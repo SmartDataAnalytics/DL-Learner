@@ -1,28 +1,15 @@
 package org.dllearner.server;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Random;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
-import org.dllearner.Config;
-import org.dllearner.LearningProblem;
-import org.dllearner.Main;
-import org.dllearner.OntologyFileFormat;
-import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.dl.Individual;
-import org.dllearner.dl.KB;
-import org.dllearner.reasoning.Reasoner;
-import org.dllearner.reasoning.ReasoningMethodUnsupportedException;
-import org.dllearner.reasoning.ReasoningService;
+import org.dllearner.server.exceptions.ClientNotKnownException;
+import org.dllearner.server.exceptions.NoOntologySelectedException;
+import org.dllearner.server.exceptions.OntologyURLNotValid;
 
 /**
  * Offene Fragen:
@@ -37,154 +24,200 @@ import org.dllearner.reasoning.ReasoningService;
 @WebService(name = "DLLearnerWebService")
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 public class DLLearnerWS {
-
+	Random rand=new Random();
+	private HashMap<Integer, ClientState> clients;
+	
 	// private String ontologyURL;
 	// private String ontologyFormat;
-	private Reasoner reasoner;
-	private ReasoningService rs;
-	private SortedSet<Individual> positiveExamples;
-	private SortedSet<Individual> negativeExamples;
 	
-	/*
-	public DLLearnerWS() {
-		System.out.println("call");
+	
+	
+	public DLLearnerWS(){
+		this.clients=new HashMap<Integer, ClientState>();
+		
+	}
+	
+	/**
+	 * 
+	 * 
+	 * 
+	 */
+	@WebMethod
+	public int getID(){
+		int id=rand.nextInt();
+		while (id<=0){
+			id=rand.nextInt();
+		}
+		
+		// dont change to local function get, cause of exception
+		ClientState c=this.clients.get(new Long(id));
+		if(c!=null){
+			return getID();
+		}
+		else {
+			this.clients.put(new Integer(id), new ClientState());
+			System.out.println("new Client with id: "+id);
+			return id;	
+		}
+		
+	}
+	
+	@WebMethod
+	public void addPositiveExample(int id,String posExample) throws ClientNotKnownException{
+		ClientState c=getClientState(id);
+		c.addPositiveExample(posExample);
+		//positiveExamples.add(new Individual(posExample));
+	}
+	@WebMethod
+	public void addNegativeExample(int id,String negExample) throws ClientNotKnownException {
+		ClientState c=getClientState(id);
+		c.addNegativeExample(negExample);
+	}	
+	@WebMethod
+	public void addIgnoredConcept(int id,String concept)throws ClientNotKnownException {
+		getClientState(id).addIgnoredConcept(concept);
+	}
+	
+	@WebMethod
+	public  String[] selectInstancesForAConcept(int id,String Concept)throws ClientNotKnownException,NoOntologySelectedException{
+		return getClientState(id).selectInstancesForAConcept(Concept);
+	}
+	
+	
+	@WebMethod
+	public String[] getPositiveExamples(int id)throws ClientNotKnownException{
+		ClientState c=getClientState(id);
+		return c.getPositiveExamples();
+	}
+	@WebMethod
+	public String[] getNegativeExamples(int id)throws ClientNotKnownException{
+		ClientState c=getClientState(id);
+		return c.getNegativeExamples();
+	}
+	@WebMethod
+	public String[] getIgnoredConcepts(int id)throws ClientNotKnownException{
+		return getClientState(id).getIgnoredConcepts();
+	}
+	
+	@WebMethod
+	public boolean removePositiveExample(int id, String pos)throws ClientNotKnownException{
+		return getClientState(id).removePositiveExample(pos);
+	}
+	
+	@WebMethod
+	public boolean removeNegativeExample(int id, String neg)throws ClientNotKnownException{
+		return getClientState(id).removeNegativeExample(neg);
+	}
+	@WebMethod
+	public boolean removeAllExamples(int id)throws ClientNotKnownException{
+		return getClientState(id).removeAllExamples();
+	}
+	@WebMethod
+	public boolean removeAllPositiveExamples(int id)throws ClientNotKnownException{
+		return getClientState(id).removeAllPositiveExamples();
+	}
+	@WebMethod
+	public boolean removeAllNegativeExamples(int id)throws ClientNotKnownException{
+		return getClientState(id).removeAllNegativeExamples();
+	}
+	@WebMethod
+	public void removeIgnoredConcept(int id,String concept)throws ClientNotKnownException{
+		getClientState(id).removeIgnoredConcept(concept);
+	}
+	
+	@WebMethod
+	public String getCurrentOntologyURL(int id)throws ClientNotKnownException,NoOntologySelectedException{
+		return getClientState(id).getCurrentOntologyURL();
+		
+	}
+	
+	@WebMethod
+	public String[] getInstances(int id)throws ClientNotKnownException,NoOntologySelectedException{
+		return getClientState(id).getInstances();
+	}
+	
+	@WebMethod
+	public String[] getAtomicConcepts(int id)throws ClientNotKnownException,NoOntologySelectedException{
+		return getClientState(id).getAtomicConcepts();
+	}
+	
+	@WebMethod
+	public String[] getAtomicRoles(int id)throws ClientNotKnownException,NoOntologySelectedException{
+		return getClientState(id).getAtomicRoles();
+	}
+	@WebMethod
+	public String[] getIndividualsForARole(int id,String Role)throws ClientNotKnownException, NoOntologySelectedException{
+		return getClientState(id).getIndividualsForARole(Role);
+	}
+	@WebMethod
+	public String getSubsumptionHierarchy(int id)throws ClientNotKnownException, NoOntologySelectedException{
+		return getClientState(id).getSubsumptionHierarchy();
+	}
+	
+	@WebMethod
+	public String[] retrieval(int id,String Concept)throws ClientNotKnownException,NoOntologySelectedException{
+		return getClientState(id).retrieval(Concept);
+	}
+	
+	@WebMethod
+	public void readOntology(int id,String ontologyURL, String format)throws ClientNotKnownException,OntologyURLNotValid{
+		getClientState(id).readOntology(ontologyURL, format);
+		
+	}
+	
+	@WebMethod
+	public void removeOntology(int id)throws ClientNotKnownException{
+		getClientState(id).removeOntology();
+	}
+	
+	@WebMethod
+	public String learnConcept(int id)throws ClientNotKnownException{
+		return "Deprecated method";
+		
+	}
+	
+	
+	@WebMethod
+	public String getAlgorithmStatus(int id ) throws ClientNotKnownException{
+		
+		return getClientState(id).getAlgorithmStatus();
+	}
+	
+	
+	@WebMethod
+	public void learnMonitored(int id )throws ClientNotKnownException{
+		getClientState(id).learnMonitored();
+	}
+	/*@WebMethod
+	public void relearn(int id,String Concept )throws ClientNotKnownException{
+		getClientState(id).relearn(Concept);
 	}*/
 	
-	@PostConstruct
-	public void postConstruct() {
-		System.out.println("post construct");
-		positiveExamples = new TreeSet<Individual>();
-		negativeExamples = new TreeSet<Individual>();
+	@WebMethod 
+	public String getLastResult(int id)throws ClientNotKnownException{
+		return getClientState(id).getLastResult();
 	}
 	
-	@PreDestroy
-	public void preConstruct() {
-		System.out.println("pre destroy");
-	}	
-	
-	/**
-	 * Specifies the URI of the ontology containing the background 
-	 * knowledge. Reads the ontology and sends it to the reasoner.
-	 * 
-	 * @param ontologyURI The URI of the ontology to use.
-	 */
-	// gleiche Methoden mit verschiedenen Parametern sind offenbar problematisch
-	/*
-	@WebMethod
-	public void readOntology(String ontologyURI) {
-		readOntology(ontologyURI, "RDF/XML");
-	}
-	*/
-	
-	/**
-	 * Specifies the URI of the ontology containing the background 
-	 * knowledge and its format. Reads the ontology and sends it to
-	 * the reasoner.
-	 * 
-	 * @param ontologyURI The URI of the ontology to use.
-	 * @param format "RDF/XML" or "N-TRIPLES".
-	 */
-	@WebMethod
-	public void readOntology(String ontologyURL, String format) {
-		// this.ontologyURL = ontologyURL;
-		// this.ontologyFormat = format;
-		
-		// TODO: potentielles Sicherheitsrisiko, da man damit derzeit auch lokale Dateien
-		// laden könnte (Fix: nur http:// zulassen, kein file://)
-		URL ontology = null;
-		try {
-			ontology = new URL(ontologyURL);
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		}
-		
-		OntologyFileFormat ofFormat;
-		if (format.equals("RDF/XML"))
-			ofFormat = OntologyFileFormat.RDF_XML;
-		else
-			ofFormat = OntologyFileFormat.N_TRIPLES;
-		
-		Map<URL, OntologyFileFormat> m = new HashMap<URL, OntologyFileFormat>();
-		m.put(ontology, ofFormat);
-		
-		// Default-URI für DIG-Reasoner setzen
-		try {
-			Config.digReasonerURL = new URL("http://localhost:8081");
-		} catch (MalformedURLException e) {
-			// Exception tritt nie auf, da URL korrekt
-			e.printStackTrace();
-		}		
-		
-		 reasoner = Main.createReasoner(new KB(), m);
-		 rs = new ReasoningService(reasoner);
+	@WebMethod 
+	public void stop(int id)throws ClientNotKnownException{
+		  getClientState(id).stop();
 	}
 	
-	/*
-	// String[] funktioniert leider noch nicht
-	@WebMethod
-	public void addPositiveExamples(String[] posExamples) {
-		for(String example : posExamples)
-			positiveExamples.add(new Individual(example));
-	}
-	
-	@WebMethod
-	public void addNegativeExamples(String[] negExamples) {
-		for(String example : negExamples)
-			negativeExamples.add(new Individual(example));
-	}
-	*/
 
-	@WebMethod
-	public void addPositiveExample(String posExample) {
-		positiveExamples.add(new Individual(posExample));
-	}
+	//*************************USER MANAGEMENT
 	
-	@WebMethod
-	public void addNegativeExample(String negExample) {
-		negativeExamples.add(new Individual(negExample));
-	}	
-	
-	@WebMethod
-	public void removePositiveExample(String posExample) {
-		positiveExamples.remove(new Individual(posExample));
-	}
-	
-	@WebMethod
-	public void removeNegativeExample(String negExample) {
-		negativeExamples.remove(new Individual(negExample));
-	}
-	
-	@WebMethod
-	public String learnConcept() {
-		// notwendige Vorverarbeitungsschritte für den Lernalgorithmus
-		// - es müssen ein paar Konzepte, die ev. von Jena generiert wurden ignoriert
-		//   werden
-		// - die Subsumptionhierarchie muss erstellt werden
-		// - die Subsumptionhierarchie wird verbessert um das Lernen effizienter zu machen
-		Main.autoDetectConceptsAndRoles(rs);
-		reasoner.prepareSubsumptionHierarchy();
-		if (Config.Refinement.improveSubsumptionHierarchy) {
-			try {
-				reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
-			} catch (ReasoningMethodUnsupportedException e) {
-				// solange DIG-Reasoner eingestellt ist, schlägt diese Operation nie fehl
-				e.printStackTrace();
-			}
-		}
+	public ClientState getClientState(int id)throws ClientNotKnownException{
+		System.out.println("Request from "+id);
+		ClientState c=this.clients.get(new Integer(id));
+		if(c==null){
+			//System.out.println(clients.keySet().toString());
+			throw new ClientNotKnownException("Client with id: "+id+" is not known","ClientNotKnownException");};
+		return c;
 		
-		System.out.println(positiveExamples);
-		System.out.println(negativeExamples);
-		
-		LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
-		// erstmal wird nur der Refinement-Learner als Web-Service angeboten
-		ROLearner learner = new ROLearner(learningProblem);
-		return learner.getBestSolution().toString();
 	}
+	
+	
 
-	// Testmethode
-	@WebMethod
-	public String hello(String name) {
-		return "Hello " + name + "!";
-	}		
+	
 	
 }
