@@ -1,0 +1,1 @@
+java -cp .:lib/dllearner.jar:lib/kaon2.jar:lib/dig1.1-xmlbeans.jar:lib/xbean.jar:lib/jena/antlr-2.7.5.jar:lib/jena/commons-logging.jar:lib/jena/concurrent.jar:lib/jena/icu4j_3_4.jar:lib/jena/iri.jar:lib/jena/jena.jar:lib/jena/xercesImpl.jar org.dllearner.server.DLLearnerWSStart $@

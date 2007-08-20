@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="build" name="dl_learner">
+	
+	<property name="kaon2" value="lib/kaon2.jar"/>
+	<property name="xbean" value="lib/xbean.jar"/>
+	<property name="dig1.1_xmlbeans" value="lib/dig1.1-xmlbeans.jar"/>	
+	
+	<!-- Jena -->
+	<property name="jena" value="lib/jena/jena.jar"/>
+	
+    <path id="classpath">
+        <pathelement location="."/>
+        <pathelement location="${kaon2}"/>
+    	<pathelement location="${xbean}"/>
+      	<pathelement location="${dig1.1_xmlbeans}"/>
+    	<pathelement location="${jena}"/>
+    	<pathelement location="lib/owlapi/owlapi-api.jar"/>
+    	<pathelement location="lib/owlapi/owlapi-apibinding.jar"/>
+    	<pathelement location="lib/owlapi/owlapi-dig1_1.jar"/>
+    </path>	
+	
+	<target name="build">
+		<tstamp>
+  			<format property="today" pattern="yyyy-MM-dd" locale="en" />		
+	  	</tstamp>
+		<property name="version_dir" value="dllearner-${today}" />
+		<property name="release_tmp_dir" value="release/${version_dir}" />
+		<!-- Java-Datei mit Build schreiben -->
+		<echo file="org/dllearner/Info.java" append="false">
+// File is updated automatically when a new version is created
+package org.dllearner;
+
+public class Info {
+	public static final String build = "${today}";
+}
+		</echo>			
+		<!-- Projekt in temporäres Verzeichnis compilieren -->
+		<mkdir dir="classes"/>		
+        <javac destdir="classes">
+            <src path="."/>
+            <classpath refid="classpath"/>
+        </javac>
+		<!-- altes Release löschen und neues erstellen --> 		
+		<mkdir dir="${release_tmp_dir}"/>
+		<mkdir dir="${release_tmp_dir}/lib/"/>
+        <jar jarfile="${release_tmp_dir}/lib/dllearner.jar">
+            <fileset dir="classes"/>
+        </jar> 	
+		<delete dir="classes"/>
+		<copy file="${kaon2}" todir="${release_tmp_dir}/lib/" />
+		<copy file="${xbean}" todir="${release_tmp_dir}/lib/" />
+		<copy file="${dig1.1_xmlbeans}" todir="${release_tmp_dir}/lib/" />
+		<copy toDir="${release_tmp_dir}/lib/jena/">
+			<fileset dir="lib/jena/"/>
+		</copy>
+		<copy toDir="${release_tmp_dir}/lib/owlapi/">
+			<fileset dir="lib/owlapi/"/>
+		</copy>		
+		<copy toDir="${release_tmp_dir}/lib/modules/">
+			<fileset dir="lib/modules/"/>
+		</copy>		
+		<copy toDir="${release_tmp_dir}">
+			<fileset dir="files"/>
+		</copy>
+		<!-- nicht notwendig
+		<chmod file="${release_tmp_dir}/dllearner" perm="755"/>
+		<chmod file="${release_tmp_dir}/quickstart" perm="755"/>
+		-->
+		<!-- Datei mit Datum des Builds schreiben -->
+		<!-- (today wird schon weiter oben definiert)
+		<tstamp>
+  			<format property="today" pattern="yyyy-MM-dd" locale="en" />		
+	  	</tstamp>
+	  	-->
+		<echo file="${release_tmp_dir}/build.txt" append="false">DL-Leaner Build ${today}</echo>
+		<!-- tar.bz2 erzeugen (zip würde auch gehen, aber kann keine Dateien mit
+		execute-Erlaubnis speichern, bz2 ist hier nur unswesentlich besser, aber langsamer) -->
+		<tar destfile="dllearner_${today}.tar.gz" compression="gzip">
+		  <!-- Extraset für ausführbare Dateien -->	
+		  <tarfileset dir="release/" mode="755">
+		    <include name="${version_dir}/dllearner" />
+		  	<include name="${version_dir}/quickstart" />
+		  	<include name="${version_dir}/ws" />
+		  </tarfileset>
+		  <tarfileset dir="release/">
+		    <exclude name="${version_dir}/dllearner"/>
+		  	<exclude name="${version_dir}/quickstart" />
+		  	<exclude name="${version_dir}/quickstart" />
+		  </tarfileset>
+		</tar>
+		<!-- kopieren des Quellcodes -->
+		<mkdir dir="${release_tmp_dir}/src/"/>
+		<copy toDir="${release_tmp_dir}/src/">
+			<fileset dir="." includes="**/*.java,**/*.jjt,build.xml"/>
+		</copy>
+		<!-- Backup erstellen (enthält zusätzlich Quellcode) -->
+		<tar destfile="backup_dllearner_${today}.tar.gz" compression="gzip">
+			<tarfileset dir="release/" mode="755">
+			    <include name="${version_dir}/dllearner" />
+			  	<include name="${version_dir}/quickstart" />
+			</tarfileset>
+			<tarfileset dir="release/">
+			    <exclude name="${version_dir}/dllearner"/>
+			  	<exclude name="${version_dir}/quickstart" />
+			</tarfileset>				
+		</tar>			
+		<delete dir="release"/>			
+	</target>
+	
+</project>

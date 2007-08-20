@@ -1,0 +1,319 @@
+DL-Learner ist a program to learn Description Logic concepts from positive and 
+negative examples.
+
+Requirements
+============
+
+Java 5 is required. No installation is necessary. Just download and extract
+DL-Learner.
+
+Instructions
+============
+
+Linux (and other systems)
+
+Make sure the file "dllearner" is executable and run it on the command line 
+followed by the name of the file to process, e.g. 
+"./dllearner examples/father.conf".
+
+Windows:
+
+Run "dllearner.bat" followed by the name of the file to process, e.g. 
+"dllearner.bat examples/father.conf".
+
+All:
+
+You can use the "java" command to run the program directly. Have a look at 
+"dllearner" and "dllearner.bat" to see what the command looks like.
+
+Syntax
+======
+
+The background knowledge can either be given as OWL DL file (using the import
+function in the configuration files) or by specifying it directly in the 
+configuration file (which we refer to as the internal knowledge base).
+
+Some examples of the syntax of the background knowledge in the internal 
+knowledge base:
+
+person = (male OR female).
+mother = (female AND EXISTS hasChild.TOP).
+motherManyDaughters = (female AND >= 4 hasChild.female).
+(mother AND father) SUBCLASSOF person.
+
+Also see the example files.
+
+This is the EBNF description of the input language [slightly outdated]:
+
+Number = ["1"-"9"] (["0"-"9"])*
+Id = ["a"-"z"] (["_","a"-"z","A"-"Z","0"-"9"])*
+String: "\"" (~["\"","\\","\n","\r"])* "\""
+Instruction =   ConfOption 
+              | FunctionCall 
+              | PosExample 
+              | NegExample 
+              | ABoxConcept 
+              | ABoxRole 
+              | Transitive 
+              | Functional 
+              | Symmetric 
+              | Inverse 
+              | Subrole 
+              | TBoxEquiv 
+              | TBoxSub
+ConfOption = Id [ "." Id ] "="  ( Id | Number ) ";"
+FunctionCall = Id "(" String ")" ";"
+PosExample = "+" Id "(" Id ")" "."
+NegExample = "-" Id "(" Id ")" "."
+ABoxConcept = Concept "(" Id ")" "."
+ABoxRole = Id "(" Id "," Id ")" "."
+Transitive = "Transitive" "(" Id ")" "."
+Functional = "Functional" "(" Id ")" "."
+Symmetric = "Symmetric" "(" Id ")" "."
+Inverse = "Inverse" "(" Id "," Id ")" "."
+Subrole = "Subrole" "(" Id "," Id ")" "."
+TBoxEquiv = Concept "=" Concept "."
+TBoxSub = Concept ("SUBCLASSOF" | "SUB" ) Concept "."
+Concept =   "TOP"
+          | "BOTTOM"
+          | Id
+          | "(" Concept "AND" Concept ")"
+          | "(" Concept "OR" Concept ")"
+          | "EXISTS" Id "." Concept
+          | "ALL" Id "." Concept
+          | "NOT" Concept
+          | ">=" Number Id "." Concept
+          | "<=" Number Id "." Concept
+
+Configuration Options
+=====================
+
+General
+-------
+
+Option: algorithm
+Possible Values: bruteForce, gp, random, refinement, hybridGP
+Default: refinement
+Effect: Specifies the algorithm to use for solving the learning problem. Note,
+        that hybridGP is not an algorithm itself, but starts the GP algorithm
+        with a sensible set of default values for the hybrid algorithm combining
+        GP with refinement operators. In particular the probability of all
+        operators except refinement is set to 0.
+
+Option: reasoner
+Possible Values: dig, kaon2, fastRetrieval
+Default: dig
+Effect: Specifies the reasoner to be used. DIG communicates with a reasoner
+        using the DIG Interface. KAON2 means to use the KAON2 Java API directly.
+        FastRetrieval is an internal algorithm, which can only be used for 
+        retrieval (not for subsumption). Currently the DIG reasoner cannot read
+        OWL files.
+
+Option: digReasonerURL
+Possible Values: a valid URL
+Default: http://localhost:8081
+Effect: Specifies the URL to be used to look for a DIG capable reasoner.
+
+Option: writeDIGProtocol
+Possible Values: true, false
+Default: false
+Effect: Specifies whether to store all DIG communication.
+
+Option: digProtocolFile
+Possible Values: strings
+Default: digProtocol.txt
+Effect: The file to store all DIG communication if writeDIGProtocol is true.
+
+Option: useRetrievalForClassification
+Possible Values: true, false
+Default: false
+Effect: To measure which concepts are covered, one can either use one retrieval
+        or several instance checks (at most one for each example). This option
+        controls which of both options should be used.
+
+Option: percentPerLengthUnit
+Possible Values: 0-1
+Default: 0.05
+Effect: How much percent (wrt classification accuracy) can a concept be worse to
+        justify an increase in length of 1. This variable is used for GP and in
+        refinement when the flexible heuristic is used. For GP, you should use a
+        value smaller than the default.
+
+> general options below are ignored <
+> by the refinement operator algorithm <
+
+Option: accuracyPenalty
+Possible Values: 1-1000
+Default: 1
+Effect: Sets the penalty for "small misclassifications".
+
+Option: errorPenalty
+Possible Values: 1-1000
+Default: 3
+Effect: Sets the penalty for classification errors.
+
+Option: maxLength
+Possible Values: 1-20
+Default: 7
+Effect: For the brute force learner this specifies the depth limit for the
+        search. The GP learner currently ignores it.
+
+Option: scoreMethod
+Possible Values: full, positive
+Default: positive
+Effect: The positive score method ignores if a negative examples cannot be
+        classified. This is often usefull, because of the limited expressiveness
+        of SHIQ wrt. negated role assertions. The full method penalizes this.
+		
+Option: showCorrectClassifications
+Possible Values: true, false
+Default: false
+Effect: Controls if correct classifications are printed (does not effect the
+        algorithm).
+		
+Option: penalizeNeutralExamples
+Possible Values: true, false
+Default: false
+Effect: If true there is a penalty if a neutral (neither positive nor negative)
+        individual is classified as either positive or negative. This should
+        usually be set to false.
+
+Refinement Operator Algorithm Specific
+--------------------------------------
+
+Option: refinement.horizontalExpansionFactor
+Possible Values: 0-1
+Default: 0.6
+Effect: Specifies horizontal expansion factor.
+
+Option: refinement.writeSearchTree
+Possible Values: true, false
+Default: false
+Effect: Specifies whether to write the search tree to a file.
+
+Option: refinement.searchTreeFile
+Possible Values: strings
+Default: "searchTree.txt"
+Effect: Specifies a file to save the current search tree after each loop of
+        the refinement algorithm.
+
+Option: refinement.heuristic
+Possible Values: flexible, lexicographic
+Default: lexicographic
+Effect: The refinement operator together with a heuristic yields a learning
+        algorithm. The lexicographic heuristic uses a lexicographic order of
+        covered negative examples and horizontal expansion of a node (i.e.
+        the covered examples are the first criterion, the horizontal expansion
+        the second criterion). The flexible heuristic computes a combined node
+        score of both criteria. Note, that the lexicographic needs a horizontal
+        expansion factor greater than 0 to ensure correctness of the learning
+        algorithm.
+
+Option: refinement.quiet
+Possible Values: true, false
+Default: false
+Effect: If set to true, no messages will be shown during the run of the 
+        algorithm (but there will still be startup and summary messages).
+
+Option: refinement.applyAllFilter
+Possible Values: true, false
+Default: true
+Effect: Specifies wether all equivalences should be used.
+
+Option: refinement.applyExistsFilter
+Possible Values: true, false
+Default: true
+Effect: Specifies wether exists equivalences should be used.
+
+Option: refinement.useTooWeakList
+Possible Values: true, false
+Default: true
+Effect: Specifies wether a too weak list should be used to reduce reasoner
+        requests.
+
+Option: refinement.useOverlyGeneralList
+Possible Values: true, false
+Default: true
+Effect: Specifies wether an overly general list should be used to reduce 
+        reasoner requests.
+
+Option: refinement.useShortConceptConstruction
+Possible Values: true, false
+Default: true
+Effect: Specifies wether the algorithm should try to reduce a concept to a
+        known more general concept to reduce the number of necessary 
+        subsumption checks for the reasoner.
+
+Option: refinement.useDIGMultiInstanceChecks
+Possible Values: never, twoChecks, oneCheck
+Default: twoChecks
+Effect: The DIG protocol allows to send several queries to a DIG reasoner at
+        once. [This is automatically done for subsumption tests.] However,
+        for instance checks this has the disadvantage that it may not be 
+        necessary to send all instance to the DIG reasoner if one of the 
+        positive examples is not covered (meaning that the concept is 
+        classified as too weak). 
+        If the option is set to never, then each instance check is send 
+        separately.
+        If the option is set to twoChecks, then first all positive examples will
+        be send in one query. If all of them are covered, i.e. the concept is
+        not classified as too weak, then all the negative examples are send in
+        one query.
+        If the option is set to oneCheck, then all examples will be send in one
+        query.
+
+Genetic Programming Specific
+----------------------------
+
+Option: gp.algorithmType
+Possible Values: steadyState, generational
+Default: steadyState
+Effect: Uses either a steady state (population partly replaced) or generational
+        (population completely replaced) algorithm.
+		
+Option: gp.elitism
+Possible Values: true, false
+Default: true
+Effect: If true an the GP algorithm uses elitism, i.e. the best individual is
+        guarenteed to survive.
+		
+Option: gp.numberOfIndividuals
+Possible Values: 1-1000000
+Default: 1000
+Effect: Sets the number of individuals in the population. A higher value
+        improves classification, but is computationally more expensive.
+		
+Option: gp.numberOfSelectedIndividuals
+Possible Values: 1-1000000
+Default: 960
+Effect: Sets the number of individuals, which are selected for replacement in a
+        steady state GP algorithm.
+		
+Option: gp.crossoverPercent
+Possible Values: 0-100
+Default: 95
+Effect: The probability that offspring is produced using crossover (in contrast
+        to simply being copied over to the next generation).
+		
+Option: gp.mutationPercent
+Possible Values: 0-100
+Default: 3
+Effect: The probability that offspring is mutated after reproduction.
+
+Option: gp.hillClimbingPercent
+Possible Values: 0-100
+Default: 0
+Effect: The probability that offspring is produced using the hill climbing
+        operator.
+
+Option: gp.refinementPercent
+Possible Values: 0-100
+Default: 0
+Effect: The probability that offspring is produced using the genetic refinement
+        operator.
+
+Option: gp.postConvergenceGenerations
+Possible Values: 10-1000
+Default: 50
+Effect: If the algorithm does not find a better solution for this number of
+        generations it stops.
