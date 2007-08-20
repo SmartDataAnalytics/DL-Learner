@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+	<!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+]>
+<rdf:RDF xml:base="http://localhost/foo" 
+xmlns:a="http://localhost/foo#" 
+xmlns:owl="http://www.w3.org/2002/07/owl#" 
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" 
+xmlns:prefix1="http://localhost/foo#">
+	<owl:Ontology rdf:about=""/>
+	<owl:Class rdf:ID="freeStandingPillar">
+		<owl:equivalentClass>
+			<owl:Class>
+				<owl:intersectionOf rdf:parseType="Collection">
+					<owl:Class rdf:about="#pillar"/>
+					<owl:Class>
+						<owl:complementOf>
+							<owl:Restriction>
+								<owl:onProperty rdf:resource="#touches"/>
+								<owl:someValuesFrom rdf:resource="&owl;Thing"/>
+							</owl:Restriction>
+						</owl:complementOf>
+					</owl:Class>
+				</owl:intersectionOf>
+			</owl:Class>
+		</owl:equivalentClass>
+	</owl:Class>
+	<owl:Class rdf:ID="parallelpipe">
+		<owl:equivalentClass>
+			<owl:Class>
+				<owl:unionOf rdf:parseType="Collection">
+					<owl:Class rdf:about="#brick"/>
+					<owl:Class rdf:about="#wedge"/>
+				</owl:unionOf>
+			</owl:Class>
+		</owl:equivalentClass>
+	</owl:Class>
+	<prefix1:brick rdf:ID="a"/>
+	<prefix1:brick rdf:ID="b"/>
+	<prefix1:brick rdf:ID="c"/>
+	<prefix1:construction rdf:ID="c1">
+		<prefix1:hasParallelpipe rdf:resource="#a"/>
+		<prefix1:hasPillar rdf:resource="#p1"/>
+		<prefix1:hasPillar rdf:resource="#p2"/>
+	</prefix1:construction>
+	<prefix1:construction rdf:ID="c2">
+		<prefix1:hasParallelpipe rdf:resource="#b"/>
+		<prefix1:hasPillar rdf:resource="#p3"/>
+		<prefix1:hasPillar rdf:resource="#p4"/>
+	</prefix1:construction>
+	<prefix1:construction rdf:ID="c3">
+		<prefix1:hasParallelpipe rdf:resource="#c"/>
+		<prefix1:hasPillar rdf:resource="#p5"/>
+		<prefix1:hasPillar rdf:resource="#p6"/>
+	</prefix1:construction>
+	<prefix1:construction rdf:ID="c4">
+		<prefix1:hasParallelpipe rdf:resource="#d"/>
+		<prefix1:hasPillar rdf:resource="#p7"/>
+		<prefix1:hasPillar rdf:resource="#p8"/>
+	</prefix1:construction>
+	<prefix1:construction rdf:ID="c5">
+		<prefix1:hasParallelpipe rdf:resource="#e"/>
+		<prefix1:hasPillar rdf:resource="#p9"/>
+	</prefix1:construction>
+	<prefix1:wedge rdf:ID="d"/>
+	<prefix1:wedge rdf:ID="e"/>
+	<prefix1:freeStandingPillar rdf:ID="p1">
+		<rdf:type rdf:resource="#pillar"/>
+		<prefix1:leftof rdf:resource="#p2"/>
+		<prefix1:supports rdf:resource="#a"/>
+	</prefix1:freeStandingPillar>
+	<prefix1:freeStandingPillar rdf:ID="p2">
+		<rdf:type rdf:resource="#pillar"/>
+		<prefix1:supports rdf:resource="#a"/>
+	</prefix1:freeStandingPillar>
+	<prefix1:freeStandingPillar rdf:ID="p3">
+		<rdf:type rdf:resource="#pillar"/>
+		<prefix1:leftof rdf:resource="#p4"/>
+	</prefix1:freeStandingPillar>
+	<prefix1:freeStandingPillar rdf:ID="p4">
+		<rdf:type rdf:resource="#pillar"/>
+	</prefix1:freeStandingPillar>
+	<prefix1:pillar rdf:ID="p5">
+		<prefix1:leftof rdf:resource="#p6"/>
+		<prefix1:supports rdf:resource="#c"/>
+		<prefix1:touches rdf:resource="#p6"/>
+	</prefix1:pillar>
+	<prefix1:pillar rdf:ID="p6">
+		<prefix1:supports rdf:resource="#c"/>
+	</prefix1:pillar>
+	<prefix1:freeStandingPillar rdf:ID="p7">
+		<rdf:type rdf:resource="#pillar"/>
+		<prefix1:leftof rdf:resource="#p8"/>
+		<prefix1:supports rdf:resource="#d"/>
+	</prefix1:freeStandingPillar>
+	<prefix1:freeStandingPillar rdf:ID="p8">
+		<rdf:type rdf:resource="#pillar"/>
+		<prefix1:supports rdf:resource="#d"/>
+	</prefix1:freeStandingPillar>
+	<prefix1:freeStandingPillar rdf:ID="p9">
+		<rdf:type rdf:resource="#pillar"/>
+		<prefix1:supports rdf:resource="#e"/>
+	</prefix1:freeStandingPillar>
+	<owl:Class rdf:ID="brick"/>
+	<owl:Class rdf:ID="construction"/>
+	<owl:Class rdf:ID="pillar"/>
+	<owl:Class rdf:ID="wedge"/>
+	<owl:Class rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
+	<owl:ObjectProperty rdf:ID="hasParallelpipe"/>
+	<owl:ObjectProperty rdf:ID="hasPillar"/>
+	<owl:ObjectProperty rdf:ID="leftof"/>
+	<owl:ObjectProperty rdf:ID="supports"/>
+	<owl:ObjectProperty rdf:ID="touches"/>
+</rdf:RDF>
