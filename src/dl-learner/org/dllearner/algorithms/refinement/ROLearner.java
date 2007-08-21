@@ -433,6 +433,11 @@ public class ROLearner implements LearningAlgorithm {
 	// recDepth dient nur zur Protokollierung
 	private void extendNodeProper(Node node, Concept concept, int maxLength, int recDepth) {
 		
+		// führe Methode nicht aus, wenn Algorithmus gestoppt wurde (alle rekursiven Funktionsaufrufe
+		// werden nacheinander abgebrochen, so dass ohne weitere Reasoninganfragen relativ schnell beendet wird)
+		if(stop)
+			return;
+		
 		if(recDepth > maxRecDepth)
 			maxRecDepth = recDepth;
 		
