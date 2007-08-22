@@ -557,7 +557,7 @@ class Model{
 		$first= readdir ($verz);
 		$ret=array();
 		while ($file = readdir ($verz)) 
-		{
+		{	if($file==".svn")continue;
 			$ret[]=$file;
 		}
 		closedir($verz);
