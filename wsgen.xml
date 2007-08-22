@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="wsgen">
+
+	<!-- does not work yet -->
+	<taskdef name="wsgen" classname="com.sun.tools.ws.ant.WsGen" />
+
+	<target name="wsgen">
+	    <wsgen      
+	         sei="org.dllearner.server.DLLearnerWS"          
+	         keep="true"
+	         verbose="true">
+	     </wsgen>		
+	</target>
+</project>
