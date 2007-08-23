@@ -1,3 +1,4 @@
+
 package org.dllearner.server;
 
 import java.net.MalformedURLException;
@@ -27,9 +28,6 @@ import org.dllearner.reasoning.ReasoningMethodUnsupportedException;
 import org.dllearner.reasoning.ReasoningService;
 import org.dllearner.server.exceptions.NoOntologySelectedException;
 import org.dllearner.server.exceptions.OntologyURLNotValid;
-
-import com.hp.hpl.jena.shared.DoesNotExistException;
-import com.hp.hpl.jena.shared.JenaException;
 
 public class ClientState {
 	
@@ -445,13 +443,13 @@ public class ClientState {
 			p(rs.getSubsumptionHierarchy().toString());
 			//rs.getRoleMembers(arg0)
 		}
-		catch (DoesNotExistException e) {
+		catch (Exception e) { //TODO
 			this.removeOntology();
 			throw new OntologyURLNotValid("The URL of the Ontology is not correct<br>\nCheck settings and URL","OntologyURLNotValid");
 			}
-		catch (JenaException e) {
+		/*catch (JenaException e) {
 			e.printStackTrace();}
-		
+		*/
 		
 		/*catch(Exception e2) {
 			

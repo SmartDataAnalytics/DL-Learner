@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.XmlType;
  * Generated source version: 2.0_02
  * 
  */
-@XmlRootElement(name = "ClientNotKnownException", namespace = "http://ws/")
+@XmlRootElement(name = "ClientNotKnownException", namespace = "http://server.dllearner.org/")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ClientNotKnownException", namespace = "http://ws/", propOrder = {
+@XmlType(name = "ClientNotKnownException", namespace = "http://server.dllearner.org/", propOrder = {
     "detail",
     "message"
 })
