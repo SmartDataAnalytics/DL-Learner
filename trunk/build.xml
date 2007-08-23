@@ -108,12 +108,22 @@ public class Info {
 		<delete dir="release"/>		
 	</target>
 	
-	<target  name="wsgen" >
+	<target  name="wsgen_windows" >
 	  <exec dir="${source_dir}" executable="wsgen">
 	    <arg value="-keep"/>
 	    <arg value="-verbose"/>
 	  	<arg value="-cp"/>
-	  	<arg value=".;../../library/dig1.1-xmlbeans.jar;../../library/kaon2.jar;../../library/xbean.jar;../../library/owlapi/;../../library/owlapi/antlr-runtime-3.0.jar;../../library/owlapi/commons-lang-2.2.jar;../../library/owlapi/owlapi-api.jar;../../library/owlapi/owlapi-apibinding.jar;../../library/owlapi/owlapi-change.jar;../../library/owlapi/owlapi-debugging.jar;../../library/owlapi/owlapi-dig1_1.jar;../../library/owlapi/owlapi-functionalparser.jar;../../library/owlapi/owlapi-functionalrenderer.jar;../../library/owlapi/owlapi-impl.jar;../../library/owlapi/owlapi-krssparser.jar;../../library/owlapi/owlapi-mansyntaxparser.jar;../../library/owlapi/owlapi-mansyntaxrenderer.jar;../../library/owlapi/owlapi-metrics.jar;../../library/owlapi/owlapi-oboparser.jar;../../library/owlapi/owlapi-owlxmlparser.jar;../../library/owlapi/owlapi-owlxmlrenderer.jar;../../library/owlapi/owlapi-rdfapi.jar;../../library/owlapi/owlapi-rdfxmlparser.jar;../../library/owlapi/owlapi-rdfxmlrenderer.jar;../../library/owlapi/owlapi-util.jar"/>
+	  	<arg value=".;../../classes;../../library/dig1.1-xmlbeans.jar;../../library/kaon2.jar;../../library/xbean.jar;../../library/owlapi/;../../library/owlapi/antlr-runtime-3.0.jar;../../library/owlapi/commons-lang-2.2.jar;../../library/owlapi/owlapi-api.jar;../../library/owlapi/owlapi-apibinding.jar;../../library/owlapi/owlapi-change.jar;../../library/owlapi/owlapi-debugging.jar;../../library/owlapi/owlapi-dig1_1.jar;../../library/owlapi/owlapi-functionalparser.jar;../../library/owlapi/owlapi-functionalrenderer.jar;../../library/owlapi/owlapi-impl.jar;../../library/owlapi/owlapi-krssparser.jar;../../library/owlapi/owlapi-mansyntaxparser.jar;../../library/owlapi/owlapi-mansyntaxrenderer.jar;../../library/owlapi/owlapi-metrics.jar;../../library/owlapi/owlapi-oboparser.jar;../../library/owlapi/owlapi-owlxmlparser.jar;../../library/owlapi/owlapi-owlxmlrenderer.jar;../../library/owlapi/owlapi-rdfapi.jar;../../library/owlapi/owlapi-rdfxmlparser.jar;../../library/owlapi/owlapi-rdfxmlrenderer.jar;../../library/owlapi/owlapi-util.jar"/>
+	    <arg value="org.dllearner.server.DLLearnerWS"/>  
+	  </exec>
+	</target>
+	
+	<target  name="wsgen_linux" >
+	  <exec dir="${source_dir}" executable="wsgen">
+	    <arg value="-keep"/>
+	    <arg value="-verbose"/> 
+	  	<arg value="-cp"/>
+	  	<arg value=".:../../classes/:../../library/dig1.1-xmlbeans.jar:../../library/kaon2.jar:../../library/xbean.jar:../../library/owlapi/:../../library/owlapi/antlr-runtime-3.0.jar:../../library/owlapi/commons-lang-2.2.jar:../../library/owlapi/owlapi-api.jar:../../library/owlapi/owlapi-apibinding.jar:../../library/owlapi/owlapi-change.jar:../../library/owlapi/owlapi-debugging.jar:../../library/owlapi/owlapi-dig1_1.jar:../../library/owlapi/owlapi-functionalparser.jar:../../library/owlapi/owlapi-functionalrenderer.jar:../../library/owlapi/owlapi-impl.jar:../../library/owlapi/owlapi-krssparser.jar:../../library/owlapi/owlapi-mansyntaxparser.jar:../../library/owlapi/owlapi-mansyntaxrenderer.jar:../../library/owlapi/owlapi-metrics.jar:../../library/owlapi/owlapi-oboparser.jar:../../library/owlapi/owlapi-owlxmlparser.jar:../../library/owlapi/owlapi-owlxmlrenderer.jar:../../library/owlapi/owlapi-rdfapi.jar:../../library/owlapi/owlapi-rdfxmlparser.jar:../../library/owlapi/owlapi-rdfxmlrenderer.jar:../../library/owlapi/owlapi-util.jar"/>
 	    <arg value="org.dllearner.server.DLLearnerWS"/>  
 	  </exec>
 	</target>
