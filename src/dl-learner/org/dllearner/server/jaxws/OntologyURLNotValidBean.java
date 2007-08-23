@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.XmlType;
  * Generated source version: 2.0_02
  * 
  */
-@XmlRootElement(name = "OntologyURLNotValid", namespace = "http://ws/")
+@XmlRootElement(name = "OntologyURLNotValid", namespace = "http://server.dllearner.org/")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "OntologyURLNotValid", namespace = "http://ws/", propOrder = {
+@XmlType(name = "OntologyURLNotValid", namespace = "http://server.dllearner.org/", propOrder = {
     "detail",
     "message"
 })

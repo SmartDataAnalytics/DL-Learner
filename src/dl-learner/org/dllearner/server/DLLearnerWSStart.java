@@ -18,7 +18,8 @@ import com.sun.net.httpserver.HttpServer;
 public class DLLearnerWSStart {
 
 	public static void main(String[] args) {
-		String url = "http://139.18.114.78:8181/services";
+		//String url = "http://139.18.114.78:8181/services";
+		String url="";
 		if (args.length > 0)
 			url = args[0];
 		try{
