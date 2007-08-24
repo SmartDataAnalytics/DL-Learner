@@ -17,7 +17,7 @@ import org.dllearner.utilities.Helper;
  * @author jl
  *
  */
-public class Individual implements KBElement, Comparable {
+public class Individual implements KBElement, Comparable<Individual> {
 
 	// public static int idCounter = 0;
 	
@@ -48,13 +48,14 @@ public class Individual implements KBElement, Comparable {
     	    return name;
     }
 
-	public int compareTo(Object arg0) {
-		// TODO Auto-generated method stub
-		return name.compareTo(((Individual)arg0).name);
+	public int compareTo(Individual o) {
+		return name.compareTo(o.name);
 	}
-
+    
 	@Override
 	public boolean equals(Object o) {
-		return (compareTo(o)==0);
+		return (compareTo((Individual)o)==0);
 	}
+
+
 }

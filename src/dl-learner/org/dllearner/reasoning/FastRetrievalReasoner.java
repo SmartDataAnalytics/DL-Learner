@@ -49,7 +49,7 @@ public class FastRetrievalReasoner extends AbstractReasoner {
 	}	
 	
 	public SortedSetTuple<Individual> doubleRetrieval(Concept concept, Concept adc) {
-		SortedSetTuple adcSet = fastRetrieval.calculateSets(adc);
+		SortedSetTuple<String> adcSet = fastRetrieval.calculateSets(adc);
 		return Helper.getIndividualTuple(fastRetrieval.calculateSetsADC(concept, adcSet));
 	}	
 	

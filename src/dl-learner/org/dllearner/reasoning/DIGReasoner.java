@@ -119,8 +119,9 @@ public class DIGReasoner extends AbstractReasoner {
 				System.exit(0);
 			} else {
 				long importTime = System.currentTimeMillis() - importStartTime;
-				System.out.println("OK");
+				System.out.println("OK (" + importTime + " ms)");
 				// (" + JenaOWLDIGConverter.nrOfStatementsLastConversion + " statements, "+ importTime + " ms)");
+				
 			}
 				
 		}

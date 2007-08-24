@@ -31,7 +31,7 @@ public class FastRetrieval {
 	
 	// Algorithmus wird ueber Rekursion und 
 	// Delegation zur Helper-Klasse implementiert
-	public SortedSetTuple<String> calculateSetsADC(Concept concept, SortedSetTuple adcSet) {
+	public SortedSetTuple<String> calculateSetsADC(Concept concept, SortedSetTuple<String> adcSet) {
 		if(concept instanceof Top) {
 			return new SortedSetTuple<String>(abox.top,abox.bottom);
 		} else if(concept instanceof Bottom) {
