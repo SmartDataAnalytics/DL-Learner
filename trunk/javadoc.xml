@@ -22,7 +22,8 @@
         	linksource="true" 
         	bottom="DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007 Jens Lehmann" 
         	Encoding="ISO-8859-1" 
-        	windowtitle="DL-Learner Javadoc"
-        	/>
+        	windowtitle="DL-Learner Javadoc">
+        	<taglet name="org.dllearner.utilities.ToDoTaglet" path="classes" />
+    	</javadoc>
     </target>
 </project>
