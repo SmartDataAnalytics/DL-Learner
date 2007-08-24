@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.reasoning;
 
 import java.util.Set;
@@ -12,9 +31,9 @@ import org.dllearner.dl.Top;
 import org.dllearner.utilities.ConceptComparator;
 
 /**
- * Repräsentiert eine Subsumptionhierarchie (ohne äquivalente Konzepte).
- * 
- * @author jl
+ * Represents a subsumption hierarchy (ignoring equivalent concepts).
+ *  
+ * @author Jens Lehmann
  *
  */
 public class SubsumptionHierarchy {
@@ -32,19 +51,17 @@ public class SubsumptionHierarchy {
 		allowedConceptsInSubsumptionHierarchy.add(new Top());
 		allowedConceptsInSubsumptionHierarchy.add(new Bottom());
 	}
-	
-	// es wird geklont, damit Subsumptionhierarchie nicht von außen verändert 
-	// werden kann
-	@SuppressWarnings("unchecked")
+		
+	@SuppressWarnings("unchecked")	
 	public SortedSet<Concept> getMoreGeneralConcepts(Concept concept) {
+		// we clone all concepts before returning them such that they cannot be
+		// modified externally
 		return (TreeSet<Concept>) subsumptionHierarchyUp.get(concept).clone();	
-		// return subsumptionHierarchyUp.get(concept); // ohne klonen geht es nicht
 	}
 	
 	@SuppressWarnings("unchecked")
 	public SortedSet<Concept> getMoreSpecialConcepts(Concept concept) {
 		return (TreeSet<Concept>) subsumptionHierarchyDown.get(concept).clone();
-		// return subsumptionHierarchyDown.get(concept); // ohne klonen geht es nicht
 	}	
 	
 	public void improveSubsumptionHierarchy() {
