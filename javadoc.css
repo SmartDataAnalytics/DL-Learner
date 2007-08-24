@@ -1,0 +1,90 @@
+
+/* Define colors, fonts and other style attributes here to override the defaults */
+
+/* Page background color */
+body {
+    background-color: rgb(234, 234, 234);
+	font-family: trebuchet ms, verdana, tahoma, arial;
+	font-size: 82%;
+	color: #3E3E3E;
+}
+a {
+	font-weight:     bold;
+	color:           rgb(0,0,132); 
+	text-decoration: none;
+}
+.svnkit {
+	font-size:   150%;
+	color:       rgb(51, 102, 153);
+}
+
+pre{
+	margin: 0px; 
+	padding: 0.5em; 
+	font-size: 100%;	
+	border: 1px solid #ccc;
+}
+
+.javakeyword{
+	font-family: Courier New;
+	color: rgb(127,0,85); 	
+	font-weight: bold;
+	font-size: 100%;
+}
+.javacomment {
+	font-family: Courier New; 
+	font-size: 100%; 
+	font-style: normal;
+	color: rgb(63, 127, 95);
+}
+
+.javacode {
+	font-family: Courier New; 
+	font-size: 100%; 
+	font-style: normal;
+	color: black;
+	background-color: #FFFFFF;
+	width: 98.4%;
+}
+
+.javastring {
+	font-family: Courier New; 
+	font-size: 100%; 
+	font-style: normal;
+	color: rgb(42, 0, 255);
+}
+
+/* Headings */
+h1 { 
+    font-size: 145%; 
+}
+
+h3 { 
+    padding-left: 40px;
+    background: transparent url(info.png) no-repeat left;
+}
+
+a:hover {
+	color: #CF4705;
+	text-decoration: underline;
+}
+
+/* Table colors */
+.TableHeadingColor     { background: rgb(173,184,217) } 
+.TableSubHeadingColor  { background: rgb(173,184,217) }
+.TableRowColor         { background: rgb(220, 220, 220) } 
+
+/* Font used in left-hand frame lists */
+.FrameTitleFont   { font-size: 100%; font-family: Helvetica, Arial, sans-serif }
+.FrameHeadingFont { font-size: 100%; font-family: Helvetica, Arial, sans-serif }
+.FrameItemFont    { font-size: 100%; font-family: Helvetica, Arial, sans-serif }
+
+/* Navigation bar fonts and colors */
+.NavBarCell1    { font-size: 90%; background-color: #AFCAAF }
+.NavBarCell1Rev { background-color: #999933 } 
+.NavBarFont1    { font-family:  Verdana; color:#506474;}
+.NavBarFont1Rev { font-family:  Verdana; color:#F3EBC6;}
+
+.NavBarCell2    { font-family:  Verdana; background-color: rgb(234, 234, 234);}
+.NavBarCell3    { font-family:  Verdana; background-color: rgb(234, 234, 234);}
+
