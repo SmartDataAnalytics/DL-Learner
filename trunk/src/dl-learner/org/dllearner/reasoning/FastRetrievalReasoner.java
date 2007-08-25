@@ -76,5 +76,4 @@ public class FastRetrievalReasoner extends AbstractReasoner {
 	public void prepareSubsumptionHierarchy() {
 		// hier muss nichts getan werden
 	}
-	
 }
