@@ -40,6 +40,8 @@ public interface Reasoner {
 	
 	public SubsumptionHierarchy getSubsumptionHierarchy() throws ReasoningMethodUnsupportedException;
 	
+	public RoleHierarchy getRoleHierarchy() throws ReasoningMethodUnsupportedException;
+	
 	public SortedSet<Individual> retrieval(Concept concept) throws ReasoningMethodUnsupportedException;
 	
 	public Map<Individual, SortedSet<Individual>> getRoleMembers(AtomicRole atomicRole) throws ReasoningMethodUnsupportedException;

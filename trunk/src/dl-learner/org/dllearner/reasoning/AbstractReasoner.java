@@ -90,6 +90,10 @@ public abstract class AbstractReasoner implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 		
+	public RoleHierarchy getRoleHierarchy() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
 	public Set<AtomicConcept> getConcepts(Individual i) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
