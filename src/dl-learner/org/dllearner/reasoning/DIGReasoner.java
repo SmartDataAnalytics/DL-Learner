@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.reasoning;
 
 import java.io.File;
@@ -25,6 +45,7 @@ import org.dllearner.dl.KB;
 import org.dllearner.dl.Top;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.RoleComparator;
 import org.kr.dl.dig.v1_1.Concepts;
 import org.kr.dl.dig.v1_1.Csynonyms;
 import org.kr.dl.dig.v1_1.IdType;
@@ -35,6 +56,12 @@ import org.kr.dl.dig.v1_1.Roles;
 import org.kr.dl.dig.v1_1.Rsynonyms;
 import org.kr.dl.dig.v1_1.IndividualSetDocument.IndividualSet;
 
+/**
+ * DIG 1.1 implementation of the reasoner interface. 
+ * 
+ * @author Jens Lehmann
+ *
+ */
 public class DIGReasoner extends AbstractReasoner {
 
 	// Variablen für Reasoner
@@ -54,11 +81,19 @@ public class DIGReasoner extends AbstractReasoner {
 	// unterschiedlich sind;
 	// alternativ wäre auch eine Indizierung über Strings möglich
 	ConceptComparator conceptComparator = new ConceptComparator();
+	RoleComparator roleComparator = new RoleComparator();
 	SubsumptionHierarchy subsumptionHierarchy;
+	RoleHierarchy roleHierarchy;
 	// enthält atomare Konzepte, sowie Top und Bottom
 	Set<Concept> allowedConceptsInSubsumptionHierarchy;
 	
-	// imports not supported yet
+	/**
+	 * Creates a DIG reasoner object.
+	 * 
+	 * @param kb Internal knowledge base.
+	 * @param url URL of the DIG reasoner e.g. http://localhost:8081.
+	 * @param imports Files to import (format and physical location of each file).
+	 */
 	public DIGReasoner(KB kb, URL url, Map<URL,OntologyFileFormat> imports) {
 		this.imports = imports;
 		this.kb = kb;
@@ -136,6 +171,10 @@ public class DIGReasoner extends AbstractReasoner {
 
 	}
 	
+	/**
+	 * Construct a subsumption hierarchy using DIG queries. After calling this 
+	 * method one can ask for children or parents in the subsumption hierarchy.
+	 */
 	public void prepareSubsumptionHierarchy() {
 		allowedConceptsInSubsumptionHierarchy = new TreeSet<Concept>(conceptComparator);		
 		allowedConceptsInSubsumptionHierarchy.addAll(Config.Refinement.allowedConcepts);
@@ -171,6 +210,26 @@ public class DIGReasoner extends AbstractReasoner {
 		
 		subsumptionHierarchy = new SubsumptionHierarchy(Config.Refinement.allowedConcepts, subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
+	
+	/**
+	 * Constructs a role hierarchy using DIG queries. After calling this method,
+	 * one can query parents or children of roles.
+	 * 
+	 * @todo Does not yet take ignored roles into account.  
+	 */
+	@Override
+	public void prepareRoleHierarchy() {	
+		TreeMap<AtomicRole,TreeSet<AtomicRole>> roleHierarchyUp = new TreeMap<AtomicRole,TreeSet<AtomicRole>>(roleComparator);
+		TreeMap<AtomicRole,TreeSet<AtomicRole>> roleHierarchyDown = new TreeMap<AtomicRole,TreeSet<AtomicRole>>(roleComparator);
+		
+		// Refinement atomarer Konzepte
+		for(AtomicRole role : atomicRoles) {
+			roleHierarchyDown.put(role, getMoreSpecialRolesDIG(role));
+			roleHierarchyUp.put(role, getMoreGeneralRolesDIG(role));		
+		}
+		
+		roleHierarchy = new RoleHierarchy(Config.Refinement.allowedRoles, roleHierarchyUp, roleHierarchyDown);
+	}	
 	
 	// eigentlich müsste man klonen um sicherzustellen, dass der parent-Link
 	// bei null bleibt; bei der aktuellen Implementierung ist der parent-Link
@@ -371,6 +430,11 @@ public class DIGReasoner extends AbstractReasoner {
 		return subsumptionHierarchy;
 	}
 	
+	@Override
+	public RoleHierarchy getRoleHierarchy() {
+		return roleHierarchy;
+	}
+	
 	private TreeSet<Concept> getMoreGeneralConceptsDIG(Concept concept) {
 		String moreGeneralDIG = asksPrefix;
 		moreGeneralDIG += "<parents id=\"query_parents\">";
@@ -447,6 +511,54 @@ public class DIGReasoner extends AbstractReasoner {
 		
 		return resultsSet;
 	}	
+	
+	private TreeSet<AtomicRole> getMoreGeneralRolesDIG(AtomicRole role) {
+		String moreGeneralRolesDIG = asksPrefix;
+		moreGeneralRolesDIG += "<rparents id=\"query_parents\">";
+		moreGeneralRolesDIG += "<ratom name=\"" + role.getName() + "\" />";
+		moreGeneralRolesDIG += "</rparents></asks>";
+		
+		ResponsesDocument rd = connector.asks(moreGeneralRolesDIG);
+		TreeSet<AtomicRole> resultsSet = new TreeSet<AtomicRole>(roleComparator);
+		Roles[] rolesArray = rd.getResponses().getRoleSetArray()[0].getSynonymsArray();		
+		
+		for(int i=0; i<rolesArray.length; i++) {
+			Named[] atoms = rolesArray[i].getRatomArray();
+			
+			for(Named atom : atoms) {
+				AtomicRole ar = new AtomicRole(atom.getName());
+				//if(Config.Refinement.allowedRoles.contains(ar))
+				resultsSet.add(ar);
+			}				
+		}
+		
+		// System.out.println(rd);
+		
+		return resultsSet;
+	}
+	
+	private TreeSet<AtomicRole> getMoreSpecialRolesDIG(AtomicRole role) {
+		String moreSpecialRolesDIG = asksPrefix;
+		moreSpecialRolesDIG += "<rchildren id=\"query_children\">";
+		moreSpecialRolesDIG += "<ratom name=\"" + role.getName() + "\" />";
+		moreSpecialRolesDIG += "</rchildren></asks>";
+		
+		ResponsesDocument rd = connector.asks(moreSpecialRolesDIG);
+		TreeSet<AtomicRole> resultsSet = new TreeSet<AtomicRole>(roleComparator);
+		Roles[] rolesArray = rd.getResponses().getRoleSetArray()[0].getSynonymsArray();		
+		
+		for(int i=0; i<rolesArray.length; i++) {
+			Named[] atoms = rolesArray[i].getRatomArray();
+			
+			for(Named atom : atoms) {
+				AtomicRole ar = new AtomicRole(atom.getName());
+				//if(Config.Refinement.allowedRoles.contains(ar))
+				resultsSet.add(ar);
+			}				
+		}
+		
+		return resultsSet;
+	}
 	
 	public boolean instanceCheck(Concept concept, Individual individual) {
 		String instanceCheckDIG = asksPrefix;
