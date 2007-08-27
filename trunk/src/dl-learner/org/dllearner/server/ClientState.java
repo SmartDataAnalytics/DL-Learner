@@ -110,7 +110,7 @@ public class ClientState {
 		AtomicConcept SelectedConcept=new AtomicConcept(Concept);
 		ArrayList<String> al=new ArrayList<String>();
 		Individual indtmp=null;
-		Set ConceptSet=null;
+		Set<AtomicConcept> ConceptSet=null;
 		AtomicConcept ac=null;
 		
 		
@@ -173,8 +173,8 @@ public class ClientState {
 			{
 				ac=superConcepts.get(jj);
 				p("next this: "+ac.getName());
-				Set negatives=rs.retrieval(ac);
-				Iterator i2 = negatives.iterator();
+				Set<Individual> negatives=rs.retrieval(ac);
+				Iterator<Individual> i2 = negatives.iterator();
 				indtmp=null;
 				while(i2.hasNext()){
 					
@@ -206,15 +206,15 @@ public class ClientState {
 		AtomicConcept SelectedConcept=new AtomicConcept(Concept);
 		ArrayList<String> ret=new ArrayList<String>();
 		Individual indtmp=null;
-		Set ConceptSet=null;
+		Set<AtomicConcept> ConceptSet=null;
 		AtomicConcept ac=null;
 		Random r=new Random();
 		
 		
 		System.out.println("selectAConcept: "+Concept);
 		// add all positives
-		Set positives=rs.retrieval(SelectedConcept);
-		Iterator i = positives.iterator();
+		Set<Individual> positives=rs.retrieval(SelectedConcept);
+		Iterator<Individual> i = positives.iterator();
 		while(i.hasNext()){
 			indtmp=(Individual)i.next();
 			p("added "+indtmp.getName()+" to positives");
@@ -242,9 +242,9 @@ public class ClientState {
 	
 	
 	public ArrayList<AtomicConcept> subsumesAll(AtomicConcept c){
-		Set s=rs.getAtomicConcepts();
+		Set<AtomicConcept> s=rs.getAtomicConcepts();
 		ArrayList<AtomicConcept> ret=new ArrayList<AtomicConcept>();
-		Iterator i=s.iterator();
+		Iterator<AtomicConcept> i=s.iterator();
 		while (i.hasNext()) {
 			AtomicConcept element = (AtomicConcept) i.next();
 			if(rs.subsumes(element, c))
@@ -257,7 +257,7 @@ public class ClientState {
 	}
 	public String[] getPositiveExamples(){
 		String[] ret=new String[positiveExamples.size()];
-		Iterator i=positiveExamples.iterator();
+		Iterator<Individual> i=positiveExamples.iterator();
 		int a=0;
 		while (i.hasNext()){
 			ret[a++]=((Individual)i.next()).getName();
@@ -267,7 +267,7 @@ public class ClientState {
 	}
 	public String[] getNegativeExamples(){
 		String[] ret=new String[negativeExamples.size()];
-		Iterator i=negativeExamples.iterator();
+		Iterator<Individual> i=negativeExamples.iterator();
 		int a=0;
 		while (i.hasNext()){
 			ret[a++]=((Individual)i.next()).getName();
@@ -278,7 +278,7 @@ public class ClientState {
 	
 	public String[] getIgnoredConcepts() {	
 		String[] ret=new String[ignoredConcept.size()];
-		Iterator i=ignoredConcept.iterator();
+		Iterator<String> i=ignoredConcept.iterator();
 		int a=0;
 		while (i.hasNext()){
 			ret[a++]=((String)i.next());
@@ -334,7 +334,7 @@ public class ClientState {
 		SortedSet<Individual> s=rs.getIndividuals();
 		//System.out.println(s);
 		String[] ret=new String[s.size()];
-		Iterator i=s.iterator();
+		Iterator<Individual> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
 			ret[a++]=((Individual)i.next()).getName();
@@ -491,8 +491,8 @@ public class ClientState {
 	}
 	
 	public String[] getIndividualsForARole(String Role)throws NoOntologySelectedException{
-		Map m=rs.getRoleMembers(new AtomicRole(Role));
-		Set s=m.keySet();
+		Map<Individual,SortedSet<Individual>> m=rs.getRoleMembers(new AtomicRole(Role));
+		Set<Individual> s=m.keySet();
 		return SortedSet2StringListIndividuals(s);
 	}
 	
@@ -521,10 +521,10 @@ public class ClientState {
 			//this.lm.notify();
 	}
 	
-	public String[] SortedSet2StringListIndividuals(Set s){
+	public String[] SortedSet2StringListIndividuals(Set<Individual> s){
 		
 		String[] ret=new String[s.size()];
-		Iterator i=s.iterator();
+		Iterator<Individual> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
 			ret[a++]=((Individual)i.next()).getName();
@@ -533,10 +533,10 @@ public class ClientState {
 		return ret;
 	}
 	
-	public String[] SortedSet2StringListConcepts(Set s){
+	public String[] SortedSet2StringListConcepts(Set<AtomicConcept> s){
 		
 		String[] ret=new String[s.size()];
-		Iterator i=s.iterator();
+		Iterator<AtomicConcept> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
 			ret[a++]=((AtomicConcept)i.next()).getName();
@@ -544,10 +544,10 @@ public class ClientState {
 		Arrays.sort(ret);
 		return ret;
 	}
-	public String[] SortedSet2StringListRoles(Set s){
+	public String[] SortedSet2StringListRoles(Set<AtomicRole> s){
 		
 		String[] ret=new String[s.size()];
-		Iterator i=s.iterator();
+		Iterator<AtomicRole> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
 			ret[a++]=((AtomicRole)i.next()).getName();
