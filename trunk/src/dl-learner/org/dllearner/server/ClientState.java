@@ -116,10 +116,10 @@ public class ClientState {
 		
 		System.out.println("selectInstancesForAConcept: "+Concept);
 		// add all positives
-		Set positives=rs.retrieval(SelectedConcept);
-		Iterator i = positives.iterator();
+		Set<Individual> positives=rs.retrieval(SelectedConcept);
+		Iterator<Individual> i = positives.iterator();
 		while(i.hasNext()){
-			indtmp=(Individual)i.next();
+			indtmp=i.next();
 			p("added "+indtmp.getName()+" to positives");
 			al.add("added "+indtmp.getName()+" to positives");
 			positiveExamples.add(indtmp);
@@ -223,8 +223,8 @@ public class ClientState {
 		}
 		
 		//find All other Instances concepts
-		Set otherInstances=rs.getIndividuals();
-		Iterator it=otherInstances.iterator();
+		Set<Individual> otherInstances=rs.getIndividuals();
+		Iterator<Individual> it=otherInstances.iterator();
 		while(it.hasNext()){
 			indtmp=(Individual)it.next();
 			
