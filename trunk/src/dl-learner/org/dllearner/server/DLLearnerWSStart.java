@@ -19,9 +19,9 @@ public class DLLearnerWSStart {
 
 	public static void main(String[] args) {
 		//String url = "http://139.18.114.78:8181/services";
-		String url="";
+		/*String url="";
 		if (args.length > 0)
-			url = args[0];
+			url = args[0];*/
 		try{
 		
 		InetSocketAddress isa=new InetSocketAddress("localhost",8181);
