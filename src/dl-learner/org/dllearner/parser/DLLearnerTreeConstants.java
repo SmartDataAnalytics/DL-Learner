@@ -2,7 +2,7 @@
 
 package org.dllearner.parser;
 
-public interface DLLearnerTreeConstants
+public @SuppressWarnings("all") interface DLLearnerTreeConstants
 {
   public int JJTSTART = 0;
   public int JJTCONFOPTION = 1;

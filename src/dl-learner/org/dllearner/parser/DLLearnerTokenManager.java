@@ -18,8 +18,7 @@ import org.dllearner.dl.*;
 import org.dllearner.ConfigurationOption;
 import org.dllearner.utilities.*;
 
-@SuppressWarnings({"all"})
-public class DLLearnerTokenManager implements DLLearnerConstants
+public @SuppressWarnings("all") class DLLearnerTokenManager implements DLLearnerConstants
 {
   public static  java.io.PrintStream debugStream = System.out;
   public static  void setDebugStream(java.io.PrintStream ds) { debugStream = ds; }
