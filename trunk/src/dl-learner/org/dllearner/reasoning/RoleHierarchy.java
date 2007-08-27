@@ -69,6 +69,8 @@ public class RoleHierarchy {
 		return (TreeSet<AtomicRole>) roleHierarchyDown.get(role).clone();
 	}			
 	
+	
+	
 	@Override
 	public String toString() {
 		String str = "";
@@ -89,5 +91,20 @@ public class RoleHierarchy {
 				str += toString(hierarchy, c, depth+1);
 		}
 		return str;
-	}		
+	}
+
+	/**
+	 * @return The most general roles.
+	 */
+	public TreeSet<AtomicRole> getMostGeneralRoles() {
+		return mostGeneralRoles;
+	}
+
+	/**
+	 * @return The most special roles.
+	 */
+	public TreeSet<AtomicRole> getMostSpecialRoles() {
+		return mostSpecialRoles;
+	}
+
 }
