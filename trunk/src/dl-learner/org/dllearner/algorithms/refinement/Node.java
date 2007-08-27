@@ -88,6 +88,7 @@ public class Node {
 		return isTooWeak;
 	}
 	
+	@Override		
 	public String toString() {
 		String ret = concept.toString() + " [q:";
 		if(isTooWeak)

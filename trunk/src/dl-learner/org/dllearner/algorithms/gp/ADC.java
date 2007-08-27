@@ -19,6 +19,7 @@ public class ADC extends Concept {
 		return 1;
 	}
 
+	@Override
 	public String toString() {
 		return "ADC";
 	}

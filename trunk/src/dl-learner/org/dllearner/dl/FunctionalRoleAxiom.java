@@ -16,6 +16,7 @@ public class FunctionalRoleAxiom implements RBoxAxiom {
 		return 1 + role.getLength();
 	}
 	
+	@Override		
 	public String toString() {
 		return "Functional(" + role.toString() + ")";
 	}

@@ -19,6 +19,7 @@ public class Disjunction extends Concept {
 		addChild(c2);
 	}
 	
+	@Override		
     public String toString() {
         return "(" + children.get(0).toString() + " OR " + children.get(1).toString() + ")";
     }

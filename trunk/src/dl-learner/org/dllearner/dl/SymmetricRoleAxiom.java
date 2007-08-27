@@ -16,6 +16,7 @@ public class SymmetricRoleAxiom implements RBoxAxiom {
 		return 1 + role.getLength();
 	}
 	
+	@Override		
 	public String toString() {
 		return "Symmetric(" + role.toString() + ")";
 	}	

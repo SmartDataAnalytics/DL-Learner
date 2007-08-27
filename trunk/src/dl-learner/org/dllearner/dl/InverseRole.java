@@ -22,6 +22,7 @@ public class InverseRole extends Role {
 		return 2;
 	}
 	
+	@Override		
 	public String toString() {
 		return getName() + "-";
 	}

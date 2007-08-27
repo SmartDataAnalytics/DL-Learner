@@ -35,6 +35,7 @@ public class MultiDisjunction extends Concept {
 		return length + children.size() - 1;		
 	}
 
+	@Override		
 	public String toString() {
 		if(children.size()==0)
 			return "EMPTY_OR";

@@ -22,6 +22,7 @@ public class ConceptAssertion implements AssertionalAxiom {
 		return 1 + concept.getLength();
 	}
 	
+	@Override		
 	public String toString() {
 		return concept.toString() + "(" + individual + ")";
 	}

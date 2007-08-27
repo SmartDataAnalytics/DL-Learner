@@ -560,6 +560,7 @@ public class DIGReasoner extends AbstractReasoner {
 		return resultsSet;
 	}
 	
+	@Override		
 	public boolean instanceCheck(Concept concept, Individual individual) {
 		String instanceCheckDIG = asksPrefix;
 		instanceCheckDIG += "<instance id= \"query_instance\">";
@@ -570,6 +571,7 @@ public class DIGReasoner extends AbstractReasoner {
 		return parseBooleanAnswer(instanceCheckDIG);	
 	}
 	
+	@Override	
 	public Set<Individual> instanceCheck(Concept concept, Set<Individual> individuals) {
 		String instanceCheckDIG = asksPrefix;
 		int id = 0;
@@ -596,6 +598,7 @@ public class DIGReasoner extends AbstractReasoner {
 		return returnSet;		
 	}
 	
+	@Override	
 	public SortedSet<Individual> retrieval(Concept concept) {
 		
 		String retrievalDIG = asksPrefix;
@@ -614,6 +617,7 @@ public class DIGReasoner extends AbstractReasoner {
 	}
 	
 	// ToDo: gibt momentan nur einen Wert bei äquivalenten Klassen aus
+	@Override		
 	public Set<AtomicConcept> getConcepts(Individual individual) {
 		String typesDIG = asksPrefix;
 		typesDIG += "<types id=\"query_types\">";
@@ -646,6 +650,7 @@ public class DIGReasoner extends AbstractReasoner {
 	// keine getter um ein IndividualPairSet zu finden; in der XSD-Datei ist
 	// das in Responsegroup auch nicht definiert
 	// => deswegen wird hier die XML-Cursor-API verwendet
+	@Override		
 	public Map<Individual, SortedSet<Individual>> getRoleMembers(AtomicRole atomicRole) {
 		String relatedIndividualsDIG = asksPrefix;
 		relatedIndividualsDIG += "<relatedIndividuals id=\"related_individuals\">";
@@ -691,7 +696,7 @@ public class DIGReasoner extends AbstractReasoner {
 		return resultMap;
 	}
 	
-	
+	@Override	
 	public boolean isSatisfiable() {
 		String satisfiableDIG = asksPrefix;
 		// wenn Top erfüllbar ist, dann gibt es auch ein Modell für die KB

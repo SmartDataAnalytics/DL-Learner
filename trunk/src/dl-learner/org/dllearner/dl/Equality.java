@@ -22,6 +22,7 @@ public class Equality implements TerminologicalAxiom {
 		return 1 + concept1.getLength() + concept2.getLength();
 	}
 	
+	@Override		
 	public String toString() {
 		return concept1.toString() + " = " + concept2.toString();
 	}

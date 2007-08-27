@@ -156,6 +156,7 @@ public class ConceptComparator implements Comparator<Concept> {
 
 	// TODO: Vergleich zwischen ConceptComparators: immer identisch
 	// (testen, ob das bessere Performance bringt)
+	@Override		
 	public boolean equals(Object o) {
 		return (o instanceof ConceptComparator);
 	}

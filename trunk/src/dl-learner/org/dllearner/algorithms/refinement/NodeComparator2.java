@@ -53,6 +53,7 @@ public class NodeComparator2 implements Comparator<Node> {
 		throw new RuntimeException("Cannot compare nodes, which have no evaluated quality or are too weak.");
 	}
 
+	@Override		
 	public boolean equals(Object o) {
 		return (o instanceof NodeComparator2);
 	}

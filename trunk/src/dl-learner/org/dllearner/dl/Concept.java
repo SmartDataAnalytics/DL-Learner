@@ -158,6 +158,7 @@ public abstract class Concept implements Cloneable, KBElement {
      * werden dabei nicht mitgeklont, sondern nur parent und children. 
      */
     @SuppressWarnings("unchecked")
+	@Override    
     public Object clone() {
         Concept node = null;
         try {

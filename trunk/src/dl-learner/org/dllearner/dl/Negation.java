@@ -16,6 +16,7 @@ public class Negation extends Concept {
 		addChild(c);
 	}
 	
+	@Override		
     public String toString() {
         return "(NOT " +children.get(0).toString() + ")";
     }

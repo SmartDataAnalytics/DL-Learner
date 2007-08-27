@@ -22,6 +22,7 @@ public class SubRoleAxiom implements RBoxAxiom {
 		return 1 + role.getLength() + subRole.getLength();
 	}
 	
+	@Override		
 	public String toString() {
 		return "Subrole(" + subRole + "," + role.toString() + ")";
 	}		

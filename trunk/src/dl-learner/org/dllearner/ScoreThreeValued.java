@@ -124,10 +124,12 @@ public class ScoreThreeValued extends Score {
         errorRate = (double) errors/numberOfExamples;
     }
 
+    @Override
     public double getScore() {
         return score;
     }
     
+    @Override
     public String toString() {
         DecimalFormat df = new DecimalFormat("0.00");
         String str = "";
