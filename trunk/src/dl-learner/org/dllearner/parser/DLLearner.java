@@ -22,8 +22,8 @@ import org.dllearner.dl.*;
 import org.dllearner.ConfigurationOption;
 import org.dllearner.utilities.*;
 
-@SuppressWarnings({"all"})
-public class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants, DLLearnerConstants {/*@bgen(jjtree)*/
+// @SuppressWarnings({"all"})
+public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants, DLLearnerConstants {/*@bgen(jjtree)*/
   protected static JJTDLLearnerState jjtree = new JJTDLLearnerState();
         private static ConceptComparator conceptComparator = new ConceptComparator();
         // hier wird Parse-Fehler angezeigt, obwohl eigentlich alles stimmt??
@@ -2027,8 +2027,8 @@ SubRoleAxiom Subrole() : {String s1,s2;}
   }
   public DLLearner(java.io.InputStream stream, String encoding) {
     if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser.  You must");
-      System.out.println("       either use ReInit() or set the JavaCC option STATIC to false");
+      System.out.println("ERROR: Second call to constructor of static parser.  ");
+      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
       System.out.println("       during parser generation.");
       throw new Error();
     }
@@ -2058,8 +2058,8 @@ SubRoleAxiom Subrole() : {String s1,s2;}
 
   public DLLearner(java.io.Reader stream) {
     if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser.  You must");
-      System.out.println("       either use ReInit() or set the JavaCC option STATIC to false");
+      System.out.println("ERROR: Second call to constructor of static parser. ");
+      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
       System.out.println("       during parser generation.");
       throw new Error();
     }
@@ -2086,8 +2086,8 @@ SubRoleAxiom Subrole() : {String s1,s2;}
 
   public DLLearner(DLLearnerTokenManager tm) {
     if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser.  You must");
-      System.out.println("       either use ReInit() or set the JavaCC option STATIC to false");
+      System.out.println("ERROR: Second call to constructor of static parser. ");
+      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
       System.out.println("       during parser generation.");
       throw new Error();
     }
@@ -2218,9 +2218,6 @@ SubRoleAxiom Subrole() : {String s1,s2;}
   static public ParseException generateParseException() {
     jj_expentries.removeAllElements();
     boolean[] la1tokens = new boolean[39];
-    for (int i = 0; i < 39; i++) {
-      la1tokens[i] = false;
-    }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -2249,7 +2246,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     jj_add_error_token(0, 0);
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
-      exptokseq[i] = (int[])jj_expentries.elementAt(i);
+      exptokseq[i] = jj_expentries.elementAt(i);
     }
     return new ParseException(token, exptokseq, tokenImage);
   }
