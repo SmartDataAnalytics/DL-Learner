@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.reasoning;
 
 import java.io.File;
@@ -15,20 +35,13 @@ import org.dllearner.dl.Individual;
 import org.dllearner.utilities.SortedSetTuple;
 
 /**
- * Das ist die Schnittstelle zum verwendeten Reasoner. Hier k�nnen Queries
- * eingegeben werden, die dann zum benutzten Reasoner weitergeleitet werdern.
- * Die zentrale Schnittstelle soll erm�glichen, dass verschiedene Reasoner auf
- * unterschiedliche Art und Weise angebunden werden k�nnen.
+ * The reasoning service is the interface to the used reasoner. Basically,
+ * it delegates all incoming reasoner request to the <code>Reasoner</code>
+ * object which has been specified in the constructor. However, it calculates
+ * some additional statistics about the time the reasoner needs to answer
+ * the query.
  * 
- * TODO: ADC-Support, d.h. es werden zwei Konzepte als Input f�r Klassifikation
- * gebracht wovon eins ein Hilfskonzept ist was zur Wissensbasis hinzugef�gt
- * werden muss
- * 
- * TODO: Reasoner k�nnte ein Caching f�r Anfragen bzgl. Subsumption- hierarchie
- * bereitstellen => im Lernalgorithmus m�ssen f�r atomare Konzept die Nachbarn
- * in der Subsumptionhierarchie bekannt sein
- * 
- * @author jl
+ * @author Jens Lehmann
  * 
  */
 public class ReasoningService {
@@ -255,14 +268,45 @@ public class ReasoningService {
 	}
 	*/
 	
-	// conveniven
+	/**
+	 * Returns more general concepts in the subsumption hierarchy.
+	 * 
+	 * @param concept Atomic concept, top, or bottom.
+	 * @return A set of more general concepts.
+	 */
 	public SortedSet<Concept> getMoreGeneralConcepts(Concept concept) {
 		return getSubsumptionHierarchy().getMoreGeneralConcepts(concept);
 	}
 
+	/**
+	 * Returns more special concepts in the subsumption hierarchy.
+	 * 
+	 * @param concept Atomic concept, top, or bottom.
+	 * @return A set of more special concepts.
+	 */
 	public SortedSet<Concept> getMoreSpecialConcepts(Concept concept) {
 		return getSubsumptionHierarchy().getMoreSpecialConcepts(concept);
 	}	
+	
+	/**
+	 * Returns more general concepts in the subsumption hierarchy.
+	 * 
+	 * @param role Atomic concept, top, or bottom.
+	 * @return A set of more general concepts.
+	 */
+	public SortedSet<AtomicRole> getMoreGeneralRoles(AtomicRole role) {
+		return getRoleHierarchy().getMoreGeneralRoles(role);
+	}
+
+	/**
+	 * Returns more special concepts in the subsumption hierarchy.
+	 * 
+	 * @param role Atomic concept, top, or bottom.
+	 * @return A set of more special concepts.
+	 */
+	public SortedSet<AtomicRole> getMoreSpecialRoles(AtomicRole role) {
+		return getRoleHierarchy().getMoreSpecialRoles(role);
+	}
 	
 	public SubsumptionHierarchy getSubsumptionHierarchy() {
 		try {
@@ -274,6 +318,15 @@ public class ReasoningService {
 		}	
 	}
 
+	public RoleHierarchy getRoleHierarchy() {
+		try {
+			return reasoner.getRoleHierarchy();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
 	public boolean isSatisfiable() {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result;		
