@@ -16,7 +16,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.dllearner.OntologyFileFormat;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.w3c.dom.Document;
@@ -33,8 +32,9 @@ public class OWLAPIDIGConverter {
 		 
 		 /* Load an ontology from a physical URI */
 		 OWLOntologyManager manager = OWLManager.createOWLOntologyManager();   
-		 OWLOntology ontology = manager.loadOntologyFromPhysicalURI(file.toURI());
-	 
+		 //the next function could return an ontology
+		 manager.loadOntologyFromPhysicalURI(file.toURI());
+		 
 		 DIGTranslatorImpl dig=new DIGTranslatorImpl(manager);
 	     Document doc=dig.createTellsDocument(kbURI.toString());
 	     dig.translateToDIG(manager.getOntologies(), doc, doc.getDocumentElement() );
