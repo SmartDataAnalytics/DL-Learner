@@ -110,7 +110,7 @@ public class ClientState {
 		AtomicConcept SelectedConcept=new AtomicConcept(Concept);
 		ArrayList<String> al=new ArrayList<String>();
 		Individual indtmp=null;
-		Set<AtomicConcept> ConceptSet=null;
+		//Set<AtomicConcept> ConceptSet=null;
 		AtomicConcept ac=null;
 		
 		
@@ -206,8 +206,8 @@ public class ClientState {
 		AtomicConcept SelectedConcept=new AtomicConcept(Concept);
 		ArrayList<String> ret=new ArrayList<String>();
 		Individual indtmp=null;
-		Set<AtomicConcept> ConceptSet=null;
-		AtomicConcept ac=null;
+		//Set<AtomicConcept> ConceptSet=null;
+		//AtomicConcept ac=null;
 		Random r=new Random();
 		
 		

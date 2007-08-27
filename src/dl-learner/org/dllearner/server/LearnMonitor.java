@@ -34,6 +34,10 @@ public class LearnMonitor extends Thread {
 		
 	}
 	
+	/**
+	 * @override
+	 */
+	@Override
 	public void run(){
 		try{
 		c.setStatus("still running");
