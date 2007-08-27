@@ -1,7 +1,8 @@
 package org.dllearner.server.exceptions;
 
 public class NoOntologySelectedException extends Exception {
-    String detail;
+	 static final long serialVersionUID=101;
+	String detail;
     
     public NoOntologySelectedException (String message, String detail) {
         super (message);

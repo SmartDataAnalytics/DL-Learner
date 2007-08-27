@@ -37,6 +37,7 @@ public class LearnMonitor extends Thread {
 	public void run(){
 		try{
 		c.setStatus("still running");
+		if(active);
 		active=true;
 		c.setStatus("running");
 		

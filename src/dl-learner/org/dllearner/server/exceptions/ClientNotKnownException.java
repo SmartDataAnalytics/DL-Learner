@@ -1,7 +1,8 @@
 package org.dllearner.server.exceptions;
 
 public class ClientNotKnownException extends Exception {
-    String detail;
+    static final long serialVersionUID=100;
+	String detail;
     
     public ClientNotKnownException (String message, String detail) {
         super (message);
