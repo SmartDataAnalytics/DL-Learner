@@ -84,6 +84,7 @@ public class All extends Quantification {
     }    
     */
     
+	@Override		
     public String toString() {
         return "ALL " + role + "." + children.get(0).toString();
     }

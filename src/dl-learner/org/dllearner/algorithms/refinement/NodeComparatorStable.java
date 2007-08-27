@@ -43,6 +43,7 @@ public class NodeComparatorStable implements Comparator<Node> {
 	}
 
 	// alle NodeComparators führen zur gleichen Ordnung
+	@Override		
 	public boolean equals(Object o) {
 		return (o instanceof NodeComparatorStable);
 	}

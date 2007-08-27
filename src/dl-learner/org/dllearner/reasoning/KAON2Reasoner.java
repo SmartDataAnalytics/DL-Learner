@@ -273,6 +273,7 @@ public class KAON2Reasoner extends AbstractReasoner {
 		subsumptionHierarchy = new org.dllearner.reasoning.SubsumptionHierarchy(atomicConcepts, subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
 	
+	@Override	
 	public SortedSet<Individual> retrieval(Concept c) {
 		SortedSet<Individual> result = new TreeSet<Individual>();
 		Description d = getKAON2Description(c);
@@ -358,6 +359,7 @@ public class KAON2Reasoner extends AbstractReasoner {
 		throw new Error("Subsumption Error in KAON2.");
 	}
 
+	@Override	
 	public boolean isSatisfiable() {
 		try {
 			return kaon2Reasoner.isSatisfiable();
@@ -396,6 +398,7 @@ public class KAON2Reasoner extends AbstractReasoner {
 	}
 	*/
 
+	@Override	
 	public org.dllearner.reasoning.SubsumptionHierarchy getSubsumptionHierarchy() {
 		return subsumptionHierarchy;
 	}
@@ -428,6 +431,7 @@ public class KAON2Reasoner extends AbstractReasoner {
 		}
 	}
 
+	@Override	
 	public Map<org.dllearner.dl.Individual, SortedSet<org.dllearner.dl.Individual>> getRoleMembers(AtomicRole atomicRole) {
 		Map<org.dllearner.dl.Individual, SortedSet<org.dllearner.dl.Individual>> returnMap = new TreeMap<org.dllearner.dl.Individual, SortedSet<org.dllearner.dl.Individual>>();
 

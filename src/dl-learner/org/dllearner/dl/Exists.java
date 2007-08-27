@@ -85,6 +85,7 @@ public class Exists extends Quantification {
     }
     */
     
+	@Override	    
     public String toString() {
         return "EXISTS " + role + "." + children.get(0).toString();
     }

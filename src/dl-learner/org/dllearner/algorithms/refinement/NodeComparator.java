@@ -87,7 +87,9 @@ public class NodeComparator implements Comparator<Node> {
 		throw new RuntimeException("Cannot compare nodes, which have no evaluated quality or are too weak.");
 	}
 
+
 	// alle NodeComparators führen zur gleichen Ordnung
+	@Override	
 	public boolean equals(Object o) {
 		return (o instanceof NodeComparator);
 	}

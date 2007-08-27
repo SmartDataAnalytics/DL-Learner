@@ -76,6 +76,7 @@ public class FlatABox {
     	return (String) roleArray[nr];
     }    
     
+	@Override	    
     public String toString() {
         String output = "";
         output += "domain: " + domain.toString() + "\n";

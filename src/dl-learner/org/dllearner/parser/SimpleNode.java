@@ -2,6 +2,7 @@
 
 package org.dllearner.parser;
 
+@SuppressWarnings("all")
 public class SimpleNode implements Node {
   protected Node parent;
   protected Node[] children;

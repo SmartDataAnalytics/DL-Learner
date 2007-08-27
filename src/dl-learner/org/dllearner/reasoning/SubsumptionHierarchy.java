@@ -97,6 +97,7 @@ public class SubsumptionHierarchy {
 		subsumptionHierarchyUp = hierarchyUpNew;
 	}
 	
+	@Override	
 	public String toString() {
 		return toString(false);
 	}

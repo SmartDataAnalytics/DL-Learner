@@ -28,6 +28,7 @@ public class RoleAssertion implements AssertionalAxiom {
 		return 2 + role.getLength();
 	}
 
+	@Override		
 	public String toString() {
 		return role.toString() + "(" + individual1 + "," + individual2 +")";
 	}

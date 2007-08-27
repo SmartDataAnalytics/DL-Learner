@@ -13,6 +13,7 @@ public class AtomicRole extends Role {
 		return 1;
 	}
 	
+	@Override		
 	public String toString() {
 		String name = getName();
     	String prefixToHide = Helper.findPrefixToHide(name); 

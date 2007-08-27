@@ -22,6 +22,7 @@ public class InverseRoleAxiom implements RBoxAxiom {
 		return 1 + role.getLength() + inverseRole.getLength();
 	}
 	
+	@Override		
 	public String toString() {
 		return "Inverse(" + inverseRole + "," + role.toString() + ")";
 	}	

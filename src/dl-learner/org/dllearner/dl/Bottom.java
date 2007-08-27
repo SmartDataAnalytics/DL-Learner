@@ -11,7 +11,7 @@ public class Bottom extends Concept {
         negSet = abox.top;
     }
     */
-
+	@Override	
     public String toString() {
         return "BOTTOM";
     }

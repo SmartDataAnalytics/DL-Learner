@@ -16,6 +16,7 @@ public class TransitiveRoleAxiom implements RBoxAxiom {
 		return role;
 	}
 	
+	@Override		
 	public String toString() {
 		return "Transitive(" + role.toString() + ")";
 	}	

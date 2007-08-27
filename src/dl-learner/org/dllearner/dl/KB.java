@@ -156,6 +156,7 @@ public class KB implements KBElement {
 		return length;
 	}
 	
+	@Override		
 	public String toString() {
 		String str = "TBox["+tbox.size()+"]:\n";
 		for(Axiom a : tbox)

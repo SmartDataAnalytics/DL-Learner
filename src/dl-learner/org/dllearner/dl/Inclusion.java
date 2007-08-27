@@ -22,6 +22,7 @@ public class Inclusion implements TerminologicalAxiom {
 		return 1 + subConcept.getLength() + superConcept.getLength();
 	}
 	
+	@Override		
 	public String toString() {
 		return subConcept.toString() + " SUBCONCEPTOF " + superConcept.toString();
 	}

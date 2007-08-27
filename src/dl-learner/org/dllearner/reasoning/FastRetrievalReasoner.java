@@ -44,15 +44,18 @@ public class FastRetrievalReasoner extends AbstractReasoner {
 		return ReasonerType.FAST_RETRIEVAL;
 	}
 
+	@Override		
 	public SortedSetTuple<Individual> doubleRetrieval(Concept concept) {
 		return Helper.getIndividualTuple(fastRetrieval.calculateSets(concept));
 	}	
 	
+	@Override		
 	public SortedSetTuple<Individual> doubleRetrieval(Concept concept, Concept adc) {
 		SortedSetTuple<String> adcSet = fastRetrieval.calculateSets(adc);
 		return Helper.getIndividualTuple(fastRetrieval.calculateSetsADC(concept, adcSet));
 	}	
 	
+	@Override		
 	public SortedSet<Individual> retrieval(Concept concept) {
 		return Helper.getIndividualSet(fastRetrieval.calculateSets(concept).getPosSet());
 	}

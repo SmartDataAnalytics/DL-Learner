@@ -12,6 +12,7 @@ public class Top extends Concept {
     }
     */
 
+	@Override		
     public String toString() {
         return "TOP";
     }

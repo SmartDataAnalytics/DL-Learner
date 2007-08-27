@@ -33,6 +33,7 @@ public class MultiConjunction extends Concept {
 		return length + children.size() - 1;
 	}
 
+	@Override		
 	public String toString() {
 		if(children.size()==0)
 			return "EMPTY_AND";
