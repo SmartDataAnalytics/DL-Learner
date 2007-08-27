@@ -38,7 +38,7 @@ public class QuickStart {
 		getAllConfs(f, path);
 
 		// System.out.println(hm.size());
-		Iterator i = hm.keySet().iterator();
+		Iterator<String> i = hm.keySet().iterator();
 		Object[] sort = new Object[hm.size()];
 		int count = 0;
 		while (i.hasNext())
