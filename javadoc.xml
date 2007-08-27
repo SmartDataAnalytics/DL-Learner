@@ -24,6 +24,7 @@
         	Encoding="ISO-8859-1" 
         	windowtitle="DL-Learner Javadoc">
         	<taglet name="org.dllearner.utilities.ToDoTaglet" path="classes" />
+        	<link href="http://java.sun.com/javase/6/docs/api/"/>
     	</javadoc>
     </target>
 </project>

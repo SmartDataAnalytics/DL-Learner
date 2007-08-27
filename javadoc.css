@@ -18,13 +18,6 @@ a {
 	color:       rgb(51, 102, 153);
 }
 
-pre{
-	margin: 0px; 
-	padding: 0.5em; 
-	font-size: 100%;	
-	border: 1px solid #ccc;
-}
-
 .javakeyword{
 	font-family: Courier New;
 	color: rgb(127,0,85); 	
@@ -70,8 +63,8 @@ a:hover {
 }
 
 /* Table colors */
-.TableHeadingColor     { background: rgb(173,184,217) } 
-.TableSubHeadingColor  { background: rgb(173,184,217) }
+.TableHeadingColor     { background: rgb(172,185,216) } 
+.TableSubHeadingColor  { background: rgb(172,185,216) }
 .TableRowColor         { background: rgb(220, 220, 220) } 
 
 /* Font used in left-hand frame lists */
