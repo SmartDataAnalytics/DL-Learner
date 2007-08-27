@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.OntologyFileFormat;
 import org.dllearner.dl.AtomicConcept;
@@ -291,6 +292,7 @@ public class ReasoningService {
 	/**
 	 * Returns more general concepts in the subsumption hierarchy.
 	 * 
+	 * @see RoleHierarchy#getMoreGeneralRoles(AtomicRole)
 	 * @param role Atomic concept, top, or bottom.
 	 * @return A set of more general concepts.
 	 */
@@ -301,12 +303,29 @@ public class ReasoningService {
 	/**
 	 * Returns more special concepts in the subsumption hierarchy.
 	 * 
+	 * @see RoleHierarchy#getMoreSpecialRoles(AtomicRole)
 	 * @param role Atomic concept, top, or bottom.
 	 * @return A set of more special concepts.
 	 */
 	public SortedSet<AtomicRole> getMoreSpecialRoles(AtomicRole role) {
 		return getRoleHierarchy().getMoreSpecialRoles(role);
 	}
+	
+	/**
+	 * @see RoleHierarchy#getMostGeneralRoles()
+	 * @return The most general roles.
+	 */
+	public TreeSet<AtomicRole> getMostGeneralRoles() {
+		return getRoleHierarchy().getMostGeneralRoles();
+	}
+	
+	/**
+	 * @see RoleHierarchy#getMostSpecialRoles()
+	 * @return The most special roles.
+	 */
+	public TreeSet<AtomicRole> getMostSpecialRoles() {
+		return getRoleHierarchy().getMostSpecialRoles();
+	}	
 	
 	public SubsumptionHierarchy getSubsumptionHierarchy() {
 		try {
