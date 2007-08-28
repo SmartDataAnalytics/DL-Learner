@@ -1,4 +1,4 @@
-package org.dllearner.server.exceptions;
+package org.dllearner.server;
 
 public class NoOntologySelectedException extends Exception {
 	 static final long serialVersionUID=101;

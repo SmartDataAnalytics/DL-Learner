@@ -26,8 +26,6 @@ import org.dllearner.dl.KB;
 import org.dllearner.reasoning.Reasoner;
 import org.dllearner.reasoning.ReasoningMethodUnsupportedException;
 import org.dllearner.reasoning.ReasoningService;
-import org.dllearner.server.exceptions.NoOntologySelectedException;
-import org.dllearner.server.exceptions.OntologyURLNotValid;
 
 public class ClientState {
 	

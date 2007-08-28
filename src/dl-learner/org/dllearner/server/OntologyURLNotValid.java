@@ -1,4 +1,4 @@
-package org.dllearner.server.exceptions;
+package org.dllearner.server;
 
 public class OntologyURLNotValid extends Exception {
 	 static final long serialVersionUID=102;

@@ -7,9 +7,6 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
-import org.dllearner.server.exceptions.ClientNotKnownException;
-import org.dllearner.server.exceptions.NoOntologySelectedException;
-import org.dllearner.server.exceptions.OntologyURLNotValid;
 
 /**
  * Offene Fragen:
