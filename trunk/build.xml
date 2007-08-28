@@ -164,7 +164,8 @@ public class Info {
 	
 	<target name="createScripts" >
 	<pathconvert refid="classpath" property="pathString"/>
-	<echo message="${pathString}"/>
+	<echo file="bin/test.bat" message="java -cp ${pathString} org.dllearner.QuickStart"/>
+	<property name="kaon2" value="${lib_dir}/kaon2.jar"/>
 		 	
 		
 	</target>
