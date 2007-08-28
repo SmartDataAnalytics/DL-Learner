@@ -146,8 +146,13 @@ public class DIGReasoner extends AbstractReasoner {
 			// eingebunden werden müssen)
 			long importStartTime = System.currentTimeMillis();
 			System.out.print("Converting import file " + file + " to DIG using OWL API ... ");
-			// importDIGString = JenaOWLDIGConverter.getTellsString(file, imports.get(file), kbURI);
-			importDIGString = OWLAPIDIGConverter.getTellsString(file, imports.get(file), kbURI);
+			
+			// if the ontology format is N-Triples then Jena is used, otherwise the OWL API
+			if(imports.get(file).equals(OntologyFileFormat.N_TRIPLES))
+				importDIGString = JenaOWLDIGConverter.getTellsString(file, imports.get(file), kbURI);
+			else
+				importDIGString = OWLAPIDIGConverter.getTellsString(file, imports.get(file), kbURI);
+			
 			ResponseDocument rdImport = connector.tells(importDIGString);
 			if(!rdImport.getResponse().isSetOk()) {
 				System.err.println("DIG-Reasoner cannot read knowledgebase.");
