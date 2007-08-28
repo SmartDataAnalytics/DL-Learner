@@ -1,1 +1,37 @@
- 
+Requirements
+============
+Java 6 and a reasoner is required.
+
+Installation
+============
+No further installation is necessary. Just download and extract DL-Learner.
+
+Running Instructions
+====================
+The instructions assume that you have a usable reasoner running (usually a
+DIG capable reasoner running on http://localhost:8081).
+
+Linux (and other systems)
+
+Make sure the file "dllearner" is executable and run it on the command line 
+followed by the name of the file to process, e.g. 
+"./dllearner examples/father.conf".
+
+Windows:
+
+Run "dllearner.bat" followed by the name of the file to process, e.g. 
+"dllearner.bat examples/father.conf".
+
+All:
+
+You can use the "java" command to run the program directly. Have a look at 
+"dllearner" and "dllearner.bat" to see what the command looks like.
+
+Web-Service
+===========
+
+If you want to run DL-Learner as a Web Service, you can run the scripts "ws" or
+"ws.bat". They create an own local webserver running DL-Learner. An example
+PHP client is also provided by DL-Learner. It can be downloaded at the 
+sourceforge.net project website:
+http://sourceforge.net/project/showfiles.php?group_id=203619
