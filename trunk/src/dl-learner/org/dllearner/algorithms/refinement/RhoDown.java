@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.algorithms.refinement;
 
 import java.util.HashMap;
@@ -30,6 +49,17 @@ import org.dllearner.reasoning.ReasoningService;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 
+/**
+ * Implementation of the downward refinement operator in the DL-Learner refinement 
+ * based algorithm.
+ * 
+ * See <a href="http://jens-lehmann.org/files/2007_alc_learning_algorithm.pdf"
+ * >http://jens-lehmann.org/files/2007_alc_learning_algorithm.pdf</a> for
+ * details.
+ * 
+ * @author Jens Lehmann
+ *
+ */
 public class RhoDown implements RefinementOperator {
 
 	private LearningProblem learningProblem;
@@ -222,25 +252,48 @@ public class RhoDown implements RefinementOperator {
 			}
 			
 		} else if (concept instanceof Exists) {
+			Role role = ((Quantification)concept).getRole();
+			
+			// rule 1: EXISTS r.D => EXISTS r.E
 			tmp = refine(concept.getChild(0), maxLength-2, null);
 
 			for(Concept c : tmp) {
 				refinements.add(new Exists(((Quantification)concept).getRole(),c));
 			}
+			
+			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
+			// currently inverse roles are not supported
+			AtomicRole ar = (AtomicRole) role;
+			Set<AtomicRole> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
+			for(AtomicRole moreSpecialRole : moreSpecialRoles) {
+				refinements.add(new Exists(moreSpecialRole, concept.getChild(0)));
+			}
 
 		} else if (concept instanceof All) {
+			Role role = ((Quantification)concept).getRole();
+			
+			// rule 1: ALL r.D => ALL r.E
 			tmp = refine(concept.getChild(0), maxLength-2, null);
 
 			for(Concept c : tmp) {
 				refinements.add(new All(((Quantification)concept).getRole(),c));
 			}		
 			
+			// rule 2: ALL r.D => ALL r.BOTTOM if D is a most specific atomic concept
 			// falls es keine spezielleren atomaren Konzepte gibt, dann wird 
 			// bottom angehangen => nur wenn es ein atomares Konzept (insbesondere != bottom)
 			// ist
 			// if(tmp.size()==0) {
 			if(concept.getChild(0) instanceof AtomicConcept && tmp.size()==0) {
 				refinements.add(new All(((Quantification)concept).getRole(),new Bottom()));
+			}
+			
+			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
+			// currently inverse roles are not supported
+			AtomicRole ar = (AtomicRole) role;
+			Set<AtomicRole> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
+			for(AtomicRole moreSpecialRole : moreSpecialRoles) {
+				refinements.add(new All(moreSpecialRole, concept.getChild(0)));
 			}
 			
 		} else if(concept instanceof Disjunction || concept instanceof Conjunction)
@@ -438,14 +491,13 @@ public class RhoDown implements RefinementOperator {
 		topComputationTimeNs += System.nanoTime() - topComputationTimeStartNs;
 	}
 	
+	// computation of the set M 
 	private void computeM(int maxLength) {
 		long mComputationTimeStartNs = System.nanoTime();
 		// System.out.println("compute M from " + (topRefinementsLength+1) + " up to " + maxLength);
-		// berechnen der Menge M bis zu maxLength
 		
-		// erstmal leere Mengen hinzufügen (um die Fälle abzudecken, in denen
-		// es keine Rolle gibt, also M für bestimmte Längen keinen Einträge hat,
-		// was an anderen Stellen zu NullPointerExceptions führen kann)
+		// initialise all not yet initialised lengths
+		// (avoids null pointers in some cases)
 		for(int i=topRefinementsLength+1; i<=maxLength; i++) {
 			m.put(i, new TreeSet<Concept>(conceptComparator));
 		}
@@ -474,9 +526,14 @@ public class RhoDown implements RefinementOperator {
 			// Konzepte der Länge 3: EXISTS r.TOP
 			if(Config.Refinement.useExistsConstructor) {
 				Set<Concept> m3 = new TreeSet<Concept>(conceptComparator);
-				for(AtomicRole r : Config.Refinement.allowedRoles) {
+				// previous operator: uses all roles
+				// for(AtomicRole r : Config.Refinement.allowedRoles) {
+				//	m3.add(new Exists(r, new Top()));
+				//}
+				// new operator: only uses most general roles
+				for(AtomicRole r : rs.getMostGeneralRoles()) {
 					m3.add(new Exists(r, new Top()));
-				}
+				}				
 				m.put(3,m3);
 			}
 		}
@@ -498,8 +555,13 @@ public class RhoDown implements RefinementOperator {
 							// if(!m.containsKey(i+2))
 							//	m.put(i+2, new TreeSet<Concept>(conceptComparator));
 							
-							for(AtomicRole r : Config.Refinement.allowedRoles) {
+							// previous operator: uses all roles
+							// for(AtomicRole r : Config.Refinement.allowedRoles) {
 								// Mehrfacheinf�gen ist bei einer Menge kein Problem
+							// 	m.get(i+2).add(new All(r,c));
+							// }
+							
+							for(AtomicRole r : rs.getMostGeneralRoles()) {
 								m.get(i+2).add(new All(r,c));
 							}
 						}
