@@ -95,6 +95,18 @@ public class DLLearner {
 		return negativeExamples;
 	}
 	
+	public static List<ConfigurationOption> getConfOptions() {
+		return confOptions;
+	}
+	
+	public static List<List<String>> getFunctionCalls() {
+		return functionCalls;
+	}
+	
+	public static KB getKB() {
+		return kb;
+	}
+	
 	/*
 	private static void addFunctionCall(String functionName, String argument) {
 		if(functionCalls.containsKey(functionName)) {
@@ -151,7 +163,11 @@ public class DLLearner {
 	
 	public static void parseFile(String filename) {
 		try {
-			new DLLearner(new FileInputStream(filename));
+			if(constructorCalled)
+				DLLearner.ReInit(new FileInputStream(filename));
+			else
+				new DLLearner(new FileInputStream(filename));
+			constructorCalled = true;
 			DLLearner.Start();
 		} catch(Exception e) {
 			e.printStackTrace();

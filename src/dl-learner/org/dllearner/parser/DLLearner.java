@@ -81,6 +81,18 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
                 return negativeExamples;
         }
 
+        public static List<ConfigurationOption> getConfOptions() {
+                return confOptions;
+        }
+
+        public static List<List<String>> getFunctionCalls() {
+                return functionCalls;
+        }
+
+        public static KB getKB() {
+                return kb;
+        }
+
         /*
 	private static void addFunctionCall(String functionName, String argument) {
 		if(functionCalls.containsKey(functionName)) {
@@ -137,7 +149,11 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
 
         public static void parseFile(String filename) {
                 try {
-                        new DLLearner(new FileInputStream(filename));
+                        if(constructorCalled)
+                                DLLearner.ReInit(new FileInputStream(filename));
+                        else
+                                new DLLearner(new FileInputStream(filename));
+                        constructorCalled = true;
                         DLLearner.Start();
                 } catch(Exception e) {
                         e.printStackTrace();
@@ -1561,25 +1577,6 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     finally { jj_save(11, xla); }
   }
 
-  static final private boolean jj_3R_19() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_9() {
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_36() {
-    if (jj_3R_50()) return true;
-    if (jj_3R_22()) return true;
-    if (jj_3R_17()) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
-    if (jj_3R_14()) return true;
-    return false;
-  }
-
   static final private boolean jj_3R_18() {
     if (jj_3R_12()) return true;
     return false;
@@ -2009,6 +2006,25 @@ SubRoleAxiom Subrole() : {String s1,s2;}
 
   static final private boolean jj_3R_21() {
     if (jj_scan_token(OR)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_19() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_9() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_36() {
+    if (jj_3R_50()) return true;
+    if (jj_3R_22()) return true;
+    if (jj_3R_17()) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    if (jj_3R_14()) return true;
     return false;
   }
 
