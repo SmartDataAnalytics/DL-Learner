@@ -13,21 +13,10 @@
 	<property name="release_tmp_dir" value="release/${version_dir}" />
 	<property name="release_php_client_tmp_dir" value="release/php-client-${today}" />	
 	
-	
+	<!-- KAON2 must not be distributed with the official release -->
 	<property name="kaon2" value="${lib_dir}/kaon2.jar"/>
-	<property name="xbean" value="${lib_dir}/xbean.jar"/>
-	<property name="dig1.1_xmlbeans" value="${lib_dir}/dig1.1-xmlbeans.jar"/>
-	<property name="sparql" value="${lib_dir}/modules/sparqlModule.jar"/>
-	
-	<property name="jena" value="${lib_dir}/jena/jena.jar"/>
-		
-	<property name="owlapi-api" value="${lib_dir}/owlapi/owlapi-api.jar"/>
-	<property name="owlapi-apibinding" value="${lib_dir}/owlapi/owlapi-apibinding.jar"/>
-	<property name="owlapi-dig1_1" value="${lib_dir}/owlapi/owlapi-dig1_1.jar"/>
-	
-	<!-- setup classpath -->
- 
-	
+
+	<!-- set up classpath -->
 	<path id="classpath">
 		<pathelement location="."/>
 	    <fileset dir="${lib_dir}">
@@ -39,7 +28,7 @@
 	</path>
 	
 	<!-- build target -->
-	<target name="build" depends="createScripts">
+	<target name="build" depends="createScripts,javadoc">
 		
 		<!-- write current build date into Info.java -->
 		<echo file="${source_dir}/org/dllearner/Info.java" append="false">
@@ -81,6 +70,17 @@ public class Info {
 		<!-- create file containing the build info -->
 		<echo file="${release_tmp_dir}/build.txt" append="false">DL-Leaner Build ${today}</echo>
 		
+		<!-- create empty log directory for release -->
+		<mkdir dir="${release_tmp_dir}/log" />
+		
+		<!-- copy documentation excluding developer documentation -->
+		<copy toDir="${release_tmp_dir}/doc">
+			<fileset dir="doc">
+				<exclude name="eclipse/" />
+				<exclude name="javadoc/" />
+			</fileset>
+		</copy>
+		
 		<!-- create tar.gz files (allows storing whether a file is executable) -->
 		<tar longfile="gnu" destfile="dllearner_${today}.tar.gz" compression="gzip">
 		  <!-- extra set for executable files -->	
@@ -102,8 +102,16 @@ public class Info {
 			<fileset dir="${source_dir}" includes="**/*.java,**/*.jjt,build.xml"/>
 		</copy>
 		
-		<!-- create backup (= standard build + source code) -->
-		<tar longfile="gnu" destfile="backup_dllearner_${today}.tar.gz" compression="gzip">
+		<!-- create copy developer documentation -->
+		<copy todir="${release_tmp_dir}/doc/eclipse/">
+		    <fileset dir="doc/eclipse/"/>
+		</copy>		
+		<copy todir="${release_tmp_dir}/doc/javadoc/">
+		    <fileset dir="doc/javadoc/"/>
+		</copy>				
+		
+		<!-- create backup (= standard build + source code + developer documentation) -->
+		<tar longfile="gnu" destfile="dllearner_developer_${today}.tar.gz" compression="gzip">
 			<tarfileset dir="release/" mode="755">
 			    <include name="${version_dir}/dllearner" />
 			  	<include name="${version_dir}/quickstart" />
@@ -144,6 +152,7 @@ public class Info {
 		<delete dir="release" />
 	</target>
 	
+	<!-- generate JAXWS classes -->
 	<target name="wsgen" >
 		<path id="wsgen">
 			<path refid="classpath"/>
@@ -160,38 +169,31 @@ public class Info {
 	  </exec>
 	</target>
 	
-
-	
+	<!-- generate startup scripts -->
 	<target name="createScripts" >
 		<path id="addjar">
 			<path refid="classpath"/>
 			<pathelement location="${lib_dir}/dllearner.jar"/>
 		</path>
-	<path id="removeprefix"><pathelement location="."/>	</path>
-	<pathconvert refid="removeprefix" property="removeprefix" />
-	
-	<pathconvert refid="addjar" property="pathStringUnix" targetos="unix">
-		<map from="${removeprefix}" to="."/>
-	</pathconvert>
-	<pathconvert refid="addjar" property="pathStringWin" targetos="windows">
-		<map from="${removeprefix}" to="."/>
-	</pathconvert>
+		<path id="removeprefix"><pathelement location="."/>	</path>
+		<pathconvert refid="removeprefix" property="removeprefix" />
+		
+		<pathconvert refid="addjar" property="pathStringUnix" targetos="unix">
+			<map from="${removeprefix}" to="."/>
+		</pathconvert>
+		<pathconvert refid="addjar" property="pathStringWin" targetos="windows">
+			<map from="${removeprefix}" to="."/>
+		</pathconvert>
 
-	<!--<echo message="${removeprefix}"/>
-	<echo message="${pathStringUnix}"/>
-	<echo message="${pathStringWin}"/>-->
-		
-	<echo file="bin/quickstart.bat" message="java -cp ${pathStringWin} org.dllearner.QuickStart"/>
-	<echo file="bin/dllearner.bat" message="java -cp ${pathStringWin} org.dllearner.parser.DLLearner %*"/>
-	<echo file="bin/ws.bat" message="java -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
-	<echo file="bin/quickstart" message="java -cp ${pathStringUnix} org.dllearner.QuickStart"/>
-	<echo file="bin/dllearner" message="java -cp ${pathStringUnix} org.dllearner.parser.DLLearner $@"/>
-	<echo file="bin/ws" message="java -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
-		
+		<echo file="bin/quickstart.bat" message="java -cp ${pathStringWin} org.dllearner.QuickStart"/>
+		<echo file="bin/dllearner.bat" message="java -cp ${pathStringWin} org.dllearner.parser.DLLearner %*"/>
+		<echo file="bin/ws.bat" message="java -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
+		<echo file="bin/quickstart" message="java -cp ${pathStringUnix} org.dllearner.QuickStart"/>
+		<echo file="bin/dllearner" message="java -cp ${pathStringUnix} org.dllearner.parser.DLLearner $@"/>
+		<echo file="bin/ws" message="java -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
 	</target>
 	
-	
-	
+	<!-- generate Javadoc -->
     <target name="javadoc">
     	<pathconvert refid="classpath" property="jdocclasspath"/>
     	<!--classpath="library/owlapi/antlr-runtime-3.0.jar:library/owlapi/owlapi-rdfxmlparser.jar:library/owlapi/owlapi-owlxmlrenderer.jar:library/owlapi/owlapi-mansyntaxrenderer.jar:library/owlapi/owlapi-metrics.jar:library/owlapi/owlapi-owlxmlparser.jar:library/owlapi/owlapi-change.jar:library/owlapi/owlapi-rdfxmlrenderer.jar:library/owlapi/owlapi-apibinding.jar:library/xbean.jar:library/owlapi/owlapi-oboparser.jar:library/jena/jena.jar:library/owlapi/commons-lang-2.2.jar:library/jena/commons-logging.jar:library/owlapi/owlapi-dig1_1.jar:library/owlapi/owlapi-api.jar:library/owlapi/owlapi-debugging.jar:library/jena/iri.jar:library/kaon2.jar:library/jena/xercesImpl.jar:library/owlapi/owlapi-krssparser.jar:library/jena/antlr-2.7.5.jar:library/owlapi/owlapi-functionalrenderer.jar:library/modules/sparqlModule.jar:library/owlapi/owlapi-mansyntaxparser.jar:library/jena/icu4j_3_4.jar:library/owlapi/owlapi-util.jar:library/dig1.1-xmlbeans.jar:library/jena/concurrent.jar:library/owlapi/owlapi-functionalparser.jar:library/owlapi/owlapi-impl.jar:library/owlapi/owlapi-rdfapi.jar" -->
