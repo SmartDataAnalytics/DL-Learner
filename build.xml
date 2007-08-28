@@ -168,18 +168,18 @@ public class Info {
 			<pathelement location="${lib_dir}/dllearner.jar"/>
 		</path>
 	<path id="removeprefix"><pathelement location="."/>	</path>
-	<pathconvert refid="removeprefix" property="removeprefixwin" targetos="windows"/>
-	<pathconvert refid="removeprefix" property="removeprefixunix" targetos="unix"/>
+	<pathconvert refid="removeprefix" property="removeprefix" />
+	
 	<pathconvert refid="addjar" property="pathStringUnix" targetos="unix">
-		<map from="${removeprefixunix}" to="."/>
-		<map from="c:" to=""/>
+		<map from="${removeprefix}" to="."/>
 	</pathconvert>
 	<pathconvert refid="addjar" property="pathStringWin" targetos="windows">
-		<map from="${removeprefixwin}" to="."/>
+		<map from="${removeprefix}" to="."/>
 	</pathconvert>
 
-	<echo message="${removeprefixunix}"/>
+	<echo message="${removeprefix}"/>
 	<echo message="${pathStringUnix}"/>
+	<echo message="${pathStringWin}"/>
 		
 	<echo file="bin/quickstart.bat" message="java -cp ${pathStringWin} org.dllearner.QuickStart"/>
 	<echo file="bin/dllearner.bat" message="java -cp ${pathStringWin} org.dllearner.parser.DLLearner %*"/>
