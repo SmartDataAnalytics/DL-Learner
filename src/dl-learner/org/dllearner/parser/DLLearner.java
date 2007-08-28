@@ -73,6 +73,14 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
                 }
         }
 
+        public static Map<AtomicConcept,SortedSet<Individual>> getPositiveExamples() {
+                return positiveExamples;
+        }
+
+        public static Map<AtomicConcept,SortedSet<Individual>> getNegativeExamples() {
+                return negativeExamples;
+        }
+
         /*
 	private static void addFunctionCall(String functionName, String argument) {
 		if(functionCalls.containsKey(functionName)) {
@@ -125,6 +133,15 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
                 Concept c = DLLearner.Concept();
 
                 return c;
+        }
+
+        public static void parseFile(String filename) {
+                try {
+                        new DLLearner(new FileInputStream(filename));
+                        DLLearner.Start();
+                } catch(Exception e) {
+                        e.printStackTrace();
+                }
         }
 
   public static void main(String args[]) {
@@ -1544,66 +1561,6 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     finally { jj_save(11, xla); }
   }
 
-  static final private boolean jj_3R_50() {
-    if (jj_scan_token(LE)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_47() {
-    if (jj_scan_token(EXISTS)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_49() {
-    if (jj_scan_token(GE)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_45() {
-    if (jj_scan_token(BOTTOM)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_39() {
-    if (jj_scan_token(NOT)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_51() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_48() {
-    if (jj_scan_token(ALL)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_46() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_51()) {
-    jj_scanpos = xsp;
-    if (jj_3R_52()) return true;
-    }
-    return false;
-  }
-
-  static final private boolean jj_3R_44() {
-    if (jj_scan_token(TOP)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_20() {
-    if (jj_scan_token(AND)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_21() {
-    if (jj_scan_token(OR)) return true;
-    return false;
-  }
-
   static final private boolean jj_3R_19() {
     if (jj_3R_4()) return true;
     return false;
@@ -1992,6 +1949,66 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     jj_scanpos = xsp;
     if (jj_3R_41()) return true;
     }
+    return false;
+  }
+
+  static final private boolean jj_3R_50() {
+    if (jj_scan_token(LE)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_47() {
+    if (jj_scan_token(EXISTS)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_49() {
+    if (jj_scan_token(GE)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_45() {
+    if (jj_scan_token(BOTTOM)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_39() {
+    if (jj_scan_token(NOT)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_51() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_48() {
+    if (jj_scan_token(ALL)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_46() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_51()) {
+    jj_scanpos = xsp;
+    if (jj_3R_52()) return true;
+    }
+    return false;
+  }
+
+  static final private boolean jj_3R_44() {
+    if (jj_scan_token(TOP)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_20() {
+    if (jj_scan_token(AND)) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_21() {
+    if (jj_scan_token(OR)) return true;
     return false;
   }
 

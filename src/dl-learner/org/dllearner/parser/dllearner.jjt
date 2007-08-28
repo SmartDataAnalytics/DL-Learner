@@ -87,6 +87,14 @@ public class DLLearner {
 		}		
 	}	
 	
+	public static Map<AtomicConcept,SortedSet<Individual>> getPositiveExamples() {
+		return positiveExamples;
+	}
+	
+	public static Map<AtomicConcept,SortedSet<Individual>> getNegativeExamples() {
+		return negativeExamples;
+	}
+	
 	/*
 	private static void addFunctionCall(String functionName, String argument) {
 		if(functionCalls.containsKey(functionName)) {
@@ -139,6 +147,15 @@ public class DLLearner {
 		Concept c = DLLearner.Concept();		
 		
 		return c;
+	}
+	
+	public static void parseFile(String filename) {
+		try {
+			new DLLearner(new FileInputStream(filename));
+			DLLearner.Start();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
   public static void main(String args[]) {
