@@ -260,7 +260,7 @@ class Model{
 		{	$ret="";
 			$uri="index.php?";
 			
-			$tt1=$this->getTooltip("Choose to automatically add instances of this class to positives examples<br>and try to estimate negative examples");
+			$tt1=$this->getTooltip("Choose to automatically add instances of this class to positives examples<br>and choose randomly 50% of instances left over to negative examples");
 			$tt2=$this->getTooltip("Choose to ignore a class when learning, can be used to relearn a concept definition");
 			
 			$ret.="Ignored Classes:<br>".((sizeof($this->ignoredConcepts)==0)?"None<br>":"");
