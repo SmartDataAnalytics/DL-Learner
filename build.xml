@@ -2,7 +2,7 @@
 <project basedir="." default="build" name="dl_learner">
 	
 	<!-- directory settings -->
-	<property name="lib_dir" value="library" />
+	<property name="lib_dir" value="lib" />
 	<property name="source_dir" value="src/dl-learner" />
 	<property name="class_dir" value="classes" />
 	<property name="php_client_dir" value="src/php-client" />
@@ -39,7 +39,7 @@
 	</path>
 	
 	<!-- build target -->
-	<target name="build">
+	<target name="build" depends="createScripts">
 		
 		<!-- write current build date into Info.java -->
 		<echo file="${source_dir}/org/dllearner/Info.java" append="false">
@@ -163,12 +163,34 @@ public class Info {
 
 	
 	<target name="createScripts" >
-	<pathconvert refid="classpath" property="pathString"/>
-	<echo file="bin/test.bat" message="java -cp ${pathString} org.dllearner.QuickStart"/>
-	<property name="kaon2" value="${lib_dir}/kaon2.jar"/>
-		 	
+		<path id="addjar">
+			<path refid="classpath"/>
+			<pathelement location="${lib_dir}/dllearner.jar"/>
+		</path>
+	<path id="removeprefix"><pathelement location="."/>	</path>
+	<pathconvert refid="removeprefix" property="removeprefixwin" targetos="windows"/>
+	<pathconvert refid="removeprefix" property="removeprefixunix" targetos="unix"/>
+	<pathconvert refid="addjar" property="pathStringUnix" targetos="unix">
+		<map from="${removeprefixunix}" to="."/>
+		<map from="c:" to=""/>
+	</pathconvert>
+	<pathconvert refid="addjar" property="pathStringWin" targetos="windows">
+		<map from="${removeprefixwin}" to="."/>
+	</pathconvert>
+
+	<echo message="${removeprefixunix}"/>
+	<echo message="${pathStringUnix}"/>
+		
+	<echo file="bin/quickstart.bat" message="java -cp ${pathStringWin} org.dllearner.QuickStart"/>
+	<echo file="bin/dllearner.bat" message="java -cp ${pathStringWin} org.dllearner.parser.DLLearner %*"/>
+	<echo file="bin/ws.bat" message="java -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
+	<echo file="bin/quickstart" message="java -cp ${pathStringUnix} org.dllearner.QuickStart"/>
+	<echo file="bin/dllearner" message="java -cp ${pathStringUnix} org.dllearner.parser.DLLearner $@"/>
+	<echo file="bin/ws" message="java -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
 		
 	</target>
+	
+	
 	
     <target name="javadoc">
     	<pathconvert refid="classpath" property="jdocclasspath"/>
