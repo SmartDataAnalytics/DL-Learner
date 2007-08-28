@@ -194,7 +194,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
       // n.dump("");
       // System.out.println("Thank you.");
     } catch (Exception e) {
-      System.out.println("Oops. hh");
+      System.out.println("\nParse exception occurred. Please follow the advise given below.");
       System.out.println(e.getMessage());
       e.printStackTrace();
       System.exit(0);
