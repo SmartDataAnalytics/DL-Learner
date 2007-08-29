@@ -1,4 +1,69 @@
+SPARQL-module
 
+The SPARQL module is integrated into the DL-Learner and cannot be run alone any more.
+You can just ignore the second part of this file, although it might describe some things
+in more detail.
+
+
+Here are some things that have to be included in the .conf file
+to get a working example:
+
+loadJarFile("lib/modules/sparqlModule.jar");
+runPreprocessingModule("org.dllearner.modules.SparqlModule");
+
+Options:
+========
+
+sparqlModule.numberOfRecursion = 2; 
+(range: 1-3)
+Influences how deep the Ontology will be cut out
+Default: not sure 2 at the moment
+1: means only the selected individuals are loaded
+2: adds classes of the individuals and properties
+3: adds classes of properties of individuals and superclasses of classes
+
+
+sparqlModule.filterMode = 0;
+(range 0-2)
+These are presets for SPARQL filters (see below for configurations)
+0 only yago classes
+1 only categories
+2 skos and categories
+
+
+With the next options SPARQL filters can be configured in more detail.
+USE EITHER THIS or the filtermode above.
+
+sparqlModule.sparqlPredicateFilterList={"http://www.w3.org/2004/02/skos/core",
+			"http://xmlns.com/foaf/0.1/",	
+			"http://dbpedia.org/property/wikipage-",
+			"http://www.w3.org/2002/07/owl#sameAs",
+			"http://dbpedia.org/property/reference"};
+
+sparqlModule.sparqlObjectFilterList={"http://dbpedia.org/resource/Category:Articles_",
+		     "http://dbpedia.org/resource/Category:Wikipedia_",
+			"http://xmlns.com/foaf/0.1/",
+			"http://dbpedia.org/resource/Category",
+			"http://dbpedia.org/resource/Template",
+		       "http://upload.wikimedia.org/wikipedia/commons"};
+
+
+With the next option you can state namespaces that shall be typed as classes:
+sparqlModule.classList={"http://dbpedia.org/class/yago",
+			"http://dbpedia.org/resource/Category:",
+			"http://dbpedia.org/resource/Template:",
+			"http://www.w3.org/2004/02/skos/core",
+			"http://dbpedia.org/class/"};
+
+Hint: You can maybe export the ontology with the help of kaon2 in rdf format using:
+export("file.owl");
+But it is untested.
+
+
+
+Attention*******************************************
+below is a description of how to run the sparql module as a standalone application
+this was disabled though and does NOT work at the moment
 
 Algorithm:
 =========
