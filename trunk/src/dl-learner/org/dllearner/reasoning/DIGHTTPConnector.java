@@ -101,6 +101,7 @@ public class DIGHTTPConnector {
 			rd = ResponsesDocument.Factory.parse(answer);
 		} catch (XmlException e) {
 			e.printStackTrace();
+			System.err.println("Exception occured when receiving the following string:\n" + answer);
 		}
 		return rd;
 	}

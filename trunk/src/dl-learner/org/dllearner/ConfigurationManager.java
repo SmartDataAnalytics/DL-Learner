@@ -56,7 +56,7 @@ public class ConfigurationManager {
 	private List<String> setOptions;
 	
 	public ConfigurationManager() {
-		this(null);
+		this(new LinkedList<ConfigurationOption>());
 	}
 	
 	public ConfigurationManager(Collection<ConfigurationOption> confOptions) {

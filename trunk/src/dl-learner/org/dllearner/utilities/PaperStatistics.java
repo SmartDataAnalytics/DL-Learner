@@ -26,24 +26,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.dllearner.Config;
+import org.dllearner.ConfigurationManager;
 import org.dllearner.LearningProblem;
 import org.dllearner.Main;
 import org.dllearner.OntologyFileFormat;
+import org.dllearner.Score;
+import org.dllearner.Config.Algorithm;
+import org.dllearner.algorithms.LearningAlgorithm;
+import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.dl.AtomicConcept;
 import org.dllearner.dl.Individual;
 import org.dllearner.dl.KB;
 import org.dllearner.parser.DLLearner;
+import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.Reasoner;
 import org.dllearner.reasoning.ReasoningMethodUnsupportedException;
 import org.dllearner.reasoning.ReasoningService;
 
 /**
  * Utility script for creating statistics for publications.
- * (Warning: Scripts may run for several hours.)
+ * (Warning: Scripts may run for several hours. Results may change
+ * when core algorithms are modified.)
  * 
  * @author Jens Lehmann
  *
@@ -91,77 +96,140 @@ public class PaperStatistics {
 		// - more?
 		
 		String exampleBaseDir = "examples/";
+		String gnuplotBaseDir = "log/gnuplot/";
+		String statBaseDir = "log/stat/";
 		
 		File[] confFiles = new File[1];
-		confFiles[0] = new File(exampleBaseDir, "trains/trains.conf"); 		
+		confFiles[0] = new File(exampleBaseDir + "trains", "trains_owl.conf"); 		
 		
-		/*
-		Stat[][] statAr = new Stat[4][3];
-		File[][] fileAr = new File[4][3];		
+		String[] examples = new String[1];
+		examples[0] = "trains";
 		
-		fileAr[0][0] = new File(baseDir, "gnuplot/hybrid100classification.data");
-		fileAr[0][1] = new File(baseDir, "gnuplot/hybrid100length.data");
-		fileAr[0][2] = new File(baseDir, "gnuplot/hybrid100runtime.data");
-		fileAr[1][0] = new File(baseDir, "gnuplot/hybrid50classification.data");
-		fileAr[1][1] = new File(baseDir, "gnuplot/hybrid50length.data");
-		fileAr[1][2] = new File(baseDir, "gnuplot/hybrid50runtime.data");
-		fileAr[2][0] = new File(baseDir, "gnuplot/gpclassification.data");
-		fileAr[2][1] = new File(baseDir, "gnuplot/gplength.data");
-		fileAr[2][2] = new File(baseDir, "gnuplot/gpruntime.data");		
-		*/
+		String[] algorithms = new String[3];
+		algorithms[0] = "refinement";
+		algorithms[1] = "gp";
+		algorithms[2] = "hybrid";
 		
-		// set reasoner URL
-		try {
-			Config.digReasonerURL = new URL("http://localhost:8081");
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}			
+		int[] algorithmRuns = {1,10,10};
 		
-		String fatherConfFile = "examples/father2.conf";
+		// do not plot anything
+		// File[][][] gnuplotFiles = new File[examples.length][algorithms.length][3];
+		// for(int i=0; i<examples.length; i++) {
+		//	for(int j=0; j<algorithms.length; j++) {
+		//		gnuplotFiles[i][j][0] = new File(gnuplotBaseDir, examples[i] + "_classification_" + algorithms[j] + ".data");
+		//		gnuplotFiles[i][j][1] = new File(gnuplotBaseDir, examples[i] + "_length_" + algorithms[j] + ".data");
+		//		gnuplotFiles[i][j][2] = new File(gnuplotBaseDir, examples[i] + "_runtime_" + algorithms[j] + ".data");
+		//	}
+		//}
 		
-		// file is parsed, but we use only the specified examples really
-		// (everything else is ignored)
-		DLLearner.parseFile(fatherConfFile);
-		// DLLearner.parseFile(fatherConfFile);		
+		File statFile = new File(statBaseDir, "statistics.txt");
+		String statString = "**automatically generated statistics**\n\n";
 		
-		Map<URL, OntologyFileFormat> imports = getImports(DLLearner.getFunctionCalls());
+		// just set default options
+		ConfigurationManager confMgr = new ConfigurationManager();
+		confMgr.applyOptions();
 		
-		// initialise reasoner
-		Reasoner reasoner = Main.createReasoner(new KB(), imports);
-		ReasoningService rs = new ReasoningService(reasoner);		
-		
-		Main.autoDetectConceptsAndRoles(rs);
-		if (Config.Refinement.improveSubsumptionHierarchy) {
-			try {
-				reasoner.prepareSubsumptionHierarchy();
-				reasoner.prepareRoleHierarchy();
-				reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
-			} catch (ReasoningMethodUnsupportedException e) {
-				e.printStackTrace();
+		for(int exampleNr=0; exampleNr < examples.length; exampleNr++) {
+			
+			// parse current conf file
+			DLLearner.parseFile(confFiles[exampleNr].toString());
+			
+			// read which files were imported (internal KB is ignored) and initialise reasoner
+			Map<URL, OntologyFileFormat> imports = getImports(DLLearner.getFunctionCalls(), confFiles[exampleNr]);
+			
+			// detect specified positive and negative examples
+			SortedSet<Individual> positiveExamples = null;
+			SortedSet<Individual> negativeExamples = null;
+			Map<AtomicConcept,SortedSet<Individual>> posExamplesTmp = DLLearner.getPositiveExamples();
+			Map<AtomicConcept,SortedSet<Individual>> negExamplesTmp = DLLearner.getNegativeExamples();
+			for (AtomicConcept target : posExamplesTmp.keySet())
+				positiveExamples = posExamplesTmp.get(target);
+			for (AtomicConcept target : negExamplesTmp.keySet())
+				negativeExamples = negExamplesTmp.get(target);
+			int nrOfExamples = positiveExamples.size() + negativeExamples.size();
+			
+			statString += "example: " + examples[exampleNr] + "\n\n";
+			
+			for(int algorithmNr=0; algorithmNr < algorithms.length; algorithmNr++) {
+								
+				// create reasoner (this has to be done in this inner loop to 
+				// ensure that none of the algorithm benefits from e.g. caching
+				// of previous reasoning requests
+				Reasoner reasoner = Main.createReasoner(new KB(), imports);
+				ReasoningService rs = new ReasoningService(reasoner);					
+				
+				// prepare reasoner for using subsumption and role hierarchy
+				// TODO: currently, it is a small unfairness that each algorithm
+				// uses the same reasoning object (e.g. the second algorithm may
+				// have a small advantage if the reasoner cached reasoning requests
+				// of the first algorithm)
+				Main.autoDetectConceptsAndRoles(rs);
+				try {
+					reasoner.prepareSubsumptionHierarchy();
+					reasoner.prepareRoleHierarchy();
+					// improving the subsumption hierarchy makes only sense
+					// for the refinement based algorithm
+					if(algorithmNr==0)
+						reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
+				} catch (ReasoningMethodUnsupportedException e) {
+					e.printStackTrace();
+				}
+				
+				// create learning problem
+				LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
+				
+				LearningAlgorithm learningAlgorithm = null;
+				if(algorithmNr==0) {
+					Config.algorithm = Algorithm.REFINEMENT;
+					learningAlgorithm = new ROLearner(learningProblem);
+				} else if(algorithmNr==1) {
+					Config.algorithm = Algorithm.GP;
+					Config.GP.numberOfIndividuals = 21;
+					Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;
+					Config.GP.refinementProbability = 0;
+					Config.GP.mutationProbability = 0.02;
+					Config.GP.crossoverProbability = 0.8;
+					Config.GP.hillClimbingProbability = 0;			
+					learningAlgorithm = new GP(learningProblem);
+				} else if(algorithmNr==2) {
+					Config.algorithm = Algorithm.HYBRID_GP;
+					Config.GP.numberOfIndividuals = 11;
+					Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;
+					Config.GP.refinementProbability = 0.65;
+					Config.GP.mutationProbability = 0.02;
+					Config.GP.crossoverProbability = 0.2;
+					Config.GP.hillClimbingProbability = 0;
+					learningAlgorithm = new GP(learningProblem);
+				}
+				
+				rs.resetStatistics();
+				long algorithmStartTime = System.nanoTime();
+				learningAlgorithm.start();
+				long algorithmTime = System.nanoTime() - algorithmStartTime;
+				// long algorithmTimeSeconds = algorithmTime / 1000000000;	
+				
+				int conceptLength = learningAlgorithm.getBestSolution().getLength();
+				Score bestScore = learningAlgorithm.getSolutionScore();
+				int misClassifications = bestScore.getCoveredNegatives().size()
+						+ bestScore.getNotCoveredPositives().size();
+				double classificationRatePercent = 100 * ((nrOfExamples - misClassifications) / (double) nrOfExamples);
+				
+				statString += "algorithm: " + algorithms[algorithmNr] + "\n";
+				statString += "classification: " + classificationRatePercent + "%\n";
+				statString += "concept length: " + conceptLength + "\n";
+				statString += "runtime: " + Helper.prettyPrintNanoSeconds(algorithmTime) + "s\n\n";
+			
+				// free knowledge base to avoid memory leaks
+				((DIGReasoner) reasoner).releaseKB();
+				
 			}
+
 		}
 		
-		SortedSet<Individual> positiveExamples = new TreeSet<Individual>();
-		SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
-		Map<AtomicConcept,SortedSet<Individual>> posExamplesTmp = DLLearner.getPositiveExamples();
-		Map<AtomicConcept,SortedSet<Individual>> negExamplesTmp = DLLearner.getNegativeExamples();
-		
-		for (AtomicConcept target : posExamplesTmp.keySet())
-			positiveExamples = posExamplesTmp.get(target);
-
-		for (AtomicConcept target : negExamplesTmp.keySet())
-			negativeExamples = negExamplesTmp.get(target);
-			
-
-		
-		LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
-		ROLearner learner = new ROLearner(learningProblem);
-		learner.start();
-		System.out.println(learner.getBestSolution().toString());
-		
+		Main.createFile(statFile, statString);
 	}
 	
-	private static Map<URL, OntologyFileFormat> getImports(List<List<String>> functionCalls) {
+	private static Map<URL, OntologyFileFormat> getImports(List<List<String>> functionCalls, File confFile) {
 		Map<URL, OntologyFileFormat> importedFiles = new HashMap<URL, OntologyFileFormat>();
 		
 		OntologyFileFormat format = null;
@@ -170,15 +238,13 @@ public class PaperStatistics {
 		for (List<String> call : functionCalls) {
 			
 			if(call.get(0).equals("import")) {
-				// alte Methode mit file statt URI
-				// File f = new File(baseDir, call.get(1));
-				
+
 				try {				
 					String fileString = call.get(1);
 					if(fileString.startsWith("http:")) {
 						url = new URL(fileString);
 					} else {
-						File f = new File("examples", call.get(1));
+						File f = new File(confFile.getParent(), call.get(1));
 						url = f.toURI().toURL();
 					}
 				} catch (MalformedURLException e) {
