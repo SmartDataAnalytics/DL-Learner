@@ -432,6 +432,7 @@ public class ClientState {
 			reasoner.prepareSubsumptionHierarchy();
 			if (Config.Refinement.improveSubsumptionHierarchy) {
 				try {
+					reasoner.prepareRoleHierarchy();
 					reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
 				} catch (ReasoningMethodUnsupportedException e) {
 					// solange DIG-Reasoner eingestellt ist, schlägt diese Operation nie fehl
