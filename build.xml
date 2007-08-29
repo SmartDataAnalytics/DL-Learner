@@ -208,7 +208,7 @@ public class Info {
         	nonavbar="false" 
         	notree="false" 
         	overview="src/dl-learner/overview.html" 
-        	packagenames="org.dllearner.reasoning,org.dllearner.dl,org.dllearner.server,org.dllearner,org.dllearner.server.exceptions,org.dllearner.server.jaxws,org.dllearner.algorithms.gp,org.dllearner.parser,org.dllearner.modules,org.dllearner.algorithms,org.dllearner.examples,org.dllearner.utilities,org.dllearner.algorithms.hybridgp,org.dllearner.algorithms.refinement" 
+        	packagenames="org.dllearner.reasoning,org.dllearner.dl,org.dllearner.server,org.dllearner,org.dllearner.server.exceptions,org.dllearner.server.jaxws,org.dllearner.algorithms.gp,org.dllearner.parser,org.dllearner.modules,org.dllearner.modules.sparql,org.dllearner.algorithms,org.dllearner.examples,org.dllearner.utilities,org.dllearner.algorithms.hybridgp,org.dllearner.algorithms.refinement" 
         	source="1.6" 
         	sourcepath="src/dl-learner" 
         	splitindex="true" 
