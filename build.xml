@@ -212,7 +212,7 @@ public class Info {
         	source="1.6" 
         	sourcepath="src/dl-learner" 
         	splitindex="true" 
-        	stylesheetfile="/home/jl/promotion/dl-learner-svn/trunk/javadoc.css" 
+        	stylesheetfile="javadoc.css" 
         	use="true" 
         	version="true"
         	linksource="true" 
