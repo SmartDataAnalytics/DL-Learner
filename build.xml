@@ -82,7 +82,7 @@ public class Info {
 		</copy>
 		
 		<!-- create tar.gz files (allows storing whether a file is executable) -->
-		<tar longfile="gnu" destfile="dllearner_${today}.tar.gz" compression="gzip">
+		<tar longfile="gnu" destfile="dllearner-nosource-${today}.tar.gz" compression="gzip">
 		  <!-- extra set for executable files -->	
 		  <tarfileset dir="release/" mode="755">
 		    <include name="${version_dir}/dllearner" />
@@ -111,7 +111,7 @@ public class Info {
 		</copy>				
 		
 		<!-- create backup (= standard build + source code + developer documentation) -->
-		<tar longfile="gnu" destfile="dllearner_developer_${today}.tar.gz" compression="gzip">
+		<tar longfile="gnu" destfile="dllearner-${today}.tar.gz" compression="gzip">
 			<tarfileset dir="release/" mode="755">
 			    <include name="${version_dir}/dllearner" />
 			  	<include name="${version_dir}/quickstart" />
@@ -145,7 +145,7 @@ public class Info {
 		</copy>
 		
 		<!-- create release -->
-		<tar destfile="php_client_${today}.tar.gz" compression="gzip">
+		<tar destfile="php-client-${today}.tar.gz" compression="gzip">
 			<tarfileset dir="release" />
 		</tar>
 		
@@ -196,7 +196,6 @@ public class Info {
 	<!-- generate Javadoc -->
     <target name="javadoc">
     	<pathconvert refid="classpath" property="jdocclasspath"/>
-    	<!--classpath="library/owlapi/antlr-runtime-3.0.jar:library/owlapi/owlapi-rdfxmlparser.jar:library/owlapi/owlapi-owlxmlrenderer.jar:library/owlapi/owlapi-mansyntaxrenderer.jar:library/owlapi/owlapi-metrics.jar:library/owlapi/owlapi-owlxmlparser.jar:library/owlapi/owlapi-change.jar:library/owlapi/owlapi-rdfxmlrenderer.jar:library/owlapi/owlapi-apibinding.jar:library/xbean.jar:library/owlapi/owlapi-oboparser.jar:library/jena/jena.jar:library/owlapi/commons-lang-2.2.jar:library/jena/commons-logging.jar:library/owlapi/owlapi-dig1_1.jar:library/owlapi/owlapi-api.jar:library/owlapi/owlapi-debugging.jar:library/jena/iri.jar:library/kaon2.jar:library/jena/xercesImpl.jar:library/owlapi/owlapi-krssparser.jar:library/jena/antlr-2.7.5.jar:library/owlapi/owlapi-functionalrenderer.jar:library/modules/sparqlModule.jar:library/owlapi/owlapi-mansyntaxparser.jar:library/jena/icu4j_3_4.jar:library/owlapi/owlapi-util.jar:library/dig1.1-xmlbeans.jar:library/jena/concurrent.jar:library/owlapi/owlapi-functionalparser.jar:library/owlapi/owlapi-impl.jar:library/owlapi/owlapi-rdfapi.jar" -->
         <javadoc access="public"
         	author="true" 
         	classpath="${jdocclasspath}"
@@ -223,36 +222,5 @@ public class Info {
         	<link href="http://java.sun.com/javase/6/docs/api/"/>
     	</javadoc>
     </target>	
-	
-	
-	<!--
-	Some old elements which are kept for reference for a couple of days
-	
-	
-	<target name="wsgen_linux" >
-	  <exec dir="${source_dir}" executable="wsgen">
-	    <arg value="-keep"/>
-	    <arg value="-verbose"/> 
-	  	<arg value="-cp"/>
-	  	<arg value=".:../../classes/:../../library/dig1.1-xmlbeans.jar:../../library/kaon2.jar:../../library/xbean.jar:../../library/owlapi/:../../library/owlapi/antlr-runtime-3.0.jar:../../library/owlapi/commons-lang-2.2.jar:../../library/owlapi/owlapi-api.jar:../../library/owlapi/owlapi-apibinding.jar:../../library/owlapi/owlapi-change.jar:../../library/owlapi/owlapi-debugging.jar:../../library/owlapi/owlapi-dig1_1.jar:../../library/owlapi/owlapi-functionalparser.jar:../../library/owlapi/owlapi-functionalrenderer.jar:../../library/owlapi/owlapi-impl.jar:../../library/owlapi/owlapi-krssparser.jar:../../library/owlapi/owlapi-mansyntaxparser.jar:../../library/owlapi/owlapi-mansyntaxrenderer.jar:../../library/owlapi/owlapi-metrics.jar:../../library/owlapi/owlapi-oboparser.jar:../../library/owlapi/owlapi-owlxmlparser.jar:../../library/owlapi/owlapi-owlxmlrenderer.jar:../../library/owlapi/owlapi-rdfapi.jar:../../library/owlapi/owlapi-rdfxmlparser.jar:../../library/owlapi/owlapi-rdfxmlrenderer.jar:../../library/owlapi/owlapi-util.jar"/>
-	    <arg value="org.dllearner.server.DLLearnerWS"/>  
-	  </exec>
-	</target>
-	
-	  <path id="classpath">
-        <pathelement location="."/>
-        <pathelement location="${kaon2}"/>
-    	<pathelement location="${xbean}"/>
-      	<pathelement location="${dig1.1_xmlbeans}"/>
-    	<pathelement location="${jena}"/>
-    	<pathelement location="${owlapi-api}"/>
-    	<pathelement location="${owlapi-apibinding}"/>
-    	<pathelement location="${owlapi-dig1_1}"/>
-    </path>
-	
-	-->
-	
-	
-	
 	
 </project>
