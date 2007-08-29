@@ -145,21 +145,26 @@ public class DIGReasoner extends AbstractReasoner {
 			// DL-Learner stark anwächst, da verschieden Jena-Bibliotheken
 			// eingebunden werden müssen)
 			long importStartTime = System.currentTimeMillis();
-			System.out.print("Converting import file " + file + " to DIG using OWL API ... ");
 			
 			// if the ontology format is N-Triples then Jena is used, otherwise the OWL API
-			if(imports.get(file).equals(OntologyFileFormat.N_TRIPLES))
+			if(imports.get(file).equals(OntologyFileFormat.N_TRIPLES)) {
+				System.out.print("Converting import file " + file + " to DIG using Jena ... ");
+				
 				importDIGString = JenaOWLDIGConverter.getTellsString(file, imports.get(file), kbURI);
-			else
+			} else {
+				System.out.println("Converting import file " + file + " to DIG using OWL API:");
+				
 				importDIGString = OWLAPIDIGConverter.getTellsString(file, imports.get(file), kbURI);
-			
+			}
+				
 			ResponseDocument rdImport = connector.tells(importDIGString);
 			if(!rdImport.getResponse().isSetOk()) {
 				System.err.println("DIG-Reasoner cannot read knowledgebase.");
 				System.exit(0);
 			} else {
 				long importTime = System.currentTimeMillis() - importStartTime;
-				System.out.println("OK (" + importTime + " ms)");
+				if(imports.get(file).equals(OntologyFileFormat.N_TRIPLES))
+					System.out.println("OK (" + importTime + " ms)");
 				// (" + JenaOWLDIGConverter.nrOfStatementsLastConversion + " statements, "+ importTime + " ms)");
 				
 			}
