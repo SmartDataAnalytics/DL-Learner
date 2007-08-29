@@ -199,6 +199,7 @@ public class PaperStatistics {
 						Config.algorithm = Algorithm.REFINEMENT;
 						Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
 						Config.Refinement.horizontalExpansionFactor = 0.6;
+						Config.Refinement.quiet = true;
 						Config.percentPerLengthUnit = 0.05;
 						learningAlgorithm = new ROLearner(learningProblem);
 					} else if(algorithmNr==1) {
