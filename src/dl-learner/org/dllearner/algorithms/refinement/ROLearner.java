@@ -819,8 +819,7 @@ public class ROLearner implements LearningAlgorithm {
 	}
 
 	public Score getSolutionScore() {
-		// TODO Auto-generated method stub
-		return null;
+		return learningProblem.computeScore(getBestSolution());
 	}
 
 	public void stop() {
