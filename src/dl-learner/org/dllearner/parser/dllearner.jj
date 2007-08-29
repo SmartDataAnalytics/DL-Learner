@@ -166,6 +166,13 @@ public class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants/*@egen*
 	}
 	
 	public static void parseFile(String filename) {
+		
+		positiveExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
+		negativeExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
+		confOptions = new LinkedList<ConfigurationOption>();
+		functionCalls = new LinkedList<List<String>>();		
+		kb = new KB();
+		 
 		try {
 			if(constructorCalled)
 				DLLearner.ReInit(new FileInputStream(filename));

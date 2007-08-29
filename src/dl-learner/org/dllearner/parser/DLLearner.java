@@ -148,6 +148,13 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
         }
 
         public static void parseFile(String filename) {
+
+                positiveExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
+                negativeExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
+                confOptions = new LinkedList<ConfigurationOption>();
+                functionCalls = new LinkedList<List<String>>();
+                kb = new KB();
+
                 try {
                         if(constructorCalled)
                                 DLLearner.ReInit(new FileInputStream(filename));
@@ -1577,25 +1584,6 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     finally { jj_save(11, xla); }
   }
 
-  static final private boolean jj_3R_18() {
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_35() {
-    if (jj_3R_49()) return true;
-    if (jj_3R_22()) return true;
-    if (jj_3R_17()) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
-    if (jj_3R_14()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_26() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
   static final private boolean jj_3R_34() {
     if (jj_3R_39()) return true;
     if (jj_3R_14()) return true;
@@ -2025,6 +2013,25 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     if (jj_3R_17()) return true;
     if (jj_scan_token(COMMAND_END)) return true;
     if (jj_3R_14()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_18() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_35() {
+    if (jj_3R_49()) return true;
+    if (jj_3R_22()) return true;
+    if (jj_3R_17()) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    if (jj_3R_14()) return true;
+    return false;
+  }
+
+  static final private boolean jj_3R_26() {
+    if (jj_3R_4()) return true;
     return false;
   }
 
