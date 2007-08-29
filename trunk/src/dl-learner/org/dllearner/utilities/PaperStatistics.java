@@ -99,11 +99,13 @@ public class PaperStatistics {
 		String gnuplotBaseDir = "log/gnuplot/";
 		String statBaseDir = "log/stat/";
 		
-		File[] confFiles = new File[1];
-		confFiles[0] = new File(exampleBaseDir + "trains", "trains_owl.conf"); 		
+		File[] confFiles = new File[2];
+		confFiles[0] = new File(exampleBaseDir + "trains", "trains_owl.conf"); 	
+		confFiles[1] = new File(exampleBaseDir, "father2.conf");
 		
-		String[] examples = new String[1];
+		String[] examples = new String[2];
 		examples[0] = "trains";
+		examples[1] = "father";
 		
 		String[] algorithms = new String[3];
 		algorithms[0] = "refinement";
@@ -151,77 +153,89 @@ public class PaperStatistics {
 			statString += "example: " + examples[exampleNr] + "\n\n";
 			
 			for(int algorithmNr=0; algorithmNr < algorithms.length; algorithmNr++) {
-								
-				// create reasoner (this has to be done in this inner loop to 
-				// ensure that none of the algorithm benefits from e.g. caching
-				// of previous reasoning requests
-				Reasoner reasoner = Main.createReasoner(new KB(), imports);
-				ReasoningService rs = new ReasoningService(reasoner);					
+							
+				Stat classification = new Stat();
+				Stat length = new Stat();
+				Stat runtime = new Stat();
 				
-				// prepare reasoner for using subsumption and role hierarchy
-				// TODO: currently, it is a small unfairness that each algorithm
-				// uses the same reasoning object (e.g. the second algorithm may
-				// have a small advantage if the reasoner cached reasoning requests
-				// of the first algorithm)
-				Main.autoDetectConceptsAndRoles(rs);
-				try {
-					reasoner.prepareSubsumptionHierarchy();
-					reasoner.prepareRoleHierarchy();
-					// improving the subsumption hierarchy makes only sense
-					// for the refinement based algorithm
-					if(algorithmNr==0)
-						reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
-				} catch (ReasoningMethodUnsupportedException e) {
-					e.printStackTrace();
-				}
+				for(int runNr=0; runNr < algorithmRuns[algorithmNr]; runNr++) {
+					
+					// create reasoner (this has to be done in this inner loop to 
+					// ensure that none of the algorithm benefits from e.g. caching
+					// of previous reasoning requests
+					Reasoner reasoner = Main.createReasoner(new KB(), imports);
+					ReasoningService rs = new ReasoningService(reasoner);					
+					
+					// prepare reasoner for using subsumption and role hierarchy
+					// TODO: currently, it is a small unfairness that each algorithm
+					// uses the same reasoning object (e.g. the second algorithm may
+					// have a small advantage if the reasoner cached reasoning requests
+					// of the first algorithm)
+					Main.autoDetectConceptsAndRoles(rs);
+					try {
+						reasoner.prepareSubsumptionHierarchy();
+						reasoner.prepareRoleHierarchy();
+						// improving the subsumption hierarchy makes only sense
+						// for the refinement based algorithm
+						if(algorithmNr==0)
+							reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
+					} catch (ReasoningMethodUnsupportedException e) {
+						e.printStackTrace();
+					}
+					
+					// create learning problem
+					LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
+					
+					LearningAlgorithm learningAlgorithm = null;
+					if(algorithmNr==0) {
+						Config.algorithm = Algorithm.REFINEMENT;
+						learningAlgorithm = new ROLearner(learningProblem);
+					} else if(algorithmNr==1) {
+						Config.algorithm = Algorithm.GP;
+						Config.GP.numberOfIndividuals = 21;
+						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;
+						Config.GP.refinementProbability = 0;
+						Config.GP.mutationProbability = 0.02;
+						Config.GP.crossoverProbability = 0.8;
+						Config.GP.hillClimbingProbability = 0;			
+						learningAlgorithm = new GP(learningProblem);
+					} else if(algorithmNr==2) {
+						Config.algorithm = Algorithm.HYBRID_GP;
+						Config.GP.numberOfIndividuals = 11;
+						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;
+						Config.GP.refinementProbability = 0.65;
+						Config.GP.mutationProbability = 0.02;
+						Config.GP.crossoverProbability = 0.2;
+						Config.GP.hillClimbingProbability = 0;
+						learningAlgorithm = new GP(learningProblem);
+					}
+					
+					rs.resetStatistics();
+					long algorithmStartTime = System.nanoTime();
+					learningAlgorithm.start();
+					long algorithmTime = System.nanoTime() - algorithmStartTime;
+					// long algorithmTimeSeconds = algorithmTime / 1000000000;	
+					
+					int conceptLength = learningAlgorithm.getBestSolution().getLength();
+					Score bestScore = learningAlgorithm.getSolutionScore();
+					int misClassifications = bestScore.getCoveredNegatives().size()
+							+ bestScore.getNotCoveredPositives().size();
+					double classificationRatePercent = 100 * ((nrOfExamples - misClassifications) / (double) nrOfExamples);
+					
+					classification.addNumber(classificationRatePercent);
+					length.addNumber(conceptLength);
+					runtime.addNumber(algorithmTime);
+					
+					// free knowledge base to avoid memory leaks
+					((DIGReasoner) reasoner).releaseKB();				
 				
-				// create learning problem
-				LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
+				}				
 				
-				LearningAlgorithm learningAlgorithm = null;
-				if(algorithmNr==0) {
-					Config.algorithm = Algorithm.REFINEMENT;
-					learningAlgorithm = new ROLearner(learningProblem);
-				} else if(algorithmNr==1) {
-					Config.algorithm = Algorithm.GP;
-					Config.GP.numberOfIndividuals = 21;
-					Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;
-					Config.GP.refinementProbability = 0;
-					Config.GP.mutationProbability = 0.02;
-					Config.GP.crossoverProbability = 0.8;
-					Config.GP.hillClimbingProbability = 0;			
-					learningAlgorithm = new GP(learningProblem);
-				} else if(algorithmNr==2) {
-					Config.algorithm = Algorithm.HYBRID_GP;
-					Config.GP.numberOfIndividuals = 11;
-					Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;
-					Config.GP.refinementProbability = 0.65;
-					Config.GP.mutationProbability = 0.02;
-					Config.GP.crossoverProbability = 0.2;
-					Config.GP.hillClimbingProbability = 0;
-					learningAlgorithm = new GP(learningProblem);
-				}
-				
-				rs.resetStatistics();
-				long algorithmStartTime = System.nanoTime();
-				learningAlgorithm.start();
-				long algorithmTime = System.nanoTime() - algorithmStartTime;
-				// long algorithmTimeSeconds = algorithmTime / 1000000000;	
-				
-				int conceptLength = learningAlgorithm.getBestSolution().getLength();
-				Score bestScore = learningAlgorithm.getSolutionScore();
-				int misClassifications = bestScore.getCoveredNegatives().size()
-						+ bestScore.getNotCoveredPositives().size();
-				double classificationRatePercent = 100 * ((nrOfExamples - misClassifications) / (double) nrOfExamples);
-				
-				statString += "algorithm: " + algorithms[algorithmNr] + "\n";
-				statString += "classification: " + classificationRatePercent + "%\n";
-				statString += "concept length: " + conceptLength + "\n";
-				statString += "runtime: " + Helper.prettyPrintNanoSeconds(algorithmTime) + "s\n\n";
+				statString += "algorithm: " + algorithms[algorithmNr] + " (runs: " + algorithmRuns[algorithmNr] + ")\n";
+				statString += "classification: " + classification.getMean() + "% (standard deviation: " + classification.getStandardDeviation() + "%)\n";
+				statString += "concept length: " + length.getMean() + " (standard deviation: " + length.getStandardDeviation() + ")\n";
+				statString += "runtime: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getMean())) + " (standard deviation: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getStandardDeviation())) + ")\n\n";
 			
-				// free knowledge base to avoid memory leaks
-				((DIGReasoner) reasoner).releaseKB();
-				
 			}
 
 		}

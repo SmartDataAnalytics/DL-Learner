@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.utilities;
 
 /**
@@ -57,20 +77,21 @@ public class Stat {
      * 
      * @return The stanard deviation of all numbers.
      */
-    public double getStandardDeviation() {
-        // TODO: Standardabweichung ist anscheinend nicht korrekt, siehe
-        // http://de.wikipedia.org/wiki/Standardabweichung. Es muss N-1 verwendet
-        // werden.    	
-    	/*
-        double mean = getMean();
-        double tmp = squareSum / count - mean * mean;
-        if(tmp==0)
-        	return 0;
-        else
-        	return Math.sqrt(tmp);
-        */
-    	// korrekter Code nach http://de.wikipedia.org/wiki/Standardabweichung
-        return Math.sqrt((count*squareSum-sum*sum)/(count*(count-1)));
+    public double getStandardDeviation() {    	
+    	if(count <= 1)
+     		return 0.0;
+    	
+    	// formula from http://de.wikipedia.org/wiki/Standardabweichung
+    	double val = (count*squareSum-sum*sum)/(count*(count-1));
+    	double root = Math.sqrt(val);
+    	
+    	// due to rounding errors it can happen that "val" is negative
+    	// this means that the real value is 0 (or very close to it), so
+    	// we return 0
+    	if(Double.isNaN(root)) 
+    		return 0.0;
+    	else
+    		return root;
     }
 
 }
