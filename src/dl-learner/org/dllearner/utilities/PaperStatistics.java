@@ -99,13 +99,21 @@ public class PaperStatistics {
 		String gnuplotBaseDir = "log/gnuplot/";
 		String statBaseDir = "log/stat/";
 		
-		File[] confFiles = new File[2];
-		confFiles[0] = new File(exampleBaseDir + "trains", "trains_owl.conf"); 	
-		confFiles[1] = new File(exampleBaseDir, "father2.conf");
+		File[] confFiles = new File[6];
+		confFiles[0] = new File(exampleBaseDir + "trains", "trains_owl.conf");
+		confFiles[1] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_owl.conf");
+		confFiles[2] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_complex_owl.conf");
+        confFiles[3] = new File(exampleBaseDir + "poker", "pair_owl.conf");
+        confFiles[4] = new File(exampleBaseDir + "poker", "straight_owl.conf");
+        confFiles[5] = new File(exampleBaseDir + "forte", "forte_uncle_owl.conf");
 		
-		String[] examples = new String[2];
+		String[] examples = new String[6];
 		examples[0] = "trains";
-		examples[1] = "father";
+		examples[1] = "moral reasoner (43 examples, simple)";
+		examples[2] = "moral reasoner (43 examples, complex)";
+		examples[3] = "poker (49 examples, pair)";
+		examples[4] = "poker (55 examples, straight)";
+		examples[5] = "uncle (FORTE data set)";
 		
 		String[] algorithms = new String[3];
 		algorithms[0] = "refinement";
@@ -189,24 +197,35 @@ public class PaperStatistics {
 					LearningAlgorithm learningAlgorithm = null;
 					if(algorithmNr==0) {
 						Config.algorithm = Algorithm.REFINEMENT;
+						Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
+						Config.Refinement.horizontalExpansionFactor = 0.6;
+						Config.percentPerLengthUnit = 0.05;
 						learningAlgorithm = new ROLearner(learningProblem);
 					} else if(algorithmNr==1) {
 						Config.algorithm = Algorithm.GP;
-						Config.GP.numberOfIndividuals = 21;
-						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;
+						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
+						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
+						Config.GP.generations = 50;	
+						Config.GP.useFixedNumberOfGenerations = true;
+						Config.GP.numberOfIndividuals = 401;
 						Config.GP.refinementProbability = 0;
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.8;
-						Config.GP.hillClimbingProbability = 0;			
+						Config.GP.hillClimbingProbability = 0;
+						Config.percentPerLengthUnit = 0.005;
 						learningAlgorithm = new GP(learningProblem);
 					} else if(algorithmNr==2) {
 						Config.algorithm = Algorithm.HYBRID_GP;
-						Config.GP.numberOfIndividuals = 11;
-						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;
+						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
+						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
+						Config.GP.generations = 50;
+						Config.GP.useFixedNumberOfGenerations = true;
+						Config.GP.numberOfIndividuals = 401;
 						Config.GP.refinementProbability = 0.65;
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.2;
 						Config.GP.hillClimbingProbability = 0;
+						Config.percentPerLengthUnit = 0.005;
 						learningAlgorithm = new GP(learningProblem);
 					}
 					
