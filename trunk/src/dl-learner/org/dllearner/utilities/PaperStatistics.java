@@ -208,7 +208,7 @@ public class PaperStatistics {
 						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
 						Config.GP.generations = 50;	
 						Config.GP.useFixedNumberOfGenerations = true;
-						Config.GP.numberOfIndividuals = 401;
+						Config.GP.numberOfIndividuals = 201;
 						Config.GP.refinementProbability = 0;
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.8;
@@ -221,7 +221,7 @@ public class PaperStatistics {
 						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
 						Config.GP.generations = 50;
 						Config.GP.useFixedNumberOfGenerations = true;
-						Config.GP.numberOfIndividuals = 401;
+						Config.GP.numberOfIndividuals = 201;
 						Config.GP.refinementProbability = 0.65;
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.2;
