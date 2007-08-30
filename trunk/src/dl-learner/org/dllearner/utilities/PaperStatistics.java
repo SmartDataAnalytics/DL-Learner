@@ -99,21 +99,23 @@ public class PaperStatistics {
 		String gnuplotBaseDir = "log/gnuplot/";
 		String statBaseDir = "log/stat/";
 		
-		File[] confFiles = new File[6];
+		File[] confFiles = new File[7];
 		confFiles[0] = new File(exampleBaseDir + "trains", "trains_owl.conf");
-		confFiles[1] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_owl.conf");
-		confFiles[2] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_complex_owl.conf");
-        confFiles[3] = new File(exampleBaseDir + "poker", "pair_owl.conf");
-        confFiles[4] = new File(exampleBaseDir + "poker", "straight_owl.conf");
-        confFiles[5] = new File(exampleBaseDir + "forte", "forte_uncle_owl.conf");
+		confFiles[1] = new File(exampleBaseDir + "arch", "arch_owl.conf");
+		confFiles[2] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_owl.conf");
+		confFiles[3] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_complex_owl.conf");
+        confFiles[4] = new File(exampleBaseDir + "poker", "pair_owl.conf");
+        confFiles[5] = new File(exampleBaseDir + "poker", "straight_owl.conf");
+        confFiles[6] = new File(exampleBaseDir + "forte", "forte_uncle_owl.conf");
 		
-		String[] examples = new String[6];
+		String[] examples = new String[7];
 		examples[0] = "trains";
-		examples[1] = "moral reasoner (43 examples, simple)";
-		examples[2] = "moral reasoner (43 examples, complex)";
-		examples[3] = "poker (49 examples, pair)";
-		examples[4] = "poker (55 examples, straight)";
-		examples[5] = "uncle (FORTE data set)";
+		examples[1] = "arches";
+		examples[2] = "moral reasoner (43 examples, simple)";
+		examples[3] = "moral reasoner (43 examples, complex)";
+		examples[4] = "poker (49 examples, pair)";
+		examples[5] = "poker (55 examples, straight)";
+		examples[6] = "uncle (FORTE data set)";
 		
 		String[] algorithms = new String[3];
 		algorithms[0] = "refinement";
@@ -133,7 +135,9 @@ public class PaperStatistics {
 		//}
 		
 		File statFile = new File(statBaseDir, "statistics.txt");
+		File statDetailsFile = new File(statBaseDir, "statistics_details.txt");
 		String statString = "**automatically generated statistics**\n\n";
+		String statDetailsString = statString;
 		
 		// just set default options
 		ConfigurationManager confMgr = new ConfigurationManager();
@@ -197,7 +201,7 @@ public class PaperStatistics {
 					LearningAlgorithm learningAlgorithm = null;
 					if(algorithmNr==0) {
 						Config.algorithm = Algorithm.REFINEMENT;
-						Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
+						// Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
 						Config.Refinement.horizontalExpansionFactor = 0.6;
 						Config.Refinement.quiet = true;
 						Config.percentPerLengthUnit = 0.05;
@@ -247,20 +251,29 @@ public class PaperStatistics {
 					runtime.addNumber(algorithmTime);
 					
 					// free knowledge base to avoid memory leaks
-					((DIGReasoner) reasoner).releaseKB();				
+					((DIGReasoner) reasoner).releaseKB();	
+					
+					statDetailsString += "example: " + examples[exampleNr] + "\n";
+					statDetailsString += "algorithm: " + algorithms[algorithmNr] + "\n";
+					statDetailsString += "learned concept: " + learningAlgorithm.getBestSolution() + "\n";
+					statDetailsString += "concept length: " +  length.getMean() + "\n";
+					statDetailsString += "runtime: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getMean())) + "\n\n";
 				
-				}				
+					Main.createFile(statDetailsFile, statDetailsString);
+					
+				} // end run loop				
 				
 				statString += "algorithm: " + algorithms[algorithmNr] + " (runs: " + algorithmRuns[algorithmNr] + ")\n";
 				statString += "classification: " + classification.getMean() + "% (standard deviation: " + classification.getStandardDeviation() + "%)\n";
 				statString += "concept length: " + length.getMean() + " (standard deviation: " + length.getStandardDeviation() + ")\n";
 				statString += "runtime: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getMean())) + " (standard deviation: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getStandardDeviation())) + ")\n\n";
 			
-			}
-
-		}
+				Main.createFile(statFile, statString);
+				
+			} // end algorithm loop
+			
+		} // end example loop
 		
-		Main.createFile(statFile, statString);
 	}
 	
 	private static Map<URL, OntologyFileFormat> getImports(List<List<String>> functionCalls, File confFile) {
