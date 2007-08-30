@@ -256,8 +256,9 @@ public class PaperStatistics {
 					statDetailsString += "example: " + examples[exampleNr] + "\n";
 					statDetailsString += "algorithm: " + algorithms[algorithmNr] + "\n";
 					statDetailsString += "learned concept: " + learningAlgorithm.getBestSolution() + "\n";
-					statDetailsString += "concept length: " +  length.getMean() + "\n";
-					statDetailsString += "runtime: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getMean())) + "\n\n";
+					statDetailsString += "classification: " + classificationRatePercent + "\n";
+					statDetailsString += "concept length: " +  conceptLength + "\n";
+					statDetailsString += "runtime: " + Helper.prettyPrintNanoSeconds(algorithmTime) + "\n\n";
 				
 					Main.createFile(statDetailsFile, statDetailsString);
 					
