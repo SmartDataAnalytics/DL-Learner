@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.algorithms.gp;
 
 import org.dllearner.Score;
@@ -6,25 +26,12 @@ import org.dllearner.dl.Concept;
 /**
  * This class represents a program, i.e. an individual.
  * 
- * Um spaeter KAON2-Queries zu unterstuetzen, muesste man aus Program ein Interface
- * oder eine abstrakte Klasse machen. Diese Klasse wird zu OwnProgram o.ä. und
- * es wird eine zusaetzliche Klasse KAON2Program erstellt, die dann Queries an
- * KAON2 stellt und im Konstruktor eine KAON2-DL entgegennimmt. Programmiert
- * wird im GP-Algorithmus dann natuerlich nur gegen das Interface. Schwierig wird
- * lediglich, dass KAON2 eine andere Struktur hat, also ev. die Utility-Methoden
- * angepasst werden muessen. :-/
- * 
- * Neu: Das Ganze wurde jetzt ueber einen abstrahierten Reasoner und die Klasse
- * LearningProblem erledigt. TODO: Eventuell ist etwas wie "ProblemSolution" ein
- * besserer Name. Bei Program scheint unklar, warum das LearningProblem hier eine
- * Rolle spielt.
- * 
  * @author Jens Lehmann
  * 
  */
 public class Program {
 
-	// private static int fitnessEvaluations = 0;
+	// public static int fitnessEvaluations = 0;
 
 	private Concept hypothesis;
 
@@ -39,7 +46,7 @@ public class Program {
 	// private LearningProblem learningProblem;
 
 	private double fitness;
-
+	
 	/**
 	 * Create a new program.
 	 * 
@@ -60,7 +67,10 @@ public class Program {
 		// fitness = score.getScore() - hypothesis.getLength() * Config.percentPerLengthUnit;
 		// => in getScore() ist jetzt schon der length penalty integriert
 		fitness = score.getScore();
-
+		// fitnessEvaluations++;
+		
+		// System.out.println("new program: " + hypothesis);
+		
 		/*
 		// falls R�ckgabetyp spezifiziert ist, dann muss hier der Baum
 		// entsprechend ver�ndert werden
