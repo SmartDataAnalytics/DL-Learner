@@ -201,4 +201,9 @@ public class KB implements KBElement {
 		
 		return connectedSet;
 	}
+	
+	public int getNumberOfAxioms() {
+		return (abox.size() + tbox.size() + rbox.size());
+	}
+	
 }
