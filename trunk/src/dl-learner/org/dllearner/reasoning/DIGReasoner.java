@@ -97,7 +97,7 @@ public class DIGReasoner extends AbstractReasoner {
 	public DIGReasoner(KB kb, URL url, Map<URL,OntologyFileFormat> imports) {
 		this.imports = imports;
 		this.kb = kb;
-		connector = new DIGHTTPConnector(url);
+		connector = new DIGHTTPConnector(url);		
 		identifier = connector.getIdentifier();
 		kbURI = connector.newKB();
 		
@@ -109,20 +109,22 @@ public class DIGReasoner extends AbstractReasoner {
 		"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">";
 		
 		// erzeuge tell-Anfrage für Knowledgebase
-		StringBuilder sb = new StringBuilder();
-		sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-		sb.append("<tells xmlns=\"http://dl.kr.org/dig/2003/02/lang\" " +
-				"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-				"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
-				"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">");
-		sb.append(DIGConverter.getDIGString(kb));
-		sb.append("</tells>");
-		
-		ResponseDocument rd = connector.tells(sb.toString());
-		if(!rd.getResponse().isSetOk()) {
-			System.err.println("DIG-Reasoner cannot read knowledgebase.");
-			System.exit(0);
-		}		
+		if(kb.getNumberOfAxioms()>0) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+			sb.append("<tells xmlns=\"http://dl.kr.org/dig/2003/02/lang\" " +
+					"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+					"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
+					"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">");
+			sb.append(DIGConverter.getDIGString(kb));
+			sb.append("</tells>");
+			
+			ResponseDocument rd = connector.tells(sb.toString());
+			if(!rd.getResponse().isSetOk()) {
+				System.err.println("DIG-Reasoner cannot read knowledgebase.");
+				System.exit(0);
+			}
+		}
 		
 		String importDIGString = "";
 		
@@ -173,6 +175,8 @@ public class DIGReasoner extends AbstractReasoner {
 			
 		// es wird jetzt immer der DIG-Reasoner abgefragt (auch ohne Importe), 
 		// da so gleich auch äquivalente Konzepte rausgefiltert werden
+		
+
 		
 		// DIG-Abfragen nach Konzepten, Rollen, Individuals
 		atomicConcepts = getAtomicConceptsDIG();
