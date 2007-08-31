@@ -116,6 +116,7 @@ public class PaperStatistics {
 		examples[4] = "poker (49 examples, pair)";
 		examples[5] = "poker (55 examples, straight)";
 		examples[6] = "uncle (FORTE data set)";
+		int startExampleNr = 0;		
 		
 		String[] algorithms = new String[3];
 		algorithms[0] = "refinement";
@@ -123,6 +124,9 @@ public class PaperStatistics {
 		algorithms[2] = "hybrid";
 		
 		int[] algorithmRuns = {1,10,10};
+		int startAlgorithmNr = 0;
+
+
 		
 		// do not plot anything
 		// File[][][] gnuplotFiles = new File[examples.length][algorithms.length][3];
@@ -143,7 +147,7 @@ public class PaperStatistics {
 		ConfigurationManager confMgr = new ConfigurationManager();
 		confMgr.applyOptions();
 		
-		for(int exampleNr=0; exampleNr < examples.length; exampleNr++) {
+		for(int exampleNr=startExampleNr; exampleNr < examples.length; exampleNr++) {
 			
 			// parse current conf file
 			DLLearner.parseFile(confFiles[exampleNr].toString());
@@ -164,7 +168,7 @@ public class PaperStatistics {
 			
 			statString += "example: " + examples[exampleNr] + "\n\n";
 			
-			for(int algorithmNr=0; algorithmNr < algorithms.length; algorithmNr++) {
+			for(int algorithmNr=startAlgorithmNr; algorithmNr < algorithms.length; algorithmNr++) {
 							
 				Stat classification = new Stat();
 				Stat length = new Stat();
@@ -177,6 +181,13 @@ public class PaperStatistics {
 					// of previous reasoning requests
 					Reasoner reasoner = Main.createReasoner(new KB(), imports);
 					ReasoningService rs = new ReasoningService(reasoner);					
+					
+					// System.out.println(positiveExamples);
+					// System.out.println(negativeExamples);
+					// System.exit(0);
+					
+					// create learning problem
+					LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);					
 					
 					// prepare reasoner for using subsumption and role hierarchy
 					// TODO: currently, it is a small unfairness that each algorithm
@@ -194,10 +205,7 @@ public class PaperStatistics {
 					} catch (ReasoningMethodUnsupportedException e) {
 						e.printStackTrace();
 					}
-					
-					// create learning problem
-					LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
-					
+
 					LearningAlgorithm learningAlgorithm = null;
 					if(algorithmNr==0) {
 						Config.algorithm = Algorithm.REFINEMENT;
@@ -213,6 +221,8 @@ public class PaperStatistics {
 						Config.GP.generations = 50;	
 						Config.GP.useFixedNumberOfGenerations = true;
 						Config.GP.numberOfIndividuals = 201;
+						// if(exampleNr == 3 || exampleNr == 4)
+						// 	Config.GP.numberOfIndividuals = 51;
 						Config.GP.refinementProbability = 0;
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.8;
@@ -226,6 +236,8 @@ public class PaperStatistics {
 						Config.GP.generations = 50;
 						Config.GP.useFixedNumberOfGenerations = true;
 						Config.GP.numberOfIndividuals = 201;
+						//if(exampleNr == 3 || exampleNr == 4)
+						//	Config.GP.numberOfIndividuals = 51;						
 						Config.GP.refinementProbability = 0.65;
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.2;
@@ -234,7 +246,8 @@ public class PaperStatistics {
 						learningAlgorithm = new GP(learningProblem);
 					}
 					
-					rs.resetStatistics();
+					// rs.resetStatistics();
+					
 					long algorithmStartTime = System.nanoTime();
 					learningAlgorithm.start();
 					long algorithmTime = System.nanoTime() - algorithmStartTime;
@@ -256,7 +269,7 @@ public class PaperStatistics {
 					statDetailsString += "example: " + examples[exampleNr] + "\n";
 					statDetailsString += "algorithm: " + algorithms[algorithmNr] + "\n";
 					statDetailsString += "learned concept: " + learningAlgorithm.getBestSolution() + "\n";
-					statDetailsString += "classification: " + classificationRatePercent + "\n";
+					statDetailsString += "classification: " + classificationRatePercent + "%\n";
 					statDetailsString += "concept length: " +  conceptLength + "\n";
 					statDetailsString += "runtime: " + Helper.prettyPrintNanoSeconds(algorithmTime) + "\n\n";
 				
