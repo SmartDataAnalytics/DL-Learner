@@ -1,5 +1,24 @@
-package org.dllearner.algorithms.gp;
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
+package org.dllearner.algorithms.gp;
 
 import static org.dllearner.Config.GP.algorithmType;
 import static org.dllearner.Config.GP.crossoverProbability;
@@ -26,14 +45,12 @@ import java.util.Map.Entry;
 
 import org.dllearner.Config;
 import org.dllearner.LearningProblem;
-import org.dllearner.Main;
 import org.dllearner.Score;
 import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.hybridgp.Psi;
 import org.dllearner.dl.Concept;
 import org.dllearner.dl.Top;
 import org.dllearner.utilities.Helper;
-
 
 /**
  * This class implements the genetic programming (GP) algorithm and provides
@@ -85,6 +102,8 @@ public class GP implements LearningAlgorithm {
     private Comparator<Program> fitnessComparator;
     
     private static Random rand = new Random();
+    
+    private long startTime;
 
     private Score bestScore;
     private Concept bestConcept;
@@ -105,7 +124,7 @@ public class GP implements LearningAlgorithm {
     	this.learningProblem = learningProblem;
     }
     
-    public void start() {
+    public void start() {   	
     	// falls refinement-Wahrscheinlichkeit größer 0, dann erzeuge psi
     	psi = new Psi(learningProblem);
     	
@@ -180,6 +199,8 @@ public class GP implements LearningAlgorithm {
             }
         };
 
+        startTime = System.nanoTime();        
+        
         // System.out.println("If Java does not allocate enough memory on your system\n" +
         //        "use \"java -Xmx128m Start\" to start the program. This allocates\n" +
         //        "a maximum of 128 MB of memory. 64 MB are sufficient so it is usually\n" +
@@ -201,7 +222,8 @@ public class GP implements LearningAlgorithm {
         Program[] newIndividuals = new Program[numberOfNewIndividuals];
         Program[] tmp = new Program[2];
 
-        long startTime = System.currentTimeMillis();
+        // long startTime = System.currentTimeMillis();
+
 
         int generation = 0;
 
@@ -259,6 +281,12 @@ public class GP implements LearningAlgorithm {
                     
                     newIndividuals[i] = tmp[0];
                     newIndividuals[i + 1] = tmp[1];
+                    
+                    // Incrementing i here is a significant code change! (2007/08/31)
+                    // This is done, because crossover uses two individuals as input and 
+                    // outputs two. Without the increment that second produced child is 
+                    // overwritten, which caused a significant loss in performance.
+                    i++;
                 // mutation
                 }  else if(rand >= crossoverBoundary && rand < mutationBoundary) {
                 	newIndividuals[i] = GPUtilities.mutation(learningProblem, individuals[selectedIndividuals[i]]);
@@ -346,7 +374,7 @@ public class GP implements LearningAlgorithm {
 
         // fittestIndividual.optimize();        
         
-        long endTime = System.currentTimeMillis();
+        long endTime = System.nanoTime(); // .currentTimeMillis();
         // R�ckgabewert des Algorithmus speichern
         bestScore = fittestIndividual.getScore();
         bestConcept = fittestIndividual.getTree();
@@ -381,7 +409,7 @@ public class GP implements LearningAlgorithm {
         System.out.println("generations: " + generation);
         System.out.println("fittest individual found after "
                 + fittestIndividualGeneration + " generations");
-        System.out.println("runtime in ms: " + (endTime - startTime));
+        System.out.println("runtime in ms: " + Helper.prettyPrintNanoSeconds(endTime - startTime));
         System.out.println("fitness evaluations: "
                 + GPUtilities.fitnessEvaluations);
         if(Config.algorithm == Config.Algorithm.HYBRID_GP) {
@@ -660,8 +688,13 @@ public class GP implements LearningAlgorithm {
         	conceptLengthSum += p.getTree().getLength();
         double conceptLengthAverage = conceptLengthSum/(double)individuals.length;
         System.out.println("average concept length: " + df.format(conceptLengthAverage));
-        long algorithmTime = System.nanoTime() - Main.getAlgorithmStartTime();
+        // long algorithmTime = System.nanoTime() - Main.getAlgorithmStartTime();
+        long algorithmTime = System.nanoTime() - startTime;
         System.out.println("overall algorithm runtime: " + Helper.prettyPrintNanoSeconds(algorithmTime));
+        // System.out.println("instance checks: " + learningProblem.getReasoningService().getNrOfInstanceChecks());
+        // System.out.println("fitness evals: " + Program.fitnessEvaluations);
+        // System.out.println("nr. of individuals: " + individuals.length + " (" + numberOfSelectedIndividuals + " selected)");
+        
         
         // für temporäre Performance-Werte
         // double some = 100*(psi.someTime/(double)algorithmTime);
