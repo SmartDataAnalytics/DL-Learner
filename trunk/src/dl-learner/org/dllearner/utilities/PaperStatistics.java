@@ -126,7 +126,8 @@ public class PaperStatistics {
 		int[] algorithmRuns = {1,10,10};
 		int startAlgorithmNr = 0;
 
-
+		Config.writeDIGProtocol = true;
+		Config.digProtocolFile = new File(statBaseDir, "dig.log");
 		
 		// do not plot anything
 		// File[][][] gnuplotFiles = new File[examples.length][algorithms.length][3];
@@ -169,7 +170,9 @@ public class PaperStatistics {
 			statString += "example: " + examples[exampleNr] + "\n\n";
 			
 			for(int algorithmNr=startAlgorithmNr; algorithmNr < algorithms.length; algorithmNr++) {
-							
+				// reset algorithm number (next example starts with first algorithm)
+				startAlgorithmNr = 0;		
+				
 				Stat classification = new Stat();
 				Stat length = new Stat();
 				Stat runtime = new Stat();
@@ -228,6 +231,10 @@ public class PaperStatistics {
 						Config.GP.crossoverProbability = 0.8;
 						Config.GP.hillClimbingProbability = 0;
 						Config.percentPerLengthUnit = 0.005;
+						// give GP a chance to find the long solution of the
+						// uncle problem
+						if(exampleNr==3 || exampleNr == 6)
+							Config.percentPerLengthUnit = 0.002;
 						learningAlgorithm = new GP(learningProblem);
 					} else if(algorithmNr==2) {
 						Config.algorithm = Algorithm.HYBRID_GP;
@@ -243,6 +250,8 @@ public class PaperStatistics {
 						Config.GP.crossoverProbability = 0.2;
 						Config.GP.hillClimbingProbability = 0;
 						Config.percentPerLengthUnit = 0.005;
+						if(exampleNr == 3 || exampleNr==6)
+							Config.percentPerLengthUnit = 0.002;						
 						learningAlgorithm = new GP(learningProblem);
 					}
 					
