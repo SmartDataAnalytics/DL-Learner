@@ -7,7 +7,7 @@ xmlns="http://www.di.uniba.it/learning"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://www.di.uniba.it/learning/../LearningProblem.xsd" 
 
-knowledgeBase="file:pair50.owl" 
+knowledgeBase="file:../poker/pair50.owl" 
 positiveExampleSource="pairPositives.txt" 
 negativeExampleSource="pairNegatives.txt" 
 abstractionClass="it.uniba.di.dl.abstraction.KBoundMSCApproximatorRefinement" 
