@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007, Sebastian Hellmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.modules.sparql;
 
 import java.io.File;
@@ -17,6 +36,13 @@ import org.dllearner.dl.KB;
 import org.dllearner.modules.PreprocessingModule;
 
 
+/**
+ * implements the module
+ * like a main function
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class SparqlModule implements PreprocessingModule {
 	
 	FileWriter fw;
@@ -27,10 +53,19 @@ public class SparqlModule implements PreprocessingModule {
 	
 	
 			
+/**
+* @return current version
+ */
 public String getModuleName(){
 	return "Sparql Module v0.3";
 }
 	
+	/**
+	 * 
+	 * implements the required function
+	 * sets up everything, reads the option collects the ontology, writes it to a file 
+	 * 
+	 */
 	public void preprocess(KB kb,
 			Map<AtomicConcept, SortedSet<Individual>> positiveExamples,
 			Map<AtomicConcept, SortedSet<Individual>> negativeExamples,
@@ -93,7 +128,7 @@ public String getModuleName(){
 			}
 		}// end for
 		System.out.println("SparqlModul: Processing finished");
-		// subject for which information is drafted from wikipedia
+		// subjects for which information is drafted from wikipedia
 		String[] subjectList=makeSubjectList(prefix, positiveExamples, negativeExamples);
 		
 

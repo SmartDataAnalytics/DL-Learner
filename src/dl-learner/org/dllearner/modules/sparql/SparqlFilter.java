@@ -1,5 +1,33 @@
+/**
+ * Copyright (C) 2007, Sebastian Hellmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.modules.sparql;
 
+/**
+ * 
+ * 
+ * encapsulates all the options 
+ * see the documentation for more help
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class SparqlFilter {
 	public int mode=0;
 	//  0 yago, 1 only cat, 2 skos+cat
@@ -63,7 +91,7 @@ public class SparqlFilter {
 			ObjFilter=onlyCatObjFilterDefault;
 			PredFilter=onlyCatPredFilterDefault;			
 			break;
-		case 2:
+		case 2: // there are some other changes to, which are made directly in other functions
 			ObjFilter=skosObjFilterDefault;
 			PredFilter=skosPredFilterDefault;			
 			break;
