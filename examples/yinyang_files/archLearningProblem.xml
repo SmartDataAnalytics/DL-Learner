@@ -7,7 +7,7 @@ xmlns="http://www.di.uniba.it/learning"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://www.di.uniba.it/learning/../LearningProblem.xsd" 
 
-knowledgeBase="file:arch.owl" 
+knowledgeBase="file:../arch/arch.owl" 
 positiveExampleSource="archPositives.txt" 
 negativeExampleSource="archNegatives.txt" 
 abstractionClass="it.uniba.di.dl.abstraction.KBoundMSCApproximatorRefinement" 
