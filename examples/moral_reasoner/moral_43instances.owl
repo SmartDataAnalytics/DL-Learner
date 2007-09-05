@@ -19,26 +19,14 @@
                 <owl:Class rdf:about="#responsible"/>
                 <owl:Class>
                     <owl:intersectionOf rdf:parseType="Collection">
-                        <owl:Restriction>
-                            <owl:onProperty rdf:resource="#severity_harm"/>
-                            <owl:someValuesFrom>
-                                <owl:Restriction>
-                                    <owl:onProperty rdf:resource="#greater"/>
-                                    <owl:someValuesFrom rdf:resource="&owl;Thing"/>
-                                </owl:Restriction>
-                            </owl:someValuesFrom>
-                        </owl:Restriction>
+                        <owl:Class rdf:about="#severity_harm"/>
                         <owl:Class>
                             <owl:intersectionOf rdf:parseType="Collection">
-                                <owl:Restriction>
-                                    <owl:onProperty rdf:resource="#benefit_victim"/>
-                                    <owl:someValuesFrom>
-                                        <owl:Restriction>
-                                            <owl:onProperty rdf:resource="#smaller"/>
-                                            <owl:someValuesFrom rdf:resource="&owl;Thing"/>
-                                        </owl:Restriction>
-                                    </owl:someValuesFrom>
-                                </owl:Restriction>
+                                <owl:Class>
+                                    <owl:complementOf>
+                                        <owl:Class rdf:about="#benefit_victim"/>
+                                    </owl:complementOf>
+                                </owl:Class>
                                 <owl:Class>
                                     <owl:complementOf>
                                         <owl:Class rdf:about="#justified"/>
@@ -386,26 +374,14 @@
                 <owl:Class rdf:about="#vicarious"/>
                 <owl:Class>
                     <owl:intersectionOf rdf:parseType="Collection">
-                        <owl:Restriction>
-                            <owl:onProperty rdf:resource="#severity_harm"/>
-                            <owl:someValuesFrom>
-                                <owl:Restriction>
-                                    <owl:onProperty rdf:resource="#greater"/>
-                                    <owl:someValuesFrom rdf:resource="&owl;Thing"/>
-                                </owl:Restriction>
-                            </owl:someValuesFrom>
-                        </owl:Restriction>
+                        <owl:Class rdf:about="#severity_harm"/>
                         <owl:Class>
                             <owl:intersectionOf rdf:parseType="Collection">
-                                <owl:Restriction>
-                                    <owl:onProperty rdf:resource="#benefit_victim"/>
-                                    <owl:someValuesFrom>
-                                        <owl:Restriction>
-                                            <owl:onProperty rdf:resource="#smaller"/>
-                                            <owl:someValuesFrom rdf:resource="&owl;Thing"/>
-                                        </owl:Restriction>
-                                    </owl:someValuesFrom>
-                                </owl:Restriction>
+                                <owl:Class>
+                                    <owl:complementOf>
+                                        <owl:Class rdf:about="#benefit_victim"/>
+                                    </owl:complementOf>
+                                </owl:Class>
                                 <owl:Class>
                                     <owl:complementOf>
                                         <owl:Class rdf:about="#justified"/>
@@ -490,6 +466,13 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#careful"/>
             </owl:complementOf>
         </owl:Class>
@@ -532,6 +515,13 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#someone_else_cause_harm"/>
             </owl:complementOf>
         </owl:Class>
@@ -543,11 +533,10 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v0"/>
 </a:achieve_goal>
 
-<a:control_perpetrator rdf:ID="n1">
+<a:benefit_victim rdf:ID="n1">
+    <rdf:type rdf:resource="#control_perpetrator"/>
     <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
     <rdf:type rdf:resource="#goal_outweigh_harm"/>
     <rdf:type rdf:resource="#intervening_contribution"/>
@@ -629,6 +618,13 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#someone_else_cause_harm"/>
             </owl:complementOf>
         </owl:Class>
@@ -640,9 +636,7 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v0"/>
-</a:control_perpetrator>
+</a:benefit_victim>
 
 <a:achieve_goal rdf:ID="n10">
     <rdf:type rdf:resource="#foresee_intervention"/>
@@ -665,6 +659,13 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#careful"/>
             </owl:complementOf>
         </owl:Class>
@@ -725,11 +726,17 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v0"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
 </a:achieve_goal>
 
 <a:benefit_protagonist rdf:ID="n2">
+    <rdf:type rdf:resource="#benefit_victim"/>
     <rdf:type rdf:resource="#careful"/>
     <rdf:type rdf:resource="#external_cause"/>
     <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
@@ -744,6 +751,7 @@
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
@@ -786,11 +794,10 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
-<a:careful rdf:ID="n3">
+<a:benefit_victim rdf:ID="n3">
+    <rdf:type rdf:resource="#careful"/>
     <rdf:type rdf:resource="#external_cause"/>
     <rdf:type rdf:resource="#foresee_intervention"/>
     <rdf:type rdf:resource="#intervening_contribution"/>
@@ -878,6 +885,13 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#someone_else_cause_harm"/>
             </owl:complementOf>
         </owl:Class>
@@ -889,11 +903,10 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v0"/>
-</a:careful>
+</a:benefit_victim>
 
-<a:careful rdf:ID="n5">
+<a:benefit_victim rdf:ID="n5">
+    <rdf:type rdf:resource="#careful"/>
     <rdf:type rdf:resource="#external_force"/>
     <rdf:type rdf:resource="#foresee_intervention"/>
     <rdf:type rdf:resource="#harm_caused_as_planned"/>
@@ -905,6 +918,7 @@
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
@@ -956,9 +970,7 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v1"/>
-</a:careful>
+</a:benefit_victim>
 
 <a:achieve_goal rdf:ID="n6">
     <rdf:type rdf:resource="#benefit_protagonist"/>
@@ -976,7 +988,15 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
@@ -1005,11 +1025,10 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:achieve_goal>
 
 <a:benefit_protagonist rdf:ID="n7">
+    <rdf:type rdf:resource="#benefit_victim"/>
     <rdf:type rdf:resource="#control_perpetrator"/>
     <rdf:type rdf:resource="#external_cause"/>
     <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
@@ -1021,6 +1040,7 @@
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
     <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
@@ -1078,11 +1098,10 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:achieve_goal rdf:ID="n8">
+    <rdf:type rdf:resource="#benefit_victim"/>
     <rdf:type rdf:resource="#control_perpetrator"/>
     <rdf:type rdf:resource="#external_cause"/>
     <rdf:type rdf:resource="#external_force"/>
@@ -1093,6 +1112,7 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
@@ -1151,8 +1171,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:achieve_goal>
 
 <a:benefit_protagonist rdf:ID="n9">
@@ -1175,6 +1193,13 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#careful"/>
             </owl:complementOf>
         </owl:Class>
@@ -1238,12 +1263,17 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#sufficient_for_harm"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v0"/>
 </a:benefit_protagonist>
 
 <a:external_force rdf:ID="n90">
@@ -1254,6 +1284,7 @@
     <rdf:type rdf:resource="#neither_mental_state"/>
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type>
         <owl:Class>
@@ -1266,6 +1297,13 @@
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -1339,12 +1377,11 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:external_force>
 
 <a:achieve_goal rdf:ID="n91">
     <rdf:type rdf:resource="#benefit_protagonist"/>
+    <rdf:type rdf:resource="#benefit_victim"/>
     <rdf:type rdf:resource="#careful"/>
     <rdf:type rdf:resource="#external_force"/>
     <rdf:type rdf:resource="#goal_achieveable_less_harmful"/>
@@ -1354,6 +1391,7 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
@@ -1418,8 +1456,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:achieve_goal>
 
 <a:achieve_goal rdf:ID="n92">
@@ -1439,6 +1475,13 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#foresee_intervention"/>
             </owl:complementOf>
         </owl:Class>
@@ -1474,6 +1517,13 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#someone_else_cause_harm"/>
             </owl:complementOf>
         </owl:Class>
@@ -1485,8 +1535,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v0"/>
 </a:achieve_goal>
 
 <a:achieve_goal rdf:ID="n93">
@@ -1497,6 +1545,13 @@
     <rdf:type rdf:resource="#low_foreseeability"/>
     <rdf:type rdf:resource="#negligent_mental_state"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
@@ -1584,16 +1639,22 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#someone_else_cause_harm"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v0"/>
 </a:achieve_goal>
 
 <a:achieve_goal rdf:ID="n94">
     <rdf:type rdf:resource="#benefit_protagonist"/>
+    <rdf:type rdf:resource="#benefit_victim"/>
     <rdf:type rdf:resource="#careful"/>
     <rdf:type rdf:resource="#external_cause"/>
     <rdf:type rdf:resource="#foresee_intervention"/>
@@ -1603,6 +1664,7 @@
     <rdf:type rdf:resource="#neither_mental_state"/>
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
@@ -1667,8 +1729,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:achieve_goal>
 
 <a:benefit_protagonist rdf:ID="n95">
@@ -1694,6 +1754,13 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#external_cause"/>
             </owl:complementOf>
         </owl:Class>
@@ -1736,12 +1803,17 @@
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
                 <owl:Class rdf:about="#someone_else_cause_harm"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v0"/>
 </a:benefit_protagonist>
 
 <a:benefit_protagonist rdf:ID="n96">
@@ -1754,10 +1826,18 @@
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
     <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -1831,12 +1911,11 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:achieve_goal rdf:ID="n97">
     <rdf:type rdf:resource="#benefit_protagonist"/>
+    <rdf:type rdf:resource="#benefit_victim"/>
     <rdf:type rdf:resource="#control_perpetrator"/>
     <rdf:type rdf:resource="#external_cause"/>
     <rdf:type rdf:resource="#external_force"/>
@@ -1849,6 +1928,7 @@
     <rdf:type rdf:resource="#neither_mental_state"/>
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
@@ -1886,15 +1966,15 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:achieve_goal>
 
-<a:careful rdf:ID="n98">
+<a:benefit_victim rdf:ID="n98">
+    <rdf:type rdf:resource="#careful"/>
     <rdf:type rdf:resource="#external_force"/>
     <rdf:type rdf:resource="#high_foreseeability"/>
     <rdf:type rdf:resource="#intervening_contribution"/>
     <rdf:type rdf:resource="#negligent_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
@@ -1995,11 +2075,10 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v1"/>
-</a:careful>
+</a:benefit_victim>
 
 <a:achieve_goal rdf:ID="n99">
+    <rdf:type rdf:resource="#benefit_victim"/>
     <rdf:type rdf:resource="#foresee_intervention"/>
     <rdf:type rdf:resource="#high_foreseeability"/>
     <rdf:type rdf:resource="#intervening_contribution"/>
@@ -2074,8 +2153,13 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v1"/>
-    <a:severity_harm rdf:resource="#v0"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#severity_harm"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
 </a:achieve_goal>
 
 <a:benefit_protagonist rdf:ID="p0">
@@ -2091,10 +2175,18 @@
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2147,8 +2239,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:benefit_protagonist rdf:ID="p1">
@@ -2160,11 +2250,19 @@
     <rdf:type rdf:resource="#monitor"/>
     <rdf:type rdf:resource="#negligent_mental_state"/>
     <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2238,8 +2336,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:benefit_protagonist rdf:ID="p10">
@@ -2252,11 +2348,19 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2323,8 +2427,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:achieve_goal rdf:ID="p100">
@@ -2340,11 +2442,19 @@
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#produce_harm"/>
     <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2390,8 +2500,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:achieve_goal>
 
 <a:benefit_protagonist rdf:ID="p101">
@@ -2404,12 +2512,20 @@
     <rdf:type rdf:resource="#negligent_mental_state"/>
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2469,8 +2585,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:benefit_protagonist rdf:ID="p2">
@@ -2484,11 +2598,19 @@
     <rdf:type rdf:resource="#negligent_mental_state"/>
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2548,8 +2670,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:benefit_protagonist rdf:ID="p3">
@@ -2566,11 +2686,19 @@
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2609,8 +2737,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:careful rdf:ID="p4">
@@ -2622,6 +2748,7 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
@@ -2634,6 +2761,13 @@
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2700,8 +2834,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:careful>
 
 <a:careful rdf:ID="p5">
@@ -2715,6 +2847,7 @@
     <rdf:type rdf:resource="#necessary_for_harm"/>
     <rdf:type rdf:resource="#negligent_mental_state"/>
     <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
@@ -2728,6 +2861,13 @@
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2773,8 +2913,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:careful>
 
 <a:benefit_protagonist rdf:ID="p6">
@@ -2787,11 +2925,19 @@
     <rdf:type rdf:resource="#negligent_mental_state"/>
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2858,8 +3004,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:benefit_protagonist rdf:ID="p7">
@@ -2875,12 +3019,20 @@
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -2919,8 +3071,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:control_perpetrator rdf:ID="p8">
@@ -2931,6 +3081,7 @@
     <rdf:type rdf:resource="#necessary_for_harm"/>
     <rdf:type rdf:resource="#negligent_mental_state"/>
     <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
@@ -2942,6 +3093,13 @@
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3022,8 +3180,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:control_perpetrator>
 
 <a:control_perpetrator rdf:ID="p9">
@@ -3035,6 +3191,7 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type>
         <owl:Class>
@@ -3047,6 +3204,13 @@
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3113,8 +3277,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:control_perpetrator>
 
 <a:control_perpetrator rdf:ID="p90">
@@ -3128,6 +3290,7 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
@@ -3141,6 +3304,13 @@
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3186,8 +3356,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:control_perpetrator>
 
 <a:benefit_protagonist rdf:ID="p91">
@@ -3199,11 +3367,19 @@
     <rdf:type rdf:resource="#negligent_mental_state"/>
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_include_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3277,8 +3453,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:careful rdf:ID="p92">
@@ -3290,6 +3464,7 @@
     <rdf:type rdf:resource="#necessary_for_harm"/>
     <rdf:type rdf:resource="#neither_mental_state"/>
     <rdf:type rdf:resource="#outrank_perpetrator"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
@@ -3303,6 +3478,13 @@
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3362,8 +3544,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:careful>
 
 <a:benefit_protagonist rdf:ID="p93">
@@ -3377,11 +3557,19 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3441,8 +3629,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:careful rdf:ID="p94">
@@ -3452,6 +3638,7 @@
     <rdf:type rdf:resource="#necessary_for_harm"/>
     <rdf:type rdf:resource="#negligent_mental_state"/>
     <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
@@ -3464,6 +3651,13 @@
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3544,8 +3738,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:careful>
 
 <a:achieve_goal rdf:ID="p95">
@@ -3559,10 +3751,18 @@
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#produce_harm"/>
     <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#benefit_protagonist"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3629,8 +3829,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:achieve_goal>
 
 <a:benefit_protagonist rdf:ID="p96">
@@ -3644,11 +3842,19 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_known"/>
     <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3708,8 +3914,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:achieve_goal rdf:ID="p97">
@@ -3728,7 +3932,15 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#plan_known"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
@@ -3757,8 +3969,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:achieve_goal>
 
 <a:benefit_protagonist rdf:ID="p98">
@@ -3773,12 +3983,20 @@
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#plan_include_harm"/>
     <rdf:type rdf:resource="#produce_harm"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type rdf:resource="#sufficient_for_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3824,8 +4042,6 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
 
 <a:benefit_protagonist rdf:ID="p99">
@@ -3838,11 +4054,19 @@
     <rdf:type rdf:resource="#low_foreseeability"/>
     <rdf:type rdf:resource="#outrank_perpetrator"/>
     <rdf:type rdf:resource="#reckless_mental_state"/>
+    <rdf:type rdf:resource="#severity_harm"/>
     <rdf:type rdf:resource="#someone_else_cause_harm"/>
     <rdf:type>
         <owl:Class>
             <owl:complementOf>
                 <owl:Class rdf:about="#achieve_goal"/>
+            </owl:complementOf>
+        </owl:Class>
+    </rdf:type>
+    <rdf:type>
+        <owl:Class>
+            <owl:complementOf>
+                <owl:Class rdf:about="#benefit_victim"/>
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
@@ -3909,23 +4133,13 @@
             </owl:complementOf>
         </owl:Class>
     </rdf:type>
-    <a:benefit_victim rdf:resource="#v0"/>
-    <a:severity_harm rdf:resource="#v1"/>
 </a:benefit_protagonist>
-
-<a:Number rdf:ID="v0">
-    <a:smaller rdf:resource="#v1"/>
-</a:Number>
-
-<a:Number rdf:ID="v1">
-    <a:greater rdf:resource="#v0"/>
-</a:Number>
-
-<owl:Class rdf:ID="Number"/>
 
 <owl:Class rdf:ID="achieve_goal"/>
 
 <owl:Class rdf:ID="benefit_protagonist"/>
+
+<owl:Class rdf:ID="benefit_victim"/>
 
 <owl:Class rdf:ID="careful"/>
 
@@ -3963,18 +4177,10 @@
 
 <owl:Class rdf:ID="produce_harm"/>
 
+<owl:Class rdf:ID="severity_harm"/>
+
 <owl:Class rdf:ID="someone_else_cause_harm"/>
 
 <owl:Class rdf:ID="sufficient_for_harm"/>
-
-<owl:Class rdf:about="&owl;Thing"/>
-
-<owl:ObjectProperty rdf:ID="benefit_victim"/>
-
-<owl:ObjectProperty rdf:ID="greater"/>
-
-<owl:ObjectProperty rdf:ID="severity_harm"/>
-
-<owl:ObjectProperty rdf:ID="smaller"/>
 
 </rdf:RDF>
