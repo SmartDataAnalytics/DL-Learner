@@ -13,7 +13,7 @@ negativeExampleSource="straightNegatives.txt"
 abstractionClass="it.uniba.di.dl.abstraction.KBoundMSCApproximatorRefinement" 
 learn="true" 
 normalize="true" 
-consistencyCheck="false"
+consistencyCheck="true"
 reasonerURL ="http://localhost:8081"
 
 
