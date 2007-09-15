@@ -126,6 +126,7 @@ public class PaperStatistics {
 		int[] algorithmRuns = {1,10,10};
 		int startAlgorithmNr = 0;
 
+		// Config.GP.maxConceptLength = 30;
 		Config.writeDIGProtocol = true;
 		Config.digProtocolFile = new File(statBaseDir, "dig.log");
 		
@@ -233,7 +234,7 @@ public class PaperStatistics {
 						Config.percentPerLengthUnit = 0.005;
 						// give GP a chance to find the long solution of the
 						// uncle problem
-						if(exampleNr==3 || exampleNr == 6)
+						if(exampleNr==3 || exampleNr==5 || exampleNr == 6)
 							Config.percentPerLengthUnit = 0.002;
 						learningAlgorithm = new GP(learningProblem);
 					} else if(algorithmNr==2) {
@@ -250,7 +251,7 @@ public class PaperStatistics {
 						Config.GP.crossoverProbability = 0.2;
 						Config.GP.hillClimbingProbability = 0;
 						Config.percentPerLengthUnit = 0.005;
-						if(exampleNr == 3 || exampleNr==6)
+						if(exampleNr == 3 || exampleNr==5 || exampleNr==6)
 							Config.percentPerLengthUnit = 0.002;						
 						learningAlgorithm = new GP(learningProblem);
 					}
