@@ -8,55 +8,59 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="600"
+   height="477.14276"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.45"
-   sodipodi:docname="architecture.svg"
+   sodipodi:docname="architecture_german.eps"
    sodipodi:docbase="/home/jl/promotion/dl-learner-svn/trunk/resources"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   sodipodi:modified="true">
+   inkscape:output_extension="org.inkscape.output.eps"
+   inkscape:export-filename="/home/jl/promotion/dl-learner-svn/trunk/resources/architecture_german.png"
+   inkscape:export-xdpi="67.5"
+   inkscape:export-ydpi="67.5"
+   version="1.0"
+   inkscape:dataloss="true">
   <defs
      id="defs4">
     <marker
        inkscape:stockid="TriangleOutL"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="TriangleOutL"
        style="overflow:visible">
       <path
          id="path3302"
-         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
-         transform="scale(0.8)" />
+         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="scale(0.8,0.8)" />
     </marker>
     <marker
        inkscape:stockid="TriangleOutM"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="TriangleOutM"
        style="overflow:visible">
       <path
          id="path3299"
-         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
-         transform="scale(0.4)" />
+         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="scale(0.4,0.4)" />
     </marker>
     <marker
        inkscape:stockid="Arrow2Lend"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="Arrow2Lend"
-       style="overflow:visible;">
+       style="overflow:visible">
       <path
          id="path3379"
-         style="font-size:12.0;fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
-         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
-         transform="scale(1.1) rotate(180) translate(1,0)" />
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.97309,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
     </marker>
   </defs>
   <sodipodi:namedview
@@ -71,7 +75,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
      inkscape:cx="375"
-     inkscape:cy="520"
+     inkscape:cy="178.45345"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:window-width="1280"
@@ -92,7 +96,8 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-49.999999,-175.71934)">
     <rect
        style="opacity:0.58500001;fill:#ffd42a;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.98969221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2160"
@@ -110,17 +115,17 @@
          id="tspan2164"
          x="64.285713"
          y="206.6479"
-         style="font-size:18">background knowledge</tspan><tspan
+         style="font-size:18px">Hintergrundwissen</tspan><tspan
          sodipodi:role="line"
          x="64.285713"
          y="229.1479"
          id="tspan2166"
-         style="font-size:18">(OWL-DL ontology,</tspan><tspan
+         style="font-size:18px">(OWL-DL Ontologie,</tspan><tspan
          sodipodi:role="line"
          x="64.285713"
          y="251.6479"
          id="tspan2168"
-         style="font-size:18">DL knowledge base)</tspan></text>
+         style="font-size:18px">DL Wissensbasis)</tspan></text>
     <rect
        style="opacity:0.58500001;fill:#ffd42a;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.06090128;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect3167"
@@ -158,11 +163,11 @@
          sodipodi:role="line"
          id="tspan3177"
          x="411.42856"
-         y="209.50504">positive and negative</tspan><tspan
+         y="209.50504">positive und negative</tspan><tspan
          sodipodi:role="line"
          x="411.42856"
          y="232.00504"
-         id="tspan3179">examples</tspan></text>
+         id="tspan3179">Beispiele</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -172,7 +177,7 @@
          sodipodi:role="line"
          id="tspan3183"
          x="81.428574"
-         y="398.07648">Reasoner, e.g.</tspan><tspan
+         y="398.07648">Reasoner, z.B.</tspan><tspan
          sodipodi:role="line"
          x="81.428574"
          y="420.57648"
@@ -188,13 +193,13 @@
        y="399.50504"
        id="text3187"><tspan
          sodipodi:role="line"
-         id="tspan3189"
          x="431.42856"
-         y="399.50504">concept quality</tspan><tspan
+         y="399.50504"
+         id="tspan3191">Qualitätsmessung</tspan><tspan
          sodipodi:role="line"
          x="431.42856"
          y="422.00504"
-         id="tspan3191">measure</tspan></text>
+         id="tspan2234">des Konzepts</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -204,26 +209,26 @@
          sodipodi:role="line"
          id="tspan3195"
          x="222.85715"
-         y="585.21936">concept generator, e.g.</tspan><tspan
+         y="585.21936">Konzept-Generator, z.B.</tspan><tspan
          sodipodi:role="line"
          x="222.85715"
          y="607.71936"
-         id="tspan3197">refinement operator based,</tspan><tspan
+         id="tspan3197">Refinement Operator basiert,</tspan><tspan
          sodipodi:role="line"
          x="222.85715"
          y="630.21936"
-         id="tspan3201">genetic programming</tspan></text>
+         id="tspan3201">Genetische Programmierung</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="-330.92288"
-       y="509.11539"
+       x="-348.07318"
+       y="506.30338"
        id="text3413"
-       transform="matrix(2.633324e-3,-0.9999965,0.9999965,2.633324e-3,0,0)"><tspan
+       transform="matrix(2.6333241e-3,-0.9999965,0.9999965,2.6333241e-3,0,0)"><tspan
          sodipodi:role="line"
          id="tspan3415"
-         x="-330.92288"
-         y="509.11539">use</tspan></text>
+         x="-348.07318"
+         y="506.30338">benutzt</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.81616569;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#TriangleOutL);stroke-miterlimit:4;stroke-dasharray:3.26466269, 3.26466269;stroke-dashoffset:0;stroke-opacity:1"
        d="M 162.85714,361.19067 L 162.85714,276.53946"
@@ -236,14 +241,14 @@
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="-329.63123"
-       y="152.86742"
+       x="-349.63113"
+       y="152.92007"
        id="text3425"
-       transform="matrix(2.6333242e-3,-0.9999965,0.9999965,2.6333242e-3,0,0)"><tspan
+       transform="matrix(2.6333243e-3,-0.9999965,0.9999965,2.6333243e-3,0,0)"><tspan
          sodipodi:role="line"
          id="tspan3427"
-         x="-329.63123"
-         y="152.86742">use</tspan></text>
+         x="-349.63113"
+         y="152.92007">benutzt</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.90932429;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#TriangleOutL);stroke-miterlimit:4;stroke-dasharray:2.7279727, 2.7279727;stroke-dashoffset:0;stroke-opacity:1"
        d="M 544.48318,465.45996 C 504.89558,458.38783 475.6447,491.54308 451.56873,544.83742"
@@ -267,11 +272,11 @@
          sodipodi:role="line"
          id="tspan3459"
          x="565.71429"
-         y="519.50507">test</tspan><tspan
+         y="519.50507">teste</tspan><tspan
          sodipodi:role="line"
          x="565.71429"
          y="542.00507"
-         id="tspan3461">concept</tspan></text>
+         id="tspan3461">Konzept</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -279,13 +284,9 @@
        y="498.07648"
        id="text3463"><tspan
          sodipodi:role="line"
-         id="tspan3465"
          x="391.42859"
-         y="498.07648">return</tspan><tspan
-         sodipodi:role="line"
-         x="391.42859"
-         y="520.57648"
-         id="tspan3467">quality</tspan></text>
+         y="498.07648"
+         id="tspan3467">Qualität</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.94272459;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#TriangleOutL);stroke-miterlimit:4;stroke-dasharray:2.82817393, 2.82817393;stroke-dashoffset:0;stroke-opacity:1"
        d="M 217.62905,548.94843 C 176.19401,556.21074 145.57809,522.16395 120.37857,467.43654"
@@ -303,23 +304,23 @@
        y="490.93359"
        id="text3473"><tspan
          sodipodi:role="line"
-         id="tspan3475"
          x="237.14285"
-         y="490.93359">query</tspan><tspan
+         y="490.93359"
+         id="tspan3477">Anfrage-</tspan><tspan
          sodipodi:role="line"
          x="237.14285"
          y="513.43359"
-         id="tspan3477">results</tspan></text>
+         id="tspan2238">ergebnis</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="88.571426"
-       y="535.21936"
+       x="80"
+       y="536.64795"
        id="text3479"><tspan
          sodipodi:role="line"
          id="tspan3481"
-         x="88.571426"
-         y="535.21936">query</tspan></text>
+         x="80"
+         y="536.64795">Anfrage</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -348,6 +349,6 @@
          sodipodi:role="line"
          id="tspan3495"
          x="318.57144"
-         y="363.79077">results</tspan></text>
+         y="363.79077">Resultate</tspan></text>
   </g>
 </svg>
