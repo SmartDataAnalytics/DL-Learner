@@ -20,9 +20,24 @@
 package org.dllearner.core;
 
 /**
+ * This class represents a configuration option (without a value for the
+ * option).
+ * 
  * @author Jens Lehmann
  *
  */
-public class ConfigOption {
+public abstract class ConfigOption {
 
+	private String name;
+	
+	public ConfigOption(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public abstract boolean isValidValue(Object value);
+	
 }
