@@ -19,10 +19,29 @@
  */
 package org.dllearner.core;
 
+import java.util.Collection;
+
 /**
  * @author Jens Lehmann
  *
  */
 public interface Component {
 
+	/**
+	 * 
+	 * @return The name of this component.
+	 */
+	public String getName();
+	
+	/**
+	 * Returns all configuration options supported by this component.
+	 */
+	public Collection<ConfigOption> getConfigOptions();
+	
+	/**
+	 * Applies a configuration option to this component.
+	 * 
+	 * @param entry A configuration entry.
+	 */
+	public void applyConfigEntry(ConfigEntry entry);
 }

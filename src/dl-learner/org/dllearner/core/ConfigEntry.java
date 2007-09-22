@@ -20,9 +20,19 @@
 package org.dllearner.core;
 
 /**
+ * A config entry is a configuration option and a value for the option.
+ * 
  * @author Jens Lehmann
  *
  */
-public class ConfigOptionInstance {
+public class ConfigEntry {
 
+	public ConfigEntry(ConfigOption option, Object value) throws Exception {
+		if(!option.isValidValue(value)) {
+			throw new InvalidConfigOptionValueException(option, value);
+		} else {
+			
+		}
+	}
+	
 }

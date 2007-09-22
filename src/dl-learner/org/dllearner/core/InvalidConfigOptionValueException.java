@@ -23,14 +23,12 @@ package org.dllearner.core;
  * @author Jens Lehmann
  *
  */
-public enum ConfigOptionType {
+public class InvalidConfigOptionValueException extends Exception {
 
-	INT,
+	private static final long serialVersionUID = 3286110428258072698L;
 	
-	DOUBLE,
-	
-	STRING,
-	
-	SET_STRING
-	
+	public InvalidConfigOptionValueException(ConfigOption option, Object value) {
+		super("The value " + value + " is not valid for the configuration option " + option + ".");
+	}
+
 }
