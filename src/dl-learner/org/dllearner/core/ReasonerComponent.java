@@ -17,19 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.learningproblems;
+package org.dllearner.core;
 
 /**
  * @author Jens Lehmann
  *
  */
-public class DefinitionLPTwoValued extends DefinitionLP {
+public class ReasonerComponent extends Component {
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#getName()
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
-	public static String getName() {
-		return "two valued definition learning problem";
+	@Override
+	public void applyConfigEntry(ConfigEntry entry) {
+		// TODO Auto-generated method stub
+
 	}
-	
+
 }

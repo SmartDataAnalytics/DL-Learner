@@ -17,15 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.learningproblems;
+package org.dllearner.core;
 
 /**
- * Marker interface for all learning problems (the "New" at the end of the name
- * is temporary for the restructuring process).
- * 
  * @author Jens Lehmann
  *
  */
-public interface LearningProblemNew {
+public class LearningAlgorithmNew extends Component {
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	public void applyConfigEntry(ConfigEntry entry) {
+		// TODO Auto-generated method stub
+
+	}
 
 }
