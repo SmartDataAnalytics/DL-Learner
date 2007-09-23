@@ -19,17 +19,17 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
-
-import org.dllearner.core.ConfigEntry;
-import org.dllearner.core.ConfigOption;
-
 /**
  * @author Jens Lehmann
  *
  */
 public class DefinitionLPThreeValued extends DefinitionLP {
 
-
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#getName()
+	 */
+	public static String getName() {
+		return "two valued definition learning problem";
+	}
 
 }

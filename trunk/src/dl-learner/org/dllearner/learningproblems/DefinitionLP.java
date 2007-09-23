@@ -21,19 +21,20 @@ package org.dllearner.learningproblems;
 
 import java.util.Collection;
 
-import org.dllearner.core.Component;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
+import org.dllearner.core.LearningProblemNew;
 
 /**
  * @author Jens Lehmann
  *
  */
-public abstract class DefinitionLP implements LearningProblemNew, Component {
+public abstract class DefinitionLP extends LearningProblemNew {
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
+	@Override
 	public void applyConfigEntry(ConfigEntry entry) {
 		// TODO Auto-generated method stub
 		
@@ -42,16 +43,8 @@ public abstract class DefinitionLP implements LearningProblemNew, Component {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#getConfigOptions()
 	 */
-	public Collection<ConfigOption> getConfigOptions() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public String getName() {
-		// TODO Auto-generated method stub
+	public static Collection<ConfigOption> getConfigOptions() {
+		// TODO: positive and negative examples
 		return null;
 	}
 	

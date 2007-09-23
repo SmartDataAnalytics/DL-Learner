@@ -17,19 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.learningproblems;
+package org.dllearner.core;
 
 /**
+ * Marker interface for all learning problems (the "New" at the end of the name
+ * is temporary for the restructuring process).
+ * 
  * @author Jens Lehmann
  *
  */
-public class DefinitionLPTwoValued extends DefinitionLP {
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "two valued definition learning problem";
-	}
+public abstract class LearningProblemNew extends Component {
 	
 }

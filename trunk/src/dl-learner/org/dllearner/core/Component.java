@@ -20,28 +20,33 @@
 package org.dllearner.core;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * @author Jens Lehmann
  *
  */
-public interface Component {
-
+public abstract class Component {
+	
 	/**
 	 * 
 	 * @return The name of this component.
 	 */
-	public String getName();
+	public static String getName() {
+		return "unnamed component";
+	}
 	
 	/**
 	 * Returns all configuration options supported by this component.
 	 */
-	public Collection<ConfigOption> getConfigOptions();
+	public static Collection<ConfigOption> createConfigOptions() {
+		return new LinkedList<ConfigOption>();
+	}
 	
 	/**
 	 * Applies a configuration option to this component.
 	 * 
 	 * @param entry A configuration entry.
 	 */
-	public void applyConfigEntry(ConfigEntry entry);
+	public abstract void applyConfigEntry(ConfigEntry entry);
 }
