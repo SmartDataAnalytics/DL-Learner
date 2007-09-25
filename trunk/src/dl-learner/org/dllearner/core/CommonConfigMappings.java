@@ -20,24 +20,9 @@
 package org.dllearner.core;
 
 /**
- * This class represents a configuration option (without a value for the
- * option).
- * 
  * @author Jens Lehmann
  *
  */
-public abstract class ConfigOption<T> {
+public class CommonConfigMappings {
 
-	private String name;
-	
-	public ConfigOption(String name) {
-		this.name = name;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public abstract boolean isValidValue(T value);
-	
 }

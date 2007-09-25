@@ -23,15 +23,8 @@ package org.dllearner.core;
  * @author Jens Lehmann
  *
  */
-public class LearningAlgorithmNew extends Component {
+public abstract class LearningAlgorithmNew extends Component {
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	public void applyConfigEntry(ConfigEntry entry) {
-		// TODO Auto-generated method stub
 
-	}
 
 }

@@ -26,7 +26,7 @@ package org.dllearner.core;
  * @author Jens Lehmann
  *
  */
-public class IntegerConfigOption extends ConfigOption {
+public class IntegerConfigOption extends ConfigOption<Integer> {
 
 	private int lowerLimit = Integer.MIN_VALUE;
 	private int upperLimit = Integer.MAX_VALUE;
@@ -38,7 +38,7 @@ public class IntegerConfigOption extends ConfigOption {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
 	 */
-	@Override
+	/*
 	public boolean isValidValue(Object value) {
 		if(!(value instanceof Integer))
 			return false;
@@ -50,7 +50,19 @@ public class IntegerConfigOption extends ConfigOption {
 		else
 			return false;
 	}
+	*/
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
+	 */
+	@Override
+	public boolean isValidValue(Integer value) {
+		if(value >= lowerLimit && value <= upperLimit)
+			return true;
+		else
+			return false;		
+	}
+	
 	/**
 	 * @return the The lowest possible value for this configuration option.
 	 */
@@ -78,5 +90,7 @@ public class IntegerConfigOption extends ConfigOption {
 	public void setUpperLimit(int upperLimit) {
 		this.upperLimit = upperLimit;
 	}
+
+
 
 }

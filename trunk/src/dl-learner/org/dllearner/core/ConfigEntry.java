@@ -25,14 +25,30 @@ package org.dllearner.core;
  * @author Jens Lehmann
  *
  */
-public class ConfigEntry {
+public class ConfigEntry<T> {
 
-	public ConfigEntry(ConfigOption option, Object value) throws Exception {
+	private ConfigOption<T> option;
+	private T value;
+	
+	public ConfigEntry(ConfigOption<T> option, T value) throws InvalidConfigOptionValueException {
 		if(!option.isValidValue(value)) {
 			throw new InvalidConfigOptionValueException(option, value);
 		} else {
-			
+			this.option = option;
+			this.value = value;
 		}
+	}
+	
+	public ConfigOption<T> getOption() {
+		return option;
+	}
+	
+	public String getOptionName() {
+		return option.getName();
+	}
+	
+	public T getValue() {
+		return value;
 	}
 	
 }

@@ -19,25 +19,32 @@
  */
 package org.dllearner.core;
 
+import org.dllearner.kb.OWLFile;
+
 /**
- * This class represents a configuration option (without a value for the
- * option).
+ * Test for component based design.
  * 
  * @author Jens Lehmann
- *
+ * 
  */
-public abstract class ConfigOption<T> {
+public class ComponentTest {
 
-	private String name;
-	
-	public ConfigOption(String name) {
-		this.name = name;
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+
+		// get singleton instance of component manager
+		ComponentManager cm = ComponentManager.getInstance();
+		
+		// create knowledge source
+		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+		
+		// ... to be continued ...
+		
+		ReasonerComponent reasoner = new ReasonerComponent();
+		ComponentManager.getInstance().learningProblem(LearningProblemNew.class, reasoner);
+
 	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public abstract boolean isValidValue(T value);
-	
+
 }

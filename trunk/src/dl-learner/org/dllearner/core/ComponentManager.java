@@ -72,6 +72,33 @@ public class ComponentManager {
 		return componentStrings;
 	}
 	
+	public KnowledgeSource knowledgeSource(Class<? extends KnowledgeSource> source) {
+		try {
+			Constructor<? extends KnowledgeSource> constructor = source.getConstructor();
+			return constructor.newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	public LearningProblemNew learningProblem(Class<LearningProblemNew> lp, ReasonerComponent reasoner) {
 		try {
 			Constructor<LearningProblemNew> constructor = lp.getConstructor(ReasonerComponent.class);

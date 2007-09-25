@@ -39,8 +39,8 @@ public abstract class Component {
 	/**
 	 * Returns all configuration options supported by this component.
 	 */
-	public static Collection<ConfigOption> createConfigOptions() {
-		return new LinkedList<ConfigOption>();
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		return new LinkedList<ConfigOption<?>>();
 	}
 	
 	/**
@@ -48,5 +48,5 @@ public abstract class Component {
 	 * 
 	 * @param entry A configuration entry.
 	 */
-	public abstract void applyConfigEntry(ConfigEntry entry);
+	public abstract <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException;
 }

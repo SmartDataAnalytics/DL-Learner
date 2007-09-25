@@ -29,7 +29,7 @@ public class ReasonerComponent extends Component {
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
 	@Override
-	public void applyConfigEntry(ConfigEntry entry) {
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) {
 		// TODO Auto-generated method stub
 
 	}

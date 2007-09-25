@@ -19,25 +19,14 @@
  */
 package org.dllearner.core;
 
+import java.net.URI;
+
 /**
- * This class represents a configuration option (without a value for the
- * option).
- * 
  * @author Jens Lehmann
  *
  */
-public abstract class ConfigOption<T> {
+public abstract class KnowledgeSource extends Component {
+	
+	public abstract String toDIG(URI kbURI);
 
-	private String name;
-	
-	public ConfigOption(String name) {
-		this.name = name;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public abstract boolean isValidValue(T value);
-	
 }
