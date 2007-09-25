@@ -2,8 +2,8 @@ package org.dllearner.utilities;
 
 import java.util.Comparator;
 
-import org.dllearner.dl.AtomicRole;
-import org.dllearner.dl.Role;
+import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Role;
 
 public class RoleComparator implements Comparator<Role> {
 

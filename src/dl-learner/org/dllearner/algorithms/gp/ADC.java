@@ -1,6 +1,6 @@
 package org.dllearner.algorithms.gp;
 
-import org.dllearner.dl.Concept;
+import org.dllearner.core.dl.Concept;
 
 public class ADC extends Concept {
 

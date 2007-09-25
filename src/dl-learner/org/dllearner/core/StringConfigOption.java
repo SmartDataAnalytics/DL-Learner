@@ -63,4 +63,12 @@ public class StringConfigOption extends ConfigOption<String> {
 		this.allowedValues = allowedValues;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
+	 */
+	@Override
+	public boolean checkType(Object object) {
+		return (object instanceof String);
+	}
+
 }

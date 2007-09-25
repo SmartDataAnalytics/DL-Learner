@@ -2,32 +2,32 @@ package org.dllearner.reasoning;
 
 import java.util.Set;
 
-import org.dllearner.dl.All;
-import org.dllearner.dl.AtomicConcept;
-import org.dllearner.dl.AtomicRole;
-import org.dllearner.dl.Axiom;
-import org.dllearner.dl.Bottom;
-import org.dllearner.dl.Concept;
-import org.dllearner.dl.ConceptAssertion;
-import org.dllearner.dl.Conjunction;
-import org.dllearner.dl.Disjunction;
-import org.dllearner.dl.Equality;
-import org.dllearner.dl.Exists;
-import org.dllearner.dl.FunctionalRoleAxiom;
-import org.dllearner.dl.Inclusion;
-import org.dllearner.dl.Individual;
-import org.dllearner.dl.InverseRole;
-import org.dllearner.dl.KB;
-import org.dllearner.dl.MultiConjunction;
-import org.dllearner.dl.MultiDisjunction;
-import org.dllearner.dl.Negation;
-import org.dllearner.dl.Quantification;
-import org.dllearner.dl.Role;
-import org.dllearner.dl.RoleAssertion;
-import org.dllearner.dl.SubRoleAxiom;
-import org.dllearner.dl.SymmetricRoleAxiom;
-import org.dllearner.dl.Top;
-import org.dllearner.dl.TransitiveRoleAxiom;
+import org.dllearner.core.dl.All;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Axiom;
+import org.dllearner.core.dl.Bottom;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.ConceptAssertion;
+import org.dllearner.core.dl.Conjunction;
+import org.dllearner.core.dl.Disjunction;
+import org.dllearner.core.dl.Equality;
+import org.dllearner.core.dl.Exists;
+import org.dllearner.core.dl.FunctionalRoleAxiom;
+import org.dllearner.core.dl.Inclusion;
+import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.InverseRole;
+import org.dllearner.core.dl.KB;
+import org.dllearner.core.dl.MultiConjunction;
+import org.dllearner.core.dl.MultiDisjunction;
+import org.dllearner.core.dl.Negation;
+import org.dllearner.core.dl.Quantification;
+import org.dllearner.core.dl.Role;
+import org.dllearner.core.dl.RoleAssertion;
+import org.dllearner.core.dl.SubRoleAxiom;
+import org.dllearner.core.dl.SymmetricRoleAxiom;
+import org.dllearner.core.dl.Top;
+import org.dllearner.core.dl.TransitiveRoleAxiom;
 
 /**
  * Methods for converting internal representation to DIG and

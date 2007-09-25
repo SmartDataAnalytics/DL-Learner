@@ -44,6 +44,11 @@ public abstract class Component {
 	}
 	
 	/**
+	 * Method to be called after the component has been configured.
+	 */
+	public abstract void init();
+	
+	/**
 	 * Applies a configuration option to this component.
 	 * 
 	 * @param entry A configuration entry.

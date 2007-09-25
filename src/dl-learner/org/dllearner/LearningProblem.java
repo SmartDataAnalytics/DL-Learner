@@ -5,11 +5,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.Config.Refinement;
-import org.dllearner.dl.Concept;
-import org.dllearner.dl.Individual;
-import org.dllearner.dl.Negation;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.Negation;
 import org.dllearner.reasoning.ReasonerType;
-import org.dllearner.reasoning.ReasoningService;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SortedSetTuple;
 

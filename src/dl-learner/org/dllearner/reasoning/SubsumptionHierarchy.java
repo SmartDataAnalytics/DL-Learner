@@ -24,10 +24,10 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.dl.AtomicConcept;
-import org.dllearner.dl.Bottom;
-import org.dllearner.dl.Concept;
-import org.dllearner.dl.Top;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.Bottom;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Top;
 import org.dllearner.utilities.ConceptComparator;
 
 /**

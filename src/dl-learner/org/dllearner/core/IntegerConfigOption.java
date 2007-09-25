@@ -91,6 +91,18 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 		this.upperLimit = upperLimit;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
+	 */
+	@Override
+	public boolean checkType(Object object) {
+		return (object instanceof Integer);
+	}
+
+
+
+
+
 
 
 }

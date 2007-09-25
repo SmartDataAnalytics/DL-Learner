@@ -4,7 +4,7 @@ import org.dllearner.LearningProblem;
 import org.dllearner.Score;
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.algorithms.gp.GPUtilities;
-import org.dllearner.dl.Concept;
+import org.dllearner.core.dl.Concept;
 
 public class RandomGuesser implements LearningAlgorithm {
 

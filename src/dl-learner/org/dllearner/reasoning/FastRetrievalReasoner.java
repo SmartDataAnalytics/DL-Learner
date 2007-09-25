@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.dl.AtomicConcept;
-import org.dllearner.dl.AtomicRole;
-import org.dllearner.dl.Concept;
-import org.dllearner.dl.FlatABox;
-import org.dllearner.dl.Individual;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.FlatABox;
+import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SortedSetTuple;
 

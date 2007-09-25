@@ -26,8 +26,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.dllearner.kb.OWLFile;
+
 
 /**
  * Central manager class for DL-Learner.
@@ -41,7 +48,69 @@ public class ComponentManager {
 	
 	private static ComponentManager cm = new ComponentManager();
 	
+	private List<Class<? extends Component>> components;
+	
+	// list of all configuration options of all components
+	private Map<Class<? extends Component>,List<ConfigOption<?>>> componentOptions;
+	private Map<Class<? extends Component>,Map<String,ConfigOption<?>>> componentOptionsByName;
+	
+	@SuppressWarnings({"unchecked"})
 	private ComponentManager() {
+		// read in components file
+		List<String> componentsString = readComponentsFile();
+		
+		// component list
+		components = new LinkedList<Class<? extends Component>>();
+		
+		// create classes from strings
+		for(String componentString : componentsString) {
+			try {
+				Class<? extends Component> component = Class.forName(componentString).asSubclass(Component.class);
+				components.add(component);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		// read in all configuration options
+		componentOptions = new HashMap<Class<? extends Component>,List<ConfigOption<?>>>();
+		componentOptionsByName = new HashMap<Class<? extends Component>,Map<String,ConfigOption<?>>>();
+		
+		for(Class<? extends Component> component : components) {
+			// unfortunately Java does not seem to offer a way to call
+			// a static method given a class object directly, so we have
+			// to use reflection
+			try {
+				Method createConfig = component.getMethod("createConfigOptions");
+				List<ConfigOption<?>> options = (List<ConfigOption<?>>) createConfig.invoke(null);
+				
+				componentOptions.put(component, options);
+				
+				Map<String,ConfigOption<?>> byName = new HashMap<String,ConfigOption<?>>();
+				for(ConfigOption<?> option : options)
+					byName.put(option.getName(), option);
+				componentOptionsByName.put(component, byName);				
+				
+				// componentOptionsByName.put(key, value)
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 		
 	}
 	
@@ -72,6 +141,42 @@ public class ComponentManager {
 		return componentStrings;
 	}
 	
+	/**
+	 * Convenience method for testing purposes. If you know that the type of the
+	 * value is correct, it is preferable to create a ConfigEntry object and apply
+	 * it to the component (no type checking necessary).
+	 * @param component
+	 * @param optionName
+	 * @param value
+	 */
+	public <T> void applyConfigEntry(Component component, String optionName, T value) {
+		// first we look whether the component is registered
+		if(components.contains(component)) {
+
+			// look for a config option with the specified name
+			ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(component).get(optionName);
+			if(option!=null) {
+				// check whether the given object has the correct type
+				if(!option.checkType(value)) {
+					System.out.println("Warning: value " + value + " is not valid for option " + optionName + " in component " + component);
+					return;
+				}
+				
+				// we have checked the type, hence it should now be safe to typecast and
+				// create a ConfigEntry object
+				try {
+					@SuppressWarnings({"unchecked"})
+					ConfigEntry<T> entry = new ConfigEntry<T>((ConfigOption<T>) option, value);
+					component.applyConfigEntry(entry);
+				} catch (InvalidConfigOptionValueException e) {
+					System.out.println("Warning: value " + value + " is not valid for option " + optionName + " in component " + component);
+				}
+			} else
+				System.out.println("Warning: undefined option " + optionName + " in component " + component);			
+		} else
+			System.out.println("Warning: unregistered component " + component);		
+	}
+	
 	public KnowledgeSource knowledgeSource(Class<? extends KnowledgeSource> source) {
 		try {
 			Constructor<? extends KnowledgeSource> constructor = source.getConstructor();
@@ -99,9 +204,37 @@ public class ComponentManager {
 		return null;
 	}
 	
-	public LearningProblemNew learningProblem(Class<LearningProblemNew> lp, ReasonerComponent reasoner) {
+	public <T extends ReasonerComponent> ReasoningService reasoningService(Class<T> reasoner, Set<KnowledgeSource> sources) {
 		try {
-			Constructor<LearningProblemNew> constructor = lp.getConstructor(ReasonerComponent.class);
+			Constructor<T> constructor = reasoner.getConstructor(ReasonerComponent.class);
+			T reasonerInstance = constructor.newInstance(sources);
+			return new ReasoningService(reasonerInstance);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
+		return null;
+	}
+	
+	public <T extends LearningProblemNew> T learningProblem(Class<T> lp, ReasonerComponent reasoner) {
+		try {
+			Constructor<T> constructor = lp.getConstructor(ReasonerComponent.class);
 			return constructor.newInstance(reasoner);
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block

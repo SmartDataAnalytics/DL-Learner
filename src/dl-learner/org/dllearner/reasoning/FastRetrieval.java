@@ -4,16 +4,16 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.dl.All;
-import org.dllearner.dl.AtomicConcept;
-import org.dllearner.dl.Bottom;
-import org.dllearner.dl.Concept;
-import org.dllearner.dl.Conjunction;
-import org.dllearner.dl.Disjunction;
-import org.dllearner.dl.Exists;
-import org.dllearner.dl.FlatABox;
-import org.dllearner.dl.Negation;
-import org.dllearner.dl.Top;
+import org.dllearner.core.dl.All;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.Bottom;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Conjunction;
+import org.dllearner.core.dl.Disjunction;
+import org.dllearner.core.dl.Exists;
+import org.dllearner.core.dl.FlatABox;
+import org.dllearner.core.dl.Negation;
+import org.dllearner.core.dl.Top;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SortedSetTuple;
 

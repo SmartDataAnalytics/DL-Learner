@@ -36,14 +36,14 @@ import org.dllearner.Config.Algorithm;
 import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.dl.AtomicConcept;
-import org.dllearner.dl.Individual;
-import org.dllearner.dl.KB;
+import org.dllearner.core.Reasoner;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.KB;
 import org.dllearner.parser.DLLearner;
 import org.dllearner.reasoning.DIGReasoner;
-import org.dllearner.reasoning.Reasoner;
-import org.dllearner.reasoning.ReasoningMethodUnsupportedException;
-import org.dllearner.reasoning.ReasoningService;
 
 /**
  * Utility script for creating statistics for publications.

@@ -31,5 +31,14 @@ public class DefinitionLPTwoValued extends DefinitionLP {
 	public static String getName() {
 		return "two valued definition learning problem";
 	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

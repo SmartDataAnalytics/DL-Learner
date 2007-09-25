@@ -4,7 +4,7 @@ import org.dllearner.Config;
 import org.dllearner.LearningProblem;
 import org.dllearner.Main;
 import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.reasoning.ReasoningMethodUnsupportedException;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 
 public class LearnMonitor extends Thread {
 

@@ -1,6 +1,6 @@
 package org.dllearner.algorithms.refinement;
 
-import org.dllearner.dl.Concept;
+import org.dllearner.core.dl.Concept;
 
 /**
  * Soll hauptsächlich dazu dienen zu testen, ob ein Konzept im

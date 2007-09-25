@@ -9,12 +9,12 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.Config;
-import org.dllearner.dl.AtomicConcept;
-import org.dllearner.dl.AtomicRole;
-import org.dllearner.dl.Concept;
-import org.dllearner.dl.Individual;
-import org.dllearner.dl.NumberRestriction;
-import org.dllearner.dl.Quantification;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.NumberRestriction;
+import org.dllearner.core.dl.Quantification;
 
 /**
  * Die Hilfsmethoden benutzen alle SortedSet, da die Operationen damit schneller sind.

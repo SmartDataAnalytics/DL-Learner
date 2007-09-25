@@ -8,7 +8,7 @@ import java.util.TreeMap;
 import org.dllearner.LearningProblem;
 import org.dllearner.Score;
 import org.dllearner.algorithms.gp.Program;
-import org.dllearner.dl.Concept;
+import org.dllearner.core.dl.Concept;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 

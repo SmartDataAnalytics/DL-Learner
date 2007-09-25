@@ -2,7 +2,8 @@ package org.dllearner.algorithms.refinement;
 
 import java.util.List;
 import java.util.Set;
-import org.dllearner.dl.Concept;
+
+import org.dllearner.core.dl.Concept;
 
 public interface RefinementOperator {
 
