@@ -27,7 +27,7 @@ public class InvalidConfigOptionValueException extends Exception {
 
 	private static final long serialVersionUID = 3286110428258072698L;
 	
-	public InvalidConfigOptionValueException(ConfigOption option, Object value) {
+	public InvalidConfigOptionValueException(ConfigOption<?> option, Object value) {
 		super("The value " + value + " is not valid for the configuration option " + option + ".");
 	}
 

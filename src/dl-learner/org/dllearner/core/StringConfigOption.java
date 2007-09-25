@@ -29,7 +29,7 @@ import java.util.TreeSet;
  * @author Jens Lehmann
  *
  */
-public class StringConfigOption extends ConfigOption {
+public class StringConfigOption extends ConfigOption<String> {
 
 	private Set<String> allowedValues;
 	
@@ -42,13 +42,8 @@ public class StringConfigOption extends ConfigOption {
 	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
 	 */
 	@Override
-	public boolean isValidValue(Object value) {
-		if(!(value instanceof String))
-			return false;
-		
-		String stringValue = (String) value;
-		
-		if(allowedValues.size() == 0 || allowedValues.contains(stringValue))
+	public boolean isValidValue(String value) {
+		if(allowedValues.size() == 0 || allowedValues.contains(value))
 			return true;
 		else
 			return false;
