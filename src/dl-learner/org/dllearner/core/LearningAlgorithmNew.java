@@ -19,12 +19,39 @@
  */
 package org.dllearner.core;
 
+import org.dllearner.Score;
+import org.dllearner.core.dl.Concept;
+
 /**
  * @author Jens Lehmann
  *
  */
 public abstract class LearningAlgorithmNew extends Component {
 
+	/**
+	 * Starts the algorithm.
+	 *
+	 */
+	public abstract void start();
+	
 
+	/**
+	 * Stops the algorithm gracefully.
+	 *
+	 */
+	public abstract void stop();
 
+	/**
+	 * Every algorithm must be able to return the score of the
+	 * best solution found.
+	 * @return Best score.
+	 */
+	public abstract Score getSolutionScore();
+	
+	/**
+	 * Returns the best solutions obtained so far.
+	 * @return Best solution.
+	 */
+	public abstract Concept getBestSolution();	
+	
 }
