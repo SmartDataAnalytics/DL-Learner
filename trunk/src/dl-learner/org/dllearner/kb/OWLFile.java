@@ -19,8 +19,10 @@
  */
 package org.dllearner.kb;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -60,13 +62,27 @@ public class OWLFile extends KnowledgeSource {
 			String s = (String) entry.getValue();
 			try {
 				url = new URL(s);
+				// File f = new File(url.toURI());
+				//if(!f.canRead())
+				//	throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue());
 			} catch (MalformedURLException e) {
-				// e.printStackTrace();
-				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue());
-			}
+				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),"malformed URL " + s);
+			} //catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			//}
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -78,13 +94,6 @@ public class OWLFile extends KnowledgeSource {
 		return OWLAPIDIGConverter.getTellsString(url, OntologyFileFormat.RDF_XML, kbURI);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#init()
-	 */
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 }

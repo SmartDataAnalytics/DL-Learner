@@ -1,12 +1,21 @@
 package org.dllearner.algorithms;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.dllearner.LearningProblem;
 import org.dllearner.Score;
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.algorithms.gp.GPUtilities;
+import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.ConfigOption;
+import org.dllearner.core.IntegerConfigOption;
+import org.dllearner.core.InvalidConfigOptionValueException;
+import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningProblemNew;
 import org.dllearner.core.dl.Concept;
 
-public class RandomGuesser implements LearningAlgorithm {
+public class RandomGuesser extends LearningAlgorithmNew implements LearningAlgorithm {
 
     private Concept bestDefinition = null;
     private Score bestScore;
@@ -15,6 +24,37 @@ public class RandomGuesser implements LearningAlgorithm {
 	private int numberOfTrees;
 	private int maxDepth;
     
+	public RandomGuesser(LearningProblemNew lp) {
+		
+	}
+	
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		options.add(new IntegerConfigOption("numberOfTrees"));
+		options.add(new IntegerConfigOption("maxDepth"));
+		return options;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		String name = entry.getOptionName();
+		if (name.equals("numberOfTrees"))
+			numberOfTrees = (Integer) entry.getValue();
+		else if(name.equals("maxDepth"))
+			maxDepth = (Integer) entry.getValue();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}	
     
 	/**
 	 * Generiert zufaellig Loesungen.
@@ -26,6 +66,7 @@ public class RandomGuesser implements LearningAlgorithm {
 		this.maxDepth = maxDepth;
 	}
 	
+	@Override
 	public void start() {
 		// this.learningProblem = learningProblem;
 		
@@ -50,16 +91,21 @@ public class RandomGuesser implements LearningAlgorithm {
 		// System.out.println(bestScore);
 	}
 
+	@Override
 	public Score getSolutionScore() {
 		return bestScore;
 	}
 
+	@Override
 	public Concept getBestSolution() {
 		return bestDefinition;
 	}
 
+	@Override
 	public void stop() {
 		// TODO Auto-generated method stub
 		
 	}
+
+
 }

@@ -43,19 +43,16 @@ import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.KB;
 import org.dllearner.core.dl.Top;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.RoleComparator;
-import org.dllearner.utilities.SortedSetTuple;
 import org.kr.dl.dig.v1_1.Concepts;
 import org.kr.dl.dig.v1_1.Csynonyms;
 import org.kr.dl.dig.v1_1.IdType;
@@ -728,23 +725,6 @@ public class DIGReasonerNew extends ReasonerComponent {
 		// kaon2Reasoner.saveOntology(file, format);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Reasoner#doubleRetrieval(org.dllearner.core.dl.Concept)
-	 */
-	public SortedSetTuple<Individual> doubleRetrieval(Concept concept)
-			throws ReasoningMethodUnsupportedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Reasoner#doubleRetrieval(org.dllearner.core.dl.Concept, org.dllearner.core.dl.Concept)
-	 */
-	public SortedSetTuple<Individual> doubleRetrieval(Concept concept, Concept adc)
-			throws ReasoningMethodUnsupportedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }

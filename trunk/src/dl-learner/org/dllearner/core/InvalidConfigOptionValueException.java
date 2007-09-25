@@ -30,5 +30,9 @@ public class InvalidConfigOptionValueException extends Exception {
 	public InvalidConfigOptionValueException(ConfigOption<?> option, Object value) {
 		super("The value " + value + " is not valid for the configuration option " + option + ".");
 	}
-
+	
+	public InvalidConfigOptionValueException(ConfigOption<?> option, Object value, String reason) {
+		super("The value " + value + " is not valid for the configuration option " + option + ". Reason: " + reason + ".");
+	}
+	
 }

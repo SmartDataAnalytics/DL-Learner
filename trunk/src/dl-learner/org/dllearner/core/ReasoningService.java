@@ -95,11 +95,20 @@ public class ReasoningService {
 	public ReasoningService(Reasoner reasoner) {
 		this.reasoner = reasoner;
 
+		resetStatistics();
+	}
+	
+	public ReasoningService(ReasonerComponent reasoner) {
+		this.reasoner = reasoner;
+	}
+	
+	public void init() {
+		// temporary ugly hack to keep old version working
+		((ReasonerComponent)reasoner).init();
+		
 		// Listenansicht
 		atomicConceptsList = new LinkedList<AtomicConcept>(getAtomicConcepts());
-		atomicRolesList = new LinkedList<AtomicRole>(getAtomicRoles());
-
-		resetStatistics();
+		atomicRolesList = new LinkedList<AtomicRole>(getAtomicRoles());		
 	}
 	
 	// zurücksetzen aller Statistiken (wenn z.B. vorher ein Satisfiability Check gemacht wird,
@@ -417,7 +426,7 @@ public class ReasoningService {
 	public List<AtomicRole> getAtomicRolesList() {
 		return atomicRolesList;
 	}
-
+	
 	public long getInstanceCheckReasoningTimeNs() {
 		return instanceCheckReasoningTimeNs;
 	}

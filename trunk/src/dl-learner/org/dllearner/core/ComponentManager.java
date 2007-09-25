@@ -27,13 +27,14 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.dllearner.kb.OWLFile;
+import java.util.TreeSet;
 
 
 /**
@@ -44,15 +45,22 @@ import org.dllearner.kb.OWLFile;
  */
 public class ComponentManager {
 
+	// these variables are valid for the complete lifetime of DL-Learner
 	private static String componentsFile = "lib/components.ini";
-	
 	private static ComponentManager cm = new ComponentManager();
-	
-	private List<Class<? extends Component>> components;
+	private static Set<Class<? extends Component>> components;
 	
 	// list of all configuration options of all components
 	private Map<Class<? extends Component>,List<ConfigOption<?>>> componentOptions;
 	private Map<Class<? extends Component>,Map<String,ConfigOption<?>>> componentOptionsByName;
+	
+	private Comparator<Class<?>> classComparator = new Comparator<Class<?>>() {
+
+		public int compare(Class<?> c1, Class<?> c2) {
+			return c1.getName().compareTo(c2.getName());
+		}
+		
+	};
 	
 	@SuppressWarnings({"unchecked"})
 	private ComponentManager() {
@@ -60,7 +68,7 @@ public class ComponentManager {
 		List<String> componentsString = readComponentsFile();
 		
 		// component list
-		components = new LinkedList<Class<? extends Component>>();
+		components = new TreeSet<Class<? extends Component>>(classComparator);
 		
 		// create classes from strings
 		for(String componentString : componentsString) {
@@ -151,10 +159,10 @@ public class ComponentManager {
 	 */
 	public <T> void applyConfigEntry(Component component, String optionName, T value) {
 		// first we look whether the component is registered
-		if(components.contains(component)) {
+		if(components.contains(component.getClass())) {
 
 			// look for a config option with the specified name
-			ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(component).get(optionName);
+			ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(component.getClass()).get(optionName);
 			if(option!=null) {
 				// check whether the given object has the correct type
 				if(!option.checkType(value)) {
@@ -204,9 +212,15 @@ public class ComponentManager {
 		return null;
 	}
 	
+	public <T extends ReasonerComponent> ReasoningService reasoningService(Class<T> reasoner, KnowledgeSource source) {
+		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
+		sources.add(source);
+		return reasoningService(reasoner, sources);
+	}
+	
 	public <T extends ReasonerComponent> ReasoningService reasoningService(Class<T> reasoner, Set<KnowledgeSource> sources) {
 		try {
-			Constructor<T> constructor = reasoner.getConstructor(ReasonerComponent.class);
+			Constructor<T> constructor = reasoner.getConstructor(Set.class);
 			T reasonerInstance = constructor.newInstance(sources);
 			return new ReasoningService(reasonerInstance);
 		} catch (IllegalArgumentException e) {
@@ -232,9 +246,9 @@ public class ComponentManager {
 		return null;
 	}
 	
-	public <T extends LearningProblemNew> T learningProblem(Class<T> lp, ReasonerComponent reasoner) {
+	public <T extends LearningProblemNew> T learningProblem(Class<T> lp, ReasoningService reasoner) {
 		try {
-			Constructor<T> constructor = lp.getConstructor(ReasonerComponent.class);
+			Constructor<T> constructor = lp.getConstructor(ReasoningService.class);
 			return constructor.newInstance(reasoner);
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
@@ -252,6 +266,33 @@ public class ComponentManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public <T extends LearningAlgorithmNew> T learningAlgorithm(Class<T> la, LearningProblemNew lp) {
+		try {
+			Constructor<T> constructor = la.getConstructor(LearningProblemNew.class);
+			return constructor.newInstance(lp);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

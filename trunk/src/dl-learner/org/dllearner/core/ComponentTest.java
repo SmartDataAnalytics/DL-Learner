@@ -19,7 +19,13 @@
  */
 package org.dllearner.core;
 
+import java.io.File;
+import java.net.MalformedURLException;
+
+import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.learningproblems.DefinitionLPTwoValued;
+import org.dllearner.reasoning.DIGReasonerNew;
 
 /**
  * Test for component based design.
@@ -34,18 +40,35 @@ public class ComponentTest {
 	 */
 	public static void main(String[] args) {
 
+		String example = null;
+		try {
+			example = new File("examples/father.owl").toURI().toURL().toString();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}		
+		
 		// get singleton instance of component manager
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		// create knowledge source
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		cm.applyConfigEntry(source, "url", "father.owl");
+		cm.applyConfigEntry(source, "url", example);
+		source.init();
 		
-		// ... to be continued ...
+		ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
+		rs.init();
 		
-		// ReasonerComponent reasoner = new ReasonerComponent();
-		// ComponentManager.getInstance().learningProblem(LearningProblemNew.class, reasoner);
-
+		LearningProblemNew lp = cm.learningProblem(DefinitionLPTwoValued.class, rs);
+		// ... add positive and negative examples here ...
+		lp.init();
+		
+		LearningAlgorithmNew la = cm.learningAlgorithm(RandomGuesser.class, lp);
+		la.init();
+		
+		// la.start();
+		
+		System.out.println(la.getBestSolution());
 	}
 
 }
