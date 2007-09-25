@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import org.dllearner.Main;
 import org.dllearner.Info;
-import org.dllearner.dl.*;
+import org.dllearner.core.dl.*;
 import org.dllearner.ConfigurationOption;
 import org.dllearner.utilities.*;
 
