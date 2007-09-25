@@ -9,18 +9,18 @@ import java.util.TreeSet;
 
 import org.dllearner.LearningProblem;
 import org.dllearner.algorithms.refinement.RefinementOperator;
-import org.dllearner.dl.All;
-import org.dllearner.dl.AtomicConcept;
-import org.dllearner.dl.AtomicRole;
-import org.dllearner.dl.Bottom;
-import org.dllearner.dl.Concept;
-import org.dllearner.dl.Exists;
-import org.dllearner.dl.MultiConjunction;
-import org.dllearner.dl.MultiDisjunction;
-import org.dllearner.dl.Negation;
-import org.dllearner.dl.Quantification;
-import org.dllearner.dl.Top;
-import org.dllearner.reasoning.ReasoningService;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.dl.All;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Bottom;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Exists;
+import org.dllearner.core.dl.MultiConjunction;
+import org.dllearner.core.dl.MultiDisjunction;
+import org.dllearner.core.dl.Negation;
+import org.dllearner.core.dl.Quantification;
+import org.dllearner.core.dl.Top;
 import org.dllearner.utilities.ConceptComparator;
 
 public class PsiUp implements RefinementOperator {

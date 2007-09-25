@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.dllearner.dl.Concept;
+import org.dllearner.core.dl.Concept;
 import org.dllearner.parser.DLLearner;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.KAON2Reasoner;

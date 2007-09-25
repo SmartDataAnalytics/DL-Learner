@@ -21,7 +21,7 @@
 package org.dllearner.algorithms.gp;
 
 import org.dllearner.Score;
-import org.dllearner.dl.Concept;
+import org.dllearner.core.dl.Concept;
 
 /**
  * This class represents a program, i.e. an individual.

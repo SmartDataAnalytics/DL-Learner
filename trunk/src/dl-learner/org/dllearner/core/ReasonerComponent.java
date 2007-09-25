@@ -19,19 +19,104 @@
  */
 package org.dllearner.core;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Individual;
+import org.dllearner.reasoning.RoleHierarchy;
+import org.dllearner.reasoning.SubsumptionHierarchy;
+import org.dllearner.utilities.SortedSetTuple;
+
 /**
  * @author Jens Lehmann
- *
+ * 
  */
-public class ReasonerComponent extends Component {
+public abstract class ReasonerComponent extends Component implements Reasoner {
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) {
-		// TODO Auto-generated method stub
+	public boolean subsumes(Concept superConcept, Concept subConcept)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
 
+	public Set<Concept> subsumes(Concept superConcept, Set<Concept> subConcepts)
+			throws ReasoningMethodUnsupportedException {
+		Set<Concept> returnSet = new HashSet<Concept>();
+		for (Concept subConcept : subConcepts) {
+			if (subsumes(superConcept, subConcept))
+				returnSet.add(subConcept);
+		}
+		return returnSet;
+	}
+
+	public Set<Concept> subsumes(Set<Concept> superConcepts, Concept subConcept)
+			throws ReasoningMethodUnsupportedException {
+		Set<Concept> returnSet = new HashSet<Concept>();
+		for (Concept superConcept : superConcepts) {
+			if (subsumes(superConcept, subConcept))
+				returnSet.add(superConcept);
+		}
+		return returnSet;
+	}
+
+	public SortedSet<Individual> retrieval(Concept concept)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	public Map<Individual, SortedSet<Individual>> getRoleMembers(AtomicRole atomicRole)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	public boolean instanceCheck(Concept concept, Individual individual)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	public Set<Individual> instanceCheck(Concept concept, Set<Individual> individuals)
+			throws ReasoningMethodUnsupportedException {
+		Set<Individual> returnSet = new HashSet<Individual>();
+		for (Individual individual : individuals) {
+			if (instanceCheck(concept, individual))
+				returnSet.add(individual);
+		}
+		return returnSet;
+	}
+
+	public SortedSetTuple<Individual> doubleRetrieval(Concept concept)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	public SortedSetTuple<Individual> doubleRetrieval(Concept concept, Concept adc)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	public boolean isSatisfiable() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	public SubsumptionHierarchy getSubsumptionHierarchy()
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	public void prepareRoleHierarchy() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	public RoleHierarchy getRoleHierarchy() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	public Set<AtomicConcept> getConcepts(Individual i) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
 	}
 
 }

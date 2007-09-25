@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.dl.AtomicRole;
+import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.utilities.RoleComparator;
 
 /**

@@ -8,16 +8,16 @@ import java.util.Map;
 import org.dllearner.Config;
 import org.dllearner.LearningProblem;
 import org.dllearner.Score;
-import org.dllearner.dl.All;
-import org.dllearner.dl.AtomicConcept;
-import org.dllearner.dl.AtomicRole;
-import org.dllearner.dl.Bottom;
-import org.dllearner.dl.Concept;
-import org.dllearner.dl.Conjunction;
-import org.dllearner.dl.Disjunction;
-import org.dllearner.dl.Exists;
-import org.dllearner.dl.Negation;
-import org.dllearner.dl.Top;
+import org.dllearner.core.dl.All;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Bottom;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Conjunction;
+import org.dllearner.core.dl.Disjunction;
+import org.dllearner.core.dl.Exists;
+import org.dllearner.core.dl.Negation;
+import org.dllearner.core.dl.Top;
 
 /**
  * TODO: Man könnte den Speicherbedarf gegen Null gehen lassen, wenn man gar keine Programme

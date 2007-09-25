@@ -38,6 +38,16 @@ public abstract class ConfigOption<T> {
 		return name;
 	}
 	
+	/**
+	 * Checks whether the object has the correct type to be used as
+	 * a value for this option (this method is necessary, because
+	 * generic information is erased at runtime in Java).
+	 *  
+	 * @param object The object to check.
+	 * @return
+	 */
+	public abstract boolean checkType(Object object);
+	
 	public abstract boolean isValidValue(T value);
 	
 }

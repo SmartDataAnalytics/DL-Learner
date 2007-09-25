@@ -1,7 +1,7 @@
 package org.dllearner.algorithms;
 
 import org.dllearner.Score;
-import org.dllearner.dl.Concept;
+import org.dllearner.core.dl.Concept;
 
 /**
  * TODO: Es gibt 3 Sachen, die eine Loesung ausmachen: die Loesung selbst,

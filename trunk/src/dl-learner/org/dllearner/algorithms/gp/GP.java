@@ -48,8 +48,8 @@ import org.dllearner.LearningProblem;
 import org.dllearner.Score;
 import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.hybridgp.Psi;
-import org.dllearner.dl.Concept;
-import org.dllearner.dl.Top;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Top;
 import org.dllearner.utilities.Helper;
 
 /**

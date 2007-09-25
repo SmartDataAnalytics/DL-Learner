@@ -5,10 +5,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.dl.AtomicConcept;
-import org.dllearner.dl.AtomicRole;
-import org.dllearner.dl.Concept;
-import org.dllearner.dl.Individual;
+import org.dllearner.core.Reasoner;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.SortedSetTuple;
 
 public abstract class AbstractReasoner implements Reasoner {

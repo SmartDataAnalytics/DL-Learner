@@ -6,9 +6,9 @@ import java.util.SortedSet;
 
 import org.dllearner.ConfigurationOption;
 import org.dllearner.Main;
-import org.dllearner.dl.AtomicConcept;
-import org.dllearner.dl.Individual;
-import org.dllearner.dl.KB;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.KB;
 
 public class TestModule extends AbstractPreprocessingModule {
 

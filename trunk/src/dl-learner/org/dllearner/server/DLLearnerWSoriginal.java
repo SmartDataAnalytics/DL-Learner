@@ -16,11 +16,11 @@ import org.dllearner.LearningProblem;
 import org.dllearner.Main;
 import org.dllearner.OntologyFileFormat;
 import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.dl.Individual;
-import org.dllearner.dl.KB;
-import org.dllearner.reasoning.Reasoner;
-import org.dllearner.reasoning.ReasoningMethodUnsupportedException;
-import org.dllearner.reasoning.ReasoningService;
+import org.dllearner.core.Reasoner;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.KB;
 
 /**
  * Offene Fragen:

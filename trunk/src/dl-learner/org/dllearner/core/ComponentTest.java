@@ -39,11 +39,12 @@ public class ComponentTest {
 		
 		// create knowledge source
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+		cm.applyConfigEntry(source, "url", "father.owl");
 		
 		// ... to be continued ...
 		
-		ReasonerComponent reasoner = new ReasonerComponent();
-		ComponentManager.getInstance().learningProblem(LearningProblemNew.class, reasoner);
+		// ReasonerComponent reasoner = new ReasonerComponent();
+		// ComponentManager.getInstance().learningProblem(LearningProblemNew.class, reasoner);
 
 	}
 

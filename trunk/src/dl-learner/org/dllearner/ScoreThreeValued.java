@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.dl.Individual;
+import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.Helper;
 
 /**
