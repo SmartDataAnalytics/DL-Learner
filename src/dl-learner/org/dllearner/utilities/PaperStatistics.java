@@ -36,12 +36,16 @@ import org.dllearner.Config.Algorithm;
 import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.core.ComponentManager;
+import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningProblemNew;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
+import org.dllearner.learningproblems.DefinitionLPTwoValued;
 import org.dllearner.parser.DLLearner;
 import org.dllearner.reasoning.DIGReasoner;
 
@@ -145,6 +149,8 @@ public class PaperStatistics {
 		String statString = "**automatically generated statistics**\n\n";
 		String statDetailsString = statString;
 		
+		ComponentManager cm = ComponentManager.getInstance();
+		
 		// just set default options
 		ConfigurationManager confMgr = new ConfigurationManager();
 		confMgr.applyOptions();
@@ -191,7 +197,8 @@ public class PaperStatistics {
 					// System.exit(0);
 					
 					// create learning problem
-					LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);					
+					// LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
+					LearningProblemNew learningProblem = cm.learningProblem(DefinitionLPTwoValued.class, rs);
 					
 					// prepare reasoner for using subsumption and role hierarchy
 					// TODO: currently, it is a small unfairness that each algorithm
@@ -210,14 +217,15 @@ public class PaperStatistics {
 						e.printStackTrace();
 					}
 
-					LearningAlgorithm learningAlgorithm = null;
+					LearningAlgorithmNew learningAlgorithm = null;
 					if(algorithmNr==0) {
 						Config.algorithm = Algorithm.REFINEMENT;
 						// Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
 						Config.Refinement.horizontalExpansionFactor = 0.6;
 						Config.Refinement.quiet = true;
 						Config.percentPerLengthUnit = 0.05;
-						learningAlgorithm = new ROLearner(learningProblem);
+						// learningAlgorithm = new ROLearner(learningProblem);
+						// learningAlgorithm = cm.learningAlgorithm(ROLearner.class, learningProblem);
 					} else if(algorithmNr==1) {
 						Config.algorithm = Algorithm.GP;
 						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
@@ -236,7 +244,8 @@ public class PaperStatistics {
 						// uncle problem
 						if(exampleNr==3 || exampleNr==5 || exampleNr == 6)
 							Config.percentPerLengthUnit = 0.002;
-						learningAlgorithm = new GP(learningProblem);
+						// learningAlgorithm = new GP(learningProblem);
+						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem);
 					} else if(algorithmNr==2) {
 						Config.algorithm = Algorithm.HYBRID_GP;
 						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
@@ -253,7 +262,8 @@ public class PaperStatistics {
 						Config.percentPerLengthUnit = 0.005;
 						if(exampleNr == 3 || exampleNr==5 || exampleNr==6)
 							Config.percentPerLengthUnit = 0.002;						
-						learningAlgorithm = new GP(learningProblem);
+						// learningAlgorithm = new GP(learningProblem);
+						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem);
 					}
 					
 					// rs.resetStatistics();
@@ -285,7 +295,7 @@ public class PaperStatistics {
 				
 					Main.createFile(statDetailsFile, statDetailsString);
 					
-				} // end run loop				
+				} // end run loop		
 				
 				statString += "algorithm: " + algorithms[algorithmNr] + " (runs: " + algorithmRuns[algorithmNr] + ")\n";
 				statString += "classification: " + classification.getMean() + "% (standard deviation: " + classification.getStandardDeviation() + "%)\n";

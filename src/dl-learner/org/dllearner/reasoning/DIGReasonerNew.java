@@ -566,7 +566,7 @@ public class DIGReasonerNew extends ReasonerComponent {
 	}
 	
 	@Override	
-	public Set<Individual> instanceCheck(Concept concept, Set<Individual> individuals) {
+	public SortedSet<Individual> instanceCheck(Concept concept, Set<Individual> individuals) {
 		String instanceCheckDIG = asksPrefix;
 		int id = 0;
 		// ID-Konzept-Zuordnung speichern, da bei der Antwort nur die IDs
@@ -585,7 +585,7 @@ public class DIGReasonerNew extends ReasonerComponent {
 		ResponsesDocument rd = connector.asks(instanceCheckDIG);
 		IdType[] ids = rd.getResponses().getTrueArray();
 		
-		Set<Individual> returnSet = new HashSet<Individual>();
+		SortedSet<Individual> returnSet = new TreeSet<Individual>();
 		for(IdType idType : ids) {
 			returnSet.add(new Individual(queryMap.get(idType.getId())));
 		}

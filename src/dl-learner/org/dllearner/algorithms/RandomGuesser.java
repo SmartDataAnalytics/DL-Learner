@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.algorithms;
 
 import java.util.Collection;
@@ -14,18 +33,27 @@ import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblemNew;
 import org.dllearner.core.dl.Concept;
+import org.dllearner.learningproblems.DefinitionLP;
+import org.dllearner.learningproblems.DefinitionLPThreeValued;
+import org.dllearner.learningproblems.DefinitionLPTwoValued;
 
 public class RandomGuesser extends LearningAlgorithmNew implements LearningAlgorithm {
 
     private Concept bestDefinition = null;
     private Score bestScore;
     private double bestFitness = Double.NEGATIVE_INFINITY;
-    private LearningProblem learningProblem;
+    private DefinitionLP learningProblem;
 	private int numberOfTrees;
 	private int maxDepth;
     
-	public RandomGuesser(LearningProblemNew lp) {
-		
+	public RandomGuesser(DefinitionLP learningProblem) {
+		this.learningProblem = learningProblem;
+	}
+	
+	public static Collection<Class<? extends LearningProblemNew>> supportedLearningProblems() {
+		Collection<Class<? extends LearningProblemNew>> problems = new LinkedList<Class<? extends LearningProblemNew>>();
+		problems.add(DefinitionLP.class);
+		return problems;
 	}
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
@@ -55,17 +83,7 @@ public class RandomGuesser extends LearningAlgorithmNew implements LearningAlgor
 		// TODO Auto-generated method stub
 		
 	}	
-    
-	/**
-	 * Generiert zufaellig Loesungen.
-	 * @param numberOfTrees Anzahl zu generierender Loesungen.
-	 */
-	public RandomGuesser(LearningProblem learningProblem, int numberOfTrees, int maxDepth) {
-		this.learningProblem = learningProblem;
-		this.numberOfTrees = numberOfTrees;
-		this.maxDepth = maxDepth;
-	}
-	
+    	
 	@Override
 	public void start() {
 		// this.learningProblem = learningProblem;

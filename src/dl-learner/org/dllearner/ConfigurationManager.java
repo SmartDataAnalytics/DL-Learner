@@ -531,14 +531,14 @@ public class ConfigurationManager {
 			}
 		} else if (option.equals("useRetrievalForClassification"))
 			Config.useRetrievalForClassification = strToBool(value);
-		else if (option.equals("refinement.useDIGMultiInstanceChecks")) {
-			if(value.equals("never"))
-				Config.Refinement.useDIGMultiInstanceChecks = Config.Refinement.UseDIGMultiInstanceChecks.NEVER;
-			else if(value.equals("twoChecks"))
-				Config.Refinement.useDIGMultiInstanceChecks = Config.Refinement.UseDIGMultiInstanceChecks.TWOCHECKS;
-			else if(value.equals("oneCheck"))
-				Config.Refinement.useDIGMultiInstanceChecks = Config.Refinement.UseDIGMultiInstanceChecks.ONECHECK;
-		} 
+//		else if (option.equals("refinement.useDIGMultiInstanceChecks")) {
+//			if(value.equals("never"))
+//				Config.Refinement.useDIGMultiInstanceChecks = Config.Refinement.UseDIGMultiInstanceChecks.NEVER;
+//			else if(value.equals("twoChecks"))
+//				Config.Refinement.useDIGMultiInstanceChecks = Config.Refinement.UseDIGMultiInstanceChecks.TWOCHECKS;
+//			else if(value.equals("oneCheck"))
+//				Config.Refinement.useDIGMultiInstanceChecks = Config.Refinement.UseDIGMultiInstanceChecks.ONECHECK;
+//		} 
 	}
 
 	private void applySetOptions(String optionString, Set<String> setValues) {

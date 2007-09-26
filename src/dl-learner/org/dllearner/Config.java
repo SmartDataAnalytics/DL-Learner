@@ -13,6 +13,7 @@ import org.dllearner.algorithms.gp.GP.AlgorithmType;
 import org.dllearner.algorithms.gp.GP.SelectionType;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.learningproblems.DefinitionLP.UseMultiInstanceChecks;
 import org.dllearner.reasoning.ReasonerType;
 
 public class Config {
@@ -149,17 +150,13 @@ public class Config {
 
 		public static Heuristic heuristic = Heuristic.LEXICOGRAPHIC;
 
-		public enum UseDIGMultiInstanceChecks {
-			NEVER, TWOCHECKS, ONECHECK
-		};
-
 		// multi instance check => es wird versucht mehrere instance checks pro
 		// Anfrage auf einmal an den Reasoner zu schicken; Vorteil bei DIG:
 		// weniger Kommunikation; Nachteil: es müssen alle instanceChecks
 		// ausgeführt
 		// werden, bevor too weak festgestellt werden kann
 		// TODO: not implemented
-		public static UseDIGMultiInstanceChecks useDIGMultiInstanceChecks = UseDIGMultiInstanceChecks.TWOCHECKS;
+		public static UseMultiInstanceChecks useDIGMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
 
 		// geplante Optionen um den Suchraum einzuschränken
 

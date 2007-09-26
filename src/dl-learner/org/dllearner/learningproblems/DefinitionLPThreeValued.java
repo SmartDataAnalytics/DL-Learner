@@ -19,8 +19,14 @@
  */
 package org.dllearner.learningproblems;
 
+import java.util.SortedSet;
+
+import org.dllearner.Score;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.InvalidConfigOptionValueException;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Individual;
 
 /**
  * @author Jens Lehmann
@@ -28,6 +34,10 @@ import org.dllearner.core.InvalidConfigOptionValueException;
  */
 public class DefinitionLPThreeValued extends DefinitionLP {
 
+	public DefinitionLPThreeValued(ReasoningService reasoningService) {
+		super(reasoningService);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#getName()
 	 */
@@ -53,4 +63,52 @@ public class DefinitionLPThreeValued extends DefinitionLP {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.learningproblems.DefinitionLP#computeScore(org.dllearner.core.dl.Concept)
+	 */
+	@Override
+	public Score computeScore(Concept concept) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.learningproblems.DefinitionLP#coveredNegativeExamplesOrTooWeak(org.dllearner.core.dl.Concept)
+	 */
+	@Override
+	public int coveredNegativeExamplesOrTooWeak(Concept concept) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.learningproblems.DefinitionLP#getNegativeExamples()
+	 */
+	@Override
+	public SortedSet<Individual> getNegativeExamples() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.learningproblems.DefinitionLP#getPositiveExamples()
+	 */
+	@Override
+	public SortedSet<Individual> getPositiveExamples() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.learningproblems.DefinitionLP#getReasoningService()
+	 */
+	@Override
+	public ReasoningService getReasoningService() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public SortedSet<Individual> getNeutralExamples() {
+		throw new UnsupportedOperationException();
+	}
 }

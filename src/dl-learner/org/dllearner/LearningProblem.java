@@ -9,6 +9,7 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.Negation;
+import org.dllearner.learningproblems.DefinitionLP.UseMultiInstanceChecks;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SortedSetTuple;
@@ -79,11 +80,11 @@ public class LearningProblem {
 			//} else
 			//	throw new Error("LP not completely implemented");
 		} else {
-			if(Refinement.useDIGMultiInstanceChecks != Config.Refinement.UseDIGMultiInstanceChecks.NEVER) {
+			if(Refinement.useDIGMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
 				// Option wird nur bei DIG-Reasoner genutzt, ansonsten einfach ignoriert
 				if(Config.reasonerType == ReasonerType.DIG) {
 					// two checks
-					if(Config.Refinement.useDIGMultiInstanceChecks == Config.Refinement.UseDIGMultiInstanceChecks.TWOCHECKS) {
+					if(Config.Refinement.useDIGMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
 						Set<Individual> s = reasoningService.instanceCheck(concept, positiveExamples);
 						// if the concept is too weak, then do not query negative examples
 						if(s.size()!=positiveExamples.size())

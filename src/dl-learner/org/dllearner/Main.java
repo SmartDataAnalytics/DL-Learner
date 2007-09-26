@@ -45,6 +45,8 @@ import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.core.ComponentManager;
+import org.dllearner.core.LearningProblemNew;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
@@ -58,6 +60,8 @@ import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.RoleAssertion;
+import org.dllearner.learningproblems.DefinitionLP;
+import org.dllearner.learningproblems.DefinitionLPTwoValued;
 import org.dllearner.modules.ModuleInvocator;
 import org.dllearner.parser.DLLearner;
 import org.dllearner.parser.ParseException;
@@ -401,7 +405,7 @@ public class Main {
 			processQueryMode(reasoner);
 		} else {
 			if (Config.statisticMode)
-				createStatistics(learningProblem, baseDir);
+				; // createStatistics(learningProblem, baseDir);
 			else {
 
 				rs.resetStatistics();
@@ -411,11 +415,11 @@ public class Main {
 					LearningAlgorithm la = new BruteForceLearner(learningProblem);
 					la.start();
 				} else if (Config.algorithm == Algorithm.RANDOM_GUESSER) {
-					new RandomGuesser(learningProblem, 10000, 10);
+					// new RandomGuesser(learningProblem, 10000, 10);
 				} else if (Config.algorithm == Algorithm.GP 
 						|| Config.algorithm == Algorithm.HYBRID_GP) {
-					LearningAlgorithm la = new GP(learningProblem);
-					la.start();
+					//LearningAlgorithm la = new GP(learningProblem);
+					//la.start();
 				} else {
 					if (Config.Refinement.improveSubsumptionHierarchy) {
 						// if(Config.reasonerType == ReasonerType.DIG) {
@@ -741,83 +745,83 @@ public class Main {
 	
 	// Statistikerzeugung wird ausgelagert, damit im "normalen" Programm
 	// nichts ge�ndert werden muss
-	private void createStatistics(LearningProblem learningProblem, String baseDir) {
-
-		int runs = 20;
-		LearningAlgorithm alg;
-
-		Stat stat1 = new Stat();
-		Stat stat2 = new Stat();
-		Stat stat3 = new Stat();
-		// Stat stat4 = new Stat();
-		File exportFile1 = new File(baseDir, "../../stats/guesser.data");
-		File exportFile2 = new File(baseDir, "../../stats/gp1.data");
-		File exportFile3 = new File(baseDir, "../../stats/gp2.data");
-		// File exportFile4 = new File(baseDir, "../../stats/gp3.data");
-		StringBuilder exportString1 = new StringBuilder();
-		StringBuilder exportString2 = new StringBuilder();
-		StringBuilder exportString3 = new StringBuilder();
-		// StringBuilder exportString4 = new StringBuilder();
-
-		for (int i = 1000; i <= 30000; i += 2000) {
-			stat1 = new Stat();
-			stat2 = new Stat();
-			stat3 = new Stat();
-			// stat4 = new Stat();
-			for (int run = 0; run < runs; run++) {
-				System.out.println("=============");
-				System.out.println("i " + i + " run " + run);
-				System.out.println("=============");
-				alg = new RandomGuesser(learningProblem, i, 6);
-				stat1.addNumber(alg.getSolutionScore().getScore() - 0.1
-						* alg.getBestSolution().getLength());
-
-				Config.GP.numberOfIndividuals = i / 10;
-				Config.GP.mutationProbability = 0.03f;
-				Config.GP.crossoverProbability = 0.9f;
-				Config.GP.hillClimbingProbability = 0.0f;
-				alg = new GP(learningProblem);
-				stat2.addNumber(alg.getSolutionScore().getScore() - 0.1
-						* alg.getBestSolution().getLength());
-
-				// wie GP 1, aber mit Hill Climbing
-				Config.GP.crossoverProbability = 0.8f;
-				Config.GP.hillClimbingProbability = 0.15f;
-				alg = new GP(learningProblem);
-				stat3.addNumber(alg.getSolutionScore().getScore() - 0.1
-						* alg.getBestSolution().getLength());
-				// stat.addNumber(((GP)alg).fittestIndividualGeneration);
-
-				// wie GP 1, aber mit festem return type
-				/*
-				 * Config.GP.crossoverProbability = 0.85f;
-				 * Config.GP.hillClimbingProbability = 0.0f; Config.returnType =
-				 * "male"; alg = new GP();
-				 * stat4.addNumber(alg.getSolutionScore().getScore()-0.1*alg.getBestSolution().getConceptLength());
-				 * Config.returnType = "";
-				 */
-
-			}
-			exportString1.append(i + " " + stat1.getMean() + " "
-					+ stat1.getStandardDeviation() + "\n");
-			exportString2.append(i + " " + stat2.getMean() + " "
-					+ stat2.getStandardDeviation() + "\n");
-			exportString3.append(i + " " + stat3.getMean() + " "
-					+ stat3.getStandardDeviation() + "\n");
-			// exportString4.append(i + " " + stat4.getMean() + " " +
-			// stat4.getStandardDeviation() + "\n");
-		}
-
-		createFile(exportFile1, exportString1.toString());
-		createFile(exportFile2, exportString2.toString());
-		createFile(exportFile3, exportString3.toString());
-		// createFile(exportFile4, exportString4.toString());
-	}
+//	private void createStatistics(LearningProblemNew learningProblem, String baseDir) {
+//
+//		int runs = 20;
+//		LearningAlgorithm alg;
+//
+//		Stat stat1 = new Stat();
+//		Stat stat2 = new Stat();
+//		Stat stat3 = new Stat();
+//		// Stat stat4 = new Stat();
+//		File exportFile1 = new File(baseDir, "../../stats/guesser.data");
+//		File exportFile2 = new File(baseDir, "../../stats/gp1.data");
+//		File exportFile3 = new File(baseDir, "../../stats/gp2.data");
+//		// File exportFile4 = new File(baseDir, "../../stats/gp3.data");
+//		StringBuilder exportString1 = new StringBuilder();
+//		StringBuilder exportString2 = new StringBuilder();
+//		StringBuilder exportString3 = new StringBuilder();
+//		// StringBuilder exportString4 = new StringBuilder();
+//
+//		for (int i = 1000; i <= 30000; i += 2000) {
+//			stat1 = new Stat();
+//			stat2 = new Stat();
+//			stat3 = new Stat();
+//			// stat4 = new Stat();
+//			for (int run = 0; run < runs; run++) {
+//				System.out.println("=============");
+//				System.out.println("i " + i + " run " + run);
+//				System.out.println("=============");
+//				alg = new RandomGuesser(learningProblem, i, 6);
+//				stat1.addNumber(alg.getSolutionScore().getScore() - 0.1
+//						* alg.getBestSolution().getLength());
+//
+//				Config.GP.numberOfIndividuals = i / 10;
+//				Config.GP.mutationProbability = 0.03f;
+//				Config.GP.crossoverProbability = 0.9f;
+//				Config.GP.hillClimbingProbability = 0.0f;
+//				alg = new GP(learningProblem);
+//				stat2.addNumber(alg.getSolutionScore().getScore() - 0.1
+//						* alg.getBestSolution().getLength());
+//
+//				// wie GP 1, aber mit Hill Climbing
+//				Config.GP.crossoverProbability = 0.8f;
+//				Config.GP.hillClimbingProbability = 0.15f;
+//				alg = new GP(learningProblem);
+//				stat3.addNumber(alg.getSolutionScore().getScore() - 0.1
+//						* alg.getBestSolution().getLength());
+//				// stat.addNumber(((GP)alg).fittestIndividualGeneration);
+//
+//				// wie GP 1, aber mit festem return type
+//				/*
+//				 * Config.GP.crossoverProbability = 0.85f;
+//				 * Config.GP.hillClimbingProbability = 0.0f; Config.returnType =
+//				 * "male"; alg = new GP();
+//				 * stat4.addNumber(alg.getSolutionScore().getScore()-0.1*alg.getBestSolution().getConceptLength());
+//				 * Config.returnType = "";
+//				 */
+//
+//			}
+//			exportString1.append(i + " " + stat1.getMean() + " "
+//					+ stat1.getStandardDeviation() + "\n");
+//			exportString2.append(i + " " + stat2.getMean() + " "
+//					+ stat2.getStandardDeviation() + "\n");
+//			exportString3.append(i + " " + stat3.getMean() + " "
+//					+ stat3.getStandardDeviation() + "\n");
+//			// exportString4.append(i + " " + stat4.getMean() + " " +
+//			// stat4.getStandardDeviation() + "\n");
+//		}
+//
+//		createFile(exportFile1, exportString1.toString());
+//		createFile(exportFile2, exportString2.toString());
+//		createFile(exportFile3, exportString3.toString());
+//		// createFile(exportFile4, exportString4.toString());
+//	}
 
 	// erzeugt Statistiken für MLDM-Paper zur Verarbeitung mit GnuPlot
 	// Vorsicht: Laufzeit von mehreren Stunden
 	@SuppressWarnings("unused")
-	private void createStatisticsMLDMPaper(LearningProblem learningProblem, String baseDir) {
+	private void createStatisticsMLDMPaper(DefinitionLP learningProblem, String baseDir) {
 		// Algorithmus 1: hybrid GP (100% refinement)
 		// Algorithmus 2: 50% refinement, 40% crossover, 1% mutation
 		// Algorithmus 3: 80% crossover, 2% mutation
@@ -856,6 +860,8 @@ public class Main {
 		fileAr[3][1] = new File(baseDir, "gnuplot/extralength.data");
 		fileAr[3][2] = new File(baseDir, "gnuplot/extraruntime.data");
 
+		ComponentManager cm = ComponentManager.getInstance();
+		
 		long overallTimeStart = System.nanoTime();
 
 		// allgemeine Einstellungen
@@ -881,7 +887,10 @@ public class Main {
 					reasoner = new DIGReasoner(kb, Config.digReasonerURL, importedFiles);
 					reasoner.prepareSubsumptionHierarchy();
 					rs = new ReasoningService(reasoner);
-					learningProblem = new LearningProblem(rs, posExamples, negExamples);
+					// learningProblem = new LearningProblem(rs, posExamples, negExamples);
+					learningProblem = cm.learningProblem(DefinitionLPTwoValued.class, rs);
+					cm.applyConfigEntry(learningProblem, "positiveExamples", posExamples);
+					cm.applyConfigEntry(learningProblem, "negativeExamples", negExamples);
 
 					if (j == 0) {
 						Config.algorithm = Algorithm.HYBRID_GP;

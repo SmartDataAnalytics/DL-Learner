@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +35,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
+
+import org.dllearner.kb.OWLFile;
 
 
 /**
@@ -49,10 +53,15 @@ public class ComponentManager {
 	private static String componentsFile = "lib/components.ini";
 	private static ComponentManager cm = new ComponentManager();
 	private static Set<Class<? extends Component>> components;
+	private static Set<Class<? extends KnowledgeSource>> knowledgeSources;
+	private static Set<Class<? extends ReasonerComponent>> reasonerComponents;
+	private static Set<Class<? extends LearningProblemNew>> learningProblems;
+	private static Set<Class<? extends LearningAlgorithmNew>> learningAlgorithms;
 	
 	// list of all configuration options of all components
-	private Map<Class<? extends Component>,List<ConfigOption<?>>> componentOptions;
-	private Map<Class<? extends Component>,Map<String,ConfigOption<?>>> componentOptionsByName;
+	private static Map<Class<? extends Component>,List<ConfigOption<?>>> componentOptions;
+	private static Map<Class<? extends Component>,Map<String,ConfigOption<?>>> componentOptionsByName;
+	private static Map<Class<? extends LearningAlgorithmNew>,Collection<Class<? extends LearningProblemNew>>> algorithmProblemsMapping;
 	
 	private Comparator<Class<?>> classComparator = new Comparator<Class<?>>() {
 
@@ -69,12 +78,51 @@ public class ComponentManager {
 		
 		// component list
 		components = new TreeSet<Class<? extends Component>>(classComparator);
+		knowledgeSources = new TreeSet<Class<? extends KnowledgeSource>>(classComparator);
+		reasonerComponents = new TreeSet<Class<? extends ReasonerComponent>>(classComparator);
+		learningProblems = new TreeSet<Class<? extends LearningProblemNew>>(classComparator);
+		learningAlgorithms = new TreeSet<Class<? extends LearningAlgorithmNew>>(classComparator);
+		algorithmProblemsMapping = new TreeMap<Class<? extends LearningAlgorithmNew>,Collection<Class<? extends LearningProblemNew>>>(classComparator);
 		
 		// create classes from strings
 		for(String componentString : componentsString) {
 			try {
 				Class<? extends Component> component = Class.forName(componentString).asSubclass(Component.class);
 				components.add(component);
+				
+				if(KnowledgeSource.class.isAssignableFrom(component))
+					knowledgeSources.add((Class<? extends KnowledgeSource>)component);
+				else if(ReasonerComponent.class.isAssignableFrom(component))
+					reasonerComponents.add((Class<? extends ReasonerComponent>)component);
+				else if(LearningProblemNew.class.isAssignableFrom(component))
+					learningProblems.add((Class<? extends LearningProblemNew>)component);
+				else if(LearningAlgorithmNew.class.isAssignableFrom(component)) {
+					Class<? extends LearningAlgorithmNew> learningAlgorithmClass = (Class<? extends LearningAlgorithmNew>)component;
+					learningAlgorithms.add(learningAlgorithmClass);
+					
+					try {
+						Method method = learningAlgorithmClass.getMethod("supportedLearningProblems");
+						Collection<Class<? extends LearningProblemNew>> problems = (Collection<Class<? extends LearningProblemNew>>) method.invoke(null);
+						algorithmProblemsMapping.put(learningAlgorithmClass, problems);
+					} catch (SecurityException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchMethodException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -120,6 +168,7 @@ public class ComponentManager {
 			
 		}
 		
+		// System.out.println(components);
 	}
 	
 	public static ComponentManager getInstance() {
@@ -186,6 +235,9 @@ public class ComponentManager {
 	}
 	
 	public KnowledgeSource knowledgeSource(Class<? extends KnowledgeSource> source) {
+		if(!knowledgeSources.contains(source))
+			System.err.println("Warning: knowledge source " + source + " is not a registered knowledge source component.");
+		
 		try {
 			Constructor<? extends KnowledgeSource> constructor = source.getConstructor();
 			return constructor.newInstance();
@@ -219,6 +271,9 @@ public class ComponentManager {
 	}
 	
 	public <T extends ReasonerComponent> ReasoningService reasoningService(Class<T> reasoner, Set<KnowledgeSource> sources) {
+		if(!reasonerComponents.contains(reasoner))
+			System.err.println("Warning: reasoner component " + reasoner + " is not a registered reasoner component.");
+				
 		try {
 			Constructor<T> constructor = reasoner.getConstructor(Set.class);
 			T reasonerInstance = constructor.newInstance(sources);
@@ -247,6 +302,9 @@ public class ComponentManager {
 	}
 	
 	public <T extends LearningProblemNew> T learningProblem(Class<T> lp, ReasoningService reasoner) {
+		if(!learningProblems.contains(lp))
+			System.err.println("Warning: learning problem " + lp + " is not a registered learning problem component.");
+				
 		try {
 			Constructor<T> constructor = lp.getConstructor(ReasoningService.class);
 			return constructor.newInstance(reasoner);
@@ -273,9 +331,26 @@ public class ComponentManager {
 		return null;
 	}
 	
+	// automagically calls the right constructor for the given learning problem
 	public <T extends LearningAlgorithmNew> T learningAlgorithm(Class<T> la, LearningProblemNew lp) {
+		if(!learningAlgorithms.contains(la))
+			System.err.println("Warning: learning algorithm " + la + " is not a registered learning algorithm component.");					
+		
+		// find the right constructor: use the one that is registered and
+		// has the class of the learning problem as a subclass
+		Class<? extends LearningProblemNew> constructorArgument = null;
+		for(Class<? extends LearningProblemNew> problemClass : algorithmProblemsMapping.get(la)) {
+			if(problemClass.isAssignableFrom(lp.getClass()))
+				constructorArgument = problemClass;
+		}
+		
+		if(constructorArgument == null) {
+			System.err.println("Warning: No suitable constructor registered for algorithm " + la.getName() + " and problem " + lp.getClass().getName() + ". Registered constructors for " + la.getName() + ": " + algorithmProblemsMapping.get(la) + ".");
+			return null;
+		}
+		
 		try {
-			Constructor<T> constructor = la.getConstructor(LearningProblemNew.class);
+			Constructor<T> constructor = la.getConstructor(constructorArgument);
 			return constructor.newInstance(lp);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block

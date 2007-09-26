@@ -38,7 +38,9 @@ import static org.dllearner.Config.GP.useFixedNumberOfGenerations;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -48,8 +50,14 @@ import org.dllearner.LearningProblem;
 import org.dllearner.Score;
 import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.hybridgp.Psi;
+import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.ConfigOption;
+import org.dllearner.core.InvalidConfigOptionValueException;
+import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningProblemNew;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Top;
+import org.dllearner.learningproblems.DefinitionLP;
 import org.dllearner.utilities.Helper;
 
 /**
@@ -59,7 +67,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  * 
  */
-public class GP implements LearningAlgorithm {
+public class GP extends LearningAlgorithmNew implements LearningAlgorithm {
 
     // NumberFormat f;
 	DecimalFormat df = new DecimalFormat("0.00");
@@ -108,7 +116,7 @@ public class GP implements LearningAlgorithm {
     private Score bestScore;
     private Concept bestConcept;
     
-    private LearningProblem learningProblem;
+    private DefinitionLP learningProblem;
     
     // private GeneticRefinementOperator psi;
     private Psi psi;
@@ -120,10 +128,36 @@ public class GP implements LearningAlgorithm {
      * 1.0 and a probability of mutation of 0.01.
      * 
      */
-    public GP(LearningProblem learningProblem) {
+    public GP(DefinitionLP learningProblem) {
     	this.learningProblem = learningProblem;
     }
     
+	public static Collection<Class<? extends LearningProblemNew>> supportedLearningAlgorithms() {
+		Collection<Class<? extends LearningProblemNew>> problems = new LinkedList<Class<? extends LearningProblemNew>>();
+		problems.add(DefinitionLP.class);
+		return problems;
+	}
+    
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		return options;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		String name = entry.getOptionName();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() {
+	}
+	
     public void start() {   	
     	// falls refinement-Wahrscheinlichkeit größer 0, dann erzeuge psi
     	psi = new Psi(learningProblem);

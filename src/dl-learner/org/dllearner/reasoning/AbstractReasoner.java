@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
@@ -53,8 +54,8 @@ public abstract class AbstractReasoner implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public Set<Individual> instanceCheck(Concept concept, Set<Individual> individuals) throws ReasoningMethodUnsupportedException {
-		Set<Individual> returnSet = new HashSet<Individual>();
+	public SortedSet<Individual> instanceCheck(Concept concept, Set<Individual> individuals) throws ReasoningMethodUnsupportedException {
+		SortedSet<Individual> returnSet = new TreeSet<Individual>();
 		for(Individual individual : individuals) {
 			if(instanceCheck(concept,individual))
 				returnSet.add(individual);

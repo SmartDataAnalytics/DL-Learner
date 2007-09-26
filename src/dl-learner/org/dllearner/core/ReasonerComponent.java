@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
@@ -78,9 +79,9 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public Set<Individual> instanceCheck(Concept concept, Set<Individual> individuals)
+	public SortedSet<Individual> instanceCheck(Concept concept, Set<Individual> individuals)
 			throws ReasoningMethodUnsupportedException {
-		Set<Individual> returnSet = new HashSet<Individual>();
+		SortedSet<Individual> returnSet = new TreeSet<Individual>();
 		for (Individual individual : individuals) {
 			if (instanceCheck(concept, individual))
 				returnSet.add(individual);
