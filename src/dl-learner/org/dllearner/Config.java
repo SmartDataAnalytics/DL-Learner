@@ -113,7 +113,7 @@ public class Config {
 	public static int maxLineLength = 100;
 
 	public static boolean writeDIGProtocol = false;
-	public static File digProtocolFile = new File("digProtocol.txt");
+	public static File digProtocolFile = new File("log/digProtocol.txt");
 
 	// public static String preprocessingModule = "";
 

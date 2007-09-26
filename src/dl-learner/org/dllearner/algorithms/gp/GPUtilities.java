@@ -123,7 +123,7 @@ public class GPUtilities {
     
 	public static Program createProgram(LearningProblem learningProblem, Concept mainTree) {
 		return new Program(calculateFitness(learningProblem, mainTree), mainTree);
-	}	
+	}
 	
 	private static Program createProgram(LearningProblem learningProblem, Concept mainTree, Concept adc) {
 		return new Program(calculateFitness(learningProblem, mainTree,adc), mainTree, adc);

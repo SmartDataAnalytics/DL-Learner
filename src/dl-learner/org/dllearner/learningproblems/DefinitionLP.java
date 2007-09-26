@@ -27,14 +27,5 @@ import org.dllearner.core.LearningProblemNew;
  *
  */
 public abstract class DefinitionLP extends LearningProblemNew {
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 }

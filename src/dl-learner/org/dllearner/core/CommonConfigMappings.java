@@ -19,10 +19,23 @@
  */
 package org.dllearner.core;
 
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.dllearner.core.dl.Individual;
+
 /**
  * @author Jens Lehmann
  *
  */
 public class CommonConfigMappings {
 
+	public static SortedSet<Individual> getIndividualSet(Set<String> individuals) {
+		SortedSet<Individual> set = new TreeSet<Individual>();
+		for(String individual : individuals)
+			set.add(new Individual(individual));
+		return set;
+	}
+	
 }

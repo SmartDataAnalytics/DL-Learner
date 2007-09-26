@@ -21,6 +21,8 @@ package org.dllearner.core;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.kb.OWLFile;
@@ -59,14 +61,26 @@ public class ComponentTest {
 		ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
 		rs.init();
 		
+		Set<String> positiveExamples = new TreeSet<String>();
+		positiveExamples.add("http://example.com/father#stefan");
+		positiveExamples.add("http://example.com/father#markus");
+		positiveExamples.add("http://example.com/father#martin");
+		Set<String> negativeExamples = new TreeSet<String>();
+		negativeExamples.add("http://example.com/father#heinz");
+		negativeExamples.add("http://example.com/father#anna");
+		negativeExamples.add("http://example.com/father#michelle");
+		
 		LearningProblemNew lp = cm.learningProblem(DefinitionLPTwoValued.class, rs);
-		// ... add positive and negative examples here ...
+		cm.applyConfigEntry(lp, "positiveExamples", positiveExamples);
+		cm.applyConfigEntry(lp, "negativeExamples", negativeExamples);
 		lp.init();
 		
 		LearningAlgorithmNew la = cm.learningAlgorithm(RandomGuesser.class, lp);
+		cm.applyConfigEntry(la, "numberOfTrees", 100);
+		cm.applyConfigEntry(la, "maxDepth", 5);
 		la.init();
 		
-		// la.start();
+		la.start();
 		
 		System.out.println(la.getBestSolution());
 	}

@@ -113,23 +113,25 @@ public class DIGReasonerNew extends ReasonerComponent {
 		"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
 		"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">";
 		
+		// momementan wird davon ausgegangen, dass toDIG(kbURI) den gesamten
+		// tells-Request liefert
 		StringBuilder sb = new StringBuilder();
-		sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-		sb.append("<tells xmlns=\"http://dl.kr.org/dig/2003/02/lang\" " +
-				"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-				"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
-				"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">");		
+//		sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+//		sb.append("<tells xmlns=\"http://dl.kr.org/dig/2003/02/lang\" " +
+//				"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+//				"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
+//				"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">");		
 		for(KnowledgeSource source : sources) {
 			sb.append(source.toDIG(kbURI));
+			
+			ResponseDocument rd = connector.tells(sb.toString());
+			if(!rd.getResponse().isSetOk()) {
+				System.err.println("DIG-Reasoner cannot read knowledgebase.");
+				System.exit(0);
+			}			
 		}
-		sb.append("</tells>");
+//		sb.append("</tells>");
 				
-		ResponseDocument rd = connector.tells(sb.toString());
-		if(!rd.getResponse().isSetOk()) {
-			System.err.println("DIG-Reasoner cannot read knowledgebase.");
-			System.exit(0);
-		}
-		
 		// DIG-Abfragen nach Konzepten, Rollen, Individuals
 		atomicConcepts = getAtomicConceptsDIG();
 		atomicRoles = getAtomicRolesDIG();

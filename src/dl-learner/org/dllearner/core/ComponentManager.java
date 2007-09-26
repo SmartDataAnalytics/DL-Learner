@@ -137,7 +137,7 @@ public class ComponentManager {
 			String line;
 
 			while ((line = br.readLine()) != null) {
-				if(!(line.startsWith("#") || line.startsWith("//") || line.startsWith("%")))
+				if(!(line.startsWith("#") || line.startsWith("//") || line.startsWith("%") || line.length()<=1))
 					componentStrings.add(line);
 			}
 			
@@ -166,7 +166,7 @@ public class ComponentManager {
 			if(option!=null) {
 				// check whether the given object has the correct type
 				if(!option.checkType(value)) {
-					System.out.println("Warning: value " + value + " is not valid for option " + optionName + " in component " + component);
+					System.out.println("Warning: value " + value + " is not valid for option " + optionName + " in component " + component + ". It does not have the correct type.");
 					return;
 				}
 				
