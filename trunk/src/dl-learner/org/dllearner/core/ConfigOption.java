@@ -23,6 +23,11 @@ package org.dllearner.core;
  * This class represents a configuration option (without a value for the
  * option).
  * 
+ * Note: Currently, handling the type of a configuration option is not 
+ * straightforward to implement, because Java Generics information is 
+ * erased at runtime. This will be fixed in Java 7, in particular JSR 308,
+ * which is due at approx. the end of 2008.
+ * 
  * @author Jens Lehmann
  *
  */

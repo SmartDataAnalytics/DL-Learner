@@ -23,67 +23,235 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
+import org.dllearner.Score;
+import org.dllearner.ScoreTwoValued;
+import org.dllearner.core.BooleanConfigOption;
 import org.dllearner.core.CommonConfigMappings;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
-import org.dllearner.core.IntegerConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.StringSetConfigOption;
+import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
+import org.dllearner.utilities.Helper;
 
 /**
+ * The aim of this learning problem is to learn a concept definition such that
+ * the positive examples and the negative examples do not follow. It is
+ * 2-valued, because we only distinguish between covered and non-covered
+ * examples. (A 3-valued problem distinguishes between covered examples,
+ * examples covered by the negation of the concept, and all other examples.) The
+ * 2-valued learning problem is often more useful for Description Logics due to
+ * (the Open World Assumption and) the fact that negative knowledge, e.g. that a
+ * person does not have a child, is or cannot be expressed.
+ * 
  * @author Jens Lehmann
- *
+ * 
  */
 public class DefinitionLPTwoValued extends DefinitionLP {
 
-	private ReasoningService rs;
-	
 	private SortedSet<Individual> positiveExamples;
 	private SortedSet<Individual> negativeExamples;
-	
-	public DefinitionLPTwoValued(ReasoningService rs) {
-		this.rs = rs;
+	private SortedSet<Individual> posNegExamples;
+
+	public DefinitionLPTwoValued(ReasoningService reasoningService) {
+		super(reasoningService);
 	}
-	
+
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringSetConfigOption("positiveExamples"));
 		options.add(new StringSetConfigOption("negativeExamples"));
+		options.add(new BooleanConfigOption("useRetrievalForClassficiation"));
 		return options;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
 	@Override
-	@SuppressWarnings({"unchecked"})
+	@SuppressWarnings( { "unchecked" })
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
 		String name = entry.getOptionName();
-		if(name.equals("positiveExamples"))
-			positiveExamples = CommonConfigMappings.getIndividualSet((Set<String>) entry.getValue());
-		else if(name.equals("negativeExamples"))
-			negativeExamples = CommonConfigMappings.getIndividualSet((Set<String>) entry.getValue());
+		if (name.equals("positiveExamples"))
+			positiveExamples = CommonConfigMappings
+					.getIndividualSet((Set<String>) entry.getValue());
+		else if (name.equals("negativeExamples"))
+			negativeExamples = CommonConfigMappings
+					.getIndividualSet((Set<String>) entry.getValue());
+		else if (name.equals("useRetrievalForClassification"))
+			useRetrievalForClassification = (Boolean) entry.getValue();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.Component#getName()
 	 */
 	public static String getName() {
 		return "two valued definition learning problem";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
+		posNegExamples = Helper.union(positiveExamples, negativeExamples);
 	}
-	
+
+	/**
+	 * This method computes (using the reasoner) whether a concept is too weak.
+	 * If it is not weak, it returns the number of covered negative example. It
+	 * can use retrieval or instance checks for classification.
+	 * 
+	 * @see org.dllearner.learningproblems.DefinitionLP.MultiInstanceChecks
+	 * @todo Performance could be slightly improved by counting the number of
+	 *       covers instead of using sets and counting their size.
+	 * @param concept
+	 *            The concept to test.
+	 * @return -1 if concept is too weak and the number of covered negative
+	 *         examples otherwise.
+	 */
+	@Override
+	public int coveredNegativeExamplesOrTooWeak(Concept concept) {
+
+		if (useRetrievalForClassification) {
+			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
+			SortedSet<Individual> negAsPos = Helper.intersection(negativeExamples, posClassified);
+			SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
+
+			// the set is constructed piecewise to avoid expensive set
+			// operations
+			// on a large number of individuals
+			for (Individual posExample : positiveExamples) {
+				if (!posClassified.contains(posExample))
+					posAsNeg.add(posExample);
+			}
+
+			// too weak
+			if (posAsNeg.size() > 0)
+				return -1;
+			// number of covered negatives
+			else
+				return negAsPos.size();
+		} else {
+			if (useDIGMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
+				// two checks
+				if (useDIGMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
+					Set<Individual> s = reasoningService.instanceCheck(concept, positiveExamples);
+					// if the concept is too weak, then do not query negative
+					// examples
+					if (s.size() != positiveExamples.size())
+						return -1;
+					else {
+						s = reasoningService.instanceCheck(concept, negativeExamples);
+						return s.size();
+					}
+					// one check
+				} else {
+					Set<Individual> s = reasoningService.instanceCheck(concept, posNegExamples);
+					// test whether all positive examples are covered
+					if (s.containsAll(positiveExamples))
+						return s.size() - positiveExamples.size();
+					else
+						return -1;
+				}
+			} else {
+				// SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
+				SortedSet<Individual> negAsPos = new TreeSet<Individual>();
+
+				for (Individual example : positiveExamples) {
+					if (!reasoningService.instanceCheck(concept, example))
+						return -1;
+					// posAsNeg.add(example);
+				}
+				for (Individual example : negativeExamples) {
+					if (reasoningService.instanceCheck(concept, example))
+						negAsPos.add(example);
+				}
+
+				return negAsPos.size();
+			}
+		}
+	}
+
+	/**
+	 * Computes score of a given concept using the reasoner. Either retrieval or
+	 * instance check are used. For the latter, this method treats
+	 * <code>UseMultiInstanceChecks.TWO_CHECKS</code> as if it were 
+	 * <code>UseMultiInstanceChecks.ONE_CHECKS</code> (it does not make much sense
+	 * to implement TWO_CHECKS in this function, because we have to test all
+	 * examples to create a score object anyway).
+	 * 
+	 * @see org.dllearner.learningproblems.DefinitionLP.MultiInstanceChecks
+	 * @param concept
+	 *            The concept to test.
+	 * @return Corresponding Score object.
+	 */
+	public Score computeScore(Concept concept) {
+		if (useRetrievalForClassification) {
+			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
+			SortedSet<Individual> posAsPos = Helper.intersection(positiveExamples, posClassified);
+			SortedSet<Individual> negAsPos = Helper.intersection(negativeExamples, posClassified);
+			SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
+
+			// piecewise set construction
+			for (Individual posExample : positiveExamples) {
+				if (!posClassified.contains(posExample))
+					posAsNeg.add(posExample);
+			}
+			SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
+			for (Individual negExample : negativeExamples) {
+				if (!posClassified.contains(negExample))
+					negAsNeg.add(negExample);
+			}
+			return new ScoreTwoValued(concept.getLength(), posAsPos, posAsNeg, negAsPos, negAsNeg);
+		// instance checks for classification
+		} else {
+			SortedSet<Individual> posAsPos = new TreeSet<Individual>();
+			SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
+			SortedSet<Individual> negAsPos = new TreeSet<Individual>();
+			SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
+
+			if (useDIGMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
+				SortedSet<Individual> posClassified = reasoningService.instanceCheck(concept,
+						posNegExamples);
+				SortedSet<Individual> negClassified = Helper.difference(posNegExamples,
+						posClassified);
+				posAsPos = Helper.intersection(positiveExamples, posClassified);
+				posAsNeg = Helper.intersection(positiveExamples, negClassified);
+				negAsPos = Helper.intersection(negativeExamples, posClassified);
+				negAsNeg = Helper.intersection(negativeExamples, negClassified);
+				return new ScoreTwoValued(concept.getLength(), posAsPos, posAsNeg, negAsPos,
+						negAsNeg);
+			} else {
+
+				for (Individual example : positiveExamples) {
+					if (reasoningService.instanceCheck(concept, example))
+						posAsPos.add(example);
+					else
+						posAsNeg.add(example);
+				}
+				for (Individual example : negativeExamples) {
+					if (reasoningService.instanceCheck(concept, example))
+						negAsPos.add(example);
+					else
+						negAsNeg.add(example);
+				}
+				return new ScoreTwoValued(concept.getLength(), posAsPos, posAsNeg, negAsPos,
+						negAsNeg);
+			}
+		}
+	}
+
 	public SortedSet<Individual> getNegativeExamples() {
 		return negativeExamples;
 	}
@@ -92,9 +260,9 @@ public class DefinitionLPTwoValued extends DefinitionLP {
 		return positiveExamples;
 	}
 
-	// TODO: remove? reasoning service should probably not be accessed via 
+	// TODO: remove? reasoning service should probably not be accessed via
 	// learning problem
 	public ReasoningService getReasoningService() {
-		return rs;
-	}	
+		return reasoningService;
+	}
 }

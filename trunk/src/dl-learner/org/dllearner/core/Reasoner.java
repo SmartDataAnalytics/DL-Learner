@@ -73,7 +73,7 @@ public interface Reasoner {
 	public boolean instanceCheck(Concept concept, Individual individual) throws ReasoningMethodUnsupportedException;
 	
 	// mehrere instance checks für ein Konzept - spart bei DIG Anfragen
-	public Set<Individual> instanceCheck(Concept concept, Set<Individual> individuals) throws ReasoningMethodUnsupportedException;
+	public SortedSet<Individual> instanceCheck(Concept concept, Set<Individual> individuals) throws ReasoningMethodUnsupportedException;
 	
 	public SortedSetTuple<Individual> doubleRetrieval(Concept concept) throws ReasoningMethodUnsupportedException;
 	

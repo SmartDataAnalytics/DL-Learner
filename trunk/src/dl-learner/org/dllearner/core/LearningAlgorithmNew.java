@@ -19,6 +19,9 @@
  */
 package org.dllearner.core;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.dllearner.Score;
 import org.dllearner.core.dl.Concept;
 
@@ -52,6 +55,13 @@ public abstract class LearningAlgorithmNew extends Component {
 	 * Returns the best solutions obtained so far.
 	 * @return Best solution.
 	 */
-	public abstract Concept getBestSolution();	
+	public abstract Concept getBestSolution();
+	
+	/**
+	 * Returns all learning problems supported by this component.
+	 */
+	public static Collection<Class<? extends LearningProblemNew>> supportedLearningProblems() {
+		return new LinkedList<Class<? extends LearningProblemNew>>();
+	}
 	
 }

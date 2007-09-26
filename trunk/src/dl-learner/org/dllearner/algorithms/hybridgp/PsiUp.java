@@ -21,18 +21,19 @@ import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Quantification;
 import org.dllearner.core.dl.Top;
+import org.dllearner.learningproblems.DefinitionLP;
 import org.dllearner.utilities.ConceptComparator;
 
 public class PsiUp implements RefinementOperator {
 
 	ConceptComparator conceptComparator = new ConceptComparator();
 	
-	LearningProblem learningProblem;
+	DefinitionLP learningProblem;
 	ReasoningService reasoningService;
 	
 	private TreeSet<Concept> bottomSet;
 	
-	public PsiUp(LearningProblem learningProblem) {
+	public PsiUp(DefinitionLP learningProblem) {
 		this.learningProblem = learningProblem;
 		reasoningService = learningProblem.getReasoningService();
 		

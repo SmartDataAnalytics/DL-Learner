@@ -19,19 +19,32 @@
  */
 package org.dllearner.core;
 
+import java.util.TreeSet;
+
 /**
- * Marker interface for all learning problems (the "New" at the end of the name
- * is temporary for the restructuring process).
- * 
  * @author Jens Lehmann
  *
  */
-public abstract class LearningProblemNew extends Component {
-	
-	protected ReasoningService reasoningService;
-	
-	public LearningProblemNew(ReasoningService reasoningService) {
-		this.reasoningService = reasoningService;
+public class BooleanConfigOption extends ConfigOption<Boolean> {
+
+	public BooleanConfigOption(String name) {
+		super(name);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
+	 */
+	@Override
+	public boolean checkType(Object object) {
+		return (object instanceof Boolean);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
+	 */
+	@Override
+	public boolean isValidValue(Boolean value) {
+		return true;
+	}
+
 }

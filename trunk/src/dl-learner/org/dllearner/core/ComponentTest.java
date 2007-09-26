@@ -20,7 +20,6 @@
 package org.dllearner.core;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -41,26 +40,22 @@ public class ComponentTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		String example = null;
-		try {
-			example = new File("examples/father.owl").toURI().toURL().toString();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			System.exit(0);
-		}		
 		
 		// get singleton instance of component manager
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		// create knowledge source
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		cm.applyConfigEntry(source, "url", example);
+		String example = "examples/father.owl";
+		cm.applyConfigEntry(source, "url", new File(example).toURI().toString());
 		source.init();
 		
+		// create DIG reasoning service with standard settings
 		ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
 		rs.init();
 		
+		// create a learning problem and set positive and negative examples
+		LearningProblemNew lp = cm.learningProblem(DefinitionLPTwoValued.class, rs);
 		Set<String> positiveExamples = new TreeSet<String>();
 		positiveExamples.add("http://example.com/father#stefan");
 		positiveExamples.add("http://example.com/father#markus");
@@ -69,19 +64,18 @@ public class ComponentTest {
 		negativeExamples.add("http://example.com/father#heinz");
 		negativeExamples.add("http://example.com/father#anna");
 		negativeExamples.add("http://example.com/father#michelle");
-		
-		LearningProblemNew lp = cm.learningProblem(DefinitionLPTwoValued.class, rs);
 		cm.applyConfigEntry(lp, "positiveExamples", positiveExamples);
 		cm.applyConfigEntry(lp, "negativeExamples", negativeExamples);
 		lp.init();
 		
+		// create the learning algorithm
 		LearningAlgorithmNew la = cm.learningAlgorithm(RandomGuesser.class, lp);
 		cm.applyConfigEntry(la, "numberOfTrees", 100);
 		cm.applyConfigEntry(la, "maxDepth", 5);
 		la.init();
 		
+		// start the algorithm and print the best concept found
 		la.start();
-		
 		System.out.println(la.getBestSolution());
 	}
 

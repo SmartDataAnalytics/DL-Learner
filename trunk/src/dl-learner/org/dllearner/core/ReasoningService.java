@@ -193,9 +193,9 @@ public class ReasoningService {
 		return result;
 	}
 
-	public Set<Individual> instanceCheck(Concept concept, Set<Individual> s) {
+	public SortedSet<Individual> instanceCheck(Concept concept, Set<Individual> s) {
 		reasoningStartTimeTmp = System.nanoTime();
-		Set<Individual> result = null;
+		SortedSet<Individual> result = null;
 		try {
 			result = reasoner.instanceCheck(concept, s);
 		} catch (ReasoningMethodUnsupportedException e) {
