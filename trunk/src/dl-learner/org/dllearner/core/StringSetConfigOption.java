@@ -36,8 +36,7 @@ public class StringSetConfigOption extends ConfigOption<Set<String>> {
 	 */
 	@Override
 	public boolean isValidValue(Set<String> value) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	/* (non-Javadoc)

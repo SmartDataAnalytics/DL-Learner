@@ -75,6 +75,7 @@ public class RandomGuesser extends LearningAlgorithmNew implements LearningAlgor
 		Program p;
 		
 		for(int i=0; i<numberOfTrees; i++) {
+			// p = GPUtilities.createGrowRandomProgram(learningProblem, maxDepth);
 			p = GPUtilities.createGrowRandomProgram(learningProblem, maxDepth);
 			if(p.getFitness()>bestFitness) {
 				bestFitness = p.getFitness();

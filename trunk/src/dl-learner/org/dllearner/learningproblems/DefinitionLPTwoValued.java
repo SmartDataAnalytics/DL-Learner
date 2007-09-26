@@ -19,12 +19,55 @@
  */
 package org.dllearner.learningproblems;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.SortedSet;
+
+import org.dllearner.core.CommonConfigMappings;
+import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.ConfigOption;
+import org.dllearner.core.IntegerConfigOption;
+import org.dllearner.core.InvalidConfigOptionValueException;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.StringSetConfigOption;
+import org.dllearner.core.dl.Individual;
+
 /**
  * @author Jens Lehmann
  *
  */
 public class DefinitionLPTwoValued extends DefinitionLP {
 
+	private ReasoningService rs;
+	
+	private SortedSet<Individual> positiveExamples;
+	private SortedSet<Individual> negativeExamples;
+	
+	public DefinitionLPTwoValued(ReasoningService rs) {
+		this.rs = rs;
+	}
+	
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		options.add(new StringSetConfigOption("positiveExamples"));
+		options.add(new StringSetConfigOption("negativeExamples"));
+		return options;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	@SuppressWarnings({"unchecked"})
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		String name = entry.getOptionName();
+		if(name.equals("positiveExamples"))
+			positiveExamples = CommonConfigMappings.getIndividualSet((Set<String>) entry.getValue());
+		else if(name.equals("negativeExamples"))
+			negativeExamples = CommonConfigMappings.getIndividualSet((Set<String>) entry.getValue());
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#getName()
 	 */
@@ -41,4 +84,17 @@ public class DefinitionLPTwoValued extends DefinitionLP {
 		
 	}
 	
+	public SortedSet<Individual> getNegativeExamples() {
+		return negativeExamples;
+	}
+
+	public SortedSet<Individual> getPositiveExamples() {
+		return positiveExamples;
+	}
+
+	// TODO: remove? reasoning service should probably not be accessed via 
+	// learning problem
+	public ReasoningService getReasoningService() {
+		return rs;
+	}	
 }

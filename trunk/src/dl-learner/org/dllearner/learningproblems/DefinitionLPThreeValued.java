@@ -19,6 +19,9 @@
  */
 package org.dllearner.learningproblems;
 
+import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.InvalidConfigOptionValueException;
+
 /**
  * @author Jens Lehmann
  *
@@ -37,6 +40,15 @@ public class DefinitionLPThreeValued extends DefinitionLP {
 	 */
 	@Override
 	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
 		// TODO Auto-generated method stub
 		
 	}
