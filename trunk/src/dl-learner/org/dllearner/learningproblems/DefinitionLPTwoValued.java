@@ -63,9 +63,12 @@ public class DefinitionLPTwoValued extends DefinitionLP {
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringSetConfigOption("positiveExamples"));
-		options.add(new StringSetConfigOption("negativeExamples"));
-		options.add(new BooleanConfigOption("useRetrievalForClassficiation"));
+		options.add(new StringSetConfigOption("positiveExamples",
+				"positive examples"));
+		options.add(new StringSetConfigOption("negativeExamples",
+				"negative examples"));
+		options.add(new BooleanConfigOption("useRetrievalForClassficiation", 
+				"Specifies whether to use retrieval or instance checks for testing a concept."));
 		return options;
 	}
 

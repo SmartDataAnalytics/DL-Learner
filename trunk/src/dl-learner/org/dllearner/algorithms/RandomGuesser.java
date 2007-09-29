@@ -58,8 +58,8 @@ public class RandomGuesser extends LearningAlgorithmNew implements LearningAlgor
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new IntegerConfigOption("numberOfTrees"));
-		options.add(new IntegerConfigOption("maxDepth"));
+		options.add(new IntegerConfigOption("numberOfTrees", "number of randomly generated concepts/trees"));
+		options.add(new IntegerConfigOption("maxDepth", "maximum depth of generated concepts/trees"));
 		return options;
 	}
 	

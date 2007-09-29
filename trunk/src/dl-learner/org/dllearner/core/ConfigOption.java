@@ -33,15 +33,36 @@ package org.dllearner.core;
  */
 public abstract class ConfigOption<T> {
 
-	private String name;
+	protected String name;
 	
-	public ConfigOption(String name) {
+	protected String description;
+	
+	protected T defaultValue;
+	
+	public ConfigOption(String name, String description) {
+		this(name, description, null);
+	}
+	
+	public ConfigOption(String name, String description, T defaultValue) {
 		this.name = name;
+		this.description = description;
+		this.defaultValue = defaultValue;
 	}
 	
 	public String getName() {
 		return name;
 	}
+	
+	public String getDescription() {
+		return description;
+	}	
+	
+	/**
+	 * @return the defaultValue
+	 */
+	public T getDefaultValue() {
+		return defaultValue;
+	}	
 	
 	/**
 	 * Checks whether the object has the correct type to be used as
@@ -54,5 +75,14 @@ public abstract class ConfigOption<T> {
 	public abstract boolean checkType(Object object);
 	
 	public abstract boolean isValidValue(T value);
+	
+	public static String getRestrictionDescription() {
+		return "none";
+	}
+	
+	@Override
+	public String toString() {
+		return "option name: " + name + "\ndescription: " + description + "\nvalues: " + getRestrictionDescription() + "\ndefault value: " + defaultValue + "\n";
+	}
 	
 }

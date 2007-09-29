@@ -49,7 +49,7 @@ public class OWLFile extends KnowledgeSource {
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("url"));
+		options.add(new StringConfigOption("url", "URL pointing to the OWL file"));
 		return options;
 	}
 

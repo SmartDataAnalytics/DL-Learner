@@ -27,8 +27,8 @@ import java.util.Set;
  */
 public class StringSetConfigOption extends ConfigOption<Set<String>> {
 
-	public StringSetConfigOption(String name) {
-		super(name);
+	public StringSetConfigOption(String name, String description) {
+		super(name, description);
 	}
 	
 	/* (non-Javadoc)

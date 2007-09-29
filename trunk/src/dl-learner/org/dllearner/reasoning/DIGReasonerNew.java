@@ -144,7 +144,7 @@ public class DIGReasonerNew extends ReasonerComponent {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("reasonerUrl"));
+		options.add(new StringConfigOption("reasonerUrl", "URL of the DIG reasoner"));
 		return options;
 	}	
 	

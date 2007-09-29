@@ -33,8 +33,8 @@ public class StringConfigOption extends ConfigOption<String> {
 
 	private Set<String> allowedValues;
 	
-	public StringConfigOption(String name) {
-		super(name);
+	public StringConfigOption(String name, String description) {
+		super(name, description);
 		allowedValues = new TreeSet<String>();
 	}
 	
