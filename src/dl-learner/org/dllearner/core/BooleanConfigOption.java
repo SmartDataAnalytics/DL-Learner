@@ -27,8 +27,8 @@ import java.util.TreeSet;
  */
 public class BooleanConfigOption extends ConfigOption<Boolean> {
 
-	public BooleanConfigOption(String name) {
-		super(name);
+	public BooleanConfigOption(String name, String description) {
+		super(name, description);
 	}
 	
 	/* (non-Javadoc)

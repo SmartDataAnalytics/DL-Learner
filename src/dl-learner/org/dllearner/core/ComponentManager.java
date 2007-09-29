@@ -42,7 +42,14 @@ import org.dllearner.kb.OWLFile;
 
 
 /**
- * Central manager class for DL-Learner.
+ * Central manager class for DL-Learner. There are currently four types of components
+ * in DL-Learner: knowledge sources, reasoners, learning problems, and learning 
+ * algorithms. For accessing these components you should create instances and
+ * configure them using this class. The component manager is implemented as a
+ * Singleton and will read the components file (containing a list of all components)
+ * at startup. This allows interfaces (command line, graphical, web service) to
+ * easily query the available components, set and get their configuration options,
+ * and run the algorithm.
  * 
  * @author Jens Lehmann
  *
@@ -352,6 +359,33 @@ public class ComponentManager {
 		try {
 			Constructor<T> constructor = la.getConstructor(constructorArgument);
 			return constructor.newInstance(lp);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private <T,U> T invokeConstructor(Class<T> clazz, Class<U> argumentClass, U argumentObject) {
+		try {
+			Constructor<T> constructor = clazz.getConstructor(argumentClass);
+			return constructor.newInstance(argumentObject);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

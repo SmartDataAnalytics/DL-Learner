@@ -31,8 +31,8 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 	private int lowerLimit = Integer.MIN_VALUE;
 	private int upperLimit = Integer.MAX_VALUE;
 	
-	public IntegerConfigOption(String name) {
-		super(name);
+	public IntegerConfigOption(String name, String description) {
+		super(name, description);
 	}
 		
 	/* (non-Javadoc)

@@ -27,7 +27,7 @@ public final class CommonConfigOptions {
 
 	public static final IntegerConfigOption getVerbosityOption() {
 		// TODO: temporary code
-		IntegerConfigOption verbosityOption = new IntegerConfigOption("verbosity");
+		IntegerConfigOption verbosityOption = new IntegerConfigOption("verbosity", "control verbosity of output");
 		return verbosityOption;
 	}
 	
