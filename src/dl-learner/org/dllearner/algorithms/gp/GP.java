@@ -158,6 +158,7 @@ public class GP extends LearningAlgorithmNew implements LearningAlgorithm {
 	public void init() {
 	}
 	
+	@Override
     public void start() {   	
     	// falls refinement-Wahrscheinlichkeit größer 0, dann erzeuge psi
     	psi = new Psi(learningProblem);
@@ -828,15 +829,18 @@ public class GP extends LearningAlgorithmNew implements LearningAlgorithm {
         System.exit(0);
     }
 
+    @Override
 	public Score getSolutionScore() {
 		return bestScore;
 	}
 
+	@Override
 	public Concept getBestSolution() {
 		// return fittestIndividual.getTree();
 		return bestConcept;
 	}
 
+	@Override
 	public void stop() {
 		// TODO Auto-generated method stub
 		

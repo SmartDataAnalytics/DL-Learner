@@ -38,21 +38,18 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.kb.OWLFile;
-
-
 /**
- * Central manager class for DL-Learner. There are currently four types of components
- * in DL-Learner: knowledge sources, reasoners, learning problems, and learning 
- * algorithms. For accessing these components you should create instances and
- * configure them using this class. The component manager is implemented as a
- * Singleton and will read the components file (containing a list of all components)
- * at startup. This allows interfaces (command line, graphical, web service) to
- * easily query the available components, set and get their configuration options,
- * and run the algorithm.
+ * Central manager class for DL-Learner. There are currently four types of
+ * components in DL-Learner: knowledge sources, reasoners, learning problems,
+ * and learning algorithms. For accessing these components you should create
+ * instances and configure them using this class. The component manager is
+ * implemented as a Singleton and will read the components file (containing a
+ * list of all components) at startup. This allows interfaces (command line,
+ * graphical, web service) to easily query the available components, set and get
+ * their configuration options, and run the algorithm.
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public class ComponentManager {
 
@@ -64,127 +61,93 @@ public class ComponentManager {
 	private static Set<Class<? extends ReasonerComponent>> reasonerComponents;
 	private static Set<Class<? extends LearningProblemNew>> learningProblems;
 	private static Set<Class<? extends LearningAlgorithmNew>> learningAlgorithms;
-	
+
 	// list of all configuration options of all components
-	private static Map<Class<? extends Component>,List<ConfigOption<?>>> componentOptions;
-	private static Map<Class<? extends Component>,Map<String,ConfigOption<?>>> componentOptionsByName;
-	private static Map<Class<? extends LearningAlgorithmNew>,Collection<Class<? extends LearningProblemNew>>> algorithmProblemsMapping;
-	
+	private static Map<Class<? extends Component>, List<ConfigOption<?>>> componentOptions;
+	private static Map<Class<? extends Component>, Map<String, ConfigOption<?>>> componentOptionsByName;
+	private static Map<Class<? extends LearningAlgorithmNew>, Collection<Class<? extends LearningProblemNew>>> algorithmProblemsMapping;
+
 	private Comparator<Class<?>> classComparator = new Comparator<Class<?>>() {
 
 		public int compare(Class<?> c1, Class<?> c2) {
 			return c1.getName().compareTo(c2.getName());
 		}
-		
+
 	};
-	
-	@SuppressWarnings({"unchecked"})
+
+	@SuppressWarnings( { "unchecked" })
 	private ComponentManager() {
 		// read in components file
 		List<String> componentsString = readComponentsFile();
-		
+
 		// component list
 		components = new TreeSet<Class<? extends Component>>(classComparator);
 		knowledgeSources = new TreeSet<Class<? extends KnowledgeSource>>(classComparator);
 		reasonerComponents = new TreeSet<Class<? extends ReasonerComponent>>(classComparator);
 		learningProblems = new TreeSet<Class<? extends LearningProblemNew>>(classComparator);
 		learningAlgorithms = new TreeSet<Class<? extends LearningAlgorithmNew>>(classComparator);
-		algorithmProblemsMapping = new TreeMap<Class<? extends LearningAlgorithmNew>,Collection<Class<? extends LearningProblemNew>>>(classComparator);
-		
+		algorithmProblemsMapping = new TreeMap<Class<? extends LearningAlgorithmNew>, Collection<Class<? extends LearningProblemNew>>>(
+				classComparator);
+
 		// create classes from strings
-		for(String componentString : componentsString) {
+		for (String componentString : componentsString) {
 			try {
-				Class<? extends Component> component = Class.forName(componentString).asSubclass(Component.class);
+				Class<? extends Component> component = Class.forName(componentString).asSubclass(
+						Component.class);
 				components.add(component);
-				
-				if(KnowledgeSource.class.isAssignableFrom(component))
-					knowledgeSources.add((Class<? extends KnowledgeSource>)component);
-				else if(ReasonerComponent.class.isAssignableFrom(component))
-					reasonerComponents.add((Class<? extends ReasonerComponent>)component);
-				else if(LearningProblemNew.class.isAssignableFrom(component))
-					learningProblems.add((Class<? extends LearningProblemNew>)component);
-				else if(LearningAlgorithmNew.class.isAssignableFrom(component)) {
-					Class<? extends LearningAlgorithmNew> learningAlgorithmClass = (Class<? extends LearningAlgorithmNew>)component;
+
+				if (KnowledgeSource.class.isAssignableFrom(component))
+					knowledgeSources.add((Class<? extends KnowledgeSource>) component);
+				else if (ReasonerComponent.class.isAssignableFrom(component))
+					reasonerComponents.add((Class<? extends ReasonerComponent>) component);
+				else if (LearningProblemNew.class.isAssignableFrom(component))
+					learningProblems.add((Class<? extends LearningProblemNew>) component);
+				else if (LearningAlgorithmNew.class.isAssignableFrom(component)) {
+					Class<? extends LearningAlgorithmNew> learningAlgorithmClass = (Class<? extends LearningAlgorithmNew>) component;
 					learningAlgorithms.add(learningAlgorithmClass);
-					
-					try {
-						Method method = learningAlgorithmClass.getMethod("supportedLearningProblems");
-						Collection<Class<? extends LearningProblemNew>> problems = (Collection<Class<? extends LearningProblemNew>>) method.invoke(null);
-						algorithmProblemsMapping.put(learningAlgorithmClass, problems);
-					} catch (SecurityException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (NoSuchMethodException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
+					Collection<Class<? extends LearningProblemNew>> problems = (Collection<Class<? extends LearningProblemNew>>) invokeStaticMethod(
+							learningAlgorithmClass, "supportedLearningProblems");
+					algorithmProblemsMapping.put(learningAlgorithmClass, problems);
 				}
-				
+
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
+
 		// read in all configuration options
-		componentOptions = new HashMap<Class<? extends Component>,List<ConfigOption<?>>>();
-		componentOptionsByName = new HashMap<Class<? extends Component>,Map<String,ConfigOption<?>>>();
-		
-		for(Class<? extends Component> component : components) {
-			// unfortunately Java does not seem to offer a way to call
-			// a static method given a class object directly, so we have
-			// to use reflection
-			try {
-				Method createConfig = component.getMethod("createConfigOptions");
-				List<ConfigOption<?>> options = (List<ConfigOption<?>>) createConfig.invoke(null);
-				
-				componentOptions.put(component, options);
-				
-				Map<String,ConfigOption<?>> byName = new HashMap<String,ConfigOption<?>>();
-				for(ConfigOption<?> option : options)
-					byName.put(option.getName(), option);
-				componentOptionsByName.put(component, byName);				
-				
-				// componentOptionsByName.put(key, value)
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
+		componentOptions = new HashMap<Class<? extends Component>, List<ConfigOption<?>>>();
+		componentOptionsByName = new HashMap<Class<? extends Component>, Map<String, ConfigOption<?>>>();
+
+		for (Class<? extends Component> component : components) {
+
+			List<ConfigOption<?>> options = (List<ConfigOption<?>>) invokeStaticMethod(component,
+					"createConfigOptions");
+
+			componentOptions.put(component, options);
+
+			Map<String, ConfigOption<?>> byName = new HashMap<String, ConfigOption<?>>();
+			for (ConfigOption<?> option : options)
+				byName.put(option.getName(), option);
+			componentOptionsByName.put(component, byName);
+
 		}
-		
+
 		// System.out.println(components);
 	}
-	
+
+	/**
+	 * 
+	 * @return The singleton <code>ComponentManager</code> instance.
+	 */
 	public static ComponentManager getInstance() {
 		return cm;
 	}
-	
+
 	private static List<String> readComponentsFile() {
 		List<String> componentStrings = new LinkedList<String>();
-		
+
 		try {
 			FileInputStream fstream = new FileInputStream(componentsFile);
 
@@ -193,172 +156,178 @@ public class ComponentManager {
 			String line;
 
 			while ((line = br.readLine()) != null) {
-				if(!(line.startsWith("#") || line.startsWith("//") || line.startsWith("%") || line.length()<=1))
+				if (!(line.startsWith("#") || line.startsWith("//") || line.startsWith("%") || line
+						.length() <= 1))
 					componentStrings.add(line);
 			}
-			
-			in.close();			
+
+			in.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return componentStrings;
 	}
-	
+
 	/**
 	 * Convenience method for testing purposes. If you know that the type of the
-	 * value is correct, it is preferable to create a ConfigEntry object and apply
-	 * it to the component (no type checking necessary).
+	 * value is correct, it is preferable to create a ConfigEntry object and
+	 * apply it to the component (no type checking necessary).
+	 * 
 	 * @param component
 	 * @param optionName
 	 * @param value
 	 */
 	public <T> void applyConfigEntry(Component component, String optionName, T value) {
 		// first we look whether the component is registered
-		if(components.contains(component.getClass())) {
+		if (components.contains(component.getClass())) {
 
 			// look for a config option with the specified name
-			ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(component.getClass()).get(optionName);
-			if(option!=null) {
+			ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(
+					component.getClass()).get(optionName);
+			if (option != null) {
 				// check whether the given object has the correct type
-				if(!option.checkType(value)) {
-					System.out.println("Warning: value " + value + " is not valid for option " + optionName + " in component " + component + ". It does not have the correct type.");
+				if (!option.checkType(value)) {
+					System.out.println("Warning: value " + value + " is not valid for option "
+							+ optionName + " in component " + component
+							+ ". It does not have the correct type.");
 					return;
 				}
-				
-				// we have checked the type, hence it should now be safe to typecast and
+
+				// we have checked the type, hence it should now be safe to
+				// typecast and
 				// create a ConfigEntry object
 				try {
-					@SuppressWarnings({"unchecked"})
+					@SuppressWarnings( { "unchecked" })
 					ConfigEntry<T> entry = new ConfigEntry<T>((ConfigOption<T>) option, value);
 					component.applyConfigEntry(entry);
 				} catch (InvalidConfigOptionValueException e) {
-					System.out.println("Warning: value " + value + " is not valid for option " + optionName + " in component " + component);
+					System.out.println("Warning: value " + value + " is not valid for option "
+							+ optionName + " in component " + component);
 				}
 			} else
-				System.out.println("Warning: undefined option " + optionName + " in component " + component);			
+				System.out.println("Warning: undefined option " + optionName + " in component "
+						+ component);
 		} else
-			System.out.println("Warning: unregistered component " + component);		
+			System.out.println("Warning: unregistered component " + component);
 	}
-	
-	public KnowledgeSource knowledgeSource(Class<? extends KnowledgeSource> source) {
-		if(!knowledgeSources.contains(source))
-			System.err.println("Warning: knowledge source " + source + " is not a registered knowledge source component.");
-		
+
+	/**
+	 * Applies a config entry to a component. If the entry is not valid, the method
+	 * prints an exception and returns false.
+	 * @param <T> Type of the config option.
+	 * @param component A component object.
+	 * @param entry The configuration entry to set.
+	 * @return True of the config entry could be applied succesfully, otherwise false.
+	 */
+	public <T> boolean applyConfigEntry(Component component, ConfigEntry<T> entry) {
 		try {
-			Constructor<? extends KnowledgeSource> constructor = source.getConstructor();
-			return constructor.newInstance();
-		} catch (InstantiationException e) {
+			component.applyConfigEntry(entry);
+			return true;
+		} catch (InvalidConfigOptionValueException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return false;
 		}
-		
-		return null;
 	}
 	
-	public <T extends ReasonerComponent> ReasoningService reasoningService(Class<T> reasoner, KnowledgeSource source) {
+	/**
+	 * Factory method for creating a knowledge source.
+	 * @param source A registered knowledge source component.
+	 * @return An instance of the given knowledge source class.
+	 */
+	public KnowledgeSource knowledgeSource(Class<? extends KnowledgeSource> source) {
+		if (!knowledgeSources.contains(source))
+			System.err.println("Warning: knowledge source " + source
+					+ " is not a registered knowledge source component.");
+
+		return invokeConstructor(source, new Class[] {}, new Object[] {});
+	}
+
+	public <T extends ReasonerComponent> ReasoningService reasoningService(Class<T> reasoner,
+			KnowledgeSource source) {
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		sources.add(source);
 		return reasoningService(reasoner, sources);
 	}
-	
-	public <T extends ReasonerComponent> ReasoningService reasoningService(Class<T> reasoner, Set<KnowledgeSource> sources) {
-		if(!reasonerComponents.contains(reasoner))
-			System.err.println("Warning: reasoner component " + reasoner + " is not a registered reasoner component.");
-				
-		try {
-			Constructor<T> constructor = reasoner.getConstructor(Set.class);
-			T reasonerInstance = constructor.newInstance(sources);
-			return new ReasoningService(reasonerInstance);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-		
-		return null;
+
+	public <T extends ReasonerComponent> ReasoningService reasoningService(Class<T> reasoner,
+			Set<KnowledgeSource> sources) {
+		if (!reasonerComponents.contains(reasoner))
+			System.err.println("Warning: reasoner component " + reasoner
+					+ " is not a registered reasoner component.");
+
+		T reasonerInstance = invokeConstructor(reasoner, new Class[] { Set.class },
+				new Object[] { sources });
+		return new ReasoningService(reasonerInstance);
 	}
-	
+
 	public <T extends LearningProblemNew> T learningProblem(Class<T> lp, ReasoningService reasoner) {
-		if(!learningProblems.contains(lp))
-			System.err.println("Warning: learning problem " + lp + " is not a registered learning problem component.");
-				
-		try {
-			Constructor<T> constructor = lp.getConstructor(ReasoningService.class);
-			return constructor.newInstance(reasoner);
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return null;
+		if (!learningProblems.contains(lp))
+			System.err.println("Warning: learning problem " + lp
+					+ " is not a registered learning problem component.");
+
+		return invokeConstructor(lp, new Class[] { ReasoningService.class },
+				new Object[] { reasoner });
 	}
-	
+
 	// automagically calls the right constructor for the given learning problem
 	public <T extends LearningAlgorithmNew> T learningAlgorithm(Class<T> la, LearningProblemNew lp) {
-		if(!learningAlgorithms.contains(la))
-			System.err.println("Warning: learning algorithm " + la + " is not a registered learning algorithm component.");					
-		
+		if (!learningAlgorithms.contains(la))
+			System.err.println("Warning: learning algorithm " + la
+					+ " is not a registered learning algorithm component.");
+
 		// find the right constructor: use the one that is registered and
 		// has the class of the learning problem as a subclass
 		Class<? extends LearningProblemNew> constructorArgument = null;
-		for(Class<? extends LearningProblemNew> problemClass : algorithmProblemsMapping.get(la)) {
-			if(problemClass.isAssignableFrom(lp.getClass()))
+		for (Class<? extends LearningProblemNew> problemClass : algorithmProblemsMapping.get(la)) {
+			if (problemClass.isAssignableFrom(lp.getClass()))
 				constructorArgument = problemClass;
 		}
-		
-		if(constructorArgument == null) {
-			System.err.println("Warning: No suitable constructor registered for algorithm " + la.getName() + " and problem " + lp.getClass().getName() + ". Registered constructors for " + la.getName() + ": " + algorithmProblemsMapping.get(la) + ".");
+
+		if (constructorArgument == null) {
+			System.err.println("Warning: No suitable constructor registered for algorithm "
+					+ la.getName() + " and problem " + lp.getClass().getName()
+					+ ". Registered constructors for " + la.getName() + ": "
+					+ algorithmProblemsMapping.get(la) + ".");
 			return null;
 		}
-		
+
+		return invokeConstructor(la, new Class[] { constructorArgument }, new Object[] { lp });
+	}
+
+	private Object invokeStaticMethod(Class<?> clazz, String methodName, Object... args) {
+		// unfortunately Java does not seem to offer a way to call
+		// a static method given a class object directly, so we have
+		// to use reflection
 		try {
-			Constructor<T> constructor = la.getConstructor(constructorArgument);
-			return constructor.newInstance(lp);
+			Method method = clazz.getMethod(methodName);
+			return method.invoke(null, args);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	private <T> T invokeConstructor(Class<T> clazz, Class<?>[] argumentClasses,
+			Object[] argumentObjects) {
+		try {
+			Constructor<T> constructor = clazz.getConstructor(argumentClasses);
+			return constructor.newInstance(argumentObjects);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -378,35 +347,8 @@ public class ComponentManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
-	private <T,U> T invokeConstructor(Class<T> clazz, Class<U> argumentClass, U argumentObject) {
-		try {
-			Constructor<T> constructor = clazz.getConstructor(argumentClass);
-			return constructor.newInstance(argumentObject);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-	
+
 }

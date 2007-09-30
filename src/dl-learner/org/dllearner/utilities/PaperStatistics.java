@@ -26,16 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+
 import org.dllearner.Config;
 import org.dllearner.ConfigurationManager;
-import org.dllearner.LearningProblem;
 import org.dllearner.Main;
 import org.dllearner.OntologyFileFormat;
 import org.dllearner.Score;
 import org.dllearner.Config.Algorithm;
-import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
-import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblemNew;

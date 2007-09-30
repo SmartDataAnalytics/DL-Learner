@@ -19,8 +19,6 @@
  */
 package org.dllearner.core;
 
-import java.util.TreeSet;
-
 /**
  * @author Jens Lehmann
  *
