@@ -199,6 +199,7 @@ public class DefinitionLPTwoValued extends DefinitionLP {
 	 *            The concept to test.
 	 * @return Corresponding Score object.
 	 */
+	@Override
 	public Score computeScore(Concept concept) {
 		if (useRetrievalForClassification) {
 			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
@@ -255,16 +256,19 @@ public class DefinitionLPTwoValued extends DefinitionLP {
 		}
 	}
 
+	@Override
 	public SortedSet<Individual> getNegativeExamples() {
 		return negativeExamples;
 	}
 
+	@Override
 	public SortedSet<Individual> getPositiveExamples() {
 		return positiveExamples;
 	}
 
 	// TODO: remove? reasoning service should probably not be accessed via
 	// learning problem
+	@Override
 	public ReasoningService getReasoningService() {
 		return reasoningService;
 	}
