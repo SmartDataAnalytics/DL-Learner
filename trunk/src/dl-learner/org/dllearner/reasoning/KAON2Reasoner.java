@@ -78,7 +78,7 @@ public class KAON2Reasoner extends AbstractReasoner {
 	Set<AtomicRole> atomicRoles;
 	SortedSet<Individual> individuals;
 	SubsumptionHierarchy kaon2SubsumptionHierarchy = null;
-	org.dllearner.reasoning.SubsumptionHierarchy subsumptionHierarchy;
+	org.dllearner.core.dl.SubsumptionHierarchy subsumptionHierarchy;
 	
 	private org.semanticweb.kaon2.api.reasoner.Reasoner kaon2Reasoner;
 	private KAON2Connection kaon2Connection;
@@ -270,7 +270,7 @@ public class KAON2Reasoner extends AbstractReasoner {
 			subsumptionHierarchyUp.put(ac, (TreeSet<Concept>) getConceptsFromSubsumptionHierarchyNodes(kaon2SubsumptionHierarchy.getNodeFor(kaon2Ac).getParentNodes()));
 		}
 		
-		subsumptionHierarchy = new org.dllearner.reasoning.SubsumptionHierarchy(atomicConcepts, subsumptionHierarchyUp, subsumptionHierarchyDown);
+		subsumptionHierarchy = new org.dllearner.core.dl.SubsumptionHierarchy(atomicConcepts, subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
 	
 	@Override	
@@ -399,7 +399,7 @@ public class KAON2Reasoner extends AbstractReasoner {
 	*/
 
 	@Override	
-	public org.dllearner.reasoning.SubsumptionHierarchy getSubsumptionHierarchy() {
+	public org.dllearner.core.dl.SubsumptionHierarchy getSubsumptionHierarchy() {
 		return subsumptionHierarchy;
 	}
 	

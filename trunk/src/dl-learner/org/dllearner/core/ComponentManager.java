@@ -21,6 +21,7 @@ package org.dllearner.core;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,6 +38,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import org.dllearner.utilities.Files;
 
 /**
  * Central manager class for DL-Learner. There are currently four types of
@@ -296,6 +299,51 @@ public class ComponentManager {
 		return invokeConstructor(la, new Class[] { constructorArgument }, new Object[] { lp });
 	}
 
+	public void writeConfigDocumentation(File file) {
+		String doc = "";
+		doc += "This file contains an automatically generated files of all components and their config options.\n\n";
+		
+		// go through all types of components and write down their documentation
+		doc += "*********************\n";
+		doc += "* Knowledge Sources *\n";
+		doc += "*********************\n\n";
+		for(Class<? extends Component> component : knowledgeSources)
+			doc += getComponentConfigString(component);
+		
+		doc += "*************\n";
+		doc += "* Reasoners *\n";
+		doc += "*************\n\n";
+		for(Class<? extends Component> component : reasonerComponents)
+			doc += getComponentConfigString(component);
+		
+		doc += "*********************\n";
+		doc += "* Learning Problems *\n";
+		doc += "*********************\n\n";
+		for(Class<? extends Component> component : learningProblems)
+			doc += getComponentConfigString(component);
+		
+		doc += "***********************\n";
+		doc += "* Learning Algorithms *\n";
+		doc += "***********************\n\n";
+		for(Class<? extends Component> component : learningAlgorithms)
+			doc += getComponentConfigString(component);
+		
+		Files.createFile(file, doc);
+	}
+	
+	private String getComponentConfigString(Class<? extends Component> component) {
+		String componentDescription =  "component: " + invokeStaticMethod(component,"getName") + " (" + component.getName() + ")";
+		String str = componentDescription + "\n";
+		for(int i=0; i<componentDescription.length(); i++)
+			str += "=";
+		str += "\n\n";
+		
+		for(ConfigOption<?> option : componentOptions.get(component)) {
+			str += option.toString() + "\n";
+		}		
+		return str;
+	}
+	
 	private Object invokeStaticMethod(Class<?> clazz, String methodName, Object... args) {
 		// unfortunately Java does not seem to offer a way to call
 		// a static method given a class object directly, so we have

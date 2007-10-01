@@ -12,6 +12,8 @@ import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.RoleHierarchy;
+import org.dllearner.core.dl.SubsumptionHierarchy;
 import org.dllearner.utilities.SortedSetTuple;
 
 public abstract class AbstractReasoner implements Reasoner {

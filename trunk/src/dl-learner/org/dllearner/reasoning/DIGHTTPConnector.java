@@ -13,7 +13,7 @@ import java.net.URL;
 
 import org.apache.xmlbeans.XmlException;
 import org.dllearner.Config;
-import org.dllearner.Main;
+import org.dllearner.utilities.Files;
 import org.kr.dl.dig.v1_1.GetIdentifierDocument;
 import org.kr.dl.dig.v1_1.IdRespType;
 import org.kr.dl.dig.v1_1.IdentifierDocument;
@@ -132,7 +132,7 @@ public class DIGHTTPConnector {
 			osw.close();
 			
 			if(Config.writeDIGProtocol)
-				Main.appendFile(Config.digProtocolFile, "DIG code send to reasoner:\n\n"+send+"\n\n");
+				Files.appendFile(Config.digProtocolFile, "DIG code send to reasoner:\n\n"+send+"\n\n");
 			
 			// Antwort empfangen
 			InputStream is = connection.getInputStream();
@@ -155,7 +155,7 @@ public class DIGHTTPConnector {
 		
 		// DIG-Kommunikation protokollieren, falls das eingestellt ist
 		if(Config.writeDIGProtocol)
-			Main.appendFile(Config.digProtocolFile, "DIG code received from reasoner:\n\n"+answer+"\n\n");
+			Files.appendFile(Config.digProtocolFile, "DIG code received from reasoner:\n\n"+answer+"\n\n");
 		
 		return answer.toString();
 	}

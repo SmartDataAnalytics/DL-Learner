@@ -291,7 +291,7 @@ public class PaperStatistics {
 					statDetailsString += "concept length: " +  conceptLength + "\n";
 					statDetailsString += "runtime: " + Helper.prettyPrintNanoSeconds(algorithmTime) + "\n\n";
 				
-					Main.createFile(statDetailsFile, statDetailsString);
+					Files.createFile(statDetailsFile, statDetailsString);
 					
 				} // end run loop		
 				
@@ -300,7 +300,7 @@ public class PaperStatistics {
 				statString += "concept length: " + length.getMean() + " (standard deviation: " + length.getStandardDeviation() + ")\n";
 				statString += "runtime: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getMean())) + " (standard deviation: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getStandardDeviation())) + ")\n\n";
 			
-				Main.createFile(statFile, statString);
+				Files.createFile(statFile, statString);
 				
 			} // end algorithm loop
 			

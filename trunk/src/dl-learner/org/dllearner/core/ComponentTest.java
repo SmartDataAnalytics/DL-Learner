@@ -44,6 +44,8 @@ public class ComponentTest {
 		// get singleton instance of component manager
 		ComponentManager cm = ComponentManager.getInstance();
 		
+		cm.writeConfigDocumentation(new File("doc/configOptionsNew.txt"));
+		
 		// create knowledge source
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		String example = "examples/father.owl";
