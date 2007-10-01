@@ -8,6 +8,7 @@ Parser komplexer machen. */
 options {
   // MULTI=true;
   JDK_VERSION = "1.5";
+  STATIC = false;
 }
 
 // wenn der Parser ge\ufffdndert wird, dann muss man in einigen Dateien SuppressWarnings
@@ -27,6 +28,7 @@ import java.util.TreeSet;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -39,24 +41,24 @@ import org.dllearner.utilities.*;
 
 // @SuppressWarnings({"all"})
 public class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
-  protected static JJTDLLearnerState jjtree = new JJTDLLearnerState();
+  protected JJTDLLearnerState jjtree = new JJTDLLearnerState();
 
 /*@egen*/
 	
 	private static ConceptComparator conceptComparator = new ConceptComparator();
 	// hier wird Parse-Fehler angezeigt, obwohl eigentlich alles stimmt??
-	private static Map<AtomicConcept,SortedSet<Individual>> positiveExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
-	private static Map<AtomicConcept,SortedSet<Individual>> negativeExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
+	private Map<AtomicConcept,SortedSet<Individual>> positiveExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
+	private Map<AtomicConcept,SortedSet<Individual>> negativeExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
 	
 	// Konfigurationsoptionen
-	private static List<ConfigurationOption> confOptions = new LinkedList<ConfigurationOption>();
+	private List<ConfigurationOption> confOptions = new LinkedList<ConfigurationOption>();
 	
 	// Funktionsaufrufe (die gleiche Funktion darf mehrmals mit unterschiedlichen
 	// Argumenten aufgerufen werden)
 	// private static Map<String,Set<String>> functionCallsAlt = new TreeMap<String,Set<String>>();
 	// jeder Funktionsaufruf hat eine Liste von n Argumenten; alle Funktionsaufrufe
 	// werden in einer Liste gespeichert
-	private static List<List<String>> functionCalls = new LinkedList<List<String>>();
+	private List<List<String>> functionCalls = new LinkedList<List<String>>();
 	// => irgendwie Funktionsname + Argumente speichern
 	// => d.h. man br\u00e4uchte f\u00fcr jede Funktion so eine Liste oder das erste Element
 	// der Liste ist der Funktionsname <= ist noch die praktikabelste Variante
@@ -65,13 +67,13 @@ public class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants/*@egen*
 	// sich um einen statischen Parser, d.h. der Konstruktor darf nur einmal
 	// aufgerufen werden; weitere Parsevorg\u00e4nge erfolgen dann mit ReInit
 	// TODO: bei einem Webservice braucht man wahrscheinlich einen dynamischen Parser
-	private static boolean constructorCalled = false;
+	// private static boolean constructorCalled = false;
 	
 	// Wissensbasis
-	private static KB kb = new KB();
+	private KB kb = new KB();
 	public static final String internalNamespace = "http://localhost/foo#";
 	
-	private static void addPositiveExample(AtomicConcept conceptName, Individual instanceName) {
+	private void addPositiveExample(AtomicConcept conceptName, Individual instanceName) {
 		if(positiveExamples.containsKey(conceptName)) {
 			positiveExamples.get(conceptName).add(instanceName);
 		} else {
@@ -81,7 +83,7 @@ public class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants/*@egen*
 		}
 	}
 	
-	private static void addNegativeExample(AtomicConcept conceptName, Individual instanceName) {
+	private void addNegativeExample(AtomicConcept conceptName, Individual instanceName) {
 		if(negativeExamples.containsKey(conceptName)) {
 			negativeExamples.get(conceptName).add(instanceName);
 		} else {
@@ -91,23 +93,23 @@ public class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants/*@egen*
 		}		
 	}	
 	
-	public static Map<AtomicConcept,SortedSet<Individual>> getPositiveExamples() {
+	public Map<AtomicConcept,SortedSet<Individual>> getPositiveExamples() {
 		return positiveExamples;
 	}
 	
-	public static Map<AtomicConcept,SortedSet<Individual>> getNegativeExamples() {
+	public Map<AtomicConcept,SortedSet<Individual>> getNegativeExamples() {
 		return negativeExamples;
 	}
 	
-	public static List<ConfigurationOption> getConfOptions() {
+	public List<ConfigurationOption> getConfOptions() {
 		return confOptions;
 	}
 	
-	public static List<List<String>> getFunctionCalls() {
+	public List<List<String>> getFunctionCalls() {
 		return functionCalls;
 	}
 	
-	public static KB getKB() {
+	public KB getKB() {
 		return kb;
 	}
 	
@@ -135,19 +137,14 @@ public class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants/*@egen*
 	
 	public static SimpleNode parseString(String str) throws ParseException {
 		StringReader sr = new StringReader(str);
-		// new DLLearner(sr);
-		DLLearner.ReInit(sr);
-		SimpleNode n = DLLearner.Start();
+		DLLearner learner = new DLLearner(sr);
+		SimpleNode n = learner.Start();
 		return n;
 	}
 	
 	public static Concept parseConcept(String str) throws ParseException {
 		StringReader sr = new StringReader(str);
-		if(constructorCalled)
-			DLLearner.ReInit(sr);
-		else
-			new DLLearner(sr);
-		constructorCalled = true;
+		DLLearner learner = new DLLearner(sr);
 		// 		
 		//SimpleNode n = DLLearner.Start();
 		//return n;	
@@ -160,29 +157,22 @@ public class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants/*@egen*
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		Concept c = DLLearner.Concept();		
+		Concept c = learner.Concept();		
 		
 		return c;
 	}
 	
-	public static void parseFile(String filename) {
-		
-		positiveExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
-		negativeExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
-		confOptions = new LinkedList<ConfigurationOption>();
-		functionCalls = new LinkedList<List<String>>();		
-		kb = new KB();
-		 
+	public static DLLearner parseFile(String filename) {
+		DLLearner learner = null;
 		try {
-			if(constructorCalled)
-				DLLearner.ReInit(new FileInputStream(filename));
-			else
-				new DLLearner(new FileInputStream(filename));
-			constructorCalled = true;
-			DLLearner.Start();
-		} catch(Exception e) {
+			learner = new DLLearner(new FileInputStream(filename));
+			learner.Start();
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
+		} catch(ParseException e) {
 			e.printStackTrace();
 		}
+		return learner;
 	}
 	
   public static void main(String args[]) {
@@ -206,16 +196,16 @@ public class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants/*@egen*
     long parseStartTime = System.currentTimeMillis();
 
     SimpleNode n = null;
+    DLLearner learner = null;
     try {
-        new DLLearner(new FileInputStream(args[args.length-1]));
-        constructorCalled = true;
+        learner = new DLLearner(new FileInputStream(args[args.length-1]));
         baseDir = f.getParentFile().getPath();    	
     } catch(IOException e) {
         System.err.println(e);
         System.exit(0);
     }
     try {
-      n = DLLearner.Start();
+      n = learner.Start();
       // n.dump("");
       // System.out.println("Thank you.");
     } catch (Exception e) {
@@ -246,7 +236,9 @@ public class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants/*@egen*
     // n.dump("");
     
     // neuer Aufruf des Hauptprogramms
-    new Main(kb,positiveExamples,negativeExamples,confOptions,functionCalls,baseDir,queryMode);
+    // TODO: remove (in the future, the parser will be called from whatever method
+    // needs it, instead of starting the learning process itself)
+    // new Main(kb,positiveExamples,negativeExamples,confOptions,functionCalls,baseDir,queryMode);
   }
 }
 PARSER_END(DLLearner)
@@ -307,6 +299,7 @@ SimpleNode Start() :
 	RBoxAxiom rBoxAxiom;
 	Equality equality;
 	Inclusion inclusion;
+	ConfigurationOption confOption;
 }
 {/*@bgen(jjtree) Start */
   try {
@@ -314,7 +307,8 @@ SimpleNode Start() :
   (		// bei Konfigurationsoption geht der Parser bis zum Semikolon durch, da das das einzige
   		// sichere Unterscheidungsmerkmal ist
   		LOOKAHEAD(Id() [ "." Id() ] "="  ( Id() | Integer() | Double() | String() 
-  		  | "{" "}" | "{" ( ( String() | Id() ) "," )* (String() | Id()) "}" ) <CONF_END>)  ConfOption()
+  		  | "{" "}" | "{" ( ( String() | Id() ) "," )* (String() | Id()) "}" ) <CONF_END>)  confOption=ConfOption()
+  		  { confOptions.add(confOption); }
   	|	LOOKAHEAD(Id() "(" String() ("," String())* ")" <CONF_END>) FunctionCall()
   		// positive bzw. negative Beispiele sind an "+" bzw. "-" erkennbar
   	|	LOOKAHEAD(<POS_EX>) PosExample()
@@ -369,7 +363,33 @@ SimpleNode Start() :
 /*@egen*/
 }
 
-void ConfOption() : 
+KB parseKB() :
+{/*@bgen(jjtree) parseKB */
+        SimpleNode jjtn000 = new SimpleNode(JJTPARSEKB);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	KB kb = null;
+}
+{/*@bgen(jjtree) parseKB */
+        try {
+/*@egen*/
+	<EOF>/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{return kb; }/*@bgen(jjtree)*/
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+ConfigurationOption ConfOption() : 
 {/*@bgen(jjtree) ConfOption */
         SimpleNode jjtn000 = new SimpleNode(JJTCONFOPTION);
         boolean jjtc000 = true;
@@ -424,7 +444,8 @@ void ConfOption() :
 	  		else
 	  			confOption = new ConfigurationOption(option,value);
   	}
-  	confOptions.add(confOption);
+  	return confOption;
+  	// confOptions.add(confOption);
   }/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {

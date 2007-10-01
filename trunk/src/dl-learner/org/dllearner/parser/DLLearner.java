@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -24,21 +25,21 @@ import org.dllearner.utilities.*;
 
 // @SuppressWarnings({"all"})
 public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLearnerTreeConstants, DLLearnerConstants {/*@bgen(jjtree)*/
-  protected static JJTDLLearnerState jjtree = new JJTDLLearnerState();
+  protected JJTDLLearnerState jjtree = new JJTDLLearnerState();
         private static ConceptComparator conceptComparator = new ConceptComparator();
         // hier wird Parse-Fehler angezeigt, obwohl eigentlich alles stimmt??
-        private static Map<AtomicConcept,SortedSet<Individual>> positiveExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
-        private static Map<AtomicConcept,SortedSet<Individual>> negativeExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
+        private Map<AtomicConcept,SortedSet<Individual>> positiveExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
+        private Map<AtomicConcept,SortedSet<Individual>> negativeExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
 
         // Konfigurationsoptionen
-        private static List<ConfigurationOption> confOptions = new LinkedList<ConfigurationOption>();
+        private List<ConfigurationOption> confOptions = new LinkedList<ConfigurationOption>();
 
         // Funktionsaufrufe (die gleiche Funktion darf mehrmals mit unterschiedlichen
         // Argumenten aufgerufen werden)
         // private static Map<String,Set<String>> functionCallsAlt = new TreeMap<String,Set<String>>();
         // jeder Funktionsaufruf hat eine Liste von n Argumenten; alle Funktionsaufrufe
         // werden in einer Liste gespeichert
-        private static List<List<String>> functionCalls = new LinkedList<List<String>>();
+        private List<List<String>> functionCalls = new LinkedList<List<String>>();
         // => irgendwie Funktionsname + Argumente speichern
         // => d.h. man bräuchte für jede Funktion so eine Liste oder das erste Element
         // der Liste ist der Funktionsname <= ist noch die praktikabelste Variante
@@ -47,13 +48,13 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
         // sich um einen statischen Parser, d.h. der Konstruktor darf nur einmal
         // aufgerufen werden; weitere Parsevorgänge erfolgen dann mit ReInit
         // TODO: bei einem Webservice braucht man wahrscheinlich einen dynamischen Parser
-        private static boolean constructorCalled = false;
+        // private static boolean constructorCalled = false;
 
         // Wissensbasis
-        private static KB kb = new KB();
+        private KB kb = new KB();
         public static final String internalNamespace = "http://localhost/foo#";
 
-        private static void addPositiveExample(AtomicConcept conceptName, Individual instanceName) {
+        private void addPositiveExample(AtomicConcept conceptName, Individual instanceName) {
                 if(positiveExamples.containsKey(conceptName)) {
                         positiveExamples.get(conceptName).add(instanceName);
                 } else {
@@ -63,7 +64,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
                 }
         }
 
-        private static void addNegativeExample(AtomicConcept conceptName, Individual instanceName) {
+        private void addNegativeExample(AtomicConcept conceptName, Individual instanceName) {
                 if(negativeExamples.containsKey(conceptName)) {
                         negativeExamples.get(conceptName).add(instanceName);
                 } else {
@@ -73,23 +74,23 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
                 }
         }
 
-        public static Map<AtomicConcept,SortedSet<Individual>> getPositiveExamples() {
+        public Map<AtomicConcept,SortedSet<Individual>> getPositiveExamples() {
                 return positiveExamples;
         }
 
-        public static Map<AtomicConcept,SortedSet<Individual>> getNegativeExamples() {
+        public Map<AtomicConcept,SortedSet<Individual>> getNegativeExamples() {
                 return negativeExamples;
         }
 
-        public static List<ConfigurationOption> getConfOptions() {
+        public List<ConfigurationOption> getConfOptions() {
                 return confOptions;
         }
 
-        public static List<List<String>> getFunctionCalls() {
+        public List<List<String>> getFunctionCalls() {
                 return functionCalls;
         }
 
-        public static KB getKB() {
+        public KB getKB() {
                 return kb;
         }
 
@@ -117,19 +118,14 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
 
         public static SimpleNode parseString(String str) throws ParseException {
                 StringReader sr = new StringReader(str);
-                // new DLLearner(sr);
-                DLLearner.ReInit(sr);
-                SimpleNode n = DLLearner.Start();
+                DLLearner learner = new DLLearner(sr);
+                SimpleNode n = learner.Start();
                 return n;
         }
 
         public static Concept parseConcept(String str) throws ParseException {
                 StringReader sr = new StringReader(str);
-                if(constructorCalled)
-                        DLLearner.ReInit(sr);
-                else
-                        new DLLearner(sr);
-                constructorCalled = true;
+                DLLearner learner = new DLLearner(sr);
                 // 		
                 //SimpleNode n = DLLearner.Start();
                 //return n;	
@@ -142,29 +138,22 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-                Concept c = DLLearner.Concept();
+                Concept c = learner.Concept();
 
                 return c;
         }
 
-        public static void parseFile(String filename) {
-
-                positiveExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
-                negativeExamples = new TreeMap<AtomicConcept,SortedSet<Individual>>(conceptComparator);
-                confOptions = new LinkedList<ConfigurationOption>();
-                functionCalls = new LinkedList<List<String>>();
-                kb = new KB();
-
+        public static DLLearner parseFile(String filename) {
+                DLLearner learner = null;
                 try {
-                        if(constructorCalled)
-                                DLLearner.ReInit(new FileInputStream(filename));
-                        else
-                                new DLLearner(new FileInputStream(filename));
-                        constructorCalled = true;
-                        DLLearner.Start();
-                } catch(Exception e) {
+                        learner = new DLLearner(new FileInputStream(filename));
+                        learner.Start();
+                } catch(FileNotFoundException e) {
+                        e.printStackTrace();
+                } catch(ParseException e) {
                         e.printStackTrace();
                 }
+                return learner;
         }
 
   public static void main(String args[]) {
@@ -188,16 +177,16 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     long parseStartTime = System.currentTimeMillis();
 
     SimpleNode n = null;
+    DLLearner learner = null;
     try {
-        new DLLearner(new FileInputStream(args[args.length-1]));
-        constructorCalled = true;
+        learner = new DLLearner(new FileInputStream(args[args.length-1]));
         baseDir = f.getParentFile().getPath();
     } catch(IOException e) {
         System.err.println(e);
         System.exit(0);
     }
     try {
-      n = DLLearner.Start();
+      n = learner.Start();
       // n.dump("");
       // System.out.println("Thank you.");
     } catch (Exception e) {
@@ -228,7 +217,9 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     // n.dump("");
 
     // neuer Aufruf des Hauptprogramms
-    new Main(kb,positiveExamples,negativeExamples,confOptions,functionCalls,baseDir,queryMode);
+    // TODO: remove (in the future, the parser will be called from whatever method
+    // needs it, instead of starting the learning process itself)
+    // new Main(kb,positiveExamples,negativeExamples,confOptions,functionCalls,baseDir,queryMode);
   }
 
 /* Grob�berblick:
@@ -244,7 +235,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
   	|	Concept() "=" Concept() <COMMAND_END>		// TBox - �quivalenz von Konzepten
   	|	Concept() "SUBCLASS" Concept() <COMMAND_END> 	// TBox - Konzept 1 Teilmenge von Konzept 2
 */
-  static final public SimpleNode Start() throws ParseException {
+  final public SimpleNode Start() throws ParseException {
  /*@bgen(jjtree) Start */
         SimpleNode jjtn000 = new SimpleNode(JJTSTART);
         boolean jjtc000 = true;
@@ -253,6 +244,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
         RBoxAxiom rBoxAxiom;
         Equality equality;
         Inclusion inclusion;
+        ConfigurationOption confOption;
     try {
       label_1:
       while (true) {
@@ -281,7 +273,8 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
           break label_1;
         }
         if (jj_2_1(2147483647)) {
-          ConfOption();
+          confOption = ConfOption();
+                    confOptions.add(confOption);
         } else if (jj_2_2(2147483647)) {
           FunctionCall();
         } else if (jj_2_3(2147483647)) {
@@ -357,7 +350,25 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     throw new Error("Missing return statement in function");
   }
 
-  static final public void ConfOption() throws ParseException {
+  final public KB parseKB() throws ParseException {
+ /*@bgen(jjtree) parseKB */
+        SimpleNode jjtn000 = new SimpleNode(JJTPARSEKB);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);KB kb = null;
+    try {
+      jj_consume_token(0);
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+         {if (true) return kb;}
+    } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+    }
+    throw new Error("Missing return statement in function");
+  }
+
+  final public ConfigurationOption ConfOption() throws ParseException {
  /*@bgen(jjtree) ConfOption */
         SimpleNode jjtn000 = new SimpleNode(JJTCONFOPTION);
         boolean jjtc000 = true;
@@ -476,7 +487,9 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
                         else
                                 confOption = new ConfigurationOption(option,value);
         }
-        confOptions.add(confOption);
+        {if (true) return confOption;}
+        // confOptions.add(confOption);
+
     } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -496,9 +509,10 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
       jjtree.closeNodeScope(jjtn000, true);
     }
     }
+    throw new Error("Missing return statement in function");
   }
 
-  static final public void FunctionCall() throws ParseException {
+  final public void FunctionCall() throws ParseException {
  /*@bgen(jjtree) FunctionCall */
         SimpleNode jjtn000 = new SimpleNode(JJTFUNCTIONCALL);
         boolean jjtc000 = true;
@@ -549,7 +563,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     }
   }
 
-  static final public void PosExample() throws ParseException {
+  final public void PosExample() throws ParseException {
                      /*@bgen(jjtree) PosExample */
                       SimpleNode jjtn000 = new SimpleNode(JJTPOSEXAMPLE);
                       boolean jjtc000 = true;
@@ -585,7 +599,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     }
   }
 
-  static final public void NegExample() throws ParseException {
+  final public void NegExample() throws ParseException {
                      /*@bgen(jjtree) NegExample */
                       SimpleNode jjtn000 = new SimpleNode(JJTNEGEXAMPLE);
                       boolean jjtc000 = true;
@@ -621,7 +635,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     }
   }
 
-  static final public ConceptAssertion ABoxConcept() throws ParseException {
+  final public ConceptAssertion ABoxConcept() throws ParseException {
                                   /*@bgen(jjtree) ABoxConcept */
                                   SimpleNode jjtn000 = new SimpleNode(JJTABOXCONCEPT);
                                   boolean jjtc000 = true;
@@ -657,7 +671,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     throw new Error("Missing return statement in function");
   }
 
-  static final public RoleAssertion ABoxRole() throws ParseException {
+  final public RoleAssertion ABoxRole() throws ParseException {
  /*@bgen(jjtree) ABoxRole */
         SimpleNode jjtn000 = new SimpleNode(JJTABOXROLE);
         boolean jjtc000 = true;
@@ -709,7 +723,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     throw new Error("Missing return statement in function");
   }
 
-  static final public TransitiveRoleAxiom Transitive() throws ParseException {
+  final public TransitiveRoleAxiom Transitive() throws ParseException {
                                     /*@bgen(jjtree) Transitive */
                                     SimpleNode jjtn000 = new SimpleNode(JJTTRANSITIVE);
                                     boolean jjtc000 = true;
@@ -745,7 +759,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     throw new Error("Missing return statement in function");
   }
 
-  static final public FunctionalRoleAxiom Functional() throws ParseException {
+  final public FunctionalRoleAxiom Functional() throws ParseException {
                                     /*@bgen(jjtree) Functional */
                                     SimpleNode jjtn000 = new SimpleNode(JJTFUNCTIONAL);
                                     boolean jjtc000 = true;
@@ -781,7 +795,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     throw new Error("Missing return statement in function");
   }
 
-  static final public SymmetricRoleAxiom Symmetric() throws ParseException {
+  final public SymmetricRoleAxiom Symmetric() throws ParseException {
                                   /*@bgen(jjtree) Symmetric */
                                   SimpleNode jjtn000 = new SimpleNode(JJTSYMMETRIC);
                                   boolean jjtc000 = true;
@@ -817,7 +831,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     throw new Error("Missing return statement in function");
   }
 
-  static final public InverseRoleAxiom Inverse() throws ParseException {
+  final public InverseRoleAxiom Inverse() throws ParseException {
                               /*@bgen(jjtree) Inverse */
                               SimpleNode jjtn000 = new SimpleNode(JJTINVERSE);
                               boolean jjtc000 = true;
@@ -855,7 +869,7 @@ public @SuppressWarnings("all") class DLLearner/*@bgen(jjtree)*/implements DLLea
     throw new Error("Missing return statement in function");
   }
 
-  static final public SubRoleAxiom Subrole() throws ParseException {
+  final public SubRoleAxiom Subrole() throws ParseException {
                           /*@bgen(jjtree) Subrole */
                           SimpleNode jjtn000 = new SimpleNode(JJTSUBROLE);
                           boolean jjtc000 = true;
@@ -954,7 +968,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
    { return new SubRoleAxiom(new AtomicRole(s1),new AtomicRole(s2));}
 }
 ****************************************************************/
-  static final public Equality TBoxEquiv() throws ParseException {
+  final public Equality TBoxEquiv() throws ParseException {
                         /*@bgen(jjtree) TBoxEquiv */
                         SimpleNode jjtn000 = new SimpleNode(JJTTBOXEQUIV);
                         boolean jjtc000 = true;
@@ -989,7 +1003,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public Inclusion TBoxSub() throws ParseException {
+  final public Inclusion TBoxSub() throws ParseException {
                        /*@bgen(jjtree) TBoxSub */
                        SimpleNode jjtn000 = new SimpleNode(JJTTBOXSUB);
                        boolean jjtc000 = true;
@@ -1039,7 +1053,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
   }
 
 // TODO: Support f�r inverse Rollen
-  static final public Concept Concept() throws ParseException {
+  final public Concept Concept() throws ParseException {
  /*@bgen(jjtree) Concept */
         SimpleNode jjtn000 = new SimpleNode(JJTCONCEPT);
         boolean jjtc000 = true;
@@ -1165,7 +1179,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public void Or() throws ParseException {
+  final public void Or() throws ParseException {
              /*@bgen(jjtree) Or */
   SimpleNode jjtn000 = new SimpleNode(JJTOR);
   boolean jjtc000 = true;
@@ -1179,7 +1193,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     }
   }
 
-  static final public void And() throws ParseException {
+  final public void And() throws ParseException {
               /*@bgen(jjtree) And */
   SimpleNode jjtn000 = new SimpleNode(JJTAND);
   boolean jjtc000 = true;
@@ -1193,7 +1207,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     }
   }
 
-  static final public void Top() throws ParseException {
+  final public void Top() throws ParseException {
               /*@bgen(jjtree) Top */
   SimpleNode jjtn000 = new SimpleNode(JJTTOP);
   boolean jjtc000 = true;
@@ -1207,7 +1221,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     }
   }
 
-  static final public void Bottom() throws ParseException {
+  final public void Bottom() throws ParseException {
                  /*@bgen(jjtree) Bottom */
   SimpleNode jjtn000 = new SimpleNode(JJTBOTTOM);
   boolean jjtc000 = true;
@@ -1221,7 +1235,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     }
   }
 
-  static final public void Exists() throws ParseException {
+  final public void Exists() throws ParseException {
                  /*@bgen(jjtree) Exists */
   SimpleNode jjtn000 = new SimpleNode(JJTEXISTS);
   boolean jjtc000 = true;
@@ -1235,7 +1249,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     }
   }
 
-  static final public void All() throws ParseException {
+  final public void All() throws ParseException {
               /*@bgen(jjtree) All */
   SimpleNode jjtn000 = new SimpleNode(JJTALL);
   boolean jjtc000 = true;
@@ -1249,7 +1263,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     }
   }
 
-  static final public void Not() throws ParseException {
+  final public void Not() throws ParseException {
               /*@bgen(jjtree) Not */
   SimpleNode jjtn000 = new SimpleNode(JJTNOT);
   boolean jjtc000 = true;
@@ -1263,7 +1277,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     }
   }
 
-  static final public void GE() throws ParseException {
+  final public void GE() throws ParseException {
              /*@bgen(jjtree) GE */
   SimpleNode jjtn000 = new SimpleNode(JJTGE);
   boolean jjtc000 = true;
@@ -1277,7 +1291,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     }
   }
 
-  static final public void LE() throws ParseException {
+  final public void LE() throws ParseException {
              /*@bgen(jjtree) LE */
   SimpleNode jjtn000 = new SimpleNode(JJTLE);
   boolean jjtc000 = true;
@@ -1291,7 +1305,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     }
   }
 
-  static final public AtomicConcept AtomicConcept() throws ParseException {
+  final public AtomicConcept AtomicConcept() throws ParseException {
  /*@bgen(jjtree) AtomicConcept */
         SimpleNode jjtn000 = new SimpleNode(JJTATOMICCONCEPT);
         boolean jjtc000 = true;
@@ -1334,7 +1348,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public AtomicRole AtomicRole() throws ParseException {
+  final public AtomicRole AtomicRole() throws ParseException {
  /*@bgen(jjtree) AtomicRole */
         SimpleNode jjtn000 = new SimpleNode(JJTATOMICROLE);
         boolean jjtc000 = true;
@@ -1377,7 +1391,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public Individual Individual() throws ParseException {
+  final public Individual Individual() throws ParseException {
  /*@bgen(jjtree) Individual */
         SimpleNode jjtn000 = new SimpleNode(JJTINDIVIDUAL);
         boolean jjtc000 = true;
@@ -1420,7 +1434,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public String Id() throws ParseException {
+  final public String Id() throws ParseException {
  /*@bgen(jjtree) Id */
   SimpleNode jjtn000 = new SimpleNode(JJTID);
   boolean jjtc000 = true;
@@ -1439,7 +1453,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public double Double() throws ParseException {
+  final public double Double() throws ParseException {
  /*@bgen(jjtree) Double */
   SimpleNode jjtn000 = new SimpleNode(JJTDOUBLE);
   boolean jjtc000 = true;
@@ -1457,7 +1471,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public int Integer() throws ParseException {
+  final public int Integer() throws ParseException {
  /*@bgen(jjtree) Integer */
   SimpleNode jjtn000 = new SimpleNode(JJTINTEGER);
   boolean jjtc000 = true;
@@ -1477,7 +1491,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public String String() throws ParseException {
+  final public String String() throws ParseException {
  /*@bgen(jjtree) String */
   SimpleNode jjtn000 = new SimpleNode(JJTSTRING);
   boolean jjtc000 = true;
@@ -1500,135 +1514,91 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     throw new Error("Missing return statement in function");
   }
 
-  static final private boolean jj_2_1(int xla) {
+  final private boolean jj_2_1(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_1(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(0, xla); }
   }
 
-  static final private boolean jj_2_2(int xla) {
+  final private boolean jj_2_2(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_2(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(1, xla); }
   }
 
-  static final private boolean jj_2_3(int xla) {
+  final private boolean jj_2_3(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_3(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(2, xla); }
   }
 
-  static final private boolean jj_2_4(int xla) {
+  final private boolean jj_2_4(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_4(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(3, xla); }
   }
 
-  static final private boolean jj_2_5(int xla) {
+  final private boolean jj_2_5(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_5(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(4, xla); }
   }
 
-  static final private boolean jj_2_6(int xla) {
+  final private boolean jj_2_6(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_6(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(5, xla); }
   }
 
-  static final private boolean jj_2_7(int xla) {
+  final private boolean jj_2_7(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_7(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(6, xla); }
   }
 
-  static final private boolean jj_2_8(int xla) {
+  final private boolean jj_2_8(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_8(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(7, xla); }
   }
 
-  static final private boolean jj_2_9(int xla) {
+  final private boolean jj_2_9(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_9(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(8, xla); }
   }
 
-  static final private boolean jj_2_10(int xla) {
+  final private boolean jj_2_10(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_10(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(9, xla); }
   }
 
-  static final private boolean jj_2_11(int xla) {
+  final private boolean jj_2_11(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_11(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(10, xla); }
   }
 
-  static final private boolean jj_2_12(int xla) {
+  final private boolean jj_2_12(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_12(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(11, xla); }
   }
 
-  static final private boolean jj_3R_34() {
-    if (jj_3R_39()) return true;
-    if (jj_3R_14()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_12() {
-    if (jj_scan_token(29)) return true;
-    if (jj_3R_14()) return true;
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_12() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_33() {
-    if (jj_3R_48()) return true;
-    if (jj_3R_17()) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
-    if (jj_3R_14()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_8() {
-    if (jj_3R_23()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_11() {
-    if (jj_scan_token(29)) return true;
-    if (jj_3R_14()) return true;
-    if (jj_3R_20()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_10() {
-    if (jj_scan_token(26)) return true;
-    if (jj_scan_token(27)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_32() {
+  final private boolean jj_3R_32() {
     if (jj_3R_47()) return true;
     if (jj_3R_17()) return true;
     if (jj_scan_token(COMMAND_END)) return true;
@@ -1636,12 +1606,18 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_25() {
-    if (jj_3R_12()) return true;
+  final private boolean jj_3_10() {
+    if (jj_scan_token(26)) return true;
+    if (jj_scan_token(27)) return true;
     return false;
   }
 
-  static final private boolean jj_3_9() {
+  final private boolean jj_3R_26() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_9() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_18()) {
@@ -1652,7 +1628,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_31() {
+  final private boolean jj_3R_31() {
     if (jj_scan_token(29)) return true;
     if (jj_3R_14()) return true;
     if (jj_3R_21()) return true;
@@ -1661,7 +1637,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_30() {
+  final private boolean jj_3R_30() {
     if (jj_scan_token(29)) return true;
     if (jj_3R_14()) return true;
     if (jj_3R_20()) return true;
@@ -1670,32 +1646,37 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_7() {
-    if (jj_3R_22()) return true;
+  final private boolean jj_3R_8() {
+    if (jj_3R_23()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_22() {
+  final private boolean jj_3R_22() {
     if (jj_scan_token(NUMBER)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_29() {
+  final private boolean jj_3R_29() {
     if (jj_3R_46()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_28() {
+  final private boolean jj_3R_28() {
     if (jj_3R_45()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_27() {
+  final private boolean jj_3R_25() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_27() {
     if (jj_3R_44()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_14() {
+  final private boolean jj_3R_14() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_27()) {
@@ -1729,17 +1710,27 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_6() {
+  final private boolean jj_3R_7() {
+    if (jj_3R_22()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_23() {
+    if (jj_scan_token(DOUBLE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_38() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_6() {
     if (jj_3R_4()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_43() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_8() {
+  final private boolean jj_3_8() {
     if (jj_3R_14()) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -1750,34 +1741,59 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3_7() {
+  final private boolean jj_3R_43() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_7() {
     if (jj_3R_14()) return true;
     if (jj_scan_token(25)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_13() {
+  final private boolean jj_3R_13() {
     if (jj_scan_token(28)) return true;
     if (jj_3R_12()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_23() {
-    if (jj_scan_token(DOUBLE)) return true;
+  final private boolean jj_3R_4() {
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_38() {
+  final private boolean jj_3R_41() {
     if (jj_3R_12()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_42() {
+  final private boolean jj_3R_37() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_15() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_37()) {
+    jj_scanpos = xsp;
+    if (jj_3R_38()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_42() {
     if (jj_3R_12()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_24() {
+  final private boolean jj_3R_16() {
+    if (jj_3R_39()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_24() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_42()) {
@@ -1788,12 +1804,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_16() {
-    if (jj_3R_39()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_6() {
+  final private boolean jj_3_6() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_16()) jj_scanpos = xsp;
@@ -1804,33 +1815,33 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_4() {
-    if (jj_scan_token(ID)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_5() {
+  final private boolean jj_3R_5() {
     if (jj_scan_token(COMMAND_END)) return true;
     if (jj_3R_4()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_41() {
+  final private boolean jj_3R_52() {
     if (jj_3R_12()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_37() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3_4() {
+  final private boolean jj_3_4() {
     if (jj_scan_token(NEG_EX)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_11() {
+  final private boolean jj_3R_40() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_3() {
+    if (jj_scan_token(POS_EX)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_11() {
     if (jj_scan_token(26)) return true;
     Token xsp;
     while (true) {
@@ -1846,22 +1857,17 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3_3() {
-    if (jj_scan_token(POS_EX)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_15() {
+  final private boolean jj_3R_17() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_37()) {
+    if (jj_3R_40()) {
     jj_scanpos = xsp;
-    if (jj_3R_38()) return true;
+    if (jj_3R_41()) return true;
     }
     return false;
   }
 
-  static final private boolean jj_3_2() {
+  final private boolean jj_3_2() {
     if (jj_3R_4()) return true;
     if (jj_scan_token(29)) return true;
     if (jj_3R_12()) return true;
@@ -1875,7 +1881,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3_5() {
+  final private boolean jj_3_5() {
     if (jj_3R_14()) return true;
     if (jj_scan_token(29)) return true;
     if (jj_3R_15()) return true;
@@ -1884,7 +1890,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3_1() {
+  final private boolean jj_3_1() {
     if (jj_3R_4()) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -1911,68 +1917,48 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_52() {
-    if (jj_3R_12()) return true;
+  final private boolean jj_3R_50() {
+    if (jj_scan_token(LE)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_10() {
+  final private boolean jj_3R_47() {
+    if (jj_scan_token(EXISTS)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_49() {
+    if (jj_scan_token(GE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_45() {
+    if (jj_scan_token(BOTTOM)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_39() {
+    if (jj_scan_token(NOT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_10() {
     if (jj_scan_token(26)) return true;
     if (jj_scan_token(27)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_40() {
+  final private boolean jj_3R_51() {
     if (jj_3R_4()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_17() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_40()) {
-    jj_scanpos = xsp;
-    if (jj_3R_41()) return true;
-    }
-    return false;
-  }
-
-  static final private boolean jj_3R_50() {
-    if (jj_scan_token(LE)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_47() {
-    if (jj_scan_token(EXISTS)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_49() {
-    if (jj_scan_token(GE)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_45() {
-    if (jj_scan_token(BOTTOM)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_39() {
-    if (jj_scan_token(NOT)) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_51() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_48() {
+  final private boolean jj_3R_48() {
     if (jj_scan_token(ALL)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_46() {
+  final private boolean jj_3R_46() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_51()) {
@@ -1982,32 +1968,27 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_44() {
+  final private boolean jj_3R_44() {
     if (jj_scan_token(TOP)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_20() {
+  final private boolean jj_3R_20() {
     if (jj_scan_token(AND)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_21() {
+  final private boolean jj_3R_21() {
     if (jj_scan_token(OR)) return true;
     return false;
   }
 
-  static final private boolean jj_3R_19() {
+  final private boolean jj_3R_19() {
     if (jj_3R_4()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_9() {
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  static final private boolean jj_3R_36() {
+  final private boolean jj_3R_36() {
     if (jj_3R_50()) return true;
     if (jj_3R_22()) return true;
     if (jj_3R_17()) return true;
@@ -2016,12 +1997,12 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_18() {
+  final private boolean jj_3R_18() {
     if (jj_3R_12()) return true;
     return false;
   }
 
-  static final private boolean jj_3R_35() {
+  final private boolean jj_3R_35() {
     if (jj_3R_49()) return true;
     if (jj_3R_22()) return true;
     if (jj_3R_17()) return true;
@@ -2030,22 +2011,54 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final private boolean jj_3R_26() {
-    if (jj_3R_4()) return true;
+  final private boolean jj_3R_34() {
+    if (jj_3R_39()) return true;
+    if (jj_3R_14()) return true;
     return false;
   }
 
-  static private boolean jj_initialized_once = false;
-  static public DLLearnerTokenManager token_source;
-  static SimpleCharStream jj_input_stream;
-  static public Token token, jj_nt;
-  static private int jj_ntk;
-  static private Token jj_scanpos, jj_lastpos;
-  static private int jj_la;
-  static public boolean lookingAhead = false;
-  static private boolean jj_semLA;
-  static private int jj_gen;
-  static final private int[] jj_la1 = new int[15];
+  final private boolean jj_3_12() {
+    if (jj_scan_token(29)) return true;
+    if (jj_3R_14()) return true;
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_12() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_33() {
+    if (jj_3R_48()) return true;
+    if (jj_3R_17()) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    if (jj_3R_14()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_9() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_11() {
+    if (jj_scan_token(29)) return true;
+    if (jj_3R_14()) return true;
+    if (jj_3R_20()) return true;
+    return false;
+  }
+
+  public DLLearnerTokenManager token_source;
+  SimpleCharStream jj_input_stream;
+  public Token token, jj_nt;
+  private int jj_ntk;
+  private Token jj_scanpos, jj_lastpos;
+  private int jj_la;
+  public boolean lookingAhead = false;
+  private boolean jj_semLA;
+  private int jj_gen;
+  final private int[] jj_la1 = new int[15];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -2058,21 +2071,14 @@ SubRoleAxiom Subrole() : {String s1,s2;}
    private static void jj_la1_1() {
       jj_la1_1 = new int[] {0x3e,0x3e,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x41,0x0,0x0,0x0,0x0,0x0,};
    }
-  static final private JJCalls[] jj_2_rtns = new JJCalls[12];
-  static private boolean jj_rescan = false;
-  static private int jj_gc = 0;
+  final private JJCalls[] jj_2_rtns = new JJCalls[12];
+  private boolean jj_rescan = false;
+  private int jj_gc = 0;
 
   public DLLearner(java.io.InputStream stream) {
      this(stream, null);
   }
   public DLLearner(java.io.InputStream stream, String encoding) {
-    if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser.  ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
-      System.out.println("       during parser generation.");
-      throw new Error();
-    }
-    jj_initialized_once = true;
     try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new DLLearnerTokenManager(jj_input_stream);
     token = new Token();
@@ -2082,10 +2088,10 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  static public void ReInit(java.io.InputStream stream) {
+  public void ReInit(java.io.InputStream stream) {
      ReInit(stream, null);
   }
-  static public void ReInit(java.io.InputStream stream, String encoding) {
+  public void ReInit(java.io.InputStream stream, String encoding) {
     try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
     token = new Token();
@@ -2097,13 +2103,6 @@ SubRoleAxiom Subrole() : {String s1,s2;}
   }
 
   public DLLearner(java.io.Reader stream) {
-    if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser. ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
-      System.out.println("       during parser generation.");
-      throw new Error();
-    }
-    jj_initialized_once = true;
     jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new DLLearnerTokenManager(jj_input_stream);
     token = new Token();
@@ -2113,7 +2112,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  static public void ReInit(java.io.Reader stream) {
+  public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
     token = new Token();
@@ -2125,13 +2124,6 @@ SubRoleAxiom Subrole() : {String s1,s2;}
   }
 
   public DLLearner(DLLearnerTokenManager tm) {
-    if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser. ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
-      System.out.println("       during parser generation.");
-      throw new Error();
-    }
-    jj_initialized_once = true;
     token_source = tm;
     token = new Token();
     jj_ntk = -1;
@@ -2150,7 +2142,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  static final private Token jj_consume_token(int kind) throws ParseException {
+  final private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -2175,8 +2167,8 @@ SubRoleAxiom Subrole() : {String s1,s2;}
   }
 
   static private final class LookaheadSuccess extends java.lang.Error { }
-  static final private LookaheadSuccess jj_ls = new LookaheadSuccess();
-  static final private boolean jj_scan_token(int kind) {
+  final private LookaheadSuccess jj_ls = new LookaheadSuccess();
+  final private boolean jj_scan_token(int kind) {
     if (jj_scanpos == jj_lastpos) {
       jj_la--;
       if (jj_scanpos.next == null) {
@@ -2197,7 +2189,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return false;
   }
 
-  static final public Token getNextToken() {
+  final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
@@ -2205,7 +2197,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return token;
   }
 
-  static final public Token getToken(int index) {
+  final public Token getToken(int index) {
     Token t = lookingAhead ? jj_scanpos : token;
     for (int i = 0; i < index; i++) {
       if (t.next != null) t = t.next;
@@ -2214,20 +2206,20 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return t;
   }
 
-  static final private int jj_ntk() {
+  final private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  static private java.util.Vector<int[]> jj_expentries = new java.util.Vector<int[]>();
-  static private int[] jj_expentry;
-  static private int jj_kind = -1;
-  static private int[] jj_lasttokens = new int[100];
-  static private int jj_endpos;
+  private java.util.Vector<int[]> jj_expentries = new java.util.Vector<int[]>();
+  private int[] jj_expentry;
+  private int jj_kind = -1;
+  private int[] jj_lasttokens = new int[100];
+  private int jj_endpos;
 
-  static private void jj_add_error_token(int kind, int pos) {
+  private void jj_add_error_token(int kind, int pos) {
     if (pos >= 100) return;
     if (pos == jj_endpos + 1) {
       jj_lasttokens[jj_endpos++] = kind;
@@ -2255,7 +2247,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     }
   }
 
-  static public ParseException generateParseException() {
+  public ParseException generateParseException() {
     jj_expentries.removeAllElements();
     boolean[] la1tokens = new boolean[39];
     if (jj_kind >= 0) {
@@ -2291,13 +2283,13 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  static final public void enable_tracing() {
+  final public void enable_tracing() {
   }
 
-  static final public void disable_tracing() {
+  final public void disable_tracing() {
   }
 
-  static final private void jj_rescan_token() {
+  final private void jj_rescan_token() {
     jj_rescan = true;
     for (int i = 0; i < 12; i++) {
     try {
@@ -2327,7 +2319,7 @@ SubRoleAxiom Subrole() : {String s1,s2;}
     jj_rescan = false;
   }
 
-  static final private void jj_save(int index, int xla) {
+  final private void jj_save(int index, int xla) {
     JJCalls p = jj_2_rtns[index];
     while (p.gen > jj_gen) {
       if (p.next == null) { p = p.next = new JJCalls(); break; }
