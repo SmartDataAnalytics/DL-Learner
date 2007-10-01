@@ -156,16 +156,16 @@ public class PaperStatistics {
 		for(int exampleNr=startExampleNr; exampleNr < examples.length; exampleNr++) {
 			
 			// parse current conf file
-			DLLearner.parseFile(confFiles[exampleNr].toString());
+			DLLearner learner = DLLearner.parseFile(confFiles[exampleNr].toString());
 			
 			// read which files were imported (internal KB is ignored) and initialise reasoner
-			Map<URL, OntologyFileFormat> imports = getImports(DLLearner.getFunctionCalls(), confFiles[exampleNr]);
+			Map<URL, OntologyFileFormat> imports = getImports(learner.getFunctionCalls(), confFiles[exampleNr]);
 			
 			// detect specified positive and negative examples
 			SortedSet<Individual> positiveExamples = null;
 			SortedSet<Individual> negativeExamples = null;
-			Map<AtomicConcept,SortedSet<Individual>> posExamplesTmp = DLLearner.getPositiveExamples();
-			Map<AtomicConcept,SortedSet<Individual>> negExamplesTmp = DLLearner.getNegativeExamples();
+			Map<AtomicConcept,SortedSet<Individual>> posExamplesTmp = learner.getPositiveExamples();
+			Map<AtomicConcept,SortedSet<Individual>> negExamplesTmp = learner.getNegativeExamples();
 			for (AtomicConcept target : posExamplesTmp.keySet())
 				positiveExamples = posExamplesTmp.get(target);
 			for (AtomicConcept target : negExamplesTmp.keySet())

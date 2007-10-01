@@ -5,40 +5,42 @@ package org.dllearner.parser;
 public @SuppressWarnings("all") interface DLLearnerTreeConstants
 {
   public int JJTSTART = 0;
-  public int JJTCONFOPTION = 1;
-  public int JJTFUNCTIONCALL = 2;
-  public int JJTPOSEXAMPLE = 3;
-  public int JJTNEGEXAMPLE = 4;
-  public int JJTABOXCONCEPT = 5;
-  public int JJTABOXROLE = 6;
-  public int JJTTRANSITIVE = 7;
-  public int JJTFUNCTIONAL = 8;
-  public int JJTSYMMETRIC = 9;
-  public int JJTINVERSE = 10;
-  public int JJTSUBROLE = 11;
-  public int JJTTBOXEQUIV = 12;
-  public int JJTTBOXSUB = 13;
-  public int JJTCONCEPT = 14;
-  public int JJTOR = 15;
-  public int JJTAND = 16;
-  public int JJTTOP = 17;
-  public int JJTBOTTOM = 18;
-  public int JJTEXISTS = 19;
-  public int JJTALL = 20;
-  public int JJTNOT = 21;
-  public int JJTGE = 22;
-  public int JJTLE = 23;
-  public int JJTATOMICCONCEPT = 24;
-  public int JJTATOMICROLE = 25;
-  public int JJTINDIVIDUAL = 26;
-  public int JJTID = 27;
-  public int JJTDOUBLE = 28;
-  public int JJTINTEGER = 29;
-  public int JJTSTRING = 30;
+  public int JJTPARSEKB = 1;
+  public int JJTCONFOPTION = 2;
+  public int JJTFUNCTIONCALL = 3;
+  public int JJTPOSEXAMPLE = 4;
+  public int JJTNEGEXAMPLE = 5;
+  public int JJTABOXCONCEPT = 6;
+  public int JJTABOXROLE = 7;
+  public int JJTTRANSITIVE = 8;
+  public int JJTFUNCTIONAL = 9;
+  public int JJTSYMMETRIC = 10;
+  public int JJTINVERSE = 11;
+  public int JJTSUBROLE = 12;
+  public int JJTTBOXEQUIV = 13;
+  public int JJTTBOXSUB = 14;
+  public int JJTCONCEPT = 15;
+  public int JJTOR = 16;
+  public int JJTAND = 17;
+  public int JJTTOP = 18;
+  public int JJTBOTTOM = 19;
+  public int JJTEXISTS = 20;
+  public int JJTALL = 21;
+  public int JJTNOT = 22;
+  public int JJTGE = 23;
+  public int JJTLE = 24;
+  public int JJTATOMICCONCEPT = 25;
+  public int JJTATOMICROLE = 26;
+  public int JJTINDIVIDUAL = 27;
+  public int JJTID = 28;
+  public int JJTDOUBLE = 29;
+  public int JJTINTEGER = 30;
+  public int JJTSTRING = 31;
 
 
   public String[] jjtNodeName = {
     "Start",
+    "parseKB",
     "ConfOption",
     "FunctionCall",
     "PosExample",
