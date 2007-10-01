@@ -11,7 +11,6 @@ import java.util.TreeSet;
 
 import org.dllearner.Config;
 import org.dllearner.LearningProblem;
-import org.dllearner.Main;
 import org.dllearner.Score;
 import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.core.dl.Concept;
@@ -20,6 +19,7 @@ import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Top;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 
 public class ROLearner implements LearningAlgorithm {
@@ -330,7 +330,7 @@ public class ROLearner implements LearningAlgorithm {
 				searchTree += treeString + "\n";
 				// TODO: ev. immer nur einen search tree speichern und den an die
 				// Datei anhängen => spart Speicher
-				Main.createFile(Config.Refinement.searchTreeFile, searchTree);
+				Files.createFile(Config.Refinement.searchTreeFile, searchTree);
 			}
 			
 			// Anzahl Schleifendurchläufe
@@ -343,7 +343,7 @@ public class ROLearner implements LearningAlgorithm {
 		
 		// Suchbaum in Datei schreiben
 		if(Config.Refinement.writeSearchTree)
-			Main.createFile(Config.Refinement.searchTreeFile, searchTree);
+			Files.createFile(Config.Refinement.searchTreeFile, searchTree);
 		
 		// Ergebnisausgabe
 		/*

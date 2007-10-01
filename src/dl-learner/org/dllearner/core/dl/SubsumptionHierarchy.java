@@ -17,17 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.reasoning;
+package org.dllearner.core.dl;
 
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.Bottom;
-import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.Top;
 import org.dllearner.utilities.ConceptComparator;
 
 /**

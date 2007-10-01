@@ -22,7 +22,6 @@ package org.dllearner;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -70,6 +69,7 @@ import org.dllearner.reasoning.KAON2Reasoner;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.RoleComparator;
 import org.dllearner.utilities.Stat;
@@ -954,7 +954,7 @@ public class Main {
 			// am Ende => man kann den Test also auch zwischendurch abbrechen
 			for (int j = 0; j < 3; j++) {
 				for (int k = 0; k < 3; k++) {
-					createFile(fileAr[j][k], exportString[j][k].toString());
+					Files.createFile(fileAr[j][k], exportString[j][k].toString());
 				}
 			}
 		}
@@ -962,29 +962,6 @@ public class Main {
 		long overallTime = System.nanoTime() - overallTimeStart;
 		System.out.println("\noverall time: "
 				+ Helper.prettyPrintNanoSeconds(overallTime));
-	}
-
-	// creates a file with the given content
-	public static void createFile(File file, String content) {
-		try {
-			FileOutputStream fos = new FileOutputStream(file);
-			fos.write(content.getBytes());
-			fos.close();
-		} catch (Exception e) {
-			System.out.println(e);
-			System.exit(0);
-		}
-	}
-
-	public static void appendFile(File file, String content) {
-		try {
-			FileOutputStream fos = new FileOutputStream(file, true);
-			fos.write(content.getBytes());
-			fos.close();
-		} catch (Exception e) {
-			System.out.println(e);
-			System.exit(0);
-		}
 	}
 
 	// TODO: query mode umschreiben
