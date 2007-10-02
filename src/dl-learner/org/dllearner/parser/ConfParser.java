@@ -80,18 +80,19 @@ public @SuppressWarnings("all") class ConfParser/*@bgen(jjtree)*/implements Conf
 	*/
 
 
+        /*
+	public static SimpleNode parseString(String str) throws ParseException {
+		StringReader sr = new StringReader(str);
+		DLLearner learner = new DLLearner(sr);
+		SimpleNode n = learner.Start();
+		return n;
+	}
+	*/
 
-        public static SimpleNode parseString(String str) throws ParseException {
-                StringReader sr = new StringReader(str);
-                DLLearner learner = new DLLearner(sr);
-                SimpleNode n = learner.Start();
-                return n;
-        }
-
-        public static DLLearner parseFile(String filename) {
-                DLLearner learner = null;
+        public static ConfParser parseFile(String filename) {
+                ConfParser learner = null;
                 try {
-                        learner = new DLLearner(new FileInputStream(filename));
+                        learner = new ConfParser(new FileInputStream(filename));
                         learner.Start();
                 } catch(FileNotFoundException e) {
                         e.printStackTrace();
@@ -122,9 +123,9 @@ public @SuppressWarnings("all") class ConfParser/*@bgen(jjtree)*/implements Conf
     long parseStartTime = System.currentTimeMillis();
 
     SimpleNode n = null;
-    DLLearner learner = null;
+    ConfParser learner = null;
     try {
-        learner = new DLLearner(new FileInputStream(args[args.length-1]));
+        learner = new ConfParser(new FileInputStream(args[args.length-1]));
         baseDir = f.getParentFile().getPath();
     } catch(IOException e) {
         System.err.println(e);
@@ -650,70 +651,6 @@ public @SuppressWarnings("all") class ConfParser/*@bgen(jjtree)*/implements Conf
     finally { jj_save(5, xla); }
   }
 
-  final private boolean jj_3R_7() {
-    if (jj_3R_16()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_4() {
-    if (jj_scan_token(ID)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_6() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_22() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_6() {
-    if (jj_scan_token(26)) return true;
-    if (jj_scan_token(27)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_13() {
-    if (jj_scan_token(28)) return true;
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_5() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_14()) {
-    jj_scanpos = xsp;
-    if (jj_3R_15()) return true;
-    }
-    if (jj_scan_token(28)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_12() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_21() {
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_18() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_21()) {
-    jj_scanpos = xsp;
-    if (jj_3R_22()) return true;
-    }
-    if (jj_scan_token(28)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_9() {
     if (jj_3R_12()) return true;
     return false;
@@ -830,6 +767,70 @@ public @SuppressWarnings("all") class ConfParser/*@bgen(jjtree)*/implements Conf
 
   final private boolean jj_3R_14() {
     if (jj_3R_12()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_7() {
+    if (jj_3R_16()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_4() {
+    if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_6() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_22() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_6() {
+    if (jj_scan_token(26)) return true;
+    if (jj_scan_token(27)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_13() {
+    if (jj_scan_token(28)) return true;
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_5() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_14()) {
+    jj_scanpos = xsp;
+    if (jj_3R_15()) return true;
+    }
+    if (jj_scan_token(28)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_12() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_21() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_18() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_21()) {
+    jj_scanpos = xsp;
+    if (jj_3R_22()) return true;
+    }
+    if (jj_scan_token(28)) return true;
     return false;
   }
 

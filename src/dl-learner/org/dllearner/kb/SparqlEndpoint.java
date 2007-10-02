@@ -24,29 +24,37 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Set;
 
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.StringConfigOption;
-import org.dllearner.reasoning.OWLAPIDIGConverter;
+import org.dllearner.core.StringSetConfigOption;
 
 /**
- * @author Jens Lehmann
+ * Represents a SPARQL Endpoint. 
+ * TODO: move org.dllearner.modules.sparql to this package and
+ * integrate its classes
+ * TODO: Is it necessary to create a class DBpediaSparqlEndpoint?
  * 
+ * @author Jens Lehmann
+ *
  */
-public class OWLFile extends KnowledgeSource {
+public class SparqlEndpoint extends KnowledgeSource {
 
 	private URL url;
+	private Set<String> instances;
 
 	public static String getName() {
-		return "OWL file";
+		return "SPARQL Endpoint";
 	}
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("url", "URL pointing to the OWL file"));
+		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
+		options.add(new StringSetConfigOption("instances","relevant instances e.g. positive and negative examples in a learning problem"));
 		return options;
 	}
 
@@ -54,20 +62,21 @@ public class OWLFile extends KnowledgeSource {
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
 	@Override
+	@SuppressWarnings({"unchecked"})
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		if (entry.getOptionName().equals("url")) {
+		String option = entry.getOptionName();
+		if (option.equals("url")) {
 			String s = (String) entry.getValue();
 			try {
 				url = new URL(s);
-				// File f = new File(url.toURI());
-				//if(!f.canRead())
-				//	throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue());
 			} catch (MalformedURLException e) {
 				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),"malformed URL " + s);
 			} //catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
 			//}
+		} else if(option.equals("instances")) {
+			instances = (Set<String>) entry.getValue();
 		}
 	}
 
@@ -76,8 +85,7 @@ public class OWLFile extends KnowledgeSource {
 	 */
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
+		// TODO add code for downloading data from SPARQL endpoint 
 	}
 	
 	/*
@@ -87,10 +95,7 @@ public class OWLFile extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		// TODO: need some handling for cases where the URL was not set
-		return OWLAPIDIGConverter.getTellsString(url, OntologyFileFormat.RDF_XML, kbURI);
+		return null;
 	}
-
-
 
 }

@@ -9,9 +9,8 @@ import java.util.TreeMap;
 
 import org.dllearner.Config;
 import org.dllearner.Main;
-import org.dllearner.Score;
-import org.dllearner.ScoreThreeValued;
 import org.dllearner.core.LearningProblemNew;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
@@ -28,6 +27,7 @@ import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Top;
 import org.dllearner.learningproblems.DefinitionLP;
 import org.dllearner.learningproblems.DefinitionLPThreeValued;
+import org.dllearner.learningproblems.ScoreThreeValued;
 import org.dllearner.reasoning.FastRetrieval;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;

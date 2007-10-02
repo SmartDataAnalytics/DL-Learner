@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.dllearner.core.dl.Concept;
-import org.dllearner.parser.DLLearner;
+import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.KAON2Reasoner;
 import org.semanticweb.kaon2.api.DefaultOntologyResolver;
@@ -42,7 +42,7 @@ public class OntologyClassRewriter {
 		try {
 			// neue Definition in DL-Learner internes Format parsen
 			// (Warnung für Web-Service: Parser ist momentan noch statisch, d.h. nicht thread safe)
-			Concept newConceptInternal = DLLearner.parseConcept(newConceptString);
+			Concept newConceptInternal = KBParser.parseConcept(newConceptString);
 			
 			// umwandeln in interne KAON2-Darstellung (bereits im DL-Learner implementiert)
 			Description newConceptKAON2 = KAON2Reasoner.getKAON2Description(newConceptInternal);

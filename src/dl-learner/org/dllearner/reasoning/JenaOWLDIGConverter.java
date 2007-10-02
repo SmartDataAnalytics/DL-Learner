@@ -16,7 +16,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.dllearner.OntologyFileFormat;
+import org.dllearner.kb.OntologyFileFormat;
 import org.w3c.dom.Document;
 
 import com.hp.hpl.jena.graph.Graph;

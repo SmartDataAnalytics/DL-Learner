@@ -19,9 +19,9 @@
  */
 package org.dllearner.kb;
 
-import java.net.MalformedURLException;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URI;
-import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -30,23 +30,27 @@ import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.StringConfigOption;
-import org.dllearner.reasoning.OWLAPIDIGConverter;
+import org.dllearner.core.dl.KB;
+import org.dllearner.parser.KBParser;
+import org.dllearner.parser.ParseException;
+import org.dllearner.reasoning.DIGConverter;
 
 /**
  * @author Jens Lehmann
- * 
+ *
  */
-public class OWLFile extends KnowledgeSource {
+public class KBFile extends KnowledgeSource {
 
-	private URL url;
+	private File file;
+	private KB kb;
 
 	public static String getName() {
-		return "OWL file";
+		return "KB file";
 	}
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("url", "URL pointing to the OWL file"));
+		options.add(new StringConfigOption("filename", "pointer to the KB file"));
 		return options;
 	}
 
@@ -55,19 +59,9 @@ public class OWLFile extends KnowledgeSource {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		if (entry.getOptionName().equals("url")) {
-			String s = (String) entry.getValue();
-			try {
-				url = new URL(s);
-				// File f = new File(url.toURI());
-				//if(!f.canRead())
-				//	throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue());
-			} catch (MalformedURLException e) {
-				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),"malformed URL " + s);
-			} //catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			//}
+		String option = entry.getOptionName();
+		if (option.equals("filename")) {
+			file = new File((String)entry.getValue());
 		}
 	}
 
@@ -76,8 +70,15 @@ public class OWLFile extends KnowledgeSource {
 	 */
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
+		try {
+			kb = KBParser.parseKBFile(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/*
@@ -87,10 +88,7 @@ public class OWLFile extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		// TODO: need some handling for cases where the URL was not set
-		return OWLAPIDIGConverter.getTellsString(url, OntologyFileFormat.RDF_XML, kbURI);
+		return DIGConverter.getDIGString(kb).toString();
 	}
-
-
-
+	
 }

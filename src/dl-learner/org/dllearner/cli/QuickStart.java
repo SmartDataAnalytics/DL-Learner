@@ -1,4 +1,4 @@
-package org.dllearner;
+package org.dllearner.cli;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,10 +10,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.dllearner.parser.DLLearner;
-
 /**
- * A tool to quickly start a learning exampe. It detects all conf files in 
+ * A tool to quickly start a learning example. It detects all conf files in 
  * the examples directory and offers the user to start one of them. 
  * 
  * @author Sebastian Hellmann
@@ -107,7 +105,8 @@ public class QuickStart {
 				Selected = lastused;
 			}
 
-			DLLearner.main(new String[] { Selected });
+			System.out.println("ToDo: start commandline interface with selected conf file");
+			// DLLearner.main(new String[] { Selected });
 
 		} catch (Exception e) {
 			e.printStackTrace();

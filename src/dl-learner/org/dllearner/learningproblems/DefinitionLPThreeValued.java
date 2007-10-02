@@ -21,10 +21,10 @@ package org.dllearner.learningproblems;
 
 import java.util.SortedSet;
 
-import org.dllearner.Score;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 

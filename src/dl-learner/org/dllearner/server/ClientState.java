@@ -17,7 +17,6 @@ import org.dllearner.Config;
 import org.dllearner.ConfigurationManager;
 import org.dllearner.ConfigurationOption;
 import org.dllearner.Main;
-import org.dllearner.OntologyFileFormat;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
@@ -26,6 +25,7 @@ import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
+import org.dllearner.kb.OntologyFileFormat;
 
 public class ClientState {
 	

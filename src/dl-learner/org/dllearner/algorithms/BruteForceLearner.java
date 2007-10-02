@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.dllearner.Config;
 import org.dllearner.LearningProblem;
-import org.dllearner.Score;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;

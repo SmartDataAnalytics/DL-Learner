@@ -26,6 +26,8 @@ import java.util.Set;
 /**
  * mainly converts datatypes
  * 
+ * TODO: move to org.dllearner.utilities
+ * 
  * @author Sebastian Hellmann
  *
  */

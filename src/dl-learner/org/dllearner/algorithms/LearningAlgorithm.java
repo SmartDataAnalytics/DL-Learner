@@ -1,6 +1,6 @@
 package org.dllearner.algorithms;
 
-import org.dllearner.Score;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 
 /**

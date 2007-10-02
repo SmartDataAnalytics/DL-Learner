@@ -35,7 +35,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.dllearner.Config;
-import org.dllearner.OntologyFileFormat;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Bottom;
@@ -45,6 +44,7 @@ import org.dllearner.core.dl.KB;
 import org.dllearner.core.dl.RoleHierarchy;
 import org.dllearner.core.dl.SubsumptionHierarchy;
 import org.dllearner.core.dl.Top;
+import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.RoleComparator;

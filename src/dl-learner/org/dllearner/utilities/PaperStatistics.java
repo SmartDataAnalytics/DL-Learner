@@ -30,8 +30,6 @@ import java.util.SortedSet;
 import org.dllearner.Config;
 import org.dllearner.ConfigurationManager;
 import org.dllearner.Main;
-import org.dllearner.OntologyFileFormat;
-import org.dllearner.Score;
 import org.dllearner.Config.Algorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.core.ComponentManager;
@@ -40,11 +38,13 @@ import org.dllearner.core.LearningProblemNew;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
+import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.learningproblems.DefinitionLPTwoValued;
-import org.dllearner.parser.DLLearner;
+import org.dllearner.parser.ConfParser;
 import org.dllearner.reasoning.DIGReasoner;
 
 /**
@@ -156,20 +156,14 @@ public class PaperStatistics {
 		for(int exampleNr=startExampleNr; exampleNr < examples.length; exampleNr++) {
 			
 			// parse current conf file
-			DLLearner learner = DLLearner.parseFile(confFiles[exampleNr].toString());
+			ConfParser learner = ConfParser.parseFile(confFiles[exampleNr].toString());
 			
 			// read which files were imported (internal KB is ignored) and initialise reasoner
 			Map<URL, OntologyFileFormat> imports = getImports(learner.getFunctionCalls(), confFiles[exampleNr]);
 			
 			// detect specified positive and negative examples
-			SortedSet<Individual> positiveExamples = null;
-			SortedSet<Individual> negativeExamples = null;
-			Map<AtomicConcept,SortedSet<Individual>> posExamplesTmp = learner.getPositiveExamples();
-			Map<AtomicConcept,SortedSet<Individual>> negExamplesTmp = learner.getNegativeExamples();
-			for (AtomicConcept target : posExamplesTmp.keySet())
-				positiveExamples = posExamplesTmp.get(target);
-			for (AtomicConcept target : negExamplesTmp.keySet())
-				negativeExamples = negExamplesTmp.get(target);
+			SortedSet<Individual> positiveExamples = learner.getPositiveExamples();
+			SortedSet<Individual> negativeExamples = learner.getNegativeExamples();
 			int nrOfExamples = positiveExamples.size() + negativeExamples.size();
 			
 			statString += "example: " + examples[exampleNr] + "\n\n";
