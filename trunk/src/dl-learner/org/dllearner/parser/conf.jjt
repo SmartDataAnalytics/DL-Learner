@@ -1,0 +1,362 @@
+options {
+  JDK_VERSION = "1.6";
+  STATIC = false;
+}
+
+PARSER_BEGIN(ConfParser)
+package org.dllearner.parser; 
+
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringReader;
+
+import org.dllearner.Main;
+import org.dllearner.Info;
+
+import org.dllearner.core.dl.*;
+import org.dllearner.ConfigurationOption;
+import org.dllearner.utilities.*;
+
+public class ConfParser {
+	
+	private SortedSet<Individual> positiveExamples = new TreeSet<Individual>();
+	private SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
+	
+	// Konfigurationsoptionen
+	private List<ConfigurationOption> confOptions = new LinkedList<ConfigurationOption>();
+	
+	// Funktionsaufrufe (die gleiche Funktion darf mehrmals mit unterschiedlichen
+	// Argumenten aufgerufen werden)
+	// private static Map<String,Set<String>> functionCallsAlt = new TreeMap<String,Set<String>>();
+	// jeder Funktionsaufruf hat eine Liste von n Argumenten; alle Funktionsaufrufe
+	// werden in einer Liste gespeichert
+	private List<List<String>> functionCalls = new LinkedList<List<String>>();
+	// => irgendwie Funktionsname + Argumente speichern
+	// => d.h. man bräuchte für jede Funktion so eine Liste oder das erste Element
+	// der Liste ist der Funktionsname <= ist noch die praktikabelste Variante
+	
+	// speichert, ob der Parser-Konstruktor aufgerufen wurde: momemtan handelt es
+	// sich um einen statischen Parser, d.h. der Konstruktor darf nur einmal
+	// aufgerufen werden; weitere Parsevorgänge erfolgen dann mit ReInit
+	// TODO: bei einem Webservice braucht man wahrscheinlich einen dynamischen Parser
+	// private static boolean constructorCalled = false;
+	
+	// Wissensbasis
+	// private KB kb = new KB();
+	// public static final String internalNamespace = "http://localhost/foo#";
+	
+	public Map<AtomicConcept,SortedSet<Individual>> getPositiveExamples() {
+		return positiveExamples;
+	}
+	
+	public Map<AtomicConcept,SortedSet<Individual>> getNegativeExamples() {
+		return negativeExamples;
+	}
+	
+	public List<ConfigurationOption> getConfOptions() {
+		return confOptions;
+	}
+	
+	public List<List<String>> getFunctionCalls() {
+		return functionCalls;
+	}
+	
+	/*
+	private static void addFunctionCall(String functionName, String argument) {
+		if(functionCalls.containsKey(functionName)) {
+			functionCalls.get(functionName).add(argument);
+		} else {
+			Set<String> newFunction = new TreeSet<String>();
+			newFunction.add(argument);
+			functionCalls.put(functionName,newFunction);
+		}		
+	}
+	*/	
+	
+
+	
+	public static SimpleNode parseString(String str) throws ParseException {
+		StringReader sr = new StringReader(str);
+		DLLearner learner = new DLLearner(sr);
+		SimpleNode n = learner.Start();
+		return n;
+	}
+	
+	public static DLLearner parseFile(String filename) {
+		DLLearner learner = null;
+		try {
+			learner = new DLLearner(new FileInputStream(filename));
+			learner.Start();
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
+		} catch(ParseException e) {
+			e.printStackTrace();
+		}
+		return learner;
+	}
+	
+  public static void main(String args[]) {
+
+    if(args.length==0) {
+        System.out.println("Please specify an input file.");
+        System.exit(0);
+    }
+
+    System.out.println("Starting DL-Learner (Build " + Info.build + ")");
+	// System.out.println(args);
+ 
+	// System.out.println(args[0]);
+	// System.out.println(args[1]);
+	// System.out.println(args.length);
+
+    File f = new File(args[args.length-1]);
+    String baseDir = "";
+
+	System.out.print("Parsing " + f.getName() + " ... ");
+    long parseStartTime = System.currentTimeMillis();
+
+    SimpleNode n = null;
+    DLLearner learner = null;
+    try {
+        learner = new DLLearner(new FileInputStream(args[args.length-1]));
+        baseDir = f.getParentFile().getPath();    	
+    } catch(IOException e) {
+        System.err.println(e);
+        System.exit(0);
+    }
+    try {
+      n = learner.Start();
+      // n.dump("");
+      // System.out.println("Thank you.");
+    } catch (Exception e) {
+      System.out.println("\nParse exception occurred. Please follow the advise given below.");
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+      System.exit(0);
+    }
+
+    long parseDuration = System.currentTimeMillis() - parseStartTime;
+    System.out.println("OK (" + parseDuration + " ms)");
+
+    boolean queryMode = false;
+    // solution test mode wird nicht unbedingt gebraucht, da man die covers
+    // gleich standardmäßig beim query mit anzeigen kann
+    // boolean solutionTestMode = false;
+    
+    if(args.length>1 && args[0].equals("-q"))
+    	queryMode = true;
+    
+    //if(args.length>1 && args[0].equals("-qt")) {
+    //	queryMode = true;
+    //	solutionTestMode = true;
+    //}
+    
+    // new Main(n, baseDir, queryMode);
+    // Parser erstmal Standalone testen
+    // n.dump("");
+    
+    // neuer Aufruf des Hauptprogramms
+    // TODO: remove (in the future, the parser will be called from whatever method
+    // needs it, instead of starting the learning process itself)
+    // new Main(kb,positiveExamples,negativeExamples,confOptions,functionCalls,baseDir,queryMode);
+  }
+}
+PARSER_END(ConfParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+} 
+
+TOKEN :
+{
+    < COMMAND_END: "." >
+  | < CONF_END: ";" >
+  | < POS_EX: "+" >
+  | < NEG_EX: "-" >
+  | < ID: ["a"-"z"] (["_","a"-"z","A"-"Z","0"-"9"])* >
+  | < NUMBER: (["1"-"9"] (["0"-"9"])* | "0") >
+  | < DOUBLE: (["1"-"9"] (["0"-"9"])* | "0") "." (["0"-"9"])* >
+  | <TOP: "TOP" >
+  | <BOTTOM: "BOTTOM" >
+  | <AND: "AND" >
+  | <OR: "OR" >
+  | <EXISTS: "EXISTS" | "SOME" >
+  | <ALL: "ALL" | "FORALL" >
+  | <NOT: "NEG" | "NOT" >
+  | <GE: ">=" >
+  | <LE: "<=" >
+  | <STRING: "\"" (~["\"","\\","\n","\r"])* "\"">
+}
+
+SimpleNode Start() : 
+{
+	ConceptAssertion conceptAssertion;
+	RoleAssertion roleAssertion;
+	RBoxAxiom rBoxAxiom;
+	Equality equality;
+	Inclusion inclusion;
+	ConfigurationOption confOption;
+}
+{
+  (		// bei Konfigurationsoption geht der Parser bis zum Semikolon durch, da das das einzige
+  		// sichere Unterscheidungsmerkmal ist
+  		LOOKAHEAD(Id() [ "." Id() ] "="  ( Id() | Integer() | Double() | String() 
+  		  | "{" "}" | "{" ( ( String() | Id() ) "," )* (String() | Id()) "}" ) <CONF_END>)  confOption=ConfOption()
+  		  { confOptions.add(confOption); }
+  	|	LOOKAHEAD(Id() "(" String() ("," String())* ")" <CONF_END>) FunctionCall()
+  		// positive bzw. negative Beispiele sind an "+" bzw. "-" erkennbar
+  	|	LOOKAHEAD(<POS_EX>) PosExample()
+  	|	LOOKAHEAD(<NEG_EX>) NegExample()
+  )*
+  <EOF>
+  { return jjtThis; }
+}
+
+ConfigurationOption ConfOption() : 
+{
+	boolean containsSubOption=false, isNumeric=false, isDouble=false, isSet=false;
+	String option="", subOption="", value="", tmp=""; 
+	int number = 0;
+	double numberDouble = 0;
+	ConfigurationOption confOption;
+	Set<String> values = new HashSet<String>();
+}
+{
+  option=Id() [ "." subOption=Id() {containsSubOption=true;} ] 
+  "="  (   value=Id() 
+         | value=String()
+         | number=Integer() {isNumeric=true;} 
+         | numberDouble=Double() {isNumeric=true; isDouble=true;} 
+         | LOOKAHEAD("{" "}") "{" "}" {isSet=true;} // leere Menge 
+         | "{" ( LOOKAHEAD(2) ( tmp=String() | tmp=Id() ) {values.add(tmp);} "," )* 
+           (tmp=String() | tmp=Id()) {values.add(tmp);} "}" {isSet=true;}
+           // eine Liste von ein oder mehr Elementen in Mengenschreibweise
+         ) <CONF_END>
+  {
+  	if(containsSubOption) {
+  		if(isNumeric)
+  			if(isDouble)
+	  			confOption = new ConfigurationOption(option,subOption,numberDouble);
+	  		else
+		  		confOption = new ConfigurationOption(option,subOption,number);
+  		else
+  			if(isSet)
+  				confOption = new ConfigurationOption(option,subOption,values);
+  			else
+  				confOption = new ConfigurationOption(option,subOption,value);
+  	} else {
+  		if(isNumeric)
+  			if(isDouble)
+	  			confOption = new ConfigurationOption(option,numberDouble);
+	  		else
+	  			confOption = new ConfigurationOption(option,number);
+  		else
+  			if(isSet)
+	  			confOption = new ConfigurationOption(option,values);
+	  		else
+	  			confOption = new ConfigurationOption(option,value);
+  	}
+  	return confOption;
+  	// confOptions.add(confOption);
+  }
+}
+
+void FunctionCall() : 
+{
+	String s, s1, s2;
+	List<String> list = new LinkedList<String>();
+}
+{
+  	s1=Id() "(" s2=String() { list.add(s1); list.add(s2); }
+  	("," s=String() { list.add(s); } )* ")" <CONF_END>
+  	{ functionCalls.add(list); }
+}
+
+void PosExample() : { Individual i; }
+{
+  	<POS_EX> i=Individual()
+  	{ positiveExamples.add(i); }
+}
+
+void NegExample() : { Individual i; }
+{
+  	<NEG_EX> i=Individual()
+  	{ negativeExamples.add(i); }
+}
+
+Individual Individual() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return new Individual(KBParser.getInternalURI(name));
+	}
+}
+
+String Id() : 
+{
+  Token t;
+}
+{
+  t=<ID>
+  {
+    return t.image;
+  }
+}
+
+double Double() : 
+{
+  Token t;
+}
+{
+  t=<DOUBLE>
+  {
+    return new Double(t.image);
+  }
+}
+
+int Integer() : 
+{
+  Token t;
+}
+{
+  t=<NUMBER>
+  {
+    return new Integer(t.image);
+  }
+}
+
+String String() : 
+{
+  Token t;
+  String s;
+}
+{
+  t=<STRING>
+  {
+    // enclosing "" are removed
+    s = t.image;
+    s = s.substring(1, s.length() - 1);
+    return s;
+  }
+}
