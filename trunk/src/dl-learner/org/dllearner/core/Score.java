@@ -1,4 +1,4 @@
-package org.dllearner;
+package org.dllearner.core;
 
 import java.util.Set;
 

@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.dllearner.LearningProblem;
-import org.dllearner.Score;
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.algorithms.gp.GPUtilities;
 import org.dllearner.core.ConfigEntry;
@@ -32,6 +31,7 @@ import org.dllearner.core.IntegerConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblemNew;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.learningproblems.DefinitionLP;
 import org.dllearner.learningproblems.DefinitionLPThreeValued;

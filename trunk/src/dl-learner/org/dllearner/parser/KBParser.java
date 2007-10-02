@@ -2,6 +2,10 @@
 package org.dllearner.parser;
 
 import org.dllearner.core.dl.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.StringReader;
 
 public @SuppressWarnings("all") class KBParser/*@bgen(jjtree)*/implements KBParserTreeConstants, KBParserConstants {/*@bgen(jjtree)*/
   protected JJTKBParserState jjtree = new JJTKBParserState();
@@ -14,6 +18,16 @@ public @SuppressWarnings("all") class KBParser/*@bgen(jjtree)*/implements KBPars
                         return name;
                 else
                         return internalNamespace + name;
+        }
+
+        public static Concept parseConcept(String string) throws ParseException {
+                KBParser parser = new KBParser(new StringReader(string));
+                return parser.Concept();
+        }
+
+        public static KB parseKBFile(File file) throws FileNotFoundException, ParseException {
+                KBParser parser = new KBParser(new FileInputStream(file));
+                return parser.KB();
         }
 
   final public KB KB() throws ParseException {
@@ -979,11 +993,6 @@ public @SuppressWarnings("all") class KBParser/*@bgen(jjtree)*/implements KBPars
     finally { jj_save(5, xla); }
   }
 
-  final private boolean jj_3R_19() {
-    if (jj_3R_32()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_31() {
     if (jj_scan_token(ID)) return true;
     return false;
@@ -1259,6 +1268,11 @@ public @SuppressWarnings("all") class KBParser/*@bgen(jjtree)*/implements KBPars
     }
     }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_19() {
+    if (jj_3R_32()) return true;
     return false;
   }
 

@@ -28,13 +28,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.OntologyFileFormat;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.RoleHierarchy;
 import org.dllearner.core.dl.SubsumptionHierarchy;
+import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.KAON2Reasoner;
 import org.dllearner.reasoning.ReasonerType;

@@ -1,9 +1,11 @@
-package org.dllearner;
+package org.dllearner.learningproblems;
 
 import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.dllearner.Config;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.Helper;
 

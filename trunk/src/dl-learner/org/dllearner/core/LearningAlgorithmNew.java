@@ -22,7 +22,6 @@ package org.dllearner.core;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.dllearner.Score;
 import org.dllearner.core.dl.Concept;
 
 /**

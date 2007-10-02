@@ -83,7 +83,7 @@ public class KAON2Reasoner extends AbstractReasoner {
 	private org.semanticweb.kaon2.api.reasoner.Reasoner kaon2Reasoner;
 	private KAON2Connection kaon2Connection;
 
-	public KAON2Reasoner(KB kb, Map<URL,org.dllearner.OntologyFileFormat> imports) {
+	public KAON2Reasoner(KB kb, Map<URL,org.dllearner.kb.OntologyFileFormat> imports) {
 
 		if(imports.size()>1)
 			System.out.println("Warning: KAON2-Reasoner currently supports only one import file. Ignoring all other imports.");
@@ -464,11 +464,11 @@ public class KAON2Reasoner extends AbstractReasoner {
 		return returnMap;
 	}
 
-	public void saveOntology(File file, org.dllearner.OntologyFileFormat format) {
+	public void saveOntology(File file, org.dllearner.kb.OntologyFileFormat format) {
 		// File exportFile = new File(baseDir, fileName);
 		// String format = OntologyFileFormat.OWL_RDF;
 		String kaon2Format = "";
-		if(format.equals(org.dllearner.OntologyFileFormat.RDF_XML))
+		if(format.equals(org.dllearner.kb.OntologyFileFormat.RDF_XML))
 			kaon2Format = OntologyFileFormat.OWL_RDF;
 		else {
 			System.err.println("Warning: Cannot export format " + format + ". Exiting.");
@@ -512,7 +512,7 @@ public class KAON2Reasoner extends AbstractReasoner {
 		return ontology;	
 	}
 	
-	private static Ontology importKB(String ontologyURI, org.dllearner.OntologyFileFormat format, KAON2Connection connection) {
+	private static Ontology importKB(String ontologyURI, org.dllearner.kb.OntologyFileFormat format, KAON2Connection connection) {
 		Ontology ontology = null;
 		try {
 			long importStartTime = System.currentTimeMillis();

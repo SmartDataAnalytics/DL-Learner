@@ -47,6 +47,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.AssertionalAxiom;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
@@ -57,10 +58,11 @@ import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.RoleAssertion;
+import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.learningproblems.DefinitionLP;
 import org.dllearner.learningproblems.DefinitionLPTwoValued;
 import org.dllearner.modules.ModuleInvocator;
-import org.dllearner.parser.DLLearner;
+import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.TokenMgrError;
 import org.dllearner.reasoning.DIGReasoner;
@@ -990,7 +992,7 @@ public class Main {
 				boolean parsedCorrectly = true;
 
 				try {
-					concept = DLLearner.parseConcept(queryStr);
+					concept = KBParser.parseConcept(queryStr);
 				} catch (ParseException e1) {
 					e1.printStackTrace();
 					System.err
@@ -1362,7 +1364,7 @@ public class Main {
 
 		Concept c = null;
 		try {
-			c = DLLearner.parseConcept("EXISTS r.(TOP AND (TOP OR BOTTOM))");
+			c = KBParser.parseConcept("EXISTS r.(TOP AND (TOP OR BOTTOM))");
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1393,7 +1395,7 @@ public class Main {
 		 */
 		Concept c = null;
 		try {
-			c = DLLearner.parseConcept("EXISTS uncle.TOP");
+			c = KBParser.parseConcept("EXISTS uncle.TOP");
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

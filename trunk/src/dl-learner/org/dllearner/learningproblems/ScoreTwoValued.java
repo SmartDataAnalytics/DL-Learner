@@ -1,7 +1,9 @@
-package org.dllearner;
+package org.dllearner.learningproblems;
 
 import java.util.Set;
 
+import org.dllearner.Config;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.Individual;
 
 /**

@@ -11,8 +11,8 @@ import java.util.TreeSet;
 
 import org.dllearner.Config;
 import org.dllearner.LearningProblem;
-import org.dllearner.Score;
 import org.dllearner.algorithms.LearningAlgorithm;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;

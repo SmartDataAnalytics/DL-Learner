@@ -6,9 +6,12 @@ import java.util.TreeSet;
 
 import org.dllearner.Config.Refinement;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.Negation;
+import org.dllearner.learningproblems.ScoreThreeValued;
+import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.learningproblems.DefinitionLP.UseMultiInstanceChecks;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
