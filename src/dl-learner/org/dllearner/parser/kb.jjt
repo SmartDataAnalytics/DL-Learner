@@ -1,0 +1,312 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/**
+ * KB file parser.
+ */
+
+options {
+  JDK_VERSION = "1.5";
+  STATIC = false;
+}
+ 
+PARSER_BEGIN(KBParser) 
+package org.dllearner.parser;
+
+import org.dllearner.core.dl.*;
+
+public class KBParser {
+
+	public static final String internalNamespace = "http://localhost/foo#";
+
+	// method to give all internal stuff an URI (not necessary for DLs, but for OWL ontologies
+	// and it should be possible to represent the internal KB as OWL ontology)
+	public static String getInternalURI(String name) {
+		if(name.startsWith("http://"))
+			return name;
+		else
+			return internalNamespace + name;
+	}
+
+}
+PARSER_END(KBParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+} 
+
+TOKEN :
+{
+    < COMMAND_END: "." >
+  | < ID: ["a"-"z"] (["_","a"-"z","A"-"Z","0"-"9"])* >
+  | < NUMBER: (["1"-"9"] (["0"-"9"])* | "0") >
+  | < DOUBLE: (["1"-"9"] (["0"-"9"])* | "0") "." (["0"-"9"])* >
+  | < TOP: "TOP" >
+  | < BOTTOM: "BOTTOM" >
+  | < AND: "AND" >
+  | < OR: "OR" >
+  | < EXISTS: "EXISTS" | "SOME" >
+  | < ALL: "ALL" | "FORALL" >
+  | < NOT: "NEG" | "NOT" >
+  | < GE: ">=" >
+  | < LE: "<=" >
+  | < STRING: "\"" (~["\"","\\","\n","\r"])* "\"">
+}
+
+KB KB() :
+{
+	ConceptAssertion conceptAssertion;
+	RoleAssertion roleAssertion;
+	RBoxAxiom rBoxAxiom;
+	Equality equality;
+	Inclusion inclusion;
+	KB kb = new KB();
+}
+{
+  (		LOOKAHEAD(Concept() "(" Individual() ")" <COMMAND_END>) conceptAssertion=ABoxConcept()
+  		{ kb.addABoxAxiom(conceptAssertion); }
+  	|	LOOKAHEAD([Not()] AtomicRole() "(" Individual() ",") roleAssertion = ABoxRole()
+  		{ kb.addABoxAxiom(roleAssertion); }	
+  	|	rBoxAxiom = Transitive()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	| 	rBoxAxiom = Functional()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	|	rBoxAxiom = Symmetric()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	|	rBoxAxiom = Inverse()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	|	rBoxAxiom = Subrole()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  		// da Konfigurationsoptionen ausgeschlossen sind, reicht es bis zum "=" zu suchen
+  	|	LOOKAHEAD(Concept() "=") equality = TBoxEquiv()
+  		{ kb.addTBoxAxiom(equality); }
+  	|	LOOKAHEAD(Concept() ("SUBCLASSOF" | "SUB" )) inclusion = TBoxSub()
+  		{ kb.addTBoxAxiom(inclusion); }
+  )*
+  <EOF>
+  { return kb; }
+}
+
+ConceptAssertion ABoxConcept() : {Concept c; Individual i;}
+{
+	c=Concept() "(" i=Individual() ")" <COMMAND_END>
+	{ return new ConceptAssertion(c,i); }	
+}
+
+RoleAssertion ABoxRole() : 
+{ 
+	boolean isNegated=false; 
+	AtomicRole ar;
+	Individual i1,i2;
+}
+{
+   	[Not() {isNegated=true;}] ar=AtomicRole() "(" i1=Individual() "," i2=Individual() ")" <COMMAND_END>
+   	{
+   		if(isNegated)
+   			throw new Error("negated role assertions not supported yet");
+   		else
+   			return new RoleAssertion(ar,i1,i2);
+   	}
+}
+
+TransitiveRoleAxiom Transitive() : {AtomicRole ar;}
+{
+   "Transitive" "(" ar=AtomicRole() ")" <COMMAND_END>
+   { return new TransitiveRoleAxiom(ar); }
+}
+
+FunctionalRoleAxiom Functional() : {AtomicRole ar;}
+{
+   "Functional" "(" ar=AtomicRole() ")" <COMMAND_END>
+   { return new FunctionalRoleAxiom(ar); }
+   
+}
+
+SymmetricRoleAxiom Symmetric() : {AtomicRole ar;}
+{
+   "Symmetric" "(" ar=AtomicRole() ")" <COMMAND_END>
+   { return new SymmetricRoleAxiom(ar); }
+}
+
+InverseRoleAxiom Inverse() : {AtomicRole ar1,ar2;}
+{
+   "Inverse" "(" ar1=AtomicRole() "," ar2=AtomicRole() ")" <COMMAND_END>
+   { return new InverseRoleAxiom(ar1,ar2); }
+}
+
+SubRoleAxiom Subrole() : {AtomicRole ar1,ar2;}
+{
+   "Subrole" "(" ar1=AtomicRole() "," ar2=AtomicRole() ")" <COMMAND_END>
+   { return new SubRoleAxiom(ar1,ar2);}
+}
+
+Equality TBoxEquiv() : {Concept c1,c2;}
+{
+   c1=Concept() "=" c2=Concept() <COMMAND_END>
+   { return new Equality(c1,c2); }
+}
+
+Inclusion TBoxSub() : {Concept c1,c2;}
+{
+   c1=Concept() ("SUBCLASSOF" | "SUB" | "SUBCONCEPTOF") c2=Concept() <COMMAND_END>
+   { return new Inclusion(c1,c2);}
+}
+
+Concept Concept() : 
+{
+	Concept c,c1,c2;
+	AtomicConcept ac;
+	AtomicRole ar;
+	String s;
+	int i;
+}
+{
+    Top() {return new Top();}
+  | Bottom() {return new Bottom();}
+  | ac = AtomicConcept() {return ac;}
+  // | s=Id() {return new AtomicConcept(s);}
+  // | s=String() {return new AtomicConcept(s);} 
+  // Parser geht bis zum n�chsten AND oder OR
+  | LOOKAHEAD( "(" Concept() And())    "(" c1=Concept() And() c2=Concept() ")" 
+  	{return new Conjunction(c1,c2);}
+  | LOOKAHEAD( "(" Concept() Or())    "(" c1=Concept() Or() c2=Concept() ")"
+  	{return new Disjunction(c1,c2);}
+  // EXISTS oder ALL reicht aus um richtigen Zweig zu w�hlen
+  // | Exists() s=Id() "." c=Concept()
+  // {return new Exists(new AtomicRole(s),c); } 
+  | Exists() ar=AtomicRole() "." c=Concept()
+  	{return new Exists(ar,c); } 
+  // | All() s=Id() "." c=Concept()
+  //	{return new All(new AtomicRole(s),c); }
+  | All() ar=AtomicRole() "." c=Concept()
+	{return new All(ar,c); }	
+  | Not() c=Concept()
+  	{return new Negation(c); }
+  // | GE() i=Integer() s=Id() "." c=Concept()
+  //	{return new GreaterEqual(i,new AtomicRole(s),c);}
+  | GE() i=Integer() ar=AtomicRole() "." c=Concept()
+  	{return new GreaterEqual(i,ar,c);}  	
+  // | LE() i=Integer() s=Id() "." c=Concept()
+  //	{return new LessEqual(i,new AtomicRole(s),c);}
+  | LE() i=Integer() ar=AtomicRole() "." c=Concept()
+  	{return new LessEqual(i,ar,c);}  	
+}
+
+void Or() : {} { <OR> }
+void And() : {} { <AND> }
+void Top() : {} { <TOP> }
+void Bottom() : {} { <BOTTOM> } 
+void Exists() : {} { <EXISTS> }
+void All() : {} { <ALL> }
+void Not() : {} { <NOT> }
+void GE() : {} { <GE> }
+void LE() : {} { <LE> }
+
+AtomicConcept AtomicConcept() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return new AtomicConcept(getInternalURI(name));
+	}
+}
+
+AtomicRole AtomicRole() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return new AtomicRole(getInternalURI(name));
+	}
+}
+
+Individual Individual() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return new Individual(getInternalURI(name));
+	}
+}
+
+String Id() : 
+{
+  Token t;
+}
+{
+  t=<ID>
+  {
+    // jjtThis.setId(t.image);
+    return t.image;
+  }
+}
+
+double Double() : 
+{
+  Token t;
+}
+{
+  t=<DOUBLE>
+  {
+    return new Double(t.image);
+  }
+}
+
+int Integer() : 
+{
+  Token t;
+}
+{
+  t=<NUMBER>
+  {
+    // jjtThis.setId(t.image);
+    // muss noch in Integer umgewandelt werden
+    return new Integer(t.image);
+  }
+}
+
+String String() : 
+{
+  Token t;
+  String s;
+}
+{
+  t=<STRING>
+  {
+    // jjtThis.setId(t.image);
+    // es werden sofort die Anfuehrungszeichen abgeschnitten
+    s = t.image;
+    s = s.substring(1, s.length() - 1);
+    return s;
+  }
+}
