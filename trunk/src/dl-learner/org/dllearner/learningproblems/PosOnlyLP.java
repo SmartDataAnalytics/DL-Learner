@@ -19,12 +19,17 @@
  */
 package org.dllearner.learningproblems;
 
+import org.dllearner.core.LearningProblemNew;
+import org.dllearner.core.ReasoningService;
+
 /**
- * Marker interface for definition learning problems.
- * 
  * @author Jens Lehmann
  *
  */
-public interface DefinitionLP  {
-		
+public abstract class PosOnlyLP extends LearningProblemNew {
+
+	public PosOnlyLP(ReasoningService reasoningService) {
+		super(reasoningService);
+	}
+
 }

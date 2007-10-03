@@ -25,7 +25,7 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.DefinitionLPTwoValued;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.DIGReasonerNew;
 
 /**
@@ -57,7 +57,7 @@ public class ComponentTest {
 		rs.init();
 		
 		// create a learning problem and set positive and negative examples
-		LearningProblemNew lp = cm.learningProblem(DefinitionLPTwoValued.class, rs);
+		LearningProblemNew lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
 		Set<String> positiveExamples = new TreeSet<String>();
 		positiveExamples.add("http://example.com/father#stefan");
 		positiveExamples.add("http://example.com/father#markus");

@@ -32,9 +32,9 @@ import org.dllearner.core.dl.Individual;
  * @author Jens Lehmann
  *
  */
-public class DefinitionLPThreeValued extends DefinitionLP {
+public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 
-	public DefinitionLPThreeValued(ReasoningService reasoningService) {
+	public PosNegDefinitionLPStrict(ReasoningService reasoningService) {
 		super(reasoningService);
 	}
 	
@@ -42,7 +42,7 @@ public class DefinitionLPThreeValued extends DefinitionLP {
 	 * @see org.dllearner.core.Component#getName()
 	 */
 	public static String getName() {
-		return "two valued definition learning problem";
+		return "three valued definition learning problem";
 	}
 
 	/* (non-Javadoc)

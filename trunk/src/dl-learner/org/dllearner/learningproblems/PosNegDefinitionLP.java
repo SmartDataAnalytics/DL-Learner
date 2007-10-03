@@ -50,44 +50,10 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  * 
  */
-public class DefinitionLPTwoValued extends DefinitionLP {
+public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 
-	private SortedSet<Individual> positiveExamples;
-	private SortedSet<Individual> negativeExamples;
-	private SortedSet<Individual> posNegExamples;
-
-	public DefinitionLPTwoValued(ReasoningService reasoningService) {
+	public PosNegDefinitionLP(ReasoningService reasoningService) {
 		super(reasoningService);
-	}
-
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringSetConfigOption("positiveExamples",
-				"positive examples"));
-		options.add(new StringSetConfigOption("negativeExamples",
-				"negative examples"));
-		options.add(new BooleanConfigOption("useRetrievalForClassficiation", 
-				"Specifies whether to use retrieval or instance checks for testing a concept."));
-		return options;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	@SuppressWarnings( { "unchecked" })
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if (name.equals("positiveExamples"))
-			positiveExamples = CommonConfigMappings
-					.getIndividualSet((Set<String>) entry.getValue());
-		else if (name.equals("negativeExamples"))
-			negativeExamples = CommonConfigMappings
-					.getIndividualSet((Set<String>) entry.getValue());
-		else if (name.equals("useRetrievalForClassification"))
-			useRetrievalForClassification = (Boolean) entry.getValue();
 	}
 
 	/*
@@ -97,16 +63,6 @@ public class DefinitionLPTwoValued extends DefinitionLP {
 	 */
 	public static String getName() {
 		return "two valued definition learning problem";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#init()
-	 */
-	@Override
-	public void init() {
-		posNegExamples = Helper.union(positiveExamples, negativeExamples);
 	}
 
 	/**
@@ -159,7 +115,7 @@ public class DefinitionLPTwoValued extends DefinitionLP {
 					}
 					// one check
 				} else {
-					Set<Individual> s = reasoningService.instanceCheck(concept, posNegExamples);
+					Set<Individual> s = reasoningService.instanceCheck(concept, allExamples);
 					// test whether all positive examples are covered
 					if (s.containsAll(positiveExamples))
 						return s.size() - positiveExamples.size();
@@ -226,8 +182,8 @@ public class DefinitionLPTwoValued extends DefinitionLP {
 
 			if (useDIGMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
 				SortedSet<Individual> posClassified = reasoningService.instanceCheck(concept,
-						posNegExamples);
-				SortedSet<Individual> negClassified = Helper.difference(posNegExamples,
+						allExamples);
+				SortedSet<Individual> negClassified = Helper.difference(allExamples,
 						posClassified);
 				posAsPos = Helper.intersection(positiveExamples, posClassified);
 				posAsNeg = Helper.intersection(positiveExamples, negClassified);

@@ -34,25 +34,25 @@ import org.dllearner.core.LearningProblemNew;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.learningproblems.DefinitionLP;
-import org.dllearner.learningproblems.DefinitionLPThreeValued;
-import org.dllearner.learningproblems.DefinitionLPTwoValued;
+import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 
 public class RandomGuesser extends LearningAlgorithmNew implements LearningAlgorithm {
 
     private Concept bestDefinition = null;
     private Score bestScore;
     private double bestFitness = Double.NEGATIVE_INFINITY;
-    private DefinitionLP learningProblem;
+    private LearningProblemNew learningProblem;
 	private int numberOfTrees;
 	private int maxDepth;
     
-	public RandomGuesser(DefinitionLP learningProblem) {
+	public RandomGuesser(LearningProblemNew learningProblem) {
 		this.learningProblem = learningProblem;
 	}
 	
 	public static Collection<Class<? extends LearningProblemNew>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblemNew>> problems = new LinkedList<Class<? extends LearningProblemNew>>();
-		problems.add(DefinitionLP.class);
+		problems.add(LearningProblemNew.class);
 		return problems;
 	}
 	

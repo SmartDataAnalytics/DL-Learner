@@ -20,11 +20,11 @@
 package org.dllearner.learningproblems;
 
 /**
- * Marker interface for definition learning problems.
+ * Marker interface for inclusion learning problems.
  * 
  * @author Jens Lehmann
  *
  */
-public interface DefinitionLP  {
-		
+public interface InclusionLP {
+
 }

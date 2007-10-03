@@ -60,7 +60,7 @@ import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.RoleAssertion;
 import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.learningproblems.DefinitionLP;
-import org.dllearner.learningproblems.DefinitionLPTwoValued;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.modules.ModuleInvocator;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -821,7 +821,7 @@ public class Main {
 	// erzeugt Statistiken für MLDM-Paper zur Verarbeitung mit GnuPlot
 	// Vorsicht: Laufzeit von mehreren Stunden
 	@SuppressWarnings("unused")
-	private void createStatisticsMLDMPaper(DefinitionLP learningProblem, String baseDir) {
+	private void createStatisticsMLDMPaper(PosNegDefinitionLP learningProblem, String baseDir) {
 		// Algorithmus 1: hybrid GP (100% refinement)
 		// Algorithmus 2: 50% refinement, 40% crossover, 1% mutation
 		// Algorithmus 3: 80% crossover, 2% mutation
@@ -888,7 +888,7 @@ public class Main {
 					reasoner.prepareSubsumptionHierarchy();
 					rs = new ReasoningService(reasoner);
 					// learningProblem = new LearningProblem(rs, posExamples, negExamples);
-					learningProblem = cm.learningProblem(DefinitionLPTwoValued.class, rs);
+					learningProblem = cm.learningProblem(PosNegDefinitionLP.class, rs);
 					cm.applyConfigEntry(learningProblem, "positiveExamples", posExamples);
 					cm.applyConfigEntry(learningProblem, "negativeExamples", negExamples);
 

@@ -12,7 +12,7 @@ import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.learningproblems.ScoreThreeValued;
 import org.dllearner.learningproblems.ScoreTwoValued;
-import org.dllearner.learningproblems.DefinitionLP.UseMultiInstanceChecks;
+import org.dllearner.learningproblems.PosNegLP.UseMultiInstanceChecks;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SortedSetTuple;

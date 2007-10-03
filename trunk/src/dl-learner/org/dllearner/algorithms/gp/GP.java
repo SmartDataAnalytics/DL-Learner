@@ -58,6 +58,7 @@ import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Top;
 import org.dllearner.learningproblems.DefinitionLP;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Helper;
 
 /**
@@ -116,7 +117,7 @@ public class GP extends LearningAlgorithmNew implements LearningAlgorithm {
     private Score bestScore;
     private Concept bestConcept;
     
-    private DefinitionLP learningProblem;
+    private PosNegLP learningProblem;
     
     // private GeneticRefinementOperator psi;
     private Psi psi;
@@ -128,13 +129,13 @@ public class GP extends LearningAlgorithmNew implements LearningAlgorithm {
      * 1.0 and a probability of mutation of 0.01.
      * 
      */
-    public GP(DefinitionLP learningProblem) {
+    public GP(PosNegLP learningProblem) {
     	this.learningProblem = learningProblem;
     }
     
 	public static Collection<Class<? extends LearningProblemNew>> supportedLearningAlgorithms() {
 		Collection<Class<? extends LearningProblemNew>> problems = new LinkedList<Class<? extends LearningProblemNew>>();
-		problems.add(DefinitionLP.class);
+		problems.add(PosNegLP.class);
 		return problems;
 	}
     
