@@ -25,8 +25,8 @@ import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Top;
-import org.dllearner.learningproblems.DefinitionLP;
-import org.dllearner.learningproblems.DefinitionLPThreeValued;
+import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScoreThreeValued;
 import org.dllearner.reasoning.FastRetrieval;
 import org.dllearner.reasoning.ReasonerType;
@@ -57,7 +57,7 @@ public class GPUtilities {
 	
     private static Random rand = new Random();
     
-    private static Score calculateFitness(DefinitionLP learningProblem, Concept hypothesis) {
+    private static Score calculateFitness(LearningProblemNew learningProblem, Concept hypothesis) {
     	return calculateFitness(learningProblem, hypothesis, null);
     }
     
@@ -66,7 +66,7 @@ public class GPUtilities {
     // (macht aber nicht so viel Sinn, da man das bei richtigen Reasoning-Algorithmen
     // ohnehin mit einer Erweiterung der Wissensbasis um die Inklusion Target SUBSETOF ReturnType
     // erschlagen kann)
-	private static Score calculateFitness(DefinitionLP learningProblem, Concept hypothesis, Concept adc) {
+	private static Score calculateFitness(LearningProblemNew learningProblem, Concept hypothesis, Concept adc) {
 		Concept extendedHypothesis;
 		
 		if (!Config.returnType.equals("")) {
@@ -89,7 +89,9 @@ public class GPUtilities {
 		
 		Score score;
 		if(Config.GP.adc)
-			score = learningProblem.computeScore(extendedHypothesis, adc);
+			// TODO: ADC-Support
+			// score = learningProblem.computeScore(extendedHypothesis, adc);
+			throw new RuntimeException("ADC not supported");
 		else
 			score = learningProblem.computeScore(extendedHypothesis);
 		
@@ -121,11 +123,11 @@ public class GPUtilities {
 		return score;
 	}    
     
-	public static Program createProgram(DefinitionLP learningProblem, Concept mainTree) {
+	public static Program createProgram(LearningProblemNew learningProblem, Concept mainTree) {
 		return new Program(calculateFitness(learningProblem, mainTree), mainTree);
 	}
 	
-	private static Program createProgram(DefinitionLP learningProblem, Concept mainTree, Concept adc) {
+	private static Program createProgram(LearningProblemNew learningProblem, Concept mainTree, Concept adc) {
 		return new Program(calculateFitness(learningProblem, mainTree,adc), mainTree, adc);
 	}
 	
@@ -133,7 +135,7 @@ public class GPUtilities {
      * Perform a point mutation on the given program.
      * @param p The program to be mutated.
      */
-    public static Program mutation(DefinitionLP learningProblem, Program p) {
+    public static Program mutation(LearningProblemNew learningProblem, Program p) {
     	mutation++;
     	if(Config.GP.adc) {
     		// TODO: hier kann man noch mehr Feinabstimmung machen, d.h.
@@ -157,7 +159,7 @@ public class GPUtilities {
     	}
     }
 
-    private static Concept mutation(DefinitionLP learningProblem, Concept tree, boolean useADC) {
+    private static Concept mutation(LearningProblemNew learningProblem, Concept tree, boolean useADC) {
     	// auch bei Mutation muss darauf geachtet werden, dass 
     	// Baum nicht modifiziert wird (sonst w�rde man automatisch auch
     	// andere "selected individuals" modifizieren)
@@ -226,7 +228,7 @@ public class GPUtilities {
      * @param p2 Second parent.
      * @return A two-element array containing the offpsring.
      */
-    public static Program[] crossover(DefinitionLP learningProblem, Program p1, Program p2) {
+    public static Program[] crossover(LearningProblemNew learningProblem, Program p1, Program p2) {
     	crossover++;
     	if(Config.GP.adc) {
     		Concept[] pt;
@@ -302,7 +304,7 @@ public class GPUtilities {
 
     // m�sste auch mit ADC funktionieren, da nur am Hauptbaum etwas 
     // ver�ndert wird
-    public static Program hillClimbing(DefinitionLP learningProblem, Program p) {
+    public static Program hillClimbing(LearningProblemNew learningProblem, Program p) {
     	hillClimbing++;
     	// checken, ob Bedingungen f�r hill-climbing erf�llt sind
     	if(!learningProblem.getReasoningService().getReasonerType().equals(ReasonerType.FAST_RETRIEVAL)
@@ -325,7 +327,7 @@ public class GPUtilities {
     // Alternativen zu speichern und dann ein Element zuf�llig auszuw�hlen,
     // aber w�rde man das nicht machen, dann w�re das ein starker Bias
     // zu z.B. Disjunktion (weil die als erstes getestet wird)
-    private static Concept hillClimbing(DefinitionLP learningProblem, Concept node, ScoreThreeValued score) {
+    private static Concept hillClimbing(LearningProblemNew learningProblem, Concept node, ScoreThreeValued score) {
     	SortedSetTuple<Individual> tuple = new SortedSetTuple<Individual>(score.getPosClassified(),score.getNegClassified());
     	SortedSetTuple<String> stringTuple = Helper.getStringTuple(tuple);
     	// FlatABox abox = FlatABox.getInstance();
@@ -440,15 +442,15 @@ public class GPUtilities {
     	}
     }
     
-    private static ScoreThreeValued getScore(int conceptLength, DefinitionLP learningProblem, SortedSet<Individual> posClassified, SortedSet<Individual> negClassified) {
+    private static ScoreThreeValued getScore(int conceptLength, LearningProblemNew learningProblem, SortedSet<Individual> posClassified, SortedSet<Individual> negClassified) {
     	// es muss hier die Helper-Methode verwendet werden, sonst werden
     	// Individuals gel�scht !!
     	SortedSet<Individual> neutClassified = Helper.intersection(learningProblem.getReasoningService().getIndividuals(),posClassified); 
     	// learningProblem.getReasoner().getIndividuals();
     	// neutClassified.retainAll(posClassified);
     	neutClassified.retainAll(negClassified);
-    	
-    	return new ScoreThreeValued(conceptLength, posClassified, neutClassified, negClassified, learningProblem.getPositiveExamples(),((DefinitionLPThreeValued)learningProblem).getNeutralExamples(),learningProblem.getNegativeExamples());
+    	PosNegDefinitionLPStrict lp = (PosNegDefinitionLPStrict)learningProblem;
+    	return new ScoreThreeValued(conceptLength, posClassified, neutClassified, negClassified, lp.getPositiveExamples(),lp.getNeutralExamples(),lp.getNegativeExamples());
     }
     
     // aktualisiert die besten Knoten
@@ -477,7 +479,7 @@ public class GPUtilities {
     	return returnMap;
     }
     
-    private static Concept pickTerminalSymbol(DefinitionLP learningProblem, boolean useADC) {
+    private static Concept pickTerminalSymbol(LearningProblemNew learningProblem, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
         int nr;
         int nrOfConcepts = learningProblem.getReasoningService().getAtomicConcepts().size();
@@ -607,7 +609,7 @@ public class GPUtilities {
      * @param depth Depth of the tree.
      * @return The created program.
      */
-    public static Program createFullRandomProgram(DefinitionLP learningProblem, int depth) {
+    public static Program createFullRandomProgram(LearningProblemNew learningProblem, int depth) {
     	if(Config.GP.adc) {
     		// erster Baum Hauptbaum, zweiter Baum ADC
     		return createProgram(learningProblem, createFullRandomTree(learningProblem, depth, true),
@@ -617,7 +619,7 @@ public class GPUtilities {
     		return createProgram(learningProblem, createFullRandomTree(learningProblem, depth, false));
     }
 
-    private static Concept createFullRandomTree(DefinitionLP learningProblem, int depth, boolean useADC) {
+    private static Concept createFullRandomTree(LearningProblemNew learningProblem, int depth, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
         int numberOfRoles = learningProblem.getReasoningService().getAtomicRoles().size(); //  abox.roles.size();
         
@@ -668,7 +670,7 @@ public class GPUtilities {
      * @param depth The maximum depth of the program tree.
      * @return The created program.
      */
-    public static Program createGrowRandomProgram(DefinitionLP learningProblem, int depth) {
+    public static Program createGrowRandomProgram(LearningProblemNew learningProblem, int depth) {
     	if(Config.GP.adc) {
     		// erster Baum Hauptbaum, zweiter Baum ADC
     		return createProgram(learningProblem, createGrowRandomTree(learningProblem,depth,true),
@@ -678,7 +680,7 @@ public class GPUtilities {
     		return createProgram(learningProblem, createGrowRandomTree(learningProblem, depth,false));    	
     }
 
-    private static Concept createGrowRandomTree(DefinitionLP learningProblem, int depth, boolean useADC) {
+    private static Concept createGrowRandomTree(LearningProblemNew learningProblem, int depth, boolean useADC) {
     	/*
         private static Concept pickAlphabetSymbol(boolean useADC) {
             FlatABox abox = FlatABox.getInstance();

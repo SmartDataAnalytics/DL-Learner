@@ -12,7 +12,7 @@ import org.dllearner.algorithms.gp.GP.AlgorithmType;
 import org.dllearner.algorithms.gp.GP.SelectionType;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
-import org.dllearner.learningproblems.DefinitionLP.UseMultiInstanceChecks;
+import org.dllearner.learningproblems.PosNegLP.UseMultiInstanceChecks;
 import org.dllearner.learningproblems.ScoreThreeValued.ScoreMethod;
 import org.dllearner.reasoning.ReasonerType;
 

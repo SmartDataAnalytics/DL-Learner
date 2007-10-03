@@ -43,7 +43,7 @@ import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
 import org.dllearner.kb.OntologyFileFormat;
-import org.dllearner.learningproblems.DefinitionLPTwoValued;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.reasoning.DIGReasoner;
 
@@ -190,7 +190,7 @@ public class PaperStatistics {
 					
 					// create learning problem
 					// LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
-					LearningProblemNew learningProblem = cm.learningProblem(DefinitionLPTwoValued.class, rs);
+					LearningProblemNew learningProblem = cm.learningProblem(PosNegDefinitionLP.class, rs);
 					
 					// prepare reasoner for using subsumption and role hierarchy
 					// TODO: currently, it is a small unfairness that each algorithm

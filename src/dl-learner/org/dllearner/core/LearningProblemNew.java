@@ -19,8 +19,10 @@
  */
 package org.dllearner.core;
 
+import org.dllearner.core.dl.Concept;
+
 /**
- * Marker interface for all learning problems (the "New" at the end of the name
+ * Base class for all learning problems (the "New" at the end of the name
  * is temporary for the restructuring process).
  * 
  * @author Jens Lehmann
@@ -32,6 +34,14 @@ public abstract class LearningProblemNew extends Component {
 	
 	public LearningProblemNew(ReasoningService reasoningService) {
 		this.reasoningService = reasoningService;
+	}
+	
+	public abstract Score computeScore(Concept concept);
+	
+	// TODO: remove? reasoning service should probably not be accessed via
+	// learning problem
+	public ReasoningService getReasoningService() {
+		return reasoningService;
 	}
 	
 }

@@ -22,6 +22,7 @@ import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Quantification;
 import org.dllearner.core.dl.Top;
 import org.dllearner.learningproblems.DefinitionLP;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 
 /**
@@ -40,12 +41,12 @@ public class PsiDown implements RefinementOperator {
 
 	ConceptComparator conceptComparator = new ConceptComparator();
 	
-	DefinitionLP learningProblem;
+	PosNegLP learningProblem;
 	ReasoningService reasoningService;
 	
 	private TreeSet<Concept> topSet;
 	
-	public PsiDown(DefinitionLP learningProblem) {
+	public PsiDown(PosNegLP learningProblem) {
 		this.learningProblem = learningProblem;
 		reasoningService = learningProblem.getReasoningService();
 		

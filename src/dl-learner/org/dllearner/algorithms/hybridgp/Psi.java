@@ -11,6 +11,7 @@ import org.dllearner.core.LearningProblemNew;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.learningproblems.DefinitionLP;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 
@@ -18,7 +19,7 @@ public class Psi implements GeneticRefinementOperator {
 
 	PsiUp pu;
 	PsiDown pd;
-	DefinitionLP learningProblem;
+	PosNegLP learningProblem;
 	int nrOfPositiveExamples;
 	int nrOfNegativeExamples;
 	Random random;
@@ -48,7 +49,7 @@ public class Psi implements GeneticRefinementOperator {
 	private long someTimeStart = 0;
 	public long someTime = 0;
 	
-	public Psi(DefinitionLP learningProblem) { //, PsiUp pu, PsiDown pd) {
+	public Psi(PosNegLP learningProblem) { //, PsiUp pu, PsiDown pd) {
 		// this.pu = pu;
 		// this.pd = pd;
 		this.learningProblem = learningProblem;
