@@ -19,12 +19,12 @@
  */
 
 /**
- * Conf file parser.
+ * Conf file parser. 
  */
 
 options {
-  JDK_VERSION = "1.6";
-  STATIC = false;
+  JDK_VERSION = "1.5";
+  STATIC = false; 
 }
 
 PARSER_BEGIN(ConfParser)
@@ -80,13 +80,13 @@ public class ConfParser {
 	// private KB kb = new KB();
 	// public static final String internalNamespace = "http://localhost/foo#";
 	
-	public Map<AtomicConcept,SortedSet<Individual>> getPositiveExamples() {
+	public SortedSet<Individual> getPositiveExamples() {
 		return positiveExamples;
 	}
 	
-	public Map<AtomicConcept,SortedSet<Individual>> getNegativeExamples() {
+	public SortedSet<Individual> getNegativeExamples() {
 		return negativeExamples;
-	}
+	} 
 	
 	public List<ConfigurationOption> getConfOptions() {
 		return confOptions;
@@ -151,7 +151,7 @@ public class ConfParser {
 	System.out.print("Parsing " + f.getName() + " ... ");
     long parseStartTime = System.currentTimeMillis();
 
-    SimpleNode n = null;
+    // SimpleNode n = null;
     ConfParser learner = null;
     try {
         learner = new ConfParser(new FileInputStream(args[args.length-1]));
@@ -161,7 +161,7 @@ public class ConfParser {
         System.exit(0);
     }
     try {
-      n = learner.Start();  
+      learner.Start();  
       // n.dump("");
       // System.out.println("Thank you.");
     } catch (Exception e) {
@@ -231,7 +231,7 @@ TOKEN :
   | <STRING: "\"" (~["\"","\\","\n","\r"])* "\"">
 }
 
-SimpleNode Start() : 
+void Start() : 
 {
 	ConceptAssertion conceptAssertion;
 	RoleAssertion roleAssertion;
@@ -252,7 +252,6 @@ SimpleNode Start() :
   	|	LOOKAHEAD(<NEG_EX>) NegExample()
   )*
   <EOF>
-  { return jjtThis; }
 }
 
 ConfigurationOption ConfOption() : 
