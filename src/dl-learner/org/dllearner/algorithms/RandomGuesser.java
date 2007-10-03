@@ -22,7 +22,6 @@ package org.dllearner.algorithms;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.dllearner.LearningProblem;
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.algorithms.gp.GPUtilities;
 import org.dllearner.core.ConfigEntry;
@@ -30,29 +29,26 @@ import org.dllearner.core.ConfigOption;
 import org.dllearner.core.IntegerConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.LearningAlgorithmNew;
-import org.dllearner.core.LearningProblemNew;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
-import org.dllearner.learningproblems.DefinitionLP;
-import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
 
 public class RandomGuesser extends LearningAlgorithmNew implements LearningAlgorithm {
 
     private Concept bestDefinition = null;
     private Score bestScore;
     private double bestFitness = Double.NEGATIVE_INFINITY;
-    private LearningProblemNew learningProblem;
+    private LearningProblem learningProblem;
 	private int numberOfTrees;
 	private int maxDepth;
     
-	public RandomGuesser(LearningProblemNew learningProblem) {
+	public RandomGuesser(LearningProblem learningProblem) {
 		this.learningProblem = learningProblem;
 	}
 	
-	public static Collection<Class<? extends LearningProblemNew>> supportedLearningProblems() {
-		Collection<Class<? extends LearningProblemNew>> problems = new LinkedList<Class<? extends LearningProblemNew>>();
-		problems.add(LearningProblemNew.class);
+	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
+		problems.add(LearningProblem.class);
 		return problems;
 	}
 	

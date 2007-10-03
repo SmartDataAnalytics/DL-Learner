@@ -211,20 +211,4 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 		}
 	}
 
-	@Override
-	public SortedSet<Individual> getNegativeExamples() {
-		return negativeExamples;
-	}
-
-	@Override
-	public SortedSet<Individual> getPositiveExamples() {
-		return positiveExamples;
-	}
-
-	// TODO: remove? reasoning service should probably not be accessed via
-	// learning problem
-	@Override
-	public ReasoningService getReasoningService() {
-		return reasoningService;
-	}
 }

@@ -57,7 +57,7 @@ public class ComponentTest {
 		rs.init();
 		
 		// create a learning problem and set positive and negative examples
-		LearningProblemNew lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
+		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
 		Set<String> positiveExamples = new TreeSet<String>();
 		positiveExamples.add("http://example.com/father#stefan");
 		positiveExamples.add("http://example.com/father#markus");

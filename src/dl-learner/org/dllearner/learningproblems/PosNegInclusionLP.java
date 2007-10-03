@@ -29,7 +29,7 @@ import org.dllearner.core.CommonConfigMappings;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
-import org.dllearner.core.LearningProblemNew;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.StringSetConfigOption;

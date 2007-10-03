@@ -34,7 +34,7 @@ import org.dllearner.Config.Algorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningAlgorithmNew;
-import org.dllearner.core.LearningProblemNew;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
@@ -190,7 +190,7 @@ public class PaperStatistics {
 					
 					// create learning problem
 					// LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
-					LearningProblemNew learningProblem = cm.learningProblem(PosNegDefinitionLP.class, rs);
+					LearningProblem learningProblem = cm.learningProblem(PosNegDefinitionLP.class, rs);
 					
 					// prepare reasoner for using subsumption and role hierarchy
 					// TODO: currently, it is a small unfairness that each algorithm

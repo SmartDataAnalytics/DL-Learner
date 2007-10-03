@@ -1,6 +1,7 @@
 package org.dllearner.algorithms.refinement;
 
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -10,19 +11,26 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.Config;
-import org.dllearner.LearningProblem;
 import org.dllearner.algorithms.LearningAlgorithm;
+import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.ConfigOption;
+import org.dllearner.core.IntegerConfigOption;
+import org.dllearner.core.InvalidConfigOptionValueException;
+import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Top;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 
-public class ROLearner implements LearningAlgorithm {
+public class ROLearner extends LearningAlgorithmNew {
 	
 	private boolean stop = false;
 	
@@ -31,7 +39,7 @@ public class ROLearner implements LearningAlgorithm {
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	DecimalFormat df = new DecimalFormat();	
 	
-	private LearningProblem learningProblem;
+	private PosNegLP learningProblem;
 	// private LearningProblem learningProblem2;
 	
 	// Menge von Kandidaten für Refinement
@@ -103,7 +111,7 @@ public class ROLearner implements LearningAlgorithm {
 
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
-	public ROLearner(LearningProblem learningProblem) {
+	public ROLearner(PosNegLP learningProblem) {
 		this.learningProblem = learningProblem;
 		// this.learningProblem2 = learningProblem2;
 		operator = new RhoDown(learningProblem);
@@ -203,7 +211,36 @@ public class ROLearner implements LearningAlgorithm {
 		
 		// start();
 	}
+	
+	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
+		problems.add(PosNegDefinitionLP.class);
+		return problems;
+	}
+	
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		return options;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		// TODO Auto-generated method stub
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	// Kernalgorithmus
 	@SuppressWarnings("unchecked")
 	public void start() {
@@ -825,5 +862,7 @@ public class ROLearner implements LearningAlgorithm {
 	public void stop() {
 		stop = true;
 	}
+
+
 
 }
