@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.dllearner.ConfigurationOption;
+import org.dllearner.cli.ConfFileOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
@@ -70,7 +70,7 @@ public class PartialOntology implements PreprocessingModule {
 	public void preprocess(KB kb,
 			Map<AtomicConcept, SortedSet<Individual>> positiveExamples,
 			Map<AtomicConcept, SortedSet<Individual>> negativeExamples,
-			List<ConfigurationOption> confOptions,
+			List<ConfFileOption> confOptions,
 			List<List<String>> functionCalls, String baseDir,
 			boolean useQueryMode) {
 		

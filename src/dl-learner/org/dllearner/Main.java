@@ -43,6 +43,7 @@ import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.cli.ConfFileOption;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblem;
@@ -117,7 +118,7 @@ public class Main {
 	// neuer Hauptkonstruktor
 	public Main(KB kb, Map<AtomicConcept, SortedSet<Individual>> positiveExamples,
 			Map<AtomicConcept, SortedSet<Individual>> negativeExamples,
-			List<ConfigurationOption> confOptions, List<List<String>> functionCalls,
+			List<ConfFileOption> confOptions, List<List<String>> functionCalls,
 			String baseDir, boolean useQueryMode) {
 
 		this.kb = kb;

@@ -15,9 +15,9 @@ import java.util.TreeSet;
 
 import org.dllearner.Config;
 import org.dllearner.ConfigurationManager;
-import org.dllearner.ConfigurationOption;
 import org.dllearner.Main;
 import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.cli.ConfFileOption;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
@@ -63,13 +63,13 @@ public class ClientState {
 	public void setStatus(String status) {this.status = status;}
 	
 	ConfigurationManager confMgr;
-	public void addOption(ConfigurationOption c){confMgr.applyConfigurationOption(c);}
+	public void addOption(ConfFileOption c){confMgr.applyConfigurationOption(c);}
 	ROLearner ROL;
 
 	public ClientState() {
 		
 		
-		TreeSet<ConfigurationOption> s=new TreeSet<ConfigurationOption>();
+		TreeSet<ConfFileOption> s=new TreeSet<ConfFileOption>();
 		//s.add(new ConfigurationOption("refinement","quiet","true"));
 		/*s.add(new ConfigurationOption());
 		s.add(new ConfigurationOption());
@@ -79,7 +79,7 @@ public class ClientState {
 		s.add(new ConfigurationOption());*/
 		
 		confMgr = new ConfigurationManager(s);
-		addOption(new ConfigurationOption("refinement","quiet","true"));
+		addOption(new ConfFileOption("refinement","quiet","true"));
 		//confMgr.applyOptions();
 
 	}
@@ -460,7 +460,7 @@ public class ClientState {
 	
 	
 	public void learnMonitored(){
-		addOption(new ConfigurationOption("refinement","ignoredConcepts",ignoredConcept));
+		addOption(new ConfFileOption("refinement","ignoredConcepts",ignoredConcept));
 		this.lm=new LearnMonitor(this);
 		this.lm.start();
 		//this.lm.learn(this);

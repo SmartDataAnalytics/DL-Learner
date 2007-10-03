@@ -30,6 +30,7 @@ options {
 PARSER_BEGIN(ConfParser)
 package org.dllearner.parser; 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
@@ -49,36 +50,40 @@ import org.dllearner.Main;
 import org.dllearner.Info;
 
 import org.dllearner.core.dl.*;
-import org.dllearner.ConfigurationOption;
+import org.dllearner.cli.*;
 import org.dllearner.utilities.*;
 
 public class ConfParser {
 	
+	// examples
 	private SortedSet<Individual> positiveExamples = new TreeSet<Individual>();
 	private SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
 	
-	// Konfigurationsoptionen
-	private List<ConfigurationOption> confOptions = new LinkedList<ConfigurationOption>();
+	// conf file options
+	private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
+	private Map<String,ConfFileOption> confOptionsByName = new HashMap<String,ConfFileOption>();
 	
 	// Funktionsaufrufe (die gleiche Funktion darf mehrmals mit unterschiedlichen
 	// Argumenten aufgerufen werden)
 	// private static Map<String,Set<String>> functionCallsAlt = new TreeMap<String,Set<String>>();
 	// jeder Funktionsaufruf hat eine Liste von n Argumenten; alle Funktionsaufrufe
 	// werden in einer Liste gespeichert
-	private List<List<String>> functionCalls = new LinkedList<List<String>>();
+	// private List<List<String>> functionCalls = new LinkedList<List<String>>();
 	// => irgendwie Funktionsname + Argumente speichern
 	// => d.h. man bräuchte für jede Funktion so eine Liste oder das erste Element
 	// der Liste ist der Funktionsname <= ist noch die praktikabelste Variante
 	
-	// speichert, ob der Parser-Konstruktor aufgerufen wurde: momemtan handelt es
-	// sich um einen statischen Parser, d.h. der Konstruktor darf nur einmal
-	// aufgerufen werden; weitere Parsevorgänge erfolgen dann mit ReInit
-	// TODO: bei einem Webservice braucht man wahrscheinlich einen dynamischen Parser
-	// private static boolean constructorCalled = false;
+	private Map<String,List<List<String>>> functionCalls = new HashMap<String,List<List<String>>>();
 	
-	// Wissensbasis
-	// private KB kb = new KB();
-	// public static final String internalNamespace = "http://localhost/foo#";
+	private void addFunctionCall(String name, List<String> arguments) {
+		if(functionCalls.containsKey(name))
+			functionCalls.get(name).add(arguments);
+		else {
+			List<List<String>> calls = new LinkedList<List<String>>();
+			calls.add(arguments);
+			functionCalls.put(name,calls);
+		}
+	}
 	
 	public SortedSet<Individual> getPositiveExamples() {
 		return positiveExamples;
@@ -88,11 +93,15 @@ public class ConfParser {
 		return negativeExamples;
 	} 
 	
-	public List<ConfigurationOption> getConfOptions() {
+	public List<ConfFileOption> getConfOptions() {
 		return confOptions;
 	}
 	
-	public List<List<String>> getFunctionCalls() {
+	public Map<String,ConfFileOption> getConfOptionsByName() {
+		return confOptionsByName;
+	}
+	
+	public Map<String,List<List<String>>> getFunctionCalls() {
 		return functionCalls;
 	}
 	
@@ -118,7 +127,7 @@ public class ConfParser {
 	}
 	*/
 	
-	public static ConfParser parseFile(String filename) {
+	public static ConfParser parseFile(File filename) {
 		ConfParser learner = null;
 		try {
 			learner = new ConfParser(new FileInputStream(filename));
@@ -238,14 +247,14 @@ void Start() :
 	RBoxAxiom rBoxAxiom;
 	Equality equality;
 	Inclusion inclusion;
-	ConfigurationOption confOption;
+	ConfFileOption confOption;
 }
 {
   (		// bei Konfigurationsoption geht der Parser bis zum Semikolon durch, da das das einzige
   		// sichere Unterscheidungsmerkmal ist
   		LOOKAHEAD(Id() [ "." Id() ] "="  ( Id() | Integer() | Double() | String() 
   		  | "{" "}" | "{" ( ( String() | Id() ) "," )* (String() | Id()) "}" ) <CONF_END>)  confOption=ConfOption()
-  		  { confOptions.add(confOption); }
+  		  { confOptions.add(confOption); confOptionsByName.put(confOption.getFullName(), confOption); }
   	|	LOOKAHEAD(Id() "(" String() ("," String())* ")" <CONF_END>) FunctionCall()
   		// positive bzw. negative Beispiele sind an "+" bzw. "-" erkennbar
   	|	LOOKAHEAD(<POS_EX>) PosExample()
@@ -254,13 +263,13 @@ void Start() :
   <EOF>
 }
 
-ConfigurationOption ConfOption() : 
+ConfFileOption ConfOption() : 
 {
 	boolean containsSubOption=false, isNumeric=false, isDouble=false, isSet=false;
 	String option="", subOption="", value="", tmp=""; 
 	int number = 0;
 	double numberDouble = 0;
-	ConfigurationOption confOption;
+	ConfFileOption confOption;
 	Set<String> values = new HashSet<String>();
 }
 {
@@ -278,25 +287,25 @@ ConfigurationOption ConfOption() :
   	if(containsSubOption) {
   		if(isNumeric)
   			if(isDouble)
-	  			confOption = new ConfigurationOption(option,subOption,numberDouble);
+	  			confOption = new ConfFileOption(option,subOption,numberDouble);
 	  		else
-		  		confOption = new ConfigurationOption(option,subOption,number);
+		  		confOption = new ConfFileOption(option,subOption,number);
   		else
   			if(isSet)
-  				confOption = new ConfigurationOption(option,subOption,values);
+  				confOption = new ConfFileOption(option,subOption,values);
   			else
-  				confOption = new ConfigurationOption(option,subOption,value);
+  				confOption = new ConfFileOption(option,subOption,value);
   	} else {
   		if(isNumeric)
   			if(isDouble)
-	  			confOption = new ConfigurationOption(option,numberDouble);
+	  			confOption = new ConfFileOption(option,numberDouble);
 	  		else
-	  			confOption = new ConfigurationOption(option,number);
+	  			confOption = new ConfFileOption(option,number);
   		else
   			if(isSet)
-	  			confOption = new ConfigurationOption(option,values);
+	  			confOption = new ConfFileOption(option,values);
 	  		else
-	  			confOption = new ConfigurationOption(option,value);
+	  			confOption = new ConfFileOption(option,value);
   	}
   	return confOption;
   	// confOptions.add(confOption);
@@ -309,9 +318,9 @@ void FunctionCall() :
 	List<String> list = new LinkedList<String>();
 }
 {
-  	s1=Id() "(" s2=String() { list.add(s1); list.add(s2); }
+  	s1=Id() "(" s2=String() { list.add(s2); }
   	("," s=String() { list.add(s); } )* ")" <CONF_END>
-  	{ functionCalls.add(list); }
+  	{ addFunctionCall(s1,list); }
 }
 
 void PosExample() : { Individual i; }
