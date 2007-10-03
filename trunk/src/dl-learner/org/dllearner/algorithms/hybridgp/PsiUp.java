@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.LearningProblem;
 import org.dllearner.algorithms.refinement.RefinementOperator;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.All;
@@ -21,7 +20,6 @@ import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Quantification;
 import org.dllearner.core.dl.Top;
-import org.dllearner.learningproblems.DefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 

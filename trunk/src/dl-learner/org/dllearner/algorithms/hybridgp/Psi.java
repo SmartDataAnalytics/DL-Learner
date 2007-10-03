@@ -5,12 +5,9 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.dllearner.LearningProblem;
 import org.dllearner.algorithms.gp.Program;
-import org.dllearner.core.LearningProblemNew;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
-import org.dllearner.learningproblems.DefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;

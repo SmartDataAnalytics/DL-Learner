@@ -30,7 +30,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.Config;
-import org.dllearner.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
@@ -46,6 +45,7 @@ import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Quantification;
 import org.dllearner.core.dl.Role;
 import org.dllearner.core.dl.Top;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 
@@ -62,7 +62,7 @@ import org.dllearner.utilities.ConceptTransformation;
  */
 public class RhoDown implements RefinementOperator {
 
-	private LearningProblem learningProblem;
+	private PosNegLP learningProblem;
 	private ReasoningService rs;
 	
 	// gibt die Gr��e an bis zu der die Refinements des Top-Konzepts
@@ -91,7 +91,7 @@ public class RhoDown implements RefinementOperator {
 	
 	// braucht man wirklich das learningProblem oder reicht der Reasoning-Service?
 	// TODO: conceptComparator könnte auch noch Parameter sein
-	public RhoDown(LearningProblem learningProblem) {
+	public RhoDown(PosNegLP learningProblem) {
 		this.learningProblem = learningProblem;
 		rs = learningProblem.getReasoningService();
 	}

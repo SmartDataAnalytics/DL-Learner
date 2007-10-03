@@ -1,7 +1,6 @@
 package org.dllearner.server;
 
 import org.dllearner.Config;
-import org.dllearner.LearningProblem;
 import org.dllearner.Main;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
@@ -61,10 +60,10 @@ public class LearnMonitor extends Thread {
 			}
 		}
 		c.p("learning started");
-		LearningProblem learningProblem = new LearningProblem(c.getRs(), c.getPosExamples(), c.getNegExamples());
+		// LearningProblem learningProblem = new LearningProblem(c.getRs(), c.getPosExamples(), c.getNegExamples());
 		// erstmal wird nur der Refinement-Learner als Web-Service angeboten
 		//System.out.println("aaaa");
-		c.ROL = new ROLearner(learningProblem);
+		// c.ROL = new ROLearner(learningProblem);
 		
 		c.ROL.start();
 		//new ROLearner();

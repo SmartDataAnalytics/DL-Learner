@@ -29,7 +29,7 @@ import org.dllearner.core.CommonConfigMappings;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
-import org.dllearner.core.LearningProblemNew;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.StringSetConfigOption;
 import org.dllearner.core.dl.Concept;
@@ -40,7 +40,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public abstract class PosNegLP extends LearningProblemNew {
+public abstract class PosNegLP extends LearningProblem {
 	
 	protected SortedSet<Individual> positiveExamples;
 	protected SortedSet<Individual> negativeExamples;

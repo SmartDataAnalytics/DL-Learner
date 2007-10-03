@@ -44,6 +44,8 @@ import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
@@ -61,6 +63,7 @@ import org.dllearner.core.dl.RoleAssertion;
 import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.learningproblems.DefinitionLP;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.modules.ModuleInvocator;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -97,7 +100,7 @@ public class Main {
 	
 	private Reasoner reasoner;
 	private ReasoningService rs;
-	private LearningProblem learningProblem;
+	private PosNegLP learningProblem;
 	// es werden jeweils die Dateien mit dem zugehörigen Format abgelegt
 	Map<URL, OntologyFileFormat> importedFiles;
 	Map<File, OntologyFileFormat> exportedFiles;
@@ -235,7 +238,8 @@ public class Main {
 
 		reasoner = createReasoner(kb, importedFiles);
 		ReasoningService rs = new ReasoningService(reasoner);
-		learningProblem = new LearningProblem(rs, posExamples, negExamples);
+		// commented out during changes
+		// learningProblem = new LearningProblem(rs, posExamples, negExamples);
 
 		// export function
 		/*
@@ -412,7 +416,7 @@ public class Main {
 				algorithmStartTime = System.nanoTime();
 
 				if (Config.algorithm == Algorithm.BRUTE_FORCE) {
-					LearningAlgorithm la = new BruteForceLearner(learningProblem);
+					LearningAlgorithmNew la = new BruteForceLearner(learningProblem);
 					la.start();
 				} else if (Config.algorithm == Algorithm.RANDOM_GUESSER) {
 					// new RandomGuesser(learningProblem, 10000, 10);
@@ -444,7 +448,7 @@ public class Main {
 						// implemented)");
 						// }
 					}
-					LearningAlgorithm la = new ROLearner(learningProblem);
+					LearningAlgorithmNew la = new ROLearner(learningProblem);
 					la.start();
 					// new ROLearner(learningProblem, learningProblem2);
 				}
@@ -1293,95 +1297,9 @@ public class Main {
 		return abox;
 	}
 
-	// irgendwelche Sachen testen
-	@SuppressWarnings("unused")
-	private void test(LearningProblem learningProblem) {
-		System.out.println("=== starting test method ===");
-		// Concept concept = DLLearner.parseConcept("NOT EXISTS hasChild.NOT
-		// male");
-		// System.out.println("testing: " + concept);
-		/*
-		 * PsiDown pd = new PsiDown(learningProblem); concept =
-		 * ConceptTransformation.transformToMulti(concept);
-		 * 
-		 * Set<Concept> r = pd.refine(concept); System.out.println(r);
-		 */
-		/*
-		 * Concept result =
-		 * ConceptTransformation.transformToNegationNormalForm(concept);
-		 * System.out.println(result);
-		 * 
-		 */
-
-		/*
-		 * Concept male = new
-		 * AtomicConcept("http://www.csc.liv.ac.uk/~luigi/ontologies/basicFamily#Male");
-		 * AtomicRole hasChild = new
-		 * AtomicRole("http://www.csc.liv.ac.uk/~luigi/ontologies/basicFamily#hasChild");
-		 * Concept exists = new Exists(hasChild, new Top()); MultiConjunction mc =
-		 * new MultiConjunction(); mc.addChild(male); mc.addChild(exists);
-		 * 
-		 * SortedSet<String> result = rs.retrieval(mc); for(String s : result)
-		 * System.out.println(s);
-		 * 
-		 * SortedSet<String> result2 = Helper.intersection(result,
-		 * learningProblem.getPositiveExamples());
-		 * 
-		 * Score score = learningProblem.computeScore(mc);
-		 * System.out.println("===");
-		 * System.out.println(score.getCoveredPositives());
-		 * System.out.println(score.getCoveredNegatives());
-		 * 
-		 * Concept top = new Top(); RhoDown rd = new RhoDown(learningProblem);
-		 * Set<Concept> result3 = rd.refine(top, 3, null); for(Concept c :
-		 * result3) System.out.println(c);
-		 * 
-		 * System.out.println(rs.getMoreSpecialConcepts(top));
-		 * 
-		 * Concept container = new
-		 * AtomicConcept("http://www.w3.org/2000/01/rdf-schema#Resource");
-		 * System.out.println(((DIGReasoner)reasoner).getMoreSpecialConceptsDIG(container));
-		 */
-
-		/*
-		 * for(int i=0; i<10; i++) { Program p =
-		 * GPUtilities.createGrowRandomProgram(learningProblem, 3); //
-		 * System.out.println("concept: " + p.getTree()); //
-		 * System.out.println("fitness: " + p.getFitness()); //
-		 * System.out.println("length of concept: " + p.getTree().getLength()); //
-		 * System.out.println(p.getScore());
-		 * 
-		 * System.out.println("##"); boolean ok = GPUtilities.checkProgram(p); //
-		 * if(!ok) System.out.println(p.getTree()); }
-		 * 
-		 * System.out.println("==="); // Concept male = new
-		 * AtomicConcept("male"); Concept male =
-		 * rs.getAtomicConceptsList().get(0); // Concept male = null; //
-		 * for(Concept c : rs.getAtomicConcepts()) // male = c;
-		 * GPUtilities.checkTree(male, true); System.out.println(male);
-		 * System.out.println(male.getParent());
-		 */
-
-		Concept c = null;
-		try {
-			c = KBParser.parseConcept("EXISTS r.(TOP AND (TOP OR BOTTOM))");
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		ConceptTransformation.transformToMulti(c);
-		// Concept cMod =
-		// ConceptTransformation.transformToNegationNormalForm(c);
-		Concept cMod = ConceptTransformation.applyEquivalenceRules(c);
-		System.out.println(c);
-		System.out.println(cMod);
-
-		System.exit(0);
-	}
-
 	// generiert sibling aus Forte-Daten
 	@SuppressWarnings("unused")
-	private void test2(LearningProblem learningProblem) {
+	private void test2(PosNegLP learningProblem) {
 		// Set<AtomicRole> roles = reasoner.getAtomicRoles();
 		// for(AtomicRole role : roles) {
 		// System.out.println(rs.getRoleMembers(role));

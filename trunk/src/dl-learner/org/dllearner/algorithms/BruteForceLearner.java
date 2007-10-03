@@ -1,12 +1,18 @@
 package org.dllearner.algorithms;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.dllearner.Config;
-import org.dllearner.LearningProblem;
+import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.ConfigOption;
+import org.dllearner.core.IntegerConfigOption;
+import org.dllearner.core.InvalidConfigOptionValueException;
+import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
@@ -27,7 +33,7 @@ import org.dllearner.core.dl.Top;
  * @author Jens Lehmann
  *
  */
-public class BruteForceLearner implements LearningAlgorithm {
+public class BruteForceLearner extends LearningAlgorithmNew {
     
 	LearningProblem learningProblem;
 	
@@ -48,9 +54,36 @@ public class BruteForceLearner implements LearningAlgorithm {
     
     public BruteForceLearner(LearningProblem learningProblem) {
     	this.learningProblem = learningProblem;
-    	
-       
     }
+    
+	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
+		problems.add(LearningProblem.class);
+		return problems;
+	}
+	
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		options.add(new IntegerConfigOption("numberOfTrees", "number of randomly generated concepts/trees"));
+		options.add(new IntegerConfigOption("maxDepth", "maximum depth of generated concepts/trees"));
+		return options;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		String name = entry.getOptionName();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() {
+
+	}	
     
     public void start() {
        	// FlatABox abox = FlatABox.getInstance();

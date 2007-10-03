@@ -59,8 +59,8 @@ public abstract class LearningAlgorithmNew extends Component {
 	/**
 	 * Returns all learning problems supported by this component.
 	 */
-	public static Collection<Class<? extends LearningProblemNew>> supportedLearningProblems() {
-		return new LinkedList<Class<? extends LearningProblemNew>>();
+	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
+		return new LinkedList<Class<? extends LearningProblem>>();
 	}
 	
 }

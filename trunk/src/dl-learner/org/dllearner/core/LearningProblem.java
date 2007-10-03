@@ -22,17 +22,16 @@ package org.dllearner.core;
 import org.dllearner.core.dl.Concept;
 
 /**
- * Base class for all learning problems (the "New" at the end of the name
- * is temporary for the restructuring process).
+ * Base class for all learning problems.
  * 
  * @author Jens Lehmann
  *
  */
-public abstract class LearningProblemNew extends Component {
+public abstract class LearningProblem extends Component {
 	
 	protected ReasoningService reasoningService;
 	
-	public LearningProblemNew(ReasoningService reasoningService) {
+	public LearningProblem(ReasoningService reasoningService) {
 		this.reasoningService = reasoningService;
 	}
 	

@@ -46,18 +46,16 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.dllearner.Config;
-import org.dllearner.LearningProblem;
 import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.hybridgp.Psi;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.LearningAlgorithmNew;
-import org.dllearner.core.LearningProblemNew;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Top;
-import org.dllearner.learningproblems.DefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Helper;
 
@@ -133,8 +131,8 @@ public class GP extends LearningAlgorithmNew implements LearningAlgorithm {
     	this.learningProblem = learningProblem;
     }
     
-	public static Collection<Class<? extends LearningProblemNew>> supportedLearningAlgorithms() {
-		Collection<Class<? extends LearningProblemNew>> problems = new LinkedList<Class<? extends LearningProblemNew>>();
+	public static Collection<Class<? extends LearningProblem>> supportedLearningAlgorithms() {
+		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
 		problems.add(PosNegLP.class);
 		return problems;
 	}

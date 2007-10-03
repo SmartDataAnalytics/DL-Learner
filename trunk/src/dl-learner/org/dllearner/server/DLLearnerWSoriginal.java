@@ -12,15 +12,16 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.dllearner.Config;
-import org.dllearner.LearningProblem;
 import org.dllearner.Main;
 import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
 import org.dllearner.kb.OntologyFileFormat;
+import org.dllearner.learningproblems.PosNegLP;
 
 /**
  * Offene Fragen:
@@ -151,7 +152,8 @@ public class DLLearnerWSoriginal {
 			}
 		}
 		
-		LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
+		// LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
+		PosNegLP learningProblem = null;
 		// erstmal wird nur der Refinement-Learner als Web-Service angeboten
 		ROLearner learner = new ROLearner(learningProblem);
 		return learner.getBestSolution().toString();

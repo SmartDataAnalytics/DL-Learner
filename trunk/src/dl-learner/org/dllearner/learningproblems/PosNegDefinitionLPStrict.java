@@ -19,14 +19,22 @@
  */
 package org.dllearner.learningproblems;
 
+import java.util.Collection;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
+import org.dllearner.core.BooleanConfigOption;
 import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.Negation;
+import org.dllearner.reasoning.ReasonerType;
+import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.SortedSetTuple;
 
 /**
  * @author Jens Lehmann
@@ -34,6 +42,9 @@ import org.dllearner.core.dl.Individual;
  */
 public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 
+	private SortedSet<Individual> neutralExamples;
+	private boolean penaliseNeutralExamples = false;
+	
 	public PosNegDefinitionLPStrict(ReasoningService reasoningService) {
 		super(reasoningService);
 	}
@@ -45,22 +56,37 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 		return "three valued definition learning problem";
 	}
 
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = PosNegLP.createConfigOptions();
+		options.add(new BooleanConfigOption("penaliseNeutralExamples", "if set to true neutral examples are penalised"));
+		return options;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	@SuppressWarnings( { "unchecked" })
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		super.applyConfigEntry(entry);
+		String name = entry.getOptionName();
+		if(name.equals("penaliseNeutralExamples"))
+			penaliseNeutralExamples = (Boolean) entry.getValue();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		// TODO Auto-generated method stub
-		
+		super.init();
+		// compute neutral examples, i.e. those which are neither positive
+		// nor negative (we have to take care to copy sets instead of 
+		// modifying them)
+		neutralExamples = Helper.intersection(reasoningService.getIndividuals(),positiveExamples);
+		neutralExamples.retainAll(negativeExamples);
 	}
 
 	/* (non-Javadoc)
@@ -68,8 +94,62 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 	 */
 	@Override
 	public Score computeScore(Concept concept) {
-		// TODO Auto-generated method stub
-		return null;
+	   	if(useRetrievalForClassification) {
+    		if(reasoningService.getReasonerType() == ReasonerType.FAST_RETRIEVAL) {
+        		SortedSetTuple<Individual> tuple = reasoningService.doubleRetrieval(concept);
+        		// this.defPosSet = tuple.getPosSet();
+        		// this.defNegSet = tuple.getNegSet();  
+        		SortedSet<Individual> neutClassified = Helper.intersectionTuple(reasoningService.getIndividuals(),tuple);
+        		return new ScoreThreeValued(concept.getLength(),tuple.getPosSet(),neutClassified,tuple.getNegSet(),positiveExamples,neutralExamples,negativeExamples);
+    		} else if(reasoningService.getReasonerType() == ReasonerType.KAON2) {
+    			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
+    			SortedSet<Individual> negClassified = reasoningService.retrieval(new Negation(concept));
+    			SortedSet<Individual> neutClassified = Helper.intersection(reasoningService.getIndividuals(),posClassified);
+    			neutClassified.retainAll(negClassified);
+    			return new ScoreThreeValued(concept.getLength(), posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples);     			
+    		} else
+    			throw new Error("score cannot be computed in this configuration");
+    	} else {
+    		if(reasoningService.getReasonerType() == ReasonerType.KAON2) {
+    			if(penaliseNeutralExamples)
+    				throw new Error("It does not make sense to use single instance checks when" +
+    						"neutral examples are penalized. Use Retrievals instead.");
+    				
+    			// TODO: umschreiben in instance checks
+    			SortedSet<Individual> posClassified = new TreeSet<Individual>();
+    			SortedSet<Individual> negClassified = new TreeSet<Individual>();
+    			// Beispiele durchgehen
+    			// TODO: Implementierung ist ineffizient, da man hier schon in Klassen wie
+    			// posAsNeut, posAsNeg etc. einteilen k�nnte; so wird das extra in der Score-Klasse
+    			// gemacht; bei wichtigen Benchmarks des 3-wertigen Lernproblems m�sste man das
+    			// umstellen
+    			// pos => pos
+    			for(Individual example : positiveExamples) {
+    				if(reasoningService.instanceCheck(concept, example))
+    					posClassified.add(example);
+    			}
+    			// neg => pos
+    			for(Individual example: negativeExamples) {
+    				if(reasoningService.instanceCheck(concept, example))
+    					posClassified.add(example);
+    			}
+    			// pos => neg
+    			for(Individual example : positiveExamples) {
+    				if(reasoningService.instanceCheck(new Negation(concept), example))
+    					negClassified.add(example);
+    			}
+    			// neg => neg
+    			for(Individual example : negativeExamples) {
+    				if(reasoningService.instanceCheck(new Negation(concept), example))
+    					negClassified.add(example);
+    			}    			
+    			
+    			SortedSet<Individual> neutClassified = Helper.intersection(reasoningService.getIndividuals(),posClassified);
+    			neutClassified.retainAll(negClassified);
+    			return new ScoreThreeValued(concept.getLength(), posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples); 		
+    		} else
+    			throw new Error("score cannot be computed in this configuration");
+    	}
 	}
 
 	/* (non-Javadoc)
@@ -77,38 +157,10 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 	 */
 	@Override
 	public int coveredNegativeExamplesOrTooWeak(Concept concept) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.learningproblems.DefinitionLP#getNegativeExamples()
-	 */
-	@Override
-	public SortedSet<Individual> getNegativeExamples() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.learningproblems.DefinitionLP#getPositiveExamples()
-	 */
-	@Override
-	public SortedSet<Individual> getPositiveExamples() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.learningproblems.DefinitionLP#getReasoningService()
-	 */
-	@Override
-	public ReasoningService getReasoningService() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Method not implemented for three valued definition learning problem.");
 	}
 
 	public SortedSet<Individual> getNeutralExamples() {
-		throw new UnsupportedOperationException();
+		return neutralExamples;
 	}
 }

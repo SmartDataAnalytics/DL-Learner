@@ -19,14 +19,14 @@
  */
 package org.dllearner.learningproblems;
 
-import org.dllearner.core.LearningProblemNew;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 
 /**
  * @author Jens Lehmann
  *
  */
-public abstract class PosOnlyLP extends LearningProblemNew {
+public abstract class PosOnlyLP extends LearningProblem {
 
 	public PosOnlyLP(ReasoningService reasoningService) {
 		super(reasoningService);

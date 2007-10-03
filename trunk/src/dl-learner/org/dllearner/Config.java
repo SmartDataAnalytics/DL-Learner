@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.LearningProblem.LearningProblemType;
 import org.dllearner.algorithms.gp.GP.AlgorithmType;
 import org.dllearner.algorithms.gp.GP.SelectionType;
 import org.dllearner.core.dl.AtomicConcept;
@@ -32,7 +31,7 @@ public class Config {
 
 	public static ScoreMethod scoreMethod = ScoreMethod.POSITIVE;
 
-	public static LearningProblemType learningProblemType = LearningProblemType.TWO_VALUED;
+	// public static LearningProblemType learningProblemType = LearningProblemType.TWO_VALUED;
 
 	public static boolean penalizeNeutralExamples = false;
 
