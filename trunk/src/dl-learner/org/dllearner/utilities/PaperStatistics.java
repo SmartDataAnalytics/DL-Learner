@@ -156,7 +156,7 @@ public class PaperStatistics {
 		for(int exampleNr=startExampleNr; exampleNr < examples.length; exampleNr++) {
 			
 			// parse current conf file
-			ConfParser learner = ConfParser.parseFile(confFiles[exampleNr].toString());
+			ConfParser learner = ConfParser.parseFile(confFiles[exampleNr]);
 			
 			// read which files were imported (internal KB is ignored) and initialise reasoner
 			Map<URL, OntologyFileFormat> imports = getImports(learner.getFunctionCalls(), confFiles[exampleNr]);
@@ -302,15 +302,17 @@ public class PaperStatistics {
 		
 	}
 	
-	private static Map<URL, OntologyFileFormat> getImports(List<List<String>> functionCalls, File confFile) {
+	private static Map<URL, OntologyFileFormat> getImports(Map<String,List<List<String>>> functionCalls, File confFile) {
 		Map<URL, OntologyFileFormat> importedFiles = new HashMap<URL, OntologyFileFormat>();
 		
 		OntologyFileFormat format = null;
 		URL url = null;
 		
-		for (List<String> call : functionCalls) {
+		List<List<String>> imports = functionCalls.get("import");
+		
+		for (List<String> call : imports) {
 			
-			if(call.get(0).equals("import")) {
+			//if(call.get(0).equals("import")) {
 
 				try {				
 					String fileString = call.get(1);
@@ -336,7 +338,7 @@ public class PaperStatistics {
 						format = OntologyFileFormat.N_TRIPLES;
 					importedFiles.put(url, format);
 				}
-			}			
+			// }			
 		}
 		
 		return importedFiles;

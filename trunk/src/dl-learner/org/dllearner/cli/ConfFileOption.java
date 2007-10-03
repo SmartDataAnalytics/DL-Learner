@@ -1,14 +1,35 @@
-package org.dllearner;
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+package org.dllearner.cli;
 
 import java.util.Set;
 
 /**
- * Repraesentiert eine Konfigurationsoption. Es werden verschiedene Optionen angeboten.
+ * Represents one configuration option in a conf file, e.g.
+ * refinement.horizontalExpansionFactor = 0.6.
  * 
- * @author jl
+ * @author Jens Lehmann
  *
  */
-public class ConfigurationOption {
+public class ConfFileOption {
 
 	private boolean containsSubOption = true;
 	private boolean isIntegerOption = false;
@@ -21,23 +42,23 @@ public class ConfigurationOption {
 	private double doubleValue;
 	private Set<String> setValues;
 	
-	public ConfigurationOption(String option, String value) {
+	public ConfFileOption(String option, String value) {
 		this(option, null, value);
 		containsSubOption = false;
 	}
 	
-	public ConfigurationOption(String option, String subOption, String value) {
+	public ConfFileOption(String option, String subOption, String value) {
 		this.option = option;
 		this.subOption = subOption;
 		strValue = value;
 	}
 	
-	public ConfigurationOption(String option, int value) {
+	public ConfFileOption(String option, int value) {
 		this(option, null, value);
 		containsSubOption = false;
 	}
 	
-	public ConfigurationOption(String option, String subOption, int value) {
+	public ConfFileOption(String option, String subOption, int value) {
 		this.option = option;
 		this.subOption = subOption;
 		intValue = value;
@@ -45,12 +66,12 @@ public class ConfigurationOption {
 		isNumeric = true;
 	}
 
-	public ConfigurationOption(String option, double value) {
+	public ConfFileOption(String option, double value) {
 		this(option, null, value);
 		containsSubOption = false;
 	}
 	
-	public ConfigurationOption(String option, String subOption, double value) {
+	public ConfFileOption(String option, String subOption, double value) {
 		this.option = option;
 		this.subOption = subOption;
 		doubleValue = value;
@@ -58,12 +79,12 @@ public class ConfigurationOption {
 		isNumeric = true;
 	}
 	
-	public ConfigurationOption(String option, Set<String> values) {
+	public ConfFileOption(String option, Set<String> values) {
 		this(option, null, values);
 		containsSubOption = false;
 	}
 	
-	public ConfigurationOption(String option, String subOption, Set<String> values) {
+	public ConfFileOption(String option, String subOption, Set<String> values) {
 		this.option = option;
 		this.subOption = subOption;
 		isSetOption = true;
@@ -124,6 +145,13 @@ public class ConfigurationOption {
 
 	public Set<String> getSetValues() {
 		return setValues;
+	}
+	
+	public String getFullName() {
+		if(containsSubOption)
+			return option + "." + subOption;
+		else
+			return option;
 	}
 
 }

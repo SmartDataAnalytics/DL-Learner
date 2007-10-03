@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.ConfigurationOption;
 import org.dllearner.Main;
+import org.dllearner.cli.ConfFileOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
@@ -69,7 +69,7 @@ public String getModuleName(){
 	public void preprocess(KB kb,
 			Map<AtomicConcept, SortedSet<Individual>> positiveExamples,
 			Map<AtomicConcept, SortedSet<Individual>> negativeExamples,
-			List<ConfigurationOption> confOptions,
+			List<ConfFileOption> confOptions,
 			List<List<String>> functionCalls, String baseDir,
 			boolean useQueryMode) {
 		

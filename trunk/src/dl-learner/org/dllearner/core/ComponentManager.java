@@ -398,5 +398,9 @@ public class ComponentManager {
 
 		return null;
 	}
+	
+	public ConfigOption<?> getConfigOption(Class<? extends Component> component, String name) {
+		return componentOptionsByName.get(component).get(name);
+	}
 
 }

@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import org.dllearner.Config.Algorithm;
 import org.dllearner.algorithms.gp.GP.AlgorithmType;
 import org.dllearner.algorithms.gp.GP.SelectionType;
+import org.dllearner.cli.ConfFileOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.learningproblems.ScoreThreeValued.ScoreMethod;
@@ -44,7 +45,7 @@ import org.dllearner.utilities.RoleComparator;
  */
 public class ConfigurationManager {
 
-	private Collection<ConfigurationOption> options;
+	private Collection<ConfFileOption> options;
 	
 	// verfuegbare Optionen
 	// Problemfall: double-Optionen, die auch int-Optionen sein können;
@@ -56,10 +57,10 @@ public class ConfigurationManager {
 	private List<String> setOptions;
 	
 	public ConfigurationManager() {
-		this(new LinkedList<ConfigurationOption>());
+		this(new LinkedList<ConfFileOption>());
 	}
 	
-	public ConfigurationManager(Collection<ConfigurationOption> confOptions) {
+	public ConfigurationManager(Collection<ConfFileOption> confOptions) {
 		// options = new HashSet<ConfigurationOption>();
 		options = confOptions;
 		strOptions = new HashMap<String, String[]>();
@@ -73,7 +74,7 @@ public class ConfigurationManager {
 	}
 	
 	public void applyOptions() {
-		for(ConfigurationOption option : options) {
+		for(ConfFileOption option : options) {
 			// System.out.println(option);
 			applyConfigurationOption(option);
 		}
@@ -101,7 +102,7 @@ public class ConfigurationManager {
 	
 	// TODO: bei Fehlerbehandlungen müsste man jetzt noch berücksichtigen, dass
 	// Mengen als 4. Optionstyp (neben int, double, string) dazugekommen sind
-	public void applyConfigurationOption(ConfigurationOption option) {
+	public void applyConfigurationOption(ConfFileOption option) {
 		String optionString;
 		if(option.containsSubOption())
 			optionString = option.getOption() + "." + option.getSubOption();
