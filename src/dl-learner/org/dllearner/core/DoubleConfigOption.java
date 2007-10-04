@@ -20,18 +20,18 @@
 package org.dllearner.core;
 
 /**
- * A configuration option, which allows values of type integer. A minimum and
- * maximum value of the argument can optionally be specified.
+ * Represents a configuration option with values of type value. Similar
+ * to the integer option a minimum and a maximum value can specified.
  * 
  * @author Jens Lehmann
  *
  */
-public class IntegerConfigOption extends ConfigOption<Integer> {
+public class DoubleConfigOption extends ConfigOption<Double> {
 
-	private int lowerLimit = Integer.MIN_VALUE;
-	private int upperLimit = Integer.MAX_VALUE;
+	private double lowerLimit = Double.MIN_VALUE;
+	private double upperLimit = Double.MAX_VALUE;
 	
-	public IntegerConfigOption(String name, String description) {
+	public DoubleConfigOption(String name, String description) {
 		super(name, description);
 	}
 		
@@ -39,7 +39,7 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
 	 */
 	@Override
-	public boolean isValidValue(Integer value) {
+	public boolean isValidValue(Double value) {
 		if(value >= lowerLimit && value <= upperLimit)
 			return true;
 		else
@@ -49,28 +49,28 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 	/**
 	 * @return the The lowest possible value for this configuration option.
 	 */
-	public int getLowerLimit() {
+	public double getLowerLimit() {
 		return lowerLimit;
 	}
 
 	/**
 	 * @param lowerLimit The lowest possible value for this configuration option.
 	 */
-	public void setLowerLimit(int lowerLimit) {
+	public void setLowerLimit(double lowerLimit) {
 		this.lowerLimit = lowerLimit;
 	}
 
 	/**
 	 * @return the The highest possible value for this configuration option.
 	 */
-	public int getUpperLimit() {
+	public double getUpperLimit() {
 		return upperLimit;
 	}
 
 	/**
 	 * @param upperLimit The highest possible value for this configuration option.
 	 */
-	public void setUpperLimit(int upperLimit) {
+	public void setUpperLimit(double upperLimit) {
 		this.upperLimit = upperLimit;
 	}
 
@@ -79,7 +79,7 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 	 */
 	@Override
 	public boolean checkType(Object object) {
-		return (object instanceof Integer);
+		return (object instanceof Double);
 	}
 
 }

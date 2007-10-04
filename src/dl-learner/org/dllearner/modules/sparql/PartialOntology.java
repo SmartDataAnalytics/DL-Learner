@@ -84,7 +84,7 @@ public class PartialOntology implements PreprocessingModule {
 		 
 		 for (int i = 0; i < confOptions.size(); i++) {
 				if(confOptions.get(i).getOption().equals("hidePrefix")){
-					prefix=confOptions.get(i).getStrValue();
+					prefix=confOptions.get(i).getStringValue();
 				}
 				System.out.println(confOptions.get(i).getOption());
 				if(confOptions.get(i).getOption().equals("gp"))

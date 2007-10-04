@@ -21,37 +21,16 @@ package org.dllearner.modules.sparql;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * mainly converts datatypes
  * 
- * TODO: move to org.dllearner.utilities
  * 
  * @author Sebastian Hellmann
  *
  */
 public class Util {
 
-	
-	/**
-	 * easy conversion
-	 * 
-	 * @param s
-	 * @return
-	 */
-	public  static String[] setToArray(Set<String> s){
-		if(s==null)return null;
-		String[] ret=new String[s.size()];
-		int i=0;
-		for (Iterator<String> iter = s.iterator(); iter.hasNext();) {
-			ret[i] = iter.next();
-			i++;
-			
-		}
-		return ret;
-		
-	}
 	
 	/**
 	 * Warning use only for visualization

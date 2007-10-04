@@ -34,6 +34,7 @@ import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
 import org.dllearner.modules.PreprocessingModule;
+import org.dllearner.utilities.Datastructures;
 
 
 /**
@@ -97,7 +98,7 @@ public String getModuleName(){
 			
 		for (int i = 0; i < confOptions.size(); i++) {
 			if(confOptions.get(i).getOption().equals("hidePrefix")){
-				prefix=confOptions.get(i).getStrValue();
+				prefix=confOptions.get(i).getStringValue();
 			}
 			//sparqlModule options
 			if(confOptions.get(i).getOption().equals("sparqlModule")){
@@ -136,7 +137,7 @@ public String getModuleName(){
 			this.fw=new FileWriter(new File(baseDir+File.separator+filename),true);
 			System.out.println("SparqlModul: Collecting Ontology");
 			OntologyCollector oc=new OntologyCollector(subjectList, numberOfRecursions,
-					 filterMode,  Util.setToArray(predList),Util.setToArray( objList),Util.setToArray(classList));
+					 filterMode,  Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList));
 			
 			String ont=oc.collectOntology();
 			fw.write(ont);

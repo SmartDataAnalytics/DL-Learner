@@ -22,6 +22,7 @@ import org.dllearner.learningproblems.ScoreThreeValued.ScoreMethod;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.RoleComparator;
 
 /**
@@ -188,15 +189,15 @@ public class ConfigurationManager {
 				// alle Strings erlaubt)
 				String[] possibleValuesArray = strOptions.get(optionString);
 				List<String> possibleValues = Arrays.asList(possibleValuesArray);
-				if (!possibleValues.contains(option.getStrValue()) && possibleValues.size() != 0) {
+				if (!possibleValues.contains(option.getStringValue()) && possibleValues.size() != 0) {
 					System.out.println("Error: The configuration option \"" + optionString
-							+ "\" must not have value \"" + option.getStrValue()
+							+ "\" must not have value \"" + option.getStringValue()
 							+ "\". The value must be one of " + possibleValues + ".");
 					System.exit(0);
 				}
 				
 				// alles OK, Option kann angewandt werden
-				applyStringOptions(optionString,option.getStrValue());
+				applyStringOptions(optionString,option.getStringValue());
 				
 			// Option existiert nicht => Fehlerbehandlung
 			} else {
@@ -421,17 +422,17 @@ public class ConfigurationManager {
 	
 	private void applyStringOptions(String option, String value) {
 		if (option.equals("penalizeNeutralExamples"))
-			Config.penalizeNeutralExamples = strToBool(value);
+			Config.penalizeNeutralExamples = Datastructures.strToBool(value);
 		else if (option.equals("showCorrectClassifications"))
-			Config.showCorrectClassifications = strToBool(value);
+			Config.showCorrectClassifications = Datastructures.strToBool(value);
 		else if (option.equals("statMode"))
-			Config.statisticMode = strToBool(value);
+			Config.statisticMode = Datastructures.strToBool(value);
 		else if (option.equals("una"))
-			Config.una = strToBool(value);		
+			Config.una = Datastructures.strToBool(value);		
 		else if (option.equals("owa"))
-			Config.owa = strToBool(value);		
+			Config.owa = Datastructures.strToBool(value);		
 		else if (option.equals("gp.useFixedNumberOfGenerations"))
-			Config.GP.useFixedNumberOfGenerations = strToBool(value);
+			Config.GP.useFixedNumberOfGenerations = Datastructures.strToBool(value);
 		else if (option.equals("scoreMethod")) {
 			if (value.equals("full"))
 				Config.scoreMethod = ScoreMethod.FULL;
@@ -459,17 +460,17 @@ public class ConfigurationManager {
 		} else if(option.equals("hidePrefix")) {
 			Config.hidePrefixes.add(value);
 		} else if (option.equals("showIndividuals")) {
-			Config.showIndividuals = strToBool(value);
+			Config.showIndividuals = Datastructures.strToBool(value);
 		} else if (option.equals("showConcepts")) {
-			Config.showConcepts = strToBool(value);
+			Config.showConcepts = Datastructures.strToBool(value);
 		} else if (option.equals("showRoles")) {
-			Config.showRoles = strToBool(value);
+			Config.showRoles = Datastructures.strToBool(value);
 		} else if (option.equals("showInternalKB")) {
-			Config.showInternalKB = strToBool(value);
+			Config.showInternalKB = Datastructures.strToBool(value);
 		} else if (option.equals("showSubsumptionHierarchy")) {
-			Config.showSubsumptionHierarchy = strToBool(value);
+			Config.showSubsumptionHierarchy = Datastructures.strToBool(value);
 		} else if (option.equals("writeDIGProtocol")) {
-			Config.writeDIGProtocol = strToBool(value);
+			Config.writeDIGProtocol = Datastructures.strToBool(value);
 		} else if (option.equals("digProtocolFile")) {
 			Config.digProtocolFile = new File(value);
 		// } else if (option.equals("preprocessingModule")) {
@@ -487,34 +488,34 @@ public class ConfigurationManager {
 			else
 				Config.GP.algorithmType = AlgorithmType.GENERATIONAL;
 		} else if (option.equals("gp.adc")) {
-			Config.GP.adc = strToBool(value);
+			Config.GP.adc = Datastructures.strToBool(value);
 		} else if (option.equals("refinement.heuristic")) {
 			if(value.equals("lexicographic"))
 				Config.Refinement.heuristic = Config.Refinement.Heuristic.LEXICOGRAPHIC;
 			else
 				Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
 		} else if (option.equals("refinement.quiet"))
-			Config.Refinement.quiet = strToBool(value);
+			Config.Refinement.quiet = Datastructures.strToBool(value);
 		else if (option.equals("refinement.writeSearchTree"))
-			Config.Refinement.writeSearchTree = strToBool(value);
+			Config.Refinement.writeSearchTree = Datastructures.strToBool(value);
 		else if (option.equals("refinement.searchTreeFile")) {
 			Config.Refinement.searchTreeFile = new File(value);
 		} else if (option.equals("refinement.applyAllFilter"))
-			Config.Refinement.applyAllFilter = strToBool(value);
+			Config.Refinement.applyAllFilter = Datastructures.strToBool(value);
 		else if (option.equals("refinement.applyExistsFilter"))
-			Config.Refinement.applyExistsFilter = strToBool(value);
+			Config.Refinement.applyExistsFilter = Datastructures.strToBool(value);
 		else if (option.equals("refinement.useTooWeakList"))
-			Config.Refinement.useTooWeakList = strToBool(value);
+			Config.Refinement.useTooWeakList = Datastructures.strToBool(value);
 		else if (option.equals("refinement.useOverlyGeneralList"))
-			Config.Refinement.useOverlyGeneralList = strToBool(value);
+			Config.Refinement.useOverlyGeneralList = Datastructures.strToBool(value);
 		else if (option.equals("refinement.useShortConceptConstruction"))
-			Config.Refinement.useShortConceptConstruction = strToBool(value);
+			Config.Refinement.useShortConceptConstruction = Datastructures.strToBool(value);
 		else if (option.equals("refinement.useAllConstructor"))
-			Config.Refinement.useAllConstructor = strToBool(value);
+			Config.Refinement.useAllConstructor = Datastructures.strToBool(value);
 		else if (option.equals("refinement.useExistsConstructor"))
-			Config.Refinement.useExistsConstructor = strToBool(value);
+			Config.Refinement.useExistsConstructor = Datastructures.strToBool(value);
 		else if (option.equals("refinement.useNegation"))
-			Config.Refinement.useNegation = strToBool(value);		
+			Config.Refinement.useNegation = Datastructures.strToBool(value);		
 		else if (option.equals("reasoner")) {
 			if(value.equals("dig"))
 				Config.reasonerType = ReasonerType.DIG;
@@ -531,7 +532,7 @@ public class ConfigurationManager {
 				System.exit(0);
 			}
 		} else if (option.equals("useRetrievalForClassification"))
-			Config.useRetrievalForClassification = strToBool(value);
+			Config.useRetrievalForClassification = Datastructures.strToBool(value);
 //		else if (option.equals("refinement.useDIGMultiInstanceChecks")) {
 //			if(value.equals("never"))
 //				Config.Refinement.useDIGMultiInstanceChecks = Config.Refinement.UseDIGMultiInstanceChecks.NEVER;
@@ -567,15 +568,6 @@ public class ConfigurationManager {
 		}
 	}	
 	
-	private static boolean strToBool(String str) {
-		if (str.equals("true"))
-			return true;
-		else if (str.equals("false"))
-			return false;
-		else
-			throw new Error("Cannot convert to boolean.");
-	}
-
 	public void addDoubleOption(String option, Double[] range) {
 		doubleOptions.put(option, range);
 	}

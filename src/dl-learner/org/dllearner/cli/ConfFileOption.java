@@ -33,11 +33,12 @@ public class ConfFileOption {
 
 	private boolean containsSubOption = true;
 	private boolean isIntegerOption = false;
-	private boolean isNumeric = false;
+	private boolean isDoubleOption = false;
+	private boolean isStringOption = false;
 	private boolean isSetOption = false;
 	private String option;
 	private String subOption;
-	private String strValue;
+	private String stringValue;
 	private int intValue;
 	private double doubleValue;
 	private Set<String> setValues;
@@ -50,7 +51,8 @@ public class ConfFileOption {
 	public ConfFileOption(String option, String subOption, String value) {
 		this.option = option;
 		this.subOption = subOption;
-		strValue = value;
+		stringValue = value;
+		isStringOption = true;
 	}
 	
 	public ConfFileOption(String option, int value) {
@@ -63,7 +65,6 @@ public class ConfFileOption {
 		this.subOption = subOption;
 		intValue = value;
 		isIntegerOption = true;
-		isNumeric = true;
 	}
 
 	public ConfFileOption(String option, double value) {
@@ -75,8 +76,7 @@ public class ConfFileOption {
 		this.option = option;
 		this.subOption = subOption;
 		doubleValue = value;
-		// isIntegerOption = false;
-		isNumeric = true;
+		isDoubleOption = false;
 	}
 	
 	public ConfFileOption(String option, Set<String> values) {
@@ -98,17 +98,13 @@ public class ConfFileOption {
 	public int getIntValue() {
 		return intValue;
 	}
-
-	public boolean isIntegerOption() {
-		return isIntegerOption;
-	}
-
+	
 	public String getOption() {
 		return option;
 	}
 
-	public String getStrValue() {
-		return strValue;
+	public String getStringValue() {
+		return stringValue;
 	}
 
 	public String getSubOption() {
@@ -119,8 +115,46 @@ public class ConfFileOption {
 		return doubleValue;
 	}
 
+	public Object getValue() {
+		if(isIntegerOption)
+			return intValue;
+		else if(isDoubleOption)
+			return doubleValue;
+		else if(isStringOption)
+			return stringValue;
+		else
+			return setValues;
+	}
+		
+	/**
+	 * 
+	 * @return The class of the value of the conf file option;
+	 */
+	public Class<?> getType() {
+		if(isIntegerOption)
+			return Integer.class;
+		else if(isDoubleOption)
+			return Double.class;
+		else if(isStringOption)
+			return String.class;
+		else
+			return Set.class;		
+	}
+	
+	public boolean isIntegerOption() {
+		return isIntegerOption;
+	}
+
+	public boolean isDoubleOption() {
+		return isDoubleOption;
+	}
+	
 	public boolean isNumeric() {
-		return isNumeric;
+		return (isIntegerOption || isDoubleOption);
+	}
+	
+	public boolean isStringOption() {
+		return isStringOption;
 	}	
 	
 	public boolean isSetOption() {
@@ -134,13 +168,13 @@ public class ConfFileOption {
 			completeOption += option + "." + subOption;
 		else
 			completeOption += option;
-		if(isNumeric)
+		if(isNumeric())
 			if(isIntegerOption)
 				return completeOption + "=" + intValue;
 			else
 				return completeOption + "=" + doubleValue;
 		else
-			return completeOption + "=" + strValue;
+			return completeOption + "=" + stringValue;
 	}
 
 	public Set<String> getSetValues() {
