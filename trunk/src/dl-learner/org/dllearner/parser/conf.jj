@@ -62,6 +62,7 @@ public class ConfParser {
 	// conf file options
 	private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
 	private Map<String,ConfFileOption> confOptionsByName = new HashMap<String,ConfFileOption>();
+	private Map<String,List<ConfFileOption>> confOptionsByPrefix = new HashMap<String,List<ConfFileOption>>();
 	
 	// Funktionsaufrufe (die gleiche Funktion darf mehrmals mit unterschiedlichen
 	// Argumenten aufgerufen werden)
@@ -85,6 +86,19 @@ public class ConfParser {
 		}
 	}
 	
+	private void addConfOption(ConfFileOption confOption) {
+		confOptions.add(confOption);
+		confOptionsByName.put(confOption.getFullName(), confOption);
+		String prefix = confOption.getOption();
+		if(confOptionsByPrefix.containsKey(prefix))
+			confOptionsByPrefix.get(prefix).add(confOption);
+		else {
+			LinkedList<ConfFileOption> optionList = new LinkedList<ConfFileOption>();
+			optionList.add(confOption);
+			confOptionsByPrefix.put(prefix,optionList);
+		}
+	}
+	
 	public SortedSet<Individual> getPositiveExamples() {
 		return positiveExamples;
 	}
@@ -99,6 +113,18 @@ public class ConfParser {
 	
 	public Map<String,ConfFileOption> getConfOptionsByName() {
 		return confOptionsByName;
+	}
+
+	public ConfFileOption getConfOptionsByName(String name) {
+		return confOptionsByName.get(name);
+	}
+	
+	public Map<String,List<ConfFileOption>> getConfOptionsByPrefix() {
+		return confOptionsByPrefix;
+	}
+	
+	public List<ConfFileOption> getConfOptionsByPrefix(String prefix) {
+		return confOptionsByPrefix.get(prefix);
 	}
 	
 	public Map<String,List<List<String>>> getFunctionCalls() {
@@ -254,7 +280,7 @@ void Start() :
   		// sichere Unterscheidungsmerkmal ist
   		LOOKAHEAD(Id() [ "." Id() ] "="  ( Id() | Integer() | Double() | String() 
   		  | "{" "}" | "{" ( ( String() | Id() ) "," )* (String() | Id()) "}" ) <CONF_END>)  confOption=ConfOption()
-  		  { confOptions.add(confOption); confOptionsByName.put(confOption.getFullName(), confOption); }
+  		  { addConfOption(confOption); }
   	|	LOOKAHEAD(Id() "(" String() ("," String())* ")" <CONF_END>) FunctionCall()
   		// positive bzw. negative Beispiele sind an "+" bzw. "-" erkennbar
   	|	LOOKAHEAD(<POS_EX>) PosExample()
