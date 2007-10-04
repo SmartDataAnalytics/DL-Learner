@@ -33,6 +33,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
         // conf file options
         private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
         private Map<String,ConfFileOption> confOptionsByName = new HashMap<String,ConfFileOption>();
+        private Map<String,List<ConfFileOption>> confOptionsByPrefix = new HashMap<String,List<ConfFileOption>>();
 
         // Funktionsaufrufe (die gleiche Funktion darf mehrmals mit unterschiedlichen
         // Argumenten aufgerufen werden)
@@ -56,6 +57,19 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
                 }
         }
 
+        private void addConfOption(ConfFileOption confOption) {
+                confOptions.add(confOption);
+                confOptionsByName.put(confOption.getFullName(), confOption);
+                String prefix = confOption.getOption();
+                if(confOptionsByPrefix.containsKey(prefix))
+                        confOptionsByPrefix.get(prefix).add(confOption);
+                else {
+                        LinkedList<ConfFileOption> optionList = new LinkedList<ConfFileOption>();
+                        optionList.add(confOption);
+                        confOptionsByPrefix.put(prefix,optionList);
+                }
+        }
+
         public SortedSet<Individual> getPositiveExamples() {
                 return positiveExamples;
         }
@@ -70,6 +84,18 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
 
         public Map<String,ConfFileOption> getConfOptionsByName() {
                 return confOptionsByName;
+        }
+
+        public ConfFileOption getConfOptionsByName(String name) {
+                return confOptionsByName.get(name);
+        }
+
+        public Map<String,List<ConfFileOption>> getConfOptionsByPrefix() {
+                return confOptionsByPrefix;
+        }
+
+        public List<ConfFileOption> getConfOptionsByPrefix(String prefix) {
+                return confOptionsByPrefix.get(prefix);
         }
 
         public Map<String,List<List<String>>> getFunctionCalls() {
@@ -198,7 +224,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
       }
       if (jj_2_1(2147483647)) {
         confOption = ConfOption();
-                    confOptions.add(confOption); confOptionsByName.put(confOption.getFullName(), confOption);
+                    addConfOption(confOption);
       } else if (jj_2_2(2147483647)) {
         FunctionCall();
       } else if (jj_2_3(2147483647)) {
@@ -464,64 +490,6 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     finally { jj_save(5, xla); }
   }
 
-  final private boolean jj_3R_8() {
-    if (jj_3R_17()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_10() {
-    if (jj_scan_token(26)) return true;
-    if (jj_scan_token(27)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_19() {
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_17() {
-    if (jj_scan_token(DOUBLE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_14() {
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_7() {
-    if (jj_3R_16()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_4() {
-    if (jj_scan_token(ID)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_6() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_22() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_13() {
-    if (jj_scan_token(28)) return true;
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_6() {
-    if (jj_scan_token(26)) return true;
-    if (jj_scan_token(27)) return true;
-    return false;
-  }
-
   final private boolean jj_3_5() {
     Token xsp;
     xsp = jj_scanpos;
@@ -644,6 +612,64 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     }
     }
     if (jj_scan_token(CONF_END)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_8() {
+    if (jj_3R_17()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_10() {
+    if (jj_scan_token(26)) return true;
+    if (jj_scan_token(27)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_19() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_17() {
+    if (jj_scan_token(DOUBLE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_14() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_7() {
+    if (jj_3R_16()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_4() {
+    if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_6() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_22() {
+    if (jj_3R_4()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_13() {
+    if (jj_scan_token(28)) return true;
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_6() {
+    if (jj_scan_token(26)) return true;
+    if (jj_scan_token(27)) return true;
     return false;
   }
 
