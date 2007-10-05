@@ -71,7 +71,7 @@ public class ComponentTest {
 		lp.init();
 		
 		// create the learning algorithm
-		LearningAlgorithmNew la = cm.learningAlgorithm(RandomGuesser.class, lp);
+		LearningAlgorithmNew la = cm.learningAlgorithm(RandomGuesser.class, lp, rs);
 		cm.applyConfigEntry(la, "numberOfTrees", 100);
 		cm.applyConfigEntry(la, "maxDepth", 5);
 		la.init();

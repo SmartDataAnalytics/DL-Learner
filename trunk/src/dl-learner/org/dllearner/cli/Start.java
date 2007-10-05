@@ -92,7 +92,7 @@ public class Start {
 			// TODO: SPARQL-specific settings
 
 			// ks.applyConfigEntry(new ConfigEntry)
-
+			sources.add(ks);
 		}
 
 		// step 2: detect used reasoner
@@ -106,8 +106,10 @@ public class Start {
 					+ "for option \"reasoner\".");
 		}
 
-		// step 3: detect learning problem (no options yet)
+		// step 3: detect learning problem (no options for choosing it yet)
 		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
+		cm.applyConfigEntry(lp, "positiveExamples", parser.getPositiveExamples());
+		cm.applyConfigEntry(lp, "negativeExamples", parser.getNegativeExamples());
 
 		// step 4: detect learning algorithm
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
@@ -116,15 +118,20 @@ public class Start {
 		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
 			laClass = ROLearner.class;
 
-		la = cm.learningAlgorithm(ROLearner.class, lp);
+		la = cm.learningAlgorithm(ROLearner.class, lp, rs);
 
-		configureComponent(cm, la, parser.getConfOptionsByPrefix(componentPrefixMapping
-				.get(la)));
+		String algPrefix = componentPrefixMapping.get(la.getClass());
+		configureComponent(cm, la, parser.getConfOptionsByPrefix(algPrefix));
 
+		// initialise all structures
+		for(KnowledgeSource source : sources)
+			source.init();
+		rs.init();
+		lp.init();
+		la.init();
+		
 		// start algorithm
 		la.start();
-
-		// use parsed values to configure components
 
 		// several classes of options: function calls, conf options for a
 		// component,
@@ -139,17 +146,22 @@ public class Start {
 	// creates a mapping from components to option prefix strings
 	private static Map<Class<? extends Component>, String> createComponentPrefixMapping() {
 		Map<Class<? extends Component>, String> componentPrefixMapping = new HashMap<Class<? extends Component>, String>();
+		// knowledge sources
+		componentPrefixMapping.put(SparqlEndpoint.class, "sparql");		
+		// reasoners
+		componentPrefixMapping.put(DIGReasonerNew.class, "digReasoner");		
+		// learning problems - configured via + and - flags for examples
+		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
 		componentPrefixMapping.put(GP.class, "gp");
-		componentPrefixMapping.put(DIGReasonerNew.class, "digReasoner");
-		componentPrefixMapping.put(SparqlEndpoint.class, "sparql");
 		return componentPrefixMapping;
 	}
 
 	private static void configureComponent(ComponentManager cm,
 			Component component, List<ConfFileOption> options) {
-		for (ConfFileOption option : options)
-			applyConfFileOption(cm, component, option);
+		if(options != null)
+			for (ConfFileOption option : options)
+				applyConfFileOption(cm, component, option);
 	}
 
 	private static void applyConfFileOption(ComponentManager cm,
@@ -240,8 +252,8 @@ public class Start {
 			Class<? extends KnowledgeSource> ksClass;
 			if (arguments.size() == 1) {
 				String filename = url.getPath();
-				String ending = filename.substring(filename.lastIndexOf("."));
-
+				String ending = filename.substring(filename.lastIndexOf(".")+1);
+				
 				if (ending.equals("rdf") || ending.equals("owl"))
 					ksClass = OWLFile.class;
 				else if (ending.equals("nt"))
@@ -249,7 +261,7 @@ public class Start {
 				else if (ending.equals("kb"))
 					ksClass = KBFile.class;
 				else {
-					System.err.println("Warning: no format fiven for " + arguments.get(0)
+					System.err.println("Warning: no format given for " + arguments.get(0)
 							+ " and could not detect it. Chosing RDF/XML.");
 					ksClass = OWLFile.class;
 				}

@@ -30,6 +30,7 @@ import org.dllearner.core.IntegerConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 
@@ -42,7 +43,7 @@ public class RandomGuesser extends LearningAlgorithmNew implements LearningAlgor
 	private int numberOfTrees;
 	private int maxDepth;
     
-	public RandomGuesser(LearningProblem learningProblem) {
+	public RandomGuesser(LearningProblem learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
 	}
 	

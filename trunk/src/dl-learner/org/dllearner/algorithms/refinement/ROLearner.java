@@ -11,19 +11,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.Config;
-import org.dllearner.algorithms.LearningAlgorithm;
+import org.dllearner.Main;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
-import org.dllearner.core.IntegerConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Top;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
@@ -33,6 +32,8 @@ import org.dllearner.utilities.Helper;
 public class ROLearner extends LearningAlgorithmNew {
 	
 	private boolean stop = false;
+	
+	private ReasoningService rs;
 	
 	private Comparator<Node> nodeComparator;
 	private NodeComparatorStable nodeComparatorStable = new NodeComparatorStable();
@@ -111,8 +112,12 @@ public class ROLearner extends LearningAlgorithmNew {
 
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
-	public ROLearner(PosNegLP learningProblem) {
+	public ROLearner(PosNegLP learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
+		this.rs = rs;
+		
+		// rs.getR
+		
 		// this.learningProblem2 = learningProblem2;
 		operator = new RhoDown(learningProblem);
 		
@@ -214,7 +219,7 @@ public class ROLearner extends LearningAlgorithmNew {
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
-		problems.add(PosNegDefinitionLP.class);
+		problems.add(PosNegLP.class);
 		return problems;
 	}
 	
@@ -237,8 +242,13 @@ public class ROLearner extends LearningAlgorithmNew {
 	 */
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-		
+		// TODO: this needs to be changed
+		Main.autoDetectConceptsAndRoles(rs);
+		// prepare subsumption and role hierarchies, because they are needed
+		// during the run of the algorithm
+		rs.prepareSubsumptionHierarchy();
+		rs.getSubsumptionHierarchy().improveSubsumptionHierarchy();
+		rs.prepareRoleHierarchy();
 	}
 	
 	// Kernalgorithmus
@@ -851,14 +861,17 @@ public class ROLearner extends LearningAlgorithmNew {
 		return false;
 	}	
 	
+	@Override
 	public Concept getBestSolution() {
 		return candidatesStable.last().getConcept();
 	}
 
+	@Override
 	public Score getSolutionScore() {
 		return learningProblem.computeScore(getBestSolution());
 	}
 
+	@Override
 	public void stop() {
 		stop = true;
 	}

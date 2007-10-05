@@ -21,7 +21,10 @@ package org.dllearner.kb;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -41,7 +44,8 @@ import org.dllearner.reasoning.DIGConverter;
  */
 public class KBFile extends KnowledgeSource {
 
-	private File file;
+	// private File file;
+	private URL url;
 	private KB kb;
 
 	public static String getName() {
@@ -50,7 +54,8 @@ public class KBFile extends KnowledgeSource {
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("filename", "pointer to the KB file"));
+		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system"));
+		options.add(new StringConfigOption("url", "URL pointer to the KB file"));
 		return options;
 	}
 
@@ -61,7 +66,18 @@ public class KBFile extends KnowledgeSource {
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
 		String option = entry.getOptionName();
 		if (option.equals("filename")) {
-			file = new File((String)entry.getValue());
+			// file = new File((String)entry.getValue());
+			try {
+				url = new File((String)entry.getValue()).toURI().toURL();
+			} catch (MalformedURLException e) {
+				throw new InvalidConfigOptionValueException(entry.getOption(),entry.getValue());
+			}
+		} else if(option.equals("url")) {
+			try {
+				url = new URL((String)entry.getValue());
+			} catch (MalformedURLException e) {
+				throw new InvalidConfigOptionValueException(entry.getOption(),entry.getValue());
+			}
 		}
 	}
 
@@ -71,12 +87,10 @@ public class KBFile extends KnowledgeSource {
 	@Override
 	public void init() {
 		try {
-			kb = KBParser.parseKBFile(file);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			kb = KBParser.parseKBFile(url);
+		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -88,7 +102,15 @@ public class KBFile extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		return DIGConverter.getDIGString(kb).toString();
+		return DIGConverter.getDIGString(kb, kbURI).toString();
+	}
+	
+	@Override
+	public String toString() {
+		if(kb==null)
+			return "KB file (not initialised)";
+		else
+			return kb.toString();
 	}
 	
 }

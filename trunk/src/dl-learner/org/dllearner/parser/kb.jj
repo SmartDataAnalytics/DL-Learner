@@ -31,10 +31,8 @@ PARSER_BEGIN(KBParser)
 package org.dllearner.parser;
 
 import org.dllearner.core.dl.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.StringReader;
+import java.io.*;
+import java.net.URL;
 
 public class KBParser {
 
@@ -52,6 +50,11 @@ public class KBParser {
 	public static Concept parseConcept(String string) throws ParseException {
 		KBParser parser = new KBParser(new StringReader(string));
 		return parser.Concept();
+	}
+
+	public static KB parseKBFile(URL url) throws IOException, ParseException {
+		KBParser parser = new KBParser(url.openStream());
+		return parser.KB();
 	}
 
 	public static KB parseKBFile(File file) throws FileNotFoundException, ParseException {

@@ -2,10 +2,8 @@
 package org.dllearner.parser;
 
 import org.dllearner.core.dl.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.StringReader;
+import java.io.*;
+import java.net.URL;
 
 public @SuppressWarnings("all") class KBParser implements KBParserConstants {
 
@@ -23,6 +21,11 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
         public static Concept parseConcept(String string) throws ParseException {
                 KBParser parser = new KBParser(new StringReader(string));
                 return parser.Concept();
+        }
+
+        public static KB parseKBFile(URL url) throws IOException, ParseException {
+                KBParser parser = new KBParser(url.openStream());
+                return parser.KB();
         }
 
         public static KB parseKBFile(File file) throws FileNotFoundException, ParseException {
@@ -491,35 +494,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     finally { jj_save(5, xla); }
   }
 
-  final private boolean jj_3R_18() {
-    if (jj_3R_22()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_14() {
-    if (jj_scan_token(20)) return true;
-    if (jj_3R_20()) return true;
-    if (jj_3R_4()) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
-    if (jj_3R_2()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_15() {
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_3() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_15()) {
-    jj_scanpos = xsp;
-    if (jj_3R_16()) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3R_13() {
     if (jj_scan_token(19)) return true;
     if (jj_3R_20()) return true;
@@ -721,6 +695,35 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
 
   final private boolean jj_3R_21() {
     if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_18() {
+    if (jj_3R_22()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_14() {
+    if (jj_scan_token(20)) return true;
+    if (jj_3R_20()) return true;
+    if (jj_3R_4()) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    if (jj_3R_2()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_15() {
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_3() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_15()) {
+    jj_scanpos = xsp;
+    if (jj_3R_16()) return true;
+    }
     return false;
   }
 

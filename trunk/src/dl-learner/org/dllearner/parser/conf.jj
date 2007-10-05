@@ -56,8 +56,8 @@ import org.dllearner.utilities.*;
 public class ConfParser {
 	
 	// examples
-	private SortedSet<Individual> positiveExamples = new TreeSet<Individual>();
-	private SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
+	private SortedSet<String> positiveExamples = new TreeSet<String>();
+	private SortedSet<String> negativeExamples = new TreeSet<String>();
 	
 	// conf file options
 	private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
@@ -99,11 +99,11 @@ public class ConfParser {
 		}
 	}
 	
-	public SortedSet<Individual> getPositiveExamples() {
+	public SortedSet<String> getPositiveExamples() {
 		return positiveExamples;
 	}
 	
-	public SortedSet<Individual> getNegativeExamples() {
+	public SortedSet<String> getNegativeExamples() {
 		return negativeExamples;
 	} 
 	
@@ -349,26 +349,26 @@ void FunctionCall() :
   	{ addFunctionCall(s1,list); }
 }
 
-void PosExample() : { Individual i; }
+void PosExample() : { String i; }
 {
   	<POS_EX> i=Individual()
   	{ positiveExamples.add(i); }
 }
 
-void NegExample() : { Individual i; }
+void NegExample() : { String i; }
 {
   	<NEG_EX> i=Individual()
   	{ negativeExamples.add(i); }
 }
 
-Individual Individual() :
+String Individual() :
 {
 	String name;
 }
 {
 	(name=Id() | name=String())
 	{
-		return new Individual(KBParser.getInternalURI(name));
+		return KBParser.getInternalURI(name);
 	}
 }
 
