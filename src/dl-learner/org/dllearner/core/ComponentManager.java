@@ -247,24 +247,42 @@ public class ComponentManager {
 		return invokeConstructor(source, new Class[] {}, new Object[] {});
 	}
 
-	public <T extends ReasonerComponent> ReasoningService reasoningService(Class<T> reasoner,
+	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
 			KnowledgeSource source) {
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		sources.add(source);
-		return reasoningService(reasoner, sources);
+		return reasoner(reasoner, sources);
 	}
 
-	public <T extends ReasonerComponent> ReasoningService reasoningService(Class<T> reasoner,
+	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
 			Set<KnowledgeSource> sources) {
 		if (!reasonerComponents.contains(reasoner))
 			System.err.println("Warning: reasoner component " + reasoner
 					+ " is not a registered reasoner component.");
 
-		T reasonerInstance = invokeConstructor(reasoner, new Class[] { Set.class },
+		return invokeConstructor(reasoner, new Class[] { Set.class },
 				new Object[] { sources });
-		return new ReasoningService(reasonerInstance);
+//		T reasonerInstance = invokeConstructor(reasoner, new Class[] { Set.class },
+//				new Object[] { sources });
+//		return new ReasoningService(reasonerInstance);
 	}
 
+	/**
+	 * This method returns an instance of <code>ReasoningService</code>. The
+	 * difference between <code>ReasoningService</code> and <code>ReasonerComponent</code>
+	 * is that the former delegates all calls to the latter and collects statistics
+	 * while doing this. This means that the reasoning service enables the
+	 * collection of query information, while the <code>ReasonerComponent</code>
+	 * implements the actual reasoning methods defined by the <code>Reasoner</code>
+	 * interface.
+	 * 
+	 * @param reasoner A reasoner component.
+	 * @return The reasoning service encapsulating the reasoner.
+	 */
+	public ReasoningService reasoningService(ReasonerComponent reasoner) {
+		return new ReasoningService(reasoner);
+	}
+	
 	public <T extends LearningProblem> T learningProblem(Class<T> lp, ReasoningService reasoner) {
 		if (!learningProblems.contains(lp))
 			System.err.println("Warning: learning problem " + lp

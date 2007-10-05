@@ -53,7 +53,9 @@ public class ComponentTest {
 		source.init();
 		
 		// create DIG reasoning service with standard settings
-		ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
+		ReasonerComponent reasoner = cm.reasoner(DIGReasonerNew.class, source);
+		// ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
+		ReasoningService rs = cm.reasoningService(reasoner);
 		rs.init();
 		
 		// create a learning problem and set positive and negative examples

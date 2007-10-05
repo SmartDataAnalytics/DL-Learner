@@ -41,6 +41,7 @@ import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.StringSetConfigOption;
@@ -51,6 +52,7 @@ import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.reasoning.DIGReasonerNew;
 import org.dllearner.utilities.Datastructures;
+import org.dllearner.utilities.Helper;
 
 /**
  * Startup file for Command Line Interface.
@@ -76,35 +78,33 @@ public class Start {
 		// parse conf file
 		ConfParser parser = ConfParser.parseFile(file);
 
-		// try {
-
 		// step 1: detect knowledge sources
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		Map<URL, Class<? extends KnowledgeSource>> importedFiles = getImportedFiles(parser, baseDir);
 		for (Map.Entry<URL, Class<? extends KnowledgeSource>> entry : importedFiles.entrySet()) {
 			KnowledgeSource ks = cm.knowledgeSource(entry.getValue());
-			// ConfigOption<?> urlOption = cm.getConfigOption(entry.getValue(),
-			// "url");
-			// cm.applyConfigEntry(ks, new ConfigEntry<String>(urlOption,
-			// entry.getValue()));
+			// apply URL entry (this assumes that every knowledge source has a
+			// configuration option "url"), so this may need to be changed in the
+			// future
 			cm.applyConfigEntry(ks, "url", entry.getKey().toString());
 
-			// TODO: SPARQL-specific settings
-
-			// ks.applyConfigEntry(new ConfigEntry)
 			sources.add(ks);
+			configureComponent(cm, ks, componentPrefixMapping, parser);
 		}
 
 		// step 2: detect used reasoner
 		ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
-		ReasoningService rs = null;
+		Class<? extends ReasonerComponent> reasonerClass = null;
 		// default value
 		if (reasonerOption == null || reasonerOption.getStringValue().equals("dig"))
-			rs = cm.reasoningService(DIGReasonerNew.class, sources);
+			reasonerClass = DIGReasonerNew.class;
 		else {
 			handleError("Unknown value " + reasonerOption.getStringValue()
 					+ "for option \"reasoner\".");
 		}
+		ReasonerComponent reasoner = cm.reasoner(reasonerClass, sources);
+		configureComponent(cm, reasoner, componentPrefixMapping, parser);
+		ReasoningService rs = cm.reasoningService(reasoner);
 
 		// step 3: detect learning problem (no options for choosing it yet)
 		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
@@ -118,10 +118,8 @@ public class Start {
 		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
 			laClass = ROLearner.class;
 
-		la = cm.learningAlgorithm(ROLearner.class, lp, rs);
-
-		String algPrefix = componentPrefixMapping.get(la.getClass());
-		configureComponent(cm, la, parser.getConfOptionsByPrefix(algPrefix));
+		la = cm.learningAlgorithm(laClass, lp, rs);
+		configureComponent(cm, la, componentPrefixMapping, parser);
 
 		// initialise all structures
 		for(KnowledgeSource source : sources)
@@ -130,17 +128,22 @@ public class Start {
 		lp.init();
 		la.init();
 		
+		// Satisfiability Check
+		if (parser.getConfOptionsByName("cli.checkSatisfiability").getStringValue().equals("true")) {
+			System.out.print("Satisfiability Check ... ");
+			long satStartTime = System.nanoTime();
+			boolean satisfiable = rs.isSatisfiable();
+			long satDuration = System.nanoTime() - satStartTime;
+
+			String result = satisfiable ? "OK" : "not satisfiable!";
+			System.out.println(result + " ("
+					+ Helper.prettyPrintNanoSeconds(satDuration, true, false) + ")");
+			if (!satisfiable)
+				System.exit(0);
+		}
+		
 		// start algorithm
 		la.start();
-
-		// several classes of options: function calls, conf options for a
-		// component,
-		// CLI specific options, general conf options for all components
-
-		// } catch (InvalidConfigOptionValueException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 
 	// creates a mapping from components to option prefix strings
@@ -157,6 +160,13 @@ public class Start {
 		return componentPrefixMapping;
 	}
 
+	private static void configureComponent(ComponentManager cm, Component component,
+			Map<Class<? extends Component>,String> componentPrefixMapping, ConfParser parser) {
+		String prefix = componentPrefixMapping.get(component.getClass());
+		if(prefix != null)
+			configureComponent(cm, component, parser.getConfOptionsByPrefix(prefix));
+	}
+	
 	private static void configureComponent(ComponentManager cm,
 			Component component, List<ConfFileOption> options) {
 		if(options != null)
