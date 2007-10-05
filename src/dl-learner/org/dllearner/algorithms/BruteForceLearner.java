@@ -13,6 +13,7 @@ import org.dllearner.core.IntegerConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
@@ -52,7 +53,7 @@ public class BruteForceLearner extends LearningAlgorithmNew {
     // Programme nach Anzahl Knoten sortiert
     private Map<Integer,List<Concept>> generatedDefinitions = new HashMap<Integer,List<Concept>>();
     
-    public BruteForceLearner(LearningProblem learningProblem) {
+    public BruteForceLearner(LearningProblem learningProblem, ReasoningService rs) {
     	this.learningProblem = learningProblem;
     }
     

@@ -1,5 +1,6 @@
 package org.dllearner.reasoning;
 
+import java.net.URI;
 import java.util.Set;
 
 import org.dllearner.core.dl.All;
@@ -37,6 +38,18 @@ import org.dllearner.core.dl.TransitiveRoleAxiom;
  *
  */
 public class DIGConverter {
+	
+	public static StringBuilder getDIGString(KB kb, URI kbURI) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+		sb.append("<tells xmlns=\"http://dl.kr.org/dig/2003/02/lang\" " +
+				"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+				"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
+				"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">");
+		sb.append(getDIGString(kb));
+		sb.append("</tells>");
+		return sb;
+	}
 	
 	public static StringBuilder getDIGString(KB kb) {
 		StringBuilder sb = new StringBuilder();

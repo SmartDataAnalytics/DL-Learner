@@ -162,8 +162,8 @@ public class PaperStatistics {
 			Map<URL, OntologyFileFormat> imports = getImports(learner.getFunctionCalls(), confFiles[exampleNr]);
 			
 			// detect specified positive and negative examples
-			SortedSet<Individual> positiveExamples = learner.getPositiveExamples();
-			SortedSet<Individual> negativeExamples = learner.getNegativeExamples();
+			SortedSet<String> positiveExamples = learner.getPositiveExamples();
+			SortedSet<String> negativeExamples = learner.getNegativeExamples();
 			int nrOfExamples = positiveExamples.size() + negativeExamples.size();
 			
 			statString += "example: " + examples[exampleNr] + "\n\n";
@@ -237,7 +237,7 @@ public class PaperStatistics {
 						if(exampleNr==3 || exampleNr==5 || exampleNr == 6)
 							Config.percentPerLengthUnit = 0.002;
 						// learningAlgorithm = new GP(learningProblem);
-						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem);
+						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
 					} else if(algorithmNr==2) {
 						Config.algorithm = Algorithm.HYBRID_GP;
 						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
@@ -255,7 +255,7 @@ public class PaperStatistics {
 						if(exampleNr == 3 || exampleNr==5 || exampleNr==6)
 							Config.percentPerLengthUnit = 0.002;						
 						// learningAlgorithm = new GP(learningProblem);
-						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem);
+						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
 					}
 					
 					// rs.resetStatistics();

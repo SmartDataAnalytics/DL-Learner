@@ -417,7 +417,7 @@ public class Main {
 				algorithmStartTime = System.nanoTime();
 
 				if (Config.algorithm == Algorithm.BRUTE_FORCE) {
-					LearningAlgorithmNew la = new BruteForceLearner(learningProblem);
+					LearningAlgorithmNew la = new BruteForceLearner(learningProblem, null);
 					la.start();
 				} else if (Config.algorithm == Algorithm.RANDOM_GUESSER) {
 					// new RandomGuesser(learningProblem, 10000, 10);
@@ -449,7 +449,7 @@ public class Main {
 						// implemented)");
 						// }
 					}
-					LearningAlgorithmNew la = new ROLearner(learningProblem);
+					LearningAlgorithmNew la = new ROLearner(learningProblem, null);
 					la.start();
 					// new ROLearner(learningProblem, learningProblem2);
 				}

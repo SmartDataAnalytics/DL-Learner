@@ -27,8 +27,8 @@ import org.dllearner.utilities.*;
 public @SuppressWarnings("all") class ConfParser implements ConfParserConstants {
 
         // examples
-        private SortedSet<Individual> positiveExamples = new TreeSet<Individual>();
-        private SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
+        private SortedSet<String> positiveExamples = new TreeSet<String>();
+        private SortedSet<String> negativeExamples = new TreeSet<String>();
 
         // conf file options
         private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
@@ -70,11 +70,11 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
                 }
         }
 
-        public SortedSet<Individual> getPositiveExamples() {
+        public SortedSet<String> getPositiveExamples() {
                 return positiveExamples;
         }
 
-        public SortedSet<Individual> getNegativeExamples() {
+        public SortedSet<String> getNegativeExamples() {
                 return negativeExamples;
         }
 
@@ -385,20 +385,20 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
   }
 
   final public void PosExample() throws ParseException {
-                      Individual i;
+                      String i;
     jj_consume_token(POS_EX);
     i = Individual();
           positiveExamples.add(i);
   }
 
   final public void NegExample() throws ParseException {
-                      Individual i;
+                      String i;
     jj_consume_token(NEG_EX);
     i = Individual();
           negativeExamples.add(i);
   }
 
-  final public Individual Individual() throws ParseException {
+  final public String Individual() throws ParseException {
         String name;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
@@ -412,7 +412,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
       jj_consume_token(-1);
       throw new ParseException();
     }
-                {if (true) return new Individual(KBParser.getInternalURI(name));}
+                {if (true) return KBParser.getInternalURI(name);}
     throw new Error("Missing return statement in function");
   }
 

@@ -155,7 +155,7 @@ public class DLLearnerWSoriginal {
 		// LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
 		PosNegLP learningProblem = null;
 		// erstmal wird nur der Refinement-Learner als Web-Service angeboten
-		ROLearner learner = new ROLearner(learningProblem);
+		ROLearner learner = new ROLearner(learningProblem, null);
 		return learner.getBestSolution().toString();
 	}
 

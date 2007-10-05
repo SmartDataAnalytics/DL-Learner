@@ -275,7 +275,7 @@ public class ComponentManager {
 	}
 
 	// automagically calls the right constructor for the given learning problem
-	public <T extends LearningAlgorithmNew> T learningAlgorithm(Class<T> la, LearningProblem lp) {
+	public <T extends LearningAlgorithmNew> T learningAlgorithm(Class<T> la, LearningProblem lp, ReasoningService rs) {
 		if (!learningAlgorithms.contains(la))
 			System.err.println("Warning: learning algorithm " + la
 					+ " is not a registered learning algorithm component.");
@@ -296,7 +296,7 @@ public class ComponentManager {
 			return null;
 		}
 
-		return invokeConstructor(la, new Class[] { constructorArgument }, new Object[] { lp });
+		return invokeConstructor(la, new Class[] { constructorArgument, ReasoningService.class }, new Object[] { lp, rs });
 	}
 
 	public void writeConfigDocumentation(File file) {
