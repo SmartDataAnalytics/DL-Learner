@@ -20,7 +20,6 @@
 package org.dllearner.kb;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -111,6 +110,10 @@ public class KBFile extends KnowledgeSource {
 			return "KB file (not initialised)";
 		else
 			return kb.toString();
+	}
+	
+	public URL getURL() {
+		return url;
 	}
 	
 }

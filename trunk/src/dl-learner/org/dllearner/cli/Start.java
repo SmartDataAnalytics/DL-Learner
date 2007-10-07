@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
@@ -42,9 +43,13 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.StringSetConfigOption;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Individual;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpoint;
@@ -70,7 +75,11 @@ public class Start {
 		String baseDir = file.getParentFile().getPath();
 
 		// create component manager instance
+		System.out.print("starting component manager ... ");
+		long cmStartTime = System.nanoTime();
 		ComponentManager cm = ComponentManager.getInstance();
+		long cmTime = System.nanoTime() - cmStartTime;
+		System.out.println("OK (" + Helper.prettyPrintNanoSeconds(cmTime) + ")");
 
 		// create a mapping between components and prefixes in the conf file
 		Map<Class<? extends Component>, String> componentPrefixMapping = createComponentPrefixMapping();
@@ -84,7 +93,8 @@ public class Start {
 		for (Map.Entry<URL, Class<? extends KnowledgeSource>> entry : importedFiles.entrySet()) {
 			KnowledgeSource ks = cm.knowledgeSource(entry.getValue());
 			// apply URL entry (this assumes that every knowledge source has a
-			// configuration option "url"), so this may need to be changed in the
+			// configuration option "url"), so this may need to be changed in
+			// the
 			// future
 			cm.applyConfigEntry(ks, "url", entry.getKey().toString());
 
@@ -108,8 +118,10 @@ public class Start {
 
 		// step 3: detect learning problem (no options for choosing it yet)
 		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
-		cm.applyConfigEntry(lp, "positiveExamples", parser.getPositiveExamples());
-		cm.applyConfigEntry(lp, "negativeExamples", parser.getNegativeExamples());
+		SortedSet<String> posExamples = parser.getPositiveExamples();
+		SortedSet<String> negExamples = parser.getNegativeExamples();
+		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
+		cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 
 		// step 4: detect learning algorithm
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
@@ -122,26 +134,34 @@ public class Start {
 		configureComponent(cm, la, componentPrefixMapping, parser);
 
 		// initialise all structures
-		for(KnowledgeSource source : sources)
-			source.init();
-		rs.init();
-		lp.init();
-		la.init();
-		
-		// Satisfiability Check
-		if (parser.getConfOptionsByName("cli.checkSatisfiability").getStringValue().equals("true")) {
-			System.out.print("Satisfiability Check ... ");
-			long satStartTime = System.nanoTime();
-			boolean satisfiable = rs.isSatisfiable();
-			long satDuration = System.nanoTime() - satStartTime;
+		for (KnowledgeSource source : sources)
+			initComponent(cm, source);
+		initComponent(cm, reasoner);
+		initComponent(cm, lp);
+		initComponent(cm, la);
 
-			String result = satisfiable ? "OK" : "not satisfiable!";
-			System.out.println(result + " ("
-					+ Helper.prettyPrintNanoSeconds(satDuration, true, false) + ")");
-			if (!satisfiable)
-				System.exit(0);
+		// show examples (display each one if they do not take up much space,
+		// otherwise just show the number of examples)
+		boolean oneLineExampleInfo = true;
+		int maxExampleStringLength = Math.max(posExamples.toString().length(), negExamples
+				.toString().length());
+		if (maxExampleStringLength > 100)
+			oneLineExampleInfo = false;
+		if (oneLineExampleInfo) {
+			System.out.println("positive examples[" + posExamples.size() + "]: " + posExamples);
+			System.out.println("negative examples[" + negExamples.size() + "]: " + negExamples);
+		} else {
+			System.out.println("positive examples[" + posExamples.size() + "]: ");
+			for (String ex : posExamples)
+				System.out.println("  " + ex);
+			System.out.println("negative examples[" + negExamples.size() + "]: ");
+			for (String ex : negExamples)
+				System.out.println("  " + ex);
 		}
-		
+
+		// handle any CLI options
+		processCLIOptions(cm, parser, rs);
+
 		// start algorithm
 		la.start();
 	}
@@ -150,9 +170,9 @@ public class Start {
 	private static Map<Class<? extends Component>, String> createComponentPrefixMapping() {
 		Map<Class<? extends Component>, String> componentPrefixMapping = new HashMap<Class<? extends Component>, String>();
 		// knowledge sources
-		componentPrefixMapping.put(SparqlEndpoint.class, "sparql");		
+		componentPrefixMapping.put(SparqlEndpoint.class, "sparql");
 		// reasoners
-		componentPrefixMapping.put(DIGReasonerNew.class, "digReasoner");		
+		componentPrefixMapping.put(DIGReasonerNew.class, "digReasoner");
 		// learning problems - configured via + and - flags for examples
 		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
@@ -161,21 +181,21 @@ public class Start {
 	}
 
 	private static void configureComponent(ComponentManager cm, Component component,
-			Map<Class<? extends Component>,String> componentPrefixMapping, ConfParser parser) {
+			Map<Class<? extends Component>, String> componentPrefixMapping, ConfParser parser) {
 		String prefix = componentPrefixMapping.get(component.getClass());
-		if(prefix != null)
+		if (prefix != null)
 			configureComponent(cm, component, parser.getConfOptionsByPrefix(prefix));
 	}
-	
-	private static void configureComponent(ComponentManager cm,
-			Component component, List<ConfFileOption> options) {
-		if(options != null)
+
+	private static void configureComponent(ComponentManager cm, Component component,
+			List<ConfFileOption> options) {
+		if (options != null)
 			for (ConfFileOption option : options)
 				applyConfFileOption(cm, component, option);
 	}
 
-	private static void applyConfFileOption(ComponentManager cm,
-			Component component, ConfFileOption option) {
+	private static void applyConfFileOption(ComponentManager cm, Component component,
+			ConfFileOption option) {
 		// the name of the option is suboption-part (the first part refers
 		// to its component)
 		String optionName = option.getSubOption();
@@ -186,44 +206,46 @@ public class Start {
 
 			// catch all invalid config options
 			try {
-				
+
 				// perform compatibility checks
 				if (configOption instanceof StringConfigOption && option.isStringOption()) {
 
 					ConfigEntry<String> entry = new ConfigEntry<String>(
 							(StringConfigOption) configOption, option.getStringValue());
 					cm.applyConfigEntry(component, entry);
-					
-				} else if(configOption instanceof IntegerConfigOption && option.isIntegerOption()) {
-				
+
+				} else if (configOption instanceof IntegerConfigOption && option.isIntegerOption()) {
+
 					ConfigEntry<Integer> entry = new ConfigEntry<Integer>(
 							(IntegerConfigOption) configOption, option.getIntValue());
-					cm.applyConfigEntry(component, entry);					
-					
-				} else if(configOption instanceof DoubleConfigOption && (option.isIntegerOption() || option.isDoubleOption())) {
-				
+					cm.applyConfigEntry(component, entry);
+
+				} else if (configOption instanceof DoubleConfigOption
+						&& (option.isIntegerOption() || option.isDoubleOption())) {
+
 					double value;
-					if(option.isIntegerOption())
+					if (option.isIntegerOption())
 						value = option.getIntValue();
 					else
 						value = option.getDoubleValue();
-					
+
 					ConfigEntry<Double> entry = new ConfigEntry<Double>(
 							(DoubleConfigOption) configOption, value);
-					cm.applyConfigEntry(component, entry);					
-					
-				} else if(configOption instanceof BooleanConfigOption && option.isStringOption()) {
-				
+					cm.applyConfigEntry(component, entry);
+
+				} else if (configOption instanceof BooleanConfigOption && option.isStringOption()) {
+
 					ConfigEntry<Boolean> entry = new ConfigEntry<Boolean>(
-							(BooleanConfigOption) configOption, Datastructures.strToBool(option.getStringValue()));
-					cm.applyConfigEntry(component, entry);					
-					
-				} else if(configOption instanceof StringSetConfigOption && option.isSetOption()) {
-				
+							(BooleanConfigOption) configOption, Datastructures.strToBool(option
+									.getStringValue()));
+					cm.applyConfigEntry(component, entry);
+
+				} else if (configOption instanceof StringSetConfigOption && option.isSetOption()) {
+
 					ConfigEntry<Set<String>> entry = new ConfigEntry<Set<String>>(
 							(StringSetConfigOption) configOption, option.getSetValues());
-					cm.applyConfigEntry(component, entry);				
-					
+					cm.applyConfigEntry(component, entry);
+
 				} else {
 					handleError("The type of conf file entry " + option + " is not correct.");
 				}
@@ -262,8 +284,8 @@ public class Start {
 			Class<? extends KnowledgeSource> ksClass;
 			if (arguments.size() == 1) {
 				String filename = url.getPath();
-				String ending = filename.substring(filename.lastIndexOf(".")+1);
-				
+				String ending = filename.substring(filename.lastIndexOf(".") + 1);
+
 				if (ending.equals("rdf") || ending.equals("owl"))
 					ksClass = OWLFile.class;
 				else if (ending.equals("nt"))
@@ -298,6 +320,92 @@ public class Start {
 		}
 
 		return importedFiles;
+	}
+
+	private static void processCLIOptions(ComponentManager cm, ConfParser parser,
+			ReasoningService rs) {
+		// CLI options (i.e. options which are related to the CLI
+		// user interface but not to one of the components)
+		List<ConfFileOption> cliOptions = parser.getConfOptionsByPrefix("cli");
+		int maxLineLength = 100;
+		for (ConfFileOption cliOption : cliOptions) {
+			String name = cliOption.getSubOption();
+			if (name.equals("showIndividuals")) {
+				if (cliOption.getStringValue().equals("true")) {
+					int stringLength = rs.getIndividuals().toString().length();
+					if (stringLength > maxLineLength) {
+						System.out.println("individuals[" + rs.getIndividuals().size() + "]: ");
+						for (Individual ind : rs.getIndividuals())
+							System.out.println("  " + ind);
+					} else
+						System.out.println("individuals[" + rs.getIndividuals().size() + "]: "
+								+ rs.getIndividuals());
+				}
+			} else if (name.equals("showConcepts")) {
+				if (cliOption.getStringValue().equals("true")) {
+					int stringLength = rs.getAtomicConcepts().toString().length();
+					if (stringLength > maxLineLength) {
+						System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: ");
+						for (AtomicConcept ac : rs.getAtomicConcepts())
+							System.out.println("  " + ac);
+					} else
+						System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: "
+								+ rs.getAtomicConcepts());
+				}
+			} else if (name.equals("showRoles")) {
+				if (cliOption.getStringValue().equals("true")) {
+					int stringLength = rs.getAtomicRoles().toString().length();
+					if (stringLength > maxLineLength) {
+						System.out.println("roles[" + rs.getAtomicRoles().size() + "]: ");
+						for (AtomicRole r : rs.getAtomicRoles())
+							System.out.println("  " + r);
+					} else
+						System.out.println("roles[" + rs.getAtomicRoles().size() + "]: "
+								+ rs.getAtomicRoles());
+				}
+			} else if (name.equals("showSubsumptionHierarchy")) {
+				if (cliOption.getStringValue().equals("true")) {
+					System.out.println("Subsumption Hierarchy:");
+					System.out.println(rs.getSubsumptionHierarchy());
+				}
+				// satisfiability check
+			} else if (name.equals("checkSatisfiability")) {
+				if (cliOption.getStringValue().equals("true")) {
+					System.out.print("Satisfiability Check ... ");
+					long satStartTime = System.nanoTime();
+					boolean satisfiable = rs.isSatisfiable();
+					long satDuration = System.nanoTime() - satStartTime;
+
+					String result = satisfiable ? "OK" : "not satisfiable!";
+					System.out.println(result + " ("
+							+ Helper.prettyPrintNanoSeconds(satDuration, true, false) + ")");
+					if (!satisfiable)
+						System.exit(0);
+				}
+			} else
+				handleError("Unknown CLI option \"" + name + "\".");
+		}
+	}
+
+	private static void initComponent(ComponentManager cm, Component component) {
+		System.out.print("initialising component \"" + cm.getComponentName(component.getClass())
+				+ "\" ... ");
+		long initStartTime = System.nanoTime();
+		component.init();
+		// standard messsage is just "OK" but can be more detailed for certain
+		// components
+		String message = "OK";
+		if (component instanceof KBFile)
+			message = ((KBFile) component).getURL().toString() + " read";
+		else if (component instanceof DIGReasonerNew) {
+			DIGReasonerNew reasoner = (DIGReasonerNew) component;
+			message = "using " + reasoner.getIdentifier() + " connected via DIG 1.1 at "
+					+ reasoner.getReasonerURL().toString();
+		}
+
+		long initTime = System.nanoTime() - initStartTime;
+		System.out.println(message + " (" + Helper.prettyPrintNanoSeconds(initTime, false, false)
+				+ ")");
 	}
 
 	private static void handleError(String message) {

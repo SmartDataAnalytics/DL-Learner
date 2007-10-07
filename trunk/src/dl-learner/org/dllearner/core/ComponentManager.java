@@ -66,6 +66,7 @@ public class ComponentManager {
 	private static Set<Class<? extends LearningAlgorithmNew>> learningAlgorithms;
 
 	// list of all configuration options of all components
+	private static Map<Class<? extends Component>, String> componentNames;
 	private static Map<Class<? extends Component>, List<ConfigOption<?>>> componentOptions;
 	private static Map<Class<? extends Component>, Map<String, ConfigOption<?>>> componentOptionsByName;
 	private static Map<Class<? extends LearningAlgorithmNew>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
@@ -119,15 +120,18 @@ public class ComponentManager {
 			}
 		}
 
+		componentNames = new HashMap<Class<? extends Component>, String>();
 		// read in all configuration options
 		componentOptions = new HashMap<Class<? extends Component>, List<ConfigOption<?>>>();
 		componentOptionsByName = new HashMap<Class<? extends Component>, Map<String, ConfigOption<?>>>();
 
 		for (Class<? extends Component> component : components) {
 
+			String name = (String) invokeStaticMethod(component, "getName");
+			componentNames.put(component, name);
+			
 			List<ConfigOption<?>> options = (List<ConfigOption<?>>) invokeStaticMethod(component,
 					"createConfigOptions");
-
 			componentOptions.put(component, options);
 
 			Map<String, ConfigOption<?>> byName = new HashMap<String, ConfigOption<?>>();
@@ -419,6 +423,10 @@ public class ComponentManager {
 	
 	public ConfigOption<?> getConfigOption(Class<? extends Component> component, String name) {
 		return componentOptionsByName.get(component).get(name);
+	}
+	
+	public String getComponentName(Class<? extends Component> component) {
+		return componentNames.get(component);
 	}
 
 }
