@@ -91,6 +91,8 @@ public class OWLFile extends KnowledgeSource {
 		return OWLAPIDIGConverter.getTellsString(url, OntologyFileFormat.RDF_XML, kbURI);
 	}
 
-
+	public URL getURL() {
+		return url;
+	}
 
 }

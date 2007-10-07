@@ -102,6 +102,7 @@ public class ReasoningService {
 		this.reasoner = reasoner;
 	}
 	
+	/*
 	public void init() {
 		// temporary ugly hack to keep old version working
 		((ReasonerComponent)reasoner).init();
@@ -110,6 +111,7 @@ public class ReasoningService {
 		atomicConceptsList = new LinkedList<AtomicConcept>(getAtomicConcepts());
 		atomicRolesList = new LinkedList<AtomicRole>(getAtomicRoles());		
 	}
+	*/
 	
 	// zurücksetzen aller Statistiken (wenn z.B. vorher ein Satisfiability Check gemacht wird,
 	// der allerdings nicht zum eigentlichen Algorithmus gehört)

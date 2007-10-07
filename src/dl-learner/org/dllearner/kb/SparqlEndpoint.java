@@ -98,4 +98,7 @@ public class SparqlEndpoint extends KnowledgeSource {
 		return null;
 	}
 
+	public URL getURL() {
+		return url;
+	}
 }

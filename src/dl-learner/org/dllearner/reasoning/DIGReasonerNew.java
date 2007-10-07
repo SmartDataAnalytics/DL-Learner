@@ -729,6 +729,8 @@ public class DIGReasonerNew extends ReasonerComponent {
 		// kaon2Reasoner.saveOntology(file, format);
 	}
 
-
+	public URL getReasonerURL() {
+		return reasonerURL;
+	}
 	
 }

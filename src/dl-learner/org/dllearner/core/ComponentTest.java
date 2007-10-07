@@ -56,7 +56,7 @@ public class ComponentTest {
 		ReasonerComponent reasoner = cm.reasoner(DIGReasonerNew.class, source);
 		// ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
 		ReasoningService rs = cm.reasoningService(reasoner);
-		rs.init();
+		reasoner.init();
 		
 		// create a learning problem and set positive and negative examples
 		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
