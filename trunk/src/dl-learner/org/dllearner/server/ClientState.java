@@ -15,7 +15,6 @@ import java.util.TreeSet;
 
 import org.dllearner.Config;
 import org.dllearner.ConfigurationManager;
-import org.dllearner.Main;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.core.Reasoner;
@@ -26,6 +25,7 @@ import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
 import org.dllearner.kb.OntologyFileFormat;
+import org.dllearner.utilities.Helper;
 
 public class ClientState {
 	
@@ -425,10 +425,11 @@ public class ClientState {
 			e.printStackTrace();
 		}		
 		
-		 reasoner = Main.createReasoner(new KB(), m);
+		 // reasoner = Main.createReasoner(new KB(), m);
+		 System.err.println("TODO: rewrite webservice code");
 		 rs = new ReasoningService(reasoner);
 		
-		 Main.autoDetectConceptsAndRoles(rs);
+		 Helper.autoDetectConceptsAndRoles(rs);
 			reasoner.prepareSubsumptionHierarchy();
 			if (Config.Refinement.improveSubsumptionHierarchy) {
 				try {

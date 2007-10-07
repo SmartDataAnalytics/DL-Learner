@@ -8,8 +8,8 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 
 import org.dllearner.Config;
-import org.dllearner.Main;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
@@ -340,7 +340,14 @@ public class GPUtilities {
     	Score tmpScore;
     	SortedSetTuple<String> tmp, tmp2;
     	// FlatABox abox = ((FastRetrievalReasoner)learningProblem.getReasoner().getFastRetrieval().getAbox();
-    	FlatABox abox = Main.getFlatAbox();
+    	// FlatABox abox = Main.getFlatAbox();
+    	FlatABox abox = null;
+		try {
+			abox = Helper.createFlatABox(learningProblem.getReasoningService());
+		} catch (ReasoningMethodUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	
     	// TODO: testen, ob aktuelles Konzept zu speziell bzw. allgemein ist;
     	// dann kann man das effizienter implementieren

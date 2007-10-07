@@ -19,15 +19,20 @@
  */
 package org.dllearner.cli;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
@@ -42,22 +47,31 @@ import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.Score;
 import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.StringSetConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.kb.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.parser.ConfParser;
+import org.dllearner.parser.KBParser;
+import org.dllearner.parser.ParseException;
+import org.dllearner.parser.TokenMgrError;
 import org.dllearner.reasoning.DIGReasonerNew;
+import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.RoleComparator;
 
 /**
  * Startup file for Command Line Interface.
@@ -140,6 +154,9 @@ public class Start {
 		initComponent(cm, lp);
 		initComponent(cm, la);
 
+		// perform file exports
+		performExports(parser, baseDir, rs);
+		
 		// show examples (display each one if they do not take up much space,
 		// otherwise just show the number of examples)
 		boolean oneLineExampleInfo = true;
@@ -163,7 +180,11 @@ public class Start {
 		processCLIOptions(cm, parser, rs);
 
 		// start algorithm
+		long algStartTime = System.nanoTime();
 		la.start();
+		long algDuration = System.nanoTime() - algStartTime;
+		
+		printConclusions(rs, algDuration);
 	}
 
 	// creates a mapping from components to option prefix strings
@@ -180,6 +201,10 @@ public class Start {
 		return componentPrefixMapping;
 	}
 
+	// convenience method
+	// basically every prefix (e.g. "refinement" in "refinement.horizontalExpFactor)
+	// corresponds to a specific component - this way the CLI will automatically
+	// support any configuration options supported by the component
 	private static void configureComponent(ComponentManager cm, Component component,
 			Map<Class<? extends Component>, String> componentPrefixMapping, ConfParser parser) {
 		String prefix = componentPrefixMapping.get(component.getClass());
@@ -187,6 +212,7 @@ public class Start {
 			configureComponent(cm, component, parser.getConfOptionsByPrefix(prefix));
 	}
 
+	// convenience method - see above method
 	private static void configureComponent(ComponentManager cm, Component component,
 			List<ConfFileOption> options) {
 		if (options != null)
@@ -194,6 +220,8 @@ public class Start {
 				applyConfFileOption(cm, component, option);
 	}
 
+	// applies an option to a component - checks whether the option and its
+	// value is valid
 	private static void applyConfFileOption(ComponentManager cm, Component component,
 			ConfFileOption option) {
 		// the name of the option is suboption-part (the first part refers
@@ -260,7 +288,7 @@ public class Start {
 	}
 
 	// detects all imported files and their format
-	private static Map<URL, Class<? extends KnowledgeSource>> getImportedFiles(ConfParser parser,
+	public static Map<URL, Class<? extends KnowledgeSource>> getImportedFiles(ConfParser parser,
 			String baseDir) {
 		List<List<String>> imports = parser.getFunctionCalls().get("import");
 		Map<URL, Class<? extends KnowledgeSource>> importedFiles = new HashMap<URL, Class<? extends KnowledgeSource>>();
@@ -322,6 +350,27 @@ public class Start {
 		return importedFiles;
 	}
 
+	private static void performExports(ConfParser parser, String baseDir, ReasoningService rs) {
+		List<List<String>> exports = parser.getFunctionCalls().get("export");
+		if(exports == null)
+			return;
+		for(List<String> export : exports) {
+			File file = new File(baseDir, export.get(0));
+			if (export.size() == 1)
+				// use RDF/XML by default
+				rs.saveOntology(file, OntologyFileFormat.RDF_XML);
+			else {
+				String formatString = export.get(1);
+				OntologyFileFormat format;
+				if (formatString.equals("RDF/XML"))
+					format = OntologyFileFormat.RDF_XML;
+				else
+					format = OntologyFileFormat.N_TRIPLES;
+				rs.saveOntology(file, format);
+			}
+		}
+	}
+	
 	private static void processCLIOptions(ComponentManager cm, ConfParser parser,
 			ReasoningService rs) {
 		// CLI options (i.e. options which are related to the CLI
@@ -407,7 +456,161 @@ public class Start {
 		System.out.println(message + " (" + Helper.prettyPrintNanoSeconds(initTime, false, false)
 				+ ")");
 	}
+	
+	private static void printConclusions(ReasoningService rs, long algorithmDuration) {
+		if (rs.getNrOfRetrievals() > 0) {
+			System.out.println("number of retrievals: " + rs.getNrOfRetrievals());
+			System.out.println("retrieval reasoning time: "
+					+ Helper.prettyPrintNanoSeconds(rs
+							.getRetrievalReasoningTimeNs()) + " ( "
+					+ Helper.prettyPrintNanoSeconds(rs.getTimePerRetrievalNs())
+					+ " per retrieval)");
+		}
+		if (rs.getNrOfInstanceChecks() > 0) {
+			System.out.println("number of instance checks: "
+					+ rs.getNrOfInstanceChecks() + " ("
+					+ rs.getNrOfMultiInstanceChecks() + " multiple)");
+			System.out.println("instance check reasoning time: "
+					+ Helper.prettyPrintNanoSeconds(rs
+							.getInstanceCheckReasoningTimeNs())
+					+ " ( "
+					+ Helper.prettyPrintNanoSeconds(rs
+							.getTimePerInstanceCheckNs())
+					+ " per instance check)");
+		}
+		if (rs.getNrOfSubsumptionHierarchyQueries() > 0) {
+			System.out.println("subsumption hierarchy queries: "
+					+ rs.getNrOfSubsumptionHierarchyQueries());
+			/*
+			 * System.out.println("subsumption hierarchy reasoning time: " +
+			 * Helper.prettyPrintNanoSeconds(rs
+			 * .getSubsumptionHierarchyTimeNs()) + " ( " +
+			 * Helper.prettyPrintNanoSeconds(rs
+			 * .getTimePerSubsumptionHierarchyQueryNs()) + " per
+			 * subsumption hierachy query)");
+			 */
+		}
+		if (rs.getNrOfSubsumptionChecks() > 0) {
+			System.out.println("(complex) subsumption checks: "
+					+ rs.getNrOfSubsumptionChecks() + " ("
+					+ rs.getNrOfMultiSubsumptionChecks() + " multiple)");
+			System.out.println("subsumption reasoning time: "
+					+ Helper.prettyPrintNanoSeconds(rs
+							.getSubsumptionReasoningTimeNs())
+					+ " ( "
+					+ Helper.prettyPrintNanoSeconds(rs
+							.getTimePerSubsumptionCheckNs())
+					+ " per subsumption check)");
+		}
+		DecimalFormat df = new DecimalFormat();
+		double reasoningPercentage = 100 * rs.getOverallReasoningTimeNs()
+				/ (double) algorithmDuration;
+		System.out
+				.println("overall reasoning time: "
+						+ Helper.prettyPrintNanoSeconds(rs
+								.getOverallReasoningTimeNs()) + " ("
+						+ df.format(reasoningPercentage)
+						+ "% of overall runtime)");
+		System.out.println("overall algorithm runtime: "
+				+ Helper.prettyPrintNanoSeconds(algorithmDuration));
+	}
+	
+	// TODO: query mode umschreiben
+	private static void processQueryMode(LearningProblem lp, ReasoningService rs) {
 
+		System.out
+				.println("Entering query mode. Enter a concept for performing retrieval or q to quit.");
+		String queryStr = "";
+		do {
+
+			System.out.print("enter query: "); // String einlesen
+			BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+			// Eingabestring einlesen
+			try {
+				queryStr = input.readLine();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			if (!queryStr.equals("q")) {
+
+				// Konzept parsen
+				Concept concept = null;
+				boolean parsedCorrectly = true;
+
+				try {
+					concept = KBParser.parseConcept(queryStr);
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+					System.err
+							.println("The concept you entered could not be parsed. Please try again.");
+					parsedCorrectly = false;
+				} catch (TokenMgrError e) {
+					e.printStackTrace();
+					System.err
+							.println("An error occured during parsing. Please enter a syntactically valid concept.");
+					parsedCorrectly = false;
+				}
+
+				if (parsedCorrectly) {
+					// berechne im Konzept vorkommende atomare Rollen und
+					// Konzepte
+					SortedSet<AtomicConcept> occurringConcepts = new TreeSet<AtomicConcept>(
+							new ConceptComparator());
+					occurringConcepts.addAll(Helper.getAtomicConcepts(concept));
+					SortedSet<AtomicRole> occurringRoles = new TreeSet<AtomicRole>(
+							new RoleComparator());
+					occurringRoles.addAll(Helper.getAtomicRoles(concept));
+
+					// ziehe davon die existierenden ab => die resultierenden
+					// Mengen
+					// sollten leer sein, ansonsten Fehler (der DIG-Reasoner
+					// fängt das
+					// leider nicht selbst ab)
+					// => momentan etwas umständlich gelöst, da es in Java bei
+					// removeAll darauf
+					// ankommt, dass die Argumentmenge den Comparator
+					// implementiert hat, was hier
+					// (noch) nicht der Fall ist
+					for (AtomicConcept ac : rs.getAtomicConcepts())
+						occurringConcepts.remove(ac);
+					for (AtomicRole ar : rs.getAtomicRoles())
+						occurringRoles.remove(ar);
+
+					boolean nonExistingConstructs = false;
+					if (occurringConcepts.size() != 0 || occurringRoles.size() != 0) {
+						System.out
+								.println("You used non-existing atomic concepts or roles. Please correct your query.");
+						if (occurringConcepts.size() > 0)
+							System.out.println("non-existing concepts: "
+									+ occurringConcepts);
+						if (occurringRoles.size() > 0)
+							System.out.println("non-existing roles: " + occurringRoles);
+						nonExistingConstructs = true;
+					}
+
+					if (!nonExistingConstructs) {
+						// Retrieval stellen
+						Set<Individual> result = null;
+						result = rs.retrieval(concept);
+
+						System.out.println(result);
+
+						Score score = lp.computeScore(concept);
+						System.out.println(score);
+
+						// feststellen, was zur Lösung noch fehlt
+						// Set<String> notCoveredPositives
+					}
+				}
+			}
+
+		} while (!queryStr.equals("q"));
+
+	}
+	
 	private static void handleError(String message) {
 		System.err.println(message);
 		System.exit(0);

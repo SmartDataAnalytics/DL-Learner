@@ -12,7 +12,6 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.dllearner.Config;
-import org.dllearner.Main;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Reasoner;
@@ -22,6 +21,7 @@ import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
 import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.utilities.Helper;
 
 /**
  * Offene Fragen:
@@ -97,7 +97,7 @@ public class DLLearnerWSoriginal {
 			e.printStackTrace();
 		}		
 		 
-		 reasoner = Main.createReasoner(new KB(), m);
+		 // reasoner = Main.createReasoner(new KB(), m);
 		 
 		 rs = new ReasoningService(reasoner);
 		 
@@ -141,7 +141,7 @@ public class DLLearnerWSoriginal {
 		//   werden
 		// - die Subsumptionhierarchie muss erstellt werden
 		// - die Subsumptionhierarchie wird verbessert um das Lernen effizienter zu machen
-		Main.autoDetectConceptsAndRoles(rs);
+		Helper.autoDetectConceptsAndRoles(rs);
 		reasoner.prepareSubsumptionHierarchy();
 		if (Config.Refinement.improveSubsumptionHierarchy) {
 			try {
