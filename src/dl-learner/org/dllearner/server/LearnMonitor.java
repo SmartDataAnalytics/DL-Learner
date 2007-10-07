@@ -1,9 +1,9 @@
 package org.dllearner.server;
 
 import org.dllearner.Config;
-import org.dllearner.Main;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.utilities.Helper;
 
 public class LearnMonitor extends Thread {
 
@@ -49,7 +49,7 @@ public class LearnMonitor extends Thread {
 		//   werden
 		// - die Subsumptionhierarchie muss erstellt werden
 		// - die Subsumptionhierarchie wird verbessert um das Lernen effizienter zu machen
-		Main.autoDetectConceptsAndRoles(c.getRs());
+		Helper.autoDetectConceptsAndRoles(c.getRs());
 		c.getReasoner().prepareSubsumptionHierarchy();
 		if (Config.Refinement.improveSubsumptionHierarchy) {
 			try {

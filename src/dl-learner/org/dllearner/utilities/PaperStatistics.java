@@ -29,23 +29,27 @@ import java.util.SortedSet;
 
 import org.dllearner.Config;
 import org.dllearner.ConfigurationManager;
-import org.dllearner.Main;
 import org.dllearner.Config.Algorithm;
 import org.dllearner.algorithms.gp.GP;
+import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithmNew;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Reasoner;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.KB;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.reasoning.DIGReasoner;
+import org.dllearner.reasoning.DIGReasonerNew;
 
 /**
  * Utility script for creating statistics for publications.
@@ -158,8 +162,11 @@ public class PaperStatistics {
 			// parse current conf file
 			ConfParser learner = ConfParser.parseFile(confFiles[exampleNr]);
 			
+			String baseDir = confFiles[exampleNr].getParent();
+			
 			// read which files were imported (internal KB is ignored) and initialise reasoner
 			Map<URL, OntologyFileFormat> imports = getImports(learner.getFunctionCalls(), confFiles[exampleNr]);
+			//Map<URL, Class<? extends KnowledgeSource>> imports = Start.getImportedFiles(learner, baseDir);
 			
 			// detect specified positive and negative examples
 			SortedSet<String> positiveExamples = learner.getPositiveExamples();
@@ -181,7 +188,10 @@ public class PaperStatistics {
 					// create reasoner (this has to be done in this inner loop to 
 					// ensure that none of the algorithm benefits from e.g. caching
 					// of previous reasoning requests
-					Reasoner reasoner = Main.createReasoner(new KB(), imports);
+					// Reasoner reasoner = Main.createReasoner(new KB(), imports);
+					// TODO: needs fixing
+					KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+					ReasonerComponent reasoner = cm.reasoner(DIGReasonerNew.class, ks);
 					ReasoningService rs = new ReasoningService(reasoner);					
 					
 					// System.out.println(positiveExamples);
@@ -197,7 +207,7 @@ public class PaperStatistics {
 					// uses the same reasoning object (e.g. the second algorithm may
 					// have a small advantage if the reasoner cached reasoning requests
 					// of the first algorithm)
-					Main.autoDetectConceptsAndRoles(rs);
+					Helper.autoDetectConceptsAndRoles(rs);
 					try {
 						reasoner.prepareSubsumptionHierarchy();
 						reasoner.prepareRoleHierarchy();
@@ -276,7 +286,7 @@ public class PaperStatistics {
 					runtime.addNumber(algorithmTime);
 					
 					// free knowledge base to avoid memory leaks
-					((DIGReasoner) reasoner).releaseKB();	
+					((DIGReasonerNew) reasoner).releaseKB();	
 					
 					statDetailsString += "example: " + examples[exampleNr] + "\n";
 					statDetailsString += "algorithm: " + algorithms[algorithmNr] + "\n";
@@ -342,6 +352,170 @@ public class PaperStatistics {
 		}
 		
 		return importedFiles;
+	}
+	
+	// erzeugt Statistiken für MLDM-Paper zur Verarbeitung mit GnuPlot
+	// Vorsicht: Laufzeit von mehreren Stunden
+	
+	/**
+	 * Has been used to create the statistics for the MLDM 2007 paper.
+	 * Warning: this method runs for several hours
+	 * 
+	 * @todo: This method has not been fully adapted to the base structure
+	 * changes. To reproduce the results, the method has to be implemented
+	 * properly.
+	 */
+	@SuppressWarnings("unused")
+	public static void createStatisticsMLDMPaper(PosNegDefinitionLP learningProblem, String baseDir) {
+		// Algorithmus 1: hybrid GP (100% refinement)
+		// Algorithmus 2: 50% refinement, 40% crossover, 1% mutation
+		// Algorithmus 3: 80% crossover, 2% mutation
+
+		// Diagramm 1: Prozentzahl richtig klassifiziert
+		// Diagramm 2: Konzeptlänge
+		// Diagramm 3: Laufzeit
+
+		int runs = 9;
+		GP gp;
+		long algorithmStartTime;
+		int nrOfExamples = learningProblem.getPositiveExamples().size()
+				+ learningProblem.getNegativeExamples().size();
+
+		Stat[][] statAr = new Stat[4][3];
+		File[][] fileAr = new File[4][3];
+		StringBuilder[][] exportString = new StringBuilder[4][3];
+		// initialise export strings
+		for (int j = 0; j < 4; j++) {
+			for (int k = 0; k < 3; k++) {
+				exportString[j][k] = new StringBuilder();
+			}
+		}
+
+		fileAr[0][0] = new File(baseDir, "gnuplot/hybrid100classification.data");
+		fileAr[0][1] = new File(baseDir, "gnuplot/hybrid100length.data");
+		fileAr[0][2] = new File(baseDir, "gnuplot/hybrid100runtime.data");
+		fileAr[1][0] = new File(baseDir, "gnuplot/hybrid50classification.data");
+		fileAr[1][1] = new File(baseDir, "gnuplot/hybrid50length.data");
+		fileAr[1][2] = new File(baseDir, "gnuplot/hybrid50runtime.data");
+		fileAr[2][0] = new File(baseDir, "gnuplot/gpclassification.data");
+		fileAr[2][1] = new File(baseDir, "gnuplot/gplength.data");
+		fileAr[2][2] = new File(baseDir, "gnuplot/gpruntime.data");
+
+		// Extra-Test
+		fileAr[3][0] = new File(baseDir, "gnuplot/extraclassification.data");
+		fileAr[3][1] = new File(baseDir, "gnuplot/extralength.data");
+		fileAr[3][2] = new File(baseDir, "gnuplot/extraruntime.data");
+
+		ComponentManager cm = ComponentManager.getInstance();
+		
+		long overallTimeStart = System.nanoTime();
+
+		// allgemeine Einstellungen
+		// Config.GP.elitism = true;
+
+		for (int i = 700; i <= 700; i += 100) {
+			// initialise statistics array
+			for (int j = 0; j < 4; j++) {
+				for (int k = 0; k < 3; k++) {
+					statAr[j][k] = new Stat();
+				}
+			}
+
+			for (int run = 0; run < runs; run++) {
+				System.out.println("=============");
+				System.out.println("i " + i + " run " + run);
+				System.out.println("=============");
+
+				// nur ein Test durchlaufen
+				for (int j = 0; j < 3; j++) {
+
+					// Reasoner neu erstellen um Speicherprobleme zu vermeiden
+					// reasoner = new DIGReasoner(kb, Config.digReasonerURL, importedFiles);
+					// TODO: set up knowledge source
+					KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+					ReasonerComponent reasoner = cm.reasoner(DIGReasonerNew.class, ks);
+					// reasoner.prepareSubsumptionHierarchy();
+					// rs = new ReasoningService(reasoner);
+					ReasoningService rs = cm.reasoningService(reasoner);
+					// learningProblem = new LearningProblem(rs, posExamples, negExamples);
+					learningProblem = cm.learningProblem(PosNegDefinitionLP.class, rs);
+					
+					// TODO: set up pos/neg examples
+					cm.applyConfigEntry(learningProblem, "positiveExamples", null);
+					cm.applyConfigEntry(learningProblem, "negativeExamples", null);
+
+					if (j == 0) {
+						Config.algorithm = Algorithm.HYBRID_GP;
+						Config.GP.numberOfIndividuals = i + 1;
+						Config.GP.refinementProbability = 0.85;
+						Config.GP.mutationProbability = 0.02;
+						Config.GP.crossoverProbability = 0.05;
+						Config.GP.hillClimbingProbability = 0;
+					} else if (j == 1) {
+						Config.algorithm = Algorithm.HYBRID_GP;
+						Config.GP.numberOfIndividuals = i + 1;
+						Config.GP.refinementProbability = 0.4;
+						Config.GP.mutationProbability = 0.02;
+						Config.GP.crossoverProbability = 0.4;
+						Config.GP.hillClimbingProbability = 0;
+					} else if (j == 2) {
+						Config.algorithm = Algorithm.GP;
+						Config.GP.numberOfIndividuals = i + 1;
+						Config.GP.refinementProbability = 0;
+						Config.GP.mutationProbability = 0.02;
+						Config.GP.crossoverProbability = 0.8;
+						Config.GP.hillClimbingProbability = 0;
+					} else if (j == 3) {
+						Config.algorithm = Algorithm.HYBRID_GP;
+						Config.GP.numberOfIndividuals = i + 1;
+						Config.GP.refinementProbability = 0.7;
+						Config.GP.mutationProbability = 0.02;
+						Config.GP.crossoverProbability = 0.1;
+						Config.GP.hillClimbingProbability = 0;
+					}
+
+					algorithmStartTime = System.nanoTime();
+					gp = new GP(learningProblem);
+					long algorithmTime = System.nanoTime() - algorithmStartTime;
+					long algorithmTimeSeconds = algorithmTime / 1000000000;
+
+					// Release, damit Pellet (hoffentlich) Speicher wieder
+					// freigibt
+					((DIGReasonerNew) reasoner).releaseKB();
+
+					int conceptLength = gp.getBestSolution().getLength();
+					Score bestScore = gp.getSolutionScore();
+					int misClassifications = bestScore.getCoveredNegatives().size()
+							+ bestScore.getNotCoveredPositives().size();
+					double classificationRatePercent = 100 * ((nrOfExamples - misClassifications) / (double) nrOfExamples);
+
+					statAr[j][0].addNumber(classificationRatePercent);
+					statAr[j][1].addNumber(conceptLength);
+					statAr[j][2].addNumber(algorithmTimeSeconds);
+
+				}
+			}
+
+			for (int j = 0; j < 3; j++) {
+				for (int k = 0; k < 3; k++) {
+					exportString[j][k].append(i + " " + statAr[j][k].getMean() + " "
+							+ statAr[j][k].getStandardDeviation() + "\n");
+				}
+			}
+
+			// Daten werden nach jeder Populationserhöhung geschrieben, nicht
+			// nur
+			// am Ende => man kann den Test also auch zwischendurch abbrechen
+			for (int j = 0; j < 3; j++) {
+				for (int k = 0; k < 3; k++) {
+					Files.createFile(fileAr[j][k], exportString[j][k].toString());
+				}
+			}
+		}
+
+		long overallTime = System.nanoTime() - overallTimeStart;
+		System.out.println("\noverall time: "
+				+ Helper.prettyPrintNanoSeconds(overallTime));
 	}
 	
 }

@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.Main;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
@@ -94,7 +93,7 @@ public String getModuleName(){
 		//boolean useLiterals=false;
 		
 		System.out.println("SparqlModul: Processing Options");
-		Main.getConfMgr().addStringOption("preprocessingModule", new String[] {}); 
+		// Main.getConfMgr().addStringOption("preprocessingModule", new String[] {}); 
 			
 		for (int i = 0; i < confOptions.size(); i++) {
 			if(confOptions.get(i).getOption().equals("hidePrefix")){
@@ -104,23 +103,23 @@ public String getModuleName(){
 			if(confOptions.get(i).getOption().equals("sparqlModule")){
 				if(confOptions.get(i).getSubOption().equals("numberOfRecursion")){
 					numberOfRecursions=confOptions.get(i).getIntValue();
-					Main.getConfMgr().addIntegerOption("sparqlModule.numberOfRecursion", new Integer[] { 1, 3 });
+					// Main.getConfMgr().addIntegerOption("sparqlModule.numberOfRecursion", new Integer[] { 1, 3 });
 				}
 				if(confOptions.get(i).getSubOption().equals("filterMode")){
 					filterMode=confOptions.get(i).getIntValue();
-					Main.getConfMgr().addIntegerOption("sparqlModule.filterMode", new Integer[] { 0, 2 });
+					// Main.getConfMgr().addIntegerOption("sparqlModule.filterMode", new Integer[] { 0, 2 });
 				}
 				if(confOptions.get(i).getSubOption().equals("sparqlPredicateFilterList")){
 					predList=confOptions.get(i).getSetValues();
-					Main.getConfMgr().addSetOption("sparqlModule.sparqlPredicateFilterList");
+					// Main.getConfMgr().addSetOption("sparqlModule.sparqlPredicateFilterList");
 				}
 				if(confOptions.get(i).getSubOption().equals("sparqlObjectFilterList")){
 					objList=confOptions.get(i).getSetValues();
-					Main.getConfMgr().addSetOption("sparqlModule.sparqlObjectFilterList");
+					// Main.getConfMgr().addSetOption("sparqlModule.sparqlObjectFilterList");
 				}
 				if(confOptions.get(i).getSubOption().equals("classList")){
 					classList=confOptions.get(i).getSetValues();
-					Main.getConfMgr().addSetOption("sparqlModule.classList");
+					// Main.getConfMgr().addSetOption("sparqlModule.classList");
 				}
 				if(confOptions.get(i).getSubOption().equals("useLiterals")){
 					//useLiterals=confOptions.get(i).;

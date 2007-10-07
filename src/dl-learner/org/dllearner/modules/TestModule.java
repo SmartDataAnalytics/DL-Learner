@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.dllearner.Main;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
@@ -18,7 +17,7 @@ public class TestModule extends AbstractPreprocessingModule {
 			List<ConfFileOption> confOptions, List<List<String>> functionCalls,
 			String baseDir, boolean useQueryMode) {
 		
-		Main.getConfMgr().addStringOption("bla", new String[] {"test"});
+		//Main.getConfMgr().addStringOption("bla", new String[] {"test"});
 		System.out.println("Modul-Hauptmethode");
 
 	}

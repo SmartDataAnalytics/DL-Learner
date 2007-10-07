@@ -1,5 +1,7 @@
 package org.dllearner.utilities;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -9,12 +11,22 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.Config;
+import org.dllearner.Config.Refinement;
+import org.dllearner.core.Reasoner;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.dl.AssertionalAxiom;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.ConceptAssertion;
+import org.dllearner.core.dl.FlatABox;
 import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.KB;
+import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.NumberRestriction;
 import org.dllearner.core.dl.Quantification;
+import org.dllearner.core.dl.RoleAssertion;
 
 /**
  * Die Hilfsmethoden benutzen alle SortedSet, da die Operationen damit schneller sind.
@@ -227,5 +239,207 @@ public class Helper {
 			ret.put(i.getName(), getStringSet(roleMembers.get(i)));
 		}
 		return ret;
+	}
+
+	/**
+	 * TODO: 
+	 * split in two methods (one for concepts, one for roles),
+	 * document what exactly the method is doing, 
+	 * remove dependencies from old Config class, 
+	 * incorporate the new methods in the learning algorithms when appropriate 
+	 * (common conf options for allowed concepts/roles and forbidden 
+	 * concepts/roles need to be created)
+	 * 
+	 * Computes the set of allowed concepts based on configuration settings (also
+	 * ignores anonymous and standard RDF, RDFS, OWL concept produces by Jena).
+	 *
+	 */
+	public static void autoDetectConceptsAndRoles(ReasoningService rs) {
+	// einige Sachen, die momentan nur vom Refinement-Algorithmus
+	// unterstützt werden (später ev. auch von anderen Algorithmen)
+	//if (Config.algorithm == Algorithm.REFINEMENT) {
+		
+		// berechnen der verwendbaren Konzepte
+		if (Config.Refinement.allowedConceptsAutoDetect) {
+			// TODO: Code aus DIG-Reasoner-Klasse einfügen
+	
+			Set<AtomicConcept> allowedConceptsTmp = new TreeSet<AtomicConcept>(
+					new ConceptComparator());
+			allowedConceptsTmp.addAll(rs.getAtomicConcepts());
+			Iterator<AtomicConcept> it = allowedConceptsTmp.iterator();
+			while (it.hasNext()) {
+				String conceptName = it.next().getName();
+				// System.out.println(conceptName);
+				// seltsame anon-Konzepte, die von Jena erzeugt werden
+				// löschen
+				if (conceptName.startsWith("anon")) {
+					System.out
+							.println("  Ignoring concept "
+									+ conceptName
+									+ " (probably an anonymous concept produced by Jena when reading in OWL file).");
+					it.remove();
+				} else if (conceptName
+						.startsWith("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
+					System.out
+							.println("  Ignoring concept "
+									+ conceptName
+									+ " (RDF construct produced by Jena when reading in OWL file).");
+					it.remove();
+				} else if (conceptName
+						.startsWith("http://www.w3.org/2000/01/rdf-schema#")) {
+					System.out
+							.println("  Ignoring concept "
+									+ conceptName
+									+ " (RDF Schema construct produced by Jena when reading in OWL file).");
+					it.remove();
+				} else if (conceptName.startsWith("http://www.w3.org/2002/07/owl#")) {
+					System.out
+							.println("  Ignoring concept "
+									+ conceptName
+									+ " (OWL construct produced by Jena when reading in OWL file).");
+					it.remove();
+				}
+			}
+			
+			// hier werden jetzt noch die zu ignorierenden Konzepte entfernt
+			if(Config.Refinement.ignoredConcepts != null) {
+				
+				
+				for(AtomicConcept ac : Config.Refinement.ignoredConcepts) {
+					boolean success = allowedConceptsTmp.remove(ac);
+					if(!success) {
+						System.out.println("Ignored concept " + ac + " does not exist in knowledge base.");
+						System.exit(0);
+					}
+						
+				}
+			}
+				
+			
+			Config.Refinement.allowedConcepts = allowedConceptsTmp;
+		} else {
+			// prüfen, ob nur verfügbare Konzepte vom Nutzer gewählt worden
+			Set<AtomicConcept> allowed = new HashSet<AtomicConcept>();
+			allowed.addAll(Config.Refinement.allowedConcepts);
+			allowed.removeAll(rs.getAtomicConcepts());
+			if (allowed.size() > 0) {
+				System.out
+						.println("Some of the concepts you told the learner to use in the definition, "
+								+ "do not exist in the background knowledge: "
+								+ allowed);
+				System.out.println("Please correct this problem and restart.");
+				System.exit(0);
+			}
+		}
+	
+		if (Config.Refinement.allowedRolesAutoDetect) {
+			Set<AtomicRole> allowedRolesTmp = rs.getAtomicRoles();
+			
+			// hier werden jetzt noch die zu ignorierenden Rollen entfernt
+			if(Config.Refinement.ignoredRoles != null) {
+				
+				
+				for(AtomicRole ar : Config.Refinement.ignoredRoles) {
+					boolean success = allowedRolesTmp.remove(ar);
+					if(!success) {
+						System.out.println("Ignored role " + ar + " does not exist in knowledge base.");
+						System.exit(0);
+					}
+						
+				}
+			}
+			
+			Config.Refinement.allowedRoles = allowedRolesTmp;
+			
+		} else {
+			Set<AtomicRole> allowedR = new HashSet<AtomicRole>();
+			allowedR.addAll(Config.Refinement.allowedRoles);
+	
+			Set<AtomicRole> existingR = new TreeSet<AtomicRole>(new RoleComparator());
+			existingR.addAll(rs.getAtomicRoles());
+	
+			// allowedR.removeAll(rs.getAtomicRoles());
+			allowedR.removeAll(existingR);
+	
+			if (allowedR.size() > 0) {
+				System.out
+						.println("Some of the roles you told the learner to use in the definition, "
+								+ "do not exist in the background knowledge: "
+								+ allowedR);
+				System.out.println("Please correct this problem and restart.");
+				System.out.println(rs.getAtomicRoles());
+				System.out.println(Config.Refinement.allowedRoles);
+				System.exit(0);
+			}
+	
+		}
+	}
+
+	// creates a flat ABox by querying a reasoner
+	public static FlatABox createFlatABox(ReasoningService rs)
+			throws ReasoningMethodUnsupportedException {
+		long dematStartTime = System.currentTimeMillis();
+		
+		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
+		for (AtomicConcept atomicConcept : rs.getAtomicConcepts()) {
+			aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs.retrieval(atomicConcept)));
+			Negation negatedAtomicConcept = new Negation(atomicConcept);
+			aBox.atomicConceptsNeg.put(atomicConcept.getName(), getStringSet(rs.retrieval(negatedAtomicConcept)));
+			aBox.concepts.add(atomicConcept.getName());
+		}
+	
+		for (AtomicRole atomicRole : rs.getAtomicRoles()) {
+			aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs
+					.getRoleMembers(atomicRole)));
+			aBox.roles.add(atomicRole.getName());
+		}
+	
+		aBox.domain = getStringSet(rs.getIndividuals());
+		aBox.top = aBox.domain;
+		// ab hier keine �nderungen mehr an FlatABox
+		aBox.prepare();
+	
+		// System.out.println(aBox);
+	
+		long dematDuration = System.currentTimeMillis() - dematStartTime;
+		System.out.println("OK (" + dematDuration + " ms)");
+		return aBox;
+	}
+
+	// die Methode soll alle Konzeptzusicherungen und Rollenzusicherungen von
+	// Individuen entfernen, die mit diesem Individuum verbunden sind
+	@SuppressWarnings("unused")
+	private static void removeIndividualSubtree(KB kb, Individual individual) {
+		System.out.println();
+		// erster Schritt: alle verbundenen Individuen finden
+		Set<Individual> connectedIndividuals = kb.findRelatedIndividuals(individual);
+		System.out.println("connected individuals: " + connectedIndividuals);
+		// Individual selbst auch entfernen
+		connectedIndividuals.add(individual);
+	
+		// zweiter Schritt: entfernen von Rollen- und Konzeptzusicherungen
+		Set<AssertionalAxiom> abox = kb.getAbox();
+		Iterator<AssertionalAxiom> it = abox.iterator();
+		while (it.hasNext()) {
+			AssertionalAxiom a = it.next();
+			if (a instanceof RoleAssertion) {
+				RoleAssertion ra = (RoleAssertion) a;
+				if (connectedIndividuals.contains(ra.getIndividual1())
+						|| connectedIndividuals.contains(ra.getIndividual2())) {
+					System.out.println("remove " + ra);
+					it.remove();
+				}
+			} else if (a instanceof ConceptAssertion) {
+				if (connectedIndividuals.contains(((ConceptAssertion) a).getIndividual())) {
+					System.out.println("remove " + a);
+					it.remove();
+				}
+			} else
+				throw new RuntimeException();
+		}
+	
+		Set<Individual> inds = kb.findAllIndividuals();
+		System.out.println("remaining individuals: " + inds);
+		System.out.println();
 	}	
 }

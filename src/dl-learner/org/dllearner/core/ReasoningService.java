@@ -36,6 +36,7 @@ import org.dllearner.core.dl.RoleHierarchy;
 import org.dllearner.core.dl.SubsumptionHierarchy;
 import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.reasoning.DIGReasoner;
+import org.dllearner.reasoning.DIGReasonerNew;
 import org.dllearner.reasoning.KAON2Reasoner;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.SortedSetTuple;
@@ -413,7 +414,7 @@ public class ReasoningService {
 		} else if (getReasonerType() == ReasonerType.DIG) {
 			// DIG erzeugt momentan auch nur einen KAON2-Reasoner und
 			// exportiert dann mit der obigen Funktion
-			((DIGReasoner) reasoner).saveOntology(file, format);
+			((DIGReasonerNew) reasoner).saveOntology(file, format);
 		} 
 	}
 

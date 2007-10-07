@@ -17,7 +17,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.dllearner.Main;
 import org.dllearner.Info;
 
 import org.dllearner.core.dl.*;
@@ -490,6 +489,12 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     finally { jj_save(5, xla); }
   }
 
+  final private boolean jj_3_6() {
+    if (jj_scan_token(26)) return true;
+    if (jj_scan_token(27)) return true;
+    return false;
+  }
+
   final private boolean jj_3_5() {
     Token xsp;
     xsp = jj_scanpos;
@@ -664,12 +669,6 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
   final private boolean jj_3R_13() {
     if (jj_scan_token(28)) return true;
     if (jj_3R_12()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_6() {
-    if (jj_scan_token(26)) return true;
-    if (jj_scan_token(27)) return true;
     return false;
   }
 

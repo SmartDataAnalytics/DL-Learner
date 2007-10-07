@@ -14,7 +14,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
-import org.dllearner.Main;
 import org.dllearner.Info;
 import org.dllearner.core.dl.*;
 import org.dllearner.cli.*;

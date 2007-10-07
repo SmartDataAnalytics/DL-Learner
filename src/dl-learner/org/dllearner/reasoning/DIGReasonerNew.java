@@ -727,6 +727,7 @@ public class DIGReasonerNew extends ReasonerComponent {
 		// das mit KAON2 auch gut)
 		// KAON2Reasoner kaon2Reasoner = new KAON2Reasoner(kb,imports);
 		// kaon2Reasoner.saveOntology(file, format);
+		throw new UnsupportedOperationException("Saving ontologies not yet implemented.");
 	}
 
 	public URL getReasonerURL() {

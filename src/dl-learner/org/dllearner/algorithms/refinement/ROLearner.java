@@ -11,7 +11,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.Config;
-import org.dllearner.Main;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
@@ -243,7 +242,7 @@ public class ROLearner extends LearningAlgorithmNew {
 	@Override
 	public void init() {
 		// TODO: this needs to be changed
-		Main.autoDetectConceptsAndRoles(rs);
+		Helper.autoDetectConceptsAndRoles(rs);
 		// prepare subsumption and role hierarchies, because they are needed
 		// during the run of the algorithm
 		rs.prepareSubsumptionHierarchy();
