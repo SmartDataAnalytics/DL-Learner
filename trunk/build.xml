@@ -185,11 +185,11 @@ public class Info {
 			<map from="${removeprefix}" to="."/>
 		</pathconvert>
 
-		<echo file="bin/quickstart.bat" message="java -cp ${pathStringWin} org.dllearner.QuickStart"/>
-		<echo file="bin/dllearner.bat" message="java -cp ${pathStringWin} org.dllearner.parser.DLLearner %*"/>
+		<echo file="bin/quickstart.bat" message="java -cp ${pathStringWin} org.dllearner.cli.QuickStart"/>
+		<echo file="bin/dllearner.bat" message="java -cp ${pathStringWin} org.dllearner.cli.Start %*"/>
 		<echo file="bin/ws.bat" message="java -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
-		<echo file="bin/quickstart" message="java -cp ${pathStringUnix} org.dllearner.QuickStart"/>
-		<echo file="bin/dllearner" message="java -cp ${pathStringUnix} org.dllearner.parser.DLLearner $@"/>
+		<echo file="bin/quickstart" message="java -cp ${pathStringUnix} org.dllearner.cli.QuickStart"/>
+		<echo file="bin/dllearner" message="java -cp ${pathStringUnix} org.dllearner.cli.start $@"/>
 		<echo file="bin/ws" message="java -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
 	</target>
 	
