@@ -81,11 +81,17 @@ import org.dllearner.utilities.RoleComparator;
 public class Start {
 
 	/**
+	 * Entry point for CLI interface.
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		File file = new File(args[args.length - 1]);
 		String baseDir = file.getParentFile().getPath();
+
+		boolean inQueryMode = false;
+		if (args.length > 1 && args[0].equals("-q"))
+			inQueryMode = true;
 
 		// create component manager instance
 		System.out.print("starting component manager ... ");
@@ -133,13 +139,13 @@ public class Start {
 		ConfFileOption problemOption = parser.getConfOptionsByName("problem");
 		Class<? extends LearningProblem> lpClass = null;
 		LearningProblem lp = null;
-		if(problemOption == null || problemOption.getStringValue().equals("posNegDefinition"))
+		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinition"))
 			lpClass = PosNegDefinitionLP.class;
-		else if(problemOption.getStringValue().equals("posNegInclusion"))
+		else if (problemOption.getStringValue().equals("posNegInclusion"))
 			lpClass = PosNegInclusionLP.class;
 		else
 			handleError("Unknown value " + problemOption.getValue() + " for option \"problem\".");
-		
+
 		lp = cm.learningProblem(lpClass, rs);
 		SortedSet<String> posExamples = parser.getPositiveExamples();
 		SortedSet<String> negExamples = parser.getNegativeExamples();
@@ -165,7 +171,7 @@ public class Start {
 
 		// perform file exports
 		performExports(parser, baseDir, rs);
-		
+
 		// show examples (display each one if they do not take up much space,
 		// otherwise just show the number of examples)
 		boolean oneLineExampleInfo = true;
@@ -188,12 +194,17 @@ public class Start {
 		// handle any CLI options
 		processCLIOptions(cm, parser, rs);
 
-		// start algorithm
-		long algStartTime = System.nanoTime();
-		la.start();
-		long algDuration = System.nanoTime() - algStartTime;
-		
-		printConclusions(rs, algDuration);
+		if (inQueryMode)
+			processQueryMode(lp, rs);
+		else {
+			// start algorithm
+			long algStartTime = System.nanoTime();
+			la.start();
+			long algDuration = System.nanoTime() - algStartTime;
+
+			printConclusions(rs, algDuration);
+		}
+
 	}
 
 	// creates a mapping from components to option prefix strings
@@ -211,7 +222,8 @@ public class Start {
 	}
 
 	// convenience method
-	// basically every prefix (e.g. "refinement" in "refinement.horizontalExpFactor)
+	// basically every prefix (e.g. "refinement" in
+	// "refinement.horizontalExpFactor)
 	// corresponds to a specific component - this way the CLI will automatically
 	// support any configuration options supported by the component
 	private static void configureComponent(ComponentManager cm, Component component,
@@ -361,9 +373,9 @@ public class Start {
 
 	private static void performExports(ConfParser parser, String baseDir, ReasoningService rs) {
 		List<List<String>> exports = parser.getFunctionCalls().get("export");
-		if(exports == null)
+		if (exports == null)
 			return;
-		for(List<String> export : exports) {
+		for (List<String> export : exports) {
 			File file = new File(baseDir, export.get(0));
 			if (export.size() == 1)
 				// use RDF/XML by default
@@ -379,71 +391,71 @@ public class Start {
 			}
 		}
 	}
-	
+
 	private static void processCLIOptions(ComponentManager cm, ConfParser parser,
 			ReasoningService rs) {
 		// CLI options (i.e. options which are related to the CLI
 		// user interface but not to one of the components)
 		List<ConfFileOption> cliOptions = parser.getConfOptionsByPrefix("cli");
-		if(cliOptions != null) {
-		int maxLineLength = 100;
-		for (ConfFileOption cliOption : cliOptions) {
-			String name = cliOption.getSubOption();
-			if (name.equals("showIndividuals")) {
-				if (cliOption.getStringValue().equals("true")) {
-					int stringLength = rs.getIndividuals().toString().length();
-					if (stringLength > maxLineLength) {
-						System.out.println("individuals[" + rs.getIndividuals().size() + "]: ");
-						for (Individual ind : rs.getIndividuals())
-							System.out.println("  " + ind);
-					} else
-						System.out.println("individuals[" + rs.getIndividuals().size() + "]: "
-								+ rs.getIndividuals());
-				}
-			} else if (name.equals("showConcepts")) {
-				if (cliOption.getStringValue().equals("true")) {
-					int stringLength = rs.getAtomicConcepts().toString().length();
-					if (stringLength > maxLineLength) {
-						System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: ");
-						for (AtomicConcept ac : rs.getAtomicConcepts())
-							System.out.println("  " + ac);
-					} else
-						System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: "
-								+ rs.getAtomicConcepts());
-				}
-			} else if (name.equals("showRoles")) {
-				if (cliOption.getStringValue().equals("true")) {
-					int stringLength = rs.getAtomicRoles().toString().length();
-					if (stringLength > maxLineLength) {
-						System.out.println("roles[" + rs.getAtomicRoles().size() + "]: ");
-						for (AtomicRole r : rs.getAtomicRoles())
-							System.out.println("  " + r);
-					} else
-						System.out.println("roles[" + rs.getAtomicRoles().size() + "]: "
-								+ rs.getAtomicRoles());
-				}
-			} else if (name.equals("showSubsumptionHierarchy")) {
-				if (cliOption.getStringValue().equals("true")) {
-					System.out.println("Subsumption Hierarchy:");
-					System.out.println(rs.getSubsumptionHierarchy());
-				}
-				// satisfiability check
-			} else if (name.equals("checkSatisfiability")) {
-				if (cliOption.getStringValue().equals("true")) {
-					System.out.print("Satisfiability Check ... ");
-					long satStartTime = System.nanoTime();
-					boolean satisfiable = rs.isSatisfiable();
-					long satDuration = System.nanoTime() - satStartTime;
+		if (cliOptions != null) {
+			int maxLineLength = 100;
+			for (ConfFileOption cliOption : cliOptions) {
+				String name = cliOption.getSubOption();
+				if (name.equals("showIndividuals")) {
+					if (cliOption.getStringValue().equals("true")) {
+						int stringLength = rs.getIndividuals().toString().length();
+						if (stringLength > maxLineLength) {
+							System.out.println("individuals[" + rs.getIndividuals().size() + "]: ");
+							for (Individual ind : rs.getIndividuals())
+								System.out.println("  " + ind);
+						} else
+							System.out.println("individuals[" + rs.getIndividuals().size() + "]: "
+									+ rs.getIndividuals());
+					}
+				} else if (name.equals("showConcepts")) {
+					if (cliOption.getStringValue().equals("true")) {
+						int stringLength = rs.getAtomicConcepts().toString().length();
+						if (stringLength > maxLineLength) {
+							System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: ");
+							for (AtomicConcept ac : rs.getAtomicConcepts())
+								System.out.println("  " + ac);
+						} else
+							System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: "
+									+ rs.getAtomicConcepts());
+					}
+				} else if (name.equals("showRoles")) {
+					if (cliOption.getStringValue().equals("true")) {
+						int stringLength = rs.getAtomicRoles().toString().length();
+						if (stringLength > maxLineLength) {
+							System.out.println("roles[" + rs.getAtomicRoles().size() + "]: ");
+							for (AtomicRole r : rs.getAtomicRoles())
+								System.out.println("  " + r);
+						} else
+							System.out.println("roles[" + rs.getAtomicRoles().size() + "]: "
+									+ rs.getAtomicRoles());
+					}
+				} else if (name.equals("showSubsumptionHierarchy")) {
+					if (cliOption.getStringValue().equals("true")) {
+						System.out.println("Subsumption Hierarchy:");
+						System.out.println(rs.getSubsumptionHierarchy());
+					}
+					// satisfiability check
+				} else if (name.equals("checkSatisfiability")) {
+					if (cliOption.getStringValue().equals("true")) {
+						System.out.print("Satisfiability Check ... ");
+						long satStartTime = System.nanoTime();
+						boolean satisfiable = rs.isSatisfiable();
+						long satDuration = System.nanoTime() - satStartTime;
 
-					String result = satisfiable ? "OK" : "not satisfiable!";
-					System.out.println(result + " ("
-							+ Helper.prettyPrintNanoSeconds(satDuration, true, false) + ")");
-					if (!satisfiable)
-						System.exit(0);
-				}
-			} else
-				handleError("Unknown CLI option \"" + name + "\".");
-		}
+						String result = satisfiable ? "OK" : "not satisfiable!";
+						System.out.println(result + " ("
+								+ Helper.prettyPrintNanoSeconds(satDuration, true, false) + ")");
+						if (!satisfiable)
+							System.exit(0);
+					}
+				} else
+					handleError("Unknown CLI option \"" + name + "\".");
+			}
 		}
 	}
 
@@ -467,26 +479,22 @@ public class Start {
 		System.out.println(message + " (" + Helper.prettyPrintNanoSeconds(initTime, false, false)
 				+ ")");
 	}
-	
+
 	private static void printConclusions(ReasoningService rs, long algorithmDuration) {
 		if (rs.getNrOfRetrievals() > 0) {
 			System.out.println("number of retrievals: " + rs.getNrOfRetrievals());
-			System.out.println("retrieval reasoning time: "
-					+ Helper.prettyPrintNanoSeconds(rs
-							.getRetrievalReasoningTimeNs()) + " ( "
-					+ Helper.prettyPrintNanoSeconds(rs.getTimePerRetrievalNs())
-					+ " per retrieval)");
+			System.out
+					.println("retrieval reasoning time: "
+							+ Helper.prettyPrintNanoSeconds(rs.getRetrievalReasoningTimeNs())
+							+ " ( " + Helper.prettyPrintNanoSeconds(rs.getTimePerRetrievalNs())
+							+ " per retrieval)");
 		}
 		if (rs.getNrOfInstanceChecks() > 0) {
-			System.out.println("number of instance checks: "
-					+ rs.getNrOfInstanceChecks() + " ("
+			System.out.println("number of instance checks: " + rs.getNrOfInstanceChecks() + " ("
 					+ rs.getNrOfMultiInstanceChecks() + " multiple)");
 			System.out.println("instance check reasoning time: "
-					+ Helper.prettyPrintNanoSeconds(rs
-							.getInstanceCheckReasoningTimeNs())
-					+ " ( "
-					+ Helper.prettyPrintNanoSeconds(rs
-							.getTimePerInstanceCheckNs())
+					+ Helper.prettyPrintNanoSeconds(rs.getInstanceCheckReasoningTimeNs()) + " ( "
+					+ Helper.prettyPrintNanoSeconds(rs.getTimePerInstanceCheckNs())
 					+ " per instance check)");
 		}
 		if (rs.getNrOfSubsumptionHierarchyQueries() > 0) {
@@ -497,57 +505,50 @@ public class Start {
 			 * Helper.prettyPrintNanoSeconds(rs
 			 * .getSubsumptionHierarchyTimeNs()) + " ( " +
 			 * Helper.prettyPrintNanoSeconds(rs
-			 * .getTimePerSubsumptionHierarchyQueryNs()) + " per
-			 * subsumption hierachy query)");
+			 * .getTimePerSubsumptionHierarchyQueryNs()) + " per subsumption
+			 * hierachy query)");
 			 */
 		}
 		if (rs.getNrOfSubsumptionChecks() > 0) {
-			System.out.println("(complex) subsumption checks: "
-					+ rs.getNrOfSubsumptionChecks() + " ("
-					+ rs.getNrOfMultiSubsumptionChecks() + " multiple)");
+			System.out.println("(complex) subsumption checks: " + rs.getNrOfSubsumptionChecks()
+					+ " (" + rs.getNrOfMultiSubsumptionChecks() + " multiple)");
 			System.out.println("subsumption reasoning time: "
-					+ Helper.prettyPrintNanoSeconds(rs
-							.getSubsumptionReasoningTimeNs())
-					+ " ( "
-					+ Helper.prettyPrintNanoSeconds(rs
-							.getTimePerSubsumptionCheckNs())
+					+ Helper.prettyPrintNanoSeconds(rs.getSubsumptionReasoningTimeNs()) + " ( "
+					+ Helper.prettyPrintNanoSeconds(rs.getTimePerSubsumptionCheckNs())
 					+ " per subsumption check)");
 		}
 		DecimalFormat df = new DecimalFormat();
 		double reasoningPercentage = 100 * rs.getOverallReasoningTimeNs()
 				/ (double) algorithmDuration;
-		System.out
-				.println("overall reasoning time: "
-						+ Helper.prettyPrintNanoSeconds(rs
-								.getOverallReasoningTimeNs()) + " ("
-						+ df.format(reasoningPercentage)
-						+ "% of overall runtime)");
+		System.out.println("overall reasoning time: "
+				+ Helper.prettyPrintNanoSeconds(rs.getOverallReasoningTimeNs()) + " ("
+				+ df.format(reasoningPercentage) + "% of overall runtime)");
 		System.out.println("overall algorithm runtime: "
 				+ Helper.prettyPrintNanoSeconds(algorithmDuration));
 	}
-	
-	// TODO: query mode umschreiben
+
+	// performs a query - used for debugging learning examples
 	private static void processQueryMode(LearningProblem lp, ReasoningService rs) {
 
-		System.out
-				.println("Entering query mode. Enter a concept for performing retrieval or q to quit.");
+		System.out.println("Entering query mode. Enter a concept for performing "
+				+ "retrieval or q to quit. Use brackets for complex expresssions," +
+						"e.g. (a AND b).");
 		String queryStr = "";
 		do {
 
-			System.out.print("enter query: "); // String einlesen
+			System.out.print("enter query: ");
+			// read input string
 			BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-			// Eingabestring einlesen
 			try {
 				queryStr = input.readLine();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-
+			
 			if (!queryStr.equals("q")) {
 
-				// Konzept parsen
+				// parse concept
 				Concept concept = null;
 				boolean parsedCorrectly = true;
 
@@ -566,8 +567,7 @@ public class Start {
 				}
 
 				if (parsedCorrectly) {
-					// berechne im Konzept vorkommende atomare Rollen und
-					// Konzepte
+					// compute atomic roles and concepts used in concept
 					SortedSet<AtomicConcept> occurringConcepts = new TreeSet<AtomicConcept>(
 							new ConceptComparator());
 					occurringConcepts.addAll(Helper.getAtomicConcepts(concept));
@@ -575,16 +575,15 @@ public class Start {
 							new RoleComparator());
 					occurringRoles.addAll(Helper.getAtomicRoles(concept));
 
-					// ziehe davon die existierenden ab => die resultierenden
-					// Mengen
-					// sollten leer sein, ansonsten Fehler (der DIG-Reasoner
-					// fängt das
-					// leider nicht selbst ab)
-					// => momentan etwas umständlich gelöst, da es in Java bei
-					// removeAll darauf
-					// ankommt, dass die Argumentmenge den Comparator
-					// implementiert hat, was hier
-					// (noch) nicht der Fall ist
+					// substract existing roles/concepts from detected
+					// roles/concepts -> the resulting sets should be
+					// empty, otherwise print a warning (the DIG reasoner
+					// will just treat them as concepts about which it 
+					// has no knowledge - this makes it hard to
+					// detect typos 
+					// (note that removeAll currently gives a different 
+					// result here, because the comparator of the argument 
+					// is used)
 					for (AtomicConcept ac : rs.getAtomicConcepts())
 						occurringConcepts.remove(ac);
 					for (AtomicRole ar : rs.getAtomicRoles())
@@ -595,25 +594,29 @@ public class Start {
 						System.out
 								.println("You used non-existing atomic concepts or roles. Please correct your query.");
 						if (occurringConcepts.size() > 0)
-							System.out.println("non-existing concepts: "
-									+ occurringConcepts);
+							System.out.println("non-existing concepts: " + occurringConcepts);
 						if (occurringRoles.size() > 0)
 							System.out.println("non-existing roles: " + occurringRoles);
 						nonExistingConstructs = true;
 					}
 
 					if (!nonExistingConstructs) {
-						// Retrieval stellen
+						
+						if(!queryStr.startsWith("(") && (queryStr.contains("AND") || queryStr.contains("OR"))) {
+							System.out.println("Make sure you did not forget to use outer brackets.");					
+						}
+						
+						System.out.println("The query is: " + concept + ".");
+						
+						// pose retrieval query
 						Set<Individual> result = null;
 						result = rs.retrieval(concept);
 
-						System.out.println(result);
+						System.out.println("retrieval result: " + result);
 
 						Score score = lp.computeScore(concept);
 						System.out.println(score);
 
-						// feststellen, was zur Lösung noch fehlt
-						// Set<String> notCoveredPositives
 					}
 				}
 			}
@@ -621,7 +624,7 @@ public class Start {
 		} while (!queryStr.equals("q"));
 
 	}
-	
+
 	private static void handleError(String message) {
 		System.err.println(message);
 		System.exit(0);
