@@ -56,6 +56,12 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 		super(reasoningService);
 	}
 
+	public PosNegDefinitionLP(ReasoningService reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
+		super(reasoningService);
+		this.positiveExamples = positiveExamples;
+		this.negativeExamples = negativeExamples;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
