@@ -35,6 +35,10 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 		super(name, description);
 	}
 		
+	public IntegerConfigOption(String name, String description, int defaultValue) {
+		super(name, description, defaultValue);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
 	 */

@@ -334,7 +334,10 @@ public class GPUtilities {
     	// damit stellen wir sicher, dass nur Konzepte in die Auswahl
     	// genommen werden, die besser klassifizieren als das �bergebene
     	// Konzept (falls das nicht existiert, dann hill climbing = reproduction)
-    	double bestScore = score.getScore()+Config.accuracyPenalty/2;
+    	System.err.println("Next line needs fixing to work.");
+    	System.exit(0);
+    	// double bestScore = score.getScore()+Config.accuracyPenalty/2;
+    	double bestScore = 0;
     	Map<Integer,List<String>> bestNeighbours = new TreeMap<Integer,List<String>>();
     	Score tmpScore;
     	SortedSetTuple<String> tmp, tmp2;
@@ -456,7 +459,7 @@ public class GPUtilities {
     	// neutClassified.retainAll(posClassified);
     	neutClassified.retainAll(negClassified);
     	PosNegDefinitionLPStrict lp = (PosNegDefinitionLPStrict)learningProblem;
-    	return new ScoreThreeValued(conceptLength, posClassified, neutClassified, negClassified, lp.getPositiveExamples(),lp.getNeutralExamples(),lp.getNegativeExamples());
+    	return new ScoreThreeValued(conceptLength, lp.getAccuracyPenalty(), lp.getErrorPenalty(), posClassified, neutClassified, negClassified, lp.getPositiveExamples(),lp.getNeutralExamples(),lp.getNegativeExamples());
     }
     
     // aktualisiert die besten Knoten

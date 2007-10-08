@@ -403,9 +403,9 @@ public class ConfigurationManager {
 	private void applyDoubleOptions(String option, double value) {
 		// System.out.println(option + "  " + value);
 		if (option.equals("accuracyPenalty"))
-			Config.accuracyPenalty = value;
+			; //Config.accuracyPenalty = value;
 		else if (option.equals("errorPenalty"))
-			Config.errorPenalty = value;	
+			; //Config.errorPenalty = value;	
 		else if (option.equals("gp.crossoverPercent"))
 			Config.GP.crossoverProbability = value / (double) 100;
 		else if (option.equals("gp.mutationPercent"))

@@ -25,6 +25,9 @@ public class ScoreThreeValued extends Score {
 	
 	public enum ScoreMethod {POSITIVE, FULL};
 	
+	private double accuracyPenalty;
+	private double errorPenalty;
+	
 	private SortedSet<Individual> posClassified;
 	private SortedSet<Individual> neutClassified;
 	private SortedSet<Individual> negClassified;
@@ -52,6 +55,8 @@ public class ScoreThreeValued extends Score {
     private int conceptLength;
     
     public ScoreThreeValued(int conceptLength,
+    		double accuracyPenalty,
+    		double errorPenalty,
     		SortedSet<Individual> posClassified,
     		SortedSet<Individual> neutClassified,
     		SortedSet<Individual> negClassified,
@@ -59,6 +64,8 @@ public class ScoreThreeValued extends Score {
     		SortedSet<Individual> neutExamples,
     		SortedSet<Individual> negExamples) {
     	this.conceptLength = conceptLength;
+    	this.accuracyPenalty = accuracyPenalty;
+    	this.errorPenalty = errorPenalty;
     	this.posClassified = posClassified;
     	this.neutClassified = neutClassified;
     	this.negClassified = negClassified;
@@ -85,20 +92,20 @@ public class ScoreThreeValued extends Score {
     }
     
     private void computeStatistics() {     
-        score = - posAsNeg.size()*Config.errorPenalty
-        - negAsPos.size()*Config.errorPenalty
-        - posAsNeut.size()*Config.accuracyPenalty;
+        score = - posAsNeg.size()*errorPenalty
+        - negAsPos.size()*errorPenalty
+        - posAsNeut.size()*accuracyPenalty;
         
         if(Config.scoreMethod==ScoreMethod.FULL)
-        	score -= negAsNeut.size()*Config.accuracyPenalty;
+        	score -= negAsNeut.size()*accuracyPenalty;
         
         if(Config.penalizeNeutralExamples)
-        	score -= (neutAsPos.size()*Config.accuracyPenalty        
-            + neutAsNeg.size()*Config.accuracyPenalty);
+        	score -= (neutAsPos.size()*accuracyPenalty        
+            + neutAsNeg.size()*accuracyPenalty);
         
         // TODO: man könnte hier statt error penality auch accuracy penalty
         // nehmen
-        double worstValue = nrOfExamples * Config.errorPenalty;
+        double worstValue = nrOfExamples * errorPenalty;
         // ergibt Zahl zwischen -1 und 0
         score = score / worstValue;
         score -= Config.percentPerLengthUnit * conceptLength;
@@ -149,7 +156,7 @@ public class ScoreThreeValued extends Score {
             str += "  neutral --> neutral: " + neutAsNeut + "\n";
             str += "  negative --> negative: " + negAsNeg + "\n";
         }
-        str += "Inaccurately classified (penalty of " + df.format(Config.accuracyPenalty) + " per instance):\n";
+        str += "Inaccurately classified (penalty of " + df.format(accuracyPenalty) + " per instance):\n";
         str += "  positive --> neutral: " + posAsNeut + "\n";
         if(Config.penalizeNeutralExamples) {
         	str += "  neutral --> positive: " + neutAsPos + "\n";  
@@ -157,7 +164,7 @@ public class ScoreThreeValued extends Score {
         }
         if(Config.scoreMethod == ScoreMethod.FULL)
         	str += "  negative --> neutral: " + negAsNeut + "\n"; 
-        str += "Classification errors (penalty of " + df.format(Config.errorPenalty) + " per instance):\n";
+        str += "Classification errors (penalty of " + df.format(errorPenalty) + " per instance):\n";
         str += "  positive --> negative: " + posAsNeg + "\n";
         str += "  negative --> positive: " + negAsPos + "\n";
         str += "Statistics:\n";
@@ -194,7 +201,7 @@ public class ScoreThreeValued extends Score {
 
 	@Override
 	public Score getModifiedLengthScore(int newLength) {
-		return new ScoreThreeValued(newLength, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
+		return new ScoreThreeValued(newLength, accuracyPenalty, errorPenalty, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
 	}	
     
 }

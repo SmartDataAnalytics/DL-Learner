@@ -19,15 +19,15 @@ public class Config {
 	// standardmäßig wird bis Tiefe 7 gesucht
 	// public static int maxLength = 7;
 
-	public static int maxDepth;
+	// public static int maxDepth;
 
 	// Punktabzug für "ungenaue" Klassifizierungen, also positiv als neutral,
 	// neutral als negativ und negativ als neutral
-	public static double accuracyPenalty = 1;
+	// public static double accuracyPenalty = 1;
 
 	// Punktabzug für fehlerhafte Klassifizierungen, also positiv als negativ
 	// und negativ als positiv
-	public static double errorPenalty = 3;
+	// public static double errorPenalty = 3;
 
 	public static ScoreMethod scoreMethod = ScoreMethod.POSITIVE;
 
