@@ -35,6 +35,10 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 		super(name, description);
 	}
 		
+	public DoubleConfigOption(String name, String description, double defaultValue) {
+		super(name, description, defaultValue);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
 	 */

@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import org.dllearner.core.BooleanConfigOption;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
+import org.dllearner.core.DoubleConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
@@ -45,6 +46,11 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 	private SortedSet<Individual> neutralExamples;
 	private boolean penaliseNeutralExamples = false;
 	
+	private static final double defaultAccuracyPenalty = 1;
+	private double accuracyPenalty = defaultAccuracyPenalty;
+	private static final double defaultErrorPenalty = 3;
+	private double errorPenalty = defaultErrorPenalty;
+	
 	public PosNegDefinitionLPStrict(ReasoningService reasoningService) {
 		super(reasoningService);
 	}
@@ -59,6 +65,8 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = PosNegLP.createConfigOptions();
 		options.add(new BooleanConfigOption("penaliseNeutralExamples", "if set to true neutral examples are penalised"));
+		options.add(new DoubleConfigOption("accuracyPenalty", "penalty for pos/neg examples which are classified as neutral", defaultAccuracyPenalty));
+		options.add(new DoubleConfigOption("errorPenalty", "penalty for pos. examples classified as negative or vice versa", defaultErrorPenalty));
 		return options;
 	}
 	
@@ -74,6 +82,7 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 		String name = entry.getOptionName();
 		if(name.equals("penaliseNeutralExamples"))
 			penaliseNeutralExamples = (Boolean) entry.getValue();
+		// else if
 	}
 	
 	/* (non-Javadoc)
@@ -100,13 +109,13 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
         		// this.defPosSet = tuple.getPosSet();
         		// this.defNegSet = tuple.getNegSet();  
         		SortedSet<Individual> neutClassified = Helper.intersectionTuple(reasoningService.getIndividuals(),tuple);
-        		return new ScoreThreeValued(concept.getLength(),tuple.getPosSet(),neutClassified,tuple.getNegSet(),positiveExamples,neutralExamples,negativeExamples);
+        		return new ScoreThreeValued(concept.getLength(),accuracyPenalty, errorPenalty, tuple.getPosSet(),neutClassified,tuple.getNegSet(),positiveExamples,neutralExamples,negativeExamples);
     		} else if(reasoningService.getReasonerType() == ReasonerType.KAON2) {
     			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
     			SortedSet<Individual> negClassified = reasoningService.retrieval(new Negation(concept));
     			SortedSet<Individual> neutClassified = Helper.intersection(reasoningService.getIndividuals(),posClassified);
     			neutClassified.retainAll(negClassified);
-    			return new ScoreThreeValued(concept.getLength(), posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples);     			
+    			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples);     			
     		} else
     			throw new Error("score cannot be computed in this configuration");
     	} else {
@@ -146,7 +155,7 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
     			
     			SortedSet<Individual> neutClassified = Helper.intersection(reasoningService.getIndividuals(),posClassified);
     			neutClassified.retainAll(negClassified);
-    			return new ScoreThreeValued(concept.getLength(), posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples); 		
+    			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples); 		
     		} else
     			throw new Error("score cannot be computed in this configuration");
     	}
@@ -162,5 +171,19 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 
 	public SortedSet<Individual> getNeutralExamples() {
 		return neutralExamples;
+	}
+
+	/**
+	 * @return the accuracyPenalty
+	 */
+	public double getAccuracyPenalty() {
+		return accuracyPenalty;
+	}
+
+	/**
+	 * @return the errorPenalty
+	 */
+	public double getErrorPenalty() {
+		return errorPenalty;
 	}
 }
