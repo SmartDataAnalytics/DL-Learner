@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.learningproblems;
 
 import java.text.DecimalFormat;
@@ -10,13 +30,13 @@ import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.Helper;
 
 /**
- * Berechnet die Punktzahl (negativ), indem es die Ergebnisse einer Definition
- * mit den Soll-Ergebnissen vergleicht.
+ * Computes the score (a negative value) by comparing the classification results
+ * with ideal results.
  * 
- * TODO: die Implementierung ist momentan dahingehend unguenstig, dass viele Sachen
- * nur fuer die optische Aufbereitung berechnet werden; effizienter waere es
- * nur die Klassifikationsfehler zu beruecksichtigen und andere statistische Werte nur
- * dann wenn sie benoetigt werden
+ * @todo: The implementation is not very efficient, because some things are 
+ * only computed to be able to present the score results. This means that
+ * it would be better to compute only the necessary computations and do
+ * the other ones only when they are needed to calculate statistical values.
  * 
  * @author Jens Lehmann
  *
@@ -25,9 +45,15 @@ public class ScoreThreeValued extends Score {
 	
 	public enum ScoreMethod {POSITIVE, FULL};
 	
+	// configuration options
 	private double accuracyPenalty;
 	private double errorPenalty;
 	private boolean penaliseNeutralExamples;
+	
+	// potential configuration options (not implemented as such, but one
+	// could so)
+	private boolean showCorrectClassifications = false;
+	private static ScoreMethod scoreMethod = ScoreMethod.POSITIVE;
 	
 	private SortedSet<Individual> posClassified;
 	private SortedSet<Individual> neutClassified;
@@ -98,7 +124,7 @@ public class ScoreThreeValued extends Score {
         - negAsPos.size()*errorPenalty
         - posAsNeut.size()*accuracyPenalty;
         
-        if(Config.scoreMethod==ScoreMethod.FULL)
+        if(scoreMethod==ScoreMethod.FULL)
         	score -= negAsNeut.size()*accuracyPenalty;
         
         if(penaliseNeutralExamples)
@@ -145,14 +171,14 @@ public class ScoreThreeValued extends Score {
         DecimalFormat df = new DecimalFormat("0.00");
         String str = "";
         str += "score method ";
-        if(Config.scoreMethod == ScoreMethod.FULL)
+        if(scoreMethod == ScoreMethod.FULL)
         	str += "full";
         else
         	str += "positive";
         if(!penaliseNeutralExamples)
         	str += " (neutral examples not penalized)";
         str += "\n";
-        if(Config.showCorrectClassifications) {
+        if(showCorrectClassifications) {
             str += "Correctly classified:\n";
             str += "  positive --> positive: " + posAsPos + "\n";
             str += "  neutral --> neutral: " + neutAsNeut + "\n";
@@ -164,7 +190,7 @@ public class ScoreThreeValued extends Score {
         	str += "  neutral --> positive: " + neutAsPos + "\n";  
         	str += "  neutral --> negative: " + neutAsNeg + "\n";
         }
-        if(Config.scoreMethod == ScoreMethod.FULL)
+        if(scoreMethod == ScoreMethod.FULL)
         	str += "  negative --> neutral: " + negAsNeut + "\n"; 
         str += "Classification errors (penalty of " + df.format(errorPenalty) + " per instance):\n";
         str += "  positive --> negative: " + posAsNeg + "\n";

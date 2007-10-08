@@ -11,7 +11,6 @@ import org.dllearner.algorithms.gp.GP.SelectionType;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.learningproblems.PosNegLP.UseMultiInstanceChecks;
-import org.dllearner.learningproblems.ScoreThreeValued.ScoreMethod;
 import org.dllearner.reasoning.ReasonerType;
 
 public class Config {
@@ -28,13 +27,13 @@ public class Config {
 	// und negativ als positiv
 	// public static double errorPenalty = 3;
 
-	public static ScoreMethod scoreMethod = ScoreMethod.POSITIVE;
+	// public static ScoreMethod scoreMethod = ScoreMethod.POSITIVE;
 
 	// public static LearningProblemType learningProblemType = LearningProblemType.TWO_VALUED;
 
 	// public static boolean penalizeNeutralExamples = false;
 
-	public static boolean showCorrectClassifications = false;
+	// public static boolean showCorrectClassifications = false;
 
 	// wieviel Prozent darf ein um eine Einheit längeres Konzept schlechter
 	// sein (aktuell: 5% sind eine Verlängerung um 1 wert)
