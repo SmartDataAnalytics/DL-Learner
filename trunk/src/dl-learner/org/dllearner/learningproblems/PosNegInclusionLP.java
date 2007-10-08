@@ -21,31 +21,38 @@ package org.dllearner.learningproblems;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.SortedSet;
 
 import org.dllearner.core.BooleanConfigOption;
-import org.dllearner.core.CommonConfigMappings;
-import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
-import org.dllearner.core.InvalidConfigOptionValueException;
-import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.StringSetConfigOption;
 import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.Negation;
 
 /**
+ * The aim of this learning problem is to find an appropriate inclusion axiom
+ * given positive and negative examples. 
+ * 
+ * This is similar to the definition learning problem, but here the positive 
+ * and negative examples usually do not follow when the inclusion is added to 
+ * the knowledge base. This raises the question how the quality of a concept
+ * with respect to this learning problem can be measured. Due to the fact that
+ * the inclusion does not entail examples, we have to look at the negation of
+ * the concept we are looking at. For a good solution it is the case that
+ * no positive examples follow from the negated concept, the negative 
+ * examples follow from it. This means that the standard definition learning
+ * problem and the inclusion learning problem can be seen as two possible
+ * weakenings of the strict definition learning problem. (Of course, both problems
+ * can yield the same solution.) 
+ * 
  * @author Jens Lehmann
  *
  */
 public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 
-	private SortedSet<Individual> positiveExamples;
-	private SortedSet<Individual> negativeExamples;
-	private SortedSet<Individual> posNegExamples;
-
+	private PosNegDefinitionLP definitionLP;
+	
 	public PosNegInclusionLP(ReasoningService reasoningService) {
 		super(reasoningService);
 	}
@@ -64,56 +71,43 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 * @see org.dllearner.core.Component#getName()
 	 */
-	@Override
-	@SuppressWarnings( { "unchecked" })
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if (name.equals("positiveExamples"))
-			positiveExamples = CommonConfigMappings
-					.getIndividualSet((Set<String>) entry.getValue());
-		else if (name.equals("negativeExamples"))
-			negativeExamples = CommonConfigMappings
-					.getIndividualSet((Set<String>) entry.getValue());
-		else if (name.equals("useRetrievalForClassification"))
-			useRetrievalForClassification = (Boolean) entry.getValue();
+	public static String getName() {
+		return "inclusion learning problem";
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "two valued definition learning problem";
-	}
-
-	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-
+		super.init();
+		definitionLP = new PosNegDefinitionLP(reasoningService, negativeExamples, positiveExamples);
 	}
-
-	/* (non-Javadoc)
+	
+	/**
+	 * Calls the same method on the standard definition learning problem, but 
+	 * negates the concept before and permutes positive and negative examples.
+	 * 
 	 * @see org.dllearner.learningproblems.PosNegLP#coveredNegativeExamplesOrTooWeak(org.dllearner.core.dl.Concept)
 	 */
 	@Override
 	public int coveredNegativeExamplesOrTooWeak(Concept concept) {
-		// TODO Auto-generated method stub
-		return 0;
+		return definitionLP.coveredNegativeExamplesOrTooWeak(new Negation(concept));
 	}
 
-	/* (non-Javadoc)
+	/** 
+	 * Calls the same method on the standard definition learning problem, but 
+	 * negates the concept before and permutes positive and negative examples.
+	 * 
 	 * @see org.dllearner.core.LearningProblemNew#computeScore(org.dllearner.core.dl.Concept)
 	 */
 	@Override
 	public Score computeScore(Concept concept) {
-		// TODO Auto-generated method stub
-		return null;
+		return definitionLP.computeScore(new Negation(concept));
 	}
 
 }
