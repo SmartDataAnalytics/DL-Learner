@@ -27,6 +27,7 @@ public class ScoreThreeValued extends Score {
 	
 	private double accuracyPenalty;
 	private double errorPenalty;
+	private boolean penaliseNeutralExamples;
 	
 	private SortedSet<Individual> posClassified;
 	private SortedSet<Individual> neutClassified;
@@ -57,6 +58,7 @@ public class ScoreThreeValued extends Score {
     public ScoreThreeValued(int conceptLength,
     		double accuracyPenalty,
     		double errorPenalty,
+    		boolean penaliseNeutralExamples,
     		SortedSet<Individual> posClassified,
     		SortedSet<Individual> neutClassified,
     		SortedSet<Individual> negClassified,
@@ -99,7 +101,7 @@ public class ScoreThreeValued extends Score {
         if(Config.scoreMethod==ScoreMethod.FULL)
         	score -= negAsNeut.size()*accuracyPenalty;
         
-        if(Config.penalizeNeutralExamples)
+        if(penaliseNeutralExamples)
         	score -= (neutAsPos.size()*accuracyPenalty        
             + neutAsNeg.size()*accuracyPenalty);
         
@@ -147,7 +149,7 @@ public class ScoreThreeValued extends Score {
         	str += "full";
         else
         	str += "positive";
-        if(!Config.penalizeNeutralExamples)
+        if(!penaliseNeutralExamples)
         	str += " (neutral examples not penalized)";
         str += "\n";
         if(Config.showCorrectClassifications) {
@@ -158,7 +160,7 @@ public class ScoreThreeValued extends Score {
         }
         str += "Inaccurately classified (penalty of " + df.format(accuracyPenalty) + " per instance):\n";
         str += "  positive --> neutral: " + posAsNeut + "\n";
-        if(Config.penalizeNeutralExamples) {
+        if(penaliseNeutralExamples) {
         	str += "  neutral --> positive: " + neutAsPos + "\n";  
         	str += "  neutral --> negative: " + neutAsNeg + "\n";
         }
@@ -201,7 +203,7 @@ public class ScoreThreeValued extends Score {
 
 	@Override
 	public Score getModifiedLengthScore(int newLength) {
-		return new ScoreThreeValued(newLength, accuracyPenalty, errorPenalty, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
+		return new ScoreThreeValued(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
 	}	
     
 }
