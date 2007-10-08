@@ -43,7 +43,6 @@ import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.StringSetConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
-import org.dllearner.modules.sparql.OntologyCollector;
 import org.dllearner.reasoning.OWLAPIDIGConverter;
 import org.dllearner.utilities.Datastructures;
 
