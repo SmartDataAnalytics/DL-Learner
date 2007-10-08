@@ -13,12 +13,10 @@ import javax.jws.soap.SOAPBinding;
 
 import org.dllearner.Config;
 import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.KB;
 import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Helper;

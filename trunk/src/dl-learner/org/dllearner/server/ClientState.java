@@ -23,7 +23,6 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.KB;
 import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.utilities.Helper;
 

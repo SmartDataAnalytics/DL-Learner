@@ -75,7 +75,7 @@ public class BruteForceLearner extends LearningAlgorithm {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
+		// String name = entry.getOptionName();
 	}
 
 	/* (non-Javadoc)
@@ -86,6 +86,7 @@ public class BruteForceLearner extends LearningAlgorithm {
 
 	}	
     
+	@Override
     public void start() {
        	// FlatABox abox = FlatABox.getInstance();
     	int maxLength = Config.maxLength;
@@ -274,16 +275,17 @@ public class BruteForceLearner extends LearningAlgorithm {
         }
     }
 
+    @Override
 	public Score getSolutionScore() {
 		return bestScore;
 	}
 
+	@Override
 	public Concept getBestSolution() {
 		return bestDefinition;
 	}
 
+	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-		
 	}
 }
