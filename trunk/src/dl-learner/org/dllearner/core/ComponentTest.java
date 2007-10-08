@@ -26,7 +26,7 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
-import org.dllearner.reasoning.DIGReasonerNew;
+import org.dllearner.reasoning.DIGReasoner;
 
 /**
  * Test for component based design.
@@ -53,7 +53,7 @@ public class ComponentTest {
 		source.init();
 		
 		// create DIG reasoning service with standard settings
-		ReasonerComponent reasoner = cm.reasoner(DIGReasonerNew.class, source);
+		ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, source);
 		// ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
 		ReasoningService rs = cm.reasoningService(reasoner);
 		reasoner.init();
@@ -73,7 +73,7 @@ public class ComponentTest {
 		lp.init();
 		
 		// create the learning algorithm
-		LearningAlgorithmNew la = cm.learningAlgorithm(RandomGuesser.class, lp, rs);
+		LearningAlgorithm la = cm.learningAlgorithm(RandomGuesser.class, lp, rs);
 		cm.applyConfigEntry(la, "numberOfTrees", 100);
 		cm.applyConfigEntry(la, "maxDepth", 5);
 		la.init();

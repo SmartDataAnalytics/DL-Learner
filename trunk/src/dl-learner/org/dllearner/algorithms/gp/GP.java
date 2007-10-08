@@ -50,7 +50,7 @@ import org.dllearner.algorithms.hybridgp.Psi;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
-import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
@@ -65,7 +65,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  * 
  */
-public class GP extends LearningAlgorithmNew {
+public class GP extends LearningAlgorithm {
 
     // NumberFormat f;
 	DecimalFormat df = new DecimalFormat("0.00");

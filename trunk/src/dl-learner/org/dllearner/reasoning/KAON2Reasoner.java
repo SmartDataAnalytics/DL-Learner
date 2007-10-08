@@ -15,6 +15,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.Config;
+import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.InvalidConfigOptionValueException;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AssertionalAxiom;
 import org.dllearner.core.dl.AtomicConcept;
@@ -70,7 +73,7 @@ import org.semanticweb.kaon2.api.reasoner.SubsumptionHierarchy.Node;
  * @author jl
  * 
  */
-public class KAON2Reasoner extends AbstractReasoner {
+public class KAON2Reasoner extends ReasonerComponent {
 
 	ConceptComparator conceptComparator = new ConceptComparator();
 	
@@ -761,6 +764,24 @@ public class KAON2Reasoner extends AbstractReasoner {
 
 	public SortedSet<Individual> getIndividuals() {
 		return individuals;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	// Problem: mit den eigenen Datenstrukturen wird OWL nicht vollständig

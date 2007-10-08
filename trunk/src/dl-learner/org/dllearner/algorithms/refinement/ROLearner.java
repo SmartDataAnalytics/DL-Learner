@@ -14,7 +14,7 @@ import org.dllearner.Config;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
-import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
@@ -28,7 +28,7 @@ import org.dllearner.utilities.ConceptTransformation;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 
-public class ROLearner extends LearningAlgorithmNew {
+public class ROLearner extends LearningAlgorithm {
 	
 	private boolean stop = false;
 	

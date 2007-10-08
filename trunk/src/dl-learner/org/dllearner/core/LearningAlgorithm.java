@@ -28,7 +28,7 @@ import org.dllearner.core.dl.Concept;
  * @author Jens Lehmann
  *
  */
-public abstract class LearningAlgorithmNew extends Component {
+public abstract class LearningAlgorithm extends Component {
 
 	/**
 	 * Starts the algorithm.
