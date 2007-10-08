@@ -24,16 +24,9 @@ import java.io.FileWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
@@ -42,10 +35,7 @@ import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.StringSetConfigOption;
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.Individual;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
-import org.dllearner.reasoning.OWLAPIDIGConverter;
 import org.dllearner.utilities.Datastructures;
 
 /**

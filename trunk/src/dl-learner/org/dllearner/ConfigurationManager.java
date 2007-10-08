@@ -1,6 +1,5 @@
 package org.dllearner;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -497,9 +496,9 @@ public class ConfigurationManager {
 		} else if (option.equals("refinement.quiet"))
 			Config.Refinement.quiet = Datastructures.strToBool(value);
 		else if (option.equals("refinement.writeSearchTree"))
-			Config.Refinement.writeSearchTree = Datastructures.strToBool(value);
+			; //Config.Refinement.writeSearchTree = Datastructures.strToBool(value);
 		else if (option.equals("refinement.searchTreeFile")) {
-			Config.Refinement.searchTreeFile = new File(value);
+			; // Config.Refinement.searchTreeFile = new File(value);
 		} else if (option.equals("refinement.applyAllFilter"))
 			Config.Refinement.applyAllFilter = Datastructures.strToBool(value);
 		else if (option.equals("refinement.applyExistsFilter"))
