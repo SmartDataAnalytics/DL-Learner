@@ -127,8 +127,8 @@ public class PaperStatistics {
 		int startAlgorithmNr = 0;
 
 		// Config.GP.maxConceptLength = 30;
-		Config.writeDIGProtocol = true;
-		Config.digProtocolFile = new File(statBaseDir, "dig.log");
+		// Config.writeDIGProtocol = true;
+		// Config.digProtocolFile = new File(statBaseDir, "dig.log");
 		
 		// do not plot anything
 		// File[][][] gnuplotFiles = new File[examples.length][algorithms.length][3];

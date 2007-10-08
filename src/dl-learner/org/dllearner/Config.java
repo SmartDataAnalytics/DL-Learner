@@ -112,8 +112,8 @@ public class Config {
 	public static boolean showInternalKB = false;
 	public static int maxLineLength = 100;
 
-	public static boolean writeDIGProtocol = false;
-	public static File digProtocolFile = new File("log/digProtocol.txt");
+	// public static boolean writeDIGProtocol = false;
+	// public static File digProtocolFile = new File("log/digProtocol.txt");
 
 	// public static String preprocessingModule = "";
 

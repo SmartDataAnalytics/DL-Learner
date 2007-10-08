@@ -74,5 +74,9 @@ public class Files {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void clearFile(File file) {
+		createFile(file, "");
+	}
 
 }

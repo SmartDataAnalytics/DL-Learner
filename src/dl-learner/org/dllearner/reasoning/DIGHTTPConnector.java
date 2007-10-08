@@ -1,6 +1,27 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.reasoning;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,7 +33,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.xmlbeans.XmlException;
-import org.dllearner.Config;
 import org.dllearner.utilities.Files;
 import org.kr.dl.dig.v1_1.GetIdentifierDocument;
 import org.kr.dl.dig.v1_1.IdRespType;
@@ -27,17 +47,23 @@ import org.kr.dl.dig.v1_1.KbDocument.Kb;
  * Methods for sending messages to a DIG-capable reasoner and receiving answers
  * using Apache XML Beans.
  * 
- * @author jl
+ * @author Jens Lehmann
  * 
  */
 public class DIGHTTPConnector {
 
 	private URL url;
+	private File protocolFile;
 
 	public DIGHTTPConnector(URL url) {
 		this.url = url;
 	}
  
+	public DIGHTTPConnector(URL url, File protocolFile) {
+		this.url = url;
+		this.protocolFile = protocolFile;
+	}
+	
 	public URI newKB() {
 		NewKBDocument newKB = NewKBDocument.Factory.newInstance();
 		newKB.addNewNewKB();
@@ -131,10 +157,10 @@ public class DIGHTTPConnector {
 			osw.write(send);
 			osw.close();
 			
-			if(Config.writeDIGProtocol)
-				Files.appendFile(Config.digProtocolFile, "DIG code send to reasoner:\n\n"+send+"\n\n");
+			if(protocolFile != null)
+				Files.appendFile(protocolFile, "DIG code send to reasoner:\n\n"+send+"\n\n");
 			
-			// Antwort empfangen
+			// receive answer
 			InputStream is = connection.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
@@ -153,9 +179,8 @@ public class DIGHTTPConnector {
 			System.exit(0);
 		}	
 		
-		// DIG-Kommunikation protokollieren, falls das eingestellt ist
-		if(Config.writeDIGProtocol)
-			Files.appendFile(Config.digProtocolFile, "DIG code received from reasoner:\n\n"+answer+"\n\n");
+		if(protocolFile != null)
+			Files.appendFile(protocolFile, "DIG code received from reasoner:\n\n"+answer+"\n\n");
 		
 		return answer.toString();
 	}
