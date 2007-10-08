@@ -28,6 +28,10 @@ public class BooleanConfigOption extends ConfigOption<Boolean> {
 	public BooleanConfigOption(String name, String description) {
 		super(name, description);
 	}
+
+	public BooleanConfigOption(String name, String description, boolean defaultValue) {
+		super(name, description, defaultValue);
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)

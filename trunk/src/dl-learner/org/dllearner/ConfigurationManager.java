@@ -470,9 +470,9 @@ public class ConfigurationManager {
 		} else if (option.equals("showSubsumptionHierarchy")) {
 			Config.showSubsumptionHierarchy = Datastructures.strToBool(value);
 		} else if (option.equals("writeDIGProtocol")) {
-			Config.writeDIGProtocol = Datastructures.strToBool(value);
+			// Config.writeDIGProtocol = Datastructures.strToBool(value);
 		} else if (option.equals("digProtocolFile")) {
-			Config.digProtocolFile = new File(value);
+			// Config.digProtocolFile = new File(value);
 		// } else if (option.equals("preprocessingModule")) {
 		//	Config.preprocessingModule = value;
 		} else if (option.equals("gp.selectionType")) {

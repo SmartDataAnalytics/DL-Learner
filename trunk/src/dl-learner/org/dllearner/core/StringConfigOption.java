@@ -31,11 +31,14 @@ import java.util.TreeSet;
  */
 public class StringConfigOption extends ConfigOption<String> {
 
-	private Set<String> allowedValues;
+	private Set<String> allowedValues = new TreeSet<String>();;
 	
 	public StringConfigOption(String name, String description) {
 		super(name, description);
-		allowedValues = new TreeSet<String>();
+	}
+	
+	public StringConfigOption(String name, String description, String defaultValue) {
+		super(name, description, defaultValue);
 	}
 	
 	/* (non-Javadoc)
