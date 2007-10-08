@@ -45,7 +45,7 @@ import org.dllearner.core.DoubleConfigOption;
 import org.dllearner.core.IntegerConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasonerComponent;
@@ -67,7 +67,7 @@ import org.dllearner.parser.ConfParser;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.TokenMgrError;
-import org.dllearner.reasoning.DIGReasonerNew;
+import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
@@ -121,7 +121,7 @@ public class Start {
 		Class<? extends ReasonerComponent> reasonerClass = null;
 		// default value
 		if (reasonerOption == null || reasonerOption.getStringValue().equals("dig"))
-			reasonerClass = DIGReasonerNew.class;
+			reasonerClass = DIGReasoner.class;
 		else {
 			handleError("Unknown value " + reasonerOption.getStringValue()
 					+ "for option \"reasoner\".");
@@ -139,8 +139,8 @@ public class Start {
 
 		// step 4: detect learning algorithm
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
-		LearningAlgorithmNew la = null;
-		Class<? extends LearningAlgorithmNew> laClass = null;
+		LearningAlgorithm la = null;
+		Class<? extends LearningAlgorithm> laClass = null;
 		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
 			laClass = ROLearner.class;
 
@@ -193,7 +193,7 @@ public class Start {
 		// knowledge sources
 		componentPrefixMapping.put(SparqlEndpoint.class, "sparql");
 		// reasoners
-		componentPrefixMapping.put(DIGReasonerNew.class, "digReasoner");
+		componentPrefixMapping.put(DIGReasoner.class, "digReasoner");
 		// learning problems - configured via + and - flags for examples
 		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
@@ -446,8 +446,8 @@ public class Start {
 		String message = "OK";
 		if (component instanceof KBFile)
 			message = ((KBFile) component).getURL().toString() + " read";
-		else if (component instanceof DIGReasonerNew) {
-			DIGReasonerNew reasoner = (DIGReasonerNew) component;
+		else if (component instanceof DIGReasoner) {
+			DIGReasoner reasoner = (DIGReasoner) component;
 			message = "using " + reasoner.getIdentifier() + " connected via DIG 1.1 at "
 					+ reasoner.getReasonerURL().toString();
 		}

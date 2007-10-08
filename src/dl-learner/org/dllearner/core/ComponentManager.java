@@ -63,13 +63,13 @@ public class ComponentManager {
 	private static Set<Class<? extends KnowledgeSource>> knowledgeSources;
 	private static Set<Class<? extends ReasonerComponent>> reasonerComponents;
 	private static Set<Class<? extends LearningProblem>> learningProblems;
-	private static Set<Class<? extends LearningAlgorithmNew>> learningAlgorithms;
+	private static Set<Class<? extends LearningAlgorithm>> learningAlgorithms;
 
 	// list of all configuration options of all components
 	private static Map<Class<? extends Component>, String> componentNames;
 	private static Map<Class<? extends Component>, List<ConfigOption<?>>> componentOptions;
 	private static Map<Class<? extends Component>, Map<String, ConfigOption<?>>> componentOptionsByName;
-	private static Map<Class<? extends LearningAlgorithmNew>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
+	private static Map<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
 
 	private Comparator<Class<?>> classComparator = new Comparator<Class<?>>() {
 
@@ -89,8 +89,8 @@ public class ComponentManager {
 		knowledgeSources = new TreeSet<Class<? extends KnowledgeSource>>(classComparator);
 		reasonerComponents = new TreeSet<Class<? extends ReasonerComponent>>(classComparator);
 		learningProblems = new TreeSet<Class<? extends LearningProblem>>(classComparator);
-		learningAlgorithms = new TreeSet<Class<? extends LearningAlgorithmNew>>(classComparator);
-		algorithmProblemsMapping = new TreeMap<Class<? extends LearningAlgorithmNew>, Collection<Class<? extends LearningProblem>>>(
+		learningAlgorithms = new TreeSet<Class<? extends LearningAlgorithm>>(classComparator);
+		algorithmProblemsMapping = new TreeMap<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>>(
 				classComparator);
 
 		// create classes from strings
@@ -106,8 +106,8 @@ public class ComponentManager {
 					reasonerComponents.add((Class<? extends ReasonerComponent>) component);
 				else if (LearningProblem.class.isAssignableFrom(component))
 					learningProblems.add((Class<? extends LearningProblem>) component);
-				else if (LearningAlgorithmNew.class.isAssignableFrom(component)) {
-					Class<? extends LearningAlgorithmNew> learningAlgorithmClass = (Class<? extends LearningAlgorithmNew>) component;
+				else if (LearningAlgorithm.class.isAssignableFrom(component)) {
+					Class<? extends LearningAlgorithm> learningAlgorithmClass = (Class<? extends LearningAlgorithm>) component;
 					learningAlgorithms.add(learningAlgorithmClass);
 					Collection<Class<? extends LearningProblem>> problems = (Collection<Class<? extends LearningProblem>>) invokeStaticMethod(
 							learningAlgorithmClass, "supportedLearningProblems");
@@ -297,7 +297,7 @@ public class ComponentManager {
 	}
 
 	// automagically calls the right constructor for the given learning problem
-	public <T extends LearningAlgorithmNew> T learningAlgorithm(Class<T> la, LearningProblem lp, ReasoningService rs) {
+	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> la, LearningProblem lp, ReasoningService rs) {
 		if (!learningAlgorithms.contains(la))
 			System.err.println("Warning: learning algorithm " + la
 					+ " is not a registered learning algorithm component.");

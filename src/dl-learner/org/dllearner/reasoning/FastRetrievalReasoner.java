@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.InvalidConfigOptionValueException;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Concept;
@@ -13,7 +16,7 @@ import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SortedSetTuple;
 
-public class FastRetrievalReasoner extends AbstractReasoner {
+public class FastRetrievalReasoner extends ReasonerComponent {
 
 	FlatABox abox;
 	FastRetrieval fastRetrieval;
@@ -78,5 +81,23 @@ public class FastRetrievalReasoner extends AbstractReasoner {
 
 	public void prepareSubsumptionHierarchy() {
 		// hier muss nichts getan werden
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
 	}
 }

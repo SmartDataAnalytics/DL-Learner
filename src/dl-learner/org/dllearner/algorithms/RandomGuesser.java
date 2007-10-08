@@ -28,13 +28,13 @@ import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.IntegerConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
-import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 
-public class RandomGuesser extends LearningAlgorithmNew {
+public class RandomGuesser extends LearningAlgorithm {
 
     private Concept bestDefinition = null;
     private Score bestScore;

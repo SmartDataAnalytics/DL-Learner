@@ -31,25 +31,19 @@ import org.dllearner.Config;
 import org.dllearner.ConfigurationManager;
 import org.dllearner.Config.Algorithm;
 import org.dllearner.algorithms.gp.GP;
-import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithmNew;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.KB;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.reasoning.DIGReasoner;
-import org.dllearner.reasoning.DIGReasonerNew;
 
 /**
  * Utility script for creating statistics for publications.
@@ -191,7 +185,7 @@ public class PaperStatistics {
 					// Reasoner reasoner = Main.createReasoner(new KB(), imports);
 					// TODO: needs fixing
 					KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
-					ReasonerComponent reasoner = cm.reasoner(DIGReasonerNew.class, ks);
+					ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, ks);
 					ReasoningService rs = new ReasoningService(reasoner);					
 					
 					// System.out.println(positiveExamples);
@@ -219,7 +213,7 @@ public class PaperStatistics {
 						e.printStackTrace();
 					}
 
-					LearningAlgorithmNew learningAlgorithm = null;
+					LearningAlgorithm learningAlgorithm = null;
 					if(algorithmNr==0) {
 						Config.algorithm = Algorithm.REFINEMENT;
 						// Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
@@ -286,7 +280,7 @@ public class PaperStatistics {
 					runtime.addNumber(algorithmTime);
 					
 					// free knowledge base to avoid memory leaks
-					((DIGReasonerNew) reasoner).releaseKB();	
+					((DIGReasoner) reasoner).releaseKB();	
 					
 					statDetailsString += "example: " + examples[exampleNr] + "\n";
 					statDetailsString += "algorithm: " + algorithms[algorithmNr] + "\n";
@@ -433,7 +427,7 @@ public class PaperStatistics {
 					// reasoner = new DIGReasoner(kb, Config.digReasonerURL, importedFiles);
 					// TODO: set up knowledge source
 					KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
-					ReasonerComponent reasoner = cm.reasoner(DIGReasonerNew.class, ks);
+					ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, ks);
 					// reasoner.prepareSubsumptionHierarchy();
 					// rs = new ReasoningService(reasoner);
 					ReasoningService rs = cm.reasoningService(reasoner);
@@ -481,7 +475,7 @@ public class PaperStatistics {
 
 					// Release, damit Pellet (hoffentlich) Speicher wieder
 					// freigibt
-					((DIGReasonerNew) reasoner).releaseKB();
+					((DIGReasoner) reasoner).releaseKB();
 
 					int conceptLength = gp.getBestSolution().getLength();
 					Score bestScore = gp.getSolutionScore();

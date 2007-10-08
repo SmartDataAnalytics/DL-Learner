@@ -17,14 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.dllearner.reasoning;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -35,12 +37,17 @@ import javax.xml.namespace.QName;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.dllearner.Config;
+import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.ConfigOption;
+import org.dllearner.core.InvalidConfigOptionValueException;
+import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.KB;
 import org.dllearner.core.dl.RoleHierarchy;
 import org.dllearner.core.dl.SubsumptionHierarchy;
 import org.dllearner.core.dl.Top;
@@ -59,20 +66,21 @@ import org.kr.dl.dig.v1_1.Rsynonyms;
 import org.kr.dl.dig.v1_1.IndividualSetDocument.IndividualSet;
 
 /**
- * DIG 1.1 implementation of the reasoner interface. 
+ * DIG 1.1 implementation of the reasoner interface.
  * 
  * @author Jens Lehmann
  *
  */
-public class DIGReasoner extends AbstractReasoner {
+public class DIGReasoner extends ReasonerComponent {
 
+	URL reasonerURL;
+	Set<KnowledgeSource> sources;
+	
 	// Variablen für Reasoner
 	DIGHTTPConnector connector;
 	String identifier;
 	URI kbURI;
 	private String asksPrefix;
-	Map<URL,OntologyFileFormat> imports;
-	KB kb;
 	// Cache für Konzepte, Rollen und Individuen
 	Set<AtomicConcept> atomicConcepts;
 	Set<AtomicRole> atomicRoles;
@@ -87,19 +95,18 @@ public class DIGReasoner extends AbstractReasoner {
 	SubsumptionHierarchy subsumptionHierarchy;
 	RoleHierarchy roleHierarchy;
 	// enthält atomare Konzepte, sowie Top und Bottom
-	Set<Concept> allowedConceptsInSubsumptionHierarchy;
+	Set<Concept> allowedConceptsInSubsumptionHierarchy;	
 	
-	/**
-	 * Creates a DIG reasoner object.
-	 * 
-	 * @param kb Internal knowledge base.
-	 * @param url URL of the DIG reasoner e.g. http://localhost:8081.
-	 * @param imports Files to import (format and physical location of each file).
-	 */
-	public DIGReasoner(KB kb, URL url, Map<URL,OntologyFileFormat> imports) {
-		this.imports = imports;
-		this.kb = kb;
-		connector = new DIGHTTPConnector(url);		
+	public DIGReasoner(Set<KnowledgeSource> sources) {
+		this.sources = sources;
+		try {
+			reasonerURL = new URL("http://localhost:8081");
+		} catch (MalformedURLException e) {	}
+	}
+	
+	@Override
+	public void init() {
+		connector = new DIGHTTPConnector(reasonerURL);		
 		identifier = connector.getIdentifier();
 		kbURI = connector.newKB();
 		
@@ -110,82 +117,57 @@ public class DIGReasoner extends AbstractReasoner {
 		"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
 		"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">";
 		
-		// erzeuge tell-Anfrage für Knowledgebase
-		if(kb.getNumberOfAxioms()>0) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-			sb.append("<tells xmlns=\"http://dl.kr.org/dig/2003/02/lang\" " +
-					"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-					"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
-					"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">");
-			sb.append(DIGConverter.getDIGString(kb));
-			sb.append("</tells>");
+		// momementan wird davon ausgegangen, dass toDIG(kbURI) den gesamten
+		// tells-Request liefert
+		StringBuilder sb = new StringBuilder();
+//		sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+//		sb.append("<tells xmlns=\"http://dl.kr.org/dig/2003/02/lang\" " +
+//				"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+//				"xsi:schemaLocation=\"http://dl.kr.org/dig/2003/02/lang\n" +
+//				"http://dl-web.man.ac.uk/dig/2003/02/dig.xsd\" uri=\""+kbURI+"\">");		
+		for(KnowledgeSource source : sources) {
+			sb.append(source.toDIG(kbURI));
 			
 			ResponseDocument rd = connector.tells(sb.toString());
 			if(!rd.getResponse().isSetOk()) {
 				System.err.println("DIG-Reasoner cannot read knowledgebase.");
 				System.exit(0);
-			}
+			}			
 		}
-		
-		String importDIGString = "";
-		
-		// Ontologien mit Hilfe von KAON2 importieren - direkt zur
-		// KB hinzufügen
-		for(URL file : imports.keySet()) {
-			/*
-			// System.out.println("Importing " + file + " using KAON2.");
-			Ontology ontology = KAON2Reasoner.importKB(file);
-			try {
-				KAON2Reasoner.importKAON2Ontology(kb, ontology);
-			} catch (KAON2Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			*/
-			
-			// mit Hilfe von Jena wird OWL zu DIG konvertiert
-			// (allein diese Funktion sorgt leider dafür, dass 
-			// DL-Learner stark anwächst, da verschieden Jena-Bibliotheken
-			// eingebunden werden müssen)
-			long importStartTime = System.currentTimeMillis();
-			
-			// if the ontology format is N-Triples then Jena is used, otherwise the OWL API
-			if(imports.get(file).equals(OntologyFileFormat.N_TRIPLES)) {
-				System.out.print("Converting import file " + file + " to DIG using Jena ... ");
+//		sb.append("</tells>");
 				
-				importDIGString = JenaOWLDIGConverter.getTellsString(file, imports.get(file), kbURI);
-			} else {
-				System.out.println("Converting import file " + file + " to DIG using OWL API:");
-				
-				importDIGString = OWLAPIDIGConverter.getTellsString(file, imports.get(file), kbURI);
-			}
-				
-			ResponseDocument rdImport = connector.tells(importDIGString);
-			if(!rdImport.getResponse().isSetOk()) {
-				System.err.println("DIG-Reasoner cannot read knowledgebase.");
-				System.exit(0);
-			} else {
-				long importTime = System.currentTimeMillis() - importStartTime;
-				if(imports.get(file).equals(OntologyFileFormat.N_TRIPLES))
-					System.out.println("OK (" + importTime + " ms)");
-				// (" + JenaOWLDIGConverter.nrOfStatementsLastConversion + " statements, "+ importTime + " ms)");
-				
-			}
-				
-		}
-			
-		// es wird jetzt immer der DIG-Reasoner abgefragt (auch ohne Importe), 
-		// da so gleich auch äquivalente Konzepte rausgefiltert werden
-		
-
-		
 		// DIG-Abfragen nach Konzepten, Rollen, Individuals
 		atomicConcepts = getAtomicConceptsDIG();
 		atomicRoles = getAtomicRolesDIG();
-		individuals = getIndividualsDIG();
-
+		individuals = getIndividualsDIG();		
 	}
+	
+	public static String getName() {
+		return "DIG reasoner";
+	}
+	
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		options.add(new StringConfigOption("reasonerUrl", "URL of the DIG reasoner"));
+		return options;
+	}	
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
+	@Override
+	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		if (entry.getOptionName().equals("reasonerUrl")) {
+			String s = (String) entry.getValue();
+			try {
+				reasonerURL = new URL(s);
+			} catch (MalformedURLException e) {
+				// e.printStackTrace();
+				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue());
+			}
+		}
+	}
+	
 	
 	/**
 	 * Construct a subsumption hierarchy using DIG queries. After calling this 
@@ -739,11 +721,19 @@ public class DIGReasoner extends AbstractReasoner {
 		connector.releaseKB(kbURI);
 	}
 
+	// TODO: not working yet - it is probably better to include a method
+	// in knowledge source to save the corresponding source to a file
 	public void saveOntology(File file, OntologyFileFormat format) {
 		// KAON2-Reasoner erzeugen und den die Ontologie speichern lassen
 		// (später könnte man das über Jena erledigen, allerdings funktioniert
 		// das mit KAON2 auch gut)
-		KAON2Reasoner kaon2Reasoner = new KAON2Reasoner(kb,imports);
-		kaon2Reasoner.saveOntology(file, format);
+		// KAON2Reasoner kaon2Reasoner = new KAON2Reasoner(kb,imports);
+		// kaon2Reasoner.saveOntology(file, format);
+		throw new UnsupportedOperationException("Saving ontologies not yet implemented.");
 	}
+
+	public URL getReasonerURL() {
+		return reasonerURL;
+	}
+	
 }
