@@ -421,7 +421,7 @@ public class ConfigurationManager {
 	
 	private void applyStringOptions(String option, String value) {
 		if (option.equals("penalizeNeutralExamples"))
-			Config.penalizeNeutralExamples = Datastructures.strToBool(value);
+			; // Config.penalizeNeutralExamples = Datastructures.strToBool(value);
 		else if (option.equals("showCorrectClassifications"))
 			Config.showCorrectClassifications = Datastructures.strToBool(value);
 		else if (option.equals("statMode"))

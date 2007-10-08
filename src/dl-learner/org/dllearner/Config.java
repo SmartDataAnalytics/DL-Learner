@@ -32,7 +32,7 @@ public class Config {
 
 	// public static LearningProblemType learningProblemType = LearningProblemType.TWO_VALUED;
 
-	public static boolean penalizeNeutralExamples = false;
+	// public static boolean penalizeNeutralExamples = false;
 
 	public static boolean showCorrectClassifications = false;
 

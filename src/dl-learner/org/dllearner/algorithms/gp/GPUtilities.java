@@ -459,7 +459,7 @@ public class GPUtilities {
     	// neutClassified.retainAll(posClassified);
     	neutClassified.retainAll(negClassified);
     	PosNegDefinitionLPStrict lp = (PosNegDefinitionLPStrict)learningProblem;
-    	return new ScoreThreeValued(conceptLength, lp.getAccuracyPenalty(), lp.getErrorPenalty(), posClassified, neutClassified, negClassified, lp.getPositiveExamples(),lp.getNeutralExamples(),lp.getNegativeExamples());
+    	return new ScoreThreeValued(conceptLength, lp.getAccuracyPenalty(), lp.getErrorPenalty(), lp.isPenaliseNeutralExamples(), posClassified, neutClassified, negClassified, lp.getPositiveExamples(),lp.getNeutralExamples(),lp.getNegativeExamples());
     }
     
     // aktualisiert die besten Knoten
