@@ -142,6 +142,7 @@ public class ComponentManager {
 		}
 
 		// System.out.println(components);
+		// System.out.println(learningProblems);
 	}
 
 	/**
