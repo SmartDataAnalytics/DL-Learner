@@ -17,7 +17,7 @@ import org.dllearner.reasoning.ReasonerType;
 
 public class Config {
 	// standardmäßig wird bis Tiefe 7 gesucht
-	public static int maxLength = 7;
+	// public static int maxLength = 7;
 
 	public static int maxDepth;
 

@@ -383,7 +383,7 @@ public class ConfigurationManager {
 
 	private void applyIntOptions(String option, int value) {
 		if (option.equals("maxLength"))
-			Config.maxLength = value;
+			;//Config.maxLength = value;
 		else if (option.equals("gp.numberOfIndividuals"))
 			Config.GP.numberOfIndividuals = value;
 		else if (option.equals("gp.numberOfSelectedIndividuals"))
