@@ -146,7 +146,7 @@ public class GP extends LearningAlgorithm {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
+		// String name = entry.getOptionName();
 	}
 
 	/* (non-Javadoc)

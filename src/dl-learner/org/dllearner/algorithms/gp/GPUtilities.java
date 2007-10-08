@@ -26,7 +26,6 @@ import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Top;
 import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
-import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScoreThreeValued;
 import org.dllearner.reasoning.FastRetrieval;
 import org.dllearner.reasoning.ReasonerType;

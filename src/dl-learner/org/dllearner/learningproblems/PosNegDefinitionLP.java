@@ -19,20 +19,12 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.BooleanConfigOption;
-import org.dllearner.core.CommonConfigMappings;
-import org.dllearner.core.ConfigEntry;
-import org.dllearner.core.ConfigOption;
-import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
-import org.dllearner.core.StringSetConfigOption;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.Helper;

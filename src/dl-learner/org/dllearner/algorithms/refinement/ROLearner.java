@@ -251,6 +251,7 @@ public class ROLearner extends LearningAlgorithm {
 	}
 	
 	// Kernalgorithmus
+	@Override
 	@SuppressWarnings("unchecked")
 	public void start() {
 

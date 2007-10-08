@@ -11,8 +11,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.Config;
-import org.dllearner.Config.Refinement;
-import org.dllearner.core.Reasoner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.AssertionalAxiom;

@@ -1,7 +1,6 @@
 package org.dllearner.server;
 
 import org.dllearner.Config;
-import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.utilities.Helper;
 
