@@ -17,7 +17,6 @@ import org.dllearner.algorithms.gp.GP.SelectionType;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
-import org.dllearner.learningproblems.ScoreThreeValued.ScoreMethod;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.ConceptComparator;
@@ -423,7 +422,7 @@ public class ConfigurationManager {
 		if (option.equals("penalizeNeutralExamples"))
 			; // Config.penalizeNeutralExamples = Datastructures.strToBool(value);
 		else if (option.equals("showCorrectClassifications"))
-			Config.showCorrectClassifications = Datastructures.strToBool(value);
+			; // Config.showCorrectClassifications = Datastructures.strToBool(value);
 		else if (option.equals("statMode"))
 			Config.statisticMode = Datastructures.strToBool(value);
 		else if (option.equals("una"))
@@ -433,10 +432,10 @@ public class ConfigurationManager {
 		else if (option.equals("gp.useFixedNumberOfGenerations"))
 			Config.GP.useFixedNumberOfGenerations = Datastructures.strToBool(value);
 		else if (option.equals("scoreMethod")) {
-			if (value.equals("full"))
-				Config.scoreMethod = ScoreMethod.FULL;
-			else
-				Config.scoreMethod = ScoreMethod.POSITIVE;
+//			if (value.equals("full"))
+//				Config.scoreMethod = ScoreMethod.FULL;
+//			else
+//				Config.scoreMethod = ScoreMethod.POSITIVE;
 		} else if (option.equals("returnType"))
 			Config.returnType = value;
 		else if (option.equals("algorithm")) {
