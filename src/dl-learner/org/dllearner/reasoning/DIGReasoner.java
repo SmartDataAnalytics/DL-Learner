@@ -102,7 +102,7 @@ public class DIGReasoner extends ReasonerComponent {
 
 	private boolean writeDIGProtocol;
 	private File digProtocolFile;
-	private static String defaultDIGProtocolFile = "log/digProtocol";
+	private static String defaultDIGProtocolFile = "log/digProtocol.txt";
 	
 	public DIGReasoner(Set<KnowledgeSource> sources) {
 		this.sources = sources;

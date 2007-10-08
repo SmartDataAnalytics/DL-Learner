@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.refinement;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Comparator;
@@ -11,6 +12,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.Config;
+import org.dllearner.core.BooleanConfigOption;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
@@ -18,6 +20,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
+import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
@@ -29,6 +32,11 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 
 public class ROLearner extends LearningAlgorithm {
+	
+	// configuration options
+	private boolean writeSearchTree;
+	private File searchTreeFile;
+	private static String defaultSearchTreeFile = "log/searchTree.txt";
 	
 	private boolean stop = false;
 	
@@ -224,6 +232,8 @@ public class ROLearner extends LearningAlgorithm {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		options.add(new BooleanConfigOption("writeSearchTree", "specifies whether to write a search tree", false));
+		options.add(new StringConfigOption("searchTreeFile","file to use for the search tree", defaultSearchTreeFile));
 		return options;
 	}
 	
@@ -232,8 +242,11 @@ public class ROLearner extends LearningAlgorithm {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		// TODO Auto-generated method stub
-		
+		String name = entry.getOptionName();
+		if(name.equals("writeSearchTree"))
+			writeSearchTree = (Boolean) entry.getValue();
+		else if(name.equals("searchTreeFile"))
+			searchTreeFile = new File((String)entry.getValue());
 	}
 
 	/* (non-Javadoc)
@@ -241,6 +254,9 @@ public class ROLearner extends LearningAlgorithm {
 	 */
 	@Override
 	public void init() {
+		if(searchTreeFile == null)
+			searchTreeFile = new File(defaultSearchTreeFile);
+
 		// TODO: this needs to be changed
 		Helper.autoDetectConceptsAndRoles(rs);
 		// prepare subsumption and role hierarchies, because they are needed
@@ -365,7 +381,7 @@ public class ROLearner extends LearningAlgorithm {
 			//	System.out.println(n);
 			//}
 			
-			if(Config.Refinement.writeSearchTree) {
+			if(writeSearchTree) {
 				// String treeString = "";
 				String treeString = "best expanded node: " + bestNode+ "\n";
 				if(expandedNodes.size()>1) {
@@ -381,7 +397,7 @@ public class ROLearner extends LearningAlgorithm {
 				searchTree += treeString + "\n";
 				// TODO: ev. immer nur einen search tree speichern und den an die
 				// Datei anhängen => spart Speicher
-				Files.createFile(Config.Refinement.searchTreeFile, searchTree);
+				Files.createFile(searchTreeFile, searchTree);
 			}
 			
 			// Anzahl Schleifendurchläufe
@@ -393,8 +409,8 @@ public class ROLearner extends LearningAlgorithm {
 		}
 		
 		// Suchbaum in Datei schreiben
-		if(Config.Refinement.writeSearchTree)
-			Files.createFile(Config.Refinement.searchTreeFile, searchTree);
+		if(writeSearchTree)
+			Files.createFile(searchTreeFile, searchTree);
 		
 		// Ergebnisausgabe
 		/*
@@ -440,7 +456,7 @@ public class ROLearner extends LearningAlgorithm {
 		// gefunden wurden
 		long propCalcNsStart = System.nanoTime();
 		
-		if(Config.Refinement.writeSearchTree)
+		if(writeSearchTree)
 			expandedNodes.add(node);
 		
 		if(node.getChildren().size()>maxNrOfChildren)

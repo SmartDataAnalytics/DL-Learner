@@ -1,6 +1,5 @@
 package org.dllearner;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.LinkedList;
@@ -139,9 +138,9 @@ public class Config {
 
 		public static boolean quiet = false;
 
-		public static boolean writeSearchTree = false;
+		// public static boolean writeSearchTree = false;
 
-		public static File searchTreeFile = new File("searchTree.txt");
+		// public static File searchTreeFile = new File("searchTree.txt");
 
 		public enum Heuristic {
 			LEXICOGRAPHIC, FLEXIBLE
