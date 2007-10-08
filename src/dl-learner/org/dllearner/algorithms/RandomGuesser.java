@@ -34,7 +34,7 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
 
-public class RandomGuesser extends LearningAlgorithmNew implements LearningAlgorithm {
+public class RandomGuesser extends LearningAlgorithmNew {
 
     private Concept bestDefinition = null;
     private Score bestScore;

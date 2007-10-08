@@ -46,7 +46,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.dllearner.Config;
-import org.dllearner.algorithms.LearningAlgorithm;
 import org.dllearner.algorithms.hybridgp.Psi;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
@@ -66,7 +65,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  * 
  */
-public class GP extends LearningAlgorithmNew implements LearningAlgorithm {
+public class GP extends LearningAlgorithmNew {
 
     // NumberFormat f;
 	DecimalFormat df = new DecimalFormat("0.00");
