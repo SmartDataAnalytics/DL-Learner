@@ -19,12 +19,21 @@
  */
 package org.dllearner.kb;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
@@ -32,6 +41,11 @@ import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.StringSetConfigOption;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.Individual;
+import org.dllearner.modules.sparql.OntologyCollector;
+import org.dllearner.reasoning.OWLAPIDIGConverter;
+import org.dllearner.utilities.Datastructures;
 
 /**
  * Represents a SPARQL Endpoint. 
@@ -85,7 +99,79 @@ public class SparqlEndpoint extends KnowledgeSource {
 	 */
 	@Override
 	public void init() {
-		// TODO add code for downloading data from SPARQL endpoint 
+		// TODO add code for downloading data from SPARQL endpoint
+		String filename=System.currentTimeMillis()+".nt";
+		
+		int numberOfRecursions=1;
+		Set<String> predList=new HashSet<String>();
+		Set<String> objList=new HashSet<String>();
+		Set<String> classList=new HashSet<String>();
+		String prefix="";
+		int filterMode=0;
+		Map<AtomicConcept, SortedSet<Individual>> positive=new HashMap<AtomicConcept, SortedSet<Individual>>();
+		Map<AtomicConcept, SortedSet<Individual>> negative=new HashMap<AtomicConcept, SortedSet<Individual>>();
+		AtomicConcept concept=new AtomicConcept("test");
+		Individual ind1=new Individual("http://dbpedia.org/resource/Pythagoras");
+		Individual ind2=new Individual("http://dbpedia.org/resource/Socrates");
+		SortedSet<Individual> sort1=new TreeSet<Individual>();
+		SortedSet<Individual> sort2=new TreeSet<Individual>();
+		sort1.add(ind1);
+		sort2.add(ind2);
+		positive.put(concept, sort1 );
+		negative.put(concept, sort2 );
+		
+		String[] subjectList=makeSubjectList(prefix, positive, negative);
+		
+
+		try{
+			FileWriter fw=new FileWriter(new File("examples/"+filename),true);
+			System.out.println("SparqlModul: Collecting Ontology");
+			OntologyCollector oc=new OntologyCollector(subjectList, numberOfRecursions,
+					 filterMode,  Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList));
+			
+			String ont=oc.collectOntology();
+			fw.write(ont);
+			fw.flush();
+						
+			System.out.println("SparqlModul: ****Finished");
+						
+			fw.close();
+			this.url=(new File("examples/"+filename)).toURI().toURL();
+			//System.exit(0);
+			}catch (Exception e) {e.printStackTrace();}	
+	}
+	
+	private String[] makeSubjectList(String prefix,
+			Map<AtomicConcept, SortedSet<Individual>> positive,
+			Map<AtomicConcept, SortedSet<Individual>> negative){
+		
+		//prefix
+		prefix="";
+		
+		ArrayList<String> al=new ArrayList<String>();
+		Iterator<AtomicConcept> it=positive.keySet().iterator();
+		while(it.hasNext()){
+			SortedSet<Individual> s=positive.get(it.next());
+			Iterator<Individual> inner =s.iterator();
+			while(inner.hasNext()){
+				al.add(inner.next().toString());
+			}
+		}
+
+		it=negative.keySet().iterator();
+		while(it.hasNext()){
+			SortedSet<Individual> s=negative.get(it.next());
+			Iterator<Individual> inner =s.iterator();
+			while(inner.hasNext()){
+				al.add(inner.next().toString());
+			}
+		}
+		String[] subjectList=new String[al.size()];
+		Object[] o=al.toArray();
+		for (int i = 0; i < subjectList.length; i++) {
+			subjectList[i]=prefix+(String)o[i];
+		}
+		return subjectList;
 	}
 	
 	/*
@@ -95,7 +181,7 @@ public class SparqlEndpoint extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		return null;
+		return OWLAPIDIGConverter.getTellsString(url, OntologyFileFormat.N_TRIPLES, kbURI);
 	}
 
 	public URL getURL() {
