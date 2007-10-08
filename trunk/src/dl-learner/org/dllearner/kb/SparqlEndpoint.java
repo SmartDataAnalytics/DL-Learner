@@ -55,7 +55,7 @@ import org.dllearner.utilities.Datastructures;
  * TODO: Is it necessary to create a class DBpediaSparqlEndpoint?
  * 
  * @author Jens Lehmann
- *
+ * @author Sebastian Knappe
  */
 public class SparqlEndpoint extends KnowledgeSource {
 
