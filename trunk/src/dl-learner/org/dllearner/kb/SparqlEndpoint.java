@@ -37,6 +37,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
+import org.dllearner.core.IntegerConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.StringConfigOption;
@@ -71,7 +72,7 @@ public class SparqlEndpoint extends KnowledgeSource {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
 		options.add(new StringSetConfigOption("instances","relevant instances e.g. positive and negative examples in a learning problem"));
-		options.add(new StringConfigOption("numberOfRecursions","number of Recursions, the Sparql-Endpoint is asked"));
+		options.add(new IntegerConfigOption("numberOfRecursions","number of Recursions, the Sparql-Endpoint is asked"));
 		return options;
 	}
 
@@ -95,7 +96,8 @@ public class SparqlEndpoint extends KnowledgeSource {
 		} else if(option.equals("instances")) {
 			instances = (Set<String>) entry.getValue();
 		} else if(option.equals("numberOfRecursions")){
-			this.numberOfRecursions=Integer.parseInt((String)entry.getValue());
+			this.numberOfRecursions=(Integer)entry.getValue();
+			System.out.println("test "+numberOfRecursions);
 		}
 	}
 
@@ -112,9 +114,6 @@ public class SparqlEndpoint extends KnowledgeSource {
 		Set<String> classList=new HashSet<String>();
 		String prefix="";
 		int filterMode=0;
-		
-		Individual ind1=new Individual("http://dbpedia.org/resource/Pythagoras");
-		Individual ind2=new Individual("http://dbpedia.org/resource/Socrates");
 		
 		try{
 			FileWriter fw=new FileWriter(new File("examples/"+filename),true);
