@@ -250,6 +250,10 @@ public class ROLearner extends LearningAlgorithm {
 		rs.prepareRoleHierarchy();
 	}
 	
+	public static String getName() {
+		return "refinement operator based learning algorithm";
+	}
+	
 	// Kernalgorithmus
 	@Override
 	@SuppressWarnings("unchecked")
