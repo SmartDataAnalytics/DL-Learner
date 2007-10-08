@@ -43,6 +43,7 @@ import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.StringSetConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Individual;
+import org.dllearner.reasoning.JenaOWLDIGConverter;
 import org.dllearner.reasoning.OWLAPIDIGConverter;
 import org.dllearner.utilities.Datastructures;
 
@@ -59,6 +60,8 @@ public class SparqlEndpoint extends KnowledgeSource {
 
 	private URL url;
 	private Set<String> instances;
+	private URL ntFile;
+	private int numberOfRecursions;
 
 	public static String getName() {
 		return "SPARQL Endpoint";
@@ -68,6 +71,7 @@ public class SparqlEndpoint extends KnowledgeSource {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
 		options.add(new StringSetConfigOption("instances","relevant instances e.g. positive and negative examples in a learning problem"));
+		options.add(new StringConfigOption("numberOfRecursions","number of Recursions, the Sparql-Endpoint is asked"));
 		return options;
 	}
 
@@ -90,6 +94,8 @@ public class SparqlEndpoint extends KnowledgeSource {
 			//}
 		} else if(option.equals("instances")) {
 			instances = (Set<String>) entry.getValue();
+		} else if(option.equals("numberOfRecursions")){
+			this.numberOfRecursions=Integer.parseInt((String)entry.getValue());
 		}
 	}
 
@@ -101,31 +107,20 @@ public class SparqlEndpoint extends KnowledgeSource {
 		// TODO add code for downloading data from SPARQL endpoint
 		String filename=System.currentTimeMillis()+".nt";
 		
-		int numberOfRecursions=1;
 		Set<String> predList=new HashSet<String>();
 		Set<String> objList=new HashSet<String>();
 		Set<String> classList=new HashSet<String>();
 		String prefix="";
 		int filterMode=0;
-		Map<AtomicConcept, SortedSet<Individual>> positive=new HashMap<AtomicConcept, SortedSet<Individual>>();
-		Map<AtomicConcept, SortedSet<Individual>> negative=new HashMap<AtomicConcept, SortedSet<Individual>>();
-		AtomicConcept concept=new AtomicConcept("test");
+		
 		Individual ind1=new Individual("http://dbpedia.org/resource/Pythagoras");
 		Individual ind2=new Individual("http://dbpedia.org/resource/Socrates");
-		SortedSet<Individual> sort1=new TreeSet<Individual>();
-		SortedSet<Individual> sort2=new TreeSet<Individual>();
-		sort1.add(ind1);
-		sort2.add(ind2);
-		positive.put(concept, sort1 );
-		negative.put(concept, sort2 );
 		
-		String[] subjectList=makeSubjectList(prefix, positive, negative);
-		
-
 		try{
 			FileWriter fw=new FileWriter(new File("examples/"+filename),true);
 			System.out.println("SparqlModul: Collecting Ontology");
-			OntologyCollector oc=new OntologyCollector(subjectList, numberOfRecursions,
+			String[] a=new String[0];
+			OntologyCollector oc=new OntologyCollector(instances.toArray(a), numberOfRecursions,
 					 filterMode,  Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList));
 			
 			String ont=oc.collectOntology();
@@ -135,42 +130,9 @@ public class SparqlEndpoint extends KnowledgeSource {
 			System.out.println("SparqlModul: ****Finished");
 						
 			fw.close();
-			this.url=(new File("examples/"+filename)).toURI().toURL();
+			this.ntFile=(new File("examples/"+filename)).toURI().toURL();
 			//System.exit(0);
 			}catch (Exception e) {e.printStackTrace();}	
-	}
-	
-	private String[] makeSubjectList(String prefix,
-			Map<AtomicConcept, SortedSet<Individual>> positive,
-			Map<AtomicConcept, SortedSet<Individual>> negative){
-		
-		//prefix
-		prefix="";
-		
-		ArrayList<String> al=new ArrayList<String>();
-		Iterator<AtomicConcept> it=positive.keySet().iterator();
-		while(it.hasNext()){
-			SortedSet<Individual> s=positive.get(it.next());
-			Iterator<Individual> inner =s.iterator();
-			while(inner.hasNext()){
-				al.add(inner.next().toString());
-			}
-		}
-
-		it=negative.keySet().iterator();
-		while(it.hasNext()){
-			SortedSet<Individual> s=negative.get(it.next());
-			Iterator<Individual> inner =s.iterator();
-			while(inner.hasNext()){
-				al.add(inner.next().toString());
-			}
-		}
-		String[] subjectList=new String[al.size()];
-		Object[] o=al.toArray();
-		for (int i = 0; i < subjectList.length; i++) {
-			subjectList[i]=prefix+(String)o[i];
-		}
-		return subjectList;
 	}
 	
 	/*
@@ -180,7 +142,7 @@ public class SparqlEndpoint extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		return OWLAPIDIGConverter.getTellsString(url, OntologyFileFormat.N_TRIPLES, kbURI);
+		return JenaOWLDIGConverter.getTellsString(ntFile, OntologyFileFormat.N_TRIPLES, kbURI);
 	}
 
 	public URL getURL() {
