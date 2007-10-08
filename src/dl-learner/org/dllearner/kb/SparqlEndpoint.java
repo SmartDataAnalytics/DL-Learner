@@ -63,7 +63,11 @@ public class SparqlEndpoint extends KnowledgeSource {
 	private Set<String> instances;
 	private URL ntFile;
 	private int numberOfRecursions;
-
+	private int filterMode;
+	private Set<String> predList;
+	private Set<String> objList;
+	private Set<String> classList;
+	
 	public static String getName() {
 		return "SPARQL Endpoint";
 	}
@@ -73,6 +77,10 @@ public class SparqlEndpoint extends KnowledgeSource {
 		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
 		options.add(new StringSetConfigOption("instances","relevant instances e.g. positive and negative examples in a learning problem"));
 		options.add(new IntegerConfigOption("numberOfRecursions","number of Recursions, the Sparql-Endpoint is asked"));
+		options.add(new IntegerConfigOption("filterMode","the mode of the SPARQL Filter"));
+		options.add(new StringSetConfigOption("predList","a predicate list"));
+		options.add(new StringSetConfigOption("objList","an object list"));
+		options.add(new StringSetConfigOption("classList","a class list"));
 		return options;
 	}
 
@@ -89,15 +97,19 @@ public class SparqlEndpoint extends KnowledgeSource {
 				url = new URL(s);
 			} catch (MalformedURLException e) {
 				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),"malformed URL " + s);
-			} //catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			//}
+			}
 		} else if(option.equals("instances")) {
 			instances = (Set<String>) entry.getValue();
 		} else if(option.equals("numberOfRecursions")){
-			this.numberOfRecursions=(Integer)entry.getValue();
-			System.out.println("test "+numberOfRecursions);
+			numberOfRecursions=(Integer)entry.getValue();
+		} else if(option.equals("predList")) {
+			predList = (Set<String>) entry.getValue();
+		} else if(option.equals("objList")) {
+			objList = (Set<String>) entry.getValue();
+		} else if(option.equals("classList")) {
+			classList = (Set<String>) entry.getValue();
+		} else if(option.equals("filterMode")){
+			filterMode=(Integer)entry.getValue();
 		}
 	}
 
@@ -109,14 +121,11 @@ public class SparqlEndpoint extends KnowledgeSource {
 		// TODO add code for downloading data from SPARQL endpoint
 		String filename=System.currentTimeMillis()+".nt";
 		
-		Set<String> predList=new HashSet<String>();
-		Set<String> objList=new HashSet<String>();
-		Set<String> classList=new HashSet<String>();
-		String prefix="";
-		int filterMode=0;
-		
 		try{
-			FileWriter fw=new FileWriter(new File("examples/"+filename),true);
+			String basedir="cache"+File.separator;
+			if(!new File(basedir).exists())
+				new File(basedir).mkdir();
+			FileWriter fw=new FileWriter(new File(basedir+filename),true);
 			System.out.println("SparqlModul: Collecting Ontology");
 			String[] a=new String[0];
 			OntologyCollector oc=new OntologyCollector(instances.toArray(a), numberOfRecursions,
@@ -129,7 +138,7 @@ public class SparqlEndpoint extends KnowledgeSource {
 			System.out.println("SparqlModul: ****Finished");
 						
 			fw.close();
-			this.ntFile=(new File("examples/"+filename)).toURI().toURL();
+			this.ntFile=(new File(basedir+filename)).toURI().toURL();
 			//System.exit(0);
 			}catch (Exception e) {e.printStackTrace();}	
 	}
