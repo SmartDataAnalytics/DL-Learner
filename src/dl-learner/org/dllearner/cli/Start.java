@@ -63,6 +63,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.kb.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -130,8 +131,18 @@ public class Start {
 		configureComponent(cm, reasoner, componentPrefixMapping, parser);
 		ReasoningService rs = cm.reasoningService(reasoner);
 
-		// step 3: detect learning problem (no options for choosing it yet)
-		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
+		// step 3: detect learning problem
+		ConfFileOption problemOption = parser.getConfOptionsByName("problem");
+		Class<? extends LearningProblem> lpClass = null;
+		LearningProblem lp = null;
+		if(problemOption == null || problemOption.getStringValue().equals("posNegDefinition"))
+			lpClass = PosNegDefinitionLP.class;
+		else if(problemOption.getStringValue().equals("posNegInclusion"))
+			lpClass = PosNegInclusionLP.class;
+		else
+			handleError("Unknown value " + problemOption.getValue() + " for option \"problem\".");
+		
+		lp = cm.learningProblem(lpClass, rs);
 		SortedSet<String> posExamples = parser.getPositiveExamples();
 		SortedSet<String> negExamples = parser.getNegativeExamples();
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
@@ -376,6 +387,7 @@ public class Start {
 		// CLI options (i.e. options which are related to the CLI
 		// user interface but not to one of the components)
 		List<ConfFileOption> cliOptions = parser.getConfOptionsByPrefix("cli");
+		if(cliOptions != null) {
 		int maxLineLength = 100;
 		for (ConfFileOption cliOption : cliOptions) {
 			String name = cliOption.getSubOption();
@@ -433,6 +445,7 @@ public class Start {
 				}
 			} else
 				handleError("Unknown CLI option \"" + name + "\".");
+		}
 		}
 	}
 
