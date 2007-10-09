@@ -194,7 +194,7 @@ require_once 'pear/HTTP_Request.php';
 	public function getInfo(){
 	
 		$functions = $this->soapclient->__getFunctions();
-		echo '<b>Verfügbare Methoden:</b>';
+		echo '<b>Verfï¿½gbare Methoden:</b>';
 		echo '<pre>';
 		print_r($functions);
 		echo '</pre>';
@@ -203,19 +203,19 @@ require_once 'pear/HTTP_Request.php';
 		}
 	
 	
-	public function loadWSDLfiles($wsdluri){
-		$main=$this->getwsdl($wsdluri);
-		$other=$this->getOtherWSDL($main);
-		$newMain=$this->changeWSDL($main);
-		$this->writeToFile("main.wsdl",$newMain);
+	public static function loadWSDLfiles($wsdluri){
+		$main=self::getwsdl($wsdluri);
+		$other=self::getOtherWSDL($main);
+		$newMain=self::changeWSDL($main);
+		self::writeToFile("main.wsdl",$newMain);
 		$x=0;
 		foreach ($other as $o){
-			$this->writeToFile("def".($x++).".xsd",$this->getwsdl($o));
+			self::writeToFile("def".($x++).".xsd",self::getwsdl($o));
 		}
 
 	}
 	
-	public function changeWSDL($wsdl){
+	public static function changeWSDL($wsdl){
 		$before="<xsd:import schemaLocation=\"";
 		$after="\" namespace=\"";
 		$newWSDL="";
@@ -236,7 +236,7 @@ require_once 'pear/HTTP_Request.php';
 			
 	}
 	
-	public function getOtherWSDL($wsdl){
+	public static function getOtherWSDL($wsdl){
 		$before="<xsd:import schemaLocation=\"";
 		$after="\" namespace=\"";
 		$ret=array();
@@ -254,7 +254,7 @@ require_once 'pear/HTTP_Request.php';
 
 	
 	
-	public function getwsdl($wsdluri){
+	public static function getwsdl($wsdluri){
 		// this is copied from the Pear example
 		// please don't ask me how it works
 		$req = &new HTTP_Request($wsdluri);
@@ -267,7 +267,7 @@ require_once 'pear/HTTP_Request.php';
 	
 	
 	
-	public function writeToFile($filename,$content){
+	public static function writeToFile($filename,$content){
 
 		$fp=fopen($filename,"w");
 		fwrite($fp,$content);
