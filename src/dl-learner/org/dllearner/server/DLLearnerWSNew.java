@@ -19,8 +19,12 @@
  */
 package org.dllearner.server;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -49,9 +53,9 @@ import org.dllearner.reasoning.DIGReasoner;
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 public class DLLearnerWSNew {
 
-	private HashMap<Long, State> clients;
+	private Map<Long, State> clients = new HashMap<Long,State>();
 	private Random rand=new Random();
-	private ComponentManager cm = ComponentManager.getInstance();
+	private static ComponentManager cm = ComponentManager.getInstance();
 	
 	/**
 	 * Generates a unique ID for the client and initialises a session. 
@@ -66,6 +70,7 @@ public class DLLearnerWSNew {
 		do {
 			id = rand.nextLong();
 		} while(clients.containsKey(id));
+		clients.put(id, new State());
 		return id;
 	}
 	
@@ -77,14 +82,20 @@ public class DLLearnerWSNew {
 		return state;
 	}
 	
+	///////////////////////////////////////
+	// methods for basic component setup //
+	///////////////////////////////////////
+	
 	@WebMethod
-	public boolean addKnowledgeSource(long id, String component, String url) throws ClientNotKnownException {
+	public boolean addKnowledgeSource(long id, String component, String url) throws ClientNotKnownException, UnknownComponentException {
 		State state = getState(id);
 		Class<? extends KnowledgeSource> ksClass;
 		if(component.equals("sparql"))
 			ksClass = SparqlEndpoint.class;
-		else
+		else if(component.equals("owlfile"))
 			ksClass = OWLFile.class;
+		else
+			throw new UnknownComponentException(component);
 		KnowledgeSource ks = cm.knowledgeSource(ksClass);
 		cm.applyConfigEntry(ks, "url", url);
 		return state.addKnowledgeSource(ks);
@@ -136,4 +147,47 @@ public class DLLearnerWSNew {
 		state.setLearningAlgorithm(la);
 	}
 	
+	/**
+	 * Initialise all components.
+	 * @param id Session ID.
+	 */
+	@WebMethod
+	public void init(long id) throws ClientNotKnownException {
+		State state = getState(id);
+		for(KnowledgeSource ks : state.getKnowledgeSources())
+			ks.init();
+		state.getReasonerComponent().init();
+		state.getLearningProblem().init();
+		state.getLearningAlgorithm().init();
+	}
+	
+	@WebMethod
+	public String learn(long id) throws ClientNotKnownException {
+		State state = getState(id);
+		state.getLearningAlgorithm().start();
+		return state.getLearningAlgorithm().getBestSolution().toString();
+	}
+	
+	/////////////////////////////////////////
+	// methods for component configuration //
+	/////////////////////////////////////////
+	
+	@WebMethod
+	public void setPositiveExamples(long id, String[] positiveExamples) throws ClientNotKnownException {
+		State state = getState(id);
+		Set<String> posExamples = new TreeSet<String>(Arrays.asList(positiveExamples));
+		cm.applyConfigEntry(state.getLearningProblem(), "positiveExamples", posExamples);
+	}
+	
+	@WebMethod
+	public void setNegativeExamples(long id, String[] negativeExamples) throws ClientNotKnownException {
+		State state = getState(id);
+		Set<String> negExamples = new TreeSet<String>(Arrays.asList(negativeExamples));
+		cm.applyConfigEntry(state.getLearningProblem(), "negativeExamples", negExamples);
+	}
+	
+	////////////////////////////////////
+	// reasoning and querying methods //
+	////////////////////////////////////
+
 }

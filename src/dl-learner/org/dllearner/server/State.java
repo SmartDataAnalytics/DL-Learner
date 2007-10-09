@@ -19,6 +19,7 @@
  */
 package org.dllearner.server;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -38,7 +39,7 @@ import org.dllearner.kb.SparqlEndpoint;
  */
 public class State {
 
-	private Set<KnowledgeSource> knowledgeSources;
+	private Set<KnowledgeSource> knowledgeSources = new HashSet<KnowledgeSource>();
 	
 	private LearningProblem learningProblem;
 	
