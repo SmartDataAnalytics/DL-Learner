@@ -21,6 +21,7 @@ package org.dllearner.kb;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -28,6 +29,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.dllearner.core.BooleanConfigOption;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.IntegerConfigOption;
@@ -35,6 +37,9 @@ import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.StringConfigOption;
 import org.dllearner.core.StringSetConfigOption;
+import org.dllearner.core.dl.KB;
+import org.dllearner.parser.KBParser;
+import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
 import org.dllearner.utilities.Datastructures;
 
@@ -57,6 +62,9 @@ public class SparqlEndpoint extends KnowledgeSource {
 	private Set<String> predList;
 	private Set<String> objList;
 	private Set<String> classList;
+	private KB kb;
+	private String format;
+	private boolean dumpToFile;
 	
 	public static String getName() {
 		return "SPARQL Endpoint";
@@ -71,6 +79,8 @@ public class SparqlEndpoint extends KnowledgeSource {
 		options.add(new StringSetConfigOption("predList","a predicate list"));
 		options.add(new StringSetConfigOption("objList","an object list"));
 		options.add(new StringSetConfigOption("classList","a class list"));
+		options.add(new StringConfigOption("format", "N-TRIPLES or KB format"));
+		options.add(new BooleanConfigOption("dumpToFile", "wether Ontology from DBPedia is written to a file or not"));
 		return options;
 	}
 
@@ -100,6 +110,10 @@ public class SparqlEndpoint extends KnowledgeSource {
 			classList = (Set<String>) entry.getValue();
 		} else if(option.equals("filterMode")){
 			filterMode=(Integer)entry.getValue();
+		} else if(option.equals("format")){
+			format=(String)entry.getValue();
+		} else if(option.equals("dumpToFile")){
+			dumpToFile=(Boolean)entry.getValue();
 		}
 	}
 
@@ -108,29 +122,34 @@ public class SparqlEndpoint extends KnowledgeSource {
 	 */
 	@Override
 	public void init() {
-		// TODO add code for downloading data from SPARQL endpoint
-		String filename=System.currentTimeMillis()+".nt";
+		System.out.println("SparqlModul: Collecting Ontology");
+		String[] a=new String[0];
+		OntologyCollector oc=new OntologyCollector(instances.toArray(a), numberOfRecursions,
+				 filterMode,  Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format);
+		String ont=oc.collectOntology();
 		
-		try{
+		if (format.equals("N-TRIPLES")||dumpToFile){
+			String filename=System.currentTimeMillis()+".nt";
 			String basedir="cache"+File.separator;
-			if(!new File(basedir).exists())
-				new File(basedir).mkdir();
-			FileWriter fw=new FileWriter(new File(basedir+filename),true);
-			System.out.println("SparqlModul: Collecting Ontology");
-			String[] a=new String[0];
-			OntologyCollector oc=new OntologyCollector(instances.toArray(a), numberOfRecursions,
-					 filterMode,  Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList));
-			
-			String ont=oc.collectOntology();
-			fw.write(ont);
-			fw.flush();
-						
-			System.out.println("SparqlModul: ****Finished");
-						
-			fw.close();
-			this.ntFile=(new File(basedir+filename)).toURI().toURL();
-			//System.exit(0);
-			}catch (Exception e) {e.printStackTrace();}	
+			try{
+				if(!new File(basedir).exists())
+					new File(basedir).mkdir();
+				
+				FileWriter fw=new FileWriter(new File(basedir+filename),true);
+				fw.write(ont);
+				fw.flush();
+				fw.close();
+											
+				ntFile=(new File(basedir+filename)).toURI().toURL();
+			}catch (Exception e) {e.printStackTrace();}
+		}
+		if (format.equals("KB")) {
+			try{
+				kb=KBParser.parseKBFile(new StringReader(ont));
+			} catch(Exception e) {e.printStackTrace();}
+		}
+		
+		System.out.println("SparqlModul: ****Finished");
 	}
 	
 	/*
@@ -140,7 +159,8 @@ public class SparqlEndpoint extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		return JenaOWLDIGConverter.getTellsString(ntFile, OntologyFileFormat.N_TRIPLES, kbURI);
+		if (format.equals("N-TRIPLES")) return JenaOWLDIGConverter.getTellsString(ntFile, OntologyFileFormat.N_TRIPLES, kbURI);
+		else return DIGConverter.getDIGString(kb, kbURI).toString();
 	}
 
 	public URL getURL() {
