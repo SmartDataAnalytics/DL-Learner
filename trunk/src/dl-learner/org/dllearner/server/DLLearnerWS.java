@@ -212,7 +212,8 @@ public class DLLearnerWS {
 		ClientState c=this.clients.get(new Integer(id));
 		if(c==null){
 			//System.out.println(clients.keySet().toString());
-			throw new ClientNotKnownException("Client with id: "+id+" is not known","ClientNotKnownException");};
+			// throw new ClientNotKnownException("Client with id: "+id+" is not known","ClientNotKnownException");
+			};
 		return c;
 		
 	}
