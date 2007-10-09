@@ -19,12 +19,16 @@
  */
 package org.dllearner.server;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.SparqlEndpoint;
 
 /**
  * Stores the state of a DL-Learner client session.
@@ -34,26 +38,27 @@ import org.dllearner.core.ReasonerComponent;
  */
 public class State {
 
-	private Set<KnowledgeSource> knowledgeSource;
+	private Set<KnowledgeSource> knowledgeSources;
 	
 	private LearningProblem learningProblem;
 	
 	private ReasonerComponent reasonerComponent;
+	private ReasoningService reasoningService;
 	
 	private LearningAlgorithm learningAlgorithm;
 
 	/**
 	 * @return the knowledgeSource
 	 */
-	public Set<KnowledgeSource> getKnowledgeSource() {
-		return knowledgeSource;
+	public Set<KnowledgeSource> getKnowledgeSources() {
+		return knowledgeSources;
 	}
 
 	/**
-	 * @param knowledgeSource the knowledgeSource to set
+	 * @param knowledgeSources the knowledgeSource to set
 	 */
-	public void setKnowledgeSource(Set<KnowledgeSource> knowledgeSource) {
-		this.knowledgeSource = knowledgeSource;
+	public void setKnowledgeSources(Set<KnowledgeSource> knowledgeSources) {
+		this.knowledgeSources = knowledgeSources;
 	}
 
 	/**
@@ -62,16 +67,25 @@ public class State {
 	 * @see java.util.Set#add(java.lang.Object)
 	 */
 	public boolean addKnowledgeSource(KnowledgeSource ks) {
-		return knowledgeSource.add(ks);
+		return knowledgeSources.add(ks);
 	}
 
 	/**
-	 * @param o
-	 * @return
-	 * @see java.util.Set#remove(java.lang.Object)
+	 * Removes a knowledge source with the given URL (independant of its type).
+	 * @param url URL of the OWL file or SPARQL Endpoint.
+	 * @return True if a knowledge source was deleted, false otherwise.
 	 */
-	public boolean removeKnowledgeSource(KnowledgeSource ks) {
-		return knowledgeSource.remove(ks);
+	public boolean removeKnowledgeSource(String url) {
+		Iterator<KnowledgeSource> it = knowledgeSources.iterator(); 
+		while(it.hasNext()) {
+			KnowledgeSource source = it.next();
+			if((source instanceof OWLFile && ((OWLFile)source).getURL().toString().equals(url))
+				|| (source instanceof SparqlEndpoint && ((SparqlEndpoint)source).getURL().toString().equals(url)) ) {
+				it.remove();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -96,10 +110,14 @@ public class State {
 	}
 
 	/**
+	 * Sets the reasoner component and creates the corresponding
+	 * <code>ReasoningService</code> instance.
+	 * 
 	 * @param reasonerComponent the reasonerComponent to set
 	 */
 	public void setReasonerComponent(ReasonerComponent reasonerComponent) {
 		this.reasonerComponent = reasonerComponent;
+		reasoningService = new ReasoningService(reasonerComponent);
 	}
 
 	/**
@@ -114,6 +132,13 @@ public class State {
 	 */
 	public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
 		this.learningAlgorithm = learningAlgorithm;
+	}
+
+	/**
+	 * @return the reasoningService
+	 */
+	public ReasoningService getReasoningService() {
+		return reasoningService;
 	}
 	
 }
