@@ -46,6 +46,7 @@ public class OntologyCollector {
 	HashSet<String> classes;
 	HashSet<String> instances;
 	HashSet<String> triples;
+	String format;
 	
 	// some namespaces
 	String subclass="http://www.w3.org/2000/01/rdf-schema#subClassOf";
@@ -74,10 +75,10 @@ public class OntologyCollector {
 	 * @param defClasses
 	 */
 	public OntologyCollector(String[] subjectList,int numberOfRecursions,
-			int filterMode, String[] FilterPredList,String[] FilterObjList,String[] defClasses){
+			int filterMode, String[] FilterPredList,String[] FilterObjList,String[] defClasses, String format){
 		this.subjectList=subjectList;
 		this.numberOfRecursions=numberOfRecursions;
-	
+		this.format=format;
 		this.s=new SimpleHTTPRequest();
 		this.q=new QueryMaker();
 		this.c=new Cache("cache");
@@ -282,11 +283,12 @@ public class OntologyCollector {
 		 * @return triple in the n triple notation
 		 */
 		public String makeTriples(String s,String p, String o){
-			//s=replaceNamespace(s);
-			//p=replaceNamespace(p);
-			//o=replaceNamespace(o);
 			String ret="";
-			ret="<"+s+"> <"+p+"> <"+o+">.\n";
+			if (format.equals("N-TRIPLES")) ret="<"+s+"> <"+p+"> <"+o+">.\n";
+			else if (format.equals("KB")){
+				if (p.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) ret="\""+o+"\"(\""+s+"\").\n"; 
+				else ret="\""+p+"\"(\""+s+"\",\""+o+"\").\n";
+			}
 			return ret;
 		}
 		
