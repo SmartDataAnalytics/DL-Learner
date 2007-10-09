@@ -26,10 +26,17 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
+import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpoint;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.reasoning.DIGReasoner;
 
 /**
  * DL-Learner web service interface.
@@ -71,22 +78,62 @@ public class DLLearnerWSNew {
 	}
 	
 	@WebMethod
-	public void addKnowledgeSource(long id, String type, String url) throws ClientNotKnownException {
+	public boolean addKnowledgeSource(long id, String component, String url) throws ClientNotKnownException {
 		State state = getState(id);
 		Class<? extends KnowledgeSource> ksClass;
-		if(type.equals("sparql"))
+		if(component.equals("sparql"))
 			ksClass = SparqlEndpoint.class;
 		else
 			ksClass = OWLFile.class;
 		KnowledgeSource ks = cm.knowledgeSource(ksClass);
 		cm.applyConfigEntry(ks, "url", url);
-		state.addKnowledgeSource(ks);
+		return state.addKnowledgeSource(ks);
 	}
 	
 	@WebMethod
-	public void setLearningAlgorithm(long id, String algorithm) throws ClientNotKnownException {
+	public boolean removeKnowledgeSource(long id, String url) throws ClientNotKnownException {
+		return getState(id).removeKnowledgeSource(url);
+	}
+	
+	@WebMethod
+	public void setReasoner(long id, String component) throws ClientNotKnownException, UnknownComponentException {
 		State state = getState(id);
-		// ...
+		Class<? extends ReasonerComponent> rcClass;
+		if(component.equals("dig"))
+			rcClass = DIGReasoner.class;
+		else
+			throw new UnknownComponentException(component);
+		
+		ReasonerComponent rc = cm.reasoner(rcClass, state.getKnowledgeSources());
+		state.setReasonerComponent(rc);
+	}
+	
+	@WebMethod
+	public void setLearningProblem(long id, String component) throws ClientNotKnownException, UnknownComponentException {
+		State state = getState(id);
+		Class<? extends LearningProblem> lpClass;
+		if(component.equals("posNegDefinition"))
+			lpClass = PosNegDefinitionLP.class;
+		else if(component.equals("posNegInclusion"))
+			lpClass = PosNegInclusionLP.class;
+		else
+			throw new UnknownComponentException(component);
+		
+		LearningProblem lp = cm.learningProblem(lpClass, state.getReasoningService());
+		state.setLearningProblem(lp);
+	}
+	
+	@WebMethod
+	public void setLearningAlgorithm(long id, String component) throws ClientNotKnownException, UnknownComponentException {
+		State state = getState(id);
+		Class<? extends LearningAlgorithm> laClass;
+		if(component.equals("refinement"))
+			laClass = ROLearner.class;
+		else
+			throw new UnknownComponentException(component);
+		
+		LearningAlgorithm la = cm.learningAlgorithm(laClass, state.getLearningProblem(), state.getReasoningService());
+		state.setLearningAlgorithm(la);
 	}
 	
 }
