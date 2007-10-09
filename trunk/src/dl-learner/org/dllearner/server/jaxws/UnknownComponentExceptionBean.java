@@ -13,10 +13,10 @@ import javax.xml.bind.annotation.XmlType;
  * Generated source version: 2.0_02
  * 
  */
-@XmlRootElement(name = "ClientNotKnownException", namespace = "http://server.dllearner.org/")
+@XmlRootElement(name = "UnknownComponentException", namespace = "http://server.dllearner.org/")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ClientNotKnownException", namespace = "http://server.dllearner.org/")
-public class ClientNotKnownExceptionBean {
+@XmlType(name = "UnknownComponentException", namespace = "http://server.dllearner.org/")
+public class UnknownComponentExceptionBean {
 
     private String message;
 
