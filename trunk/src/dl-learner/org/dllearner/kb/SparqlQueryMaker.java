@@ -26,7 +26,7 @@ package org.dllearner.kb;
  * @author Sebastian Hellmann
  *
  */
-public class QueryMaker {
+public class SparqlQueryMaker {
 	//Good
 	/*public static String  owl ="http://www.w3.org/2002/07/owl#";
 	public static String  xsd="http://www.w3.org/2001/XMLSchema#";

@@ -40,7 +40,7 @@ import java.net.URLEncoder;
  * @author Sebastian Hellmann
  *
  */
-public class Cache implements Serializable{
+public class SparqlCache implements Serializable{
 	
 	
 	final static long serialVersionUID=104;
@@ -59,7 +59,7 @@ public class Cache implements Serializable{
 	 * 
 	 * @param path Where the base path to the cache is 
 	 */
-	public Cache(String path){
+	public SparqlCache(String path){
 		this.basedir=path+File.separator;
 		if(!new File(path).exists())
 			{System.out.println(new File(path).mkdir());;}
@@ -73,7 +73,7 @@ public class Cache implements Serializable{
 	 * @param content the sparql xml result
 	 * @param sparql the sparql query
 	 */
-	public Cache(String content, String sparql){
+	public SparqlCache(String content, String sparql){
 		this.content=content;
 		this.sparqlquery=sparql;
 		this.timestamp=System.currentTimeMillis();
@@ -92,7 +92,7 @@ public class Cache implements Serializable{
 		//System.out.println("get From "+key);
 		String ret=null;
 		try{
-		Cache c =readFromFile(makeFilename(key))	;
+		SparqlCache c =readFromFile(makeFilename(key))	;
 		if(c==null)return null;
 		//System.out.println(" file found");
 		if(!c.checkFreshness())return null;
@@ -114,7 +114,7 @@ public class Cache implements Serializable{
 	 */
 	public void put(String key, String content, String sparql){
 		//System.out.println("put into "+key);
-		Cache c=new Cache(content,sparql);
+		SparqlCache c=new SparqlCache(content,sparql);
 		putIntoFile(makeFilename(key), c);
 	}
 	
@@ -178,7 +178,7 @@ public class Cache implements Serializable{
 	 * @param Filename
 	 * @param content
 	 */
-	public void putIntoFile(String Filename,Cache content){
+	public void putIntoFile(String Filename,SparqlCache content){
 		try{
 		//FileWriter fw=new FileWriter(new File(Filename),true);
 		FileOutputStream  fos = new FileOutputStream( Filename , false ); 
@@ -195,12 +195,12 @@ public class Cache implements Serializable{
 	 * @param Filename
 	 * @return one entry object
 	 */
-	public Cache readFromFile(String Filename){
-		Cache content=null;
+	public SparqlCache readFromFile(String Filename){
+		SparqlCache content=null;
 		try{
 		FileInputStream  fos = new FileInputStream( Filename ); 
 		ObjectInputStream o = new ObjectInputStream( fos ); 
-		content=(Cache)o.readObject();
+		content=(SparqlCache)o.readObject();
 		//FileReader fr=new FileReader(new File(Filename,"r"));
 		//BufferedReader br=new BufferedReader(fr);
 		}catch (Exception e) {}
