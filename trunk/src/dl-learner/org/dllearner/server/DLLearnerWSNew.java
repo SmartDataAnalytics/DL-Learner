@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jws.WebMethod;
@@ -53,7 +54,7 @@ import org.dllearner.reasoning.DIGReasoner;
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 public class DLLearnerWSNew {
 
-	private Map<Long, State> clients = new HashMap<Long,State>();
+	private Map<Long, State> clients = new TreeMap<Long,State>();
 	private Random rand=new Random();
 	private static ComponentManager cm = ComponentManager.getInstance();
 	
