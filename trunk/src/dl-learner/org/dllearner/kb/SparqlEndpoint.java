@@ -125,7 +125,7 @@ public class SparqlEndpoint extends KnowledgeSource {
 		System.out.println("SparqlModul: Collecting Ontology");
 		String[] a=new String[0];
 		OntologyCollector oc=new OntologyCollector(instances.toArray(a), numberOfRecursions,
-				 filterMode,  Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format);
+				 filterMode,  Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url);
 		String ont=oc.collectOntology();
 		
 		if (format.equals("N-TRIPLES")||dumpToFile){
