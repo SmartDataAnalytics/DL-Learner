@@ -19,11 +19,21 @@
  */
 package org.dllearner.kb;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+
+import org.dllearner.utilities.Files;
 
 /**
  * This class collects the ontology from dbpedia,
@@ -39,7 +49,7 @@ public class OntologyCollector {
 	SimpleHTTPRequest s;
 	QueryMaker q;
 	Cache c;
-	InetAddress ia;
+	URL url;
 	SparqlFilter sf;
 	String[] subjectList;
 	int numberOfRecursions;
@@ -48,6 +58,8 @@ public class OntologyCollector {
 	HashSet<String> instances;
 	HashSet<String> triples;
 	String format;
+	static final char value[]={13,10};
+	static final String cut=new String(value);
 	
 	// some namespaces
 	String subclass="http://www.w3.org/2000/01/rdf-schema#subClassOf";
@@ -88,14 +100,12 @@ public class OntologyCollector {
 		}
 		
 		try{
-		this.sf=new SparqlFilter(filterMode,FilterPredList,FilterObjList);
-		this.ia=InetAddress.getByName(url.getHost());
-		//this.fw=new FileWriter(new File(System.currentTimeMillis()+".nt"),true);
-		this.properties=new HashSet<String>();
-		this.classes=new HashSet<String>();
-		this.instances=new HashSet<String>();
-		this.triples=new HashSet<String>();
-		//this.all=new HashSet<String>();
+			this.sf=new SparqlFilter(filterMode,FilterPredList,FilterObjList);
+			this.url=url;
+			this.properties=new HashSet<String>();
+			this.classes=new HashSet<String>();
+			this.instances=new HashSet<String>();
+			this.triples=new HashSet<String>();
 		}catch (Exception e) {e.printStackTrace();}
 		
 	}
@@ -152,7 +162,7 @@ public class OntologyCollector {
 		String xml;
 		// if not in cache get it from dbpedia
 		if(FromCache==null){
-			xml=s.sendAndReceive(ia, 8890, sparql);
+			xml=sendAndReceive(sparql);
 			c.put(StartingSubject, xml, sparql);
 			System.out.print("\n");
 			}
@@ -364,5 +374,49 @@ public class OntologyCollector {
 			System.out.println(s);
 		}
 		
-	
+		private String sendAndReceive(String sparql) {
+			StringBuilder answer = new StringBuilder();	
+			
+			// String an Sparql-Endpoint schicken
+			HttpURLConnection connection;
+				
+			try {
+				connection = (HttpURLConnection) url.openConnection();
+				connection.setDoOutput(true);
+							
+				connection.addRequestProperty("Host", "dbpedia.openlinksw.com");
+				connection.addRequestProperty("Connection","close");
+				connection.addRequestProperty("Accept","text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
+				connection.addRequestProperty("Accept-Language","de-de,de;q=0.8,en-us;q=0.5,en;q=0.3");
+				connection.addRequestProperty("Accept-Charset","ISO-8859-1,utf-8;q=0.7,*;q=0.7");
+				connection.addRequestProperty("User-Agent","Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4 Web-Sniffer/1.0.24");
+				
+				OutputStream os = connection.getOutputStream();
+				OutputStreamWriter osw = new OutputStreamWriter(os);
+				osw.write("default-graph-uri=http%3A%2F%2Fdbpedia.org&query=" +
+					URLEncoder.encode(sparql, "UTF-8")+
+					"&format=application%2Fsparql-results%2Bxml");
+				osw.close();
+				
+				// receive answer
+				InputStream is = connection.getInputStream();
+				InputStreamReader isr = new InputStreamReader(is);
+				BufferedReader br = new BufferedReader(isr);
+				
+				String line;
+				do {
+					line = br.readLine();
+					if(line!=null)
+						answer.append(line);
+				} while (line != null);
+				
+				br.close();
+				
+			} catch (IOException e) {		
+				System.out.println("Communication problem with Sparql Server.");
+				System.exit(0);
+			}	
+			
+			return answer.toString();
+		}
 }
