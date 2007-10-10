@@ -43,12 +43,11 @@ import org.dllearner.utilities.Files;
  * @author Sebastian Hellmann
  *
  */
-public class OntologyCollector {
+public class SparqlOntologyCollector {
 
 	boolean print_flag=false;
-	SimpleHTTPRequest s;
-	QueryMaker q;
-	Cache c;
+	SparqlQueryMaker q;
+	SparqlCache c;
 	URL url;
 	SparqlFilter sf;
 	String[] subjectList;
@@ -87,14 +86,13 @@ public class OntologyCollector {
 	 * @param FilterObjList
 	 * @param defClasses
 	 */
-	public OntologyCollector(String[] subjectList,int numberOfRecursions,
+	public SparqlOntologyCollector(String[] subjectList,int numberOfRecursions,
 			int filterMode, String[] FilterPredList,String[] FilterObjList,String[] defClasses, String format, URL url){
 		this.subjectList=subjectList;
 		this.numberOfRecursions=numberOfRecursions;
 		this.format=format;
-		this.s=new SimpleHTTPRequest();
-		this.q=new QueryMaker();
-		this.c=new Cache("cache");
+		this.q=new SparqlQueryMaker();
+		this.c=new SparqlCache("cache");
 		if(defClasses!=null && defClasses.length>0 ){
 			this.defaultClasses=defClasses;
 		}
