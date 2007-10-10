@@ -37,6 +37,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -184,6 +185,14 @@ public class DLLearnerWSNew {
 		state.getLearningAlgorithm().init();
 	}
 	
+	/**
+	 * Starts the learning algorithm and returns the best concept found. This
+	 * method will block until learning is completed.
+	 * 
+	 * @param id Session ID.
+	 * @return The best solution found.
+	 * @throws ClientNotKnownException
+	 */
 	@WebMethod
 	public String learn(int id) throws ClientNotKnownException {
 		State state = getState(id);
@@ -191,6 +200,44 @@ public class DLLearnerWSNew {
 		return state.getLearningAlgorithm().getBestSolution().toString();
 	}
 	
+	/**
+	 * Starts the learning algorithm and returns immediately. The learning
+	 * algorithm is executed in its own thread and can be queried and 
+	 * controlled using other Web Service methods.
+	 * 
+	 * @param id Session ID.
+	 * @throws ClientNotKnownException
+	 */
+	@WebMethod 
+	public void learnThreaded(int id) throws ClientNotKnownException {
+		final State state = getState(id);
+		Thread learningThread = new Thread() {
+			@Override
+			public void run() {
+				state.setAlgorithmRunning(true);
+				state.getLearningAlgorithm().start();
+				state.setAlgorithmRunning(false);
+			}
+		};
+		learningThread.start();
+	}
+	
+	@WebMethod
+	public String getCurrentlyBestConcept(int id) throws ClientNotKnownException {
+		State state = getState(id);
+		return state.getLearningAlgorithm().getBestSolution().toString();
+	}
+	
+	@WebMethod
+	public boolean isAlgorithmRunning(int id) throws ClientNotKnownException {
+		return getState(id).isAlgorithmRunning();
+	}
+	
+	/**
+	 * Stops the learning algorithm smoothly.
+	 * @param id
+	 * @throws ClientNotKnownException
+	 */
 	@WebMethod
 	public void stop(int id) throws ClientNotKnownException {
 		getState(id).getLearningAlgorithm().stop();
@@ -224,5 +271,18 @@ public class DLLearnerWSNew {
 	////////////////////////////////////
 	// reasoning and querying methods //
 	////////////////////////////////////
+	
+	@WebMethod
+	public String[] getAtomicConcepts(int id) throws ClientNotKnownException {
+		Set<AtomicConcept> atomicConcepts = getState(id).getReasoningService().getAtomicConcepts();
+		// convert to String-Array
+		String[] result = new String[atomicConcepts.size()];
+		int i=0;
+		for(AtomicConcept ac : atomicConcepts) {
+			result[i] = ac.getName();
+			i++;
+		}
+		return result;
+	}
 	
 }

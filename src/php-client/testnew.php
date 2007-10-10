@@ -37,11 +37,40 @@ $learn_start = microtime(true);
 $init = $learn_start - $start;
 echo 'components initialised in '.$init.' seconds<br />';
 
-$concept = $client->learn($id);
+$threaded = true;
 
-$learn = microtime(true) - $learn_start;
-echo 'concept learned in '.$learn.' seconds<br />';
+if($threaded == false) {
 
-echo 'result: '.$concept;
+	$concept = $client->learn($id);
+	
+	$learn = microtime(true) - $learn_start;
+	echo 'concept learned in '.$learn.' seconds<br />';
+	
+	echo 'result: '.$concept;
+	
+} else {
+
+	$client->learnThreaded($id);
+	
+	$i = 1;
+	$sleeptime = 1;
+	
+	do {
+		// sleep a while
+		sleep($sleeptime);
+		
+		// see what we have learned so far
+		$concept=$client->getCurrentlyBestConcept($id);
+		$running=$client->isAlgorithmRunning($id);
+		
+		$seconds = $i * $sleeptime;
+		
+		echo 'result after '.$seconds.' seconds of sleep: '.$concept.'<br />';
+		
+		$i++;
+	} while($running);
+	
+	echo 'algorithm finished';
+}
 
 ?>

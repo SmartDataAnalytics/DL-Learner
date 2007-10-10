@@ -59,6 +59,8 @@ public class State {
 
 	private Random rand=new Random();
 	
+	private boolean isAlgorithmRunning = false;
+	
 	private int generateComponentID(Component component) {
 		int id;
 		do {
@@ -66,6 +68,20 @@ public class State {
 		} while(componentIDs.keySet().contains(id));
 		componentIDs.put(id, component);
 		return id;		
+	}
+	
+	/**
+	 * @return the isAlgorithmRunning
+	 */
+	public boolean isAlgorithmRunning() {
+		return isAlgorithmRunning;
+	}
+
+	/**
+	 * @param isAlgorithmRunning the isAlgorithmRunning to set
+	 */
+	public void setAlgorithmRunning(boolean isAlgorithmRunning) {
+		this.isAlgorithmRunning = isAlgorithmRunning;
 	}
 	
 //	public Component getComponent(Class<? extends Component> componentClass) throws UnknownComponentException {
