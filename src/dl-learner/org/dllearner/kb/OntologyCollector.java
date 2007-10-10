@@ -20,6 +20,7 @@
 package org.dllearner.kb;
 
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -75,7 +76,7 @@ public class OntologyCollector {
 	 * @param defClasses
 	 */
 	public OntologyCollector(String[] subjectList,int numberOfRecursions,
-			int filterMode, String[] FilterPredList,String[] FilterObjList,String[] defClasses, String format){
+			int filterMode, String[] FilterPredList,String[] FilterObjList,String[] defClasses, String format, URL url){
 		this.subjectList=subjectList;
 		this.numberOfRecursions=numberOfRecursions;
 		this.format=format;
@@ -88,7 +89,7 @@ public class OntologyCollector {
 		
 		try{
 		this.sf=new SparqlFilter(filterMode,FilterPredList,FilterObjList);
-		this.ia=InetAddress.getByName("dbpedia.openlinksw.com");
+		this.ia=InetAddress.getByName(url.getHost());
 		//this.fw=new FileWriter(new File(System.currentTimeMillis()+".nt"),true);
 		this.properties=new HashSet<String>();
 		this.classes=new HashSet<String>();
