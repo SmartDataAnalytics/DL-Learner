@@ -22,7 +22,7 @@ $client = new SoapClient("main.wsdl");
 
 $id = $client->generateID();
 
-$client->addKnowledgeSource($id, "owlfile", $ontology);
+$ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);
 $client->setReasoner($id, "dig");
 $client->setLearningProblem($id, "posNegDefinition");
 $client->setPositiveExamples($id, $posExamples);
