@@ -19,10 +19,14 @@
  */
 package org.dllearner.server;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
@@ -39,6 +43,11 @@ import org.dllearner.kb.SparqlEndpoint;
  */
 public class State {
 
+	// stores the mapping between component IDs and component
+	// (note that this allows us to keep all references to components even
+	// if they are note used anymore e.g. a deleted knowledge source)
+	private Map<Integer,Component> componentIDs = new HashMap<Integer,Component>(); 
+	
 	private Set<KnowledgeSource> knowledgeSources = new HashSet<KnowledgeSource>();
 	
 	private LearningProblem learningProblem;
@@ -48,28 +57,35 @@ public class State {
 	
 	private LearningAlgorithm learningAlgorithm;
 
-	/**
-	 * @return the knowledgeSource
-	 */
-	public Set<KnowledgeSource> getKnowledgeSources() {
-		return knowledgeSources;
+	private Random rand=new Random();
+	
+	private int generateComponentID(Component component) {
+		int id;
+		do {
+			id = rand.nextInt();
+		} while(componentIDs.keySet().contains(id));
+		componentIDs.put(id, component);
+		return id;		
 	}
-
-	/**
-	 * @param knowledgeSources the knowledgeSource to set
-	 */
-	public void setKnowledgeSources(Set<KnowledgeSource> knowledgeSources) {
-		this.knowledgeSources = knowledgeSources;
-	}
-
-	/**
-	 * @param e
-	 * @return
-	 * @see java.util.Set#add(java.lang.Object)
-	 */
-	public boolean addKnowledgeSource(KnowledgeSource ks) {
-		return knowledgeSources.add(ks);
-	}
+	
+//	public Component getComponent(Class<? extends Component> componentClass) throws UnknownComponentException {
+//		if(learningProblem.getClass().equals(componentClass))
+//			return learningProblem;
+//		else if(learningAlgorithm.getClass().equals(componentClass))
+//			return learningAlgorithm;
+//		else if(reasonerComponent.getClass().equals(componentClass))
+//			return reasonerComponent;
+//		else if(KnowledgeSource.class.isAssignableFrom(componentClass)) {
+//			
+//			
+//			for(KnowledgeSource ks : knowledgeSources) {
+//				if(ks.getClass().equals(componentClass))
+//					return ks;
+//			}
+//			throw new UnknownComponentException(componentClass.getName());
+//		} else
+//			throw new UnknownComponentException(componentClass.getName());
+//	}
 
 	/**
 	 * Removes a knowledge source with the given URL (independant of its type).
@@ -99,8 +115,9 @@ public class State {
 	/**
 	 * @param learningProblem the learningProblem to set
 	 */
-	public void setLearningProblem(LearningProblem learningProblem) {
+	public int setLearningProblem(LearningProblem learningProblem) {
 		this.learningProblem = learningProblem;
+		return generateComponentID(learningProblem);
 	}
 
 	/**
@@ -116,9 +133,10 @@ public class State {
 	 * 
 	 * @param reasonerComponent the reasonerComponent to set
 	 */
-	public void setReasonerComponent(ReasonerComponent reasonerComponent) {
+	public int setReasonerComponent(ReasonerComponent reasonerComponent) {
 		this.reasonerComponent = reasonerComponent;
 		reasoningService = new ReasoningService(reasonerComponent);
+		return generateComponentID(reasonerComponent);
 	}
 
 	/**
@@ -131,8 +149,9 @@ public class State {
 	/**
 	 * @param learningAlgorithm the learningAlgorithm to set
 	 */
-	public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
+	public int setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
 		this.learningAlgorithm = learningAlgorithm;
+		return generateComponentID(learningAlgorithm);
 	}
 
 	/**
@@ -141,5 +160,34 @@ public class State {
 	public ReasoningService getReasoningService() {
 		return reasoningService;
 	}
+
+	/**
+	 * @param key
+	 * @return
+	 * @see java.util.Map#get(java.lang.Object)
+	 */
+	public Component getComponent(int id) {
+		return componentIDs.get(id);
+	}
+
+	/**
+	 * @param e
+	 * @return
+	 */
+	public int addKnowledgeSource(KnowledgeSource ks) {
+		knowledgeSources.add(ks);
+		return generateComponentID(ks);
+		
+	}
+
+	public boolean removeKnowledgeSource(int componentID) {
+		return knowledgeSources.remove(componentIDs.get(componentID));
+	}
 	
+	/**
+	 * @return the knowledgeSources
+	 */
+	public Set<KnowledgeSource> getKnowledgeSources() {
+		return knowledgeSources;
+	}
 }
