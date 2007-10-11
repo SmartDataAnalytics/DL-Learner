@@ -26,6 +26,7 @@ import java.util.SortedSet;
 
 import org.dllearner.core.BooleanConfigOption;
 import org.dllearner.core.CommonConfigMappings;
+import org.dllearner.core.CommonConfigOptions;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
@@ -48,6 +49,7 @@ public abstract class PosNegLP extends LearningProblem {
 	
 	protected boolean useRetrievalForClassification = false;
 	protected UseMultiInstanceChecks useDIGMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
+	protected double percentPerLengthUnit = 0.05;
 
 	/**
 	 * If instance checks are used for testing concepts (e.g. no retrieval), then
@@ -87,6 +89,7 @@ public abstract class PosNegLP extends LearningProblem {
 				"negative examples"));
 		options.add(new BooleanConfigOption("useRetrievalForClassficiation", 
 				"Specifies whether to use retrieval or instance checks for testing a concept."));
+		options.add(CommonConfigOptions.getPercentPerLenghtUnitOption(0.05));
 		return options;
 	}
 	
@@ -107,6 +110,8 @@ public abstract class PosNegLP extends LearningProblem {
 					.getIndividualSet((Set<String>) entry.getValue());
 		else if (name.equals("useRetrievalForClassification"))
 			useRetrievalForClassification = (Boolean) entry.getValue();
+		else if (name.equals("percentPerLengthUnit"))
+			percentPerLengthUnit = (Double) entry.getValue();
 	}
 	
 	/*
@@ -128,5 +133,9 @@ public abstract class PosNegLP extends LearningProblem {
 	}
 	
 	public abstract int coveredNegativeExamplesOrTooWeak(Concept concept);
+
+	public double getPercentPerLengthUnit() {
+		return percentPerLengthUnit;
+	}
 	
 }

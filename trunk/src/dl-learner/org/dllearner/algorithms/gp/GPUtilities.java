@@ -68,22 +68,25 @@ public class GPUtilities {
 	private static Score calculateFitness(LearningProblem learningProblem, Concept hypothesis, Concept adc) {
 		Concept extendedHypothesis;
 		
-		if (!Config.returnType.equals("")) {
-			System.out.println("return type");
-			
-			// newRoot.addChild(new AtomicConcept(Config.returnType));
-			// newRoot.addChild(hypothesis);
-			Concept newRoot;
-			if(Config.GP.useMultiStructures)
-				newRoot = new MultiConjunction(new AtomicConcept(Config.returnType),hypothesis);
-			else
-				newRoot = new Conjunction(new AtomicConcept(Config.returnType),hypothesis);			
-			// parent wieder auf null setzen, damit es nicht inkonsistent wird
-			// TODO: ist nicht wirklich elegant und auch inkompatibel mit
-			// dem Hill-Climbing-Operator
-			hypothesis.setParent(null);
-			extendedHypothesis = newRoot;
-		} else
+		// return type temporarily disabled 
+		// => it is probably more appropriate to have the 
+		// number of superclasses of a target concept
+		// as parameter of the learning problem
+//		
+//		if (!Config.returnType.equals("")) {
+//			System.out.println("return type");
+//			
+//			Concept newRoot;
+//			if(Config.GP.useMultiStructures)
+//				newRoot = new MultiConjunction(new AtomicConcept(Config.returnType),hypothesis);
+//			else
+//				newRoot = new Conjunction(new AtomicConcept(Config.returnType),hypothesis);			
+//			// parent wieder auf null setzen, damit es nicht inkonsistent wird
+//			// TODO: ist nicht wirklich elegant und auch inkompatibel mit
+//			// dem Hill-Climbing-Operator
+//			hypothesis.setParent(null);
+//			extendedHypothesis = newRoot;
+//		} else
 			extendedHypothesis = hypothesis;		
 		
 		Score score;
@@ -459,7 +462,7 @@ public class GPUtilities {
     	// neutClassified.retainAll(posClassified);
     	neutClassified.retainAll(negClassified);
     	PosNegDefinitionLPStrict lp = (PosNegDefinitionLPStrict)learningProblem;
-    	return new ScoreThreeValued(conceptLength, lp.getAccuracyPenalty(), lp.getErrorPenalty(), lp.isPenaliseNeutralExamples(), posClassified, neutClassified, negClassified, lp.getPositiveExamples(),lp.getNeutralExamples(),lp.getNegativeExamples());
+    	return new ScoreThreeValued(conceptLength, lp.getAccuracyPenalty(), lp.getErrorPenalty(), lp.isPenaliseNeutralExamples(), lp.getPercentPerLengthUnit(), posClassified, neutClassified, negClassified, lp.getPositiveExamples(),lp.getNeutralExamples(),lp.getNegativeExamples());
     }
     
     // aktualisiert die besten Knoten

@@ -28,7 +28,7 @@ import org.dllearner.utilities.Helper;
 
 public class ClientState {
 	
-	private String  reasonerURL="http://localhost:8081";
+	// private String  reasonerURL="http://localhost:8081";
 	//private String  reasonerURL="http://localhost:3490";
 	
 	private SortedSet<Individual> positiveExamples = new TreeSet<Individual>();
@@ -417,12 +417,12 @@ public class ClientState {
 		
 		// Default-URI für DIG-Reasoner setzen
 		
-		try {
-			Config.digReasonerURL = new URL(reasonerURL);
-		} catch (MalformedURLException e) {
-			// Exception tritt nie auf, da URL korrekt
-			e.printStackTrace();
-		}		
+//		try {
+//			Config.digReasonerURL = new URL(reasonerURL);
+//		} catch (MalformedURLException e) {
+//			// Exception tritt nie auf, da URL korrekt
+//			e.printStackTrace();
+//		}		
 		
 		 // reasoner = Main.createReasoner(new KB(), m);
 		 System.err.println("TODO: rewrite webservice code");

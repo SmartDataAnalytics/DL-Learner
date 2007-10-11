@@ -88,12 +88,12 @@ public class DLLearnerWSoriginal {
 		m.put(ontology, ofFormat);
 		
 		// Default-URI für DIG-Reasoner setzen
-		try {
-			Config.digReasonerURL = new URL("http://localhost:8081");
-		} catch (MalformedURLException e) {
-			// Exception tritt nie auf, da URL korrekt
-			e.printStackTrace();
-		}		
+//		try {
+//			Config.digReasonerURL = new URL("http://localhost:8081");
+//		} catch (MalformedURLException e) {
+//			// Exception tritt nie auf, da URL korrekt
+//			e.printStackTrace();
+//		}		
 		 
 		 // reasoner = Main.createReasoner(new KB(), m);
 		 

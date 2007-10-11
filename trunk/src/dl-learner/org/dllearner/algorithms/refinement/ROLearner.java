@@ -39,7 +39,7 @@ public class ROLearner extends LearningAlgorithm {
 	private boolean writeSearchTree;
 	private File searchTreeFile;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
-	private Heuristic heuristic = Heuristic.LEXICOGRAPHIC;  
+	private Heuristic heuristic = Heuristic.LEXICOGRAPHIC;
 	
 	private boolean stop = false;
 	
@@ -166,7 +166,7 @@ public class ROLearner extends LearningAlgorithm {
 				heuristic = Heuristic.LEXICOGRAPHIC;
 			else
 				heuristic = Heuristic.FLEXIBLE;
-		}
+		} 
 	}
 
 	/* (non-Javadoc)
@@ -181,7 +181,7 @@ public class ROLearner extends LearningAlgorithm {
 		if(heuristic == Heuristic.LEXICOGRAPHIC)
 			nodeComparator = new NodeComparator();
 		else
-			nodeComparator = new NodeComparator2(learningProblem.getNegativeExamples().size());		
+			nodeComparator = new NodeComparator2(learningProblem.getNegativeExamples().size(), learningProblem.getPercentPerLengthUnit());		
 		
 		// TODO: this needs to be changed
 		Helper.autoDetectConceptsAndRoles(rs);

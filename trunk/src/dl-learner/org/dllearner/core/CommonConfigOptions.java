@@ -38,4 +38,7 @@ public final class CommonConfigOptions {
 		return option;
 	}
 	
+	public static StringConfigOption getReturnType() {
+		return new StringConfigOption("returnType", "Specifies the type which the solution has to belong to (if already) known. This means we inform the learning algorithm that the solution is a subclass of this type.");
+	}
 }

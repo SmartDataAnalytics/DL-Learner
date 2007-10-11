@@ -29,7 +29,6 @@ import java.util.SortedSet;
 
 import org.dllearner.Config;
 import org.dllearner.ConfigurationManager;
-import org.dllearner.Config.Algorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -215,15 +214,15 @@ public class PaperStatistics {
 
 					LearningAlgorithm learningAlgorithm = null;
 					if(algorithmNr==0) {
-						Config.algorithm = Algorithm.REFINEMENT;
+						// Config.algorithm = Algorithm.REFINEMENT;
 						// Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
 						Config.Refinement.horizontalExpansionFactor = 0.6;
 						Config.Refinement.quiet = true;
-						Config.percentPerLengthUnit = 0.05;
+						// Config.percentPerLengthUnit = 0.05;
 						// learningAlgorithm = new ROLearner(learningProblem);
 						// learningAlgorithm = cm.learningAlgorithm(ROLearner.class, learningProblem);
 					} else if(algorithmNr==1) {
-						Config.algorithm = Algorithm.GP;
+						// Config.algorithm = Algorithm.GP;
 						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
 						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
 						Config.GP.generations = 50;	
@@ -235,15 +234,15 @@ public class PaperStatistics {
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.8;
 						Config.GP.hillClimbingProbability = 0;
-						Config.percentPerLengthUnit = 0.005;
+						// Config.percentPerLengthUnit = 0.005;
 						// give GP a chance to find the long solution of the
 						// uncle problem
-						if(exampleNr==3 || exampleNr==5 || exampleNr == 6)
-							Config.percentPerLengthUnit = 0.002;
+						// if(exampleNr==3 || exampleNr==5 || exampleNr == 6)
+						//	Config.percentPerLengthUnit = 0.002;
 						// learningAlgorithm = new GP(learningProblem);
 						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
 					} else if(algorithmNr==2) {
-						Config.algorithm = Algorithm.HYBRID_GP;
+						// Config.algorithm = Algorithm.HYBRID_GP;
 						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
 						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
 						Config.GP.generations = 50;
@@ -255,9 +254,9 @@ public class PaperStatistics {
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.2;
 						Config.GP.hillClimbingProbability = 0;
-						Config.percentPerLengthUnit = 0.005;
-						if(exampleNr == 3 || exampleNr==5 || exampleNr==6)
-							Config.percentPerLengthUnit = 0.002;						
+						// Config.percentPerLengthUnit = 0.005;
+						// if(exampleNr == 3 || exampleNr==5 || exampleNr==6)
+//							Config.percentPerLengthUnit = 0.002;						
 						// learningAlgorithm = new GP(learningProblem);
 						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
 					}
@@ -439,28 +438,28 @@ public class PaperStatistics {
 					cm.applyConfigEntry(learningProblem, "negativeExamples", null);
 
 					if (j == 0) {
-						Config.algorithm = Algorithm.HYBRID_GP;
+						// Config.algorithm = Algorithm.HYBRID_GP;
 						Config.GP.numberOfIndividuals = i + 1;
 						Config.GP.refinementProbability = 0.85;
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.05;
 						Config.GP.hillClimbingProbability = 0;
 					} else if (j == 1) {
-						Config.algorithm = Algorithm.HYBRID_GP;
+						// Config.algorithm = Algorithm.HYBRID_GP;
 						Config.GP.numberOfIndividuals = i + 1;
 						Config.GP.refinementProbability = 0.4;
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.4;
 						Config.GP.hillClimbingProbability = 0;
 					} else if (j == 2) {
-						Config.algorithm = Algorithm.GP;
+						// Config.algorithm = Algorithm.GP;
 						Config.GP.numberOfIndividuals = i + 1;
 						Config.GP.refinementProbability = 0;
 						Config.GP.mutationProbability = 0.02;
 						Config.GP.crossoverProbability = 0.8;
 						Config.GP.hillClimbingProbability = 0;
 					} else if (j == 3) {
-						Config.algorithm = Algorithm.HYBRID_GP;
+						// Config.algorithm = Algorithm.HYBRID_GP;
 						Config.GP.numberOfIndividuals = i + 1;
 						Config.GP.refinementProbability = 0.7;
 						Config.GP.mutationProbability = 0.02;

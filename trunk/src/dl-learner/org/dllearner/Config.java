@@ -1,7 +1,6 @@
 package org.dllearner;
 
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +10,6 @@ import org.dllearner.algorithms.gp.GP.SelectionType;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.learningproblems.PosNegLP.UseMultiInstanceChecks;
-import org.dllearner.reasoning.ReasonerType;
 
 public class Config {
 	// standardmäßig wird bis Tiefe 7 gesucht
@@ -52,34 +50,34 @@ public class Config {
 	// 0.05)
 	// angebracht
 	// public static double percentPerLengthUnit = 0.0025;
-	public static double percentPerLengthUnit = 0.05;
+	// public static double percentPerLengthUnit = 0.05;
 
-	public enum Algorithm {
-		GP, BRUTE_FORCE, RANDOM_GUESSER, REFINEMENT, HYBRID_GP
-	};
-
-	public static Algorithm algorithm = Algorithm.REFINEMENT;
+//	public enum Algorithm {
+//		GP, BRUTE_FORCE, RANDOM_GUESSER, REFINEMENT, HYBRID_GP
+//	};
+//
+//	public static Algorithm algorithm = Algorithm.REFINEMENT;
 
 	// Rückgabetyp des gelernten Konzepts
-	public static String returnType = "";
+	// public static String returnType = "";
 
-	public static boolean statisticMode = false;
+	// public static boolean statisticMode = false;
 
 	// if set to true a retrieval algorithm is used for classification
 	// instead of single instance checks (default is now false, because
 	// we can send all instance checks in a single request), for KAON2
 	// as reasoner it should in many cases be set to true
-	public static boolean useRetrievalForClassification = false;
+	// public static boolean useRetrievalForClassification = false;
 
 	// welche Art von Reasoning wird benutzt (eigener Algorithmus,
 	// KAON2-API, DIG-Interface)
-	public static ReasonerType reasonerType = ReasonerType.DIG;
+	// public static ReasonerType reasonerType = ReasonerType.DIG;
 
 	// bei fast retrieval muss trotzdem irgendein Reasoner gesetzt
 	// werden um die flat ABox zu erzeugen
-	public static ReasonerType startUpReasoningType = ReasonerType.KAON2;
+	// public static ReasonerType startUpReasoningType = ReasonerType.KAON2;
 
-	public static URL digReasonerURL = null;
+	// public static URL digReasonerURL = null;
 
 	// unique names assumption
 	public static boolean una = false;

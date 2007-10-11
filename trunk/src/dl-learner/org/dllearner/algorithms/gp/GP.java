@@ -414,8 +414,9 @@ public class GP extends LearningAlgorithm {
 
         // nachschauen, ob ev. noch bessere Konzepte im Psi-Cache sind
         boolean betterValueFoundInPsiCache = false;
-        double bestValue = bestScore.getScore(); 
-        if(Config.algorithm == Config.Algorithm.HYBRID_GP) {
+        double bestValue = bestScore.getScore();
+        
+        if(Config.GP.refinementProbability > 0) {
         	// das Problem ist hier, dass die gecachte Score nicht unbedingt
         	// der echten Score entsprechen muss, d.h. hier muss die
         	// Konzeptlänge mit einberechnet werden => deswegen werden
@@ -445,7 +446,7 @@ public class GP extends LearningAlgorithm {
         System.out.println("runtime in ms: " + Helper.prettyPrintNanoSeconds(endTime - startTime));
         System.out.println("fitness evaluations: "
                 + GPUtilities.fitnessEvaluations);
-        if(Config.algorithm == Config.Algorithm.HYBRID_GP) {
+        if(refinementProbability > 0) {
         	System.out.println("operator applications: " + psi.getNrOfRequests() + " psi, " + GPUtilities.crossover + " crossover, " +
         			GPUtilities.mutation + " mutation, " + GPUtilities.hillClimbing + " hillClimbing");
         }
@@ -735,7 +736,7 @@ public class GP extends LearningAlgorithm {
         
         // System.out.println();
         System.out.println("best definition found: " + n);
-        if(Config.algorithm == Config.Algorithm.HYBRID_GP) {
+        if(refinementProbability > 0) {
         	double cacheHitRate=0;
         	double pdCacheHitRate=0, puCacheHitRate=0;
         	if(psi.getNrOfRequests()>0) {
