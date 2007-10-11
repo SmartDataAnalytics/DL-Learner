@@ -262,7 +262,31 @@ public class DLLearnerWSNew {
 	}
 	
 	@WebMethod
-	public void applyConfigEntry(int sessionID, int componentID, String optionName, Object value) throws ClientNotKnownException, UnknownComponentException {
+	public void applyConfigEntryInt(int sessionID, int componentID, String optionName, Integer value) throws ClientNotKnownException, UnknownComponentException
+	{
+		applyConfigEntry(sessionID, componentID,optionName,value);
+	}
+	
+	@WebMethod
+	public void applyConfigEntryString(int sessionID, int componentID, String optionName, String value) throws ClientNotKnownException, UnknownComponentException
+	{
+		applyConfigEntry(sessionID, componentID,optionName,value);
+	}
+	
+	@WebMethod
+	public void applyConfigEntryStringArray(int sessionID, int componentID, String optionName, String[] value) throws ClientNotKnownException, UnknownComponentException
+	{
+		Set<String> stringSet = new TreeSet<String>(Arrays.asList(value));
+		applyConfigEntry(sessionID, componentID,optionName,stringSet);
+	}
+	
+	@WebMethod
+	public void applyConfigEntryBoolean(int sessionID, int componentID, String optionName, Boolean value) throws ClientNotKnownException, UnknownComponentException
+	{
+		applyConfigEntry(sessionID, componentID,optionName,value);
+	}
+	
+	private void applyConfigEntry(int sessionID, int componentID, String optionName, Object value) throws ClientNotKnownException, UnknownComponentException {
 		State state = getState(sessionID);
 		Component component = state.getComponent(componentID);
 		cm.applyConfigEntry(component, optionName, value);
