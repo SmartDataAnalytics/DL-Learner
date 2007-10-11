@@ -31,4 +31,11 @@ public final class CommonConfigOptions {
 		return verbosityOption;
 	}
 	
+	public static DoubleConfigOption getPercentPerLenghtUnitOption(double defaultValue) {
+		DoubleConfigOption option = new DoubleConfigOption("percentPerLenghtUnit", "describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one", defaultValue);
+		option.setLowerLimit(0.0);
+		option.setUpperLimit(1.0);
+		return option;
+	}
+	
 }

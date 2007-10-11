@@ -141,11 +141,7 @@ public class Config {
 
 		// public static File searchTreeFile = new File("searchTree.txt");
 
-		public enum Heuristic {
-			LEXICOGRAPHIC, FLEXIBLE
-		};
-
-		public static Heuristic heuristic = Heuristic.LEXICOGRAPHIC;
+		// public static Heuristic heuristic = Heuristic.LEXICOGRAPHIC;
 
 		// multi instance check => es wird versucht mehrere instance checks pro
 		// Anfrage auf einmal an den Reasoner zu schicken; Vorteil bei DIG:

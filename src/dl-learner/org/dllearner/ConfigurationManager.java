@@ -415,7 +415,7 @@ public class ConfigurationManager {
 		else if (option.equals("refinement.horizontalExpansionFactor"))
 			Config.Refinement.horizontalExpansionFactor = value;
 		else if (option.equals("percentPerLengthUnit"))
-			Config.percentPerLengthUnit = value;		
+			; // Config.percentPerLengthUnit = value;		
 	}
 	
 	private void applyStringOptions(String option, String value) {
@@ -488,10 +488,10 @@ public class ConfigurationManager {
 		} else if (option.equals("gp.adc")) {
 			Config.GP.adc = Datastructures.strToBool(value);
 		} else if (option.equals("refinement.heuristic")) {
-			if(value.equals("lexicographic"))
-				Config.Refinement.heuristic = Config.Refinement.Heuristic.LEXICOGRAPHIC;
-			else
-				Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
+//			if(value.equals("lexicographic"))
+//				Config.Refinement.heuristic = Config.Refinement.Heuristic.LEXICOGRAPHIC;
+//			else
+//				Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
 		} else if (option.equals("refinement.quiet"))
 			Config.Refinement.quiet = Datastructures.strToBool(value);
 		else if (option.equals("refinement.writeSearchTree"))
