@@ -170,7 +170,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 				if (!posClassified.contains(negExample))
 					negAsNeg.add(negExample);
 			}
-			return new ScoreTwoValued(concept.getLength(), posAsPos, posAsNeg, negAsPos, negAsNeg);
+			return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
 		// instance checks for classification
 		} else {
 			SortedSet<Individual> posAsPos = new TreeSet<Individual>();
@@ -187,7 +187,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 				posAsNeg = Helper.intersection(positiveExamples, negClassified);
 				negAsPos = Helper.intersection(negativeExamples, posClassified);
 				negAsNeg = Helper.intersection(negativeExamples, negClassified);
-				return new ScoreTwoValued(concept.getLength(), posAsPos, posAsNeg, negAsPos,
+				return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
 						negAsNeg);
 			} else {
 
@@ -203,7 +203,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 					else
 						negAsNeg.add(example);
 				}
-				return new ScoreTwoValued(concept.getLength(), posAsPos, posAsNeg, negAsPos,
+				return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
 						negAsNeg);
 			}
 		}

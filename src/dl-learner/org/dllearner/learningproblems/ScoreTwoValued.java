@@ -2,7 +2,6 @@ package org.dllearner.learningproblems;
 
 import java.util.Set;
 
-import org.dllearner.Config;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Individual;
 
@@ -23,9 +22,11 @@ public class ScoreTwoValued extends Score {
     private double classificationScore;
     private int nrOfExamples;
     private int conceptLength;
+    private double percentPerLengthUnit;
 	
-	public ScoreTwoValued(int conceptLength, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
-    	this.conceptLength = conceptLength;		
+	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
+    	this.conceptLength = conceptLength;
+    	this.percentPerLengthUnit = percentPerLengthUnit;
 		this.posAsPos = posAsPos;
 		this.posAsNeg = posAsNeg;
 		this.negAsPos = negAsPos;
@@ -40,7 +41,7 @@ public class ScoreTwoValued extends Score {
 		// Anteil falscher Klassifikationen (Zahl zwischen -1 und 0)
 		classificationScore = classificationScore / (double) nrOfExamples;
 		// Berücksichtigung des Längenfaktors
-		score = classificationScore - Config.percentPerLengthUnit * conceptLength;
+		score = classificationScore - percentPerLengthUnit * conceptLength;
 	}
 	
 	@Override
@@ -82,6 +83,6 @@ public class ScoreTwoValued extends Score {
 	
 	@Override
 	public Score getModifiedLengthScore(int newLength) {
-		return new ScoreTwoValued(newLength, posAsPos, posAsNeg, negAsPos, negAsNeg);
+		return new ScoreTwoValued(newLength, percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
 	}	
 }

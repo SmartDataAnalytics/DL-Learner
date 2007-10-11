@@ -100,6 +100,7 @@ public class DLLearnerWSNew {
 	}
 	
 	// returns the class which is referred to by the string
+	@SuppressWarnings({"unused"})
 	private Class<? extends Component> getComponent(String component) throws UnknownComponentException {
 		if(knowledgeSourceMapping.containsKey(component))
 			return knowledgeSourceMapping.get(component);

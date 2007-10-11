@@ -24,7 +24,6 @@ import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.Config;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.Helper;
@@ -49,6 +48,7 @@ public class ScoreThreeValued extends Score {
 	private double accuracyPenalty;
 	private double errorPenalty;
 	private boolean penaliseNeutralExamples;
+	private double percentPerLengthUnit;
 	
 	// potential configuration options (not implemented as such, but one
 	// could so)
@@ -85,6 +85,7 @@ public class ScoreThreeValued extends Score {
     		double accuracyPenalty,
     		double errorPenalty,
     		boolean penaliseNeutralExamples,
+    		double percentPerLengthUnit,
     		SortedSet<Individual> posClassified,
     		SortedSet<Individual> neutClassified,
     		SortedSet<Individual> negClassified,
@@ -94,6 +95,8 @@ public class ScoreThreeValued extends Score {
     	this.conceptLength = conceptLength;
     	this.accuracyPenalty = accuracyPenalty;
     	this.errorPenalty = errorPenalty;
+    	this.penaliseNeutralExamples = penaliseNeutralExamples;
+    	this.percentPerLengthUnit = percentPerLengthUnit;
     	this.posClassified = posClassified;
     	this.neutClassified = neutClassified;
     	this.negClassified = negClassified;
@@ -136,7 +139,7 @@ public class ScoreThreeValued extends Score {
         double worstValue = nrOfExamples * errorPenalty;
         // ergibt Zahl zwischen -1 und 0
         score = score / worstValue;
-        score -= Config.percentPerLengthUnit * conceptLength;
+        score -= percentPerLengthUnit * conceptLength;
         
         // die folgenden Berechnungen k�nnten aus Performancegr�nden auch
         // ausgegliedert werden
@@ -229,7 +232,7 @@ public class ScoreThreeValued extends Score {
 
 	@Override
 	public Score getModifiedLengthScore(int newLength) {
-		return new ScoreThreeValued(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
+		return new ScoreThreeValued(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
 	}	
     
 }

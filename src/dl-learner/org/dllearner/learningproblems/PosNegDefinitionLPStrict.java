@@ -112,13 +112,13 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
         		// this.defPosSet = tuple.getPosSet();
         		// this.defNegSet = tuple.getNegSet();  
         		SortedSet<Individual> neutClassified = Helper.intersectionTuple(reasoningService.getIndividuals(),tuple);
-        		return new ScoreThreeValued(concept.getLength(),accuracyPenalty, errorPenalty, penaliseNeutralExamples, tuple.getPosSet(),neutClassified,tuple.getNegSet(),positiveExamples,neutralExamples,negativeExamples);
+        		return new ScoreThreeValued(concept.getLength(),accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, tuple.getPosSet(),neutClassified,tuple.getNegSet(),positiveExamples,neutralExamples,negativeExamples);
     		} else if(reasoningService.getReasonerType() == ReasonerType.KAON2) {
     			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
     			SortedSet<Individual> negClassified = reasoningService.retrieval(new Negation(concept));
     			SortedSet<Individual> neutClassified = Helper.intersection(reasoningService.getIndividuals(),posClassified);
     			neutClassified.retainAll(negClassified);
-    			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples);     			
+    			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples);     			
     		} else
     			throw new Error("score cannot be computed in this configuration");
     	} else {
@@ -158,7 +158,7 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
     			
     			SortedSet<Individual> neutClassified = Helper.intersection(reasoningService.getIndividuals(),posClassified);
     			neutClassified.retainAll(negClassified);
-    			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples); 		
+    			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples); 		
     		} else
     			throw new Error("score cannot be computed in this configuration");
     	}

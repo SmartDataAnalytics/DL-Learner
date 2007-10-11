@@ -1,7 +1,5 @@
 package org.dllearner;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,14 +9,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.Config.Algorithm;
 import org.dllearner.algorithms.gp.GP.AlgorithmType;
 import org.dllearner.algorithms.gp.GP.SelectionType;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.parser.KBParser;
-import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.RoleComparator;
@@ -80,14 +76,14 @@ public class ConfigurationManager {
 		
 		// DIG-Reasoner-URL setzen, falls nicht schon geschehen (kann wegen Exception
 		// nicht in Config gesetzt werden)
-		if(Config.digReasonerURL == null) {
-			try {
-				Config.digReasonerURL = new URL("http://localhost:8081");
-			} catch (MalformedURLException e) {
-				// Exception tritt nie auf, da URL korrekt
-				e.printStackTrace();
-			}
-		}
+//		if(Config.digReasonerURL == null) {
+//			try {
+//				Config.digReasonerURL = new URL("http://localhost:8081");
+//			} catch (MalformedURLException e) {
+//				// Exception tritt nie auf, da URL korrekt
+//				e.printStackTrace();
+//			}
+//		}
 		
 		// der parserinterne Namespace wird immer ausgeblendet
 		Config.hidePrefixes.add(KBParser.internalNamespace);
@@ -424,38 +420,38 @@ public class ConfigurationManager {
 		else if (option.equals("showCorrectClassifications"))
 			; // Config.showCorrectClassifications = Datastructures.strToBool(value);
 		else if (option.equals("statMode"))
-			Config.statisticMode = Datastructures.strToBool(value);
+			; // Config.statisticMode = Datastructures.strToBool(value);
 		else if (option.equals("una"))
 			Config.una = Datastructures.strToBool(value);		
 		else if (option.equals("owa"))
 			Config.owa = Datastructures.strToBool(value);		
 		else if (option.equals("gp.useFixedNumberOfGenerations"))
 			Config.GP.useFixedNumberOfGenerations = Datastructures.strToBool(value);
-		else if (option.equals("scoreMethod")) {
+//		else if (option.equals("scoreMethod")) {
 //			if (value.equals("full"))
 //				Config.scoreMethod = ScoreMethod.FULL;
 //			else
 //				Config.scoreMethod = ScoreMethod.POSITIVE;
-		} else if (option.equals("returnType"))
-			Config.returnType = value;
-		else if (option.equals("algorithm")) {
-			if (value.equals("gp"))
-				Config.algorithm = Algorithm.GP;
-			else if (value.equals("random"))
-				Config.algorithm = Algorithm.RANDOM_GUESSER;
-			else if(value.equals("bruteForce"))
-				Config.algorithm = Algorithm.BRUTE_FORCE;
-			else if(value.equals("refinement"))
-				Config.algorithm = Algorithm.REFINEMENT;
-			// hybrid GP = Menge von Konfigurationsoptionen
-			else {
-				Config.algorithm = Algorithm.HYBRID_GP;
-				Config.GP.refinementProbability = 1.0d;
-				Config.GP.crossoverProbability = 0.0d;
-				Config.GP.hillClimbingProbability = 0.0d;
-				Config.GP.mutationProbability = 0.0d;
-			}
-		} else if(option.equals("hidePrefix")) {
+//		} else if (option.equals("returnType"))
+//			Config.returnType = value;
+//		else if (option.equals("algorithm")) {
+//			if (value.equals("gp"))
+//				Config.algorithm = Algorithm.GP;
+//			else if (value.equals("random"))
+//				Config.algorithm = Algorithm.RANDOM_GUESSER;
+//			else if(value.equals("bruteForce"))
+//				Config.algorithm = Algorithm.BRUTE_FORCE;
+//			else if(value.equals("refinement"))
+//				Config.algorithm = Algorithm.REFINEMENT;
+//			// hybrid GP = Menge von Konfigurationsoptionen
+//			else {
+//				Config.algorithm = Algorithm.HYBRID_GP;
+//				Config.GP.refinementProbability = 1.0d;
+//				Config.GP.crossoverProbability = 0.0d;
+//				Config.GP.hillClimbingProbability = 0.0d;
+//				Config.GP.mutationProbability = 0.0d;
+//			}
+		else if(option.equals("hidePrefix")) {
 			Config.hidePrefixes.add(value);
 		} else if (option.equals("showIndividuals")) {
 			Config.showIndividuals = Datastructures.strToBool(value);
@@ -514,23 +510,24 @@ public class ConfigurationManager {
 			Config.Refinement.useExistsConstructor = Datastructures.strToBool(value);
 		else if (option.equals("refinement.useNegation"))
 			Config.Refinement.useNegation = Datastructures.strToBool(value);		
-		else if (option.equals("reasoner")) {
-			if(value.equals("dig"))
-				Config.reasonerType = ReasonerType.DIG;
-			else if(value.equals("kaon2"))
-				Config.reasonerType = ReasonerType.KAON2;
-			else if(value.equals("fastRetrieval"))
-				Config.reasonerType = ReasonerType.FAST_RETRIEVAL;
-		} else if (option.equals("digReasonerURL")) {
-			try {
-				Config.digReasonerURL = new URL(value);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-				System.err.println("Malformed URL for DIG reasoner was given.");
-				System.exit(0);
-			}
-		} else if (option.equals("useRetrievalForClassification"))
-			Config.useRetrievalForClassification = Datastructures.strToBool(value);
+//		else if (option.equals("reasoner")) {
+//			if(value.equals("dig"))
+//				Config.reasonerType = ReasonerType.DIG;
+//			else if(value.equals("kaon2"))
+//				Config.reasonerType = ReasonerType.KAON2;
+//			else if(value.equals("fastRetrieval"))
+//				Config.reasonerType = ReasonerType.FAST_RETRIEVAL;
+		else if (option.equals("digReasonerURL")) {
+//			try {
+//				Config.digReasonerURL = new URL(value);
+//			} catch (MalformedURLException e) {
+//				e.printStackTrace();
+//				System.err.println("Malformed URL for DIG reasoner was given.");
+//				System.exit(0);
+//			}
+		}
+//		} else if (option.equals("useRetrievalForClassification"))
+//			Config.useRetrievalForClassification = Datastructures.strToBool(value);
 //		else if (option.equals("refinement.useDIGMultiInstanceChecks")) {
 //			if(value.equals("never"))
 //				Config.Refinement.useDIGMultiInstanceChecks = Config.Refinement.UseDIGMultiInstanceChecks.NEVER;

@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.dllearner.Config;
+import org.dllearner.core.CommonConfigOptions;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
 import org.dllearner.core.IntegerConfigOption;
@@ -63,6 +63,7 @@ public class BruteForceLearner extends LearningAlgorithm {
     private Score bestScore;
     
     private int maxLength = 7;
+    private String returnType;
     
     // list of all generated concepts sorted by length
     private Map<Integer,List<Concept>> generatedDefinitions = new HashMap<Integer,List<Concept>>();
@@ -80,6 +81,7 @@ public class BruteForceLearner extends LearningAlgorithm {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new IntegerConfigOption("maxLength", "maximum length of generated concepts"));
+		options.add(CommonConfigOptions.getReturnType());
 		return options;
 	}
 	
@@ -91,6 +93,8 @@ public class BruteForceLearner extends LearningAlgorithm {
 		String name = entry.getOptionName();
 		if(name.equals("maxLength"))
 			maxLength = (Integer) entry.getValue();
+		else if(name.equals("returnType"))
+			returnType = (String) returnType;
 	}
 
 	/* (non-Javadoc)
@@ -148,8 +152,8 @@ public class BruteForceLearner extends LearningAlgorithm {
             	// if a return type is already given an appropriate tree is 
             	// generated here
             	Concept newRoot;
-            	if(!Config.returnType.equals("")) {
-            		newRoot = new Conjunction(new AtomicConcept(Config.returnType),program);
+            	if(returnType != null) {
+            		newRoot = new Conjunction(new AtomicConcept(returnType),program);
             	} else
             		newRoot = program;
             	

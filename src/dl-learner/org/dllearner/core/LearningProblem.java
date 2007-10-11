@@ -24,6 +24,18 @@ import org.dllearner.core.dl.Concept;
 /**
  * Base class for all learning problems.
  * 
+ * @todo The current learning problem implementations 
+ * assume that we learn a concept, which does not exist
+ * in the knowledge base so far. However, often we want
+ * to learn a complex definition for a concept which
+ * is already integrated in a subsumption hierarchy. This
+ * means it would make sense to specifiy the list of these
+ * superclasses as an additional argument of the learning
+ * problem. The learning algorithms could then make use of
+ * this to optimise their search for a solution. (More
+ * generally, one could specify the name of the concept, which
+ * should be improved.)
+ * 
  * @author Jens Lehmann
  *
  */
