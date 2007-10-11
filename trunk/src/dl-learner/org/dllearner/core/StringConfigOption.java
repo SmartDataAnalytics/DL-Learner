@@ -19,6 +19,7 @@
  */
 package org.dllearner.core;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -66,6 +67,10 @@ public class StringConfigOption extends ConfigOption<String> {
 		this.allowedValues = allowedValues;
 	}
 
+	public void setAllowedValues(String[] allowedValues) {
+		this.allowedValues = new TreeSet<String>(Arrays.asList(allowedValues));
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
 	 */

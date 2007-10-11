@@ -33,10 +33,13 @@ import org.dllearner.utilities.Helper;
 
 public class ROLearner extends LearningAlgorithm {
 	
+	public enum Heuristic {	LEXICOGRAPHIC, FLEXIBLE	}
+	
 	// configuration options
 	private boolean writeSearchTree;
 	private File searchTreeFile;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
+	private Heuristic heuristic = Heuristic.LEXICOGRAPHIC;  
 	
 	private boolean stop = false;
 	
@@ -123,105 +126,12 @@ public class ROLearner extends LearningAlgorithm {
 		this.learningProblem = learningProblem;
 		this.rs = rs;
 		
-		// rs.getR
-		
 		// this.learningProblem2 = learningProblem2;
 		operator = new RhoDown(learningProblem);
-		
-		// Heuristik je nach Konfiguration einstellen
-		if(Config.Refinement.heuristic == Config.Refinement.Heuristic.LEXICOGRAPHIC)
-			nodeComparator = new NodeComparator();
-		else
-			nodeComparator = new NodeComparator2(learningProblem.getNegativeExamples().size());
 		
 		// candidate sets entsprechend der gewählten Heuristik initialisieren
 		candidates = new TreeSet<Node>(nodeComparator);
 		// newCandidates = new TreeSet<Node>(nodeComparator);
-		
-		// System.out.println("===");		
-		
-		
-		// short concept test
-		// Concept c = DLLearner.parseConcept("((male OR (male OR EXISTS hasChild.TOP)) AND male)");
-		// c = ConceptTransformation.transformToMultiClean(c);
-		// System.out.println("parsed: " + c);
-		// Concept c2 = ConceptTransformation.getShortConcept(c, conceptComparator);
-		// ConceptTransformation.cleanConcept(c);
-		// System.out.println("old:    " + c);
-		// System.out.println("new:    " + c2);
-		// System.exit(0);
-		
-		// Subsumption-Test
-		// Concept superConcept = DLLearner.parseConcept("BOTTOM");
-		// Concept subConcept = DLLearner.parseConcept("TOP");
-		// Concept subConcept = DLLearner.parseConcept("(male AND TOP)");
-		
-		// boolean result = learningProblem.getReasoningService().subsumes(superConcept, subConcept);
-		// System.out.println(result);
-		// System.exit(0);
-		
-		// Set<Concept> superConcepts = new HashSet<Concept>();
-		// superConcepts.add(c1);
-		// superConcepts.add(c2);
-		// Set<Concept> result = learningProblem.getReasoningService().subsumes(superConcepts, subConcept);
-		// System.out.println(result);
-		// System.exit(0);
-		
-		// boolean result = learningProblem.getReasoningService().subsumes(c1, c2);
-		// System.out.println(c1 + " subsumes " + c2 + ": " +result);
-		// System.exit(0);
-		
-		// Subsumption-Hierarchie-Test
-		// Concept c = DLLearner.parseConcept("top");
-		// System.out.println(learningProblem.getReasoningService().getMoreGeneralConcepts(c));
-		// System.exit(0);
-		
-		// Zerlegungstest
-		
-		/*
-		int length = 10;
-		
-		System.out.println("length " + length);
-		long startTime = System.nanoTime();
-		List<List<Integer>> combos2 = ((RhoDown)operator).getCombos(length);
-		long duration = System.nanoTime() - startTime;
-		for(List<Integer> combo : combos2) {
-			System.out.println(combo);
-		}
-		
-		System.out.println("--");
-		startTime = System.nanoTime();
-		RhoDown.summen(length,length,"",0);
-		long duration2 = System.nanoTime() - startTime;
-		System.out.println("--");
-		
-		System.out.println("duration 1: " + Helper.prettyPrintNanoSeconds(duration));
-		System.out.println("duration 2: " + Helper.prettyPrintNanoSeconds(duration2));
-		
-		System.exit(0);	
-		*/
-		
-		
-		// Refinement-Test
-		/*
-		// RhoDown rho = new RhoDown(learningProblem);
-		Concept concept = DLLearner.parseConcept("male");
-		concept = ConceptTransformation.transformToMulti(concept);
-	
-		Set<Concept> refinements = operator.refine(concept, 3, null);
-		
-		
-		System.out.println("=== testing refinements of " + concept + " ===");
-		// rho.computeTopRefinements(5);
-		// for(Concept c : rho.topRefinementsCumulative.get(5)) {
-		// for(Concept c : rho.m.get(3)) {
-		for(Concept c : refinements) {
-			System.out.println(c);
-		}
-		*/
-		
-		
-		// start();
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
@@ -234,6 +144,9 @@ public class ROLearner extends LearningAlgorithm {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new BooleanConfigOption("writeSearchTree", "specifies whether to write a search tree", false));
 		options.add(new StringConfigOption("searchTreeFile","file to use for the search tree", defaultSearchTreeFile));
+		StringConfigOption heuristicOption = new StringConfigOption("heuristic", "specifiy the heuristic to use", "lexicographic");
+		heuristicOption.setAllowedValues(new String[] {"lexicographic", "flexible"});
+		options.add(heuristicOption);
 		return options;
 	}
 	
@@ -247,6 +160,13 @@ public class ROLearner extends LearningAlgorithm {
 			writeSearchTree = (Boolean) entry.getValue();
 		else if(name.equals("searchTreeFile"))
 			searchTreeFile = new File((String)entry.getValue());
+		else if(name.equals("heuristic")) {
+			String value = (String) entry.getValue();
+			if(value.equals("lexicographic"))
+				heuristic = Heuristic.LEXICOGRAPHIC;
+			else
+				heuristic = Heuristic.FLEXIBLE;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -257,6 +177,12 @@ public class ROLearner extends LearningAlgorithm {
 		if(searchTreeFile == null)
 			searchTreeFile = new File(defaultSearchTreeFile);
 
+		// adjust heuristic
+		if(heuristic == Heuristic.LEXICOGRAPHIC)
+			nodeComparator = new NodeComparator();
+		else
+			nodeComparator = new NodeComparator2(learningProblem.getNegativeExamples().size());		
+		
 		// TODO: this needs to be changed
 		Helper.autoDetectConceptsAndRoles(rs);
 		// prepare subsumption and role hierarchies, because they are needed
@@ -895,7 +821,5 @@ public class ROLearner extends LearningAlgorithm {
 	public void stop() {
 		stop = true;
 	}
-
-
 
 }
