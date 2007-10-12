@@ -49,4 +49,32 @@ public final class CommonConfigOptions {
 	public static BooleanConfigOption getOWA() {
 		return new BooleanConfigOption("owa", "open world assumption (if set to false, we try to close the world", true);
 	}
+	
+	public static StringSetConfigOption allowedConcepts() {
+		return new StringSetConfigOption("allowedConcepts", "concepts the algorithm is allowed to use");
+	}
+	
+	public static StringSetConfigOption allowedRoles() {
+		return new StringSetConfigOption("allowedRoles", "roles the algorithm is allowed to use");
+	}
+	
+	public static StringSetConfigOption ignoredConcepts() {
+		return new StringSetConfigOption("ignoredConcepts", "concepts the algorithm must ignore");
+	}
+	
+	public static StringSetConfigOption ignoredRoles() {
+		return new StringSetConfigOption("ignoredRoles", "roles the algorithm must ignore");
+	}	
+	
+	public static BooleanConfigOption useAllConstructor() {
+		return new BooleanConfigOption("useAllConstructor", "specifies whether to universal concept constructor is used in the learning algorothm");
+	}
+	
+	public static BooleanConfigOption useExistsConstructor() {
+		return new BooleanConfigOption("useExistsConstructor", "specifies whether to existential concept constructor is used in the learning algorothm");
+	}
+	
+	public static BooleanConfigOption useNegation() {
+		return new BooleanConfigOption("useNegation", "specifies whether negation is used in the learning algorothm");
+	}
 }

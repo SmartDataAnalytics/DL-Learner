@@ -7,7 +7,6 @@ import org.dllearner.algorithms.gp.GP.AlgorithmType;
 import org.dllearner.algorithms.gp.GP.SelectionType;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
-import org.dllearner.learningproblems.PosNegLP.UseMultiInstanceChecks;
 
 public class Config {
 	// standardmäßig wird bis Tiefe 7 gesucht
@@ -98,13 +97,13 @@ public class Config {
 	// Informationen (Rollen, Konzepte, Individuen, Anzahl Axiome) über
 	// Wissensbasis anzeigen => alles konfigurierbar um Output in Grenzen
 	// zu halten
-	public static boolean showRoles = false;
-	public static boolean showConcepts = false;
-	public static boolean showIndividuals = false;
-	public static boolean showSubsumptionHierarchy = false;
+//	public static boolean showRoles = false;
+//	public static boolean showConcepts = false;
+//	public static boolean showIndividuals = false;
+//	public static boolean showSubsumptionHierarchy = false;
 	// zeigt die interne Wissensbasis an (d.h. keine externen OWL-Dateien)
-	public static boolean showInternalKB = false;
-	public static int maxLineLength = 100;
+//	public static boolean showInternalKB = false;
+//	public static int maxLineLength = 100;
 
 	// public static boolean writeDIGProtocol = false;
 	// public static File digProtocolFile = new File("log/digProtocol.txt");
@@ -145,7 +144,7 @@ public class Config {
 		// ausgeführt
 		// werden, bevor too weak festgestellt werden kann
 		// TODO: not implemented
-		public static UseMultiInstanceChecks useDIGMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
+//		public static UseMultiInstanceChecks useDIGMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
 
 		// geplante Optionen um den Suchraum einzuschränken
 
@@ -185,7 +184,7 @@ public class Config {
 		// Domain und Range beim Verschachteln von Rollen beachten
 		// nicht implementiert
 		// TODO: Wie soll man das in DIG machen?
-		public static boolean useDomainRange = false;
+//		public static boolean useDomainRange = false;
 
 		// bereits vorher allgemeinere Konzepte festlegen (Default: keine)
 		// nicht implementiert

@@ -13,8 +13,10 @@ import java.util.TreeSet;
 
 import org.dllearner.Config;
 import org.dllearner.core.BooleanConfigOption;
+import org.dllearner.core.CommonConfigOptions;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
+import org.dllearner.core.DoubleConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
@@ -142,6 +144,25 @@ public class ROLearner extends LearningAlgorithm {
 		StringConfigOption heuristicOption = new StringConfigOption("heuristic", "specifiy the heuristic to use", "lexicographic");
 		heuristicOption.setAllowedValues(new String[] {"lexicographic", "flexible"});
 		options.add(heuristicOption);
+		options.add(new BooleanConfigOption("applyAllFilter", "usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)", true));
+		options.add(new BooleanConfigOption("applyExistsFilter", "usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)", true));
+		options.add(new BooleanConfigOption("useTooWeakList", "try to filter out too weak concepts without sending them to the reasoner", true));
+		options.add(new BooleanConfigOption("useOverlyGeneralList", "try to find overly general concept without sending them to the reasoner", true));
+		options.add(new BooleanConfigOption("useShortConceptConstruction", "shorten concept to see whether they already exist", true));
+		DoubleConfigOption horizExp = new DoubleConfigOption("horizontalExpansionFactor", "horizontal expansion factor (see publication for description)", 0.6);
+		horizExp.setLowerLimit(0.0);
+		horizExp.setUpperLimit(1.0);
+		options.add(horizExp);
+		options.add(new BooleanConfigOption("improveSubsumptionHierarchy", "simplify subsumption hierarchy to reduce search space (see publication for description)", true));
+		// TODO: replace by a general verbosity option for all components
+		options.add(new BooleanConfigOption("quiet", "may be deprecated soon", false));
+		options.add(CommonConfigOptions.allowedConcepts());
+		options.add(CommonConfigOptions.ignoredConcepts());
+		options.add(CommonConfigOptions.allowedRoles());
+		options.add(CommonConfigOptions.ignoredRoles());
+		options.add(CommonConfigOptions.useAllConstructor());
+		options.add(CommonConfigOptions.useExistsConstructor());
+		options.add(CommonConfigOptions.useNegation());		
 		return options;
 	}
 	
