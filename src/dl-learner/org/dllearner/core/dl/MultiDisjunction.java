@@ -1,6 +1,7 @@
 package org.dllearner.core.dl;
 
 import java.util.List;
+import java.util.Map;
 
 public class MultiDisjunction extends Concept {
 
@@ -34,17 +35,16 @@ public class MultiDisjunction extends Concept {
 		}
 		return length + children.size() - 1;		
 	}
-
-	@Override		
-	public String toString() {
+	
+	public String toString(String baseURI, Map<String,String> prefixes) {
 		if(children.size()==0)
 			return "EMPTY_OR";
 		
 		String ret = "(";
 		for(int i=0; i<children.size()-1; i++) {
-			ret += children.get(i).toString() + " OR "; 
+			ret += children.get(i).toString(baseURI, prefixes) + " OR "; 
 		}
-		ret += children.get(children.size()-1).toString() + ")";
+		ret += children.get(children.size()-1).toString(baseURI, prefixes) + ")";
 		return ret;
 	}	
 	

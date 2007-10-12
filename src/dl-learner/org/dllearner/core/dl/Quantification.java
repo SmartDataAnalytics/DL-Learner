@@ -1,6 +1,6 @@
 package org.dllearner.core.dl;
 
-public class Quantification extends Concept {
+public abstract class Quantification extends Concept {
 
 	Role role;
 	

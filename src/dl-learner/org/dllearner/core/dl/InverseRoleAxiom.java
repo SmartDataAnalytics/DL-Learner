@@ -1,6 +1,8 @@
 package org.dllearner.core.dl;
 
-public class InverseRoleAxiom implements RBoxAxiom {
+import java.util.Map;
+
+public class InverseRoleAxiom extends RBoxAxiom {
 
 	private AtomicRole inverseRole;
 	private AtomicRole role;
@@ -22,8 +24,7 @@ public class InverseRoleAxiom implements RBoxAxiom {
 		return 1 + role.getLength() + inverseRole.getLength();
 	}
 	
-	@Override		
-	public String toString() {
-		return "Inverse(" + inverseRole + "," + role.toString() + ")";
+	public String toString(String baseURI, Map<String,String> prefixes) {
+		return "Inverse(" + inverseRole + "," + role.toString(baseURI, prefixes) + ")";
 	}	
 }

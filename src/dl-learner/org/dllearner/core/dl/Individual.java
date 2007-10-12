@@ -1,5 +1,7 @@
 package org.dllearner.core.dl;
 
+import java.util.Map;
+
 import org.dllearner.utilities.Helper;
 
 /**
@@ -40,11 +42,11 @@ public class Individual implements KBElement, Comparable<Individual> {
 
     @Override
     public String toString() {
-    	String prefixToHide = Helper.findPrefixToHide(name); 
-    		
-    	if(prefixToHide != null)
-    		return name.substring(prefixToHide.length());
-    	else
+//    	String prefixToHide = Helper.findPrefixToHide(name); 
+//    		
+//    	if(prefixToHide != null)
+//    		return name.substring(prefixToHide.length());
+//    	else
     	    return name;
     }
 
@@ -56,6 +58,9 @@ public class Individual implements KBElement, Comparable<Individual> {
 	public boolean equals(Object o) {
 		return (compareTo((Individual)o)==0);
 	}
-
+	
+    public String toString(String baseURI, Map<String,String> prefixes) {
+    	return Helper.getAbbreviatedString(name, baseURI, prefixes);
+    }
 
 }

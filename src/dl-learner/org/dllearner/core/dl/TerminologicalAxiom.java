@@ -1,5 +1,5 @@
 package org.dllearner.core.dl;
 
-public interface TerminologicalAxiom extends Axiom {
+public abstract class TerminologicalAxiom extends Axiom {
 
 }

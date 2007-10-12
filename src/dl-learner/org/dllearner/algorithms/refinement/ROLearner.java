@@ -126,12 +126,7 @@ public class ROLearner extends LearningAlgorithm {
 		this.learningProblem = learningProblem;
 		this.rs = rs;
 		
-		// this.learningProblem2 = learningProblem2;
-		operator = new RhoDown(learningProblem);
-		
-		// candidate sets entsprechend der gewählten Heuristik initialisieren
-		candidates = new TreeSet<Node>(nodeComparator);
-		// newCandidates = new TreeSet<Node>(nodeComparator);
+
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
@@ -182,6 +177,13 @@ public class ROLearner extends LearningAlgorithm {
 			nodeComparator = new NodeComparator();
 		else
 			nodeComparator = new NodeComparator2(learningProblem.getNegativeExamples().size(), learningProblem.getPercentPerLengthUnit());		
+		
+		// this.learningProblem2 = learningProblem2;
+		operator = new RhoDown(learningProblem);
+		
+		// candidate sets entsprechend der gewählten Heuristik initialisieren
+		candidates = new TreeSet<Node>(nodeComparator);
+		// newCandidates = new TreeSet<Node>(nodeComparator);
 		
 		// TODO: this needs to be changed
 		Helper.autoDetectConceptsAndRoles(rs);

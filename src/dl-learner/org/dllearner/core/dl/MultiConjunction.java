@@ -1,6 +1,7 @@
 package org.dllearner.core.dl;
 
 import java.util.List;
+import java.util.Map;
 
 public class MultiConjunction extends Concept {
 
@@ -33,16 +34,15 @@ public class MultiConjunction extends Concept {
 		return length + children.size() - 1;
 	}
 
-	@Override		
-	public String toString() {
+	public String toString(String baseURI, Map<String,String> prefixes) {
 		if(children.size()==0)
 			return "EMPTY_AND";
 		
 		String ret = "(";
 		for(int i=0; i<children.size()-1; i++) {
-			ret += children.get(i).toString() + " AND "; 
+			ret += children.get(i).toString(baseURI, prefixes) + " AND "; 
 		}
-		ret += children.get(children.size()-1).toString() + ")";
+		ret += children.get(children.size()-1).toString(baseURI, prefixes) + ")";
 		return ret;
 	}
 	

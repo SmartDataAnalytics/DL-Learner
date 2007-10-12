@@ -1,6 +1,8 @@
 package org.dllearner.core.dl;
 
-public class TransitiveRoleAxiom implements RBoxAxiom {
+import java.util.Map;
+
+public class TransitiveRoleAxiom extends RBoxAxiom {
 
 	private Role role;
 	
@@ -16,8 +18,7 @@ public class TransitiveRoleAxiom implements RBoxAxiom {
 		return role;
 	}
 	
-	@Override		
-	public String toString() {
-		return "Transitive(" + role.toString() + ")";
-	}	
+	public String toString(String baseURI, Map<String,String> prefixes) {
+		return "Transitive(" + role.toString(baseURI, prefixes) + ")";
+	}
 }

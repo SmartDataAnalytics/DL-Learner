@@ -1,5 +1,7 @@
 package org.dllearner.core.dl;
 
+import java.util.Map;
+
 import org.dllearner.utilities.Helper;
 
 public class AtomicRole extends Role {
@@ -15,12 +17,16 @@ public class AtomicRole extends Role {
 	
 	@Override		
 	public String toString() {
-		String name = getName();
-    	String prefixToHide = Helper.findPrefixToHide(name); 
-		
-    	if(prefixToHide != null)
-    		return name.substring(prefixToHide.length());
-    	else
+//		String name = getName();
+//    	String prefixToHide = Helper.findPrefixToHide(name); 
+//		
+//    	if(prefixToHide != null)
+//    		return name.substring(prefixToHide.length());
+//    	else
     	    return name;
 	}
+	
+    public String toString(String baseURI, Map<String,String> prefixes) {
+    	return Helper.getAbbreviatedString(name, baseURI, prefixes);
+    }
 }

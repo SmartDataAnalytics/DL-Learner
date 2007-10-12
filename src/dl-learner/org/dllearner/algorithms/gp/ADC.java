@@ -1,5 +1,7 @@
 package org.dllearner.algorithms.gp;
 
+import java.util.Map;
+
 import org.dllearner.core.dl.Concept;
 
 public class ADC extends Concept {
@@ -19,8 +21,7 @@ public class ADC extends Concept {
 		return 1;
 	}
 
-	@Override
-	public String toString() {
+	public String toString(String baseURI, Map<String,String> prefixes) {
 		return "ADC";
 	}
 

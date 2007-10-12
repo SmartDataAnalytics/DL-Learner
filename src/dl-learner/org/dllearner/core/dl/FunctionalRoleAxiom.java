@@ -1,6 +1,8 @@
 package org.dllearner.core.dl;
 
-public class FunctionalRoleAxiom implements RBoxAxiom {
+import java.util.Map;
+
+public class FunctionalRoleAxiom extends RBoxAxiom {
 
 	private AtomicRole role;
 	
@@ -15,9 +17,8 @@ public class FunctionalRoleAxiom implements RBoxAxiom {
 	public int getLength() {
 		return 1 + role.getLength();
 	}
-	
-	@Override		
-	public String toString() {
-		return "Functional(" + role.toString() + ")";
+		
+	public String toString(String baseURI, Map<String,String> prefixes) {
+		return "Functional(" + role.toString(baseURI, prefixes) + ")";
 	}
 }

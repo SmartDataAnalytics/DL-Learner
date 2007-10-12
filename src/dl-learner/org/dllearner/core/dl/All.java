@@ -1,5 +1,7 @@
 package org.dllearner.core.dl;
 
+import java.util.Map;
+
 
 public class All extends Quantification {
     
@@ -83,10 +85,9 @@ public class All extends Quantification {
         return true;
     }    
     */
-    
-	@Override		
-    public String toString() {
-        return "ALL " + role + "." + children.get(0).toString();
+    	
+    public String toString(String baseURI, Map<String,String> prefixes) {
+        return "ALL " + role + "." + children.get(0).toString(baseURI, prefixes);
     }
 
     /*

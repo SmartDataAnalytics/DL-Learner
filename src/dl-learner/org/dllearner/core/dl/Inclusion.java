@@ -1,6 +1,8 @@
 package org.dllearner.core.dl;
 
-public class Inclusion implements TerminologicalAxiom {
+import java.util.Map;
+
+public class Inclusion extends TerminologicalAxiom {
 	
 	private Concept subConcept;
 	private Concept superConcept;
@@ -22,8 +24,7 @@ public class Inclusion implements TerminologicalAxiom {
 		return 1 + subConcept.getLength() + superConcept.getLength();
 	}
 	
-	@Override		
-	public String toString() {
-		return subConcept.toString() + " SUBCONCEPTOF " + superConcept.toString();
+	public String toString(String baseURI, Map<String,String> prefixes) {
+		return subConcept.toString(baseURI, prefixes) + " SUBCONCEPTOF " + superConcept.toString(baseURI, prefixes);
 	}
 }

@@ -1,6 +1,8 @@
 package org.dllearner.core.dl;
 
-public class SymmetricRoleAxiom implements RBoxAxiom {
+import java.util.Map;
+
+public class SymmetricRoleAxiom extends RBoxAxiom {
 
 	private AtomicRole role;
 	
@@ -16,8 +18,7 @@ public class SymmetricRoleAxiom implements RBoxAxiom {
 		return 1 + role.getLength();
 	}
 	
-	@Override		
-	public String toString() {
-		return "Symmetric(" + role.toString() + ")";
+	public String toString(String baseURI, Map<String,String> prefixes) {
+		return "Symmetric(" + role.toString(baseURI, prefixes) + ")";
 	}	
 }

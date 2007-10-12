@@ -3,6 +3,7 @@ package org.dllearner.reasoning;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,8 +15,9 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.Config;
+import org.dllearner.core.CommonConfigOptions;
 import org.dllearner.core.ConfigEntry;
+import org.dllearner.core.ConfigOption;
 import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.dl.All;
@@ -75,6 +77,9 @@ import org.semanticweb.kaon2.api.reasoner.SubsumptionHierarchy.Node;
  */
 public class KAON2Reasoner extends ReasonerComponent {
 
+	// configuration options
+	private boolean una = false;
+	
 	ConceptComparator conceptComparator = new ConceptComparator();
 	
 	Set<AtomicConcept> atomicConcepts;
@@ -198,7 +203,7 @@ public class KAON2Reasoner extends ReasonerComponent {
 
 			// je nachdem, ob unique names assumption aktiviert ist, muss
 			// man jetzt noch hinzuf�gen, dass die Individuen verschieden sind
-			if (Config.una) {
+			if (una) {
 				Set<org.semanticweb.kaon2.api.owl.elements.Individual> individualsSet = new HashSet<org.semanticweb.kaon2.api.owl.elements.Individual>();
 				for (Individual individual : individuals)
 					individualsSet.add(KAON2Manager.factory().individual(individual.getName()));
@@ -699,15 +704,15 @@ public class KAON2Reasoner extends ReasonerComponent {
 		Formula f = null;
 
 		// falls closed world assumption, dann reicht default negation
-		if (Config.owa)
+//		if (Config.owa)
 			// wegen BUG IN KAON2 momentan auskommentiert
 			// f = KAON2Manager.factory().classicalNegation(l);
-			;
-		else
+//			;
+//		else
 			f = KAON2Manager.factory().defaultNegation(l);
 
 		// if-Teil entf�llt, sobald Bug in KAON2 gefixt wurde
-		if (!Config.owa) {
+//		if (!Config.owa) {
 			// ClassicalNegation cn =
 			// KAON2Manager.factory().classicalNegation(l);
 			try {
@@ -736,7 +741,7 @@ public class KAON2Reasoner extends ReasonerComponent {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+//		}
 
 		return returnMap;
 	}
@@ -766,13 +771,20 @@ public class KAON2Reasoner extends ReasonerComponent {
 		return individuals;
 	}
 
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		options.add(CommonConfigOptions.getUNA());
+		return options;
+	}	
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		// TODO Auto-generated method stub
-		
+		String name = entry.getOptionName();
+		if(name.equals("una"))
+			una = (Boolean) entry.getValue();
 	}
 
 	/* (non-Javadoc)

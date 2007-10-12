@@ -41,4 +41,12 @@ public final class CommonConfigOptions {
 	public static StringConfigOption getReturnType() {
 		return new StringConfigOption("returnType", "Specifies the type which the solution has to belong to (if already) known. This means we inform the learning algorithm that the solution is a subclass of this type.");
 	}
+	
+	public static BooleanConfigOption getUNA() {
+		return new BooleanConfigOption("una", "unique names assumption", false);
+	}
+	
+	public static BooleanConfigOption getOWA() {
+		return new BooleanConfigOption("owa", "open world assumption (if set to false, we try to close the world", true);
+	}
 }

@@ -1,6 +1,6 @@
 package org.dllearner.core.dl;
 
-
+import java.util.Map;
 
 public class Top extends Concept {
 
@@ -12,8 +12,7 @@ public class Top extends Concept {
     }
     */
 
-	@Override		
-    public String toString() {
+    public String toString(String baseURI, Map<String,String> prefixes) {
         return "TOP";
     }
 

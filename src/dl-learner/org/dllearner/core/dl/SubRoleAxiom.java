@@ -1,6 +1,8 @@
 package org.dllearner.core.dl;
 
-public class SubRoleAxiom implements RBoxAxiom {
+import java.util.Map;
+
+public class SubRoleAxiom extends RBoxAxiom {
 
 	private AtomicRole role;
 	private AtomicRole subRole;
@@ -21,9 +23,8 @@ public class SubRoleAxiom implements RBoxAxiom {
 	public int getLength() {
 		return 1 + role.getLength() + subRole.getLength();
 	}
-	
-	@Override		
-	public String toString() {
-		return "Subrole(" + subRole + "," + role.toString() + ")";
+		
+	public String toString(String baseURI, Map<String,String> prefixes) {
+		return "Subrole(" + subRole.toString(baseURI, prefixes) + "," + role.toString(baseURI, prefixes) + ")";
 	}		
 }
