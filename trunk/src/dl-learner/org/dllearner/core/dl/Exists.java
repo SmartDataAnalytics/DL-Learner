@@ -1,5 +1,7 @@
 package org.dllearner.core.dl;
 
+import java.util.Map;
+
 
 public class Exists extends Quantification {
 
@@ -85,9 +87,8 @@ public class Exists extends Quantification {
     }
     */
     
-	@Override	    
-    public String toString() {
-        return "EXISTS " + role + "." + children.get(0).toString();
+    public String toString(String baseURI, Map<String,String> prefixes) {
+        return "EXISTS " + role.toString(baseURI, prefixes) + "." + children.get(0).toString(baseURI, prefixes);
     }
 
     /*

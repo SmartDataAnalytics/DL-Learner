@@ -1,6 +1,7 @@
 package org.dllearner.core.dl;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -155,22 +156,20 @@ public class KB implements KBElement {
 			length += a.getLength();
 		return length;
 	}
-	
-	@Override		
-	public String toString() {
+		
+	public String toString(String baseURI, Map<String,String> prefixes) {
 		String str = "TBox["+tbox.size()+"]:\n";
 		for(Axiom a : tbox)
-			str += "  " + a.toString()+"\n";
+			str += "  " + a.toString(baseURI, prefixes)+"\n";
 		str += "RBox["+rbox.size()+"]:\n";
 		for(Axiom a : rbox)
-			str += "  " + a.toString()+"\n";
+			str += "  " + a.toString(baseURI, prefixes)+"\n";
 		str += "ABox["+abox.size()+"]:\n";
 		for(Axiom a : abox)
-			str += "  " + a.toString()+"\n";
+			str += "  " + a.toString(baseURI, prefixes)+"\n";
 		return str;
 	}
 	
-
 	public Set<Individual> findRelatedIndividuals(Individual individual) {
 		return findRelatedIndividuals(individual, new TreeSet<Individual>());
 	}

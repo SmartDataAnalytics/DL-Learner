@@ -1,5 +1,7 @@
 package org.dllearner.core.dl;
 
+import java.util.Map;
+
 
 public class Disjunction extends Concept {
 
@@ -19,9 +21,8 @@ public class Disjunction extends Concept {
 		addChild(c2);
 	}
 	
-	@Override		
-    public String toString() {
-        return "(" + children.get(0).toString() + " OR " + children.get(1).toString() + ")";
+    public String toString(String baseURI, Map<String,String> prefixes) {
+        return "(" + children.get(0).toString(baseURI, prefixes) + " OR " + children.get(1).toString(baseURI, prefixes) + ")";
     }
 
 	public int getLength() {

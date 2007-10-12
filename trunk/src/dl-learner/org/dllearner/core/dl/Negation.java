@@ -1,5 +1,7 @@
 package org.dllearner.core.dl;
 
+import java.util.Map;
+
 
 public class Negation extends Concept {
 
@@ -16,9 +18,8 @@ public class Negation extends Concept {
 		addChild(c);
 	}
 	
-	@Override		
-    public String toString() {
-        return "(NOT " +children.get(0).toString() + ")";
+    public String toString(String baseURI, Map<String,String> prefixes) {
+        return "(NOT " +children.get(0).toString(baseURI, prefixes) + ")";
     }
 
 	public int getLength() {

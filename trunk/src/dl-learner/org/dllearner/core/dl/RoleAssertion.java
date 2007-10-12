@@ -1,6 +1,8 @@
 package org.dllearner.core.dl;
 
-public class RoleAssertion implements AssertionalAxiom {
+import java.util.Map;
+
+public class RoleAssertion extends AssertionalAxiom {
 
 	private AtomicRole role;
 	private Individual individual1;
@@ -28,8 +30,7 @@ public class RoleAssertion implements AssertionalAxiom {
 		return 2 + role.getLength();
 	}
 
-	@Override		
-	public String toString() {
-		return role.toString() + "(" + individual1 + "," + individual2 +")";
+	public String toString(String baseURI, Map<String,String> prefixes) {
+		return role.toString(baseURI, prefixes) + "(" + individual1.toString(baseURI, prefixes) + "," + individual2.toString(baseURI, prefixes) +")";
 	}
 }

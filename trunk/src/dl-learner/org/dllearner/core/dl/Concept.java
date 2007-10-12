@@ -269,4 +269,10 @@ public abstract class Concept implements Cloneable, KBElement {
     public Concept getChild(int i) {
         return children.get(i);
     }
+    
+	@Override
+	public String toString() {
+		return toString(null, null);
+	}
+    
 }

@@ -1,8 +1,6 @@
 package org.dllearner;
 
 import java.lang.reflect.Field;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.dllearner.algorithms.gp.GP.AlgorithmType;
@@ -80,22 +78,22 @@ public class Config {
 	// public static URL digReasonerURL = null;
 
 	// unique names assumption
-	public static boolean una = false;
+	// public static boolean una = false;
 
 	// open world assumption; momentan wird closed world assumption nur
 	// fuer Rollen unterstuetzt
-	public static boolean owa = true;
+	// public static boolean owa = true;
 
 	// an-/abschalten von System.nanoTime()-Aufrufen außerhalb des
 	// Reasoningservice
-	public static boolean useNonReasonerBenchmarks = false;
+	// public static boolean useNonReasonerBenchmarks = false;
 
 	// erlaubt das abschalten von Benchmarks bei der Subsumptionhierarchie,
 	// da diese ohnehin gecacht wird, also die System.nanoTime()-Aufrufe nur
 	// Zeit kosten
 	// public static boolean useHierarchyReasonerBenchmarks = false;
 
-	public static List<String> hidePrefixes = new LinkedList<String>();
+	// public static List<String> hidePrefixes = new LinkedList<String>();
 
 	// Informationen (Rollen, Konzepte, Individuen, Anzahl Axiome) über
 	// Wissensbasis anzeigen => alles konfigurierbar um Output in Grenzen

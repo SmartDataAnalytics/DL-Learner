@@ -1,6 +1,8 @@
 package org.dllearner.core.dl;
 
-public class Equality implements TerminologicalAxiom {
+import java.util.Map;
+
+public class Equality extends TerminologicalAxiom {
 	
 	private Concept concept1;
 	private Concept concept2;
@@ -21,9 +23,8 @@ public class Equality implements TerminologicalAxiom {
 	public int getLength() {
 		return 1 + concept1.getLength() + concept2.getLength();
 	}
-	
-	@Override		
-	public String toString() {
-		return concept1.toString() + " = " + concept2.toString();
+			
+	public String toString(String baseURI, Map<String,String> prefixes) {
+		return concept1.toString(baseURI, prefixes) + " = " + concept2.toString(baseURI, prefixes);
 	}
 }

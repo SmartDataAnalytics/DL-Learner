@@ -1,5 +1,7 @@
 package org.dllearner.core.dl;
 
+import java.util.Map;
+
 import org.dllearner.utilities.Helper;
 
 
@@ -34,11 +36,11 @@ public class AtomicConcept extends Concept {
     public String toString() {
     	// es soll ein Prefix ausgeblendet werden um Konzepte
     	// lesbarer zu machen (z.B. http://blabla.org/bla/bla#eigentlicher Name
-    	String prefixToHide = Helper.findPrefixToHide(name); 
-    		
-    	if(prefixToHide != null)
-    		return name.substring(prefixToHide.length());
-    	else
+//    	String prefixToHide = Helper.findPrefixToHide(name); 
+//    		
+//    	if(prefixToHide != null)
+//    		return name.substring(prefixToHide.length());
+//    	else
     	    return name;
     }
 
@@ -51,4 +53,8 @@ public class AtomicConcept extends Concept {
 		return 0;
 	}
 
+    public String toString(String baseURI, Map<String,String> prefixes) {
+    	return Helper.getAbbreviatedString(name, baseURI, prefixes);
+    }
+	
 }

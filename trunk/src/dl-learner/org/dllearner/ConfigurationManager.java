@@ -86,7 +86,7 @@ public class ConfigurationManager {
 //		}
 		
 		// der parserinterne Namespace wird immer ausgeblendet
-		Config.hidePrefixes.add(KBParser.internalNamespace);
+		; // Config.hidePrefixes.add(KBParser.internalNamespace);
 		
 	}
 	
@@ -422,9 +422,9 @@ public class ConfigurationManager {
 		else if (option.equals("statMode"))
 			; // Config.statisticMode = Datastructures.strToBool(value);
 		else if (option.equals("una"))
-			Config.una = Datastructures.strToBool(value);		
+			; // Config.una = Datastructures.strToBool(value);		
 		else if (option.equals("owa"))
-			Config.owa = Datastructures.strToBool(value);		
+			; // Config.owa = Datastructures.strToBool(value);		
 		else if (option.equals("gp.useFixedNumberOfGenerations"))
 			Config.GP.useFixedNumberOfGenerations = Datastructures.strToBool(value);
 //		else if (option.equals("scoreMethod")) {
@@ -452,7 +452,7 @@ public class ConfigurationManager {
 //				Config.GP.mutationProbability = 0.0d;
 //			}
 		else if(option.equals("hidePrefix")) {
-			Config.hidePrefixes.add(value);
+//			Config.hidePrefixes.add(value);
 		} else if (option.equals("showIndividuals")) {
 			Config.showIndividuals = Datastructures.strToBool(value);
 		} else if (option.equals("showConcepts")) {

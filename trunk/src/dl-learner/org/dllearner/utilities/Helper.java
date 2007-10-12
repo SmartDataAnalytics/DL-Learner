@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.dllearner.Config;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
@@ -69,12 +70,40 @@ public class Helper {
 	// sucht, ob der übergebene String mit einem Prefix beginnt der
 	// versteckt werden soll und gibt diesen zurück, ansonsten wird
 	// null zurück gegeben
-	public static String findPrefixToHide(String name) {
-    	for(String prefix : Config.hidePrefixes) {
-    		if(name.startsWith(prefix))
-    			return prefix;
-    	}		
-    	return null;
+//	public static String findPrefixToHide(String name) {
+//    	for(String prefix : Config.hidePrefixes) {
+//    		if(name.startsWith(prefix))
+//    			return prefix;
+//    	}		
+//    	return null;
+//	}
+	
+	/**
+	 * 
+	 * Transforms an URI to an abbreviated version, e.g. if the base URI is
+	 * "http://example.com/" and the uri is "http://example.com/test", then 
+	 * "test" is returned. If the the uri is "http://anotherexample.com/test2"
+	 * and a prefix "ns1" is given for "http://anotherexample.com", then
+	 * "ns1:test2" is returned. If there is no match, uri is returned.
+	 * 
+	 * @param uri The full uri, which should be transformed to an abbreviated version.
+	 * @param baseURI The base uri (ignored if null).
+	 * @param prefixes A prefix map (ignored if null), where each entry contains a short string e.g. ns1
+	 * as key and the corresponding uri as value.
+	 * @return Abbreviated version of the parameter uri.
+	 */
+	public static String getAbbreviatedString(String uri, String baseURI, Map<String,String> prefixes) {
+		if(baseURI != null && uri.startsWith(baseURI)) {
+			return uri.substring(baseURI.length());
+		} else {
+			if(prefixes != null) {
+				for(Entry<String,String> prefix : prefixes.entrySet()) {
+					if(uri.startsWith(prefix.getValue()))
+						return prefix.getKey() + ":" + uri.substring(prefix.getValue().length());
+				}
+			}
+			return uri;
+		}
 	}
 	
 	public static String prettyPrintNanoSeconds(long nanoSeconds) {

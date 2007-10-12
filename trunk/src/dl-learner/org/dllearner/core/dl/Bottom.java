@@ -1,5 +1,7 @@
 package org.dllearner.core.dl;
 
+import java.util.Map;
+
 
 
 public class Bottom extends Concept {
@@ -11,8 +13,8 @@ public class Bottom extends Concept {
         negSet = abox.top;
     }
     */
-	@Override	
-    public String toString() {
+	
+    public String toString(String baseURI, Map<String,String> prefixes) {
         return "BOTTOM";
     }
 

@@ -1,6 +1,8 @@
 package org.dllearner.core.dl;
 
-public class ConceptAssertion implements AssertionalAxiom {
+import java.util.Map;
+
+public class ConceptAssertion extends AssertionalAxiom {
 	
 	private Concept concept;
 	private Individual individual;
@@ -21,9 +23,8 @@ public class ConceptAssertion implements AssertionalAxiom {
 	public int getLength() {
 		return 1 + concept.getLength();
 	}
-	
-	@Override		
-	public String toString() {
-		return concept.toString() + "(" + individual + ")";
+		
+	public String toString(String baseURI, Map<String,String> prefixes) {
+		return concept.toString(baseURI, prefixes) + "(" + individual + ")";
 	}
 }

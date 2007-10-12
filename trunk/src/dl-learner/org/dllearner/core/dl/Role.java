@@ -1,8 +1,10 @@
 package org.dllearner.core.dl;
 
+import java.util.Map;
+
 public abstract class Role implements KBElement {
 
-	private String name;
+	protected String name;
 	
 	public Role(String name) {
 		this.name = name;
@@ -11,4 +13,5 @@ public abstract class Role implements KBElement {
 	public String getName() {
 		return name;
 	}
+	
 }

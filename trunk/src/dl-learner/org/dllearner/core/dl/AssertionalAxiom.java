@@ -1,5 +1,5 @@
 package org.dllearner.core.dl;
 
-public interface AssertionalAxiom extends Axiom {
+public abstract class AssertionalAxiom extends Axiom {
 
 }

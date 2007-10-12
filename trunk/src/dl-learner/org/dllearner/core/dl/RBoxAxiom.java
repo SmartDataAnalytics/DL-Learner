@@ -1,5 +1,5 @@
 package org.dllearner.core.dl;
 
-public interface RBoxAxiom extends Axiom {
+public abstract class RBoxAxiom extends Axiom {
 
 }

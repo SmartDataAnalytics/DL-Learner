@@ -1,5 +1,7 @@
 package org.dllearner.core.dl;
 
+import java.util.Map;
+
 public class LessEqual extends NumberRestriction {
 
 	public LessEqual(int number, Role role, Concept c) {
@@ -11,8 +13,7 @@ public class LessEqual extends NumberRestriction {
 		return 1;
 	}	
 
-	@Override
-	public String toString() {
-		return "<= " + number + " " + role + " " + getChild(0);
+	public String toString(String baseURI, Map<String,String> prefixes) {
+		return "<= " + number + " " + role.toString(baseURI, prefixes) + " " + getChild(0).toString(baseURI, prefixes);
 	}	
 }
