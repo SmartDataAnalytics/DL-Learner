@@ -4,6 +4,19 @@ This file contains an automatically generated files of all components and their 
 * Knowledge Sources *
 *********************
 
+component: KB file (org.dllearner.kb.KBFile)
+============================================
+
+option name: filename
+description: pointer to the KB file on local file system
+values: none
+default value: null
+
+option name: url
+description: URL pointer to the KB file
+values: none
+default value: null
+
 component: OWL file (org.dllearner.kb.OWLFile)
 ==============================================
 
@@ -12,24 +25,116 @@ description: URL pointing to the OWL file
 values: none
 default value: null
 
+component: SPARQL Endpoint (org.dllearner.kb.SparqlEndpoint)
+============================================================
+
+option name: url
+description: URL of SPARQL Endpoint
+values: none
+default value: null
+
+option name: instances
+description: relevant instances e.g. positive and negative examples in a learning problem
+values: none
+default value: null
+
+option name: numberOfRecursions
+description: number of Recursions, the Sparql-Endpoint is asked
+values: none
+default value: null
+
+option name: filterMode
+description: the mode of the SPARQL Filter
+values: none
+default value: null
+
+option name: predList
+description: a predicate list
+values: none
+default value: null
+
+option name: objList
+description: an object list
+values: none
+default value: null
+
+option name: classList
+description: a class list
+values: none
+default value: null
+
+option name: format
+description: N-TRIPLES or KB format
+values: none
+default value: null
+
+option name: dumpToFile
+description: wether Ontology from DBPedia is written to a file or not
+values: none
+default value: null
+
 *************
 * Reasoners *
 *************
 
-component: DIG reasoner (org.dllearner.reasoning.DIGReasonerNew)
-================================================================
+component: DIG reasoner (org.dllearner.reasoning.DIGReasoner)
+=============================================================
 
 option name: reasonerUrl
 description: URL of the DIG reasoner
 values: none
 default value: null
 
+option name: writeDIGProtocol
+description: specifies whether or not to write a protocoll of send and received DIG requests
+values: none
+default value: false
+
+option name: digProtocolFile
+description: the file to store the DIG protocol
+values: none
+default value: log/digProtocol.txt
+
+component: unnamed component (org.dllearner.reasoning.FastRetrievalReasoner)
+============================================================================
+
+component: unnamed component (org.dllearner.reasoning.KAON2Reasoner)
+====================================================================
+
+option name: una
+description: unique names assumption
+values: none
+default value: false
+
 *********************
 * Learning Problems *
 *********************
 
-component: two valued definition learning problem (org.dllearner.learningproblems.DefinitionLPTwoValued)
-========================================================================================================
+component: two valued definition learning problem (org.dllearner.learningproblems.PosNegDefinitionLP)
+=====================================================================================================
+
+option name: positiveExamples
+description: positive examples
+values: none
+default value: null
+
+option name: negativeExamples
+description: negative examples
+values: none
+default value: null
+
+option name: useRetrievalForClassficiation
+description: Specifies whether to use retrieval or instance checks for testing a concept.
+values: none
+default value: null
+
+option name: percentPerLenghtUnit
+description: describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one
+values: none
+default value: 0.05
+
+component: inclusion learning problem (org.dllearner.learningproblems.PosNegInclusionLP)
+========================================================================================
 
 option name: positiveExamples
 description: positive examples
@@ -50,6 +155,19 @@ default value: null
 * Learning Algorithms *
 ***********************
 
+component: unnamed component (org.dllearner.algorithms.BruteForceLearner)
+=========================================================================
+
+option name: maxLength
+description: maximum length of generated concepts
+values: none
+default value: null
+
+option name: returnType
+description: Specifies the type which the solution has to belong to (if already) known. This means we inform the learning algorithm that the solution is a subclass of this type.
+values: none
+default value: null
+
 component: unnamed component (org.dllearner.algorithms.RandomGuesser)
 =====================================================================
 
@@ -62,4 +180,25 @@ option name: maxDepth
 description: maximum depth of generated concepts/trees
 values: none
 default value: null
+
+component: unnamed component (org.dllearner.algorithms.gp.GP)
+=============================================================
+
+component: refinement operator based learning algorithm (org.dllearner.algorithms.refinement.ROLearner)
+=======================================================================================================
+
+option name: writeSearchTree
+description: specifies whether to write a search tree
+values: none
+default value: false
+
+option name: searchTreeFile
+description: file to use for the search tree
+values: none
+default value: log/searchTree.txt
+
+option name: heuristic
+description: specifiy the heuristic to use
+values: none
+default value: lexicographic
 
