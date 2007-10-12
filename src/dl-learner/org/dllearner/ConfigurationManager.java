@@ -454,15 +454,15 @@ public class ConfigurationManager {
 		else if(option.equals("hidePrefix")) {
 //			Config.hidePrefixes.add(value);
 		} else if (option.equals("showIndividuals")) {
-			Config.showIndividuals = Datastructures.strToBool(value);
+//			Config.showIndividuals = Datastructures.strToBool(value);
 		} else if (option.equals("showConcepts")) {
-			Config.showConcepts = Datastructures.strToBool(value);
+//			Config.showConcepts = Datastructures.strToBool(value);
 		} else if (option.equals("showRoles")) {
-			Config.showRoles = Datastructures.strToBool(value);
+//			Config.showRoles = Datastructures.strToBool(value);
 		} else if (option.equals("showInternalKB")) {
-			Config.showInternalKB = Datastructures.strToBool(value);
+//			Config.showInternalKB = Datastructures.strToBool(value);
 		} else if (option.equals("showSubsumptionHierarchy")) {
-			Config.showSubsumptionHierarchy = Datastructures.strToBool(value);
+//			Config.showSubsumptionHierarchy = Datastructures.strToBool(value);
 		} else if (option.equals("writeDIGProtocol")) {
 			// Config.writeDIGProtocol = Datastructures.strToBool(value);
 		} else if (option.equals("digProtocolFile")) {
