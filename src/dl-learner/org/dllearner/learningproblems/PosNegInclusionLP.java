@@ -21,6 +21,9 @@ package org.dllearner.learningproblems;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.BooleanConfigOption;
 import org.dllearner.core.ConfigOption;
@@ -28,7 +31,10 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.StringSetConfigOption;
 import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.Negation;
+import org.dllearner.learningproblems.PosNegLP.UseMultiInstanceChecks;
+import org.dllearner.utilities.Helper;
 
 /**
  * The aim of this learning problem is to find an appropriate inclusion axiom
@@ -56,7 +62,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	public PosNegInclusionLP(ReasoningService reasoningService) {
 		super(reasoningService);
 	}
-
+/*
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringSetConfigOption("positiveExamples",
@@ -67,7 +73,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 				"Specifies whether to use retrieval or instance checks for testing a concept."));
 		return options;
 	}
-
+*/
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -86,19 +92,89 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	public void init() {
 		super.init();
 		definitionLP = new PosNegDefinitionLP(reasoningService, negativeExamples, positiveExamples);
+		// TODO: we must make sure that the problem also gets the same 
+		// reasoning options (i.e. options are the same up to reversed example sets)
+		definitionLP.init();
 	}
 	
 	/**
-	 * Calls the same method on the standard definition learning problem, but 
-	 * negates the concept before and permutes positive and negative examples.
+	 * See the documentation of <code>coveredNegativeExamplesOrTooWeak</code> in
+	 * the definition learning problem case. This method works differently:
+	 * First, it tests whether none of the positive examples is covered by the
+	 * negation of the given concept. Should this be the case, it returns
+	 * too weak. If this is not the case, the method returns the number of
+	 * negative examples, which do not follow from the negation of the input
+	 * concept. Thus, this methods uses a different notion of coverage than
+	 * the one for the standard definition learning problem.
 	 * 
-	 * @see org.dllearner.learningproblems.PosNegLP#coveredNegativeExamplesOrTooWeak(org.dllearner.core.dl.Concept)
+	 * @see org.dllearner.learningproblems.DefinitionLP.MultiInstanceChecks
+	 * @param concept
+	 *            The concept to test.
+	 * @return -1 if concept is too weak and the number of covered negative
+	 *         examples otherwise.
 	 */
 	@Override
 	public int coveredNegativeExamplesOrTooWeak(Concept concept) {
-		return definitionLP.coveredNegativeExamplesOrTooWeak(new Negation(concept));
-	}
 
+		if (useRetrievalForClassification) {
+			SortedSet<Individual> inNegatedConcept = reasoningService.retrieval(new Negation(concept));
+
+			for (Individual posExample : positiveExamples) {
+				// if any positive example follows from the negation, then
+				// the concept is "too weak"
+				if (inNegatedConcept.contains(posExample))
+					return -1;
+			}
+
+			// number of covered negatives
+			// cover = neg. example does not belong to the negated concept
+			SortedSet<Individual> negExInNegatedConcept = Helper.intersection(negativeExamples, inNegatedConcept);			
+			return (negativeExamples.size() - negExInNegatedConcept.size());
+		} else {
+			if (useDIGMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
+				// two checks
+				if (useDIGMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
+					Set<Individual> posExInNegatedConcept = reasoningService.instanceCheck(new Negation(concept), positiveExamples);
+					
+					if(posExInNegatedConcept.size()>0) {
+						return -1;
+					} else {
+						Set<Individual> negExInNegatedConcept = reasoningService.instanceCheck(new Negation(concept), negativeExamples);
+						return (negativeExamples.size() - negExInNegatedConcept.size());
+					}
+						
+					// one check
+				} else {
+					Set<Individual> inNegatedConcept = reasoningService.instanceCheck(new Negation(concept), allExamples);
+					
+					for(Individual i : positiveExamples) {
+						if(inNegatedConcept.contains(i))
+							return -1;
+					}
+					
+					// we can now be sure that inNegatedConcept contains only
+					// negative examples
+					return (negativeExamples.size() - inNegatedConcept.size());
+					
+				}
+			// single instance checks
+			} else {
+				int coverCount = negativeExamples.size();
+
+				for (Individual example : positiveExamples) {
+					if (reasoningService.instanceCheck(new Negation(concept), example))
+						return -1;
+				}
+				for (Individual example : negativeExamples) {
+					if (!reasoningService.instanceCheck(new Negation(concept), example))
+						coverCount--;
+				}
+
+				return coverCount;
+			}
+		}
+	}
+	
 	/** 
 	 * Calls the same method on the standard definition learning problem, but 
 	 * negates the concept before and permutes positive and negative examples.

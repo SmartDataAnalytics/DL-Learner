@@ -1,0 +1,20 @@
+BOTTOM = (male AND female).
+
+// persons
+male(markus).
+male(stefan).
+male(heinz).
+male(bernd).
+female(anna).
+female(gabi).
+female(michelle).
+
+// children
+hasChild(stefan,markus).
+hasChild(markus,anna).
+hasChild(bernd,gabi).
+hasChild(anna,heinz).
+
+// to learn the inclusion axiom father SUBCLASS OF male AND EXISTS hasChild.TOP
+// properly, we have to specifiy explicity that heinz does not have children
+NOT EXISTS hasChild.TOP(heinz).
