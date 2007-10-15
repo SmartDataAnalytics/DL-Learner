@@ -28,6 +28,7 @@ import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Top;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 import org.dllearner.utilities.Files;
@@ -53,7 +54,8 @@ public class ROLearner extends LearningAlgorithm {
 	DecimalFormat df = new DecimalFormat();	
 	
 	private PosNegLP learningProblem;
-	// private LearningProblem learningProblem2;
+	private PosOnlyDefinitionLP posOnlyLearningProblem;
+	private boolean posOnly = false;
 	
 	// Menge von Kandidaten für Refinement
 	// (wird für Direktzugriff auf Baumknoten verwendet)
@@ -127,13 +129,19 @@ public class ROLearner extends LearningAlgorithm {
 	public ROLearner(PosNegLP learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
 		this.rs = rs;
-		
-
+		posOnly=false;
+	}
+	
+	public ROLearner(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
+		this.posOnlyLearningProblem = learningProblem;
+		this.rs = rs;
+		posOnly=true;
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
 		problems.add(PosNegLP.class);
+		problems.add(PosOnlyDefinitionLP.class);
 		return problems;
 	}
 	
@@ -196,11 +204,15 @@ public class ROLearner extends LearningAlgorithm {
 		// adjust heuristic
 		if(heuristic == Heuristic.LEXICOGRAPHIC)
 			nodeComparator = new NodeComparator();
-		else
-			nodeComparator = new NodeComparator2(learningProblem.getNegativeExamples().size(), learningProblem.getPercentPerLengthUnit());		
+		else {
+			if(posOnly) {
+				throw new RuntimeException("does not work with positive examples only yet");
+			}
+			nodeComparator = new NodeComparator2(learningProblem.getNegativeExamples().size(), learningProblem.getPercentPerLengthUnit());
+		}
 		
 		// this.learningProblem2 = learningProblem2;
-		operator = new RhoDown(learningProblem);
+		operator = new RhoDown(rs);
 		
 		// candidate sets entsprechend der gewählten Heuristik initialisieren
 		candidates = new TreeSet<Node>(nodeComparator);
@@ -219,6 +231,20 @@ public class ROLearner extends LearningAlgorithm {
 		return "refinement operator based learning algorithm";
 	}
 	
+	private int coveredNegativesOrTooWeak(Concept concept) {
+		if(posOnly)
+			return posOnlyLearningProblem.coveredPseudoNegativeExamplesOrTooWeak(concept);
+		else
+			return learningProblem.coveredNegativeExamplesOrTooWeak(concept);
+	}
+	
+	private int getNumberOfNegatives() {
+		if(posOnly)
+			return posOnlyLearningProblem.getPseudoNegatives().size();
+		else
+			return learningProblem.getNegativeExamples().size();
+	}
+	
 	// Kernalgorithmus
 	@Override
 	@SuppressWarnings("unchecked")
@@ -230,7 +256,7 @@ public class ROLearner extends LearningAlgorithm {
 		// int coveredNegativeExamples = learningProblem.coveredNegativeExamplesOrTooWeak(top);
 		// aus Top folgen immer alle negativen Beispiele, d.h. es ist nur eine Lösung, wenn
 		// es keine negativen Beispiele gibt
-		int coveredNegativeExamples = learningProblem.getNegativeExamples().size();
+		int coveredNegativeExamples = getNumberOfNegatives();
 		topNode.setCoveredNegativeExamples(coveredNegativeExamples);
 		// topNode.setHorizontalExpansion(1); // die 0 ist eigentlich richtig, da keine Refinements
 		// der Länge 1 untersucht wurden
@@ -553,7 +579,7 @@ public class ROLearner extends LearningAlgorithm {
 		if(toEvaluateConcepts.size()>0) {
 			// Test aller Konzepte auf properness (mit DIG in nur einer Anfrage)
 			long propCalcReasoningStart = System.nanoTime();
-			improperConcepts = learningProblem.getReasoningService().subsumes(toEvaluateConcepts, concept);
+			improperConcepts = rs.subsumes(toEvaluateConcepts, concept);
 			propernessTestsReasoner+=toEvaluateConcepts.size();
 			// boolean isProper = !learningProblem.getReasoningService().subsumes(refinement, concept);
 			propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;
@@ -622,7 +648,7 @@ public class ROLearner extends LearningAlgorithm {
 				if(Config.Refinement.useOverlyGeneralList && refinement instanceof MultiDisjunction) {
 					if(containsOverlyGeneralElement((MultiDisjunction)refinement)) {
 						conceptTestsOverlyGeneralList++;
-						quality = learningProblem.getNegativeExamples().size();
+						quality = getNumberOfNegatives();
 						qualityKnown = true;
 						newNode.setQualityEvaluationMethod(Node.QualityEvaluationMethod.OVERLY_GENERAL_LIST);
 					}	
@@ -632,7 +658,7 @@ public class ROLearner extends LearningAlgorithm {
 				if(!qualityKnown) {
 					long propCalcReasoningStart2 = System.nanoTime();
 					conceptTestsReasoner++;
-					quality = learningProblem.coveredNegativeExamplesOrTooWeak(refinement);
+					quality = coveredNegativesOrTooWeak(refinement);
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
 					newNode.setQualityEvaluationMethod(Node.QualityEvaluationMethod.REASONER);
 				}
@@ -654,7 +680,7 @@ public class ROLearner extends LearningAlgorithm {
 					// candidatesStable.add(newNode);
 				
 					
-					if(quality == learningProblem.getNegativeExamples().size())
+					if(quality == getNumberOfNegatives())
 						overlyGeneralList.add(refinement);
 					
 					// System.out.print(".");
@@ -773,12 +799,12 @@ public class ROLearner extends LearningAlgorithm {
 		if(showBenchmarkInformation) {
 			
 
-			long reasoningTime = learningProblem.getReasoningService().getOverallReasoningTimeNs();
+			long reasoningTime = rs.getOverallReasoningTimeNs();
 			double reasoningPercentage = 100 * reasoningTime/(double)algorithmRuntime;
 			long propWithoutReasoning = propernessCalcTimeNs-propernessCalcReasoningTimeNs;
 			double propPercentage = 100 * propWithoutReasoning/(double)algorithmRuntime;
 			double deletionPercentage = 100 * childConceptsDeletionTimeNs/(double)algorithmRuntime;
-			long subTime = learningProblem.getReasoningService().getSubsumptionReasoningTimeNs();
+			long subTime = rs.getSubsumptionReasoningTimeNs();
 			double subPercentage = 100 * subTime/(double)algorithmRuntime;
 			double refinementPercentage = 100 * refinementCalcTimeNs/(double)algorithmRuntime;
 			double redundancyCheckPercentage = 100 * redundancyCheckTimeNs/(double)algorithmRuntime;
@@ -837,7 +863,10 @@ public class ROLearner extends LearningAlgorithm {
 
 	@Override
 	public Score getSolutionScore() {
-		return learningProblem.computeScore(getBestSolution());
+		if(posOnly)
+			return posOnlyLearningProblem.computeScore(getBestSolution());
+		else
+			return learningProblem.computeScore(getBestSolution());
 	}
 
 	@Override
