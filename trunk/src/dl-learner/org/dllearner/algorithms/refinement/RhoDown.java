@@ -45,7 +45,6 @@ import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Quantification;
 import org.dllearner.core.dl.Role;
 import org.dllearner.core.dl.Top;
-import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 
@@ -62,7 +61,7 @@ import org.dllearner.utilities.ConceptTransformation;
  */
 public class RhoDown implements RefinementOperator {
 
-	private PosNegLP learningProblem;
+//	private PosNegLP learningProblem;
 	private ReasoningService rs;
 	
 	// gibt die Gr��e an bis zu der die Refinements des Top-Konzepts
@@ -91,9 +90,10 @@ public class RhoDown implements RefinementOperator {
 	
 	// braucht man wirklich das learningProblem oder reicht der Reasoning-Service?
 	// TODO: conceptComparator könnte auch noch Parameter sein
-	public RhoDown(PosNegLP learningProblem) {
-		this.learningProblem = learningProblem;
-		rs = learningProblem.getReasoningService();
+	public RhoDown(ReasoningService reasoningService) {
+		this.rs = reasoningService;
+//		this.learningProblem = learningProblem;
+//		rs = learningProblem.getReasoningService();
 	}
 
 	public Set<Concept> refine(Concept concept) {
@@ -141,7 +141,7 @@ public class RhoDown implements RefinementOperator {
 			// beachte: die Funktion gibt bereits nur nicht-äquivalente Konzepte zurück
 			// TODO: der Cast auf SortedSet ist nur ein Hack und muss später geeignet
 			// behandelt werden
-			refinements = learningProblem.getReasoningService().getMoreSpecialConcepts(concept);
+			refinements = rs.getMoreSpecialConcepts(concept);
 			// refinements.addAll(learningProblem.getReasoningService().getMoreSpecialConcepts(concept));
 			
 			// Bottom rausschmeißen (nicht im Operator vorgesehen)
@@ -506,14 +506,14 @@ public class RhoDown implements RefinementOperator {
 		// TODO: Spezialfälle, dass zwischen Top und Bottom nichts liegt behandeln
 		if(topRefinementsLength==0 && maxLength>0) {
 			// Konzepte der Länge 1 = alle Konzepte, die in der Subsumptionhierarchie unter Top liegen
-			Set<Concept> m1 = learningProblem.getReasoningService().getMoreSpecialConcepts(new Top()); 
+			Set<Concept> m1 = rs.getMoreSpecialConcepts(new Top()); 
 			m.put(1,m1);
 		}
 		
 		if(topRefinementsLength<2 && maxLength>1) {	
 			// Konzepte der Länge 2 = Negation aller Konzepte, die über Bottom liegen
 			if(Config.Refinement.useNegation) {
-				Set<Concept> m2tmp = learningProblem.getReasoningService().getMoreGeneralConcepts(new Bottom());
+				Set<Concept> m2tmp = rs.getMoreGeneralConcepts(new Bottom());
 				Set<Concept> m2 = new TreeSet<Concept>(conceptComparator);
 				for(Concept c : m2tmp) {
 					m2.add(new Negation(c));

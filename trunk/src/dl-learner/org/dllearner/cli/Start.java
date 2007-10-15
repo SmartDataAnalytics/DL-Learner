@@ -62,6 +62,7 @@ import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.kb.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -143,6 +144,8 @@ public class Start {
 			lpClass = PosNegDefinitionLP.class;
 		else if (problemOption.getStringValue().equals("posNegInclusion"))
 			lpClass = PosNegInclusionLP.class;
+		else if (problemOption.getStringValue().equals("posOnlyDefinition"))
+			lpClass = PosOnlyDefinitionLP.class;
 		else
 			handleError("Unknown value " + problemOption.getValue() + " for option \"problem\".");
 
@@ -150,7 +153,8 @@ public class Start {
 		SortedSet<String> posExamples = parser.getPositiveExamples();
 		SortedSet<String> negExamples = parser.getNegativeExamples();
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
-		cm.applyConfigEntry(lp, "negativeExamples", negExamples);
+		if(lpClass != PosOnlyDefinitionLP.class)
+			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 
 		// step 4: detect learning algorithm
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
