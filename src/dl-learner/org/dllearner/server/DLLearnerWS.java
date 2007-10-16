@@ -296,6 +296,46 @@ public class DLLearnerWS {
 		cm.applyConfigEntry(component, optionName, value);
 	}
 	
+	@WebMethod
+	public String[] getConfigOptionValueStringArray(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
+		return getConfigOptionValue(sessionID, componentID, optionName, String[].class);
+	}
+	
+	@WebMethod
+	public String getConfigOptionValueString(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
+		return getConfigOptionValue(sessionID, componentID, optionName, String.class);
+	}
+	
+	@WebMethod
+	public Double getConfigOptionValueDouble(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
+		return getConfigOptionValue(sessionID, componentID, optionName, Double.class);
+	}
+	
+	@WebMethod
+	public Boolean getConfigOptionValueBoolean(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
+		return getConfigOptionValue(sessionID, componentID, optionName, Boolean.class);
+	}
+	
+	@WebMethod
+	public Integer getConfigOptionValueInt(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
+		return getConfigOptionValue(sessionID, componentID, optionName, Integer.class);
+	}
+	
+	@SuppressWarnings({"unchecked"})
+	private <T> T getConfigOptionValue(int sessionID, int componentID, String optionName, Class<T> clazz) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
+		Object value = getConfigOptionValue(sessionID, componentID, optionName);
+		if(clazz.isInstance(value))
+			return (T) value;
+		else
+			throw new ConfigOptionTypeException(optionName, clazz, value.getClass());
+	}
+	
+	private Object getConfigOptionValue(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException {
+		ClientState state = getState(sessionID);
+		Component component = state.getComponent(componentID);
+		return cm.getConfigOptionValue(component, optionName);
+	}
+	
 	////////////////////////////////////
 	// reasoning and querying methods //
 	////////////////////////////////////

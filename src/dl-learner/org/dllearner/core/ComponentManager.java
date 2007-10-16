@@ -256,12 +256,14 @@ public class ComponentManager {
 	 * @param source A registered knowledge source component.
 	 * @return An instance of the given knowledge source class.
 	 */
-	public KnowledgeSource knowledgeSource(Class<? extends KnowledgeSource> source) {
+	public <T extends KnowledgeSource> T knowledgeSource(Class<T> source) {
 		if (!knowledgeSources.contains(source))
 			System.err.println("Warning: knowledge source " + source
 					+ " is not a registered knowledge source component.");
 
-		return invokeConstructor(source, new Class[] {}, new Object[] {});
+		T ks = invokeConstructor(source, new Class[] {}, new Object[] {});
+		pool.registerComponent(ks);
+		return ks;
 	}
 
 	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
@@ -277,11 +279,10 @@ public class ComponentManager {
 			System.err.println("Warning: reasoner component " + reasoner
 					+ " is not a registered reasoner component.");
 
-		return invokeConstructor(reasoner, new Class[] { Set.class },
+		T rc = invokeConstructor(reasoner, new Class[] { Set.class },
 				new Object[] { sources });
-//		T reasonerInstance = invokeConstructor(reasoner, new Class[] { Set.class },
-//				new Object[] { sources });
-//		return new ReasoningService(reasonerInstance);
+		pool.registerComponent(rc);
+		return rc;
 	}
 
 	/**
@@ -300,40 +301,70 @@ public class ComponentManager {
 		return new ReasoningService(reasoner);
 	}
 	
-	public <T extends LearningProblem> T learningProblem(Class<T> lp, ReasoningService reasoner) {
-		if (!learningProblems.contains(lp))
-			System.err.println("Warning: learning problem " + lp
+	public <T extends LearningProblem> T learningProblem(Class<T> lpClass, ReasoningService reasoner) {
+		if (!learningProblems.contains(lpClass))
+			System.err.println("Warning: learning problem " + lpClass
 					+ " is not a registered learning problem component.");
 
-		return invokeConstructor(lp, new Class[] { ReasoningService.class },
+		T lp = invokeConstructor(lpClass, new Class[] { ReasoningService.class },
 				new Object[] { reasoner });
+		pool.registerComponent(lp);
+		return lp;
 	}
 
 	// automagically calls the right constructor for the given learning problem
-	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> la, LearningProblem lp, ReasoningService rs) {
-		if (!learningAlgorithms.contains(la))
-			System.err.println("Warning: learning algorithm " + la
+	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasoningService rs) {
+		if (!learningAlgorithms.contains(laClass))
+			System.err.println("Warning: learning algorithm " + laClass
 					+ " is not a registered learning algorithm component.");
 
 		// find the right constructor: use the one that is registered and
 		// has the class of the learning problem as a subclass
 		Class<? extends LearningProblem> constructorArgument = null;
-		for (Class<? extends LearningProblem> problemClass : algorithmProblemsMapping.get(la)) {
+		for (Class<? extends LearningProblem> problemClass : algorithmProblemsMapping.get(laClass)) {
 			if (problemClass.isAssignableFrom(lp.getClass()))
 				constructorArgument = problemClass;
 		}
 
 		if (constructorArgument == null) {
 			System.err.println("Warning: No suitable constructor registered for algorithm "
-					+ la.getName() + " and problem " + lp.getClass().getName()
-					+ ". Registered constructors for " + la.getName() + ": "
-					+ algorithmProblemsMapping.get(la) + ".");
+					+ laClass.getName() + " and problem " + lp.getClass().getName()
+					+ ". Registered constructors for " + laClass.getName() + ": "
+					+ algorithmProblemsMapping.get(laClass) + ".");
 			return null;
 		}
 
-		return invokeConstructor(la, new Class[] { constructorArgument, ReasoningService.class }, new Object[] { lp, rs });
+		T la = invokeConstructor(laClass, new Class[] { constructorArgument, ReasoningService.class }, new Object[] { lp, rs });
+		pool.registerComponent(la);
+		return la;
 	}
 
+	/**
+	 * The <code>ComponentManager</code> factory methods produce component
+	 * instances, which can be freed using this method. Calling the factory
+	 * methods without freeing components when they are not used anymore 
+	 * can (in theory) cause memory problems.
+	 * 
+	 * @param component The component to free. 
+	 */
+	public void freeComponent(Component component) {
+		pool.unregisterComponent(component);
+	}
+	
+	public <T> T getConfigOptionValue(Component component, ConfigOption<T> option) {
+		T object = pool.getLastValidConfigValue(component, option);
+		if(object==null)
+			return option.getDefaultValue();
+		else
+			return object;
+	}
+	
+	public Object getConfigOptionValue(Component component, String optionName) {
+		ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(
+				component.getClass()).get(optionName);
+		return getConfigOptionValue(component, option);
+	}
+	
 	public void writeConfigDocumentation(File file) {
 		String doc = "";
 		doc += "This file contains an automatically generated files of all components and their config options.\n\n";
