@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Stores all live components.
+ * Stores all live components and the configuration options, which were
+ * applied to them.
  * 
  * @author Jens Lehmann
  *
@@ -42,10 +43,6 @@ public class ComponentPool {
 	// complete history of all made config entries for a component
 	private Map<Component,List<ConfigEntry<?>>> configEntryHistory = new HashMap<Component,List<ConfigEntry<?>>>();
 	
-	public Object getLastValidConfigEntry(Component component, ConfigOption<?> option) {
-		return lastValidConfigValue.get(component).get(option);
-	}
-	
 	public void registerComponent(Component component) {
 		components.add(component);
 		Map<ConfigOption<?>,Object> emptyMap = new HashMap<ConfigOption<?>,Object>();
@@ -59,10 +56,11 @@ public class ComponentPool {
 		components.remove(component);
 	}
 
-	public Object getLastValidConfigValue(Component component, ConfigOption<?> option) {
-		return lastValidConfigValue.get(component).get(option);
+	@SuppressWarnings({"unchecked"})
+	public <T> T getLastValidConfigValue(Component component, ConfigOption<T> option) {
+		return (T) lastValidConfigValue.get(component).get(option);
 	}
-
+	
 	public void addConfigEntry(Component component, ConfigEntry<?> entry, boolean valid) {
 		configEntryHistory.get(component).add(entry);
 		if(valid)
