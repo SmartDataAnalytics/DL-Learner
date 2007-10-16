@@ -1,11 +1,17 @@
 package org.dllearner.utilities;
 
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class SortedSetTuple<T> {
 
 	private SortedSet<T> posSet;
 	private SortedSet<T> negSet;
+	
+	public SortedSetTuple() {
+		posSet = new TreeSet<T>();
+		negSet = new TreeSet<T>();
+	}
 	
 	public SortedSetTuple(SortedSet<T> posSet, SortedSet<T> negSet) {
 		this.posSet = posSet;

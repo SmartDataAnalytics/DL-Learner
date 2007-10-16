@@ -22,15 +22,14 @@ package org.dllearner.learningproblems;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
-import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.SortedSetTuple;
 
 /**
  * Caches results of previous concept evaluation to speed up
@@ -46,6 +45,7 @@ public class EvaluationCache {
 
 	// maps a concept to a list of individuals it covers
 	private Map<Concept,SortedSet<Individual>> cache;
+	private boolean checkForEqualConcepts = false;
 	
 	// concept comparator for concept indexing 
 	// (so only logarithmic time complexity is needed to access a cached object)
@@ -66,44 +66,49 @@ public class EvaluationCache {
 	/**
 	 * Determines which examples are instances of a concept.
 	 * @param concept
-	 * @return Set of inferred individuals or null if none were infered.
+	 * @return A tuple of two sets, where the first element is the
+	 * set of individuals belonging to the class and the second element
+	 * is the set of individuals not belonging to the class. For all
+	 * elements, which are in neither of the sets, the cache cannot
+	 * safely determine whether they are concept instances or not.
 	 */
-	public SortedSet<Individual> inferMember(Concept concept) {
-		// return examples for atomic concepts if it is in the cache
-		if(concept instanceof AtomicConcept)
-			return cache.get(concept);
-		// for a negation NOT C we can only say which concepts are not in it
-		// (those in C), but we cannot say which ones are in NOT C
-//		else if(concept instanceof Negation)
-//			return Helper.difference(examples, inferPos(concept.getChild(0)));
-		// for a conjunction we know that the intersection of instances
-		// of all children belongs to the concept
-		else if(concept instanceof MultiConjunction) {
-			SortedSet<Individual> ret = inferMember(concept.getChild(0));
-			for(int i=1; i<concept.getChildren().size(); i++) {
-				ret = Helper.intersection(ret, inferMember(concept.getChild(i)));
+	public SortedSetTuple<Individual> infer(Concept concept) {
+		if(checkForEqualConcepts) {
+			SortedSet<Individual> pos = cache.get(concept);
+			SortedSet<Individual> neg = Helper.difference(examples, pos);
+			return new SortedSetTuple<Individual>(pos,neg);
+		} else {
+			// for a negation NOT C we can only say which concepts are not in it
+			// (those in C), but we cannot say which ones are in NOT C
+			
+			// for a conjunction we know that the intersection of instances
+			// of all children belongs to the concept			
+			if(concept instanceof MultiConjunction) {
+				handleMultiConjunction((MultiConjunction)concept);
+			// disjunctions are similar to conjunctions but we use union here;
+			// note that there can be instances which are neither in a concept
+			// C nor in a concept D, but in (C OR D)				
+			} else if(concept instanceof MultiDisjunction) {
+				SortedSet<Individual> ret = cache.get(concept.getChild(0));
+				for(int i=1; i<concept.getChildren().size(); i++) {
+					ret = Helper.union(ret, cache.get(concept.getChild(i)));
+				}
+			// in all other cases we cannot infer anything, so we return an
+			// empty tuple
+			} else {
+				return new SortedSetTuple<Individual>();
 			}
-			return ret;
-		// disjunctions are similar to conjunctions but we use union here;
-		// note that there can be instances which are neither in a concept
-		// C nor in a concept D, but in (C OR D)
-		} else if(concept instanceof MultiDisjunction) {
-			SortedSet<Individual> ret = inferMember(concept.getChild(0));
-			for(int i=1; i<concept.getChildren().size(); i++) {
-				ret = Helper.union(ret, inferMember(concept.getChild(i)));
-			}
-			return ret;
 		}
 		
-		return new TreeSet<Individual>();
+		return null;
 	}
 	
-	/**
-	 * Determines which examples are not instance of a concept.
-	 * @param concept
-	 * @return
-	 */
-	public SortedSet<Individual> inferNonMember(Concept concept) {
+	private SortedSetTuple<Individual> handleMultiConjunction(MultiConjunction mc) {
+		SortedSet<Individual> pos = cache.get(mc.getChild(0));
+		for(int i=1; i<mc.getChildren().size(); i++) {
+			pos = Helper.intersection(pos, cache.get(mc.getChild(i)));
+		}		
+		// TODO: handle the case that some children may not be in cache
 		return null;
 	}
 }

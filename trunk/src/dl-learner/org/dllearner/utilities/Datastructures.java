@@ -19,10 +19,17 @@
  */
 package org.dllearner.utilities;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Individual;
+
 /**
+ * Conversion between different data structures.
+ * 
  * @author Jens Lehmann
  * @author Sebastian Hellmann
  *
@@ -44,7 +51,7 @@ public class Datastructures {
 	 * @param s
 	 * @return
 	 */
-	public  static String[] setToArray(Set<String> s){
+	public static String[] setToArray(Set<String> s) {
 		if(s==null)return null;
 		String[] ret=new String[s.size()];
 		int i=0;
@@ -57,4 +64,39 @@ public class Datastructures {
 		
 	}
 
+	public static String[] sortedSet2StringListIndividuals(Set<Individual> individuals){
+		
+		String[] ret=new String[individuals.size()];
+		Iterator<Individual> i=individuals.iterator();
+		int a=0;
+		while (i.hasNext()){
+			ret[a++]=((Individual)i.next()).getName();
+		}
+		Arrays.sort(ret);
+		return ret;
+	}
+	
+	public static String[] sortedSet2StringListRoles(Set<AtomicRole> s){
+		
+		String[] ret=new String[s.size()];
+		Iterator<AtomicRole> i=s.iterator();
+		int a=0;
+		while (i.hasNext()){
+			ret[a++]=((AtomicRole)i.next()).getName();
+		}
+		Arrays.sort(ret);
+		return ret;
+	}
+	
+	public static String[] sortedSet2StringListConcepts(Set<AtomicConcept> s){
+		
+		String[] ret=new String[s.size()];
+		Iterator<AtomicConcept> i=s.iterator();
+		int a=0;
+		while (i.hasNext()){
+			ret[a++]=((AtomicConcept)i.next()).getName();
+		}
+		Arrays.sort(ret);
+		return ret;
+	}	
 }
