@@ -32,7 +32,7 @@ public class DLLearnerWSStart {
 		
 		System.out.print("Starting DL-Learner web service at http://" + 
 				isa.getHostName()+":"+isa.getPort()+ "/services ... ");
-		 Endpoint endpoint = Endpoint.create(new DLLearnerWSNew());
+		 Endpoint endpoint = Endpoint.create(new DLLearnerWS());
 		//Endpoint endpoint = Endpoint.create(new CustomDataClass());
 		HttpContext context = server.createContext("/services");
 	     endpoint.publish(context);
