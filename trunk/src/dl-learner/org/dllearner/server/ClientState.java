@@ -45,7 +45,7 @@ public class ClientState {
 
 	// stores the mapping between component IDs and component
 	// (note that this allows us to keep all references to components even
-	// if they are note used anymore e.g. a deleted knowledge source)
+	// if they are not used anymore e.g. a deleted knowledge source)
 	private Map<Integer,Component> componentIDs = new HashMap<Integer,Component>(); 
 	
 	private Set<KnowledgeSource> knowledgeSources = new HashSet<KnowledgeSource>();

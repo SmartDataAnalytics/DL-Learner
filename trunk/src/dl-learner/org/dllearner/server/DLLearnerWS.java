@@ -314,7 +314,7 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] retrieval(int id, String conceptString) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		// call parser to parse atomic concept
+		// call parser to parse concept
 		Concept concept = null;
 		try {
 			concept = KBParser.parseConcept(conceptString);

@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
+ * General component base class.
+ * 
  * @author Jens Lehmann
  *
  */
@@ -54,4 +56,13 @@ public abstract class Component {
 	 * @param entry A configuration entry.
 	 */
 	public abstract <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException;
+	
+	/**
+	 * Gets the value of a configuration option of this component.
+	 * 
+	 * @param <T> Option type.
+	 * @param option A configuration option of this component.
+	 * @return Current value of the configuration option.
+	 */
+//	public abstract <T> T getConfigValue(ConfigOption<T> option) throws UnknownConfigOptionException;
 }

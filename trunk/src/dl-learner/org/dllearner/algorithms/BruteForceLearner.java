@@ -62,7 +62,7 @@ public class BruteForceLearner extends LearningAlgorithm {
     private Concept bestDefinition;
     private Score bestScore;
     
-    private int maxLength = 7;
+    private Integer maxLength = 7;
     private String returnType;
     
     // list of all generated concepts sorted by length
@@ -97,6 +97,13 @@ public class BruteForceLearner extends LearningAlgorithm {
 			returnType = (String) returnType;
 	}
 
+//	public Object getConfigValue(String optionName) throws UnknownConfigOptionException {
+//		if(optionName.equals("maxLength"))
+//			return maxLength;
+//		else
+//			throw new UnknownConfigOptionException(getClass(), optionName);
+//	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */
@@ -264,4 +271,5 @@ public class BruteForceLearner extends LearningAlgorithm {
 	@Override
 	public void stop() {
 	}
+
 }

@@ -56,6 +56,8 @@ import org.dllearner.utilities.Files;
  */
 public class ComponentManager {
 
+	private ComponentPool pool = new ComponentPool();
+	
 	// these variables are valid for the complete lifetime of DL-Learner
 	private static String componentsFile = "lib/components.ini";
 	private static ComponentManager cm = new ComponentManager();
@@ -71,6 +73,9 @@ public class ComponentManager {
 	private static Map<Class<? extends Component>, Map<String, ConfigOption<?>>> componentOptionsByName;
 	private static Map<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
 
+	// list of default values of config options
+//	private static Map<ConfigOption<?>,Object> configOptionDefaults;
+	
 	private Comparator<Class<?>> classComparator = new Comparator<Class<?>>() {
 
 		public int compare(Class<?> c1, Class<?> c2) {
@@ -124,21 +129,24 @@ public class ComponentManager {
 		// read in all configuration options
 		componentOptions = new HashMap<Class<? extends Component>, List<ConfigOption<?>>>();
 		componentOptionsByName = new HashMap<Class<? extends Component>, Map<String, ConfigOption<?>>>();
-
+//		configOptionDefaults = new HashMap<ConfigOption<?>,Object>();
+		
 		for (Class<? extends Component> component : components) {
 
 			String name = (String) invokeStaticMethod(component, "getName");
 			componentNames.put(component, name);
 			
+			// assign options to components
 			List<ConfigOption<?>> options = (List<ConfigOption<?>>) invokeStaticMethod(component,
 					"createConfigOptions");
 			componentOptions.put(component, options);
 
+			// make config options accessible by name
 			Map<String, ConfigOption<?>> byName = new HashMap<String, ConfigOption<?>>();
 			for (ConfigOption<?> option : options)
 				byName.put(option.getName(), option);
 			componentOptionsByName.put(component, byName);
-
+			
 		}
 
 		// System.out.println(components);
@@ -186,6 +194,7 @@ public class ComponentManager {
 	 * @param optionName
 	 * @param value
 	 */
+	@SuppressWarnings( { "unchecked" })
 	public <T> void applyConfigEntry(Component component, String optionName, T value) {
 		// first we look whether the component is registered
 		if (components.contains(component.getClass())) {
@@ -205,11 +214,13 @@ public class ComponentManager {
 				// we have checked the type, hence it should now be safe to
 				// typecast and
 				// create a ConfigEntry object
-				try {
-					@SuppressWarnings( { "unchecked" })
-					ConfigEntry<T> entry = new ConfigEntry<T>((ConfigOption<T>) option, value);
+				ConfigEntry<T> entry = null;
+				try {	
+					entry = new ConfigEntry<T>((ConfigOption<T>) option, value);
 					component.applyConfigEntry(entry);
+					pool.addConfigEntry(component, entry, true);
 				} catch (InvalidConfigOptionValueException e) {
+					pool.addConfigEntry(component, entry, false);
 					System.out.println("Warning: value " + value + " is not valid for option "
 							+ optionName + " in component " + component);
 				}
@@ -231,9 +242,10 @@ public class ComponentManager {
 	public <T> boolean applyConfigEntry(Component component, ConfigEntry<T> entry) {
 		try {
 			component.applyConfigEntry(entry);
+			pool.addConfigEntry(component,entry,true);
 			return true;
 		} catch (InvalidConfigOptionValueException e) {
-			// TODO Auto-generated catch block
+			pool.addConfigEntry(component,entry,false);
 			e.printStackTrace();
 			return false;
 		}
