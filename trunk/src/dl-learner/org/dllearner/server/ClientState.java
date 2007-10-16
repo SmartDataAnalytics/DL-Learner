@@ -41,7 +41,7 @@ import org.dllearner.kb.SparqlEndpoint;
  * @author Jens Lehmann
  *
  */
-public class State {
+public class ClientState {
 
 	// stores the mapping between component IDs and component
 	// (note that this allows us to keep all references to components even

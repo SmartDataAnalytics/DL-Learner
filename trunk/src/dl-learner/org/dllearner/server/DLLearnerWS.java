@@ -60,9 +60,9 @@ import org.dllearner.utilities.Datastructures;
  */
 @WebService(name = "DLLearnerWebService")
 @SOAPBinding(style = SOAPBinding.Style.RPC)
-public class DLLearnerWSNew {
+public class DLLearnerWS {
 
-	private Map<Integer, State> clients = new TreeMap<Integer,State>();
+	private Map<Integer, ClientState> clients = new TreeMap<Integer,ClientState>();
 	private Random rand=new Random();
 	private static ComponentManager cm = ComponentManager.getInstance();
 	
@@ -72,7 +72,7 @@ public class DLLearnerWSNew {
 	private static Map<String,Class<? extends LearningProblem>> learningProblemMapping = new TreeMap<String,Class<? extends LearningProblem>>();
 	private static Map<String,Class<? extends LearningAlgorithm>> learningAlgorithmMapping = new TreeMap<String,Class<? extends LearningAlgorithm>>();
 	
-	public DLLearnerWSNew() {
+	public DLLearnerWS() {
 		knowledgeSourceMapping.put("owlfile", OWLFile.class);
 		knowledgeSourceMapping.put("sparql", SparqlEndpoint.class);
 		reasonerMapping.put("dig", DIGReasoner.class);
@@ -94,13 +94,13 @@ public class DLLearnerWSNew {
 		do {
 			id = rand.nextInt();
 		} while(clients.containsKey(id));
-		clients.put(id, new State());
+		clients.put(id, new ClientState());
 		return id;
 	}
 	
 	// returns session state or throws client not known exception
-	private State getState(int id) throws ClientNotKnownException {
-		State state = clients.get(id);
+	private ClientState getState(int id) throws ClientNotKnownException {
+		ClientState state = clients.get(id);
 		if(state==null)
 			throw new ClientNotKnownException(id);
 		return state;
@@ -132,7 +132,7 @@ public class DLLearnerWSNew {
 	 */
 	@WebMethod
 	public int addKnowledgeSource(int id, String component, String url) throws ClientNotKnownException, UnknownComponentException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		Class<? extends KnowledgeSource> ksClass = knowledgeSourceMapping.get(component);
 		if(ksClass == null)
 			throw new UnknownComponentException(component);
@@ -148,7 +148,7 @@ public class DLLearnerWSNew {
 	
 	@WebMethod
 	public int setReasoner(int id, String component) throws ClientNotKnownException, UnknownComponentException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		Class<? extends ReasonerComponent> rcClass = reasonerMapping.get(component);
 		if(rcClass == null)
 			throw new UnknownComponentException(component);
@@ -159,7 +159,7 @@ public class DLLearnerWSNew {
 	
 	@WebMethod
 	public int setLearningProblem(int id, String component) throws ClientNotKnownException, UnknownComponentException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		Class<? extends LearningProblem> lpClass = learningProblemMapping.get(component);
 		if(lpClass == null)
 			throw new UnknownComponentException(component);
@@ -170,7 +170,7 @@ public class DLLearnerWSNew {
 	
 	@WebMethod
 	public int setLearningAlgorithm(int id, String component) throws ClientNotKnownException, UnknownComponentException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		Class<? extends LearningAlgorithm> laClass = learningAlgorithmMapping.get(component);
 		if(laClass == null)
 			throw new UnknownComponentException(component);
@@ -185,7 +185,7 @@ public class DLLearnerWSNew {
 	 */
 	@WebMethod
 	public void init(int id) throws ClientNotKnownException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		for(KnowledgeSource ks : state.getKnowledgeSources())
 			ks.init();
 		state.getReasonerComponent().init();
@@ -203,7 +203,7 @@ public class DLLearnerWSNew {
 	 */
 	@WebMethod
 	public String learn(int id) throws ClientNotKnownException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
 		return state.getLearningAlgorithm().getBestSolution().toString();
 	}
@@ -218,7 +218,7 @@ public class DLLearnerWSNew {
 	 */
 	@WebMethod 
 	public void learnThreaded(int id) throws ClientNotKnownException {
-		final State state = getState(id);
+		final ClientState state = getState(id);
 		Thread learningThread = new Thread() {
 			@Override
 			public void run() {
@@ -232,7 +232,7 @@ public class DLLearnerWSNew {
 	
 	@WebMethod
 	public String getCurrentlyBestConcept(int id) throws ClientNotKnownException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		return state.getLearningAlgorithm().getBestSolution().toString();
 	}
 	
@@ -257,14 +257,14 @@ public class DLLearnerWSNew {
 	
 	@WebMethod
 	public void setPositiveExamples(int id, String[] positiveExamples) throws ClientNotKnownException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		Set<String> posExamples = new TreeSet<String>(Arrays.asList(positiveExamples));
 		cm.applyConfigEntry(state.getLearningProblem(), "positiveExamples", posExamples);
 	}
 	
 	@WebMethod
 	public void setNegativeExamples(int id, String[] negativeExamples) throws ClientNotKnownException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		Set<String> negExamples = new TreeSet<String>(Arrays.asList(negativeExamples));
 		cm.applyConfigEntry(state.getLearningProblem(), "negativeExamples", negExamples);
 	}
@@ -291,7 +291,7 @@ public class DLLearnerWSNew {
 	}
 	
 	private void applyConfigEntry(int sessionID, int componentID, String optionName, Object value) throws ClientNotKnownException, UnknownComponentException {
-		State state = getState(sessionID);
+		ClientState state = getState(sessionID);
 		Component component = state.getComponent(componentID);
 		cm.applyConfigEntry(component, optionName, value);
 	}
@@ -313,7 +313,7 @@ public class DLLearnerWSNew {
 	
 	@WebMethod
 	public String[] retrieval(int id, String conceptString) throws ClientNotKnownException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		// call parser to parse atomic concept
 		Concept concept = null;
 		try {
@@ -328,21 +328,21 @@ public class DLLearnerWSNew {
 	
 	@WebMethod
 	public String[] getAtomicRoles(int id) throws ClientNotKnownException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		Set<AtomicRole> roles = state.getReasoningService().getAtomicRoles();
 		return Datastructures.sortedSet2StringListRoles(roles);
 	}
 	
 	@WebMethod
 	public String[] getInstances(int id) throws ClientNotKnownException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		Set<Individual> individuals = state.getReasoningService().getIndividuals();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
 	
 	@WebMethod
 	public String[] getIndividualsForARole(int id, String role) throws ClientNotKnownException {
-		State state = getState(id);
+		ClientState state = getState(id);
 		Map<Individual,SortedSet<Individual>> m = state.getReasoningService().getRoleMembers(new AtomicRole(role));
 		Set<Individual> individuals = m.keySet();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
