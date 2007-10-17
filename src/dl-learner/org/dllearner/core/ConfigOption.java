@@ -76,13 +76,13 @@ public abstract class ConfigOption<T> {
 	
 	public abstract boolean isValidValue(T value);
 	
-	public static String getRestrictionDescription() {
-		return "none";
+	public String getAllowedValuesDescription() {
+		return getClass().toString();
 	}
 	
 	@Override
 	public String toString() {
-		return "option name: " + name + "\ndescription: " + description + "\nvalues: " + getRestrictionDescription() + "\ndefault value: " + defaultValue + "\n";
+		return "option name: " + name + "\ndescription: " + description + "\nvalues: " + getAllowedValuesDescription() + "\ndefault value: " + defaultValue + "\n";
 	}
 	
 }

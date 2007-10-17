@@ -85,5 +85,15 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	public boolean checkType(Object object) {
 		return (object instanceof Double);
 	}
+	
+	@Override
+	public String getAllowedValuesDescription() {
+		String str = getClass().toString();
+		if(lowerLimit != Double.MIN_VALUE)
+			str += " min " + lowerLimit;
+		if(upperLimit != Double.MAX_VALUE)
+			str += " max " + upperLimit;
+		return str;
+	}
 
 }

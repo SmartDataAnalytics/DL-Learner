@@ -166,7 +166,7 @@ public class Helper {
      * @param set2
      * @return
      */
-    public static<T> Set<T> unionAlt(Set<T> set1, Set<T> set2) {
+    public static<T> Set<T> union(Set<T> set1, Set<T> set2) {
         // TODO: effizientere Implementierung (längere Liste klonen und Elemente
         // anhängen)
         Set<T> union = new TreeSet<T>();

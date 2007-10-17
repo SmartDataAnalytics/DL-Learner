@@ -86,4 +86,14 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 		return (object instanceof Integer);
 	}
 
+	@Override
+	public String getAllowedValuesDescription() {
+		String str = getClass().toString();
+		if(lowerLimit != Integer.MIN_VALUE)
+			str += " min " + lowerLimit;
+		if(upperLimit != Integer.MAX_VALUE)
+			str += " max " + upperLimit;
+		return str;
+	}	
+	
 }
