@@ -36,7 +36,6 @@ import java.util.TreeSet;
 import javax.xml.namespace.QName;
 
 import org.apache.xmlbeans.XmlCursor;
-import org.dllearner.Config;
 import org.dllearner.core.BooleanConfigOption;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
@@ -202,9 +201,9 @@ public class DIGReasoner extends ReasonerComponent {
 	 * Construct a subsumption hierarchy using DIG queries. After calling this
 	 * method one can ask for children or parents in the subsumption hierarchy.
 	 */
-	public void prepareSubsumptionHierarchy() {
+	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
 		allowedConceptsInSubsumptionHierarchy = new TreeSet<Concept>(conceptComparator);
-		allowedConceptsInSubsumptionHierarchy.addAll(Config.Refinement.allowedConcepts);
+		allowedConceptsInSubsumptionHierarchy.addAll(allowedConcepts);
 		allowedConceptsInSubsumptionHierarchy.add(new Top());
 		allowedConceptsInSubsumptionHierarchy.add(new Bottom());
 
@@ -237,7 +236,7 @@ public class DIGReasoner extends ReasonerComponent {
 			subsumptionHierarchyUp.put(atom, tmp);
 		}
 
-		subsumptionHierarchy = new SubsumptionHierarchy(Config.Refinement.allowedConcepts,
+		subsumptionHierarchy = new SubsumptionHierarchy(allowedConcepts,
 				subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
 
@@ -248,19 +247,19 @@ public class DIGReasoner extends ReasonerComponent {
 	 * @todo Does not yet take ignored roles into account.
 	 */
 	@Override
-	public void prepareRoleHierarchy() {
+	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) {
 		TreeMap<AtomicRole, TreeSet<AtomicRole>> roleHierarchyUp = new TreeMap<AtomicRole, TreeSet<AtomicRole>>(
 				roleComparator);
 		TreeMap<AtomicRole, TreeSet<AtomicRole>> roleHierarchyDown = new TreeMap<AtomicRole, TreeSet<AtomicRole>>(
 				roleComparator);
-
+ 
 		// Refinement atomarer Konzepte
 		for (AtomicRole role : atomicRoles) {
 			roleHierarchyDown.put(role, getMoreSpecialRolesDIG(role));
 			roleHierarchyUp.put(role, getMoreGeneralRolesDIG(role));
 		}
 
-		roleHierarchy = new RoleHierarchy(Config.Refinement.allowedRoles, roleHierarchyUp,
+		roleHierarchy = new RoleHierarchy(allowedRoles, roleHierarchyUp,
 				roleHierarchyDown);
 	}
 

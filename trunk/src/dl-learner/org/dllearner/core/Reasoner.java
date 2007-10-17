@@ -47,8 +47,8 @@ public interface Reasoner {
 	// pro erstelltem ReasoningService bzw. Reasoner aufgerufen werden)
 	// => erstellt auch vereinfachte Sichten auf Subsumptionhierarchie
 	// (siehe einfacher Traversal in Diplomarbeit)
-	public void prepareSubsumptionHierarchy();
-	public void prepareRoleHierarchy() throws ReasoningMethodUnsupportedException;
+	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts);
+	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) throws ReasoningMethodUnsupportedException;
 	
 	public boolean subsumes(Concept superConcept, Concept subConcept) throws ReasoningMethodUnsupportedException;
 	

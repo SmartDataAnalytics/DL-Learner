@@ -248,7 +248,7 @@ public class KAON2Reasoner extends ReasonerComponent {
 	// TODO: hier werden momentan keine allowed concepts berücksichtigt
 	// (benötigt rekursive Aufrufe, da ein erlaubtes Konzept von einem nicht
 	// erlaubten verdeckt werden könnte)
-	public void prepareSubsumptionHierarchy() {
+	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
 		try {
 			kaon2SubsumptionHierarchy = kaon2Reasoner.getSubsumptionHierarchy();
 		} catch (KAON2Exception e) {

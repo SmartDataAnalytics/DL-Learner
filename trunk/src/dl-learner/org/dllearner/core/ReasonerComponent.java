@@ -108,7 +108,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public void prepareRoleHierarchy() throws ReasoningMethodUnsupportedException {
+	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 

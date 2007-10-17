@@ -13,6 +13,7 @@ import java.util.TreeSet;
 
 import org.dllearner.Config;
 import org.dllearner.core.BooleanConfigOption;
+import org.dllearner.core.CommonConfigMappings;
 import org.dllearner.core.CommonConfigOptions;
 import org.dllearner.core.ConfigEntry;
 import org.dllearner.core.ConfigOption;
@@ -23,6 +24,8 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.StringConfigOption;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
@@ -43,6 +46,13 @@ public class ROLearner extends LearningAlgorithm {
 	private File searchTreeFile;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 	private Heuristic heuristic = Heuristic.LEXICOGRAPHIC;
+	Set<AtomicConcept> allowedConcepts;
+	Set<AtomicRole> allowedRoles;
+	Set<AtomicConcept> ignoredConcepts;
+	Set<AtomicRole> ignoredRoles;
+	// these are computed as the result of the previous four settings
+	Set<AtomicConcept> usedConcepts;
+	Set<AtomicRole> usedRoles;	
 	
 	private boolean stop = false;
 	
@@ -164,6 +174,7 @@ public class ROLearner extends LearningAlgorithm {
 		options.add(new BooleanConfigOption("improveSubsumptionHierarchy", "simplify subsumption hierarchy to reduce search space (see publication for description)", true));
 		// TODO: replace by a general verbosity option for all components
 		options.add(new BooleanConfigOption("quiet", "may be deprecated soon", false));
+		// allowed/ignored concepts/roles could also be a reasoner option (?)
 		options.add(CommonConfigOptions.allowedConcepts());
 		options.add(CommonConfigOptions.ignoredConcepts());
 		options.add(CommonConfigOptions.allowedRoles());
@@ -178,6 +189,7 @@ public class ROLearner extends LearningAlgorithm {
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
 	@Override
+	@SuppressWarnings({"unchecked"})
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
 		String name = entry.getOptionName();
 		if(name.equals("writeSearchTree"))
@@ -190,7 +202,16 @@ public class ROLearner extends LearningAlgorithm {
 				heuristic = Heuristic.LEXICOGRAPHIC;
 			else
 				heuristic = Heuristic.FLEXIBLE;
-		} 
+		} else if(name.equals("allowedConcepts")) {
+			allowedConcepts = CommonConfigMappings.getAtomicConceptSet((Set<String>)entry.getValue());
+		} else if(name.equals("allowedRoles")) {
+			allowedRoles = CommonConfigMappings.getAtomicRoleSet((Set<String>)entry.getValue());
+		} else if(name.equals("ignoredConcepts")) {
+			ignoredConcepts = CommonConfigMappings.getAtomicConceptSet((Set<String>)entry.getValue());
+		} else if(name.equals("ignoredRoles")) {
+			ignoredRoles = CommonConfigMappings.getAtomicRoleSet((Set<String>)entry.getValue());
+		}
+			
 	}
 
 	/* (non-Javadoc)
@@ -218,13 +239,29 @@ public class ROLearner extends LearningAlgorithm {
 		candidates = new TreeSet<Node>(nodeComparator);
 		// newCandidates = new TreeSet<Node>(nodeComparator);
 		
-		// TODO: this needs to be changed
-		Helper.autoDetectConceptsAndRoles(rs);
+		if(allowedConcepts != null) {
+			// sanity check to control if no non-existing concepts are in the list
+			Helper.checkConcepts(rs, allowedConcepts);
+			usedConcepts = allowedConcepts;
+		} else if(ignoredConcepts != null) {
+			usedConcepts = Helper.computeConceptsUsingIgnoreList(rs, ignoredConcepts);
+		} else {
+			usedConcepts = Helper.computeConcepts(rs);
+		}
+		
+		if(allowedRoles != null) {
+			Helper.checkRoles(rs, allowedRoles);
+			usedRoles = allowedRoles;
+		} else if(ignoredRoles != null) {
+			Helper.checkRoles(rs, ignoredRoles);
+			usedRoles = Helper.difference(rs.getAtomicRoles(), ignoredRoles);
+		}
+		
 		// prepare subsumption and role hierarchies, because they are needed
 		// during the run of the algorithm
-		rs.prepareSubsumptionHierarchy();
+		rs.prepareSubsumptionHierarchy(usedConcepts);
 		rs.getSubsumptionHierarchy().improveSubsumptionHierarchy();
-		rs.prepareRoleHierarchy();
+		rs.prepareRoleHierarchy(usedRoles);
 	}
 	
 	public static String getName() {
