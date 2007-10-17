@@ -1,0 +1,10 @@
+// disjoint classes
+(diesel AND benzin) = BOTTOM.
+
+diesel(d1).
+diesel(d2).
+diesel(d3).
+super(s1).
+super(s2).
+benzin(b1).
+benzin(b2).
