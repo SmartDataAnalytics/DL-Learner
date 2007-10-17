@@ -1,12 +1,9 @@
 package org.dllearner;
 
 import java.lang.reflect.Field;
-import java.util.Set;
 
 import org.dllearner.algorithms.gp.GP.AlgorithmType;
 import org.dllearner.algorithms.gp.GP.SelectionType;
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
 
 public class Config {
 	// standardmäßig wird bis Tiefe 7 gesucht
@@ -151,9 +148,9 @@ public class Config {
 		// Konzepte, die in der Definition vorkommen können (per Default
 		// ("null") alle)
 		// nicht implementiert
-		public static Set<AtomicConcept> allowedConcepts = null;
+//		public static Set<AtomicConcept> allowedConcepts = null;
 		// ignorierte Konzepte; Default null = keine
-		public static Set<AtomicConcept> ignoredConcepts = null;
+//		public static Set<AtomicConcept> ignoredConcepts = null;
 		// beachte: es können nur entweder die erlaubten oder die ignorierten
 		// Konzepte
 		// gesetzt werden
@@ -161,13 +158,13 @@ public class Config {
 		// true falls die Konzepte vom Nutzer gesetzt worden (also
 		// allowedConcepts
 		// gleich null), ansonsten false
-		public static boolean allowedConceptsAutoDetect = true;
+//		public static boolean allowedConceptsAutoDetect = true;
 
 		// Rollen, die in der Lösung vorkommen können
 		// nicht implementiert
-		public static Set<AtomicRole> allowedRoles = null;
-		public static Set<AtomicRole> ignoredRoles = null;
-		public static boolean allowedRolesAutoDetect = true;
+//		public static Set<AtomicRole> allowedRoles = null;
+//		public static Set<AtomicRole> ignoredRoles = null;
+//		public static boolean allowedRolesAutoDetect = true;
 
 		// max. Verschachtelungstiefe der Lösung
 		// nicht implementiert

@@ -342,8 +342,8 @@ public class ReasoningService {
 		return getRoleHierarchy().getMostSpecialRoles();
 	}	
 	
-	public void prepareSubsumptionHierarchy() {
-		reasoner.prepareSubsumptionHierarchy();
+	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
+		reasoner.prepareSubsumptionHierarchy(allowedConcepts);
 	}
 
 	public SubsumptionHierarchy getSubsumptionHierarchy() {
@@ -356,9 +356,9 @@ public class ReasoningService {
 		}	
 	}
 
-	public void prepareRoleHierarchy() {
+	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) {
 		try {
-			reasoner.prepareRoleHierarchy();
+			reasoner.prepareRoleHierarchy(allowedRoles);
 		} catch (ReasoningMethodUnsupportedException e) {
 			handleExceptions(e);
 		}

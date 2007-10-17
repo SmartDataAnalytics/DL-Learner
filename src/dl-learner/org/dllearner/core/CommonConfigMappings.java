@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Individual;
 
 /**
@@ -38,4 +40,17 @@ public class CommonConfigMappings {
 		return set;
 	}
 	
+	public static SortedSet<AtomicConcept> getAtomicConceptSet(Set<String> atomicConcepts) {
+		SortedSet<AtomicConcept> set = new TreeSet<AtomicConcept>();
+		for(String atomicConcept : atomicConcepts)
+			set.add(new AtomicConcept(atomicConcept));
+		return set;
+	}	
+	
+	public static SortedSet<AtomicRole> getAtomicRoleSet(Set<String> atomicRoles) {
+		SortedSet<AtomicRole> set = new TreeSet<AtomicRole>();
+		for(String atomicRole : atomicRoles)
+			set.add(new AtomicRole(atomicRole));
+		return set;
+	}
 }

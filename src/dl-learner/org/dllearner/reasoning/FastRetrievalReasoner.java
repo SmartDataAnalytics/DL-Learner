@@ -79,7 +79,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		return abox;
 	}
 
-	public void prepareSubsumptionHierarchy() {
+	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
 		// hier muss nichts getan werden
 	}
 

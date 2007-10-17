@@ -20,14 +20,18 @@
 package org.dllearner.core;
 
 /**
+ * Contains methods for creating common configuration options, i.e. options
+ * which are or may be of use for several components. 
+ * 
  * @author Jens Lehmann
  *
  */
 public final class CommonConfigOptions {
 
-	public static final IntegerConfigOption getVerbosityOption() {
-		// TODO: temporary code
-		IntegerConfigOption verbosityOption = new IntegerConfigOption("verbosity", "control verbosity of output");
+	public static StringConfigOption getVerbosityOption() {
+		StringConfigOption verbosityOption = new StringConfigOption("verbosity", "control verbosity of output for this component", "warning");
+		String[] allowedValues = new String[] {"quiet", "error", "warning", "notice", "info", "debug"};
+		verbosityOption.setAllowedValues(allowedValues);
 		return verbosityOption;
 	}
 	

@@ -7,17 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.dllearner.algorithms.gp.GP.AlgorithmType;
 import org.dllearner.algorithms.gp.GP.SelectionType;
 import org.dllearner.cli.ConfFileOption;
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
-import org.dllearner.parser.KBParser;
-import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Datastructures;
-import org.dllearner.utilities.RoleComparator;
 
 /**
  * Nach dem einlesen der Datei werden hier alle Konfigurationsoptionen
@@ -542,24 +536,24 @@ public class ConfigurationManager {
 		// System.out.println(":" + optionString + " " + setValues);
 		
 		if(optionString.equals("refinement.allowedConcepts")) {
-			Config.Refinement.allowedConceptsAutoDetect = false;
-			Config.Refinement.allowedConcepts = new TreeSet<AtomicConcept>(new ConceptComparator());
-			for(String s : setValues)
+//			Config.Refinement.allowedConceptsAutoDetect = false;
+			; // Config.Refinement.allowedConcepts = new TreeSet<AtomicConcept>(new ConceptComparator());
+//			for(String s : setValues)
 				// es wird die gleiche Funktion wie im Parser genommen um Namen auf URIs zu mappen
-				Config.Refinement.allowedConcepts.add(new AtomicConcept(KBParser.getInternalURI(s)));
+//				Config.Refinement.allowedConcepts.add(new AtomicConcept(KBParser.getInternalURI(s)));
 		} else if(optionString.equals("refinement.allowedRoles")) {
-			Config.Refinement.allowedRolesAutoDetect = false;
-			Config.Refinement.allowedRoles = new TreeSet<AtomicRole>(new RoleComparator());
-			for(String s : setValues)
-				Config.Refinement.allowedRoles.add(new AtomicRole(KBParser.getInternalURI(s)));
+//			Config.Refinement.allowedRolesAutoDetect = false;
+//			Config.Refinement.allowedRoles = new TreeSet<AtomicRole>(new RoleComparator());
+//			for(String s : setValues)
+//				Config.Refinement.allowedRoles.add(new AtomicRole(KBParser.getInternalURI(s)));
 		} else if(optionString.equals("refinement.ignoredConcepts")) {
-			Config.Refinement.ignoredConcepts = new TreeSet<AtomicConcept>(new ConceptComparator());
-			for(String s : setValues)
-				Config.Refinement.ignoredConcepts.add(new AtomicConcept(KBParser.getInternalURI(s)));			
+//			Config.Refinement.ignoredConcepts = new TreeSet<AtomicConcept>(new ConceptComparator());
+//			for(String s : setValues)
+//				Config.Refinement.ignoredConcepts.add(new AtomicConcept(KBParser.getInternalURI(s)));			
 		} else if(optionString.equals("refinement.ignoredRoles")) {
-			Config.Refinement.ignoredRoles = new TreeSet<AtomicRole>(new RoleComparator());
-			for(String s : setValues)
-				Config.Refinement.ignoredRoles.add(new AtomicRole(KBParser.getInternalURI(s)));			
+//			Config.Refinement.ignoredRoles = new TreeSet<AtomicRole>(new RoleComparator());
+//			for(String s : setValues)
+//				Config.Refinement.ignoredRoles.add(new AtomicRole(KBParser.getInternalURI(s)));			
 		}
 	}	
 	

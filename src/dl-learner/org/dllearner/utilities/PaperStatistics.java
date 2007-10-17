@@ -35,7 +35,6 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.kb.OWLFile;
@@ -200,17 +199,17 @@ public class PaperStatistics {
 					// uses the same reasoning object (e.g. the second algorithm may
 					// have a small advantage if the reasoner cached reasoning requests
 					// of the first algorithm)
-					Helper.autoDetectConceptsAndRoles(rs);
-					try {
-						reasoner.prepareSubsumptionHierarchy();
-						reasoner.prepareRoleHierarchy();
-						// improving the subsumption hierarchy makes only sense
-						// for the refinement based algorithm
-						if(algorithmNr==0)
-							reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
-					} catch (ReasoningMethodUnsupportedException e) {
-						e.printStackTrace();
-					}
+//					Helper.autoDetectConceptsAndRoles(rs);
+//					try {
+//						reasoner.prepareSubsumptionHierarchy();
+//						reasoner.prepareRoleHierarchy();
+//						// improving the subsumption hierarchy makes only sense
+//						// for the refinement based algorithm
+//						if(algorithmNr==0)
+//							reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
+//					} catch (ReasoningMethodUnsupportedException e) {
+//						e.printStackTrace();
+//					}
 
 					LearningAlgorithm learningAlgorithm = null;
 					if(algorithmNr==0) {
