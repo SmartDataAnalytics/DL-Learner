@@ -465,6 +465,13 @@ public class ComponentManager {
 		return null;
 	}
 	
+	public static List<ConfigOption<?>> getConfigOptions(Class<? extends Component> componentClass) {
+		if (!components.contains(componentClass))
+			System.err.println("Warning: component " + componentClass
+					+ " is not a registered component. [ComponentManager.getConfigOptions]");
+		return componentOptions.get(componentClass);
+	}
+	
 	public ConfigOption<?> getConfigOption(Class<? extends Component> component, String name) {
 		return componentOptionsByName.get(component).get(name);
 	}
@@ -472,5 +479,7 @@ public class ComponentManager {
 	public String getComponentName(Class<? extends Component> component) {
 		return componentNames.get(component);
 	}
+
+
 
 }

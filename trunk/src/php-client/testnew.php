@@ -20,6 +20,27 @@ LearnerClient::loadWSDLfiles($wsdluri);
 // test web service
 $client = new SoapClient("main.wsdl");
 
+$print_ws_info = false;
+
+if($print_ws_info) {
+	$components = $client->getComponents()->item;
+	
+	echo '<h1>Web Service Information</h1>';
+	
+	foreach($components as $component) {
+		echo '<h2>component '.$component.'</h2>';	
+	
+		$options = $client->getConfigOptions($component, true)->item;
+		if(!is_array($options))
+			$options = array($options);
+		
+		foreach($options as $option)
+			echo $option.'<br />';
+	}
+}
+
+echo '<h1>Algorithm Run</h1>';
+
 $id = $client->generateID();
 
 $ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);

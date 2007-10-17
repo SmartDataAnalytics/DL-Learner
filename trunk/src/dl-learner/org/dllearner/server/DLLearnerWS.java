@@ -20,6 +20,7 @@
 package org.dllearner.server;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -34,6 +35,7 @@ import javax.jws.soap.SOAPBinding;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.ConfigOption;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
@@ -50,6 +52,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.utilities.Datastructures;
+import org.dllearner.utilities.Helper;
 
 /**
  * DL-Learner web service interface.
@@ -71,6 +74,7 @@ public class DLLearnerWS {
 	private static Map<String,Class<? extends ReasonerComponent>> reasonerMapping = new TreeMap<String,Class<? extends ReasonerComponent>>();
 	private static Map<String,Class<? extends LearningProblem>> learningProblemMapping = new TreeMap<String,Class<? extends LearningProblem>>();
 	private static Map<String,Class<? extends LearningAlgorithm>> learningAlgorithmMapping = new TreeMap<String,Class<? extends LearningAlgorithm>>();
+	private static Set<String> components;
 	
 	public DLLearnerWS() {
 		knowledgeSourceMapping.put("owlfile", OWLFile.class);
@@ -79,6 +83,9 @@ public class DLLearnerWS {
 		learningProblemMapping.put("posNegDefinition", PosNegDefinitionLP.class);
 		learningProblemMapping.put("posNegInclusion", PosNegInclusionLP.class);
 		learningAlgorithmMapping.put("refinement", ROLearner.class);
+		components = Helper.union(knowledgeSourceMapping.keySet(),reasonerMapping.keySet());
+		components = Helper.union(components, learningProblemMapping.keySet());
+		components = Helper.union(components, learningAlgorithmMapping.keySet());
 	}
 	
 	/**
@@ -107,7 +114,6 @@ public class DLLearnerWS {
 	}
 	
 	// returns the class which is referred to by the string
-	@SuppressWarnings({"unused"})
 	private Class<? extends Component> getComponent(String component) throws UnknownComponentException {
 		if(knowledgeSourceMapping.containsKey(component))
 			return knowledgeSourceMapping.get(component);
@@ -124,6 +130,52 @@ public class DLLearnerWS {
 	///////////////////////////////////////
 	// methods for basic component setup //
 	///////////////////////////////////////
+	
+	@WebMethod
+	public String[] getComponents() {
+		return components.toArray(new String[components.size()]);
+	}
+	
+	@WebMethod
+	public String[] getKnowledgeSources() {
+		Set<String> knowledgeSources = knowledgeSourceMapping.keySet();
+		return knowledgeSources.toArray(new String[knowledgeSources.size()]);
+	}
+	
+	@WebMethod
+	public String[] getReasoners() {
+		Set<String> reasoners = reasonerMapping.keySet();
+		return reasoners.toArray(new String[reasoners.size()]);		
+	}
+	
+	@WebMethod
+	public String[] getLearningProblems() {
+		Set<String> learningProblems = learningProblemMapping.keySet();
+		return learningProblems.toArray(new String[learningProblems.size()]);		
+	}
+	
+	@WebMethod
+	public String[] getLearningAlgorithms() {
+		Set<String> learningAlgorithms = learningAlgorithmMapping.keySet();
+		return learningAlgorithms.toArray(new String[learningAlgorithms.size()]);		
+	}	
+	
+	@WebMethod
+	public String[] getConfigOptions(String component, boolean allInfo) throws UnknownComponentException {
+		Class<? extends Component> componentClass = getComponent(component);
+		List<ConfigOption<?>> options = ComponentManager.getConfigOptions(componentClass);
+		String[] optionsString = new String[options.size()];
+		for(int i=0; i<options.size(); i++) {
+			ConfigOption<?> option = options.get(i);
+			optionsString[i] = option.getName();
+			if(allInfo) {
+				optionsString[i] += "#" + option.getDescription();
+				optionsString[i] += "#" + option.getAllowedValuesDescription();
+				optionsString[i] += "#" + option.getDefaultValue();				
+			}	
+		}
+		return optionsString;
+	}
 	
 	/**
 	 * Adds a knowledge source.
