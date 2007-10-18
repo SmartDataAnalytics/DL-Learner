@@ -439,4 +439,21 @@ public class DLLearnerWS {
 		Set<Individual> individuals = m.keySet();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
+	
+	@WebMethod
+	public String[] getTriples(int id, int componentID) throws ClientNotKnownException
+	{
+		ClientState state=getState(id);
+		Component component = state.getComponent(componentID);
+		component.init();
+		return ((SparqlEndpoint)component).getOntArray();
+	}
+	
+	@WebMethod
+	public String[] getSubjects(int id, int componentID, String label, int limit) throws ClientNotKnownException
+	{
+		ClientState state=getState(id);
+		Component component = state.getComponent(componentID);
+		return ((SparqlEndpoint)component).getSubjects(label,limit);
+	}
 }
