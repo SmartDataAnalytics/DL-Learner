@@ -81,6 +81,7 @@ public class SparqlFilter {
 	public SparqlFilter(int mode, String[] pred, String[] obj) {
 		if (mode==-1 && (pred==null || pred.length==0 || obj==null||obj.length==0))
 			{mode=0;}
+		else this.mode=mode;
 		
 		switch (mode){
 		case 0: //yago

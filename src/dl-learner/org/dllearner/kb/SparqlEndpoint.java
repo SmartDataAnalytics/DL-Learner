@@ -28,6 +28,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import org.dllearner.core.BooleanConfigOption;
 import org.dllearner.core.ConfigEntry;
@@ -56,7 +58,7 @@ public class SparqlEndpoint extends KnowledgeSource {
 
 	private URL url;
 	private Set<String> instances;
-	private URL ntFile;
+	private URL dumpFile;
 	private int numberOfRecursions;
 	private int filterMode;
 	private Set<String> predList;
@@ -65,6 +67,8 @@ public class SparqlEndpoint extends KnowledgeSource {
 	private KB kb;
 	private String format;
 	private boolean dumpToFile;
+	private boolean useLits=false;
+	private String[] ontArray;
 	
 	public static String getName() {
 		return "SPARQL Endpoint";
@@ -81,6 +85,7 @@ public class SparqlEndpoint extends KnowledgeSource {
 		options.add(new StringSetConfigOption("classList","a class list"));
 		options.add(new StringConfigOption("format", "N-TRIPLES or KB format"));
 		options.add(new BooleanConfigOption("dumpToFile", "wether Ontology from DBPedia is written to a file or not"));
+		options.add(new BooleanConfigOption("useLits","use Literals in SPARQL query"));
 		return options;
 	}
 
@@ -114,6 +119,8 @@ public class SparqlEndpoint extends KnowledgeSource {
 			format=(String)entry.getValue();
 		} else if(option.equals("dumpToFile")){
 			dumpToFile=(Boolean)entry.getValue();
+		} else if(option.equals("useLits")){
+			useLits=(Boolean)entry.getValue();
 		}
 	}
 
@@ -125,10 +132,16 @@ public class SparqlEndpoint extends KnowledgeSource {
 		System.out.println("SparqlModul: Collecting Ontology");
 		String[] a=new String[0];
 		SparqlOntologyCollector oc=new SparqlOntologyCollector(instances.toArray(a), numberOfRecursions,
-				 filterMode,  Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url);
-		String ont=oc.collectOntology();
+				 filterMode,  Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url,useLits);
+		String ont="";
+		if (format.equals("Array")){
+			ontArray=oc.collectOntologyAsArray();
+		}
+		else{
+			ont=oc.collectOntology();
+		}
 		
-		if (format.equals("N-TRIPLES")||dumpToFile){
+		if (dumpToFile){
 			String filename=System.currentTimeMillis()+".nt";
 			String basedir="cache"+File.separator;
 			try{
@@ -140,7 +153,7 @@ public class SparqlEndpoint extends KnowledgeSource {
 				fw.flush();
 				fw.close();
 											
-				ntFile=(new File(basedir+filename)).toURI().toURL();
+				dumpFile=(new File(basedir+filename)).toURI().toURL();
 			}catch (Exception e) {e.printStackTrace();}
 		}
 		if (format.equals("KB")) {
@@ -159,11 +172,24 @@ public class SparqlEndpoint extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		if (format.equals("N-TRIPLES")) return JenaOWLDIGConverter.getTellsString(ntFile, OntologyFileFormat.N_TRIPLES, kbURI);
+		if (format.equals("N-TRIPLES")) return JenaOWLDIGConverter.getTellsString(dumpFile, OntologyFileFormat.N_TRIPLES, kbURI);
 		else return DIGConverter.getDIGString(kb, kbURI).toString();
 	}
 
 	public URL getURL() {
 		return url;
+	}
+	
+	public String[] getOntArray() {
+		return ontArray;
+	}
+	
+	public String[] getSubjects(String label,int limit)
+	{
+		System.out.println("SparqlModul: Collecting Subjects");
+		SparqlOntologyCollector oc=new SparqlOntologyCollector(null, 1,0,null,null,null,null,url,false);
+		String[] ret=oc.getSubjectsFromLabel(label,limit);
+		System.out.println("SparqlModul: ****Finished");
+		return ret;
 	}
 }

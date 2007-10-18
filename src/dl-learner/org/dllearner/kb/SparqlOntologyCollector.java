@@ -31,6 +31,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 
 /**
@@ -85,7 +87,7 @@ public class SparqlOntologyCollector {
 	 * @param defClasses
 	 */
 	public SparqlOntologyCollector(String[] subjectList,int numberOfRecursions,
-			int filterMode, String[] FilterPredList,String[] FilterObjList,String[] defClasses, String format, URL url){
+			int filterMode, String[] FilterPredList,String[] FilterObjList,String[] defClasses, String format, URL url, boolean useLits){
 		this.subjectList=subjectList;
 		this.numberOfRecursions=numberOfRecursions;
 		this.format=format;
@@ -93,10 +95,9 @@ public class SparqlOntologyCollector {
 		this.c=new SparqlCache("cache");
 		if(defClasses!=null && defClasses.length>0 ){
 			this.defaultClasses=defClasses;
-		}
-		
+		}		
 		try{
-			this.sf=new SparqlFilter(filterMode,FilterPredList,FilterObjList);
+			this.sf=new SparqlFilter(filterMode,FilterPredList,FilterObjList,useLits);
 			this.url=url;
 			this.properties=new HashSet<String>();
 			this.classes=new HashSet<String>();
@@ -120,6 +121,32 @@ public class SparqlOntologyCollector {
 			
 		}	
 		return ret;
+	}
+	
+	public String[] collectOntologyAsArray(){
+		getRecursiveList(subjectList, numberOfRecursions);
+		if (sf.mode!=3) finalize();
+		String[] a=new String[0];
+		return triples.toArray(a);
+	}
+	
+	public String[] getSubjectsFromLabel(String label, int limit){
+		System.out.println("Searching for Label: "+label);
+		String sparql=q.makeLabelQuery(label,limit);
+		String FromCache=c.get(label, sparql);
+		String xml;
+		// if not in cache get it from dbpedia
+		if(FromCache==null){
+			xml=sendAndReceive(sparql);
+			c.put(label, xml, sparql);
+			System.out.print("\n");
+		}
+		else{
+			xml=FromCache;
+			System.out.println("FROM CACHE");
+		}
+		
+		return processSubjects(xml);
 	}
 	
 	/**
@@ -191,20 +218,25 @@ public class SparqlOntologyCollector {
 	public  String[] processResult(String subject,String xml){
 		//TODO if result is empty, catch exceptions
 		String one="<binding name=\"predicate\"><uri>";
-		String two="<binding name=\"object\"><uri>";
+		String two="<binding name=\"object\">";
 		String end="</uri></binding>";
 		String predtmp="";
 		String objtmp="";
 		ArrayList<String> al=new ArrayList<String>();
-		
 		while(xml.indexOf(one)!=-1){
 			//get pred
 			xml=xml.substring(xml.indexOf(one)+one.length());
 			predtmp=xml.substring(0,xml.indexOf(end));
 			//getobj
 			xml=xml.substring(xml.indexOf(two)+two.length());
-			objtmp=xml.substring(0,xml.indexOf(end));
+			if (xml.startsWith("<literal xml:lang=\"en\">")){
+				xml=xml.substring(xml.indexOf(">")+1);
+				objtmp=xml.substring(0,xml.indexOf("</literal>"));
+			}
+			else if (xml.startsWith("<uri>")) objtmp=xml.substring(5,xml.indexOf(end));
+			else continue;
 			
+			System.out.println("Pred: "+predtmp+" Obj: "+objtmp);			
 			// writes the triples and resources in the hashsets
 			// also fills the arraylist al
 			processTriples(subject, predtmp, objtmp,al);
@@ -280,6 +312,23 @@ public class SparqlOntologyCollector {
 			
 			return;
 		}
+	
+		private String[] processSubjects(String xml){
+			Vector<String> vec=new Vector<String>();
+			String one="<binding name=\"subject\"><uri>";
+			String end="</uri></binding>";
+			String subject="";
+			while(xml.indexOf(one)!=-1){
+				//get subject
+				xml=xml.substring(xml.indexOf(one)+one.length());
+				subject=xml.substring(0,xml.indexOf(end));
+								
+				System.out.println("Subject: "+subject);
+				vec.addElement(subject);
+			}	
+			String[] a=new String[vec.size()];
+			return vec.toArray(a);
+		}
 //		
 		/**
 		 * also makes subclass property between classes
@@ -295,6 +344,10 @@ public class SparqlOntologyCollector {
 			else if (format.equals("KB")){
 				if (p.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) ret="\""+o+"\"(\""+s+"\").\n"; 
 				else ret="\""+p+"\"(\""+s+"\",\""+o+"\").\n";
+			}
+			else if (format.equals("Array"))
+			{
+				ret=s+"<"+p+"<"+o+"\n";
 			}
 			return ret;
 		}
@@ -375,7 +428,7 @@ public class SparqlOntologyCollector {
 			
 			// String an Sparql-Endpoint schicken
 			HttpURLConnection connection;
-				
+			
 			try {
 				connection = (HttpURLConnection) url.openConnection();
 				connection.setDoOutput(true);
