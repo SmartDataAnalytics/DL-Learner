@@ -15,11 +15,11 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.core.CommonConfigOptions;
-import org.dllearner.core.ConfigEntry;
-import org.dllearner.core.ConfigOption;
-import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.config.CommonConfigOptions;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AssertionalAxiom;
 import org.dllearner.core.dl.AtomicConcept;

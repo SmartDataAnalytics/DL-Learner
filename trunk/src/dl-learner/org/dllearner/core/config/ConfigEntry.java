@@ -17,22 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core;
+package org.dllearner.core.config;
+
 
 /**
+ * A config entry is a configuration option and a value for the option.
+ * 
  * @author Jens Lehmann
  *
  */
-public class UnknownConfigOptionException extends Exception {
+public class ConfigEntry<T> {
 
-	private static final long serialVersionUID = -7808637210577591687L;
-
-	public UnknownConfigOptionException(Class<? extends Component> componentClass, String optionName) {
-		super("Option " + optionName + " unknown in component " + ComponentManager.getInstance().getComponentName(componentClass) + "(" + componentClass.getName() + ")");
+	private ConfigOption<T> option;
+	private T value;
+	
+	public ConfigEntry(ConfigOption<T> option, T value) throws InvalidConfigOptionValueException {
+		if(!option.isValidValue(value)) {
+			throw new InvalidConfigOptionValueException(option, value);
+		} else {
+			this.option = option;
+			this.value = value;
+		}
 	}
 	
-	public UnknownConfigOptionException(Class<? extends Component> componentClass, ConfigOption<?> option) {
-		super("Option " + option.getName() + " unknown in component " + ComponentManager.getInstance().getComponentName(componentClass) + "(" + componentClass.getName() + ")");
+	public ConfigOption<T> getOption() {
+		return option;
+	}
+	
+	public String getOptionName() {
+		return option.getName();
+	}
+	
+	public T getValue() {
+		return value;
 	}
 	
 }

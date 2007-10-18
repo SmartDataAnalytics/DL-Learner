@@ -39,6 +39,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.utilities.Files;
 
 /**

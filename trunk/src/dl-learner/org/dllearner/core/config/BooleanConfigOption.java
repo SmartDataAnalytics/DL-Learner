@@ -17,42 +17,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core;
+package org.dllearner.core.config;
 
-import java.util.Set;
 
 /**
  * @author Jens Lehmann
  *
  */
-public class StringSetConfigOption extends ConfigOption<Set<String>> {
+public class BooleanConfigOption extends ConfigOption<Boolean> {
 
-	public StringSetConfigOption(String name, String description) {
+	public BooleanConfigOption(String name, String description) {
 		super(name, description);
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
-	 */
-	@Override
-	public boolean isValidValue(Set<String> value) {
-		return true;
-	}
 
+	public BooleanConfigOption(String name, String description, boolean defaultValue) {
+		super(name, description, defaultValue);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
 	 */
 	@Override
 	public boolean checkType(Object object) {
-		if(!(object instanceof Set))
-			return false;
-		
-		Set<?> set = (Set<?>) object;
-		for(Object element : set)  {
-			if(!(element instanceof String))
-				return false;
-		}
-		
+		return (object instanceof Boolean);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
+	 */
+	@Override
+	public boolean isValidValue(Boolean value) {
 		return true;
 	}
 

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core;
+package org.dllearner.core.config;
 
 import java.util.Set;
 import java.util.SortedSet;

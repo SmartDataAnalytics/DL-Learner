@@ -17,22 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core;
+package org.dllearner.core.config;
+
+import java.io.File;
+
+import org.dllearner.core.ComponentManager;
 
 /**
+ * Collects information about all used configuration options and
+ * writes them into a file. This way the documentation is always
+ * in sync with the source code.
+ * 
  * @author Jens Lehmann
  *
  */
-public class InvalidConfigOptionValueException extends Exception {
+public class ConfigDocumentationGenerator {
 
-	private static final long serialVersionUID = 3286110428258072698L;
-	
-	public InvalidConfigOptionValueException(ConfigOption<?> option, Object value) {
-		super("The value " + value + " is not valid for the configuration option " + option + ".");
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		File file = new File("doc/configOptions.txt");
+		ComponentManager cm = ComponentManager.getInstance();
+		cm.writeConfigDocumentation(file);
 	}
-	
-	public InvalidConfigOptionValueException(ConfigOption<?> option, Object value, String reason) {
-		super("The value " + value + " is not valid for the configuration option " + option + ". Reason: " + reason + ".");
-	}
-	
+
 }

@@ -17,11 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core;
+package org.dllearner.core.config;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
+
 
 /**
  * A configuration option, which allows values of type String. Optionally a set

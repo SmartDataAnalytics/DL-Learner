@@ -17,25 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core;
+package org.dllearner.core.config;
+
 
 /**
- * Represents a configuration option with values of type value. Similar
- * to the integer option a minimum and a maximum value can specified.
+ * A configuration option, which allows values of type integer. A minimum and
+ * maximum value of the argument can optionally be specified.
  * 
  * @author Jens Lehmann
  *
  */
-public class DoubleConfigOption extends ConfigOption<Double> {
+public class IntegerConfigOption extends ConfigOption<Integer> {
 
-	private double lowerLimit = Double.MIN_VALUE;
-	private double upperLimit = Double.MAX_VALUE;
+	private int lowerLimit = Integer.MIN_VALUE;
+	private int upperLimit = Integer.MAX_VALUE;
 	
-	public DoubleConfigOption(String name, String description) {
+	public IntegerConfigOption(String name, String description) {
 		super(name, description);
 	}
 		
-	public DoubleConfigOption(String name, String description, double defaultValue) {
+	public IntegerConfigOption(String name, String description, int defaultValue) {
 		super(name, description, defaultValue);
 	}
 	
@@ -43,7 +44,7 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
 	 */
 	@Override
-	public boolean isValidValue(Double value) {
+	public boolean isValidValue(Integer value) {
 		if(value >= lowerLimit && value <= upperLimit)
 			return true;
 		else
@@ -53,28 +54,28 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	/**
 	 * @return the The lowest possible value for this configuration option.
 	 */
-	public double getLowerLimit() {
+	public int getLowerLimit() {
 		return lowerLimit;
 	}
 
 	/**
 	 * @param lowerLimit The lowest possible value for this configuration option.
 	 */
-	public void setLowerLimit(double lowerLimit) {
+	public void setLowerLimit(int lowerLimit) {
 		this.lowerLimit = lowerLimit;
 	}
 
 	/**
 	 * @return the The highest possible value for this configuration option.
 	 */
-	public double getUpperLimit() {
+	public int getUpperLimit() {
 		return upperLimit;
 	}
 
 	/**
 	 * @param upperLimit The highest possible value for this configuration option.
 	 */
-	public void setUpperLimit(double upperLimit) {
+	public void setUpperLimit(int upperLimit) {
 		this.upperLimit = upperLimit;
 	}
 
@@ -83,17 +84,17 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	 */
 	@Override
 	public boolean checkType(Object object) {
-		return (object instanceof Double);
+		return (object instanceof Integer);
 	}
-	
+
 	@Override
 	public String getAllowedValuesDescription() {
 		String str = getClass().toString();
-		if(lowerLimit != Double.MIN_VALUE)
+		if(lowerLimit != Integer.MIN_VALUE)
 			str += " min " + lowerLimit;
-		if(upperLimit != Double.MAX_VALUE)
+		if(upperLimit != Integer.MAX_VALUE)
 			str += " max " + upperLimit;
 		return str;
-	}
-
+	}	
+	
 }
