@@ -23,13 +23,13 @@ import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.BooleanConfigOption;
-import org.dllearner.core.ConfigEntry;
-import org.dllearner.core.ConfigOption;
-import org.dllearner.core.DoubleConfigOption;
-import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
+import org.dllearner.core.config.BooleanConfigOption;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DoubleConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.Negation;

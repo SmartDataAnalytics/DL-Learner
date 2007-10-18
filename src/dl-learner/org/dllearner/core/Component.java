@@ -22,6 +22,10 @@ package org.dllearner.core;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+
 /**
  * General component base class.
  * 

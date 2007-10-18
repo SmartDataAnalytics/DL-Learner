@@ -17,38 +17,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core;
+package org.dllearner.core.config;
+
+import java.util.Set;
+
 
 /**
- * A config entry is a configuration option and a value for the option.
- * 
  * @author Jens Lehmann
  *
  */
-public class ConfigEntry<T> {
+public class StringSetConfigOption extends ConfigOption<Set<String>> {
 
-	private ConfigOption<T> option;
-	private T value;
+	public StringSetConfigOption(String name, String description) {
+		super(name, description);
+	}
 	
-	public ConfigEntry(ConfigOption<T> option, T value) throws InvalidConfigOptionValueException {
-		if(!option.isValidValue(value)) {
-			throw new InvalidConfigOptionValueException(option, value);
-		} else {
-			this.option = option;
-			this.value = value;
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
+	 */
+	@Override
+	public boolean isValidValue(Set<String> value) {
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
+	 */
+	@Override
+	public boolean checkType(Object object) {
+		if(!(object instanceof Set))
+			return false;
+		
+		Set<?> set = (Set<?>) object;
+		for(Object element : set)  {
+			if(!(element instanceof String))
+				return false;
 		}
+		
+		return true;
 	}
-	
-	public ConfigOption<T> getOption() {
-		return option;
-	}
-	
-	public String getOptionName() {
-		return option.getName();
-	}
-	
-	public T getValue() {
-		return value;
-	}
-	
+
 }

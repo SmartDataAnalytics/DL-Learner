@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ConfigEntry;
-import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Concept;

@@ -24,14 +24,14 @@ import java.util.LinkedList;
 
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.algorithms.gp.GPUtilities;
-import org.dllearner.core.ConfigEntry;
-import org.dllearner.core.ConfigOption;
-import org.dllearner.core.IntegerConfigOption;
-import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.IntegerConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.dl.Concept;
 
 public class RandomGuesser extends LearningAlgorithm {

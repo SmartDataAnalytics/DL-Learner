@@ -27,11 +27,11 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.dllearner.core.ConfigEntry;
-import org.dllearner.core.ConfigOption;
-import org.dllearner.core.InvalidConfigOptionValueException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.StringConfigOption;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.dl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
