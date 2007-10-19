@@ -208,7 +208,7 @@ public class Start {
 
 			printConclusions(rs, algDuration);
 		}
-
+		
 	}
 
 	// creates a mapping from components to option prefix strings
