@@ -44,6 +44,7 @@ public class ROLearner extends LearningAlgorithm {
 	// configuration options
 	private boolean writeSearchTree;
 	private File searchTreeFile;
+	private boolean replaceSearchTree = false;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 	private Heuristic heuristic = Heuristic.LEXICOGRAPHIC;
 	Set<AtomicConcept> allowedConcepts;
@@ -100,7 +101,7 @@ public class ROLearner extends LearningAlgorithm {
 	// boolean quiet = false;
 	boolean showBenchmarkInformation = false;
 	// boolean createTreeString = false;
-	String searchTree = new String();
+	// String searchTree = new String();
 	TreeSet<Node> expandedNodes = new TreeSet<Node>(nodeComparatorStable);
 	
 	// Konfiguration des Algorithmus
@@ -159,6 +160,7 @@ public class ROLearner extends LearningAlgorithm {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new BooleanConfigOption("writeSearchTree", "specifies whether to write a search tree", false));
 		options.add(new StringConfigOption("searchTreeFile","file to use for the search tree", defaultSearchTreeFile));
+		options.add(new BooleanConfigOption("replaceSearchTree","specifies whether to replace the search tree in the log file after each run or append the new search tree", false));
 		StringConfigOption heuristicOption = new StringConfigOption("heuristic", "specifiy the heuristic to use", "lexicographic");
 		heuristicOption.setAllowedValues(new String[] {"lexicographic", "flexible"});
 		options.add(heuristicOption);
@@ -196,6 +198,8 @@ public class ROLearner extends LearningAlgorithm {
 			writeSearchTree = (Boolean) entry.getValue();
 		else if(name.equals("searchTreeFile"))
 			searchTreeFile = new File((String)entry.getValue());
+		else if(name.equals("replaceSearchTree"))
+			replaceSearchTree = (Boolean) entry.getValue();
 		else if(name.equals("heuristic")) {
 			String value = (String) entry.getValue();
 			if(value.equals("lexicographic"))
@@ -222,6 +226,9 @@ public class ROLearner extends LearningAlgorithm {
 		if(searchTreeFile == null)
 			searchTreeFile = new File(defaultSearchTreeFile);
 
+		if(writeSearchTree)
+			Files.clearFile(searchTreeFile);
+		
 		// adjust heuristic
 		if(heuristic == Heuristic.LEXICOGRAPHIC)
 			nodeComparator = new NodeComparator();
@@ -407,11 +414,15 @@ public class ROLearner extends LearningAlgorithm {
 				expandedNodes.clear();
 				treeString += "horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion + "\n";
 				treeString += topNode.getTreeString();
+				treeString += "\n";
 				// System.out.println(treeString);
-				searchTree += treeString + "\n";
+				// searchTree += treeString + "\n";
 				// TODO: ev. immer nur einen search tree speichern und den an die
 				// Datei anhängen => spart Speicher
-				Files.createFile(searchTreeFile, searchTree);
+				if(replaceSearchTree)
+					Files.createFile(searchTreeFile, treeString);
+				else
+					Files.appendFile(searchTreeFile, treeString);
 			}
 			
 			// Anzahl Schleifendurchläufe
@@ -423,8 +434,8 @@ public class ROLearner extends LearningAlgorithm {
 		}
 		
 		// Suchbaum in Datei schreiben
-		if(writeSearchTree)
-			Files.createFile(searchTreeFile, searchTree);
+//		if(writeSearchTree)
+//			Files.createFile(searchTreeFile, searchTree);
 		
 		// Ergebnisausgabe
 		/*
