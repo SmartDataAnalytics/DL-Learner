@@ -26,7 +26,21 @@ $masterContent="
   
 </div> <!-- box -->
 
-".$left."
+<div class=\"box\" id=\"examples\">
+  <div class=\"boxtitle\">Examples<a class=\"title_switch\" onclick=\"toggleBoxContent(this);\">–</a></div>
+  <div class=\"boxcontent\">
+	".$examples."
+  </div> <!-- boxcontent -->
+  
+</div> <!-- box -->
+
+<div class=\"box\" id=\"examples\">
+  <div class=\"boxtitle\">Concept<a class=\"title_switch\" onclick=\"toggleBoxContent(this);\">–</a></div>
+  <div class=\"boxcontent\">
+	".$concept."
+  </div> <!-- boxcontent -->
+  
+</div> <!-- box -->
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </div><!-- END leftSidebar -->
@@ -38,7 +52,7 @@ $masterContent="
 	".$content."
   </div> <!-- boxcontent -->
 </div> <!-- box -->
-".$middle."
+
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </div><!-- content -->
 
