@@ -7,50 +7,39 @@ class SparqlConnection
 	private $DBPediaUrl;
 	private $DLLearnerUri;
 	private $client;
-	private $id;
-	
-	public function getID(){
-		return $this->id;
-	}
-	
-	function SparqlConnection($DBPediaUrl,$DLLearnerUri,$getID=0)
+		
+	function SparqlConnection($DBPediaUrl,$DLLearnerUri)
 	{
 		ini_set("soap.wsdl_cache_enabled","0");
 		$this->DBPediaUrl=$DBPediaUrl;
 		$this->DLLearnerUri=$DLLearnerUri;
 		$this->loadWSDLfiles($DLLearnerUri);
 		$this->client=new SoapClient("main.wsdl");
-		if($getID==0)
-		{  		
-     		$this->id=$this->client->generateID();
-     	}
-     	else
-     	{
-     		$this->id=$getID;
-     	}
 	}
 	
 	function getConceptFromExamples($posExamples,$negExamples)
 	{
-		$ksID = $this->client->addKnowledgeSource($this->id, "sparql", $this->DBPediaUrl);
-		$this->client->applyConfigEntryInt($this->id, $ksID, "numberOfRecursions", 2);
-		$this->client->applyConfigEntryStringArray($this->id, $ksID, "instances", array_merge($posExamples,$negExamples));
-		$this->client->applyConfigEntryInt($this->id, $ksID, "filterMode", 0);
-		$this->client->applyConfigEntryStringArray($this->id, $ksID, "predList", array());
-		$this->client->applyConfigEntryStringArray($this->id, $ksID, "objList", array());
-		$this->client->applyConfigEntryStringArray($this->id, $ksID, "classList", array());
-		$this->client->applyConfigEntryString($this->id, $ksID, "format", "KB");
-		$this->client->applyConfigEntryBoolean($this->id, $ksID, "dumpToFile", false);
+		$id=$this->client->generateID();
 		
-		$this->client->setReasoner($this->id, "dig");
-		$this->client->setLearningProblem($this->id, "posNegDefinition");
-		$this->client->setPositiveExamples($this->id, $posExamples);
-		$this->client->setNegativeExamples($this->id, $negExamples);
-		$this->client->setLearningAlgorithm($this->id, "refinement");
+		$ksID = $this->client->addKnowledgeSource($id, "sparql", $this->DBPediaUrl);
+		$this->client->applyConfigEntryInt($id, $ksID, "numberOfRecursions", 2);
+		$this->client->applyConfigEntryStringArray($id, $ksID, "instances", array_merge($posExamples,$negExamples));
+		$this->client->applyConfigEntryInt($id, $ksID, "filterMode", 0);
+		$this->client->applyConfigEntryStringArray($id, $ksID, "predList", array());
+		$this->client->applyConfigEntryStringArray($id, $ksID, "objList", array());
+		$this->client->applyConfigEntryStringArray($id, $ksID, "classList", array());
+		$this->client->applyConfigEntryString($id, $ksID, "format", "KB");
+		$this->client->applyConfigEntryBoolean($id, $ksID, "dumpToFile", true);
+		
+		$this->client->setReasoner($id, "dig");
+		$this->client->setLearningProblem($id, "posNegDefinition");
+		$this->client->setPositiveExamples($id, $posExamples);
+		$this->client->setNegativeExamples($id, $negExamples);
+		$this->client->setLearningAlgorithm($id, "refinement");
 		
 		$start = microtime(true);
 
-		$this->client->init($this->id);
+		$this->client->init($id);
 
 		$learn_start = microtime(true);
 		$init = $learn_start - $start;
@@ -96,18 +85,20 @@ class SparqlConnection
 	
 	function getTriples($individual)
 	{
-		$ksID = $this->client->addKnowledgeSource($this->id, "sparql", $this->DBPediaUrl);
-		$this->client->applyConfigEntryInt($this->id, $ksID, "numberOfRecursions", 1);
-		$this->client->applyConfigEntryStringArray($this->id, $ksID, "instances", array($individual));
-		$this->client->applyConfigEntryInt($this->id, $ksID, "filterMode", 3);
-		$this->client->applyConfigEntryStringArray($this->id, $ksID, "predList", array());
-		$this->client->applyConfigEntryStringArray($this->id, $ksID, "objList", array());
-		$this->client->applyConfigEntryStringArray($this->id, $ksID, "classList", array());
-		$this->client->applyConfigEntryString($this->id, $ksID, "format", "Array");
-		$this->client->applyConfigEntryBoolean($this->id, $ksID, "dumpToFile", false);
-		$this->client->applyConfigEntryBoolean($this->id,$ksID,"useLits",true);
+		$id=$this->client->generateID();
 		
-		$object=$this->client->getTriples($this->id,$ksID);
+		$ksID = $this->client->addKnowledgeSource($id, "sparql", $this->DBPediaUrl);
+		$this->client->applyConfigEntryInt($id, $ksID, "numberOfRecursions", 1);
+		$this->client->applyConfigEntryStringArray($id, $ksID, "instances", array($individual));
+		$this->client->applyConfigEntryInt($id, $ksID, "filterMode", 3);
+		$this->client->applyConfigEntryStringArray($id, $ksID, "predList", array());
+		$this->client->applyConfigEntryStringArray($id, $ksID, "objList", array());
+		$this->client->applyConfigEntryStringArray($id, $ksID, "classList", array());
+		$this->client->applyConfigEntryString($id, $ksID, "format", "Array");
+		$this->client->applyConfigEntryBoolean($id, $ksID, "dumpToFile", false);
+		$this->client->applyConfigEntryBoolean($id,$ksID,"useLits",true);
+		
+		$object=$this->client->getTriples($id,$ksID);
 		$array=$object->item;
 		$ret=array();
 		foreach ($array as $element)
@@ -121,8 +112,10 @@ class SparqlConnection
 	
 	function getSubjects($label,$limit)
 	{
-		$ksID = $this->client->addKnowledgeSource($this->id, "sparql", $this->DBPediaUrl);
-		$object=$this->client->getSubjects($this->id,$ksID,$label,$limit);
+		$id=$this->client->generateID();
+		
+		$ksID = $this->client->addKnowledgeSource($id, "sparql", $this->DBPediaUrl);
+		$object=$this->client->getSubjects($id,$ksID,$label,$limit);
 		return $object->item;
 	}
 	
@@ -198,18 +191,4 @@ class SparqlConnection
 	
 	}
 }
-
-$positive=array("http://dbpedia.org/resource/Pythagoras",
-				"http://dbpedia.org/resource/Philolaus",
-				"http://dbpedia.org/resource/Archytas");
-$negative=array("http://dbpedia.org/resource/Socrates",
-				"http://dbpedia.org/resource/Zeno_of_Elea",
-				"http://dbpedia.org/resource/Plato");
-
-$sparqlConnection=new SparqlConnection("http://dbpedia.openlinksw.com:8890/sparql","http://localhost:8181/services?wsdl");
-//$sparqlConnection->getConceptFromExamples($positive,$negative);
-//$triples=$sparqlConnection->getTriples("http://dbpedia.org/resource/Leipzig");
-//print_r($triples);
-//$subjects=$sparqlConnection->getSubjects("Leipzig",5);
-//print_r($subjects);
 ?>
