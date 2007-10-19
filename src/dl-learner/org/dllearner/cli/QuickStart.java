@@ -31,8 +31,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 /**
- * A tool to quickly start a learning example. It detects all conf files in 
- * the examples directory and offers the user to start one of them. 
+ * A tool to quickly start a learning example. It detects all conf files in the
+ * examples directory and offers the user to start one of them.
  * 
  * @author Sebastian Hellmann
  * @author Jens Lehmann
@@ -47,8 +47,8 @@ public class QuickStart {
 		String lastused = readit();
 		String tab = "	";
 		int the_Number = 0;
-		ArrayList<String> FinalSelection = new ArrayList<String>();
-		FinalSelection.add("na");
+		ArrayList<String> finalSelection = new ArrayList<String>();
+		finalSelection.add("na");
 
 		hm = new HashMap<String, ArrayList<String>>();
 		String path = pm + File.separator + "examples";
@@ -83,7 +83,7 @@ public class QuickStart {
 			Arrays.sort(files);
 			for (int j = 0; j < files.length; j++) {
 				the_Number++;
-				FinalSelection.add(the_Number, s + files[j] + ".conf");// tmp=the_Number+":"+tab+files[j];
+				finalSelection.add(the_Number, s + files[j] + ".conf");// tmp=the_Number+":"+tab+files[j];
 				System.out.println("  " + the_Number + ":" + tab + files[j] + "");
 
 			}
@@ -96,7 +96,7 @@ public class QuickStart {
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			int target = 0;
-			String Selected = "";
+			String selected = "";
 			while (true) {
 				String cmd = br.readLine();
 				try {
@@ -114,20 +114,19 @@ public class QuickStart {
 			}// end while
 			if (number) {
 				try {
-					Selected = FinalSelection.get(target);
+					selected = finalSelection.get(target);
 				} catch (Exception e) {
 					System.out.println("number does not exist");
 				}
 				;
-				writeit(Selected);
-				System.out.println(Selected);
+				writeit(selected);
+				System.out.println(selected);
 			} else if (!number) {
-				Selected = lastused;
+				selected = lastused;
 			}
 
-			System.out.println("ToDo: start commandline interface with selected conf file");
 			// DLLearner.main(new String[] { Selected });
-			Start.main(new String[] { Selected });
+			Start.main(new String[] { selected });
 
 		} catch (Exception e) {
 			e.printStackTrace();
