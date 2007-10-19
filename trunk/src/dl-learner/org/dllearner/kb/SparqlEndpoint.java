@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.OntologyFormat;
+import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
@@ -170,10 +172,19 @@ public class SparqlEndpoint extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		if (format.equals("N-TRIPLES")) return JenaOWLDIGConverter.getTellsString(dumpFile, OntologyFileFormat.N_TRIPLES, kbURI);
+		if (format.equals("N-TRIPLES")) return JenaOWLDIGConverter.getTellsString(dumpFile, OntologyFormat.N_TRIPLES, kbURI);
 		else return DIGConverter.getDIGString(kb, kbURI).toString();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.KnowledgeSource#export(java.io.File, org.dllearner.core.OntologyFormat)
+	 */
+	@Override
+	public void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException {
+		// currently no export functions implemented, so we just throw an exception
+		throw new OntologyFormatUnsupportedException("export", format);
+	}
+	
 	public URL getURL() {
 		return url;
 	}

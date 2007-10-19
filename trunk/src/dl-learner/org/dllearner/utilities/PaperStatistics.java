@@ -34,11 +34,11 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.reasoning.DIGReasoner;
@@ -157,7 +157,7 @@ public class PaperStatistics {
 			String baseDir = confFiles[exampleNr].getParent();
 			
 			// read which files were imported (internal KB is ignored) and initialise reasoner
-			Map<URL, OntologyFileFormat> imports = getImports(learner.getFunctionCalls(), confFiles[exampleNr]);
+			Map<URL, OntologyFormat> imports = getImports(learner.getFunctionCalls(), confFiles[exampleNr]);
 			//Map<URL, Class<? extends KnowledgeSource>> imports = Start.getImportedFiles(learner, baseDir);
 			
 			// detect specified positive and negative examples
@@ -304,10 +304,10 @@ public class PaperStatistics {
 		
 	}
 	
-	private static Map<URL, OntologyFileFormat> getImports(Map<String,List<List<String>>> functionCalls, File confFile) {
-		Map<URL, OntologyFileFormat> importedFiles = new HashMap<URL, OntologyFileFormat>();
+	private static Map<URL, OntologyFormat> getImports(Map<String,List<List<String>>> functionCalls, File confFile) {
+		Map<URL, OntologyFormat> importedFiles = new HashMap<URL, OntologyFormat>();
 		
-		OntologyFileFormat format = null;
+		OntologyFormat format = null;
 		URL url = null;
 		
 		List<List<String>> imports = functionCalls.get("import");
@@ -331,13 +331,13 @@ public class PaperStatistics {
 				
 				if (call.size() == 2)
 					// falls nichts angegeben, dann wird RDF/XML gewählt
-					importedFiles.put(url, OntologyFileFormat.RDF_XML);
+					importedFiles.put(url, OntologyFormat.RDF_XML);
 				else {
 					String formatString = call.get(2);
 					if (formatString.equals("RDF/XML"))
-						format = OntologyFileFormat.RDF_XML;
+						format = OntologyFormat.RDF_XML;
 					else
-						format = OntologyFileFormat.N_TRIPLES;
+						format = OntologyFormat.N_TRIPLES;
 					importedFiles.put(url, format);
 				}
 			// }			

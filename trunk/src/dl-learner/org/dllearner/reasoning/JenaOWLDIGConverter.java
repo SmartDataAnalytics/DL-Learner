@@ -16,7 +16,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.dllearner.kb.OntologyFileFormat;
+import org.dllearner.core.OntologyFormat;
 import org.w3c.dom.Document;
 
 import com.hp.hpl.jena.graph.Graph;
@@ -35,7 +35,7 @@ public class JenaOWLDIGConverter {
 		String tells = "";
 		try {
 			URL url = file.toURI().toURL();			
-			tells = getTellsString(url, OntologyFileFormat.RDF_XML, new URI("kk"));
+			tells = getTellsString(url, OntologyFormat.RDF_XML, new URI("kk"));
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
@@ -46,7 +46,7 @@ public class JenaOWLDIGConverter {
 	
 	// returns a DIG 1.1 Tells String from an ontology file
 	// using the Jena library
-	public static String getTellsString(URL file, OntologyFileFormat format, URI kbURI) {
+	public static String getTellsString(URL file, OntologyFormat format, URI kbURI) {
 		String tellString = "";
 		
 	    // Spezifikation erzeugen: OWL DL
@@ -74,7 +74,7 @@ public class JenaOWLDIGConverter {
 	    // OntModel m = ModelFactory.createOntologyModel();
 		Model m = spec.createBaseModel();
 		String lang = "";
-		if(format.equals(OntologyFileFormat.RDF_XML))
+		if(format.equals(OntologyFormat.RDF_XML))
 			lang = "RDF/XML";
 		else
 			lang = "N-TRIPLES";

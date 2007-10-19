@@ -19,19 +19,20 @@
  */
 package org.dllearner.core;
 
-import java.io.File;
-import java.net.URI;
 
 /**
- * Represents a knowledge source component.
+ * Indicates that an operation is not supported/implemented for
+ * a specific ontology file format.
  * 
  * @author Jens Lehmann
  *
  */
-public abstract class KnowledgeSource extends Component {
-	
-	public abstract String toDIG(URI kbURI);
+public class OntologyFormatUnsupportedException extends Exception {
 
-	public abstract void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException;
+	private static final long serialVersionUID = 1080949376967068007L;
+
+	public OntologyFormatUnsupportedException(String operation, OntologyFormat format) {
+		super("The operation " + operation + " does not support the ontology file format " + format);
+	}
 	
 }

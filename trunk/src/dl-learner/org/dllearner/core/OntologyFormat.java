@@ -1,6 +1,6 @@
-package org.dllearner.kb;
+package org.dllearner.core;
 
-public enum OntologyFileFormat {
+public enum OntologyFormat {
 
 	/**
 	 * RDF-Triples in XML file

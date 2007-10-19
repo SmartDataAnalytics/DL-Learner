@@ -33,7 +33,6 @@ import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.RoleHierarchy;
 import org.dllearner.core.dl.SubsumptionHierarchy;
-import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.KAON2Reasoner;
 import org.dllearner.reasoning.ReasonerType;
@@ -406,7 +405,7 @@ public class ReasoningService {
 	}
 
 	// speichern einer Ontolgie wird speziell behandelt, da kein Reasoning
-	public void saveOntology(File file, OntologyFileFormat format) {
+	public void saveOntology(File file, OntologyFormat format) {
 		if (getReasonerType() == ReasonerType.KAON2) {
 			((KAON2Reasoner) reasoner).saveOntology(file, format);
 		} else if (getReasonerType() == ReasonerType.DIG) {

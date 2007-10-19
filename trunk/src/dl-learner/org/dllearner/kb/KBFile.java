@@ -116,11 +116,12 @@ public class KBFile extends KnowledgeSource {
 			return kb.toString();
 	}
 	
-	public void export(File file, org.dllearner.kb.OntologyFileFormat format) {
+	@Override
+	public void export(File file, org.dllearner.core.OntologyFormat format){
 		Reasoner kaon2Reasoner = KAON2Reasoner.getKAON2Reasoner(kb);
 		
 		String kaon2Format = "";
-		if(format.equals(org.dllearner.kb.OntologyFileFormat.RDF_XML))
+		if(format.equals(org.dllearner.core.OntologyFormat.RDF_XML))
 			kaon2Format = OntologyFileFormat.OWL_RDF;
 		else {
 			System.err.println("Warning: Cannot export format " + format + ". Exiting.");
