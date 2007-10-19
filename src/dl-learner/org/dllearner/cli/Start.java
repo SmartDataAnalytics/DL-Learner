@@ -174,7 +174,7 @@ public class Start {
 		initComponent(cm, la);
 
 		// perform file exports
-		performExports(parser, baseDir, rs);
+		performExports(parser, baseDir, sources, rs);
 
 		// show examples (display each one if they do not take up much space,
 		// otherwise just show the number of examples)
@@ -375,24 +375,39 @@ public class Start {
 		return importedFiles;
 	}
 
-	private static void performExports(ConfParser parser, String baseDir, ReasoningService rs) {
+	private static void performExports(ConfParser parser, String baseDir, Set<KnowledgeSource> sources, ReasoningService rs) {
 		List<List<String>> exports = parser.getFunctionCalls().get("export");
+
 		if (exports == null)
 			return;
+		
+		File file = null;
+		OntologyFileFormat format = null;		
 		for (List<String> export : exports) {
-			File file = new File(baseDir, export.get(0));
+			file = new File(baseDir, export.get(0));
 			if (export.size() == 1)
 				// use RDF/XML by default
-				rs.saveOntology(file, OntologyFileFormat.RDF_XML);
+				format = OntologyFileFormat.RDF_XML;
+				// rs.saveOntology(file, OntologyFileFormat.RDF_XML);
 			else {
 				String formatString = export.get(1);
-				OntologyFileFormat format;
+				// OntologyFileFormat format;
 				if (formatString.equals("RDF/XML"))
 					format = OntologyFileFormat.RDF_XML;
 				else
 					format = OntologyFileFormat.N_TRIPLES;
-				rs.saveOntology(file, format);
+				// rs.saveOntology(file, format);
 			}
+		}
+		// hack: ideally we would have the possibility to export each knowledge
+		// source to specified files with specified formats (and maybe including 
+		// the option to merge them all in one file)
+		// however implementing this requires quite some effort so for the
+		// moment we just stick to exporting KB files (moreover all but the last
+		// export statement are ignored)
+		for(KnowledgeSource source : sources) {
+			if(source instanceof KBFile)
+				((KBFile)source).export(file, format);
 		}
 	}
 

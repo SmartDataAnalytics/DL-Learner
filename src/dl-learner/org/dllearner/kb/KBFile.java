@@ -36,6 +36,10 @@ import org.dllearner.core.dl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGConverter;
+import org.dllearner.reasoning.KAON2Reasoner;
+import org.semanticweb.kaon2.api.KAON2Exception;
+import org.semanticweb.kaon2.api.formatting.OntologyFileFormat;
+import org.semanticweb.kaon2.api.reasoner.Reasoner;
 
 /**
  * @author Jens Lehmann
@@ -110,6 +114,28 @@ public class KBFile extends KnowledgeSource {
 			return "KB file (not initialised)";
 		else
 			return kb.toString();
+	}
+	
+	public void export(File file, org.dllearner.kb.OntologyFileFormat format) {
+		Reasoner kaon2Reasoner = KAON2Reasoner.getKAON2Reasoner(kb);
+		
+		String kaon2Format = "";
+		if(format.equals(org.dllearner.kb.OntologyFileFormat.RDF_XML))
+			kaon2Format = OntologyFileFormat.OWL_RDF;
+		else {
+			System.err.println("Warning: Cannot export format " + format + ". Exiting.");
+			System.exit(0);
+		}
+		
+		try {
+			kaon2Reasoner.getOntology().saveOntology(kaon2Format,file,"ISO-8859-1");
+		} catch (KAON2Exception e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	public URL getURL() {
