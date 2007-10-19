@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Individual;
+import org.dllearner.utilities.ConceptComparator;
 
 /**
  * @author Jens Lehmann
@@ -33,6 +34,9 @@ import org.dllearner.core.dl.Individual;
  */
 public class CommonConfigMappings {
 
+	private static ConceptComparator cm = new ConceptComparator();
+	// private static RoleComparator rc = new RoleComparator();
+	
 	public static SortedSet<Individual> getIndividualSet(Set<String> individuals) {
 		SortedSet<Individual> set = new TreeSet<Individual>();
 		for(String individual : individuals)
@@ -41,7 +45,7 @@ public class CommonConfigMappings {
 	}
 	
 	public static SortedSet<AtomicConcept> getAtomicConceptSet(Set<String> atomicConcepts) {
-		SortedSet<AtomicConcept> set = new TreeSet<AtomicConcept>();
+		SortedSet<AtomicConcept> set = new TreeSet<AtomicConcept>(cm);
 		for(String atomicConcept : atomicConcepts)
 			set.add(new AtomicConcept(atomicConcept));
 		return set;
