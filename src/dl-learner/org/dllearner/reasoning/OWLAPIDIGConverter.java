@@ -14,7 +14,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.dllearner.kb.OntologyFileFormat;
+import org.dllearner.core.OntologyFormat;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
@@ -25,7 +25,7 @@ import uk.ac.manchester.cs.owl.inference.dig11.DIGTranslatorImpl;
 
 public class OWLAPIDIGConverter {
 
-	public static String getTellsString(URL file, OntologyFileFormat format, URI kbURI) {
+	public static String getTellsString(URL file, OntologyFormat format, URI kbURI) {
 	 // public static String getTellsString(URL file,  URI kbURI){//throws OWLOntologyCreationException{
 		 String ret="";
 		 try{

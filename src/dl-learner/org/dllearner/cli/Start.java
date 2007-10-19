@@ -41,6 +41,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
@@ -58,7 +59,6 @@ import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.kb.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
@@ -382,20 +382,20 @@ public class Start {
 			return;
 		
 		File file = null;
-		OntologyFileFormat format = null;		
+		OntologyFormat format = null;		
 		for (List<String> export : exports) {
 			file = new File(baseDir, export.get(0));
 			if (export.size() == 1)
 				// use RDF/XML by default
-				format = OntologyFileFormat.RDF_XML;
+				format = OntologyFormat.RDF_XML;
 				// rs.saveOntology(file, OntologyFileFormat.RDF_XML);
 			else {
 				String formatString = export.get(1);
 				// OntologyFileFormat format;
 				if (formatString.equals("RDF/XML"))
-					format = OntologyFileFormat.RDF_XML;
+					format = OntologyFormat.RDF_XML;
 				else
-					format = OntologyFileFormat.N_TRIPLES;
+					format = OntologyFormat.N_TRIPLES;
 				// rs.saveOntology(file, format);
 			}
 		}

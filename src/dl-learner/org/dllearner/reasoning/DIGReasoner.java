@@ -37,6 +37,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.ConfigEntry;
@@ -51,7 +52,6 @@ import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.RoleHierarchy;
 import org.dllearner.core.dl.SubsumptionHierarchy;
 import org.dllearner.core.dl.Top;
-import org.dllearner.kb.OntologyFileFormat;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -755,7 +755,7 @@ public class DIGReasoner extends ReasonerComponent {
 
 	// TODO: not working yet - it is probably better to include a method
 	// in knowledge source to save the corresponding source to a file
-	public void saveOntology(File file, OntologyFileFormat format) {
+	public void saveOntology(File file, OntologyFormat format) {
 		// KAON2-Reasoner erzeugen und den die Ontologie speichern lassen
 		// (später könnte man das über Jena erledigen, allerdings funktioniert
 		// das mit KAON2 auch gut)

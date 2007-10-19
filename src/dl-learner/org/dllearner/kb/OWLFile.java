@@ -19,6 +19,7 @@
  */
 package org.dllearner.kb;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -26,6 +27,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.OntologyFormat;
+import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
@@ -88,11 +91,20 @@ public class OWLFile extends KnowledgeSource {
 	@Override
 	public String toDIG(URI kbURI) {
 		// TODO: need some handling for cases where the URL was not set
-		return OWLAPIDIGConverter.getTellsString(url, OntologyFileFormat.RDF_XML, kbURI);
+		return OWLAPIDIGConverter.getTellsString(url, OntologyFormat.RDF_XML, kbURI);
 	}
 
 	public URL getURL() {
 		return url;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.KnowledgeSource#export(java.io.File, org.dllearner.core.OntologyFormat)
+	 */
+	@Override
+	public void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException {
+		// currently no export functions implemented, so we just throw an exception
+		throw new OntologyFormatUnsupportedException("export", format);
 	}
 
 }
