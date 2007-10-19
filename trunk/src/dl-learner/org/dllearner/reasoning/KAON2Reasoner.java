@@ -586,7 +586,24 @@ public class KAON2Reasoner extends ReasonerComponent {
 		throw new IllegalArgumentException("Unsupported concept type.");
 	}
 
-	private org.semanticweb.kaon2.api.reasoner.Reasoner getKAON2Reasoner(KB kb,
+	public static org.semanticweb.kaon2.api.reasoner.Reasoner getKAON2Reasoner(KB kb) {
+		try {
+			KAON2Connection connection = KAON2Manager.newConnection();
+			
+			DefaultOntologyResolver resolver = new DefaultOntologyResolver();
+			resolver.registerReplacement("http://localhost/foo", "file:nothing.xml");
+			connection.setOntologyResolver(resolver);
+			Ontology ontology = connection.createOntology("http://localhost/foo",
+							new HashMap<String, Object>());
+			return getKAON2Reasoner(kb, ontology);
+			
+		} catch (KAON2Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private static org.semanticweb.kaon2.api.reasoner.Reasoner getKAON2Reasoner(KB kb,
 			Ontology ontology) {
 
 		org.semanticweb.kaon2.api.reasoner.Reasoner reasoner = null;
