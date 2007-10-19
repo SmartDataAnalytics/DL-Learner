@@ -28,8 +28,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.BooleanConfigOption;
