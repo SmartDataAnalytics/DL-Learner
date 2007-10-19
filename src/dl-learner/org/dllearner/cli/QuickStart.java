@@ -127,6 +127,7 @@ public class QuickStart {
 
 			System.out.println("ToDo: start commandline interface with selected conf file");
 			// DLLearner.main(new String[] { Selected });
+			Start.main(new String[] { Selected });
 
 		} catch (Exception e) {
 			e.printStackTrace();
