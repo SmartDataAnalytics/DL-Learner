@@ -48,6 +48,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGReasoner;
@@ -82,6 +83,7 @@ public class DLLearnerWS {
 		reasonerMapping.put("dig", DIGReasoner.class);
 		learningProblemMapping.put("posNegDefinition", PosNegDefinitionLP.class);
 		learningProblemMapping.put("posNegInclusion", PosNegInclusionLP.class);
+		learningProblemMapping.put("posOnlyDefinition", PosOnlyDefinitionLP.class);
 		learningAlgorithmMapping.put("refinement", ROLearner.class);
 		components = Helper.union(knowledgeSourceMapping.keySet(),reasonerMapping.keySet());
 		components = Helper.union(components, learningProblemMapping.keySet());
@@ -286,6 +288,13 @@ public class DLLearnerWS {
 	public String getCurrentlyBestConcept(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		return state.getLearningAlgorithm().getBestSolution().toString();
+	}
+	
+	@WebMethod
+	public String[] getCurrentlyBestConcepts(int id, int nrOfConcepts) throws ClientNotKnownException {
+		ClientState state = getState(id);
+		List<Concept> bestConcepts = state.getLearningAlgorithm().getBestSolutions(nrOfConcepts);
+		return bestConcepts.toArray(new String[bestConcepts.size()]);
 	}
 	
 	@WebMethod

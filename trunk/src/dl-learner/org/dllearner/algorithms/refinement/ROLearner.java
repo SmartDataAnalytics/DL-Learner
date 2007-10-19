@@ -901,6 +901,19 @@ public class ROLearner extends LearningAlgorithm {
 	}
 
 	@Override
+	public synchronized List<Concept> getBestSolutions(int nrOfSolutions) {
+		List<Concept> best = new LinkedList<Concept>();
+		int i=0;
+		for(Node n : candidatesStable.descendingSet()) {
+			best.add(n.getConcept());
+			if(i==nrOfSolutions)
+				return best;
+			i++;
+		}
+		return best;
+	}
+	
+	@Override
 	public Score getSolutionScore() {
 		if(posOnly)
 			return posOnlyLearningProblem.computeScore(getBestSolution());
