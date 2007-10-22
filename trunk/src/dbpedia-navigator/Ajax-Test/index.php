@@ -12,11 +12,17 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
     <link rel="stylesheet" href="default.css"/>
 	<?php $xajax->printJavascript('xajax/'); ?>
 	<script type="text/javascript">
-        showLoading = function() {
-            xajax.$('loading').style.display='block';
+        showLoadingSubjects = function() {
+            xajax.$('loadingSubject').style.display='block';
         };
-        hideLoading = function() {
-            xajax.$('loading').style.display = 'none';
+        hideLoadingSubjects = function() {
+            xajax.$('loadingSubject').style.display = 'none';
+        };
+        showLoadingArticle = function() {
+            xajax.$('loadingArticle').style.display='block';
+        };
+        hideLoadingArticle = function() {
+            xajax.$('loadingArticle').style.display = 'none';
         }
   </script>
    </head>
@@ -46,7 +52,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
 <div class="box" id="search">
   <div class="boxtitle">Searchresults</div>
   <div class="boxcontent" id="searchcontent">
-  <div id="loading"><img src="ajax-loader.gif" alt="Loading..."/></div>
+  <div id="loadingSubject" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
@@ -57,6 +63,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
 <div class="box" id="search">
   <div class="boxtitle">Content</div>
   <div class="boxcontent" id="article">
+  <div id="loadingArticle" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
