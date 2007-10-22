@@ -1,0 +1,23 @@
+.loadCSS1 {
+	visibility: hidden;
+}
+.unloadCSS1 {
+	visibility: visible;
+}
+.frame {
+	border: 1px solid #4444aa;
+	background: #bbbbff;
+	padding: 2px;
+}
+.headerText {
+	background: #ffffff;
+	color: #111177;
+	font-weight: bold;
+}
+.bodyText {
+	color: #4444aa;
+}
+.tagline {
+	color: #4444aa;
+	font-size: smaller;
+}

@@ -1,6 +1,6 @@
 <?php
 
-require_once 'pear/HTTP_Request.php';
+//require_once 'pear/HTTP_Request.php';
 
 class SparqlConnection
 {
@@ -14,7 +14,7 @@ class SparqlConnection
 		ini_set('default_socket_timeout',200);
 		$this->DBPediaUrl=$DBPediaUrl;
 		$this->DLLearnerUri=$DLLearnerUri;
-		$this->loadWSDLfiles($DLLearnerUri);
+		//$this->loadWSDLfiles($DLLearnerUri);
 		$this->client=new SoapClient("main.wsdl");
 	}
 	
@@ -111,7 +111,7 @@ class SparqlConnection
 		return $ret;
 	}
 	
-	function getSubjects($label,$limit)
+	function getSubjects($label='Leipzig',$limit=5)
 	{
 		$id=$this->client->generateID();
 		

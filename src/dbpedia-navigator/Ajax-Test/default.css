@@ -1,0 +1,478 @@
+/**
+  * default.css
+  * main Ontowiki style sheet
+  * @author: Norman Heino
+  * @version: $Id: default.css 751 2007-02-14 19:20:17Z nheino $
+  */
+
+/* remove browser specific margins */
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font: 80%/1.2 "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+p {
+	margin: 8px 0;
+}
+
+h2 {
+	margin: 0.5em 0 0.1em 0;
+/*	background-color: #eee;*/
+	font-size: 110%;
+}
+
+
+/*
+ * Main site structure
+ */
+
+#wrapper {
+	position: relative;
+	max-width: 100%;
+	padding: 15px;
+/*	margin: 15px;*/
+}
+
+#content {
+	margin: 0 19em;
+	overflow: hidden;
+/*	border-left: 1px solid #bbb;
+	border-right: 1px solid #bbb;
+	padding: 0 5px;*/
+}
+
+/*
+ * Side bars are positioned absolutely due to several reasons:
+ * (1)Internet Explorer has problems displaying float elements, 
+ * (2) the content's position in html is irrelevant, 
+ * (3) positioning the content div is more straightforward.
+ */
+#leftSidebar {
+	position: absolute;
+	width: 18em;
+}
+
+#rightSidebar {
+	position: absolute;
+	width: 18em;
+	top: 15px;
+	right: 15px;
+}
+
+#clear {
+	clear: both;
+}
+
+
+/*
+ * sidebar content (boxes)
+ */
+
+.box {
+	color: #666;
+	margin-bottom: 20px;
+	border: 1px solid #bbb;
+	font-size: 85%;
+}
+
+/*.box td {
+	font-size: 100%;
+}*/
+
+.box .boxtitle {
+	color: #666;
+	background-color: #eee;
+	padding: 3px 0.4em;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.box .boxtitle .boxtitle_string {
+	width: 80%;
+	overflow: hidden;
+/*	display: none;*/
+}
+
+.box .boxcontent {
+	padding: 0.6em;
+	border-top: 1px solid #bbb;
+}
+
+/* restrict content of certain boxes */
+.box#predicates .boxcontent, 
+.box#classes .boxcontent {
+	overflow: hidden;
+}
+
+.box p {
+	margin: 0 2px 4px 0;
+}
+
+.box ul, .box ol {
+	margin: 0px;
+/*	padding-left: 15px;*/
+	list-style-position: inside;
+}
+
+.box ul.no_bullet, .box ul.no_bullet {
+	list-style-type: none;
+}
+
+.box ul li.horizontal, .box ol li.horizontal, 
+.box ul.horizontal,    .box ol.horizontal {
+	display: inline;
+}
+
+.box a.title_switch {
+	position: absolute;
+	right: 0.5em;
+	margin: auto 0;
+	color: #666;
+	border: 1px solid #bbb;
+	width: 1em;
+	height: 1em;
+	background-color: #fff;
+	text-align: center;
+}
+
+.box a.title_switch:hover {
+	color: #02a;
+	text-decoration: none;
+	background-color: #eee;
+}
+
+.box hr {
+	margin: 0.5em 0;
+	border: none;
+	border-top: 1px dotted #bbb;
+	height: 0;
+}
+
+.box#classes .boxcontent a {
+	display: block;
+}
+
+/*.box select {
+	width: 250px; /* TODO remove absolute size */
+}*/
+
+.box input {
+	width: auto;
+}
+
+.box td input {
+	width: 100%;
+}
+
+.box img.rating {
+	position: relative;
+	top: 1px;
+}
+
+.hidden {
+	display: none;
+}
+
+
+/*
+ * Links
+ */
+
+a, a:link, a:visited {
+	color: #02a;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+
+/*
+ * Tabs
+ */
+
+/* all the tabs */
+.tabs {
+	float: left;
+	width: 100%;
+	background: #fff url("../images/tabs_back.png") repeat-x bottom;
+}
+
+.tabs ul {
+	list-style: none;
+}
+
+.tabs li {
+	float: left;
+	margin-right: 1px;
+}
+
+.tabs a {
+	display: block;
+	margin-top: 1px;
+	padding: 0.35em 1.35em;
+	background-image: url("../images/tab_back.png");
+	background-repeat: repeat-x;
+	background-color: #cbcbcb;
+	border: 1px solid #bbb;
+}
+
+.tabs a:hover {
+	background: #fff;
+	text-decoration: none;
+}
+
+.tabs a.current {
+	background: #fff;
+	border-bottom: 1px solid #fff;
+}
+
+/* horizontal line underneath the tabs */
+#tab-line {
+	height: 1em;
+	clear: both;
+}
+
+#instances {
+	float: right;
+}
+
+.selected {
+	background-color: #bde; /*#b4d5fe;*/
+}
+
+.button {
+	border: solid black 1px;
+	padding: 0px 1px;
+	background-color: #eee;
+}
+
+/*
+ * Tables
+ */
+
+tr.odd {
+	background-color: #ccc;
+}
+
+tr.even {
+	background-color: #eee;
+}
+
+table.instanceTable th {
+	text-align: left;
+/*	background-color: #eee;*/
+}
+
+table.instanceTable > tbody > tr > td {
+	padding-top: 0.5em;
+}
+
+table.instanceTable td.property {
+	text-align: right;
+	font-style: italic;
+	padding-right: 5px;
+}
+
+table.instanceTable ul {
+	margin: 0px;
+	padding-left: 20px;
+}
+
+table.instanceTable {
+	width: 100%;
+}
+
+.searchHighlight {
+	background-color: orange;
+}
+
+table.tripletable {
+	width: 100%;
+	font-size: 90%;
+}
+
+.tripletable td {
+	padding: 0.4em;
+}
+
+table.blind tr td {
+	padding-top: 0.4em;
+}
+
+/*
+ * Instances
+ */
+
+.instance .instance {
+	margin-left: 13px;
+	background-color: #ddd;
+}
+.instance .instance td {
+	font-size: 90%;
+}
+.instance .instance .instance {
+	background-color: #eee;
+}
+
+.instance .instance .instance .instance {
+	background-color: #fff;
+}
+
+#instanceEdit {
+	border-spacing: 0px;
+	width: 100%;
+}
+
+#instanceEdit input, #instanceEdit textarea {
+/*	width: 250px;*/
+	background-color: #fff;
+	font-size: 95%;
+	font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+	padding: 0.1em 0;
+}
+
+#instanceEdit > tbody > tr > td, #instanceEdit > tr > td {
+	background-color: #eee;
+	padding: 5px;
+	border-bottom: 2px solid #fdfdfd;
+}
+
+/*
+ * Calendar
+ */
+
+table.calendar {
+	margin-top: 1em;
+	width: 100%;
+	height: 730px;
+	table-layout: fixed;
+	font-size: 90%;
+}
+
+.calendar .weekday0 {
+	background-color: #eee;
+	padding: 0.4em;
+}
+.calendar .weekday1 {
+	background-color: #f5f5f5;
+	padding: 0.4em;
+}
+.calendar .weekend0 {
+	background-color: #ddd;
+	padding: 0.4em;
+}
+.calendar .weekend1 {
+	background-color: #eaeaea;
+	padding: 0.4em;
+}
+
+#map {
+	margin-top: 0.5em;
+	width: 100%;
+	height: 750px;
+	font-size: 90%;
+}
+
+#map .instance td {
+	font-size: 80%;
+	padding: 0 3px;
+	border-bottom: 5px solid white;
+}
+
+#superClassPath {
+	margin-bottom: 0.5em;
+}
+
+img {
+	border: none;
+}
+
+span.submit {
+	float: right;
+	padding-right: 100px;
+}
+
+/*
+ * Autosuggest box
+ */
+div.autosuggest {
+	font-size: 85%;
+	position: absolute;
+	background-color: #fff;
+	border: 1px solid #bbb;
+}
+
+div.autosuggest ul {
+	list-style-type: none;
+	list-style-position: inside;
+	padding-left: 0px;
+}
+
+div.autosuggest ul li.selected {
+	background-color: #bde;
+}
+
+div.autosuggest ul li {
+	display: block;
+	padding: 0.2em;
+/*	height: 22px;*/
+	cursor: pointer;
+}
+
+span.formal {
+	display: none;
+}
+
+/*
+ * Layer
+ */
+#layer {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	background-image: url("../images/black_50.png");
+	background-repeat: repeat;
+	z-index: 98;
+}
+
+#layerContent {
+	margin-top: 100px;
+	margin: auto;
+	width: 500px;
+	height: 300px;
+	background-color: #ffb;
+	border: 2px solid #bbb;
+	z-index: 99;
+}
+
+/*
+ * Buttons
+ */
+input.button {
+	border: 1px solid #bbb; 
+	color: #666;
+	background-color: #eee;
+	padding: 3px 0.4em;
+	font-weight: bold;
+	white-space: nowrap;
+	font-size: 85%;
+}
+
+/*
+ * Loading
+ */
+#loading {
+    padding: 20px;
+    display: none; /* hidden */
+    left: 50%;
+    top: 25%;
+    font-weight: bold;
+    font-size: large;
+}
