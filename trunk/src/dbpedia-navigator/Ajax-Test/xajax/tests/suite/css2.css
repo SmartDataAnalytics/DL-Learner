@@ -1,0 +1,20 @@
+.loadCSS2 {
+	visibility: hidden;
+}
+.unloadCSS2 {
+	visibility: visible;
+}
+.frame {
+	border: 1px solid #4444aa;
+}
+.headerText {
+	text-align: center;
+	padding: 3px;
+}
+.bodyText {
+	padding: 2px;
+}
+.tagline {
+	padding: 2px;
+	visibility: visible;
+}
