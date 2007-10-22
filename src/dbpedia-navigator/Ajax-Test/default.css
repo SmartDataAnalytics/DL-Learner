@@ -464,15 +464,3 @@ input.button {
 	white-space: nowrap;
 	font-size: 85%;
 }
-
-/*
- * Loading
- */
-#loading {
-    padding: 20px;
-    display: none; /* hidden */
-    left: 50%;
-    top: 25%;
-    font-weight: bold;
-    font-size: large;
-}
