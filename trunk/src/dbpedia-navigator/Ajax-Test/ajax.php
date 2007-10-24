@@ -12,4 +12,6 @@ $xajax->register(XAJAX_FUNCTION, 'getarticle', array(
     ));
 $xajax->registerFunction('addPositive');
 $xajax->registerFunction('addNegative');
+$xajax->registerFunction('clearPositives');
+$xajax->registerFunction('clearNegatives');
 ?>

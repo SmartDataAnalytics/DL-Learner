@@ -33,7 +33,7 @@ function getarticle($subject)
 	$contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";
 	
 	$objResponse = new xajaxResponse();
-	$objResponse->assign("article", "innerHTML", $content);
+	$objResponse->assign("articlecontent", "innerHTML", $content);
 	$objResponse->assign("contentbuttons", "innerHTML", $contentbuttons);
 	return $objResponse;
 }
@@ -73,6 +73,24 @@ function addNegative($subject)
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->append("Negatives", "innerHTML", $content);
+	return $objResponse;
+}
+
+function clearPositives()
+{
+	unset($_SESSION['positive']);
+	
+	$objResponse = new xajaxResponse();
+	$objResponse->assign("Positives", "innerHTML", "");
+	return $objResponse;
+}
+
+function clearNegatives()
+{
+	unset($_SESSION['negative']);
+	
+	$objResponse = new xajaxResponse();
+	$objResponse->assign("Negatives", "innerHTML", "");
 	return $objResponse;
 }
 
