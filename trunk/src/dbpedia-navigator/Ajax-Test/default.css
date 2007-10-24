@@ -464,3 +464,14 @@ input.button {
 	white-space: nowrap;
 	font-size: 85%;
 }
+
+input.button:hover {
+	border-left:1px solid #ffffff;
+	border-top:1px solid #ffffff;
+	border-right:1px solid #848484;
+	border-bottom:1px solid #848484;
+}
+
+#contentbuttons{
+	text-align:right;
+}
