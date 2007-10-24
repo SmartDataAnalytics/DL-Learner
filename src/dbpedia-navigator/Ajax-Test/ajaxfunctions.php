@@ -30,8 +30,49 @@ function getarticle($subject)
 		$content.="Subject: ".urldecode($triple[0])."<br/>Predicate: ".urldecode($triple[1])."<br/>Object: ".urldecode($triple[2])."<br/><br/>\n";
 	}
 	
+	$contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";
+	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("article", "innerHTML", $content);
+	$objResponse->assign("contentbuttons", "innerHTML", $contentbuttons);
+	return $objResponse;
+}
+
+function addPositive($subject)
+{
+	if (!isset($_SESSION['positive'])){
+		$array=array($subject);
+		$_SESSION['positive']=$array;
+	}
+	else{
+		$array=$_SESSION['positive'];
+		$array[]=$subject;
+		$_SESSION['positive']=$array;
+	}
+	
+	$content=$subject."<br/>";
+	
+	$objResponse = new xajaxResponse();
+	$objResponse->append("Positives", "innerHTML", $content);
+	return $objResponse;
+}
+
+function addNegative($subject)
+{
+	if (!isset($_SESSION['negative'])){
+		$array=array($subject);
+		$_SESSION['negative']=$array;
+	}
+	else{
+		$array=$_SESSION['negative'];
+		$array[]=$subject;
+		$_SESSION['negative']=$array;
+	}
+	
+	$content=$subject."<br/>";
+	
+	$objResponse = new xajaxResponse();
+	$objResponse->append("Negatives", "innerHTML", $content);
 	return $objResponse;
 }
 

@@ -10,4 +10,6 @@ $xajax->register(XAJAX_FUNCTION, 'getarticle', array(
     'onResponseDelay' => 'showLoadingArticle',
     'beforeResponseProcessing' => 'hideLoadingArticle'
     ));
+$xajax->registerFunction('addPositive');
+$xajax->registerFunction('addNegative');
 ?>
