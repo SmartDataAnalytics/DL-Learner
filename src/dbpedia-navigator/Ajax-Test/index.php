@@ -24,14 +24,17 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
         };
         showLoadingArticle = function() {
             xajax.$('loadingArticle').style.display='block';
+            xajax.$('articlecontent').style.display = 'none';
         };
         hideLoadingArticle = function() {
             xajax.$('loadingArticle').style.display = 'none';
+            xajax.$('articlecontent').style.display = 'block';
         }
   </script>
    </head>
   <body>
 <h3>DBPedia-Navigator-Test</h3>
+<div id="layer" style="display:none"><div id="layerContent" style="display:none"></div></div>
 <div id="wrapper">
 <div id="leftSidebar">
 
@@ -65,9 +68,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
 </div><!-- END leftSidebar -->
 
 <div id="content">
-<div class="box" id="search">
-  <div class="boxtitle">Content<div id="contentbuttons"></div></div>
+<div class="box">
+  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Article</td><td class="right"><span id="contentbuttons"></span></td></tr></table></div>
   <div class="boxcontent" id="article">
+  <div id="articlecontent" style="display:none"></div>
   <div id="loadingArticle" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
   </div> <!-- boxcontent -->
 </div> <!-- box -->
@@ -77,13 +81,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
 <div id="rightSidebar">
 
 <div class="box">
-  <div class="boxtitle">Positives</div>
+  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Positives</td><td class="right"><input type="button" value="Clear" class="button" onclick="xajax_clearPositives();return false;" /></td></tr></table></div>
   <div class="boxcontent" id="Positives">
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
 <div class="box">
-  <div class="boxtitle">Negatives</div>
+  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Negatives</td><td class="right"><input type="button" value="Clear" class="button" onclick="xajax_clearNegatives();return false;" /></td></tr></table></div>
   <div class="boxcontent" id="Negatives">
   </div> <!-- boxcontent -->
 </div> <!-- box -->
