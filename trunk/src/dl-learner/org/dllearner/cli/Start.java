@@ -318,6 +318,7 @@ public class Start {
 		List<List<String>> imports = parser.getFunctionCalls().get("import");
 		Map<URL, Class<? extends KnowledgeSource>> importedFiles = new HashMap<URL, Class<? extends KnowledgeSource>>();
 
+		if(imports != null) {
 		for (List<String> arguments : imports) {
 			// step 1: detect URL
 			URL url = null;
@@ -370,6 +371,7 @@ public class Start {
 
 				importedFiles.put(url, ksClass);
 			}
+		}
 		}
 
 		return importedFiles;
