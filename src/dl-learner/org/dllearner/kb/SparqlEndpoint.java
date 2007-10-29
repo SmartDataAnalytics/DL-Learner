@@ -213,4 +213,13 @@ public class SparqlEndpoint extends KnowledgeSource {
 		System.out.println("SparqlModul: ****Finished");
 		return ret;
 	}
+	
+	public String[] getSubjectsFromConcept(String concept)
+	{
+		System.out.println("SparqlModul: Collecting Subjects");
+		SparqlOntologyCollector oc=new SparqlOntologyCollector(url);
+		String[] ret=oc.getSubjectsFromConcept(concept);
+		System.out.println("SparqlModul: ****Finished");
+		return ret;
+	}
 }

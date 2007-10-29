@@ -154,6 +154,26 @@ public class SparqlOntologyCollector {
 		return processSubjects(xml);
 	}
 	
+	public String[] getSubjectsFromConcept(String concept)
+	{
+		System.out.println("Searching for Subjects of type: "+concept);
+		String sparql=q.makeConceptQuery(concept);
+		String FromCache=c.get(concept, sparql);
+		String xml;
+		// if not in cache get it from dbpedia
+		if(FromCache==null){
+			xml=sendAndReceive(sparql);
+			c.put(concept, xml, sparql);
+			System.out.print("\n");
+		}
+		else{
+			xml=FromCache;
+			System.out.println("FROM CACHE");
+		}
+		
+		return processSubjects(xml);
+	}
+	
 	/**
 	 * calls getRecursive for each subject in list
 	 * @param subjects
