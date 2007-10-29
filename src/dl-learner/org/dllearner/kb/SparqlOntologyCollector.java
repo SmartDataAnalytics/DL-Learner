@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.dllearner.utilities.Datastructures;
+
 
 /**
  * This class collects the ontology from dbpedia,
@@ -40,6 +42,7 @@ import java.util.Vector;
  * 
  * 
  * @author Sebastian Hellmann
+ * @author Sebastian Knappe
  *
  */
 public class SparqlOntologyCollector {
@@ -56,9 +59,7 @@ public class SparqlOntologyCollector {
 	HashSet<String> instances;
 	HashSet<String> triples;
 	String format;
-	static final char value[]={13,10};
-	static final String cut=new String(value);
-	
+		
 	// some namespaces
 	String subclass="http://www.w3.org/2000/01/rdf-schema#subClassOf";
 	String type="http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
@@ -72,7 +73,7 @@ public class SparqlOntologyCollector {
 			"http://dbpedia.org/resource/Category:",
 			"http://dbpedia.org/resource/Template:",
 			"http://www.w3.org/2004/02/skos/core",
-			"http://dbpedia.org/class/"}; //TODO FEHLER hier fehlt yago
+			"http://dbpedia.org/class/"};
 	
 	
 	/**
@@ -105,6 +106,14 @@ public class SparqlOntologyCollector {
 		}catch (Exception e) {e.printStackTrace();}
 		
 	}
+	
+	public SparqlOntologyCollector(URL url)
+	{
+		this.q=new SparqlQueryMaker();
+		this.c=new SparqlCache("cache");
+		this.url=url;
+	}
+	
 	/**
 	 * first collects the ontology 
 	 * then types everything so it becomes owl-dl
@@ -117,16 +126,13 @@ public class SparqlOntologyCollector {
 		String ret="";
 		for (Iterator<String> iter = triples.iterator(); iter.hasNext();) {
 			ret += iter.next();
-			
 		}	
 		return ret;
 	}
 	
-	public String[] collectOntologyAsArray(){
-		getRecursiveList(subjectList, numberOfRecursions);
-		if (sf.mode!=3) finalize();
-		String[] a=new String[0];
-		return triples.toArray(a);
+	public String[] collectTriples(){
+		getRecursive(subjectList[0], 1);
+		return Datastructures.setToArray(triples);
 	}
 	
 	public String[] getSubjectsFromLabel(String label, int limit){
@@ -155,10 +161,8 @@ public class SparqlOntologyCollector {
 	 */
 	public void getRecursiveList(String[] subjects,int NumberofRecursions){
 		for (int i = 0; i < subjects.length; i++) {
-			getRecursive(subjects[i], NumberofRecursions);
-			
-		}
-		
+			getRecursive(subjects[i], NumberofRecursions);	
+		}	
 	}
 	
 	/**
@@ -170,38 +174,31 @@ public class SparqlOntologyCollector {
 	public void getRecursive(String StartingSubject,int NumberofRecursions){
 		System.out.print("SparqlModul: Depth: "+NumberofRecursions+" @ "+StartingSubject+" ");
 		if(NumberofRecursions<=0)
-			{	return;
-			}
+			return;
 		else {NumberofRecursions--;}
-		//System.out.println(NumberofRecursions);
+		
 		try{
-	
-		String sparql=q.makeQueryFilter(StartingSubject,this.sf);
-		p(sparql);
-		p("*******************");
-		// checks cache
-		String FromCache=c.get(StartingSubject, sparql);
-		String xml;
-		// if not in cache get it from dbpedia
-		if(FromCache==null){
-			xml=sendAndReceive(sparql);
-			c.put(StartingSubject, xml, sparql);
-			System.out.print("\n");
+			String sparql=q.makeQueryFilter(StartingSubject,this.sf);
+			// checks cache
+			String FromCache=c.get(StartingSubject, sparql);
+			String xml;
+			// if not in cache get it from dbpedia
+			if(FromCache==null){
+				xml=sendAndReceive(sparql);
+				c.put(StartingSubject, xml, sparql);
+				System.out.print("\n");
 			}
-		else{
-			xml=FromCache;
-			System.out.println("FROM CACHE");
-		}
-		p(xml);
-		p("***********************");
-		// get new Subjects
-		String[] newSubjects=processResult(StartingSubject,xml);
+			else{
+				xml=FromCache;
+				System.out.println("FROM CACHE");
+			}
+			// get new Subjects
+			String[] newSubjects=processResult(StartingSubject,xml);
+			
+			for (int i = 0; (i < newSubjects.length)&& NumberofRecursions!=0; i++) {
+				getRecursive(newSubjects[i], NumberofRecursions);
+			}
 		
-		for (int i = 0; (i < newSubjects.length)&& NumberofRecursions!=0; i++) {
-			getRecursive(newSubjects[i], NumberofRecursions);
-		}
-		
-		//System.out.println(xml);
 		}catch (Exception e) {e.printStackTrace();}
 		
 	}
@@ -250,8 +247,6 @@ public class SparqlOntologyCollector {
 			ret[i]=(String)o[i];
 		}
 		return ret;
-		//return (String[])al.toArray();
-		//System.out.println(xml);
 	}
 		
 	
@@ -266,205 +261,195 @@ public class SparqlOntologyCollector {
 	 * @param al
 	 */
 	public void processTriples(String s,String p, String o,ArrayList<String> al){
-			// the next two lines bump out some inconsistencies within dbpedia
-			String t="/Category";
-			if(s.equals(t) || o.equals(t))return ;
-			
-			if(sf.mode==2)
-			{
-				if(  o.startsWith("http://dbpedia.org/resource/Category:")
-						&& 
-					!p.startsWith("http://www.w3.org/2004/02/skos/core")
-				   )
-					{return;}
-				if(p.equals("http://www.w3.org/2004/02/skos/core#broader")){
-					p=subclass;
-				}
-				else if(p.equals("http://www.w3.org/2004/02/skos/core#subject")){
+		// the next two lines bump out some inconsistencies within dbpedia
+		String t="/Category";
+		if(s.equals(t) || o.equals(t))return ;
+		
+		if(sf.mode==2)
+		{
+			if(  o.startsWith("http://dbpedia.org/resource/Category:")
+					&& 
+				!p.startsWith("http://www.w3.org/2004/02/skos/core"))
+				return;
+			if(p.equals("http://www.w3.org/2004/02/skos/core#broader")){
+				p=subclass;
+			}
+			else if(p.equals("http://www.w3.org/2004/02/skos/core#subject")){
 				p=type;
-				}
-				else {}
 			}
+			else {}
+		}
 			
-			//save for further processing
-			al.add(o);
+		//save for further processing
+		al.add(o);
 			
-			// type classes
-			if(isClass(o)){
-				classes.add(o);
-				if(isClass(s))p=subclass;
-				else p=type;
-			}
-			else {
-				instances.add(o);
-				this.properties.add(p);
-			}
-			
-			
-			
-			//maketriples
-			try{
+		// type classes
+		if(isClass(o)){
+			classes.add(o);
+			if(isClass(s))p=subclass;
+			else p=type;
+		}
+		else {
+			instances.add(o);
+			this.properties.add(p);
+		}
+				
+		//maketriples
+		try{
 			this.triples.add(makeTriples(s, p, o));
 			//fw.write(makeTriples(subject, predtmp, objtmp));
-			}catch (Exception e) {e.printStackTrace();}
+		}catch (Exception e) {e.printStackTrace();}
 			
 			
-			return;
-		}
+		return;
+	}
 	
-		private String[] processSubjects(String xml){
-			Vector<String> vec=new Vector<String>();
-			String one="<binding name=\"subject\"><uri>";
-			String end="</uri></binding>";
-			String subject="";
-			while(xml.indexOf(one)!=-1){
-				//get subject
-				xml=xml.substring(xml.indexOf(one)+one.length());
-				subject=xml.substring(0,xml.indexOf(end));
-								
-				System.out.println("Subject: "+subject);
-				vec.addElement(subject);
-			}	
-			String[] a=new String[vec.size()];
-			return vec.toArray(a);
+	private String[] processSubjects(String xml){
+		Vector<String> vec=new Vector<String>();
+		String one="<binding name=\"subject\"><uri>";
+		String end="</uri></binding>";
+		String subject="";
+		while(xml.indexOf(one)!=-1){
+			//get subject
+			xml=xml.substring(xml.indexOf(one)+one.length());
+			subject=xml.substring(0,xml.indexOf(end));
+							
+			System.out.println("Subject: "+subject);
+			vec.addElement(subject);
+		}	
+		String[] a=new String[vec.size()];
+		return vec.toArray(a);
+	}
+	
+	/**
+	 * also makes subclass property between classes
+	 * 
+	 * @param s
+	 * @param p
+	 * @param o
+	 * @return triple in the n triple notation
+	 */
+	public String makeTriples(String s,String p, String o){
+		String ret="";
+		if (format.equals("N-TRIPLES")) ret="<"+s+"> <"+p+"> <"+o+">.\n";
+		else if (format.equals("KB")){
+			if (p.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) ret="\""+o+"\"(\""+s+"\").\n"; 
+			else ret="\""+p+"\"(\""+s+"\",\""+o+"\").\n";
 		}
-//		
-		/**
-		 * also makes subclass property between classes
-		 * 
-		 * @param s
-		 * @param p
-		 * @param o
-		 * @return triple in the n triple notation
-		 */
-		public String makeTriples(String s,String p, String o){
-			String ret="";
-			if (format.equals("N-TRIPLES")) ret="<"+s+"> <"+p+"> <"+o+">.\n";
-			else if (format.equals("KB")){
-				if (p.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) ret="\""+o+"\"(\""+s+"\").\n"; 
-				else ret="\""+p+"\"(\""+s+"\",\""+o+"\").\n";
-			}
-			else if (format.equals("Array"))
-			{
-				ret=s+"<"+p+"<"+o+"\n";
-			}
-			return ret;
+		else if (format.equals("Array"))
+		{
+			ret=s+"<"+p+"<"+o+"\n";
 		}
+		return ret;
+	}
 		
-		/**
-		 * decides if an object is treated as a class
-		 * 
-		 * @param obj
-		 * @return true if obj is in the defaultClassesList
-		 */
-		public boolean isClass(String obj){
-			
-			boolean retval=false;
-			for (String defclass : defaultClasses) {
-				if(obj.contains(defclass))retval=true;
-			}
-			return retval;
+	/**
+	 * decides if an object is treated as a class
+	 * 
+	 * @param obj
+	 * @return true if obj is in the defaultClassesList
+	 */
+	public boolean isClass(String obj){
+		
+		boolean retval=false;
+		for (String defclass : defaultClasses) {
+			if(obj.contains(defclass))retval=true;
 		}
+		return retval;
+	}
 		
 	
-		/** 
-		 * @see java.lang.Object#finalize()
-		 */
-		@Override
-		public void finalize(){
-			typeProperties();
-			typeClasses();
-			typeInstances();
-		}
+	/** 
+	 * @see java.lang.Object#finalize()
+	 */
+	@Override
+	public void finalize(){
+		typeProperties();
+		typeClasses();
+		typeInstances();
+	}
 		
-		public void typeProperties(){
-			String rdfns="http://www.w3.org/1999/02/22-rdf-syntax-ns";
-			String owlns="http://www.w3.org/2002/07/owl";
-			Iterator<String> it=properties.iterator();
-			String current="";
-			while (it.hasNext()){
-				try{
-				current=it.next();
-				if(current.equals(subclass))continue;
-				if(current.contains(rdfns)||current.contains(owlns)){/*DO NOTHING*/}
-				else {this.triples.add(makeTriples(current,type,objectProperty));}
-				}catch (Exception e) {}
+	public void typeProperties(){
+		String rdfns="http://www.w3.org/1999/02/22-rdf-syntax-ns";
+		String owlns="http://www.w3.org/2002/07/owl";
+		Iterator<String> it=properties.iterator();
+		String current="";
+		while (it.hasNext()){
+			try{
+			current=it.next();
+			if(current.equals(subclass))continue;
+			if(current.contains(rdfns)||current.contains(owlns)){/*DO NOTHING*/}
+			else {this.triples.add(makeTriples(current,type,objectProperty));}
+			}catch (Exception e) {}
 
-			}
 		}
-		public void typeClasses(){ 
-			Iterator<String> it=classes.iterator();
-			String current="";
-			while (it.hasNext()){
-				try{
-				current=it.next();
-				this.triples.add(makeTriples(current,type,classns));
-				}catch (Exception e) {}
-			}
+	}
+	
+	public void typeClasses(){ 
+		Iterator<String> it=classes.iterator();
+		String current="";
+		while (it.hasNext()){
+			try{
+			current=it.next();
+			this.triples.add(makeTriples(current,type,classns));
+			}catch (Exception e) {}
 		}
-		public void typeInstances(){
-			Iterator<String> it=instances.iterator();
-			String current="";
-			while (it.hasNext()){
-				try{
+	}
+	
+	public void typeInstances(){
+		Iterator<String> it=instances.iterator();
+		String current="";
+		while (it.hasNext()){
+			try{
 				current=it.next();
 				this.triples.add(makeTriples(current,type,thing));
-				}catch (Exception e) {}
-			}
+			}catch (Exception e) {}
 		}
+	}
+	//TODO alles dbpedia-spezifische rausbekommen	
+	private String sendAndReceive(String sparql) {
+		StringBuilder answer = new StringBuilder();	
 		
-		/**
-		 * debug print turn on print_flag
-		 * @param s
-		 */
-		public void p(String s){
-			if(print_flag)
-			System.out.println(s);
-		}
-		
-		private String sendAndReceive(String sparql) {
-			StringBuilder answer = new StringBuilder();	
+		// String an Sparql-Endpoint schicken
+		HttpURLConnection connection;
 			
-			// String an Sparql-Endpoint schicken
-			HttpURLConnection connection;
-			
-			try {
-				connection = (HttpURLConnection) url.openConnection();
-				connection.setDoOutput(true);
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setDoOutput(true);
 							
-				connection.addRequestProperty("Host", "dbpedia.openlinksw.com");
-				connection.addRequestProperty("Connection","close");
-				connection.addRequestProperty("Accept","text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
-				connection.addRequestProperty("Accept-Language","de-de,de;q=0.8,en-us;q=0.5,en;q=0.3");
-				connection.addRequestProperty("Accept-Charset","ISO-8859-1,utf-8;q=0.7,*;q=0.7");
-				connection.addRequestProperty("User-Agent","Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4 Web-Sniffer/1.0.24");
+			connection.addRequestProperty("Host", "dbpedia.openlinksw.com");
+			connection.addRequestProperty("Connection","close");
+			connection.addRequestProperty("Accept","text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
+			connection.addRequestProperty("Accept-Language","de-de,de;q=0.8,en-us;q=0.5,en;q=0.3");
+			connection.addRequestProperty("Accept-Charset","ISO-8859-1,utf-8;q=0.7,*;q=0.7");
+			connection.addRequestProperty("User-Agent","Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4 Web-Sniffer/1.0.24");
 				
-				OutputStream os = connection.getOutputStream();
-				OutputStreamWriter osw = new OutputStreamWriter(os);
-				osw.write("default-graph-uri=http%3A%2F%2Fdbpedia.org&query=" +
-					URLEncoder.encode(sparql, "UTF-8")+
-					"&format=application%2Fsparql-results%2Bxml");
+			OutputStream os = connection.getOutputStream();
+			OutputStreamWriter osw = new OutputStreamWriter(os);
+			osw.write("default-graph-uri=http%3A%2F%2Fdbpedia.org&query=" +
+				URLEncoder.encode(sparql, "UTF-8")+
+				"&format=application%2Fsparql-results%2Bxml");
 				osw.close();
 				
-				// receive answer
-				InputStream is = connection.getInputStream();
-				InputStreamReader isr = new InputStreamReader(is);
-				BufferedReader br = new BufferedReader(isr);
-				
-				String line;
-				do {
-					line = br.readLine();
-					if(line!=null)
-						answer.append(line);
-				} while (line != null);
-				
-				br.close();
-				
-			} catch (IOException e) {		
-				System.out.println("Communication problem with Sparql Server.");
-				System.exit(0);
-			}	
+			// receive answer
+			InputStream is = connection.getInputStream();
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
 			
-			return answer.toString();
-		}
+			String line;
+			do {
+				line = br.readLine();
+				if(line!=null)
+					answer.append(line);
+			} while (line != null);
+				
+			br.close();
+				
+		} catch (IOException e) {		
+			System.out.println("Communication problem with Sparql Server.");
+			System.exit(0);
+		}	
+			
+		return answer.toString();
+	}
 }
