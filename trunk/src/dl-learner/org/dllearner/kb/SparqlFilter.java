@@ -79,9 +79,9 @@ public class SparqlFilter {
 			"http://upload.wikimedia.org/wikipedia/commons"};
 	
 	public SparqlFilter(int mode, String[] pred, String[] obj) {
-		if (mode==-1 && (pred==null || pred.length==0 || obj==null||obj.length==0))
+		if (mode==-1 && (pred==null || obj==null))
 			{mode=0;}
-		else this.mode=mode;
+		this.mode=mode;
 		
 		switch (mode){
 		case 0: //yago
@@ -100,8 +100,9 @@ public class SparqlFilter {
 			ObjFilter=obj;
 			PredFilter=pred;
 			break;
-		
-	}}
+		}
+	}
+	
 	public SparqlFilter(int mode, String[] pred, String[] obj,boolean uselits) throws Exception{
 		this(mode,  pred,obj);
 		this.useLiterals=uselits;
@@ -109,12 +110,9 @@ public class SparqlFilter {
 	
 	public String[] getObjFilter(){
 		return this.ObjFilter;
-		}
+	}
+	
 	public String[] getPredFilter(){
 		return this.PredFilter;
-		}
-	
-	
-		
-	}
-
+	}		
+}
