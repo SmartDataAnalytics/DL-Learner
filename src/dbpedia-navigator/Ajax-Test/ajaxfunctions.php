@@ -51,7 +51,7 @@ function addPositive($subject)
 		$_SESSION['positive']=$array;
 	}
 	
-	$content=$subject."<br/>";
+	$content=urldecode(substr (strrchr ($subject, "/"), 1))."<br/>";
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->append("Positives", "innerHTML", $content);
@@ -70,7 +70,7 @@ function addNegative($subject)
 		$_SESSION['negative']=$array;
 	}
 	
-	$content=$subject."<br/>";
+	$content=urldecode(substr (strrchr ($subject, "/"), 1))."<br/>";
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->append("Negatives", "innerHTML", $content);
@@ -97,7 +97,6 @@ function clearNegatives()
 
 function learnConcept()
 {
-	$concept="";
 	if (isset($_SESSION['positive'])&&isset($_SESSION['negative']))
 	{
 		require_once("Settings.php");
@@ -105,10 +104,11 @@ function learnConcept()
 		$settings=new Settings();
 		$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
 		
-		$concept.=$sc->getConceptFromExamples($_SESSION['positive'],$_SESSION['negative']);
+		$concept=$sc->getConceptFromExamples($_SESSION['positive'],$_SESSION['negative']);
 		$_SESSION['lastLearnedConcept']=$concept;
+		$concept=urldecode(substr (strrchr ($concept, "/"), 1));
 	}
-	else $concept.="You must choose at least one<br/> positive and one negative example.";
+	else $concept="You must choose at least one<br/> positive and one negative example.";
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("conceptcontent", "innerHTML", $concept);
