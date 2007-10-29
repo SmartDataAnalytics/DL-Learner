@@ -11,7 +11,7 @@ function getsubjects($label, $limit)
 	$subjects=$sc->getSubjects($label,$limit);
 	foreach ($subjects as $subject)
 	{
-		$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".urldecode($subject)."</a><br/>";
+		$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".urldecode(substr (strrchr ($subject, "/"), 1))."</a><br/>";
 	}
 	
 	$objResponse = new xajaxResponse();
@@ -106,11 +106,35 @@ function learnConcept()
 		$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
 		
 		$concept.=$sc->getConceptFromExamples($_SESSION['positive'],$_SESSION['negative']);
+		$_SESSION['lastLearnedConcept']=$concept;
 	}
 	else $concept.="You must choose at least one<br/> positive and one negative example.";
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("conceptcontent", "innerHTML", $concept);
+	return $objResponse;
+}
+
+function getSubjectsFromConcept()
+{
+	require_once("Settings.php");
+	require_once("SparqlConnection.php");
+	$settings=new Settings();
+	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
+	
+	$content="";
+	if (isset($_SESSION['lastLearnedConcept']))
+	{
+		$subjects=$sc->getSubjectsFromConcept($_SESSION['lastLearnedConcept']);
+		foreach ($subjects as $subject)
+		{
+			$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".urldecode(substr (strrchr ($subject, "/"), 1))."</a><br/>";
+		}
+	}
+	else $content.="No concept to get Subjects from.";
+	
+	$objResponse = new xajaxResponse();
+	$objResponse->assign("conceptsubjectcontent", "innerHTML", $content);
 	return $objResponse;
 }
 
