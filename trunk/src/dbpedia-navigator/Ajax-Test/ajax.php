@@ -18,4 +18,8 @@ $xajax->register(XAJAX_FUNCTION, 'learnConcept', array(
     'onResponseDelay' => 'showLoadingConcept',
     'beforeResponseProcessing' => 'hideLoadingConcept'
     ));
+$xajax->register(XAJAX_FUNCTION, 'getSubjectsFromConcept', array(
+    'onResponseDelay' => 'showLoadingConceptSubjects',
+    'beforeResponseProcessing' => 'hideLoadingConceptSubjects'
+    ));
 ?>

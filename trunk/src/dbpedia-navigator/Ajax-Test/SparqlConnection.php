@@ -10,11 +10,9 @@ class SparqlConnection
 		
 	function SparqlConnection($DBPediaUrl,$DLLearnerUri)
 	{
-		ini_set("soap.wsdl_cache_enabled","0");
 		ini_set('default_socket_timeout',200);
 		$this->DBPediaUrl=$DBPediaUrl;
 		$this->DLLearnerUri=$DLLearnerUri;
-		//$this->loadWSDLfiles($DLLearnerUri);
 		$this->client=new SoapClient("main.wsdl");
 	}
 	
@@ -108,14 +106,25 @@ class SparqlConnection
 		return $object->item;
 	}
 	
-	private function loadWSDLfiles($wsdluri){
-		$main=$this->getwsdl($wsdluri);
-		$other=$this->getOtherWSDL($main);
-		$newMain=$this->changeWSDL($main);
-		$this->writeToFile("main.wsdl",$newMain);
+	function getSubjectsFromConcept($concept)
+	{
+		$id=$this->client->generateID();
+		
+		$ksID = $this->client->addKnowledgeSource($id, "sparql", $this->DBPediaUrl);
+		$object=$this->client->getSubjectsFromConcept($id,$ksID,$concept);
+		return $object->item;
+	}
+	
+	public function loadWSDLfiles($wsdluri){
+		ini_set("soap.wsdl_cache_enabled","0");
+		
+		$main=SparqlConnection::getwsdl($wsdluri);
+		$other=SparqlConnection::getOtherWSDL($main);
+		$newMain=SparqlConnection::changeWSDL($main);
+		SparqlConnection::writeToFile("main.wsdl",$newMain);
 		$x=0;
 		foreach ($other as $o){
-			$this->writeToFile("def".($x++).".xsd",$this->getwsdl($o));
+			SparqlConnection::writeToFile("def".($x++).".xsd",SparqlConnection::getwsdl($o));
 		}
 
 	}

@@ -1,9 +1,7 @@
 <?php
 session_start();
 
-unset($_SESSION['positive']);
-unset($_SESSION['negative']);
-
+echo "<a href='clearsession.php'>start from scratch</a>";
 
 require("ajax.php");
  ini_set('error_reporting',E_ALL);
@@ -41,6 +39,14 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
         hideLoadingConcept = function() {
             xajax.$('loadingConcept').style.display = 'none';
             xajax.$('conceptcontent').style.display = 'block';
+        };
+        showLoadingConceptSubjects = function() {
+            xajax.$('loadingConceptSubjects').style.display='block';
+            xajax.$('conceptsubjectcontent').style.display = 'none';
+        };
+        hideLoadingConceptSubjects = function() {
+            xajax.$('loadingConceptSubjects').style.display = 'none';
+            xajax.$('conceptsubjectcontent').style.display = 'block';
         }
   </script>
    </head>
@@ -81,6 +87,14 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
   <div class="boxcontent">
   <div id="conceptcontent" style="display:none"></div>
   <div id="loadingConcept" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
+  </div> <!-- boxcontent -->
+</div> <!-- box -->
+
+<div class="box" id="conceptSubjects">
+  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Subjects From Concept</td><td class="right"><input type="button" value="Show" class="button" onclick="xajax_getSubjectsFromConcept();return false;" /></td></tr></table></div>
+  <div class="boxcontent">
+  <div id="conceptsubjectcontent" style="display:none"></div>
+  <div id="loadingConceptSubjects" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
