@@ -91,7 +91,7 @@ class SparqlConnection
 		foreach ($array as $element)
 		{
 			$items=preg_split("[<]",$element,-1, PREG_SPLIT_NO_EMPTY);
-			$ret[]=$items;	
+			$ret[$items[1]]=$items[2];	
 		}
 		
 		return $ret;
