@@ -55,7 +55,8 @@ import org.dllearner.utilities.Datastructures;
  * @author Sebastian Knappe
  */
 public class SparqlEndpoint extends KnowledgeSource {
-
+	
+	//ConfigOptions
 	private URL url;
 	private Set<String> instances;
 	private URL dumpFile;
@@ -64,16 +65,25 @@ public class SparqlEndpoint extends KnowledgeSource {
 	private Set<String> predList;
 	private Set<String> objList;
 	private Set<String> classList;
-	private KB kb;
 	private String format;
 	private boolean dumpToFile;
 	private boolean useLits=false;
+	
+	//received ontology as array, used if format=Array(an element of the
+	//array consists of the subject, predicate and object separated by '<'
 	private String[] ontArray;
+	
+	//received ontology as KB, the internal format
+	private KB kb;
 	
 	public static String getName() {
 		return "SPARQL Endpoint";
 	}
-
+	
+	/**
+	 * sets the ConfigOptions for this KnowledgeSource
+	 * @return
+	 */
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
@@ -130,16 +140,9 @@ public class SparqlEndpoint extends KnowledgeSource {
 	@Override
 	public void init() {
 		System.out.println("SparqlModul: Collecting Ontology");
-		String[] a=new String[0];
-		SparqlOntologyCollector oc=new SparqlOntologyCollector(instances.toArray(a), numberOfRecursions,
-				 filterMode,  Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url,useLits);
-		String ont="";
-		if (format.equals("Array")){
-			ontArray=oc.collectOntologyAsArray();
-		}
-		else{
-			ont=oc.collectOntology();
-		}
+		SparqlOntologyCollector oc=new SparqlOntologyCollector(Datastructures.setToArray(instances), numberOfRecursions, filterMode,
+				Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url,useLits);
+		String ont=oc.collectOntology();
 		
 		if (dumpToFile){
 			String filename=System.currentTimeMillis()+".nt";
@@ -196,8 +199,17 @@ public class SparqlEndpoint extends KnowledgeSource {
 	public String[] getSubjects(String label,int limit)
 	{
 		System.out.println("SparqlModul: Collecting Subjects");
-		SparqlOntologyCollector oc=new SparqlOntologyCollector(null, 1,0,null,null,null,null,url,false);
+		SparqlOntologyCollector oc=new SparqlOntologyCollector(url);
 		String[] ret=oc.getSubjectsFromLabel(label,limit);
+		System.out.println("SparqlModul: ****Finished");
+		return ret;
+	}
+	
+	public String[] getTriples(){
+		System.out.println("SparqlModul: Collecting Triples");
+		SparqlOntologyCollector oc=new SparqlOntologyCollector(Datastructures.setToArray(instances), numberOfRecursions, filterMode,
+				Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url,useLits);
+		String[] ret=oc.collectTriples();
 		System.out.println("SparqlModul: ****Finished");
 		return ret;
 	}
