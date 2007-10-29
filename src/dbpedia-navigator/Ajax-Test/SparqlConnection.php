@@ -42,21 +42,12 @@ class SparqlConnection
 
 		$this->client->init($id);
 
-		$learn_start = microtime(true);
-		$init = $learn_start - $start;
-		echo 'components initialised in '.$init.' seconds<br />';
-		
 		$threaded=true;
 		
 		if($threaded == false) {
 	
 			$concept = $this->client->learn($id);
 			
-			$learn = microtime(true) - $learn_start;
-			echo 'concept learned in '.$learn.' seconds<br />';
-			
-			echo 'result: '.$concept;
-		
 		} else {
 		
 			$this->client->learnThreaded($id);
@@ -74,12 +65,9 @@ class SparqlConnection
 				
 				$seconds = $i * $sleeptime;
 				
-				echo 'result after '.$seconds.' seconds of sleep: '.$concept.'<br />';
-				
 				$i++;
 			} while($running);
 			
-			echo 'algorithm finished';
 		}
 		return $concept;
 	}

@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+unset($_SESSION['positive']);
+unset($_SESSION['negative']);
+
+
 require("ajax.php");
  ini_set('error_reporting',E_ALL);
  ini_set('max_execution_time',200);
@@ -29,6 +33,14 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
         hideLoadingArticle = function() {
             xajax.$('loadingArticle').style.display = 'none';
             xajax.$('articlecontent').style.display = 'block';
+        };
+        showLoadingConcept = function() {
+            xajax.$('loadingConcept').style.display='block';
+            xajax.$('conceptcontent').style.display = 'none';
+        };
+        hideLoadingConcept = function() {
+            xajax.$('loadingConcept').style.display = 'none';
+            xajax.$('conceptcontent').style.display = 'block';
         }
   </script>
    </head>
@@ -61,6 +73,14 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
   <div class="boxcontent">
   <div id="searchcontent" style="display:none"></div>
   <div id="loadingSubject" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
+  </div> <!-- boxcontent -->
+</div> <!-- box -->
+
+<div class="box" id="concept">
+  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Learned Concept</td><td class="right"><input type="button" value="Learn" class="button" onclick="xajax_learnConcept();return false;" /></td></tr></table></div>
+  <div class="boxcontent">
+  <div id="conceptcontent" style="display:none"></div>
+  <div id="loadingConcept" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
