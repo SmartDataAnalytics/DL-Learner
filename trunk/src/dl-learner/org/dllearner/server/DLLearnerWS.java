@@ -454,8 +454,7 @@ public class DLLearnerWS {
 	{
 		ClientState state=getState(id);
 		Component component = state.getComponent(componentID);
-		component.init();
-		return ((SparqlEndpoint)component).getOntArray();
+		return ((SparqlEndpoint)component).getTriples();
 	}
 	
 	@WebMethod
