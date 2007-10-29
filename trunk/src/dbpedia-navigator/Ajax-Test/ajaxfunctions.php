@@ -1,4 +1,5 @@
 <?php
+session_start();
 function getsubjects($label, $limit)
 {
 	include_once("Settings.php");
@@ -91,6 +92,25 @@ function clearNegatives()
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("Negatives", "innerHTML", "");
+	return $objResponse;
+}
+
+function learnConcept()
+{
+	$concept="";
+	if (isset($_SESSION['positive'])&&isset($_SESSION['negative']))
+	{
+		require_once("Settings.php");
+		require_once("SparqlConnection.php");
+		$settings=new Settings();
+		$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
+		
+		$concept.=$sc->getConceptFromExamples($_SESSION['positive'],$_SESSION['negative']);
+	}
+	else $concept.="You must choose at least one<br/> positive and one negative example.";
+	
+	$objResponse = new xajaxResponse();
+	$objResponse->assign("conceptcontent", "innerHTML", $concept);
 	return $objResponse;
 }
 

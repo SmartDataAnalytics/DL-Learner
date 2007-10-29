@@ -14,4 +14,8 @@ $xajax->registerFunction('addPositive');
 $xajax->registerFunction('addNegative');
 $xajax->registerFunction('clearPositives');
 $xajax->registerFunction('clearNegatives');
+$xajax->register(XAJAX_FUNCTION, 'learnConcept', array(
+    'onResponseDelay' => 'showLoadingConcept',
+    'beforeResponseProcessing' => 'hideLoadingConcept'
+    ));
 ?>
