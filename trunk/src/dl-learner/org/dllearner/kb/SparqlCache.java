@@ -38,10 +38,9 @@ import java.net.URLEncoder;
  * before returning the SPARQL xml-result
  * 
  * @author Sebastian Hellmann
- *
+ * @author Sebastian Knappe
  */
 public class SparqlCache implements Serializable{
-	
 	
 	final static long serialVersionUID=104;
 	transient String basedir="";
@@ -89,16 +88,13 @@ public class SparqlCache implements Serializable{
 	 * @return the cached sparql result or null
 	 */
 	public String get(String key, String sparql){
-		//System.out.println("get From "+key);
 		String ret=null;
 		try{
 		SparqlCache c =readFromFile(makeFilename(key))	;
 		if(c==null)return null;
-		//System.out.println(" file found");
 		if(!c.checkFreshness())return null;
-		//System.out.println("fresh");
 		if(!c.validate(sparql))return null;
-		//System.out.println("valid");
+		
 		ret=c.content;
 		}catch (Exception e) {e.printStackTrace();}
 		return ret;
@@ -113,7 +109,6 @@ public class SparqlCache implements Serializable{
 	 * @param sparql the sparql query
 	 */
 	public void put(String key, String content, String sparql){
-		//System.out.println("put into "+key);
 		SparqlCache c=new SparqlCache(content,sparql);
 		putIntoFile(makeFilename(key), c);
 	}
@@ -180,12 +175,11 @@ public class SparqlCache implements Serializable{
 	 */
 	public void putIntoFile(String Filename,SparqlCache content){
 		try{
-		//FileWriter fw=new FileWriter(new File(Filename),true);
-		FileOutputStream  fos = new FileOutputStream( Filename , false ); 
-		ObjectOutputStream o = new ObjectOutputStream( fos ); 
-		o.writeObject( content ); 
-		fos.flush();
-		fos.close();
+			FileOutputStream  fos = new FileOutputStream( Filename , false ); 
+			ObjectOutputStream o = new ObjectOutputStream( fos ); 
+			o.writeObject( content ); 
+			fos.flush();
+			fos.close();
 		}catch (Exception e) {System.out.println("Not in cache creating: "+Filename);}
 	}
 	
@@ -198,11 +192,9 @@ public class SparqlCache implements Serializable{
 	public SparqlCache readFromFile(String Filename){
 		SparqlCache content=null;
 		try{
-		FileInputStream  fos = new FileInputStream( Filename ); 
-		ObjectInputStream o = new ObjectInputStream( fos ); 
-		content=(SparqlCache)o.readObject();
-		//FileReader fr=new FileReader(new File(Filename,"r"));
-		//BufferedReader br=new BufferedReader(fr);
+			FileInputStream  fos = new FileInputStream( Filename ); 
+			ObjectInputStream o = new ObjectInputStream( fos ); 
+			content=(SparqlCache)o.readObject();
 		}catch (Exception e) {}
 		return content;
 		
