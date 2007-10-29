@@ -464,4 +464,12 @@ public class DLLearnerWS {
 		Component component = state.getComponent(componentID);
 		return ((SparqlEndpoint)component).getSubjects(label,limit);
 	}
+	
+	@WebMethod
+	public String[] getSubjectsFromConcept(int id, int componentID, String concept) throws ClientNotKnownException
+	{
+		ClientState state=getState(id);
+		Component component = state.getComponent(componentID);
+		return ((SparqlEndpoint)component).getSubjectsFromConcept(concept);
+	}
 }

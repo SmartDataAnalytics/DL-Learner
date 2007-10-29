@@ -84,4 +84,9 @@ public class SparqlQueryMaker {
 				"WHERE { ?subject rdfs:label ?object.FILTER regex(?object,\""+label+"\"@en)}\n"+
 				"LIMIT "+limit;
 	}
+	
+	public String makeConceptQuery(String concept){
+		return  "SELECT DISTINCT ?subject\n"+
+				"WHERE { ?subject a <"+concept+">}\n";
+	}
 }
