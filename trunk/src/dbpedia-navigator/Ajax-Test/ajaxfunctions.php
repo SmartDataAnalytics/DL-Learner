@@ -27,9 +27,8 @@ function getarticle($subject)
 	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
 	$triples=$sc->getTriples($subject);
 	$content="";
-	foreach ($triples as $triple){
-		$content.="Subject: ".urldecode($triple[0])."<br/>Predicate: ".urldecode($triple[1])."<br/>Object: ".urldecode($triple[2])."<br/><br/>\n";
-	}
+	$content.="<img src=\"".$triples['http://xmlns.com/foaf/0.1/img']."\" alt=\"Picture of ".urldecode(substr (strrchr ($subject, "/"), 1))."\" width=\"50\"/ style=\"float:left\">";
+	$content.="<div>".$triples['http://dbpedia.org/property/abstract']."</div>";
 	
 	$contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";
 	
