@@ -1,4 +1,5 @@
 <?php
+ini_set('max_execution_time',200);
 session_start();
 function getsubjects($label, $limit)
 {
@@ -8,10 +9,13 @@ function getsubjects($label, $limit)
 	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
 	
 	$content="";
-	$subjects=$sc->getSubjects($label,$limit);
-	foreach ($subjects as $subject)
-	{
-		$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".urldecode(substr (strrchr ($subject, "/"), 1))."</a><br/>";
+	$subjects=$sc->getSubjects($settings->sparqlttl,$label,$limit);
+	if (count($subjects)==0) $content.="No search result found in time.";
+	else{
+		foreach ($subjects as $subject)
+		{
+			$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".urldecode(substr (strrchr ($subject, "/"), 1))."</a><br/>";
+		}
 	}
 	
 	$objResponse = new xajaxResponse();
@@ -25,12 +29,15 @@ function getarticle($subject)
 	require_once("SparqlConnection.php");
 	$settings=new Settings();
 	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
-	$triples=$sc->getTriples($subject);
-	$content="";
-	$content.="<img src=\"".$triples['http://xmlns.com/foaf/0.1/img']."\" alt=\"Picture of ".urldecode(substr (strrchr ($subject, "/"), 1))."\" width=\"50\"/ style=\"float:left\">";
-	$content.="<div>".$triples['http://dbpedia.org/property/abstract']."</div>";
-	
-	$contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";
+	$triples=$sc->getTriples($settings->sparqlttl,$subject);
+	if (count($triples)==0) $content.="Article not found.";
+	else {
+		$content="";
+		$content.="<img src=\"".$triples['http://xmlns.com/foaf/0.1/img']."\" alt=\"Picture of ".urldecode(substr (strrchr ($subject, "/"), 1))."\" width=\"50\"/ style=\"float:left\">";
+		$content.="<div>".$triples['http://dbpedia.org/property/abstract']."</div>";
+		
+		$contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";
+	}
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("articlecontent", "innerHTML", $content);
@@ -103,9 +110,9 @@ function learnConcept()
 		$settings=new Settings();
 		$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
 		
-		$concept=$sc->getConceptFromExamples($_SESSION['positive'],$_SESSION['negative']);
+		$concept=$sc->getConceptFromExamples($settings->sparqlttl,$_SESSION['positive'],$_SESSION['negative']);
 		$_SESSION['lastLearnedConcept']=$concept;
-		$concept=urldecode(substr (strrchr ($concept, "/"), 1));
+		if (strlen(substr (strrchr ($concept, "/"), 1))>0) $concept=urldecode(substr (strrchr ($concept, "/"), 1));
 	}
 	else $concept="You must choose at least one<br/> positive and one negative example.";
 	
@@ -124,10 +131,13 @@ function getSubjectsFromConcept()
 	$content="";
 	if (isset($_SESSION['lastLearnedConcept']))
 	{
-		$subjects=$sc->getSubjectsFromConcept($_SESSION['lastLearnedConcept']);
-		foreach ($subjects as $subject)
-		{
-			$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".urldecode(substr (strrchr ($subject, "/"), 1))."</a><br/>";
+		$subjects=$sc->getSubjectsFromConcept($settings->sparqlttl,$_SESSION['lastLearnedConcept']);
+		if (count($subjects)==0) $content.="No examples for concept found in time.";
+		else {
+			foreach ($subjects as $subject)
+			{
+				$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".urldecode(substr (strrchr ($subject, "/"), 1))."</a><br/>";
+			}
 		}
 	}
 	else $content.="No concept to get Subjects from.";

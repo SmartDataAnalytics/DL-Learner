@@ -69,6 +69,39 @@ public class SparqlEndpoint extends KnowledgeSource {
 	private boolean dumpToFile;
 	private boolean useLits=false;
 	
+	/**
+	 * Holds the results of the calculateSubjects method 
+	 */
+	private String[] subjects;
+	
+	/**
+	 * Holds the results of the calculateTriples method 
+	 */
+	private String[] triples;
+	
+	/**
+	 * Holds the results of the calculateConceptSubjects method 
+	 */
+	private String[] conceptSubjects;
+	
+	/**
+	 * if a method is running this becomes true
+	 */
+	private boolean subjectThreadRunning=false;
+	
+	private boolean triplesThreadRunning=false;
+	
+	private boolean conceptThreadRunning=false;
+	
+	/**
+	 * the Thread that is running a method
+	 */
+	private Thread subjectThread;
+	
+	private Thread triplesThread;
+	
+	private Thread conceptThread;
+	
 	//received ontology as array, used if format=Array(an element of the
 	//array consists of the subject, predicate and object separated by '<'
 	private String[] ontArray;
@@ -196,30 +229,96 @@ public class SparqlEndpoint extends KnowledgeSource {
 		return ontArray;
 	}
 	
-	public String[] getSubjects(String label,int limit)
+	public void calculateSubjects(String label,int limit)
 	{
 		System.out.println("SparqlModul: Collecting Subjects");
 		SparqlOntologyCollector oc=new SparqlOntologyCollector(url);
-		String[] ret=oc.getSubjectsFromLabel(label,limit);
+		subjects=oc.getSubjectsFromLabel(label,limit);
 		System.out.println("SparqlModul: ****Finished");
-		return ret;
 	}
 	
-	public String[] getTriples(){
+	public void calculateTriples(){
 		System.out.println("SparqlModul: Collecting Triples");
 		SparqlOntologyCollector oc=new SparqlOntologyCollector(Datastructures.setToArray(instances), numberOfRecursions, filterMode,
 				Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url,useLits);
-		String[] ret=oc.collectTriples();
+		triples=oc.collectTriples();
 		System.out.println("SparqlModul: ****Finished");
-		return ret;
 	}
 	
-	public String[] getSubjectsFromConcept(String concept)
+	public void calculateConceptSubjects(String concept)
 	{
 		System.out.println("SparqlModul: Collecting Subjects");
 		SparqlOntologyCollector oc=new SparqlOntologyCollector(url);
-		String[] ret=oc.getSubjectsFromConcept(concept);
+		conceptSubjects=oc.getSubjectsFromConcept(concept);
 		System.out.println("SparqlModul: ****Finished");
-		return ret;
+	}
+	
+	public boolean subjectThreadIsRunning()
+	{
+		return subjectThreadRunning;
+	}
+	
+	public void setSubjectThreadRunning(boolean bool)
+	{
+		subjectThreadRunning=bool;
+	}
+	
+	public boolean triplesThreadIsRunning()
+	{
+		return triplesThreadRunning;
+	}
+	
+	public void setTriplesThreadRunning(boolean bool)
+	{
+		triplesThreadRunning=bool;
+	}
+	
+	public boolean conceptThreadIsRunning()
+	{
+		return conceptThreadRunning;
+	}
+	
+	public void setConceptThreadRunning(boolean bool)
+	{
+		conceptThreadRunning=bool;
+	}
+	
+	public String[] getSubjects()
+	{
+		return subjects;
+	}
+
+	public Thread getSubjectThread() {
+		return subjectThread;
+	}
+
+	public void setSubjectThread(Thread subjectThread) {
+		this.subjectThread = subjectThread;
+	}
+
+	public Thread getTriplesThread() {
+		return triplesThread;
+	}
+
+	public void setTriplesThread(Thread triplesThread) {
+		this.triplesThread = triplesThread;
+	}
+
+	public Thread getConceptThread() {
+		return conceptThread;
+	}
+
+	public void setConceptThread(Thread conceptThread) {
+		this.conceptThread = conceptThread;
+	}
+
+	public String[] getTriples()
+	{
+		return triples;
+	}
+	
+	public String[] getConceptSubjects()
+	{
+		return conceptSubjects;
 	}
 }
