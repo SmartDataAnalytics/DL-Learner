@@ -449,27 +449,99 @@ public class DLLearnerWS {
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
 	
+	////////////////////////////////////
+	//     sparql modul methods       //
+	////////////////////////////////////
+	
+	
 	@WebMethod
-	public String[] getTriples(int id, int componentID) throws ClientNotKnownException
+	public void startThread(int id, int componentID, String[] options) throws ClientNotKnownException
 	{
-		ClientState state=getState(id);
-		Component component = state.getComponent(componentID);
-		return ((SparqlEndpoint)component).getTriples();
+		final ClientState state = getState(id);
+		final Component component = state.getComponent(componentID);
+		String method=options[0];
+		Thread thread=null;
+		if (method.equals("subjects")){
+			final String label=options[1];
+			final int limit=Integer.parseInt(options[2]);
+			thread = new Thread() {
+				@Override
+				public void run() {
+					((SparqlEndpoint)component).setSubjectThread(this);
+					((SparqlEndpoint)component).setSubjectThreadRunning(true);
+					((SparqlEndpoint)component).calculateSubjects(label,limit);
+					((SparqlEndpoint)component).setSubjectThreadRunning(false);
+				}
+			};
+		} else if (method.equals("triples")){
+			thread = new Thread() {
+				@Override
+				public void run() {
+					((SparqlEndpoint)component).setTriplesThread(this);
+					((SparqlEndpoint)component).setTriplesThreadRunning(true);
+					((SparqlEndpoint)component).calculateTriples();
+					((SparqlEndpoint)component).setTriplesThreadRunning(false);
+				}
+			};
+		} else if (method.equals("conceptSubjects")){
+			final String concept=options[1];
+			thread = new Thread() {
+				@Override
+				public void run() {
+					((SparqlEndpoint)component).setConceptThread(this);
+					((SparqlEndpoint)component).setConceptThreadRunning(true);
+					((SparqlEndpoint)component).calculateConceptSubjects(concept);
+					((SparqlEndpoint)component).setConceptThreadRunning(false);
+				}
+			};
+		}
+		thread.start();
 	}
 	
 	@WebMethod
-	public String[] getSubjects(int id, int componentID, String label, int limit) throws ClientNotKnownException
+	public boolean isThreadRunning(int id, int componentID, String option) throws ClientNotKnownException
 	{
-		ClientState state=getState(id);
+		ClientState state = getState(id);
 		Component component = state.getComponent(componentID);
-		return ((SparqlEndpoint)component).getSubjects(label,limit);
+		if (option.equals("subjects"))
+			return ((SparqlEndpoint)component).subjectThreadIsRunning();
+		else if (option.equals("triples"))
+			return ((SparqlEndpoint)component).triplesThreadIsRunning();
+		else if (option.equals("conceptSubjects"))
+			return ((SparqlEndpoint)component).conceptThreadIsRunning();
+		return true;
 	}
 	
 	@WebMethod
-	public String[] getSubjectsFromConcept(int id, int componentID, String concept) throws ClientNotKnownException
+	public void stopSparqlThread(int id, int componentID, String option) throws ClientNotKnownException
 	{
-		ClientState state=getState(id);
+		ClientState state = getState(id);
 		Component component = state.getComponent(componentID);
-		return ((SparqlEndpoint)component).getSubjectsFromConcept(concept);
+		if (option.equals("subjects"))
+			((SparqlEndpoint)component).getSubjectThread().stop();
+		else if (option.equals("triples"))
+			((SparqlEndpoint)component).getTriplesThread().stop();
+		else if (option.equals("conceptSubjects"))
+			((SparqlEndpoint)component).getConceptThread().stop();
+	}
+	
+	@WebMethod
+	public String[] getFromSparql(int id, int componentID, String option) throws ClientNotKnownException
+	{
+		ClientState state = getState(id);
+		Component component = state.getComponent(componentID);
+		if (option.equals("subjects"))
+			return ((SparqlEndpoint)component).getSubjects();
+		else if (option.equals("triples"))
+			return ((SparqlEndpoint)component).getTriples();
+		else if (option.equals("conceptSubjects"))
+			return ((SparqlEndpoint)component).getConceptSubjects();
+		return new String[0];
+	}
+	
+	@WebMethod
+	public void debug(String deb)
+	{
+		System.out.println(deb);
 	}
 }
