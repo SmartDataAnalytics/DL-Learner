@@ -12,7 +12,6 @@
 	<classpathentry kind="lib" path="lib/jena/iri.jar"/>
 	<classpathentry kind="lib" path="lib/jena/jena.jar"/>
 	<classpathentry kind="lib" path="lib/jena/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="lib/modules/sparqlModule.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi/antlr-runtime-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi/commons-lang-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi/owlapi-api.jar"/>
