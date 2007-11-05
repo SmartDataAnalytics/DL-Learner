@@ -21,6 +21,7 @@ package org.dllearner.kb;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -47,8 +48,6 @@ import org.dllearner.utilities.Datastructures;
 
 /**
  * Represents a SPARQL Endpoint. 
- * TODO: move org.dllearner.modules.sparql to this package and
- * integrate its classes
  * TODO: Is it necessary to create a class DBpediaSparqlEndpoint?
  * 
  * @author Jens Lehmann
@@ -175,29 +174,34 @@ public class SparqlEndpoint extends KnowledgeSource {
 		System.out.println("SparqlModul: Collecting Ontology");
 		SparqlOntologyCollector oc=new SparqlOntologyCollector(Datastructures.setToArray(instances), numberOfRecursions, filterMode,
 				Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url,useLits);
-		String ont=oc.collectOntology();
-		
-		if (dumpToFile){
-			String filename=System.currentTimeMillis()+".nt";
-			String basedir="cache"+File.separator;
-			try{
-				if(!new File(basedir).exists())
-					new File(basedir).mkdir();
 				
-				FileWriter fw=new FileWriter(new File(basedir+filename),true);
-				fw.write(ont);
-				fw.flush();
-				fw.close();
-											
-				dumpFile=(new File(basedir+filename)).toURI().toURL();
-			}catch (Exception e) {e.printStackTrace();}
+		try
+		{
+			String ont=oc.collectOntology();
+				
+			if (dumpToFile){
+				String filename=System.currentTimeMillis()+".nt";
+				String basedir="cache"+File.separator;
+				try{
+					if(!new File(basedir).exists())
+						new File(basedir).mkdir();
+					
+					FileWriter fw=new FileWriter(new File(basedir+filename),true);
+					fw.write(ont);
+					fw.flush();
+					fw.close();
+												
+					dumpFile=(new File(basedir+filename)).toURI().toURL();
+				}catch (Exception e) {e.printStackTrace();}
+			}
+			if (format.equals("KB")) {
+				try{
+					kb=KBParser.parseKBFile(new StringReader(ont));
+				} catch(Exception e) {e.printStackTrace();}
+			}
+		}catch(IOException e) {
+			e.printStackTrace();
 		}
-		if (format.equals("KB")) {
-			try{
-				kb=KBParser.parseKBFile(new StringReader(ont));
-			} catch(Exception e) {e.printStackTrace();}
-		}
-		
 		System.out.println("SparqlModul: ****Finished");
 	}
 	
@@ -233,15 +237,24 @@ public class SparqlEndpoint extends KnowledgeSource {
 	{
 		System.out.println("SparqlModul: Collecting Subjects");
 		SparqlOntologyCollector oc=new SparqlOntologyCollector(url);
-		subjects=oc.getSubjectsFromLabel(label,limit);
+		try{
+			subjects=oc.getSubjectsFromLabel(label,limit);
+		}catch (IOException e){
+			subjects=new String[1];
+			subjects[0]="[Error]Sparql Endpoint could not be reached.";
+		}
 		System.out.println("SparqlModul: ****Finished");
 	}
 	
-	public void calculateTriples(){
+	public void calculateTriples(String subject) {
 		System.out.println("SparqlModul: Collecting Triples");
-		SparqlOntologyCollector oc=new SparqlOntologyCollector(Datastructures.setToArray(instances), numberOfRecursions, filterMode,
-				Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url,useLits);
-		triples=oc.collectTriples();
+		SparqlOntologyCollector oc=new SparqlOntologyCollector(url);
+		try{
+			triples=oc.collectTriples(subject);
+		}catch (IOException e){
+			triples=new String[1];
+			triples[0]="[Error]Sparql Endpoint could not be reached.";
+		}
 		System.out.println("SparqlModul: ****Finished");
 	}
 	
@@ -249,7 +262,12 @@ public class SparqlEndpoint extends KnowledgeSource {
 	{
 		System.out.println("SparqlModul: Collecting Subjects");
 		SparqlOntologyCollector oc=new SparqlOntologyCollector(url);
-		conceptSubjects=oc.getSubjectsFromConcept(concept);
+		try{
+			conceptSubjects=oc.getSubjectsFromConcept(concept);
+		}catch (IOException e){
+			conceptSubjects=new String[1];
+			conceptSubjects[0]="[Error]Sparql Endpoint could not be reached.";
+		}
 		System.out.println("SparqlModul: ****Finished");
 	}
 	

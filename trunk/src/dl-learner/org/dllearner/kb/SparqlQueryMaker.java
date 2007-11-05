@@ -24,13 +24,14 @@ package org.dllearner.kb;
  * This class produces sparql queries
  * 
  * @author Sebastian Hellmann
+ * @author Sebastian Knappe
  *
  */
 public class SparqlQueryMaker {
 	
 	/**
-	 * reads all the options and makes the sparql query accordingly
-	 * @param subject
+	 * creates a query with the specified filters for alls triples with subject
+	 * @param subject the searched subject
 	 * @param sf special object encapsulating all options
 	 * @return sparql query
 	 */
@@ -78,15 +79,31 @@ public class SparqlQueryMaker {
 		 return "&&( !regex(str(?predicate), '"+ns+"') )";
 	}
 	
+	/**
+	 * creates a query for subjects with the specified label
+	 * @param label a phrase that is part of the label of a subject
+	 * @param limit this limits the amount of results
+	 * @return
+	 */
 	public String makeLabelQuery(String label,int limit){
-		return  "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n"+
-				"SELECT DISTINCT ?subject\n"+
-				"WHERE { ?subject rdfs:label ?object.FILTER regex(?object,\""+label+"\"@en)}\n"+
+		//TODO maybe use http://xmlns:com/foaf/0.1/page
+		return  "SELECT DISTINCT ?subject\n"+
+				"WHERE { ?subject <http://xmlns.com/foaf/0.1/page> ?object.FILTER regex(?object,\""+label+"\"@en)}\n"+
 				"LIMIT "+limit;
 	}
 	
+	/**
+	 * creates a query for all subjects that are of the type concept
+	 * @param concept the type that subjects are searched for
+	 * @return
+	 */
 	public String makeConceptQuery(String concept){
 		return  "SELECT DISTINCT ?subject\n"+
 				"WHERE { ?subject a <"+concept+">}\n";
+	}
+	
+	public String makeArticleQuery(String subject){
+		return  "SELECT ?predicate,?object\n"+
+		"WHERE { <"+subject+"> ?predicate ?object}\n";
 	}
 }

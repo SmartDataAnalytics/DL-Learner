@@ -90,12 +90,12 @@ public class SparqlCache implements Serializable{
 	public String get(String key, String sparql){
 		String ret=null;
 		try{
-		SparqlCache c =readFromFile(makeFilename(key))	;
-		if(c==null)return null;
-		if(!c.checkFreshness())return null;
-		if(!c.validate(sparql))return null;
-		
-		ret=c.content;
+			SparqlCache c =readFromFile(makeFilename(key));
+			if(c==null)return null;
+			if(!c.checkFreshness())return null;
+			if(!c.validate(sparql))return null;
+			
+			ret=c.content;
 		}catch (Exception e) {e.printStackTrace();}
 		return ret;
 	}
