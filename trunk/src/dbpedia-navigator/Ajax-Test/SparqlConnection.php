@@ -1,12 +1,12 @@
 <?php
 
-//require_once 'pear/HTTP_Request.php';
-
 class SparqlConnection
 {
 	private $DBPediaUrl;
 	private $DLLearnerUri;
 	private $client;
+	private $id;
+	private $ksID;
 		
 	function SparqlConnection($DBPediaUrl,$DLLearnerUri)
 	{
@@ -14,41 +14,40 @@ class SparqlConnection
 		$this->DBPediaUrl=$DBPediaUrl;
 		$this->DLLearnerUri=$DLLearnerUri;
 		$this->client=new SoapClient("main.wsdl");
+		$this->id=$this->client->generateID();
+		$this->ksID = $this->client->addKnowledgeSource($this->id, "sparql", $this->DBPediaUrl);
 	}
 	
 	function getConceptFromExamples($ttl,$posExamples,$negExamples)
 	{
-		$id=$this->client->generateID();
+		$this->client->applyConfigEntryInt($this->id, $this->ksID, "numberOfRecursions", 2);
+		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
+		$this->client->applyConfigEntryInt($this->id, $this->ksID, "filterMode", 0);
+		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "predList", array());
+		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "objList", array());
+		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "classList", array());
+		$this->client->applyConfigEntryString($this->id, $this->ksID, "format", "KB");
+		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "dumpToFile", true);
 		
-		$ksID = $this->client->addKnowledgeSource($id, "sparql", $this->DBPediaUrl);
-		$this->client->applyConfigEntryInt($id, $ksID, "numberOfRecursions", 2);
-		$this->client->applyConfigEntryStringArray($id, $ksID, "instances", array_merge($posExamples,$negExamples));
-		$this->client->applyConfigEntryInt($id, $ksID, "filterMode", 0);
-		$this->client->applyConfigEntryStringArray($id, $ksID, "predList", array());
-		$this->client->applyConfigEntryStringArray($id, $ksID, "objList", array());
-		$this->client->applyConfigEntryStringArray($id, $ksID, "classList", array());
-		$this->client->applyConfigEntryString($id, $ksID, "format", "KB");
-		$this->client->applyConfigEntryBoolean($id, $ksID, "dumpToFile", true);
-		
-		$this->client->setReasoner($id, "dig");
-		$this->client->setLearningProblem($id, "posNegDefinition");
-		$this->client->setPositiveExamples($id, $posExamples);
-		$this->client->setNegativeExamples($id, $negExamples);
-		$this->client->setLearningAlgorithm($id, "refinement");
+		$this->client->setReasoner($this->id, "dig");
+		$this->client->setLearningProblem($this->id, "posNegDefinition");
+		$this->client->setPositiveExamples($this->id, $posExamples);
+		$this->client->setNegativeExamples($this->id, $negExamples);
+		$this->client->setLearningAlgorithm($this->id, "refinement");
 		
 		$start = microtime(true);
 
-		$this->client->init($id);
+		$this->client->init($this->id);
 
 		$threaded=true;
 		
 		if($threaded == false) {
 	
-			$concept = $this->client->learn($id);
+			$concept = $this->client->learn($this->id);
 			
 		} else {
 		
-			$this->client->learnThreaded($id);
+			$this->client->learnThreaded($this->id);
 			
 			$i = 1;
 			$sleeptime = 1;
@@ -58,36 +57,23 @@ class SparqlConnection
 				sleep($sleeptime);
 				
 				// see what we have learned so far
-				$concept=$this->client->getCurrentlyBestConcept($id);
-				$running=$this->client->isAlgorithmRunning($id);
+				$concept=$this->client->getCurrentlyBestConcept($this->id);
+				$running=$this->client->isAlgorithmRunning($this->id);
 				
 				$seconds = $i * $sleeptime;
 				
 				$i++;
 			} while($seconds<$ttl&&$running);
 			
-			$this->client->stop($id);
+			$this->client->stop($this->id);
 		}
 		return $concept;
 	}
 	
 	function getTriples($ttl,$individual)
 	{
-		$id=$this->client->generateID();
-		
-		$ksID = $this->client->addKnowledgeSource($id, "sparql", $this->DBPediaUrl);
-		$this->client->applyConfigEntryInt($id, $ksID, "numberOfRecursions", 1);
-		$this->client->applyConfigEntryStringArray($id, $ksID, "instances", array($individual));
-		$this->client->applyConfigEntryInt($id, $ksID, "filterMode", -1);
-		$this->client->applyConfigEntryStringArray($id, $ksID, "predList", array());
-		$this->client->applyConfigEntryStringArray($id, $ksID, "objList", array());
-		$this->client->applyConfigEntryStringArray($id, $ksID, "classList", array());
-		$this->client->applyConfigEntryString($id, $ksID, "format", "Array");
-		$this->client->applyConfigEntryBoolean($id, $ksID, "dumpToFile", false);
-		$this->client->applyConfigEntryBoolean($id,$ksID,"useLits",true);
-		
-		$options=array("triples");
-		$this->client->startThread($id,$ksID,$options);
+		$options=array("triples",$individual);
+		$this->client->startThread($this->id,$this->ksID,$options);
 		$i = 1;
 		$sleeptime = 1;
 			
@@ -96,15 +82,16 @@ class SparqlConnection
 			sleep($sleeptime);
 				
 			// see if algorithm is running
-			if (!$this->client->isThreadRunning($id,$ksID,"triples"))
+			if (!$this->client->isThreadRunning($this->id,$this->ksID,"triples"))
 			{
-				$object=$this->client->getFromSparql($id,$ksID,"triples");
+				$object=$this->client->getFromSparql($this->id,$this->ksID,"triples");
 				$array=$object->item;
+				if (count($array)==1) return $array;
 				$ret=array();
 				foreach ($array as $element)
 				{
 					$items=preg_split("[<]",$element,-1, PREG_SPLIT_NO_EMPTY);
-					$ret[$items[1]]=$items[2];	
+					$ret[$items[0]]=$items[1];	
 				}
 				return $ret;
 			}
@@ -113,18 +100,14 @@ class SparqlConnection
 			$i++;
 		} while($seconds<$ttl);
 		
-		$this->client->stopSparqlThread($id,$ksID,"triples");
+		$this->client->stopSparqlThread($this->id,$this->ksID,"triples");
 		return array();	
 	}
 	
 	function getSubjects($ttl,$label='Leipzig',$limit=5)
 	{
-		$id=$this->client->generateID();
-		
-		$ksID = $this->client->addKnowledgeSource($id, "sparql", $this->DBPediaUrl);
-		
 		$options=array("subjects",$label,$limit);
-		$this->client->startThread($id,$ksID,$options);
+		$this->client->startThread($this->id,$this->ksID,$options);
 		$i = 1;
 		$sleeptime = 1;
 			
@@ -133,9 +116,9 @@ class SparqlConnection
 			sleep($sleeptime);
 				
 			// see if algorithm is running
-			if (!$this->client->isThreadRunning($id,$ksID,"subjects"))
+			if (!$this->client->isThreadRunning($this->id,$this->ksID,"subjects"))
 			{
-				$object=$this->client->getFromSparql($id,$ksID,"subjects");
+				$object=$this->client->getFromSparql($this->id,$this->ksID,"subjects");
 				return $object->item;
 			}
 			
@@ -143,17 +126,14 @@ class SparqlConnection
 			$i++;
 		} while($seconds<$ttl);
 		
-		$this->client->stopSparqlThread($id,$ksID,"subjects");
+		$this->client->stopSparqlThread($this->id,$this->ksID,"subjects");
 		return array();
 	}
 	
 	function getSubjectsFromConcept($ttl,$concept)
 	{
-		$id=$this->client->generateID();
-		
-		$ksID = $this->client->addKnowledgeSource($id, "sparql", $this->DBPediaUrl);
 		$options=array("conceptSubjects",$concept);
-		$this->client->startThread($id,$ksID,$options);
+		$this->client->startThread($this->id,$this->ksID,$options);
 		$i = 1;
 		$sleeptime = 1;
 		do {
@@ -161,9 +141,9 @@ class SparqlConnection
 			sleep($sleeptime);
 				
 			// see if algorithm is running
-			if (!$this->client->isThreadRunning($id,$ksID,"conceptSubjects"))
+			if (!$this->client->isThreadRunning($this->id,$this->ksID,"conceptSubjects"))
 			{
-				$object=$this->client->getFromSparql($id,$ksID,"conceptSubjects");
+				$object=$this->client->getFromSparql($this->id,$this->ksID,"conceptSubjects");
 				return $object->item;
 			}
 			
@@ -171,8 +151,69 @@ class SparqlConnection
 			$i++;
 		} while($seconds<$ttl);
 		
-		$this->client->stopSparqlThread($id,$ksID,"conceptSubjects");
+		$this->client->stopSparqlThread($this->id,$this->ksID,"conceptSubjects");
 		return array();
+	}
+	
+	/*public function testSoapTime()
+	{
+		$start = microtime(true);
+		$this->id=$this->client->generateID();
+		$test=$this->client->debug("Test");
+		$time=microtime(true)-$start;
+		return "Word: ".$test." got from SOAP in: ".$time;
+	}*/
+	
+	public function startSearchAndShowArticle($keyword)
+	{
+		//TODO work on $keyword to get white space out
+		//TODO change article get function
+		$options=array("triples","http://dbpedia.org/resource/".$keyword);
+		$this->client->startThread($this->id,$this->ksID,$options);
+		
+		$options=array("subjects",$keyword,15);
+		$this->client->startThread($this->id,$this->ksID,$options);
+	}
+	
+	public function checkSearch($stop)
+	{
+		$this->client=new SoapClient("main.wsdl");
+		if ($stop){
+			$this->client->stopSparqlThread($this->id,$this->ksID,"subjects");
+			return;
+		}
+		
+		// see if algorithm is running
+		if (!$this->client->isThreadRunning($this->id,$this->ksID,"subjects"))
+		{
+			$object=$this->client->getFromSparql($this->id,$this->ksID,"subjects");
+			return $object->item;
+		}
+		return NULL;
+	}
+	
+	public function checkShowArticle($stop)
+	{
+		$this->client=new SoapClient("main.wsdl");
+		if ($stop){
+			$this->client->stopSparqlThread($this->id,$this->ksID,"triples");
+			return;
+		}
+		
+		if (!$this->client->isThreadRunning($this->id,$this->ksID,"triples"))
+		{
+			$object=$this->client->getFromSparql($this->id,$this->ksID,"triples");
+			$array=$object->item;
+			if (count($array)==1) return $array;
+			$ret=array();
+			foreach ($array as $element)
+			{
+				$items=preg_split("[<]",$element,-1, PREG_SPLIT_NO_EMPTY);
+				$ret[$items[0]]=$items[1];	
+			}
+			return $ret;
+		}
+		return NULL;
 	}
 	
 	public function loadWSDLfiles($wsdluri){
