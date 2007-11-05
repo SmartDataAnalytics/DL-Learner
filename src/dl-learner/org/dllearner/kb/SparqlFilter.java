@@ -26,6 +26,7 @@ package org.dllearner.kb;
  * see the documentation for more help
  * 
  * @author Sebastian Hellmann
+ * @author Sebastian Knappe
  *
  */
 public class SparqlFilter {
@@ -104,7 +105,7 @@ public class SparqlFilter {
 	}
 	
 	public SparqlFilter(int mode, String[] pred, String[] obj,boolean uselits) throws Exception{
-		this(mode,  pred,obj);
+		this(mode,pred,obj);
 		this.useLiterals=uselits;
 	}
 	

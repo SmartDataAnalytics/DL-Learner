@@ -120,7 +120,7 @@ public class SparqlOntologyCollector {
 	 * 
 	 * @return all triples in n-triple format
 	 */
-	public String collectOntology(){
+	public String collectOntology() throws IOException{
 		getRecursiveList(subjectList, numberOfRecursions);
 		finalize();
 		String ret="";
@@ -130,12 +130,57 @@ public class SparqlOntologyCollector {
 		return ret;
 	}
 	
-	public String[] collectTriples(){
-		getRecursive(subjectList[0], 1);
-		return Datastructures.setToArray(triples);
+	public String[] collectTriples(String subject) throws IOException{
+		System.out.println("Searching for Article: "+subject);
+		String sparql=q.makeArticleQuery(subject);
+		String FromCache=c.get(subject, sparql);
+		String xml;
+		// if not in cache get it from dbpedia
+		if(FromCache==null){
+			xml=sendAndReceive(sparql);
+			c.put(subject, xml, sparql);
+			System.out.print("\n");
+		}
+		else{
+			xml=FromCache;
+			System.out.println("FROM CACHE");
+		}
+		
+		return processArticle(xml);
 	}
 	
-	public String[] getSubjectsFromLabel(String label, int limit){
+	public String[] processArticle(String xml)
+	{
+		Vector<String> vec=new Vector<String>();
+		String one="<binding name=\"predicate\"><uri>";
+		String two="<binding name=\"object\">";
+		String end="</uri></binding>";
+		String predtmp="";
+		String objtmp="";
+		ArrayList<String> al=new ArrayList<String>();
+		while(xml.indexOf(one)!=-1){
+			//get pred
+			xml=xml.substring(xml.indexOf(one)+one.length());
+			predtmp=xml.substring(0,xml.indexOf(end));
+			//getobj
+			xml=xml.substring(xml.indexOf(two)+two.length());
+			if (xml.startsWith("<literal xml:lang=\"en\">")){
+				xml=xml.substring(xml.indexOf(">")+1);
+				objtmp=xml.substring(0,xml.indexOf("</literal>"));
+			}
+			else if (xml.startsWith("<uri>")) objtmp=xml.substring(5,xml.indexOf(end));
+			else continue;
+			
+			System.out.println("Pred: "+predtmp+" Obj: "+objtmp);			
+			
+			vec.add(predtmp+"<"+objtmp);
+		}
+		
+		String[] ret=new String[vec.size()];
+		return vec.toArray(ret);
+	}
+	
+	public String[] getSubjectsFromLabel(String label, int limit) throws IOException{
 		System.out.println("Searching for Label: "+label);
 		String sparql=q.makeLabelQuery(label,limit);
 		String FromCache=c.get(label, sparql);
@@ -154,7 +199,7 @@ public class SparqlOntologyCollector {
 		return processSubjects(xml);
 	}
 	
-	public String[] getSubjectsFromConcept(String concept)
+	public String[] getSubjectsFromConcept(String concept) throws IOException
 	{
 		System.out.println("Searching for Subjects of type: "+concept);
 		String sparql=q.makeConceptQuery(concept);
@@ -179,7 +224,7 @@ public class SparqlOntologyCollector {
 	 * @param subjects
 	 * @param NumberofRecursions
 	 */
-	public void getRecursiveList(String[] subjects,int NumberofRecursions){
+	public void getRecursiveList(String[] subjects,int NumberofRecursions) throws IOException{
 		for (int i = 0; i < subjects.length; i++) {
 			getRecursive(subjects[i], NumberofRecursions);	
 		}	
@@ -191,36 +236,33 @@ public class SparqlOntologyCollector {
 	 * @param StartingSubject
 	 * @param NumberofRecursions
 	 */
-	public void getRecursive(String StartingSubject,int NumberofRecursions){
+	public void getRecursive(String StartingSubject,int NumberofRecursions) throws IOException{
 		System.out.print("SparqlModul: Depth: "+NumberofRecursions+" @ "+StartingSubject+" ");
 		if(NumberofRecursions<=0)
 			return;
 		else {NumberofRecursions--;}
 		
-		try{
-			String sparql=q.makeQueryFilter(StartingSubject,this.sf);
-			// checks cache
-			String FromCache=c.get(StartingSubject, sparql);
-			String xml;
-			// if not in cache get it from dbpedia
-			if(FromCache==null){
-				xml=sendAndReceive(sparql);
-				c.put(StartingSubject, xml, sparql);
-				System.out.print("\n");
-			}
-			else{
-				xml=FromCache;
-				System.out.println("FROM CACHE");
-			}
-			// get new Subjects
-			String[] newSubjects=processResult(StartingSubject,xml);
+		String sparql=q.makeQueryFilter(StartingSubject,this.sf);
+		// checks cache
+		String FromCache=c.get(StartingSubject, sparql);
+		String xml;
+		// if not in cache get it from dbpedia
+		if(FromCache==null){
+			xml=sendAndReceive(sparql);
+			c.put(StartingSubject, xml, sparql);
+			System.out.print("\n");
+		}
+		else{
+			xml=FromCache;
+			System.out.println("FROM CACHE");
+		}
+		
+		// get new Subjects
+		String[] newSubjects=processResult(StartingSubject,xml);
 			
-			for (int i = 0; (i < newSubjects.length)&& NumberofRecursions!=0; i++) {
-				getRecursive(newSubjects[i], NumberofRecursions);
-			}
-		
-		}catch (Exception e) {e.printStackTrace();}
-		
+		for (int i = 0; (i < newSubjects.length)&& NumberofRecursions!=0; i++) {
+			getRecursive(newSubjects[i], NumberofRecursions);
+		}
 	}
 	
 	/**
@@ -427,49 +469,43 @@ public class SparqlOntologyCollector {
 		}
 	}
 	//TODO alles dbpedia-spezifische rausbekommen	
-	private String sendAndReceive(String sparql) {
+	private String sendAndReceive(String sparql) throws IOException{
 		StringBuilder answer = new StringBuilder();	
 		
 		// String an Sparql-Endpoint schicken
 		HttpURLConnection connection;
 			
-		try {
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setDoOutput(true);
+		connection = (HttpURLConnection) url.openConnection();
+		connection.setDoOutput(true);
 							
-			connection.addRequestProperty("Host", "dbpedia.openlinksw.com");
-			connection.addRequestProperty("Connection","close");
-			connection.addRequestProperty("Accept","text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
-			connection.addRequestProperty("Accept-Language","de-de,de;q=0.8,en-us;q=0.5,en;q=0.3");
-			connection.addRequestProperty("Accept-Charset","ISO-8859-1,utf-8;q=0.7,*;q=0.7");
-			connection.addRequestProperty("User-Agent","Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4 Web-Sniffer/1.0.24");
+		connection.addRequestProperty("Host", "dbpedia.openlinksw.com");
+		connection.addRequestProperty("Connection","close");
+		connection.addRequestProperty("Accept","text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
+		connection.addRequestProperty("Accept-Language","de-de,de;q=0.8,en-us;q=0.5,en;q=0.3");
+		connection.addRequestProperty("Accept-Charset","utf-8;q=1.0");
+		connection.addRequestProperty("User-Agent","Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4 Web-Sniffer/1.0.24");
 				
-			OutputStream os = connection.getOutputStream();
-			OutputStreamWriter osw = new OutputStreamWriter(os);
-			osw.write("default-graph-uri=http%3A%2F%2Fdbpedia.org&query=" +
-				URLEncoder.encode(sparql, "UTF-8")+
-				"&format=application%2Fsparql-results%2Bxml");
-				osw.close();
+		OutputStream os = connection.getOutputStream();
+		OutputStreamWriter osw = new OutputStreamWriter(os);
+		osw.write("default-graph-uri=http%3A%2F%2Fdbpedia.org&query=" +
+			URLEncoder.encode(sparql, "UTF-8")+
+			"&format=application%2Fsparql-results%2Bxml");
+			osw.close();
 				
-			// receive answer
-			InputStream is = connection.getInputStream();
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader br = new BufferedReader(isr);
+		// receive answer
+		InputStream is = connection.getInputStream();
+		InputStreamReader isr = new InputStreamReader(is,"UTF-8");
+		BufferedReader br = new BufferedReader(isr);
 			
-			String line;
-			do {
-				line = br.readLine();
-				if(line!=null)
-					answer.append(line);
-			} while (line != null);
-				
-			br.close();
-				
-		} catch (IOException e) {		
-			System.out.println("Communication problem with Sparql Server.");
-			System.exit(0);
-		}	
+		String line;
+		do {
+			line = br.readLine();
+			if(line!=null)
+				answer.append(line);
+		} while (line != null);
 			
+		br.close();
+				
 		return answer.toString();
 	}
 }

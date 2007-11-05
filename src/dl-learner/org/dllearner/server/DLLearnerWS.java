@@ -20,6 +20,8 @@
 package org.dllearner.server;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -474,12 +476,13 @@ public class DLLearnerWS {
 				}
 			};
 		} else if (method.equals("triples")){
+			final String subject=options[1];
 			thread = new Thread() {
 				@Override
 				public void run() {
 					((SparqlEndpoint)component).setTriplesThread(this);
 					((SparqlEndpoint)component).setTriplesThreadRunning(true);
-					((SparqlEndpoint)component).calculateTriples();
+					((SparqlEndpoint)component).calculateTriples(subject);
 					((SparqlEndpoint)component).setTriplesThreadRunning(false);
 				}
 			};
@@ -540,8 +543,8 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public void debug(String deb)
+	public String debug(String deb)
 	{
-		System.out.println(deb);
+		return "Test";
 	}
 }
