@@ -5,15 +5,14 @@ session_start();
 
 echo "<a href='clearsession.php'>start from scratch</a>";
 
-require("ajax.php");
- 
+require("ajax.php"); 
   
-echo '<?xml version="1.0" encoding="UTF-8"?>'
+echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
 <html>
   <head>
     <title>DL Learner</title>
-    <meta http-equiv=\"content-type\" content=\"text/html; charset=ISO-8859-1\"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="default.css"/>
     <?php $xajax->printJavascript('xajax/'); ?>
 	<script type="text/javascript">
@@ -57,26 +56,19 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
 <div id="wrapper">
 <div id="leftSidebar">
 
-<div class="box" id="search">
+<div class="box">
   <div class="boxtitle">Search</div>
-  <div class="boxcontent">
-	<table border="0">
-	<tr><tb>Search:<br/></tb></tr>
-	<tr><tb><input type="textfield" name="label" id="label">&nbsp;&nbsp;&nbsp;<select name="limit" size="1" id="limit">
-      		<option>1</option>
-      		<option selected="selected">5</option>
-      		<option>10</option>
-      		<option>15</option>
-      		</select><br/></tb></tr>
-			<tr><tb><input type="button" value="Search" class="button" onclick="xajax_getsubjects(document.getElementById('label').value,document.getElementById('limit').value);return false;"/></tb></tr>
-			</table>
+  <div class="boxcontent" id="search">
+	Search:<br/>
+	<input type="textfield" name="label" id="label"><br/>
+	<input type="button" value="Article" class="button" onclick="xajax_searchAndShowArticle(document.getElementById('label').value);return false;" />&nbsp;&nbsp;&nbsp;<input type="button" value="Fulltext" class="button" onclick=""/>
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
-<div class="box" id="search">
+<div class="box">
   <div class="boxtitle">Searchresults</div>
   <div class="boxcontent">
-  <div id="searchcontent" style="display:none"></div>
+  <div id="searchcontent" style="display:block"></div>
   <div id="loadingSubject" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
   </div> <!-- boxcontent -->
 </div> <!-- box -->
@@ -104,7 +96,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'
 <div class="box">
   <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Article</td><td class="right"><span id="contentbuttons"></span></td></tr></table></div>
   <div class="boxcontent" id="article">
-  <div id="articlecontent" style="display:none"></div>
+  <div id="articlecontent" style="display:block"></div>
   <div id="loadingArticle" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
   </div> <!-- boxcontent -->
 </div> <!-- box -->

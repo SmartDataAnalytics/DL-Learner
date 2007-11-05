@@ -328,3 +328,11 @@ input.button:hover {
 	font-weight: bold;
 	white-space: nowrap;
 }
+
+#search {
+	text-align:center;
+}
+
+#label {
+	margin-bottom: 0.1em;
+}

@@ -1,7 +1,8 @@
 <?php
 require_once ("xajax/xajax_core/xajax.inc.php");
+$sid = session_id();
 
-$xajax = new xajax("ajaxfunctions.php");
+$xajax = new xajax("ajaxfunctions.php?sid=$sid");
 $xajax->register(XAJAX_FUNCTION, 'getsubjects', array(
     'onResponseDelay' => 'showLoadingSubjects',
     'beforeResponseProcessing' => 'hideLoadingSubjects'
@@ -22,4 +23,10 @@ $xajax->register(XAJAX_FUNCTION, 'getSubjectsFromConcept', array(
     'onResponseDelay' => 'showLoadingConceptSubjects',
     'beforeResponseProcessing' => 'hideLoadingConceptSubjects'
     ));
+$xajax->registerFunction('searchAndShowArticle');
+$xajax->register(XAJAX_FUNCTION, 'showThisSearchResult', array(
+	'onResponseDelay' => 'showLoadingSubjects',
+    'beforeResponseProcessing' => 'hideLoadingSubjects'
+	));
+$xajax->registerFunction('showThisArticle');
 ?>
