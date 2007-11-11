@@ -483,6 +483,41 @@ public class ComponentManager {
 		return componentNames.get(component);
 	}
 
+	/**
+	 * @return the components
+	 */
+	public static Set<Class<? extends Component>> getComponents() {
+		return components;
+	}
+
+	/**
+	 * @return the knowledgeSources
+	 */
+	public static Set<Class<? extends KnowledgeSource>> getKnowledgeSources() {
+		return knowledgeSources;
+	}
+
+	/**
+	 * @return the reasonerComponents
+	 */
+	public static Set<Class<? extends ReasonerComponent>> getReasonerComponents() {
+		return reasonerComponents;
+	}
+
+	/**
+	 * @return the learningProblems
+	 */
+	public static Set<Class<? extends LearningProblem>> getLearningProblems() {
+		return learningProblems;
+	}
+
+	/**
+	 * @return the learningAlgorithms
+	 */
+	public static Set<Class<? extends LearningAlgorithm>> getLearningAlgorithms() {
+		return learningAlgorithms;
+	}
+
 
 
 }
