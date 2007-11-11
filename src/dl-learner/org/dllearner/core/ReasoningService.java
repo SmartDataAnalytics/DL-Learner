@@ -21,6 +21,7 @@
 package org.dllearner.core;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,32 +85,19 @@ public class ReasoningService {
 	// private Map<Concept,Set<Concept>> moreSpecialConcepts = new HashMap<Concept,Set<Concept>>();
 	
 	private Reasoner reasoner;
-
-	// Beachte: wenn Wissensbasis modifiziert wird, muss ein neues
-	// Reasoner-Objekt
-	// angelegt werden (da Wissensbasis sofort entsprechend verwendetem
-	// Reasoning-Typ
-	// umgewandelt wird)
-	public ReasoningService(Reasoner reasoner) {
-		this.reasoner = reasoner;
-
-		resetStatistics();
-	}
 	
+	// note that you must not modify the underlying knowledge base of
+	// a reasoning service (if you do, you have to create a new reasoning
+	// service object)
 	public ReasoningService(ReasonerComponent reasoner) {
 		this.reasoner = reasoner;
-	}
-	
-	/*
-	public void init() {
-		// temporary ugly hack to keep old version working
-		((ReasonerComponent)reasoner).init();
-		
-		// Listenansicht
+
+		// list view
 		atomicConceptsList = new LinkedList<AtomicConcept>(getAtomicConcepts());
-		atomicRolesList = new LinkedList<AtomicRole>(getAtomicRoles());		
+		atomicRolesList = new LinkedList<AtomicRole>(getAtomicRoles());	
+		
+		resetStatistics();		
 	}
-	*/
 	
 	// zurücksetzen aller Statistiken (wenn z.B. vorher ein Satisfiability Check gemacht wird,
 	// der allerdings nicht zum eigentlichen Algorithmus gehört)

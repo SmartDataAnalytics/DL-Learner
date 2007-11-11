@@ -44,8 +44,6 @@ public class ComponentTest {
 		// get singleton instance of component manager
 		ComponentManager cm = ComponentManager.getInstance();
 		
-		cm.writeConfigDocumentation(new File("doc/configOptionsNew.txt"));
-		
 		// create knowledge source
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		String example = "examples/father.owl";
@@ -55,8 +53,8 @@ public class ComponentTest {
 		// create DIG reasoning service with standard settings
 		ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, source);
 		// ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
-		ReasoningService rs = cm.reasoningService(reasoner);
 		reasoner.init();
+		ReasoningService rs = cm.reasoningService(reasoner);
 		
 		// create a learning problem and set positive and negative examples
 		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
