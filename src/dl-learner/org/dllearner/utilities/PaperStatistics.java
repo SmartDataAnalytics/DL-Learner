@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.dllearner.Config;
 import org.dllearner.ConfigurationManager;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.core.ComponentManager;
@@ -222,17 +221,17 @@ public class PaperStatistics {
 						// learningAlgorithm = cm.learningAlgorithm(ROLearner.class, learningProblem);
 					} else if(algorithmNr==1) {
 						// Config.algorithm = Algorithm.GP;
-						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
-						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
-						Config.GP.generations = 50;	
-						Config.GP.useFixedNumberOfGenerations = true;
-						Config.GP.numberOfIndividuals = 201;
+//						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
+////						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
+//						Config.GP.generations = 50;	
+//						Config.GP.useFixedNumberOfGenerations = true;
+//						Config.GP.numberOfIndividuals = 201;
 						// if(exampleNr == 3 || exampleNr == 4)
 						// 	Config.GP.numberOfIndividuals = 51;
-						Config.GP.refinementProbability = 0;
-						Config.GP.mutationProbability = 0.02;
-						Config.GP.crossoverProbability = 0.8;
-						Config.GP.hillClimbingProbability = 0;
+//						Config.GP.refinementProbability = 0;
+//						Config.GP.mutationProbability = 0.02;
+//						Config.GP.crossoverProbability = 0.8;
+//						Config.GP.hillClimbingProbability = 0;
 						// Config.percentPerLengthUnit = 0.005;
 						// give GP a chance to find the long solution of the
 						// uncle problem
@@ -242,17 +241,17 @@ public class PaperStatistics {
 						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
 					} else if(algorithmNr==2) {
 						// Config.algorithm = Algorithm.HYBRID_GP;
-						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
-						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
-						Config.GP.generations = 50;
-						Config.GP.useFixedNumberOfGenerations = true;
-						Config.GP.numberOfIndividuals = 201;
+//						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
+//						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
+//						Config.GP.generations = 50;
+//						Config.GP.useFixedNumberOfGenerations = true;
+//						Config.GP.numberOfIndividuals = 201;
 						//if(exampleNr == 3 || exampleNr == 4)
 						//	Config.GP.numberOfIndividuals = 51;						
-						Config.GP.refinementProbability = 0.65;
-						Config.GP.mutationProbability = 0.02;
-						Config.GP.crossoverProbability = 0.2;
-						Config.GP.hillClimbingProbability = 0;
+//						Config.GP.refinementProbability = 0.65;
+//						Config.GP.mutationProbability = 0.02;
+//						Config.GP.crossoverProbability = 0.2;
+//						Config.GP.hillClimbingProbability = 0;
 						// Config.percentPerLengthUnit = 0.005;
 						// if(exampleNr == 3 || exampleNr==5 || exampleNr==6)
 //							Config.percentPerLengthUnit = 0.002;						
@@ -438,36 +437,36 @@ public class PaperStatistics {
 
 					if (j == 0) {
 						// Config.algorithm = Algorithm.HYBRID_GP;
-						Config.GP.numberOfIndividuals = i + 1;
-						Config.GP.refinementProbability = 0.85;
-						Config.GP.mutationProbability = 0.02;
-						Config.GP.crossoverProbability = 0.05;
-						Config.GP.hillClimbingProbability = 0;
+//						Config.GP.numberOfIndividuals = i + 1;
+//						Config.GP.refinementProbability = 0.85;
+//						Config.GP.mutationProbability = 0.02;
+//						Config.GP.crossoverProbability = 0.05;
+//						Config.GP.hillClimbingProbability = 0;
 					} else if (j == 1) {
 						// Config.algorithm = Algorithm.HYBRID_GP;
-						Config.GP.numberOfIndividuals = i + 1;
-						Config.GP.refinementProbability = 0.4;
-						Config.GP.mutationProbability = 0.02;
-						Config.GP.crossoverProbability = 0.4;
-						Config.GP.hillClimbingProbability = 0;
+//						Config.GP.numberOfIndividuals = i + 1;
+//						Config.GP.refinementProbability = 0.4;
+//						Config.GP.mutationProbability = 0.02;
+//						Config.GP.crossoverProbability = 0.4;
+//						Config.GP.hillClimbingProbability = 0;
 					} else if (j == 2) {
 						// Config.algorithm = Algorithm.GP;
-						Config.GP.numberOfIndividuals = i + 1;
-						Config.GP.refinementProbability = 0;
-						Config.GP.mutationProbability = 0.02;
-						Config.GP.crossoverProbability = 0.8;
-						Config.GP.hillClimbingProbability = 0;
+//						Config.GP.numberOfIndividuals = i + 1;
+//						Config.GP.refinementProbability = 0;
+//						Config.GP.mutationProbability = 0.02;
+//						Config.GP.crossoverProbability = 0.8;
+//						Config.GP.hillClimbingProbability = 0;
 					} else if (j == 3) {
 						// Config.algorithm = Algorithm.HYBRID_GP;
-						Config.GP.numberOfIndividuals = i + 1;
-						Config.GP.refinementProbability = 0.7;
-						Config.GP.mutationProbability = 0.02;
-						Config.GP.crossoverProbability = 0.1;
-						Config.GP.hillClimbingProbability = 0;
+//						Config.GP.numberOfIndividuals = i + 1;
+//						Config.GP.refinementProbability = 0.7;
+//						Config.GP.mutationProbability = 0.02;
+//						Config.GP.crossoverProbability = 0.1;
+//						Config.GP.hillClimbingProbability = 0;
 					}
 
 					algorithmStartTime = System.nanoTime();
-					gp = new GP(learningProblem);
+//					gp = new GP(learningProblem);
 					long algorithmTime = System.nanoTime() - algorithmStartTime;
 					long algorithmTimeSeconds = algorithmTime / 1000000000;
 
@@ -475,15 +474,15 @@ public class PaperStatistics {
 					// freigibt
 					((DIGReasoner) reasoner).releaseKB();
 
-					int conceptLength = gp.getBestSolution().getLength();
-					Score bestScore = gp.getSolutionScore();
-					int misClassifications = bestScore.getCoveredNegatives().size()
-							+ bestScore.getNotCoveredPositives().size();
-					double classificationRatePercent = 100 * ((nrOfExamples - misClassifications) / (double) nrOfExamples);
-
-					statAr[j][0].addNumber(classificationRatePercent);
-					statAr[j][1].addNumber(conceptLength);
-					statAr[j][2].addNumber(algorithmTimeSeconds);
+//					int conceptLength = gp.getBestSolution().getLength();
+//					Score bestScore = gp.getSolutionScore();
+//					int misClassifications = bestScore.getCoveredNegatives().size()
+//							+ bestScore.getNotCoveredPositives().size();
+//					double classificationRatePercent = 100 * ((nrOfExamples - misClassifications) / (double) nrOfExamples);
+//
+//					statAr[j][0].addNumber(classificationRatePercent);
+//					statAr[j][1].addNumber(conceptLength);
+//					statAr[j][2].addNumber(algorithmTimeSeconds);
 
 				}
 			}

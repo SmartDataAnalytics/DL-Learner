@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
-import org.dllearner.Config;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.Score;
@@ -16,8 +15,6 @@ import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.Conjunction;
-import org.dllearner.core.dl.Disjunction;
 import org.dllearner.core.dl.Exists;
 import org.dllearner.core.dl.FlatABox;
 import org.dllearner.core.dl.Individual;
@@ -90,7 +87,7 @@ public class GPUtilities {
 			extendedHypothesis = hypothesis;		
 		
 		Score score;
-		if(Config.GP.adc)
+		if(adc != null)
 			// TODO: ADC-Support
 			// score = learningProblem.computeScore(extendedHypothesis, adc);
 			throw new RuntimeException("ADC not supported");
@@ -139,7 +136,7 @@ public class GPUtilities {
      */
     public static Program mutation(LearningProblem learningProblem, Program p) {
     	mutation++;
-    	if(Config.GP.adc) {
+    	if(p.getAdc() != null) {
     		// TODO: hier kann man noch mehr Feinabstimmung machen, d.h.
     		// Mutation abh�ngig von Knotenanzahl
     		if(Math.random()<0.5) {
@@ -232,7 +229,7 @@ public class GPUtilities {
      */
     public static Program[] crossover(LearningProblem learningProblem, Program p1, Program p2) {
     	crossover++;
-    	if(Config.GP.adc) {
+    	if(p1.getAdc() != null) {
     		Concept[] pt;
     		Program result[] = new Program[2];
     		
@@ -318,7 +315,7 @@ public class GPUtilities {
     	// Knoten kopieren, damit er sich nicht ver�ndert (es wird sonst der
     	// parent-Link ver�ndert)
     	Concept treecloned = (Concept) p.getTree().clone();
-    	if(Config.GP.adc)
+    	if(p.getAdc() != null)
     		return createProgram(learningProblem,hillClimbing(learningProblem,treecloned,(ScoreThreeValued)p.getScore()),p.getAdc());
     	else
     		return createProgram(learningProblem,hillClimbing(learningProblem,treecloned,(ScoreThreeValued)p.getScore()));
@@ -424,20 +421,20 @@ public class GPUtilities {
     		// returnNode = new Disjunction();
     		// returnNode.addChild(new AtomicConcept(name));    		
     		// returnNode.addChild(node);
-    		if(Config.GP.useMultiStructures)
+//    		if(useMultiStructures)
     			returnNode = new MultiDisjunction(new AtomicConcept(name),node);
-    		else
-    			returnNode = new Disjunction(new AtomicConcept(name),node);
+//    		else
+//    			returnNode = new Disjunction(new AtomicConcept(name),node);
     	// wegen else if schlie�en sich die F�lle gegenseitig aus
     	} else if(nr<sizeSum2) {
     		name = bestNeighbours.get(2).get(nr-sizeSum1);
     		// returnNode = new Conjunction();
     		// returnNode.addChild(new AtomicConcept(name));    		
     		// returnNode.addChild(node);
-    		if(Config.GP.useMultiStructures)
+//    		if(useMultiStructures)
     			returnNode = new MultiConjunction(new AtomicConcept(name),node);
-    		else
-    			returnNode = new Conjunction(new AtomicConcept(name),node);
+//    		else
+//    			returnNode = new Conjunction(new AtomicConcept(name),node);
     	} else if(nr<sizeSum3) {
     		name = bestNeighbours.get(3).get(nr-sizeSum2);
     		// returnNode = new Exists(new AtomicRole(name));
@@ -621,8 +618,8 @@ public class GPUtilities {
      * @param depth Depth of the tree.
      * @return The created program.
      */
-    public static Program createFullRandomProgram(LearningProblem learningProblem, int depth) {
-    	if(Config.GP.adc) {
+    public static Program createFullRandomProgram(LearningProblem learningProblem, int depth, boolean adc) {
+    	if(adc) {
     		// erster Baum Hauptbaum, zweiter Baum ADC
     		return createProgram(learningProblem, createFullRandomTree(learningProblem, depth, true),
     				createFullRandomTree(learningProblem, depth, false));
@@ -644,15 +641,15 @@ public class GPUtilities {
             if(nr == 0 || nr == 1) {
             	Concept child2 = createFullRandomTree(learningProblem, depth-1, useADC);
             	if(nr == 0) {
-            		if(Config.GP.useMultiStructures)
+//            		if(useMultiStructures)
             			return new MultiDisjunction(child1,child2);
-            		else
-            			return new Disjunction(child1,child2);
+//            		else
+//            			return new Disjunction(child1,child2);
             	} else {
-            		if(Config.GP.useMultiStructures)
+//            		if(useMultiStructures)
             			return new MultiConjunction(child1, child2);
-            		else
-            			return new Conjunction(child1, child2);
+//            		else
+//            			return new Conjunction(child1, child2);
             	}
             } else if(nr==2) {
             	return new Negation(child1);
@@ -682,8 +679,8 @@ public class GPUtilities {
      * @param depth The maximum depth of the program tree.
      * @return The created program.
      */
-    public static Program createGrowRandomProgram(LearningProblem learningProblem, int depth) {
-    	if(Config.GP.adc) {
+    public static Program createGrowRandomProgram(LearningProblem learningProblem, int depth, boolean adc) {
+    	if(adc) {
     		// erster Baum Hauptbaum, zweiter Baum ADC
     		return createProgram(learningProblem, createGrowRandomTree(learningProblem,depth,true),
     				createGrowRandomTree(learningProblem,depth,false));
@@ -773,15 +770,15 @@ public class GPUtilities {
             else if(nr>=2 && nr < numberOfConcepts+2)
             	return (AtomicConcept)learningProblem.getReasoningService().getAtomicConceptsList().get(nr-2).clone();
             else if(nr==numberOfConcepts+2) {
-            	if(Config.GP.useMultiStructures)
+//            	if(useMultiStructures)
             		return new MultiConjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
-            	else
-            		return new Conjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
+//            	else
+//            		return new Conjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
             } else if(nr==numberOfConcepts+3) {
-            	if(Config.GP.useMultiStructures)
+//            	if(useMultiStructures)
             		return new MultiDisjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
-            	else
-            		return new Disjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
+//            	else
+//            		return new Disjunction(createGrowRandomTree(learningProblem, depth-1, useADC),createGrowRandomTree(learningProblem, depth-1, useADC));
             } else if(nr==numberOfConcepts+4)
             	return new Negation(createGrowRandomTree(learningProblem, depth-1, useADC));
             else if(nr>=numberOfConcepts+5 && nr<numberOfConcepts+5+numberOfRoles)

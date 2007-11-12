@@ -165,6 +165,10 @@ public class Start {
 		Class<? extends LearningAlgorithm> laClass = null;
 		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
 			laClass = ROLearner.class;
+		else if(algorithmOption.getStringValue().equals("gp"))
+			laClass = GP.class;
+		else
+			handleError("Unknown value in " + algorithmOption);
 
 		la = cm.learningAlgorithm(laClass, lp, rs);
 		configureComponent(cm, la, componentPrefixMapping, parser);

@@ -329,6 +329,10 @@ public class ReasoningService {
 		return getRoleHierarchy().getMostSpecialRoles();
 	}	
 	
+	public void prepareSubsumptionHierarchy() {
+		reasoner.prepareSubsumptionHierarchy(getAtomicConcepts());
+	}
+	
 	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
 		reasoner.prepareSubsumptionHierarchy(allowedConcepts);
 	}
@@ -343,6 +347,10 @@ public class ReasoningService {
 		}	
 	}
 
+	public void prepareRoleHierarchy() {
+		prepareRoleHierarchy(getAtomicRoles());
+	}
+	
 	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) {
 		try {
 			reasoner.prepareRoleHierarchy(allowedRoles);
