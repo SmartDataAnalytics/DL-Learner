@@ -2,9 +2,6 @@ package org.dllearner;
 
 import java.lang.reflect.Field;
 
-import org.dllearner.algorithms.gp.GP.AlgorithmType;
-import org.dllearner.algorithms.gp.GP.SelectionType;
-
 public class Config {
 	// standardmäßig wird bis Tiefe 7 gesucht
 	// public static int maxLength = 7;
@@ -195,46 +192,46 @@ public class Config {
 
 		// FPS funktioniert momentan noch nicht, es muss sichergestellt werden,
 		// dass die Fitness positiv ist (momentan ist sie nie gr��er 0)
-		public static SelectionType selectionType = SelectionType.RANK_SELECTION;
-
-		public static int tournamentSize = 3;
-
-		public static boolean elitism = true;
-
-		public static AlgorithmType algorithmType = AlgorithmType.STEADY_STATE;
-
-		public static double mutationProbability = 0.03d;
-
-		public static double crossoverProbability = 0.95d;
-
-		public static double hillClimbingProbability = 0.0d;
-
-		public static double refinementProbability = 0.0;
-
-		public static int numberOfIndividuals = 100;
-
-		public static int numberOfSelectedIndividuals = 96;
-
-		public static boolean useFixedNumberOfGenerations = false;
-
-		public static int generations = 20;
-
-		public static int postConvergenceGenerations = 50;
-
-		public static boolean adc = false;
-
-		public static int initMinDepth = 4;
-
-		public static int initMaxDepth = 6;
-
-		public static int maxConceptLength = 75;
-
-		// bei true werden statt Disjunction MultiDisjunction und statt
-		// Conjunction
-		// MultiConjunction im GP benutzt (es gibt derzeit keinen Grund es auf
-		// false
-		// zu setzen)
-		public static boolean useMultiStructures = true;
+//		public static SelectionType selectionType = SelectionType.RANK_SELECTION;
+//
+//		public static int tournamentSize = 3;
+//
+//		public static boolean elitism = true;
+//
+//		public static AlgorithmType algorithmType = AlgorithmType.STEADY_STATE;
+//
+//		public static double mutationProbability = 0.03d;
+//
+//		public static double crossoverProbability = 0.95d;
+//
+//		public static double hillClimbingProbability = 0.0d;
+//
+//		public static double refinementProbability = 0.0;
+//
+//		public static int numberOfIndividuals = 100;
+//
+//		public static int numberOfSelectedIndividuals = 96;
+//
+//		public static boolean useFixedNumberOfGenerations = false;
+//
+//		public static int generations = 20;
+//
+//		public static int postConvergenceGenerations = 50;
+//
+//		public static boolean adc = false;
+//
+//		public static int initMinDepth = 4;
+//
+//		public static int initMaxDepth = 6;
+//
+//		public static int maxConceptLength = 75;
+//
+//		// bei true werden statt Disjunction MultiDisjunction und statt
+//		// Conjunction
+//		// MultiConjunction im GP benutzt (es gibt derzeit keinen Grund es auf
+//		// false
+//		// zu setzen)
+//		public static boolean useMultiStructures = true;
 		
 	}
 

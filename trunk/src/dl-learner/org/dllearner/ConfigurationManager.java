@@ -8,10 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.dllearner.algorithms.gp.GP.AlgorithmType;
-import org.dllearner.algorithms.gp.GP.SelectionType;
 import org.dllearner.cli.ConfFileOption;
-import org.dllearner.utilities.Datastructures;
 
 /**
  * Nach dem einlesen der Datei werden hier alle Konfigurationsoptionen
@@ -372,20 +369,20 @@ public class ConfigurationManager {
 	private void applyIntOptions(String option, int value) {
 		if (option.equals("maxLength"))
 			;//Config.maxLength = value;
-		else if (option.equals("gp.numberOfIndividuals"))
-			Config.GP.numberOfIndividuals = value;
-		else if (option.equals("gp.numberOfSelectedIndividuals"))
-			Config.GP.numberOfSelectedIndividuals = value;		
-		else if (option.equals("gp.postConvergenceGenerations"))
-			Config.GP.postConvergenceGenerations = value;
-		else if (option.equals("gp.generations"))
-			Config.GP.generations = value;
-		else if (option.equals("gp.tournamentSize"))
-			Config.GP.tournamentSize = value;
-		else if (option.equals("gp.initMinDepth"))
-			Config.GP.initMinDepth = value;	
-		else if (option.equals("gp.initMaxDepth"))
-			Config.GP.initMaxDepth = value;		
+//		else if (option.equals("gp.numberOfIndividuals"))
+//			Config.GP.numberOfIndividuals = value;
+//		else if (option.equals("gp.numberOfSelectedIndividuals"))
+//			Config.GP.numberOfSelectedIndividuals = value;		
+//		else if (option.equals("gp.postConvergenceGenerations"))
+//			Config.GP.postConvergenceGenerations = value;
+//		else if (option.equals("gp.generations"))
+//			Config.GP.generations = value;
+//		else if (option.equals("gp.tournamentSize"))
+//			Config.GP.tournamentSize = value;
+//		else if (option.equals("gp.initMinDepth"))
+//			Config.GP.initMinDepth = value;	
+//		else if (option.equals("gp.initMaxDepth"))
+//			Config.GP.initMaxDepth = value;		
 	}
 	
 	private void applyDoubleOptions(String option, double value) {
@@ -394,14 +391,14 @@ public class ConfigurationManager {
 			; //Config.accuracyPenalty = value;
 		else if (option.equals("errorPenalty"))
 			; //Config.errorPenalty = value;	
-		else if (option.equals("gp.crossoverPercent"))
-			Config.GP.crossoverProbability = value / (double) 100;
-		else if (option.equals("gp.mutationPercent"))
-			Config.GP.mutationProbability = value / (double) 100;
-		else if (option.equals("gp.hillClimbingPercent"))
-			Config.GP.hillClimbingProbability = value / (double) 100;
-		else if (option.equals("gp.refinementPercent"))
-			Config.GP.refinementProbability = value / (double) 100;		
+//		else if (option.equals("gp.crossoverPercent"))
+//			Config.GP.crossoverProbability = value / (double) 100;
+//		else if (option.equals("gp.mutationPercent"))
+//			Config.GP.mutationProbability = value / (double) 100;
+//		else if (option.equals("gp.hillClimbingPercent"))
+//			Config.GP.hillClimbingProbability = value / (double) 100;
+//		else if (option.equals("gp.refinementPercent"))
+//			Config.GP.refinementProbability = value / (double) 100;		
 //		else if (option.equals("refinement.horizontalExpansionFactor"))
 //			Config.Refinement.horizontalExpansionFactor = value;
 		else if (option.equals("percentPerLengthUnit"))
@@ -419,8 +416,8 @@ public class ConfigurationManager {
 			; // Config.una = Datastructures.strToBool(value);		
 		else if (option.equals("owa"))
 			; // Config.owa = Datastructures.strToBool(value);		
-		else if (option.equals("gp.useFixedNumberOfGenerations"))
-			Config.GP.useFixedNumberOfGenerations = Datastructures.strToBool(value);
+//		else if (option.equals("gp.useFixedNumberOfGenerations"))
+//			Config.GP.useFixedNumberOfGenerations = Datastructures.strToBool(value);
 //		else if (option.equals("scoreMethod")) {
 //			if (value.equals("full"))
 //				Config.scoreMethod = ScoreMethod.FULL;
@@ -462,21 +459,21 @@ public class ConfigurationManager {
 		} else if (option.equals("digProtocolFile")) {
 			// Config.digProtocolFile = new File(value);
 		// } else if (option.equals("preprocessingModule")) {
-		//	Config.preprocessingModule = value;
-		} else if (option.equals("gp.selectionType")) {
-			if (value.equals("fps"))
-				Config.GP.selectionType = SelectionType.FPS;
-			else if (value.equals("rankSelection"))
-				Config.GP.selectionType = SelectionType.RANK_SELECTION;
-			else
-				Config.GP.selectionType = SelectionType.TOURNAMENT_SELECTION;
-		} else if (option.equals("gp.algorithmType")) {
-			if (value.equals("steadyState"))
-				Config.GP.algorithmType = AlgorithmType.STEADY_STATE;
-			else
-				Config.GP.algorithmType = AlgorithmType.GENERATIONAL;
-		} else if (option.equals("gp.adc")) {
-			Config.GP.adc = Datastructures.strToBool(value);
+//		//	Config.preprocessingModule = value;
+//		} else if (option.equals("gp.selectionType")) {
+//			if (value.equals("fps"))
+//				Config.GP.selectionType = SelectionType.FPS;
+//			else if (value.equals("rankSelection"))
+//				Config.GP.selectionType = SelectionType.RANK_SELECTION;
+//			else
+//				Config.GP.selectionType = SelectionType.TOURNAMENT_SELECTION;
+//		} else if (option.equals("gp.algorithmType")) {
+//			if (value.equals("steadyState"))
+//				Config.GP.algorithmType = AlgorithmType.STEADY_STATE;
+//			else
+//				Config.GP.algorithmType = AlgorithmType.GENERATIONAL;
+//		} else if (option.equals("gp.adc")) {
+////			Config.GP.adc = Datastructures.strToBool(value);
 		} else if (option.equals("refinement.heuristic")) {
 //			if(value.equals("lexicographic"))
 //				Config.Refinement.heuristic = Config.Refinement.Heuristic.LEXICOGRAPHIC;
