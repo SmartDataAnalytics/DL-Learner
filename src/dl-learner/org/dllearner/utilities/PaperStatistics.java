@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.dllearner.ConfigurationManager;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -145,8 +144,8 @@ public class PaperStatistics {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		// just set default options
-		ConfigurationManager confMgr = new ConfigurationManager();
-		confMgr.applyOptions();
+//		ConfigurationManager confMgr = new ConfigurationManager();
+//		confMgr.applyOptions();
 		
 		for(int exampleNr=startExampleNr; exampleNr < examples.length; exampleNr++) {
 			
