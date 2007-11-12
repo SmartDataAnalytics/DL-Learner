@@ -215,8 +215,8 @@ public class PaperStatistics {
 					if(algorithmNr==0) {
 						// Config.algorithm = Algorithm.REFINEMENT;
 						// Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
-						Config.Refinement.horizontalExpansionFactor = 0.6;
-						Config.Refinement.quiet = true;
+//						Config.Refinement.horizontalExpansionFactor = 0.6;
+//						Config.Refinement.quiet = true;
 						// Config.percentPerLengthUnit = 0.05;
 						// learningAlgorithm = new ROLearner(learningProblem);
 						// learningAlgorithm = cm.learningAlgorithm(ROLearner.class, learningProblem);

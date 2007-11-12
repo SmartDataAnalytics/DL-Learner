@@ -33,8 +33,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.dllearner.utilities.Datastructures;
-
 
 /**
  * This class collects the ontology from dbpedia,
@@ -157,7 +155,7 @@ public class SparqlOntologyCollector {
 		String end="</uri></binding>";
 		String predtmp="";
 		String objtmp="";
-		ArrayList<String> al=new ArrayList<String>();
+		// ArrayList<String> al=new ArrayList<String>();
 		while(xml.indexOf(one)!=-1){
 			//get pred
 			xml=xml.substring(xml.indexOf(one)+one.length());

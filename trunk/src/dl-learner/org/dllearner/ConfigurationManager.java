@@ -402,8 +402,8 @@ public class ConfigurationManager {
 			Config.GP.hillClimbingProbability = value / (double) 100;
 		else if (option.equals("gp.refinementPercent"))
 			Config.GP.refinementProbability = value / (double) 100;		
-		else if (option.equals("refinement.horizontalExpansionFactor"))
-			Config.Refinement.horizontalExpansionFactor = value;
+//		else if (option.equals("refinement.horizontalExpansionFactor"))
+//			Config.Refinement.horizontalExpansionFactor = value;
 		else if (option.equals("percentPerLengthUnit"))
 			; // Config.percentPerLengthUnit = value;		
 	}
@@ -482,9 +482,9 @@ public class ConfigurationManager {
 //				Config.Refinement.heuristic = Config.Refinement.Heuristic.LEXICOGRAPHIC;
 //			else
 //				Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
-		} else if (option.equals("refinement.quiet"))
-			Config.Refinement.quiet = Datastructures.strToBool(value);
-		else if (option.equals("refinement.writeSearchTree"))
+		} else if (option.equals("refinement.quiet")) {
+//			Config.Refinement.quiet = Datastructures.strToBool(value);
+		} else if (option.equals("refinement.writeSearchTree"))
 			; //Config.Refinement.writeSearchTree = Datastructures.strToBool(value);
 		else if (option.equals("refinement.searchTreeFile")) {
 			; // Config.Refinement.searchTreeFile = new File(value);
@@ -498,12 +498,12 @@ public class ConfigurationManager {
 //			Config.Refinement.useOverlyGeneralList = Datastructures.strToBool(value);
 //		else if (option.equals("refinement.useShortConceptConstruction"))
 //			Config.Refinement.useShortConceptConstruction = Datastructures.strToBool(value);
-		} else if (option.equals("refinement.useAllConstructor"))
-			Config.Refinement.useAllConstructor = Datastructures.strToBool(value);
-		else if (option.equals("refinement.useExistsConstructor"))
-			Config.Refinement.useExistsConstructor = Datastructures.strToBool(value);
-		else if (option.equals("refinement.useNegation"))
-			Config.Refinement.useNegation = Datastructures.strToBool(value);		
+//		} else if (option.equals("refinement.useAllConstructor"))
+//			Config.Refinement.useAllConstructor = Datastructures.strToBool(value);
+//		else if (option.equals("refinement.useExistsConstructor"))
+//			Config.Refinement.useExistsConstructor = Datastructures.strToBool(value);
+//		else if (option.equals("refinement.useNegation"))
+//			Config.Refinement.useNegation = Datastructures.strToBool(value);		
 //		else if (option.equals("reasoner")) {
 //			if(value.equals("dig"))
 //				Config.reasonerType = ReasonerType.DIG;
@@ -511,7 +511,7 @@ public class ConfigurationManager {
 //				Config.reasonerType = ReasonerType.KAON2;
 //			else if(value.equals("fastRetrieval"))
 //				Config.reasonerType = ReasonerType.FAST_RETRIEVAL;
-		else if (option.equals("digReasonerURL")) {
+//		else if (option.equals("digReasonerURL")) {
 //			try {
 //				Config.digReasonerURL = new URL(value);
 //			} catch (MalformedURLException e) {

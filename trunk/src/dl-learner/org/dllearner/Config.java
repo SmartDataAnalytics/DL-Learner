@@ -123,11 +123,11 @@ public class Config {
 
 //		public static boolean useShortConceptConstruction = true;
 
-		public static double horizontalExpansionFactor = 0.6;
+//		public static double horizontalExpansionFactor = 0.6;
 
-		public static boolean improveSubsumptionHierarchy = true;
+//		public static boolean improveSubsumptionHierarchy = true;
 
-		public static boolean quiet = false;
+//		public static boolean quiet = false;
 
 		// public static boolean writeSearchTree = false;
 
@@ -168,13 +168,13 @@ public class Config {
 
 		// max. Verschachtelungstiefe der Lösung
 		// nicht implementiert
-		public static int maxDepth = 0;
+//		public static int maxDepth = 0;
 
 		// Konstruktoren an- und abschalten
 		// nicht implementiert
-		public static boolean useAllConstructor = true;
-		public static boolean useExistsConstructor = true;
-		public static boolean useNegation = true;
+//		public static boolean useAllConstructor = true;
+//		public static boolean useExistsConstructor = true;
+//		public static boolean useNegation = true;
 		// public static boolean useDisjunction = true;
 		// public static boolean useConjunction = true;
 
