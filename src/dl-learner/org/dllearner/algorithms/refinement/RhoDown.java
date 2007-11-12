@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.Config;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
@@ -90,13 +89,21 @@ public class RhoDown implements RefinementOperator {
 	
 	private boolean applyAllFilter = true;
 	private boolean applyExistsFilter = true;
+	private boolean useAllConstructor = true;
+	private boolean useExistsConstructor = true;
+	private boolean useNegation = true;	
 	
 	// braucht man wirklich das learningProblem oder reicht der Reasoning-Service?
 	// TODO: conceptComparator könnte auch noch Parameter sein
-	public RhoDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter) {
+	public RhoDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
+	boolean useExistsConstructor, boolean useNegation) {
 		this.rs = reasoningService;
 		this.applyAllFilter = applyAllFilter;
 		this.applyExistsFilter = applyExistsFilter;
+		this.useAllConstructor = useAllConstructor;
+		this.useExistsConstructor = useExistsConstructor;
+		this.useNegation = useNegation;
+		
 //		this.learningProblem = learningProblem;
 //		rs = learningProblem.getReasoningService();
 	}
@@ -517,7 +524,7 @@ public class RhoDown implements RefinementOperator {
 		
 		if(topRefinementsLength<2 && maxLength>1) {	
 			// Konzepte der Länge 2 = Negation aller Konzepte, die über Bottom liegen
-			if(Config.Refinement.useNegation) {
+			if(useNegation) {
 				Set<Concept> m2tmp = rs.getMoreGeneralConcepts(new Bottom());
 				Set<Concept> m2 = new TreeSet<Concept>(conceptComparator);
 				for(Concept c : m2tmp) {
@@ -529,7 +536,7 @@ public class RhoDown implements RefinementOperator {
 			
 		if(topRefinementsLength<3 && maxLength>2) {
 			// Konzepte der Länge 3: EXISTS r.TOP
-			if(Config.Refinement.useExistsConstructor) {
+			if(useExistsConstructor) {
 				Set<Concept> m3 = new TreeSet<Concept>(conceptComparator);
 				// previous operator: uses all roles
 				// for(AtomicRole r : Config.Refinement.allowedRoles) {
@@ -544,7 +551,7 @@ public class RhoDown implements RefinementOperator {
 		}
 		
 		if(maxLength>2) {
-			if(Config.Refinement.useAllConstructor) {
+			if(useAllConstructor) {
 				// Konzepte, die mit ALL r starten
 				// alle existierenden Konzepte durchgehen, die maximal 2 k�rzer als 
 				// die maximale L�nge sind

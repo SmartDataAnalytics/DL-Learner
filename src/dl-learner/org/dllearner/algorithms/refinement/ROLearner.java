@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.Config;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -58,7 +57,13 @@ public class ROLearner extends LearningAlgorithm {
 	private boolean applyExistsFilter = true;	
 	private boolean useTooWeakList = true;
 	private boolean useOverlyGeneralList = true;
-	private boolean useShortConceptConstruction = true;	
+	private boolean useShortConceptConstruction = true;
+	private double horizontalExpansionFactor = 0.6;
+	private boolean useAllConstructor = true;
+	private boolean useExistsConstructor = true;
+	private boolean useNegation = true;	
+	
+	private boolean quiet = false;
 	
 	private boolean stop = false;
 	
@@ -229,6 +234,14 @@ public class ROLearner extends LearningAlgorithm {
 			useOverlyGeneralList = (Boolean) entry.getValue();
 		} else if(name.equals("useShortConceptConstruction")) {
 			useShortConceptConstruction = (Boolean) entry.getValue();
+		} else if(name.equals("horzontalExpansionFactor")) {
+			horizontalExpansionFactor = (Double) entry.getValue();
+		} else if(name.equals("useAllConstructor")) {
+			useAllConstructor = (Boolean) entry.getValue();
+		} else if(name.equals("useExistsConstructor")) {
+			useExistsConstructor = (Boolean) entry.getValue();
+		} else if(name.equals("useNegation")) {
+			useNegation = (Boolean) entry.getValue();
 		}
 			
 	}
@@ -255,7 +268,7 @@ public class ROLearner extends LearningAlgorithm {
 		}
 		
 		// this.learningProblem2 = learningProblem2;
-		operator = new RhoDown(rs, applyAllFilter, applyExistsFilter);
+		operator = new RhoDown(rs, applyAllFilter, applyExistsFilter, useAllConstructor, useExistsConstructor, useNegation);
 		
 		// candidate sets entsprechend der gewählten Heuristik initialisieren
 		candidates = new TreeSet<Node>(nodeComparator);
@@ -343,7 +356,7 @@ public class ROLearner extends LearningAlgorithm {
 		// proper refinements mehr gefunden werden, aber wie stelle man das fest?
 		while(!solutionFound && !stop) {
 			
-			if(!Config.Refinement.quiet) 
+			if(!quiet) 
 				printStatistics(false);			
 			
 			// besten Knoten nach Heuristik auswählen
@@ -360,7 +373,7 @@ public class ROLearner extends LearningAlgorithm {
 			// minimum horizontal expansion berechnen
 			if(bestNode.getHorizontalExpansion()>maximumHorizontalExpansion)
 				maximumHorizontalExpansion = bestNode.getHorizontalExpansion();
-			minimumHorizontalExpansion = (int) Math.floor(Config.Refinement.horizontalExpansionFactor*maximumHorizontalExpansion);
+			minimumHorizontalExpansion = (int) Math.floor(horizontalExpansionFactor*maximumHorizontalExpansion);
 			
 			// neu: es werden solange Knoten erweitert bis wirklich jeder Knoten die
 			// notwendige minimum horizontal expansion hat
@@ -443,7 +456,7 @@ public class ROLearner extends LearningAlgorithm {
 			// Anzahl Schleifendurchläufe
 			loop++;
 			
-			if(!Config.Refinement.quiet)
+			if(!quiet)
 				System.out.println("--- loop " + loop + " finished ---");	
 			
 		}
