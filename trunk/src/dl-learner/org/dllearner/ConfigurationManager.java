@@ -488,17 +488,17 @@ public class ConfigurationManager {
 			; //Config.Refinement.writeSearchTree = Datastructures.strToBool(value);
 		else if (option.equals("refinement.searchTreeFile")) {
 			; // Config.Refinement.searchTreeFile = new File(value);
-		} else if (option.equals("refinement.applyAllFilter"))
-			Config.Refinement.applyAllFilter = Datastructures.strToBool(value);
-		else if (option.equals("refinement.applyExistsFilter"))
-			Config.Refinement.applyExistsFilter = Datastructures.strToBool(value);
-		else if (option.equals("refinement.useTooWeakList"))
-			Config.Refinement.useTooWeakList = Datastructures.strToBool(value);
-		else if (option.equals("refinement.useOverlyGeneralList"))
-			Config.Refinement.useOverlyGeneralList = Datastructures.strToBool(value);
-		else if (option.equals("refinement.useShortConceptConstruction"))
-			Config.Refinement.useShortConceptConstruction = Datastructures.strToBool(value);
-		else if (option.equals("refinement.useAllConstructor"))
+//		} else if (option.equals("refinement.applyAllFilter"))
+//			Config.Refinement.applyAllFilter = Datastructures.strToBool(value);
+		} else if (option.equals("refinement.applyExistsFilter")) {
+//			Config.Refinement.applyExistsFilter = Datastructures.strToBool(value);
+//		} else if (option.equals("refinement.useTooWeakList"))
+//			Config.Refinement.useTooWeakList = Datastructures.strToBool(value);
+//		else if (option.equals("refinement.useOverlyGeneralList"))
+//			Config.Refinement.useOverlyGeneralList = Datastructures.strToBool(value);
+//		else if (option.equals("refinement.useShortConceptConstruction"))
+//			Config.Refinement.useShortConceptConstruction = Datastructures.strToBool(value);
+		} else if (option.equals("refinement.useAllConstructor"))
 			Config.Refinement.useAllConstructor = Datastructures.strToBool(value);
 		else if (option.equals("refinement.useExistsConstructor"))
 			Config.Refinement.useExistsConstructor = Datastructures.strToBool(value);

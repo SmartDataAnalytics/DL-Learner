@@ -112,16 +112,16 @@ public class Config {
 	public static class Refinement {
 
 		// Nutzung der Äquivalenz ALL R.C AND ALL R.D = ALL R.(C AND D)
-		public static boolean applyAllFilter = true;
+//		public static boolean applyAllFilter = true;
 
 		// Nutzung der Äquivalenz EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
-		public static boolean applyExistsFilter = true;
+//		public static boolean applyExistsFilter = true;
 
-		public static boolean useTooWeakList = true;
+//		public static boolean useTooWeakList = true;
 
-		public static boolean useOverlyGeneralList = true;
+//		public static boolean useOverlyGeneralList = true;
 
-		public static boolean useShortConceptConstruction = true;
+//		public static boolean useShortConceptConstruction = true;
 
 		public static double horizontalExpansionFactor = 0.6;
 

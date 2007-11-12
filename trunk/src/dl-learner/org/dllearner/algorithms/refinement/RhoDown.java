@@ -88,10 +88,15 @@ public class RhoDown implements RefinementOperator {
 	public long mComputationTimeNs = 0;
 	public long topComputationTimeNs = 0;
 	
+	private boolean applyAllFilter = true;
+	private boolean applyExistsFilter = true;
+	
 	// braucht man wirklich das learningProblem oder reicht der Reasoning-Service?
 	// TODO: conceptComparator könnte auch noch Parameter sein
-	public RhoDown(ReasoningService reasoningService) {
+	public RhoDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter) {
 		this.rs = reasoningService;
+		this.applyAllFilter = applyAllFilter;
+		this.applyExistsFilter = applyExistsFilter;
 //		this.learningProblem = learningProblem;
 //		rs = learningProblem.getReasoningService();
 	}
@@ -318,7 +323,7 @@ public class RhoDown implements RefinementOperator {
 					
 					// falls Refinement von der Form ALL r ist, dann prüfen, ob
 					// ALL r nicht bereits vorkommt
-					if(Config.Refinement.applyAllFilter) {
+					if(applyAllFilter) {
 					if(c instanceof All) {
 						for(Concept child : concept.getChildren()) {
 							if(child instanceof All) {
@@ -444,7 +449,7 @@ public class RhoDown implements RefinementOperator {
 						ConceptTransformation.transformToOrderedNegationNormalForm(concept, conceptComparator);
 					}
 					
-					if(Config.Refinement.applyExistsFilter) {
+					if(applyExistsFilter) {
 					Iterator<MultiDisjunction> it = baseSet.iterator();
 					while(it.hasNext()) {
 						MultiDisjunction md = it.next();

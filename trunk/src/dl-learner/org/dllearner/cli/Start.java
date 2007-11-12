@@ -120,6 +120,7 @@ public class Start {
 
 			sources.add(ks);
 			configureComponent(cm, ks, componentPrefixMapping, parser);
+			initComponent(cm, ks);
 		}
 
 		// step 2: detect used reasoner
@@ -134,6 +135,7 @@ public class Start {
 		}
 		ReasonerComponent reasoner = cm.reasoner(reasonerClass, sources);
 		configureComponent(cm, reasoner, componentPrefixMapping, parser);
+		initComponent(cm, reasoner);
 		ReasoningService rs = cm.reasoningService(reasoner);
 
 		// step 3: detect learning problem
@@ -155,7 +157,8 @@ public class Start {
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
 		if(lpClass != PosOnlyDefinitionLP.class)
 			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
-
+		initComponent(cm, lp);
+		
 		// step 4: detect learning algorithm
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
 		LearningAlgorithm la = null;
@@ -165,13 +168,14 @@ public class Start {
 
 		la = cm.learningAlgorithm(laClass, lp, rs);
 		configureComponent(cm, la, componentPrefixMapping, parser);
-
-		// initialise all structures
-		for (KnowledgeSource source : sources)
-			initComponent(cm, source);
-		initComponent(cm, reasoner);
-		initComponent(cm, lp);
 		initComponent(cm, la);
+		
+		// initialise all structures
+//		for (KnowledgeSource source : sources)
+//			initComponent(cm, source);
+//		initComponent(cm, reasoner);
+//		initComponent(cm, lp);
+//		initComponent(cm, la);
 
 		// perform file exports
 		performExports(parser, baseDir, sources, rs);

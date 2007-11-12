@@ -54,6 +54,11 @@ public class ROLearner extends LearningAlgorithm {
 	// these are computed as the result of the previous four settings
 	Set<AtomicConcept> usedConcepts;
 	Set<AtomicRole> usedRoles;	
+	private boolean applyAllFilter = true;
+	private boolean applyExistsFilter = true;	
+	private boolean useTooWeakList = true;
+	private boolean useOverlyGeneralList = true;
+	private boolean useShortConceptConstruction = true;	
 	
 	private boolean stop = false;
 	
@@ -214,6 +219,16 @@ public class ROLearner extends LearningAlgorithm {
 			ignoredConcepts = CommonConfigMappings.getAtomicConceptSet((Set<String>)entry.getValue());
 		} else if(name.equals("ignoredRoles")) {
 			ignoredRoles = CommonConfigMappings.getAtomicRoleSet((Set<String>)entry.getValue());
+		} else if(name.equals("applyAllFilter")) {
+			applyAllFilter = (Boolean) entry.getValue();
+		} else if(name.equals("applyExistsFilter")) {
+			applyExistsFilter = (Boolean) entry.getValue();
+		} else if(name.equals("useTooWeakList")) {
+			useTooWeakList = (Boolean) entry.getValue();
+		} else if(name.equals("useOverlyGeneralList")) {
+			useOverlyGeneralList = (Boolean) entry.getValue();
+		} else if(name.equals("useShortConceptConstruction")) {
+			useShortConceptConstruction = (Boolean) entry.getValue();
 		}
 			
 	}
@@ -240,7 +255,7 @@ public class ROLearner extends LearningAlgorithm {
 		}
 		
 		// this.learningProblem2 = learningProblem2;
-		operator = new RhoDown(rs);
+		operator = new RhoDown(rs, applyAllFilter, applyExistsFilter);
 		
 		// candidate sets entsprechend der gewählten Heuristik initialisieren
 		candidates = new TreeSet<Node>(nodeComparator);
@@ -574,7 +589,7 @@ public class ROLearner extends LearningAlgorithm {
 				boolean propernessDetected = false;
 				
 				// 1. short concept construction
-				if(Config.Refinement.useShortConceptConstruction) {
+				if(useShortConceptConstruction) {
 					// kurzes Konzept konstruieren
 					Concept shortConcept = ConceptTransformation.getShortConcept(refinement, conceptComparator);
 					int n = conceptComparator.compare(shortConcept, concept);
@@ -587,7 +602,7 @@ public class ROLearner extends LearningAlgorithm {
 				}
 				
 				// 2. too weak test
-				if(!propernessDetected && Config.Refinement.useTooWeakList) {
+				if(!propernessDetected && useTooWeakList) {
 					if(refinement instanceof MultiConjunction) {
 						boolean tooWeakElement = containsTooWeakElement((MultiConjunction)refinement);
 						if(tooWeakElement) {
@@ -695,7 +710,7 @@ public class ROLearner extends LearningAlgorithm {
 				int quality = -2;
 				
 				// overly general list verwenden
-				if(Config.Refinement.useOverlyGeneralList && refinement instanceof MultiDisjunction) {
+				if(useOverlyGeneralList && refinement instanceof MultiDisjunction) {
 					if(containsOverlyGeneralElement((MultiDisjunction)refinement)) {
 						conceptTestsOverlyGeneralList++;
 						quality = getNumberOfNegatives();
