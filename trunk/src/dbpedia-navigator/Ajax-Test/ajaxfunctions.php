@@ -7,25 +7,25 @@ session_start();
 require("ajax.php");
 $xajax->processRequest();
 
-function getsubjects($label, $limit)
+function getsubjects($label)
 {
-	include_once("Settings.php");
+	require_once("Settings.php");
 	require_once("SparqlConnection.php");
 	$settings=new Settings();
-	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
+	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 	
 	$content="";
-	$subjects=$sc->getSubjects($settings->sparqlttl,$label,$limit);
+	$subjects=$sc->getSubjects($settings->sparqlttl,$label);
 	if (count($subjects)==1)
 	{
 		if (strpos($subjects,"[Error]")===0) $content.=substr($subjects,7);
-		else $content.="<a href=\"\" onclick=\"xajax_getarticle('".$subjects."');return false;\">".urldecode(substr (strrchr ($subjects, "/"), 1))."</a><br/>";
+		else $content.="<a href=\"\" onclick=\"xajax_getarticle('".$subjects."',-1);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subjects, "/"), 1)))."</a><br/>";
 	}
 	else if (count($subjects)==0) $content.="No search result found in time.";
 	else{
 		foreach ($subjects as $subject)
 		{
-			$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".urldecode(substr (strrchr ($subject, "/"), 1))."</a><br/>";
+			$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."',-1);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."</a><br/>";
 		}
 	}
 	
@@ -34,30 +34,65 @@ function getsubjects($label, $limit)
 	return $objResponse;
 }
 
-function getarticle($subject)
+function getarticle($subject,$fromCache)
 {
-	include_once("Settings.php");
-	require_once("SparqlConnection.php");
-	$settings=new Settings();
-	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
-	$triples=$sc->getTriples($settings->sparqlttl,$subject);
-	$content="";
-	if (count($triples)==1)
-	{
-		$content.=substr($triples,7);
-	}
-	else if (count($triples)==0) $content.="Article not found.";
-	else {
+	if (isset($_SESSION['articles']))
+		foreach ($_SESSION['articles'] as $key => $value)
+		{
+			if ($value['subject']==$subject){
+				$fromCache=$key;
+				break;
+			}
+		}
+	if ($fromCache==-1) {
+		require_once("Settings.php");
+		require_once("SparqlConnection.php");
+		$settings=new Settings();
+		$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
+		$triples=$sc->getTriples($settings->sparqlttl,$subject);
 		$content="";
-		$content.="<img src=\"".$triples['http://xmlns.com/foaf/0.1/depiction']."\" alt=\"Picture of ".urldecode(substr (strrchr ($subject, "/"), 1))."\" width=\"50\"/ style=\"float:left\">";
-		$content.="<div>".urldecode($triples['http://dbpedia.org/property/abstract'])."</div>";
+		if (count($triples)==1)
+		{
+			$content.=substr($triples,7);
+		}
+		else if (count($triples)==0) $content.="Article not found.";
+		else {
+			$content="";
+			$content.="<img src=\"".$triples['http://xmlns.com/foaf/0.1/depiction']."\" alt=\"Picture of ".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."\" width=\"50\"/ style=\"float:left\">";
+			$content.="<div>".urldecode($triples['http://dbpedia.org/property/abstract'])."</div>";
+			
+			$contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";		
+		}
 		
-		$contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";
+		//store article in session, to navigate between last 5 articles quickly
+		$contentArray=array('content' => $content,'contentbuttons' => $contentbuttons, 'subject' => $subject);
+		if (!isset($_SESSION['nextArticle'])){
+			$_SESSION['nextArticle']=0;
+			$_SESSION['articles']=array();
+		}
+		if ($_SESSION['nextArticle']==5) $_SESSION['nextArticle']=0;
+		$_SESSION['articles'][$_SESSION['nextArticle']]=$contentArray;
+		$_SESSION['currentArticle']=$_SESSION['nextArticle'];
+		$_SESSION['nextArticle']++;
+	}
+	else {
+		$content=$_SESSION['articles'][$fromCache]['content'];
+		$contentbuttons=$_SESSION['articles'][$fromCache]['contentbuttons'];
+		$subject=$_SESSION['articles'][$fromCache]['subject'];
 	}
 	
+	$lastArticles="";
+	foreach ($_SESSION['articles'] as $key => $value)
+	{
+		$lastArticles.="<a href=\"\" onclick=\"xajax_getarticle('',".$key.");return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($value['subject'], "/"), 1)))."</a><br/>";
+	}
+	
+	//build the response
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("articlecontent", "innerHTML", $content);
 	$objResponse->assign("contentbuttons", "innerHTML", $contentbuttons);
+	$objResponse->assign("ArticleTitle","innerHTML",str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1))));
+	$objResponse->assign("lastarticles","innerHTML",$lastArticles);
 	return $objResponse;
 }
 
@@ -73,7 +108,7 @@ function addPositive($subject)
 		$_SESSION['positive']=$array;
 	}
 	
-	$content=urldecode(substr (strrchr ($subject, "/"), 1))."<br/>";
+	$content=str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."<br/>";
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->append("Positives", "innerHTML", $content);
@@ -92,7 +127,7 @@ function addNegative($subject)
 		$_SESSION['negative']=$array;
 	}
 	
-	$content=urldecode(substr (strrchr ($subject, "/"), 1))."<br/>";
+	$content=str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."<br/>";
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->append("Negatives", "innerHTML", $content);
@@ -124,7 +159,7 @@ function learnConcept()
 		require_once("Settings.php");
 		require_once("SparqlConnection.php");
 		$settings=new Settings();
-		$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
+		$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 		
 		$concept=$sc->getConceptFromExamples($settings->sparqlttl,$_SESSION['positive'],$_SESSION['negative']);
 		$_SESSION['lastLearnedConcept']=$concept;
@@ -142,7 +177,7 @@ function getSubjectsFromConcept()
 	require_once("Settings.php");
 	require_once("SparqlConnection.php");
 	$settings=new Settings();
-	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
+	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 	
 	$content="";
 	if (isset($_SESSION['lastLearnedConcept']))
@@ -151,13 +186,13 @@ function getSubjectsFromConcept()
 		if (count($subjects)==1)
 		{
 			if (strpos($subjects,"[Error]")===0) $content.=substr($subjects,7);
-			else $content.="<a href=\"\" onclick=\"xajax_getarticle('".$subjects."');return false;\">".urldecode(substr (strrchr ($subjects, "/"), 1))."</a><br/>";
+			else $content.="<a href=\"\" onclick=\"xajax_getarticle('".$subjects."');return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subjects, "/"), 1)))."</a><br/>";
 		}
 		else if (count($subjects)==0) $content.="No examples for concept found in time.";
 		else {
 			foreach ($subjects as $subject)
 			{
-				$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".urldecode(substr (strrchr ($subject, "/"), 1))."</a><br/>";
+				$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."</a><br/>";
 			}
 		}
 	}
@@ -174,110 +209,13 @@ function searchAndShowArticle($keyword)
 	require_once("SparqlConnection.php");
 	$settings=new Settings();
 	
-	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
+	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 	
 	$content="";
 	
-	$sc->startSearchAndShowArticle($keyword);
 	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_showThisArticle', urlencode(serialize($sc)),"http://dbpedia.org/resource/".$keyword);
-	$objResponse->call('xajax_showThisSearchResult', urlencode(serialize($sc)));
-	return $objResponse;
-}
-
-function showThisSearchResult($sc)
-{
-	require_once("Settings.php");
-	require_once("SparqlConnection.php");
-	$settings=new Settings();
-	$sc=unserialize(urldecode($sc));
-	$objResponse = new xajaxResponse();
-	$i = 1;
-	$sleeptime = 1;
-	$searchComplete=false;
-	do {
-		if (!$searchComplete) $searchResult=$sc->checkSearch(false);
-		if (!is_null($searchResult)){
-			$searchComplete=true;
-			break;
-		}
-				
-		$seconds = $i * $sleeptime;
-		$i++;
-		
-		// sleep a while
-		sleep($sleeptime);
-	} while ($seconds<$settings->sparqlttl);
-	
-	if (!$searchComplete){
-		$sc->checkSearch(true);
-		$objResponse->assign("searchcontent","innerHtml","No search result found in time.");
-	}
-	
-	$content="";
-	if (count($searchResult)==1)
-	{
-		if (strpos($searchResult,"[Error]")===0) $content.=substr($searchResult,7);
-		else $content.="<a href=\"\" onclick=\"xajax_getarticle('".$searchResult."');return false;\">".urldecode(substr (strrchr ($searchResult, "/"), 1))."</a><br/>";
-	}
-	else if (count($searchResult)==0) $content.="No search result found in time.";
-	else{
-		foreach ($searchResult as $result)
-		{
-			$content.="<a href=\"\" onclick=\"xajax_getarticle('".$result."');return false;\">".urldecode(substr (strrchr ($result, "/"), 1))."</a><br/>";
-		}
-	}
-	
-	
-	$objResponse->assign("searchcontent", "innerHTML", $content);
-	return $objResponse;
-}
-
-function showThisArticle($sc,$subject)
-{
-	require_once("Settings.php");
-	require_once("SparqlConnection.php");
-	$settings=new Settings();
-	$sc=unserialize(urldecode($sc));
-	$i = 1;
-	$sleeptime = 1;
-	$showArticleComplete=false;
-	do {
-		if (!$showArticleComplete) $article=$sc->checkShowArticle(false);
-		if (!is_null($article)){
-			$showArticleComplete=true;
-			break;
-		}
-			
-		$seconds = $i * $sleeptime;
-		$i++;
-		
-		// sleep a while
-		sleep($sleeptime);
-	} while ($seconds<$settings->sparqlttl);
-	
-	$content="";
-	if (!$showArticleComplete){
-		$sc->checkShowArticle(true);
-	}
-	
-	
-	if (count($article)==1)
-	{
-		$content.=substr($article,7);
-	}
-	else if (count($article)==0) $content.="Article not found.";
-	else {
-		$content="";
-		$content.="<img src=\"".$article['http://xmlns.com/foaf/0.1/depiction']."\" alt=\"Picture of ".urldecode(substr (strrchr ($subject, "/"), 1))."\" width=\"50\"/ style=\"float:left\">";
-		$content.="<div>".urldecode($article['http://dbpedia.org/property/abstract'])."</div>";
-		
-		$contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";
-	}
-	
-	$objResponse = new xajaxResponse();
-	$objResponse->assign("articlecontent", "innerHTML", $content);
-	$objResponse->assign("contentbuttons", "innerHTML", $contentbuttons);
+	$objResponse->call('xajax_getarticle', "http://dbpedia.org/resource/".str_replace(" ","_",$keyword),-1);
+	$objResponse->call('xajax_getsubjects',$keyword);
 	return $objResponse;
 }
 

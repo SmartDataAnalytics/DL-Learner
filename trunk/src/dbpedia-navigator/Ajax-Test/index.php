@@ -1,7 +1,15 @@
 <?php
 ini_set('error_reporting',E_ALL);
 ini_set('max_execution_time',200);
+ini_set("soap.wsdl_cache_enabled","1");
 session_start();
+require_once('Settings.php');
+require_once('SparqlConnection.php');
+$settings=new Settings();
+$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri);
+$ids=$sc->getIDs();
+$_SESSION['id']=$ids[0];
+$_SESSION['ksID']=$ids[1];
 
 echo "<a href='clearsession.php'>start from scratch</a>";
 
@@ -94,7 +102,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 
 <div id="content">
 <div class="box">
-  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Article</td><td class="right"><span id="contentbuttons"></span></td></tr></table></div>
+  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left" id="ArticleTitle">Article</td><td class="right"><span id="contentbuttons"></span></td></tr></table></div>
   <div class="boxcontent" id="article">
   <div id="articlecontent" style="display:block"></div>
   <div id="loadingArticle" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
@@ -114,6 +122,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 <div class="box">
   <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Negatives</td><td class="right"><input type="button" value="Clear" class="button" onclick="xajax_clearNegatives();return false;" /></td></tr></table></div>
   <div class="boxcontent" id="Negatives">
+  </div> <!-- boxcontent -->
+</div> <!-- box -->
+
+<div class="box">
+  <div class="boxtitle">Last Articles</div>
+  <div class="boxcontent" id="lastarticles">
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
