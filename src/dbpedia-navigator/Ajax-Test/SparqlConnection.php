@@ -8,14 +8,27 @@ class SparqlConnection
 	private $id;
 	private $ksID;
 		
-	function SparqlConnection($DBPediaUrl,$DLLearnerUri)
+	function SparqlConnection($DBPediaUrl,$DLLearnerUri,$id=0,$ksID=0)
 	{
 		ini_set('default_socket_timeout',200);
 		$this->DBPediaUrl=$DBPediaUrl;
 		$this->DLLearnerUri=$DLLearnerUri;
 		$this->client=new SoapClient("main.wsdl");
-		$this->id=$this->client->generateID();
-		$this->ksID = $this->client->addKnowledgeSource($this->id, "sparql", $this->DBPediaUrl);
+		$this->id=$id;
+		$this->ksID=$ksID;
+	}
+	
+	function getIDs()
+	{
+		$id=$this->client->generateID();
+		$ksID=$this->client->addKnowledgeSource($id,"sparql",$this->DBPediaUrl);
+		return array(0 => $id, 1 => $ksID);
+	}
+	
+	function test()
+	{
+		$object=$this->client->test($this->id,$this->ksID);
+		return $object->item;
 	}
 	
 	function getConceptFromExamples($ttl,$posExamples,$negExamples)
@@ -104,9 +117,9 @@ class SparqlConnection
 		return array();	
 	}
 	
-	function getSubjects($ttl,$label='Leipzig',$limit=5)
+	function getSubjects($ttl,$label)
 	{
-		$options=array("subjects",$label,$limit);
+		$options=array("subjects",$label,15);
 		$this->client->startThread($this->id,$this->ksID,$options);
 		$i = 1;
 		$sleeptime = 1;
@@ -155,70 +168,7 @@ class SparqlConnection
 		return array();
 	}
 	
-	/*public function testSoapTime()
-	{
-		$start = microtime(true);
-		$this->id=$this->client->generateID();
-		$test=$this->client->debug("Test");
-		$time=microtime(true)-$start;
-		return "Word: ".$test." got from SOAP in: ".$time;
-	}*/
-	
-	public function startSearchAndShowArticle($keyword)
-	{
-		//TODO work on $keyword to get white space out
-		//TODO change article get function
-		$options=array("triples","http://dbpedia.org/resource/".$keyword);
-		$this->client->startThread($this->id,$this->ksID,$options);
-		
-		$options=array("subjects",$keyword,15);
-		$this->client->startThread($this->id,$this->ksID,$options);
-	}
-	
-	public function checkSearch($stop)
-	{
-		$this->client=new SoapClient("main.wsdl");
-		if ($stop){
-			$this->client->stopSparqlThread($this->id,$this->ksID,"subjects");
-			return;
-		}
-		
-		// see if algorithm is running
-		if (!$this->client->isThreadRunning($this->id,$this->ksID,"subjects"))
-		{
-			$object=$this->client->getFromSparql($this->id,$this->ksID,"subjects");
-			return $object->item;
-		}
-		return NULL;
-	}
-	
-	public function checkShowArticle($stop)
-	{
-		$this->client=new SoapClient("main.wsdl");
-		if ($stop){
-			$this->client->stopSparqlThread($this->id,$this->ksID,"triples");
-			return;
-		}
-		
-		if (!$this->client->isThreadRunning($this->id,$this->ksID,"triples"))
-		{
-			$object=$this->client->getFromSparql($this->id,$this->ksID,"triples");
-			$array=$object->item;
-			if (count($array)==1) return $array;
-			$ret=array();
-			foreach ($array as $element)
-			{
-				$items=preg_split("[<]",$element,-1, PREG_SPLIT_NO_EMPTY);
-				$ret[$items[0]]=$items[1];	
-			}
-			return $ret;
-		}
-		return NULL;
-	}
-	
 	public function loadWSDLfiles($wsdluri){
-		ini_set("soap.wsdl_cache_enabled","0");
-		
 		$main=SparqlConnection::getwsdl($wsdluri);
 		$other=SparqlConnection::getOtherWSDL($main);
 		$newMain=SparqlConnection::changeWSDL($main);

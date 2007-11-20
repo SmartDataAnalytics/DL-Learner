@@ -7,10 +7,7 @@ $xajax->register(XAJAX_FUNCTION, 'getsubjects', array(
     'onResponseDelay' => 'showLoadingSubjects',
     'beforeResponseProcessing' => 'hideLoadingSubjects'
     ));
-$xajax->register(XAJAX_FUNCTION, 'getarticle', array(
-    'onResponseDelay' => 'showLoadingArticle',
-    'beforeResponseProcessing' => 'hideLoadingArticle'
-    ));
+$xajax->registerFunction('getarticle');
 $xajax->registerFunction('addPositive');
 $xajax->registerFunction('addNegative');
 $xajax->registerFunction('clearPositives');
@@ -24,9 +21,4 @@ $xajax->register(XAJAX_FUNCTION, 'getSubjectsFromConcept', array(
     'beforeResponseProcessing' => 'hideLoadingConceptSubjects'
     ));
 $xajax->registerFunction('searchAndShowArticle');
-$xajax->register(XAJAX_FUNCTION, 'showThisSearchResult', array(
-	'onResponseDelay' => 'showLoadingSubjects',
-    'beforeResponseProcessing' => 'hideLoadingSubjects'
-	));
-$xajax->registerFunction('showThisArticle');
 ?>
