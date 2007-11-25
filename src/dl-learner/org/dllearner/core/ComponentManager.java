@@ -64,11 +64,11 @@ public class ComponentManager {
 	// these variables are valid for the complete lifetime of DL-Learner
 	private static String componentsFile = "lib/components.ini";
 	private static ComponentManager cm = new ComponentManager();
-	private static Set<Class<? extends Component>> components;
-	private static Set<Class<? extends KnowledgeSource>> knowledgeSources;
-	private static Set<Class<? extends ReasonerComponent>> reasonerComponents;
-	private static Set<Class<? extends LearningProblem>> learningProblems;
-	private static Set<Class<? extends LearningAlgorithm>> learningAlgorithms;
+	private static Collection<Class<? extends Component>> components;
+	private static Collection<Class<? extends KnowledgeSource>> knowledgeSources;
+	private static Collection<Class<? extends ReasonerComponent>> reasonerComponents;
+	private static Collection<Class<? extends LearningProblem>> learningProblems;
+	private static Collection<Class<? extends LearningAlgorithm>> learningAlgorithms;
 
 	// list of all configuration options of all components
 	private static Map<Class<? extends Component>, String> componentNames;
@@ -486,38 +486,36 @@ public class ComponentManager {
 	/**
 	 * @return the components
 	 */
-	public static Set<Class<? extends Component>> getComponents() {
-		return components;
+	public List<Class<? extends Component>> getComponents() {
+		return new LinkedList<Class<? extends Component>>(components);
 	}
 
 	/**
 	 * @return the knowledgeSources
 	 */
-	public static Set<Class<? extends KnowledgeSource>> getKnowledgeSources() {
-		return knowledgeSources;
+	public List<Class<? extends KnowledgeSource>> getKnowledgeSources() {
+		return new LinkedList<Class<? extends KnowledgeSource>>(knowledgeSources);
 	}
 
 	/**
 	 * @return the reasonerComponents
 	 */
-	public static Set<Class<? extends ReasonerComponent>> getReasonerComponents() {
-		return reasonerComponents;
+	public List<Class<? extends ReasonerComponent>> getReasonerComponents() {
+		return new LinkedList<Class<? extends ReasonerComponent>>(reasonerComponents);
 	}
 
 	/**
 	 * @return the learningProblems
 	 */
-	public static Set<Class<? extends LearningProblem>> getLearningProblems() {
-		return learningProblems;
+	public List<Class<? extends LearningProblem>> getLearningProblems() {
+		return new LinkedList<Class<? extends LearningProblem>>(learningProblems);
 	}
 
 	/**
 	 * @return the learningAlgorithms
 	 */
-	public static Set<Class<? extends LearningAlgorithm>> getLearningAlgorithms() {
-		return learningAlgorithms;
+	public List<Class<? extends LearningAlgorithm>> getLearningAlgorithms() {
+		return new LinkedList<Class<? extends LearningAlgorithm>>(learningAlgorithms);
 	}
-
-
 
 }
