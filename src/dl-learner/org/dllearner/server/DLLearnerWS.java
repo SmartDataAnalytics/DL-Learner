@@ -420,12 +420,23 @@ public class DLLearnerWS {
 		try {
 			concept = KBParser.parseConcept(conceptString);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Set<Individual> individuals = state.getReasoningService().retrieval(concept);
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
+	
+	@WebMethod
+	public int getConceptLength(String conceptString) {
+		// call parser to parse concept
+		Concept concept = null;
+		try {
+			concept = KBParser.parseConcept(conceptString);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return concept.getLength();
+	}	
 	
 	@WebMethod
 	public String[] getAtomicRoles(int id) throws ClientNotKnownException {
