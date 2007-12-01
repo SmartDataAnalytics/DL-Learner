@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+	<!ENTITY config "http://www.extraction.org/config#">
+	<!ENTITY owl "http://www.w3.org/2002/07/owl#">
+	<!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+	<!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+	<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+]>
+<rdf:RDF xml:base="http://www.extraction.org/config" xmlns:config="http://www.extraction.org/config#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+	<!-- Ontology Information -->
+	<owl:Ontology rdf:about="">
+		<owl:versionInfo xml:lang="en">version 0.1</owl:versionInfo>
+	</owl:Ontology>
+	<!-- Classes -->
+	<owl:Class rdf:about="#Configuration"/>
+	<owl:Class rdf:about="#FilterSet"/>
+	<owl:Class rdf:about="#GETParameter"/>
+	<owl:Class rdf:about="#ObjectFilterSet">
+		<rdfs:subClassOf rdf:resource="#FilterSet"/>
+	</owl:Class>
+	<owl:Class rdf:about="#PredicateFilterSet">
+		<rdfs:subClassOf rdf:resource="#FilterSet"/>
+	</owl:Class>
+	<owl:Class rdf:about="#SparqlEndpoint"/>
+	<owl:Class rdf:about="#TypedQuery"/>
+	<!-- Annotation Properties -->
+	<owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+	<owl:AnnotationProperty rdf:about="&owl;versionInfo"/>
+	<!-- Datatype Properties -->
+	<owl:DatatypeProperty rdf:about="#filtersURI">
+		<rdfs:domain rdf:resource="#ObjectFilterSet"/>
+		<rdfs:domain rdf:resource="#PredicateFilterSet"/>
+	</owl:DatatypeProperty>
+	<owl:DatatypeProperty rdf:about="#hasAfterGET">
+		<rdfs:domain rdf:resource="#SparqlEndpoint"/>
+	</owl:DatatypeProperty>
+	<owl:DatatypeProperty rdf:about="#hasHost">
+		<rdfs:domain rdf:resource="#SparqlEndpoint"/>
+	</owl:DatatypeProperty>
+	<owl:DatatypeProperty rdf:about="#hasMode">
+		<rdfs:domain rdf:resource="#TypedQuery"/>
+	</owl:DatatypeProperty>
+	<owl:DatatypeProperty rdf:about="#hasParameterContent">
+		<rdfs:domain rdf:resource="#GETParameter"/>
+	</owl:DatatypeProperty>
+	<owl:DatatypeProperty rdf:about="#hasParameterName">
+		<rdfs:domain rdf:resource="#GETParameter"/>
+	</owl:DatatypeProperty>
+	<owl:DatatypeProperty rdf:about="#hasPort">
+		<rdfs:domain rdf:resource="#SparqlEndpoint"/>
+	</owl:DatatypeProperty>
+	<owl:DatatypeProperty rdf:about="#hasQueryParameter">
+		<rdfs:domain rdf:resource="#SparqlEndpoint"/>
+	</owl:DatatypeProperty>
+	<owl:DatatypeProperty rdf:about="#hasRecursionDepth">
+		<rdfs:domain rdf:resource="#Configuration"/>
+	</owl:DatatypeProperty>
+	<owl:DatatypeProperty rdf:about="#usesLiterals">
+		<rdfs:domain rdf:resource="#TypedQuery"/>
+	</owl:DatatypeProperty>
+	<!-- Object Properties -->
+	<owl:ObjectProperty rdf:about="#hasGETParameter">
+		<rdfs:domain rdf:resource="#SparqlEndpoint"/>
+		<rdfs:range rdf:resource="#GETParameter"/>
+	</owl:ObjectProperty>
+	<owl:ObjectProperty rdf:about="#hasObjectFilterSet">
+		<rdfs:domain rdf:resource="#TypedQuery"/>
+		<rdfs:range rdf:resource="#ObjectFilterSet"/>
+	</owl:ObjectProperty>
+	<owl:ObjectProperty rdf:about="#hasPredicateFilterSet">
+		<rdfs:domain rdf:resource="#TypedQuery"/>
+		<rdfs:range rdf:resource="#PredicateFilterSet"/>
+	</owl:ObjectProperty>
+	<owl:ObjectProperty rdf:about="#hasSparqlEndpoint">
+		<rdfs:domain rdf:resource="#Configuration"/>
+		<rdfs:range rdf:resource="#SparqlEndpoint"/>
+	</owl:ObjectProperty>
+	<owl:ObjectProperty rdf:about="#hasTypedQuery">
+		<rdfs:domain rdf:resource="#Configuration"/>
+		<rdfs:range rdf:resource="#TypedQuery"/>
+	</owl:ObjectProperty>
+	<!-- Instances -->
+	<config:SparqlEndpoint rdf:about="#dbpediaEndpoint">
+		<config:hasAfterGET rdf:datatype="&xsd;string">/sparql</config:hasAfterGET>
+		<config:hasGETParameter rdf:resource="#defaultgraphuri"/>
+		<config:hasGETParameter rdf:resource="#format"/>
+		<config:hasHost rdf:datatype="&xsd;string">dbpedia.openlinksw.com</config:hasHost>
+		<config:hasPort rdf:datatype="&xsd;string">80</config:hasPort>
+		<config:hasQueryParameter rdf:datatype="&xsd;string">query</config:hasQueryParameter>
+		<config:hasURL>dbpedia.openlinksw.com:80/sparql</config:hasURL>
+	</config:SparqlEndpoint>
+	<config:ObjectFilterSet rdf:about="#dbpediaGeneralObjectFilter">
+		<config:filtersURI rdf:datatype="&xsd;string">http://dbpedia.org/resource/Category:Articles_</config:filtersURI>
+		<config:filtersURI rdf:datatype="&xsd;string">http://dbpedia.org/resource/Category:Wikipedia_</config:filtersURI>
+		<config:filtersURI rdf:datatype="&xsd;string">http://upload.wikimedia.org/wikipedia/commons</config:filtersURI>
+		<config:filtersURI rdf:datatype="&xsd;string">http://upload.wikimedia.org/wikipedia</config:filtersURI>
+		<config:filtersURI rdf:datatype="&xsd;string">http://www.geonames.org</config:filtersURI>
+		<config:filtersURI rdf:datatype="&xsd;string">http://www.w3.org/2006/03/wn/wn20/instances/synset</config:filtersURI>
+		<config:filtersURI rdf:datatype="&xsd;string">http://www4.wiwiss.fu-berlin.de/flickrwrappr</config:filtersURI>
+	</config:ObjectFilterSet>
+	<config:PredicateFilterSet rdf:about="#dbpediaGeneralPredicateFilter">
+		<config:filtersURI rdf:datatype="&xsd;string">http://dbpedia.org/property/reference</config:filtersURI>
+		<config:filtersURI rdf:datatype="&xsd;string">http://dbpedia.org/property/website</config:filtersURI>
+		<config:filtersURI rdf:datatype="&xsd;string">http://dbpedia.org/property/wikipage-</config:filtersURI>
+	</config:PredicateFilterSet>
+	<config:TypedQuery rdf:about="#dbpediaYago">
+		<config:hasMode rdf:datatype="&xsd;string">forbid</config:hasMode>
+		<config:hasObjectFilterSet rdf:resource="#dbpediaGeneralObjectFilter"/>
+		<config:hasObjectFilterSet rdf:resource="#foafObjectFilter"/>
+		<config:hasObjectFilterSet rdf:resource="#yagoObjectFilter"/>
+		<config:hasPredicateFilterSet rdf:resource="#dbpediaGeneralPredicateFilter"/>
+		<config:hasPredicateFilterSet rdf:resource="#foafPredicateFilter"/>
+		<config:hasPredicateFilterSet rdf:resource="#sameAsFilter"/>
+		<config:hasPredicateFilterSet rdf:resource="#yagoPredicateFilter"/>
+		<config:usesLiterals rdf:datatype="&xsd;string">false</config:usesLiterals>
+	</config:TypedQuery>
+	<config:Configuration rdf:about="#dbpediatest" rdfs:comment="for first test">
+		<config:hasRecursionDepth rdf:datatype="&xsd;string">2</config:hasRecursionDepth>
+		<config:hasSparqlEndpoint rdf:resource="#dbpediaEndpoint"/>
+		<config:hasTypedQuery rdf:resource="#dbpediaYago"/>
+	</config:Configuration>
+	<config:GETParameter rdf:about="#defaultgraphuri">
+		<config:hasParameterContent rdf:datatype="&xsd;string">http://dbpedia.org</config:hasParameterContent>
+		<config:hasParameterName rdf:datatype="&xsd;string">default-graph-uri</config:hasParameterName>
+	</config:GETParameter>
+	<config:ObjectFilterSet rdf:about="#foafObjectFilter">
+		<config:filtersURI rdf:datatype="&xsd;string">http://xmlns.com/foaf/0.1/</config:filtersURI>
+	</config:ObjectFilterSet>
+	<config:PredicateFilterSet rdf:about="#foafPredicateFilter">
+		<config:filtersURI rdf:datatype="&xsd;string">http://xmlns.com/foaf/0.1/</config:filtersURI>
+	</config:PredicateFilterSet>
+	<config:GETParameter rdf:about="#format">
+		<config:hasParameterContent rdf:datatype="&xsd;string">application/sparql-results.xml</config:hasParameterContent>
+		<config:hasParameterName rdf:datatype="&xsd;string">format</config:hasParameterName>
+	</config:GETParameter>
+	<config:Configuration rdf:about="#localjoseki">
+		<config:hasRecursionDepth rdf:datatype="&xsd;string">2</config:hasRecursionDepth>
+		<config:hasSparqlEndpoint rdf:resource="#localjosekiendpoint"/>
+		<config:hasTypedQuery rdf:resource="#localjosekitypedquery"/>
+	</config:Configuration>
+	<config:SparqlEndpoint rdf:about="#localjosekiendpoint">
+		<config:hasAfterGET rdf:datatype="&xsd;string">/books</config:hasAfterGET>
+		<config:hasHost rdf:datatype="http://www.w3.org/2001/XMLSchema#string">localhost</config:hasHost>
+		<config:hasPort rdf:datatype="&xsd;string">2020</config:hasPort>
+		<config:hasQueryParameter rdf:datatype="&xsd;string">query</config:hasQueryParameter>
+		<config:hasURL>localhost:2020/books</config:hasURL>
+	</config:SparqlEndpoint>
+	<config:TypedQuery rdf:about="#localjosekitypedquery">
+		<config:hasMode rdf:datatype="&xsd;string">forbid</config:hasMode>
+		<config:hasObjectFilterSet rdf:resource="#dbpediaGeneralObjectFilter"/>
+		<config:hasPredicateFilterSet rdf:resource="#dbpediaGeneralPredicateFilter"/>
+		<config:usesLiterals rdf:datatype="&xsd;string">false</config:usesLiterals>
+	</config:TypedQuery>
+	<config:PredicateFilterSet rdf:about="#sameAsFilter">
+		<config:filtersURI rdf:datatype="&xsd;string">http://www.w3.org/2002/07/owl#sameAs</config:filtersURI>
+	</config:PredicateFilterSet>
+	<config:ObjectFilterSet rdf:about="#yagoObjectFilter">
+		<config:filtersURI rdf:datatype="&xsd;string">http://dbpedia.org/resource/Category:Articles_</config:filtersURI>
+		<config:filtersURI rdf:datatype="&xsd;string">http://dbpedia.org/resource/Category:Wikipedia_</config:filtersURI>
+	</config:ObjectFilterSet>
+	<config:PredicateFilterSet rdf:about="#yagoPredicateFilter">
+		<config:filtersURI rdf:datatype="&xsd;string">http://www.w3.org/2004/02/skos/core</config:filtersURI>
+	</config:PredicateFilterSet>
+	<rdf:Description rdf:about="#hasURL">
+		<rdf:type>
+			<rdf:Description rdf:about="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+		</rdf:type>
+		<rdfs:domain>
+			<rdf:Description rdf:about="#SparqlEndpoint"/>
+		</rdfs:domain>
+	</rdf:Description>
+</rdf:RDF>
