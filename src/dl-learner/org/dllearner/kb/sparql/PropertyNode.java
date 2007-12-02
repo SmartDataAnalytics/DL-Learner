@@ -10,7 +10,7 @@ public class PropertyNode extends Node {
 
 	private Node a;
 	private Node b;
-	private Set<String> SpecialTypes;
+	private Set<String> specialTypes;
 
 	public PropertyNode(URI u) {
 		super(u);
@@ -23,12 +23,12 @@ public class PropertyNode extends Node {
 		this.type = "property";
 		this.a = a;
 		this.b = b;
-		this.SpecialTypes = new HashSet<String>();
+		this.specialTypes = new HashSet<String>();
 	}
 
 	@Override
 	public Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m) {
-		Set<Tupel> s = tsq.query(this.URI);
+		Set<Tupel> s = tsq.query(this.uri);
 		Vector<Node> Nodes = new Vector<Node>();
 		// Manipulation
 
@@ -37,7 +37,7 @@ public class PropertyNode extends Node {
 			Tupel t = (Tupel) it.next();
 			try {
 				if (t.a.equals(m.type)) {
-					SpecialTypes.add(t.b);
+					specialTypes.add(t.b);
 				}
 			} catch (Exception e) {
 				System.out.println(t);
@@ -60,10 +60,10 @@ public class PropertyNode extends Node {
 	@Override
 	public Set<String> toNTriple() {
 		Set<String> s = new HashSet<String>();
-		s.add("<" + this.URI + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
+		s.add("<" + this.uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
 				+ "http://www.w3.org/2002/07/owl#ObjectProperty" + ">.");
-		for (String one : SpecialTypes) {
-			s.add("<" + this.URI + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
+		for (String one : specialTypes) {
+			s.add("<" + this.uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
 					+ one + ">.");
 
 		}

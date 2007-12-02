@@ -6,9 +6,9 @@ import java.util.Set;
 
 public class Manager {
 
-	private Configuration Configuration;
-	private TypedSparqlQuery TypedSparqlQuery;
-	private ExtractionAlgorithm ExtractionAlgorithm;
+	private Configuration configuration;
+	private TypedSparqlQuery typedSparqlQuery;
+	private ExtractionAlgorithm extractionAlgorithm;
 
 	/*public void usePredefinedConfiguration(URI uri) {
 
@@ -19,23 +19,23 @@ public class Manager {
 	
 	public void usePredefinedConfiguration(int i) {
 
-		this.Configuration = PredefinedConfigurations.get(i);
-		this.TypedSparqlQuery = new TypedSparqlQuery(Configuration);
-		this.ExtractionAlgorithm = new ExtractionAlgorithm(Configuration);
+		this.configuration = PredefinedConfigurations.get(i);
+		this.typedSparqlQuery = new TypedSparqlQuery(configuration);
+		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
 	}
 
 	public void useConfiguration(SparqlQueryType SparqlQueryType, SpecificSparqlEndpoint SparqlEndpoint, int recursiondepth,boolean getAllBackground) {
 
-		this.Configuration = new Configuration(SparqlEndpoint, SparqlQueryType,recursiondepth,getAllBackground);
-		this.TypedSparqlQuery = new TypedSparqlQuery(Configuration);
-		this.ExtractionAlgorithm = new ExtractionAlgorithm(Configuration);
+		this.configuration = new Configuration(SparqlEndpoint, SparqlQueryType,recursiondepth,getAllBackground);
+		this.typedSparqlQuery = new TypedSparqlQuery(configuration);
+		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
 	}
 
 	public String extract(URI uri) {
 		// this.TypedSparqlQuery.query(uri);
 		// System.out.println(ExtractionAlgorithm.getFirstNode(uri));
 		System.out.println("Start extracting");
-		Node n = this.ExtractionAlgorithm.expandNode(uri, this.TypedSparqlQuery);
+		Node n = this.extractionAlgorithm.expandNode(uri, this.typedSparqlQuery);
 		Set<String> s = n.toNTriple();
 		String nt = "";
 		for (String str : s) {
@@ -52,7 +52,7 @@ public class Manager {
 
 		for (String one : instances) {
 			try {
-				Node n = this.ExtractionAlgorithm.expandNode(new URI(one), this.TypedSparqlQuery);
+				Node n = this.extractionAlgorithm.expandNode(new URI(one), this.typedSparqlQuery);
 				ret.addAll(n.toNTriple());
 			} catch (Exception e) {
 				e.printStackTrace();
