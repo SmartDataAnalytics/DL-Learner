@@ -96,12 +96,7 @@ public class KAON2Reasoner extends ReasonerComponent {
 		if(imports.size()>1)
 			System.out.println("Warning: KAON2-Reasoner currently supports only one import file. Ignoring all other imports.");
 		
-		try {
-			kaon2Connection = KAON2Manager.newConnection();
-		} catch (KAON2Exception e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+		kaon2Connection = KAON2Manager.newConnection();
 	
 		DefaultOntologyResolver resolver = new DefaultOntologyResolver();
 		
@@ -475,7 +470,7 @@ public class KAON2Reasoner extends ReasonerComponent {
 	public void saveOntology(File file, org.dllearner.core.OntologyFormat format) {
 		// File exportFile = new File(baseDir, fileName);
 		// String format = OntologyFileFormat.OWL_RDF;
-		String kaon2Format = "";
+		OntologyFileFormat kaon2Format = null;
 		if(format.equals(org.dllearner.core.OntologyFormat.RDF_XML))
 			kaon2Format = OntologyFileFormat.OWL_RDF;
 		else {

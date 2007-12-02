@@ -120,7 +120,7 @@ public class KBFile extends KnowledgeSource {
 	public void export(File file, org.dllearner.core.OntologyFormat format){
 		Reasoner kaon2Reasoner = KAON2Reasoner.getKAON2Reasoner(kb);
 		
-		String kaon2Format = "";
+		OntologyFileFormat kaon2Format = null;
 		if(format.equals(org.dllearner.core.OntologyFormat.RDF_XML))
 			kaon2Format = OntologyFileFormat.OWL_RDF;
 		else {
