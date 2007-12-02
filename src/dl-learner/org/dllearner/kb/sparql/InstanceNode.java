@@ -21,7 +21,7 @@ public class InstanceNode extends Node {
 	@Override
 	public Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m) {
 
-		Set<Tupel> s = tsq.query(this.uri);
+		Set<Tupel> s = tsq.query(uri);
 		// Manipulation
 		m.check(s, this);
 		//System.out.println("fffffff"+m);
@@ -48,7 +48,7 @@ public class InstanceNode extends Node {
 			}
 
 		}
-		this.expanded = true;
+		expanded = true;
 		return Nodes;
 	}
 
@@ -60,15 +60,15 @@ public class InstanceNode extends Node {
 	@Override
 	public Set<String> toNTriple() {
 		Set<String> s = new HashSet<String>();
-		s.add("<" + this.uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
+		s.add("<" + uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
 				+ "http://www.w3.org/2002/07/owl#Thing" + ">.");
 		for (ClassNode one : classes) {
-			s.add("<" + this.uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
+			s.add("<" + uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
 					+ one.getURI() + ">.");
 			s.addAll(one.toNTriple());
 		}
 		for (PropertyNode one : properties) {
-			s.add("<" + this.uri + "><" + one.getURI() + "><" + one.getB().getURI() + ">.");
+			s.add("<" + uri + "><" + one.getURI() + "><" + one.getB().getURI() + ">.");
 			s.addAll(one.toNTriple());
 			s.addAll(one.getB().toNTriple());
 		}

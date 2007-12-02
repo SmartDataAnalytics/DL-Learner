@@ -17,13 +17,13 @@ public class TypedSparqlQuery {
 	private Configuration configuration;
 	// private SparqlHTTPRequest SparqlHTTPRequest;
 	private SparqlQueryMaker sparqlQueryMaker;
-	Cache Cache;
+	Cache cache;
 
 	public TypedSparqlQuery(Configuration Configuration) {
 		this.configuration = Configuration;
 		// this.SparqlHTTPRequest = new SparqlHTTPRequest(Configuration.getSparqlEndpoint());
 		this.sparqlQueryMaker = new SparqlQueryMaker(Configuration.getSparqlQueryType());
-		this.Cache = new Cache("cache");
+		this.cache = new Cache("cache");
 	}
 
 	public Set<Tupel> query(URI u) {
@@ -32,7 +32,7 @@ public class TypedSparqlQuery {
 		String sparql = sparqlQueryMaker.makeQueryUsingFilters(u.toString());
 
 		// check cache
-		String FromCache = this.Cache.get(u.toString(), sparql);
+		String FromCache = cache.get(u.toString(), sparql);
 		
 		String xml = null;
 		// if not in cache get it from EndPoint
@@ -45,7 +45,7 @@ public class TypedSparqlQuery {
 			}
 			//System.out.println(sparql);
 			//System.out.println(xml);
-			 this.Cache.put(u.toString(), xml, sparql);
+			 cache.put(u.toString(), xml, sparql);
 			System.out.print("\n");
 		} else {
 			xml = FromCache;
@@ -54,7 +54,7 @@ public class TypedSparqlQuery {
 
 		// System.out.println(xml);
 		// process XML
-		Set<Tupel> s = this.processResult(xml);
+		Set<Tupel> s = processResult(xml);
 		try {
 			System.out.println("retrieved " + s.size() + " tupels");
 		} catch (Exception e) {
@@ -115,7 +115,7 @@ public class TypedSparqlQuery {
 		Iterator<String> it=s.iterator();
 		String FullURI="";
 		while (it.hasNext()) {
-			String element = (String) it.next();
+			String element = it.next();
 			FullURI+=""+URLEncoder.encode(element, "UTF-8")+"="+
 					URLEncoder.encode(se.getParameters().get(element), "UTF-8")+"&";
 		}

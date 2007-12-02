@@ -14,10 +14,10 @@ public class SparqlQueryMaker {
 		String Filter = "";
 		if (!this.sparqlQueryType.isLiterals())
 			Filter += "!isLiteral(?object))";
-		for (String p : this.sparqlQueryType.getPredicatefilterlist()) {
+		for (String p : sparqlQueryType.getPredicatefilterlist()) {
 			Filter += lineend + filterPredicate(p);
 		}
-		for (String o : this.sparqlQueryType.getObjectfilterlist()) {
+		for (String o : sparqlQueryType.getObjectfilterlist()) {
 			Filter += lineend + filterObject(o);
 		}
 
