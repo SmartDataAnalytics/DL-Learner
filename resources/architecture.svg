@@ -12,11 +12,13 @@
    height="1052.3622047"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.45"
+   inkscape:version="0.45.1"
    sodipodi:docname="architecture.svg"
    sodipodi:docbase="/home/jl/promotion/dl-learner-svn/trunk/resources"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   sodipodi:modified="true">
+   inkscape:export-filename="/home/jl/promotion/dl-learner-svn/trunk/resources/architecture_large.png"
+   inkscape:export-xdpi="150"
+   inkscape:export-ydpi="150">
   <defs
      id="defs4">
     <marker
@@ -194,7 +196,7 @@
          sodipodi:role="line"
          x="431.42856"
          y="422.00504"
-         id="tspan3191">measure</tspan></text>
+         id="tspan3191">measure (heuristics)</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
