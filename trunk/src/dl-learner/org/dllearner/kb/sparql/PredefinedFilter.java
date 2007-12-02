@@ -1,35 +1,24 @@
 package org.dllearner.kb.sparql;
 
-import java.net.URL;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PredefinedConfigurations {
-
-	public static Configuration get(int i) {
+public class PredefinedFilter {
+    
+	    
+	public static SparqlQueryType getFilter(int i) {
 
 		switch (i) {
 		case 1:
-			return dbpediaYago();
+			return YagoFilter();
 
 		}
 		return null;
 	}
-
-	public static Configuration dbpediaYago() {
-		
-	    	SpecificSparqlEndpoint sse=dbpediaEndpoint();
-		// System.out.println(u);
-	    	SparqlQueryType sqt = YagoFilter();
-
-		return new Configuration(sse, sqt, 2, true);
-
-	}
+	
 	
 	public static SparqlQueryType YagoFilter(){
-	    
-	    Set<String> pred = new HashSet<String>();
+	Set<String> pred = new HashSet<String>();
 		pred.add("http://www.w3.org/2004/02/skos/core");
 		pred.add("http://www.w3.org/2002/07/owl#sameAs");
 		pred.add("http://xmlns.com/foaf/0.1/");
@@ -50,19 +39,4 @@ public class PredefinedConfigurations {
 
 		return new SparqlQueryType("forbid", obj, pred, "false");
 	}
-	
-	
-	public static SpecificSparqlEndpoint dbpediaEndpoint(){
-	    	URL u = null;
-		HashMap<String, String> m = new HashMap<String, String>();
-		m.put("default-graph-uri", "http://dbpedia.org");
-		m.put("format", "application/sparql-results.xml");
-		try {
-			u = new URL("http://dbpedia.openlinksw.com:8890/sparql");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new SpecificSparqlEndpoint(u, "dbpedia.openlinksw.com", m);
-	}
-
 }
