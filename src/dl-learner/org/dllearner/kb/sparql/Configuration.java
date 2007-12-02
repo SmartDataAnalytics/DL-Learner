@@ -18,16 +18,26 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
 public class Configuration {
-	private SparqlEndpoint SparqlEndpoint;
+	private SpecificSparqlEndpoint SparqlEndpoint;
 	private SparqlQueryType SparqlQueryType;
 	private Manipulator Manipulator;
-
+	private int recursiondepth = 2;
+	private boolean getAllBackground = true;
+	
 	private Configuration() {
 	}
 
-	public Configuration(SparqlEndpoint SparqlEndpoint, SparqlQueryType SparqlQueryType) {
+
+	public Configuration(SpecificSparqlEndpoint SparqlEndpoint,
+			SparqlQueryType SparqlQueryType, int recursiondepth,
+			boolean getAllBackground) {
 		this.SparqlEndpoint = SparqlEndpoint;
 		this.SparqlQueryType = SparqlQueryType;
+		this.Manipulator=new Manipulator();
+		this.recursiondepth = recursiondepth;
+		this.getAllBackground = getAllBackground;
+		
+
 	}
 
 	public static Configuration getConfiguration(URI uri) {
@@ -123,7 +133,7 @@ public class Configuration {
 
 	}
 
-	public static SparqlEndpoint makeEndpoint(OWLIndividual sEndpoint, OWLOntology o) {
+	public static SpecificSparqlEndpoint makeEndpoint(OWLIndividual sEndpoint, OWLOntology o) {
 		String host = getFirstValueForDataProperty("hasHost", sEndpoint.getDataPropertyValues(o));
 		String port = getFirstValueForDataProperty("hasPort", sEndpoint.getDataPropertyValues(o));
 		String hasAfterGET = getFirstValueForDataProperty("hasAfterGET", sEndpoint
@@ -135,7 +145,7 @@ public class Configuration {
 		// System.out.println("test");
 		HashMap<String, String> parameters = new HashMap<String, String>();
 		if (para == null)
-			return new SparqlEndpoint(host, port, hasAfterGET, hasQueryParameter, parameters);
+			return null;//new SpecificSparqlEndpoint(host, port, hasAfterGET, hasQueryParameter, parameters);
 		for (OWLIndividual p : para) {
 			// System.out.println("test2");
 			String a1 = getFirstValueForDataProperty("hasParameterName", p.getDataPropertyValues(o));
@@ -146,7 +156,7 @@ public class Configuration {
 		// System.out.println("test2");
 		// System.out.println(host+port+ hasAfterGET+ hasQueryParameter+
 		// parameters);
-		return new SparqlEndpoint(host, port, hasAfterGET, hasQueryParameter, parameters);
+		return null;//new SpecificSparqlEndpoint(host, port, hasAfterGET, hasQueryParameter, parameters);
 
 	}
 
@@ -196,12 +206,22 @@ public class Configuration {
 		return this.Manipulator;
 	}
 
-	public SparqlEndpoint getSparqlEndpoint() {
+	public SpecificSparqlEndpoint getSparqlEndpoint() {
 		return SparqlEndpoint;
 	}
 
 	public SparqlQueryType getSparqlQueryType() {
 		return SparqlQueryType;
+	}
+
+
+	public boolean isGetAllBackground() {
+	    return getAllBackground;
+	}
+
+
+	public int getRecursiondepth() {
+	    return recursiondepth;
 	}
 
 }

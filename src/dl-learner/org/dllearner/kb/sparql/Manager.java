@@ -10,16 +10,23 @@ public class Manager {
 	private TypedSparqlQuery TypedSparqlQuery;
 	private ExtractionAlgorithm ExtractionAlgorithm;
 
-	public void usePredefinedConfiguration(URI uri) {
+	/*public void usePredefinedConfiguration(URI uri) {
 
 		this.Configuration = org.dllearner.kb.sparql.Configuration.getConfiguration(uri);
 		this.TypedSparqlQuery = new TypedSparqlQuery(Configuration);
 		this.ExtractionAlgorithm = new ExtractionAlgorithm(Configuration);
+	}*/
+	
+	public void usePredefinedConfiguration(int i) {
+
+		this.Configuration = PredefinedConfigurations.get(i);
+		this.TypedSparqlQuery = new TypedSparqlQuery(Configuration);
+		this.ExtractionAlgorithm = new ExtractionAlgorithm(Configuration);
 	}
 
-	public void useConfiguration(SparqlQueryType SparqlQueryType, SparqlEndpoint SparqlEndpoint) {
+	public void useConfiguration(SparqlQueryType SparqlQueryType, SpecificSparqlEndpoint SparqlEndpoint, int recursiondepth,boolean getAllBackground) {
 
-		this.Configuration = new Configuration(SparqlEndpoint, SparqlQueryType);
+		this.Configuration = new Configuration(SparqlEndpoint, SparqlQueryType,recursiondepth,getAllBackground);
 		this.TypedSparqlQuery = new TypedSparqlQuery(Configuration);
 		this.ExtractionAlgorithm = new ExtractionAlgorithm(Configuration);
 	}
