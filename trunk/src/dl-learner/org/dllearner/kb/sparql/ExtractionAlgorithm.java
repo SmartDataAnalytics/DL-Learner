@@ -37,14 +37,14 @@ public class ExtractionAlgorithm {
 		System.out.println("StartVector: " + v);
 		// n.expand(tsp, this.Manipulator);
 		// Vector<Node> second=
-		for (int x = 1; x <= this.recursionDepth; x++) {
+		for (int x = 1; x <= recursionDepth; x++) {
 
 			Vector<Node> tmp = new Vector<Node>();
 			while (v.size() > 0) {
 				Node tmpNode = v.remove(0);
 				System.out.println("Expanding " + tmpNode);
 				//System.out.println(this.Manipulator);
-				Vector<Node> tmpVec = tmpNode.expand(tsp, this.manipulator);
+				Vector<Node> tmpVec = tmpNode.expand(tsp, manipulator);
 
 				tmp.addAll(tmpVec);
 			}
@@ -62,7 +62,7 @@ public class ExtractionAlgorithm {
 				System.out.println(classes.size());
 				Node next=classes.remove(0);
 				System.out.println(next);
-				classes.addAll(next.expand(tsp, this.manipulator));
+				classes.addAll(next.expand(tsp, manipulator));
 			}
 
 		}

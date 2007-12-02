@@ -28,7 +28,7 @@ public class PropertyNode extends Node {
 
 	@Override
 	public Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m) {
-		Set<Tupel> s = tsq.query(this.uri);
+		Set<Tupel> s = tsq.query(uri);
 		Vector<Node> Nodes = new Vector<Node>();
 		// Manipulation
 
@@ -54,16 +54,16 @@ public class PropertyNode extends Node {
 	}
 
 	public Node getB() {
-		return this.b;
+		return b;
 	}
 
 	@Override
 	public Set<String> toNTriple() {
 		Set<String> s = new HashSet<String>();
-		s.add("<" + this.uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
+		s.add("<" + uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
 				+ "http://www.w3.org/2002/07/owl#ObjectProperty" + ">.");
 		for (String one : specialTypes) {
-			s.add("<" + this.uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
+			s.add("<" + uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
 					+ one + ">.");
 
 		}

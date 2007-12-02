@@ -35,7 +35,7 @@ public class Manager {
 		// this.TypedSparqlQuery.query(uri);
 		// System.out.println(ExtractionAlgorithm.getFirstNode(uri));
 		System.out.println("Start extracting");
-		Node n = this.extractionAlgorithm.expandNode(uri, this.typedSparqlQuery);
+		Node n = extractionAlgorithm.expandNode(uri, typedSparqlQuery);
 		Set<String> s = n.toNTriple();
 		String nt = "";
 		for (String str : s) {
@@ -52,7 +52,7 @@ public class Manager {
 
 		for (String one : instances) {
 			try {
-				Node n = this.extractionAlgorithm.expandNode(new URI(one), this.typedSparqlQuery);
+				Node n = extractionAlgorithm.expandNode(new URI(one), typedSparqlQuery);
 				ret.addAll(n.toNTriple());
 			} catch (Exception e) {
 				e.printStackTrace();

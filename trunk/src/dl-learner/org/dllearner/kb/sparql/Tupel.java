@@ -16,7 +16,7 @@ public class Tupel {
 	}
 
 	public boolean equals(Tupel t) {
-		if (this.a.equals(t.a) && this.b.equals(t.b))
+		if (a.equals(t.a) && b.equals(t.b))
 			return true;
 		else
 			return false;
