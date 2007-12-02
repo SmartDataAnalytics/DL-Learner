@@ -112,7 +112,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	private KB kb;
 	
 	public static String getName() {
-		return "SPARQL Endpoint";
+		return "SPARQL Endpoint Restructured";
 	}
 	
 	/**
