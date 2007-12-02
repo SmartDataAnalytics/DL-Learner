@@ -2,22 +2,22 @@ package org.dllearner.kb.sparql;
 
 public class SparqlQueryMaker {
 
-	private SparqlQueryType SparqlQueryType;
+	private SparqlQueryType sparqlQueryType;
 
 	public SparqlQueryMaker(SparqlQueryType SparqlQueryType) {
-		this.SparqlQueryType = SparqlQueryType;
+		this.sparqlQueryType = SparqlQueryType;
 	}
 
 	public String makeQueryUsingFilters(String subject) {
 		String lineend = "\n";
 
 		String Filter = "";
-		if (!this.SparqlQueryType.isLiterals())
+		if (!this.sparqlQueryType.isLiterals())
 			Filter += "!isLiteral(?object))";
-		for (String p : this.SparqlQueryType.getPredicatefilterlist()) {
+		for (String p : this.sparqlQueryType.getPredicatefilterlist()) {
 			Filter += lineend + filterPredicate(p);
 		}
-		for (String o : this.SparqlQueryType.getObjectfilterlist()) {
+		for (String o : this.sparqlQueryType.getObjectfilterlist()) {
 			Filter += lineend + filterObject(o);
 		}
 

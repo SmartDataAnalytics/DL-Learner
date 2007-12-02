@@ -14,22 +14,22 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class TypedSparqlQuery {
-	private Configuration Configuration;
+	private Configuration configuration;
 	// private SparqlHTTPRequest SparqlHTTPRequest;
-	private SparqlQueryMaker SparqlQueryMaker;
+	private SparqlQueryMaker sparqlQueryMaker;
 	Cache Cache;
 
 	public TypedSparqlQuery(Configuration Configuration) {
-		this.Configuration = Configuration;
+		this.configuration = Configuration;
 		// this.SparqlHTTPRequest = new SparqlHTTPRequest(Configuration.getSparqlEndpoint());
-		this.SparqlQueryMaker = new SparqlQueryMaker(Configuration.getSparqlQueryType());
+		this.sparqlQueryMaker = new SparqlQueryMaker(Configuration.getSparqlQueryType());
 		this.Cache = new Cache("cache");
 	}
 
 	public Set<Tupel> query(URI u) {
 
 		// getQuery
-		String sparql = SparqlQueryMaker.makeQueryUsingFilters(u.toString());
+		String sparql = sparqlQueryMaker.makeQueryUsingFilters(u.toString());
 
 		// check cache
 		String FromCache = this.Cache.get(u.toString(), sparql);
@@ -96,7 +96,7 @@ public class TypedSparqlQuery {
 		
 		// String an Sparql-Endpoint schicken
 		HttpURLConnection connection;
-		SpecificSparqlEndpoint se = Configuration.getSparqlEndpoint();	
+		SpecificSparqlEndpoint se = configuration.getSparqlEndpoint();	
 		
 		connection = (HttpURLConnection) se.getURL().openConnection();
 		connection.setDoOutput(true);

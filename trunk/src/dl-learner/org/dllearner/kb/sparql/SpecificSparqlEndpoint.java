@@ -9,14 +9,14 @@ public class SpecificSparqlEndpoint {
 	
 	String host;
 	String hasQueryParameter;
-	URL URL;
+	URL url;
 	public HashMap<String, String> parameters = new HashMap<String, String>();
 
 		
 	public SpecificSparqlEndpoint(URL url,String host,  HashMap<String, String> parameters) {
 		super();
 		this.host=host;
-		this.URL = url;
+		this.url = url;
 		this.hasQueryParameter = "query";
 		this.parameters = parameters;
 	}
@@ -47,7 +47,7 @@ public class SpecificSparqlEndpoint {
 	}
 
 	public URL getURL() {
-		return this.URL;
+		return this.url;
 	}
 	
 }

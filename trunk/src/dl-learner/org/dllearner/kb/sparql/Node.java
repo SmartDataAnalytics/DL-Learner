@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.Vector;
 
 public abstract class Node {
-	URI URI;
+	URI uri;
 	protected String type;
 	protected boolean expanded = false;
 
@@ -14,7 +14,7 @@ public abstract class Node {
 	// Hashtable<String,Node> datatype=new Hashtable<String,Node>();;
 
 	public Node(URI u) {
-		this.URI = u;
+		this.uri = u;
 
 	}
 
@@ -31,7 +31,7 @@ public abstract class Node {
 
 	@Override
 	public String toString() {
-		return "Node: " + URI + ":" + type;
+		return "Node: " + uri + ":" + type;
 
 	}
 
@@ -48,7 +48,7 @@ public abstract class Node {
 	}
 
 	public URI getURI() {
-		return URI;
+		return uri;
 	}
 
 }
