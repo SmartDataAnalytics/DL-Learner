@@ -54,7 +54,7 @@ public class ExtractionAlgorithm {
 		if (this.getAllBackground) {
 			Vector<Node> classes = new Vector<Node>();
 			for (Node one : v) {
-				if (one.isClass()) {
+				if (one instanceof ClassNode) {
 					classes.add(one);
 				}
 			}

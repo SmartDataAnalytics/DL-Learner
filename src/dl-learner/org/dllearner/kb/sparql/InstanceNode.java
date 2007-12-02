@@ -53,11 +53,6 @@ public class InstanceNode extends Node {
 	}
 
 	@Override
-	public boolean isInstance() {
-		return true;
-	}
-
-	@Override
 	public Set<String> toNTriple() {
 		Set<String> s = new HashSet<String>();
 		s.add("<" + uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"

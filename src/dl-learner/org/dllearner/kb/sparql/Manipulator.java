@@ -34,17 +34,17 @@ public class Manipulator {
 		while (it.hasNext()) {
 			Tupel t = (Tupel) it.next();
 			// all classes with owl:type class
-			if (t.a.equals(type) && t.b.equals(classns) && node.isClass()) {
+			if (t.a.equals(type) && t.b.equals(classns) && node instanceof ClassNode) {
 				toRemove.add(t);
 			}
 			
 			// all with type class
-			if (t.b.equals(classns) && node.isClass()) {
+			if (t.b.equals(classns) && node instanceof ClassNode) {
 				toRemove.add(t);
 			}
 			
 			// all instances with owl:type thing
-			if (t.a.equals(type) && t.b.equals(thing) && node.isInstance()) {
+			if (t.a.equals(type) && t.b.equals(thing) && node instanceof InstanceNode) {
 				toRemove.add(t);
 			}
 			

@@ -40,11 +40,6 @@ public class ClassNode extends Node {
 	}
 
 	@Override
-	public boolean isClass() {
-		return true;
-	}
-
-	@Override
 	public Set<String> toNTriple() {
 		Set<String> s = new HashSet<String>();
 		s.add("<" + this.uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
