@@ -43,6 +43,8 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.dl.KB;
 import org.dllearner.kb.sparql.Manager;
+import org.dllearner.kb.sparql.PredefinedEndpoint;
+import org.dllearner.kb.sparql.PredefinedFilter;
 import org.dllearner.kb.sparql.SparqlQueryType;
 import org.dllearner.kb.sparql.SpecificSparqlEndpoint;
 import org.dllearner.parser.KBParser;
@@ -64,7 +66,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	private Set<String> instances;
 	private URL dumpFile;
 	private int numberOfRecursions;
-	private int filterMode;
+	private int predefinedFilter=0;
+	private int predefinedEndpoint=0;
 	private Set<String> predList;
 	private Set<String> objList;
 	private Set<String> classList;
@@ -127,7 +130,9 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		options.add(new StringConfigOption("host", "host of SPARQL Endpoint"));
 		options.add(new StringSetConfigOption("instances","relevant instances e.g. positive and negative examples in a learning problem"));
 		options.add(new IntegerConfigOption("numberOfRecursions","number of Recursions, the Sparql-Endpoint is asked"));
-		options.add(new IntegerConfigOption("filterMode","the mode of the SPARQL Filter"));
+		options.add(new IntegerConfigOption("predefinedFilter","the mode of the SPARQL Filter"));
+		options.add(new IntegerConfigOption("predefinedEndpoint","the mode of the SPARQL Filter"));
+		
 		options.add(new StringSetConfigOption("predList","a predicate list"));
 		options.add(new StringSetConfigOption("objList","an object list"));
 		options.add(new StringSetConfigOption("classList","a class list"));
@@ -164,8 +169,10 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			objList = (Set<String>) entry.getValue();
 		} else if(option.equals("classList")) {
 			classList = (Set<String>) entry.getValue();
-		} else if(option.equals("filterMode")){
-			filterMode=(Integer)entry.getValue();
+		} else if(option.equals("predefinedEndpoint")){
+		    	predefinedEndpoint=(Integer)entry.getValue();
+		} else if(option.equals("predefinedFilter")){
+		    	predefinedFilter=(Integer)entry.getValue();
 		} else if(option.equals("format")){
 			format=(String)entry.getValue();
 		} else if(option.equals("dumpToFile")){
@@ -189,19 +196,32 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			//new SparqlOntologyCollector(Datastructures.setToArray(instances), numberOfRecursions, filterMode,
 				//Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url,useLits);
 		Manager m=new Manager();
-		if(filterMode>=1){
-				m.usePredefinedConfiguration(filterMode);
+		SpecificSparqlEndpoint sse=null;
+		SparqlQueryType sqt=null;
+		HashMap<String, String> parameters = new HashMap<String, String>();
+		parameters.put("default-graph-uri", "http://dbpedia.org");
+		parameters.put("format", "application/sparql-results.xml");
+		
+		if(predefinedEndpoint>=1){
+		    sse=PredefinedEndpoint.getEndpoint(predefinedEndpoint);
+		    
+		}
+		else{
+		    SpecificSparqlEndpoint se=new SpecificSparqlEndpoint(url, host,  parameters);
+		    
+		}
+		
+		if(predefinedFilter>=1){
+		    sqt=PredefinedFilter.getFilter(predefinedFilter);
 				
 			}
 		else{
-			SparqlQueryType sqt=new SparqlQueryType("forbid", objList,predList,useLits+"");
-			HashMap<String, String> parameters = new HashMap<String, String>();
-			parameters.put("default-graph-uri", "http://dbpedia.org");
-			parameters.put("format", "application/sparql-results.xml");
-			SpecificSparqlEndpoint se=new SpecificSparqlEndpoint(url, host,  parameters);
-			m.useConfiguration(sqt, se,numberOfRecursions,getAllBackground);
+		    sqt=new SparqlQueryType("forbid", objList,predList,useLits+"");
+			
+			
+			
 		}
-		
+			m.useConfiguration(sqt, sse,numberOfRecursions,getAllBackground);
 		try
 		{
 			String ont=m.extract(instances);
