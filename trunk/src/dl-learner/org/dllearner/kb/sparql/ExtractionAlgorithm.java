@@ -49,7 +49,7 @@ public class ExtractionAlgorithm {
 				tmp.addAll(tmpVec);
 			}
 			v = tmp;
-			System.out.println("Rec: " + x + " with " + v);
+			System.out.println("Recursion counter: " + x + " with " + v.size()+" Nodes remaining");
 		}
 		if (this.getAllBackground) {
 			Vector<Node> classes = new Vector<Node>();
@@ -59,9 +59,9 @@ public class ExtractionAlgorithm {
 				}
 			}
 			while (classes.size() > 0) {
-				System.out.println(classes.size());
+				System.out.println("Remaining classes: "+classes.size());
 				Node next=classes.remove(0);
-				System.out.println(next);
+				System.out.println("Expanding: "+next);
 				classes.addAll(next.expand(tsp, manipulator));
 			}
 
