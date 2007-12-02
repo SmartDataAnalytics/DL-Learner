@@ -35,18 +35,6 @@ public abstract class Node {
 
 	}
 
-	public boolean isClass() {
-		return false;
-	}
-
-	public boolean isInstance() {
-		return false;
-	}
-
-	public boolean isProperty() {
-		return false;
-	}
-
 	public URI getURI() {
 		return uri;
 	}

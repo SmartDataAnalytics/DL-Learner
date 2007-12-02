@@ -48,11 +48,6 @@ public class PropertyNode extends Node {
 		return Nodes;
 	}
 
-	@Override
-	public boolean isProperty() {
-		return true;
-	}
-
 	public Node getB() {
 		return b;
 	}
