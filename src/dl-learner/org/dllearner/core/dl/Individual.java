@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.core.dl;
 
 import java.util.Map;
@@ -5,25 +24,13 @@ import java.util.Map;
 import org.dllearner.utilities.Helper;
 
 /**
- * Indiviualklasse soll ein Mapping von Namen auf Zahlen sein, so
- * dass compare-Methoden schneller werden.
+ * Represents an invididual in a knowledge base / ontology.
  * 
- * Wenn man individuals nur als Strings repräsentiert, dann funktioniert
- * auch die Kurzdarstellung mit hidePrefix nicht (obwohl das keine so
- * hohe Priorität hat und man an geeigneten Stellen auch anders lösen
- * kann).
- * 
- * => das sollte man erst nach den ersten Papers im Februar einbinden um
- * größere Änderungen im System zu vermeiden
- * 
- * @author jl
+ * @author Jens Lehmann
  *
  */
 public class Individual implements KBElement, Comparable<Individual> {
 
-	// public static int idCounter = 0;
-	
-	// private int id;
 	private String name;
 
 	public String getName() {
@@ -32,23 +39,11 @@ public class Individual implements KBElement, Comparable<Individual> {
 
 	public Individual(String name) {
 		this.name = name;
-		// id = idCounter;
-		// idCounter++;
 	}
 	
 	public int getLength() {
 		return 1;
 	}
-
-    @Override
-    public String toString() {
-//    	String prefixToHide = Helper.findPrefixToHide(name); 
-//    		
-//    	if(prefixToHide != null)
-//    		return name.substring(prefixToHide.length());
-//    	else
-    	    return name;
-    }
 
 	public int compareTo(Individual o) {
 		return name.compareTo(o.name);
@@ -58,6 +53,11 @@ public class Individual implements KBElement, Comparable<Individual> {
 	public boolean equals(Object o) {
 		return (compareTo((Individual)o)==0);
 	}
+	
+    @Override
+    public String toString() {
+    	    return name;
+    }	
 	
     public String toString(String baseURI, Map<String,String> prefixes) {
     	return Helper.getAbbreviatedString(name, baseURI, prefixes);

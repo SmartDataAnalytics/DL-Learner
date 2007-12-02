@@ -1,15 +1,38 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.core.dl;
 
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
 
-
-
+/**
+ * Represents an atomic concept in a knowledge base / ontology, 
+ * e.g. "car", "person".
+ * 
+ * @author Jens Lehmann
+ *
+ */
 public class AtomicConcept extends Concept {
 
     String name;
-    // List<String> subs
     
 	public AtomicConcept(String name) {
         this.name = name;
@@ -19,31 +42,6 @@ public class AtomicConcept extends Concept {
 		return name;
 	}
     
-    /*
-    @Override
-    protected void calculateSets(FlatABox abox, SortedSet<String> adcPosSet, SortedSet<String> adcNegSet) {
-        posSet = abox.atomicConceptsPos.get(conceptName);
-        negSet = abox.atomicConceptsNeg.get(conceptName);
-        
-        if(posSet == null)
-            posSet = new TreeSet<String>();
-        if(negSet == null)
-            negSet = new TreeSet<String>();       
-    }
-    */
-    
-    @Override
-    public String toString() {
-    	// es soll ein Prefix ausgeblendet werden um Konzepte
-    	// lesbarer zu machen (z.B. http://blabla.org/bla/bla#eigentlicher Name
-//    	String prefixToHide = Helper.findPrefixToHide(name); 
-//    		
-//    	if(prefixToHide != null)
-//    		return name.substring(prefixToHide.length());
-//    	else
-    	    return name;
-    }
-
 	public int getLength() {
 		return 1;
 	}
@@ -53,6 +51,11 @@ public class AtomicConcept extends Concept {
 		return 0;
 	}
 
+    @Override
+    public String toString() {
+    	    return name;
+    }	
+	
     public String toString(String baseURI, Map<String,String> prefixes) {
     	return Helper.getAbbreviatedString(name, baseURI, prefixes);
     }
