@@ -189,14 +189,16 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			//new SparqlOntologyCollector(Datastructures.setToArray(instances), numberOfRecursions, filterMode,
 				//Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url,useLits);
 		Manager m=new Manager();
-		if(filterMode==0){
-				
+		if(filterMode>=1){
 				m.usePredefinedConfiguration(filterMode);
 				
 			}
 		else{
 			SparqlQueryType sqt=new SparqlQueryType("forbid", objList,predList,useLits+"");
-			SpecificSparqlEndpoint se=new SpecificSparqlEndpoint(url, host, new HashMap<String, String>());
+			HashMap<String, String> parameters = new HashMap<String, String>();
+			parameters.put("default-graph-uri", "http://dbpedia.org");
+			parameters.put("format", "application/sparql-results.xml");
+			SpecificSparqlEndpoint se=new SpecificSparqlEndpoint(url, host,  parameters);
 			m.useConfiguration(sqt, se,numberOfRecursions,getAllBackground);
 		}
 		
