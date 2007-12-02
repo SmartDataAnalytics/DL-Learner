@@ -24,12 +24,14 @@ public class TypedSparqlQuery {
 
 		// check cache
 		String FromCache = this.Cache.get(u.toString(), sparql);
-		FromCache = null;
+		
 		String xml;
 		// if not in cache get it from EndPoint
 		if (FromCache == null) {
 			xml = this.SparqlHTTPRequest.sendAndReceiveSPARQL(sparql);
-			// this.Cache.put(u.toString(), xml, sparql);
+			//System.out.println(sparql);
+			//System.out.println(xml);
+			 this.Cache.put(u.toString(), xml, sparql);
 			System.out.print("\n");
 		} else {
 			xml = FromCache;

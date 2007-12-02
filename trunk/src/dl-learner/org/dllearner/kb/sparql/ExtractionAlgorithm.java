@@ -13,6 +13,8 @@ public class ExtractionAlgorithm {
 	public ExtractionAlgorithm(Configuration Configuration) {
 		this.Configuration = Configuration;
 		this.Manipulator = Configuration.getManipulator();
+		this.recursiondepth=Configuration.getRecursiondepth();
+		this.getAllBackground=Configuration.isGetAllBackground();
 
 	}
 
@@ -41,6 +43,7 @@ public class ExtractionAlgorithm {
 			while (v.size() > 0) {
 				Node tmpNode = v.remove(0);
 				System.out.println("Expanding " + tmpNode);
+				//System.out.println(this.Manipulator);
 				Vector<Node> tmpVec = tmpNode.expand(tsp, this.Manipulator);
 
 				tmp.addAll(tmpVec);
@@ -57,7 +60,9 @@ public class ExtractionAlgorithm {
 			}
 			while (classes.size() > 0) {
 				System.out.println(classes.size());
-				classes.addAll(classes.remove(0).expand(tsp, this.Manipulator));
+				Node next=classes.remove(0);
+				System.out.println(next);
+				classes.addAll(next.expand(tsp, this.Manipulator));
 			}
 
 		}

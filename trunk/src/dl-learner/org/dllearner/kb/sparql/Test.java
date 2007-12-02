@@ -13,7 +13,7 @@ public class Test {
 		try {
 			URI u = new URI(test);
 			Manager m = new Manager();
-			m.usePredefinedConfiguration(u);
+			//m.usePredefinedConfiguration(u);
 
 			URI u2 = new URI("http://dbpedia.org/resource/Angela_Merkel");
 

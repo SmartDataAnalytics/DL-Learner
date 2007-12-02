@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -42,12 +43,11 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.dl.KB;
 import org.dllearner.kb.sparql.Manager;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQueryType;
+import org.dllearner.kb.sparql.SpecificSparqlEndpoint;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
-import org.dllearner.utilities.Datastructures;
 
 /**
  * Represents a SPARQL Endpoint. 
@@ -59,7 +59,8 @@ import org.dllearner.utilities.Datastructures;
 public class SparqlEndpointRestructured extends KnowledgeSource {
 	
 	//ConfigOptions
-	private URL url;
+    private URL url;
+	String host;
 	private Set<String> instances;
 	private URL dumpFile;
 	private int numberOfRecursions;
@@ -70,6 +71,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	private String format;
 	private boolean dumpToFile;
 	private boolean useLits=false;
+	private boolean getAllBackground=false;
 	
 	/**
 	 * Holds the results of the calculateSubjects method 
@@ -120,8 +122,9 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	 * @return
 	 */
 	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+	    Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
+		options.add(new StringConfigOption("host", "host of SPARQL Endpoint"));
 		options.add(new StringSetConfigOption("instances","relevant instances e.g. positive and negative examples in a learning problem"));
 		options.add(new IntegerConfigOption("numberOfRecursions","number of Recursions, the Sparql-Endpoint is asked"));
 		options.add(new IntegerConfigOption("filterMode","the mode of the SPARQL Filter"));
@@ -131,6 +134,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		options.add(new StringConfigOption("format", "N-TRIPLES or KB format"));
 		options.add(new BooleanConfigOption("dumpToFile", "wether Ontology from DBPedia is written to a file or not"));
 		options.add(new BooleanConfigOption("useLits","use Literals in SPARQL query"));
+		options.add(new BooleanConfigOption("getAllBackground","get"));
 		return options;
 	}
 
@@ -148,6 +152,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			} catch (MalformedURLException e) {
 				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),"malformed URL " + s);
 			}
+		} else if(option.equals("host")) {
+			host = (String) entry.getValue();
 		} else if(option.equals("instances")) {
 			instances = (Set<String>) entry.getValue();
 		} else if(option.equals("numberOfRecursions")){
@@ -166,6 +172,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			dumpToFile=(Boolean)entry.getValue();
 		} else if(option.equals("useLits")){
 			useLits=(Boolean)entry.getValue();
+		} else if(option.equals("getAllBackground")){
+			getAllBackground=(Boolean)entry.getValue();
 		}
 	}
 
@@ -182,15 +190,16 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 				//Datastructures.setToArray(predList),Datastructures.setToArray( objList),Datastructures.setToArray(classList),format,url,useLits);
 		Manager m=new Manager();
 		if(filterMode==0){
-				try{
-				m.usePredefinedConfiguration(new URI("http://www.extraction.org/config#dbpediatest"));
-				}catch (Exception e) {e.printStackTrace();}
+				
+				m.usePredefinedConfiguration(filterMode);
+				
 			}
 		else{
-		//SparqlQueryType sqt=new SparqlQueryType("forbid", objList,predList,useLits+"");
-		//SparqlEndpoint se=new SparqlEndpoint();
-		//m.useConfiguration(SparqlQueryType, SparqlEndpoint)
+			SparqlQueryType sqt=new SparqlQueryType("forbid", objList,predList,useLits+"");
+			SpecificSparqlEndpoint se=new SpecificSparqlEndpoint(url, host, new HashMap<String, String>());
+			m.useConfiguration(sqt, se,numberOfRecursions,getAllBackground);
 		}
+		
 		try
 		{
 			String ont=m.extract(instances);

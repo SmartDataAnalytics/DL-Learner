@@ -24,6 +24,7 @@ public class InstanceNode extends Node {
 		Set<Tupel> s = tsq.query(this.URI);
 		// Manipulation
 		m.check(s, this);
+		//System.out.println("fffffff"+m);
 		Vector<Node> Nodes = new Vector<Node>();
 
 		Iterator<Tupel> it = s.iterator();
