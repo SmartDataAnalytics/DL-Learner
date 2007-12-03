@@ -277,7 +277,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
       jj_la1[8] = jj_gen;
       if (jj_2_7(2147483647)) {
         jj_consume_token(26);
-        jj_consume_token(27);
+        jj_consume_token(31);
                                        isSet=true;
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -303,7 +303,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
               throw new ParseException();
             }
                                                            values.add(tmp);
-            jj_consume_token(28);
+            jj_consume_token(29);
           }
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case STRING:
@@ -318,19 +318,19 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
             throw new ParseException();
           }
                                       values.add(tmp);
-          jj_consume_token(27);
+          jj_consume_token(31);
                                                              isSet=true;
           break;
         default:
           jj_la1[9] = jj_gen;
           if (jj_2_8(2147483647)) {
-            jj_consume_token(31);
+            jj_consume_token(27);
             jj_consume_token(32);
                                        isList=true;
           } else {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case 31:
-              jj_consume_token(31);
+            case 27:
+              jj_consume_token(27);
               label_3:
               while (true) {
                 if (jj_2_6(6)) {
@@ -338,7 +338,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
                 } else {
                   break label_3;
                 }
-                jj_consume_token(29);
+                jj_consume_token(28);
                 switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
                 case STRING:
                   tmp = String();
@@ -351,7 +351,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
                   jj_consume_token(-1);
                   throw new ParseException();
                 }
-                jj_consume_token(28);
+                jj_consume_token(29);
                 switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
                 case STRING:
                   tmp2 = String();
@@ -366,9 +366,9 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
                 }
                 jj_consume_token(30);
             tuples.add(new StringTuple(tmp,tmp2));
-                jj_consume_token(28);
+                jj_consume_token(29);
               }
-              jj_consume_token(29);
+              jj_consume_token(28);
               switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
               case STRING:
                 tmp = String();
@@ -381,7 +381,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
                 jj_consume_token(-1);
                 throw new ParseException();
               }
-              jj_consume_token(28);
+              jj_consume_token(29);
               switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
               case STRING:
                 tmp2 = String();
@@ -418,6 +418,8 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
                 else
                         if(isSet)
                                 confOption = new ConfFileOption(option,subOption,values);
+                        else if(isList)
+                                confOption = new ConfFileOption(option,subOption,tuples);
                         else
                                 confOption = new ConfFileOption(option,subOption,value);
         } else {
@@ -429,6 +431,8 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
                 else
                         if(isSet)
                                 confOption = new ConfFileOption(option,values);
+                        else if(isList)
+                                confOption = new ConfFileOption(option,tuples);
                         else
                                 confOption = new ConfFileOption(option,value);
         }
@@ -442,20 +446,20 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
         String s, s1, s2;
         List<String> list = new LinkedList<String>();
     s1 = Id();
-    jj_consume_token(29);
+    jj_consume_token(28);
     s2 = String();
                                   list.add(s2);
     label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 28:
+      case 29:
         ;
         break;
       default:
         jj_la1[11] = jj_gen;
         break label_4;
       }
-      jj_consume_token(28);
+      jj_consume_token(29);
       s = String();
                           list.add(s);
     }
@@ -584,64 +588,24 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     finally { jj_save(7, xla); }
   }
 
-  final private boolean jj_3R_19() {
-    if (jj_3R_13()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_6() {
-    if (jj_scan_token(29)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_17()) {
-    jj_scanpos = xsp;
-    if (jj_3R_18()) return true;
-    }
-    if (jj_scan_token(28)) return true;
-    xsp = jj_scanpos;
-    if (jj_3R_19()) {
-    jj_scanpos = xsp;
-    if (jj_3R_20()) return true;
-    }
-    if (jj_scan_token(30)) return true;
-    if (jj_scan_token(28)) return true;
-    return false;
-  }
-
   final private boolean jj_3_5() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_15()) {
+    if (jj_3R_13()) {
     jj_scanpos = xsp;
-    if (jj_3R_16()) return true;
+    if (jj_3R_14()) return true;
     }
-    if (jj_scan_token(28)) return true;
+    if (jj_scan_token(29)) return true;
     return false;
   }
 
-  final private boolean jj_3R_26() {
-    if (jj_3R_13()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_23() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_26()) {
-    jj_scanpos = xsp;
-    if (jj_3R_27()) return true;
-    }
-    if (jj_scan_token(28)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_21() {
+  final private boolean jj_3R_19() {
     if (jj_scan_token(NUMBER)) return true;
     return false;
   }
 
   final private boolean jj_3R_10() {
-    if (jj_3R_13()) return true;
+    if (jj_3R_11()) return true;
     return false;
   }
 
@@ -651,7 +615,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return false;
   }
 
-  final private boolean jj_3R_18() {
+  final private boolean jj_3R_16() {
     if (jj_3R_5()) return true;
     return false;
   }
@@ -666,48 +630,27 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return false;
   }
 
-  final private boolean jj_3R_12() {
-    if (jj_scan_token(26)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_23()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_3R_24()) {
-    jj_scanpos = xsp;
-    if (jj_3R_25()) return true;
-    }
-    if (jj_scan_token(27)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_25() {
-    if (jj_3R_5()) return true;
+  final private boolean jj_3R_20() {
+    if (jj_scan_token(DOUBLE)) return true;
     return false;
   }
 
   final private boolean jj_3_2() {
     if (jj_3R_5()) return true;
-    if (jj_scan_token(29)) return true;
-    if (jj_3R_13()) return true;
+    if (jj_scan_token(28)) return true;
+    if (jj_3R_11()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_14()) { jj_scanpos = xsp; break; }
+      if (jj_3R_12()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(30)) return true;
     if (jj_scan_token(CONF_END)) return true;
     return false;
   }
 
-  final private boolean jj_3R_16() {
+  final private boolean jj_3R_14() {
     if (jj_3R_5()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_22() {
-    if (jj_scan_token(DOUBLE)) return true;
     return false;
   }
 
@@ -726,41 +669,19 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     jj_scanpos = xsp;
     if (jj_3R_10()) {
     jj_scanpos = xsp;
-    if (jj_3R_11()) {
+    if (jj_scan_token(26)) {
     jj_scanpos = xsp;
-    if (jj_3R_12()) return true;
+    if (jj_scan_token(27)) return true;
     }
     }
     }
     }
     }
-    if (jj_scan_token(CONF_END)) return true;
     return false;
   }
 
   final private boolean jj_3R_9() {
-    if (jj_3R_22()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_11() {
-    if (jj_scan_token(26)) return true;
-    if (jj_scan_token(27)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_24() {
-    if (jj_3R_13()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_17() {
-    if (jj_3R_13()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_20() {
-    if (jj_3R_5()) return true;
+    if (jj_3R_20()) return true;
     return false;
   }
 
@@ -770,17 +691,32 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
   }
 
   final private boolean jj_3R_15() {
-    if (jj_3R_13()) return true;
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_18() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_13() {
+    if (jj_3R_11()) return true;
     return false;
   }
 
   final private boolean jj_3R_8() {
-    if (jj_3R_21()) return true;
+    if (jj_3R_19()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_11() {
+    if (jj_scan_token(STRING)) return true;
     return false;
   }
 
   final private boolean jj_3_8() {
-    if (jj_scan_token(31)) return true;
+    if (jj_scan_token(27)) return true;
     if (jj_scan_token(32)) return true;
     return false;
   }
@@ -790,25 +726,39 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return false;
   }
 
-  final private boolean jj_3R_27() {
-    if (jj_3R_5()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_13() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_14() {
-    if (jj_scan_token(28)) return true;
-    if (jj_3R_13()) return true;
-    return false;
-  }
-
   final private boolean jj_3_7() {
     if (jj_scan_token(26)) return true;
-    if (jj_scan_token(27)) return true;
+    if (jj_scan_token(31)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_12() {
+    if (jj_scan_token(29)) return true;
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_17() {
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_6() {
+    if (jj_scan_token(28)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_15()) {
+    jj_scanpos = xsp;
+    if (jj_3R_16()) return true;
+    }
+    if (jj_scan_token(29)) return true;
+    xsp = jj_scanpos;
+    if (jj_3R_17()) {
+    jj_scanpos = xsp;
+    if (jj_3R_18()) return true;
+    }
+    if (jj_scan_token(30)) return true;
+    if (jj_scan_token(29)) return true;
     return false;
   }
 
@@ -829,7 +779,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
       jj_la1_1();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1c00,0x100,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1007000,0x4000000,0x80000000,0x10000000,0x1001000,};
+      jj_la1_0 = new int[] {0x1c00,0x100,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1007000,0x4000000,0x8000000,0x20000000,0x1001000,};
    }
    private static void jj_la1_1() {
       jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};

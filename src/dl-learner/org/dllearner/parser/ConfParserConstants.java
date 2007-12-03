@@ -55,11 +55,11 @@ public @SuppressWarnings("all") interface ConfParserConstants {
     "<STRING>",
     "\"=\"",
     "\"{\"",
-    "\"}\"",
-    "\",\"",
-    "\"(\"",
-    "\")\"",
     "\"[\"",
+    "\"(\"",
+    "\",\"",
+    "\")\"",
+    "\"}\"",
     "\"]\"",
   };
 
