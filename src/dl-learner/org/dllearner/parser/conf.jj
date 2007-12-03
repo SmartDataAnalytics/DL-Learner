@@ -290,12 +290,13 @@ void Start() :
 
 ConfFileOption ConfOption() : 
 {
-	boolean containsSubOption=false, isNumeric=false, isDouble=false, isSet=false;
-	String option="", subOption="", value="", tmp=""; 
+	boolean containsSubOption=false, isNumeric=false, isDouble=false, isSet=false, isList=false;
+	String option="", subOption="", value="", tmp="", tmp2=""; 
 	int number = 0;
 	double numberDouble = 0;
 	ConfFileOption confOption;
 	Set<String> values = new HashSet<String>();
+	List<StringTuple> tuples = new LinkedList<StringTuple>();
 }
 {
   option=Id() [ "." subOption=Id() {containsSubOption=true;} ] 
@@ -307,6 +308,13 @@ ConfFileOption ConfOption() :
          | "{" ( LOOKAHEAD(2) ( tmp=String() | tmp=Id() ) {values.add(tmp);} "," )* 
            (tmp=String() | tmp=Id()) {values.add(tmp);} "}" {isSet=true;}
            // eine Liste von ein oder mehr Elementen in Mengenschreibweise
+         | LOOKAHEAD("[" "]") "[" "]" {isList=true;} // empty list
+         | "[" 
+           ( LOOKAHEAD(6) "(" (tmp=String() | tmp=Id()) "," (tmp2=String() | tmp2=Id()) ")"
+           {tuples.add(new StringTuple(tmp,tmp2));} "," )*
+           "(" (tmp=String() | tmp=Id()) "," (tmp2=String() | tmp2=Id()) ")"
+           {tuples.add(new StringTuple(tmp,tmp2));} 
+           "]" {isList=true;}         
          ) <CONF_END>
   {
   	if(containsSubOption) {
