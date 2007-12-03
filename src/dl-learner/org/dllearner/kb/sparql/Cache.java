@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007, Sebastian Hellmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.kb.sparql;
 
 import java.io.File;
@@ -7,19 +26,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URLEncoder;
+import java.util.HashMap;
 
 public class Cache implements Serializable {
 	// Object can be the cache itself
 	// or a cache object(one entry)
+	// it now uses a hashmap and can contain different queries at once
 
 	final static long serialVersionUID = 104;
 	transient String basedir = "";
 	transient String fileending = ".cache";
 	long timestamp;
-	String content = "";
 	long daysoffreshness = 15;
 	long multiplier = 24 * 60 * 60 * 1000;// h m s ms
-	String sparqlquery = "";
+	private HashMap<String, String> hm;
 
 	// constructor for the cache itself
 	public Cache(String path) {
@@ -28,14 +48,15 @@ public class Cache implements Serializable {
 			System.out.println(new File(path).mkdir());
 			;
 		}
-
 	}
 
 	// constructor for single cache object(one entry)
-	public Cache(String c, String sparql) {
-		this.content = c;
-		this.sparqlquery = sparql;
+	public Cache(String sparql, String content) {
+		// this.content = c;
+		// this.sparqlquery = sparql;
 		this.timestamp = System.currentTimeMillis();
+		this.hm = new HashMap<String, String>();
+		hm.put(sparql, content);
 	}
 
 	public String get(String key, String sparql) {
@@ -49,20 +70,32 @@ public class Cache implements Serializable {
 			if (!c.checkFreshness())
 				return null;
 			// System.out.println("fresh");
-			if (!c.validate(sparql))
+			String xml = "";
+			try {
+				xml = c.hm.get(sparql);
+			} catch (Exception e) {
 				return null;
+			}
+			return xml;
 			// System.out.println("valid");
-			ret = c.content;
+			// ret = c.content;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return ret;
 	};
 
-	public void put(String key, String content, String sparql) {
+	public void put(String key, String sparql, String content) {
 		// System.out.println("put into "+key);
-		Cache c = new Cache(content, sparql);
-		putIntoFile(makeFilename(key), c);
+		Cache c = readFromFile(makeFilename(key));
+		if (c == null) {
+			c = new Cache(sparql, content);
+			putIntoFile(makeFilename(key), c);
+		} else {
+			c.hm.put(sparql, content);
+			putIntoFile(makeFilename(key), c);
+		}
+
 	}
 
 	String makeFilename(String key) {
@@ -78,14 +111,6 @@ public class Cache implements Serializable {
 	boolean checkFreshness() {
 		if ((System.currentTimeMillis() - this.timestamp) <= (daysoffreshness * multiplier))
 			// fresh
-			return true;
-		else
-			return false;
-	}
-
-	boolean validate(String sparql) {
-		if (this.sparqlquery.equals(sparql))
-			// valid
 			return true;
 		else
 			return false;
