@@ -82,7 +82,7 @@ public class TypedSparqlQuery {
 			// System.out.println(sparql);
 			// System.out.println(xml);
 			cache.put(u.toString(), sparql, xml);
-			System.out.print("\n");
+			//System.out.print("\n");
 		} else {
 			xml = FromCache;
 			System.out.println("FROM CACHE");
@@ -93,7 +93,7 @@ public class TypedSparqlQuery {
 		// process XML
 		Set<Tupel> s = processResult(xml, a, b);
 		try {
-			System.out.println("retrieved " + s.size() + " tupels");
+			System.out.println("retrieved " + s.size() + " tupels\n");
 		} catch (Exception e) {
 		}
 		return s;
