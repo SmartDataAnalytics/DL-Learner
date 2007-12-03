@@ -20,7 +20,10 @@
 
 package org.dllearner.cli;
 
+import java.util.List;
 import java.util.Set;
+
+import org.dllearner.utilities.StringTuple;
 
 /**
  * Represents one configuration option in a conf file, e.g.
@@ -36,12 +39,14 @@ public class ConfFileOption {
 	private boolean isDoubleOption = false;
 	private boolean isStringOption = false;
 	private boolean isSetOption = false;
+	private boolean isListOption = false;
 	private String option;
 	private String subOption;
 	private String stringValue;
 	private int intValue;
 	private double doubleValue;
 	private Set<String> setValues;
+	private List<StringTuple> listTuples;
 	
 	public ConfFileOption(String option, String value) {
 		this(option, null, value);
@@ -91,6 +96,18 @@ public class ConfFileOption {
 		setValues = values;
 	}
 	
+	public ConfFileOption(String option, List<StringTuple> tuples) {
+		this(option, null, tuples);
+		containsSubOption = false;
+	}
+	
+	public ConfFileOption(String option, String subOption, List<StringTuple> tuples) {
+		this.option = option;
+		this.subOption = subOption;
+		isListOption = true;
+		listTuples = tuples;
+	}	
+	
 	public boolean containsSubOption() {
 		return containsSubOption;
 	}
@@ -122,8 +139,10 @@ public class ConfFileOption {
 			return doubleValue;
 		else if(isStringOption)
 			return stringValue;
-		else
+		else if(isSetOption)
 			return setValues;
+		else
+			return listTuples;
 	}
 		
 	/**
@@ -159,6 +178,10 @@ public class ConfFileOption {
 	
 	public boolean isSetOption() {
 		return isSetOption;
+	}	
+	
+	public boolean isListOption() {
+		return isListOption;
 	}	
 	
 	@Override

@@ -239,12 +239,13 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
   }
 
   final public ConfFileOption ConfOption() throws ParseException {
-        boolean containsSubOption=false, isNumeric=false, isDouble=false, isSet=false;
-        String option="", subOption="", value="", tmp="";
+        boolean containsSubOption=false, isNumeric=false, isDouble=false, isSet=false, isList=false;
+        String option="", subOption="", value="", tmp="", tmp2="";
         int number = 0;
         double numberDouble = 0;
         ConfFileOption confOption;
         Set<String> values = new HashSet<String>();
+        List<StringTuple> tuples = new LinkedList<StringTuple>();
     option = Id();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case COMMAND_END:
@@ -273,8 +274,8 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
                                   isNumeric=true; isDouble=true;
       break;
     default:
-      jj_la1[4] = jj_gen;
-      if (jj_2_6(2147483647)) {
+      jj_la1[8] = jj_gen;
+      if (jj_2_7(2147483647)) {
         jj_consume_token(26);
         jj_consume_token(27);
                                        isSet=true;
@@ -321,9 +322,89 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
                                                              isSet=true;
           break;
         default:
-          jj_la1[5] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+          jj_la1[9] = jj_gen;
+          if (jj_2_8(2147483647)) {
+            jj_consume_token(31);
+            jj_consume_token(32);
+                                       isList=true;
+          } else {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case 31:
+              jj_consume_token(31);
+              label_3:
+              while (true) {
+                if (jj_2_6(6)) {
+                  ;
+                } else {
+                  break label_3;
+                }
+                jj_consume_token(29);
+                switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+                case STRING:
+                  tmp = String();
+                  break;
+                case ID:
+                  tmp = Id();
+                  break;
+                default:
+                  jj_la1[4] = jj_gen;
+                  jj_consume_token(-1);
+                  throw new ParseException();
+                }
+                jj_consume_token(28);
+                switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+                case STRING:
+                  tmp2 = String();
+                  break;
+                case ID:
+                  tmp2 = Id();
+                  break;
+                default:
+                  jj_la1[5] = jj_gen;
+                  jj_consume_token(-1);
+                  throw new ParseException();
+                }
+                jj_consume_token(30);
+            tuples.add(new StringTuple(tmp,tmp2));
+                jj_consume_token(28);
+              }
+              jj_consume_token(29);
+              switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+              case STRING:
+                tmp = String();
+                break;
+              case ID:
+                tmp = Id();
+                break;
+              default:
+                jj_la1[6] = jj_gen;
+                jj_consume_token(-1);
+                throw new ParseException();
+              }
+              jj_consume_token(28);
+              switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+              case STRING:
+                tmp2 = String();
+                break;
+              case ID:
+                tmp2 = Id();
+                break;
+              default:
+                jj_la1[7] = jj_gen;
+                jj_consume_token(-1);
+                throw new ParseException();
+              }
+              jj_consume_token(30);
+            tuples.add(new StringTuple(tmp,tmp2));
+              jj_consume_token(32);
+                isList=true;
+              break;
+            default:
+              jj_la1[10] = jj_gen;
+              jj_consume_token(-1);
+              throw new ParseException();
+            }
+          }
         }
       }
     }
@@ -364,15 +445,15 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     jj_consume_token(29);
     s2 = String();
                                   list.add(s2);
-    label_3:
+    label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 28:
         ;
         break;
       default:
-        jj_la1[6] = jj_gen;
-        break label_3;
+        jj_la1[11] = jj_gen;
+        break label_4;
       }
       jj_consume_token(28);
       s = String();
@@ -407,7 +488,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
       name = String();
       break;
     default:
-      jj_la1[7] = jj_gen;
+      jj_la1[12] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -489,52 +570,89 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     finally { jj_save(5, xla); }
   }
 
+  final private boolean jj_2_7(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_7(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(6, xla); }
+  }
+
+  final private boolean jj_2_8(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_8(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(7, xla); }
+  }
+
+  final private boolean jj_3R_19() {
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
   final private boolean jj_3_6() {
-    if (jj_scan_token(26)) return true;
-    if (jj_scan_token(27)) return true;
+    if (jj_scan_token(29)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_17()) {
+    jj_scanpos = xsp;
+    if (jj_3R_18()) return true;
+    }
+    if (jj_scan_token(28)) return true;
+    xsp = jj_scanpos;
+    if (jj_3R_19()) {
+    jj_scanpos = xsp;
+    if (jj_3R_20()) return true;
+    }
+    if (jj_scan_token(30)) return true;
+    if (jj_scan_token(28)) return true;
     return false;
   }
 
   final private boolean jj_3_5() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_14()) {
+    if (jj_3R_15()) {
     jj_scanpos = xsp;
-    if (jj_3R_15()) return true;
+    if (jj_3R_16()) return true;
     }
     if (jj_scan_token(28)) return true;
     return false;
   }
 
-  final private boolean jj_3R_12() {
-    if (jj_scan_token(STRING)) return true;
+  final private boolean jj_3R_26() {
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_23() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_26()) {
+    jj_scanpos = xsp;
+    if (jj_3R_27()) return true;
+    }
+    if (jj_scan_token(28)) return true;
     return false;
   }
 
   final private boolean jj_3R_21() {
-    if (jj_3R_12()) return true;
+    if (jj_scan_token(NUMBER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_10() {
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_6() {
+    if (jj_scan_token(COMMAND_END)) return true;
+    if (jj_3R_5()) return true;
     return false;
   }
 
   final private boolean jj_3R_18() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_21()) {
-    jj_scanpos = xsp;
-    if (jj_3R_22()) return true;
-    }
-    if (jj_scan_token(28)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_9() {
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_5() {
-    if (jj_scan_token(COMMAND_END)) return true;
-    if (jj_3R_4()) return true;
+    if (jj_3R_5()) return true;
     return false;
   }
 
@@ -548,60 +666,58 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return false;
   }
 
-  final private boolean jj_3R_11() {
+  final private boolean jj_3R_12() {
     if (jj_scan_token(26)) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_18()) { jj_scanpos = xsp; break; }
+      if (jj_3R_23()) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_3R_19()) {
+    if (jj_3R_24()) {
     jj_scanpos = xsp;
-    if (jj_3R_20()) return true;
+    if (jj_3R_25()) return true;
     }
     if (jj_scan_token(27)) return true;
     return false;
   }
 
-  final private boolean jj_3R_20() {
-    if (jj_3R_4()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_16() {
-    if (jj_scan_token(NUMBER)) return true;
+  final private boolean jj_3R_25() {
+    if (jj_3R_5()) return true;
     return false;
   }
 
   final private boolean jj_3_2() {
-    if (jj_3R_4()) return true;
+    if (jj_3R_5()) return true;
     if (jj_scan_token(29)) return true;
-    if (jj_3R_12()) return true;
+    if (jj_3R_13()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_13()) { jj_scanpos = xsp; break; }
+      if (jj_3R_14()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(30)) return true;
     if (jj_scan_token(CONF_END)) return true;
     return false;
   }
 
-  final private boolean jj_3R_15() {
-    if (jj_3R_4()) return true;
+  final private boolean jj_3R_16() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_22() {
+    if (jj_scan_token(DOUBLE)) return true;
     return false;
   }
 
   final private boolean jj_3_1() {
-    if (jj_3R_4()) return true;
+    if (jj_3R_5()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_5()) jj_scanpos = xsp;
+    if (jj_3R_6()) jj_scanpos = xsp;
     if (jj_scan_token(25)) return true;
     xsp = jj_scanpos;
-    if (jj_3R_6()) {
-    jj_scanpos = xsp;
     if (jj_3R_7()) {
     jj_scanpos = xsp;
     if (jj_3R_8()) {
@@ -610,7 +726,9 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     jj_scanpos = xsp;
     if (jj_3R_10()) {
     jj_scanpos = xsp;
-    if (jj_3R_11()) return true;
+    if (jj_3R_11()) {
+    jj_scanpos = xsp;
+    if (jj_3R_12()) return true;
     }
     }
     }
@@ -620,55 +738,77 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return false;
   }
 
-  final private boolean jj_3R_8() {
-    if (jj_3R_17()) return true;
+  final private boolean jj_3R_9() {
+    if (jj_3R_22()) return true;
     return false;
   }
 
-  final private boolean jj_3R_10() {
+  final private boolean jj_3R_11() {
     if (jj_scan_token(26)) return true;
     if (jj_scan_token(27)) return true;
     return false;
   }
 
-  final private boolean jj_3R_19() {
-    if (jj_3R_12()) return true;
+  final private boolean jj_3R_24() {
+    if (jj_3R_13()) return true;
     return false;
   }
 
   final private boolean jj_3R_17() {
-    if (jj_scan_token(DOUBLE)) return true;
+    if (jj_3R_13()) return true;
     return false;
   }
 
-  final private boolean jj_3R_14() {
-    if (jj_3R_12()) return true;
+  final private boolean jj_3R_20() {
+    if (jj_3R_5()) return true;
     return false;
   }
 
-  final private boolean jj_3R_7() {
-    if (jj_3R_16()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_4() {
+  final private boolean jj_3R_5() {
     if (jj_scan_token(ID)) return true;
     return false;
   }
 
-  final private boolean jj_3R_6() {
-    if (jj_3R_4()) return true;
+  final private boolean jj_3R_15() {
+    if (jj_3R_13()) return true;
     return false;
   }
 
-  final private boolean jj_3R_22() {
-    if (jj_3R_4()) return true;
+  final private boolean jj_3R_8() {
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_8() {
+    if (jj_scan_token(31)) return true;
+    if (jj_scan_token(32)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_7() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_27() {
+    if (jj_3R_5()) return true;
     return false;
   }
 
   final private boolean jj_3R_13() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_14() {
     if (jj_scan_token(28)) return true;
-    if (jj_3R_12()) return true;
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_7() {
+    if (jj_scan_token(26)) return true;
+    if (jj_scan_token(27)) return true;
     return false;
   }
 
@@ -681,15 +821,20 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
   public boolean lookingAhead = false;
   private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[8];
+  final private int[] jj_la1 = new int[13];
   static private int[] jj_la1_0;
+  static private int[] jj_la1_1;
   static {
       jj_la1_0();
+      jj_la1_1();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1c00,0x100,0x1001000,0x1001000,0x1007000,0x4000000,0x10000000,0x1001000,};
+      jj_la1_0 = new int[] {0x1c00,0x100,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1007000,0x4000000,0x80000000,0x10000000,0x1001000,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[6];
+   private static void jj_la1_1() {
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+   }
+  final private JJCalls[] jj_2_rtns = new JJCalls[8];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -702,7 +847,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -715,7 +860,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -725,7 +870,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -735,7 +880,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -744,7 +889,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -753,7 +898,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -864,21 +1009,24 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[31];
+    boolean[] la1tokens = new boolean[33];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 13; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
             la1tokens[j] = true;
           }
+          if ((jj_la1_1[i] & (1<<j)) != 0) {
+            la1tokens[32+j] = true;
+          }
         }
       }
     }
-    for (int i = 0; i < 31; i++) {
+    for (int i = 0; i < 33; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -903,7 +1051,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
 
   final private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 8; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -916,6 +1064,8 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
             case 3: jj_3_4(); break;
             case 4: jj_3_5(); break;
             case 5: jj_3_6(); break;
+            case 6: jj_3_7(); break;
+            case 7: jj_3_8(); break;
           }
         }
         p = p.next;
