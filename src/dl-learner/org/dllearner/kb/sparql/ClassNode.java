@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
+import org.dllearner.utilities.StringTuple;
+
 // is a node in the graph that is a class
 public class ClassNode extends Node {
 	Set<PropertyNode> properties = new HashSet<PropertyNode>();
@@ -36,14 +38,14 @@ public class ClassNode extends Node {
 
 	@Override
 	public Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m) {
-		Set<Tupel> s = tsq.query(this.uri);
+		Set<StringTuple> s = tsq.query(this.uri);
 		s = m.check(s, this);
 		Vector<Node> Nodes = new Vector<Node>();
 		// Manipulation
 
-		Iterator<Tupel> it = s.iterator();
+		Iterator<StringTuple> it = s.iterator();
 		while (it.hasNext()) {
-			Tupel t = (Tupel) it.next();
+			StringTuple t = (StringTuple) it.next();
 			try {
 				if (t.a.equals(m.type) || t.a.equals(m.subclass)) {
 					ClassNode tmp = new ClassNode(new URI(t.b));

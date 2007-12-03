@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.dllearner.utilities.StringTuple;
+
 // can execute different queries
 public class TypedSparqlQuery {
 	private Configuration configuration;
@@ -47,7 +49,7 @@ public class TypedSparqlQuery {
 		this.cache = new Cache("cache");
 	}
 
-	public Set<Tupel> query(URI u) {
+	public Set<StringTuple> query(URI u) {
 
 		// getQuery
 		String sparql = sparqlQueryMaker.makeSubjectQueryUsingFilters(u.toString());
@@ -55,18 +57,18 @@ public class TypedSparqlQuery {
 
 	}
 
-	public Set<Tupel> getTupelsForRole(URI u) {
+	public Set<StringTuple> getTupelsForRole(URI u) {
 
 		// getQuery
 		String sparql = sparqlQueryMaker.makeRoleQueryUsingFilters(u.toString());
 
-		Set<Tupel> s = cachedSparql(u, sparql, "subject", "object");
+		Set<StringTuple> s = cachedSparql(u, sparql, "subject", "object");
 		// System.out.println(s);
 		return s;
 
 	}
 
-	private Set<Tupel> cachedSparql(URI u, String sparql, String a, String b) {
+	private Set<StringTuple> cachedSparql(URI u, String sparql, String a, String b) {
 		// check cache
 		String FromCache = cache.get(u.toString(), sparql);
 
@@ -91,7 +93,7 @@ public class TypedSparqlQuery {
 		// System.out.println(sparql);
 		// System.out.println(xml);
 		// process XML
-		Set<Tupel> s = processResult(xml, a, b);
+		Set<StringTuple> s = processResult(xml, a, b);
 		try {
 			System.out.println("retrieved " + s.size() + " tupels\n");
 		} catch (Exception e) {
@@ -99,9 +101,9 @@ public class TypedSparqlQuery {
 		return s;
 	}
 
-	public Set<Tupel> processResult(String xml, String a, String b) {
+	public Set<StringTuple> processResult(String xml, String a, String b) {
 
-		Set<Tupel> ret = new HashSet<Tupel>();
+		Set<StringTuple> ret = new HashSet<StringTuple>();
 		// TODO if result is empty, catch exceptions
 		String one = "<binding name=\"" + a + "\">";
 		String two = "<binding name=\"" + b + "\">";
@@ -120,7 +122,7 @@ public class TypedSparqlQuery {
 			xml = xml.substring(xml.indexOf(two) + two.length());
 			xml = xml.substring(xml.indexOf(uridel) + uridel.length());
 			objtmp = xml.substring(0, xml.indexOf(end));
-			ret.add(new Tupel(predtmp, objtmp));
+			ret.add(new StringTuple(predtmp, objtmp));
 			// System.out.println(new Tupel(predtmp,objtmp));
 		}
 

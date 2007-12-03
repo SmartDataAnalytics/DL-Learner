@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
+import org.dllearner.utilities.StringTuple;
+
 public class PropertyNode extends Node {
 
 	private Node a;
@@ -47,13 +49,13 @@ public class PropertyNode extends Node {
 
 	@Override
 	public Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m) {
-		Set<Tupel> s = tsq.query(uri);
+		Set<StringTuple> s = tsq.query(uri);
 		Vector<Node> Nodes = new Vector<Node>();
 		// Manipulation
 
-		Iterator<Tupel> it = s.iterator();
+		Iterator<StringTuple> it = s.iterator();
 		while (it.hasNext()) {
-			Tupel t = (Tupel) it.next();
+			StringTuple t = (StringTuple) it.next();
 			try {
 				if (t.a.equals(m.type)) {
 					specialTypes.add(t.b);

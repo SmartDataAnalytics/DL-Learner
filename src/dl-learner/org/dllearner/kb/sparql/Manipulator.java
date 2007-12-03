@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.dllearner.utilities.StringTuple;
+
 // used to manipulate retrieved tupels, identify blanknodes, etc.
 public class Manipulator {
 	public String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
@@ -46,11 +48,11 @@ public class Manipulator {
 
 	}
 
-	public Set<Tupel> check(Set<Tupel> s, Node node) {
-		Set<Tupel> toRemove = new HashSet<Tupel>();
-		Iterator<Tupel> it = s.iterator();
+	public Set<StringTuple> check(Set<StringTuple> s, Node node) {
+		Set<StringTuple> toRemove = new HashSet<StringTuple>();
+		Iterator<StringTuple> it = s.iterator();
 		while (it.hasNext()) {
-			Tupel t = (Tupel) it.next();
+			StringTuple t = (StringTuple) it.next();
 			// System.out.println(t);
 			// all classes with owl:type class
 			if (t.a.equals(type) && t.b.equals(classns) && node instanceof ClassNode) {

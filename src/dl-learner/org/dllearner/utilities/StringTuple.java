@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Sebastian Hellmann
+ * Copyright (C) 2007, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -17,15 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql;
+package org.dllearner.utilities;
 
-// a container which can hold two Strings, mainly used as a helper
-public class Tupel {
+/**
+ * A container which can hold two Strings, mainly used as a helper.
+ * 
+ * @author Sebastian Hellmann
+ */
+public class StringTuple {
 
 	public String a;
 	public String b;
 
-	public Tupel(String a, String b) {
+	public StringTuple(String a, String b) {
 		this.a = a;
 		this.b = b;
 	}
@@ -35,7 +39,7 @@ public class Tupel {
 		return "<" + a + "|" + b + ">";
 	}
 
-	public boolean equals(Tupel t) {
+	public boolean equals(StringTuple t) {
 		if (a.equals(t.a) && b.equals(t.b))
 			return true;
 		else

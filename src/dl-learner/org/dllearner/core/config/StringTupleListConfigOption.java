@@ -19,43 +19,48 @@
  */
 package org.dllearner.core.config;
 
-import java.util.Set;
+import java.util.List;
 
+import org.dllearner.utilities.StringTuple;
 
 /**
- * A set of strings.
+ * A list if string tuples, for instance for specifying several
+ * parameters or replacement rules.
  * 
  * @author Jens Lehmann
- *
  */
-public class StringSetConfigOption extends ConfigOption<Set<String>> {
+public class StringTupleListConfigOption extends ConfigOption<List<StringTuple>> {
 
-	public StringSetConfigOption(String name, String description) {
-		super(name, description);
+	public StringTupleListConfigOption(String name, String description) {
+		this(name, description, null);
 	}
 	
+	public StringTupleListConfigOption(String name, String description, List<StringTuple> defaultValue) {
+		super(name, description, defaultValue);
+	}
+
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
+	 * @see org.dllearner.core.config.ConfigOption#checkType(java.lang.Object)
 	 */
 	@Override
-	public boolean isValidValue(Set<String> value) {
+	public boolean checkType(Object object) {
+		if(!(object instanceof List))
+			return false;
+		
+		List<?> set = (List<?>) object;
+		for(Object element : set)  {
+			if(!(element instanceof StringTuple))
+				return false;
+		}
+		
 		return true;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
+	 * @see org.dllearner.core.config.ConfigOption#isValidValue(java.lang.Object)
 	 */
 	@Override
-	public boolean checkType(Object object) {
-		if(!(object instanceof Set))
-			return false;
-		
-		Set<?> set = (Set<?>) object;
-		for(Object element : set)  {
-			if(!(element instanceof String))
-				return false;
-		}
-		
+	public boolean isValidValue(List<StringTuple> value) {
 		return true;
 	}
 
