@@ -1,5 +1,25 @@
+/**
+ * Copyright (C) 2007, Sebastian Hellmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.kb.sparql;
 
+// can assemble sparql queries 
 public class SparqlQueryMaker {
 
 	private SparqlQueryType sparqlQueryType;
@@ -8,9 +28,27 @@ public class SparqlQueryMaker {
 		this.sparqlQueryType = SparqlQueryType;
 	}
 
-	public String makeQueryUsingFilters(String subject) {
+	public String makeSubjectQueryUsingFilters(String subject) {
 		String lineend = "\n";
+		String Filter = internalFilterAssemblySubject();
+		String ret = "SELECT * WHERE { " + lineend + "<" + subject + "> ?predicate ?object. "
+				+ lineend + "FILTER( " + lineend + "(" + Filter + ").}";
+		// System.out.println(ret);
+		return ret;
+	}
 
+	public String makeRoleQueryUsingFilters(String role) {
+		String lineend = "\n";
+		String Filter = internalFilterAssemblyRole();
+		String ret = "SELECT * WHERE { " + lineend + "?subject <" + role + "> ?object. " + lineend
+				+ "FILTER( " + lineend + "(" + Filter + ").}";
+		// System.out.println(ret);
+
+		return ret;
+	}
+
+	private String internalFilterAssemblySubject() {
+		String lineend = "\n";
 		String Filter = "";
 		if (!this.sparqlQueryType.isLiterals())
 			Filter += "!isLiteral(?object))";
@@ -20,18 +58,32 @@ public class SparqlQueryMaker {
 		for (String o : sparqlQueryType.getObjectfilterlist()) {
 			Filter += lineend + filterObject(o);
 		}
-
-		String ret = "SELECT * WHERE { " + lineend + "<" + subject + "> ?predicate ?object. "
-				+ lineend + "FILTER( " + lineend + "(" + Filter + ").}";
-		// System.out.println(ret);
-		return ret;
+		return Filter;
 	}
 
-	public String filterObject(String ns) {
-		return "&&( !regex(str(?object), '" + ns + "') )";
+	private String internalFilterAssemblyRole() {
+		String lineend = "\n";
+		String Filter = "";
+		if (!this.sparqlQueryType.isLiterals())
+			Filter += "!isLiteral(?object))";
+		for (String s : sparqlQueryType.getObjectfilterlist()) {
+			Filter += lineend + filterSubject(s);
+		}
+		for (String o : sparqlQueryType.getObjectfilterlist()) {
+			Filter += lineend + filterObject(o);
+		}
+		return Filter;
+	}
+
+	public String filterSubject(String ns) {
+		return "&&( !regex(str(?subject), '" + ns + "') )";
 	}
 
 	public String filterPredicate(String ns) {
 		return "&&( !regex(str(?predicate), '" + ns + "') )";
+	}
+
+	public String filterObject(String ns) {
+		return "&&( !regex(str(?object), '" + ns + "') )";
 	}
 }

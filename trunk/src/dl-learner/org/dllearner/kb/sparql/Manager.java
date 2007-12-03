@@ -1,22 +1,73 @@
+/**
+ * Copyright (C) 2007, Sebastian Hellmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.kb.sparql;
 
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+// an object of this class encapsulates everything
 public class Manager {
 
 	private Configuration configuration;
 	private TypedSparqlQuery typedSparqlQuery;
 	private ExtractionAlgorithm extractionAlgorithm;
 
-	
+	public void useConfiguration(SparqlQueryType SparqlQueryType,
+			SpecificSparqlEndpoint SparqlEndpoint, Manipulator manipulator, int recursiondepth,
+			boolean getAllBackground) {
 
-	public void useConfiguration(SparqlQueryType SparqlQueryType, SpecificSparqlEndpoint SparqlEndpoint, int recursiondepth,boolean getAllBackground) {
-
-		this.configuration = new Configuration(SparqlEndpoint, SparqlQueryType,recursiondepth,getAllBackground);
+		this.configuration = new Configuration(SparqlEndpoint, SparqlQueryType, manipulator,
+				recursiondepth, getAllBackground);
 		this.typedSparqlQuery = new TypedSparqlQuery(configuration);
 		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
+	}
+
+	public Set<String> getDomainInstancesForRole(String role) {
+		URI u = null;
+		try {
+			u = new URI(role);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Set<Tupel> t = this.typedSparqlQuery.getTupelsForRole(u);
+		Set<String> ret = new HashSet<String>();
+		for (Tupel one : t) {
+			ret.add(one.a);
+		}
+		return ret;
+	}
+
+	public Set<String> getRangeInstancesForRole(String role) {
+		URI u = null;
+		try {
+			u = new URI(role);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Set<Tupel> t = this.typedSparqlQuery.getTupelsForRole(u);
+		Set<String> ret = new HashSet<String>();
+		for (Tupel one : t) {
+			ret.add(one.b);
+		}
+		return ret;
 	}
 
 	public String extract(URI uri) {
@@ -52,6 +103,11 @@ public class Manager {
 			nt += str + "\n";
 		}
 		return nt;
+	}
+
+	public void addPredicateFilter(String str) {
+		this.configuration.getSparqlQueryType().addPredicateFilter(str);
+
 	}
 
 }
