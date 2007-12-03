@@ -53,11 +53,11 @@ import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
 
 /**
- * Represents a SPARQL Endpoint. TODO: Is it necessary to create a class
- * DBpediaSparqlEndpoint?
+ * Represents a SPARQL Endpoint.
  * 
  * @author Jens Lehmann
  * @author Sebastian Knappe
+ * @author Sebastian Hellmann
  */
 public class SparqlEndpointRestructured extends KnowledgeSource {
 
@@ -66,16 +66,16 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	String host;
 	private Set<String> instances;
 	private URL dumpFile;
-	private int numberOfRecursions;
+	private int recursionDepth = 2;
 	private int predefinedFilter = 0;
 	private int predefinedEndpoint = 0;
 	private Set<String> predList;
 	private Set<String> objList;
 	private Set<String> classList;
-	private String format;
-	private boolean dumpToFile;
+	private String format = "N-TRIPLES";
+	private boolean dumpToFile = true;
 	private boolean useLits = false;
-	private boolean getAllBackground = false;
+	private boolean getAllSuperClasses = true;
 
 	private boolean learnDomain = false;
 	private String role;
@@ -136,19 +136,19 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		options.add(new StringConfigOption("host", "host of SPARQL Endpoint"));
 		options.add(new StringSetConfigOption("instances",
 				"relevant instances e.g. positive and negative examples in a learning problem"));
-		options.add(new IntegerConfigOption("numberOfRecursions",
-				"number of Recursions, the Sparql-Endpoint is asked"));
+		options.add(new IntegerConfigOption("recursionDepth",
+				"recursion depth of KB fragment selection", 2));
 		options.add(new IntegerConfigOption("predefinedFilter", "the mode of the SPARQL Filter"));
 		options.add(new IntegerConfigOption("predefinedEndpoint", "the mode of the SPARQL Filter"));
 
-		options.add(new StringSetConfigOption("predList", "a predicate list"));
-		options.add(new StringSetConfigOption("objList", "an object list"));
-		options.add(new StringSetConfigOption("classList", "a class list"));
-		options.add(new StringConfigOption("format", "N-TRIPLES or KB format"));
+		options.add(new StringSetConfigOption("predList", "list of all ignored roles"));
+		options.add(new StringSetConfigOption("objList", "list of all ignored objects"));
+		options.add(new StringSetConfigOption("classList", "list of all ignored classes"));
+		options.add(new StringConfigOption("format", "N-TRIPLES or KB format", "N-TRIPLES"));
 		options.add(new BooleanConfigOption("dumpToFile",
-				"wether Ontology from DBPedia is written to a file or not"));
+				"Specifies whether the extracted ontology is written to a file or not.", true));
 		options.add(new BooleanConfigOption("useLits", "use Literals in SPARQL query"));
-		options.add(new BooleanConfigOption("getAllBackground", "get"));
+		options.add(new BooleanConfigOption("getAllSuperClasses", "If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.", true));
 
 		options.add(new BooleanConfigOption("learnDomain", "learns the Domain for a Role"));
 		options.add(new StringConfigOption("role", "role to learn Domain from"));
@@ -177,8 +177,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			host = (String) entry.getValue();
 		} else if (option.equals("instances")) {
 			instances = (Set<String>) entry.getValue();
-		} else if (option.equals("numberOfRecursions")) {
-			numberOfRecursions = (Integer) entry.getValue();
+		} else if (option.equals("recursionDepth")) {
+			recursionDepth = (Integer) entry.getValue();
 		} else if (option.equals("predList")) {
 			predList = (Set<String>) entry.getValue();
 		} else if (option.equals("objList")) {
@@ -195,8 +195,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			dumpToFile = (Boolean) entry.getValue();
 		} else if (option.equals("useLits")) {
 			useLits = (Boolean) entry.getValue();
-		} else if (option.equals("getAllBackground")) {
-			getAllBackground = (Boolean) entry.getValue();
+		} else if (option.equals("getAllSuperClasses")) {
+			getAllSuperClasses = (Boolean) entry.getValue();
 		} else if (option.equals("learnDomain")) {
 			learnDomain = (Boolean) entry.getValue();
 		} else if (option.equals("role")) {
@@ -244,7 +244,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			sqt = new SparqlQueryType("forbid", objList, predList, useLits + "");
 		}
 		// give everything to the manager
-		m.useConfiguration(sqt, sse, man, numberOfRecursions, getAllBackground);
+		m.useConfiguration(sqt, sse, man, recursionDepth, getAllSuperClasses);
 		try {
 			String ont = "";
 			// used to learn a domain of a role
