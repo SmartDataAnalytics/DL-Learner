@@ -25,11 +25,13 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
+import org.dllearner.utilities.StringTuple;
+
 // a node in the graph that is an instance
 public class InstanceNode extends Node {
 
 	Set<ClassNode> classes = new HashSet<ClassNode>();
-	Set<Tupel> datatypes = new HashSet<Tupel>();
+	Set<StringTuple> datatypes = new HashSet<StringTuple>();
 	Set<PropertyNode> properties = new HashSet<PropertyNode>();
 
 	public InstanceNode(URI u) {
@@ -41,15 +43,15 @@ public class InstanceNode extends Node {
 	@Override
 	public Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m) {
 
-		Set<Tupel> s = tsq.query(uri);
+		Set<StringTuple> s = tsq.query(uri);
 		// Manipulation
 		m.check(s, this);
 		// System.out.println("fffffff"+m);
 		Vector<Node> Nodes = new Vector<Node>();
 
-		Iterator<Tupel> it = s.iterator();
+		Iterator<StringTuple> it = s.iterator();
 		while (it.hasNext()) {
-			Tupel t = (Tupel) it.next();
+			StringTuple t = (StringTuple) it.next();
 
 			try {
 				if (t.a.equals(m.type)) {

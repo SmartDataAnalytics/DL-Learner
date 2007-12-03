@@ -23,6 +23,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.dllearner.utilities.StringTuple;
+
 // an object of this class encapsulates everything
 public class Manager {
 
@@ -47,9 +49,9 @@ public class Manager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Set<Tupel> t = this.typedSparqlQuery.getTupelsForRole(u);
+		Set<StringTuple> t = this.typedSparqlQuery.getTupelsForRole(u);
 		Set<String> ret = new HashSet<String>();
-		for (Tupel one : t) {
+		for (StringTuple one : t) {
 			ret.add(one.a);
 		}
 		return ret;
@@ -62,9 +64,9 @@ public class Manager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Set<Tupel> t = this.typedSparqlQuery.getTupelsForRole(u);
+		Set<StringTuple> t = this.typedSparqlQuery.getTupelsForRole(u);
 		Set<String> ret = new HashSet<String>();
-		for (Tupel one : t) {
+		for (StringTuple one : t) {
 			ret.add(one.b);
 		}
 		return ret;
