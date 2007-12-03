@@ -53,6 +53,7 @@ import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
+import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Concept;
@@ -73,6 +74,7 @@ import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.RoleComparator;
+import org.dllearner.utilities.StringTuple;
 
 /**
  * Startup file for Command Line Interface.
@@ -307,6 +309,12 @@ public class Start {
 
 					ConfigEntry<Set<String>> entry = new ConfigEntry<Set<String>>(
 							(StringSetConfigOption) configOption, option.getSetValues());
+					cm.applyConfigEntry(component, entry);
+
+				} else if (configOption instanceof StringTupleListConfigOption && option.isListOption()) {
+
+					ConfigEntry<List<StringTuple>> entry = new ConfigEntry<List<StringTuple>>(
+							(StringTupleListConfigOption) configOption, option.getListTuples());
 					cm.applyConfigEntry(component, entry);
 
 				} else {

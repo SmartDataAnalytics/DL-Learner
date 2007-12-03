@@ -41,6 +41,7 @@ import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
+import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.dl.KB;
 import org.dllearner.kb.sparql.Manager;
 import org.dllearner.kb.sparql.Manipulator;
@@ -155,6 +156,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		options.add(new StringConfigOption("blankNodeIdentifier",
 				"used to identify blanknodes in Tripels"));
 
+		options.add(new StringTupleListConfigOption("example", "example"));
+		
 		return options;
 	}
 
@@ -203,6 +206,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			role = (String) entry.getValue();
 		} else if (option.equals("blankNodeIdentifier")) {
 			blankNodeIdentifier = (String) entry.getValue();
+		} else if (option.equals("example")) {
+			System.out.println(entry.getValue());
 		}
 
 	}

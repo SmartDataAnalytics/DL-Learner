@@ -132,6 +132,14 @@ public class ConfFileOption {
 		return doubleValue;
 	}
 
+	public Set<String> getSetValues() {
+		return setValues;
+	}	
+	
+	public List<StringTuple> getListTuples() {
+		return listTuples;
+	}
+	
 	public Object getValue() {
 		if(isIntegerOption)
 			return intValue;
@@ -198,10 +206,6 @@ public class ConfFileOption {
 				return completeOption + "=" + doubleValue;
 		else
 			return completeOption + "=" + stringValue;
-	}
-
-	public Set<String> getSetValues() {
-		return setValues;
 	}
 	
 	public String getFullName() {
