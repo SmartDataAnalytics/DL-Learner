@@ -21,7 +21,7 @@ package org.dllearner.utilities;
 
 /**
  * A container which can hold two Strings, mainly used as a helper.
- * 
+ * Also used as pre form, if you want to create triple, that have the same subject
  * @author Sebastian Hellmann
  */
 public class StringTuple {

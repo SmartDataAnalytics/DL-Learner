@@ -21,9 +21,17 @@ package org.dllearner.kb.sparql;
 
 //stores all configuration settings
 public class Configuration {
+	
+	/*
+	 * this class colects all configuration information
+	 * see the other classes, which are used as attributes here
+	 * */
+	
 	private SpecificSparqlEndpoint specificSparqlEndpoint;
 	private SparqlQueryType sparqlQueryType;
 	private Manipulator manipulator;
+	// the following needs to be moved to 
+	// class extraction algorithm or manipulator
 	private int recursiondepth = 2;
 	private boolean getAllBackground = true;
 

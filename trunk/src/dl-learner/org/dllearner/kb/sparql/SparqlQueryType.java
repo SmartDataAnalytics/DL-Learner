@@ -24,6 +24,8 @@ import java.util.Set;
 // is used to set the filter: configuration
 public class SparqlQueryType {
 	// TODO make sets out of them
+	
+	
 	private String mode = "forbid";
 	private String[] objectfilterlist = { "http://dbpedia.org/resource/Category:Articles_",
 			"http://dbpedia.org/resource/Category:Wikipedia_", "http://xmlns.com/foaf/0.1/",

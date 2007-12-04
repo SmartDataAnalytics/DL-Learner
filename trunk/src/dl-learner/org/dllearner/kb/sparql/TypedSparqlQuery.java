@@ -48,7 +48,7 @@ public class TypedSparqlQuery {
 		this.sparqlQueryMaker = new SparqlQueryMaker(Configuration.getSparqlQueryType());
 		this.cache = new Cache("cache");
 	}
-
+	// standard query get a tupels (p,o) for subject s
 	public Set<StringTuple> query(URI u) {
 
 		// getQuery
@@ -57,6 +57,7 @@ public class TypedSparqlQuery {
 
 	}
 
+	// query get a tupels (s,o) for role p
 	public Set<StringTuple> getTupelsForRole(URI u) {
 
 		// getQuery
@@ -68,6 +69,8 @@ public class TypedSparqlQuery {
 
 	}
 
+	
+	// uses a cache 
 	private Set<StringTuple> cachedSparql(URI u, String sparql, String a, String b) {
 		// check cache
 		String FromCache = cache.get(u.toString(), sparql);

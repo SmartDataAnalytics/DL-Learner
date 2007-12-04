@@ -29,8 +29,10 @@ import org.dllearner.utilities.StringTuple;
 
 public class PropertyNode extends Node {
 
+	// the a and b part of a property
 	private Node a;
 	private Node b;
+	// specialtypes like owl:symmetricproperty
 	private Set<String> specialTypes;
 
 	public PropertyNode(URI u) {
@@ -68,6 +70,8 @@ public class PropertyNode extends Node {
 		}
 		return Nodes;
 	}
+	
+	// gets the types for properties recursively
 	@Override
 	public Vector<Node> expandProperties(TypedSparqlQuery tsq, Manipulator m) {
 		b.expandProperties(tsq, m);

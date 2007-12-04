@@ -50,6 +50,11 @@ public class ExtractionAlgorithm {
 		return v;
 	}
 
+	/*most important function
+	 expands one example 
+	 cave: the recursion is not a recursion anymore,
+	 it was transformed to an iteration
+	*/
 	public Node expandNode(URI u, TypedSparqlQuery tsp) {
 		Node n = getFirstNode(u);
 		Vector<Node> v = new Vector<Node>();
@@ -64,6 +69,9 @@ public class ExtractionAlgorithm {
 				Node tmpNode = v.remove(0);
 				System.out.println("Expanding " + tmpNode);
 				// System.out.println(this.Manipulator);
+				
+				// these are the new not expanded nodes
+				// the others are saved in connection with the original node
 				Vector<Node> tmpVec = tmpNode.expand(tsp, manipulator);
 
 				tmp.addAll(tmpVec);
@@ -72,6 +80,8 @@ public class ExtractionAlgorithm {
 			System.out
 					.println("Recursion counter: " + x + " with " + v.size() + " Nodes remaining");
 		}
+		
+		// gets All Class Nodes and expands them further
 		if (this.getAllBackground) {
 			Vector<Node> classes = new Vector<Node>();
 			for (Node one : v) {

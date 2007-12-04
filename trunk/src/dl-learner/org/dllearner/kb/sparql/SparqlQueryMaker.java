@@ -22,6 +22,12 @@ package org.dllearner.kb.sparql;
 // can assemble sparql queries 
 public class SparqlQueryMaker {
 
+	/* can make queries for subject, predicate, object
+	 * according to the filter settings
+	 * object not yet implemented
+	 * 
+	 * */
+	
 	private SparqlQueryType sparqlQueryType;
 
 	public SparqlQueryMaker(SparqlQueryType SparqlQueryType) {

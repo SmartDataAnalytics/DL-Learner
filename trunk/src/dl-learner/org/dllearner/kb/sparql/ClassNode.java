@@ -36,26 +36,33 @@ public class ClassNode extends Node {
 		this.type = "class";
 	}
 
+	//expands all directly connected nodes
 	@Override
 	public Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m) {
 		Set<StringTuple> s = tsq.query(this.uri);
+		// see manipulator
 		s = m.check(s, this);
 		Vector<Node> Nodes = new Vector<Node>();
-		// Manipulation
+		
 
 		Iterator<StringTuple> it = s.iterator();
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
 			try {
+				// substitute rdf:type with owl:subclassof
 				if (t.a.equals(m.type) || t.a.equals(m.subclass)) {
 					ClassNode tmp = new ClassNode(new URI(t.b));
 					properties.add(new PropertyNode(new URI(m.subclass), this, tmp));
 					Nodes.add(tmp);
 				} else {
+					// further expansion stops here
+					// Nodes.add(tmp); is missing on purpose
 					ClassNode tmp = new ClassNode(new URI(t.b));
 					properties.add(new PropertyNode(new URI(t.a), this, tmp));
 					// System.out.println(m.blankNodeIdentifier);
 					// System.out.println("XXXXX"+t.b);
+					
+					// if o is a blank node expand further
 					if (t.b.startsWith(m.blankNodeIdentifier)) {
 						tmp.expand(tsq, m);
 						System.out.println(m.blankNodeIdentifier);
@@ -72,6 +79,7 @@ public class ClassNode extends Node {
 		return Nodes;
 	}
 
+	// gets the types for properties recursively
 	@Override
 	public Vector<Node> expandProperties(TypedSparqlQuery tsq, Manipulator m) {
 		// TODO return type doesn't make sense

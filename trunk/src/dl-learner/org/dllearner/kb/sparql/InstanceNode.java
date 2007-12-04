@@ -40,11 +40,12 @@ public class InstanceNode extends Node {
 
 	}
 
+	//expands all directly connected nodes
 	@Override
 	public Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m) {
 
 		Set<StringTuple> s = tsq.query(uri);
-		// Manipulation
+		// see Manipulator
 		m.check(s, this);
 		// System.out.println("fffffff"+m);
 		Vector<Node> Nodes = new Vector<Node>();
@@ -52,7 +53,8 @@ public class InstanceNode extends Node {
 		Iterator<StringTuple> it = s.iterator();
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
-
+			// basically : if p is rdf:type then o is a class
+			// else it is an instance
 			try {
 				if (t.a.equals(m.type)) {
 					ClassNode tmp = new ClassNode(new URI(t.b));
@@ -74,6 +76,7 @@ public class InstanceNode extends Node {
 		return Nodes;
 	}
 
+	// gets the types for properties recursively
 	@Override
 	public Vector<Node> expandProperties(TypedSparqlQuery tsq, Manipulator m) {
 		for (PropertyNode one : properties) {

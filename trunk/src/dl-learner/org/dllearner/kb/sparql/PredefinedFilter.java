@@ -46,10 +46,13 @@ public class PredefinedFilter {
 		pred.add("http://dbpedia.org/property/reference");
 		pred.add("http://dbpedia.org/property/website");
 		pred.add("http://dbpedia.org/property/wikipage");
+		pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+
 
 		Set<String> obj = new HashSet<String>();
 		obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
 		obj.add("http://dbpedia.org/resource/Category:Articles_");
+		obj.add("http://dbpedia.org/resource/Template");
 		obj.add("http://xmlns.com/foaf/0.1/");
 		obj.add("http://upload.wikimedia.org/wikipedia/commons");
 		obj.add("http://upload.wikimedia.org/wikipedia");
@@ -70,10 +73,11 @@ public class PredefinedFilter {
 			pred.add("http://dbpedia.org/property/reference");
 			pred.add("http://dbpedia.org/property/website");
 			pred.add("http://dbpedia.org/property/wikipage");
+			pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 
 			Set<String> obj = new HashSet<String>();
-			obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
-			obj.add("http://dbpedia.org/resource/Category:Articles_");
+			//obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
+			//obj.add("http://dbpedia.org/resource/Category:Articles_");
 			obj.add("http://xmlns.com/foaf/0.1/");
 			obj.add("http://upload.wikimedia.org/wikipedia/commons");
 			obj.add("http://upload.wikimedia.org/wikipedia");
