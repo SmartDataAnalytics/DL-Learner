@@ -21,6 +21,7 @@ package org.dllearner.kb.sparql;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.dllearner.utilities.StringTuple;
@@ -30,6 +31,8 @@ public class Manipulator {
 	public String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 	public String type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 	public String blankNodeIdentifier = "bnode";
+	public LinkedList<StringTuple> replacePredicate;
+	public LinkedList<StringTuple> replaceObject;
 
 	String objectProperty = "http://www.w3.org/2002/07/owl#ObjectProperty";
 	String classns = "http://www.w3.org/2002/07/owl#Class";
@@ -41,20 +44,27 @@ public class Manipulator {
 			"http://dbpedia.org/resource/Category:", "http://dbpedia.org/resource/Template:",
 			"http://www.w3.org/2004/02/skos/core", "http://dbpedia.org/class/" };
 
-	public Manipulator(String blankNodeIdentifier) {
+	public Manipulator(String blankNodeIdentifier,LinkedList<StringTuple> replacePredicate,LinkedList<StringTuple> replaceObject) {
 		this.blankNodeIdentifier = blankNodeIdentifier;
+		this.replaceObject=replaceObject;
+		this.replacePredicate=replacePredicate;
+		
 		Set<String> classproperties = new HashSet<String>();
 		classproperties.add(subclass);
 
 	}
 
+	// TODO user defined rules missing
 	public Set<StringTuple> check(Set<StringTuple> s, Node node) {
 		Set<StringTuple> toRemove = new HashSet<StringTuple>();
 		Iterator<StringTuple> it = s.iterator();
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
-			// System.out.println(t);
-			// all classes with owl:type class
+			replacePredicate(t);
+			replaceObject(t);
+
+			// remove  <rdf:type, owl:class>
+			// this is done to avoid transformation to owl:subclassof
 			if (t.a.equals(type) && t.b.equals(classns) && node instanceof ClassNode) {
 				toRemove.add(t);
 			}
@@ -64,7 +74,7 @@ public class Manipulator {
 				toRemove.add(t);
 			}
 
-			// all instances with owl:type thing
+			// remove all instances with owl:type thing
 			if (t.a.equals(type) && t.b.equals(thing) && node instanceof InstanceNode) {
 				toRemove.add(t);
 			}
@@ -73,6 +83,21 @@ public class Manipulator {
 		s.removeAll(toRemove);
 
 		return s;
+	}
+	
+	private void replacePredicate(StringTuple t){
+		for(StringTuple rep:replacePredicate){
+			if(rep.a.equals(t.a)){
+				t.a=rep.b;
+			}
+		}
+	}
+	private void replaceObject(StringTuple t){
+		for(StringTuple rep:replaceObject){
+			if(rep.a.equals(t.a)){
+				t.a=rep.b;
+			}
+		}
 	}
 
 }

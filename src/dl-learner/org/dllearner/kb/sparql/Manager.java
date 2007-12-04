@@ -40,6 +40,7 @@ public class Manager {
 				recursiondepth, getAllBackground);
 		this.typedSparqlQuery = new TypedSparqlQuery(configuration);
 		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
+		
 	}
 
 	public Set<String> getDomainInstancesForRole(String role) {
@@ -76,6 +77,7 @@ public class Manager {
 		// this.TypedSparqlQuery.query(uri);
 		// System.out.println(ExtractionAlgorithm.getFirstNode(uri));
 		System.out.println("Start extracting");
+	
 		Node n = extractionAlgorithm.expandNode(uri, typedSparqlQuery);
 		Set<String> s = n.toNTriple();
 		String nt = "";

@@ -26,8 +26,10 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -52,6 +54,7 @@ import org.dllearner.kb.sparql.SpecificSparqlEndpoint;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
+import org.dllearner.utilities.StringTuple;
 
 /**
  * Represents a SPARQL Endpoint.
@@ -65,13 +68,13 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	// ConfigOptions
 	private URL url;
 	String host;
-	private Set<String> instances;
+	private Set<String> instances=new HashSet<String>();;
 	private URL dumpFile;
 	private int recursionDepth = 2;
 	private int predefinedFilter = 0;
 	private int predefinedEndpoint = 0;
-	private Set<String> predList;
-	private Set<String> objList;
+	private Set<String> predList=new HashSet<String>();
+	private Set<String> objList=new HashSet<String>();
 	private Set<String> classList;
 	private String format = "N-TRIPLES";
 	private boolean dumpToFile = true;
@@ -81,6 +84,10 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	private boolean learnDomain = false;
 	private String role;
 	private String blankNodeIdentifier = "bnode";
+	
+	LinkedList<StringTuple> URIParameters = new LinkedList<StringTuple>();
+	LinkedList<StringTuple> replacePredicate = new LinkedList<StringTuple>();
+	LinkedList<StringTuple> replaceObject = new LinkedList<StringTuple>();
 
 	/**
 	 * Holds the results of the calculateSubjects method
@@ -157,6 +164,9 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 				"used to identify blanknodes in Tripels"));
 
 		options.add(new StringTupleListConfigOption("example", "example"));
+		options.add(new StringTupleListConfigOption("replacePredicate", "rule for replacing predicates"));
+		options.add(new StringTupleListConfigOption("replaceObject", "rule for replacing predicates"));
+		
 		
 		return options;
 	}
@@ -208,6 +218,11 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			blankNodeIdentifier = (String) entry.getValue();
 		} else if (option.equals("example")) {
 			System.out.println(entry.getValue());
+		}else if (option.equals("replacePredicate")) {
+			replacePredicate = (LinkedList)entry.getValue();
+		}else if (option.equals("replaceObject")) {
+			replaceObject = (LinkedList)entry.getValue();
+			
 		}
 
 	}
@@ -229,7 +244,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		SpecificSparqlEndpoint sse = null;
 		SparqlQueryType sqt = null;
 		// get Options for Manipulator
-		Manipulator man = new Manipulator(blankNodeIdentifier);
+		Manipulator man = new Manipulator(blankNodeIdentifier,replacePredicate,replaceObject);
 		HashMap<String, String> parameters = new HashMap<String, String>();
 		parameters.put("default-graph-uri", "http://dbpedia.org");
 		parameters.put("format", "application/sparql-results.xml");
@@ -242,11 +257,13 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		}
 
 		// get Options for Filters
+		System.out.println("aaa"+predefinedFilter);
 		if (predefinedFilter >= 1) {
 			sqt = PredefinedFilter.getFilter(predefinedFilter);
 
 		} else {
 			sqt = new SparqlQueryType("forbid", objList, predList, useLits + "");
+			System.out.println(sqt);
 		}
 		// give everything to the manager
 		m.useConfiguration(sqt, sse, man, recursionDepth, getAllSuperClasses);
@@ -255,10 +272,14 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			// used to learn a domain of a role
 			if (learnDomain) {
 				instances = m.getDomainInstancesForRole(role);
-				// ad the role to the filter(a solution is always EXISTS
+				// add the role to the filter(a solution is always EXISTS
 				// role.TOP)
 				m.addPredicateFilter(role);
-				System.out.println(instances);
+				//System.out.println(instances);
+				// THIS is a workaround 
+				for(String one:instances){
+					System.out.println("+\""+one+"\"");
+				}
 			}
 			// the actual extraction is started here
 			ont = m.extract(instances);
