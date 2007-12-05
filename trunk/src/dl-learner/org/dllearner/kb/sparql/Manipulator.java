@@ -31,6 +31,7 @@ public class Manipulator {
 	public String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 	public String type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 	public String blankNodeIdentifier = "bnode";
+	public int breakSuperClassRetrievalAfter=200;
 	public LinkedList<StringTuple> replacePredicate;
 	public LinkedList<StringTuple> replaceObject;
 
@@ -44,7 +45,7 @@ public class Manipulator {
 			"http://dbpedia.org/resource/Category:", "http://dbpedia.org/resource/Template:",
 			"http://www.w3.org/2004/02/skos/core", "http://dbpedia.org/class/" };
 
-	public Manipulator(String blankNodeIdentifier,LinkedList<StringTuple> replacePredicate,LinkedList<StringTuple> replaceObject) {
+	public Manipulator(String blankNodeIdentifier,int breakSuperClassRetrievalAfter,LinkedList<StringTuple> replacePredicate,LinkedList<StringTuple> replaceObject) {
 		this.blankNodeIdentifier = blankNodeIdentifier;
 		this.replaceObject=replaceObject;
 		this.replacePredicate=replacePredicate;

@@ -80,6 +80,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	private boolean dumpToFile = true;
 	private boolean useLits = false;
 	private boolean getAllSuperClasses = true;
+	private int breakSuperClassRetrievalAfter = 500;
 
 	private boolean learnDomain = false;
 	private String role;
@@ -166,7 +167,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		options.add(new StringTupleListConfigOption("example", "example"));
 		options.add(new StringTupleListConfigOption("replacePredicate", "rule for replacing predicates"));
 		options.add(new StringTupleListConfigOption("replaceObject", "rule for replacing predicates"));
-		
+		options.add(new IntegerConfigOption("breakSuperClassRetrievalAfter", "stops a cyclic hierarchy after specified number of classes"));
+
 		
 		return options;
 	}
@@ -222,9 +224,10 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			replacePredicate = (LinkedList)entry.getValue();
 		}else if (option.equals("replaceObject")) {
 			replaceObject = (LinkedList)entry.getValue();
-			
+		}else if (option.equals("breakSuperClassRetrievalAfter")) {
+			breakSuperClassRetrievalAfter = (Integer) entry.getValue();
 		}
-
+		
 	}
 
 	/*
@@ -244,7 +247,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		SpecificSparqlEndpoint sse = null;
 		SparqlQueryType sqt = null;
 		// get Options for Manipulator
-		Manipulator man = new Manipulator(blankNodeIdentifier,replacePredicate,replaceObject);
+		Manipulator man = new Manipulator(blankNodeIdentifier,breakSuperClassRetrievalAfter,replacePredicate,replaceObject);
 		HashMap<String, String> parameters = new HashMap<String, String>();
 		parameters.put("default-graph-uri", "http://dbpedia.org");
 		parameters.put("format", "application/sparql-results.xml");
