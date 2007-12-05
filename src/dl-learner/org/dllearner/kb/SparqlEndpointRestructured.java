@@ -26,11 +26,11 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.Set;
 
 import org.dllearner.core.KnowledgeSource;
@@ -83,6 +83,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	private int breakSuperClassRetrievalAfter = 500;
 
 	private boolean learnDomain = false;
+	private boolean learnRange = false;
 	private String role;
 	private String blankNodeIdentifier = "bnode";
 	
@@ -160,7 +161,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		options.add(new BooleanConfigOption("getAllSuperClasses", "If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.", true));
 
 		options.add(new BooleanConfigOption("learnDomain", "learns the Domain for a Role"));
-		options.add(new StringConfigOption("role", "role to learn Domain from"));
+		options.add(new BooleanConfigOption("learnRange", "learns the Range for a Role"));
+		options.add(new StringConfigOption("role", "role to learn Domain/Range from"));
 		options.add(new StringConfigOption("blankNodeIdentifier",
 				"used to identify blanknodes in Tripels"));
 
@@ -214,6 +216,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			getAllSuperClasses = (Boolean) entry.getValue();
 		} else if (option.equals("learnDomain")) {
 			learnDomain = (Boolean) entry.getValue();
+		}else if (option.equals("learnRange")) {
+			learnRange = (Boolean) entry.getValue();
 		} else if (option.equals("role")) {
 			role = (String) entry.getValue();
 		} else if (option.equals("blankNodeIdentifier")) {
@@ -260,32 +264,76 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		}
 
 		// get Options for Filters
-		System.out.println("aaa"+predefinedFilter);
+		
 		if (predefinedFilter >= 1) {
 			sqt = PredefinedFilter.getFilter(predefinedFilter);
 
 		} else {
 			sqt = new SparqlQueryType("forbid", objList, predList, useLits + "");
-			System.out.println(sqt);
+			
 		}
 		// give everything to the manager
 		m.useConfiguration(sqt, sse, man, recursionDepth, getAllSuperClasses);
 		try {
 			String ont = "";
 			// used to learn a domain of a role
-			if (learnDomain) {
-				instances = m.getDomainInstancesForRole(role);
+			if (learnDomain || learnRange) {
+				Set<String> pos=new HashSet<String>();
+				Set<String> neg=new HashSet<String>();
+				if(learnDomain){
+					pos = m.getDomainInstancesForRole(role);
+					neg = m.getRangeInstancesForRole(role);
+				}else if(learnRange){
+					neg = m.getDomainInstancesForRole(role);
+					pos = m.getRangeInstancesForRole(role);
+				}
+				//choose 30
+				
+				
+					Set<String> tmp=new HashSet<String>();
+					for(String one:pos){
+						tmp.add(one);
+						if(tmp.size()>=5)break;
+					}
+					pos=tmp;
+					System.out.println(pos.size());
+					
+					tmp=new HashSet<String>();
+					for(String one:neg){
+						tmp.add(one);
+						if(tmp.size()>=5)break;
+					}
+					neg=tmp;
+					
+					instances=new HashSet<String>();
+					instances.addAll(	pos);
+					
+					instances.addAll(neg);
+					
+					for(String one:pos){
+						System.out.println("+\""+one+"\"");
+					}
+					for(String one:neg){
+						System.out.println("-\""+one+"\"");
+					}
+				
+				/*Random r= new Random();
+				
+				
+				Object[] arr=instances.toArray();
+					while(instances.size()>=30){
+					
+					}*/
 				// add the role to the filter(a solution is always EXISTS
 				// role.TOP)
 				m.addPredicateFilter(role);
 				//System.out.println(instances);
 				// THIS is a workaround 
-				for(String one:instances){
-					System.out.println("+\""+one+"\"");
-				}
+				
 			}
 			// the actual extraction is started here
 			ont = m.extract(instances);
+			System.out.println("Finished collecting Fragment");
 
 			if (dumpToFile) {
 				String filename = System.currentTimeMillis() + ".nt";
