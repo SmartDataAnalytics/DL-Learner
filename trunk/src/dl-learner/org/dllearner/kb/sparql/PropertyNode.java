@@ -23,6 +23,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.dllearner.utilities.StringTuple;

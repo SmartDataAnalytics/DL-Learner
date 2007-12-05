@@ -22,6 +22,8 @@ package org.dllearner.kb.sparql;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.utilities.StringTuple;
 
@@ -53,6 +55,7 @@ public class Manager {
 		Set<StringTuple> t = this.typedSparqlQuery.getTupelsForRole(u);
 		Set<String> ret = new HashSet<String>();
 		for (StringTuple one : t) {
+			
 			ret.add(one.a);
 		}
 		return ret;
@@ -68,6 +71,7 @@ public class Manager {
 		Set<StringTuple> t = this.typedSparqlQuery.getTupelsForRole(u);
 		Set<String> ret = new HashSet<String>();
 		for (StringTuple one : t) {
+			
 			ret.add(one.b);
 		}
 		return ret;
@@ -91,7 +95,7 @@ public class Manager {
 		// this.TypedSparqlQuery.query(uri);
 		// System.out.println(ExtractionAlgorithm.getFirstNode(uri));
 		System.out.println("Start extracting");
-		Set<String> ret = new HashSet<String>();
+		SortedSet<String> ret = new TreeSet<String>();
 
 		for (String one : instances) {
 			try {
@@ -101,12 +105,26 @@ public class Manager {
 				e.printStackTrace();
 			}
 		}
-
-		String nt = "";
-		for (String str : ret) {
-			nt += str + "\n";
+		System.out.println("Finished extracting, start conversion");
+		StringBuffer nt = new StringBuffer();
+		Object[] arr=ret.toArray();
+		for (int i = 0; i < arr.length; i++) {
+			nt.append((String) arr[i]+"\n");
+			if(i%1000==0)System.out.println(i+" of  "+arr.length+" triples done");
 		}
-		return nt;
+		/*
+		 String tmp="";
+		while ( ret.size() > 0) {
+			tmp=ret.first();
+			nt+=tmp;
+			ret.remove(tmp);
+			System.out.println(ret.size());
+			
+		}
+		/*for (String str : ret) {
+			nt += str + "\n";
+		}*/
+		return nt.toString();
 	}
 
 	public void addPredicateFilter(String str) {

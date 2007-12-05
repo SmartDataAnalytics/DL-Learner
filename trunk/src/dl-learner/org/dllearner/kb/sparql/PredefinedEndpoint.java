@@ -76,6 +76,22 @@ public class PredefinedEndpoint {
 		}
 		return new SpecificSparqlEndpoint(u, "www4.wiwiss.fu-berlin.de", m);
 	}
+	
+	/*
+	 * it only has 4 classes
+	 public static SpecificSparqlEndpoint dblp() {
+		URL u = null;
+		HashMap<String, String> m = new HashMap<String, String>();
+		// m.put("default-graph-uri", "http://dbpedia.org");
+		// m.put("format", "application/sparql-results.xml");
+		try {
+			u = new URL("http://www4.wiwiss.fu-berlin.de/dblp/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SpecificSparqlEndpoint(u, "www4.wiwiss.fu-berlin.de", m);
+	}
+	*/
 	public static SpecificSparqlEndpoint govTrack() {
 		URL u = null;
 		HashMap<String, String> m = new HashMap<String, String>();
@@ -87,6 +103,56 @@ public class PredefinedEndpoint {
 			e.printStackTrace();
 		}
 		return new SpecificSparqlEndpoint(u, "www.rdfabout.com", m);
+	}
+	public static SpecificSparqlEndpoint revyu() {
+		URL u = null;
+		HashMap<String, String> m = new HashMap<String, String>();
+		// m.put("default-graph-uri", "http://dbpedia.org");
+		// m.put("format", "application/sparql-results.xml");
+		//http://revyu.com/sparql?query=SELECT DISTINCT * WHERE {[] a ?c}
+		try {
+			u = new URL("http://revyu.com/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SpecificSparqlEndpoint(u, "revyu.com", m);
+	}
+	
+	// returns strange xml
+	/*public static SpecificSparqlEndpoint dbtune() {
+		URL u = null;
+		HashMap<String, String> m = new HashMap<String, String>();
+		// m.put("default-graph-uri", "http://dbpedia.org");
+		// m.put("format", "application/sparql-results.xml");
+		//http://dbtune.org:2020/sparql/?query=SELECT DISTINCT * WHERE {[] a ?c}Limit 10 
+		http://dbtune.org:2020/evaluateQuery?repository=default&serialization=rdfxml&queryLanguage=SPARQL&query=SELECT+DISTINCT+*+WHERE+%7B%5B%5D+a+%3Fc%7D
+			&resultFormat=xml
+			&resourceFormat=ns&entailment=none
+			http://dbtune.org:2020/evaluateQuery	
+			?repository=default&serialization=rdfxml&queryLanguage=SPARQL
+					&query=SELECT+DISTINCT+*+WHERE+%7B%5B%5D+a+%3Fc%7D
+			&resultFormat=xml
+			&resourceFormat=ns&entailment=none
+		try {
+			u = new URL("http://dbtune.org:2020/sparql/");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SpecificSparqlEndpoint(u, "dbtune.org", m);
+	}*/
+	
+	public static SpecificSparqlEndpoint myopenlink() {
+		URL u = null;
+		HashMap<String, String> m = new HashMap<String, String>();
+		m.put("default-graph-uri", "http://myopenlink.net/dataspace");
+		 m.put("format", "application/sparql-results.xml");
+		//http://myopenlink.net:8890/sparql/?query=select+distinct+%3FConcept+where+%7B%5B%5D+a+%3FConcept%7D
+		try {
+			u = new URL("http://myopenlink.net:8890/sparql/");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SpecificSparqlEndpoint(u, "myopenlink.net", m);
 	}
 	
 }
