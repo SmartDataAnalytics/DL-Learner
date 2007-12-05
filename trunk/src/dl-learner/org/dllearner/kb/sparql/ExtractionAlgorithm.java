@@ -94,6 +94,7 @@ public class ExtractionAlgorithm {
 				Node next = classes.remove(0);
 				System.out.println("Expanding: " + next);
 				classes.addAll(next.expand(tsp, manipulator));
+				if (classes.size()>=500){break;}
 			}
 
 		}

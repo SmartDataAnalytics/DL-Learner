@@ -31,6 +31,10 @@ public class PredefinedEndpoint {
 			return dbpediaEndpoint();
 		case 2:
 			return localJoseki();
+		case 3: 
+			return worldFactBook();
+		case 4: 
+			return govTrack();
 		}
 		return null;
 	}
@@ -60,4 +64,29 @@ public class PredefinedEndpoint {
 		}
 		return new SpecificSparqlEndpoint(u, "localost", m);
 	}
+	public static SpecificSparqlEndpoint worldFactBook() {
+		URL u = null;
+		HashMap<String, String> m = new HashMap<String, String>();
+		// m.put("default-graph-uri", "http://dbpedia.org");
+		// m.put("format", "application/sparql-results.xml");
+		try {
+			u = new URL("http://www4.wiwiss.fu-berlin.de/factbook/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SpecificSparqlEndpoint(u, "www4.wiwiss.fu-berlin.de", m);
+	}
+	public static SpecificSparqlEndpoint govTrack() {
+		URL u = null;
+		HashMap<String, String> m = new HashMap<String, String>();
+		// m.put("default-graph-uri", "http://dbpedia.org");
+		// m.put("format", "application/sparql-results.xml");
+		try {
+			u = new URL("http://www.rdfabout.com/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SpecificSparqlEndpoint(u, "www.rdfabout.com", m);
+	}
+	
 }
