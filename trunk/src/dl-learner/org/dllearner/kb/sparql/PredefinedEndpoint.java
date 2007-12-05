@@ -35,6 +35,10 @@ public class PredefinedEndpoint {
 			return worldFactBook();
 		case 4: 
 			return govTrack();
+		case 5:
+			return revyu();
+		case 6:
+			return myopenlink();
 		}
 		return null;
 	}
