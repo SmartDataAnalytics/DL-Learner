@@ -31,7 +31,7 @@ public class PredefinedFilter {
 		case 1:
 			return YagoFilter();
 		case 2: 
-			return CategoriesOnly();
+			return SKOS();
 		}
 		return null;
 	}
@@ -64,15 +64,16 @@ public class PredefinedFilter {
 		return new SparqlQueryType("forbid", obj, pred, "false");
 	}
 	
-	public static SparqlQueryType CategoriesOnly(){
+	public static SparqlQueryType SKOS(){
 			Set<String> pred = new HashSet<String>();
-			pred.add("http://www.w3.org/2004/02/skos/core");
+			//pred.add("http://www.w3.org/2004/02/skos/core");
 			pred.add("http://www.w3.org/2002/07/owl#sameAs");
 			pred.add("http://xmlns.com/foaf/0.1/");
 			
 			pred.add("http://dbpedia.org/property/reference");
 			pred.add("http://dbpedia.org/property/website");
 			pred.add("http://dbpedia.org/property/wikipage");
+			pred.add("http://www.w3.org/2004/02/skos/core#narrower");
 			pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 
 			Set<String> obj = new HashSet<String>();
@@ -85,7 +86,7 @@ public class PredefinedFilter {
 			obj.add("http://www.geonames.org");
 			obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
 			obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
-			obj.add("http://www.w3.org/2004/02/skos/core");
+			
 			
 			obj.add("http://dbpedia.org/class/yago");
 			obj.add("http://dbpedia.org/resource/Template");
