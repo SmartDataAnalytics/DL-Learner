@@ -36,6 +36,8 @@ import org.dllearner.utilities.StringTuple;
 
 // can execute different queries
 public class TypedSparqlQuery {
+	boolean print_flag=false;
+	boolean debug_no_cache=false;
 	private Configuration configuration;
 	// private SparqlHTTPRequest SparqlHTTPRequest;
 	private SparqlQueryMaker sparqlQueryMaker;
@@ -68,13 +70,25 @@ public class TypedSparqlQuery {
 		return s;
 
 	}
+	public Set<StringTuple> getTupelsForRole(URI u,boolean domain) {
+
+		// getQuery
+		String sparql = sparqlQueryMaker.makeRoleQueryUsingFilters(u.toString(),domain);
+
+		Set<StringTuple> s = cachedSparql(u, sparql, "subject", "object");
+		// System.out.println(s);
+		return s;
+
+	}
 
 	
 	// uses a cache 
 	private Set<StringTuple> cachedSparql(URI u, String sparql, String a, String b) {
 		// check cache
 		String FromCache = cache.get(u.toString(), sparql);
-
+		if(debug_no_cache) {
+			FromCache=null;
+			}
 		String xml = null;
 		// if not in cache get it from EndPoint
 		if (FromCache == null) {
@@ -84,9 +98,11 @@ public class TypedSparqlQuery {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// System.out.println(sparql);
+			p(sparql);
 			// System.out.println(xml);
-			cache.put(u.toString(), sparql, xml);
+			if(!debug_no_cache) {
+				cache.put(u.toString(), sparql, xml);
+			}
 			//System.out.print("\n");
 		} else {
 			xml = FromCache;
@@ -134,16 +150,20 @@ public class TypedSparqlQuery {
 	}
 
 	private String sendAndReceiveSPARQL(String sparql) throws IOException {
+		p("sendAndReceiveSPARQL");
 		StringBuilder answer = new StringBuilder();
+		//sparql="SELECT * WHERE {?a ?b ?c}LIMIT 10";
 
 		// String an Sparql-Endpoint schicken
 		HttpURLConnection connection;
 		SpecificSparqlEndpoint se = configuration.getSparqlEndpoint();
-
+		p("URL: "+se.getURL());
+		p("Host: "+se.getHost());
+		
 		connection = (HttpURLConnection) se.getURL().openConnection();
 		connection.setDoOutput(true);
 
-		connection.addRequestProperty("Host", se.getHost());
+		//connection.addRequestProperty("Host", se.getHost());
 		connection.addRequestProperty("Connection", "close");
 		connection
 				.addRequestProperty(
@@ -155,7 +175,7 @@ public class TypedSparqlQuery {
 				.addRequestProperty(
 						"User-Agent",
 						"Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4 Web-Sniffer/1.0.24");
-
+		
 		OutputStream os = connection.getOutputStream();
 		OutputStreamWriter osw = new OutputStreamWriter(os);
 
@@ -167,9 +187,9 @@ public class TypedSparqlQuery {
 			FullURI += "" + URLEncoder.encode(element, "UTF-8") + "="
 					+ URLEncoder.encode(se.getParameters().get(element), "UTF-8") + "&";
 		}
-		// System.out.println(FullURI);
+		
 		FullURI += "" + se.getHasQueryParameter() + "=" + URLEncoder.encode(sparql, "UTF-8");
-
+		p(FullURI);
 		osw.write(FullURI);
 		osw.close();
 
@@ -186,8 +206,13 @@ public class TypedSparqlQuery {
 		} while (line != null);
 
 		br.close();
-
+		p(answer.toString());
 		return answer.toString();
+	}
+	public void p(String str){
+		if(print_flag){
+			System.out.println(str);
+		}
 	}
 
 }

@@ -32,13 +32,13 @@ public class PredefinedEndpoint {
 		case 2:
 			return localJoseki();
 		case 3: 
-			return worldFactBook();
-		case 4: 
 			return govTrack();
-		case 5:
+		case 4:
 			return revyu();
-		case 6:
+		case 5:
 			return myopenlink();
+		case 6: 
+			return worldFactBook();
 		}
 		return null;
 	}
@@ -66,7 +66,7 @@ public class PredefinedEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new SpecificSparqlEndpoint(u, "localost", m);
+		return new SpecificSparqlEndpoint(u, "localhost", m);
 	}
 	public static SpecificSparqlEndpoint worldFactBook() {
 		URL u = null;

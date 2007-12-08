@@ -85,9 +85,11 @@ public class SparqlQueryType {
 		int i = 0;
 		for (; i < predicatefilterlist.length; i++) {
 			tmp[i] = predicatefilterlist[i];
-
+			//System.out.println(tmp[i]);
 		}
 		tmp[i] = filter;
+		predicatefilterlist=tmp;
+		//System.out.println("added filter: "+filter);
 
 	}
 

@@ -21,7 +21,8 @@ package org.dllearner.kb.sparql;
 
 // can assemble sparql queries 
 public class SparqlQueryMaker {
-
+	String lineend="\n";
+	boolean print_flag=false;
 	/* can make queries for subject, predicate, object
 	 * according to the filter settings
 	 * object not yet implemented
@@ -35,26 +36,47 @@ public class SparqlQueryMaker {
 	}
 
 	public String makeSubjectQueryUsingFilters(String subject) {
-		String lineend = "\n";
+		
 		String Filter = internalFilterAssemblySubject();
 		String ret = "SELECT * WHERE { " + lineend + "<" + subject + "> ?predicate ?object. "
 				+ lineend + "FILTER( " + lineend + "(" + Filter + ").}";
 		// System.out.println(ret);
+		//System.out.println(sparqlQueryType.getPredicatefilterlist().length);
 		return ret;
 	}
 
 	public String makeRoleQueryUsingFilters(String role) {
-		String lineend = "\n";
+		
 		String Filter = internalFilterAssemblyRole();
-		String ret = "SELECT * WHERE { " + lineend + "?subject <" + role + "> ?object. " + lineend
+		String ret = "SELECT * WHERE { " + lineend + " ?subject <" + role + "> ?object. " + lineend
 				+ "FILTER( " + lineend + "(" + Filter + ").}";
 		// System.out.println(ret);
 
 		return ret;
 	}
+	public String makeRoleQueryUsingFilters(String role,boolean domain) {
+		
+		String Filter = internalFilterAssemblyRole();
+		String ret="";
+		if(domain){
+			ret = "SELECT * WHERE { " + lineend + 
+				"?subject <" + role + "> ?object; a []. " + lineend
+				+ "FILTER( " + lineend + "(" + Filter + ").}";
+		// System.out.println(ret);
+		}else{
+			 ret = "SELECT * WHERE { " + lineend + 
+			"?object a [] . " +
+			"?subject <" + role + "> ?object . " + lineend
+			+ "FILTER( " + lineend + "(" + Filter + ").}";
+			
+		}
+		//System.out.println(ret);
+
+		return ret;
+	}
 
 	private String internalFilterAssemblySubject() {
-		String lineend = "\n";
+		
 		String Filter = "";
 		if (!this.sparqlQueryType.isLiterals())
 			Filter += "!isLiteral(?object))";
@@ -68,7 +90,7 @@ public class SparqlQueryMaker {
 	}
 
 	private String internalFilterAssemblyRole() {
-		String lineend = "\n";
+		
 		String Filter = "";
 		if (!this.sparqlQueryType.isLiterals())
 			Filter += "!isLiteral(?object))";
@@ -91,5 +113,11 @@ public class SparqlQueryMaker {
 
 	public String filterObject(String ns) {
 		return "&&( !regex(str(?object), '" + ns + "') )";
+	}
+	
+	public void p(String str){
+		if(print_flag){
+			System.out.println(str);
+		}
 	}
 }
