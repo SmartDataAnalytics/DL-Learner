@@ -84,7 +84,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 
 	private boolean learnDomain = false;
 	private boolean learnRange = false;
-	private String role;
+	private int numberOfInstancesUsedForRoleLearning=40;
+	private String role="";
 	private String blankNodeIdentifier = "bnode";
 	
 	LinkedList<StringTuple> URIParameters = new LinkedList<StringTuple>();
@@ -170,7 +171,9 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		options.add(new StringTupleListConfigOption("replacePredicate", "rule for replacing predicates"));
 		options.add(new StringTupleListConfigOption("replaceObject", "rule for replacing predicates"));
 		options.add(new IntegerConfigOption("breakSuperClassRetrievalAfter", "stops a cyclic hierarchy after specified number of classes"));
+		options.add(new IntegerConfigOption("numberOfInstancesUsedForRoleLearning", ""));
 
+		
 		
 		return options;
 	}
@@ -230,6 +233,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			replaceObject = (LinkedList)entry.getValue();
 		}else if (option.equals("breakSuperClassRetrievalAfter")) {
 			breakSuperClassRetrievalAfter = (Integer) entry.getValue();
+		}else if (option.equals("numberOfInstancesUsedForRoleLearning")) {
+			numberOfInstancesUsedForRoleLearning = (Integer) entry.getValue();
 		}
 		
 	}
@@ -279,12 +284,12 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			// used to learn a domain of a role
 			if (learnDomain || learnRange) {
 				Set<String> pos=new HashSet<String>();
-				Set<String> neg=new HashSet<String>();
+				//Set<String> neg=new HashSet<String>();
 				if(learnDomain){
 					pos = m.getDomainInstancesForRole(role);
-					neg = m.getRangeInstancesForRole(role);
+					//neg = m.getRangeInstancesForRole(role);
 				}else if(learnRange){
-					neg = m.getDomainInstancesForRole(role);
+					//neg = m.getDomainInstancesForRole(role);
 					pos = m.getRangeInstancesForRole(role);
 				}
 				//choose 30
@@ -293,29 +298,29 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 					Set<String> tmp=new HashSet<String>();
 					for(String one:pos){
 						tmp.add(one);
-						if(tmp.size()>=5)break;
+						if(tmp.size()>=numberOfInstancesUsedForRoleLearning)break;
 					}
 					pos=tmp;
-					System.out.println(pos.size());
+					System.out.println("Instances used: "+pos.size());
 					
-					tmp=new HashSet<String>();
+					/*tmp=new HashSet<String>();
 					for(String one:neg){
 						tmp.add(one);
 						if(tmp.size()>=5)break;
 					}
-					neg=tmp;
+					neg=tmp;*/
 					
 					instances=new HashSet<String>();
-					instances.addAll(	pos);
+					instances.addAll(pos);
 					
-					instances.addAll(neg);
+					//instances.addAll(neg);
 					
 					for(String one:pos){
 						System.out.println("+\""+one+"\"");
 					}
-					for(String one:neg){
+					/*for(String one:neg){
 						System.out.println("-\""+one+"\"");
-					}
+					}*/
 				
 				/*Random r= new Random();
 				
