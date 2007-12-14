@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.Vector;
 
 // abstract class 
-public abstract class Node {
+public abstract class Node implements Comparable{
 	URI uri;
 	protected String type;
 	protected boolean expanded = false;
@@ -33,9 +33,9 @@ public abstract class Node {
 		this.uri = u;
 	}
 
-	public abstract Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m);
+	public abstract Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m);
 
-	public abstract Vector<Node> expandProperties(TypedSparqlQuery tsq, Manipulator m);
+	public abstract Vector<Node> expandProperties(TypedSparqlQueryInterface tsq, Manipulator m);
 
 	public abstract Set<String> toNTriple();
 
@@ -47,6 +47,13 @@ public abstract class Node {
 
 	public URI getURI() {
 		return uri;
+	}
+	public boolean equals(Node n){
+		if(this.uri.equals(n.uri))return true;
+		else return false;
+	}
+	public int compareTo(Node n){
+		return this.uri.toString().compareTo(n.uri.toString());
 	}
 
 }

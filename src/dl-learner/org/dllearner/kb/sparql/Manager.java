@@ -52,7 +52,7 @@ public class Manager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Set<StringTuple> t = this.typedSparqlQuery.getTupelsForRole(u, true);
+		Set<StringTuple> t = ((TypedSparqlQuery)this.typedSparqlQuery).getTupelsForRole(u, true);
 		Set<String> ret = new HashSet<String>();
 		for (StringTuple one : t) {
 			
@@ -68,7 +68,7 @@ public class Manager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Set<StringTuple> t = this.typedSparqlQuery.getTupelsForRole(u,false);
+		Set<StringTuple> t = ((TypedSparqlQuery)this.typedSparqlQuery).getTupelsForRole(u,false);
 		Set<String> ret = new HashSet<String>();
 		for (StringTuple one : t) {
 			

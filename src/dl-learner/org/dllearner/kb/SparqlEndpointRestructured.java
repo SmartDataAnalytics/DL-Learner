@@ -80,7 +80,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	private boolean dumpToFile = true;
 	private boolean useLits = false;
 	private boolean getAllSuperClasses = true;
-	private int breakSuperClassRetrievalAfter = 500;
+	private int breakSuperClassRetrievalAfter = 200;
 
 	private boolean learnDomain = false;
 	private boolean learnRange = false;
@@ -281,15 +281,16 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		m.useConfiguration(sqt, sse, man, recursionDepth, getAllSuperClasses);
 		try {
 			String ont = "";
+			System.out.println(learnDomain);
 			// used to learn a domain of a role
 			if (learnDomain || learnRange) {
 				Set<String> pos=new HashSet<String>();
-				//Set<String> neg=new HashSet<String>();
+				Set<String> neg=new HashSet<String>();
 				if(learnDomain){
 					pos = m.getDomainInstancesForRole(role);
-					//neg = m.getRangeInstancesForRole(role);
+					neg = m.getRangeInstancesForRole(role);
 				}else if(learnRange){
-					//neg = m.getDomainInstancesForRole(role);
+					neg = m.getDomainInstancesForRole(role);
 					pos = m.getRangeInstancesForRole(role);
 				}
 				//choose 30
@@ -303,24 +304,24 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 					pos=tmp;
 					System.out.println("Instances used: "+pos.size());
 					
-					/*tmp=new HashSet<String>();
+					tmp=new HashSet<String>();
 					for(String one:neg){
 						tmp.add(one);
-						if(tmp.size()>=5)break;
+						if(tmp.size()>=numberOfInstancesUsedForRoleLearning)break;
 					}
-					neg=tmp;*/
+					neg=tmp;
 					
 					instances=new HashSet<String>();
 					instances.addAll(pos);
 					
-					//instances.addAll(neg);
+					instances.addAll(neg);
 					
 					for(String one:pos){
 						System.out.println("+\""+one+"\"");
 					}
-					/*for(String one:neg){
+					for(String one:neg){
 						System.out.println("-\""+one+"\"");
-					}*/
+					}
 				
 				/*Random r= new Random();
 				

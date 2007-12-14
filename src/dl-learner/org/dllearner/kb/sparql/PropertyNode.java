@@ -23,13 +23,11 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import org.dllearner.utilities.StringTuple;
 
-public class PropertyNode extends Node {
+public class PropertyNode extends Node implements Comparable{
 
 	// the a and b part of a property
 	private Node a;
@@ -52,7 +50,7 @@ public class PropertyNode extends Node {
 	}
 
 	@Override
-	public Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m) {
+	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m) {
 		Set<StringTuple> s = tsq.query(uri);
 		Vector<Node> Nodes = new Vector<Node>();
 		// Manipulation
@@ -75,7 +73,7 @@ public class PropertyNode extends Node {
 	
 	// gets the types for properties recursively
 	@Override
-	public Vector<Node> expandProperties(TypedSparqlQuery tsq, Manipulator m) {
+	public Vector<Node> expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
 		b.expandProperties(tsq, m);
 		return this.expand(tsq, m);
 	}
@@ -97,6 +95,22 @@ public class PropertyNode extends Node {
 		}
 
 		return s;
+	}
+	
+	@Override
+	public boolean equals(Node n){
+		if(this.uri.equals(n.uri))return true;
+		else return false;
+	}
+	@Override
+	public int compareTo(Object n){
+		return 0;
+		//
+	}
+	@Override
+	public int compareTo(Node n){
+		return super.compareTo(n);
+		//
 	}
 
 }
