@@ -35,52 +35,36 @@ import java.util.Set;
 import org.dllearner.utilities.StringTuple;
 
 // can execute different queries
-public class TypedSparqlQuery implements TypedSparqlQueryInterface{
+public class TypedSparqlQueryClasses implements TypedSparqlQueryInterface{
 	boolean print_flag=false;
-	boolean debug_no_cache=false;// true means no cahce is used
+	boolean debug_no_cache=false;
 	private Configuration configuration;
 	// private SparqlHTTPRequest SparqlHTTPRequest;
-	private SparqlQueryMaker sparqlQueryMaker;
+	//private SparqlQueryMaker sparqlQueryMaker;
 	Cache cache;
 
-	public TypedSparqlQuery(Configuration Configuration) {
-		this.configuration = Configuration;
-		// this.SparqlHTTPRequest = new
-		// SparqlHTTPRequest(Configuration.getSparqlEndpoint());
-		this.sparqlQueryMaker = new SparqlQueryMaker(Configuration.getSparqlQueryType());
+	
+	public TypedSparqlQueryClasses(Configuration configuration) {
+		this.configuration = configuration;
 		this.cache = new Cache("cache");
 	}
+	
 	// standard query get a tupels (p,o) for subject s
 	public Set<StringTuple> query(URI u) {
 
 		// getQuery
-		String sparql = sparqlQueryMaker.makeSubjectQueryUsingFilters(u.toString());
+		String sparql = "SELECT ?predicate ?object " +
+				"WHERE {" +
+				"<"+u.toString()+"> ?predicate ?object;" +
+						"a ?object . " +
+		" FILTER (!regex(str(?object),'http://xmlns.com/foaf/0.1/'))"+
+						"}";
+			
 		return cachedSparql(u, sparql, "predicate", "object");
 
 	}
 
-	// query get a tupels (s,o) for role p
-	public Set<StringTuple> getTupelsForRole(URI u) {
-
-		// getQuery
-		String sparql = sparqlQueryMaker.makeRoleQueryUsingFilters(u.toString());
-
-		Set<StringTuple> s = cachedSparql(u, sparql, "subject", "object");
-		// System.out.println(s);
-		return s;
-
-	}
-	public Set<StringTuple> getTupelsForRole(URI u,boolean domain) {
-
-		// getQuery
-		String sparql = sparqlQueryMaker.makeRoleQueryUsingFilters(u.toString(),domain);
-
-		Set<StringTuple> s = cachedSparql(u, sparql, "subject", "object");
-		// System.out.println(s);
-		return s;
-
-	}
-
+	
 	
 	// uses a cache 
 	private Set<StringTuple> cachedSparql(URI u, String sparql, String a, String b) {
@@ -257,7 +241,5 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface{
 			System.out.println(str);
 		}
 	}
-	
-	
 
 }

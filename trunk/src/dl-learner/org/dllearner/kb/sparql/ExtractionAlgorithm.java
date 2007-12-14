@@ -20,6 +20,10 @@
 package org.dllearner.kb.sparql;
 
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 // this class is used to extract the information recursively
@@ -29,6 +33,8 @@ public class ExtractionAlgorithm {
 	private Manipulator manipulator;
 	private int recursionDepth = 2;
 	private boolean getAllBackground = true;
+	private boolean closeAfterRecursion = true;
+	private boolean print_flag=false;
 
 	public ExtractionAlgorithm(Configuration Configuration) {
 		this.configuration = Configuration;
@@ -42,7 +48,7 @@ public class ExtractionAlgorithm {
 		return new InstanceNode(u);
 	}
 
-	public Vector<Node> expandAll(URI[] u, TypedSparqlQuery tsp) {
+	public Vector<Node> expandAll(URI[] u, TypedSparqlQueryInterface tsp) {
 		Vector<Node> v = new Vector<Node>();
 		for (URI one : u) {
 			v.add(expandNode(one, tsp));
@@ -55,11 +61,12 @@ public class ExtractionAlgorithm {
 	 cave: the recursion is not a recursion anymore,
 	 it was transformed to an iteration
 	*/
-	public Node expandNode(URI u, TypedSparqlQuery tsp) {
+	public Node expandNode(URI u, TypedSparqlQueryInterface tsp) {
+		long time=System.currentTimeMillis();
 		Node n = getFirstNode(u);
 		Vector<Node> v = new Vector<Node>();
 		v.add(n);
-		System.out.println("StartVector: " + v);
+		p("StartVector: " + v);
 		// n.expand(tsp, this.Manipulator);
 		// Vector<Node> second=
 		for (int x = 1; x <= recursionDepth; x++) {
@@ -67,7 +74,7 @@ public class ExtractionAlgorithm {
 			Vector<Node> tmp = new Vector<Node>();
 			while (v.size() > 0) {
 				Node tmpNode = v.remove(0);
-				System.out.println("Expanding " + tmpNode);
+				p("Expanding " + tmpNode);
 				// System.out.println(this.Manipulator);
 				
 				// these are the new not expanded nodes
@@ -77,29 +84,74 @@ public class ExtractionAlgorithm {
 				tmp.addAll(tmpVec);
 			}
 			v = tmp;
-			System.out
-					.println("Recursion counter: " + x + " with " + v.size() + " Nodes remaining");
+			System.out.println("Recursion counter: " + x + 
+					" with " + v.size() + " Nodes remaining, needed: "
+					+(System.currentTimeMillis()-time));
+			time=System.currentTimeMillis();
 		}
 		
+		HashSet<String> hadAlready=new HashSet<String>();
 		// gets All Class Nodes and expands them further
 		if (this.getAllBackground) {
+			//Set<Node> classes = new TreeSet<Node>();
 			Vector<Node> classes = new Vector<Node>();
+			
+			Vector<Node> instances = new Vector<Node>();
 			for (Node one : v) {
 				if (one instanceof ClassNode) {
 					classes.add(one);
 				}
+				if (one instanceof InstanceNode) {
+					instances.add(one);
+				}
+				
 			}
+			System.out.println(instances.size());
+			TypedSparqlQueryClasses tsqc=new TypedSparqlQueryClasses(configuration);
+			if(closeAfterRecursion){
+				while (instances.size() > 0) {
+					p("Getting classes for remaining instances: " + instances.size());
+					Node next = instances.remove(0);
+					p("Getting classes for: " + next);
+					classes.addAll(next.expand(tsqc, manipulator));
+					if (classes.size()>=manipulator.breakSuperClassRetrievalAfter){break;}
+				}
+			}
+			Vector<Node>tmp=new Vector<Node>();
+			int i=0;
 			while (classes.size() > 0) {
-				System.out.println("Remaining classes: " + classes.size());
+				p("Remaining classes: " + classes.size());
+				//Iterator<Node> it=classes.iterator();
+				//Node next =(Node) it.next();
+				//classes.remove(next);
 				Node next = classes.remove(0);
-				System.out.println("Expanding: " + next);
-				classes.addAll(next.expand(tsp, manipulator));
-				if (classes.size()>=manipulator.breakSuperClassRetrievalAfter){break;}
+				
+				if(!hadAlready.contains(next.uri.toString())){
+					p("Expanding: " + next);
+					//System.out.println(hadAlready.size());
+					hadAlready.add(next.uri.toString());
+					tmp=next.expand(tsp, manipulator);
+					classes.addAll(tmp);
+					tmp=new Vector<Node>();
+					if(i % 50==0)System.out.println("got "+i+" extra classes, max: "+manipulator.breakSuperClassRetrievalAfter);
+					i++;
+					if (i>=manipulator.breakSuperClassRetrievalAfter){break;}
+				}
+				//System.out.println("Skipping");
+				
+				
+				//if (classes.size()>=manipulator.breakSuperClassRetrievalAfter){break;}
+				
 			}
+			//System.out.println((System.currentTimeMillis()-time)+"");
 
 		}
 		return n;
 
+	}
+	
+	void p(String s){
+		if(print_flag)System.out.println(s);
 	}
 
 }

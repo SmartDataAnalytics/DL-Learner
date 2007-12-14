@@ -61,13 +61,15 @@ public class SparqlQueryMaker {
 		if(domain){
 			ret = "SELECT * WHERE { " + lineend + 
 				"?subject <" + role + "> ?object; a []. " + lineend
-				+ "FILTER( " + lineend + "(" + Filter + ").}";
+				+ "FILTER( " + lineend + "(" + Filter + ").}" ;
+						//"ORDER BY ?subject";
 		// System.out.println(ret);
 		}else{
 			 ret = "SELECT * WHERE { " + lineend + 
 			"?object a [] . " +
 			"?subject <" + role + "> ?object . " + lineend
 			+ "FILTER( " + lineend + "(" + Filter + ").}";
+			//"ORDER BY ?object";
 			
 		}
 		//System.out.println(ret);

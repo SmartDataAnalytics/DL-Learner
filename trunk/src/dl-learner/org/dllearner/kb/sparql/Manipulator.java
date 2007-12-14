@@ -49,7 +49,7 @@ public class Manipulator {
 		this.blankNodeIdentifier = blankNodeIdentifier;
 		this.replaceObject=replaceObject;
 		this.replacePredicate=replacePredicate;
-		
+		this.breakSuperClassRetrievalAfter=breakSuperClassRetrievalAfter;
 		Set<String> classproperties = new HashSet<String>();
 		classproperties.add(subclass);
 

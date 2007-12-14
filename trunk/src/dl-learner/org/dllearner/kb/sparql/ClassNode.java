@@ -40,7 +40,7 @@ public class ClassNode extends Node {
 
 	//expands all directly connected nodes
 	@Override
-	public Vector<Node> expand(TypedSparqlQuery tsq, Manipulator m) {
+	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m) {
 		Set<StringTuple> s = tsq.query(this.uri);
 		// see manipulator
 		s = m.check(s, this);
@@ -83,7 +83,7 @@ public class ClassNode extends Node {
 
 	// gets the types for properties recursively
 	@Override
-	public Vector<Node> expandProperties(TypedSparqlQuery tsq, Manipulator m) {
+	public Vector<Node> expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
 		// TODO return type doesn't make sense
 		return new Vector<Node>();
 	}
@@ -100,6 +100,17 @@ public class ClassNode extends Node {
 		}
 
 		return s;
+	}
+	
+	@Override
+	public int compareTo(Object n){
+		return super.compareTo((Node)n);
+		//
+	}
+	@Override
+	public int compareTo(Node n){
+		return super.compareTo(n);
+		//
 	}
 
 }
