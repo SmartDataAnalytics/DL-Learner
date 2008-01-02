@@ -59,6 +59,7 @@ public class ROLearner extends LearningAlgorithm {
 	private boolean useOverlyGeneralList = true;
 	private boolean useShortConceptConstruction = true;
 	private double horizontalExpansionFactor = 0.6;
+	private boolean improveSubsumptionHierarchy = true;
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
 	private boolean useNegation = true;	
@@ -236,6 +237,8 @@ public class ROLearner extends LearningAlgorithm {
 			useShortConceptConstruction = (Boolean) entry.getValue();
 		} else if(name.equals("horzontalExpansionFactor")) {
 			horizontalExpansionFactor = (Double) entry.getValue();
+		} else if(name.equals("improveSubsumptionHierarchy")) {
+			improveSubsumptionHierarchy = (Boolean) entry.getValue();
 		} else if(name.equals("useAllConstructor")) {
 			useAllConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useExistsConstructor")) {
@@ -297,7 +300,8 @@ public class ROLearner extends LearningAlgorithm {
 		// prepare subsumption and role hierarchies, because they are needed
 		// during the run of the algorithm
 		rs.prepareSubsumptionHierarchy(usedConcepts);
-		rs.getSubsumptionHierarchy().improveSubsumptionHierarchy();
+		if(improveSubsumptionHierarchy)
+			rs.getSubsumptionHierarchy().improveSubsumptionHierarchy();
 		rs.prepareRoleHierarchy(usedRoles);
 	}
 	
