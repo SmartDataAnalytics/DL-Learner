@@ -27,7 +27,7 @@ import java.util.Vector;
 
 import org.dllearner.utilities.StringTuple;
 
-public class PropertyNode extends Node implements Comparable{
+public class PropertyNode extends Node {
 
 	// the a and b part of a property
 	private Node a;
@@ -102,15 +102,10 @@ public class PropertyNode extends Node implements Comparable{
 		if(this.uri.equals(n.uri))return true;
 		else return false;
 	}
-	@Override
-	public int compareTo(Object n){
-		return 0;
-		//
-	}
+
 	@Override
 	public int compareTo(Node n){
 		return super.compareTo(n);
-		//
 	}
 
 }
