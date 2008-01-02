@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.Vector;
 
 // abstract class 
-public abstract class Node implements Comparable{
+public abstract class Node implements Comparable<Node> {
 	URI uri;
 	protected String type;
 	protected boolean expanded = false;

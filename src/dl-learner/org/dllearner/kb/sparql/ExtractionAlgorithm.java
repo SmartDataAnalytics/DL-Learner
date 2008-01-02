@@ -21,9 +21,6 @@ package org.dllearner.kb.sparql;
 
 import java.net.URI;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.Vector;
 
 // this class is used to extract the information recursively
