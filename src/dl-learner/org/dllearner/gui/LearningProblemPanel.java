@@ -1,3 +1,5 @@
+package org.dllearner.gui;
+
 /**
  * Copyright (C) 2007, Jens Lehmann
  *
@@ -17,27 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.gui;
 
-import java.util.List;
-
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import javax.swing.*;
 
 /**
- * @author Jens Lehmann
- *
+ * LearningProblemPanel
+ * 
+ * @author Tilo Hielscher
+ * 
  */
-public class ComponentRetrievalTest {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		ComponentManager cm = ComponentManager.getInstance();
-		List<Class<? extends KnowledgeSource>> sources = cm.getKnowledgeSources();
-		cm.knowledgeSource(sources.get(0));
-		System.out.println(sources.get(1).toString());
+public class LearningProblemPanel extends JPanel {
+	
+	private static final long serialVersionUID = -3819627680918930203L;
+
+	LearningProblemPanel() {
+		
 	}
-
 }
