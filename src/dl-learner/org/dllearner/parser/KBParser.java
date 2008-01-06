@@ -32,11 +32,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
                 KBParser parser = new KBParser(new FileInputStream(file));
                 return parser.KB();
         }
-        
-        public static KB parseKBFile(StringReader read) throws ParseException{
-        	KBParser parser = new KBParser(read);
-            return parser.KB();
-        }
 
   final public KB KB() throws ParseException {
         ConceptAssertion conceptAssertion;
