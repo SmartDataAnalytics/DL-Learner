@@ -22,7 +22,12 @@ package org.dllearner.kb.sparql;
 import java.net.URL;
 import java.util.HashMap;
 
-// one sparql endpoint configuration
+/**
+ * One sparql endpoint configuration.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class SpecificSparqlEndpoint {
 
 	String host;

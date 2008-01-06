@@ -27,7 +27,12 @@ import java.util.Vector;
 
 import org.dllearner.utilities.StringTuple;
 
-// a node in the graph that is an instance
+/**
+ * A node in the graph that is an instance.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class InstanceNode extends Node {
 
 	Set<ClassNode> classes = new HashSet<ClassNode>();

@@ -21,7 +21,12 @@ package org.dllearner.kb.sparql;
 
 import java.util.Set;
 
-// is used to set the filter: configuration
+/**
+ * Is used to set the filter: configuration.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class SparqlQueryType {
 	// TODO make sets out of them
 	

@@ -23,7 +23,11 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Vector;
 
-// this class is used to extract the information recursively
+/**
+ * This class is used to extract the information recursively.
+ * 
+ * @author Sebastian Hellmann
+ */
 public class ExtractionAlgorithm {
 
 	private Configuration configuration;

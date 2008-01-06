@@ -27,7 +27,11 @@ import java.util.Vector;
 
 import org.dllearner.utilities.StringTuple;
 
-// is a node in the graph that is a class
+/**
+ * Is a node in the graph that is a class.
+ * 
+ * @author Sebastian Hellmann
+ */
 public class ClassNode extends Node {
 	Set<PropertyNode> properties = new HashSet<PropertyNode>();
 

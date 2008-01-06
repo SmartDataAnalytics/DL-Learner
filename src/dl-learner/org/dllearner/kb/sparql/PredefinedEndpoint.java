@@ -22,7 +22,12 @@ package org.dllearner.kb.sparql;
 import java.net.URL;
 import java.util.HashMap;
 
-// holds some predefined endpoints
+/**
+ * Holds some predefined endpoints.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class PredefinedEndpoint {
 	public static SpecificSparqlEndpoint getEndpoint(int i) {
 

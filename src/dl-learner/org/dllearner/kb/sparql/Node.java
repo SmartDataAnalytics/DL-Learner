@@ -23,7 +23,12 @@ import java.net.URI;
 import java.util.Set;
 import java.util.Vector;
 
-// abstract class 
+/**
+ * Abstract class.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public abstract class Node implements Comparable<Node> {
 	URI uri;
 	protected String type;

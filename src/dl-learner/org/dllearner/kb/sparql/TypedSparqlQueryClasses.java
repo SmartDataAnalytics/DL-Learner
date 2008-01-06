@@ -34,7 +34,12 @@ import java.util.Set;
 
 import org.dllearner.utilities.StringTuple;
 
-// can execute different queries
+/**
+ * Can execute different queries.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class TypedSparqlQueryClasses implements TypedSparqlQueryInterface{
 	boolean print_flag=false;
 	boolean debug_no_cache=false;
@@ -113,9 +118,9 @@ public class TypedSparqlQueryClasses implements TypedSparqlQueryInterface{
 		String two = "binding name=\"" + b + "\"";
 		String endbinding= "binding";
 		String uri="uri";
-		String uridel = "<uri>";
+		//String uridel = "<uri>";
 		String bnode = "<bnode>";
-		String uriend = "</uri>";
+		//String uriend = "</uri>";
 		String predtmp = "";
 		String objtmp = "";
 		//System.out.println(getNextResult(xml));

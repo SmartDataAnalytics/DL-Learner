@@ -22,6 +22,12 @@ package org.dllearner.kb.sparql;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Predefined filters.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class PredefinedFilter {
   
 	    

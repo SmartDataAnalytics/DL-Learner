@@ -27,7 +27,12 @@ import java.util.TreeSet;
 
 import org.dllearner.utilities.StringTuple;
 
-// an object of this class encapsulates everything
+/**
+ * An object of this class encapsulates everything.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class Manager {
 
 	private Configuration configuration;

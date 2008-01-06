@@ -27,6 +27,12 @@ import java.util.Vector;
 
 import org.dllearner.utilities.StringTuple;
 
+/**
+ * Property node.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class PropertyNode extends Node {
 
 	// the a and b part of a property
@@ -78,7 +84,10 @@ public class PropertyNode extends Node {
 		return this.expand(tsq, m);
 	}
 	
-
+	public Node getA() {
+		return a;
+	}
+	
 	public Node getB() {
 		return b;
 	}

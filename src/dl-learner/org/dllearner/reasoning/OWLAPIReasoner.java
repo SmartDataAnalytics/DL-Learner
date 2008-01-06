@@ -37,6 +37,7 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.RoleHierarchy;
 import org.dllearner.core.dl.SubsumptionHierarchy;
@@ -69,10 +70,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private Set<KnowledgeSource> sources;
 	private OWLReasoner reasoner;
 	
-	private ConceptComparator conceptComparator = new ConceptComparator();
-	private RoleComparator roleComparator = new RoleComparator();
-	private SubsumptionHierarchy subsumptionHierarchy;
-	private RoleHierarchy roleHierarchy;	
+	// private ConceptComparator conceptComparator = new ConceptComparator();
+	// private RoleComparator roleComparator = new RoleComparator();
+	// private SubsumptionHierarchy subsumptionHierarchy;
+	// private RoleHierarchy roleHierarchy;	
 	
 	public OWLAPIReasoner(Set<KnowledgeSource> sources) {
 		this.sources = sources;
@@ -151,7 +152,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @see org.dllearner.core.Reasoner#getAtomicConcepts()
 	 */
 	public Set<AtomicConcept> getAtomicConcepts() {
-		// reasoner
+		// reasoner.
 		
 		// TODO Auto-generated method stub
 		return null;
@@ -189,6 +190,12 @@ public class OWLAPIReasoner extends ReasonerComponent {
 
 	}
 
+	@Override
+	public boolean subsumes(Concept superConcept, Concept subConcept) {
+		// reasoner.isSubClassOf(arg0, arg1);
+		return false;
+	}
+	
 	/**
 	 * Test 
 	 * 
