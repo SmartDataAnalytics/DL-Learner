@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.SortedSet;
@@ -35,18 +36,26 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Conjunction;
+import org.dllearner.core.dl.Disjunction;
+import org.dllearner.core.dl.Exists;
 import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.RoleHierarchy;
-import org.dllearner.core.dl.SubsumptionHierarchy;
+import org.dllearner.core.dl.MultiConjunction;
+import org.dllearner.core.dl.MultiDisjunction;
+import org.dllearner.core.dl.Negation;
+import org.dllearner.core.dl.Top;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.utilities.ConceptComparator;
-import org.dllearner.utilities.RoleComparator;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
+import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLNamedObject;
 import org.semanticweb.owl.model.OWLObjectProperty;
@@ -69,6 +78,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	private Set<KnowledgeSource> sources;
 	private OWLReasoner reasoner;
+	// the data factory is used to generate OWL API objects
+	private OWLDataFactory factory;
 	
 	// private ConceptComparator conceptComparator = new ConceptComparator();
 	// private RoleComparator roleComparator = new RoleComparator();
@@ -144,8 +155,11 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				e.printStackTrace();
 			}			
 		} else {
-			// .. insert Pellet code here
+			// instantiate Pellet reasoner
+			reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
 		}
+		
+		factory = manager.getOWLDataFactory();
 	}
 
 	/* (non-Javadoc)
@@ -192,9 +206,64 @@ public class OWLAPIReasoner extends ReasonerComponent {
 
 	@Override
 	public boolean subsumes(Concept superConcept, Concept subConcept) {
-		// reasoner.isSubClassOf(arg0, arg1);
+		try {
+			OWLDescription d1 = factory.getOWLClass(URI.create("a"));
+			OWLDescription d2 = factory.getOWLClass(URI.create("b"));
+			reasoner.isSubClassOf(d1, d2);			
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+		}
 		return false;
 	}
+	
+	public OWLDescription getOWLAPIDescription(Concept concept) {
+		if (concept instanceof AtomicConcept) {
+			return factory.getOWLClass(URI.create(((AtomicConcept)concept).getName()));
+		} else if (concept instanceof Bottom) {
+			return factory.getOWLNothing();
+		} else if (concept instanceof Top) {
+			return factory.getOWLThing();
+		} else if (concept instanceof Negation) {
+			return factory.getOWLObjectComplementOf(
+					getOWLAPIDescription(concept.getChild(0)));
+		} else if (concept instanceof Conjunction) {
+			OWLDescription d1 = getOWLAPIDescription(concept.getChild(0));
+			OWLDescription d2 = getOWLAPIDescription(concept.getChild(1));
+			Set<OWLDescription> d = new HashSet<OWLDescription>();
+			d.add(d1);
+			d.add(d2);
+			return factory.getOWLObjectIntersectionOf(d);
+		} else if (concept instanceof Disjunction) {
+			OWLDescription d1 = getOWLAPIDescription(concept.getChild(0));
+			OWLDescription d2 = getOWLAPIDescription(concept.getChild(1));
+			Set<OWLDescription> d = new HashSet<OWLDescription>();
+			d.add(d1);
+			d.add(d2);
+			return factory.getOWLObjectUnionOf(d);			
+		} else if (concept instanceof All) {
+			OWLObjectProperty role = factory.getOWLObjectProperty(
+					URI.create(((All) concept).getRole().getName()));
+			OWLDescription d = getOWLAPIDescription(concept.getChild(0));
+			return factory.getOWLObjectAllRestriction(role, d);
+		} else if(concept instanceof Exists) {
+			OWLObjectProperty role = factory.getOWLObjectProperty(
+					URI.create(((Exists) concept).getRole().getName()));
+			OWLDescription d = getOWLAPIDescription(concept.getChild(0));
+			return factory.getOWLObjectSomeRestriction(role, d);
+		} else if(concept instanceof MultiConjunction) {
+			Set<OWLDescription> descriptions = new HashSet<OWLDescription>();
+			for(Concept child : concept.getChildren())
+				descriptions.add(getOWLAPIDescription(child));
+			return factory.getOWLObjectIntersectionOf(descriptions);
+		} else if(concept instanceof MultiDisjunction) {
+			Set<OWLDescription> descriptions = new HashSet<OWLDescription>();
+			for(Concept child : concept.getChildren())
+				descriptions.add(getOWLAPIDescription(child));
+			return factory.getOWLObjectUnionOf(descriptions);			
+		}
+			
+		throw new IllegalArgumentException("Unsupported concept type.");
+	}	
 	
 	/**
 	 * Test 
