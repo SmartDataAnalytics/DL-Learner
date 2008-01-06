@@ -359,7 +359,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			}
 			if (format.equals("KB")) {
 				try {
-					kb = KBParser.parseKBFile(new StringReader(ont));
+					//kb = KBParser.parseKBFile(new StringReader(ont));
+					kb=KBParser.parseKBFile(dumpFile);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
