@@ -45,7 +45,7 @@ public class Config {
 	protected static ReasonerComponent reasoner;
 	protected static ReasoningService rs;
 	protected static List<Individual> individuals;
-	protected static String[] kbBoxItems = {"Pleae select a type", "KBFile", "OWLFile", "SparqleEndpoint"};
+	protected String[] kbBoxItems = {"Pleae select a type", "KBFile", "OWLFile", "SparqleEndpoint"};
 	
 	/**
 	 * status should show witch variables are set

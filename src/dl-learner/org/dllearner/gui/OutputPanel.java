@@ -58,11 +58,11 @@ public class OutputPanel extends JPanel implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == showButton) {
-			if (StartGUI.config.getStatus(1)) {  // file is selected and exist?
-				infoArea.append("SourceClass: " + StartGUI.config.getKnowledgeSource().toString() + "\n");
-				infoArea.append("FILE: " + StartGUI.config.getFile().toString() + "\n");
+			if (StartGUI.myconfig.getStatus(1)) {  // file is selected and exist?
+				infoArea.append("SourceClass: " + StartGUI.myconfig.getKnowledgeSource().toString() + "\n");
+				infoArea.append("FILE: " + StartGUI.myconfig.getFile().toString() + "\n");
 			}
-			if (StartGUI.config.getStatus(2)) {
+			if (StartGUI.myconfig.getStatus(2)) {
 				
 			}
 			
