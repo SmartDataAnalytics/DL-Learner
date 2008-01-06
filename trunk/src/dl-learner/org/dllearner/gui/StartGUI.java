@@ -33,15 +33,18 @@ public class StartGUI extends JFrame {
 	
 	private static final long serialVersionUID = -739265982906533775L;
 	
-	public static Config config = new Config();
+	protected static StartGUI myrun;
 	
-	private static final JTabbedPane tabPane = new JTabbedPane();
+	protected static Config myconfig = new Config();
+	
+	public JTabbedPane tabPane = new JTabbedPane();
+	
 	private JPanel tab1 = new JPanel();
 	private JPanel tab2 = new JPanel();
 	private JPanel tab3 = new JPanel();
 	private JPanel tab4 = new JPanel();
 	private JPanel tab5 = new JPanel();
-
+	
 	public StartGUI() {
 		this.setTitle("DL-Learner GUI");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -55,17 +58,22 @@ public class StartGUI extends JFrame {
 		tabPane.addTab("Knowledge Source", tab1);
 		tabPane.addTab("Reasoner", tab2);
 		tabPane.addTab("Learning Problem", tab3);
-		tabPane.addTab("Learning Algortihm", tab4);
+		tabPane.addTab("Learning Algorithm", tab4);
 		tabPane.addTab("Output", tab5);
 		this.add(tabPane);
 		this.setVisible(true);
 	}
-
+	
 	public static void main(String[] args) {
-		new StartGUI();
+		myrun = new StartGUI();
 	}
 	
-	protected static void renew() {
-		tabPane.repaint();
+	protected void renew() {
+		myrun.tabPane.repaint();
 	}
+	
+	protected StartGUI getStartGUI() {
+		return myrun;
+	}
+	
 }

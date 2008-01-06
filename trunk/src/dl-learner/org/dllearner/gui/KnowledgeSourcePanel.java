@@ -21,7 +21,7 @@ package org.dllearner.gui;
  */
 
 import java.io.File;
-//import java.util.List;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -32,6 +32,7 @@ import java.awt.event.ActionListener;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.KBFile;
 
+import org.dllearner.core.KnowledgeSource;
 
 
 /**
@@ -48,10 +49,10 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	private JFileChooser fc;
 	private JButton openButton;
 	private JTextField fileDisplay;
-    private String[] kbBoxItems = StartGUI.config.getKBBoxItems();
+    private String[] kbBoxItems = StartGUI.myconfig.getKBBoxItems();
 	private JComboBox cb = new JComboBox(kbBoxItems);	
 	private JPanel openPanel = new JPanel();
-	
+
 	KnowledgeSourcePanel() {
 		super(new BorderLayout());
 	
@@ -62,8 +63,8 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		fileDisplay.setEditable(false);
 		
 		// test output
-		//List<Class<? extends KnowledgeSource>> sources = config.getComponentManager().getKnowledgeSources();
-		//for (int i=0; i<sources.size(); i++) cb.addItem(sources.get(i)); 
+		List<Class<? extends KnowledgeSource>> sources = StartGUI.myconfig.getComponentManager().getKnowledgeSources();
+		for (int i=0; i<sources.size(); i++) cb.addItem(sources.get(i)); 
 		cb.addActionListener(this);
 		
 		JPanel choosePanel = new JPanel();
@@ -78,12 +79,14 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		if (e.getSource() == openButton) {
 			int returnVal = fc.showOpenDialog(KnowledgeSourcePanel.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				StartGUI.config.setFile(fc.getSelectedFile()); //save variable
-				fileDisplay.setText(StartGUI.config.getFile().toString());
-				StartGUI.config.getComponentManager().applyConfigEntry(StartGUI.config.getKnowledgeSource(), "url", StartGUI.config.getFile().toURI().toString());				
-				StartGUI.config.getKnowledgeSource().init();
+				StartGUI.myconfig.setFile(fc.getSelectedFile()); //save variable
+				fileDisplay.setText(StartGUI.myconfig.getFile().toString());
+				System.out.println("Init KnowledgeSource after loading file ... show over output");
+				StartGUI.myconfig.getComponentManager().applyConfigEntry(StartGUI.myconfig.getKnowledgeSource(), "url", StartGUI.myconfig.getFile().toURI().toString());				
+				StartGUI.myconfig.getKnowledgeSource().init();
 			}		
 		}
+		
 		// choose none
 		if (cb.getSelectedItem().toString() == kbBoxItems[0]) { 
 	        System.out.println("Item: " + cb.getSelectedItem());
@@ -92,19 +95,16 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		// choose KB class
 		if (cb.getSelectedItem().toString() == kbBoxItems[1]) { 
 	        System.out.println("Item: " + cb.getSelectedItem());
-	        makeCenterClean();
-			openPanel.add(fileDisplay);
-			openPanel.add(openButton);
-			openPanel.repaint();
-			StartGUI.config.setKnowledgeSource(StartGUI.config.getComponentManager().knowledgeSource(KBFile.class));
+			makeCenterClean();
 		}
 		// choose OWL class
 		if (cb.getSelectedItem().toString() == kbBoxItems[2]) { 
-	        makeCenterClean();
+	        System.out.println("Item: " + cb.getSelectedItem());
+			makeCenterClean();
 			openPanel.add(fileDisplay);
 			openPanel.add(openButton);
 			openPanel.repaint();
-			StartGUI.config.setKnowledgeSource(StartGUI.config.getComponentManager().knowledgeSource(OWLFile.class));
+			StartGUI.myconfig.setKnowledgeSource(StartGUI.myconfig.getComponentManager().knowledgeSource(OWLFile.class));
 		}
 		// choose SPARCLE class
 		if (cb.getSelectedItem().toString() == kbBoxItems[3]) { 
@@ -117,6 +117,6 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
         openPanel.remove(fileDisplay);
         openPanel.remove(openButton);
         openPanel.repaint();
-        StartGUI.renew();
-	}
+        StartGUI.myrun.renew();
+    }
 }
