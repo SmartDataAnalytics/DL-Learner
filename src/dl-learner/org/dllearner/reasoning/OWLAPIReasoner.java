@@ -26,8 +26,10 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.core.KnowledgeSource;
@@ -48,8 +50,12 @@ import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Negation;
+import org.dllearner.core.dl.RoleHierarchy;
+import org.dllearner.core.dl.SubsumptionHierarchy;
 import org.dllearner.core.dl.Top;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.RoleComparator;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
@@ -81,17 +87,23 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	// the data factory is used to generate OWL API objects
 	private OWLDataFactory factory;
 	
-	// private ConceptComparator conceptComparator = new ConceptComparator();
-	// private RoleComparator roleComparator = new RoleComparator();
-	// private SubsumptionHierarchy subsumptionHierarchy;
-	// private RoleHierarchy roleHierarchy;	
+	private ConceptComparator conceptComparator = new ConceptComparator();
+	private RoleComparator roleComparator = new RoleComparator();
+	private SubsumptionHierarchy subsumptionHierarchy;
+	private RoleHierarchy roleHierarchy;	
+	private Set<Concept> allowedConceptsInSubsumptionHierarchy;
+	
+	// primitives
+	Set<AtomicConcept> atomicConcepts;
+	Set<AtomicRole> atomicRoles;
+	SortedSet<Individual> individuals;	
 	
 	public OWLAPIReasoner(Set<KnowledgeSource> sources) {
 		this.sources = sources;
 	}
 	
 	public static String getName() {
-		return "FaCT++ reasoner";
+		return "OWL API reasoner";
 	}	
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
@@ -127,7 +139,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		};		
 		Set<OWLClass> classes = new TreeSet<OWLClass>(namedObjectComparator);
 		Set<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>(namedObjectComparator);
-		Set<OWLIndividual> individuals = new TreeSet<OWLIndividual>(namedObjectComparator);
+		Set<OWLIndividual> owlIndividuals = new TreeSet<OWLIndividual>(namedObjectComparator);
 		
 		for(KnowledgeSource source : sources) {
 			if(!(source instanceof OWLFile)) {
@@ -138,7 +150,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					OWLOntology ontology = manager.loadOntologyFromPhysicalURI(url.toURI());
 					classes.addAll(ontology.getReferencedClasses());
 					properties.addAll(ontology.getReferencedObjectProperties());
-					individuals.addAll(ontology.getReferencedIndividuals());
+					owlIndividuals.addAll(ontology.getReferencedIndividuals());
 				} catch (OWLOntologyCreationException e) {
 					e.printStackTrace();
 				} catch (URISyntaxException e) {
@@ -158,62 +170,223 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			// instantiate Pellet reasoner
 			reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
 		}
-		
 		factory = manager.getOWLDataFactory();
+		
+		// read in primitives
+		atomicConcepts = new TreeSet<AtomicConcept>(conceptComparator);
+		for(OWLClass owlClass : classes)
+			atomicConcepts.add(new AtomicConcept(owlClass.getURI().toString()));
+		atomicRoles = new TreeSet<AtomicRole>(roleComparator);
+		for(OWLObjectProperty owlProperty : properties)
+			atomicRoles.add(new AtomicRole(owlProperty.getURI().toString()));
+		individuals = new TreeSet<Individual>();
+		for(OWLIndividual owlIndividual : owlIndividuals)
+			individuals.add(new Individual(owlIndividual.getURI().toString()));
+		
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getAtomicConcepts()
 	 */
 	public Set<AtomicConcept> getAtomicConcepts() {
-		// reasoner.
-		
-		// TODO Auto-generated method stub
-		return null;
+		return atomicConcepts;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getAtomicRoles()
 	 */
 	public Set<AtomicRole> getAtomicRoles() {
-		// TODO Auto-generated method stub
-		return null;
+		return atomicRoles;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getIndividuals()
 	 */
 	public SortedSet<Individual> getIndividuals() {
-		// TODO Auto-generated method stub
-		return null;
+		return individuals;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getReasonerType()
 	 */
 	public ReasonerType getReasonerType() {
-		// TODO Auto-generated method stub
-		return null;
+		if(reasonerType.equals("FaCT++"))
+			return ReasonerType.FACT;
+		else
+			return ReasonerType.PELLET;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#prepareSubsumptionHierarchy(java.util.Set)
 	 */
 	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
-		// TODO Auto-generated method stub
+		
+		// implementation almost identical to DIG reasoner
+		// except function calls
+		
+		allowedConceptsInSubsumptionHierarchy = new TreeSet<Concept>(conceptComparator);
+		allowedConceptsInSubsumptionHierarchy.addAll(allowedConcepts);
+		allowedConceptsInSubsumptionHierarchy.add(new Top());
+		allowedConceptsInSubsumptionHierarchy.add(new Bottom());
 
+		TreeMap<Concept, TreeSet<Concept>> subsumptionHierarchyUp = new TreeMap<Concept, TreeSet<Concept>>(
+				conceptComparator);
+		TreeMap<Concept, TreeSet<Concept>> subsumptionHierarchyDown = new TreeMap<Concept, TreeSet<Concept>>(
+				conceptComparator);
+
+		// refinements of top
+		TreeSet<Concept> tmp = getMoreSpecialConcepts(new Top());
+		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+		subsumptionHierarchyDown.put(new Top(), tmp);
+
+		// refinements of bottom
+		tmp = getMoreGeneralConcepts(new Bottom());
+		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+		subsumptionHierarchyUp.put(new Bottom(), tmp);
+
+		// refinements of atomic concepts
+		for (AtomicConcept atom : atomicConcepts) {
+			tmp = getMoreSpecialConcepts(atom);
+			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+			subsumptionHierarchyDown.put(atom, tmp);
+
+			tmp = getMoreGeneralConcepts(atom);
+			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+			subsumptionHierarchyUp.put(atom, tmp);
+		}
+
+		// create subsumption hierarchy
+		subsumptionHierarchy = new SubsumptionHierarchy(allowedConcepts,
+				subsumptionHierarchyUp, subsumptionHierarchyDown);		
 	}
 
 	@Override
+	public SubsumptionHierarchy getSubsumptionHierarchy() {
+		return subsumptionHierarchy;
+	}	
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Reasoner#prepareRoleHierarchy(java.util.Set)
+	 */
+	@Override
+	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) {
+		// code copied from DIG reasoner
+		
+		TreeMap<AtomicRole, TreeSet<AtomicRole>> roleHierarchyUp = new TreeMap<AtomicRole, TreeSet<AtomicRole>>(
+				roleComparator);
+		TreeMap<AtomicRole, TreeSet<AtomicRole>> roleHierarchyDown = new TreeMap<AtomicRole, TreeSet<AtomicRole>>(
+				roleComparator);
+ 
+		// refinement of atomic concepts
+		for (AtomicRole role : atomicRoles) {
+			roleHierarchyDown.put(role, getMoreSpecialRoles(role));
+			roleHierarchyUp.put(role, getMoreGeneralRoles(role));
+		}
+
+		roleHierarchy = new RoleHierarchy(allowedRoles, roleHierarchyUp,
+				roleHierarchyDown);
+	}	
+	
+	@Override
+	public RoleHierarchy getRoleHierarchy() {
+		return roleHierarchy;
+	}	
+	
+	@Override
 	public boolean subsumes(Concept superConcept, Concept subConcept) {
 		try {
-			OWLDescription d1 = factory.getOWLClass(URI.create("a"));
-			OWLDescription d2 = factory.getOWLClass(URI.create("b"));
-			reasoner.isSubClassOf(d1, d2);			
+			return reasoner.isSubClassOf(getOWLAPIDescription(subConcept), getOWLAPIDescription(superConcept));			
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
+			throw new Error("Subsumption Error in OWL API.");
 		}
-		return false;
+	}
+	
+	private TreeSet<Concept> getMoreGeneralConcepts(Concept concept) {
+		return null;
+	}
+	
+	private TreeSet<Concept> getMoreSpecialConcepts(Concept concept) {
+		return null;
+	}	
+	
+	private TreeSet<AtomicRole> getMoreGeneralRoles(AtomicRole role) {
+		return null;
+	}
+	
+	private TreeSet<AtomicRole> getMoreSpecialRoles(AtomicRole role) {
+		return null;
+	}
+	
+	@Override
+	public boolean instanceCheck(Concept concept, Individual individual) {
+		OWLDescription d = getOWLAPIDescription(concept);
+		OWLIndividual i = factory.getOWLIndividual(URI.create(individual.getName()));
+		try {
+			return reasoner.hasType(i,d,false);
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("Instance check error in OWL API.");
+		}
+	}
+	
+	@Override
+	public SortedSet<Individual> retrieval(Concept concept) {
+		OWLDescription d = getOWLAPIDescription(concept);
+		try {
+			reasoner.getIndividuals(d, false);
+		} catch (OWLReasonerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public Set<AtomicConcept> getConcepts(Individual individual) {
+		Set<Set<OWLClass>> result = null;
+		try {
+			 result = reasoner.getTypes(factory.getOWLIndividual(URI.create(individual.getName())),false);
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("GetConcepts() reasoning error in OWL API.");
+		}
+		// the OWL API returns a set of sets; each inner set consists of
+		// atomic classes
+		Set<AtomicConcept> concepts = new HashSet<AtomicConcept>();
+		for(Set<OWLClass> classes : result) {
+			// take one element from the set and ignore the rest
+			// (TODO: we need to make sure we always ignore the same concepts)
+			OWLClass concept = classes.iterator().next();
+			concepts.add(new AtomicConcept(concept.getURI().toString()));
+		}
+		return concepts;
+	}
+	
+	@Override
+	public Map<Individual, SortedSet<Individual>> getRoleMembers(AtomicRole atomicRole) {
+		return null;
+	}
+	
+	@Override
+	public boolean isSatisfiable() {
+		try {
+			return reasoner.isSatisfiable(factory.getOWLThing());
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("Satisfiability check error in OWL API.");
+		}
+	}
+	
+	private Set<Concept> owlClassesToAtomicConcepts(Set<OWLClass> owlClasses) {
+		Set<Concept> concepts = new HashSet<Concept>();
+		for(OWLClass owlClass : owlClasses)
+			concepts.add(owlClassToAtomicConcept(owlClass));
+		return concepts;
+	}
+	
+	private Concept owlClassToAtomicConcept(OWLClass owlClass) {
+		return new AtomicConcept(owlClass.getURI().toString());
 	}
 	
 	public OWLDescription getOWLAPIDescription(Concept concept) {
