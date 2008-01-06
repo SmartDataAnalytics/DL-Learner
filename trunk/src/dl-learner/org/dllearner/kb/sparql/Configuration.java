@@ -19,7 +19,11 @@
  */
 package org.dllearner.kb.sparql;
 
-//stores all configuration settings
+/**
+ * Stores all configuration settings.
+ * 
+ * @author Sebastian Hellmann
+ */
 public class Configuration {
 	
 	/*
@@ -34,9 +38,6 @@ public class Configuration {
 	// class extraction algorithm or manipulator
 	private int recursiondepth = 2;
 	private boolean getAllBackground = true;
-
-	private Configuration() {
-	}
 
 	public Configuration(SpecificSparqlEndpoint specificSparqlEndpoint,
 			SparqlQueryType sparqlQueryType, Manipulator manipulator, int recursiondepth,

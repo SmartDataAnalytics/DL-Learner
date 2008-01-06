@@ -19,7 +19,12 @@
  */
 package org.dllearner.kb.sparql;
 
-// can assemble sparql queries 
+/**
+ * Can assemble sparql queries.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class SparqlQueryMaker {
 	String lineend="\n";
 	boolean print_flag=false;

@@ -26,7 +26,12 @@ import java.util.Set;
 
 import org.dllearner.utilities.StringTuple;
 
-// used to manipulate retrieved tupels, identify blanknodes, etc.
+/**
+ * Used to manipulate retrieved tupels, identify blanknodes, etc.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class Manipulator {
 	public String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 	public String type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";

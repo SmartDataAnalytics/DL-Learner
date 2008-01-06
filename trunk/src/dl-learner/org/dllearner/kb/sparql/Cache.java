@@ -28,6 +28,12 @@ import java.io.Serializable;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
+/**
+ * SPARQL query cache to avoid possibly expensive multiple queries.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class Cache implements Serializable {
 	// Object can be the cache itself
 	// or a cache object(one entry)
@@ -40,7 +46,7 @@ public class Cache implements Serializable {
 	long timestamp;
 	long daysoffreshness = 15;
 	long multiplier = 24 * 60 * 60 * 1000;// h m s ms
-	private HashMap<String, String> inmem_cache;
+	// private HashMap<String, String> inmem_cache;
 
 	// constructor for the cache itself
 	public Cache(String path) {

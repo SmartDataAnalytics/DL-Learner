@@ -23,15 +23,20 @@ import java.io.File;
 import java.io.FileWriter;
 import java.net.URI;
 
-// test class
+/**
+ * Test class.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class Test {
 
 	public static void main(String[] args) {
 		System.out.println("Start");
-		String test2 = "http://www.extraction.org/config#dbpediatest";
-		String test = "http://www.extraction.org/config#localjoseki";
+		// String test2 = "http://www.extraction.org/config#dbpediatest";
+		// String test = "http://www.extraction.org/config#localjoseki";
 		try {
-			URI u = new URI(test);
+			// URI u = new URI(test);
 			Manager m = new Manager();
 			// m.usePredefinedConfiguration(u);
 
