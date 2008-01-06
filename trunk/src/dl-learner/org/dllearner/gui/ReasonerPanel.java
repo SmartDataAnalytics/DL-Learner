@@ -75,6 +75,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == digButton) { // DIG
 			StartGUI.myconfig.setReasoner(StartGUI.myconfig.getComponentManager().reasoner(DIGReasoner.class, StartGUI.myconfig.getKnowledgeSource()));
+			System.out.println(StartGUI.myconfig.getKnowledgeSource());
 			StartGUI.myconfig.getReasoner().init(); //error
 			System.out.println("test");
 			
