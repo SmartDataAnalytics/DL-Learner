@@ -82,9 +82,11 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 				StartGUI.myconfig.setFile(fc.getSelectedFile()); //save variable
 				fileDisplay.setText(StartGUI.myconfig.getFile().toString());
 				System.out.println("Init KnowledgeSource after loading file ... show over output");
+				System.out.println("test: " + StartGUI.myconfig.getFile().toURI().toString());
 				StartGUI.myconfig.getComponentManager().applyConfigEntry(StartGUI.myconfig.getKnowledgeSource(), "url", StartGUI.myconfig.getFile().toURI().toString());				
 				StartGUI.myconfig.getKnowledgeSource().init();
-			}		
+			}
+			return;
 		}
 		
 		// choose none
