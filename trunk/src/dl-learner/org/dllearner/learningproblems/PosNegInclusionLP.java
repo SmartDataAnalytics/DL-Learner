@@ -124,9 +124,9 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 			SortedSet<Individual> negExInNegatedConcept = Helper.intersection(negativeExamples, inNegatedConcept);			
 			return (negativeExamples.size() - negExInNegatedConcept.size());
 		} else {
-			if (useDIGMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
+			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
 				// two checks
-				if (useDIGMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
+				if (useMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
 					Set<Individual> posExInNegatedConcept = reasoningService.instanceCheck(new Negation(concept), positiveExamples);
 					
 					if(posExInNegatedConcept.size()>0) {

@@ -19,6 +19,7 @@
  */
 package org.dllearner.reasoning;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -80,7 +81,7 @@ import org.semanticweb.owl.model.OWLOntologyManager;
  */
 public class OWLAPIReasoner extends ReasonerComponent {
 
-	private String reasonerType = "FaCT++";
+	private String reasonerType = "fact";
 	
 	private Set<KnowledgeSource> sources;
 	private OWLReasoner reasoner;
@@ -109,7 +110,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet", "FaCT++");
-		type.setAllowedValues(new String[] {"FaCT++", "Pellet"});
+		type.setAllowedValues(new String[] {"fact", "pellet"});
 		// closure-Option? siehe:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
 		options.add(type);
@@ -143,15 +144,29 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		Set<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>(namedObjectComparator);
 		Set<OWLIndividual> owlIndividuals = new TreeSet<OWLIndividual>(namedObjectComparator);
 		
+		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
+		
 		for(KnowledgeSource source : sources) {
 			if(!(source instanceof OWLFile)) {
 				System.out.println("Currently, only OWL files are supported. Ignoring knowledge source " + source + ".");
 			} else {
 				URL url = ((OWLFile)source).getURL();
+				/*
+				try {
+					url = new URL("http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl");
+				} catch (MalformedURLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				*/
 				try {
 					OWLOntology ontology = manager.loadOntologyFromPhysicalURI(url.toURI());
+					allImports.addAll(manager.getImportsClosure(ontology));
 					classes.addAll(ontology.getReferencedClasses());
 					properties.addAll(ontology.getReferencedObjectProperties());
+					// does not seem to work => workaround: query all instances of Top
+					// maybe one can also query for instances of OWLObjectProperty,
+					// OWLClass, OWLIndividual
 					owlIndividuals.addAll(ontology.getReferencedIndividuals());
 				} catch (OWLOntologyCreationException e) {
 					e.printStackTrace();
@@ -162,7 +177,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 		
 		// create actual reasoner
-		if(reasonerType.equals("FaCT++")) {
+		if(reasonerType.equals("fact")) {
 			try {
 				reasoner = new uk.ac.manchester.cs.factplusplus.owlapi.Reasoner(manager);
 			} catch (Exception e) {
@@ -173,9 +188,24 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
 		}
 		
+		/*
+		Set<OWLOntology> importsClosure = manager.getImportsClosure(ontology);
+		System.out.println("imports closure : " + importsClosure);
+        try {
+			reasoner.loadOntologies(importsClosure);
+		} catch (OWLReasonerException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/		
+		
+		System.out.println(classes);
+		System.out.println(properties);
+		System.out.println(individuals);
+		
 		// compute class hierarchy and types of individuals
 		// (done here to speed up later reasoner calls)
 		try {
+			reasoner.loadOntologies(allImports);
 			reasoner.classify();
 			reasoner.realise();
 		} catch (OWLReasonerException e) {
@@ -183,6 +213,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 		
 		factory = manager.getOWLDataFactory();
+		
+		
+		
+		try {
+			if(reasoner.isDefined(factory.getOWLIndividual(URI.create("http://example.com/father#female"))))
+				System.out.println("DEFINED.");
+			else
+				System.out.println("NOT DEFINED.");
+		} catch (OWLReasonerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		// read in primitives
 		atomicConcepts = new TreeSet<AtomicConcept>(conceptComparator);
@@ -370,17 +412,20 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}
 	
-	// TODO
 	@Override
 	public SortedSet<Individual> retrieval(Concept concept) {
 		OWLDescription d = getOWLAPIDescription(concept);
+		Set<OWLIndividual> individuals = null;
 		try {
-			reasoner.getIndividuals(d, false);
+			individuals = reasoner.getIndividuals(d, false);
 		} catch (OWLReasonerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		SortedSet<Individual> inds = new TreeSet<Individual>();
+		for(OWLIndividual ind : individuals)
+			inds.add(new Individual(ind.getURI().toString()));
+		return inds;
 	}
 	
 	@Override

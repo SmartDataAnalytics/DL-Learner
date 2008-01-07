@@ -70,6 +70,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.TokenMgrError;
 import org.dllearner.reasoning.DIGReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
@@ -132,6 +133,8 @@ public class Start {
 		// default value
 		if (reasonerOption == null || reasonerOption.getStringValue().equals("dig"))
 			reasonerClass = DIGReasoner.class;
+		else if(reasonerOption.getStringValue().equals("owlAPI"))
+			reasonerClass = OWLAPIReasoner.class;
 		else {
 			handleError("Unknown value " + reasonerOption.getStringValue()
 					+ "for option \"reasoner\".");
@@ -160,6 +163,7 @@ public class Start {
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
 		if(lpClass != PosOnlyDefinitionLP.class)
 			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
+		configureComponent(cm, lp, componentPrefixMapping, parser);
 		initComponent(cm, lp);
 		
 		// step 4: detect learning algorithm
@@ -230,7 +234,9 @@ public class Start {
 		componentPrefixMapping.put(SparqlEndpointRestructured.class, "sparql2");
 		// reasoners
 		componentPrefixMapping.put(DIGReasoner.class, "digReasoner");
+		componentPrefixMapping.put(OWLAPIReasoner.class, "owlAPIReasoner");
 		// learning problems - configured via + and - flags for examples
+		componentPrefixMapping.put(PosNegDefinitionLP.class, "posNegDefinitionLP");
 		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
 		componentPrefixMapping.put(GP.class, "gp");
