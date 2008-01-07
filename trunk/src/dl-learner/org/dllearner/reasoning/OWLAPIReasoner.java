@@ -19,7 +19,6 @@
  */
 package org.dllearner.reasoning;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -27,7 +26,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -493,6 +491,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return roles;		
 	}	
 	
+	@SuppressWarnings({"unused"})
 	private Set<Concept> owlClassesToAtomicConcepts(Set<OWLClass> owlClasses) {
 		Set<Concept> concepts = new HashSet<Concept>();
 		for(OWLClass owlClass : owlClasses)
