@@ -45,27 +45,36 @@ public class OutputPanel extends JPanel implements ActionListener {
 		
 		showButton = new JButton("Show Variables");
 		showButton.addActionListener(this);
-		infoArea = new JTextArea(20,40);		
-		
+		infoArea = new JTextArea(20, 50);		
+		JScrollPane infoScroll = new JScrollPane(infoArea);
+				
 		JPanel showPanel = new JPanel();
 		showPanel.add(showButton);
 		JPanel infoPanel = new JPanel();
-		infoPanel.add(infoArea);
-		
+		infoPanel.add(infoScroll);
+
 		add(showPanel, BorderLayout.PAGE_START);
 		add(infoPanel, BorderLayout.CENTER);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == showButton) {
-			if (StartGUI.myconfig.getStatus(1)) {  // file is selected and exist?
+			infoArea.setText("");
+			if (StartGUI.myconfig.getStatus(2)) {  // file is selected and exist?
 				infoArea.append("SourceClass: " + StartGUI.myconfig.getKnowledgeSource().toString() + "\n");
-				infoArea.append("FILE: " + StartGUI.myconfig.getFile().toString() + "\n");
+				infoArea.append("FILE: " + StartGUI.myconfig.getFile() + "\n");
 			}
-			if (StartGUI.myconfig.getStatus(2)) {
-				
+			if (StartGUI.myconfig.getStatus(3)) {  // Reasoner is set
+				infoArea.append("Reasoner: " + StartGUI.myconfig.getReasoner() + "\n");
 			}
-			
+			if (StartGUI.myconfig.getStatus(4)) {  // ReasoningServic is set
+				infoArea.append("ReasoningService: " + StartGUI.myconfig.getReasoningService() + "\n");
+			}
+			if (false) {
+				for (int i = 0; i<8; i++) { // show status-vars
+					infoArea.append("i: " + StartGUI.myconfig.getStatus(i) + "\n");
+				}
+			}
 		}
 	}
 }

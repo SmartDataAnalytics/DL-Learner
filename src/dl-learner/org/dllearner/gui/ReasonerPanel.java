@@ -24,9 +24,13 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.*;
 
+import org.dllearner.core.dl.Individual;
 import org.dllearner.reasoning.DIGReasoner;
 
 //import org.dllearner.core.ReasonerComponent;
@@ -50,6 +54,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	private JPanel centerPanel = new JPanel();
     private JButton digButton;
     private JList digList = new JList();
+    private List<Individual> individuals;
     
 	ReasonerPanel() {
 		super(new BorderLayout());
@@ -58,43 +63,48 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		digButton.addActionListener(this);
 		
 		// create a scrollable list of examples
+		digList = new JList();
 		digList.setLayoutOrientation(JList.VERTICAL);
 		digList.setVisibleRowCount(-1);
 		JScrollPane listScroller = new JScrollPane(digList);
-		listScroller.setPreferredSize(new Dimension(250, 80));
-		centerPanel.add(listScroller);
+		listScroller.setPreferredSize(new Dimension(550, 350));
 
 		digPanel.add(digButton);
 		add(digPanel, BorderLayout.PAGE_START);
 	
-		centerPanel.add(digList);
+		centerPanel.add(listScroller);
 		add(centerPanel, BorderLayout.CENTER);
 	
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == digButton) { // DIG
+		if (e.getSource() == digButton) {
+			// set reasoner
 			StartGUI.myconfig.setReasoner(StartGUI.myconfig.getComponentManager().reasoner(DIGReasoner.class, StartGUI.myconfig.getKnowledgeSource()));
-			System.out.println(StartGUI.myconfig.getKnowledgeSource());
-			StartGUI.myconfig.getReasoner().init(); //error
-			System.out.println("test");
+			//System.out.println(StartGUI.myconfig.getKnowledgeSource());
+			StartGUI.myconfig.getReasoner().init();
+			//System.out.println(StartGUI.myconfig.getReasoner());
 			
-			//config.setReasoningService(config.getComponentManager().reasoningService(config.getReasoner()));
+			// set ReasoningService
+			StartGUI.myconfig.setReasoningService(StartGUI.myconfig.getComponentManager().reasoningService(StartGUI.myconfig.getReasoner()));
 
-			// set list
-			//Set<Individual> individualsSet = config.getReasoningService().getIndividuals();
-			//config.setListIndividuals(new LinkedList<Individual>(individualsSet));
+			// get list from ReasoningService
+			Set<Individual> individualsSet = StartGUI.myconfig.getReasoningService().getIndividuals();
+			//System.out.println("IndividualsSet: " + individualsSet);
+			individuals = new LinkedList<Individual>(individualsSet);
+			//System.out.println("individuals: " + individuals);
+			
+			// make list
+			DefaultListModel listModel = new DefaultListModel();
+			for(Individual ind : individuals) {
+				listModel.addElement(ind);
+			}
+			//System.out.println("listModel: " +  listModel);
 			
 			// graphic
-			//DefaultListModel listModel = new DefaultListModel();
-			//for(Individual ind : config.getListIndividuals())
-				//listModel.addElement(ind);
+			digList.setModel(listModel);
+			StartGUI.myrun.renew();
 			
-			// graphic
-			//Set<String> exampleSet = new HashSet<String>();
-			//int[] selectedIndices = digList.getSelectedIndices();
-			//for(int i : selectedIndices)
-				//exampleSet.add(config.getListIndividuals().get(i).toString());
 		}
 	}
 }

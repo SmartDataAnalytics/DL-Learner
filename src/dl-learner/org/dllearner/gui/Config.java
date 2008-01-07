@@ -39,20 +39,20 @@ import org.dllearner.core.dl.Individual;
  */
 
 public class Config {
-	protected static ComponentManager cm = ComponentManager.getInstance();
-	protected static KnowledgeSource source;
-	protected static File selectedFile;
-	protected static ReasonerComponent reasoner;
-	protected static ReasoningService rs;
-	protected static List<Individual> individuals;
-	protected String[] kbBoxItems = {"Pleae select a type", "KBFile", "OWLFile", "SparqleEndpoint"};
+	private ComponentManager cm = ComponentManager.getInstance();
+	private KnowledgeSource source;
+	private File selectedFile;
+	private ReasonerComponent reasoner;
+	private ReasoningService rs;
+	private List<Individual> individuals;
+	private String[] kbBoxItems = {"Pleae select a type", "KBFile", "OWLFile", "SparqleEndpoint"};
 	
 	/**
 	 * status should show witch variables are set
 	 * status[0] ... cm
 	 * status[1] ... KnowledgeSource
 	 * status[2] ... File or URL 
-	 * status[3] ...
+	 * status[3] ... Resoner
 	 */
 	protected static boolean[] status = new boolean[8];
 	
@@ -112,11 +112,11 @@ public class Config {
 	}
 	
 	protected KnowledgeSource getKnowledgeSource() {
-		status[1] = true;
 		return source;
 	}
 
 	protected void setKnowledgeSource(KnowledgeSource input) {
+		status[1] = true;
 		source = input;
 	}
 
