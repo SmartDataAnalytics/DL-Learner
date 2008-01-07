@@ -110,6 +110,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet", "FaCT++");
 		type.setAllowedValues(new String[] {"FaCT++", "Pellet"});
+		// closure-Option? siehe:
+		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
 		options.add(type);
 		return options;
 	}	
@@ -170,6 +172,16 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			// instantiate Pellet reasoner
 			reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
 		}
+		
+		// compute class hierarchy and types of individuals
+		// (done here to speed up later reasoner calls)
+		try {
+			reasoner.classify();
+			reasoner.realise();
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+		}
+		
 		factory = manager.getOWLDataFactory();
 		
 		// read in primitives
@@ -303,19 +315,47 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	private TreeSet<Concept> getMoreGeneralConcepts(Concept concept) {
-		return null;
+		Set<Set<OWLClass>> classes = null;
+		try {
+			classes = reasoner.getSuperClasses(getOWLAPIDescription(concept));
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("OWL API classification error.");
+		}
+		return getFirstClasses(classes);
 	}
 	
 	private TreeSet<Concept> getMoreSpecialConcepts(Concept concept) {
-		return null;
+		Set<Set<OWLClass>> classes = null;
+		try {
+			classes = reasoner.getSubClasses(getOWLAPIDescription(concept));
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("OWL API classification error.");
+		}
+		return getFirstClasses(classes);
 	}	
 	
 	private TreeSet<AtomicRole> getMoreGeneralRoles(AtomicRole role) {
-		return null;
+		Set<Set<OWLObjectProperty>> properties;
+		try {
+			properties = reasoner.getSuperProperties(getOWLAPIDescription(role));
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("OWL API classification error.");
+		}		
+		return getFirstProperties(properties);
 	}
 	
 	private TreeSet<AtomicRole> getMoreSpecialRoles(AtomicRole role) {
-		return null;
+		Set<Set<OWLObjectProperty>> properties;
+		try {
+			properties = reasoner.getSubProperties(getOWLAPIDescription(role));
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("OWL API classification error.");
+		}		
+		return getFirstProperties(properties);		
 	}
 	
 	@Override
@@ -330,6 +370,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}
 	
+	// TODO
 	@Override
 	public SortedSet<Individual> retrieval(Concept concept) {
 		OWLDescription d = getOWLAPIDescription(concept);
@@ -351,21 +392,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			e.printStackTrace();
 			throw new Error("GetConcepts() reasoning error in OWL API.");
 		}
-		// the OWL API returns a set of sets; each inner set consists of
-		// atomic classes
-		Set<AtomicConcept> concepts = new HashSet<AtomicConcept>();
-		for(Set<OWLClass> classes : result) {
-			// take one element from the set and ignore the rest
-			// (TODO: we need to make sure we always ignore the same concepts)
-			OWLClass concept = classes.iterator().next();
-			concepts.add(new AtomicConcept(concept.getURI().toString()));
-		}
-		return concepts;
-	}
-	
-	@Override
-	public Map<Individual, SortedSet<Individual>> getRoleMembers(AtomicRole atomicRole) {
-		return null;
+		return getFirstClassesNoTopBottom(result);
 	}
 	
 	@Override
@@ -378,6 +405,49 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}
 	
+	// OWL API often returns a set of sets of classes, where each inner
+	// set consists of equivalent classes; this method picks one class
+	// from each inner set to flatten the set of sets
+	private TreeSet<Concept> getFirstClasses(Set<Set<OWLClass>> setOfSets) {
+		TreeSet<Concept> concepts = new TreeSet<Concept>(conceptComparator);
+		for(Set<OWLClass> innerSet : setOfSets) {
+			// take one element from the set and ignore the rest
+			// (TODO: we need to make sure we always ignore the same concepts)
+			OWLClass concept = innerSet.iterator().next();
+			if(concept.isOWLThing()) {
+				concepts.add(new Top());
+			} else if(concept.isOWLNothing()) {
+				concepts.add(new Bottom());
+			} else {
+				concepts.add(new AtomicConcept(concept.getURI().toString()));
+			}
+		}
+		return concepts;		
+	}
+	
+	private Set<AtomicConcept> getFirstClassesNoTopBottom(Set<Set<OWLClass>> setOfSets) {
+		Set<AtomicConcept> concepts = new HashSet<AtomicConcept>();
+		for(Set<OWLClass> innerSet : setOfSets) {
+			// take one element from the set and ignore the rest
+			// (TODO: we need to make sure we always ignore the same concepts)
+			OWLClass concept = innerSet.iterator().next();
+			if(!concept.isOWLThing() && !concept.isOWLNothing())
+				concepts.add(new AtomicConcept(concept.getURI().toString()));
+		}
+		return concepts;			
+	}
+	
+	private TreeSet<AtomicRole> getFirstProperties(Set<Set<OWLObjectProperty>> setOfSets) {
+		TreeSet<AtomicRole> roles = new TreeSet<AtomicRole>(roleComparator);
+		for(Set<OWLObjectProperty> innerSet : setOfSets) {
+			// take one element from the set and ignore the rest
+			// (TODO: we need to make sure we always ignore the same concepts)
+			OWLObjectProperty property = innerSet.iterator().next();
+			roles.add(new AtomicRole(property.getURI().toString()));
+		}
+		return roles;		
+	}	
+	
 	private Set<Concept> owlClassesToAtomicConcepts(Set<OWLClass> owlClasses) {
 		Set<Concept> concepts = new HashSet<Concept>();
 		for(OWLClass owlClass : owlClasses)
@@ -387,6 +457,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	private Concept owlClassToAtomicConcept(OWLClass owlClass) {
 		return new AtomicConcept(owlClass.getURI().toString());
+	}
+	
+	public OWLObjectProperty getOWLAPIDescription(AtomicRole role) {
+		return factory.getOWLObjectProperty(URI.create(role.getName()));
 	}
 	
 	public OWLDescription getOWLAPIDescription(Concept concept) {
