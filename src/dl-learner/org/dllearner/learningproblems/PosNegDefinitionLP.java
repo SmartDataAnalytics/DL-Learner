@@ -99,9 +99,9 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 			else
 				return negAsPos.size();
 		} else {
-			if (useDIGMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
+			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
 				// two checks
-				if (useDIGMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
+				if (useMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
 					Set<Individual> s = reasoningService.instanceCheck(concept, positiveExamples);
 					// if the concept is too weak, then do not query negative
 					// examples
@@ -172,13 +172,13 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 			}
 			return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
 		// instance checks for classification
-		} else {
+		} else {		
 			SortedSet<Individual> posAsPos = new TreeSet<Individual>();
 			SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
 			SortedSet<Individual> negAsPos = new TreeSet<Individual>();
 			SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
-
-			if (useDIGMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
+			
+			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
 				SortedSet<Individual> posClassified = reasoningService.instanceCheck(concept,
 						allExamples);
 				SortedSet<Individual> negClassified = Helper.difference(allExamples,
@@ -187,15 +187,20 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 				posAsNeg = Helper.intersection(positiveExamples, negClassified);
 				negAsPos = Helper.intersection(negativeExamples, posClassified);
 				negAsNeg = Helper.intersection(negativeExamples, negClassified);
+				
+				// System.out.println("pos classified: " + posClassified);
+				
 				return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
 						negAsNeg);
 			} else {
-
+				System.out.println("TEST");
+				
 				for (Individual example : positiveExamples) {
-					if (reasoningService.instanceCheck(concept, example))
+					if (reasoningService.instanceCheck(concept, example)) {
 						posAsPos.add(example);
-					else
-						posAsNeg.add(example);
+					} else {
+						posAsNeg.add(example); System.out.println(concept + " " + example);
+					}
 				}
 				for (Individual example : negativeExamples) {
 					if (reasoningService.instanceCheck(concept, example))

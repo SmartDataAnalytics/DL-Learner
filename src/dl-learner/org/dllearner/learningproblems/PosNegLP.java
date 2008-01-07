@@ -32,6 +32,7 @@ import org.dllearner.core.config.CommonConfigOptions;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
@@ -48,7 +49,7 @@ public abstract class PosNegLP extends LearningProblem {
 	protected SortedSet<Individual> allExamples;
 	
 	protected boolean useRetrievalForClassification = false;
-	protected UseMultiInstanceChecks useDIGMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
+	protected UseMultiInstanceChecks useMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
 	protected double percentPerLengthUnit = 0.05;
 
 	/**
@@ -90,6 +91,9 @@ public abstract class PosNegLP extends LearningProblem {
 		options.add(new BooleanConfigOption("useRetrievalForClassficiation", 
 				"Specifies whether to use retrieval or instance checks for testing a concept."));
 		options.add(CommonConfigOptions.getPercentPerLenghtUnitOption(0.05));
+		StringConfigOption multiInstanceChecks = new StringConfigOption("useMultiInstanceChecks", "See UseMultiInstanceChecks enum.");
+		multiInstanceChecks.setAllowedValues(new String[] {"never", "twoChecks", "oneCheck"});
+		options.add(multiInstanceChecks);
 		return options;
 	}
 	
@@ -112,6 +116,15 @@ public abstract class PosNegLP extends LearningProblem {
 			useRetrievalForClassification = (Boolean) entry.getValue();
 		else if (name.equals("percentPerLengthUnit"))
 			percentPerLengthUnit = (Double) entry.getValue();
+		else if (name.equals("useMultiInstanceChecks")) {
+			String value = (String) entry.getValue();
+			if(value.equals("oneCheck"))
+				useMultiInstanceChecks = UseMultiInstanceChecks.ONECHECK;
+			else if(value.equals("twoChecks"))
+				useMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
+			else
+				useMultiInstanceChecks = UseMultiInstanceChecks.NEVER;	
+		}
 	}
 	
 	/*
