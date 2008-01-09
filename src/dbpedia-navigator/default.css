@@ -32,15 +32,21 @@ h2 {
  */
 
 #wrapper {
-	position: relative;
+	/*position: relative;*/
 	max-width: 100%;
-	padding: 15px;
+	padding: 1%;
+/*	padding: 15px; */
 /*	margin: 15px;*/
 }
 
 #content {
-	margin: 0 19em;
-	overflow: hidden;
+	/*margin: 0 19em;
+	overflow: hidden;*/
+	/*width: 10%;*/
+	width: 60%; 
+	float: left;
+	margin-left: 3px;
+	margin-right: 3px; 
 /*	border-left: 1px solid #bbb;
 	border-right: 1px solid #bbb;
 	padding: 0 5px;*/
@@ -53,15 +59,20 @@ h2 {
  * (3) positioning the content div is more straightforward.
  */
 #leftSidebar {
-	position: absolute;
-	width: 18em;
+	/* position: absolute; */
+	width: 18%;
+	min-width: 150px;
+	float: left;
 }
 
 #rightSidebar {
-	position: absolute;
-	width: 18em;
-	top: 15px;
-	right: 15px;
+	/* position: absolute; */
+	/*float: right;*/
+	width: 18%;
+	min-width: 150px;
+	float: left;
+	/*top: 15px;
+	right: 15px;*/
 }
 
 #clear {
@@ -335,4 +346,17 @@ input.button:hover {
 
 #label {
 	margin-bottom: 0.1em;
+}
+
+#article {
+	min-height: 500px;
+}
+
+#credits {
+	border: none;
+}
+
+#footer {
+	clear: both;
+	text-align: center;
 }
