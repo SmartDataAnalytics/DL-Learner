@@ -13,6 +13,12 @@ $ids=$sc->getIDs();
 $_SESSION['id']=$ids[0];
 $_SESSION['ksID']=$ids[1];
 
+// debugging code
+// echo '<pre>';
+// $sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
+// print_r($sc->getTriples($settings->sparqlttl,'http://dbpedia.org/resource/Dog'));
+// echo '</pre>';
+
 require("ajax.php"); 
   
 echo '<?xml version="1.0" encoding="UTF-8"?>';
@@ -184,6 +190,9 @@ ToDo:
 	<li>get local DBpedia SPARQL endpoint working</li>
 	<li>many queries work correctly on the server, but yield to response in the interface (seems to be rather random)</li>
 	<li>fix sometimes occurring PHP errors and warnings</li>
+	<li>would be interesting to somehow view the Wikipedia article (without the left navigation part,
+	tabs etc.) as an overlay, because the Wikipedia article will almost always be a human-friendlier
+	description of an object compared to the extracted one</li> 
 </ul>
 </p>
 </div>

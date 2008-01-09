@@ -68,14 +68,14 @@ function getarticle($subject,$fromCache)
 			
 			// display a picture if there is one
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
-				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'].'" alt="Picture of '.$subject_nice.'" style="float:right; max-width:200px;" \>';
+				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0].'" alt="Picture of '.$subject_nice.'" style="float:right; max-width:200px;" \>';
 				
 			// add short description in english
-			$content.="<h3>Short Description</h3><p>".urldecode($triples['http://dbpedia.org/property/abstract'])."</p>";
+			$content.="<h4>Short Description</h4><p>".urldecode($triples['http://dbpedia.org/property/abstract'][0])."</p>";
 			
 			// give the link to the corresponding Wikipedia article
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
-				$content .= '<p><img src="images/wikipedia_favicon.png" alt"Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'].'">view Wikipedia article</a>, '; 
+				$content .= '<p><img src="images/wikipedia_favicon.png" alt"Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0].'">view Wikipedia article</a>, '; 
 			$content .= '<a href="'.$subject.'">view DBpedia resource description</a></p>';
 				
 			// display a list of classes
@@ -248,9 +248,15 @@ function searchAndShowArticle($keyword)
 
 // helper function
 function get_triple_table($triples) {
+
 	$table = '<table border="1"><tr><td>predicate</td><td>object</td></tr>';
 	foreach($triples as $predicate=>$object) {
-		$table .= '<tr><td>'.$predicate.'</td><td>'.$object.'</td></tr>';
+		$table .= '<tr><td>'.$predicate.'</td>';
+		$table .= '<td><ul>';
+		foreach($object as $element) {
+			$table .= '<li>'.$element.'</li>';
+		}
+		$table .= '</ul></td>';
 	}
 	$table .= '</table>';
 	return $table;
