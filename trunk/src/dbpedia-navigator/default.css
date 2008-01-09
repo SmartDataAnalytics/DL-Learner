@@ -156,10 +156,6 @@ h2 {
 	display: block;
 }
 
-/*.box select {
-	width: 250px; /* TODO remove absolute size */
-}*/
-
 .box input {
 	width: auto;
 }
