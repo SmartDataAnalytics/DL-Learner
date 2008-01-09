@@ -104,7 +104,11 @@ class DLLearnerConnection
 				foreach ($array as $element)
 				{
 					$items=preg_split("[<]",$element,-1, PREG_SPLIT_NO_EMPTY);
-					$ret[$items[0]]=$items[1];	
+					
+					// each property can occur multiple times (!)
+					// bug: $ret[$items[0]]=$items[1];
+						
+					$ret[$items[0]][] = $items[1];
 				}
 				return $ret;
 			}

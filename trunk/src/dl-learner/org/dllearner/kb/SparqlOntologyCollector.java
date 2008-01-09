@@ -47,7 +47,7 @@ public class SparqlOntologyCollector {
 
 	boolean print_flag=false;
 	SparqlQueryMaker q;
-	SparqlCache c;
+	SparqlCache cache;
 	URL url;
 	SparqlFilter sf;
 	String[] subjectList;
@@ -90,7 +90,7 @@ public class SparqlOntologyCollector {
 		this.numberOfRecursions=numberOfRecursions;
 		this.format=format;
 		this.q=new SparqlQueryMaker();
-		this.c=new SparqlCache("cache");
+		this.cache=new SparqlCache("cache");
 		if(defClasses!=null && defClasses.length>0 ){
 			this.defaultClasses=defClasses;
 		}		
@@ -108,7 +108,7 @@ public class SparqlOntologyCollector {
 	public SparqlOntologyCollector(URL url)
 	{
 		this.q=new SparqlQueryMaker();
-		this.c=new SparqlCache("cache");
+		this.cache=new SparqlCache("cache");
 		this.url=url;
 	}
 	
@@ -131,16 +131,16 @@ public class SparqlOntologyCollector {
 	public String[] collectTriples(String subject) throws IOException{
 		System.out.println("Searching for Article: "+subject);
 		String sparql=q.makeArticleQuery(subject);
-		String FromCache=c.get(subject, sparql);
+		String fromCache=cache.get(subject, sparql);
 		String xml;
 		// if not in cache get it from dbpedia
-		if(FromCache==null){
+		if(fromCache==null){
 			xml=sendAndReceive(sparql);
-			c.put(subject, xml, sparql);
+			cache.put(subject, xml, sparql);
 			System.out.print("\n");
 		}
 		else{
-			xml=FromCache;
+			xml=fromCache;
 			System.out.println("FROM CACHE");
 		}
 		
@@ -181,12 +181,12 @@ public class SparqlOntologyCollector {
 	public String[] getSubjectsFromLabel(String label, int limit) throws IOException{
 		System.out.println("Searching for Label: "+label);
 		String sparql=q.makeLabelQuery(label,limit);
-		String FromCache=c.get(label, sparql);
+		String FromCache=cache.get(label, sparql);
 		String xml;
 		// if not in cache get it from dbpedia
 		if(FromCache==null){
 			xml=sendAndReceive(sparql);
-			c.put(label, xml, sparql);
+			cache.put(label, xml, sparql);
 			System.out.print("\n");
 		}
 		else{
@@ -201,12 +201,12 @@ public class SparqlOntologyCollector {
 	{
 		System.out.println("Searching for Subjects of type: "+concept);
 		String sparql=q.makeConceptQuery(concept);
-		String FromCache=c.get(concept, sparql);
+		String FromCache=cache.get(concept, sparql);
 		String xml;
 		// if not in cache get it from dbpedia
 		if(FromCache==null){
 			xml=sendAndReceive(sparql);
-			c.put(concept, xml, sparql);
+			cache.put(concept, xml, sparql);
 			System.out.print("\n");
 		}
 		else{
@@ -242,12 +242,12 @@ public class SparqlOntologyCollector {
 		
 		String sparql=q.makeQueryFilter(StartingSubject,this.sf);
 		// checks cache
-		String FromCache=c.get(StartingSubject, sparql);
+		String FromCache=cache.get(StartingSubject, sparql);
 		String xml;
 		// if not in cache get it from dbpedia
 		if(FromCache==null){
 			xml=sendAndReceive(sparql);
-			c.put(StartingSubject, xml, sparql);
+			cache.put(StartingSubject, xml, sparql);
 			System.out.print("\n");
 		}
 		else{
