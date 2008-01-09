@@ -1,6 +1,6 @@
 <?php
 
-class SparqlConnection
+class DLLearnerConnection
 {
 	private $DBPediaUrl;
 	private $DLLearnerUri;
@@ -8,7 +8,7 @@ class SparqlConnection
 	private $id;
 	private $ksID;
 		
-	function SparqlConnection($DBPediaUrl,$DLLearnerUri,$id=0,$ksID=0)
+	function DLLearnerConnection($DBPediaUrl,$DLLearnerUri,$id=0,$ksID=0)
 	{
 		ini_set('default_socket_timeout',200);
 		$this->DBPediaUrl=$DBPediaUrl;
@@ -169,13 +169,13 @@ class SparqlConnection
 	}
 	
 	public function loadWSDLfiles($wsdluri){
-		$main=SparqlConnection::getwsdl($wsdluri);
-		$other=SparqlConnection::getOtherWSDL($main);
-		$newMain=SparqlConnection::changeWSDL($main);
-		SparqlConnection::writeToFile("main.wsdl",$newMain);
+		$main=DLLearnerConnection::getwsdl($wsdluri);
+		$other=DLLearnerConnection::getOtherWSDL($main);
+		$newMain=DLLearnerConnection::changeWSDL($main);
+		DLLearnerConnection::writeToFile("main.wsdl",$newMain);
 		$x=0;
 		foreach ($other as $o){
-			SparqlConnection::writeToFile("def".($x++).".xsd",SparqlConnection::getwsdl($o));
+			DLLearnerConnection::writeToFile("def".($x++).".xsd",DLLearnerConnection::getwsdl($o));
 		}
 
 	}

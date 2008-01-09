@@ -10,9 +10,9 @@ $xajax->processRequest();
 function getsubjects($label)
 {
 	require_once("Settings.php");
-	require_once("SparqlConnection.php");
+	require_once("DLLearnerConnection.php");
 	$settings=new Settings();
-	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
+	$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 	
 	$content="";
 	$subjects=$sc->getSubjects($settings->sparqlttl,$label);
@@ -46,9 +46,9 @@ function getarticle($subject,$fromCache)
 		}
 	if ($fromCache==-1) {
 		require_once("Settings.php");
-		require_once("SparqlConnection.php");
+		require_once("DLLearnerConnection.php");
 		$settings=new Settings();
-		$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
+		$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 		$triples=$sc->getTriples($settings->sparqlttl,$subject);
 		$content="";
 		if (count($triples)==1)
@@ -157,9 +157,9 @@ function learnConcept()
 	if (isset($_SESSION['positive'])&&isset($_SESSION['negative']))
 	{
 		require_once("Settings.php");
-		require_once("SparqlConnection.php");
+		require_once("DLLearnerConnection.php");
 		$settings=new Settings();
-		$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
+		$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 		
 		$concept=$sc->getConceptFromExamples($settings->sparqlttl,$_SESSION['positive'],$_SESSION['negative']);
 		$_SESSION['lastLearnedConcept']=$concept;
@@ -175,9 +175,9 @@ function learnConcept()
 function getSubjectsFromConcept()
 {
 	require_once("Settings.php");
-	require_once("SparqlConnection.php");
+	require_once("DLLearnerConnection.php");
 	$settings=new Settings();
-	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
+	$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 	
 	$content="";
 	if (isset($_SESSION['lastLearnedConcept']))
@@ -206,10 +206,10 @@ function getSubjectsFromConcept()
 function searchAndShowArticle($keyword)
 {
 	require_once("Settings.php");
-	require_once("SparqlConnection.php");
+	require_once("DLLearnerConnection.php");
 	$settings=new Settings();
 	
-	$sc=new SparqlConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
+	$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 	
 	$content="";
 	

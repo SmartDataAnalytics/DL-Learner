@@ -46,6 +46,7 @@ import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpoint;
+import org.dllearner.kb.SparqlEndpointRestructured;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -59,7 +60,6 @@ import org.dllearner.utilities.Helper;
  * DL-Learner web service interface.
  * 
  * @author Jens Lehmann
- * @author Sebastian Hellmann
  *
  */
 @WebService(name = "DLLearnerWebService")
@@ -79,7 +79,8 @@ public class DLLearnerWS {
 	
 	public DLLearnerWS() {
 		knowledgeSourceMapping.put("owlfile", OWLFile.class);
-		knowledgeSourceMapping.put("sparql", SparqlEndpoint.class);
+		knowledgeSourceMapping.put("sparqlold", SparqlEndpoint.class);
+		knowledgeSourceMapping.put("sparql", SparqlEndpointRestructured.class);
 		reasonerMapping.put("dig", DIGReasoner.class);
 		learningProblemMapping.put("posNegDefinition", PosNegDefinitionLP.class);
 		learningProblemMapping.put("posNegInclusion", PosNegInclusionLP.class);
@@ -460,10 +461,9 @@ public class DLLearnerWS {
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
 	
-	////////////////////////////////////
-	//     sparql modul methods       //
-	////////////////////////////////////
-	
+	////////////////////////////////////////
+	//     SPARQL component methods       //
+	////////////////////////////////////////
 	
 	@WebMethod
 	public void startThread(int id, int componentID, String[] options) throws ClientNotKnownException
@@ -478,10 +478,10 @@ public class DLLearnerWS {
 			thread = new Thread() {
 				@Override
 				public void run() {
-					((SparqlEndpoint)component).setSubjectThread(this);
-					((SparqlEndpoint)component).setSubjectThreadRunning(true);
-					((SparqlEndpoint)component).calculateSubjects(label,limit);
-					((SparqlEndpoint)component).setSubjectThreadRunning(false);
+					((SparqlEndpointRestructured)component).setSubjectThread(this);
+					((SparqlEndpointRestructured)component).setSubjectThreadRunning(true);
+					((SparqlEndpointRestructured)component).calculateSubjects(label,limit);
+					((SparqlEndpointRestructured)component).setSubjectThreadRunning(false);
 				}
 			};
 		} else if (method.equals("triples")){
@@ -489,10 +489,10 @@ public class DLLearnerWS {
 			thread = new Thread() {
 				@Override
 				public void run() {
-					((SparqlEndpoint)component).setTriplesThread(this);
-					((SparqlEndpoint)component).setTriplesThreadRunning(true);
-					((SparqlEndpoint)component).calculateTriples(subject);
-					((SparqlEndpoint)component).setTriplesThreadRunning(false);
+					((SparqlEndpointRestructured)component).setTriplesThread(this);
+					((SparqlEndpointRestructured)component).setTriplesThreadRunning(true);
+					((SparqlEndpointRestructured)component).calculateTriples(subject);
+					((SparqlEndpointRestructured)component).setTriplesThreadRunning(false);
 				}
 			};
 		} else if (method.equals("conceptSubjects")){
@@ -500,10 +500,10 @@ public class DLLearnerWS {
 			thread = new Thread() {
 				@Override
 				public void run() {
-					((SparqlEndpoint)component).setConceptThread(this);
-					((SparqlEndpoint)component).setConceptThreadRunning(true);
-					((SparqlEndpoint)component).calculateConceptSubjects(concept);
-					((SparqlEndpoint)component).setConceptThreadRunning(false);
+					((SparqlEndpointRestructured)component).setConceptThread(this);
+					((SparqlEndpointRestructured)component).setConceptThreadRunning(true);
+					((SparqlEndpointRestructured)component).calculateConceptSubjects(concept);
+					((SparqlEndpointRestructured)component).setConceptThreadRunning(false);
 				}
 			};
 		}
@@ -516,11 +516,11 @@ public class DLLearnerWS {
 		ClientState state = getState(id);
 		Component component = state.getComponent(componentID);
 		if (option.equals("subjects"))
-			return ((SparqlEndpoint)component).subjectThreadIsRunning();
+			return ((SparqlEndpointRestructured)component).subjectThreadIsRunning();
 		else if (option.equals("triples"))
-			return ((SparqlEndpoint)component).triplesThreadIsRunning();
+			return ((SparqlEndpointRestructured)component).triplesThreadIsRunning();
 		else if (option.equals("conceptSubjects"))
-			return ((SparqlEndpoint)component).conceptThreadIsRunning();
+			return ((SparqlEndpointRestructured)component).conceptThreadIsRunning();
 		return true;
 	}
 	
@@ -530,11 +530,11 @@ public class DLLearnerWS {
 		ClientState state = getState(id);
 		Component component = state.getComponent(componentID);
 		if (option.equals("subjects"))
-			((SparqlEndpoint)component).getSubjectThread().stop();
+			((SparqlEndpointRestructured)component).getSubjectThread().stop();
 		else if (option.equals("triples"))
-			((SparqlEndpoint)component).getTriplesThread().stop();
+			((SparqlEndpointRestructured)component).getTriplesThread().stop();
 		else if (option.equals("conceptSubjects"))
-			((SparqlEndpoint)component).getConceptThread().stop();
+			((SparqlEndpointRestructured)component).getConceptThread().stop();
 	}
 	
 	@WebMethod
@@ -543,11 +543,11 @@ public class DLLearnerWS {
 		ClientState state = getState(id);
 		Component component = state.getComponent(componentID);
 		if (option.equals("subjects"))
-			return ((SparqlEndpoint)component).getSubjects();
+			return ((SparqlEndpointRestructured)component).getSubjects();
 		else if (option.equals("triples"))
-			return ((SparqlEndpoint)component).getTriples();
+			return ((SparqlEndpointRestructured)component).getTriples();
 		else if (option.equals("conceptSubjects"))
-			return ((SparqlEndpoint)component).getConceptSubjects();
+			return ((SparqlEndpointRestructured)component).getConceptSubjects();
 		return new String[0];
 	}
 	
