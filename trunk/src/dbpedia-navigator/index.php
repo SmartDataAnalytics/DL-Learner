@@ -62,12 +62,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   </script>
   </head>
   <body>
- 
-<p><a href='clearsession.php'>start from scratch</a></p>
+
 <h1>DBPedia Navigator</h1>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
+
 <div id="wrapper">
 	<div id="leftSidebar">
 
@@ -105,16 +105,19 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 		
-		<div id="validation">
-			<?php
-			$uri = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+		<div class="box" id="credits">
+			<p>DBpedia Navigator is powered by ... <br />
+			&nbsp; <a href="http://dl-learner.org">DL-Learner</a><br />
+			&nbsp; <a href="http//dbpedia.org">DBpedia</a><br/>
+			&nbsp; <a href="http://virtuoso.openlinksw.com/wiki/main/">OpenLink Virtuoso</a><br />
+			... and implemented by <a href="http://jens-lehmann.org">Jens Lehmann</a> at 
+			the <a href="http:/aksw.org">AKSW</a> research group (University of Leipzig).</p>
 			
-			echo '<div><a href="http://validator.w3.org/check?uri='.$uri.'"';
-			echo '><img src="images/valid-xhtml10.png" alt="valid XHTML 1.0" /></a>'."\n";
-			echo '<a href="http://jigsaw.w3.org/css-validator/validator?uri='.$uri.'"';
-			echo '><img src="images/valid-css.png" alt="valid CSS" /></a></div>'."\n";
-			?>	
-		</div>		
+			<a href="http://www.w3.org/2004/OWL/"><img src="images/sw-owl-green.png" alt="OWL logo" /></a>
+			<a href="http://www.w3.org/2001/sw/DataAccess/"><img src="images/sw-sparql-green.png" alt="SPARQL logo"/></a>
+		</div>
+		
+	
 		
 	</div><!-- END leftSidebar -->
 
@@ -150,11 +153,24 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 
 	</div><!-- rightSidebar -->
 	
-	<!--  <div id="clear"></div> -->
-	
-
+	<!--   <div id="clear"></div> -->
 	
 </div><!--  wrapper -->
+<div id="footer">
+			<p>Licensed under the GNU General Public License (GPL) 3 as part of the DL-Learner open source
+			project.<br />Copyright &copy; Jens Lehmann 2007-2008 </p>
+		<div id="validation">
+			<?php
+			$uri = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+			
+			echo '<div><a href="http://validator.w3.org/check?uri='.$uri.'"';
+			echo '><img src="images/valid-xhtml10.png" alt="valid XHTML 1.0" /></a>'."\n";
+			echo '<a href="http://jigsaw.w3.org/css-validator/validator?uri='.$uri.'"';
+			echo '><img src="images/valid-css.png" alt="valid CSS" /></a></div>'."\n";
+			?>	
+		</div>	
+		<p><a href='clearsession.php'>restart session and redownload WSDL file (for debugging)</a></p>			
+</div>
   </body>
 </html>
 			
