@@ -24,11 +24,13 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 import org.dllearner.core.dl.Individual;
 import org.dllearner.reasoning.DIGReasoner;
@@ -68,13 +70,27 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		digList.setVisibleRowCount(-1);
 		JScrollPane listScroller = new JScrollPane(digList);
 		listScroller.setPreferredSize(new Dimension(550, 350));
-
+		
 		digPanel.add(digButton);
 		add(digPanel, BorderLayout.PAGE_START);
 	
 		centerPanel.add(listScroller);
 		add(centerPanel, BorderLayout.CENTER);
 	
+		digList.addListSelectionListener(new ListSelectionListener() {
+		      public void valueChanged(ListSelectionEvent evt) {
+		    	  if (evt.getValueIsAdjusting())
+		    		  return;
+		    	  //System.out.println("Selected from " + evt.getFirstIndex() + " to " + evt.getLastIndex());
+		    	  // detect which examples have been selected			
+		    	  Set<String> exampleSet = new HashSet<String>();
+		    	  int[] selectedIndices = digList.getSelectedIndices();
+		    	  for(int i : selectedIndices)
+		    		  exampleSet.add(individuals.get(i).toString());
+		    	  StartGUI.myconfig.setExampleSet(exampleSet);
+		    	  System.out.println("digList: " + StartGUI.myconfig.getExampleSet() );
+		      }
+		});
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -96,15 +112,16 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 			
 			// make list
 			DefaultListModel listModel = new DefaultListModel();
-			for(Individual ind : individuals) {
+			for(Individual ind : individuals)
 				listModel.addElement(ind);
-			}
-			//System.out.println("listModel: " +  listModel);
+			
+			digList.setModel(listModel);
 			
 			// graphic
 			digList.setModel(listModel);
 			StartGUI.myrun.renew();
 			
+			//return;
 		}
 	}
 }

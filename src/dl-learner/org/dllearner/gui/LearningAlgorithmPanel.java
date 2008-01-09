@@ -22,6 +22,14 @@ package org.dllearner.gui;
 
 import javax.swing.*;
 
+import org.dllearner.algorithms.refinement.ROLearner;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+
+
 /**
  * LearningAlgorithmPanel
  * 
@@ -29,11 +37,29 @@ import javax.swing.*;
  * 
  */
 
-public class LearningAlgorithmPanel extends JPanel {
+public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 8721490771860452959L;
-
+    
+	private JPanel laPanel = new JPanel();
+    private JButton laButton;
+    
 	LearningAlgorithmPanel() {
+		super(new BorderLayout());
+
+		laButton = new JButton("Use ROLearner");
+		laButton.addActionListener(this);
 		
+		laPanel.add(laButton);
+		add(laPanel, BorderLayout.PAGE_START);	
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == laButton) {
+			if (StartGUI.myconfig.getStatus(6)) {
+				StartGUI.myconfig.setLearningAlgorithm(StartGUI.myconfig.getComponentManager().learningAlgorithm(ROLearner.class, StartGUI.myconfig.getLearningProblem(), StartGUI.myconfig.getReasoningService()));
+				StartGUI.myconfig.getLearningAlgorithm().init();
+			}
+		}
 	}
 }

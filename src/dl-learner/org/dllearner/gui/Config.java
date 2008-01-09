@@ -21,13 +21,15 @@ package org.dllearner.gui;
  */
 
 import java.io.File;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.dl.Individual;
 
 /**
  * config
@@ -44,8 +46,10 @@ public class Config {
 	private File selectedFile;
 	private ReasonerComponent reasoner;
 	private ReasoningService rs;
-	private List<Individual> individuals;
 	private String[] kbBoxItems = {"Pleae select a type", "KBFile", "OWLFile", "SparqleEndpoint"};
+	private Set<String> exampleSet = new HashSet<String>();
+	private LearningProblem lp;
+	private LearningAlgorithm la;
 	
 	/**
 	 * status should show witch variables are set
@@ -53,6 +57,9 @@ public class Config {
 	 * status[1] ... KnowledgeSource
 	 * status[2] ... File or URL 
 	 * status[3] ... Resoner
+	 * status[4] ... ReasoningService
+	 * status[5] ... ExampleSet
+	 * status[6] ... LearningProblem
 	 */
 	protected static boolean[] status = new boolean[8];
 	
@@ -99,14 +106,6 @@ public class Config {
 		rs = input; 
 	}
 	
-	protected List<Individual> getListIndividuals () {
-		return individuals;
-	}
-	
-	protected void setListIndividuals (List<Individual> input) {
-		individuals = input; 
-	}
-	
 	protected String[] getKBBoxItems() {
 		return kbBoxItems;
 	}
@@ -120,4 +119,32 @@ public class Config {
 		source = input;
 	}
 
+	protected void setExampleSet(Set<String> input) {
+		status[5] = true;
+		exampleSet = input;
+	}
+	
+	protected Set<String> getExampleSet () {
+		return exampleSet;
+	}
+	
+	protected void setLearningProblem (LearningProblem input) {
+		status[6] = true;
+		lp = input;
+	}
+	
+	protected LearningProblem  getLearningProblem () {
+		return lp;
+	}
+	
+	protected void setLearningAlgorithm (LearningAlgorithm input) {
+		status[6] = true;
+		la = input;
+	}
+	
+	protected LearningAlgorithm  getLearningAlgorithm () {
+		return la;
+	}
+
+	
 }

@@ -20,7 +20,13 @@ package org.dllearner.gui;
  *
  */
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
+
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 
 /**
  * LearningProblemPanel
@@ -29,11 +35,32 @@ import javax.swing.*;
  * 
  */
 
-public class LearningProblemPanel extends JPanel {
+public class LearningProblemPanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = -3819627680918930203L;
 
+	private JPanel lpPanel = new JPanel();
+    private JButton lpButton;
+    
 	LearningProblemPanel() {
+		super(new BorderLayout());
+
+		lpButton = new JButton("Use PosOnlyDefinitionLP");
+		lpButton.addActionListener(this);
 		
+		lpPanel.add(lpButton);
+		add(lpPanel, BorderLayout.PAGE_START);	
 	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == lpButton) {
+			if (StartGUI.myconfig.getStatus(5)) {
+				System.out.println(StartGUI.myconfig.getExampleSet());
+				StartGUI.myconfig.setLearningProblem(StartGUI.myconfig.getComponentManager().learningProblem(PosOnlyDefinitionLP.class, StartGUI.myconfig.getReasoningService()));
+				StartGUI.myconfig.getComponentManager().applyConfigEntry(StartGUI.myconfig.getLearningProblem(), "positiveExamples", StartGUI.myconfig.getExampleSet());
+				StartGUI.myconfig.getLearningProblem().init();
+			}
+		}
+	}
+	
 }
