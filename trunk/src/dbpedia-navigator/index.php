@@ -11,13 +11,14 @@ $ids=$sc->getIDs();
 $_SESSION['id']=$ids[0];
 $_SESSION['ksID']=$ids[1];
 
-echo "<a href='clearsession.php'>start from scratch</a>";
-
 require("ajax.php"); 
   
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
-<html>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <title>DL Learner</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
@@ -59,6 +60,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   </script>
   </head>
   <body>
+<p><a href='clearsession.php'>start from scratch</a></p>
 <h3>DBPedia-Navigator-Test</h3>
 <div id="layer" style="display:none"><div id="layerContent" style="display:none"></div></div>
 <div id="wrapper">
@@ -135,6 +137,17 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 </div><!-- rightSidebar -->
 <div id="clear"></div>
 </div>
+<?php
+
+$uri = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+
+echo '<a href="http://validator.w3.org/check?uri='.$uri.'"';
+echo '><img src="images/valid-xhtml10.png" alt="valid XHTML 1.0" /></a>'."\n";
+echo '<a href="http://jigsaw.w3.org/css-validator/validator?uri='.$uri.'"';
+echo '><img src="images/valid-css.png" alt="valid CSS" /></a>'."\n";
+
+?>
+
   </body>
 </html>
 			
