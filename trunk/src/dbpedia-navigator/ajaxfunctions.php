@@ -55,13 +55,40 @@ function getarticle($subject,$fromCache)
 		{
 			$content.=substr($triples,7);
 		}
-		else if (count($triples)==0) $content.="Article not found.";
+		else if (count($triples)==0) 
+			$content.="Did not find an article with that name.";
 		else {
+		
+			// goal: display the data in a nice (DBpedia specific way), maybe similar to
+			// dbpedia.org/search
+		
 			$content="";
-			$content.="<img src=\"".$triples['http://xmlns.com/foaf/0.1/depiction']."\" alt=\"Picture of ".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."\" width=\"50\"/ style=\"float:left\">";
-			$content.="<div>".urldecode($triples['http://dbpedia.org/property/abstract'])."</div>";
+			// replace by label(?)
+			$subject_nice = str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)));
 			
-			$contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";		
+			// display a picture if there is one
+			if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
+				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'].'" alt="Picture of '.$subject_nice.'" style="float:right; max-width:200px;" \>';
+				
+			// add short description in english
+			$content.="<h3>Short Description</h3><p>".urldecode($triples['http://dbpedia.org/property/abstract'])."</p>";
+			
+			// give the link to the corresponding Wikipedia article
+			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
+				$content .= '<p><img src="images/wikipedia_favicon.png" alt"Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'].'">view Wikipedia article</a>, '; 
+			$content .= '<a href="'.$subject.'">view DBpedia resource description</a></p>';
+				
+			// display a list of classes
+			
+			// filter out uninteresting properties
+			// unset
+			
+			// display the remaining properties as list which can be used for further navigation
+			
+			$content .= '<br/><br/><br/><br/><br/><br/>'.get_triple_table($triples);
+			
+			// $contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";
+			$contentbuttons='<img src="images/green-plus.png" alt="positive example" onclick="xajax_addPositive(\''.$subject.'\')" /> &nbsp;<img src="images/red-minus.png" alt="negative example" onclick="xajax_addNegative(\''.$subject.'\') />';		
 		}
 		
 		//store article in session, to navigate between last 5 articles quickly
@@ -217,6 +244,16 @@ function searchAndShowArticle($keyword)
 	$objResponse->call('xajax_getarticle', "http://dbpedia.org/resource/".str_replace(" ","_",$keyword),-1);
 	$objResponse->call('xajax_getsubjects',$keyword);
 	return $objResponse;
+}
+
+// helper function
+function get_triple_table($triples) {
+	$table = '<table border="1"><tr><td>predicate</td><td>object</td></tr>';
+	foreach($triples as $predicate=>$object) {
+		$table .= '<tr><td>'.$predicate.'</td><td>'.$object.'</td></tr>';
+	}
+	$table .= '</table>';
+	return $table;
 }
 
 ?>
