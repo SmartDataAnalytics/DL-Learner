@@ -26,6 +26,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+import org.dllearner.core.dl.Concept;
+
 /**
  * OutputPanel
  * 
@@ -38,6 +40,7 @@ public class OutputPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1643304576470046636L;
 	
 	private JButton showButton;
+	private JButton runButton;
 	private JTextArea infoArea;
 	
 	OutputPanel() {
@@ -45,11 +48,16 @@ public class OutputPanel extends JPanel implements ActionListener {
 		
 		showButton = new JButton("Show Variables");
 		showButton.addActionListener(this);
+		
+		runButton = new JButton("Run");
+		runButton.addActionListener(this);
+		
 		infoArea = new JTextArea(20, 50);		
 		JScrollPane infoScroll = new JScrollPane(infoArea);
 				
 		JPanel showPanel = new JPanel();
 		showPanel.add(showButton);
+		showPanel.add(runButton);
 		JPanel infoPanel = new JPanel();
 		infoPanel.add(infoScroll);
 
@@ -74,6 +82,13 @@ public class OutputPanel extends JPanel implements ActionListener {
 				for (int i = 0; i<8; i++) { // show status-vars
 					infoArea.append("i: " + StartGUI.myconfig.getStatus(i) + "\n");
 				}
+			}
+		}
+		if (e.getSource() == runButton) {
+			if (StartGUI.myconfig.getStatus(6)) {
+				StartGUI.myconfig.getLearningAlgorithm().start();
+				Concept solution = StartGUI.myconfig.getLearningAlgorithm().getBestSolution();
+				infoArea.setText(solution.toString());
 			}
 		}
 	}
