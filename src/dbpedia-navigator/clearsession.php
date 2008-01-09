@@ -8,5 +8,6 @@ require_once 'SparqlConnection.php';
 require_once 'Settings.php';
 $settings=new Settings();
 SparqlConnection::loadWSDLfiles($settings->wsdluri);
-header("Location: http://" . $_SERVER["HTTP_HOST"] . "/Ajax-Test/index.php");
+$index_uri = 'http://'.$_SERVER['SERVER_NAME'].dirname($_SERVER['SCRIPT_NAME']).'/index.php';
+header('Location: ' . $index_uri);
 ?>
