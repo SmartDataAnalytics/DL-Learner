@@ -63,7 +63,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   </head>
   <body>
 
-<h1>DBPedia Navigator</h1>
+<h1>DBpedia Navigator</h1>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
@@ -75,9 +75,11 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  <div class="boxtitle">Search DBpedia</div>
 		  <div class="boxcontent" id="search">
 			<!-- Search:<br/> -->
+			<form onSubmit="xajax_searchAndShowArticle(document.getElementById('label').value);return false;">
 			<input type="text" name="label" id="label" /><br/>
-			<input type="button" value="Search" class="button" onclick="xajax_searchAndShowArticle(document.getElementById('label').value);return false;" />&nbsp;&nbsp;&nbsp;
-			<!--  <input type="button" value="Fulltext" class="button" onclick=""/> -->
+			<input type="button" value="Search" class="button" onclick="xajax_searchAndShowArticle(document.getElementById('label').value);return false;" />
+			<!--  &nbsp;&nbsp;&nbsp; <input type="button" value="Fulltext" class="button" onclick=""/> -->
+			</form>
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
@@ -123,9 +125,14 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 
 	<div id="content">
 		<div class="box">
-		  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left" id="ArticleTitle">Article</td><td class="right"><span id="contentbuttons"></span></td></tr></table></div>
+		  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left" id="ArticleTitle">Welcome</td><td class="right"><span id="contentbuttons"></span></td></tr></table></div>
 		  <div class="boxcontent" id="article">
-		  <div id="articlecontent" style="display:block"></div>
+		  <div id="articlecontent" style="display:block">
+		  <br /><br />
+		  Welcome to the DBpedia Navigator interface! DBpedia Navigator allows you to search DBpedia
+		  and uses the background knowledge in DBpedia to suggest possible interesting navigation
+		  links. 
+		  </div>
 		  <div id="loadingArticle" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
@@ -134,19 +141,19 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	<div id="rightSidebar">
 
 		<div class="box">
-		  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Positives</td><td class="right"><input type="button" value="Clear" class="button" onclick="xajax_clearPositives();return false;" /></td></tr></table></div>
+		  <div class="boxtitlewithbutton" id="positivesboxtitle">search relevant &nbsp; <input type="button" value="Clear" class="button" onclick="xajax_clearPositives();return false;" /></div>
 		  <div class="boxcontent" id="Positives">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
 		<div class="box">
-		  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Negatives</td><td class="right"><input type="button" value="Clear" class="button" onclick="xajax_clearNegatives();return false;" /></td></tr></table></div>
+		  <div class="boxtitlewithbutton" id="negativesboxtitle">not relevant &nbsp; <input type="button" value="Clear" class="button" onclick="xajax_clearNegatives();return false;" /></div>
 		  <div class="boxcontent" id="Negatives">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
 		<div class="box">
-		  <div class="boxtitle">Last Articles</div>
+		  <div class="boxtitle">Articles Last Viewed</div>
 		  <div class="boxcontent" id="lastarticles">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
@@ -169,8 +176,19 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			echo '><img src="images/valid-css.png" alt="valid CSS" /></a></div>'."\n";
 			?>	
 		</div>	
-		<p><a href='clearsession.php'>restart session and redownload WSDL file (for debugging)</a></p>			
+		<p><a href='clearsession.php'>restart session and redownload WSDL file (for debugging)</a></p>	
+		<p>
+ToDo:
+<ul>
+	<li>get learning process working (with new SPARQL component)</li>
+	<li>get local DBpedia SPARQL endpoint working</li>
+	<li>many queries work correctly on the server, but yield to response in the interface (seems to be rather random)</li>
+	<li>fix sometimes occurring PHP errors and warnings</li>
+</ul>
+</p>
 </div>
+
+
   </body>
 </html>
 			

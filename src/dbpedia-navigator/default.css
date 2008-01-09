@@ -356,6 +356,20 @@ input.button:hover {
 	border: none;
 }
 
+#positivesboxtitle {
+	/*color: black;*/
+	background-color: lightgreen;
+}
+
+#negativesboxtitle {
+	/*color: black;*/
+	background-color: #ee6666;
+}
+
+#ArticleTitle {
+	font-size: 110%;
+}
+
 #footer {
 	clear: both;
 	text-align: center;
