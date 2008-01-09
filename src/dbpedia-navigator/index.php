@@ -70,8 +70,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   <div class="boxtitle">Search</div>
   <div class="boxcontent" id="search">
 	Search:<br/>
-	<input type="textfield" name="label" id="label"><br/>
-	<input type="button" value="Article" class="button" onclick="xajax_searchAndShowArticle(document.getElementById('label').value);return false;" />&nbsp;&nbsp;&nbsp;<input type="button" value="Fulltext" class="button" onclick=""/>
+	<input type="text" name="label" id="label" /><br/>
+	<input type="button" value="Article" class="button" onclick="xajax_searchAndShowArticle(document.getElementById('label').value);return false;" />&nbsp;&nbsp;&nbsp;
+	<input type="button" value="Fulltext" class="button" onclick=""/>
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
@@ -99,7 +100,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 </div><!-- END leftSidebar -->
 
 <div id="content">
@@ -111,7 +112,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 </div><!-- content -->
 <div id="rightSidebar">
 
@@ -133,7 +134,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   </div> <!-- boxcontent -->
 </div> <!-- box -->
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>      
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />      
 </div><!-- rightSidebar -->
 <div id="clear"></div>
 </div>
@@ -141,10 +142,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 
 $uri = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 
-echo '<a href="http://validator.w3.org/check?uri='.$uri.'"';
+echo '<div><a href="http://validator.w3.org/check?uri='.$uri.'"';
 echo '><img src="images/valid-xhtml10.png" alt="valid XHTML 1.0" /></a>'."\n";
 echo '<a href="http://jigsaw.w3.org/css-validator/validator?uri='.$uri.'"';
-echo '><img src="images/valid-css.png" alt="valid CSS" /></a>'."\n";
+echo '><img src="images/valid-css.png" alt="valid CSS" /></a></div>'."\n";
 
 ?>
 
