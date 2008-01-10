@@ -68,7 +68,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	String host;
 	private Set<String> instances=new HashSet<String>();;
 	private URL dumpFile;
-	private int recursionDepth = 2;
+	private int recursionDepth = 1;
 	private int predefinedFilter = 0;
 	private int predefinedEndpoint = 0;
 	private Set<String> predList=new HashSet<String>();
@@ -78,6 +78,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 	private boolean dumpToFile = true;
 	private boolean useLits = false;
 	private boolean getAllSuperClasses = true;
+	private boolean closeAfterRecursion = true;
 	private int breakSuperClassRetrievalAfter = 200;
 
 	private boolean learnDomain = false;
@@ -170,7 +171,8 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		options.add(new StringTupleListConfigOption("replaceObject", "rule for replacing predicates"));
 		options.add(new IntegerConfigOption("breakSuperClassRetrievalAfter", "stops a cyclic hierarchy after specified number of classes"));
 		options.add(new IntegerConfigOption("numberOfInstancesUsedForRoleLearning", ""));
-
+		options.add(new BooleanConfigOption("closeAfterRecursion", "gets all classes for all instances"));
+		
 		
 		
 		return options;
@@ -224,7 +226,7 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 		} else if (option.equals("blankNodeIdentifier")) {
 			blankNodeIdentifier = (String) entry.getValue();
 		} else if (option.equals("example")) {
-			System.out.println(entry.getValue());
+			//System.out.println(entry.getValue());
 		}else if (option.equals("replacePredicate")) {
 			replacePredicate = (LinkedList)entry.getValue();
 		}else if (option.equals("replaceObject")) {
@@ -233,7 +235,9 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			breakSuperClassRetrievalAfter = (Integer) entry.getValue();
 		}else if (option.equals("numberOfInstancesUsedForRoleLearning")) {
 			numberOfInstancesUsedForRoleLearning = (Integer) entry.getValue();
-		}
+		}else if (option.equals("closeAfterRecursion")) {
+			closeAfterRecursion = (Boolean) entry.getValue();
+		} 
 		
 	}
 
@@ -276,10 +280,10 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			
 		}
 		// give everything to the manager
-		m.useConfiguration(sqt, sse, man, recursionDepth, getAllSuperClasses);
+		m.useConfiguration(sqt, sse, man, recursionDepth, getAllSuperClasses,closeAfterRecursion);
 		try {
 			String ont = "";
-			System.out.println(learnDomain);
+			//System.out.println(learnDomain);
 			// used to learn a domain of a role
 			if (learnDomain || learnRange) {
 				Set<String> pos=new HashSet<String>();
@@ -337,6 +341,9 @@ public class SparqlEndpointRestructured extends KnowledgeSource {
 			}
 			// the actual extraction is started here
 			ont = m.extract(instances);
+			System.out.println("Number of cached SPARQL queries: "+m.getConfiguration().numberOfCachedSparqlQueries);
+			System.out.println("Number of uncached SPARQL queries: "+m.getConfiguration().numberOfUncachedSparqlQueries);
+			
 			System.out.println("Finished collecting Fragment");
 
 			if (dumpToFile) {
