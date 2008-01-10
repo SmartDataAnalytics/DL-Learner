@@ -41,10 +41,10 @@ public class Manager {
 
 	public void useConfiguration(SparqlQueryType SparqlQueryType,
 			SpecificSparqlEndpoint SparqlEndpoint, Manipulator manipulator, int recursiondepth,
-			boolean getAllBackground) {
+			boolean getAllSuperClasses,boolean closeAfterRecursion) {
 
 		this.configuration = new Configuration(SparqlEndpoint, SparqlQueryType, manipulator,
-				recursiondepth, getAllBackground);
+				recursiondepth, getAllSuperClasses, closeAfterRecursion);
 		this.typedSparqlQuery = new TypedSparqlQuery(configuration);
 		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
 		
@@ -117,6 +117,7 @@ public class Manager {
 			nt.append((String) arr[i]+"\n");
 			if(i%1000==0)System.out.println(i+" of  "+arr.length+" triples done");
 		}
+		System.out.println(arr.length+" of  "+arr.length+" triples done");
 		/*
 		 String tmp="";
 		while ( ret.size() > 0) {
@@ -135,6 +136,10 @@ public class Manager {
 	public void addPredicateFilter(String str) {
 		this.configuration.getSparqlQueryType().addPredicateFilter(str);
 
+	}
+	
+	public Configuration getConfiguration(){
+		return configuration;
 	}
 
 }

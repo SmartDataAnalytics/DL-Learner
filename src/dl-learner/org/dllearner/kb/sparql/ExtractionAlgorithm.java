@@ -32,17 +32,17 @@ public class ExtractionAlgorithm {
 
 	private Configuration configuration;
 	private Manipulator manipulator;
-	private int recursionDepth = 2;
-	private boolean getAllBackground = true;
-	private boolean closeAfterRecursion = true;
+	private int recursionDepth = 1;
+	//private boolean getAllSuperClasses = true;
+	//private boolean closeAfterRecursion = true;
 	private boolean print_flag=false;
 
 	public ExtractionAlgorithm(Configuration Configuration) {
 		this.configuration = Configuration;
 		this.manipulator = Configuration.getManipulator();
 		this.recursionDepth = Configuration.getRecursiondepth();
-		this.getAllBackground = Configuration.isGetAllBackground();
-
+		//this.getAllSuperClasses = Configuration.isGetAllSuperClasses();
+		//this.closeAfterRecursion=Configuration.isCloseAfterRecursion();
 	}
 
 	public Node getFirstNode(URI u) {
@@ -87,13 +87,13 @@ public class ExtractionAlgorithm {
 			v = tmp;
 			System.out.println("Recursion counter: " + x + 
 					" with " + v.size() + " Nodes remaining, needed: "
-					+(System.currentTimeMillis()-time));
+					+(System.currentTimeMillis()-time)+"ms");
 			time=System.currentTimeMillis();
 		}
 		
 		HashSet<String> hadAlready=new HashSet<String>();
 		// gets All Class Nodes and expands them further
-		if (this.getAllBackground) {
+		if (this.configuration.isGetAllSuperClasses()) {
 			//Set<Node> classes = new TreeSet<Node>();
 			Vector<Node> classes = new Vector<Node>();
 			
@@ -107,9 +107,9 @@ public class ExtractionAlgorithm {
 				}
 				
 			}
-			System.out.println(instances.size());
+			//System.out.println(instances.size());
 			TypedSparqlQueryClasses tsqc=new TypedSparqlQueryClasses(configuration);
-			if(closeAfterRecursion){
+			if(this.configuration.isCloseAfterRecursion()){
 				while (instances.size() > 0) {
 					p("Getting classes for remaining instances: " + instances.size());
 					Node next = instances.remove(0);
@@ -134,7 +134,7 @@ public class ExtractionAlgorithm {
 					tmp=next.expand(tsp, manipulator);
 					classes.addAll(tmp);
 					tmp=new Vector<Node>();
-					if(i % 50==0)System.out.println("got "+i+" extra classes, max: "+manipulator.breakSuperClassRetrievalAfter);
+					//if(i % 50==0)System.out.println("got "+i+" extra classes, max: "+manipulator.breakSuperClassRetrievalAfter);
 					i++;
 					if (i>=manipulator.breakSuperClassRetrievalAfter){break;}
 				}
