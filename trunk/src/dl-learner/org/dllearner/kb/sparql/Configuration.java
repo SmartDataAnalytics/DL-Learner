@@ -37,23 +37,27 @@ public class Configuration {
 	// the following needs to be moved to 
 	// class extraction algorithm or manipulator
 	private int recursiondepth = 2;
-	private boolean getAllBackground = true;
+	private boolean getAllSuperClasses = true;
+	private boolean closeAfterRecursion = true;
+	public  int numberOfUncachedSparqlQueries=0; 
+	public  int numberOfCachedSparqlQueries=0; 
 
 	public Configuration(SpecificSparqlEndpoint specificSparqlEndpoint,
 			SparqlQueryType sparqlQueryType, Manipulator manipulator, int recursiondepth,
-			boolean getAllBackground) {
+			boolean getAllSuperClasses, boolean closeAfterRecursion) {
 		this.specificSparqlEndpoint = specificSparqlEndpoint;
 		this.sparqlQueryType = sparqlQueryType;
 		this.manipulator = manipulator;
 		this.recursiondepth = recursiondepth;
-		this.getAllBackground = getAllBackground;
+		this.getAllSuperClasses = getAllSuperClasses;
+		this.closeAfterRecursion=closeAfterRecursion;
 
 	}
 
 	public Configuration changeQueryType(SparqlQueryType sqt) {
 		// TODO must clone here
 		return new Configuration(this.specificSparqlEndpoint, sqt, this.manipulator,
-				this.recursiondepth, this.getAllBackground);
+				this.recursiondepth, this.getAllSuperClasses,this.closeAfterRecursion);
 
 	}
 
@@ -69,12 +73,22 @@ public class Configuration {
 		return sparqlQueryType;
 	}
 
-	public boolean isGetAllBackground() {
-		return getAllBackground;
+	public boolean isGetAllSuperClasses() {
+		return getAllSuperClasses;
+	}
+	public boolean isCloseAfterRecursion() {
+		return closeAfterRecursion;
 	}
 
 	public int getRecursiondepth() {
 		return recursiondepth;
+	}
+	
+	public void increaseNumberOfuncachedSparqlQueries(){
+		numberOfUncachedSparqlQueries++;
+	}
+	public void increaseNumberOfCachedSparqlQueries(){
+		numberOfCachedSparqlQueries++;
 	}
 
 }

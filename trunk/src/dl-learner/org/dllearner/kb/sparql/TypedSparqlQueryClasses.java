@@ -81,6 +81,7 @@ public class TypedSparqlQueryClasses implements TypedSparqlQueryInterface{
 		String xml = null;
 		// if not in cache get it from EndPoint
 		if (FromCache == null) {
+			configuration.increaseNumberOfuncachedSparqlQueries();
 			try {
 				xml = sendAndReceiveSPARQL(sparql);
 			} catch (IOException e) {
@@ -94,6 +95,7 @@ public class TypedSparqlQueryClasses implements TypedSparqlQueryInterface{
 			}
 			//System.out.print("\n");
 		} else {
+			configuration.increaseNumberOfCachedSparqlQueries();
 			xml = FromCache;
 			//System.out.println("FROM CACHE");
 		}
