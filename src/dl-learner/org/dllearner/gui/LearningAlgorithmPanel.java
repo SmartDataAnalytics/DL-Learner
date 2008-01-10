@@ -44,9 +44,13 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	private JPanel laPanel = new JPanel();
     private JButton laButton;
     
-	LearningAlgorithmPanel() {
+    private Config config;
+    
+	LearningAlgorithmPanel(Config config) {
 		super(new BorderLayout());
 
+		this.config = config;
+		
 		laButton = new JButton("Use ROLearner");
 		laButton.addActionListener(this);
 		
@@ -56,9 +60,9 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == laButton) {
-			if (StartGUI.myconfig.getStatus(6)) {
-				StartGUI.myconfig.setLearningAlgorithm(StartGUI.myconfig.getComponentManager().learningAlgorithm(ROLearner.class, StartGUI.myconfig.getLearningProblem(), StartGUI.myconfig.getReasoningService()));
-				StartGUI.myconfig.getLearningAlgorithm().init();
+			if (config.getStatus(6)) {
+				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(ROLearner.class, config.getLearningProblem(), config.getReasoningService()));
+				config.getLearningAlgorithm().init();
 			}
 		}
 	}

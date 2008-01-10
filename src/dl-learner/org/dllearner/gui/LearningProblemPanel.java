@@ -42,9 +42,13 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	private JPanel lpPanel = new JPanel();
     private JButton lpButton;
     
-	LearningProblemPanel() {
+    private Config config;
+    
+	LearningProblemPanel(Config config) {
 		super(new BorderLayout());
 
+		this.config = config;
+		
 		lpButton = new JButton("Use PosOnlyDefinitionLP");
 		lpButton.addActionListener(this);
 		
@@ -54,11 +58,11 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == lpButton) {
-			if (StartGUI.myconfig.getStatus(5)) {
-				System.out.println(StartGUI.myconfig.getExampleSet());
-				StartGUI.myconfig.setLearningProblem(StartGUI.myconfig.getComponentManager().learningProblem(PosOnlyDefinitionLP.class, StartGUI.myconfig.getReasoningService()));
-				StartGUI.myconfig.getComponentManager().applyConfigEntry(StartGUI.myconfig.getLearningProblem(), "positiveExamples", StartGUI.myconfig.getExampleSet());
-				StartGUI.myconfig.getLearningProblem().init();
+			if (config.getStatus(5)) {
+				System.out.println(config.getExampleSet());
+				config.setLearningProblem(config.getComponentManager().learningProblem(PosOnlyDefinitionLP.class, config.getReasoningService()));
+				config.getComponentManager().applyConfigEntry(config.getLearningProblem(), "positiveExamples", config.getExampleSet());
+				config.getLearningProblem().init();
 			}
 		}
 	}

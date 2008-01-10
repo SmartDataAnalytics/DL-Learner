@@ -42,9 +42,12 @@ public class OutputPanel extends JPanel implements ActionListener {
 	private JButton showButton;
 	private JButton runButton;
 	private JTextArea infoArea;
+	private Config config;
 	
-	OutputPanel() {
+	OutputPanel(Config config) {
 		super(new BorderLayout());
+		
+		this.config = config;
 		
 		showButton = new JButton("Show Variables");
 		showButton.addActionListener(this);
@@ -68,26 +71,26 @@ public class OutputPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == showButton) {
 			infoArea.setText("");
-			if (StartGUI.myconfig.getStatus(2)) {  // file is selected and exist?
-				infoArea.append("SourceClass: " + StartGUI.myconfig.getKnowledgeSource().toString() + "\n");
-				infoArea.append("FILE: " + StartGUI.myconfig.getFile() + "\n");
+			if (config.getStatus(2)) {  // file is selected and exist?
+				infoArea.append("SourceClass: " + config.getKnowledgeSource().toString() + "\n");
+				infoArea.append("FILE: " + config.getFile() + "\n");
 			}
-			if (StartGUI.myconfig.getStatus(3)) {  // Reasoner is set
-				infoArea.append("Reasoner: " + StartGUI.myconfig.getReasoner() + "\n");
+			if (config.getStatus(3)) {  // Reasoner is set
+				infoArea.append("Reasoner: " + config.getReasoner() + "\n");
 			}
-			if (StartGUI.myconfig.getStatus(4)) {  // ReasoningServic is set
-				infoArea.append("ReasoningService: " + StartGUI.myconfig.getReasoningService() + "\n");
+			if (config.getStatus(4)) {  // ReasoningServic is set
+				infoArea.append("ReasoningService: " + config.getReasoningService() + "\n");
 			}
 			if (false) {
 				for (int i = 0; i<8; i++) { // show status-vars
-					infoArea.append("i: " + StartGUI.myconfig.getStatus(i) + "\n");
+					infoArea.append("i: " + config.getStatus(i) + "\n");
 				}
 			}
 		}
 		if (e.getSource() == runButton) {
-			if (StartGUI.myconfig.getStatus(6)) {
-				StartGUI.myconfig.getLearningAlgorithm().start();
-				Concept solution = StartGUI.myconfig.getLearningAlgorithm().getBestSolution();
+			if (config.getStatus(6)) {
+				config.getLearningAlgorithm().start();
+				Concept solution = config.getLearningAlgorithm().getBestSolution();
 				infoArea.setText(solution.toString());
 			}
 		}
