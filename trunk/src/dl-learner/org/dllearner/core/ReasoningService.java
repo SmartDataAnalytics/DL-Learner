@@ -92,9 +92,12 @@ public class ReasoningService {
 	public ReasoningService(ReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 
-		// list view
-		atomicConceptsList = new LinkedList<AtomicConcept>(getAtomicConcepts());
-		atomicRolesList = new LinkedList<AtomicRole>(getAtomicRoles());	
+		// list view: the following two lines are commented out, because otherwise the ReasonerComponent
+		// already has to be initialised when a ReasoningService instance is created; this is problematic
+		// e.g. for the web service interface, which does not expose the ReasoningService
+		// (because it is not a component itself)
+		// atomicConceptsList = new LinkedList<AtomicConcept>(getAtomicConcepts());
+		// atomicRolesList = new LinkedList<AtomicRole>(getAtomicRoles());	
 		
 		resetStatistics();		
 	}
@@ -428,10 +431,12 @@ public class ReasoningService {
 	}
 
 	public List<AtomicConcept> getAtomicConceptsList() {
+		// not working, see message in constructor
 		return atomicConceptsList;
 	}
 
 	public List<AtomicRole> getAtomicRolesList() {
+		// not working, see message in constructor
 		return atomicRolesList;
 	}
 	

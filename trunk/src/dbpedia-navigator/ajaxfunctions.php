@@ -181,7 +181,7 @@ function clearNegatives()
 
 function learnConcept()
 {
-	if (isset($_SESSION['positive'])&&isset($_SESSION['negative']))
+	if (isset($_SESSION['positive']))
 	{
 		require_once("Settings.php");
 		require_once("DLLearnerConnection.php");
@@ -192,7 +192,7 @@ function learnConcept()
 		$_SESSION['lastLearnedConcept']=$concept;
 		if (strlen(substr (strrchr ($concept, "/"), 1))>0) $concept=urldecode(substr (strrchr ($concept, "/"), 1));
 	}
-	else $concept="You must choose at least one<br/> positive and one negative example.";
+	else $concept="You must choose at least one<br/> positive example.";
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("conceptcontent", "innerHTML", $concept);

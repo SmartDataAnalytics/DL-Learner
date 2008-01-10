@@ -239,13 +239,27 @@ public class DLLearnerWS {
 	 * @param id Session ID.
 	 */
 	@WebMethod
-	public void init(int id) throws ClientNotKnownException {
+	public void initAll(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		for(KnowledgeSource ks : state.getKnowledgeSources())
 			ks.init();
 		state.getReasonerComponent().init();
 		state.getLearningProblem().init();
 		state.getLearningAlgorithm().init();
+	}
+	
+	/**
+	 * Initialise the specified component.
+	 * @param id Session-ID.
+	 * @param componentID Component-ID.
+	 * @throws ClientNotKnownException Thrown if the client ID is nor registered.
+	 * @throws UnknownComponentException Thrown if the component is unknown.
+	 */
+	@WebMethod
+	public void init(int id, int componentID) throws ClientNotKnownException, UnknownComponentException {
+		ClientState state = getState(id);
+		Component component = state.getComponent(componentID);
+		component.init();
 	}
 	
 	/**
