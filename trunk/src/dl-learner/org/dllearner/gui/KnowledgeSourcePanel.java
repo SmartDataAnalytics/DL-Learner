@@ -49,13 +49,16 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	private JFileChooser fc;
 	private JButton openButton;
 	private JTextField fileDisplay;
-    private String[] kbBoxItems = StartGUI.myconfig.getKBBoxItems();
+    private String[] kbBoxItems = {"Pleae select a type", "KBFile", "OWLFile", "SparqleEndpoint"};
 	private JComboBox cb = new JComboBox(kbBoxItems);	
 	private JPanel openPanel = new JPanel();
-
-	KnowledgeSourcePanel() {
+	private Config config;
+	
+	KnowledgeSourcePanel(Config config) {
 		super(new BorderLayout());
 	
+		this.config = config;
+		
 		fc = new JFileChooser(new File("examples/"));
 		openButton = new JButton("Open File");
 		openButton.addActionListener(this);
@@ -80,12 +83,12 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		if (e.getSource() == openButton) {
 			int returnVal = fc.showOpenDialog(KnowledgeSourcePanel.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				StartGUI.myconfig.setFile(fc.getSelectedFile()); //save variable
-				fileDisplay.setText(StartGUI.myconfig.getFile().toString());
+				config.setFile(fc.getSelectedFile()); //save variable
+				fileDisplay.setText(config.getFile().toString());
 				//System.out.println("Init KnowledgeSource after loading file ... show over output");
 				//System.out.println("test: " + StartGUI.myconfig.getFile().toURI().toString());
-				StartGUI.myconfig.getComponentManager().applyConfigEntry(StartGUI.myconfig.getKnowledgeSource(), "url", StartGUI.myconfig.getFile().toURI().toString());				
-				StartGUI.myconfig.getKnowledgeSource().init();
+				config.getComponentManager().applyConfigEntry(config.getKnowledgeSource(), "url", config.getFile().toURI().toString());				
+				config.getKnowledgeSource().init();
 			}
 			return;
 		}
@@ -107,7 +110,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 			openPanel.add(fileDisplay);
 			openPanel.add(openButton);
 			openPanel.repaint();
-			StartGUI.myconfig.setKnowledgeSource(StartGUI.myconfig.getComponentManager().knowledgeSource(OWLFile.class));
+			config.setKnowledgeSource(config.getComponentManager().knowledgeSource(OWLFile.class));
 		}
 		// choose SPARCLE class
 		if (cb.getSelectedItem().toString() == kbBoxItems[3]) { 

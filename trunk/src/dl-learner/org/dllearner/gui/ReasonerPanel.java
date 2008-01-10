@@ -57,9 +57,12 @@ public class ReasonerPanel extends JPanel implements ActionListener {
     private JButton digButton;
     private JList digList = new JList();
     private List<Individual> individuals;
+    private Config config;
     
-	ReasonerPanel() {
+	ReasonerPanel(Config config) {
 		super(new BorderLayout());
+		
+		this.config = config;
 		
 		digButton = new JButton("Use DIG by default");
 		digButton.addActionListener(this);
@@ -76,7 +79,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	
 		centerPanel.add(listScroller);
 		add(centerPanel, BorderLayout.CENTER);
-	
+
+
 		digList.addListSelectionListener(new ListSelectionListener() {
 		      public void valueChanged(ListSelectionEvent evt) {
 		    	  if (evt.getValueIsAdjusting())
@@ -87,25 +91,41 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		    	  int[] selectedIndices = digList.getSelectedIndices();
 		    	  for(int i : selectedIndices)
 		    		  exampleSet.add(individuals.get(i).toString());
-		    	  StartGUI.myconfig.setExampleSet(exampleSet);
-		    	  System.out.println("digList: " + StartGUI.myconfig.getExampleSet() );
+		    	  //config.setExampleSet(exampleSet); //error
+		    	  //System.out.println("digList: " + config.getExampleSet() ); //error
 		      }
 		});
+		
 	}
-	
+
+    public void valueChanged(ListSelectionEvent evt) {
+    	System.out.println("s");
+    	if (evt.getValueIsAdjusting())
+    		return;
+  	  	System.out.println("Selected from " + evt.getFirstIndex() + " to " + evt.getLastIndex());
+  	  	// detect which examples have been selected			
+  	  	Set<String> exampleSet = new HashSet<String>();
+  	  	int[] selectedIndices = digList.getSelectedIndices();
+  	  	for(int i : selectedIndices)
+  	  		exampleSet.add(individuals.get(i).toString());
+  	  	//StartGUI.myconfig.setExampleSet(exampleSet);
+  	  	//System.out.println("digList: " + config.getExampleSet() );
+    }
+
+    
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == digButton) {
 			// set reasoner
-			StartGUI.myconfig.setReasoner(StartGUI.myconfig.getComponentManager().reasoner(DIGReasoner.class, StartGUI.myconfig.getKnowledgeSource()));
+			config.setReasoner(config.getComponentManager().reasoner(DIGReasoner.class, config.getKnowledgeSource()));
 			//System.out.println(StartGUI.myconfig.getKnowledgeSource());
-			StartGUI.myconfig.getReasoner().init();
+			config.getReasoner().init();
 			//System.out.println(StartGUI.myconfig.getReasoner());
 			
 			// set ReasoningService
-			StartGUI.myconfig.setReasoningService(StartGUI.myconfig.getComponentManager().reasoningService(StartGUI.myconfig.getReasoner()));
+			config.setReasoningService(config.getComponentManager().reasoningService(config.getReasoner()));
 
 			// get list from ReasoningService
-			Set<Individual> individualsSet = StartGUI.myconfig.getReasoningService().getIndividuals();
+			Set<Individual> individualsSet = config.getReasoningService().getIndividuals();
 			//System.out.println("IndividualsSet: " + individualsSet);
 			individuals = new LinkedList<Individual>(individualsSet);
 			//System.out.println("individuals: " + individuals);
