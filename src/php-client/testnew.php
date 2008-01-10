@@ -6,6 +6,7 @@ ini_set("soap.wsdl_cache_enabled","0");
 
 $wsdluri="http://localhost:8181/services?wsdl";
 $ontology="file:/home/jl/promotion/dl-learner-svn/trunk/examples/father.owl";
+// $ontology="file:/home/jl/programmierung/eclipse_workspace/DL-Learner-SVN/examples/father.owl";
 
 $posExamples = array('http://example.com/father#stefan',
                      'http://example.com/father#markus',
@@ -53,7 +54,7 @@ $client->setLearningAlgorithm($id, "refinement");
 
 $start = microtime(true);
 
-$client->init($id);
+$client->initAll($id);
 
 $learn_start = microtime(true);
 $init = $learn_start - $start;

@@ -1,11 +1,23 @@
 <?php
 
+/**
+ * Encapsulates all functions, which require communication with DL-Learner.
+ * 
+ * @author Jens Lehmann
+ * @author Sebastian Knappe
+ */
 class DLLearnerConnection
 {
 	private $DBPediaUrl;
 	private $DLLearnerUri;
+	
+	// 
 	private $client;
+	
+	// ID given to this client by the web service
 	private $id;
+	
+	// ID of the DBpedia knowledge source
 	private $ksID;
 		
 	function DLLearnerConnection($DBPediaUrl,$DLLearnerUri,$id=0,$ksID=0)
@@ -33,9 +45,9 @@ class DLLearnerConnection
 	
 	function getConceptFromExamples($ttl,$posExamples,$negExamples)
 	{
-		$this->client->applyConfigEntryInt($this->id, $this->ksID, "numberOfRecursions", 2);
+		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth", 2);
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
-		$this->client->applyConfigEntryInt($this->id, $this->ksID, "filterMode", 0);
+		// $this->client->applyConfigEntryInt($this->id, $this->ksID, "filterMode", 0);
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "predList", array());
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "objList", array());
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "classList", array());
@@ -43,9 +55,13 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "dumpToFile", true);
 		
 		$this->client->setReasoner($this->id, "dig");
-		$this->client->setLearningProblem($this->id, "posNegDefinition");
+		if(!isset($negExamples))
+			$this->client->setLearningProblem($this->id, "posOnlyDefinition");
+		else
+			$this->client->setLearningProblem($this->id, "posNegDefinition"); 
 		$this->client->setPositiveExamples($this->id, $posExamples);
-		$this->client->setNegativeExamples($this->id, $negExamples);
+		if(isset($negExamples))
+			$this->client->setNegativeExamples($this->id, $negExamples);
 		$this->client->setLearningAlgorithm($this->id, "refinement");
 		
 		$start = microtime(true);
