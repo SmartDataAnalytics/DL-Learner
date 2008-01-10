@@ -59,7 +59,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
     private List<Individual> individuals;
     private Config config;
     
-	ReasonerPanel(Config config) {
+	ReasonerPanel(final Config config) {
 		super(new BorderLayout());
 		
 		this.config = config;
@@ -91,8 +91,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		    	  int[] selectedIndices = digList.getSelectedIndices();
 		    	  for(int i : selectedIndices)
 		    		  exampleSet.add(individuals.get(i).toString());
-		    	  //config.setExampleSet(exampleSet); //error
-		    	  //System.out.println("digList: " + config.getExampleSet() ); //error
+		    	  config.setExampleSet(exampleSet); //error
+		    	  System.out.println("digList: " + config.getExampleSet() ); //error
 		      }
 		});
 		

@@ -104,7 +104,7 @@ public class ClassNode extends Node {
 		return s;
 	}
 	
-	
+	@Override
 	public int compareTo(Node n){
 		return super.compareTo(n);
 		//
