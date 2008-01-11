@@ -47,12 +47,11 @@ class DLLearnerConnection
 	{
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth", 2);
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
-		// $this->client->applyConfigEntryInt($this->id, $this->ksID, "filterMode", 0);
-		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "predList", array());
-		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "objList", array());
-		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "classList", array());
-		$this->client->applyConfigEntryString($this->id, $this->ksID, "format", "KB");
-		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "dumpToFile", true);
+		// $this->client->applyConfigEntryStringArray($this->id, $this->ksID, "predList", array());
+		// $this->client->applyConfigEntryStringArray($this->id, $this->ksID, "objList", array());
+		// $this->client->applyConfigEntryStringArray($this->id, $this->ksID, "classList", array());
+		// $this->client->applyConfigEntryString($this->id, $this->ksID, "format", "KB");
+		// $this->client->applyConfigEntryBoolean($this->id, $this->ksID, "dumpToFile", true);
 		
 		$this->client->setReasoner($this->id, "dig");
 		if(empty($negExamples))
@@ -65,7 +64,7 @@ class DLLearnerConnection
 		$this->client->setLearningAlgorithm($this->id, "refinement");
 		
 		$start = microtime(true);
-
+		
 		$this->client->initAll($this->id);
 
 		$threaded=true;

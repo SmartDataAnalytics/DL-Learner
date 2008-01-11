@@ -32,6 +32,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
+import org.dllearner.Info;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
@@ -89,6 +90,15 @@ public class DLLearnerWS {
 		components = Helper.union(knowledgeSourceMapping.keySet(),reasonerMapping.keySet());
 		components = Helper.union(components, learningProblemMapping.keySet());
 		components = Helper.union(components, learningAlgorithmMapping.keySet());
+	}
+	
+	/**
+	 * Returns the DL-Learner version this web service is based on.
+	 * @return DL-Learner-Build.
+	 */
+	@WebMethod
+	public String getBuild() {
+		return Info.build;
 	}
 	
 	/**

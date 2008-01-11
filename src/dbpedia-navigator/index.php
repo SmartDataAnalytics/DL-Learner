@@ -147,13 +147,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	<div id="rightSidebar">
 
 		<div class="box">
-		  <div class="boxtitlewithbutton" id="positivesboxtitle">search relevant &nbsp; <input type="button" value="Clear" class="button" onclick="xajax_clearPositives();return false;" /></div>
+		  <div class="boxtitlewithbutton" id="positivesboxtitle">search relevant &nbsp; <img src="images/remove.png" onclick="xajax_clearPositives()" /> </div>
 		  <div class="boxcontent" id="Positives">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
 		<div class="box">
-		  <div class="boxtitlewithbutton" id="negativesboxtitle">not relevant &nbsp; <input type="button" value="Clear" class="button" onclick="xajax_clearNegatives();return false;" /></div>
+		  <div class="boxtitlewithbutton" id="negativesboxtitle">not relevant &nbsp; <img src="images/remove.png" onclick="xajax_clearNegatives()" /> </div>
 		  <div class="boxcontent" id="Negatives">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
@@ -182,7 +182,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			echo '><img src="images/valid-css.png" alt="valid CSS" /></a></div>'."\n";
 			?>	
 		</div>	
-		<p><a href='clearsession.php'>restart session and redownload WSDL file (for debugging)</a></p>	
+		<p><a href='rebuild.php'>rebuild [restart session and redownload WSDL file (for debugging)]</a></p>	
 		<p>
 ToDo:
 <ul>

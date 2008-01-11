@@ -81,7 +81,7 @@ function getarticle($subject,$fromCache)
 
 			// display a list of classes
 			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']))
-				$content .= '<p>Classes: '.array_to_comma($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
+				$content .= '<p>classes: '.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
 			
 			// filter out uninteresting properties
 			unset($triples['http://xmlns.com/foaf/0.1/page']);
@@ -273,10 +273,34 @@ function get_triple_table($triples) {
 	return $table;
 }
 
-function array_to_comma_separated_list($ar) {
+function formatClassArray($ar) {
+	$string = formatClass($ar[0]);
+	for($i=1; $i<count($ar); $i++) {
+		$string .= ', ' . formatClass($ar[$i]);
+	}
+	return $string;
+}
+
+// format a class nicely, i.e. link to it and possibly display
+// it in a better way
+function formatClass($className) {
+	$yagoPrefix = 'http://dbpedia.org/class/yago/';
+	if(substr($className,0,30)==$yagoPrefix) {
+		return '<a href="'.$className.'">'.substr($className,30).'</a>';	
+	// DBpedia is Linked Data, so it makes always sense to link it
+	// ToDo: instead of linking to other pages, the resource should better
+	// be openened within DBpedia Navigator
+	} else if(substr($className,0,14)=='http://dbpedia') {
+		return '<a href="'.$className.'">'.$className.'</a>';
+	} else {
+		return $className;
+	}
+}
+
+function arrayToCommaSseparatedList($ar) {
 	$string = $ar[0];
 	for($i=1; $i<count($ar); $i++) {
-		$string .= $ar[$i] . ', ';
+		$string .= ', ' . $ar[$i];
 	}
 	return $string;
 }
