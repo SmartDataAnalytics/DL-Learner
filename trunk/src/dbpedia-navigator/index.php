@@ -118,8 +118,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			&nbsp; <a href="http://dl-learner.org">DL-Learner</a><br />
 			&nbsp; <a href="http//dbpedia.org">DBpedia</a><br/>
 			&nbsp; <a href="http://virtuoso.openlinksw.com/wiki/main/">OpenLink Virtuoso</a><br />
-			... and implemented by <a href="http://jens-lehmann.org">Jens Lehmann</a> at 
-			the <a href="http:/aksw.org">AKSW</a> research group (University of Leipzig).</p>
+			... and implemented by <a href="http://jens-lehmann.org">Jens Lehmann</a> and
+			Sebastian Knappe at	the <a href="http:/aksw.org">AKSW</a> research group (University of Leipzig).</p>
 			
 			<a href="http://www.w3.org/2004/OWL/"><img src="images/sw-owl-green.png" alt="OWL logo" /></a>
 			<a href="http://www.w3.org/2001/sw/DataAccess/"><img src="images/sw-sparql-green.png" alt="SPARQL logo"/></a>
