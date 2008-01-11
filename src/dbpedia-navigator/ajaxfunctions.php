@@ -188,7 +188,10 @@ function learnConcept()
 		$settings=new Settings();
 		$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 		
-		$concept=$sc->getConceptFromExamples($settings->sparqlttl,$_SESSION['positive'],$_SESSION['negative']);
+		if(isset($_SESSION['negative']))
+			$concept=$sc->getConceptFromExamples($settings->sparqlttl,$_SESSION['positive'],$_SESSION['negative']);
+		else
+			$concept=$sc->getConceptFromExamples($settings->sparqlttl,$_SESSION['positive'], array());
 		$_SESSION['lastLearnedConcept']=$concept;
 		if (strlen(substr (strrchr ($concept, "/"), 1))>0) $concept=urldecode(substr (strrchr ($concept, "/"), 1));
 	}

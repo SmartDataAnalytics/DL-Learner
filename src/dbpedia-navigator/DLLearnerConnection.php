@@ -55,18 +55,18 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "dumpToFile", true);
 		
 		$this->client->setReasoner($this->id, "dig");
-		if(!isset($negExamples))
+		if(empty($negExamples))
 			$this->client->setLearningProblem($this->id, "posOnlyDefinition");
 		else
 			$this->client->setLearningProblem($this->id, "posNegDefinition"); 
 		$this->client->setPositiveExamples($this->id, $posExamples);
-		if(isset($negExamples))
+		if(!empty($negExamples))
 			$this->client->setNegativeExamples($this->id, $negExamples);
 		$this->client->setLearningAlgorithm($this->id, "refinement");
 		
 		$start = microtime(true);
 
-		$this->client->init($this->id);
+		$this->client->initAll($this->id);
 
 		$threaded=true;
 		
