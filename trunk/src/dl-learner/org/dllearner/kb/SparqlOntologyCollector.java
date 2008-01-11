@@ -46,7 +46,7 @@ import java.util.Vector;
 public class SparqlOntologyCollector {
 
 	boolean print_flag=false;
-	SparqlQueryMaker q;
+	SparqlQueryMaker queryMaker;
 	SparqlCache cache;
 	URL url;
 	SparqlFilter sf;
@@ -89,7 +89,7 @@ public class SparqlOntologyCollector {
 		this.subjectList=subjectList;
 		this.numberOfRecursions=numberOfRecursions;
 		this.format=format;
-		this.q=new SparqlQueryMaker();
+		this.queryMaker=new SparqlQueryMaker();
 		this.cache=new SparqlCache("cache");
 		if(defClasses!=null && defClasses.length>0 ){
 			this.defaultClasses=defClasses;
@@ -107,7 +107,7 @@ public class SparqlOntologyCollector {
 	
 	public SparqlOntologyCollector(URL url)
 	{
-		this.q=new SparqlQueryMaker();
+		this.queryMaker=new SparqlQueryMaker();
 		this.cache=new SparqlCache("cache");
 		this.url=url;
 	}
@@ -130,7 +130,7 @@ public class SparqlOntologyCollector {
 	
 	public String[] collectTriples(String subject) throws IOException{
 		System.out.println("Searching for Article: "+subject);
-		String sparql=q.makeArticleQuery(subject);
+		String sparql=queryMaker.makeArticleQuery(subject);
 		String fromCache=cache.get(subject, sparql);
 		String xml;
 		// if not in cache get it from dbpedia
@@ -180,7 +180,7 @@ public class SparqlOntologyCollector {
 	
 	public String[] getSubjectsFromLabel(String label, int limit) throws IOException{
 		System.out.println("Searching for Label: "+label);
-		String sparql=q.makeLabelQuery(label,limit);
+		String sparql=queryMaker.makeLabelQuery(label,limit);
 		String FromCache=cache.get(label, sparql);
 		String xml;
 		// if not in cache get it from dbpedia
@@ -200,7 +200,7 @@ public class SparqlOntologyCollector {
 	public String[] getSubjectsFromConcept(String concept) throws IOException
 	{
 		System.out.println("Searching for Subjects of type: "+concept);
-		String sparql=q.makeConceptQuery(concept);
+		String sparql=queryMaker.makeConceptQuery(concept);
 		String FromCache=cache.get(concept, sparql);
 		String xml;
 		// if not in cache get it from dbpedia
@@ -240,7 +240,7 @@ public class SparqlOntologyCollector {
 			return;
 		else {NumberofRecursions--;}
 		
-		String sparql=q.makeQueryFilter(StartingSubject,this.sf);
+		String sparql=queryMaker.makeQueryFilter(StartingSubject,this.sf);
 		// checks cache
 		String FromCache=cache.get(StartingSubject, sparql);
 		String xml;

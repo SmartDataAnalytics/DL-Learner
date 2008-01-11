@@ -21,6 +21,7 @@
 package org.dllearner.core;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,25 +80,22 @@ public class ReasoningService {
 
 	// private SortedSet<Concept> retrievalsSet = new TreeSet<Concept>(new ConceptComparator());
 	
-	// Caching f�r allgemeinere/speziellere atomare Konzepte => wird innerhalb der Reasoner gemacht
-	// private Map<Concept,Set<Concept>> moreGeneralConcepts = new HashMap<Concept,Set<Concept>>();
-	// private Map<Concept,Set<Concept>> moreSpecialConcepts = new HashMap<Concept,Set<Concept>>();
-	
 	private Reasoner reasoner;
 	
-	// note that you must not modify the underlying knowledge base of
-	// a reasoning service (if you do, you have to create a new reasoning
-	// service object)
+	/**
+	 * Constructs a reasoning service object. Note that you must not 
+	 * modify the underlying knowledge base of a reasoning service 
+	 * (if you do, you have to create a new reasoning service object).
+	 * Further note, that the initialisation is lazy, e.g. you can 
+	 * feed the constructor with a non-initialised reasoner component.
+	 * However, of course you need to make sure that the resoner component 
+	 * is initialised before the first reasoner query. 
+	 * 
+	 * @param reasoner
+	 */
 	public ReasoningService(ReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 
-		// list view: the following two lines are commented out, because otherwise the ReasonerComponent
-		// already has to be initialised when a ReasoningService instance is created; this is problematic
-		// e.g. for the web service interface, which does not expose the ReasoningService
-		// (because it is not a component itself)
-		// atomicConceptsList = new LinkedList<AtomicConcept>(getAtomicConcepts());
-		// atomicRolesList = new LinkedList<AtomicRole>(getAtomicRoles());	
-		
 		resetStatistics();		
 	}
 	
@@ -430,12 +428,14 @@ public class ReasoningService {
 	}
 
 	public List<AtomicConcept> getAtomicConceptsList() {
-		// not working, see message in constructor
+		if(atomicConceptsList == null)
+			atomicConceptsList = new LinkedList<AtomicConcept>(getAtomicConcepts());
 		return atomicConceptsList;
 	}
 
 	public List<AtomicRole> getAtomicRolesList() {
-		// not working, see message in constructor
+		if(atomicRolesList == null)
+			atomicRolesList = new LinkedList<AtomicRole>(getAtomicRoles());
 		return atomicRolesList;
 	}
 	
