@@ -50,14 +50,15 @@ function getarticle($subject,$fromCache)
 		$settings=new Settings();
 		$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 		$triples=$sc->getTriples($settings->sparqlttl,$subject);
-		$content="";
+		$content="";$contentbuttons="";
 		if (count($triples)==1)
 		{
+			// ToDo: find out why this was treated in a special way by Sebastian
 			$content.=substr($triples,7);
 		}
-		else if (count($triples)==0) 
+		else if (count($triples)==0) {
 			$content.="Did not find an article with that name.";
-		else {
+		} else {
 		
 			// goal: display the data in a nice (DBpedia specific way), maybe similar to
 			// dbpedia.org/search
@@ -77,12 +78,16 @@ function getarticle($subject,$fromCache)
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
 				$content .= '<p><img src="images/wikipedia_favicon.png" alt"Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0].'">view Wikipedia article</a>, '; 
 			$content .= '<a href="'.$subject.'">view DBpedia resource description</a></p>';
-				
+
 			// display a list of classes
+			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']))
+				$content .= '<p>Classes: '.array_to_comma($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
 			
 			// filter out uninteresting properties
-			// unset
-			
+			unset($triples['http://xmlns.com/foaf/0.1/page']);
+			unset($triples['http://xmlns.com/foaf/0.1/depiction']);
+			unset($triples['http://dbpedia.org/property/abstract']);		
+
 			// display the remaining properties as list which can be used for further navigation
 			
 			$content .= '<br/><br/><br/><br/><br/><br/>'.get_triple_table($triples);
@@ -249,7 +254,10 @@ function searchAndShowArticle($keyword)
 	return $objResponse;
 }
 
-// helper function
+///////////////////////
+// Helper Functions. //
+///////////////////////
+
 function get_triple_table($triples) {
 
 	$table = '<table border="1"><tr><td>predicate</td><td>object</td></tr>';
@@ -263,6 +271,14 @@ function get_triple_table($triples) {
 	}
 	$table .= '</table>';
 	return $table;
+}
+
+function array_to_comma_separated_list($ar) {
+	$string = $ar[0];
+	for($i=1; $i<count($ar); $i++) {
+		$string .= $ar[$i] . ', ';
+	}
+	return $string;
 }
 
 ?>
