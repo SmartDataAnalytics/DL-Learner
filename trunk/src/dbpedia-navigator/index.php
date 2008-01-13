@@ -182,19 +182,64 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			echo '><img src="images/valid-css.png" alt="valid CSS" /></a></div>'."\n";
 			?>	
 		</div>	
-		<p><a href='rebuild.php'>rebuild [restart session and redownload WSDL file (for debugging)]</a></p>	
-		<p>
-ToDo:
-<ul>
-	<li>get learning process working (with new SPARQL component)</li>
-	<li>get local DBpedia SPARQL endpoint working</li>
-	<li>many queries work correctly on the server, but yield to response in the interface (seems to be rather random)</li>
-	<li>fix sometimes occurring PHP errors and warnings</li>
-	<li>would be interesting to somehow view the Wikipedia article (without the left navigation part,
+		<p><a href='rebuild.php'>rebuild [restart session and redownload WSDL file (for debugging)]</a></p>
+</div>
+
+<div id="todo">
+<b>ToDo:</b>
+<ul style="float:left">
+	<li>Get learning process working (with new SPARQL component).</li>
+	<li>Get local DBpedia SPARQL endpoint working (next DBpedia release expected at the endof January and then every
+	two months, so it would be nice to have a script based partly automated or at least documented solution for
+	creating a DBpedia mirror).</li>
+	<li>Improve stability: Fix sometimes occurring PHP errors and warnings (check PHP error log).</li>
+	<li>Currently there are three SPARQL query methods: for labels, subjects, and article. These should
+	probably be replaced by a single web service method which allows to execute a SPARQL query. This will
+	greatly simplify the DL-Learner code while making the PHP code only slightly more complex. Such a method
+	also makes much more sense as a web service method, because other applications will need different SPARQL
+	queries. Similar to the learn method, there should be a threaded and a non-threaded version of the SPARQL
+	query method. This allows not to have the overhead of creating a separate thread for simple SPARQL queries
+	(especially since we assume that the DBpedia SPARQL endpoint is local).</li>
+	<li>Automatically learn concepts whenever an example has been added (and there is at least one
+	positive example present).</li>
+	<li>Show n (for example 5) instead of 1 best concept.</li>
+	<li>For each result, display a "+" which shows more information about the concept in an overlay box, e.g. its 
+	Description Logic or OWL syntax, its classification accuracy on the examples, and which
+	examples it classifies (in-)correctly.</li>
+	<li>Move the "Learned Concepts" box above the main box in the center.</li>
+	<li>Remove the "Subjects from Concept" box and instead change the learned concepts to links (clicking
+	on a link shows instances of the concept).</li>
+	<li>Create a small number of test cases (e.g. 3), which can be used to verify that DBpedia Navigator is 
+	working in typical scenarios (in particular cases where concepts with length greater one are learned).</li>
+	<li>Display "server call" in progress (or "n server calls in progress") in the top right corner 
+	of the screen whenever AJAX queries are executed.</li>
+	<li>Allow to disable caching functionality (in Settings.php).</li>
+	<li>Fix the rebuild.php script such that PHP replaces the cached WSDL file by the new one.</li>
+	<li>Make DBpedia Navigator RESTful, e.g. URLs $base/showArticle/$URL for displaying an article;
+	$base/search/$phrase for searching; $base/listInstances/$complexClass for listing the instances of
+	a learned. Maybe session variables (in particuar the selected positive and negative examples) can 
+	also be given, e.g. $base/search/$phrase?positives=[$URL1,$URL2,$URL3]&negatives=[$URL4]. The supported
+	URI design should be briefly documented (e.g. on a dbpedia.org wiki page). A good URI design allows
+	easier external access (just give someone a link instead of saying exactly which actions have to be done to
+	get to a state), simplifies debugging the application, and may be of use for creating further
+	features.</li> 
+	<li>Improve search functionality [we will probably get feedback from Georgi in February].</li>
+	<li>[maybe] Display a tag cloud similar to <a href="http://dbpedia.org/search/">DBpedia search</a>.</li>
+	<li>Get a nice DBpedia Navigator logo (preferrably in SVG format) [currently in contact with Matt, but not
+	sure he has time to help].</li>
+	<li>[maybe] Instead of only allowing a search as entry point to the application, also display
+	a navigatable class tree.</li>
+	<li>[if possible] When expensive SPARQL queries or learning problems have been posed, there should be
+	some way to abandon these if the user has already switched to doing something else. Example: The user
+	has added 3 positive and 1 negative examples. This is executed as a learning problem, but has no solution (so
+	DL-Learner would run forever unless we pose some internal time limit). The user adds another negative example a 
+	second later, so instead of letting the previous learning problem run for a long time (and needing much resources),
+	it should be stopped by DBpedia Navigator.</li>
+	<li>[if possible] Find an easy way to validate HTML/JS in AJAX applications.</li>
+	<li>[maybe] Would be interesting to somehow view the Wikipedia article (without the left navigation part,
 	tabs etc.) as an overlay, because the Wikipedia article will almost always be a human-friendlier
-	description of an object compared to the extracted one</li> 
+	description of an object compared to the extracted one.</li> 
 </ul>
-</p>
 </div>
 
 
