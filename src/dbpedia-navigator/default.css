@@ -375,3 +375,8 @@ input.button:hover {
 	clear: both;
 	text-align: center;
 }
+
+#todo {
+	padding: 15px;
+	margin: 10px;
+}

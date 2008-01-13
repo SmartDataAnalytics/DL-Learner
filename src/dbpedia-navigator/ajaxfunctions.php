@@ -83,10 +83,19 @@ function getarticle($subject,$fromCache)
 			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']))
 				$content .= '<p>classes: '.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
 			
-			// filter out uninteresting properties
+			if(isset($triples['http://dbpedia.org/property/reference'])) {
+				$content .= '<p>references: <ul>';
+				foreach($triples['http://dbpedia.org/property/reference'] as $reference)
+					$content .= '<li><a href="'.$reference.'">'.$reference.'</a></li>';
+				$content .= '</ul></p>';
+			}
+				
+			// filter out uninteresting properties and properties which
+			// have already been displayed
 			unset($triples['http://xmlns.com/foaf/0.1/page']);
 			unset($triples['http://xmlns.com/foaf/0.1/depiction']);
-			unset($triples['http://dbpedia.org/property/abstract']);		
+			unset($triples['http://dbpedia.org/property/abstract']);
+			unset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']);		
 
 			// display the remaining properties as list which can be used for further navigation
 			
