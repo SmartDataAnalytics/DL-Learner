@@ -33,7 +33,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.kb.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 
 /**
  * Stores the state of a DL-Learner client session.

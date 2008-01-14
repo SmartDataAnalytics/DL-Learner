@@ -60,7 +60,7 @@ import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.kb.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
