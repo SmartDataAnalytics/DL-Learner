@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb;
+package org.dllearner.kb.sparql;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
+
+import org.dllearner.kb.sparql.SparqlQueryMaker;
 
 
 /**
@@ -89,7 +91,7 @@ public class SparqlOntologyCollector {
 		this.subjectList=subjectList;
 		this.numberOfRecursions=numberOfRecursions;
 		this.format=format;
-		this.queryMaker=new SparqlQueryMaker();
+		//this.queryMaker=new SparqlQueryMaker();
 		this.cache=new SparqlCache("cache");
 		if(defClasses!=null && defClasses.length>0 ){
 			this.defaultClasses=defClasses;
@@ -107,7 +109,7 @@ public class SparqlOntologyCollector {
 	
 	public SparqlOntologyCollector(URL url)
 	{
-		this.queryMaker=new SparqlQueryMaker();
+		// this.queryMaker=new SparqlQueryMaker();
 		this.cache=new SparqlCache("cache");
 		this.url=url;
 	}
@@ -130,7 +132,7 @@ public class SparqlOntologyCollector {
 	
 	public String[] collectTriples(String subject) throws IOException{
 		System.out.println("Searching for Article: "+subject);
-		String sparql=queryMaker.makeArticleQuery(subject);
+		String sparql=SparqlQueryMaker.makeArticleQuery(subject);
 		String fromCache=cache.get(subject, sparql);
 		String xml;
 		// if not in cache get it from dbpedia
@@ -180,7 +182,7 @@ public class SparqlOntologyCollector {
 	
 	public String[] getSubjectsFromLabel(String label, int limit) throws IOException{
 		System.out.println("Searching for Label: "+label);
-		String sparql=queryMaker.makeLabelQuery(label,limit);
+		String sparql=SparqlQueryMaker.makeLabelQuery(label,limit);
 		String FromCache=cache.get(label, sparql);
 		String xml;
 		// if not in cache get it from dbpedia
@@ -200,7 +202,7 @@ public class SparqlOntologyCollector {
 	public String[] getSubjectsFromConcept(String concept) throws IOException
 	{
 		System.out.println("Searching for Subjects of type: "+concept);
-		String sparql=queryMaker.makeConceptQuery(concept);
+		String sparql=SparqlQueryMaker.makeConceptQuery(concept);
 		String FromCache=cache.get(concept, sparql);
 		String xml;
 		// if not in cache get it from dbpedia
@@ -240,7 +242,7 @@ public class SparqlOntologyCollector {
 			return;
 		else {NumberofRecursions--;}
 		
-		String sparql=queryMaker.makeQueryFilter(StartingSubject,this.sf);
+		String sparql=SparqlQueryMaker.makeQueryFilter(StartingSubject,this.sf);
 		// checks cache
 		String FromCache=cache.get(StartingSubject, sparql);
 		String xml;

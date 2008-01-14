@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb;
+package org.dllearner.kb.sparql;
 
 /**
  * 
@@ -34,7 +34,7 @@ public class SparqlFilter {
 	//  0 yago, 1 only cat, 2 skos+cat
 	String[] PredFilter=null;
 	String[] ObjFilter=null;
-	boolean useLiterals=false;
+	public boolean useLiterals=false;
 	
 	
 	String[] yagoPredFilterDefault={

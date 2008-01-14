@@ -19,6 +19,7 @@
  */
 package org.dllearner.kb.sparql;
 
+
 /**
  * Can assemble sparql queries.
  * 
@@ -114,11 +115,11 @@ public class SparqlQueryMaker {
 		return "&&( !regex(str(?subject), '" + ns + "') )";
 	}
 
-	public String filterPredicate(String ns) {
+	public static String filterPredicate(String ns) {
 		return "&&( !regex(str(?predicate), '" + ns + "') )";
 	}
 
-	public String filterObject(String ns) {
+	public static String filterObject(String ns) {
 		return "&&( !regex(str(?object), '" + ns + "') )";
 	}
 	
@@ -127,4 +128,63 @@ public class SparqlQueryMaker {
 			System.out.println(str);
 		}
 	}
+	
+	/**
+	 * creates a query with the specified filters for alls triples with subject
+	 * @param subject the searched subject
+	 * @param sf special object encapsulating all options
+	 * @return sparql query
+	 */
+	public static String makeQueryFilter(String subject, SparqlFilter sf){
+		
+		
+		String Filter="";
+		if(!sf.useLiterals)Filter+="!isLiteral(?object)";
+		for (String  p : sf.getPredFilter()) {
+			Filter+="\n" + filterPredicate(p);
+		}
+		for (String  o : sf.getObjFilter()) {
+			Filter+="\n" + filterObject(o);
+		}
+		
+		String ret=		
+		"SELECT * WHERE { \n" +
+		"<"+
+		subject+
+		"> ?predicate ?object.\n";
+		if (!(Filter.length()==0)) 
+			ret+="FILTER( \n" +
+				"(" +Filter+")).";
+		ret+="}";
+		//System.out.println(ret);
+		return ret;
+	}		
+	
+	/**
+	 * creates a query for subjects with the specified label
+	 * @param label a phrase that is part of the label of a subject
+	 * @param limit this limits the amount of results
+	 * @return
+	 */
+	public static String makeLabelQuery(String label,int limit){
+		//TODO maybe use http://xmlns:com/foaf/0.1/page
+		return  "SELECT DISTINCT ?subject\n"+
+				"WHERE { ?subject <http://xmlns.com/foaf/0.1/page> ?object.FILTER regex(?object,\""+label+"\"@en)}\n"+
+				"LIMIT "+limit;
+	}
+	
+	/**
+	 * creates a query for all subjects that are of the type concept
+	 * @param concept the type that subjects are searched for
+	 * @return
+	 */
+	public static String makeConceptQuery(String concept){
+		return  "SELECT DISTINCT ?subject\n"+
+				"WHERE { ?subject a <"+concept+">}\n";
+	}
+	
+	public static String makeArticleQuery(String subject){
+		return  "SELECT ?predicate,?object\n"+
+		"WHERE { <"+subject+"> ?predicate ?object}\n";
+	}	
 }
