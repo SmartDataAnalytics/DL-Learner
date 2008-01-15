@@ -287,15 +287,22 @@ function learnConcept()
 {
 	if (isset($_SESSION['positive']))
 	{
+		$posArray=array();
+		foreach ($_SESSION['positive'] as $pos)
+			$posArray[]=$pos;
+		$negArray=array();
+		if (isset($_SESSION['negative']))
+			foreach ($_SESSION['negative'] as $neg)
+				$negArray[]=$neg;
+			
 		require_once("Settings.php");
 		require_once("DLLearnerConnection.php");
 		$settings=new Settings();
 		$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 		
-		if(isset($_SESSION['negative']))
-			$concept=$sc->getConceptFromExamples($settings->sparqlttl,$_SESSION['positive'],$_SESSION['negative']);
-		else
-			$concept=$sc->getConceptFromExamples($settings->sparqlttl,$_SESSION['positive'], array());
+		
+		$concept=$sc->getConceptFromExamples($settings->sparqlttl,$posArray,$negArray);
+		
 		$_SESSION['lastLearnedConcept']=$concept;
 		if (strlen(substr (strrchr ($concept, "/"), 1))>0) $concept=urldecode(substr (strrchr ($concept, "/"), 1));
 	}
