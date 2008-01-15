@@ -169,7 +169,7 @@ public class SparqlQueryMaker {
 	public static String makeLabelQuery(String label,int limit){
 		//TODO maybe use http://xmlns:com/foaf/0.1/page
 		return  "SELECT DISTINCT ?subject\n"+
-				"WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object.?object bif:contains '\""+label+"\"'}\n"+
+				"WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object.?object bif:contains '\""+label+"\"'@en}\n"+
 				"LIMIT "+limit;
 	}
 	
