@@ -113,8 +113,8 @@ class DLLearnerConnection
 			if (!$this->client->isThreadRunning($this->id,$this->ksID,"triples"))
 			{
 				$object=$this->client->getFromSparql($this->id,$this->ksID,"triples");
-				if (count($object)==0) return array();
-				$array=$object->item;
+				@$array=$object->item;
+				if ($array==NULL) return array();
 				if (count($array)==1) return $array;
 				$ret=array();
 				foreach ($array as $element)
@@ -260,4 +260,12 @@ class DLLearnerConnection
 	
 	}
 }
+
+/*require_once("Settings.php");
+require_once("DLLearnerConnection.php");
+$settings=new Settings();
+$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri);
+$ids=$sc->getIDs();
+$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$ids[0],$ids[1]);
+$triples=$sc->getTriples($settings->sparqlttl,"dog");*/
 ?>

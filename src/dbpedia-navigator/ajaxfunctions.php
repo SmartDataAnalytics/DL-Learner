@@ -20,13 +20,13 @@ function getsubjects($label)
 	if (count($subjects)==1)
 	{
 		if (strpos($subjects,"[Error]")===0) $content.=substr($subjects,7);
-		else $content.="<a href=\"\" onclick=\"xajax_getAndShowArticle('".str_replace("_"," ",substr (strrchr ($subjects, "/"), 1))."',-1);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subjects, "/"), 1)))."</a><br/>";
+		else $content.="<a href=\"\" onclick=\"xajax_getAndShowArticle('".str_replace("_"," ",substr (strrchr ($subjects, "/"), 1))."',-2);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subjects, "/"), 1)))."</a><br/>";
 	}
 	else if (count($subjects)==0) $content.="No search result found in time.";
 	else{
 		foreach ($subjects as $subject)
 		{
-			$content.="<a href=\"\" onclick=\"xajax_getAndShowArticle('".str_replace("_"," ",substr (strrchr ($subject, "/"), 1))."',-1);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."</a><br/>";
+			$content.="<a href=\"\" onclick=\"xajax_getAndShowArticle('".str_replace("_"," ",substr (strrchr ($subject, "/"), 1))."',-2);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."</a><br/>";
 		}
 	}
 	
@@ -57,20 +57,22 @@ function getarticle($subject,$fromCache)
 				break;
 			}
 		}
-	if ($fromCache==-1) {
+	if ($fromCache<0) {
 		require_once("Settings.php");
 		require_once("DLLearnerConnection.php");
 		$settings=new Settings();
 		$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 		$triples=$sc->getTriples($settings->sparqlttl,$subject);
 		$content="";
+		$searchResult="";
+		$objResponse = new xajaxResponse();
 		if (count($triples)==1)
 		{
 			// ToDo: find out why this was treated in a special way by Sebastian
 			$content.=substr($triples,7);
 		}
 		else if (count($triples)==0) {
-			$content.="Did not find an article with that name.";
+			$content.="Did not find an article with that name. Similar Articles are shown under 'Search Results'.";
 		} else {
 		
 			// goal: display the data in a nice (DBpedia specific way), maybe similar to
@@ -112,19 +114,34 @@ function getarticle($subject,$fromCache)
 
 			// display the remaining properties as list which can be used for further navigation
 			
-			$content .= '<br/><br/><br/><br/><br/><br/>'.get_triple_table($triples);		
+			$content .= '<br/><br/><br/><br/><br/><br/>'.get_triple_table($triples);
+
+			//store article in session, to navigate between last 5 articles quickly
+			$contentArray=array('content' => $content,'subject' => $subject);
+			if (!isset($_SESSION['nextArticle'])){
+				$_SESSION['nextArticle']=0;
+				$_SESSION['articles']=array();
+			}
+			if ($_SESSION['nextArticle']==5) $_SESSION['nextArticle']=0;
+			$_SESSION['articles'][$_SESSION['nextArticle']]=$contentArray;
+			$_SESSION['currentArticle']=$_SESSION['nextArticle'];
+			$_SESSION['nextArticle']++;
+			
+			//Add Positives to Session
+			if (!isset($_SESSION['positive'])){
+				$array=array($subject => $subject);
+				$_SESSION['positive']=$array;
+			}
+			else{
+				$array=$_SESSION['positive'];
+				$array[$subject]=$subject;
+				$_SESSION['positive']=$array;
+			}
+			
+			//build Subject and Searchresults
+			if ($fromCache==-1) 
+				$searchResult.="<a href=\"\" onclick=\"xajax_getAndShowSubjects('".str_replace("_"," ",substr (strrchr ($subject, "/"), 1))."');return false;\">Show more Results</a>";
 		}
-		
-		//store article in session, to navigate between last 5 articles quickly
-		$contentArray=array('content' => $content,'subject' => $subject);
-		if (!isset($_SESSION['nextArticle'])){
-			$_SESSION['nextArticle']=0;
-			$_SESSION['articles']=array();
-		}
-		if ($_SESSION['nextArticle']==5) $_SESSION['nextArticle']=0;
-		$_SESSION['articles'][$_SESSION['nextArticle']]=$contentArray;
-		$_SESSION['currentArticle']=$_SESSION['nextArticle'];
-		$_SESSION['nextArticle']++;
 	}
 	else {
 		$content=$_SESSION['articles'][$fromCache]['content'];
@@ -132,25 +149,11 @@ function getarticle($subject,$fromCache)
 	}
 	
 	$lastArticles="";
-	foreach ($_SESSION['articles'] as $key => $value)
-	{
-		$lastArticles.="<a href=\"\" onclick=\"xajax_getAndShowArticle('',".$key.");return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($value['subject'], "/"), 1)))."</a><br/>";
-	}
-	
-	//Add Positives to Session
-	if (!isset($_SESSION['positive'])){
-		$array=array($subject => $subject);
-		$_SESSION['positive']=$array;
-	}
-	else{
-		$array=$_SESSION['positive'];
-		$array[$subject]=$subject;
-		$_SESSION['positive']=$array;
-	}
-	
-	//build Subject and Searchresults
-	$searchResult="<a href=\"\" onclick=\"xajax_getAndShowArticle('".$subject."',-1);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."</a><br/>";
-	$searchResult.="<a href=\"\" onclick=\"xajax_getAndShowSubjects('".str_replace("_"," ",substr (strrchr ($subject, "/"), 1))."');return false;\">Show more Results</a>";
+	if (isset($_SESSION['articles']))
+		foreach ($_SESSION['articles'] as $key => $value)
+		{
+			$lastArticles.="<a href=\"\" onclick=\"xajax_getAndShowArticle('',".$key.");return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($value['subject'], "/"), 1)))."</a><br/>";
+		}
 	
 	//put whole site content into session
 	$_SESSION['artContent']=$content;
@@ -158,21 +161,21 @@ function getarticle($subject,$fromCache)
 	$_SESSION['artLast']=$lastArticles;
 	$_SESSION['artSubjects']=$searchResult;
 	
-	//build the response
-	$objResponse = new xajaxResponse();
 	return $objResponse;
 }
 
 function showArticle()
 {
-	while (!isset($_SESSION['artLast'])){
+	while (!isset($_SESSION['artSubjects'])){
 		sleep(0.5);
 	}
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("articlecontent", "innerHTML", $_SESSION['artContent']);
 	$objResponse->assign("ArticleTitle","innerHTML",$_SESSION['artTitle']);
 	$objResponse->assign("lastarticles","innerHTML",$_SESSION['artLast']);
-	$objResponse->assign("searchcontent", "innerHTML", $_SESSION['artSubjects']);
+	if ($_SESSION['artSubjects']!="") $objResponse->assign("searchcontent", "innerHTML", $_SESSION['artSubjects']);
+	if (strpos($_SESSION['artContent'],"Did not find an article with that name")===0)
+		$objResponse->call('xajax_getAndShowSubjects',$_SESSION['artTitle']);
 	unset($_SESSION['artContent']);
 	unset($_SESSION['artTitle']);
 	unset($_SESSION['artLast']);
