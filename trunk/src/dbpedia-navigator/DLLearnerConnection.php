@@ -113,6 +113,7 @@ class DLLearnerConnection
 			if (!$this->client->isThreadRunning($this->id,$this->ksID,"triples"))
 			{
 				$object=$this->client->getFromSparql($this->id,$this->ksID,"triples");
+				if (count($object)==0) return array();
 				$array=$object->item;
 				if (count($array)==1) return $array;
 				$ret=array();
