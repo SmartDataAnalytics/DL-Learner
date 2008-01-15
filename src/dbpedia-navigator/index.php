@@ -238,7 +238,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	<li>[if possible] Find an easy way to validate HTML/JS in AJAX applications.</li>
 	<li>[maybe] Would be interesting to somehow view the Wikipedia article (without the left navigation part,
 	tabs etc.) as an overlay, because the Wikipedia article will almost always be a human-friendlier
-	description of an object compared to the extracted one.</li> 
+	description of an object compared to the extracted one.</li>
+	<li>Handle redirect for example if you look for 'Deutschland'</li>
+	<li>Ich habe mir gestern deswegen mal angeschaut welche fertigen SPARQL-APIs es gibt. Eine der verbreitesten und deshalb auch aktiven Projekt ist Jena. Für uns relevant ist das ARQ-Teilprojekt: http://jena.sourceforge.net/ARQ/.
+	</li> 
 </ul>
 </div>
 
