@@ -16,21 +16,34 @@ function getsubjects($label)
 	
 	$content="";
 	$subjects=$sc->getSubjects($settings->sparqlttl,$label);
+	
 	if (count($subjects)==1)
 	{
 		if (strpos($subjects,"[Error]")===0) $content.=substr($subjects,7);
-		else $content.="<a href=\"\" onclick=\"xajax_getarticle('".$subjects."',-1);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subjects, "/"), 1)))."</a><br/>";
+		else $content.="<a href=\"\" onclick=\"xajax_getAndShowArticle('".str_replace("_"," ",substr (strrchr ($subjects, "/"), 1))."',-1);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subjects, "/"), 1)))."</a><br/>";
 	}
 	else if (count($subjects)==0) $content.="No search result found in time.";
 	else{
 		foreach ($subjects as $subject)
 		{
-			$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."',-1);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."</a><br/>";
+			$content.="<a href=\"\" onclick=\"xajax_getAndShowArticle('".str_replace("_"," ",substr (strrchr ($subject, "/"), 1))."',-1);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."</a><br/>";
 		}
 	}
 	
+	$_SESSION['subjects']=$content;
+		
 	$objResponse = new xajaxResponse();
-	$objResponse->assign("searchcontent", "innerHTML", $content);
+	return $objResponse;
+}
+
+function showSubjects()
+{
+	while (!isset($_SESSION['subjects'])){
+		sleep(0.5);
+	}
+	$objResponse = new xajaxResponse();
+	$objResponse->assign("searchcontent", "innerHTML", $_SESSION['subjects']);
+	unset($_SESSION['subjects']);
 	return $objResponse;
 }
 
@@ -50,7 +63,7 @@ function getarticle($subject,$fromCache)
 		$settings=new Settings();
 		$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
 		$triples=$sc->getTriples($settings->sparqlttl,$subject);
-		$content="";$contentbuttons="";
+		$content="";
 		if (count($triples)==1)
 		{
 			// ToDo: find out why this was treated in a special way by Sebastian
@@ -99,14 +112,11 @@ function getarticle($subject,$fromCache)
 
 			// display the remaining properties as list which can be used for further navigation
 			
-			$content .= '<br/><br/><br/><br/><br/><br/>'.get_triple_table($triples);
-			
-			// $contentbuttons="<input type=\"button\" value=\"Positive\" class=\"button\" onclick=\"xajax_addPositive('".$subject."');return false;\" />&nbsp;<input type=\"button\" value=\"Negative\" class=\"button\" onclick=\"xajax_addNegative('".$subject."');return false;\" />";
-			$contentbuttons='<img src="images/green-plus.png" alt="positive example" onclick="xajax_addPositive(\''.$subject.'\')" /> &nbsp;<img src="images/red-minus.png" alt="negative example" onclick="xajax_addNegative(\''.$subject.'\') />';		
+			$content .= '<br/><br/><br/><br/><br/><br/>'.get_triple_table($triples);		
 		}
 		
 		//store article in session, to navigate between last 5 articles quickly
-		$contentArray=array('content' => $content,'contentbuttons' => $contentbuttons, 'subject' => $subject);
+		$contentArray=array('content' => $content,'subject' => $subject);
 		if (!isset($_SESSION['nextArticle'])){
 			$_SESSION['nextArticle']=0;
 			$_SESSION['articles']=array();
@@ -118,60 +128,101 @@ function getarticle($subject,$fromCache)
 	}
 	else {
 		$content=$_SESSION['articles'][$fromCache]['content'];
-		$contentbuttons=$_SESSION['articles'][$fromCache]['contentbuttons'];
 		$subject=$_SESSION['articles'][$fromCache]['subject'];
 	}
 	
 	$lastArticles="";
 	foreach ($_SESSION['articles'] as $key => $value)
 	{
-		$lastArticles.="<a href=\"\" onclick=\"xajax_getarticle('',".$key.");return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($value['subject'], "/"), 1)))."</a><br/>";
+		$lastArticles.="<a href=\"\" onclick=\"xajax_getAndShowArticle('',".$key.");return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($value['subject'], "/"), 1)))."</a><br/>";
 	}
 	
-	//build the response
-	$objResponse = new xajaxResponse();
-	$objResponse->assign("articlecontent", "innerHTML", $content);
-	$objResponse->assign("contentbuttons", "innerHTML", $contentbuttons);
-	$objResponse->assign("ArticleTitle","innerHTML",str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1))));
-	$objResponse->assign("lastarticles","innerHTML",$lastArticles);
-	return $objResponse;
-}
-
-function addPositive($subject)
-{
+	//Add Positives to Session
 	if (!isset($_SESSION['positive'])){
-		$array=array($subject);
+		$array=array($subject => $subject);
 		$_SESSION['positive']=$array;
 	}
 	else{
 		$array=$_SESSION['positive'];
-		$array[]=$subject;
+		$array[$subject]=$subject;
 		$_SESSION['positive']=$array;
 	}
 	
-	$content=str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."<br/>";
+	//build Subject and Searchresults
+	$searchResult="<a href=\"\" onclick=\"xajax_getAndShowArticle('".$subject."',-1);return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."</a><br/>";
+	$searchResult.="<a href=\"\" onclick=\"xajax_getAndShowSubjects('".str_replace("_"," ",substr (strrchr ($subject, "/"), 1))."');return false;\">Show more Results</a>";
 	
+	//put whole site content into session
+	$_SESSION['artContent']=$content;
+	$_SESSION['artTitle']=str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)));
+	$_SESSION['artLast']=$lastArticles;
+	$_SESSION['artSubjects']=$searchResult;
+	
+	//build the response
 	$objResponse = new xajaxResponse();
-	$objResponse->append("Positives", "innerHTML", $content);
 	return $objResponse;
 }
 
-function addNegative($subject)
+function showArticle()
 {
+	while (!isset($_SESSION['artLast'])){
+		sleep(0.5);
+	}
+	$objResponse = new xajaxResponse();
+	$objResponse->assign("articlecontent", "innerHTML", $_SESSION['artContent']);
+	$objResponse->assign("ArticleTitle","innerHTML",$_SESSION['artTitle']);
+	$objResponse->assign("lastarticles","innerHTML",$_SESSION['artLast']);
+	$objResponse->assign("searchcontent", "innerHTML", $_SESSION['artSubjects']);
+	unset($_SESSION['artContent']);
+	unset($_SESSION['artTitle']);
+	unset($_SESSION['artLast']);
+	unset($_SESSION['artSubjects']);
+	
+	$objResponse->call('xajax_showInterests');	
+	return $objResponse;
+}
+
+function getAndShowArticle($subject,$fromCache)
+{
+	$objResponse = new xajaxResponse();
+	$objResponse->call('xajax_getarticle',"http://dbpedia.org/resource/".str_replace(" ","_",$subject),$fromCache);
+	$objResponse->call('xajax_showArticle');
+	return $objResponse;
+}
+
+function toPositive($subject)
+{
+	unset($_SESSION['negative'][$subject]);
+	if (!isset($_SESSION['positive'])){
+		$array=array($subject => $subject);
+		$_SESSION['positive']=$array;
+	}
+	else{
+		$array=$_SESSION['positive'];
+		$array[$subject]=$subject;
+		$_SESSION['positive']=$array;
+	}
+	
+	$objResponse = new xajaxResponse();
+	$objResponse->call('xajax_showInterests');
+	return $objResponse;
+}
+
+function toNegative($subject)
+{
+	unset($_SESSION['positive'][$subject]);
 	if (!isset($_SESSION['negative'])){
-		$array=array($subject);
+		$array=array($subject => $subject);
 		$_SESSION['negative']=$array;
 	}
 	else{
 		$array=$_SESSION['negative'];
-		$array[]=$subject;
+		$array[$subject]=$subject;
 		$_SESSION['negative']=$array;
 	}
 	
-	$content=str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."<br/>";
-	
 	$objResponse = new xajaxResponse();
-	$objResponse->append("Negatives", "innerHTML", $content);
+	$objResponse->call('xajax_showInterests');
 	return $objResponse;
 }
 
@@ -190,6 +241,42 @@ function clearNegatives()
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("Negatives", "innerHTML", "");
+	return $objResponse;
+}
+
+function showInterests()
+{
+	//add Positives and Negatives to Interests
+	$posInterests="";
+	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
+		$posInterests=$posInterests.str_replace("_"," ",urldecode(substr (strrchr ($pos, "/"), 1)))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
+	}
+	$negInterests="";
+	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
+		$negInterests=$negInterests.str_replace("_"," ",urldecode(substr (strrchr ($neg, "/"), 1)))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$pos."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
+	}
+	
+	$objResponse=new xajaxResponse();
+	$objResponse->assign('Positives','innerHTML',$posInterests);
+	$objResponse->assign('Negatives','innerHTML',$negInterests);
+	return $objResponse;
+}
+
+function removePosInterest($subject)
+{
+	unset($_SESSION['positive'][$subject]);
+		
+	$objResponse = new xajaxResponse();
+	$objResponse->call('xajax_showInterests');
+	return $objResponse;
+}
+
+function removeNegInterest($subject)
+{
+	unset($_SESSION['negative'][$subject]);
+		
+	$objResponse = new xajaxResponse();
+	$objResponse->call('xajax_showInterests');
 	return $objResponse;
 }
 
@@ -247,19 +334,11 @@ function getSubjectsFromConcept()
 	return $objResponse;
 }
 
-function searchAndShowArticle($keyword)
+function getAndShowSubjects($keyword)
 {
-	require_once("Settings.php");
-	require_once("DLLearnerConnection.php");
-	$settings=new Settings();
-	
-	$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
-	
-	$content="";
-	
 	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_getarticle', "http://dbpedia.org/resource/".str_replace(" ","_",$keyword),-1);
 	$objResponse->call('xajax_getsubjects',$keyword);
+	$objResponse->call('xajax_showSubjects');
 	return $objResponse;
 }
 

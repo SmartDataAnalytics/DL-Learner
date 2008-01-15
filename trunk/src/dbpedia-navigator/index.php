@@ -81,9 +81,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  <div class="boxtitle">Search DBpedia</div>
 		  <div class="boxcontent" id="search">
 			<!-- Search:<br/> -->
-			<form onSubmit="xajax_searchAndShowArticle(document.getElementById('label').value);return false;">
+			<form onSubmit="xajax_getAndShowArticle(document.getElementById('label').value,-1);return false;">
 			<input type="text" name="label" id="label" /><br/>
-			<input type="button" value="Search" class="button" onclick="xajax_searchAndShowArticle(document.getElementById('label').value);return false;" />
+			<input type="button" value="Search" class="button" onclick="xajax_getAndShowArticle(document.getElementById('label').value,-1);return false;" />
 			<!--  &nbsp;&nbsp;&nbsp; <input type="button" value="Fulltext" class="button" onclick=""/> -->
 			</form>
 		  </div> <!-- boxcontent -->
@@ -131,7 +131,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 
 	<div id="content">
 		<div class="box">
-		  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left" id="ArticleTitle">Welcome</td><td class="right"><span id="contentbuttons"></span></td></tr></table></div>
+		  <div class="boxtitle" id="ArticleTitle">Welcome</div>
 		  <div class="boxcontent" id="article">
 		  <div id="articlecontent" style="display:block">
 		  <br /><br />
