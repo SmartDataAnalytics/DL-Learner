@@ -43,7 +43,7 @@ import org.dllearner.core.ReasoningService;
 public class Config {
 	private ComponentManager cm = ComponentManager.getInstance();
 	private KnowledgeSource source;
-	private File selectedFile;
+	private String uri;
 	private ReasonerComponent reasoner;
 	private ReasoningService rs;
 	private String[] kbBoxItems = {"Pleae select a type", "KBFile", "OWLFile", "SparqleEndpoint"};
@@ -55,7 +55,7 @@ public class Config {
 	 * status should show witch variables are set
 	 * status[0] ... cm
 	 * status[1] ... KnowledgeSource
-	 * status[2] ... File or URL 
+	 * status[2] ... URI 
 	 * status[3] ... Resoner
 	 * status[4] ... ReasoningService
 	 * status[5] ... ExampleSet
@@ -78,13 +78,13 @@ public class Config {
 		cm = input;
 	}
 
-	protected File getFile () {
-		return selectedFile;
+	protected String getURI () {
+		return uri;
 	}
 	
-	protected void setFile (File input) {
+	protected void setURI (String input) {
 		status[2] = true;
-		selectedFile = input;
+		uri = input;
 	}
 	
 	protected ReasonerComponent getReasoner () {

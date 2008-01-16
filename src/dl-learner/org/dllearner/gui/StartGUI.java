@@ -35,8 +35,6 @@ public class StartGUI extends JFrame {
 	
 	protected static StartGUI myrun;
 	
-	//protected static Config myconfig = new Config();
-	
 	public JTabbedPane tabPane = new JTabbedPane();
 	
 	private JPanel tab1 = new JPanel();
@@ -50,7 +48,7 @@ public class StartGUI extends JFrame {
 		this.setTitle("DL-Learner GUI");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationByPlatform(true);
-		this.setSize(640, 480);
+		this.setSize(800, 600);
 		tab1.add(new KnowledgeSourcePanel(config));
 		tab2.add(new ReasonerPanel(config));
 		tab3.add(new LearningProblemPanel(config));
@@ -70,11 +68,11 @@ public class StartGUI extends JFrame {
 	}
 	
 	protected void renew() {
-		myrun.tabPane.repaint();
+		tabPane.repaint();
 	}
-	
+
 	protected StartGUI getStartGUI() {
 		return myrun;
 	}
-	
+
 }
