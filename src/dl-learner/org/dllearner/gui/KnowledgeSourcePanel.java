@@ -61,7 +61,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		sources = config.getComponentManager().getKnowledgeSources();
 		
 		fc = new JFileChooser(new File("examples/"));
-		openButton = new JButton("Open local file otherwise type URL");
+		openButton = new JButton("Open local file otherwise type URL + ENTER");
 		openButton.addActionListener(this);
 		
 		initButton = new JButton("Init KnowledgeSource");
@@ -69,6 +69,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		
 		fileDisplay = new JTextField(35);
 		fileDisplay.setEditable(true);
+		fileDisplay.addActionListener(this);
 		
 		for (int i=0; i<sources.size(); i++) {
 			String ksClass = sources.get(i).toString().substring(23).concat(".class");
@@ -91,6 +92,13 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		// change URI
+		if (e.getSource() == fileDisplay) {
+			System.out.println(fileDisplay.getText());
+			config.setURI(fileDisplay.getText());
+		}
+		
+		
 		// open File
 		if (e.getSource() == openButton) {
 			int returnVal = fc.showOpenDialog(KnowledgeSourcePanel.this);
@@ -119,11 +127,11 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
 		// init
 		if (e.getSource() == initButton) {
-			String testURI = config.getURI(); 
+			//String testURI = config.getURI(); 
 			config.setKnowledgeSource(config.getComponentManager().knowledgeSource(sources.get(choosenClassIndex)));
-			config.getComponentManager().applyConfigEntry(config.getKnowledgeSource(), "url", testURI);				
+			config.getComponentManager().applyConfigEntry(config.getKnowledgeSource(), "url", config.getURI());				
 			config.getKnowledgeSource().init();
-			System.out.println("init KnowledgeSource");
+			System.out.println("init KnowledgeSource with " + sources.get(choosenClassIndex) + " and ...");
 		}
 	}
 	
