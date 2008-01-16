@@ -188,7 +188,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 <div id="todo">
 <b>ToDo:</b>
 <ul style="float:left">
-	<li>Get learning process working (with new SPARQL component).</li>
+	<li>Get learning component fast.</li>
+	<li>Learning as a Thread.</li>
 	<li>Get local DBpedia SPARQL endpoint working (next DBpedia release expected at the endof January and then every
 	two months, so it would be nice to have a script based partly automated or at least documented solution for
 	creating a DBpedia mirror).</li>
