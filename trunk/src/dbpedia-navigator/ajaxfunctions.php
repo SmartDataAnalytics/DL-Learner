@@ -256,7 +256,7 @@ function showInterests()
 	}
 	$negInterests="";
 	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
-		$negInterests=$negInterests.str_replace("_"," ",urldecode(substr (strrchr ($neg, "/"), 1)))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$pos."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
+		$negInterests=$negInterests.str_replace("_"," ",urldecode(substr (strrchr ($neg, "/"), 1)))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
 	}
 	
 	$objResponse=new xajaxResponse();

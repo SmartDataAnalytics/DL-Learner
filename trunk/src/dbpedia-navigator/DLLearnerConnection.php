@@ -45,7 +45,7 @@ class DLLearnerConnection
 	
 	function getConceptFromExamples($ttl,$posExamples,$negExamples)
 	{
-		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth", 2);
+		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",1);
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
 		// $this->client->applyConfigEntryStringArray($this->id, $this->ksID, "predList", array());
 		// $this->client->applyConfigEntryStringArray($this->id, $this->ksID, "objList", array());
