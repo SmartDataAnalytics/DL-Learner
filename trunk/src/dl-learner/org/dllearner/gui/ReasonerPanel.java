@@ -97,22 +97,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		});
 		
 	}
-
-    public void valueChanged(ListSelectionEvent evt) {
-    	System.out.println("s");
-    	if (evt.getValueIsAdjusting())
-    		return;
-  	  	System.out.println("Selected from " + evt.getFirstIndex() + " to " + evt.getLastIndex());
-  	  	// detect which examples have been selected			
-  	  	Set<String> exampleSet = new HashSet<String>();
-  	  	int[] selectedIndices = digList.getSelectedIndices();
-  	  	for(int i : selectedIndices)
-  	  		exampleSet.add(individuals.get(i).toString());
-  	  	//StartGUI.myconfig.setExampleSet(exampleSet);
-  	  	//System.out.println("digList: " + config.getExampleSet() );
-    }
-
-    
+  
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == digButton) {
 			// set reasoner
@@ -140,8 +125,6 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 			// graphic
 			digList.setModel(listModel);
 			StartGUI.myrun.renew();
-			
-			//return;
 		}
 	}
 }

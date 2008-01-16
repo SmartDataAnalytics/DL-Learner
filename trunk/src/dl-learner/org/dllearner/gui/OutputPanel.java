@@ -71,9 +71,11 @@ public class OutputPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == showButton) {
 			infoArea.setText("");
-			if (config.getStatus(2)) {  // file is selected and exist?
+			if (config.getStatus(1)) {  // kb is set
 				infoArea.append("SourceClass: " + config.getKnowledgeSource().toString() + "\n");
-				infoArea.append("FILE: " + config.getFile() + "\n");
+			}
+			if (config.getStatus(2)) {  // file is set
+				infoArea.append("URI: " + config.getURI() + "\n");
 			}
 			if (config.getStatus(3)) {  // Reasoner is set
 				infoArea.append("Reasoner: " + config.getReasoner() + "\n");
