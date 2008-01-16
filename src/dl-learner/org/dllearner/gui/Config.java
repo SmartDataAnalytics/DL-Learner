@@ -20,9 +20,9 @@ package org.dllearner.gui;
  *
  */
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
+//import java.io.File;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;

@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -47,21 +48,21 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	private JFileChooser fc;
 	private JButton openButton, initButton;
 	private JTextField fileDisplay;
-    private String[] kbBoxItems = {"Pleae select a type"};
-	private JComboBox cb = new JComboBox(kbBoxItems);	
+    private String[] kbBoxItems = {};
+    private JComboBox cb = new JComboBox(kbBoxItems);	
 	private JPanel openPanel;
 	private Config config;
 	private int choosenClassIndex;
 	private List<Class<? extends KnowledgeSource>> sources;
 	
-	KnowledgeSourcePanel(Config config) {
+	KnowledgeSourcePanel(final Config config) {
 		super(new BorderLayout());
 	
 		this.config = config;
 		sources = config.getComponentManager().getKnowledgeSources();
 		
 		fc = new JFileChooser(new File("examples/"));
-		openButton = new JButton("Open local file otherwise type URL + ENTER");
+		openButton = new JButton("Open local file or type URL");
 		openButton.addActionListener(this);
 		
 		initButton = new JButton("Init KnowledgeSource");
@@ -69,8 +70,21 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		
 		fileDisplay = new JTextField(35);
 		fileDisplay.setEditable(true);
-		fileDisplay.addActionListener(this);
 		
+		// update config if textfield changed
+		fileDisplay.getDocument().addDocumentListener(new DocumentListener() {
+			public void insertUpdate(DocumentEvent e) {
+				config.setURI(fileDisplay.getText());
+			}
+			public void removeUpdate(DocumentEvent e) {
+				config.setURI(fileDisplay.getText());
+			}
+			public void changedUpdate(DocumentEvent e) {
+				config.setURI(fileDisplay.getText());
+			}
+		});
+		
+		// parse 
 		for (int i=0; i<sources.size(); i++) {
 			String ksClass = sources.get(i).toString().substring(23).concat(".class");
 			cb.addItem(ksClass); 
@@ -85,19 +99,20 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
 		JPanel initPanel = new JPanel();
 		initPanel.add(initButton);
+
+		openPanel.add(fileDisplay);
+		openPanel.add(openButton);
 		
 		add(choosePanel, BorderLayout.PAGE_START);
 		add(openPanel, BorderLayout.CENTER);
 		add(initPanel, BorderLayout.PAGE_END);
+		
+		choosenClassIndex = cb.getSelectedIndex();
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		// change URI
-		if (e.getSource() == fileDisplay) {
-			System.out.println(fileDisplay.getText());
-			config.setURI(fileDisplay.getText());
-		}
-		
+		// read selected KnowledgeSourceClass
+        choosenClassIndex = cb.getSelectedIndex();
 		
 		// open File
 		if (e.getSource() == openButton) {
@@ -110,35 +125,14 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 			}
 			return;
 		}
-
-		
-		// something changes in cb
-		if (cb.isEnabled()) {
-	        System.out.println("Item: " + cb.getSelectedItem());
-	        System.out.println("Item: " + cb.getSelectedIndex());
-	        
-	        choosenClassIndex = cb.getSelectedIndex() -1;
-	        
-	        makeCenterClean();
-			openPanel.add(fileDisplay);
-			openPanel.add(openButton);
-	        
-		}
-
+	
 		// init
 		if (e.getSource() == initButton) {
-			//String testURI = config.getURI(); 
 			config.setKnowledgeSource(config.getComponentManager().knowledgeSource(sources.get(choosenClassIndex)));
 			config.getComponentManager().applyConfigEntry(config.getKnowledgeSource(), "url", config.getURI());				
 			config.getKnowledgeSource().init();
-			System.out.println("init KnowledgeSource with " + sources.get(choosenClassIndex) + " and ...");
+			System.out.println("init KnowledgeSource with \n" + sources.get(choosenClassIndex) + " and \n" + config.getURI() + "\n");
 		}
 	}
-	
-	private void makeCenterClean() {
-        openPanel.remove(fileDisplay);
-        openPanel.remove(openButton);
-        openPanel.repaint();
-        StartGUI.myrun.renew();
-    }
+  
 }
