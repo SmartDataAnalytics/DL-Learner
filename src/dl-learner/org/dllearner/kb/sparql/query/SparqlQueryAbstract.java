@@ -29,6 +29,7 @@ import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
 	
 	
 	public abstract String getAsXMLString(String queryString);
+	//public abstract String getAsXMLString(String queryString);
 	
 	public void p(String str){
 		if(print_flag){

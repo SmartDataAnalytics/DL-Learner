@@ -19,6 +19,9 @@
  */
 package org.dllearner.kb.sparql.query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
 
 import com.hp.hpl.jena.query.Query;
@@ -54,9 +57,13 @@ public class SparqlQuery extends SparqlQueryAbstract{
 		Query query = QueryFactory.create(queryString);
 		query.validate();
 		// Jena access to DBpedia SPARQL endpoint
+		String service=specificSparqlEndpoint.getURL().toString();
+		ArrayList al=new ArrayList();
+		al.add("http://dbpedia.org");
+		//QueryExecution queryExecution = 
+			//QueryExecutionFactory.sparqlService(specificSparqlEndpoint.getURL().toString(), query);
 		QueryExecution queryExecution = 
-			QueryExecutionFactory.sparqlService(specificSparqlEndpoint.getURL().toString(), query);
-		
+			QueryExecutionFactory.sparqlService(service, query, al, new ArrayList());
 		p("query SPARQL server");		
 		ResultSet rs = queryExecution.execSelect();
 		
@@ -68,6 +75,12 @@ public class SparqlQuery extends SparqlQueryAbstract{
 	public String getAsXMLString(String queryString){
 		ResultSet rs=sendAndReceive(queryString);
 		return ResultSetFormatter.asXMLString(rs);
+	}
+	
+	public List asList(String queryString){
+		ResultSet rs=sendAndReceive(queryString);
+		return ResultSetFormatter.toList(rs);
+		
 	}
 	
 }
