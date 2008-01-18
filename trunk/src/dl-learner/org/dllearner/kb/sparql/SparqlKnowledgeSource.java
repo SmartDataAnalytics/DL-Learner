@@ -43,11 +43,9 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.dl.KB;
-import org.dllearner.kb.sparql.configuration.PredefinedEndpoint;
-import org.dllearner.kb.sparql.configuration.PredefinedFilter;
-import org.dllearner.kb.sparql.configuration.SparqlQueryType;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.kb.sparql.old.*;
+import org.dllearner.kb.sparql.configuration.SparqlQueryType;
+import org.dllearner.kb.sparql.old.oldSparqlOntologyCollector;
 import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
@@ -66,13 +64,13 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	// ConfigOptions
 	private URL url;
 	String host;
-	private Set<String> instances=new HashSet<String>();;
+	private Set<String> instances = new HashSet<String>();;
 	private URL dumpFile;
 	private int recursionDepth = 1;
 	private int predefinedFilter = 0;
 	private int predefinedEndpoint = 0;
-	private Set<String> predList=new HashSet<String>();
-	private Set<String> objList=new HashSet<String>();
+	private Set<String> predList = new HashSet<String>();
+	private Set<String> objList = new HashSet<String>();
 	// private Set<String> classList;
 	private String format = "N-TRIPLES";
 	private boolean dumpToFile = true;
@@ -83,16 +81,16 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	private boolean learnDomain = false;
 	private boolean learnRange = false;
-	private int numberOfInstancesUsedForRoleLearning=40;
-	private String role="";
+	private int numberOfInstancesUsedForRoleLearning = 40;
+	private String role = "";
 	private String blankNodeIdentifier = "bnode";
-	
+
 	LinkedList<StringTuple> URIParameters = new LinkedList<StringTuple>();
 	LinkedList<StringTuple> replacePredicate = new LinkedList<StringTuple>();
 	LinkedList<StringTuple> replaceObject = new LinkedList<StringTuple>();
 
 	SparqlEndpoint sse = null;
-	
+
 	/**
 	 * Holds the results of the calculateSubjects method
 	 */
@@ -146,37 +144,58 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
 		options.add(new StringConfigOption("host", "host of SPARQL Endpoint"));
-		options.add(new StringSetConfigOption("instances",
-				"relevant instances e.g. positive and negative examples in a learning problem"));
+		options
+				.add(new StringSetConfigOption("instances",
+						"relevant instances e.g. positive and negative examples in a learning problem"));
 		options.add(new IntegerConfigOption("recursionDepth",
 				"recursion depth of KB fragment selection", 2));
-		options.add(new IntegerConfigOption("predefinedFilter", "the mode of the SPARQL Filter"));
-		options.add(new IntegerConfigOption("predefinedEndpoint", "the mode of the SPARQL Filter"));
+		options.add(new IntegerConfigOption("predefinedFilter",
+				"the mode of the SPARQL Filter"));
+		options.add(new IntegerConfigOption("predefinedEndpoint",
+				"the mode of the SPARQL Filter"));
 
-		options.add(new StringSetConfigOption("predList", "list of all ignored roles"));
-		options.add(new StringSetConfigOption("objList", "list of all ignored objects"));
-		options.add(new StringSetConfigOption("classList", "list of all ignored classes"));
-		options.add(new StringConfigOption("format", "N-TRIPLES or KB format", "N-TRIPLES"));
-		options.add(new BooleanConfigOption("dumpToFile",
-				"Specifies whether the extracted ontology is written to a file or not.", true));
-		options.add(new BooleanConfigOption("useLits", "use Literals in SPARQL query"));
-		options.add(new BooleanConfigOption("getAllSuperClasses", "If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.", true));
+		options.add(new StringSetConfigOption("predList",
+				"list of all ignored roles"));
+		options.add(new StringSetConfigOption("objList",
+				"list of all ignored objects"));
+		options.add(new StringSetConfigOption("classList",
+				"list of all ignored classes"));
+		options.add(new StringConfigOption("format", "N-TRIPLES or KB format",
+				"N-TRIPLES"));
+		options
+				.add(new BooleanConfigOption(
+						"dumpToFile",
+						"Specifies whether the extracted ontology is written to a file or not.",
+						true));
+		options.add(new BooleanConfigOption("useLits",
+				"use Literals in SPARQL query"));
+		options
+				.add(new BooleanConfigOption(
+						"getAllSuperClasses",
+						"If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.",
+						true));
 
-		options.add(new BooleanConfigOption("learnDomain", "learns the Domain for a Role"));
-		options.add(new BooleanConfigOption("learnRange", "learns the Range for a Role"));
-		options.add(new StringConfigOption("role", "role to learn Domain/Range from"));
+		options.add(new BooleanConfigOption("learnDomain",
+				"learns the Domain for a Role"));
+		options.add(new BooleanConfigOption("learnRange",
+				"learns the Range for a Role"));
+		options.add(new StringConfigOption("role",
+				"role to learn Domain/Range from"));
 		options.add(new StringConfigOption("blankNodeIdentifier",
 				"used to identify blanknodes in Tripels"));
 
 		options.add(new StringTupleListConfigOption("example", "example"));
-		options.add(new StringTupleListConfigOption("replacePredicate", "rule for replacing predicates"));
-		options.add(new StringTupleListConfigOption("replaceObject", "rule for replacing predicates"));
-		options.add(new IntegerConfigOption("breakSuperClassRetrievalAfter", "stops a cyclic hierarchy after specified number of classes"));
-		options.add(new IntegerConfigOption("numberOfInstancesUsedForRoleLearning", ""));
-		options.add(new BooleanConfigOption("closeAfterRecursion", "gets all classes for all instances"));
-		
-		
-		
+		options.add(new StringTupleListConfigOption("replacePredicate",
+				"rule for replacing predicates"));
+		options.add(new StringTupleListConfigOption("replaceObject",
+				"rule for replacing predicates"));
+		options.add(new IntegerConfigOption("breakSuperClassRetrievalAfter",
+				"stops a cyclic hierarchy after specified number of classes"));
+		options.add(new IntegerConfigOption(
+				"numberOfInstancesUsedForRoleLearning", ""));
+		options.add(new BooleanConfigOption("closeAfterRecursion",
+				"gets all classes for all instances"));
+
 		return options;
 	}
 
@@ -185,15 +204,16 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	@Override
 	@SuppressWarnings( { "unchecked" })
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+	public <T> void applyConfigEntry(ConfigEntry<T> entry)
+			throws InvalidConfigOptionValueException {
 		String option = entry.getOptionName();
 		if (option.equals("url")) {
 			String s = (String) entry.getValue();
 			try {
 				url = new URL(s);
 			} catch (MalformedURLException e) {
-				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),
-						"malformed URL " + s);
+				throw new InvalidConfigOptionValueException(entry.getOption(),
+						entry.getValue(), "malformed URL " + s);
 			}
 		} else if (option.equals("host")) {
 			host = (String) entry.getValue();
@@ -205,8 +225,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			predList = (Set<String>) entry.getValue();
 		} else if (option.equals("objList")) {
 			objList = (Set<String>) entry.getValue();
-		//} else if (option.equals("classList")) {
-		//	classList = (Set<String>) entry.getValue();
+			// } else if (option.equals("classList")) {
+			// classList = (Set<String>) entry.getValue();
 		} else if (option.equals("predefinedEndpoint")) {
 			predefinedEndpoint = (Integer) entry.getValue();
 		} else if (option.equals("predefinedFilter")) {
@@ -221,26 +241,26 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			getAllSuperClasses = (Boolean) entry.getValue();
 		} else if (option.equals("learnDomain")) {
 			learnDomain = (Boolean) entry.getValue();
-		}else if (option.equals("learnRange")) {
+		} else if (option.equals("learnRange")) {
 			learnRange = (Boolean) entry.getValue();
 		} else if (option.equals("role")) {
 			role = (String) entry.getValue();
 		} else if (option.equals("blankNodeIdentifier")) {
 			blankNodeIdentifier = (String) entry.getValue();
 		} else if (option.equals("example")) {
-			//System.out.println(entry.getValue());
-		}else if (option.equals("replacePredicate")) {
-			replacePredicate = (LinkedList)entry.getValue();
-		}else if (option.equals("replaceObject")) {
-			replaceObject = (LinkedList)entry.getValue();
-		}else if (option.equals("breakSuperClassRetrievalAfter")) {
+			// System.out.println(entry.getValue());
+		} else if (option.equals("replacePredicate")) {
+			replacePredicate = (LinkedList) entry.getValue();
+		} else if (option.equals("replaceObject")) {
+			replaceObject = (LinkedList) entry.getValue();
+		} else if (option.equals("breakSuperClassRetrievalAfter")) {
 			breakSuperClassRetrievalAfter = (Integer) entry.getValue();
-		}else if (option.equals("numberOfInstancesUsedForRoleLearning")) {
+		} else if (option.equals("numberOfInstancesUsedForRoleLearning")) {
 			numberOfInstancesUsedForRoleLearning = (Integer) entry.getValue();
-		}else if (option.equals("closeAfterRecursion")) {
+		} else if (option.equals("closeAfterRecursion")) {
 			closeAfterRecursion = (Boolean) entry.getValue();
-		} 
-		
+		}
+
 	}
 
 	/*
@@ -259,92 +279,99 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		Manager m = new Manager();
 		SparqlQueryType sqt = null;
 		// get Options for Manipulator
-		Manipulator man = new Manipulator(blankNodeIdentifier,breakSuperClassRetrievalAfter,replacePredicate,replaceObject);
+		Manipulator man = new Manipulator(blankNodeIdentifier,
+				breakSuperClassRetrievalAfter, replacePredicate, replaceObject);
 		HashMap<String, String> parameters = new HashMap<String, String>();
 		parameters.put("default-graph-uri", "http://dbpedia.org");
 		parameters.put("format", "application/sparql-results.xml");
 
 		// get Options for endpoints
 		if (predefinedEndpoint >= 1) {
-			sse = PredefinedEndpoint.getEndpoint(predefinedEndpoint);
+			sse = SparqlEndpoint.getEndpointByNumber(predefinedEndpoint);
 		} else {
-			sse = new SparqlEndpoint(url, host, parameters);
+			// TODO this is not optimal, because not all options are used
+			sse = new SparqlEndpoint(url);
 		}
 
 		// get Options for Filters
-		
+
 		if (predefinedFilter >= 1) {
-			sqt = PredefinedFilter.getFilter(predefinedFilter);
+			sqt = SparqlQueryType.getFilter(predefinedFilter);
 
 		} else {
 			sqt = new SparqlQueryType("forbid", objList, predList, useLits + "");
-			
+
 		}
 		// give everything to the manager
-		m.useConfiguration(sqt, sse, man, recursionDepth, getAllSuperClasses,closeAfterRecursion);
+		m.useConfiguration(sqt, sse, man, recursionDepth, getAllSuperClasses,
+				closeAfterRecursion);
 		try {
 			String ont = "";
-			//System.out.println(learnDomain);
+			// System.out.println(learnDomain);
 			// used to learn a domain of a role
 			if (learnDomain || learnRange) {
-				Set<String> pos=new HashSet<String>();
-				Set<String> neg=new HashSet<String>();
-				if(learnDomain){
+				Set<String> pos = new HashSet<String>();
+				Set<String> neg = new HashSet<String>();
+				if (learnDomain) {
 					pos = m.getDomainInstancesForRole(role);
 					neg = m.getRangeInstancesForRole(role);
-				}else if(learnRange){
+				} else if (learnRange) {
 					neg = m.getDomainInstancesForRole(role);
 					pos = m.getRangeInstancesForRole(role);
 				}
-				//choose 30
-				
-				
-					Set<String> tmp=new HashSet<String>();
-					for(String one:pos){
-						tmp.add(one);
-						if(tmp.size()>=numberOfInstancesUsedForRoleLearning)break;
-					}
-					pos=tmp;
-					System.out.println("Instances used: "+pos.size());
-					
-					tmp=new HashSet<String>();
-					for(String one:neg){
-						tmp.add(one);
-						if(tmp.size()>=numberOfInstancesUsedForRoleLearning)break;
-					}
-					neg=tmp;
-					
-					instances=new HashSet<String>();
-					instances.addAll(pos);
-					
-					instances.addAll(neg);
-					
-					for(String one:pos){
-						System.out.println("+\""+one+"\"");
-					}
-					for(String one:neg){
-						System.out.println("-\""+one+"\"");
-					}
-				
-				/*Random r= new Random();
-				
-				
-				Object[] arr=instances.toArray();
-					while(instances.size()>=30){
-					
-					}*/
+				// choose 30
+
+				Set<String> tmp = new HashSet<String>();
+				for (String one : pos) {
+					tmp.add(one);
+					if (tmp.size() >= numberOfInstancesUsedForRoleLearning)
+						break;
+				}
+				pos = tmp;
+				System.out.println("Instances used: " + pos.size());
+
+				tmp = new HashSet<String>();
+				for (String one : neg) {
+					tmp.add(one);
+					if (tmp.size() >= numberOfInstancesUsedForRoleLearning)
+						break;
+				}
+				neg = tmp;
+
+				instances = new HashSet<String>();
+				instances.addAll(pos);
+
+				instances.addAll(neg);
+
+				for (String one : pos) {
+					System.out.println("+\"" + one + "\"");
+				}
+				for (String one : neg) {
+					System.out.println("-\"" + one + "\"");
+				}
+
+				/*
+				 * Random r= new Random();
+				 * 
+				 * 
+				 * Object[] arr=instances.toArray();
+				 * while(instances.size()>=30){
+				 *  }
+				 */
 				// add the role to the filter(a solution is always EXISTS
 				// role.TOP)
 				m.addPredicateFilter(role);
-				//System.out.println(instances);
-				// THIS is a workaround 
-				
+				// System.out.println(instances);
+				// THIS is a workaround
+
 			}
 			// the actual extraction is started here
 			ont = m.extract(instances);
-			System.out.println("Number of cached SPARQL queries: "+m.getConfiguration().numberOfCachedSparqlQueries);
-			System.out.println("Number of uncached SPARQL queries: "+m.getConfiguration().numberOfUncachedSparqlQueries);
-			
+			System.out.println("Number of cached SPARQL queries: "
+					+ m.getConfiguration().numberOfCachedSparqlQueries);
+			System.out.println("Number of uncached SPARQL queries: "
+					+ m.getConfiguration().numberOfUncachedSparqlQueries);
+
 			System.out.println("Finished collecting Fragment");
 
 			if (dumpToFile) {
@@ -354,7 +381,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 					if (!new File(basedir).exists())
 						new File(basedir).mkdir();
 
-					FileWriter fw = new FileWriter(new File(basedir + filename), true);
+					FileWriter fw = new FileWriter(
+							new File(basedir + filename), true);
 					fw.write(ont);
 					fw.flush();
 					fw.close();
@@ -366,8 +394,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			}
 			if (format.equals("KB")) {
 				try {
-					//kb = KBParser.parseKBFile(new StringReader(ont));
-					kb=KBParser.parseKBFile(dumpFile);
+					// kb = KBParser.parseKBFile(new StringReader(ont));
+					kb = KBParser.parseKBFile(dumpFile);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -386,7 +414,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	@Override
 	public String toDIG(URI kbURI) {
 		if (format.equals("N-TRIPLES"))
-			return JenaOWLDIGConverter.getTellsString(dumpFile, OntologyFormat.N_TRIPLES, kbURI);
+			return JenaOWLDIGConverter.getTellsString(dumpFile,
+					OntologyFormat.N_TRIPLES, kbURI);
 		else
 			return DIGConverter.getDIGString(kb, kbURI).toString();
 	}
@@ -398,7 +427,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 *      org.dllearner.core.OntologyFormat)
 	 */
 	@Override
-	public void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException {
+	public void export(File file, OntologyFormat format)
+			throws OntologyFormatUnsupportedException {
 		// currently no export functions implemented, so we just throw an
 		// exception
 		throw new OntologyFormatUnsupportedException("export", format);
@@ -412,9 +442,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return ontArray;
 	}
 
-	
 	/**
 	 * TODO SparqlOntologyCollector needs to be removed
+	 * 
 	 * @param label
 	 * @param limit
 	 */
@@ -432,6 +462,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	/**
 	 * TODO SparqlOntologyCollector needs to be removed
+	 * 
 	 * @param subject
 	 */
 	public void calculateTriples(String subject) {
@@ -448,6 +479,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	/**
 	 * TODO SparqlOntologyCollector needs to be removed
+	 * 
 	 * @param concept
 	 */
 	public void calculateConceptSubjects(String concept) {
@@ -521,8 +553,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	public String[] getConceptSubjects() {
 		return conceptSubjects;
 	}
-	
+
 	public SparqlQuery sparqlQuery(String query) {
-		return new SparqlQuery(sse, query);
+		return new SparqlQuery(query, sse);
 	}
 }

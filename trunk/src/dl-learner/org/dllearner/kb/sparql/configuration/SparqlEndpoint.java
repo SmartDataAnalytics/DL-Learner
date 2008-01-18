@@ -20,55 +20,175 @@
 package org.dllearner.kb.sparql.configuration;
 
 import java.net.URL;
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * One sparql endpoint configuration.
+ * One sparql endpoint configuration,
+ * made to comply with Jena
  * 
  * @author Sebastian Hellmann
  *
  */
 public class SparqlEndpoint {
-
-	String host;
-	String hasQueryParameter;
 	URL url;
-	public HashMap<String, String> parameters = new HashMap<String, String>();
+	LinkedList<String> defaultGraphURIs;
+	LinkedList<String> namedGraphURIs;
+	//public HashMap<String, String> parameters = new HashMap<String, String>();
 
-	public SparqlEndpoint(URL url, String host, HashMap<String, String> parameters) {
-		super();
-		this.host = host;
-		this.url = url;
-		this.hasQueryParameter = "query";
-		this.parameters = parameters;
+	public SparqlEndpoint(URL u) {
+		this.url = u;
+		this.defaultGraphURIs=new LinkedList<String>();
+		this.namedGraphURIs=new LinkedList<String>();
 	}
-
-	public String getHasQueryParameter() {
-		return hasQueryParameter;
+	
+	public SparqlEndpoint(URL u,List<String> defaultGraphURIs,List<String> namedGraphURIs) {
+		this.url = u;
+		this.defaultGraphURIs=new LinkedList<String>();
+		this.namedGraphURIs=new LinkedList<String>();
 	}
-
-	public void setHasQueryParameter(String hasQueryParameter) {
-		this.hasQueryParameter = hasQueryParameter;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public HashMap<String, String> getParameters() {
-		return parameters;
-	}
-
-	public void setParameters(HashMap<String, String> parameters) {
-		this.parameters = parameters;
-	}
+	
 
 	public URL getURL() {
 		return this.url;
 	}
+
+	public LinkedList<String> getDefaultGraphURIs() {
+		return defaultGraphURIs;
+	}
+
+	public LinkedList<String> getNamedGraphURIs() {
+		return namedGraphURIs;
+	}
+	
+	public static SparqlEndpoint getEndpointByNumber(int i) {
+
+		switch (i) {
+		case 0:
+			return dbpediaEndpoint();
+		case 1:
+			return localJoseki();
+		case 2: 
+			return govTrack();
+		case 3:
+			return revyu();
+		case 4:
+			return myopenlink();
+		case 5: 
+			return worldFactBook();
+		}
+		return null;
+	}
+	
+	public static SparqlEndpoint dbpediaEndpoint() {
+		URL u = null;
+		try { 
+			u = new URL("http://dbpedia.openlinksw.com:8890/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		defaultGraphURIs.add("http://dbpedia.org");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+	}
+
+	public static SparqlEndpoint localJoseki() {
+		URL u = null;
+		try { 
+			u = new URL("http://localhost:2020/books");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SparqlEndpoint(u, new LinkedList<String>(), new LinkedList<String>());
+	}
+	
+	public static SparqlEndpoint worldFactBook() {
+		URL u = null;
+		try { 
+			u = new URL("http://www4.wiwiss.fu-berlin.de/factbook/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SparqlEndpoint(u, new LinkedList<String>(), new LinkedList<String>());
+	}
+	
+
+	public static SparqlEndpoint govTrack() {
+		URL u = null;
+		try { 
+			u = new URL("http://www.rdfabout.com/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SparqlEndpoint(u, new LinkedList<String>(), new LinkedList<String>());
+	}
+	
+	public static SparqlEndpoint revyu() {
+		URL u = null;
+		try { 
+			u = new URL("http://revyu.com/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SparqlEndpoint(u, new LinkedList<String>(), new LinkedList<String>());
+	}
+	
+	public static SparqlEndpoint myopenlink() {
+		URL u = null;
+		try { 
+			u = new URL("http://myopenlink.net:8890/sparql/");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		defaultGraphURIs.add("http://myopenlink.net/dataspace");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+
+		}
+	
+	
+	// returns strange xml
+	/*public static SpecificSparqlEndpoint dbtune() {
+		URL u = null;
+		HashMap<String, String> m = new HashMap<String, String>();
+		// m.put("default-graph-uri", "http://dbpedia.org");
+		// m.put("format", "application/sparql-results.xml");
+		//http://dbtune.org:2020/sparql/?query=SELECT DISTINCT * WHERE {[] a ?c}Limit 10 
+		http://dbtune.org:2020/evaluateQuery?repository=default&serialization=rdfxml&queryLanguage=SPARQL&query=SELECT+DISTINCT+*+WHERE+%7B%5B%5D+a+%3Fc%7D
+			&resultFormat=xml
+			&resourceFormat=ns&entailment=none
+			http://dbtune.org:2020/evaluateQuery	
+			?repository=default&serialization=rdfxml&queryLanguage=SPARQL
+					&query=SELECT+DISTINCT+*+WHERE+%7B%5B%5D+a+%3Fc%7D
+			&resultFormat=xml
+			&resourceFormat=ns&entailment=none
+		try {
+			u = new URL("http://dbtune.org:2020/sparql/");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SpecificSparqlEndpoint(u, "dbtune.org", m);
+	}*/
+	
+	
+	
+	
+	/*
+	 * it only has 4 classes
+	 public static SpecificSparqlEndpoint dblp() {
+		URL u = null;
+		HashMap<String, String> m = new HashMap<String, String>();
+		// m.put("default-graph-uri", "http://dbpedia.org");
+		// m.put("format", "application/sparql-results.xml");
+		try {
+			u = new URL("http://www4.wiwiss.fu-berlin.de/dblp/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SpecificSparqlEndpoint(u, "www4.wiwiss.fu-berlin.de", m);
+	}
+	*/
+	
+	
 
 }
