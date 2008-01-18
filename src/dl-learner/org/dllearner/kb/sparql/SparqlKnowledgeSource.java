@@ -55,7 +55,7 @@ import org.dllearner.utilities.StringTuple;
  * @author Sebastian Knappe
  * @author Sebastian Hellmann
  */
-public class SparqlEndpoint extends KnowledgeSource {
+public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	// ConfigOptions
 	private URL url;
