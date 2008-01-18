@@ -24,6 +24,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.dllearner.kb.sparql.datastructure.ClassNode;
+import org.dllearner.kb.sparql.datastructure.InstanceNode;
+import org.dllearner.kb.sparql.datastructure.Node;
 import org.dllearner.utilities.StringTuple;
 
 /**

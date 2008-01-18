@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql;
+package org.dllearner.kb.sparql.old;
+
+import org.dllearner.kb.sparql.configuration.SparqlQueryType;
 
 
 /**

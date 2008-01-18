@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql;
+package org.dllearner.kb.sparql.old;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,7 +40,7 @@ import java.net.URLEncoder;
  * @author Sebastian Hellmann
  * @author Sebastian Knappe
  */
-public class SparqlCache implements Serializable{
+public class oldSparqlCache implements Serializable{
 	
 	final static long serialVersionUID=104;
 	transient String basedir="";
@@ -58,7 +58,7 @@ public class SparqlCache implements Serializable{
 	 * 
 	 * @param path Where the base path to the cache is 
 	 */
-	public SparqlCache(String path){
+	public oldSparqlCache(String path){
 		this.basedir=path+File.separator;
 		if(!new File(path).exists())
 			{System.out.println(new File(path).mkdir());;}
@@ -72,7 +72,7 @@ public class SparqlCache implements Serializable{
 	 * @param content the sparql xml result
 	 * @param sparql the sparql query
 	 */
-	public SparqlCache(String content, String sparql){
+	public oldSparqlCache(String content, String sparql){
 		this.content=content;
 		this.sparqlquery=sparql;
 		this.timestamp=System.currentTimeMillis();

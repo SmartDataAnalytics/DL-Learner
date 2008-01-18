@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql;
+package org.dllearner.kb.sparql.query;
+
+import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;

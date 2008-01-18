@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql;
+package org.dllearner.kb.sparql.old;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.dllearner.kb.sparql.SparqlQueryMaker;
+import org.dllearner.kb.sparql.old.SparqlQueryMaker;
 
 
 /**
