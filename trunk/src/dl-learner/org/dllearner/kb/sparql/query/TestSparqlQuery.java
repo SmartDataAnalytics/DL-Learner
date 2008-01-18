@@ -57,7 +57,7 @@ public class TestSparqlQuery {
 				"    <http://dbpedia.org/resource/Category:The_Simpsons_episodes%2C_season_12>." +
 				"  ?episode dbpedia2:blackboard ?chalkboard_gag }";
 		
-		testTime(5,queryString);
+		testTime(20,queryString);
 		
 		//compareResults(  queryString);
 		
@@ -69,19 +69,31 @@ public class TestSparqlQuery {
 		SparqlQuery sqJena=new SparqlQuery(sse);
 		SparqlQueryConventional sqConv=new SparqlQueryConventional(sse);
 		
-		
+		// first query is not counted
+		sqJena.asList(queryString);
 		long now=System.currentTimeMillis();
+		long tmp=now;
 		for (int i = 0; i < howOften; i++) {
-			sqJena.getAsXMLString(queryString);
+			//sqConv.getAsXMLString(queryString);
+			sqJena.asList(queryString);
+			System.out.println("Conv needed: "+(System.currentTimeMillis()-tmp));
+			tmp=System.currentTimeMillis();
 			
 			
 		}
-		System.out.println("Jena needed: "+(System.currentTimeMillis()-now));
+		System.out.println("Conv total: "+(System.currentTimeMillis()-now));
+		// first query is not counted
+		sqJena.getAsXMLString(queryString);
 		now=System.currentTimeMillis();
+		tmp=now;
 		for (int i = 0; i < howOften; i++) {
-			sqConv.getAsXMLString(queryString);
+			
+			sqJena.getAsXMLString(queryString);
+			System.out.println("Jena needed: "+(System.currentTimeMillis()-tmp));
+			tmp=System.currentTimeMillis();
+			
 		}
-		System.out.println("Conv needed: "+(System.currentTimeMillis()-now));	
+		System.out.println("Jena total: "+(System.currentTimeMillis()-now));	
 	}
 	
 	public static void compareResults( String queryString){
