@@ -29,36 +29,61 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 
 /**
- * SPARQL query cache to avoid possibly expensive multiple queries.
+ * SPARQL query cache to avoid possibly expensive multiple queries. An object of
+ * this class can be the cache itself or a cache object(one entry), We could
+ * split that in two classes, but one entry o object only has contains data and
+ * one additional function and would just be a data class
+ * 
+ * it writes the files according to one resource in the basedir and saves the
+ * cache object in it.
  * 
  * @author Sebastian Hellmann
- *
+ * 
  */
 public class Cache implements Serializable {
-	// Object can be the cache itself
-	// or a cache object(one entry)
-	// it now uses a hashmap and can contain different queries at once
-	private HashMap<String, String> hm;
+
+	/**
+	 * This maps sparql query to sparql result
+	 */
+	protected HashMap<String, String> hm;
 
 	final static long serialVersionUID = 104;
 	transient String basedir = "";
 	transient String fileending = ".cache";
+	transient boolean debug_print_flag = false;
 	long timestamp;
-	long daysoffreshness = 15;
-	long multiplier = 24 * 60 * 60 * 1000;// h m s ms
+	/**
+	 * After how many days cache entries get invalid
+	 */
+	protected long daysoffreshness = 15;
+	protected long multiplier = 24 * 60 * 60 * 1000;// h m s ms
+
 	// private HashMap<String, String> inmem_cache;
 
-	// constructor for the cache itself
+	// 
+	/**
+	 * constructor for the cache itself
+	 * 
+	 * @param path
+	 *            where the cache files will be
+	 */
 	public Cache(String path) {
 		this.basedir = path + File.separator;
 		if (!new File(path).exists()) {
-			System.out.println(new File(path).mkdir());
-			;
+			System.out.println("created directory: " + path + " : "
+					+ new File(path).mkdir());
+
 		}
 	}
 
 	// constructor for single cache object(one entry)
-	public Cache(String sparql, String content) {
+	/**
+	 * @param sparql
+	 *            query
+	 * @param content
+	 *            that is the sparql query result as xml
+	 */
+	protected Cache(String sparql, String content) {
 		// this.content = c;
 		// this.sparqlquery = sparql;
 		this.timestamp = System.currentTimeMillis();
@@ -66,7 +91,17 @@ public class Cache implements Serializable {
 		hm.put(sparql, content);
 	}
 
-	public String get(String key, String sparql) {
+	/**
+	 * gets a chached sparqlquery for a resource(key) and returns the
+	 * sparqlXMLResult or null, if none is found.
+	 * 
+	 * @param key
+	 *            is the resource, the identifier
+	 * @param sparqlquery
+	 *            is a special sparql query about that resource
+	 * @return sparqlXMLResult
+	 */
+	public String get(String key, String sparqlquery) {
 		// System.out.println("get From "+key);
 		String ret = null;
 		try {
@@ -79,7 +114,7 @@ public class Cache implements Serializable {
 			// System.out.println("fresh");
 			String xml = "";
 			try {
-				xml = c.hm.get(sparql);
+				xml = c.hm.get(sparqlquery);
 			} catch (Exception e) {
 				return null;
 			}
@@ -90,22 +125,37 @@ public class Cache implements Serializable {
 			e.printStackTrace();
 		}
 		return ret;
-	};
+	}
 
-	public void put(String key, String sparql, String content) {
+	/**
+	 * @param key
+	 *            is the resource, the identifier
+	 * @param sparqlquery
+	 *            is the query used as another identifier
+	 * @param content
+	 *            is the result of the query
+	 */
+	public void put(String key, String sparqlquery, String content) {
 		// System.out.println("put into "+key);
 		Cache c = readFromFile(makeFilename(key));
 		if (c == null) {
-			c = new Cache(sparql, content);
+			c = new Cache(sparqlquery, content);
 			putIntoFile(makeFilename(key), c);
 		} else {
-			c.hm.put(sparql, content);
+			c.hm.put(sparqlquery, content);
 			putIntoFile(makeFilename(key), c);
 		}
 
 	}
 
-	String makeFilename(String key) {
+	/**
+	 * this function takes a resource string and then URIencodes it and makes a
+	 * filename out of it for the use in the hashmap
+	 * 
+	 * @param key
+	 * @return the complete key for filename in the hashmap
+	 */
+	protected String makeFilename(String key) {
 		String ret = "";
 		try {
 			ret = basedir + URLEncoder.encode(key, "UTF-8") + fileending;
@@ -113,14 +163,6 @@ public class Cache implements Serializable {
 			e.printStackTrace();
 		}
 		return ret;
-	}
-
-	boolean checkFreshness() {
-		if ((System.currentTimeMillis() - this.timestamp) <= (daysoffreshness * multiplier))
-			// fresh
-			return true;
-		else
-			return false;
 	}
 
 	public void checkFile(String Filename) {
@@ -135,12 +177,18 @@ public class Cache implements Serializable {
 
 	}
 
-	public void putIntoFile(String Filename, Cache content) {
+	/**
+	 * puts a cache entry in a file
+	 * 
+	 * @param Filename
+	 * @param c
+	 */
+	protected void putIntoFile(String Filename, Cache c) {
 		try {
 			// FileWriter fw=new FileWriter(new File(Filename),true);
 			FileOutputStream fos = new FileOutputStream(Filename, false);
 			ObjectOutputStream o = new ObjectOutputStream(fos);
-			o.writeObject(content);
+			o.writeObject(c);
 			fos.flush();
 			fos.close();
 		} catch (Exception e) {
@@ -148,7 +196,13 @@ public class Cache implements Serializable {
 		}
 	}
 
-	public Cache readFromFile(String Filename) {
+	/**
+	 * reads a cache entry from a file
+	 * 
+	 * @param Filename
+	 * @return cache entry
+	 */
+	protected Cache readFromFile(String Filename) {
 		Cache content = null;
 		try {
 			FileInputStream fos = new FileInputStream(Filename);
@@ -161,5 +215,13 @@ public class Cache implements Serializable {
 		return content;
 
 	}
-	
+
+	protected boolean checkFreshness() {
+		if ((System.currentTimeMillis() - this.timestamp) <= (daysoffreshness * multiplier))
+			// fresh
+			return true;
+		else
+			return false;
+	}
+
 }
