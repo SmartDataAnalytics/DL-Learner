@@ -33,7 +33,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.SparqlKnowledgeSource;
 
 /**
  * Stores the state of a DL-Learner client session.
@@ -113,7 +113,7 @@ public class ClientState {
 		while(it.hasNext()) {
 			KnowledgeSource source = it.next();
 			if((source instanceof OWLFile && ((OWLFile)source).getURL().toString().equals(url))
-				|| (source instanceof SparqlEndpoint && ((SparqlEndpoint)source).getURL().toString().equals(url)) ) {
+				|| (source instanceof SparqlKnowledgeSource && ((SparqlKnowledgeSource)source).getURL().toString().equals(url)) ) {
 				it.remove();
 				return true;
 			}
