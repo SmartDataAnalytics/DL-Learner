@@ -71,7 +71,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		fileDisplay = new JTextField(35);
 		fileDisplay.setEditable(true);
 		
-		// update config if textfield changed
+		// update config if textfield fileDisplay changed
 		fileDisplay.getDocument().addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
 				config.setURI(fileDisplay.getText());
@@ -84,10 +84,9 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 			}
 		});
 		
-		// parse 
+		// add to comboBox 
 		for (int i=0; i<sources.size(); i++) {
-			String ksClass = sources.get(i).toString().substring(23).concat(".class");
-			cb.addItem(ksClass); 
+			cb.addItem(sources.get(i).getSimpleName()); 
 		}
 		
 		cb.addActionListener(this);
@@ -119,7 +118,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 			int returnVal = fc.showOpenDialog(KnowledgeSourcePanel.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				String URI = "file://";
-				URI = URI.concat(fc.getSelectedFile().toString()); // make "file://" before local URI's
+				URI = URI.concat(fc.getSelectedFile().toString()); // make "file://" before local URI
 				config.setURI(URI); //save variable
 				fileDisplay.setText(URI);
 			}

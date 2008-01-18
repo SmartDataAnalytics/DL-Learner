@@ -21,18 +21,11 @@ package org.dllearner.gui;
  */
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 import javax.swing.*;
-import javax.swing.event.*;
 
-import org.dllearner.core.dl.Individual;
 import org.dllearner.reasoning.DIGReasoner;
 
 //import org.dllearner.core.ReasonerComponent;
@@ -53,10 +46,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -7678275020058043937L;
 
 	private JPanel digPanel = new JPanel();
-	private JPanel centerPanel = new JPanel();
-    private JButton digButton;
-    private JList digList = new JList();
-    private List<Individual> individuals;
+    private JButton initButton;
     private Config config;
     
 	ReasonerPanel(final Config config) {
@@ -64,67 +54,30 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		
 		this.config = config;
 		
-		digButton = new JButton("Use DIG by default");
-		digButton.addActionListener(this);
+		initButton = new JButton("Use DIG by default");
+		initButton.addActionListener(this);
 		
-		// create a scrollable list of examples
-		digList = new JList();
-		digList.setLayoutOrientation(JList.VERTICAL);
-		digList.setVisibleRowCount(-1);
-		JScrollPane listScroller = new JScrollPane(digList);
-		listScroller.setPreferredSize(new Dimension(550, 350));
-		
-		digPanel.add(digButton);
+		digPanel.add(initButton);
 		add(digPanel, BorderLayout.PAGE_START);
-	
-		centerPanel.add(listScroller);
-		add(centerPanel, BorderLayout.CENTER);
 
-
-		digList.addListSelectionListener(new ListSelectionListener() {
-		      public void valueChanged(ListSelectionEvent evt) {
-		    	  if (evt.getValueIsAdjusting())
-		    		  return;
-		    	  //System.out.println("Selected from " + evt.getFirstIndex() + " to " + evt.getLastIndex());
-		    	  // detect which examples have been selected			
-		    	  Set<String> exampleSet = new HashSet<String>();
-		    	  int[] selectedIndices = digList.getSelectedIndices();
-		    	  for(int i : selectedIndices)
-		    		  exampleSet.add(individuals.get(i).toString());
-		    	  config.setExampleSet(exampleSet); //error
-		    	  System.out.println("digList: " + config.getExampleSet() ); //error
-		      }
-		});
-		
 	}
   
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == digButton) {
-			// set reasoner
-			config.setReasoner(config.getComponentManager().reasoner(DIGReasoner.class, config.getKnowledgeSource()));
-			//System.out.println(StartGUI.myconfig.getKnowledgeSource());
-			config.getReasoner().init();
-			//System.out.println(StartGUI.myconfig.getReasoner());
+		if (e.getSource() == initButton) {
+			if (config.getStatus(2)) { // no check if button init was used
+				// set reasoner
+				config.setReasoner(config.getComponentManager().reasoner(DIGReasoner.class, config.getKnowledgeSource()));
+				config.getReasoner().init();
 			
-			// set ReasoningService
-			config.setReasoningService(config.getComponentManager().reasoningService(config.getReasoner()));
-
-			// get list from ReasoningService
-			Set<Individual> individualsSet = config.getReasoningService().getIndividuals();
-			//System.out.println("IndividualsSet: " + individualsSet);
-			individuals = new LinkedList<Individual>(individualsSet);
-			//System.out.println("individuals: " + individuals);
-			
-			// make list
-			DefaultListModel listModel = new DefaultListModel();
-			for(Individual ind : individuals)
-				listModel.addElement(ind);
-			
-			digList.setModel(listModel);
-			
-			// graphic
-			digList.setModel(listModel);
-			StartGUI.myrun.renew();
+				// set ReasoningService
+				config.setReasoningService(config.getComponentManager().reasoningService(config.getReasoner()));
+			}
+			if (config.getStatus(3)) {  // Reasoner is set
+				System.out.println("Reasoner: " + config.getReasoner());
+			}
+			if (config.getStatus(4)) {  // ReasoningServic is set
+				System.out.println("ReasoningService: " + config.getReasoningService());
+			}
 		}
 	}
 }

@@ -21,12 +21,23 @@ package org.dllearner.gui;
  */
 
 import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.core.dl.Individual;
+//import org.dllearner.learningproblems.*;
 
 /**
  * LearningProblemPanel
@@ -39,32 +50,166 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = -3819627680918930203L;
 
+	private List<Class<? extends LearningProblem>> problems;
+    private String[] lpBoxItems = {};
+	private JComboBox cb = new JComboBox(lpBoxItems);
+	private JPanel choosePanel = new JPanel();
+	private JPanel centerPanel = new JPanel();
 	private JPanel lpPanel = new JPanel();
-    private JButton lpButton;
+	private JLabel posLabel = new JLabel("positive Examples");
+	private JLabel negLabel = new JLabel("negative Examples");
+    private JButton initButton, readListButton;
+	private int choosenClassIndex;
+    private List<Individual> individuals;
+    private JList posList = new JList();
+    private JList negList = new JList();
     
     private Config config;
     
-	LearningProblemPanel(Config config) {
+	LearningProblemPanel(final Config config) {
 		super(new BorderLayout());
 
 		this.config = config;
 		
-		lpButton = new JButton("Use PosOnlyDefinitionLP");
-		lpButton.addActionListener(this);
+		initButton = new JButton("Init LearningProblem");
+		initButton.addActionListener(this);
 		
-		lpPanel.add(lpButton);
-		add(lpPanel, BorderLayout.PAGE_START);	
+		readListButton = new JButton("Read List");
+		readListButton.addActionListener(this);
+		
+		choosePanel.add(cb);
+		choosePanel.add(readListButton);
+		lpPanel.add(initButton);
+		add(choosePanel, BorderLayout.PAGE_START);
+		add(centerPanel, BorderLayout.CENTER);
+		add(lpPanel, BorderLayout.PAGE_END);
+		
+		problems = config.getComponentManager().getLearningProblems();
+		
+		// add into comboBox
+		for (int i=0; i<problems.size(); i++) {
+			cb.addItem(problems.get(i).getSimpleName());
+		}
+		
+		// read choosen LearningProblem
+		choosenClassIndex = cb.getSelectedIndex();
+		
+		// create a scrollable list of positive examples
+		posList = new JList();
+		posList.setLayoutOrientation(JList.VERTICAL);
+		posList.setVisibleRowCount(-1);
+		JScrollPane posListScroller = new JScrollPane(posList);
+		posListScroller.setPreferredSize(new Dimension(300, 200));
+		
+		// create a scrollable list of negative examples
+		negList = new JList();
+		negList.setLayoutOrientation(JList.VERTICAL);
+		negList.setVisibleRowCount(-1);
+		JScrollPane negListScroller = new JScrollPane(negList);
+		negListScroller.setPreferredSize(new Dimension(300, 200));
+		
+		// define GridBag
+		GridBagLayout gridbag = new GridBagLayout();
+		centerPanel.setLayout(gridbag);
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.anchor = GridBagConstraints.CENTER;
+
+		buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
+		gridbag.setConstraints(posLabel, constraints);
+		centerPanel.add(posLabel);
+
+		buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
+		gridbag.setConstraints(negLabel, constraints);
+		centerPanel.add(negLabel);
+
+		buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+		gridbag.setConstraints(posListScroller, constraints);
+		centerPanel.add(posListScroller);
+		
+		buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
+		gridbag.setConstraints(negListScroller, constraints);
+		centerPanel.add(negListScroller);
+
+		add(centerPanel, BorderLayout.CENTER);
+	
+		// listener for posList
+		posList.addListSelectionListener(new ListSelectionListener() {
+		      public void valueChanged(ListSelectionEvent evt) {
+		    	  if (evt.getValueIsAdjusting())
+		    		  return;
+		    	  // detect witch examples have been selected
+		    	  Set<String> posExampleSet = new HashSet<String>();
+		    	  int[] selectedIndices = posList.getSelectedIndices();
+		    	  for(int i : selectedIndices)
+		    		  posExampleSet.add(individuals.get(i).toString());
+		    	  config.setPosExampleSet(posExampleSet);
+		    	  System.out.println("posList: " + config.getPosExampleSet() ); 
+		      }
+		});
+		
+		// listener for negList
+		negList.addListSelectionListener(new ListSelectionListener() {
+		      public void valueChanged(ListSelectionEvent evt) {
+		    	  if (evt.getValueIsAdjusting())
+		    		  return;
+		    	  // detect witch examples have been selected
+		    	  Set<String> negExampleSet = new HashSet<String>();
+		    	  int[] selectedIndices = negList.getSelectedIndices();
+		    	  for(int i : selectedIndices)
+		    		  negExampleSet.add(individuals.get(i).toString());
+		    	  config.setNegExampleSet(negExampleSet);
+		    	  System.out.println("negList: " + config.getNegExampleSet() ); 
+		      }
+		});
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == lpButton) {
+		// read selected LearningProblemClass
+        choosenClassIndex = cb.getSelectedIndex();
+  
+        // later for read options
+        //List a = config.getComponentManager().getConfigOptions(problems.get(cb.getSelectedIndex()));
+        //System.out.println("optionName: " + a);
+        
+        // get list after reasoner init
+        if (e.getSource() == readListButton) {
+    		// fill lists
+    		if (config.getStatus(4)) { // only with a reasoner
+    			Set<Individual> individualsSet = config.getReasoningService().getIndividuals();
+    			individuals = new LinkedList<Individual>(individualsSet);
+    			DefaultListModel listModel = new DefaultListModel();
+    			for(Individual ind : individuals) {
+    				listModel.addElement(ind);
+    			}
+    			posList.setModel(listModel);
+    			negList.setModel(listModel);
+    		}
+        }
+        
+		//init
+		if (e.getSource() == initButton) {
 			if (config.getStatus(5)) {
-				System.out.println(config.getExampleSet());
-				config.setLearningProblem(config.getComponentManager().learningProblem(PosOnlyDefinitionLP.class, config.getReasoningService()));
-				config.getComponentManager().applyConfigEntry(config.getLearningProblem(), "positiveExamples", config.getExampleSet());
+				config.setLearningProblem(config.getComponentManager().learningProblem(problems.get(choosenClassIndex), config.getReasoningService()));
+				config.getComponentManager().applyConfigEntry(config.getLearningProblem(), "positiveExamples", config.getPosExampleSet());
+				config.getComponentManager().applyConfigEntry(config.getLearningProblem(), "negativeExamples", config.getNegExampleSet());
 				config.getLearningProblem().init();
+				System.out.println("init LearningProblem with \n" + problems.get(choosenClassIndex) + "\nand " + "\nposExample: "  
+						+ config.getPosExampleSet() + "\nand negExample: " +  config.getNegExampleSet());
 			}
 		}
+	}
+	
+	/*
+	 * Define GridBagConstraints
+	 */
+	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx, int wy) {
+		gbc.gridx = gx;
+		gbc.gridy = gy;
+		gbc.gridwidth = gw;
+		gbc.gridheight = gh;
+		gbc.weightx = wx;
+		gbc.weighty = wy;
 	}
 	
 }

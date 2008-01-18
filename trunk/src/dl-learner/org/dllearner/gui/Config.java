@@ -46,8 +46,8 @@ public class Config {
 	private String uri;
 	private ReasonerComponent reasoner;
 	private ReasoningService rs;
-	private String[] kbBoxItems = {"Pleae select a type", "KBFile", "OWLFile", "SparqleEndpoint"};
-	private Set<String> exampleSet = new HashSet<String>();
+	private Set<String> posExampleSet = new HashSet<String>();
+	private Set<String> negExampleSet = new HashSet<String>();
 	private LearningProblem lp;
 	private LearningAlgorithm la;
 	
@@ -106,10 +106,6 @@ public class Config {
 		rs = input; 
 	}
 	
-	protected String[] getKBBoxItems() {
-		return kbBoxItems;
-	}
-	
 	protected KnowledgeSource getKnowledgeSource() {
 		return source;
 	}
@@ -119,15 +115,24 @@ public class Config {
 		source = input;
 	}
 
-	protected void setExampleSet(Set<String> input) {
+	protected void setPosExampleSet(Set<String> posExampleSet) {
 		status[5] = true;
-		exampleSet = input;
+		this.posExampleSet = posExampleSet;
 	}
 	
-	protected Set<String> getExampleSet () {
-		return exampleSet;
+	protected Set<String> getPosExampleSet () {
+		return this.posExampleSet;
 	}
 	
+	protected void setNegExampleSet(Set<String> negExampleSet) {
+		status[5] = true;
+		this.negExampleSet = negExampleSet;
+	}
+	
+	protected Set<String> getNegExampleSet () {
+		return this.negExampleSet;
+	}
+
 	protected void setLearningProblem (LearningProblem input) {
 		status[6] = true;
 		lp = input;
