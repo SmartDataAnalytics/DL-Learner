@@ -19,6 +19,7 @@
  */
 package org.dllearner.kb.sparql.query;
 
+import org.dllearner.kb.sparql.configuration.PredefinedEndpoint;
 import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
 
 import com.hp.hpl.jena.query.Query;
@@ -40,34 +41,30 @@ import com.hp.hpl.jena.query.ResultSetFormatter;
  * @author Jens Lehmann
  *
  */
-public class SparqlQuery extends SparqlQueryAbstract{
+public class JenaTestScript {
+	// this is a working Jena script
+	// TODO: query runtime seems to be much too high (compared to running it in http://dbpedia.org/sparql)
+	// verify whether our SPARQL query implementation is faster and why;
+	// TODO: check whether Jena works with the other endpoints in PredefinedEndpoint; if not
+	// check whether it can be configured to run with these
+	public static void main(String[] args) {
 		
-	public SparqlQuery(SpecificSparqlEndpoint endpoint) {
-		super(endpoint);
-		// TODO Auto-generated constructor stub
-	}
-
-	private ResultSet sendAndReceive(String queryString){
 		
-		p(queryString);
+		String queryString = "PREFIX dbpedia2: <http://dbpedia.org/property/> " +
+				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>" +
+				"SELECT ?episode ?chalkboard_gag WHERE {   ?episode skos:subject" +
+				"    <http://dbpedia.org/resource/Category:The_Simpsons_episodes%2C_season_12>." +
+				"  ?episode dbpedia2:blackboard ?chalkboard_gag }";
+		
+		//System.out.println(queryString);
 		// create a query and parse it into Jena
 		Query query = QueryFactory.create(queryString);
 		query.validate();
 		// Jena access to DBpedia SPARQL endpoint
-		QueryExecution queryExecution = 
-			QueryExecutionFactory.sparqlService(specificSparqlEndpoint.getURL().toString(), query);
-		
-		p("query SPARQL server");		
+		QueryExecution queryExecution = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
+		System.out.println("query SPARQL server");		
 		ResultSet rs = queryExecution.execSelect();
-		
-		//ResultSetFormatter.out(System.out, rs, query) ;
-		
-		return rs;
-	}
-	
-	public String getAsXMLString(String queryString){
-		ResultSet rs=sendAndReceive(queryString);
-		return ResultSetFormatter.asXMLString(rs);
+		ResultSetFormatter.out(System.out, rs, query) ;
 	}
 	
 }

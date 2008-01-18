@@ -35,6 +35,8 @@ import java.util.Set;
 import org.dllearner.kb.sparql.configuration.Configuration;
 import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
 import org.dllearner.kb.sparql.query.Cache;
+import org.dllearner.kb.sparql.query.CachedSparqlQuery;
+import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.utilities.StringTuple;
 
 /**
@@ -49,6 +51,8 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface{
 	private Configuration configuration;
 	// private SparqlHTTPRequest SparqlHTTPRequest;
 	private SparqlQueryMaker sparqlQueryMaker;
+	private SparqlQuery sparqlQuery;
+	private CachedSparqlQuery cachedSparqlQuery;
 	Cache cache;
 
 	public TypedSparqlQuery(Configuration Configuration) {
@@ -56,7 +60,9 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface{
 		// this.SparqlHTTPRequest = new
 		// SparqlHTTPRequest(Configuration.getSparqlEndpoint());
 		this.sparqlQueryMaker = new SparqlQueryMaker(Configuration.getSparqlQueryType());
+		this.sparqlQuery=new SparqlQuery(configuration.getSparqlEndpoint());
 		this.cache = new Cache("cache");
+		this.cachedSparqlQuery=new CachedSparqlQuery(this.sparqlQuery,this.cache);
 	}
 	// standard query get a tupels (p,o) for subject s
 	public Set<StringTuple> query(URI u) {
@@ -93,31 +99,7 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface{
 	// uses a cache 
 	private Set<StringTuple> cachedSparql(URI u, String sparql, String a, String b) {
 		// check cache
-		String FromCache = cache.get(u.toString(), sparql);
-		if(debug_no_cache) {
-			FromCache=null;
-			}
-		String xml = null;
-		// if not in cache get it from EndPoint
-		if (FromCache == null) {
-			configuration.increaseNumberOfuncachedSparqlQueries();
-			try {
-				xml = sendAndReceiveSPARQL(sparql);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			p(sparql);
-			// System.out.println(xml);
-			if(!debug_no_cache) {
-				cache.put(u.toString(), sparql, xml);
-			}
-			//System.out.print("\n");
-		} else {
-			configuration.increaseNumberOfCachedSparqlQueries();
-			xml = FromCache;
-			//System.out.println("FROM CACHE");
-		}
+		String xml=this.cachedSparqlQuery.getAsXMLString(u, sparql);
 
 		// System.out.println(sparql);
 		// System.out.println(xml);
@@ -202,66 +184,11 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface{
 		return xml;
 	}
 
-	private String sendAndReceiveSPARQL(String sparql) throws IOException {
-		p("sendAndReceiveSPARQL");
-		StringBuilder answer = new StringBuilder();
-		//sparql="SELECT * WHERE {?a ?b ?c}LIMIT 10";
-
-		// String an Sparql-Endpoint schicken
-		HttpURLConnection connection;
-		SpecificSparqlEndpoint se = configuration.getSparqlEndpoint();
-		p("URL: "+se.getURL());
-		p("Host: "+se.getHost());
-		
-		connection = (HttpURLConnection) se.getURL().openConnection();
-		connection.setDoOutput(true);
-
-		//connection.addRequestProperty("Host", se.getHost());
-		connection.addRequestProperty("Connection", "close");
-		connection
-				.addRequestProperty(
-						"Accept",
-						"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
-		connection.addRequestProperty("Accept-Language", "de-de,de;q=0.8,en-us;q=0.5,en;q=0.3");
-		connection.addRequestProperty("Accept-Charset", "utf-8;q=1.0");
-		connection
-				.addRequestProperty(
-						"User-Agent",
-						"Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4 Web-Sniffer/1.0.24");
-		
-		OutputStream os = connection.getOutputStream();
-		OutputStreamWriter osw = new OutputStreamWriter(os);
-
-		Set<String> s = se.getParameters().keySet();
-		Iterator<String> it = s.iterator();
-		String FullURI = "";
-		while (it.hasNext()) {
-			String element = it.next();
-			FullURI += "" + URLEncoder.encode(element, "UTF-8") + "="
-					+ URLEncoder.encode(se.getParameters().get(element), "UTF-8") + "&";
-		}
-		
-		FullURI += "" + se.getHasQueryParameter() + "=" + URLEncoder.encode(sparql, "UTF-8");
-		p(FullURI);
-		osw.write(FullURI);
-		osw.close();
-
-		// receive answer
-		InputStream is = connection.getInputStream();
-		InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-		BufferedReader br = new BufferedReader(isr);
-
-		String line;
-		do {
-			line = br.readLine();
-			if (line != null)
-				answer.append(line);
-		} while (line != null);
-
-		br.close();
-		p(answer.toString());
-		return answer.toString();
+	public String sendAndReceiveSPARQL(String queryString){
+		//SparqlQuery sq=new SparqlQuery(configuration.getSparqlEndpoint());
+		return sparqlQuery.getAsXMLString(queryString);
 	}
+	
 	public void p(String str){
 		if(print_flag){
 			System.out.println(str);
