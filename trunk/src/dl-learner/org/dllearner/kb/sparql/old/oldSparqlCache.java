@@ -90,7 +90,7 @@ public class oldSparqlCache implements Serializable{
 	public String get(String key, String sparql){
 		String ret=null;
 		try{
-			SparqlCache c =readFromFile(makeFilename(key));
+			oldSparqlCache c =readFromFile(makeFilename(key));
 			if(c==null)return null;
 			if(!c.checkFreshness())return null;
 			if(!c.validate(sparql))return null;
@@ -109,7 +109,7 @@ public class oldSparqlCache implements Serializable{
 	 * @param sparql the sparql query
 	 */
 	public void put(String key, String content, String sparql){
-		SparqlCache c=new SparqlCache(content,sparql);
+		oldSparqlCache c=new oldSparqlCache(content,sparql);
 		putIntoFile(makeFilename(key), c);
 	}
 	
@@ -173,7 +173,7 @@ public class oldSparqlCache implements Serializable{
 	 * @param Filename
 	 * @param content
 	 */
-	public void putIntoFile(String Filename,SparqlCache content){
+	public void putIntoFile(String Filename,oldSparqlCache content){
 		try{
 			FileOutputStream  fos = new FileOutputStream( Filename , false ); 
 			ObjectOutputStream o = new ObjectOutputStream( fos ); 
@@ -189,12 +189,12 @@ public class oldSparqlCache implements Serializable{
 	 * @param Filename
 	 * @return one entry object
 	 */
-	public SparqlCache readFromFile(String Filename){
-		SparqlCache content=null;
+	public oldSparqlCache readFromFile(String Filename){
+		oldSparqlCache content=null;
 		try{
 			FileInputStream  fos = new FileInputStream( Filename ); 
 			ObjectInputStream o = new ObjectInputStream( fos ); 
-			content=(SparqlCache)o.readObject();
+			content=(oldSparqlCache)o.readObject();
 		}catch (Exception e) {}
 		return content;
 		

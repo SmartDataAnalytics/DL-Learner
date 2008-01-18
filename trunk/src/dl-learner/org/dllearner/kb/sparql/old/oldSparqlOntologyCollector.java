@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.dllearner.kb.sparql.old.SparqlQueryMaker;
+import org.dllearner.kb.sparql.SparqlQueryMaker;
 
 
 /**
@@ -45,13 +45,13 @@ import org.dllearner.kb.sparql.old.SparqlQueryMaker;
  * @author Sebastian Knappe
  *
  */
-public class SparqlOntologyCollector {
+public class oldSparqlOntologyCollector {
 
 	boolean print_flag=false;
 	SparqlQueryMaker queryMaker;
-	SparqlCache cache;
+	oldSparqlCache cache;
 	URL url;
-	SparqlFilter sf;
+	oldSparqlFilter sf;
 	String[] subjectList;
 	int numberOfRecursions;
 	HashSet<String> properties;
@@ -86,18 +86,18 @@ public class SparqlOntologyCollector {
 	 * @param FilterObjList
 	 * @param defClasses
 	 */
-	public SparqlOntologyCollector(String[] subjectList,int numberOfRecursions,
+	public oldSparqlOntologyCollector(String[] subjectList,int numberOfRecursions,
 			int filterMode, String[] FilterPredList,String[] FilterObjList,String[] defClasses, String format, URL url, boolean useLits){
 		this.subjectList=subjectList;
 		this.numberOfRecursions=numberOfRecursions;
 		this.format=format;
 		//this.queryMaker=new SparqlQueryMaker();
-		this.cache=new SparqlCache("cache");
+		this.cache=new oldSparqlCache("cache");
 		if(defClasses!=null && defClasses.length>0 ){
 			this.defaultClasses=defClasses;
 		}		
 		try{
-			this.sf=new SparqlFilter(filterMode,FilterPredList,FilterObjList,useLits);
+			this.sf=new oldSparqlFilter(filterMode,FilterPredList,FilterObjList,useLits);
 			this.url=url;
 			this.properties=new HashSet<String>();
 			this.classes=new HashSet<String>();
@@ -107,10 +107,10 @@ public class SparqlOntologyCollector {
 		
 	}
 	
-	public SparqlOntologyCollector(URL url)
+	public oldSparqlOntologyCollector(URL url)
 	{
 		// this.queryMaker=new SparqlQueryMaker();
-		this.cache=new SparqlCache("cache");
+		this.cache=new oldSparqlCache("cache");
 		this.url=url;
 	}
 	

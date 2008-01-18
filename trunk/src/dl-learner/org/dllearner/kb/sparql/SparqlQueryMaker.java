@@ -17,9 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql.old;
+package org.dllearner.kb.sparql;
 
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
+import org.dllearner.kb.sparql.old.oldSparqlFilter;
 
 
 /**
@@ -137,7 +138,7 @@ public class SparqlQueryMaker {
 	 * @param sf special object encapsulating all options
 	 * @return sparql query
 	 */
-	public static String makeQueryFilter(String subject, SparqlFilter sf){
+	public static String makeQueryFilter(String subject, oldSparqlFilter sf){
 		
 		
 		String Filter="";

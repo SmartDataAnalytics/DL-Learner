@@ -29,7 +29,7 @@ package org.dllearner.kb.sparql.old;
  * @author Sebastian Knappe
  *
  */
-public class SparqlFilter {
+public class oldSparqlFilter {
 	public int mode=0;
 	//  0 yago, 1 only cat, 2 skos+cat
 	String[] PredFilter=null;
@@ -79,7 +79,7 @@ public class SparqlFilter {
 			"http://dbpedia.org/resource/Template",
 			"http://upload.wikimedia.org/wikipedia/commons"};
 	
-	public SparqlFilter(int mode, String[] pred, String[] obj) {
+	public oldSparqlFilter(int mode, String[] pred, String[] obj) {
 		if (mode==-1 && (pred==null || obj==null))
 			{mode=0;}
 		this.mode=mode;
@@ -104,7 +104,7 @@ public class SparqlFilter {
 		}
 	}
 	
-	public SparqlFilter(int mode, String[] pred, String[] obj,boolean uselits) throws Exception{
+	public oldSparqlFilter(int mode, String[] pred, String[] obj,boolean uselits) throws Exception{
 		this(mode,pred,obj);
 		this.useLiterals=uselits;
 	}
