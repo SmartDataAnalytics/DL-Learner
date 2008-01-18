@@ -32,6 +32,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.dllearner.kb.sparql.configuration.Configuration;
+import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
+import org.dllearner.kb.sparql.query.Cache;
 import org.dllearner.utilities.StringTuple;
 
 /**

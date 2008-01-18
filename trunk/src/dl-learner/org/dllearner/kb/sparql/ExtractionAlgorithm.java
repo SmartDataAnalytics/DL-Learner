@@ -23,6 +23,11 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Vector;
 
+import org.dllearner.kb.sparql.configuration.Configuration;
+import org.dllearner.kb.sparql.datastructure.ClassNode;
+import org.dllearner.kb.sparql.datastructure.InstanceNode;
+import org.dllearner.kb.sparql.datastructure.Node;
+
 /**
  * This class is used to extract the information recursively.
  * 
@@ -127,10 +132,10 @@ public class ExtractionAlgorithm {
 				//classes.remove(next);
 				Node next = classes.remove(0);
 				
-				if(!hadAlready.contains(next.uri.toString())){
+				if(!hadAlready.contains(next.getURI().toString())){
 					p("Expanding: " + next);
 					//System.out.println(hadAlready.size());
-					hadAlready.add(next.uri.toString());
+					hadAlready.add(next.getURI().toString());
 					tmp=next.expand(tsp, manipulator);
 					classes.addAll(tmp);
 					tmp=new Vector<Node>();
