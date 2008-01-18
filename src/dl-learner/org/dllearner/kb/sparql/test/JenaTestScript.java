@@ -17,10 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql.query;
-
-import org.dllearner.kb.sparql.configuration.PredefinedEndpoint;
-import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
+package org.dllearner.kb.sparql.test;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -30,41 +27,43 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 
 /**
- * Represents a SPARQL query. It includes support for stopping the SPARQL
- * query (which may be necessary if a timeout is reached).
+ * Represents a SPARQL query. It includes support for stopping the SPARQL query
+ * (which may be necessary if a timeout is reached).
  * 
- * TODO: It is probably good to change all SPARQL query calls to use only
- * this class.
+ * TODO: It is probably good to change all SPARQL query calls to use only this
+ * class.
  * 
  * TODO: Could we use Jena as a solid foundation here? (com.hp.jena.query)
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public class JenaTestScript {
 	// this is a working Jena script
-	// TODO: query runtime seems to be much too high (compared to running it in http://dbpedia.org/sparql)
+	// TODO: query runtime seems to be much too high (compared to running it in
+	// http://dbpedia.org/sparql)
 	// verify whether our SPARQL query implementation is faster and why;
-	// TODO: check whether Jena works with the other endpoints in PredefinedEndpoint; if not
+	// TODO: check whether Jena works with the other endpoints in
+	// PredefinedEndpoint; if not
 	// check whether it can be configured to run with these
 	public static void main(String[] args) {
-		
-		
-		String queryString = "PREFIX dbpedia2: <http://dbpedia.org/property/> " +
-				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>" +
-				"SELECT ?episode ?chalkboard_gag WHERE {   ?episode skos:subject" +
-				"    <http://dbpedia.org/resource/Category:The_Simpsons_episodes%2C_season_12>." +
-				"  ?episode dbpedia2:blackboard ?chalkboard_gag }";
-		
-		//System.out.println(queryString);
+
+		String queryString = "PREFIX dbpedia2: <http://dbpedia.org/property/> "
+				+ "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
+				+ "SELECT ?episode ?chalkboard_gag WHERE {   ?episode skos:subject"
+				+ "    <http://dbpedia.org/resource/Category:The_Simpsons_episodes%2C_season_12>."
+				+ "  ?episode dbpedia2:blackboard ?chalkboard_gag }";
+
+		// System.out.println(queryString);
 		// create a query and parse it into Jena
 		Query query = QueryFactory.create(queryString);
 		query.validate();
 		// Jena access to DBpedia SPARQL endpoint
-		QueryExecution queryExecution = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
-		System.out.println("query SPARQL server");		
+		QueryExecution queryExecution = QueryExecutionFactory.sparqlService(
+				"http://dbpedia.org/sparql", query);
+		System.out.println("query SPARQL server");
 		ResultSet rs = queryExecution.execSelect();
-		ResultSetFormatter.out(System.out, rs, query) ;
+		ResultSetFormatter.out(System.out, rs, query);
 	}
-	
+
 }

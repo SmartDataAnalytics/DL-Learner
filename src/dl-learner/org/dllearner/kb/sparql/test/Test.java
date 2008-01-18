@@ -17,17 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql;
+package org.dllearner.kb.sparql.test;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.net.URI;
 
+import org.dllearner.kb.sparql.Manager;
+
 /**
  * Test class.
  * 
  * @author Sebastian Hellmann
- *
+ * 
  */
 public class Test {
 
