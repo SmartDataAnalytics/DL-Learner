@@ -47,7 +47,7 @@ import org.dllearner.kb.sparql.configuration.PredefinedEndpoint;
 import org.dllearner.kb.sparql.configuration.PredefinedFilter;
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
 import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
-import org.dllearner.kb.sparql.old.SparqlOntologyCollector;
+import org.dllearner.kb.sparql.old.*;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
@@ -410,9 +410,15 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return ontArray;
 	}
 
+	
+	/**
+	 * TODO SparqlOntologyCollector needs to be removed
+	 * @param label
+	 * @param limit
+	 */
 	public void calculateSubjects(String label, int limit) {
 		System.out.println("SparqlModul: Collecting Subjects");
-		SparqlOntologyCollector oc = new SparqlOntologyCollector(url);
+		oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
 		try {
 			subjects = oc.getSubjectsFromLabel(label, limit);
 		} catch (IOException e) {
@@ -422,9 +428,13 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		System.out.println("SparqlModul: ****Finished");
 	}
 
+	/**
+	 * TODO SparqlOntologyCollector needs to be removed
+	 * @param subject
+	 */
 	public void calculateTriples(String subject) {
 		System.out.println("SparqlModul: Collecting Triples");
-		SparqlOntologyCollector oc = new SparqlOntologyCollector(url);
+		oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
 		try {
 			triples = oc.collectTriples(subject);
 		} catch (IOException e) {
@@ -434,9 +444,13 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		System.out.println("SparqlModul: ****Finished");
 	}
 
+	/**
+	 * TODO SparqlOntologyCollector needs to be removed
+	 * @param concept
+	 */
 	public void calculateConceptSubjects(String concept) {
 		System.out.println("SparqlModul: Collecting Subjects");
-		SparqlOntologyCollector oc = new SparqlOntologyCollector(url);
+		oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
 		try {
 			conceptSubjects = oc.getSubjectsFromConcept(concept);
 		} catch (IOException e) {
