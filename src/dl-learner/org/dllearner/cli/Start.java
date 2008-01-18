@@ -60,7 +60,7 @@ import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -229,7 +229,7 @@ public class Start {
 	private static Map<Class<? extends Component>, String> createComponentPrefixMapping() {
 		Map<Class<? extends Component>, String> componentPrefixMapping = new HashMap<Class<? extends Component>, String>();
 		// knowledge sources
-		componentPrefixMapping.put(SparqlEndpoint.class, "sparql");
+		componentPrefixMapping.put(SparqlKnowledgeSource.class, "sparql");
 		// reasoners
 		componentPrefixMapping.put(DIGReasoner.class, "digReasoner");
 		componentPrefixMapping.put(OWLAPIReasoner.class, "owlAPIReasoner");
@@ -383,7 +383,7 @@ public class Start {
 				else if (formatString.equals("KB"))
 					ksClass = KBFile.class;
 				else if (formatString.equals("SPARQL"))
-					ksClass = SparqlEndpoint.class;
+					ksClass = SparqlKnowledgeSource.class;
 				else if (formatString.equals("NT"))
 					ksClass = OWLFile.class;
 				else {
