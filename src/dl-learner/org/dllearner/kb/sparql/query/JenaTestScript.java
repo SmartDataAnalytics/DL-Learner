@@ -20,7 +20,7 @@
 package org.dllearner.kb.sparql.query;
 
 import org.dllearner.kb.sparql.configuration.PredefinedEndpoint;
-import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;

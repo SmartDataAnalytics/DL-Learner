@@ -11,7 +11,7 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -22,7 +22,7 @@ public class SparqlQueryConventional extends SparqlQueryAbstract{
 	
 	
 	
-	public SparqlQueryConventional(SpecificSparqlEndpoint specificSparqlEndpoint) {
+	public SparqlQueryConventional(SparqlEndpoint specificSparqlEndpoint) {
 		super(specificSparqlEndpoint);
 	}
 	

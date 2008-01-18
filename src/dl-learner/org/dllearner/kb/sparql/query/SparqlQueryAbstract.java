@@ -1,32 +1,14 @@
 package org.dllearner.kb.sparql.query;
 
-import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
 	public abstract class SparqlQueryAbstract {
-	private boolean isRunning = false;
 	boolean print_flag=false;
-	SpecificSparqlEndpoint specificSparqlEndpoint;
+	SparqlEndpoint specificSparqlEndpoint;
 	
-	public SparqlQueryAbstract(SpecificSparqlEndpoint endpoint) {
+	public SparqlQueryAbstract(SparqlEndpoint endpoint) {
 		this.specificSparqlEndpoint=endpoint;
 	}
-	
-	public void send() {
-		isRunning = true;
-		
-		// ... send query 
-		// ... check periodically whether isRunning is still true, if not
-		// abort the query
-	}
-	
-	public void stop() {
-		isRunning = false;
-	}
-
-	public boolean isRunning() {
-		return isRunning;
-	}
-	
 	
 	public abstract String getAsXMLString(String queryString);
 	//public abstract String getAsXMLString(String queryString);

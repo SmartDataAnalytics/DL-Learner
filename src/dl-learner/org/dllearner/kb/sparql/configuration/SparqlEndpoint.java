@@ -28,14 +28,14 @@ import java.util.HashMap;
  * @author Sebastian Hellmann
  *
  */
-public class SpecificSparqlEndpoint {
+public class SparqlEndpoint {
 
 	String host;
 	String hasQueryParameter;
 	URL url;
 	public HashMap<String, String> parameters = new HashMap<String, String>();
 
-	public SpecificSparqlEndpoint(URL url, String host, HashMap<String, String> parameters) {
+	public SparqlEndpoint(URL url, String host, HashMap<String, String> parameters) {
 		super();
 		this.host = host;
 		this.url = url;

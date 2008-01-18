@@ -28,7 +28,7 @@ import java.util.TreeSet;
 
 import org.dllearner.kb.sparql.configuration.Configuration;
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
-import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.datastructure.Node;
 import org.dllearner.kb.sparql.old.oldSparqlOntologyCollector;
 import org.dllearner.utilities.StringTuple;
@@ -46,7 +46,7 @@ public class Manager {
 	private ExtractionAlgorithm extractionAlgorithm;
 
 	public void useConfiguration(SparqlQueryType SparqlQueryType,
-			SpecificSparqlEndpoint SparqlEndpoint, Manipulator manipulator, int recursiondepth,
+			SparqlEndpoint SparqlEndpoint, Manipulator manipulator, int recursiondepth,
 			boolean getAllSuperClasses,boolean closeAfterRecursion) {
 
 		this.configuration = new Configuration(SparqlEndpoint, SparqlQueryType, manipulator,

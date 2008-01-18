@@ -33,7 +33,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.dllearner.kb.sparql.configuration.Configuration;
-import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.query.Cache;
 import org.dllearner.utilities.StringTuple;
 
@@ -193,7 +193,7 @@ public class TypedSparqlQueryClasses implements TypedSparqlQueryInterface{
 
 		// String an Sparql-Endpoint schicken
 		HttpURLConnection connection;
-		SpecificSparqlEndpoint se = configuration.getSparqlEndpoint();
+		SparqlEndpoint se = configuration.getSparqlEndpoint();
 		p("URL: "+se.getURL());
 		p("Host: "+se.getHost());
 		

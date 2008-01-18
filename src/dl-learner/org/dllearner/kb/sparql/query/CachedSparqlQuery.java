@@ -2,7 +2,7 @@ package org.dllearner.kb.sparql.query;
 
 import java.net.URI;
 
-import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -14,7 +14,7 @@ Cache cache;
 SparqlQuery sparqlQuery;
 boolean debug_no_cache=false;
 
-	public CachedSparqlQuery(SpecificSparqlEndpoint endpoint,Cache c) {
+	public CachedSparqlQuery(SparqlEndpoint endpoint,Cache c) {
 		//this.specificSparqlEndpoint=endpoint;
 		this.sparqlQuery=new SparqlQuery(endpoint);
 		this.cache=c;
