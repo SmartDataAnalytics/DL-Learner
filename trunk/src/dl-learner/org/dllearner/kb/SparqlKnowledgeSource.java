@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql;
+package org.dllearner.kb;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -43,6 +43,8 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.dl.KB;
+import org.dllearner.kb.sparql.Manager;
+import org.dllearner.kb.sparql.Manipulator;
 import org.dllearner.kb.sparql.configuration.PredefinedEndpoint;
 import org.dllearner.kb.sparql.configuration.PredefinedFilter;
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
