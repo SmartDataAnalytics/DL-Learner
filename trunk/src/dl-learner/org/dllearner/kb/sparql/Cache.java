@@ -35,10 +35,17 @@ import java.util.HashMap;
  * one additional function and would just be a data class
  * 
  * it writes the files according to one resource in the basedir and saves the
- * cache object in it.
+ * cache object in it.  Filename is the subject, a resource
+ *  e.g. http://dbpedia.org/resource/Angela_Merkel which is first urlencoded 
+ * and so serves as the hash for the filename.
+ * 
+ * the cache object in the file remembers: a timestamp, 
+ * a hashmap SparqlQuery -> SparqlXMLResult
+ * Cache validates if timestamp too old and Sparql-Query the same 
+ * before returning the SPARQL xml-result
  * 
  * @author Sebastian Hellmann
- * 
+ * @author Sebastian Knappe
  */
 public class Cache implements Serializable {
 
@@ -63,9 +70,9 @@ public class Cache implements Serializable {
 	// 
 	/**
 	 * constructor for the cache itself
-	 * 
+	 * Called once at the startup
 	 * @param path
-	 *            where the cache files will be
+	 *            Where the base path to the cache is 
 	 */
 	public Cache(String path) {
 		this.basedir = path + File.separator;
@@ -76,32 +83,33 @@ public class Cache implements Serializable {
 		}
 	}
 
-	// constructor for single cache object(one entry)
+	 
 	/**
-	 * @param sparql
+	 * constructor for single cache object(one entry)
+	 * @param sparqlQuery
 	 *            query
 	 * @param content
 	 *            that is the sparql query result as xml
 	 */
-	protected Cache(String sparql, String content) {
+	protected Cache(String sparqlQuery, String content) {
 		// this.content = c;
 		// this.sparqlquery = sparql;
 		this.timestamp = System.currentTimeMillis();
 		this.hm = new HashMap<String, String>();
-		hm.put(sparql, content);
+		hm.put(sparqlQuery, content);
 	}
 
 	/**
-	 * gets a chached sparqlquery for a resource(key) and returns the
+	 * gets a chached sparqlQuery for a resource(key) and returns the
 	 * sparqlXMLResult or null, if none is found.
 	 * 
 	 * @param key
 	 *            is the resource, the identifier
-	 * @param sparqlquery
+	 * @param sparqlQuery
 	 *            is a special sparql query about that resource
 	 * @return sparqlXMLResult
 	 */
-	public String get(String key, String sparqlquery) {
+	public String get(String key, String sparqlQuery) {
 		// System.out.println("get From "+key);
 		String ret = null;
 		try {
@@ -114,7 +122,7 @@ public class Cache implements Serializable {
 			// System.out.println("fresh");
 			String xml = "";
 			try {
-				xml = c.hm.get(sparqlquery);
+				xml = c.hm.get(sparqlQuery);
 			} catch (Exception e) {
 				return null;
 			}
