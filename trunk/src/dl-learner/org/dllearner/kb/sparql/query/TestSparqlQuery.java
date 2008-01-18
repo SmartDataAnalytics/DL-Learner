@@ -20,7 +20,7 @@
 package org.dllearner.kb.sparql.query;
 
 import org.dllearner.kb.sparql.configuration.PredefinedEndpoint;
-import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -65,7 +65,7 @@ public class TestSparqlQuery {
 	}
 	
 	public static void testTime(int howOften, String queryString){
-		SpecificSparqlEndpoint sse= PredefinedEndpoint.dbpediaEndpoint();
+		SparqlEndpoint sse= PredefinedEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena=new SparqlQuery(sse);
 		SparqlQueryConventional sqConv=new SparqlQueryConventional(sse);
 		
@@ -97,7 +97,7 @@ public class TestSparqlQuery {
 	}
 	
 	public static void compareResults( String queryString){
-		SpecificSparqlEndpoint sse= PredefinedEndpoint.dbpediaEndpoint();
+		SparqlEndpoint sse= PredefinedEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena=new SparqlQuery(sse);
 		SparqlQueryConventional sqConv=new SparqlQueryConventional(sse);
 		

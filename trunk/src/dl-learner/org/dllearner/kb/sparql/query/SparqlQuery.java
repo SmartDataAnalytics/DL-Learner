@@ -22,7 +22,7 @@ package org.dllearner.kb.sparql.query;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -35,21 +35,58 @@ import com.hp.hpl.jena.query.ResultSetFormatter;
  * Represents a SPARQL query. It includes support for stopping the SPARQL
  * query (which may be necessary if a timeout is reached).
  * 
- * TODO: It is probably good to change all SPARQL query calls to use only
- * this class.
- * 
- * TODO: Could we use Jena as a solid foundation here? (com.hp.jena.query)
- * 
  * @author Jens Lehmann
  *
  */
 public class SparqlQuery extends SparqlQueryAbstract{
 		
-	public SparqlQuery(SpecificSparqlEndpoint endpoint) {
+	private boolean isRunning = false;
+	private String queryString;
+	private QueryExecution queryExecution;
+	
+	public SparqlQuery(SparqlEndpoint endpoint, String queryString) {
 		super(endpoint);
-		// TODO Auto-generated constructor stub
+		this.queryString = queryString;
+	}
+	
+	public ResultSet send() {
+		isRunning = true;
+				
+		p(queryString);
+		// create a query and parse it into Jena
+		Query query = QueryFactory.create(queryString);
+		// query.validate();
+		// Jena access to DBpedia SPARQL endpoint
+		String service=specificSparqlEndpoint.getURL().toString();
+		
+		// TODO: the graph uri should be a parameter of SparqlQuery
+		ArrayList<String> al=new ArrayList<String>();
+		al.add("http://dbpedia.org");
+		QueryExecution queryExecution = 
+			QueryExecutionFactory.sparqlService(service, query, al, new ArrayList<String>());
+		p("query SPARQL server");		
+		ResultSet rs = queryExecution.execSelect();		
+		isRunning = false;
+		return rs;
+	}
+	
+	public void stop() {
+		queryExecution.abort();
+		isRunning = false;
 	}
 
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	
+	
+	// CODE BY SEBASTIAN H. BELOW //
+	
+	public SparqlQuery(SparqlEndpoint endpoint) {
+		super(endpoint);
+	}	
+	
 	private ResultSet sendAndReceive(String queryString){
 		
 		p(queryString);

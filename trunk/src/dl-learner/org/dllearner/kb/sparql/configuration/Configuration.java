@@ -33,7 +33,7 @@ public class Configuration {
 	 * see the other classes, which are used as attributes here
 	 * */
 	
-	private SpecificSparqlEndpoint specificSparqlEndpoint;
+	private SparqlEndpoint specificSparqlEndpoint;
 	private SparqlQueryType sparqlQueryType;
 	private Manipulator manipulator;
 	// the following needs to be moved to 
@@ -44,7 +44,7 @@ public class Configuration {
 	public  int numberOfUncachedSparqlQueries=0; 
 	public  int numberOfCachedSparqlQueries=0; 
 
-	public Configuration(SpecificSparqlEndpoint specificSparqlEndpoint,
+	public Configuration(SparqlEndpoint specificSparqlEndpoint,
 			SparqlQueryType sparqlQueryType, Manipulator manipulator, int recursiondepth,
 			boolean getAllSuperClasses, boolean closeAfterRecursion) {
 		this.specificSparqlEndpoint = specificSparqlEndpoint;
@@ -67,7 +67,7 @@ public class Configuration {
 		return this.manipulator;
 	}
 
-	public SpecificSparqlEndpoint getSparqlEndpoint() {
+	public SparqlEndpoint getSparqlEndpoint() {
 		return specificSparqlEndpoint;
 	}
 

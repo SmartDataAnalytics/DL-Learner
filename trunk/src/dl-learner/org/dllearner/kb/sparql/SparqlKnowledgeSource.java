@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb;
+package org.dllearner.kb.sparql;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -43,13 +43,12 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.dl.KB;
-import org.dllearner.kb.sparql.Manager;
-import org.dllearner.kb.sparql.Manipulator;
 import org.dllearner.kb.sparql.configuration.PredefinedEndpoint;
 import org.dllearner.kb.sparql.configuration.PredefinedFilter;
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
-import org.dllearner.kb.sparql.configuration.SpecificSparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.old.*;
+import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
@@ -92,6 +91,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	LinkedList<StringTuple> replacePredicate = new LinkedList<StringTuple>();
 	LinkedList<StringTuple> replaceObject = new LinkedList<StringTuple>();
 
+	SparqlEndpoint sse = null;
+	
 	/**
 	 * Holds the results of the calculateSubjects method
 	 */
@@ -256,7 +257,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// Datastructures.setToArray(predList),Datastructures.setToArray(
 		// objList),Datastructures.setToArray(classList),format,url,useLits);
 		Manager m = new Manager();
-		SpecificSparqlEndpoint sse = null;
 		SparqlQueryType sqt = null;
 		// get Options for Manipulator
 		Manipulator man = new Manipulator(blankNodeIdentifier,breakSuperClassRetrievalAfter,replacePredicate,replaceObject);
@@ -268,7 +268,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		if (predefinedEndpoint >= 1) {
 			sse = PredefinedEndpoint.getEndpoint(predefinedEndpoint);
 		} else {
-			sse = new SpecificSparqlEndpoint(url, host, parameters);
+			sse = new SparqlEndpoint(url, host, parameters);
 		}
 
 		// get Options for Filters
@@ -520,5 +520,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	public String[] getConceptSubjects() {
 		return conceptSubjects;
+	}
+	
+	public SparqlQuery sparqlQuery(String query) {
+		return new SparqlQuery(sse, query);
 	}
 }

@@ -30,7 +30,7 @@ import java.util.HashMap;
  *
  */
 public class PredefinedEndpoint {
-	public static SpecificSparqlEndpoint getEndpoint(int i) {
+	public static SparqlEndpoint getEndpoint(int i) {
 
 		switch (i) {
 		case 1:
@@ -49,7 +49,7 @@ public class PredefinedEndpoint {
 		return null;
 	}
 
-	public static SpecificSparqlEndpoint dbpediaEndpoint() {
+	public static SparqlEndpoint dbpediaEndpoint() {
 		URL u = null;
 		HashMap<String, String> m = new HashMap<String, String>();
 		m.put("default-graph-uri", "http://dbpedia.org");
@@ -59,10 +59,10 @@ public class PredefinedEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new SpecificSparqlEndpoint(u, "dbpedia.openlinksw.com", m);
+		return new SparqlEndpoint(u, "dbpedia.openlinksw.com", m);
 	}
 
-	public static SpecificSparqlEndpoint localJoseki() {
+	public static SparqlEndpoint localJoseki() {
 		URL u = null;
 		HashMap<String, String> m = new HashMap<String, String>();
 		// m.put("default-graph-uri", "http://dbpedia.org");
@@ -72,9 +72,9 @@ public class PredefinedEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new SpecificSparqlEndpoint(u, "localhost", m);
+		return new SparqlEndpoint(u, "localhost", m);
 	}
-	public static SpecificSparqlEndpoint worldFactBook() {
+	public static SparqlEndpoint worldFactBook() {
 		URL u = null;
 		HashMap<String, String> m = new HashMap<String, String>();
 		// m.put("default-graph-uri", "http://dbpedia.org");
@@ -84,7 +84,7 @@ public class PredefinedEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new SpecificSparqlEndpoint(u, "www4.wiwiss.fu-berlin.de", m);
+		return new SparqlEndpoint(u, "www4.wiwiss.fu-berlin.de", m);
 	}
 	
 	/*
@@ -102,7 +102,7 @@ public class PredefinedEndpoint {
 		return new SpecificSparqlEndpoint(u, "www4.wiwiss.fu-berlin.de", m);
 	}
 	*/
-	public static SpecificSparqlEndpoint govTrack() {
+	public static SparqlEndpoint govTrack() {
 		URL u = null;
 		HashMap<String, String> m = new HashMap<String, String>();
 		// m.put("default-graph-uri", "http://dbpedia.org");
@@ -112,9 +112,9 @@ public class PredefinedEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new SpecificSparqlEndpoint(u, "www.rdfabout.com", m);
+		return new SparqlEndpoint(u, "www.rdfabout.com", m);
 	}
-	public static SpecificSparqlEndpoint revyu() {
+	public static SparqlEndpoint revyu() {
 		URL u = null;
 		HashMap<String, String> m = new HashMap<String, String>();
 		// m.put("default-graph-uri", "http://dbpedia.org");
@@ -125,7 +125,7 @@ public class PredefinedEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new SpecificSparqlEndpoint(u, "revyu.com", m);
+		return new SparqlEndpoint(u, "revyu.com", m);
 	}
 	
 	// returns strange xml
@@ -151,7 +151,7 @@ public class PredefinedEndpoint {
 		return new SpecificSparqlEndpoint(u, "dbtune.org", m);
 	}*/
 	
-	public static SpecificSparqlEndpoint myopenlink() {
+	public static SparqlEndpoint myopenlink() {
 		URL u = null;
 		HashMap<String, String> m = new HashMap<String, String>();
 		m.put("default-graph-uri", "http://myopenlink.net/dataspace");
@@ -162,7 +162,7 @@ public class PredefinedEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new SpecificSparqlEndpoint(u, "myopenlink.net", m);
+		return new SparqlEndpoint(u, "myopenlink.net", m);
 	}
 	
 }
