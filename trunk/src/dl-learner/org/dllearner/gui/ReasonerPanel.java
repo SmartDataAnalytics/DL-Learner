@@ -23,16 +23,12 @@ package org.dllearner.gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.*;
 
-import org.dllearner.reasoning.DIGReasoner;
+import org.dllearner.core.ReasonerComponent;
 
-//import org.dllearner.core.ReasonerComponent;
-//import org.dllearner.reasoning.DIGReasoner;
-
-//import org.dllearner.core.ComponentManager;
-//import org.dllearner.core.ReasoningService;
 
 /**
  * ReasonerPanel
@@ -40,33 +36,49 @@ import org.dllearner.reasoning.DIGReasoner;
  * @author Tilo Hielscher
  * 
  */
-
 public class ReasonerPanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = -7678275020058043937L;
 
-	private JPanel digPanel = new JPanel();
+	private List<Class<? extends ReasonerComponent>> reasoners;
+	private JPanel choosePanel = new JPanel();
+	private JPanel initPanel = new JPanel();
     private JButton initButton;
     private Config config;
-    
+    private String[] cbItems = {};
+	private JComboBox cb = new JComboBox(cbItems);
+	private int choosenClassIndex;
+	
 	ReasonerPanel(final Config config) {
 		super(new BorderLayout());
 		
 		this.config = config;
 		
-		initButton = new JButton("Use DIG by default");
+		initButton = new JButton("Init Reasoner");
 		initButton.addActionListener(this);
+		initPanel.add(initButton);
 		
-		digPanel.add(initButton);
-		add(digPanel, BorderLayout.PAGE_START);
+		choosePanel.add(cb);
+		
+		add(choosePanel, BorderLayout.PAGE_START);
+		add(initPanel, BorderLayout.PAGE_END);
+		
+		// add into comboBox
+		reasoners = config.getComponentManager().getReasonerComponents();
+		for (int i=0; i<reasoners.size(); i++) {
+			cb.addItem(reasoners.get(i).getSimpleName());
+		}
 
 	}
   
 	public void actionPerformed(ActionEvent e) {
+		// read selected Class
+        choosenClassIndex = cb.getSelectedIndex();
+        
 		if (e.getSource() == initButton) {
-			if (config.getStatus(2)) { // no check if button init was used
+			if (config.getStatus(2)) { // no check if button initKnowledgeSource was pressed
 				// set reasoner
-				config.setReasoner(config.getComponentManager().reasoner(DIGReasoner.class, config.getKnowledgeSource()));
+				config.setReasoner(config.getComponentManager().reasoner(reasoners.get(choosenClassIndex), config.getKnowledgeSource()));
 				config.getReasoner().init();
 			
 				// set ReasoningService

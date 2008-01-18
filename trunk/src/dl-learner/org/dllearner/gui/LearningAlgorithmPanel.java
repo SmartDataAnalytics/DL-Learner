@@ -22,12 +22,12 @@ package org.dllearner.gui;
 
 import javax.swing.*;
 
-import org.dllearner.algorithms.refinement.ROLearner;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
+import org.dllearner.core.LearningAlgorithm;
 
 
 /**
@@ -40,29 +40,48 @@ import java.awt.event.ActionListener;
 public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 8721490771860452959L;
-    
-	private JPanel laPanel = new JPanel();
-    private JButton laButton;
-    
     private Config config;
+    private List<Class<? extends LearningAlgorithm>> learners;
+	private JPanel choosePanel = new JPanel();
+	private JPanel initPanel = new JPanel();
+    private JButton initButton;
+    private String[] cbItems = {};
+	private JComboBox cb = new JComboBox(cbItems);
+	private int choosenClassIndex;
+    
     
 	LearningAlgorithmPanel(Config config) {
 		super(new BorderLayout());
 
 		this.config = config;
 		
-		laButton = new JButton("Use ROLearner");
-		laButton.addActionListener(this);
+		initButton = new JButton("Init LearingAlgorithm");
+		initButton.addActionListener(this);
 		
-		laPanel.add(laButton);
-		add(laPanel, BorderLayout.PAGE_START);	
+		initPanel.add(initButton);
+		choosePanel.add(cb);
+
+		add(choosePanel, BorderLayout.PAGE_START);	
+		add(initPanel, BorderLayout.PAGE_END);	
+		
+		// add into comboBox
+		learners = config.getComponentManager().getLearningAlgorithms();
+		for (int i=0; i<learners.size(); i++) {
+			cb.addItem(learners.get(i).getSimpleName());
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == laButton) {
+		// read selected Class
+        choosenClassIndex = cb.getSelectedIndex();
+        
+		if (e.getSource() == initButton) {
 			if (config.getStatus(6)) {
-				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(ROLearner.class, config.getLearningProblem(), config.getReasoningService()));
+				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(learners.get(choosenClassIndex), config.getLearningProblem(), config.getReasoningService()));
 				config.getLearningAlgorithm().init();
+			}
+			if (config.getStatus(5)) {  // exemples are set
+				System.out.println("LearningAlgorithm: " + config.getLearningAlgorithm() + "\n");
 			}
 		}
 	}
