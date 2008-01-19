@@ -130,6 +130,7 @@ public class oldSparqlOntologyCollector {
 		return ret;
 	}
 	
+	/*
 	public String[] collectTriples(String subject) throws IOException{
 		System.out.println("Searching for Article: "+subject);
 		String sparql=SparqlQueryMaker.makeArticleQuery(subject);
@@ -148,6 +149,7 @@ public class oldSparqlOntologyCollector {
 		
 		return processArticle(xml);
 	}
+	*/
 	
 	public String[] processArticle(String xml)
 	{
@@ -180,7 +182,7 @@ public class oldSparqlOntologyCollector {
 		return vec.toArray(ret);
 	}
 	
-	public String[] getSubjectsFromLabel(String label, int limit) throws IOException{
+	/*public String[] getSubjectsFromLabel(String label, int limit) throws IOException{
 		System.out.println("Searching for Label: "+label);
 		String sparql=SparqlQueryMaker.makeLabelQuery(label,limit);
 		String FromCache=cache.get(label, sparql);
@@ -197,9 +199,9 @@ public class oldSparqlOntologyCollector {
 		}
 		
 		return processSubjects(xml);
-	}
+	}*/
 	
-	public String[] getSubjectsFromConcept(String concept) throws IOException
+	/*public String[] getSubjectsFromConcept(String concept) throws IOException
 	{
 		System.out.println("Searching for Subjects of type: "+concept);
 		String sparql=SparqlQueryMaker.makeConceptQuery(concept);
@@ -217,13 +219,14 @@ public class oldSparqlOntologyCollector {
 		}
 		
 		return processSubjects(xml);
-	}
+	}*/
 	
 	/**
 	 * calls getRecursive for each subject in list
 	 * @param subjects
 	 * @param NumberofRecursions
 	 */
+	
 	public void getRecursiveList(String[] subjects,int NumberofRecursions) throws IOException{
 		for (int i = 0; i < subjects.length; i++) {
 			getRecursive(subjects[i], NumberofRecursions);	
@@ -236,6 +239,7 @@ public class oldSparqlOntologyCollector {
 	 * @param StartingSubject
 	 * @param NumberofRecursions
 	 */
+	
 	public void getRecursive(String StartingSubject,int NumberofRecursions) throws IOException{
 		System.out.print("SparqlModul: Depth: "+NumberofRecursions+" @ "+StartingSubject+" ");
 		if(NumberofRecursions<=0)

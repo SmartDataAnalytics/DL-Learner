@@ -19,23 +19,12 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.dllearner.kb.sparql.configuration.Configuration;
-import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.query.Cache;
-import org.dllearner.kb.sparql.query.CachedSparqlQuery;
 import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.utilities.StringTuple;
 
@@ -52,7 +41,7 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 	// private SparqlHTTPRequest SparqlHTTPRequest;
 	private SparqlQueryMaker sparqlQueryMaker;
 	// private SparqlQuery sparqlQuery;
-	private CachedSparqlQuery cachedSparqlQuery;
+	//private CachedSparqlQuery cachedSparqlQuery;
 	Cache cache;
 
 	public TypedSparqlQuery(Configuration Configuration) {

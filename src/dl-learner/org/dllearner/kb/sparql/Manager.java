@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,10 +26,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.kb.sparql.configuration.Configuration;
-import org.dllearner.kb.sparql.configuration.SparqlQueryType;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlQueryType;
 import org.dllearner.kb.sparql.datastructure.Node;
-import org.dllearner.kb.sparql.old.oldSparqlOntologyCollector;
 import org.dllearner.utilities.StringTuple;
 
 /**

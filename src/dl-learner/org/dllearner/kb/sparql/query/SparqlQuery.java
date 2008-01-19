@@ -35,7 +35,7 @@ import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 /**
- * Represents a SPARQL query. It includes support for stopping the SPARQL query
+ * Represents one SPARQL query. It includes support for stopping the SPARQL query
  * (which may be necessary if a timeout is reached).
  * 
  * @author Jens Lehmann
@@ -49,17 +49,33 @@ public class SparqlQuery {
 	private QueryExecution queryExecution;
 	SparqlEndpoint endpoint;
 
-	public SparqlQuery(String queryString, URL u) {
+	/**
+	 * simplest contructor, works only with some endpoints, 
+	 * not with DBpedia
+	 * @param queryString
+	 * @param url
+	 */
+	public SparqlQuery(String queryString, URL url) {
 		this.queryString = queryString;
-		this.endpoint = new SparqlEndpoint(u);
+		this.endpoint = new SparqlEndpoint(url);
 	}
 
-	public SparqlQuery(String queryString, SparqlEndpoint se) {
+	/**
+	 * standard constructor
+	 * @param queryString
+	 * @param endpoint
+	 */
+	public SparqlQuery(String queryString, SparqlEndpoint endpoint) {
 		this.queryString = queryString;
-		this.endpoint = se;
+		this.endpoint = endpoint;
 	}
 
-	public ResultSet send() {
+	
+	/**
+	 * method used for sending over Jena
+	 * @return jena ResultSet
+	 */
+	protected ResultSet send() {
 		isRunning = true;
 
 		p(queryString);
@@ -88,16 +104,35 @@ public class SparqlQuery {
 		return isRunning;
 	}
 
+	/**
+	 * sends a query and returns XML
+	 * 
+	 * @return String xml
+	 */
 	public String getAsXMLString() {
 		ResultSet rs = send();
 		return ResultSetFormatter.asXMLString(rs);
 	}
 
+	/**
+	 * sends a query and returns complicated Jena List with ResultBindings
+	 * 
+	 * 
+	 * @return jena List<ResultBinding>
+	 */
 	public List<ResultBinding> getAsList() {
 		ResultSet rs = send();
 		return ResultSetFormatter.toList(rs);
 	}
 
+	
+	/**
+	 * sends a query and returns the results for variable
+	 * TODO untested and not used, feel free to change
+	 * varName as Vector<String>
+	 * @param varName
+	 * @return Vector<String>
+	 */
 	public Vector<String> getAsVector(String varName) {
 		ResultSet rs = send();
 		Vector<String> vret = new Vector<String>();
@@ -108,6 +143,15 @@ public class SparqlQuery {
 		return vret;
 	}
 
+	/**
+	 * sends a query and returns the results for two variables
+	 * ex: getAsVectorOfTupels("predicate", "object")
+	 * TODO untested and not used, feel free to change
+	 * 
+	 * @param varName1
+	 * @param varName2
+	 * @return Vector<StringTuple>
+	 */
 	public Vector<StringTuple> getAsVectorOfTupels(String varName1,
 			String varName2) {
 		ResultSet rs = send();
@@ -120,7 +164,13 @@ public class SparqlQuery {
 		return vret;
 	}
 
-	@Deprecated
+	
+	/**
+	 * sends a query and returns the results for n variables
+	 * TODO not working, finish
+	 * @param varNames
+	 * @return Vector<Vector<String>>
+	 */
 	public Vector<Vector<String>> getAsVectorOfVectors(Vector<String> varNames) {
 		// ResultSet rs = send();
 		Vector<Vector<String>> vret = new Vector<Vector<String>>();
@@ -138,6 +188,48 @@ public class SparqlQuery {
 	 * public Model asJenaModel(){ ResultSet rs=send(); return
 	 * ResultSetFormatter.toModel(rs); }
 	 */
+	
+	/**
+	 * creates a query for subjects with the specified label
+	 * @param label a phrase that is part of the label of a subject
+	 * @param limit this limits the amount of results
+	 * @param endpoint a SparqlEndpoint
+	 * @return SparqlQuery
+	 */
+	public static SparqlQuery makeLabelQuery(String label,int limit,SparqlEndpoint endpoint){
+		//TODO maybe use http://xmlns:com/foaf/0.1/page
+		String queryString= 
+		"SELECT DISTINCT ?subject\n"+
+		"WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object.?object bif:contains '\""+label+"\"'@en}\n"+
+		"LIMIT "+limit;
+		return new SparqlQuery( queryString,endpoint);
+	}
+	
+	/**
+	 * creates a query for all subjects that are of the type concept
+	 * @param concept the type that subjects are searched for
+	 * @param endpoint a SparqlEndpoint
+	 * @return SparqlQuery
+	 */
+	public static SparqlQuery makeConceptQuery(String concept, SparqlEndpoint endpoint){
+		String queryString = 
+			"SELECT DISTINCT ?subject\n"+
+			"WHERE { ?subject a <"+concept+">}\n";
+		return new SparqlQuery( queryString,endpoint);
+	}
+	
+	/**
+	 * @param subject
+	 * @param endpoint a SparqlEndpoint
+	 * @return SparqlQuery
+	 */
+	public static SparqlQuery makeArticleQuery(String subject,SparqlEndpoint endpoint){
+		String queryString = 
+		"SELECT ?predicate,?object\n"+
+		"WHERE { <"+subject+"> ?predicate ?object}\n";
+		return new SparqlQuery( queryString,endpoint);
+	}	
+	
 
 	public void p(String str) {
 		if (print_flag) {

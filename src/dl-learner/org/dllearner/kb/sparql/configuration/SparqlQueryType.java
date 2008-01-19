@@ -29,45 +29,19 @@ import java.util.Set;
  *
  */
 public class SparqlQueryType {
-	// TODO make sets out of them
-	
 	
 	private String mode = "forbid";
-	private String[] objectfilterlist = { "http://dbpedia.org/resource/Category:Articles_",
-			"http://dbpedia.org/resource/Category:Wikipedia_", "http://xmlns.com/foaf/0.1/",
-			"http://dbpedia.org/resource/Category", "http://dbpedia.org/resource/Template",
-			"http://upload.wikimedia.org/wikipedia/commons" };
-	private String[] predicatefilterlist = { "http://www.w3.org/2004/02/skos/core",
-			"http://xmlns.com/foaf/0.1/", "http://dbpedia.org/property/wikipage-",
-			"http://www.w3.org/2002/07/owl#sameAs", "http://dbpedia.org/property/reference" };
+	private Set<String> objectfilterlist;
+	private Set<String> predicatefilterlist;
 	private boolean literals = false;
 
-	public SparqlQueryType(String mode, String[] obectfilterlist, String[] predicatefilterlist,
+	public SparqlQueryType(String mode, Set<String> obectfilterlist, Set<String> predicatefilterlist,
 			boolean literals) {
 		super();
 		this.mode = mode;
 		this.objectfilterlist = obectfilterlist;
 		this.predicatefilterlist = predicatefilterlist;
 		this.literals = literals;
-	}
-
-	public SparqlQueryType(String mode, Set<String> objectfilterlist,
-			Set<String> predicatefilterlist, String literals) {
-		super();
-		this.mode = mode;
-		this.literals = (literals.equals("true")) ? true : false;
-
-		Object[] arr = objectfilterlist.toArray();
-		Object[] arr2 = predicatefilterlist.toArray();
-		this.objectfilterlist = new String[arr.length];
-		this.predicatefilterlist = new String[arr2.length];
-		for (int i = 0; i < arr.length; i++) {
-			this.objectfilterlist[i] = (String) arr[i];
-		}
-		for (int i = 0; i < arr2.length; i++) {
-			this.predicatefilterlist[i] = (String) arr2[i];
-		}
-
 	}
 
 	public boolean isLiterals() {
@@ -78,30 +52,24 @@ public class SparqlQueryType {
 		return mode;
 	}
 
-	public String[] getObjectfilterlist() {
+	public Set<String> getObjectfilterlist() {
 		return objectfilterlist;
 	}
 
-	public String[] getPredicatefilterlist() {
+	public Set<String> getPredicatefilterlist() {
 		return predicatefilterlist;
 	}
 
 	public void addPredicateFilter(String filter) {
-		String[] tmp = new String[predicatefilterlist.length + 1];
-		int i = 0;
-		for (; i < predicatefilterlist.length; i++) {
-			tmp[i] = predicatefilterlist[i];
-			//System.out.println(tmp[i]);
-		}
-		tmp[i] = filter;
-		predicatefilterlist=tmp;
+		predicatefilterlist.add(filter);
 		//System.out.println("added filter: "+filter);
-
 	}
 	
-	public static SparqlQueryType getFilter(int i) {
+	public static SparqlQueryType getFilterByNumber(int i) {
 
 		switch (i) {
+		case 0:break;
+		//should not be filled
 		case 1:
 			return YagoFilter();
 		case 2: 
@@ -126,7 +94,7 @@ public class SparqlQueryType {
 		pred.add("http://dbpedia.org/property/wikipage");
 		pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 		pred.add("http://dbpedia.org/property/relatedInstance");
-
+		
 		Set<String> obj = new HashSet<String>();
 		//obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
 		//obj.add("http://dbpedia.org/resource/Category:Articles_");
@@ -140,7 +108,7 @@ public class SparqlQueryType {
 		obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
 		obj.add("http://www.w3.org/2004/02/skos/core");
 
-		return new SparqlQueryType("forbid", obj, pred, "false");
+		return new SparqlQueryType("forbid", obj, pred, false);
 	}
 	public static SparqlQueryType YagoSpecialHierarchy(){
 		Set<String> pred = new HashSet<String>();
@@ -168,7 +136,7 @@ public class SparqlQueryType {
 			obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
 			obj.add("http://www.w3.org/2004/02/skos/core");
 
-			return new SparqlQueryType("forbid", obj, pred, "false");
+			return new SparqlQueryType("forbid", obj, pred, false);
 		}
 	
 	
@@ -200,7 +168,7 @@ public class SparqlQueryType {
 			obj.add("http://dbpedia.org/resource/Template");
 			
 			
-			return new SparqlQueryType("forbid", obj, pred, "false");
+			return new SparqlQueryType("forbid", obj, pred, false);
 		}
 	public static SparqlQueryType YAGOSKOS(){
 		Set<String> pred = new HashSet<String>();
@@ -230,7 +198,7 @@ public class SparqlQueryType {
 		obj.add("http://dbpedia.org/resource/Template");
 		
 		
-		return new SparqlQueryType("forbid", obj, pred, "false");
+		return new SparqlQueryType("forbid", obj, pred, false);
 	}
 	
 	

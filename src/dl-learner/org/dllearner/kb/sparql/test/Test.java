@@ -26,7 +26,7 @@ import java.net.URI;
 import org.dllearner.kb.sparql.Manager;
 
 /**
- * Test class.
+ * Test class, uses the whole thing
  * 
  * @author Sebastian Hellmann
  * 

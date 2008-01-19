@@ -64,17 +64,19 @@ public class SparqlEndpoint {
 	public static SparqlEndpoint getEndpointByNumber(int i) {
 
 		switch (i) {
-		case 0:
-			return dbpediaEndpoint();
+		case 0:break;
+			//should not be filled
 		case 1:
+			return dbpediaEndpoint();
+		case 2:
 			return localJoseki();
-		case 2: 
+		case 3: 
 			return govTrack();
-		case 3:
-			return revyu();
 		case 4:
+			return revyu();
+		case 5:
 			return myopenlink();
-		case 5: 
+		case 6: 
 			return worldFactBook();
 		}
 		return null;

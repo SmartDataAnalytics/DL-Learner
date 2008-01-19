@@ -33,7 +33,7 @@ public class Configuration {
 	 * see the other classes, which are used as attributes here
 	 * */
 	
-	private SparqlEndpoint specificSparqlEndpoint;
+	private SparqlEndpoint endpoint;
 	private SparqlQueryType sparqlQueryType;
 	private Manipulator manipulator;
 	// the following needs to be moved to 
@@ -47,7 +47,7 @@ public class Configuration {
 	public Configuration(SparqlEndpoint specificSparqlEndpoint,
 			SparqlQueryType sparqlQueryType, Manipulator manipulator, int recursiondepth,
 			boolean getAllSuperClasses, boolean closeAfterRecursion) {
-		this.specificSparqlEndpoint = specificSparqlEndpoint;
+		this.endpoint = specificSparqlEndpoint;
 		this.sparqlQueryType = sparqlQueryType;
 		this.manipulator = manipulator;
 		this.recursiondepth = recursiondepth;
@@ -58,7 +58,7 @@ public class Configuration {
 
 	public Configuration changeQueryType(SparqlQueryType sqt) {
 		// TODO must clone here
-		return new Configuration(this.specificSparqlEndpoint, sqt, this.manipulator,
+		return new Configuration(this.endpoint, sqt, this.manipulator,
 				this.recursiondepth, this.getAllSuperClasses,this.closeAfterRecursion);
 
 	}
@@ -68,7 +68,7 @@ public class Configuration {
 	}
 
 	public SparqlEndpoint getSparqlEndpoint() {
-		return specificSparqlEndpoint;
+		return endpoint;
 	}
 
 	public SparqlQueryType getSparqlQueryType() {

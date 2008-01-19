@@ -30,37 +30,73 @@ import org.dllearner.kb.sparql.TypedSparqlQueryInterface;
  * Abstract class.
  * 
  * @author Sebastian Hellmann
+ * 
+ */
+/**
+ * @author sebastian
  *
  */
 public abstract class Node implements Comparable<Node> {
+
+    final String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
+	final String rdftype = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+	final String objectProperty = "http://www.w3.org/2002/07/owl#ObjectProperty";
+	final String classns = "http://www.w3.org/2002/07/owl#Class";
+	final String thing = "http://www.w3.org/2002/07/owl#Thing";
+
 	URI uri;
-	protected String type;
+	//protected String type; 
 	protected boolean expanded = false;
 
 	public Node(URI u) {
 		this.uri = u;
 	}
 
-	public abstract Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m);
+	/**
+	 * Nodes are expanded with a certain context, given by 
+	 * the typedSparqlQuery and the manipulator
+	 * @param typedSparqlQuery
+	 * @param manipulator
+	 * @return Vector<Node> all Nodes that are new because of expansion
+	 */
+	public abstract Vector<Node> expand(TypedSparqlQueryInterface typedSparqlQuery,
+			Manipulator manipulator);
 
-	public abstract Vector<Node> expandProperties(TypedSparqlQueryInterface tsq, Manipulator m);
+	
+	/**
+	 * used to get type defs for properties like rdf:type SymmetricProperties
+	 * 
+	 * @param typedSparqlQuery
+	 * @param manipulator
+	 * @return Vector<Node> 
+	 */
+	public abstract void expandProperties(
+			TypedSparqlQueryInterface typedSparqlQuery, Manipulator manipulator);
 
+	/**
+	 * output
+	 * @return a set of n-triple 
+	 */
 	public abstract Set<String> toNTriple();
 
 	@Override
 	public String toString() {
-		return "Node: " + uri + ":" + type;
+		return "Node: " + uri + ":" + this.getClass();
 
 	}
 
 	public URI getURI() {
 		return uri;
 	}
-	public boolean equals(Node n){
-		if(this.uri.equals(n.uri))return true;
-		else return false;
+
+	public boolean equals(Node n) {
+		if (this.uri.equals(n.uri))
+			return true;
+		else
+			return false;
 	}
-	public int compareTo(Node n){
+
+	public int compareTo(Node n) {
 		return this.uri.toString().compareTo(n.uri.toString());
 	}
 
