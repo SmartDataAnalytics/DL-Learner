@@ -61,6 +61,7 @@ public class TestResultSet {
 		return "";
 	}
 
+	@SuppressWarnings({"unchecked"})
 	public static void testSaving(List<ResultBinding> l) {
 		System.out.println(l + "\n****************************");
 		try {

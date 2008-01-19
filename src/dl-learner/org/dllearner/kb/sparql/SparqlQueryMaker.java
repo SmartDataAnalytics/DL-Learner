@@ -20,7 +20,6 @@
 package org.dllearner.kb.sparql;
 
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
-import org.dllearner.kb.sparql.old.oldSparqlFilter;
 
 /**
  * Can assemble sparql queries. can make queries for subject, predicate, object
@@ -137,6 +136,7 @@ public class SparqlQueryMaker {
 	 *            special object encapsulating all options
 	 * @return sparql query
 	 */
+	/*
 	public static String makeQueryFilter(String subject, oldSparqlFilter sf) {
 
 		String Filter = "";
@@ -157,7 +157,8 @@ public class SparqlQueryMaker {
 		// System.out.println(ret);
 		return ret;
 	}
-
+*/
+	
 	/*
 	 * moved to SparqlQuery TODO remove here creates a query for subjects with
 	 * the specified label @param label a phrase that is part of the label of a

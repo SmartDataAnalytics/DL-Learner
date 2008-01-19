@@ -120,6 +120,7 @@ public class SparqlQuery {
 	 * 
 	 * @return jena List<ResultBinding>
 	 */
+	@SuppressWarnings({"unchecked"})
 	public List<ResultBinding> getAsList() {
 		ResultSet rs = send();
 		return ResultSetFormatter.toList(rs);
@@ -133,6 +134,7 @@ public class SparqlQuery {
 	 * @param varName
 	 * @return Vector<String>
 	 */
+	@SuppressWarnings({"unchecked"})
 	public Vector<String> getAsVector(String varName) {
 		ResultSet rs = send();
 		Vector<String> vret = new Vector<String>();
@@ -152,6 +154,7 @@ public class SparqlQuery {
 	 * @param varName2
 	 * @return Vector<StringTuple>
 	 */
+	@SuppressWarnings({"unchecked"})
 	public Vector<StringTuple> getAsVectorOfTupels(String varName1,
 			String varName2) {
 		ResultSet rs = send();
