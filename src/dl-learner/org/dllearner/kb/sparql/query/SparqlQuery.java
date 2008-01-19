@@ -155,9 +155,13 @@ public class SparqlQuery {
 	public Vector<StringTuple> getAsVectorOfTupels(String varName1,
 			String varName2) {
 		ResultSet rs = send();
+		
 		Vector<StringTuple> vret = new Vector<StringTuple>();
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
+		//System.out.println(l);
+		//System.out.println(ResultSetFormatter.asXMLString(rs));
 		for (ResultBinding resultBinding : l) {
+					
 			vret.add(new StringTuple(resultBinding.get(varName1).toString(),
 					resultBinding.get(varName2).toString()));
 		}
@@ -200,7 +204,7 @@ public class SparqlQuery {
 		//TODO maybe use http://xmlns:com/foaf/0.1/page
 		String queryString= 
 		"SELECT DISTINCT ?subject\n"+
-		"WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object.?object bif:contains '\""+label+"\"'@en}\n"+
+		"WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\""+label+"\"'@en}\n"+
 		"LIMIT "+limit;
 		return new SparqlQuery( queryString,endpoint);
 	}
@@ -225,7 +229,7 @@ public class SparqlQuery {
 	 */
 	public static SparqlQuery makeArticleQuery(String subject,SparqlEndpoint endpoint){
 		String queryString = 
-		"SELECT ?predicate,?object\n"+
+		"SELECT ?predicate ?object\n"+
 		"WHERE { <"+subject+"> ?predicate ?object}\n";
 		return new SparqlQuery( queryString,endpoint);
 	}	
