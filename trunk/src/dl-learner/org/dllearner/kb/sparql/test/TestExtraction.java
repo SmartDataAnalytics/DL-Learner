@@ -22,8 +22,13 @@ package org.dllearner.kb.sparql.test;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.URI;
+import java.util.LinkedList;
 
 import org.dllearner.kb.sparql.Manager;
+import org.dllearner.kb.sparql.Manipulator;
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
+import org.dllearner.kb.sparql.configuration.SparqlQueryType;
+import org.dllearner.utilities.StringTuple;
 
 /**
  * Test class, uses the whole thing
@@ -31,7 +36,7 @@ import org.dllearner.kb.sparql.Manager;
  * @author Sebastian Hellmann
  * 
  */
-public class Test {
+public class TestExtraction {
 
 	public static void main(String[] args) {
 		System.out.println("Start");
@@ -43,7 +48,13 @@ public class Test {
 			// m.usePredefinedConfiguration(u);
 
 			URI u2 = new URI("http://dbpedia.org/resource/Angela_Merkel");
-
+			m.useConfiguration(
+					SparqlQueryType.getFilterByNumber(1),SparqlEndpoint.getEndpointByNumber(1),
+					new Manipulator("",200,new LinkedList<StringTuple>(),new LinkedList<StringTuple>()),
+					1,true,true);
+			//, ,
+					//manipulator, recursiondepth, getAllSuperClasses, closeAfterRecursion)
+			
 			String filename = System.currentTimeMillis() + ".nt";
 			FileWriter fw = new FileWriter(new File(filename), true);
 			fw.write(m.extract(u2));
