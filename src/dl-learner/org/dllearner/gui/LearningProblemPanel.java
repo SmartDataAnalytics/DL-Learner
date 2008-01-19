@@ -88,7 +88,8 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		
 		// add into comboBox
 		for (int i=0; i<problems.size(); i++) {
-			cb.addItem(problems.get(i).getSimpleName());
+			//cb.addItem(problems.get(i).getSimpleName());
+			cb.addItem(config.getComponentManager().getComponentName(problems.get(i)));
 		}
 		
 		// read choosen LearningProblem

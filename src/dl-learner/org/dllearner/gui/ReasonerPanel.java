@@ -66,7 +66,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		// add into comboBox
 		reasoners = config.getComponentManager().getReasonerComponents();
 		for (int i=0; i<reasoners.size(); i++) {
-			cb.addItem(reasoners.get(i).getSimpleName());
+			//cb.addItem(reasoners.get(i).getSimpleName());
+			cb.addItem(config.getComponentManager().getComponentName(reasoners.get(i)));
 		}
 
 	}
