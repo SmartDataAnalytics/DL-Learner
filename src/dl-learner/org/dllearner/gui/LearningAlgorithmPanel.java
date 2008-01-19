@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.ComponentManager;
 
 
 
@@ -86,10 +87,12 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
         
 		if (e.getSource() == testButton) {
 			// TEST
-			optionList = config.getComponentManager().getConfigOptions(learners.get(cb.getSelectedIndex()));
-			//System.out.println("optionName: " + optionList);
-			System.out.println("option 0:\n" + optionList.get(0));
-			
+			//available options for selected class
+			optionList = ComponentManager.getConfigOptions(learners.get(cb.getSelectedIndex()));
+			System.out.println(optionList);
+			//System.out.println("option 0:\n" + optionList.get(0));
+			System.out.println("size: " + optionList.size());
+
 
 		}
         
