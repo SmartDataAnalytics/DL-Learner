@@ -37,7 +37,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.dl.Individual;
-//import org.dllearner.learningproblems.*;
 
 /**
  * LearningProblemPanel
@@ -168,11 +167,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// read selected LearningProblemClass
         choosenClassIndex = cb.getSelectedIndex();
-  
-        // later for read options
-        //List a = config.getComponentManager().getConfigOptions(problems.get(cb.getSelectedIndex()));
-        //System.out.println("optionName: " + a);
-        
+    
         // get list after reasoner init
         if (e.getSource() == readListButton) {
     		// fill lists

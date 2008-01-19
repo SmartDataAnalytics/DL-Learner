@@ -28,6 +28,9 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.config.ConfigOption;
+
+
 
 
 /**
@@ -44,10 +47,11 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     private List<Class<? extends LearningAlgorithm>> learners;
 	private JPanel choosePanel = new JPanel();
 	private JPanel initPanel = new JPanel();
-    private JButton initButton;
+    private JButton initButton, testButton;
     private String[] cbItems = {};
 	private JComboBox cb = new JComboBox(cbItems);
 	private int choosenClassIndex;
+	private List<ConfigOption<?>> optionList;
     
     
 	LearningAlgorithmPanel(Config config) {
@@ -57,8 +61,11 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		
 		initButton = new JButton("Init LearingAlgorithm");
 		initButton.addActionListener(this);
+		testButton = new JButton("Test");
+		testButton.addActionListener(this);
 		
 		initPanel.add(initButton);
+		initPanel.add(testButton);
 		choosePanel.add(cb);
 
 		add(choosePanel, BorderLayout.PAGE_START);	
@@ -76,6 +83,15 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// read selected Class
         choosenClassIndex = cb.getSelectedIndex();
+        
+		if (e.getSource() == testButton) {
+			// TEST
+			optionList = config.getComponentManager().getConfigOptions(learners.get(cb.getSelectedIndex()));
+			//System.out.println("optionName: " + optionList);
+			System.out.println("option 0:\n" + optionList.get(0));
+			
+
+		}
         
 		if (e.getSource() == initButton) {
 			if (config.getStatus(6)) {
