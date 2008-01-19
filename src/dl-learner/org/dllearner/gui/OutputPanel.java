@@ -89,6 +89,7 @@ public class OutputPanel extends JPanel implements ActionListener {
 				}
 			}
 		}
+		
 		if (e.getSource() == runButton) {
 			if (config.getStatus(6)) {
 				config.getLearningAlgorithm().start();
