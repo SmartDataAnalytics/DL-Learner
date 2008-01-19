@@ -27,10 +27,11 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.GridBagLayout;
 
-//import org.dllearner.kb.*;
 import org.dllearner.core.KnowledgeSource;
 
 
@@ -50,10 +51,11 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	private JTextField fileDisplay;
     private String[] kbBoxItems = {};
     private JComboBox cb = new JComboBox(kbBoxItems);	
-	private JPanel openPanel;
+	private JPanel centerPanel, choosePanel, initPanel;
 	private Config config;
 	private int choosenClassIndex;
 	private List<Class<? extends KnowledgeSource>> sources;
+	private JLabel infoLabel = new JLabel("choose lokal file or type URL");
 	
 	KnowledgeSourcePanel(final Config config) {
 		super(new BorderLayout());
@@ -62,7 +64,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		sources = config.getComponentManager().getKnowledgeSources();
 		
 		fc = new JFileChooser(new File("examples/"));
-		openButton = new JButton("Open local file or type URL");
+		openButton = new JButton("choose local file");
 		openButton.addActionListener(this);
 		
 		initButton = new JButton("Init KnowledgeSource");
@@ -86,24 +88,41 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		
 		// add to comboBox 
 		for (int i=0; i<sources.size(); i++) {
-			cb.addItem(sources.get(i).getSimpleName()); 
+			// cb.addItem(sources.get(i).getSimpleName()); 
+			cb.addItem(config.getComponentManager().getComponentName(sources.get(i)));
 		}
 		
 		cb.addActionListener(this);
 		
-		openPanel = new JPanel();
-		
-		JPanel choosePanel = new JPanel();
+		choosePanel = new JPanel();
 		choosePanel.add(cb);
 
-		JPanel initPanel = new JPanel();
+		initPanel = new JPanel();
 		initPanel.add(initButton);
 
-		openPanel.add(fileDisplay);
-		openPanel.add(openButton);
+		centerPanel = new JPanel();
+		
+		// define GridBag
+		GridBagLayout gridbag = new GridBagLayout();
+		centerPanel.setLayout(gridbag);
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.anchor = GridBagConstraints.CENTER;
+
+		buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
+		gridbag.setConstraints(infoLabel, constraints);
+		centerPanel.add(infoLabel);
+
+		buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+		gridbag.setConstraints(fileDisplay, constraints);
+		centerPanel.add(fileDisplay);
+		
+		buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
+		gridbag.setConstraints(openButton, constraints);
+		centerPanel.add(openButton);
 		
 		add(choosePanel, BorderLayout.PAGE_START);
-		add(openPanel, BorderLayout.CENTER);
+		add(centerPanel, BorderLayout.CENTER);
 		add(initPanel, BorderLayout.PAGE_END);
 		
 		choosenClassIndex = cb.getSelectedIndex();
@@ -112,6 +131,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// read selected KnowledgeSourceClass
         choosenClassIndex = cb.getSelectedIndex();
+        checkIfSparcle();
 		
 		// open File
 		if (e.getSource() == openButton) {
@@ -131,6 +151,27 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 			config.getComponentManager().applyConfigEntry(config.getKnowledgeSource(), "url", config.getURI());				
 			config.getKnowledgeSource().init();
 			System.out.println("init KnowledgeSource with \n" + sources.get(choosenClassIndex) + " and \n" + config.getURI() + "\n");
+		}
+	}
+	
+	/*
+	 * Define GridBagConstraints
+	 */
+	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx, int wy) {
+		gbc.gridx = gx;
+		gbc.gridy = gy;
+		gbc.gridwidth = gw;
+		gbc.gridheight = gh;
+		gbc.weightx = wx;
+		gbc.weighty = wy;
+	}
+	
+	private void checkIfSparcle() {
+		if (sources.get(choosenClassIndex).toString().contains("Sparql")) {
+			openButton.setEnabled(false);
+		}
+		else {
+			openButton.setEnabled(true);
 		}
 	}
   

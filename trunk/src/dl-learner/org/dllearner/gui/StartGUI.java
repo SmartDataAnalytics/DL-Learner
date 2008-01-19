@@ -38,8 +38,6 @@ public class StartGUI extends JFrame {
 	
 	private static final long serialVersionUID = -739265982906533775L;
 	
-	protected static StartGUI myrun;
-	
 	public JTabbedPane tabPane = new JTabbedPane();
 	
 	private JPanel tab1 = new JPanel();
@@ -77,15 +75,12 @@ public class StartGUI extends JFrame {
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.INFO);		
 		
-		myrun = new StartGUI();
+		new StartGUI();
 	}
 	
 	protected void renew() {
 		tabPane.repaint();
 	}
 
-	protected StartGUI getStartGUI() {
-		return myrun;
-	}
 
 }

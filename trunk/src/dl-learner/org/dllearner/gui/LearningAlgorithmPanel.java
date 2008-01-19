@@ -67,7 +67,9 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		// add into comboBox
 		learners = config.getComponentManager().getLearningAlgorithms();
 		for (int i=0; i<learners.size(); i++) {
-			cb.addItem(learners.get(i).getSimpleName());
+			//cb.addItem(learners.get(i).getSimpleName());
+			//System.out.println(learners.get(i).getSimpleName());
+			cb.addItem(config.getComponentManager().getComponentName(learners.get(i)));
 		}
 	}
 
@@ -80,7 +82,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(learners.get(choosenClassIndex), config.getLearningProblem(), config.getReasoningService()));
 				config.getLearningAlgorithm().init();
 			}
-			if (config.getStatus(5)) {  // exemples are set
+			if (config.getStatus(5)) {  // examples are set
 				System.out.println("LearningAlgorithm: " + config.getLearningAlgorithm() + "\n");
 			}
 		}
