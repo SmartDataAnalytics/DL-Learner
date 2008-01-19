@@ -140,7 +140,11 @@ public class GP extends LearningAlgorithm {
     	this.learningProblem = learningProblem;
     	this.rs = rs;
     }
-        
+      
+	public static String getName() {
+		return "genetic programming learning algorithm";
+	} 	    
+    
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
 		problems.add(PosNegLP.class);

@@ -47,6 +47,10 @@ public class RandomGuesser extends LearningAlgorithm {
 		this.learningProblem = learningProblem;
 	}
 	
+	public static String getName() {
+		return "random guesser learning algorithm";
+	} 	
+	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
 		problems.add(LearningProblem.class);

@@ -72,6 +72,10 @@ public class BruteForceLearner extends LearningAlgorithm {
     	this.learningProblem = learningProblem;
     }
     
+	public static String getName() {
+		return "brute force learning algorithm";
+	}    
+    
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
 		problems.add(LearningProblem.class);

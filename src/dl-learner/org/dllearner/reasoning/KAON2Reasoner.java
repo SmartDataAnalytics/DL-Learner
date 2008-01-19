@@ -244,6 +244,10 @@ public class KAON2Reasoner extends ReasonerComponent {
 	}
 	*/
 	
+	public static String getName() {
+		return "KAON2 reasoner";
+	} 		
+	
 	// TODO: hier werden momentan keine allowed concepts berücksichtigt
 	// (benötigt rekursive Aufrufe, da ein erlaubtes Konzept von einem nicht
 	// erlaubten verdeckt werden könnte)
