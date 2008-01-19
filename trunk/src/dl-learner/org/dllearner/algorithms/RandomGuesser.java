@@ -22,6 +22,7 @@ package org.dllearner.algorithms;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.algorithms.gp.GPUtilities;
 import org.dllearner.core.LearningAlgorithm;
@@ -43,6 +44,8 @@ public class RandomGuesser extends LearningAlgorithm {
 	private int numberOfTrees;
 	private int maxDepth;
     
+	private static Logger logger = Logger.getLogger(RandomGuesser.class);		
+	
 	public RandomGuesser(LearningProblem learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
 	}
@@ -103,12 +106,9 @@ public class RandomGuesser extends LearningAlgorithm {
 			}
 		}
 		
-		System.out.print("Random-Guesser (" + numberOfTrees + " trials, ");
-		System.out.println("maximum depth " + maxDepth + ")");
-		System.out.println("best solution: " + bestDefinition);
-		System.out.println("fitness: " + bestFitness);
-		
-		// System.out.println(bestScore);
+		logger.info("Random-Guesser (" + numberOfTrees + " trials, maximum depth " + maxDepth + ")");
+		logger.info("best solution: " + bestDefinition);
+		logger.info("fitness: " + bestFitness);
 	}
 
 	@Override

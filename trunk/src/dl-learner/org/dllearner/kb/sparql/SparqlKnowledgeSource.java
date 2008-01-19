@@ -30,10 +30,12 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.BooleanConfigOption;
+import org.dllearner.core.config.CommonConfigOptions;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
@@ -61,7 +63,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	// ConfigOptions
 	private URL url;
-	String host;
+	// String host;
 	private Set<String> instances = new HashSet<String>();;
 	private URL dumpFile;
 	private int recursionDepth = 1;
@@ -82,7 +84,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private int numberOfInstancesUsedForRoleLearning = 40;
 	private String role = "";
 	private String blankNodeIdentifier = "bnode";
-
+//	private String verbosity = "warning";
+	
 	//LinkedList<StringTuple> URIParameters = new LinkedList<StringTuple>();
 	LinkedList<StringTuple> replacePredicate = new LinkedList<StringTuple>();
 	LinkedList<StringTuple> replaceObject = new LinkedList<StringTuple>();
@@ -130,9 +133,11 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private KB kb;
 
 	public static String getName() {
-		return "SPARQL Endpoint Restructured";
+		return "SPARQL Endpoint";
 	}
 
+	private static Logger logger = Logger.getLogger(SparqlKnowledgeSource.class);	
+	
 	/**
 	 * sets the ConfigOptions for this KnowledgeSource
 	 * 
@@ -141,7 +146,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
-		options.add(new StringConfigOption("host", "host of SPARQL Endpoint"));
+//		options.add(new StringConfigOption("host", "host of SPARQL Endpoint"));
 		options
 				.add(new StringSetConfigOption("instances",
 						"relevant instances e.g. positive and negative examples in a learning problem"));
@@ -193,6 +198,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				"numberOfInstancesUsedForRoleLearning", ""));
 		options.add(new BooleanConfigOption("closeAfterRecursion",
 				"gets all classes for all instances"));
+		options.add(CommonConfigOptions.getVerbosityOption());
 
 		return options;
 	}
@@ -213,8 +219,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				throw new InvalidConfigOptionValueException(entry.getOption(),
 						entry.getValue(), "malformed URL " + s);
 			}
-		} else if (option.equals("host")) {
-			host = (String) entry.getValue();
+//		} else if (option.equals("host")) {
+//			host = (String) entry.getValue();
 		} else if (option.equals("instances")) {
 			instances = (Set<String>) entry.getValue();
 		} else if (option.equals("recursionDepth")) {
@@ -257,6 +263,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			numberOfInstancesUsedForRoleLearning = (Integer) entry.getValue();
 		} else if (option.equals("closeAfterRecursion")) {
 			closeAfterRecursion = (Boolean) entry.getValue();
+//		} else if (option.equals("verbosity")) {
+//			verbosity = (String) entry.getValue();
 		}
 
 	}
@@ -268,7 +276,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	@Override
 	public void init() {
-		System.out.println("SparqlModul: Collecting Ontology");
+		logger.info("SparqlModul: Collecting Ontology");
 		// SparqlOntologyCollector oc=
 		// new SparqlOntologyCollector(Datastructures.setToArray(instances),
 		// numberOfRecursions, filterMode,
@@ -327,7 +335,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 						break;
 				}
 				pos = tmp;
-				System.out.println("Instances used: " + pos.size());
+				logger.info("Instances used: " + pos.size());
 
 				tmp = new HashSet<String>();
 				for (String one : neg) {
@@ -343,10 +351,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				instances.addAll(neg);
 
 				for (String one : pos) {
-					System.out.println("+\"" + one + "\"");
+					logger.info("+\"" + one + "\"");
 				}
 				for (String one : neg) {
-					System.out.println("-\"" + one + "\"");
+					logger.info("-\"" + one + "\"");
 				}
 
 				/*
@@ -365,12 +373,12 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			}
 			// the actual extraction is started here
 			ont = m.extract(instances);
-			System.out.println("Number of cached SPARQL queries: "
+			logger.info("Number of cached SPARQL queries: "
 					+ m.getConfiguration().numberOfCachedSparqlQueries);
-			System.out.println("Number of uncached SPARQL queries: "
+			logger.info("Number of uncached SPARQL queries: "
 					+ m.getConfiguration().numberOfUncachedSparqlQueries);
 
-			System.out.println("Finished collecting Fragment");
+			logger.info("Finished collecting Fragment");
 
 			if (dumpToFile) {
 				String filename = System.currentTimeMillis() + ".nt";
@@ -401,7 +409,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("SparqlModul: ****Finished");
+		logger.info("SparqlModul: ****Finished");
 	}
 
 	/*
@@ -446,7 +454,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 * @param limit
 	 */
 	public void calculateSubjects(String label, int limit) {
-		System.out.println("SparqlModul: Collecting Subjects");
+		logger.info("SparqlModul: Collecting Subjects");
 		// oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
 		// try {
 		Vector<String> v = (SparqlQuery.makeLabelQuery(label, limit, sse)
@@ -458,7 +466,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// subjects = new String[1];
 		// subjects[0] = "[Error]Sparql Endpoint could not be reached.";
 		// }
-		System.out.println("SparqlModul: ****Finished");
+		logger.info("SparqlModul: ****Finished");
 	}
 
 	/**
@@ -467,7 +475,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 * @param subject
 	 */
 	public void calculateTriples(String subject) {
-		System.out.println("SparqlModul: Collecting Triples");
+		logger.info("SparqlModul: Collecting Triples");
 		Vector<StringTuple> v = (SparqlQuery.makeArticleQuery(subject, sse)
 				.getAsVectorOfTupels("predicate", "objcet"));
 		//String[] subjects = (String[]) v.toArray(new String[v.size()]);
@@ -484,7 +492,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		//	triples = new String[1];
 		//	triples[0] = "[Error]Sparql Endpoint could not be reached.";
 		//}
-		System.out.println("SparqlModul: ****Finished");
+		logger.info("SparqlModul: ****Finished");
 	}
 
 	/**
@@ -493,7 +501,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 * @param concept
 	 */
 	public void calculateConceptSubjects(String concept) {
-		System.out.println("SparqlModul: Collecting Subjects");
+		logger.info("SparqlModul: Collecting Subjects");
 		Vector<String> v = (SparqlQuery.makeConceptQuery(concept, sse)
 				.getAsVector("subject"));
 		 conceptSubjects = (String[]) v.toArray(new String[v.size()]);
@@ -506,7 +514,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// conceptSubjects = new String[1];
 		// conceptSubjects[0] = "[Error]Sparql Endpoint could not be reached.";
 		// }
-		System.out.println("SparqlModul: ****Finished");
+		logger.info("SparqlModul: ****Finished");
 	}
 
 	public boolean subjectThreadIsRunning() {
