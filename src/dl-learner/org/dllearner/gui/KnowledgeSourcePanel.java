@@ -55,7 +55,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	private Config config;
 	private int choosenClassIndex;
 	private List<Class<? extends KnowledgeSource>> sources;
-	private JLabel infoLabel = new JLabel("choose lokal file or type URL");
+	private JLabel infoLabel = new JLabel("choose local file or type URL");
 	
 	KnowledgeSourcePanel(final Config config) {
 		super(new BorderLayout());
@@ -169,9 +169,11 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	private void checkIfSparcle() {
 		if (sources.get(choosenClassIndex).toString().contains("Sparql")) {
 			openButton.setEnabled(false);
+			infoLabel.setText("type URL");
 		}
 		else {
 			openButton.setEnabled(true);
+			infoLabel.setText("choose local file or type URL");
 		}
 	}
   
