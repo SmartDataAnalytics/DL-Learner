@@ -34,6 +34,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.BruteForceLearner;
+import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
@@ -92,11 +98,20 @@ public class Start {
 	public static void main(String[] args) {
 		File file = new File(args[args.length - 1]);
 		String baseDir = file.getParentFile().getPath();
-
+		
 		boolean inQueryMode = false;
 		if (args.length > 1 && args[0].equals("-q"))
 			inQueryMode = true;
 
+		// create logger (a simple logger which outputs
+		// its messages to the console)
+		SimpleLayout layout = new SimpleLayout();
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		Logger logger = Logger.getRootLogger();
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.setLevel(Level.INFO);
+		
 		// create component manager instance
 		System.out.print("starting component manager ... ");
 		long cmStartTime = System.nanoTime();
@@ -173,19 +188,16 @@ public class Start {
 			laClass = ROLearner.class;
 		else if(algorithmOption.getStringValue().equals("gp"))
 			laClass = GP.class;
+		else if(algorithmOption.getStringValue().equals("bruteForce"))
+			laClass = BruteForceLearner.class;
+		else if(algorithmOption.getStringValue().equals("randomGuesser"))
+			laClass = RandomGuesser.class;		
 		else
 			handleError("Unknown value in " + algorithmOption);
 
 		la = cm.learningAlgorithm(laClass, lp, rs);
 		configureComponent(cm, la, componentPrefixMapping, parser);
 		initComponent(cm, la);
-		
-		// initialise all structures
-//		for (KnowledgeSource source : sources)
-//			initComponent(cm, source);
-//		initComponent(cm, reasoner);
-//		initComponent(cm, lp);
-//		initComponent(cm, la);
 
 		// perform file exports
 		performExports(parser, baseDir, sources, rs);

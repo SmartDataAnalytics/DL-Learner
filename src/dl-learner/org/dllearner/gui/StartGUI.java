@@ -22,6 +22,11 @@ package org.dllearner.gui;
 
 import javax.swing.*;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+
 /**
  * StartGUI
  * 
@@ -64,6 +69,14 @@ public class StartGUI extends JFrame {
 	}
 	
 	public static void main(String[] args) {
+		// create GUI logger
+		SimpleLayout layout = new SimpleLayout();
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		Logger logger = Logger.getRootLogger();
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.setLevel(Level.INFO);		
+		
 		myrun = new StartGUI();
 	}
 	
