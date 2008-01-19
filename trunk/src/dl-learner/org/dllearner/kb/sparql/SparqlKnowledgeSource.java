@@ -21,15 +21,14 @@ package org.dllearner.kb.sparql;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.Vector;
 
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
@@ -45,7 +44,6 @@ import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.dl.KB;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
-import org.dllearner.kb.sparql.old.oldSparqlOntologyCollector;
 import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
@@ -85,7 +83,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private String role = "";
 	private String blankNodeIdentifier = "bnode";
 
-	LinkedList<StringTuple> URIParameters = new LinkedList<StringTuple>();
+	//LinkedList<StringTuple> URIParameters = new LinkedList<StringTuple>();
 	LinkedList<StringTuple> replacePredicate = new LinkedList<StringTuple>();
 	LinkedList<StringTuple> replaceObject = new LinkedList<StringTuple>();
 
@@ -276,14 +274,15 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// numberOfRecursions, filterMode,
 		// Datastructures.setToArray(predList),Datastructures.setToArray(
 		// objList),Datastructures.setToArray(classList),format,url,useLits);
+		
 		Manager m = new Manager();
 		SparqlQueryType sqt = null;
 		// get Options for Manipulator
 		Manipulator man = new Manipulator(blankNodeIdentifier,
 				breakSuperClassRetrievalAfter, replacePredicate, replaceObject);
-		HashMap<String, String> parameters = new HashMap<String, String>();
-		parameters.put("default-graph-uri", "http://dbpedia.org");
-		parameters.put("format", "application/sparql-results.xml");
+		//HashMap<String, String> parameters = new HashMap<String, String>();
+		//parameters.put("default-graph-uri", "http://dbpedia.org");
+		//parameters.put("format", "application/sparql-results.xml");
 
 		// get Options for endpoints
 		if (predefinedEndpoint >= 1) {
@@ -296,10 +295,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// get Options for Filters
 
 		if (predefinedFilter >= 1) {
-			sqt = SparqlQueryType.getFilter(predefinedFilter);
+			sqt = SparqlQueryType.getFilterByNumber(predefinedFilter);
 
 		} else {
-			sqt = new SparqlQueryType("forbid", objList, predList, useLits + "");
+			sqt = new SparqlQueryType("forbid", objList, predList, useLits );
 
 		}
 		// give everything to the manager
@@ -355,8 +354,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				 * 
 				 * 
 				 * Object[] arr=instances.toArray();
-				 * while(instances.size()>=30){
-				 *  }
+				 * while(instances.size()>=30){ }
 				 */
 				// add the role to the filter(a solution is always EXISTS
 				// role.TOP)
@@ -443,20 +441,23 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	}
 
 	/**
-	 * TODO SparqlOntologyCollector needs to be removed
 	 * 
 	 * @param label
 	 * @param limit
 	 */
 	public void calculateSubjects(String label, int limit) {
 		System.out.println("SparqlModul: Collecting Subjects");
-		oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
-		try {
-			subjects = oc.getSubjectsFromLabel(label, limit);
-		} catch (IOException e) {
-			subjects = new String[1];
-			subjects[0] = "[Error]Sparql Endpoint could not be reached.";
-		}
+		// oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
+		// try {
+		Vector<String> v = (SparqlQuery.makeLabelQuery(label, limit, sse)
+				.getAsVector("subject"));
+		 subjects = (String[]) v.toArray(new String[v.size()]);
+		// subjects = oc.getSubjectsFromLabel(label, limit);
+		// } catch (IOException e) {
+		// TODO I removed IOException, please check
+		// subjects = new String[1];
+		// subjects[0] = "[Error]Sparql Endpoint could not be reached.";
+		// }
 		System.out.println("SparqlModul: ****Finished");
 	}
 
@@ -467,30 +468,44 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	public void calculateTriples(String subject) {
 		System.out.println("SparqlModul: Collecting Triples");
-		oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
-		try {
-			triples = oc.collectTriples(subject);
-		} catch (IOException e) {
-			triples = new String[1];
-			triples[0] = "[Error]Sparql Endpoint could not be reached.";
+		Vector<StringTuple> v = (SparqlQuery.makeArticleQuery(subject, sse)
+				.getAsVectorOfTupels("predicate", "objcet"));
+		//String[] subjects = (String[]) v.toArray(new String[v.size()]);
+		String[] tmp = new String[v.size()];
+		int i=0;
+		for (StringTuple stringTuple : v) {
+			tmp[i++]=stringTuple.a+"<"+stringTuple.b;
 		}
+		triples=tmp;
+		//oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
+		//try {
+		//	triples = oc.collectTriples(subject);
+		//} catch (IOException e) {
+		//	triples = new String[1];
+		//	triples[0] = "[Error]Sparql Endpoint could not be reached.";
+		//}
 		System.out.println("SparqlModul: ****Finished");
 	}
 
 	/**
-	 * TODO SparqlOntologyCollector needs to be removed
+	 * 
 	 * 
 	 * @param concept
 	 */
 	public void calculateConceptSubjects(String concept) {
 		System.out.println("SparqlModul: Collecting Subjects");
-		oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
-		try {
-			conceptSubjects = oc.getSubjectsFromConcept(concept);
-		} catch (IOException e) {
-			conceptSubjects = new String[1];
-			conceptSubjects[0] = "[Error]Sparql Endpoint could not be reached.";
-		}
+		Vector<String> v = (SparqlQuery.makeConceptQuery(concept, sse)
+				.getAsVector("subject"));
+		 conceptSubjects = (String[]) v.toArray(new String[v.size()]);
+
+		// oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
+		// try {
+		// conceptSubjects = oc.getSubjectsFromConcept(concept);
+		// } catch (IOException e) {
+		// TODO I removed IOException, please check
+		// conceptSubjects = new String[1];
+		// conceptSubjects[0] = "[Error]Sparql Endpoint could not be reached.";
+		// }
 		System.out.println("SparqlModul: ****Finished");
 	}
 

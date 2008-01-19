@@ -27,20 +27,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.kb.sparql.old.SparqlQueryConventional;
 import org.dllearner.kb.sparql.query.SparqlQuery;
 
 import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 public class TestResultSet {
 
-	// this is a working Jena script
-	// TODO: query runtime seems to be much too high (compared to running it in
-	// http://dbpedia.org/sparql)
-	// verify whether our SPARQL query implementation is faster and why;
-	// TODO: check whether Jena works with the other endpoints in
-	// PredefinedEndpoint; if not
-	// check whether it can be configured to run with these
 	public static void main(String[] args) {
 
 		String queryString = "PREFIX dbpedia2: <http://dbpedia.org/property/> "
@@ -69,7 +61,7 @@ public class TestResultSet {
 		return "";
 	}
 
-	public static void testSaving(List l) {
+	public static void testSaving(List<ResultBinding> l) {
 		System.out.println(l + "\n****************************");
 		try {
 			// FileWriter fw=new FileWriter(new File(Filename),true);
@@ -96,8 +88,8 @@ public class TestResultSet {
 		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
-		SparqlQueryConventional sqConv = new SparqlQueryConventional(sse);
-
+		//SparqlQueryConventional sqConv = new SparqlQueryConventional(sse);
+		
 		// first query is not counted
 		long now = System.currentTimeMillis();
 		long tmp = now;
@@ -142,10 +134,10 @@ public class TestResultSet {
 	public static void compareResults(String queryString) {
 		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
-		SparqlQueryConventional sqConv = new SparqlQueryConventional(sse);
+	//	SparqlQueryConventional sqConv = new SparqlQueryConventional(sse);
 
 		System.out.println(sqJena.getAsXMLString());
-		System.out.println(sqConv.getAsXMLString(queryString));
+		//System.out.println(sqConv.getAsXMLString(queryString));
 
 	}
 }

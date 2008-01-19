@@ -19,10 +19,8 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.dllearner.kb.sparql.configuration.Configuration;
@@ -181,7 +179,7 @@ public class TypedSparqlQueryClasses implements TypedSparqlQueryInterface {
 	}
 
 	private String sendAndReceiveSPARQL(String sparql) {
-		LinkedHashSet l = new LinkedHashSet<String>();
+		
 
 		return new SparqlQuery(sparql, configuration.getSparqlEndpoint())
 				.getAsXMLString();

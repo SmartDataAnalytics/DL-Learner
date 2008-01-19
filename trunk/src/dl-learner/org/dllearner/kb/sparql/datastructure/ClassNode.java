@@ -39,18 +39,17 @@ public class ClassNode extends Node {
 
 	public ClassNode(URI u) {
 		super(u);
-		this.type = "class";
+		// this.type = "class";
 	}
 
-	//expands all directly connected nodes
+	// expands all directly connected nodes
 	@Override
 	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m) {
+
 		Set<StringTuple> s = tsq.query(this.uri);
 		// see manipulator
 		s = m.check(s, this);
 		Vector<Node> Nodes = new Vector<Node>();
-		
-
 		Iterator<StringTuple> it = s.iterator();
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
@@ -58,7 +57,8 @@ public class ClassNode extends Node {
 				// substitute rdf:type with owl:subclassof
 				if (t.a.equals(m.type) || t.a.equals(m.subclass)) {
 					ClassNode tmp = new ClassNode(new URI(t.b));
-					properties.add(new PropertyNode(new URI(m.subclass), this, tmp));
+					properties.add(new PropertyNode(new URI(m.subclass), this,
+							tmp));
 					Nodes.add(tmp);
 				} else {
 					// further expansion stops here
@@ -67,7 +67,7 @@ public class ClassNode extends Node {
 					properties.add(new PropertyNode(new URI(t.a), this, tmp));
 					// System.out.println(m.blankNodeIdentifier);
 					// System.out.println("XXXXX"+t.b);
-					
+
 					// if o is a blank node expand further
 					if (t.b.startsWith(m.blankNodeIdentifier)) {
 						tmp.expand(tsq, m);
@@ -87,29 +87,26 @@ public class ClassNode extends Node {
 
 	// gets the types for properties recursively
 	@Override
-	public Vector<Node> expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
-		// TODO return type doesn't make sense
-		return new Vector<Node>();
+	public void expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
 	}
 
 	@Override
 	public Set<String> toNTriple() {
 		Set<String> s = new HashSet<String>();
-		s.add("<" + this.uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
-				+ "http://www.w3.org/2002/07/owl#Class" + ">.");
+		s.add("<" + this.uri + "><" + rdftype + "><" + classns + ">.");
 
 		for (PropertyNode one : properties) {
-			s.add("<" + this.uri + "><" + one.getURI() + "><" + one.getB().getURI() + ">.");
+			s.add("<" + this.uri + "><" + one.getURI() + "><"
+					+ one.getB().getURI() + ">.");
 			s.addAll(one.getB().toNTriple());
 		}
 
 		return s;
 	}
-	
+
 	@Override
-	public int compareTo(Node n){
+	public int compareTo(Node n) {
 		return super.compareTo(n);
-		//
 	}
 
 }

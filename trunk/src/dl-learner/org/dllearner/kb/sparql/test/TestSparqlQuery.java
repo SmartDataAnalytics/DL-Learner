@@ -20,30 +20,11 @@
 package org.dllearner.kb.sparql.test;
 
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.kb.sparql.old.SparqlQueryConventional;
 import org.dllearner.kb.sparql.query.SparqlQuery;
 
-/**
- * Represents a SPARQL query. It includes support for stopping the SPARQL query
- * (which may be necessary if a timeout is reached).
- * 
- * TODO: It is probably good to change all SPARQL query calls to use only this
- * class.
- * 
- * TODO: Could we use Jena as a solid foundation here? (com.hp.jena.query)
- * 
- * @author Jens Lehmann
- * 
- */
+
 public class TestSparqlQuery {
 
-	// this is a working Jena script
-	// TODO: query runtime seems to be much too high (compared to running it in
-	// http://dbpedia.org/sparql)
-	// verify whether our SPARQL query implementation is faster and why;
-	// TODO: check whether Jena works with the other endpoints in
-	// PredefinedEndpoint; if not
-	// check whether it can be configured to run with these
 	public static void main(String[] args) {
 
 		String queryString = "PREFIX dbpedia2: <http://dbpedia.org/property/> "
@@ -61,7 +42,7 @@ public class TestSparqlQuery {
 	public static void testTime(int howOften, String queryString) {
 		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
-		SparqlQueryConventional sqConv = new SparqlQueryConventional(sse);
+		//SparqlQueryConventional sqConv = new SparqlQueryConventional(sse);
 
 		// first query is not counted
 		sqJena.getAsList();

@@ -33,7 +33,7 @@ import org.dllearner.utilities.StringTuple;
  * A node in the graph that is an instance.
  * 
  * @author Sebastian Hellmann
- *
+ * 
  */
 public class InstanceNode extends Node {
 
@@ -43,11 +43,11 @@ public class InstanceNode extends Node {
 
 	public InstanceNode(URI u) {
 		super(u);
-		this.type = "instance";
+		// this.type = "instance";
 
 	}
 
-	//expands all directly connected nodes
+	// expands all directly connected nodes
 	@Override
 	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m) {
 
@@ -85,34 +85,33 @@ public class InstanceNode extends Node {
 
 	// gets the types for properties recursively
 	@Override
-	public Vector<Node> expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
+	public void expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
 		for (PropertyNode one : properties) {
 			one.expandProperties(tsq, m);
 		}
-		return new Vector<Node>();
+
 	}
 
 	@Override
 	public Set<String> toNTriple() {
 		Set<String> s = new HashSet<String>();
-		s.add("<" + uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
-				+ "http://www.w3.org/2002/07/owl#Thing" + ">.");
+		s.add("<" + uri + "><" + rdftype + "><" + thing + ">.");
 		for (ClassNode one : classes) {
-			s.add("<" + uri + "><" + "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
-					+ one.getURI() + ">.");
+			s.add("<" + uri + "><" + rdftype + "><" + one.getURI() + ">.");
 			s.addAll(one.toNTriple());
 		}
 		for (PropertyNode one : properties) {
-			s.add("<" + uri + "><" + one.getURI() + "><" + one.getB().getURI() + ">.");
+			s.add("<" + uri + "><" + one.getURI() + "><" + one.getB().getURI()
+					+ ">.");
 			s.addAll(one.toNTriple());
 			s.addAll(one.getB().toNTriple());
 		}
 
 		return s;
 	}
-	
+
 	@Override
-	public int compareTo(Node n){
+	public int compareTo(Node n) {
 		return super.compareTo(n);
 		//
 	}

@@ -30,9 +30,17 @@ import org.dllearner.kb.sparql.TypedSparqlQueryInterface;
 import org.dllearner.utilities.StringTuple;
 
 /**
- * Property node.
+ * Property node, has connection to a and b part
  * 
  * @author Sebastian Hellmann
+ *
+ */
+/**
+ * @author sebastian
+ *
+ */
+/**
+ * @author sebastian
  *
  */
 public class PropertyNode extends Node {
@@ -43,25 +51,27 @@ public class PropertyNode extends Node {
 	// specialtypes like owl:symmetricproperty
 	private Set<String> specialTypes;
 
-	public PropertyNode(URI u) {
-		super(u);
-		this.type = "property";
-
-	}
-
 	public PropertyNode(URI u, Node a, Node b) {
 		super(u);
-		this.type = "property";
+		//this.type = "property";
 		this.a = a;
 		this.b = b;
 		this.specialTypes = new HashSet<String>();
 	}
 
+	
+	// Property Nodes are normally not expanded,
+	// this function is never called
 	@Override
 	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m) {
+		return null;
+	}
+	
+	// gets the types for properties recursively
+	@Override
+	public void expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
+		b.expandProperties(tsq, m);
 		Set<StringTuple> s = tsq.query(uri);
-		Vector<Node> Nodes = new Vector<Node>();
-		// Manipulation
 
 		Iterator<StringTuple> it = s.iterator();
 		while (it.hasNext()) {
@@ -76,14 +86,8 @@ public class PropertyNode extends Node {
 			}
 
 		}
-		return Nodes;
-	}
-	
-	// gets the types for properties recursively
-	@Override
-	public Vector<Node> expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
-		b.expandProperties(tsq, m);
-		return this.expand(tsq, m);
+		
+		
 	}
 	
 	public Node getA() {

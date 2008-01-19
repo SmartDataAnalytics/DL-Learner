@@ -2,6 +2,13 @@ package org.dllearner.kb.sparql.query;
 
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
+/**
+ * Does the same as SparqlQuery, but uses the cache. key should be an uri or
+ * something that can be mapped to a file see cache
+ * 
+ * @author Jens Lehmann
+ * 
+ */
 public class CachedSparqlQuery {
 
 	String key;
@@ -11,19 +18,29 @@ public class CachedSparqlQuery {
 	SparqlQuery sparqlQuery;
 	boolean debug_no_cache = false;
 
-	public CachedSparqlQuery(SparqlEndpoint e, Cache c, String key,
+	/**
+	 * key should be an uri or something that can be mapped to a file see cache
+	 * 
+	 * @param endpoint
+	 * @param cache
+	 * @param key
+	 * @param queryString
+	 */
+	public CachedSparqlQuery(SparqlEndpoint endpoint, Cache cache, String key,
 			String queryString) {
-		this.endpoint = e;
-		this.cache = c;
+		this.endpoint = endpoint;
+		this.cache = cache;
 		this.key = key;
 		this.queryString = queryString;
-		this.sparqlQuery = new SparqlQuery(queryString, e);
+		this.sparqlQuery = new SparqlQuery(queryString, endpoint);
 	}
 
-	// URI u, String sparql
-	@Deprecated
-	public String send() {
-
+	/**
+	 * sends a query and returns XML using cache
+	 * 
+	 * @return String xml
+	 */
+	public String getAsXMLString() {
 		String FromCache = cache.get(key, queryString);
 		if (debug_no_cache) {
 			FromCache = null;

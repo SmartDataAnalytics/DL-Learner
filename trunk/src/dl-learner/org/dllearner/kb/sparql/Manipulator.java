@@ -36,22 +36,20 @@ import org.dllearner.utilities.StringTuple;
  *
  */
 public class Manipulator {
-	public String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
-	public String type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+	public final String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
+	public final String type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+	final String objectProperty = "http://www.w3.org/2002/07/owl#ObjectProperty";
+	final String classns = "http://www.w3.org/2002/07/owl#Class";
+	final String thing = "http://www.w3.org/2002/07/owl#Thing";
+
+	
 	public String blankNodeIdentifier = "bnode";
 	public int breakSuperClassRetrievalAfter=200;
 	public LinkedList<StringTuple> replacePredicate;
 	public LinkedList<StringTuple> replaceObject;
 
-	String objectProperty = "http://www.w3.org/2002/07/owl#ObjectProperty";
-	String classns = "http://www.w3.org/2002/07/owl#Class";
-	String thing = "http://www.w3.org/2002/07/owl#Thing";
-
+	
 	Set<String> classproperties;
-
-	String[] defaultClasses = { "http://dbpedia.org/class/yago",
-			"http://dbpedia.org/resource/Category:", "http://dbpedia.org/resource/Template:",
-			"http://www.w3.org/2004/02/skos/core", "http://dbpedia.org/class/" };
 
 	public Manipulator(String blankNodeIdentifier,int breakSuperClassRetrievalAfter,LinkedList<StringTuple> replacePredicate,LinkedList<StringTuple> replaceObject) {
 		this.blankNodeIdentifier = blankNodeIdentifier;
