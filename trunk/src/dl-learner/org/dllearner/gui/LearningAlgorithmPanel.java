@@ -21,6 +21,8 @@ package org.dllearner.gui;
  */
 
 import javax.swing.*;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -30,7 +32,6 @@ import java.util.List;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.ComponentManager;
-
 
 
 
@@ -47,14 +48,18 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     private Config config;
     private List<Class<? extends LearningAlgorithm>> learners;
 	private JPanel choosePanel = new JPanel();
+	private JPanel centerPanel = new JPanel();
 	private JPanel initPanel = new JPanel();
     private JButton initButton, testButton;
     private String[] cbItems = {};
 	private JComboBox cb = new JComboBox(cbItems);
 	private int choosenClassIndex;
 	private List<ConfigOption<?>> optionList;
-    
-    
+	private DefaultTableModel optionModel = new DefaultTableModel();
+	private JTable optionTable = new JTable(optionModel);
+	
+	
+	
 	LearningAlgorithmPanel(Config config) {
 		super(new BorderLayout());
 
@@ -67,9 +72,13 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		
 		initPanel.add(initButton);
 		initPanel.add(testButton);
+
 		choosePanel.add(cb);
 
-		add(choosePanel, BorderLayout.PAGE_START);	
+		centerPanel.add(optionTable);
+		
+		add(choosePanel, BorderLayout.PAGE_START);
+		add(centerPanel, BorderLayout.CENTER);	
 		add(initPanel, BorderLayout.PAGE_END);	
 		
 		// add into comboBox
@@ -79,6 +88,18 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 			//System.out.println(learners.get(i).getSimpleName());
 			cb.addItem(config.getComponentManager().getComponentName(learners.get(i)));
 		}
+		
+		// set JTable
+		optionModel.addColumn("name");
+		optionModel.addColumn("default");
+		optionModel.addColumn("class");
+
+		// first row - where is header?
+		optionModel.addRow(new Object[] {"name","default","class"});
+
+		//optionTable.setSize(400, 400);
+		//System.out.println("optionModel.getSize(): " + optionTable.getSize());
+		optionTable.updateUI();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -89,13 +110,38 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 			// TEST
 			//available options for selected class
 			optionList = ComponentManager.getConfigOptions(learners.get(cb.getSelectedIndex()));
-			System.out.println(optionList);
+			//System.out.println(optionList + "\n");
 			//System.out.println("option 0:\n" + optionList.get(0));
-			System.out.println("size: " + optionList.size());
+			//System.out.println("size: " + optionList.size() + "\n"); // size
+/*			for (int i=0; i<optionList.size(); i++) {
+				System.out.println("name: " + optionList.get(i).getName()); // name
+				System.out.println("default value: " + optionList.get(i).getDefaultValue()); // default value
+				System.out.println("class: " + optionList.get(i).getClass()); // class
+				System.out.println("description: " + optionList.get(i).getDescription()); // description
+				System.out.println("allowed value description: " + optionList.get(i).getAllowedValuesDescription()); // allowed value description
+				System.out.println();
+			}
+*/			
 
+			// show Options
+			// clear JTable
+			for (int i=optionModel.getRowCount()-1; i>0; i--) {
+				// from last to first 
+				optionModel.removeRow(i);
+			}
+			// new JTable
+			for (int i=0; i<optionList.size(); i++) {
+				optionModel.addRow(new Object[] {optionList.get(i).getName(), optionList.get(i).getDefaultValue(),
+						optionList.get(i).getClass().getSimpleName()});
+				// System.out.println("v2 name: " + optionList.get(i).getName()); // name
+
+			}
+			// update graphic
+			centerPanel.updateUI();
 
 		}
-        
+
+		// init
 		if (e.getSource() == initButton) {
 			if (config.getStatus(6)) {
 				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(learners.get(choosenClassIndex), config.getLearningProblem(), config.getReasoningService()));
