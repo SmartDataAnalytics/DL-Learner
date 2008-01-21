@@ -69,7 +69,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   </head>
   <body>
 
-<h1>DBpedia Navigator</h1>
+<!--  <h1>DBpedia Navigator</h1> -->
+<img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
@@ -241,7 +242,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	tabs etc.) as an overlay, because the Wikipedia article will almost always be a human-friendlier
 	description of an object compared to the extracted one.</li>
 	<li>Handle redirect for example if you look for 'Deutschland'</li>
-	<li>Ich habe mir gestern deswegen mal angeschaut welche fertigen SPARQL-APIs es gibt. Eine der verbreitesten und deshalb auch aktiven Projekt ist Jena. Für uns relevant ist das ARQ-Teilprojekt: http://jena.sourceforge.net/ARQ/.
+	<li>Ich habe mir gestern deswegen mal angeschaut welche fertigen SPARQL-APIs es gibt. Eine der verbreitesten und deshalb auch aktiven Projekt ist Jena. Fï¿½r uns relevant ist das ARQ-Teilprojekt: http://jena.sourceforge.net/ARQ/.
 	</li> 
 </ul>
 </div>
