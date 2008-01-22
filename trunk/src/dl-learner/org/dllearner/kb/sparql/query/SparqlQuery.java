@@ -20,6 +20,7 @@
 package org.dllearner.kb.sparql.query;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -49,6 +50,10 @@ public class SparqlQuery {
 	private QueryExecution queryExecution;
 	SparqlEndpoint endpoint;
 
+	public void setQueryExecutionRunning(boolean isRunning){
+		this.isRunning=isRunning;
+	}
+	
 	/**
 	 * simplest contructor, works only with some endpoints, 
 	 * not with DBpedia
@@ -76,8 +81,6 @@ public class SparqlQuery {
 	 * @return jena ResultSet
 	 */
 	protected ResultSet send() {
-		isRunning = true;
-
 		p(queryString);
 		// create a query and parse it into Jena
 		Query query = QueryFactory.create(queryString);
@@ -91,7 +94,6 @@ public class SparqlQuery {
 
 		p("query SPARQL server");
 		ResultSet rs = queryExecution.execSelect();
-		isRunning = false;
 		return rs;
 	}
 
@@ -103,7 +105,31 @@ public class SparqlQuery {
 	public boolean isRunning() {
 		return isRunning;
 	}
-
+	
+	public String[][] getAsStringArray(){
+		System.out.println("Starting Query");
+		ResultSet rs=send();
+		System.out.println("getResults");
+		List<ResultBinding> l = ResultSetFormatter.toList(rs);
+		List resultVars=rs.getResultVars();
+		String[][] array=new String[l.size()][resultVars.size()];
+		Iterator iter=resultVars.iterator();
+		int i=0,j=0;
+		
+		for (ResultBinding resultBinding : l) {
+			while (iter.hasNext()){
+				String varName=(String)iter.next();
+				array[i][j]=resultBinding.get(varName).toString();
+				j++;
+			}
+			iter=resultVars.iterator();
+			i++;
+			j=0;
+		}
+		System.out.println("Query complete");
+		return array;
+	}
+	
 	/**
 	 * sends a query and returns XML
 	 * 
