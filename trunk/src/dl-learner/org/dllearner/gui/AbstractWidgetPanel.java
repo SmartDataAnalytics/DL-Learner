@@ -25,7 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 //import java.util.List;
 
-//import javax.swing.JButton;
+import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 //import javax.swing.JTable;
@@ -49,21 +49,35 @@ public class AbstractWidgetPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -1802111225835164644L;
 
 	//private Config config;
-	private ConfigOption<?> configOption;
-	private JLabel nameLabel;
+	//private ConfigOption<?> configOption;
+	//private JLabel nameLabel;
 	private JPanel centerPanel = new JPanel();
 	
 	public AbstractWidgetPanel(Config config, ConfigOption<?> configOption) {
 		super(new BorderLayout());
 		//this.config = config;
-		this.configOption = configOption;
+		//this.configOption = configOption;
 		
-		//show info
-		nameLabel = new JLabel(this.configOption.getName());
-		centerPanel.add(nameLabel);
+		if (configOption.toString().contains("IntegerConfigOption")) {
+			JLabel nameLabel = new JLabel(configOption.getName());
+			JTextField integerField = new JTextField(3);
+			integerField.setText("100");
+			System.out.println(configOption.getDefaultValue());
+			centerPanel.add(nameLabel);
+			centerPanel.add(integerField);
+			add(centerPanel, BorderLayout.CENTER);
+		}
+		else if (false) {
+			
+		}
+		else {
+			JLabel nameLabel = new JLabel(configOption.getName());
+			JLabel notImplementedLabel = new JLabel("not implemented");
+			centerPanel.add(nameLabel);
+			centerPanel.add(notImplementedLabel);
+			add(centerPanel, BorderLayout.CENTER);
+		}
 		
-		//layout
-		add(centerPanel, BorderLayout.CENTER);
 		
 		
 	}
