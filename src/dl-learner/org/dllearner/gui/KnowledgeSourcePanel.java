@@ -131,7 +131,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// read selected KnowledgeSourceClass
         choosenClassIndex = cb.getSelectedIndex();
-        checkIfSparcle();
+        checkIfSparql();
 		
 		// open File
 		if (e.getSource() == openButton) {
@@ -166,7 +166,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		gbc.weighty = wy;
 	}
 	
-	private void checkIfSparcle() {
+	private void checkIfSparql() {
 		if (sources.get(choosenClassIndex).toString().contains("Sparql")) {
 			openButton.setEnabled(false);
 			infoLabel.setText("type URL");

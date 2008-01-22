@@ -117,9 +117,11 @@ public class OptionPanel extends JPanel implements ActionListener {
 			// clear
 			centerPanel.removeAll();
 			
-			//get an AbstractWidgetPanel
+			//get an AbstractWidgetPanel TEST
 			AbstractWidgetPanel firstPanel = new AbstractWidgetPanel(config, optionList.get(0));
+			AbstractWidgetPanel secondPanel = new AbstractWidgetPanel(config, optionList.get(1));
 			centerPanel.add(firstPanel);
+			centerPanel.add(secondPanel);
 			
 			// update graphic
 			centerPanel.updateUI();
