@@ -106,14 +106,18 @@ public class SparqlQuery {
 		return isRunning;
 	}
 	
+	/**
+	 * @return
+	 */
+	@SuppressWarnings({"unchecked"})
 	public String[][] getAsStringArray(){
 		System.out.println("Starting Query");
 		ResultSet rs=send();
 		System.out.println("getResults");
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
-		List resultVars=rs.getResultVars();
+		List<String> resultVars=rs.getResultVars();
 		String[][] array=new String[l.size()][resultVars.size()];
-		Iterator iter=resultVars.iterator();
+		Iterator<String> iter=resultVars.iterator();
 		int i=0,j=0;
 		
 		for (ResultBinding resultBinding : l) {

@@ -55,7 +55,6 @@ import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
-import org.dllearner.kb.sparql.query.SparqlQuery;
 
 /**
  * DL-Learner web service interface.
