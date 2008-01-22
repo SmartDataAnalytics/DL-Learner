@@ -32,8 +32,8 @@ import java.util.List;
  */
 public class SparqlEndpoint {
 	URL url;
-	LinkedList<String> defaultGraphURIs;
-	LinkedList<String> namedGraphURIs;
+	List<String> defaultGraphURIs;
+	List<String> namedGraphURIs;
 	//public HashMap<String, String> parameters = new HashMap<String, String>();
 
 	public SparqlEndpoint(URL u) {
@@ -44,8 +44,8 @@ public class SparqlEndpoint {
 	
 	public SparqlEndpoint(URL u,List<String> defaultGraphURIs,List<String> namedGraphURIs) {
 		this.url = u;
-		this.defaultGraphURIs=new LinkedList<String>();
-		this.namedGraphURIs=new LinkedList<String>();
+		this.defaultGraphURIs=defaultGraphURIs;
+		this.namedGraphURIs=namedGraphURIs;
 	}
 	
 
@@ -53,11 +53,11 @@ public class SparqlEndpoint {
 		return this.url;
 	}
 
-	public LinkedList<String> getDefaultGraphURIs() {
+	public List<String> getDefaultGraphURIs() {
 		return defaultGraphURIs;
 	}
 
-	public LinkedList<String> getNamedGraphURIs() {
+	public List<String> getNamedGraphURIs() {
 		return namedGraphURIs;
 	}
 	

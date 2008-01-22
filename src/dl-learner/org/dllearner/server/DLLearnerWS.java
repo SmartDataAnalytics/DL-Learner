@@ -55,6 +55,7 @@ import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
+import org.dllearner.kb.sparql.query.SparqlQuery;
 
 /**
  * DL-Learner web service interface.
@@ -486,7 +487,7 @@ public class DLLearnerWS {
 	////////////////////////////////////////
 	//     SPARQL component methods       //
 	////////////////////////////////////////
-	
+	/*
 	@WebMethod
 	public void startThread(int id, int componentID, String[] options) throws ClientNotKnownException
 	{
@@ -571,6 +572,49 @@ public class DLLearnerWS {
 		else if (option.equals("conceptSubjects"))
 			return ((SparqlKnowledgeSource)component).getConceptSubjects();
 		return new String[0];
+	}
+	*/
+	
+	@WebMethod
+	public String[][] sparqlQuery(int sessionID, int componentID, int queryID) throws ClientNotKnownException
+	{
+		ClientState state = getState(sessionID);
+		Component component = state.getComponent(componentID);
+		return ((SparqlKnowledgeSource)component).getSparqlResult(queryID);
+	}
+	
+	@WebMethod
+	public int sparqlQueryThreaded(int sessionID, int componentID, final String query) throws ClientNotKnownException
+	{
+		final ClientState state = getState(sessionID);
+		final Component component = state.getComponent(componentID);
+		final int ID=((SparqlKnowledgeSource)component).sparqlQuery(query);
+		Thread sparqlThread = new Thread() {
+			@Override
+			public void run() {
+				((SparqlKnowledgeSource)component).getSparqlQuery(ID).setQueryExecutionRunning(true);
+				((SparqlKnowledgeSource)component).startSparqlQuery(ID);
+				((SparqlKnowledgeSource)component).getSparqlQuery(ID).setQueryExecutionRunning(false);
+			}
+		};
+		sparqlThread.start();
+		return ID;
+	}
+	
+	@WebMethod
+	public boolean isSparqlQueryRunning(int sessionID, int componentID, int queryID) throws ClientNotKnownException
+	{
+		ClientState state = getState(sessionID);
+		Component component = state.getComponent(componentID);
+		return ((SparqlKnowledgeSource)component).getSparqlQuery(queryID).isRunning();
+	}
+	
+	@WebMethod
+	public void stopSparqlThread(int sessionID, int componentID, int queryID) throws ClientNotKnownException
+	{
+		ClientState state = getState(sessionID);
+		Component component = state.getComponent(componentID);
+		((SparqlKnowledgeSource)component).getSparqlQuery(queryID).stop();
 	}
 	
 	@WebMethod

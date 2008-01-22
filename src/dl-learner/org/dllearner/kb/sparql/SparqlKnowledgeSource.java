@@ -25,12 +25,17 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
@@ -61,8 +66,10 @@ import org.dllearner.utilities.StringTuple;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
+	private Map<Integer,SparqlQuery> queryIDs = new HashMap<Integer,SparqlQuery>();
+	private Map<Integer, String[][]> queryResult=new HashMap<Integer,String[][]>();
 	// ConfigOptions
-	private URL url;
+	public URL url;
 	// String host;
 	private Set<String> instances = new HashSet<String>();;
 	private URL dumpFile;
@@ -124,6 +131,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private Thread triplesThread;
 
 	private Thread conceptThread;
+	
+	private LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+	private LinkedList<String> namedGraphURIs=new LinkedList<String>();
 
 	// received ontology as array, used if format=Array(an element of the
 	// array consists of the subject, predicate and object separated by '<'
@@ -199,7 +209,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		options.add(new BooleanConfigOption("closeAfterRecursion",
 				"gets all classes for all instances"));
 		options.add(CommonConfigOptions.getVerbosityOption());
-
+		
+		options.add(new StringSetConfigOption("defaultGraphURIs","a list of all default Graph URIs"));
+		options.add(new StringSetConfigOption("namedGraphURIs","a list of all named Graph URIs"));
 		return options;
 	}
 
@@ -265,8 +277,19 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			closeAfterRecursion = (Boolean) entry.getValue();
 //		} else if (option.equals("verbosity")) {
 //			verbosity = (String) entry.getValue();
+		} else if (option.equals("defaultGraphURIs")) {
+			Set<String> temp = (Set<String>) entry.getValue();
+			Iterator iter=temp.iterator();
+			while (iter.hasNext()){
+				defaultGraphURIs.add((String)iter.next());
+			}
+		} else if (option.equals("namedGraphURIs")) {
+			Set<String> temp = (Set<String>) entry.getValue();
+			Iterator iter=temp.iterator();
+			while (iter.hasNext()){
+				namedGraphURIs.add((String)iter.next());
+			}
 		}
-
 	}
 
 	/*
@@ -577,7 +600,46 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return conceptSubjects;
 	}
 
-	public SparqlQuery sparqlQuery(String query) {
-		return new SparqlQuery(query, sse);
+	public int sparqlQuery(String query) {
+		this.sse=new SparqlEndpoint(url,defaultGraphURIs,namedGraphURIs);
+		return this.generateQueryID(new SparqlQuery(query, sse));
+	}
+	
+	public void startSparqlQuery(int queryID){
+		queryResult.put(queryID, queryIDs.get(queryID).getAsStringArray());
+	}
+	
+	public SparqlQuery getSparqlQuery(int queryID){
+		return queryIDs.get(queryID);
+	}
+	
+	public String[][] getSparqlResult(int queryID){
+		return queryResult.get(queryID);
+	}
+	
+	private int generateQueryID(SparqlQuery query) {
+		int id;
+		Random rand=new Random();
+		do {
+			id = rand.nextInt();
+		} while(queryIDs.keySet().contains(id));
+		queryIDs.put(id, query);
+		return id;		
+	}
+	
+	public static void main(String[] args) throws MalformedURLException
+	{
+		String query="SELECT ?pred ?obj\n"+
+					 "WHERE {<http://dbpedia.org/resource/Leipzig> ?pred ?obj}";
+		URL url=new URL("http://dbpedia.openlinksw.com:8890/sparql");
+		SparqlEndpoint sse=new SparqlEndpoint(url);
+		SparqlQuery q=new SparqlQuery(query,sse);
+		String[][] array=q.getAsStringArray();
+		for (int i=0;i<array.length;i++)
+		{
+			for (int j=0;j<array[0].length;j++)
+				System.out.print(array[i][j]+" ");
+			System.out.println();
+		}
 	}
 }
