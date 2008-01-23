@@ -57,7 +57,7 @@ import org.dllearner.reasoning.JenaOWLDIGConverter;
 import org.dllearner.utilities.StringTuple;
 
 /**
- * Represents a SPARQL Endpoint.
+ * Represents the SPARQL Endpoint Component.
  * 
  * @author Jens Lehmann
  * @author Sebastian Knappe
@@ -65,8 +65,8 @@ import org.dllearner.utilities.StringTuple;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
-	private Map<Integer,SparqlQuery> queryIDs = new HashMap<Integer,SparqlQuery>();
-	private Map<Integer, String[][]> queryResult=new HashMap<Integer,String[][]>();
+	private Map<Integer, SparqlQuery> queryIDs = new HashMap<Integer, SparqlQuery>();
+	private Map<Integer, String[][]> queryResult = new HashMap<Integer, String[][]>();
 	// ConfigOptions
 	public URL url;
 	// String host;
@@ -84,19 +84,19 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;
 	private int breakSuperClassRetrievalAfter = 200;
-
-	private boolean learnDomain = false;
-	private boolean learnRange = false;
-	private int numberOfInstancesUsedForRoleLearning = 40;
-	private String role = "";
 	private String blankNodeIdentifier = "bnode";
-//	private String verbosity = "warning";
-	
-	//LinkedList<StringTuple> URIParameters = new LinkedList<StringTuple>();
+	// private boolean learnDomain = false;
+	// private boolean learnRange = false;
+	// private int numberOfInstancesUsedForRoleLearning = 40;
+	// private String role = "";
+	//
+	// private String verbosity = "warning";
+
+	// LinkedList<StringTuple> URIParameters = new LinkedList<StringTuple>();
 	LinkedList<StringTuple> replacePredicate = new LinkedList<StringTuple>();
 	LinkedList<StringTuple> replaceObject = new LinkedList<StringTuple>();
 
-	SparqlEndpoint sse = null;
+	SparqlEndpoint endpoint = null;
 
 	/**
 	 * Holds the results of the calculateSubjects method
@@ -130,9 +130,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private Thread triplesThread;
 
 	private Thread conceptThread;
-	
-	private LinkedList<String> defaultGraphURIs=new LinkedList<String>();
-	private LinkedList<String> namedGraphURIs=new LinkedList<String>();
+
+	private LinkedList<String> defaultGraphURIs = new LinkedList<String>();
+	private LinkedList<String> namedGraphURIs = new LinkedList<String>();
 
 	// received ontology as array, used if format=Array(an element of the
 	// array consists of the subject, predicate and object separated by '<'
@@ -145,8 +145,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return "SPARQL Endpoint";
 	}
 
-	private static Logger logger = Logger.getLogger(SparqlKnowledgeSource.class);	
-	
+	private static Logger logger = Logger
+			.getLogger(SparqlKnowledgeSource.class);
+
 	/**
 	 * sets the ConfigOptions for this KnowledgeSource
 	 * 
@@ -155,7 +156,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
-//		options.add(new StringConfigOption("host", "host of SPARQL Endpoint"));
+		// options.add(new StringConfigOption("host", "host of SPARQL
+		// Endpoint"));
 		options
 				.add(new StringSetConfigOption("instances",
 						"relevant instances e.g. positive and negative examples in a learning problem"));
@@ -208,9 +210,11 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		options.add(new BooleanConfigOption("closeAfterRecursion",
 				"gets all classes for all instances"));
 		options.add(CommonConfigOptions.getVerbosityOption());
-		
-		options.add(new StringSetConfigOption("defaultGraphURIs","a list of all default Graph URIs"));
-		options.add(new StringSetConfigOption("namedGraphURIs","a list of all named Graph URIs"));
+
+		options.add(new StringSetConfigOption("defaultGraphURIs",
+				"a list of all default Graph URIs"));
+		options.add(new StringSetConfigOption("namedGraphURIs",
+				"a list of all named Graph URIs"));
 		return options;
 	}
 
@@ -230,8 +234,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				throw new InvalidConfigOptionValueException(entry.getOption(),
 						entry.getValue(), "malformed URL " + s);
 			}
-//		} else if (option.equals("host")) {
-//			host = (String) entry.getValue();
+			// } else if (option.equals("host")) {
+			// host = (String) entry.getValue();
 		} else if (option.equals("instances")) {
 			instances = (Set<String>) entry.getValue();
 		} else if (option.equals("recursionDepth")) {
@@ -254,12 +258,16 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			useLits = (Boolean) entry.getValue();
 		} else if (option.equals("getAllSuperClasses")) {
 			getAllSuperClasses = (Boolean) entry.getValue();
-		} else if (option.equals("learnDomain")) {
-			learnDomain = (Boolean) entry.getValue();
-		} else if (option.equals("learnRange")) {
-			learnRange = (Boolean) entry.getValue();
-		} else if (option.equals("role")) {
-			role = (String) entry.getValue();
+			/*
+			 * TODO remaove } else if (option.equals("learnDomain")) {
+			 * learnDomain = (Boolean) entry.getValue(); } else if
+			 * (option.equals("learnRange")) { learnRange = (Boolean)
+			 * entry.getValue(); } else if (option.equals("role")) { role =
+			 * (String) entry.getValue(); } else if
+			 * (option.equals("numberOfInstancesUsedForRoleLearning")) {
+			 * numberOfInstancesUsedForRoleLearning = (Integer)
+			 * entry.getValue();
+			 */
 		} else if (option.equals("blankNodeIdentifier")) {
 			blankNodeIdentifier = (String) entry.getValue();
 		} else if (option.equals("example")) {
@@ -270,23 +278,21 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			replaceObject = (LinkedList) entry.getValue();
 		} else if (option.equals("breakSuperClassRetrievalAfter")) {
 			breakSuperClassRetrievalAfter = (Integer) entry.getValue();
-		} else if (option.equals("numberOfInstancesUsedForRoleLearning")) {
-			numberOfInstancesUsedForRoleLearning = (Integer) entry.getValue();
 		} else if (option.equals("closeAfterRecursion")) {
 			closeAfterRecursion = (Boolean) entry.getValue();
-//		} else if (option.equals("verbosity")) {
-//			verbosity = (String) entry.getValue();
+			// } else if (option.equals("verbosity")) {
+			// verbosity = (String) entry.getValue();
 		} else if (option.equals("defaultGraphURIs")) {
 			Set<String> temp = (Set<String>) entry.getValue();
-			Iterator iter=temp.iterator();
-			while (iter.hasNext()){
-				defaultGraphURIs.add((String)iter.next());
+			Iterator iter = temp.iterator();
+			while (iter.hasNext()) {
+				defaultGraphURIs.add((String) iter.next());
 			}
 		} else if (option.equals("namedGraphURIs")) {
 			Set<String> temp = (Set<String>) entry.getValue();
-			Iterator iter=temp.iterator();
-			while (iter.hasNext()){
-				namedGraphURIs.add((String)iter.next());
+			Iterator iter = temp.iterator();
+			while (iter.hasNext()) {
+				namedGraphURIs.add((String) iter.next());
 			}
 		}
 	}
@@ -299,100 +305,50 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	@Override
 	public void init() {
 		logger.info("SparqlModul: Collecting Ontology");
-		// SparqlOntologyCollector oc=
-		// new SparqlOntologyCollector(Datastructures.setToArray(instances),
-		// numberOfRecursions, filterMode,
-		// Datastructures.setToArray(predList),Datastructures.setToArray(
-		// objList),Datastructures.setToArray(classList),format,url,useLits);
-		
+		/*
+		 * TODO remove when Jena works SparqlOntologyCollector oc= // new
+		 * SparqlOntologyCollector(Datastructures.setToArray(instances), //
+		 * numberOfRecursions, filterMode, //
+		 * Datastructures.setToArray(predList),Datastructures.setToArray(
+		 * objList),Datastructures.setToArray(classList),format,url,useLits);
+		 * //HashMap<String, String> parameters = new HashMap<String,
+		 * String>(); //parameters.put("default-graph-uri",
+		 * "http://dbpedia.org"); //parameters.put("format",
+		 * "application/sparql-results.xml");
+		 * 
+		 */
+
 		Manager m = new Manager();
-		SparqlQueryType sqt = null;
+		SparqlQueryType sparqlQueryType = null;
 		// get Options for Manipulator
-		Manipulator man = new Manipulator(blankNodeIdentifier,
+		Manipulator manipulator = new Manipulator(blankNodeIdentifier,
 				breakSuperClassRetrievalAfter, replacePredicate, replaceObject);
-		//HashMap<String, String> parameters = new HashMap<String, String>();
-		//parameters.put("default-graph-uri", "http://dbpedia.org");
-		//parameters.put("format", "application/sparql-results.xml");
 
 		// get Options for endpoints
 		if (predefinedEndpoint >= 1) {
-			sse = SparqlEndpoint.getEndpointByNumber(predefinedEndpoint);
+			endpoint = SparqlEndpoint.getEndpointByNumber(predefinedEndpoint);
 		} else {
 			// TODO this is not optimal, because not all options are used
-			sse = new SparqlEndpoint(url);
+			// like default-graph uri
+			endpoint = new SparqlEndpoint(url);
 		}
 
 		// get Options for Filters
 
 		if (predefinedFilter >= 1) {
-			sqt = SparqlQueryType.getFilterByNumber(predefinedFilter);
+			sparqlQueryType = SparqlQueryType
+					.getFilterByNumber(predefinedFilter);
 
 		} else {
-			sqt = new SparqlQueryType("forbid", objList, predList, useLits );
+			sparqlQueryType = new SparqlQueryType("forbid", objList, predList,
+					useLits);
 
 		}
 		// give everything to the manager
-		m.useConfiguration(sqt, sse, man, recursionDepth, getAllSuperClasses,
-				closeAfterRecursion);
+		m.useConfiguration(sparqlQueryType, endpoint, manipulator,
+				recursionDepth, getAllSuperClasses, closeAfterRecursion);
 		try {
 			String ont = "";
-			// System.out.println(learnDomain);
-			// used to learn a domain of a role
-			if (learnDomain || learnRange) {
-				Set<String> pos = new HashSet<String>();
-				Set<String> neg = new HashSet<String>();
-				if (learnDomain) {
-					pos = m.getDomainInstancesForRole(role);
-					neg = m.getRangeInstancesForRole(role);
-				} else if (learnRange) {
-					neg = m.getDomainInstancesForRole(role);
-					pos = m.getRangeInstancesForRole(role);
-				}
-				// choose 30
-
-				Set<String> tmp = new HashSet<String>();
-				for (String one : pos) {
-					tmp.add(one);
-					if (tmp.size() >= numberOfInstancesUsedForRoleLearning)
-						break;
-				}
-				pos = tmp;
-				logger.info("Instances used: " + pos.size());
-
-				tmp = new HashSet<String>();
-				for (String one : neg) {
-					tmp.add(one);
-					if (tmp.size() >= numberOfInstancesUsedForRoleLearning)
-						break;
-				}
-				neg = tmp;
-
-				instances = new HashSet<String>();
-				instances.addAll(pos);
-
-				instances.addAll(neg);
-
-				for (String one : pos) {
-					logger.info("+\"" + one + "\"");
-				}
-				for (String one : neg) {
-					logger.info("-\"" + one + "\"");
-				}
-
-				/*
-				 * Random r= new Random();
-				 * 
-				 * 
-				 * Object[] arr=instances.toArray();
-				 * while(instances.size()>=30){ }
-				 */
-				// add the role to the filter(a solution is always EXISTS
-				// role.TOP)
-				m.addPredicateFilter(role);
-				// System.out.println(instances);
-				// THIS is a workaround
-
-			}
 			// the actual extraction is started here
 			ont = m.extract(instances);
 			logger.info("Number of cached SPARQL queries: "
@@ -479,9 +435,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		logger.info("SparqlModul: Collecting Subjects");
 		// oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
 		// try {
-		Vector<String> v = (SparqlQuery.makeLabelQuery(label, limit, sse)
+		Vector<String> v = (SparqlQuery.makeLabelQuery(label, limit, endpoint)
 				.getAsVector("subject"));
-		 subjects = (String[]) v.toArray(new String[v.size()]);
+		subjects = (String[]) v.toArray(new String[v.size()]);
 		// subjects = oc.getSubjectsFromLabel(label, limit);
 		// } catch (IOException e) {
 		// TODO I removed IOException, please check
@@ -498,22 +454,23 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	public void calculateTriples(String subject) {
 		logger.info("SparqlModul: Collecting Triples");
-		Vector<StringTuple> v = (SparqlQuery.makeArticleQuery(subject, sse)
-				.getAsVectorOfTupels("predicate", "objcet"));
-		//String[] subjects = (String[]) v.toArray(new String[v.size()]);
+		Vector<StringTuple> v = (SparqlQuery
+				.makeArticleQuery(subject, endpoint).getAsVectorOfTupels(
+				"predicate", "objcet"));
+		// String[] subjects = (String[]) v.toArray(new String[v.size()]);
 		String[] tmp = new String[v.size()];
-		int i=0;
+		int i = 0;
 		for (StringTuple stringTuple : v) {
-			tmp[i++]=stringTuple.a+"<"+stringTuple.b;
+			tmp[i++] = stringTuple.a + "<" + stringTuple.b;
 		}
-		triples=tmp;
-		//oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
-		//try {
-		//	triples = oc.collectTriples(subject);
-		//} catch (IOException e) {
-		//	triples = new String[1];
-		//	triples[0] = "[Error]Sparql Endpoint could not be reached.";
-		//}
+		triples = tmp;
+		// oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
+		// try {
+		// triples = oc.collectTriples(subject);
+		// } catch (IOException e) {
+		// triples = new String[1];
+		// triples[0] = "[Error]Sparql Endpoint could not be reached.";
+		// }
 		logger.info("SparqlModul: ****Finished");
 	}
 
@@ -524,9 +481,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	public void calculateConceptSubjects(String concept) {
 		logger.info("SparqlModul: Collecting Subjects");
-		Vector<String> v = (SparqlQuery.makeConceptQuery(concept, sse)
+		Vector<String> v = (SparqlQuery.makeConceptQuery(concept, endpoint)
 				.getAsVector("subject"));
-		 conceptSubjects = (String[]) v.toArray(new String[v.size()]);
+		conceptSubjects = (String[]) v.toArray(new String[v.size()]);
 
 		// oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
 		// try {
@@ -600,44 +557,43 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	}
 
 	public int sparqlQuery(String query) {
-		this.sse=new SparqlEndpoint(url,defaultGraphURIs,namedGraphURIs);
-		return this.generateQueryID(new SparqlQuery(query, sse));
+		this.endpoint = new SparqlEndpoint(url, defaultGraphURIs,
+				namedGraphURIs);
+		return this.generateQueryID(new SparqlQuery(query, endpoint));
 	}
-	
-	public void startSparqlQuery(int queryID){
+
+	public void startSparqlQuery(int queryID) {
 		queryResult.put(queryID, queryIDs.get(queryID).getAsStringArray());
 	}
-	
-	public SparqlQuery getSparqlQuery(int queryID){
+
+	public SparqlQuery getSparqlQuery(int queryID) {
 		return queryIDs.get(queryID);
 	}
-	
-	public String[][] getSparqlResult(int queryID){
+
+	public String[][] getSparqlResult(int queryID) {
 		return queryResult.get(queryID);
 	}
-	
+
 	private int generateQueryID(SparqlQuery query) {
 		int id;
-		Random rand=new Random();
+		Random rand = new Random();
 		do {
 			id = rand.nextInt();
-		} while(queryIDs.keySet().contains(id));
+		} while (queryIDs.keySet().contains(id));
 		queryIDs.put(id, query);
-		return id;		
+		return id;
 	}
-	
-	public static void main(String[] args) throws MalformedURLException
-	{
-		String query="SELECT ?pred ?obj\n"+
-					 "WHERE {<http://dbpedia.org/resource/Leipzig> ?pred ?obj}";
-		URL url=new URL("http://dbpedia.openlinksw.com:8890/sparql");
-		SparqlEndpoint sse=new SparqlEndpoint(url);
-		SparqlQuery q=new SparqlQuery(query,sse);
-		String[][] array=q.getAsStringArray();
-		for (int i=0;i<array.length;i++)
-		{
-			for (int j=0;j<array[0].length;j++)
-				System.out.print(array[i][j]+" ");
+
+	public static void main(String[] args) throws MalformedURLException {
+		String query = "SELECT ?pred ?obj\n"
+				+ "WHERE {<http://dbpedia.org/resource/Leipzig> ?pred ?obj}";
+		URL url = new URL("http://dbpedia.openlinksw.com:8890/sparql");
+		SparqlEndpoint sse = new SparqlEndpoint(url);
+		SparqlQuery q = new SparqlQuery(query, sse);
+		String[][] array = q.getAsStringArray();
+		for (int i = 0; i < array.length; i++) {
+			for (int j = 0; j < array[0].length; j++)
+				System.out.print(array[i][j] + " ");
 			System.out.println();
 		}
 	}

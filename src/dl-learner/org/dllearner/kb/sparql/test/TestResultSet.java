@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
@@ -44,9 +43,11 @@ public class TestResultSet {
 		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 
+		//sqJena.testJSon();
+		
 		List<ResultBinding> l = sqJena.getAsList();
 		System.out.println(l.getClass());
-		testSaving(new LinkedList<ResultBinding>(l));
+		//testSaving(new LinkedList<ResultBinding>(l));
 		/*
 		 * for (ResultBinding o : l) { System.out.println(o); // Iterator
 		 * it=o.varNames(); while (it.hasNext()){ String tmp=(String)it.next();

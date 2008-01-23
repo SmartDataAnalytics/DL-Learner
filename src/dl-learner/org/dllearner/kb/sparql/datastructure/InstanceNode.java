@@ -51,7 +51,7 @@ public class InstanceNode extends Node {
 	@Override
 	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m) {
 
-		Set<StringTuple> s = tsq.query(uri);
+		Set<StringTuple> s = tsq.getTupelForResource(uri);
 		// see Manipulator
 		m.check(s, this);
 		// System.out.println("fffffff"+m);

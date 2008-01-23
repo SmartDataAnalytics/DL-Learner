@@ -27,25 +27,21 @@ import org.dllearner.kb.sparql.Manipulator;
 import org.dllearner.kb.sparql.TypedSparqlQueryInterface;
 
 /**
- * Abstract class.
+ * Abstract class. defines functions to expand the nodes
  * 
  * @author Sebastian Hellmann
  * 
  */
-/**
- * @author sebastian
- *
- */
 public abstract class Node implements Comparable<Node> {
 
-    final String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
+	final String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 	final String rdftype = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 	final String objectProperty = "http://www.w3.org/2002/07/owl#ObjectProperty";
 	final String classns = "http://www.w3.org/2002/07/owl#Class";
 	final String thing = "http://www.w3.org/2002/07/owl#Thing";
 
 	URI uri;
-	//protected String type; 
+	// protected String type;
 	protected boolean expanded = false;
 
 	public Node(URI u) {
@@ -53,29 +49,30 @@ public abstract class Node implements Comparable<Node> {
 	}
 
 	/**
-	 * Nodes are expanded with a certain context, given by 
-	 * the typedSparqlQuery and the manipulator
+	 * Nodes are expanded with a certain context, given by the typedSparqlQuery
+	 * and the manipulator
+	 * 
 	 * @param typedSparqlQuery
 	 * @param manipulator
 	 * @return Vector<Node> all Nodes that are new because of expansion
 	 */
-	public abstract Vector<Node> expand(TypedSparqlQueryInterface typedSparqlQuery,
-			Manipulator manipulator);
+	public abstract Vector<Node> expand(
+			TypedSparqlQueryInterface typedSparqlQuery, Manipulator manipulator);
 
-	
 	/**
-	 * used to get type defs for properties like rdf:type SymmetricProperties
+	 * gets type defs for properties like rdf:type SymmetricProperties
 	 * 
 	 * @param typedSparqlQuery
 	 * @param manipulator
-	 * @return Vector<Node> 
+	 * @return Vector<Node>
 	 */
 	public abstract void expandProperties(
 			TypedSparqlQueryInterface typedSparqlQuery, Manipulator manipulator);
 
 	/**
 	 * output
-	 * @return a set of n-triple 
+	 * 
+	 * @return a set of n-triple
 	 */
 	public abstract Set<String> toNTriple();
 

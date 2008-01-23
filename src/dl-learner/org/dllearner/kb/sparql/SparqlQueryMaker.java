@@ -23,7 +23,8 @@ import org.dllearner.kb.sparql.configuration.SparqlQueryType;
 
 /**
  * Can assemble sparql queries. can make queries for subject, predicate, object
- * according to the filter settings object not yet implemented
+ * according to the filter settings object SparqlQueryType, which gives the
+ * predicate and object lists
  * 
  * @author Sebastian Hellmann
  * 
@@ -48,6 +49,11 @@ public class SparqlQueryMaker {
 		return ret;
 	}
 
+	/**
+	 * 
+	 * @param role
+	 * @return
+	 */
 	public String makeRoleQueryUsingFilters(String role) {
 
 		String Filter = internalFilterAssemblyRole();
@@ -109,19 +115,19 @@ public class SparqlQueryMaker {
 		return Filter;
 	}
 
-	public String filterSubject(String ns) {
+	private String filterSubject(String ns) {
 		return "&&( !regex(str(?subject), '" + ns + "') )";
 	}
 
-	public static String filterPredicate(String ns) {
+	private static String filterPredicate(String ns) {
 		return "&&( !regex(str(?predicate), '" + ns + "') )";
 	}
 
-	public static String filterObject(String ns) {
+	private static String filterObject(String ns) {
 		return "&&( !regex(str(?object), '" + ns + "') )";
 	}
 
-	public void p(String str) {
+	private void p(String str) {
 		if (print_flag) {
 			System.out.println(str);
 		}
@@ -137,28 +143,18 @@ public class SparqlQueryMaker {
 	 * @return sparql query
 	 */
 	/*
-	public static String makeQueryFilter(String subject, oldSparqlFilter sf) {
+	 * public static String makeQueryFilter(String subject, oldSparqlFilter sf) {
+	 * 
+	 * String Filter = ""; if (!sf.useLiterals) Filter += "!isLiteral(?object)";
+	 * for (String p : sf.getPredFilter()) { Filter += "\n" +
+	 * filterPredicate(p); } for (String o : sf.getObjFilter()) { Filter += "\n" +
+	 * filterObject(o); }
+	 * 
+	 * String ret = "SELECT * WHERE { \n" + "<" + subject + "> ?predicate
+	 * ?object.\n"; if (!(Filter.length() == 0)) ret += "FILTER( \n" + "(" +
+	 * Filter + "))."; ret += "}"; // System.out.println(ret); return ret; }
+	 */
 
-		String Filter = "";
-		if (!sf.useLiterals)
-			Filter += "!isLiteral(?object)";
-		for (String p : sf.getPredFilter()) {
-			Filter += "\n" + filterPredicate(p);
-		}
-		for (String o : sf.getObjFilter()) {
-			Filter += "\n" + filterObject(o);
-		}
-
-		String ret = "SELECT * WHERE { \n" + "<" + subject
-				+ "> ?predicate ?object.\n";
-		if (!(Filter.length() == 0))
-			ret += "FILTER( \n" + "(" + Filter + ")).";
-		ret += "}";
-		// System.out.println(ret);
-		return ret;
-	}
-*/
-	
 	/*
 	 * moved to SparqlQuery TODO remove here creates a query for subjects with
 	 * the specified label @param label a phrase that is part of the label of a
