@@ -187,6 +187,8 @@ public class Start {
 		Class<? extends LearningAlgorithm> laClass = null;
 		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
 			laClass = ROLearner.class;
+		else if(algorithmOption.getStringValue().equals("refexamples"))
+			laClass = ExampleBasedROComponent.class;		
 		else if(algorithmOption.getStringValue().equals("gp"))
 			laClass = GP.class;
 		else if(algorithmOption.getStringValue().equals("bruteForce"))
@@ -250,7 +252,7 @@ public class Start {
 		componentPrefixMapping.put(PosNegDefinitionLP.class, "posNegDefinitionLP");
 		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
-		componentPrefixMapping.put(ExampleBasedROComponent.class, "refinement2");
+		componentPrefixMapping.put(ExampleBasedROComponent.class, "refexamples");
 		componentPrefixMapping.put(GP.class, "gp");
 		return componentPrefixMapping;
 	}
