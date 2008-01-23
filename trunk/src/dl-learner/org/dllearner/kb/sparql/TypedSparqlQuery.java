@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.dllearner.kb.sparql.configuration.Configuration;
 import org.dllearner.kb.sparql.query.Cache;
+import org.dllearner.kb.sparql.query.CachedSparqlQuery;
 import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.utilities.StringTuple;
 
@@ -36,102 +37,98 @@ import org.dllearner.utilities.StringTuple;
  */
 public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 	boolean print_flag = false;
-	boolean debug_no_cache = false;// true means no cahce is used
-	private Configuration configuration;
-	// private SparqlHTTPRequest SparqlHTTPRequest;
+	protected Configuration configuration;
 	private SparqlQueryMaker sparqlQueryMaker;
-	// private SparqlQuery sparqlQuery;
-	//private CachedSparqlQuery cachedSparqlQuery;
 	Cache cache;
+
+	// boolean debug_no_cache = false;// true means no cache is used
+	// private SparqlHTTPRequest SparqlHTTPRequest;
+	// private SparqlQuery sparqlQuery;
+	// private CachedSparqlQuery cachedSparqlQuery;
 
 	public TypedSparqlQuery(Configuration Configuration) {
 		this.configuration = Configuration;
-		// this.SparqlHTTPRequest = new
-		// SparqlHTTPRequest(Configuration.getSparqlEndpoint());
 		this.sparqlQueryMaker = new SparqlQueryMaker(Configuration
 				.getSparqlQueryType());
-		// this.sparqlQuery=new SparqlQuery(configuration.getSparqlEndpoint());
 		this.cache = new Cache("cache");
+		// this.sparqlQuery=new SparqlQuery(configuration.getSparqlEndpoint());
 		// this.cachedSparqlQuery=new
 		// CachedSparqlQuery(this.sparqlQuery,this.cache);
 	}
 
 	// standard query get a tupels (p,o) for subject s
-	public Set<StringTuple> query(URI u) {
+	/**
+	 * uses a cache and gets the result tuples for a resource u
+	 * 
+	 * @param uri
+	 *            the resource
+	 * @param sparqlQueryString
+	 * @param a
+	 *            the name of the first bound variable for xml parsing, normally
+	 *            predicate
+	 * @param b
+	 *            the name of the second bound variable for xml parsing,
+	 *            normally object
+	 * @return
+	 */
 
+	public Set<StringTuple> getTupelForResource(URI uri) {
+		// TODO remove
+		String a = "predicate";
+		String b = "object";
 		// getQuery
-		String sparql = sparqlQueryMaker.makeSubjectQueryUsingFilters(u
-				.toString());
-		return cachedSparql(u, sparql, "predicate", "object");
+		String sparqlQueryString = sparqlQueryMaker
+				.makeSubjectQueryUsingFilters(uri.toString());
 
-	}
+		CachedSparqlQuery csq = new CachedSparqlQuery(configuration
+				.getSparqlEndpoint(), cache, uri.toString(), sparqlQueryString);
 
-	// query get a tupels (s,o) for role p
-	public Set<StringTuple> getTupelsForRole(URI u) {
-
-		// getQuery
-		String sparql = sparqlQueryMaker
-				.makeRoleQueryUsingFilters(u.toString());
-
-		Set<StringTuple> s = cachedSparql(u, sparql, "subject", "object");
-		// System.out.println(s);
-		return s;
-
-	}
-
-	public Set<StringTuple> getTupelsForRole(URI u, boolean domain) {
-
-		// getQuery
-		String sparql = sparqlQueryMaker.makeRoleQueryUsingFilters(
-				u.toString(), domain);
-
-		Set<StringTuple> s = cachedSparql(u, sparql, "subject", "object");
-		// System.out.println(s);
-		return s;
-
-	}
-
-	// uses a cache
-	private Set<StringTuple> cachedSparql(URI u, String sparql, String a,
-			String b) {
-		// check cache
-		String FromCache = cache.get(u.toString(), sparql);
-		if (debug_no_cache) {
-			FromCache = null;
-		}
-		String xml = null;
-		// if not in cache get it from EndPoint
-		if (FromCache == null) {
-			configuration.increaseNumberOfuncachedSparqlQueries();
-			// try {
-			xml = sendAndReceiveSPARQL(sparql);
-			/*
-			 * } catch (IOException e) {e.printStackTrace();}
-			 */
-			p(sparql);
-			// System.out.println(xml);
-			if (!debug_no_cache) {
-				cache.put(u.toString(), sparql, xml);
-			}
-			// System.out.print("\n");
-		} else {
-			configuration.increaseNumberOfCachedSparqlQueries();
-			xml = FromCache;
-			// System.out.println("FROM CACHE");
-		}
-
-		// System.out.println(sparql);
-		// System.out.println(xml);
-		// process XML
+		String xml = csq.getAsXMLString();
+		// TODO needs to be changed to new format
 		Set<StringTuple> s = processResult(xml, a, b);
 		try {
 			// System.out.println("retrieved " + s.size() + " tupels\n");
 		} catch (Exception e) {
 		}
 		return s;
+		// return cachedSparql(u, sparql, "predicate", "object");
 
 	}
 
+	@Deprecated
+	private Set<StringTuple> cachedSparql(URI uri, String sparqlQueryString,
+			String a, String b) {
+		return null;
+		/*
+		 * OLD CODE FOLLOWING keep until Jena is working String FromCache =
+		 * cache.get(u.toString(), sparqlQueryString); if (debug_no_cache) {
+		 * //FromCache = null; } String xml = null; // if not in cache get it
+		 * from EndPoint if (FromCache == null) {
+		 * configuration.increaseNumberOfuncachedSparqlQueries(); // try { xml =
+		 * sendAndReceiveSPARQL(sparqlQueryString);
+		 * 
+		 * //} catch (IOException e) {e.printStackTrace();}
+		 * 
+		 * p(sparqlQueryString); // System.out.println(xml); if
+		 * (!debug_no_cache) { cache.put(uri.toString(), sparqlQueryString,
+		 * xml); } // System.out.print("\n"); } else {
+		 * configuration.increaseNumberOfCachedSparqlQueries(); xml = FromCache; //
+		 * System.out.println("FROM CACHE"); }
+		 */
+		// System.out.println(sparql);
+		// System.out.println(xml);
+		// process XML
+	}
+
+	/**
+	 * TODO old XML processing, can be removed, once Jena is done
+	 * 
+	 * @param xml
+	 * @param a
+	 * @param b
+	 * @return a Set of Tuples <a|b>
+	 */
+	@Deprecated
 	public Set<StringTuple> processResult(String xml, String a, String b) {
 
 		Set<StringTuple> ret = new HashSet<StringTuple>();
@@ -177,7 +174,6 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 		 * while (xml.indexOf(one) != -1) {
 		 * 
 		 * 
-		 * 
 		 *  // System.out.println(new Tupel(predtmp,objtmp)); }
 		 */
 
@@ -185,6 +181,13 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 
 	}
 
+	/**
+	 * TODO used by old XML processing, can be removed once Jena is done
+	 * 
+	 * @param xml
+	 * @return
+	 */
+	@Deprecated
 	private String getNextResult(String xml) {
 		String res1 = "<result>";
 		String res2 = "</result>";
@@ -196,6 +199,15 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 		return xml;
 	}
 
+	/**
+	 * TODO used by old XML processing, can be removed once Jena is done
+	 * 
+	 * @param xml
+	 * @param starttag
+	 * @param endtag
+	 * @return
+	 */
+	@Deprecated
 	private String getinTag(String xml, String starttag, String endtag) {
 		String res1 = "<" + starttag + ">";
 		// System.out.println(res1);
@@ -210,6 +222,7 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 		return xml;
 	}
 
+	@Deprecated
 	public String sendAndReceiveSPARQL(String queryString) {
 		// SparqlQuery sq=new SparqlQuery(configuration.getSparqlEndpoint());
 		return new SparqlQuery(queryString, configuration.getSparqlEndpoint())

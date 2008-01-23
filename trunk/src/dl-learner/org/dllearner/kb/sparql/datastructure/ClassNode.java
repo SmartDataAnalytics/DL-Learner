@@ -30,7 +30,7 @@ import org.dllearner.kb.sparql.TypedSparqlQueryInterface;
 import org.dllearner.utilities.StringTuple;
 
 /**
- * Is a node in the graph that is a class.
+ * Is a node in the graph, that is a class.
  * 
  * @author Sebastian Hellmann
  */
@@ -39,14 +39,13 @@ public class ClassNode extends Node {
 
 	public ClassNode(URI u) {
 		super(u);
-		// this.type = "class";
 	}
 
 	// expands all directly connected nodes
 	@Override
 	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m) {
 
-		Set<StringTuple> s = tsq.query(this.uri);
+		Set<StringTuple> s = tsq.getTupelForResource(this.uri);
 		// see manipulator
 		s = m.check(s, this);
 		Vector<Node> Nodes = new Vector<Node>();
@@ -69,6 +68,7 @@ public class ClassNode extends Node {
 					// System.out.println("XXXXX"+t.b);
 
 					// if o is a blank node expand further
+					// TODO this needs a lot more work
 					if (t.b.startsWith(m.blankNodeIdentifier)) {
 						tmp.expand(tsq, m);
 						System.out.println(m.blankNodeIdentifier);
@@ -90,6 +90,11 @@ public class ClassNode extends Node {
 	public void expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dllearner.kb.sparql.datastructure.Node#toNTriple()
+	 */
 	@Override
 	public Set<String> toNTriple() {
 		Set<String> s = new HashSet<String>();

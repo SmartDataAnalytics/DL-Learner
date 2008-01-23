@@ -33,7 +33,7 @@ import org.dllearner.utilities.StringTuple;
  * Used to manipulate retrieved tupels, identify blanknodes, etc.
  * 
  * @author Sebastian Hellmann
- *
+ * 
  */
 public class Manipulator {
 	public final String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
@@ -42,37 +42,47 @@ public class Manipulator {
 	final String classns = "http://www.w3.org/2002/07/owl#Class";
 	final String thing = "http://www.w3.org/2002/07/owl#Thing";
 
-	
 	public String blankNodeIdentifier = "bnode";
-	public int breakSuperClassRetrievalAfter=200;
+	public int breakSuperClassRetrievalAfter = 200;
 	public LinkedList<StringTuple> replacePredicate;
 	public LinkedList<StringTuple> replaceObject;
 
-	
-	Set<String> classproperties;
+	// Set<String> classproperties;
 
-	public Manipulator(String blankNodeIdentifier,int breakSuperClassRetrievalAfter,LinkedList<StringTuple> replacePredicate,LinkedList<StringTuple> replaceObject) {
+	public Manipulator(String blankNodeIdentifier,
+			int breakSuperClassRetrievalAfter,
+			LinkedList<StringTuple> replacePredicate,
+			LinkedList<StringTuple> replaceObject) {
 		this.blankNodeIdentifier = blankNodeIdentifier;
-		this.replaceObject=replaceObject;
-		this.replacePredicate=replacePredicate;
-		this.breakSuperClassRetrievalAfter=breakSuperClassRetrievalAfter;
-		Set<String> classproperties = new HashSet<String>();
-		classproperties.add(subclass);
+		this.replaceObject = replaceObject;
+		this.replacePredicate = replacePredicate;
+		this.breakSuperClassRetrievalAfter = breakSuperClassRetrievalAfter;
+		// Set<String> classproperties = new HashSet<String>();
+		// classproperties.add(subclass);
 
 	}
 
-	// TODO user defined rules missing
-	public Set<StringTuple> check(Set<StringTuple> s, Node node) {
+	/**
+	 * this checks for consistency and manipulates the tuples, before they get
+	 * triple
+	 * 
+	 * @param tuples
+	 *            tuples for the node
+	 * @param node
+	 * @return
+	 */
+	public Set<StringTuple> check(Set<StringTuple> tuples, Node node) {
 		Set<StringTuple> toRemove = new HashSet<StringTuple>();
-		Iterator<StringTuple> it = s.iterator();
+		Iterator<StringTuple> it = tuples.iterator();
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
 			replacePredicate(t);
 			replaceObject(t);
 
-			// remove  <rdf:type, owl:class>
+			// remove <rdf:type, owl:class>
 			// this is done to avoid transformation to owl:subclassof
-			if (t.a.equals(type) && t.b.equals(classns) && node instanceof ClassNode) {
+			if (t.a.equals(type) && t.b.equals(classns)
+					&& node instanceof ClassNode) {
 				toRemove.add(t);
 			}
 
@@ -82,27 +92,29 @@ public class Manipulator {
 			}
 
 			// remove all instances with owl:type thing
-			if (t.a.equals(type) && t.b.equals(thing) && node instanceof InstanceNode) {
+			if (t.a.equals(type) && t.b.equals(thing)
+					&& node instanceof InstanceNode) {
 				toRemove.add(t);
 			}
 
 		}
-		s.removeAll(toRemove);
+		tuples.removeAll(toRemove);
 
-		return s;
+		return tuples;
 	}
-	
-	private void replacePredicate(StringTuple t){
-		for(StringTuple rep:replacePredicate){
-			if(rep.a.equals(t.a)){
-				t.a=rep.b;
+
+	private void replacePredicate(StringTuple t) {
+		for (StringTuple rep : replacePredicate) {
+			if (rep.a.equals(t.a)) {
+				t.a = rep.b;
 			}
 		}
 	}
-	private void replaceObject(StringTuple t){
-		for(StringTuple rep:replaceObject){
-			if(rep.a.equals(t.a)){
-				t.a=rep.b;
+
+	private void replaceObject(StringTuple t) {
+		for (StringTuple rep : replaceObject) {
+			if (rep.a.equals(t.a)) {
+				t.a = rep.b;
 			}
 		}
 	}

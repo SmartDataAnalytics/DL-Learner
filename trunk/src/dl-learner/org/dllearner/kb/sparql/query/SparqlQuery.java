@@ -107,6 +107,7 @@ public class SparqlQuery {
 	}
 	
 	/**
+	 * TODO define the format
 	 * @return
 	 */
 	@SuppressWarnings({"unchecked"})
@@ -225,6 +226,29 @@ public class SparqlQuery {
 	 * public Model asJenaModel(){ ResultSet rs=send(); return
 	 * ResultSetFormatter.toModel(rs); }
 	 */
+	
+	/*public void testJSon(){ 
+		
+		ResultSet rs=send(); 
+		try{
+			//PipedOutputStream pos=new PipedOutputStream();
+			//pos.flush();
+			//System.out.println("hh");
+		//PipedInputStream pis=new PipedInputStream(pos);
+		//System.out.println("hh2");
+		//pis.flush();
+		//PrintStream out=new PrintStream();
+		//ResultSetFormatter.outputAsJSON(System.out, rs);
+		//pos.flush();
+		//System.out.println("hh");
+		//while (pis.available()>0)
+			//System.out.println("hh");
+			//System.out.println(pis.read());;
+		
+		}catch (Exception e) {e.printStackTrace();}
+		//return
+	 	//ResultSetFormatter.toModel(rs); }
+	}*/
 	
 	/**
 	 * creates a query for subjects with the specified label

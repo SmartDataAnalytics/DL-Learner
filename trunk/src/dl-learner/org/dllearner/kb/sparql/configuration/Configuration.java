@@ -22,44 +22,42 @@ package org.dllearner.kb.sparql.configuration;
 import org.dllearner.kb.sparql.Manipulator;
 
 /**
- * Stores all configuration settings.
+ * Stores all configuration settings. this class collects all configuration
+ * information see the other classes, which are used as attributes here
  * 
  * @author Sebastian Hellmann
  */
 public class Configuration {
-	
-	/*
-	 * this class colects all configuration information
-	 * see the other classes, which are used as attributes here
-	 * */
-	
+
 	private SparqlEndpoint endpoint;
 	private SparqlQueryType sparqlQueryType;
 	private Manipulator manipulator;
-	// the following needs to be moved to 
+	// the following needs to be moved to
 	// class extraction algorithm or manipulator
 	private int recursiondepth = 2;
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;
-	public  int numberOfUncachedSparqlQueries=0; 
-	public  int numberOfCachedSparqlQueries=0; 
+	public int numberOfUncachedSparqlQueries = 0;
+	public int numberOfCachedSparqlQueries = 0;
 
 	public Configuration(SparqlEndpoint specificSparqlEndpoint,
-			SparqlQueryType sparqlQueryType, Manipulator manipulator, int recursiondepth,
-			boolean getAllSuperClasses, boolean closeAfterRecursion) {
+			SparqlQueryType sparqlQueryType, Manipulator manipulator,
+			int recursiondepth, boolean getAllSuperClasses,
+			boolean closeAfterRecursion) {
 		this.endpoint = specificSparqlEndpoint;
 		this.sparqlQueryType = sparqlQueryType;
 		this.manipulator = manipulator;
 		this.recursiondepth = recursiondepth;
 		this.getAllSuperClasses = getAllSuperClasses;
-		this.closeAfterRecursion=closeAfterRecursion;
+		this.closeAfterRecursion = closeAfterRecursion;
 
 	}
 
 	public Configuration changeQueryType(SparqlQueryType sqt) {
 		// TODO must clone here
 		return new Configuration(this.endpoint, sqt, this.manipulator,
-				this.recursiondepth, this.getAllSuperClasses,this.closeAfterRecursion);
+				this.recursiondepth, this.getAllSuperClasses,
+				this.closeAfterRecursion);
 
 	}
 
@@ -78,6 +76,7 @@ public class Configuration {
 	public boolean isGetAllSuperClasses() {
 		return getAllSuperClasses;
 	}
+
 	public boolean isCloseAfterRecursion() {
 		return closeAfterRecursion;
 	}
@@ -85,11 +84,12 @@ public class Configuration {
 	public int getRecursiondepth() {
 		return recursiondepth;
 	}
-	
-	public void increaseNumberOfuncachedSparqlQueries(){
+
+	public void increaseNumberOfuncachedSparqlQueries() {
 		numberOfUncachedSparqlQueries++;
 	}
-	public void increaseNumberOfCachedSparqlQueries(){
+
+	public void increaseNumberOfCachedSparqlQueries() {
 		numberOfCachedSparqlQueries++;
 	}
 
