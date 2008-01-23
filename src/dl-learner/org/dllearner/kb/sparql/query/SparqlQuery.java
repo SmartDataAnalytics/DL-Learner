@@ -22,6 +22,7 @@ package org.dllearner.kb.sparql.query;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -229,52 +230,34 @@ public class SparqlQuery {
 	 * public Model asJenaModel(){ ResultSet rs=send(); return
 	 * ResultSetFormatter.toModel(rs); }
 	 */
+	/**
+	 * sends a query and returns JSON
+	 * @return a String representation of the Resultset as JSON
+	 */
 	public String getAsJSON(){
 		ResultSet rs=send(); 
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
 		ResultSetFormatter.outputAsJSON(baos, rs);
 		return baos.toString();
-		
 	}
 	
+	
+	/**
+	 * @param json a string representation string object
+	 * @return jena ResultSet
+	 */
 	public static ResultSet JSONtoResultSet(String json){
 		ResultSet rs=null;
 		try{
-			ByteArrayInputStream bais=new ByteArrayInputStream(json.getBytes());
+			ByteArrayInputStream bais=new ByteArrayInputStream(json.getBytes(Charset.forName("UTF-8")));
 			rs=ResultSetFactory.fromJSON(bais);
-			
 		}catch (Exception e) {e.printStackTrace();}
 		return rs;
 		
 	}
 	
 	
-	/*public void testJSon(){ 
-		try{
-			
-			try{
-			ByteArrayInputStream BAIS=new ByteArrayInputStream(JSON.getBytes());
-			ResultSet rs2=ResultSetFactory.fromJSON(BAIS);
-			System.out.println(ResultSetFormatter.asXMLString(rs2));
-			}catch (Exception e) {e.printStackTrace();}
-			//PipedOutputStream pos=new PipedOutputStream();
-			//pos.flush();
-			//System.out.println("hh");
-		//PipedInputStream pis=new PipedInputStream(pos);
-		//System.out.println("hh2");
-		//pis.flush();
-		//PrintStream out=new PrintStream();
-		//ResultSetFormatter.outputAsJSON(System.out, rs);
-		//pos.flush();
-		//System.out.println("hh");
-		//while (pis.available()>0)
-			//System.out.println("hh");
-			//System.out.println(pis.read());;
-		
-		}catch (Exception e) {e.printStackTrace();}
-		//return
-	 	//ResultSetFormatter.toModel(rs); }
-	}
+	
 	
 	/**
 	 * creates a query for subjects with the specified label
