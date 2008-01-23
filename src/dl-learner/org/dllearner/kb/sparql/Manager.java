@@ -49,6 +49,7 @@ public class Manager {
 		this.configuration = new Configuration(SparqlEndpoint, SparqlQueryType,
 				manipulator, recursiondepth, getAllSuperClasses,
 				closeAfterRecursion);
+		//System.out.println(this.configuration);
 		this.typedSparqlQuery = new TypedSparqlQuery(configuration);
 		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
 

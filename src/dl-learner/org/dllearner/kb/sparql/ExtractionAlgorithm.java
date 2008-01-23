@@ -43,7 +43,7 @@ public class ExtractionAlgorithm {
 	private boolean print_flag = false;
 
 	public ExtractionAlgorithm(Configuration Configuration) {
-		// this.configuration = Configuration;
+		this.configuration = Configuration;
 		this.manipulator = Configuration.getManipulator();
 		this.recursionDepth = Configuration.getRecursiondepth();
 		// this.getAllSuperClasses = Configuration.isGetAllSuperClasses();
@@ -71,8 +71,12 @@ public class ExtractionAlgorithm {
 	 * @return
 	 */
 	public Node expandNode(URI uri, TypedSparqlQuery typedSparqlQuery) {
+		//System.out.println(uri.toString());
+		//System.out.println(manipulator);
+		//System.out.println(this.configuration);
 		long time = System.currentTimeMillis();
 		Node n = getFirstNode(uri);
+		System.out.println(n);
 		Vector<Node> v = new Vector<Node>();
 		v.add(n);
 		p("StartVector: " + v);
@@ -85,12 +89,11 @@ public class ExtractionAlgorithm {
 				Node tmpNode = v.remove(0);
 				p("Expanding " + tmpNode);
 				// System.out.println(this.Manipulator);
-
 				// these are the new not expanded nodes
 				// the others are saved in connection with the original node
 				Vector<Node> tmpVec = tmpNode.expand(typedSparqlQuery,
 						manipulator);
-
+				//System.out.println(tmpVec);
 				tmp.addAll(tmpVec);
 			}
 			v = tmp;
@@ -101,6 +104,8 @@ public class ExtractionAlgorithm {
 		}
 
 		HashSet<String> hadAlready = new HashSet<String>();
+		p("Get all superclasses");
+		//p(configuration.toString());
 		// gets All Class Nodes and expands them further
 		if (this.configuration.isGetAllSuperClasses()) {
 			// Set<Node> classes = new TreeSet<Node>();
