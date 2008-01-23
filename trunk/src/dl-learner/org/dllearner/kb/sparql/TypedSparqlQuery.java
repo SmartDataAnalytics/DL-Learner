@@ -21,6 +21,7 @@ package org.dllearner.kb.sparql;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.dllearner.kb.sparql.configuration.Configuration;
@@ -28,6 +29,10 @@ import org.dllearner.kb.sparql.query.Cache;
 import org.dllearner.kb.sparql.query.CachedSparqlQuery;
 import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.utilities.StringTuple;
+
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 /**
  * Can execute different queries.
@@ -71,9 +76,10 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 	 *            normally object
 	 * @return
 	 */
-
+	@SuppressWarnings({"unchecked"})
 	public Set<StringTuple> getTupelForResource(URI uri) {
-		// TODO remove
+		Set<StringTuple> s = new HashSet<StringTuple>();
+		
 		String a = "predicate";
 		String b = "object";
 		// getQuery
@@ -83,16 +89,18 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 		CachedSparqlQuery csq = new CachedSparqlQuery(configuration
 				.getSparqlEndpoint(), cache, uri.toString(), sparqlQueryString);
 
-		String xml = csq.getAsXMLString();
-		// TODO needs to be changed to new format
-		Set<StringTuple> s = processResult(xml, a, b);
-		try {
-			// System.out.println("retrieved " + s.size() + " tupels\n");
-		} catch (Exception e) {
+		
+		// TODO optimize
+		ResultSet rs = csq.getAsResultSet();
+		
+		List<ResultBinding> l = ResultSetFormatter.toList(rs);
+		p(l.toString());
+		for (ResultBinding resultBinding : l) {
+					
+			s.add(new StringTuple(resultBinding.get(a).toString(),
+					resultBinding.get(b).toString()));
 		}
 		return s;
-		// return cachedSparql(u, sparql, "predicate", "object");
-
 	}
 
 	/*@Deprecated

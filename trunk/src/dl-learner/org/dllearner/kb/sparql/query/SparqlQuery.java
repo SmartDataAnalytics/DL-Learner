@@ -88,16 +88,21 @@ public class SparqlQuery {
 		p(queryString);
 		// create a query and parse it into Jena
 		Query query = QueryFactory.create(queryString);
-		// query.validate();
+		query.validate();
 
 		String service = endpoint.getURL().toString();
+		p(endpoint.getURL().toString());
 		// Jena access to SPARQL endpoint
 		QueryExecution queryExecution = QueryExecutionFactory.sparqlService(
 				service, query, endpoint.getDefaultGraphURIs(), endpoint
 						.getNamedGraphURIs());
 
 		p("query SPARQL server");
+		
+		
 		ResultSet rs = queryExecution.execSelect();
+		p(rs.getResultVars().toString());
+		//p(ResultSetFormatter.asXMLString(rs));
 		return rs;
 	}
 
@@ -170,6 +175,7 @@ public class SparqlQuery {
 	 * @return Vector<String>
 	 */
 	@SuppressWarnings({"unchecked"})
+	@Deprecated
 	public Vector<String> getAsVector(String varName) {
 		ResultSet rs = send();
 		Vector<String> vret = new Vector<String>();
@@ -190,6 +196,7 @@ public class SparqlQuery {
 	 * @return Vector<StringTuple>
 	 */
 	@SuppressWarnings({"unchecked"})
+	@Deprecated
 	public Vector<StringTuple> getAsVectorOfTupels(String varName1,
 			String varName2) {
 		ResultSet rs = send();
@@ -213,6 +220,7 @@ public class SparqlQuery {
 	 * @param varNames
 	 * @return Vector<Vector<String>>
 	 */
+	@Deprecated
 	public Vector<Vector<String>> getAsVectorOfVectors(Vector<String> varNames) {
 		// ResultSet rs = send();
 		Vector<Vector<String>> vret = new Vector<Vector<String>>();
