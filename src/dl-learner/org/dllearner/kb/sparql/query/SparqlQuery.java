@@ -19,6 +19,8 @@
  */
 package org.dllearner.kb.sparql.query;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +34,7 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.sparql.core.ResultBinding;
 
@@ -226,11 +229,34 @@ public class SparqlQuery {
 	 * public Model asJenaModel(){ ResultSet rs=send(); return
 	 * ResultSetFormatter.toModel(rs); }
 	 */
+	public String getAsJSON(){
+		ResultSet rs=send(); 
+		ByteArrayOutputStream baos=new ByteArrayOutputStream();
+		ResultSetFormatter.outputAsJSON(baos, rs);
+		return baos.toString();
+		
+	}
+	
+	public static ResultSet JSONtoResultSet(String json){
+		ResultSet rs=null;
+		try{
+			ByteArrayInputStream bais=new ByteArrayInputStream(json.getBytes());
+			rs=ResultSetFactory.fromJSON(bais);
+			
+		}catch (Exception e) {e.printStackTrace();}
+		return rs;
+		
+	}
+	
 	
 	/*public void testJSon(){ 
-		
-		ResultSet rs=send(); 
 		try{
+			
+			try{
+			ByteArrayInputStream BAIS=new ByteArrayInputStream(JSON.getBytes());
+			ResultSet rs2=ResultSetFactory.fromJSON(BAIS);
+			System.out.println(ResultSetFormatter.asXMLString(rs2));
+			}catch (Exception e) {e.printStackTrace();}
 			//PipedOutputStream pos=new PipedOutputStream();
 			//pos.flush();
 			//System.out.println("hh");
@@ -248,7 +274,7 @@ public class SparqlQuery {
 		}catch (Exception e) {e.printStackTrace();}
 		//return
 	 	//ResultSetFormatter.toModel(rs); }
-	}*/
+	}
 	
 	/**
 	 * creates a query for subjects with the specified label

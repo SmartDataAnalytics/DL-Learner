@@ -43,10 +43,12 @@ public class TestResultSet {
 		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 
-		//sqJena.testJSon();
+		String json=sqJena.getAsJSON();
+		System.out.println(json);
 		
-		List<ResultBinding> l = sqJena.getAsList();
-		System.out.println(l.getClass());
+		
+		//List<ResultBinding> l = sqJena.getAsList();
+		//System.out.println(l.getClass());
 		//testSaving(new LinkedList<ResultBinding>(l));
 		/*
 		 * for (ResultBinding o : l) { System.out.println(o); // Iterator
