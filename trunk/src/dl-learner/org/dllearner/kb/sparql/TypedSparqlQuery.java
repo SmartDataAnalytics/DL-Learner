@@ -95,7 +95,7 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 
 	}
 
-	@Deprecated
+	/*@Deprecated
 	private Set<StringTuple> cachedSparql(URI uri, String sparqlQueryString,
 			String a, String b) {
 		return null;
@@ -118,7 +118,7 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 		// System.out.println(sparql);
 		// System.out.println(xml);
 		// process XML
-	}
+	//}
 
 	/**
 	 * TODO old XML processing, can be removed, once Jena is done

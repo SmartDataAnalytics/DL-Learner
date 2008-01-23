@@ -127,11 +127,11 @@ public class SparqlQueryMaker {
 		return "&&( !regex(str(?object), '" + ns + "') )";
 	}
 
-	private void p(String str) {
+	/*private void p(String str) {
 		if (print_flag) {
 			System.out.println(str);
 		}
-	}
+	}*/
 
 	/**
 	 * creates a query with the specified filters for all triples with subject
