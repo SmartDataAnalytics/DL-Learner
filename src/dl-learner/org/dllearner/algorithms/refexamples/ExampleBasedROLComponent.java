@@ -73,7 +73,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class ExampleBasedROComponent extends LearningAlgorithm {
+public class ExampleBasedROLComponent extends LearningAlgorithm {
 	
 	// actual algorithm
 	private ExampleBasedROLearner algorithm;
@@ -117,12 +117,12 @@ public class ExampleBasedROComponent extends LearningAlgorithm {
 
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
-	public ExampleBasedROComponent(PosNegLP learningProblem, ReasoningService rs) {
+	public ExampleBasedROLComponent(PosNegLP learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
 		this.rs = rs;
 	}
 	
-	public ExampleBasedROComponent(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
+	public ExampleBasedROLComponent(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
 		this.rs = rs;
 	}

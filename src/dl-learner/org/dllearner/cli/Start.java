@@ -41,7 +41,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.gp.GP;
-import org.dllearner.algorithms.refexamples.ExampleBasedROComponent;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
@@ -188,7 +188,7 @@ public class Start {
 		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
 			laClass = ROLearner.class;
 		else if(algorithmOption.getStringValue().equals("refexamples"))
-			laClass = ExampleBasedROComponent.class;		
+			laClass = ExampleBasedROLComponent.class;		
 		else if(algorithmOption.getStringValue().equals("gp"))
 			laClass = GP.class;
 		else if(algorithmOption.getStringValue().equals("bruteForce"))
@@ -252,7 +252,7 @@ public class Start {
 		componentPrefixMapping.put(PosNegDefinitionLP.class, "posNegDefinitionLP");
 		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
-		componentPrefixMapping.put(ExampleBasedROComponent.class, "refexamples");
+		componentPrefixMapping.put(ExampleBasedROLComponent.class, "refexamples");
 		componentPrefixMapping.put(GP.class, "gp");
 		return componentPrefixMapping;
 	}
