@@ -104,6 +104,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
 	private boolean useNegation = true;	
+	private double noisePercentage = 0.0;
 	
 	// Variablen zur Einstellung der Protokollierung
 	// boolean quiet = false;
@@ -159,7 +160,11 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.ignoredRoles());
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
-		options.add(CommonConfigOptions.useNegation());		
+		options.add(CommonConfigOptions.useNegation());
+		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples");
+		noisePercentage.setLowerLimit(0.0);
+		noisePercentage.setUpperLimit(1.0);
+		options.add(noisePercentage);
 		return options;
 	}
 	
@@ -208,6 +213,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			useExistsConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useNegation")) {
 			useNegation = (Boolean) entry.getValue();
+		} else if(name.equals("noisePercentage")) {
+			noisePercentage = (Double) entry.getValue();
 		}
 			
 	}
@@ -282,8 +289,9 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 				learningProblem,
 				operator,
 				algHeuristic,
-				usedConcepts,
-				usedRoles,
+				// usedConcepts,
+				// usedRoles,
+				noisePercentage,
 				writeSearchTree,
 				replaceSearchTree,
 				searchTreeFile,
@@ -291,6 +299,9 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 				useOverlyGeneralList,
 				useShortConceptConstruction
 		);		
+		// note: used concepts and roles do not need to be passed
+		// as argument, because it is sufficient to prepare the
+		// concept and role hierarchy accordingly
 	}
 	
 	public static String getName() {

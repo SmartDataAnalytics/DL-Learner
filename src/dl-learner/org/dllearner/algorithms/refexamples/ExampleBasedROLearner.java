@@ -21,7 +21,6 @@ package org.dllearner.algorithms.refexamples;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,13 +28,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.refinement.RefinementOperator;
 import org.dllearner.algorithms.refinement.RhoDown;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
@@ -51,98 +49,86 @@ import org.dllearner.utilities.Helper;
  * Implements the example based refinement operator learning
  * approach.
  * 
+ * TODO: Implement noise handling (here and/or in heuristics). When the 
+ * noise level in the examples is set to a certain percentage, we
+ * compute the number of positive examples corresponding to this
+ * percentage. This is the maximum number of positive examples, which
+ * can be misclassified (everything above is considered a too weak
+ * concept wrt. the noise percentage).
+ * 
  * @author Jens Lehmann
  *
  */
 public class ExampleBasedROLearner {
 
-	// all configuration options, which were passed to the
-	// learning algorithms
+	private static Logger logger = Logger
+	.getLogger(ExampleBasedROLearner.class);	
+	
+	// basic setup: learning problem and reasoning service
+	private ReasoningService rs;
+	private PosNegLP learningProblem;
+	private PosOnlyDefinitionLP posOnlyLearningProblem;
+	private boolean posOnly = false;	
+	
+	// search tree options
 	private boolean writeSearchTree;
 	private File searchTreeFile;
 	private boolean replaceSearchTree = false;
-	Set<AtomicConcept> allowedConcepts;
-	Set<AtomicRole> allowedRoles;
-	Set<AtomicConcept> ignoredConcepts;
-	Set<AtomicRole> ignoredRoles;
-	// these are computed as the result of the previous four settings
-	Set<AtomicConcept> usedConcepts;
-	Set<AtomicRole> usedRoles;	
 
+	// constructs to improve performance
 	private boolean useTooWeakList = true;
 	private boolean useOverlyGeneralList = true;
 	private boolean useShortConceptConstruction = true;
-	private double horizontalExpansionFactor = 0.6;
-
 	
-	private boolean quiet = false;
-	
+	// setting to true gracefully stops the algorithm
 	private boolean stop = false;
 	
-	private ReasoningService rs;
+	// solution protocol
+	private boolean solutionFound = false;
+	private List<Concept> solutions = new LinkedList<Concept>();	
 	
-	private PosNegLP learningProblem;
-	private PosOnlyDefinitionLP posOnlyLearningProblem;
-	private boolean posOnly = false;
+	// used refinement operator and heuristic (exchangeable)
+	private RhoDown operator;
+	// private ExampleBasedHeuristic heuristic;
 	
-	// non-configuration variables	
-
-	// Lösungen protokollieren
-	boolean solutionFound = false;
-	List<Concept> solutions = new LinkedList<Concept>();	
+	// specifies whether to compute and log benchmark information
+	private boolean computeBenchmarkInformation = false;
 	
-	// verwendeter Refinement-Operator (momentan werden für Statistik RhoDown-spezifische
-	// Sachen abgefragt)
-	// RefinementOperator operator;
-	RhoDown operator;
-	
-	// Variablen zur Einstellung der Protokollierung
-	// boolean quiet = false;
-	boolean showBenchmarkInformation = false;
-	// boolean createTreeString = false;
-	// String searchTree = new String();
-
-	// Konfiguration des Algorithmus
-	// Faktor für horizontale Erweiterung (notwendig für completeness)
-	// double horizontalExpansionFactor = 0.6;	
-
-	
-	
-	private Comparator<ExampleBasedNode> nodeComparator;
+	// comparator used to maintain a stable ordering of nodes, i.e.
+	// an ordering which does not change during the run of the algorithm
 	private NodeComparatorStable nodeComparatorStable = new NodeComparatorStable();
-	private ConceptComparator conceptComparator = new ConceptComparator();
-	DecimalFormat df = new DecimalFormat();		
-	
-	// Menge von Kandidaten für Refinement
-	// (wird für Direktzugriff auf Baumknoten verwendet)
-	private TreeSet<ExampleBasedNode> candidates;
-	// während eines Durchlaufs neu gefundene Knoten
-	private List<ExampleBasedNode> newCandidates = new LinkedList<ExampleBasedNode>();
-	// stabiles candidate set, da sich die Knoten nach dem einfügen nicht
-	// verschieben können => das Set enthält nicht die aktuellen horizontal
-	// expansions, es dient nur dazu die besten Konzepte zu speichern; hat also
-	// keine Funktion im Algorithmus
+	// stable candidate set; it has no functional part in the algorithm,
+	// but is a list of the currently best concepts found
 	private TreeSet<ExampleBasedNode> candidatesStable = new TreeSet<ExampleBasedNode>(nodeComparatorStable);
-	// vorhandene Konzepte, die irgendwann als proper eingestuft worden
+	
+	// comparator used to create ordered sets of concepts
+	private ConceptComparator conceptComparator = new ConceptComparator();
+	
+	// utility variables
+	private DecimalFormat df = new DecimalFormat();		
+	
+	// candidates for refinement (used for directly accessing 
+	// nodes in the search tree)
+	private TreeSet<ExampleBasedNode> candidates;
+	
+	// new nodes found during a run of the algorithm
+	private List<ExampleBasedNode> newCandidates = new LinkedList<ExampleBasedNode>();
+	
+	// all concepts which have been evaluated as being proper refinements
 	private SortedSet<Concept> properRefinements = new TreeSet<Concept>(conceptComparator);
-	// speichert Konzept und deren Evaluierung, um sie leicht wiederzufinden für
-	// Strategien wie Konzeptverkürzung etc.
-	// Zahl = covered negatives, -1 = too weak
-	// private Map<Concept, Integer> evaluationCache = new TreeMap<Concept, Integer>(conceptComparator);
-	// Blacklists
+
+	// blacklists
 	private SortedSet<Concept> tooWeakList = new TreeSet<Concept>(conceptComparator);
 	private SortedSet<Concept> overlyGeneralList = new TreeSet<Concept>(conceptComparator);
 		
+	// set of expanded nodes (TODO: better explanation)
 	TreeSet<ExampleBasedNode> expandedNodes = new TreeSet<ExampleBasedNode>(nodeComparatorStable);
 	
-	// statistische Variablen
+	// statistic variables
 	private int maxRecDepth = 0;
 	private int maxNrOfRefinements = 0;
 	private int maxNrOfChildren = 0;
 	private int redundantConcepts = 0;
-	int maximumHorizontalExpansion;
-	int minimumHorizontalExpansion;
-	// private int propernessTests = 0;
 	private int propernessTestsReasoner = 0;
 	private int propernessTestsAvoidedByShortConceptConstruction = 0;
 	private int propernessTestsAvoidedByTooWeakList = 0;
@@ -150,7 +136,7 @@ public class ExampleBasedROLearner {
 	private int conceptTestsOverlyGeneralList = 0;
 	private int conceptTestsReasoner = 0;
 	
-	// Zeitvariablen
+	// time variables
 	private long algorithmStartTime;
 	private long propernessCalcTimeNs = 0;
 	private long propernessCalcReasoningTimeNs = 0;	
@@ -159,15 +145,14 @@ public class ExampleBasedROLearner {
 	private long redundancyCheckTimeNs = 0;
 	private long evaluateSetCreationTimeNs = 0;
 	private long improperConceptsRemovalTimeNs = 0;
-	long someTimeNs = 0;
-	int someCount = 0;	
 	
 	public ExampleBasedROLearner(
 			LearningProblem learningProblem,
 			RefinementOperator operator, 
 			ExampleBasedHeuristic heuristic,
-			Set<AtomicConcept> allowedConcepts,
-			Set<AtomicRole> allowedRoles, 
+			// Set<AtomicConcept> allowedConcepts,
+			// Set<AtomicRole> allowedRoles, 
+			double noisePercentage,
 			boolean writeSearchTree, 
 			boolean replaceSearchTree, 
 			File searchTreeFile, 
@@ -183,8 +168,9 @@ public class ExampleBasedROLearner {
 			posOnly = true;
 		}
 		
+		// this.heuristic = heuristic;
 		// candidate sets entsprechend der gewählten Heuristik initialisieren
-		candidates = new TreeSet<ExampleBasedNode>(nodeComparator);
+		candidates = new TreeSet<ExampleBasedNode>(heuristic);
 		// newCandidates = new TreeSet<Node>(nodeComparator);
 	}
 	
@@ -208,21 +194,10 @@ public class ExampleBasedROLearner {
 			solutions.add(top);
 		
 		int loop = 0;
-
-		// Voreinstellung für horizontal expansion
-		maximumHorizontalExpansion = 0;
-		minimumHorizontalExpansion = 0;		
 		
 		algorithmStartTime = System.nanoTime();
 		
-		// TODO: effizienter Traversal der Subsumption-Hierarchie
-		// TODO: Äquivalenzen nutzen
-		// TODO: Gibt es auch eine andere Abbruchbedingung? Es könnte sein, dass irgendwann keine
-		// proper refinements mehr gefunden werden, aber wie stelle man das fest?
-		while(!solutionFound && !stop) {
-			
-			if(!quiet) 
-				printStatistics(false);			
+		while(!solutionFound && !stop) {		
 			
 			// besten Knoten nach Heuristik auswählen
 			ExampleBasedNode bestNode = candidates.last();
@@ -234,67 +209,7 @@ public class ExampleBasedROLearner {
 			candidates.add(bestNode);
 			candidates.addAll(newCandidates);
 			candidatesStable.addAll(newCandidates);			
-			
-			// minimum horizontal expansion berechnen
-			if(bestNode.getHorizontalExpansion()>maximumHorizontalExpansion)
-				maximumHorizontalExpansion = bestNode.getHorizontalExpansion();
-			minimumHorizontalExpansion = (int) Math.floor(horizontalExpansionFactor*maximumHorizontalExpansion);
-			
-			// neu: es werden solange Knoten erweitert bis wirklich jeder Knoten die
-			// notwendige minimum horizontal expansion hat
-			boolean nodesExpanded;
-			do {
-				nodesExpanded = false;
-				
-
-				// es darf nicht candidatesStable geklont werden, da diese Menge nicht
-				// aktualisiert wird, also die falschen horizontal expansions vorliegen
-				// TODO: bei Tests war die Performance der clone-Operation ganz gut, aber
-				// es skaliert natürlich nicht so gut mit größer werdenden candidate set
-				// => Lösung ist vielleicht einfach einen Iterator zu verwenden und das
-				// aktuelle Konzept gleich hier zu löschen (wird dann bei expansion wieder
-				// hinzugefügt)
-				// TreeSet<Node> candidatesClone = (TreeSet<Node>) candidates.clone();
-				newCandidates.clear();
-
-
-				// for(Node candidate : candidatesClone) {
-				Iterator<ExampleBasedNode> it = candidates.iterator();
-				List<ExampleBasedNode> changedNodes = new LinkedList<ExampleBasedNode>();
-				 while(it.hasNext()){
-					ExampleBasedNode candidate = it.next();
-					// alle Kandidaten, die nicht too weak sind und unter minimumHorizontalExpansion
-					// liegen, werden erweitert
-					if(!candidate.isTooWeak() && candidate.getHorizontalExpansion()<minimumHorizontalExpansion) {
-						// Vorsicht, falls candidates irgendwann in extendProper benutzt
-						// werden sollten! Es könnten auf diese Weise Knoten fehlen 
-						// (momentan wird candidates nur zur Auswahl des besten Knotens
-						// benutzt).
-						it.remove();
 						
-						extendNodeProper(candidate, minimumHorizontalExpansion);
-						nodesExpanded = true;
-
-						changedNodes.add(candidate);
-					}
-				}
-				 
-				long someTimeStart = System.nanoTime();
-				someCount++;				 
-				// geänderte temporär entfernte Knoten wieder hinzufügen
-				candidates.addAll(changedNodes);
-				// neu gefundene Knoten hinzufügen
-				candidates.addAll(newCandidates);
-				candidatesStable.addAll(newCandidates);
-				someTimeNs += System.nanoTime() - someTimeStart;
-
-			} while(nodesExpanded && !stop);
-			
-			//System.out.println("candidate set:");
-			//for(Node n : candidates) {
-			//	System.out.println(n);
-			//}
-			
 			if(writeSearchTree) {
 				// String treeString = "";
 				String treeString = "best expanded node: " + bestNode+ "\n";
@@ -305,13 +220,9 @@ public class ExampleBasedROLearner {
 					}
 				}
 				expandedNodes.clear();
-				treeString += "horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion + "\n";
 				treeString += topNode.getTreeString();
 				treeString += "\n";
-				// System.out.println(treeString);
-				// searchTree += treeString + "\n";
-				// TODO: ev. immer nur einen search tree speichern und den an die
-				// Datei anhängen => spart Speicher
+
 				if(replaceSearchTree)
 					Files.createFile(searchTreeFile, treeString);
 				else
@@ -321,38 +232,16 @@ public class ExampleBasedROLearner {
 			// Anzahl Schleifendurchläufe
 			loop++;
 			
-			if(!quiet)
-				System.out.println("--- loop " + loop + " finished ---");	
+			logger.debug("--- loop " + loop + " finished ---");	
 			
 		}
 		
-		// Suchbaum in Datei schreiben
-//		if(writeSearchTree)
-//			Files.createFile(searchTreeFile, searchTree);
-		
-		// Ergebnisausgabe
-		/*
-		System.out.println("candidate set:");
-		for(Node n : candidates) {
-			System.out.println(n);
-		}*/
-		
-		// Set<Concept> solutionsSorted = new TreeSet(conceptComparator);
-		// solutionsSorted.addAll(solutions);
-		
-		// System.out.println("retrievals:");
-		// for(Concept c : ReasoningService.retrievals) {
-		// 	System.out.println(c);
-		// }
-		
 		if(solutionFound) {
-			System.out.println();
-			System.out.println("solutions:");
+			logger.info("\nsolutions:");
 			for(Concept c : solutions) {
-				System.out.println("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
+				logger.info("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
 			}
 		}
-		System.out.println("horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion);
 		System.out.println("size of candidate set: " + candidates.size());
 		printStatistics(true);
 		
@@ -724,16 +613,13 @@ public class ExampleBasedROLearner {
 			// searchTree += expandedNodeString + "\n";
 			System.out.println(expandedNodeString);		
 			System.out.println("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
-			String expansionString = "horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion;
-			// searchTree += expansionString + "\n";
-			System.out.println(expansionString);
 			System.out.println("size of candidate set: " + candidates.size());
 			// System.out.println("properness max recursion depth: " + maxRecDepth);
 			// System.out.println("max. number of one-step refinements: " + maxNrOfRefinements);
 			// System.out.println("max. number of children of a node: " + maxNrOfChildren);
 		}
 		
-		if(showBenchmarkInformation) {
+		if(computeBenchmarkInformation) {
 			
 
 			long reasoningTime = rs.getOverallReasoningTimeNs();
@@ -753,15 +639,11 @@ public class ExampleBasedROLearner {
 			double onnfTimePercentage = 100 * ConceptTransformation.onnfTimeNs/(double)algorithmRuntime;
 			double shorteningTimePercentage = 100 * ConceptTransformation.shorteningTimeNs/(double)algorithmRuntime;
 			
-			// nur temporär 
-			double someTimePercentage = 100 * someTimeNs/(double)algorithmRuntime;			
-			
 			System.out.println("reasoning percentage: " + df.format(reasoningPercentage) + "%");
 			System.out.println("   subsumption check time: " + df.format(subPercentage) + "%");		
 			System.out.println("proper calculation percentage (wo. reasoning): " + df.format(propPercentage) + "%");
 			System.out.println("   deletion time percentage: " + df.format(deletionPercentage) + "%");
 			System.out.println("   refinement calculation percentage: " + df.format(refinementPercentage) + "%");
-			System.out.println("      some time percentage: " + df.format(someTimePercentage) + "% " + Helper.prettyPrintNanoSeconds(someTimeNs) + " " + someCount + " times");
 			System.out.println("      m calculation percentage: " + df.format(mComputationTimePercentage) + "%");
 			System.out.println("      top calculation percentage: " + df.format(topComputationTimePercentage) + "%");
 			System.out.println("   redundancy check percentage: " + df.format(redundancyCheckPercentage) + "%");
