@@ -9,8 +9,8 @@
 class DLLearnerConnection
 {
 	private $DBPediaUrl;
-	private $DLLearnerUri;
-	
+	private $ttl;
+	private $lang;
 	// 
 	private $client;
 	
@@ -20,11 +20,14 @@ class DLLearnerConnection
 	// ID of the DBpedia knowledge source
 	private $ksID;
 		
-	function DLLearnerConnection($DBPediaUrl,$DLLearnerUri,$id=0,$ksID=0)
+	function DLLearnerConnection($id=0,$ksID=0)
 	{
 		ini_set('default_socket_timeout',200);
-		$this->DBPediaUrl=$DBPediaUrl;
-		$this->DLLearnerUri=$DLLearnerUri;
+		require_once("Settings.php");
+		$settings=new Settings();
+		$this->ttl=$settings->sparqlttl;
+		$this->lang=$settings->language;
+		$this->DBPediaUrl=$settings->dbpediauri;
 		$this->client=new SoapClient("main.wsdl");
 		$this->id=$id;
 		$this->ksID=$ksID;
@@ -35,12 +38,6 @@ class DLLearnerConnection
 		$id=$this->client->generateID();
 		$ksID=$this->client->addKnowledgeSource($id,"sparql",$this->DBPediaUrl);
 		return array(0 => $id, 1 => $ksID);
-	}
-	
-	function test()
-	{
-		$object=$this->client->test($this->id,$this->ksID);
-		return $object->item;
 	}
 	
 	function getConceptFromExamples($ttl,$posExamples,$negExamples)
@@ -97,95 +94,70 @@ class DLLearnerConnection
 		}
 		return $concept;
 	}
-	
-	function getTriples($ttl,$individual)
+			
+	function getTriples($label)
 	{
-		$options=array("triples",$individual);
-		$this->client->startThread($this->id,$this->ksID,$options);
-		$i = 1;
-		$sleeptime = 1;
-			
-		do {
-			// sleep a while
-			sleep($sleeptime);
-				
-			// see if algorithm is running
-			if (!$this->client->isThreadRunning($this->id,$this->ksID,"triples"))
-			{
-				$object=$this->client->getFromSparql($this->id,$this->ksID,"triples");
-				@$array=$object->item;
-				if ($array==NULL) return array();
-				if (count($array)==1) return $array;
-				$ret=array();
-				foreach ($array as $element)
-				{
-					$items=preg_split("[<]",$element,-1, PREG_SPLIT_NO_EMPTY);
-					
-					// each property can occur multiple times (!)
-					// bug: $ret[$items[0]]=$items[1];
-						
-					$ret[$items[0]][] = $items[1];
-				}
-				return $ret;
-			}
-			
-			$seconds = $i * $sleeptime;
-			$i++;
-		} while($seconds<$ttl);
-		
-		$this->client->stopSparqlThread($this->id,$this->ksID,"triples");
-		return array();	
+		$query="SELECT ?pred ?obj ".
+			   "WHERE {<http://dbpedia.org/resource/".str_replace(' ','_',$label)."> ?pred ?obj}";
+		$result=$this->getSparqlResult($query);
+		$ret=array();
+		foreach ($result->item as $results){
+			$value=$results->item[1];
+			if (strpos($value,"@".$this->lang)==(strlen($value)-strlen("@".$this->lang))) $ret[$results->item[0]][]=substr($value,0,strlen($value)-strlen("@".$this->lang));
+			if (strpos($value,"@")!=(strlen($value)-strlen($this->lang)-1)) $ret[$results->item[0]][]=$value;
+		}
+		return $ret;
 	}
 	
-	function getSubjects($ttl,$label)
+	function getSparqlResult($query)
 	{
-		$options=array("subjects",$label,15);
-		$this->client->startThread($this->id,$this->ksID,$options);
+		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "defaultGraphURIs", array("http://dbpedia.org"));
+		$queryID=$this->client->sparqlQueryThreaded($this->id,$this->ksID,$query);
+		$running=true;
 		$i = 1;
 		$sleeptime = 1;
-			
+		
 		do {
 			// sleep a while
 			sleep($sleeptime);
 				
-			// see if algorithm is running
-			if (!$this->client->isThreadRunning($this->id,$this->ksID,"subjects"))
-			{
-				$object=$this->client->getFromSparql($this->id,$this->ksID,"subjects");
-				return $object->item;
+			
+			$running=$this->client->isSparqlQueryRunning($this->id,$this->ksID,$queryID);
+			if (!$running){
+				$result=$this->client->sparqlQuery($this->id,$this->ksID,$queryID);
+				return $result;
 			}
 			
 			$seconds = $i * $sleeptime;
 			$i++;
-		} while($seconds<$ttl);
-		
-		$this->client->stopSparqlThread($this->id,$this->ksID,"subjects");
-		return array();
+		} while($seconds<$this->ttl);
+		$this->client->stopSparqlQuery($id,$ksID,$queryID);
 	}
 	
-	function getSubjectsFromConcept($ttl,$concept)
+	function getSubjects($label)
 	{
-		$options=array("conceptSubjects",$concept);
-		$this->client->startThread($this->id,$this->ksID,$options);
-		$i = 1;
-		$sleeptime = 1;
-		do {
-			// sleep a while
-			sleep($sleeptime);
-				
-			// see if algorithm is running
-			if (!$this->client->isThreadRunning($this->id,$this->ksID,"conceptSubjects"))
-			{
-				$object=$this->client->getFromSparql($this->id,$this->ksID,"conceptSubjects");
-				return $object->item;
-			}
-			
-			$seconds = $i * $sleeptime;
-			$i++;
-		} while($seconds<$ttl);
-		
-		$this->client->stopSparqlThread($this->id,$this->ksID,"conceptSubjects");
-		return array();
+		$query="SELECT DISTINCT ?subject\n".
+				"WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\"".$label."\"'@en}\n".
+				"LIMIT 10";
+		$result=$this->getSparqlResult($query);
+		$ret=array();
+		foreach ($result->item as $results){
+			$ret[]=$results->item;
+		}
+		return $ret;
+	}
+	
+	function getSubjectsFromConcept($concept)
+	{
+		$query="SELECT DISTINCT ?subject\n".
+			   "WHERE { ?subject a <".$concept.">}\n".
+			   "LIMIT 10";
+		$result=$this->getSparqlResult($query);
+		$ret=array();
+		foreach ($result->item as $results){
+			$ret[]=$results->item[0];
+		}
+		return $ret;
 	}
 	
 	public function loadWSDLfiles($wsdluri){

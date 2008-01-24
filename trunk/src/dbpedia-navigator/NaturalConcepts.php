@@ -10,6 +10,7 @@ class NaturalConcepts
 	
 	function getNaturalConcept(){
 		$identifiedConcepts=$this->identifyConcepts();
+		$labels=$this->getLabels($identifiedConcepts);
 		return $identifiedConcepts;
 	}
 	
@@ -32,8 +33,22 @@ class NaturalConcepts
 			$offset=$treffer[0][1];
 		}
 		
-		print_r($ret);
 		return $ret;
+	}
+	
+	function getLabels($conc)
+	{
+		$query="SELECT DISTINCT ";
+		for ($i=0;$i<count($conc)-1;$i++)
+			$query.="?obj".$i.", ";
+		$query.="?obj".$i."\n";
+		$query.="WHERE {\n";	
+		foreach ($conc as $key=>$con){
+			$query.="<".$con."> <http://www.w3.org/2000/01/rdf-schema#label> ?obj".$key.".\n";
+		}
+		$query.="}";
+		print $query;
+		return $query;
 	}
 }
 
