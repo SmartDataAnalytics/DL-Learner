@@ -38,6 +38,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.sparql.core.ResultBinding;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 /**
  * Represents one SPARQL query. It includes support for stopping the SPARQL query
@@ -86,17 +87,18 @@ public class SparqlQuery {
 	 */
 	protected ResultSet send() {
 		p(queryString);
-		// create a query and parse it into Jena
-		Query query = QueryFactory.create(queryString);
-		query.validate();
-
+		
 		String service = endpoint.getURL().toString();
 		p(endpoint.getURL().toString());
 		// Jena access to SPARQL endpoint
-		QueryExecution queryExecution = QueryExecutionFactory.sparqlService(
-				service, query, endpoint.getDefaultGraphURIs(), endpoint
-						.getNamedGraphURIs());
-
+		QueryEngineHTTP queryExecution=new QueryEngineHTTP(service,queryString);
+		for (String dgu : endpoint.getDefaultGraphURIs()){
+			queryExecution.addDefaultGraph(dgu);
+		}
+		for (String ngu : endpoint.getNamedGraphURIs()){
+			queryExecution.addNamedGraph(ngu);
+		}
+		queryExecution.addDefaultGraph("http://dbpedia.org");
 		p("query SPARQL server");
 		
 		
