@@ -5,10 +5,8 @@ ini_set('max_execution_time',200);
 ini_set("soap.wsdl_cache_enabled","1");
 
 session_start();
-require_once('Settings.php');
 require_once('DLLearnerConnection.php');
-$settings=new Settings();
-$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri);
+$sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
 $_SESSION['id']=$ids[0];
 $_SESSION['ksID']=$ids[1];
