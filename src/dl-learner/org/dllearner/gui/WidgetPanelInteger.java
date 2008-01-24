@@ -23,66 +23,77 @@ package org.dllearner.gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Color;
 //import java.util.List;
 
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JButton;
+
 //import javax.swing.JTable;
 //import javax.swing.table.DefaultTableModel;
 
-//import org.dllearner.core.Component;
-//import org.dllearner.core.ComponentManager;
-//import org.dllearner.core.config.ConfigOption;
-//import org.dllearner.core.ComponentManager;
+
 import org.dllearner.core.config.ConfigOption;
 
 
 /**
- * AbstractWidgetPanel
+ * WidgetPanel
  * 
  * @author Tilo Hielscher
  * 
  */
-public class AbstractWidgetPanel extends JPanel implements ActionListener {
+public class WidgetPanelInteger extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = -1802111225835164644L;
 
 	//private Config config;
-	//private ConfigOption<?> configOption;
-	//private JLabel nameLabel;
+	private ConfigOption<?> configOption;
+	private JLabel nameLabel;
 	private JPanel centerPanel = new JPanel();
+	private JButton setButton = new JButton("Set");
+
 	
-	public AbstractWidgetPanel(Config config, ConfigOption<?> configOption) {
-		super(new BorderLayout());
+	public WidgetPanelInteger(Config config, ConfigOption<?> configOption) {
 		//this.config = config;
-		//this.configOption = configOption;
+		this.configOption = configOption;
 		
+		// default
+		nameLabel = new JLabel(configOption.getName());
+		setButton.addActionListener(this);
+		
+		// IntegerConfigOption
 		if (configOption.toString().contains("IntegerConfigOption")) {
-			JLabel nameLabel = new JLabel(configOption.getName());
 			JTextField integerField = new JTextField(3);
-			integerField.setText("100");
+			integerField.setText("100"); 
 			System.out.println(configOption.getDefaultValue());
 			centerPanel.add(nameLabel);
 			centerPanel.add(integerField);
-			add(centerPanel, BorderLayout.CENTER);
+			centerPanel.add(setButton);
 		}
-		else if (false) {
-			
-		}
+		// UNKNOWN
 		else {
-			JLabel nameLabel = new JLabel(configOption.getName());
-			JLabel notImplementedLabel = new JLabel("not implemented");
+			nameLabel = new JLabel(configOption.getName());
+			JLabel notImplementedLabel = new JLabel("not an integer");
+			notImplementedLabel.setForeground(Color.RED);
 			centerPanel.add(nameLabel);
 			centerPanel.add(notImplementedLabel);
-			add(centerPanel, BorderLayout.CENTER);
 		}
 		
-		
-		
+		// default
+		add(centerPanel, BorderLayout.CENTER);
+	}
+	
+	public JPanel getPanel() {
+		return this;
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		
+		if (e.getSource() == setButton) {
+			int number = 10;
+			System.out.println(number);
+			System.out.println(configOption);
+		}
 	}
 }
