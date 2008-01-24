@@ -32,6 +32,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 
 /**
@@ -87,6 +88,9 @@ public class OptionPanel extends JPanel implements ActionListener {
 		// show as table
 		if (e.getSource() == tableButton) {
 			optionList = ComponentManager.getConfigOptions(componentClass);
+			
+			// clear
+			centerPanel.removeAll();
 /*	
 			System.out.println("name: " + optionList.get(i).getName()); // name
 			System.out.println("default value: " + optionList.get(i).getDefaultValue()); // default value
@@ -110,18 +114,25 @@ public class OptionPanel extends JPanel implements ActionListener {
 		// show normal
 		if (e.getSource() == normalButton) {
 			optionList = ComponentManager.getConfigOptions(componentClass); // get class for options
-			for (int i=0; i<optionList.size(); i++) {
+/*			for (int i=0; i<optionList.size(); i++) {
 				System.out.println("option: " + optionList.get(i));
 			}
-	
+*/	
 			// clear
 			centerPanel.removeAll();
 			
-			//get an AbstractWidgetPanel TEST
-			AbstractWidgetPanel firstPanel = new AbstractWidgetPanel(config, optionList.get(0));
-			AbstractWidgetPanel secondPanel = new AbstractWidgetPanel(config, optionList.get(1));
+			//get a WidgetPanel TEST
+			WidgetPanelInteger firstPanel = new WidgetPanelInteger(config, optionList.get(0));
 			centerPanel.add(firstPanel);
-			centerPanel.add(secondPanel);
+			//ConfigEntry(ConfigOption<T> option, T value);
+			
+			
+			
+			// PROBLEM
+			//ConfigEntry testEntry = new ConfigEntry(optionList.get(0), (int)10);
+			
+			
+			
 			
 			// update graphic
 			centerPanel.updateUI();
