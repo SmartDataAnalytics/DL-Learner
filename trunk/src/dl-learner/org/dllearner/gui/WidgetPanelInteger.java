@@ -24,18 +24,18 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
-//import java.util.List;
 
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 
-//import javax.swing.JTable;
-//import javax.swing.table.DefaultTableModel;
-
-
+import org.dllearner.core.Component;
+import org.dllearner.core.ComponentManager;
+import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.IntegerConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 
 /**
@@ -48,16 +48,21 @@ public class WidgetPanelInteger extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = -1802111225835164644L;
 
-	//private Config config;
+	private Config config;
 	private ConfigOption<?> configOption;
 	private JLabel nameLabel;
 	private JPanel centerPanel = new JPanel();
 	private JButton setButton = new JButton("Set");
-
-	
-	public WidgetPanelInteger(Config config, ConfigOption<?> configOption) {
-		//this.config = config;
+	private Component component;
+	private Class<? extends Component> componentOption;
+		
+	public WidgetPanelInteger(Config config, Component component, Class<? extends Component> componentOption, ConfigOption<?> configOption) {
+		this.config = config;
 		this.configOption = configOption;
+		this.component = component;
+		this.componentOption = componentOption;
+		
+		System.out.println("1st: " + component);
 		
 		// default
 		nameLabel = new JLabel(configOption.getName());
@@ -91,9 +96,30 @@ public class WidgetPanelInteger extends JPanel implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == setButton) {
-			int number = 10;
-			System.out.println(number);
-			System.out.println(configOption);
+			// INTEGER
+			Integer value = 10;
+			IntegerConfigOption specialOption;
+			String name = configOption.getName();
+			//Component component = config.getLearningAlgorithm();
+			System.out.println("name: " + name + " & value: " + value);
+			specialOption = (IntegerConfigOption) config.getComponentManager().getConfigOption(componentOption, name);
+			try {
+				ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(specialOption, value);
+				System.out.println("TEST specialEntry: " + specialEntry);
+				System.out.println("TEST component: " + component);
+				config.getComponentManager().applyConfigEntry(component, specialEntry);
+			}
+			catch (InvalidConfigOptionValueException s) {
+				s.printStackTrace();
+			}
 		}
+	}
+	
+	public void setComponent (Component component) {
+		this.component = component;
+	}
+	
+	public void setComponentOption (Class<? extends Component> componentOption) {
+		this.componentOption = componentOption;
 	}
 }
