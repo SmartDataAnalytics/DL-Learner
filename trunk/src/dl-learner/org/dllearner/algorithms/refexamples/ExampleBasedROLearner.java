@@ -148,6 +148,7 @@ public class ExampleBasedROLearner {
 	
 	public ExampleBasedROLearner(
 			LearningProblem learningProblem,
+			ReasoningService rs,
 			RefinementOperator operator, 
 			ExampleBasedHeuristic heuristic,
 			// Set<AtomicConcept> allowedConcepts,
@@ -167,27 +168,29 @@ public class ExampleBasedROLearner {
 			this.posOnlyLearningProblem = (PosOnlyDefinitionLP) learningProblem;
 			posOnly = true;
 		}
-		
-		// this.heuristic = heuristic;
-		// candidate sets entsprechend der gewählten Heuristik initialisieren
+		this.rs = rs;
+		this.operator = (RhoDown) operator;
+		// initialise candidate set with heuristic as ordering
 		candidates = new TreeSet<ExampleBasedNode>(heuristic);
-		// newCandidates = new TreeSet<Node>(nodeComparator);
+		// this.noisePercentage ...
+		this.writeSearchTree = writeSearchTree;
+		this.replaceSearchTree = replaceSearchTree;
+		this.searchTreeFile = searchTreeFile;
+		this.useTooWeakList = useTooWeakList;
+		this.useOverlyGeneralList = useOverlyGeneralList;
+		this.useShortConceptConstruction = useShortConceptConstruction;
 	}
 	
 	public void start() {
-		// Suche wird mit Top-Konzept gestartet
+		// start search with most general concept
 		Top top = new Top();
 		ExampleBasedNode topNode = new ExampleBasedNode(top);
-		// int coveredNegativeExamples = learningProblem.coveredNegativeExamplesOrTooWeak(top);
-		// aus Top folgen immer alle negativen Beispiele, d.h. es ist nur eine Lösung, wenn
-		// es keine negativen Beispiele gibt
+		// top covers all negatives
 		int coveredNegativeExamples = getNumberOfNegatives();
 		topNode.setCoveredNegativeExamples(coveredNegativeExamples);
-		// topNode.setHorizontalExpansion(1); // die 0 ist eigentlich richtig, da keine Refinements
-		// der Länge 1 untersucht wurden
 		candidates.add(topNode);
 		candidatesStable.add(topNode);
-		// Abbruchvariable => beachten, dass bereits TOP eine Lösung sein kann
+		// note that TOP may already be a solution
 		solutionFound = (coveredNegativeExamples == 0);
 		solutions = new LinkedList<Concept>();
 		if(solutionFound)
@@ -690,7 +693,7 @@ public class ExampleBasedROLearner {
 	}		
 	
 	public void stop() {
-		
+		stop = true;
 	}
 
 	public Concept getBestSolution() {

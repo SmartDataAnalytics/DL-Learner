@@ -287,6 +287,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		// options to it
 		algorithm = new ExampleBasedROLearner(
 				learningProblem,
+				rs,
 				operator,
 				algHeuristic,
 				// usedConcepts,
@@ -305,7 +306,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	}
 	
 	public static String getName() {
-		return "example driven refinement operator based learning algorithm [not working]";
+		return "example driven refinement operator based learning algorithm";
 	}
 	
 	@Override
