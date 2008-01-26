@@ -47,7 +47,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     private Config config;
     private List<Class<? extends LearningAlgorithm>> learners;
 	private JPanel choosePanel = new JPanel();
-	private OptionPanel centerPanel;
+	private OptionPanel optionPanel;
 	private JPanel initPanel = new JPanel();
     private JButton initButton;
     private String[] cbItems = {};
@@ -77,26 +77,27 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		}
 		
 		cb.addActionListener(this);
-		
-		centerPanel =  new OptionPanel(config, learners.get(choosenClassIndex));
+	
+		optionPanel =  new OptionPanel(config, config.getLearningAlgorithm(), learners.get(choosenClassIndex));
+		updateOptionPanel();
+
 		
 		add(choosePanel, BorderLayout.PAGE_START);
-		add(centerPanel, BorderLayout.CENTER);	
+		add(optionPanel, BorderLayout.CENTER);	
 		add(initPanel, BorderLayout.PAGE_END);
-		
 	}
 	
 
 	public void actionPerformed(ActionEvent e) {
 		// read selected Class
         choosenClassIndex = cb.getSelectedIndex();
-        
-        // update OptionPanel
-		centerPanel.setClass(learners.get(choosenClassIndex));
-        
+
+		updateOptionPanel();
+		
 		// init
 		if (e.getSource() == initButton) {
 			if (config.getStatus(6)) {
+				updateOptionPanel();
 				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(learners.get(choosenClassIndex), config.getLearningProblem(), config.getReasoningService()));
 				config.getLearningAlgorithm().init();
 			}
@@ -106,4 +107,9 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		}
 	}
 
+	public void updateOptionPanel() {
+        // update OptionPanel
+        optionPanel.setComponent(config.getLearningAlgorithm());
+		optionPanel.setComponentOption(learners.get(choosenClassIndex));
+	}
 }

@@ -32,8 +32,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.*;
 
 /**
  * OptionPanel
@@ -45,20 +44,23 @@ public class OptionPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = -3053205578443575240L;
 	private Config config;
-	private Class<? extends Component> componentClass;
+	private Class<? extends Component> componentOption;
 	private List<ConfigOption<?>> optionList;
 	private JButton tableButton;
 	private JButton normalButton;
+	private JButton readOptionsButton;
 	private DefaultTableModel optionModel = new DefaultTableModel();
 	private JTable optionTable = new JTable(optionModel);
 	private JPanel startPanel = new JPanel();
 	private JPanel centerPanel = new JPanel();
+	private Component component;
 
-	public OptionPanel(Config config, Class<? extends Component> componentClass) {
+	public OptionPanel(Config config, Component component, Class<? extends Component> componentOption) {
 		super(new BorderLayout());
 		
 		this.config = config;
-		this.componentClass = componentClass;
+		this.component = component;
+		this.componentOption = componentOption;
 		
 		tableButton = new JButton("show options as table");
 		tableButton.addActionListener(this);
@@ -66,10 +68,14 @@ public class OptionPanel extends JPanel implements ActionListener {
 		normalButton = new JButton("show normal");
 		normalButton.addActionListener(this);
 	
-		optionList = ComponentManager.getConfigOptions(componentClass);
+		readOptionsButton = new JButton("read set option");
+		readOptionsButton.addActionListener(this);
+		
+		optionList = ComponentManager.getConfigOptions(componentOption);
 	
 		startPanel.add(tableButton);
 		startPanel.add(normalButton);
+		startPanel.add(readOptionsButton);
 		
 		add(startPanel, BorderLayout.PAGE_START);
 		add(centerPanel, BorderLayout.CENTER);
@@ -87,17 +93,11 @@ public class OptionPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// show as table
 		if (e.getSource() == tableButton) {
-			optionList = ComponentManager.getConfigOptions(componentClass);
+			optionList = ComponentManager.getConfigOptions(componentOption);
 			
 			// clear
 			centerPanel.removeAll();
-/*	
-			System.out.println("name: " + optionList.get(i).getName()); // name
-			System.out.println("default value: " + optionList.get(i).getDefaultValue()); // default value
-			System.out.println("class: " + optionList.get(i).getClass()); // class
-			System.out.println("description: " + optionList.get(i).getDescription()); // description
-			System.out.println("allowed value description: " + optionList.get(i).getAllowedValuesDescription()); // allowed value description
-*/			
+	
 			// clear JTable
 			for (int i=optionModel.getRowCount()-1; i>0; i--) { // from last to first
 				optionModel.removeRow(i); 
@@ -113,35 +113,32 @@ public class OptionPanel extends JPanel implements ActionListener {
 		}
 		// show normal
 		if (e.getSource() == normalButton) {
-			optionList = ComponentManager.getConfigOptions(componentClass); // get class for options
-/*			for (int i=0; i<optionList.size(); i++) {
-				System.out.println("option: " + optionList.get(i));
-			}
-*/	
+			optionList = ComponentManager.getConfigOptions(componentOption); // get class for options
+
 			// clear
 			centerPanel.removeAll();
 			
-			//get a WidgetPanel TEST
-			WidgetPanelInteger firstPanel = new WidgetPanelInteger(config, optionList.get(0));
+			//get a WidgetPanel Example
+			// optionList is the list of possible options for componentOption
+			// each option can be type of IntegerConfigOption, StringConfigOption and so on
+			WidgetPanelInteger firstPanel = new WidgetPanelInteger(config, component, componentOption, optionList.get(0));
 			centerPanel.add(firstPanel);
-			//ConfigEntry(ConfigOption<T> option, T value);
-			
-			
-			
-			// PROBLEM
-			//ConfigEntry testEntry = new ConfigEntry(optionList.get(0), (int)10);
-			
-			
-			
-			
+			 
 			// update graphic
 			centerPanel.updateUI();
-			
-			
+		}
+		// read set options
+		if (e.getSource() == readOptionsButton) {
+			System.out.println("setOptions: " + config.getComponentManager().getConfigOption(componentOption, optionList.get(0).getName()));
 		}
 	}
-
-	public void setClass (Class<? extends Component> componentClass) {
-		this.componentClass = componentClass;
+	
+	public void setComponent (Component component) {
+		this.component = component;
 	}
+	
+	public void setComponentOption (Class<? extends Component> componentOption) {
+		this.componentOption = componentOption;
+	}
+	
 }
