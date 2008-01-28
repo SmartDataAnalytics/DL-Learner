@@ -1,7 +1,7 @@
 package org.dllearner.gui;
 
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -140,7 +140,7 @@ public class WidgetPanelInteger extends JPanel implements ActionListener {
 		try {
 			ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(specialOption, value);
 			//System.out.println("set Integer specialEntry: " + specialEntry);
-			//System.out.println("set Integer component: " + component);
+			System.out.println("set Integer component: " + component);
 			//System.out.println("set Integer componentOption: " + componentOption);
 			//System.out.println("set Integer config.getComponentManager().getConfigOptionValue(component, name): " + config.getComponentManager().getConfigOptionValue(component, name));
 			config.getComponentManager().applyConfigEntry(component, specialEntry);

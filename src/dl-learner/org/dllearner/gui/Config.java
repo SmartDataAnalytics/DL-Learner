@@ -1,7 +1,7 @@
 package org.dllearner.gui;
 
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -21,8 +21,8 @@ package org.dllearner.gui;
  */
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-//import java.io.File;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -30,6 +30,8 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.config.ConfigOption;
+
 
 /**
  * config
@@ -50,6 +52,8 @@ public class Config {
 	private Set<String> negExampleSet = new HashSet<String>();
 	private LearningProblem lp;
 	private LearningAlgorithm la;
+	
+	private List<ConfigOption<?>> optionLearningAlgorithm ;
 	
 	/**
 	 * status should show witch variables are set
