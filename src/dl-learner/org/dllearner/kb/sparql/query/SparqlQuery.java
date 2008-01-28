@@ -260,6 +260,10 @@ public class SparqlQuery {
 		return rs;
 		
 	}
+	
+	public String getQueryString() {
+		return queryString;
+	}
 
 	public void p(String str) {
 		if (print_flag) {

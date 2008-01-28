@@ -73,11 +73,11 @@ public class CachedSparqlQuery {
 	 * TODO can further be optimized
 	 * @return a jena ResultSet
 	 */
-	public ResultSet getAsResultSet2(){
+	public ResultSet getAsResultSet(){
 		return SparqlQuery.JSONtoResultSet(getAsJSON());
 	}
 	
-	public ResultSet getAsResultSet(){
+	public ResultSet getAsResultSet2(){
 		return this.sparqlQuery.send();
 	}
 	
@@ -97,6 +97,7 @@ public class CachedSparqlQuery {
 		if (FromCache == null) {
 			// configuration.increaseNumberOfuncachedSparqlQueries();
 			JSON = this.sparqlQuery.getAsJSON();
+			System.out.println(JSON);
 			// sendAndReceiveSPARQL(sparql);
 			// p(sparql);
 			// System.out.println(xml);
