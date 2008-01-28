@@ -1,7 +1,7 @@
 package org.dllearner.gui;
 
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,7 +19,6 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 import javax.swing.*;
 
 import java.awt.BorderLayout;
@@ -29,15 +28,12 @@ import java.util.List;
 
 import org.dllearner.core.LearningAlgorithm;
 
-
-
 /**
  * LearningAlgorithmPanel
  * 
  * @author Tilo Hielscher
  * 
  */
-
 public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 8721490771860452959L;
@@ -50,8 +46,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     private String[] cbItems = {};
 	private JComboBox cb = new JComboBox(cbItems);
 	private int choosenClassIndex;
-	
-	
+
 	
 	LearningAlgorithmPanel(Config config) {
 		super(new BorderLayout());
@@ -68,8 +63,6 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		// add into comboBox
 		learners = config.getComponentManager().getLearningAlgorithms();
 		for (int i=0; i<learners.size(); i++) {
-			//cb.addItem(learners.get(i).getSimpleName());
-			//System.out.println(learners.get(i).getSimpleName());
 			cb.addItem(config.getComponentManager().getComponentName(learners.get(i)));
 		}
 		
@@ -80,8 +73,9 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 
 		
 		add(choosePanel, BorderLayout.PAGE_START);
-		add(optionPanel, BorderLayout.CENTER);	
-		add(initPanel, BorderLayout.PAGE_END);
+		add(initPanel, BorderLayout.CENTER);
+		add(optionPanel, BorderLayout.PAGE_END);	
+	
 	}
 	
 

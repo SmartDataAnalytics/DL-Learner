@@ -1,7 +1,7 @@
 package org.dllearner.gui;
 
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -72,6 +72,9 @@ public class OptionPanel extends JPanel {
 		add(centerScroller, BorderLayout.CENTER);
 		
 		showWidgets();
+
+		System.out.println("AAA: " + ComponentManager.getConfigOptions(componentOption));
+
 	}
 	
 	public void setComponent (Component component) {

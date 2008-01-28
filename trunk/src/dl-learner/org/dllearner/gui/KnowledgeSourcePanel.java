@@ -1,7 +1,7 @@
 package org.dllearner.gui;
 
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -41,7 +41,6 @@ import org.dllearner.core.KnowledgeSource;
  * @author Tilo Hielscher
  * 
  */
-
 public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = -7678275020058043937L;
@@ -129,24 +128,24 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		// read selected KnowledgeSourceClass
-        choosenClassIndex = cb.getSelectedIndex();
-        checkIfSparql();
+	    // read selected KnowledgeSourceClass
+	    choosenClassIndex = cb.getSelectedIndex();
+	    checkIfSparql();
 		
-		// open File
-		if (e.getSource() == openButton) {
-			int returnVal = fc.showOpenDialog(KnowledgeSourcePanel.this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				String URI = "file://";
-				URI = URI.concat(fc.getSelectedFile().toString()); // make "file://" before local URI
-				config.setURI(URI); //save variable
-				fileDisplay.setText(URI);
-			}
-			return;
+	    // open File
+	    if (e.getSource() == openButton) {
+		int returnVal = fc.showOpenDialog(KnowledgeSourcePanel.this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+		    String URI = "file://";
+		    URI = URI.concat(fc.getSelectedFile().toString()); // make "file://" before local URI
+		    config.setURI(URI); //save variable
+		    fileDisplay.setText(URI);
 		}
+		return;
+	    }
 	
 		// init
-		if (e.getSource() == initButton) {
+		if (e.getSource() == initButton && config.getStatus(2)) {
 			config.setKnowledgeSource(config.getComponentManager().knowledgeSource(sources.get(choosenClassIndex)));
 			config.getComponentManager().applyConfigEntry(config.getKnowledgeSource(), "url", config.getURI());				
 			config.getKnowledgeSource().init();
