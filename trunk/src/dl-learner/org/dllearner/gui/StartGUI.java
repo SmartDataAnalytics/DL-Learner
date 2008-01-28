@@ -35,52 +35,51 @@ import org.apache.log4j.SimpleLayout;
  */
 
 public class StartGUI extends JFrame {
-	
-	private static final long serialVersionUID = -739265982906533775L;
-	
-	public JTabbedPane tabPane = new JTabbedPane();
-	
-	private JPanel tab1 = new JPanel();
-	private JPanel tab2 = new JPanel();
-	private JPanel tab3 = new JPanel();
-	private JPanel tab4 = new JPanel();
-	private JPanel tab5 = new JPanel();
 
-	public StartGUI() {
-		Config config = new Config();
-		this.setTitle("DL-Learner GUI");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setLocationByPlatform(true);
-		this.setSize(800, 600);
-		tab1.add(new KnowledgeSourcePanel(config));
-		tab2.add(new ReasonerPanel(config));
-		tab3.add(new LearningProblemPanel(config));
-		tab4.add(new LearningAlgorithmPanel(config));
-		tab5.add(new OutputPanel(config));
-		tabPane.addTab("Knowledge Source", tab1);
-		tabPane.addTab("Reasoner", tab2);
-		tabPane.addTab("Learning Problem", tab3);
-		tabPane.addTab("Learning Algorithm", tab4);
-		tabPane.addTab("Output", tab5);
-		this.add(tabPane);
-		this.setVisible(true);
-	}
-	
-	public static void main(String[] args) {
-		// create GUI logger
-		SimpleLayout layout = new SimpleLayout();
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		Logger logger = Logger.getRootLogger();
-		logger.removeAllAppenders();
-		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.INFO);		
-		
-		new StartGUI();
-	}
-	
-	protected void renew() {
-		tabPane.repaint();
-	}
+    private static final long serialVersionUID = -739265982906533775L;
 
+    public JTabbedPane tabPane = new JTabbedPane();
+
+    private JPanel tab1 = new JPanel();
+    private JPanel tab2 = new JPanel();
+    private JPanel tab3 = new JPanel();
+    private JPanel tab4 = new JPanel();
+    private JPanel tab5 = new JPanel();
+
+    public StartGUI() {
+	Config config = new Config();
+	this.setTitle("DL-Learner GUI");
+	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	this.setLocationByPlatform(true);
+	this.setSize(800, 600);
+	tab1.add(new KnowledgeSourcePanel(config));
+	tab2.add(new ReasonerPanel(config));
+	tab3.add(new LearningProblemPanel(config));
+	tab4.add(new LearningAlgorithmPanel(config));
+	tab5.add(new RunPanel(config));
+	tabPane.addTab("Knowledge Source", tab1);
+	tabPane.addTab("Reasoner", tab2);
+	tabPane.addTab("Learning Problem", tab3);
+	tabPane.addTab("Learning Algorithm", tab4);
+	tabPane.addTab("Run", tab5);
+	this.add(tabPane);
+	this.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+	// create GUI logger
+	SimpleLayout layout = new SimpleLayout();
+	ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+	Logger logger = Logger.getRootLogger();
+	logger.removeAllAppenders();
+	logger.addAppender(consoleAppender);
+	logger.setLevel(Level.INFO);
+
+	new StartGUI();
+    }
+
+    protected void renew() {
+	tabPane.repaint();
+    }
 
 }

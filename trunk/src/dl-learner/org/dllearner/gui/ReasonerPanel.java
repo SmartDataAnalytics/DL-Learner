@@ -29,7 +29,6 @@ import javax.swing.*;
 
 import org.dllearner.core.ReasonerComponent;
 
-
 /**
  * ReasonerPanel
  * 
@@ -37,60 +36,56 @@ import org.dllearner.core.ReasonerComponent;
  * 
  */
 public class ReasonerPanel extends JPanel implements ActionListener {
-	
-	private static final long serialVersionUID = -7678275020058043937L;
 
-	private List<Class<? extends ReasonerComponent>> reasoners;
-	private JPanel choosePanel = new JPanel();
-	private JPanel initPanel = new JPanel();
+    private static final long serialVersionUID = -7678275020058043937L;
+
+    private List<Class<? extends ReasonerComponent>> reasoners;
+    private JPanel choosePanel = new JPanel();
+    private JPanel initPanel = new JPanel();
     private JButton initButton;
     private Config config;
     private String[] cbItems = {};
-	private JComboBox cb = new JComboBox(cbItems);
-	private int choosenClassIndex;
-	
-	ReasonerPanel(final Config config) {
-		super(new BorderLayout());
-		
-		this.config = config;
-		
-		initButton = new JButton("Init Reasoner");
-		initButton.addActionListener(this);
-		initPanel.add(initButton);
-		
-		choosePanel.add(cb);
-		
-		add(choosePanel, BorderLayout.PAGE_START);
-		add(initPanel, BorderLayout.PAGE_END);
-		
-		// add into comboBox
-		reasoners = config.getComponentManager().getReasonerComponents();
-		for (int i=0; i<reasoners.size(); i++) {
-			//cb.addItem(reasoners.get(i).getSimpleName());
-			cb.addItem(config.getComponentManager().getComponentName(reasoners.get(i)));
-		}
+    private JComboBox cb = new JComboBox(cbItems);
+    private int choosenClassIndex;
 
+    ReasonerPanel(final Config config) {
+	super(new BorderLayout());
+
+	this.config = config;
+
+	initButton = new JButton("Init Reasoner");
+	initButton.addActionListener(this);
+	initPanel.add(initButton);
+
+	choosePanel.add(cb);
+
+	add(choosePanel, BorderLayout.PAGE_START);
+	add(initPanel, BorderLayout.PAGE_END);
+
+	// add into comboBox
+	reasoners = config.getComponentManager().getReasonerComponents();
+	for (int i = 0; i < reasoners.size(); i++) {
+	    // cb.addItem(reasoners.get(i).getSimpleName());
+	    cb.addItem(config.getComponentManager().getComponentName(
+		    reasoners.get(i)));
 	}
-  
-	public void actionPerformed(ActionEvent e) {
-		// read selected Class
-        choosenClassIndex = cb.getSelectedIndex();
-        
-		if (e.getSource() == initButton) {
-			if (config.getStatus(2)) { // no check if button initKnowledgeSource was pressed
-				// set reasoner
-				config.setReasoner(config.getComponentManager().reasoner(reasoners.get(choosenClassIndex), config.getKnowledgeSource()));
-				config.getReasoner().init();
-			
-				// set ReasoningService
-				config.setReasoningService(config.getComponentManager().reasoningService(config.getReasoner()));
-			}
-			if (config.getStatus(3)) {  // Reasoner is set
-				System.out.println("Reasoner: " + config.getReasoner());
-			}
-			if (config.getStatus(4)) {  // ReasoningServic is set
-				System.out.println("ReasoningService: " + config.getReasoningService());
-			}
-		}
+
+    }
+
+    public void actionPerformed(ActionEvent e) {
+	// read selected Class
+	choosenClassIndex = cb.getSelectedIndex();
+
+	if (e.getSource() == initButton && config.getKnowledgeSource() != null) {
+	    // set reasoner
+	    config.setReasoner(config.getComponentManager().reasoner(
+		    reasoners.get(choosenClassIndex),
+		    config.getKnowledgeSource()));
+	    config.getReasoner().init();
+
+	    // set ReasoningService
+	    config.setReasoningService(config.getComponentManager()
+		    .reasoningService(config.getReasoner()));
 	}
+    }
 }

@@ -34,7 +34,6 @@ import java.awt.GridBagLayout;
 
 import org.dllearner.core.KnowledgeSource;
 
-
 /**
  * KnowledgeSourcePanel
  * 
@@ -42,138 +41,146 @@ import org.dllearner.core.KnowledgeSource;
  * 
  */
 public class KnowledgeSourcePanel extends JPanel implements ActionListener {
-	
-	private static final long serialVersionUID = -7678275020058043937L;
-	
-	private JFileChooser fc;
-	private JButton openButton, initButton;
-	private JTextField fileDisplay;
+
+    private static final long serialVersionUID = -7678275020058043937L;
+
+    private JFileChooser fc;
+    private JButton openButton, initButton;
+    private JTextField fileDisplay;
     private String[] kbBoxItems = {};
-    private JComboBox cb = new JComboBox(kbBoxItems);	
-	private JPanel centerPanel, choosePanel, initPanel;
-	private Config config;
-	private int choosenClassIndex;
-	private List<Class<? extends KnowledgeSource>> sources;
-	private JLabel infoLabel = new JLabel("choose local file or type URL");
-	
-	KnowledgeSourcePanel(final Config config) {
-		super(new BorderLayout());
-	
-		this.config = config;
-		sources = config.getComponentManager().getKnowledgeSources();
-		
-		fc = new JFileChooser(new File("examples/"));
-		openButton = new JButton("choose local file");
-		openButton.addActionListener(this);
-		
-		initButton = new JButton("Init KnowledgeSource");
-		initButton.addActionListener(this);
-		
-		fileDisplay = new JTextField(35);
-		fileDisplay.setEditable(true);
-		
-		// update config if textfield fileDisplay changed
-		fileDisplay.getDocument().addDocumentListener(new DocumentListener() {
-			public void insertUpdate(DocumentEvent e) {
-				config.setURI(fileDisplay.getText());
-			}
-			public void removeUpdate(DocumentEvent e) {
-				config.setURI(fileDisplay.getText());
-			}
-			public void changedUpdate(DocumentEvent e) {
-				config.setURI(fileDisplay.getText());
-			}
-		});
-		
-		// add to comboBox 
-		for (int i=0; i<sources.size(); i++) {
-			// cb.addItem(sources.get(i).getSimpleName()); 
-			cb.addItem(config.getComponentManager().getComponentName(sources.get(i)));
-		}
-		
-		cb.addActionListener(this);
-		
-		choosePanel = new JPanel();
-		choosePanel.add(cb);
+    private JComboBox cb = new JComboBox(kbBoxItems);
+    private JPanel centerPanel, choosePanel, initPanel;
+    private Config config;
+    private int choosenClassIndex;
+    private List<Class<? extends KnowledgeSource>> sources;
+    private JLabel infoLabel = new JLabel("choose local file or type URL");
 
-		initPanel = new JPanel();
-		initPanel.add(initButton);
+    KnowledgeSourcePanel(final Config config) {
+	super(new BorderLayout());
 
-		centerPanel = new JPanel();
-		
-		// define GridBag
-		GridBagLayout gridbag = new GridBagLayout();
-		centerPanel.setLayout(gridbag);
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.anchor = GridBagConstraints.CENTER;
+	this.config = config;
+	sources = config.getComponentManager().getKnowledgeSources();
 
-		buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
-		gridbag.setConstraints(infoLabel, constraints);
-		centerPanel.add(infoLabel);
+	fc = new JFileChooser(new File("examples/"));
+	openButton = new JButton("choose local file");
+	openButton.addActionListener(this);
 
-		buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
-		gridbag.setConstraints(fileDisplay, constraints);
-		centerPanel.add(fileDisplay);
-		
-		buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
-		gridbag.setConstraints(openButton, constraints);
-		centerPanel.add(openButton);
-		
-		add(choosePanel, BorderLayout.PAGE_START);
-		add(centerPanel, BorderLayout.CENTER);
-		add(initPanel, BorderLayout.PAGE_END);
-		
-		choosenClassIndex = cb.getSelectedIndex();
-	}
-	
-	public void actionPerformed(ActionEvent e) {
-	    // read selected KnowledgeSourceClass
-	    choosenClassIndex = cb.getSelectedIndex();
-	    checkIfSparql();
-		
-	    // open File
-	    if (e.getSource() == openButton) {
-		int returnVal = fc.showOpenDialog(KnowledgeSourcePanel.this);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-		    String URI = "file://";
-		    URI = URI.concat(fc.getSelectedFile().toString()); // make "file://" before local URI
-		    config.setURI(URI); //save variable
-		    fileDisplay.setText(URI);
-		}
-		return;
+	initButton = new JButton("Init KnowledgeSource");
+	initButton.addActionListener(this);
+
+	fileDisplay = new JTextField(35);
+	fileDisplay.setEditable(true);
+
+	// update config if textfield fileDisplay changed
+	fileDisplay.getDocument().addDocumentListener(new DocumentListener() {
+	    public void insertUpdate(DocumentEvent e) {
+		config.setURI(fileDisplay.getText());
 	    }
-	
-		// init
-		if (e.getSource() == initButton && config.getStatus(2)) {
-			config.setKnowledgeSource(config.getComponentManager().knowledgeSource(sources.get(choosenClassIndex)));
-			config.getComponentManager().applyConfigEntry(config.getKnowledgeSource(), "url", config.getURI());				
-			config.getKnowledgeSource().init();
-			System.out.println("init KnowledgeSource with \n" + sources.get(choosenClassIndex) + " and \n" + config.getURI() + "\n");
-		}
+
+	    public void removeUpdate(DocumentEvent e) {
+		config.setURI(fileDisplay.getText());
+	    }
+
+	    public void changedUpdate(DocumentEvent e) {
+		config.setURI(fileDisplay.getText());
+	    }
+	});
+
+	// add to comboBox
+	for (int i = 0; i < sources.size(); i++) {
+	    // cb.addItem(sources.get(i).getSimpleName());
+	    cb.addItem(config.getComponentManager().getComponentName(
+		    sources.get(i)));
 	}
-	
-	/*
-	 * Define GridBagConstraints
-	 */
-	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx, int wy) {
-		gbc.gridx = gx;
-		gbc.gridy = gy;
-		gbc.gridwidth = gw;
-		gbc.gridheight = gh;
-		gbc.weightx = wx;
-		gbc.weighty = wy;
+
+	cb.addActionListener(this);
+
+	choosePanel = new JPanel();
+	choosePanel.add(cb);
+
+	initPanel = new JPanel();
+	initPanel.add(initButton);
+
+	centerPanel = new JPanel();
+
+	// define GridBag
+	GridBagLayout gridbag = new GridBagLayout();
+	centerPanel.setLayout(gridbag);
+	GridBagConstraints constraints = new GridBagConstraints();
+	constraints.fill = GridBagConstraints.BOTH;
+	constraints.anchor = GridBagConstraints.CENTER;
+
+	buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
+	gridbag.setConstraints(infoLabel, constraints);
+	centerPanel.add(infoLabel);
+
+	buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+	gridbag.setConstraints(fileDisplay, constraints);
+	centerPanel.add(fileDisplay);
+
+	buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
+	gridbag.setConstraints(openButton, constraints);
+	centerPanel.add(openButton);
+
+	add(choosePanel, BorderLayout.PAGE_START);
+	add(centerPanel, BorderLayout.CENTER);
+	add(initPanel, BorderLayout.PAGE_END);
+
+	choosenClassIndex = cb.getSelectedIndex();
+    }
+
+    public void actionPerformed(ActionEvent e) {
+	// read selected KnowledgeSourceClass
+	choosenClassIndex = cb.getSelectedIndex();
+	checkIfSparql();
+
+	// open File
+	if (e.getSource() == openButton) {
+	    int returnVal = fc.showOpenDialog(KnowledgeSourcePanel.this);
+	    if (returnVal == JFileChooser.APPROVE_OPTION) {
+		String URI = "file://";
+		// make "file://" before local URI
+		URI = URI.concat(fc.getSelectedFile().toString());
+		config.setURI(URI); // save variable
+		fileDisplay.setText(URI);
+	    }
+	    return;
 	}
-	
-	private void checkIfSparql() {
-		if (sources.get(choosenClassIndex).toString().contains("Sparql")) {
-			openButton.setEnabled(false);
-			infoLabel.setText("type URL");
-		}
-		else {
-			openButton.setEnabled(true);
-			infoLabel.setText("choose local file or type URL");
-		}
+
+	// init
+	if (e.getSource() == initButton && config.getURI() != null) {
+	    config.setKnowledgeSource(config.getComponentManager()
+		    .knowledgeSource(sources.get(choosenClassIndex)));
+	    config.getComponentManager().applyConfigEntry(
+		    config.getKnowledgeSource(), "url", config.getURI());
+	    config.getKnowledgeSource().init();
+	    System.out.println("init KnowledgeSource with \n"
+		    + sources.get(choosenClassIndex) + " and \n"
+		    + config.getURI() + "\n");
 	}
-  
+    }
+
+    /*
+     * Define GridBagConstraints
+     */
+    private void buildConstraints(GridBagConstraints gbc, int gx, int gy,
+	    int gw, int gh, int wx, int wy) {
+	gbc.gridx = gx;
+	gbc.gridy = gy;
+	gbc.gridwidth = gw;
+	gbc.gridheight = gh;
+	gbc.weightx = wx;
+	gbc.weighty = wy;
+    }
+
+    private void checkIfSparql() {
+	if (sources.get(choosenClassIndex).toString().contains("Sparql")) {
+	    openButton.setEnabled(false);
+	    infoLabel.setText("type URL");
+	} else {
+	    openButton.setEnabled(true);
+	    infoLabel.setText("choose local file or type URL");
+	}
+    }
+
 }

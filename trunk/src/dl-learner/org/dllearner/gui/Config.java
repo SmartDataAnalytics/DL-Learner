@@ -21,7 +21,6 @@ package org.dllearner.gui;
  */
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.dllearner.core.ComponentManager;
@@ -30,8 +29,6 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.config.ConfigOption;
-
 
 /**
  * config
@@ -43,117 +40,86 @@ import org.dllearner.core.config.ConfigOption;
  */
 
 public class Config {
-	private ComponentManager cm = ComponentManager.getInstance();
-	private KnowledgeSource source;
-	private String uri;
-	private ReasonerComponent reasoner;
-	private ReasoningService rs;
-	private Set<String> posExampleSet = new HashSet<String>();
-	private Set<String> negExampleSet = new HashSet<String>();
-	private LearningProblem lp;
-	private LearningAlgorithm la;
-	
-	private List<ConfigOption<?>> optionLearningAlgorithm ;
-	
-	/**
-	 * status should show witch variables are set
-	 * status[0] ... cm
-	 * status[1] ... KnowledgeSource
-	 * status[2] ... URI 
-	 * status[3] ... Resoner
-	 * status[4] ... ReasoningService
-	 * status[5] ... ExampleSet
-	 * status[6] ... LearningProblem
-	 */
-	protected static boolean[] status = new boolean[8];
-	
-	protected boolean getStatus(int position) {
-		if (status[position]) 
-			return true;
-		else 
-			return false;
-	}
+    private ComponentManager cm = ComponentManager.getInstance();
+    private KnowledgeSource source;
+    private String uri;
+    private ReasonerComponent reasoner;
+    private ReasoningService rs;
+    private Set<String> posExampleSet = new HashSet<String>();
+    private Set<String> negExampleSet = new HashSet<String>();
+    private LearningProblem lp;
+    private LearningAlgorithm la;
 
-	protected ComponentManager getComponentManager() {
-		return cm;
-	}
-	
-	protected void setComponentManager (ComponentManager input) {
-		cm = input;
-	}
+    protected ComponentManager getComponentManager() {
+	return cm;
+    }
 
-	protected String getURI () {
-		return uri;
-	}
-	
-	protected void setURI (String input) {
-		status[2] = true;
-		uri = input;
-	}
-	
-	protected ReasonerComponent getReasoner () {
-		return reasoner;
-	}
+    protected void setComponentManager(ComponentManager input) {
+	cm = input;
+    }
 
-	protected void setReasoner (ReasonerComponent input) {
-		status[3] = true;
-		reasoner = input;
-	}
-	
-	
-	protected ReasoningService getReasoningService () {
-		return rs;
-	}
-	
-	protected void setReasoningService (ReasoningService input) {
-		status[4] = true;
-		rs = input; 
-	}
-	
-	protected KnowledgeSource getKnowledgeSource() {
-		return source;
-	}
+    protected String getURI() {
+	return uri;
+    }
 
-	protected void setKnowledgeSource(KnowledgeSource input) {
-		status[1] = true;
-		source = input;
-	}
+    protected void setURI(String input) {
+	uri = input;
+    }
 
-	protected void setPosExampleSet(Set<String> posExampleSet) {
-		status[5] = true;
-		this.posExampleSet = posExampleSet;
-	}
-	
-	protected Set<String> getPosExampleSet () {
-		return this.posExampleSet;
-	}
-	
-	protected void setNegExampleSet(Set<String> negExampleSet) {
-		status[5] = true;
-		this.negExampleSet = negExampleSet;
-	}
-	
-	protected Set<String> getNegExampleSet () {
-		return this.negExampleSet;
-	}
+    protected ReasonerComponent getReasoner() {
+	return reasoner;
+    }
 
-	protected void setLearningProblem (LearningProblem input) {
-		status[6] = true;
-		lp = input;
-	}
-	
-	protected LearningProblem  getLearningProblem () {
-		return lp;
-	}
-	
-	protected void setLearningAlgorithm (LearningAlgorithm input) {
-		status[6] = true;
-		la = input;
-	}
-	
-	protected LearningAlgorithm  getLearningAlgorithm () {
-		return la;
-	}
+    protected void setReasoner(ReasonerComponent input) {
+	reasoner = input;
+    }
 
-	
+    protected ReasoningService getReasoningService() {
+	return rs;
+    }
+
+    protected void setReasoningService(ReasoningService input) {
+	rs = input;
+    }
+
+    protected KnowledgeSource getKnowledgeSource() {
+	return source;
+    }
+
+    protected void setKnowledgeSource(KnowledgeSource input) {
+	source = input;
+    }
+
+    protected void setPosExampleSet(Set<String> posExampleSet) {
+	this.posExampleSet = posExampleSet;
+    }
+
+    protected Set<String> getPosExampleSet() {
+	return this.posExampleSet;
+    }
+
+    protected void setNegExampleSet(Set<String> negExampleSet) {
+	this.negExampleSet = negExampleSet;
+    }
+
+    protected Set<String> getNegExampleSet() {
+	return this.negExampleSet;
+    }
+
+    protected void setLearningProblem(LearningProblem input) {
+	lp = input;
+    }
+
+    protected LearningProblem getLearningProblem() {
+	return lp;
+    }
+
+    protected void setLearningAlgorithm(LearningAlgorithm input) {
+	la = input;
+    }
+
+    protected LearningAlgorithm getLearningAlgorithm() {
+	return la;
+    }
+
 }
