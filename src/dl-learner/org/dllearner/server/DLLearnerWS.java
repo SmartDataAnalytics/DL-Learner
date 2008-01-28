@@ -486,93 +486,6 @@ public class DLLearnerWS {
 	////////////////////////////////////////
 	//     SPARQL component methods       //
 	////////////////////////////////////////
-	/*
-	@WebMethod
-	public void startThread(int id, int componentID, String[] options) throws ClientNotKnownException
-	{
-		final ClientState state = getState(id);
-		final Component component = state.getComponent(componentID);
-		String method=options[0];
-		Thread thread=null;
-		if (method.equals("subjects")){
-			final String label=options[1];
-			final int limit=Integer.parseInt(options[2]);
-			thread = new Thread() {
-				@Override
-				public void run() {
-					((SparqlKnowledgeSource)component).setSubjectThread(this);
-					((SparqlKnowledgeSource)component).setSubjectThreadRunning(true);
-					((SparqlKnowledgeSource)component).calculateSubjects(label,limit);
-					((SparqlKnowledgeSource)component).setSubjectThreadRunning(false);
-				}
-			};
-		} else if (method.equals("triples")){
-			final String subject=options[1];
-			thread = new Thread() {
-				@Override
-				public void run() {
-					((SparqlKnowledgeSource)component).setTriplesThread(this);
-					((SparqlKnowledgeSource)component).setTriplesThreadRunning(true);
-					((SparqlKnowledgeSource)component).calculateTriples(subject);
-					((SparqlKnowledgeSource)component).setTriplesThreadRunning(false);
-				}
-			};
-		} else if (method.equals("conceptSubjects")){
-			final String concept=options[1];
-			thread = new Thread() {
-				@Override
-				public void run() {
-					((SparqlKnowledgeSource)component).setConceptThread(this);
-					((SparqlKnowledgeSource)component).setConceptThreadRunning(true);
-					((SparqlKnowledgeSource)component).calculateConceptSubjects(concept);
-					((SparqlKnowledgeSource)component).setConceptThreadRunning(false);
-				}
-			};
-		}
-		thread.start();
-	}
-	
-	@WebMethod
-	public boolean isThreadRunning(int id, int componentID, String option) throws ClientNotKnownException
-	{
-		ClientState state = getState(id);
-		Component component = state.getComponent(componentID);
-		if (option.equals("subjects"))
-			return ((SparqlKnowledgeSource)component).subjectThreadIsRunning();
-		else if (option.equals("triples"))
-			return ((SparqlKnowledgeSource)component).triplesThreadIsRunning();
-		else if (option.equals("conceptSubjects"))
-			return ((SparqlKnowledgeSource)component).conceptThreadIsRunning();
-		return true;
-	}
-	
-	@WebMethod
-	public void stopSparqlThread(int id, int componentID, String option) throws ClientNotKnownException
-	{
-		ClientState state = getState(id);
-		Component component = state.getComponent(componentID);
-		if (option.equals("subjects"))
-			((SparqlKnowledgeSource)component).getSubjectThread().stop();
-		else if (option.equals("triples"))
-			((SparqlKnowledgeSource)component).getTriplesThread().stop();
-		else if (option.equals("conceptSubjects"))
-			((SparqlKnowledgeSource)component).getConceptThread().stop();
-	}
-	
-	@WebMethod
-	public String[] getFromSparql(int id, int componentID, String option) throws ClientNotKnownException
-	{
-		ClientState state = getState(id);
-		Component component = state.getComponent(componentID);
-		if (option.equals("subjects"))
-			return ((SparqlKnowledgeSource)component).getSubjects();
-		else if (option.equals("triples"))
-			return ((SparqlKnowledgeSource)component).getTriples();
-		else if (option.equals("conceptSubjects"))
-			return ((SparqlKnowledgeSource)component).getConceptSubjects();
-		return new String[0];
-	}
-	*/
 	
 	@WebMethod
 	public String[][] sparqlQuery(int sessionID, int componentID, int queryID) throws ClientNotKnownException
@@ -617,8 +530,8 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public String debug(String deb)
+	public void debug(String deb)
 	{
-		return "Test";
+		System.out.println(deb);
 	}
 }
