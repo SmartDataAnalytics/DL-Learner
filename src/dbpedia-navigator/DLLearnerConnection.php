@@ -40,7 +40,7 @@ class DLLearnerConnection
 		return array(0 => $id, 1 => $ksID);
 	}
 	
-	function getConceptFromExamples($ttl,$posExamples,$negExamples)
+	function getConceptFromExamples($posExamples,$negExamples)
 	{
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",1);
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
@@ -88,7 +88,7 @@ class DLLearnerConnection
 				$seconds = $i * $sleeptime;
 				
 				$i++;
-			} while($seconds<$ttl&&$running);
+			} while($seconds<$this->ttl&&$running);
 			
 			$this->client->stop($this->id);
 		}
