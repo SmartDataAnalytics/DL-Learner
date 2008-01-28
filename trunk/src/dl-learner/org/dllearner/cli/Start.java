@@ -92,6 +92,8 @@ import org.dllearner.utilities.StringTuple;
  */
 public class Start {
 
+	private static Logger logger = Logger.getRootLogger();	
+	
 	/**
 	 * Entry point for CLI interface.
 	 * 
@@ -109,7 +111,6 @@ public class Start {
 		// its messages to the console)
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		Logger logger = Logger.getRootLogger();
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.INFO);
@@ -287,7 +288,7 @@ public class Start {
 		// the name of the option is suboption-part (the first part refers
 		// to its component)
 		String optionName = option.getSubOption();
-
+		
 		ConfigOption<?> configOption = cm.getConfigOption(component.getClass(), optionName);
 		// check whether such an option exists
 		if (configOption != null) {
@@ -522,8 +523,8 @@ public class Start {
 	}
 
 	private static void initComponent(ComponentManager cm, Component component) {
-		System.out.print("initialising component \"" + cm.getComponentName(component.getClass())
-				+ "\" ... ");
+		String startMessage = "initialising component \"" + cm.getComponentName(component.getClass())
+				+ "\" ... ";
 		long initStartTime = System.nanoTime();
 		component.init();
 		// standard messsage is just "OK" but can be more detailed for certain
@@ -538,7 +539,7 @@ public class Start {
 		}
 
 		long initTime = System.nanoTime() - initStartTime;
-		System.out.println(message + " (" + Helper.prettyPrintNanoSeconds(initTime, false, false)
+		logger.info(startMessage + message + " (" + Helper.prettyPrintNanoSeconds(initTime, false, false)
 				+ ")");
 	}
 

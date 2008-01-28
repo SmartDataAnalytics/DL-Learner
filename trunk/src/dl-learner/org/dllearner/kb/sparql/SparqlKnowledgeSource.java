@@ -25,12 +25,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -64,7 +61,6 @@ import org.dllearner.utilities.StringTuple;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
-	private Map<Integer, String[][]> queryResult = new HashMap<Integer, String[][]>();
 	// ConfigOptions
 	public URL url;
 	// String host;

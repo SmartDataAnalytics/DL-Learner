@@ -19,12 +19,14 @@
  */
 package org.dllearner.learningproblems;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.Helper;
@@ -63,6 +65,10 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 		return "two valued definition learning problem";
 	}
 
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		return PosNegLP.createConfigOptions();
+	}
+	
 	/**
 	 * This method computes (using the reasoner) whether a concept is too weak.
 	 * If it is not weak, it returns the number of covered negative example. It

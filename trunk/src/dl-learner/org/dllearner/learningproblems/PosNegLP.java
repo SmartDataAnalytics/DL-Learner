@@ -112,9 +112,9 @@ public abstract class PosNegLP extends LearningProblem {
 		else if (name.equals("negativeExamples"))
 			negativeExamples = CommonConfigMappings
 					.getIndividualSet((Set<String>) entry.getValue());
-		else if (name.equals("useRetrievalForClassification"))
+		else if (name.equals("useRetrievalForClassficiation")) {
 			useRetrievalForClassification = (Boolean) entry.getValue();
-		else if (name.equals("percentPerLengthUnit"))
+		} else if (name.equals("percentPerLengthUnit"))
 			percentPerLengthUnit = (Double) entry.getValue();
 		else if (name.equals("useMultiInstanceChecks")) {
 			String value = (String) entry.getValue();
