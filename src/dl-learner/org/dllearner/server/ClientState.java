@@ -34,6 +34,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.query.SparqlQuery;
 
 /**
  * Stores the state of a DL-Learner client session.
@@ -49,6 +50,8 @@ public class ClientState {
 	private Map<Integer,Component> componentIDs = new HashMap<Integer,Component>(); 
 	
 	private Set<KnowledgeSource> knowledgeSources = new HashSet<KnowledgeSource>();
+	
+	private Map<Integer, SparqlQuery> queryIDs = new HashMap<Integer, SparqlQuery>();
 	
 	private LearningProblem learningProblem;
 	
@@ -68,6 +71,24 @@ public class ClientState {
 		} while(componentIDs.keySet().contains(id));
 		componentIDs.put(id, component);
 		return id;		
+	}
+	
+	private int generateQueryID(SparqlQuery query) {
+		int id;
+		Random rand = new Random();
+		do {
+			id = rand.nextInt();
+		} while (queryIDs.keySet().contains(id));
+		queryIDs.put(id, query);
+		return id;
+	}
+	
+	public int addQuery(SparqlQuery query){
+		return this.generateQueryID(query);
+	}
+	
+	public SparqlQuery getQuery(int id){
+		return queryIDs.get(id);
 	}
 	
 	/**

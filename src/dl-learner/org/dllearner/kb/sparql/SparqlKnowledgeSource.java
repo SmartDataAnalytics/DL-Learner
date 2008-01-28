@@ -64,7 +64,6 @@ import org.dllearner.utilities.StringTuple;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
-	private Map<Integer, SparqlQuery> queryIDs = new HashMap<Integer, SparqlQuery>();
 	private Map<Integer, String[][]> queryResult = new HashMap<Integer, String[][]>();
 	// ConfigOptions
 	public URL url;
@@ -392,32 +391,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return ontArray;
 	}
 
-	public int sparqlQuery(String query) {
+	public SparqlQuery sparqlQuery(String query) {
 		this.endpoint = new SparqlEndpoint(url, defaultGraphURIs,
 				namedGraphURIs);
-		return this.generateQueryID(new SparqlQuery(query, endpoint));
-	}
-
-	public void startSparqlQuery(int queryID) {
-		queryResult.put(queryID, queryIDs.get(queryID).getAsStringArray());
-	}
-
-	public SparqlQuery getSparqlQuery(int queryID) {
-		return queryIDs.get(queryID);
-	}
-
-	public String[][] getSparqlResult(int queryID) {
-		return queryResult.get(queryID);
-	}
-
-	private int generateQueryID(SparqlQuery query) {
-		int id;
-		Random rand = new Random();
-		do {
-			id = rand.nextInt();
-		} while (queryIDs.keySet().contains(id));
-		queryIDs.put(id, query);
-		return id;
+		return new SparqlQuery(query, endpoint);
 	}
 
 	public static void main(String[] args) throws MalformedURLException {
