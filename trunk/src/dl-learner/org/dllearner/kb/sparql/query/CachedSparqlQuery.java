@@ -77,10 +77,6 @@ public class CachedSparqlQuery {
 		return SparqlQuery.JSONtoResultSet(getAsJSON());
 	}
 	
-	public ResultSet getAsResultSet2(){
-		return this.sparqlQuery.send();
-	}
-	
 	/**
 	 * sends a query and returns JSON using cache
 	 * 

@@ -51,11 +51,8 @@ public class SparqlQuery {
 	private String queryString;
 	private QueryExecution queryExecution;
 	SparqlEndpoint endpoint;
+	private ResultSet rs=null;
 
-	public void setQueryExecutionRunning(boolean isRunning){
-		this.isRunning=isRunning;
-	}
-	
 	/**
 	 * simplest contructor, works only with some endpoints, 
 	 * not with DBpedia
@@ -82,7 +79,8 @@ public class SparqlQuery {
 	 * method used for sending over Jena
 	 * @return jena ResultSet
 	 */
-	protected ResultSet send() {
+	public void send() {
+		this.isRunning=true;
 		p(queryString);
 		
 		String service = endpoint.getURL().toString();
@@ -98,10 +96,10 @@ public class SparqlQuery {
 		p("query SPARQL server");
 		
 		
-		ResultSet rs = queryExecution.execSelect();
+		rs = queryExecution.execSelect();
 		p(rs.getResultVars().toString());
 		//p(ResultSetFormatter.asXMLString(rs));
-		return rs;
+		this.isRunning=false;
 	}
 
 	public void stop() {
@@ -119,8 +117,8 @@ public class SparqlQuery {
 	 */
 	@SuppressWarnings({"unchecked"})
 	public String[][] getAsStringArray(){
+		if (rs==null) this.send();
 		System.out.println("Starting Query");
-		ResultSet rs=send();
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
 		List<String> resultVars=rs.getResultVars();
 		String[][] array=new String[l.size()][resultVars.size()];
@@ -147,7 +145,7 @@ public class SparqlQuery {
 	 * @return String xml
 	 */
 	public String getAsXMLString() {
-		ResultSet rs = send();
+		if (rs==null) this.send();
 		return ResultSetFormatter.asXMLString(rs);
 	}
 
@@ -159,7 +157,7 @@ public class SparqlQuery {
 	 */
 	@SuppressWarnings({"unchecked"})
 	public List<ResultBinding> getAsList() {
-		ResultSet rs = send();
+		if (rs==null) this.send();
 		return ResultSetFormatter.toList(rs);
 	}
 
@@ -174,7 +172,6 @@ public class SparqlQuery {
 	@SuppressWarnings({"unchecked"})
 	@Deprecated
 	public Vector<String> getAsVector(String varName) {
-		ResultSet rs = send();
 		Vector<String> vret = new Vector<String>();
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
 		for (ResultBinding resultBinding : l) {
@@ -196,8 +193,6 @@ public class SparqlQuery {
 	@Deprecated
 	public Vector<StringTuple> getAsVectorOfTupels(String varName1,
 			String varName2) {
-		ResultSet rs = send();
-		
 		Vector<StringTuple> vret = new Vector<StringTuple>();
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
 		//System.out.println(l);
@@ -240,7 +235,7 @@ public class SparqlQuery {
 	 * @return a String representation of the Resultset as JSON
 	 */
 	public String getAsJSON(){
-		ResultSet rs=send(); 
+		if (rs==null) this.send();
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
 		ResultSetFormatter.outputAsJSON(baos, rs);
 		return baos.toString();
