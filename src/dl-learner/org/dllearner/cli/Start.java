@@ -76,6 +76,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.TokenMgrError;
 import org.dllearner.reasoning.DIGReasoner;
+import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Datastructures;
@@ -150,9 +151,11 @@ public class Start {
 			reasonerClass = DIGReasoner.class;
 		else if(reasonerOption.getStringValue().equals("owlAPI"))
 			reasonerClass = OWLAPIReasoner.class;
+		else if(reasonerOption.getStringValue().equals("fastRetrieval"))
+			reasonerClass = FastRetrievalReasoner.class;
 		else {
 			handleError("Unknown value " + reasonerOption.getStringValue()
-					+ "for option \"reasoner\".");
+					+ " for option \"reasoner\".");
 		}
 		ReasonerComponent reasoner = cm.reasoner(reasonerClass, sources);
 		configureComponent(cm, reasoner, componentPrefixMapping, parser);

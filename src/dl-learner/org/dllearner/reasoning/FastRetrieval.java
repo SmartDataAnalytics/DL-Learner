@@ -12,6 +12,8 @@ import org.dllearner.core.dl.Conjunction;
 import org.dllearner.core.dl.Disjunction;
 import org.dllearner.core.dl.Exists;
 import org.dllearner.core.dl.FlatABox;
+import org.dllearner.core.dl.MultiConjunction;
+import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Top;
 import org.dllearner.utilities.Helper;
@@ -46,6 +48,20 @@ public class FastRetrieval {
 			return calculateConjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
 		} else if(concept instanceof Disjunction) {
 			return calculateDisjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
+		} else if(concept instanceof MultiConjunction) {
+			SortedSetTuple<String> res = 
+			calculateConjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
+			for(int i=2; i < concept.getChildren().size(); i++) {
+				res = calculateConjunctionSets(res,calculateSetsADC(concept.getChild(i),adcSet));
+			}
+			return res;
+		} else if(concept instanceof MultiDisjunction) {
+			SortedSetTuple<String> res = 
+			calculateDisjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
+			for(int i=2; i < concept.getChildren().size(); i++) {
+				res = calculateDisjunctionSets(res,calculateSetsADC(concept.getChild(i),adcSet));
+			}
+			return res;			
 		} else if(concept instanceof All) {
 			return calculateAllSet(abox,((All)concept).getRole().getName(),calculateSetsADC(concept.getChild(0),adcSet));
 		} else if(concept instanceof Exists) {

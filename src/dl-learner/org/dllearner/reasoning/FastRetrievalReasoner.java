@@ -5,14 +5,21 @@ import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Conjunction;
 import org.dllearner.core.dl.FlatABox;
 import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.Negation;
+import org.dllearner.core.dl.RoleHierarchy;
+import org.dllearner.core.dl.SubsumptionHierarchy;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SortedSetTuple;
 
@@ -23,6 +30,25 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	Set<AtomicConcept> atomicConcepts;
 	Set<AtomicRole> atomicRoles;
 	SortedSet<Individual> individuals;
+	
+	ReasoningService rs;
+	ReasonerComponent rc;
+	
+	public FastRetrievalReasoner(Set<KnowledgeSource> sources) {
+		rc = new DIGReasoner(sources);
+		rc.init();
+		atomicConcepts = rc.getAtomicConcepts();
+		atomicRoles = rc.getAtomicRoles();
+		individuals = rc.getIndividuals();
+		rs = new ReasoningService(rc);
+		try {
+			abox = Helper.createFlatABox(rs);
+		} catch (ReasoningMethodUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		fastRetrieval = new FastRetrieval(abox);
+	}	
 	
 	public FastRetrievalReasoner(FlatABox abox) {
 		this.abox = abox;
@@ -79,10 +105,43 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		return abox;
 	}
 
+	// C \sqsubseteq D is rewritten to a retrieval for \not C \sqcap D
+	@Override
+	public boolean subsumes(Concept superConcept, Concept subConcept) {
+		Negation neg = new Negation(subConcept);
+		Conjunction c = new Conjunction(neg,superConcept);
+		return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
+	}
+	
+	@Override
+	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) {
+		rs.prepareRoleHierarchy(allowedRoles);
+	}	
+	
+	@Override
+	public RoleHierarchy getRoleHierarchy() {
+		return rs.getRoleHierarchy();
+	}	
+	
 	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
-		// hier muss nichts getan werden
+		rs.prepareSubsumptionHierarchy(allowedConcepts);
 	}
 
+	@Override
+	public SubsumptionHierarchy getSubsumptionHierarchy() {
+		return rs.getSubsumptionHierarchy();
+	}	
+	
+	@Override
+	public boolean isSatisfiable() {
+		return rs.isSatisfiable();
+	}
+	
+	@Override
+	public boolean instanceCheck(Concept concept, Individual individual) {
+		return fastRetrieval.calculateSets(concept).getPosSet().contains(individual.getName());
+	}
+	
 	public static String getName() {
 		return "fast retrieval reasoner";
 	} 		
