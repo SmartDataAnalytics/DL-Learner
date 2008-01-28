@@ -73,8 +73,12 @@ public class CachedSparqlQuery {
 	 * TODO can further be optimized
 	 * @return a jena ResultSet
 	 */
-	public ResultSet getAsResultSet(){
+	public ResultSet getAsResultSet2(){
 		return SparqlQuery.JSONtoResultSet(getAsJSON());
+	}
+	
+	public ResultSet getAsResultSet(){
+		return this.sparqlQuery.send();
 	}
 	
 	/**

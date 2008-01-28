@@ -30,10 +30,7 @@ import java.util.Vector;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.StringTuple;
 
-import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -125,7 +122,6 @@ public class SparqlQuery {
 	public String[][] getAsStringArray(){
 		System.out.println("Starting Query");
 		ResultSet rs=send();
-		System.out.println("getResults");
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
 		List<String> resultVars=rs.getResultVars();
 		String[][] array=new String[l.size()][resultVars.size()];

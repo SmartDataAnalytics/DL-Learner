@@ -32,7 +32,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
@@ -97,39 +96,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	LinkedList<StringTuple> replaceObject = new LinkedList<StringTuple>();
 
 	SparqlEndpoint endpoint = null;
-
-	/**
-	 * Holds the results of the calculateSubjects method
-	 */
-	private String[] subjects;
-
-	/**
-	 * Holds the results of the calculateTriples method
-	 */
-	private String[] triples;
-
-	/**
-	 * Holds the results of the calculateConceptSubjects method
-	 */
-	private String[] conceptSubjects;
-
-	/**
-	 * if a method is running this becomes true
-	 */
-	private boolean subjectThreadRunning = false;
-
-	private boolean triplesThreadRunning = false;
-
-	private boolean conceptThreadRunning = false;
-
-	/**
-	 * the Thread that is running a method
-	 */
-	private Thread subjectThread;
-
-	private Thread triplesThread;
-
-	private Thread conceptThread;
 
 	private LinkedList<String> defaultGraphURIs = new LinkedList<String>();
 	private LinkedList<String> namedGraphURIs = new LinkedList<String>();
@@ -424,136 +390,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	public String[] getOntArray() {
 		return ontArray;
-	}
-
-	/**
-	 * 
-	 * @param label
-	 * @param limit
-	 */
-	public void calculateSubjects(String label, int limit) {
-		logger.info("SparqlModul: Collecting Subjects");
-		// oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
-		// try {
-		Vector<String> v = (SparqlQuery.makeLabelQuery(label, limit, endpoint)
-				.getAsVector("subject"));
-		subjects = (String[]) v.toArray(new String[v.size()]);
-		// subjects = oc.getSubjectsFromLabel(label, limit);
-		// } catch (IOException e) {
-		// TODO I removed IOException, please check
-		// subjects = new String[1];
-		// subjects[0] = "[Error]Sparql Endpoint could not be reached.";
-		// }
-		logger.info("SparqlModul: ****Finished");
-	}
-
-	/**
-	 * TODO SparqlOntologyCollector needs to be removed
-	 * 
-	 * @param subject
-	 */
-	public void calculateTriples(String subject) {
-		logger.info("SparqlModul: Collecting Triples");
-		Vector<StringTuple> v = (SparqlQuery
-				.makeArticleQuery(subject, endpoint).getAsVectorOfTupels(
-				"predicate", "objcet"));
-		// String[] subjects = (String[]) v.toArray(new String[v.size()]);
-		String[] tmp = new String[v.size()];
-		int i = 0;
-		for (StringTuple stringTuple : v) {
-			tmp[i++] = stringTuple.a + "<" + stringTuple.b;
-		}
-		triples = tmp;
-		// oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
-		// try {
-		// triples = oc.collectTriples(subject);
-		// } catch (IOException e) {
-		// triples = new String[1];
-		// triples[0] = "[Error]Sparql Endpoint could not be reached.";
-		// }
-		logger.info("SparqlModul: ****Finished");
-	}
-
-	/**
-	 * 
-	 * 
-	 * @param concept
-	 */
-	public void calculateConceptSubjects(String concept) {
-		logger.info("SparqlModul: Collecting Subjects");
-		Vector<String> v = (SparqlQuery.makeConceptQuery(concept, endpoint)
-				.getAsVector("subject"));
-		conceptSubjects = (String[]) v.toArray(new String[v.size()]);
-
-		// oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url);
-		// try {
-		// conceptSubjects = oc.getSubjectsFromConcept(concept);
-		// } catch (IOException e) {
-		// TODO I removed IOException, please check
-		// conceptSubjects = new String[1];
-		// conceptSubjects[0] = "[Error]Sparql Endpoint could not be reached.";
-		// }
-		logger.info("SparqlModul: ****Finished");
-	}
-
-	public boolean subjectThreadIsRunning() {
-		return subjectThreadRunning;
-	}
-
-	public void setSubjectThreadRunning(boolean bool) {
-		subjectThreadRunning = bool;
-	}
-
-	public boolean triplesThreadIsRunning() {
-		return triplesThreadRunning;
-	}
-
-	public void setTriplesThreadRunning(boolean bool) {
-		triplesThreadRunning = bool;
-	}
-
-	public boolean conceptThreadIsRunning() {
-		return conceptThreadRunning;
-	}
-
-	public void setConceptThreadRunning(boolean bool) {
-		conceptThreadRunning = bool;
-	}
-
-	public String[] getSubjects() {
-		return subjects;
-	}
-
-	public Thread getSubjectThread() {
-		return subjectThread;
-	}
-
-	public void setSubjectThread(Thread subjectThread) {
-		this.subjectThread = subjectThread;
-	}
-
-	public Thread getTriplesThread() {
-		return triplesThread;
-	}
-
-	public void setTriplesThread(Thread triplesThread) {
-		this.triplesThread = triplesThread;
-	}
-
-	public Thread getConceptThread() {
-		return conceptThread;
-	}
-
-	public void setConceptThread(Thread conceptThread) {
-		this.conceptThread = conceptThread;
-	}
-
-	public String[] getTriples() {
-		return triples;
-	}
-
-	public String[] getConceptSubjects() {
-		return conceptSubjects;
 	}
 
 	public int sparqlQuery(String query) {
