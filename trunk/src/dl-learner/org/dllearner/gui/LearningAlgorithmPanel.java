@@ -21,7 +21,6 @@ package org.dllearner.gui;
  */
 
 import javax.swing.*;
-//import javax.swing.table.DefaultTableModel;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -29,8 +28,6 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import org.dllearner.core.LearningAlgorithm;
-//import org.dllearner.core.config.ConfigOption;
-//import org.dllearner.core.ComponentManager;
 
 
 
@@ -97,8 +94,8 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		// init
 		if (e.getSource() == initButton) {
 			if (config.getStatus(6)) {
-				updateOptionPanel();
 				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(learners.get(choosenClassIndex), config.getLearningProblem(), config.getReasoningService()));
+				updateOptionPanel();
 				config.getLearningAlgorithm().init();
 			}
 			if (config.getStatus(5)) {  // examples are set
