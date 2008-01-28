@@ -35,72 +35,69 @@ import org.dllearner.core.LearningAlgorithm;
  * 
  */
 public class LearningAlgorithmPanel extends JPanel implements ActionListener {
-	
-	private static final long serialVersionUID = 8721490771860452959L;
+
+    private static final long serialVersionUID = 8721490771860452959L;
     private Config config;
     private List<Class<? extends LearningAlgorithm>> learners;
-	private JPanel choosePanel = new JPanel();
-	private OptionPanel optionPanel;
-	private JPanel initPanel = new JPanel();
+    private JPanel choosePanel = new JPanel();
+    private OptionPanel optionPanel;
+    private JPanel initPanel = new JPanel();
     private JButton initButton;
     private String[] cbItems = {};
-	private JComboBox cb = new JComboBox(cbItems);
-	private int choosenClassIndex;
+    private JComboBox cb = new JComboBox(cbItems);
+    private int choosenClassIndex;
 
-	
-	LearningAlgorithmPanel(Config config) {
-		super(new BorderLayout());
+    LearningAlgorithmPanel(Config config) {
+	super(new BorderLayout());
 
-		this.config = config;
-		
-		initButton = new JButton("Init LearingAlgorithm");
-		initButton.addActionListener(this);
-				
-		initPanel.add(initButton);
+	this.config = config;
 
-		choosePanel.add(cb);
-		
-		// add into comboBox
-		learners = config.getComponentManager().getLearningAlgorithms();
-		for (int i=0; i<learners.size(); i++) {
-			cb.addItem(config.getComponentManager().getComponentName(learners.get(i)));
-		}
-		
-		cb.addActionListener(this);
-	
-		optionPanel =  new OptionPanel(config, config.getLearningAlgorithm(), learners.get(choosenClassIndex));
-		updateOptionPanel();
+	initButton = new JButton("Init LearingAlgorithm");
+	initButton.addActionListener(this);
 
-		
-		add(choosePanel, BorderLayout.PAGE_START);
-		add(initPanel, BorderLayout.CENTER);
-		add(optionPanel, BorderLayout.PAGE_END);	
-	
-	}
-	
+	initPanel.add(initButton);
 
-	public void actionPerformed(ActionEvent e) {
-		// read selected Class
-        choosenClassIndex = cb.getSelectedIndex();
+	choosePanel.add(cb);
 
-		updateOptionPanel();
-		
-		// init
-		if (e.getSource() == initButton) {
-			if (config.getStatus(6)) {
-				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(learners.get(choosenClassIndex), config.getLearningProblem(), config.getReasoningService()));
-				updateOptionPanel();
-				config.getLearningAlgorithm().init();
-			}
-			if (config.getStatus(5)) {  // examples are set
-				System.out.println("LearningAlgorithm: " + config.getLearningAlgorithm() + "\n");
-			}
-		}
+	// add into comboBox
+	learners = config.getComponentManager().getLearningAlgorithms();
+	for (int i = 0; i < learners.size(); i++) {
+	    cb.addItem(config.getComponentManager().getComponentName(
+		    learners.get(i)));
 	}
 
-	public void updateOptionPanel() {
-        // update OptionPanel
-        optionPanel.setComponent(config.getLearningAlgorithm());
-		optionPanel.setComponentOption(learners.get(choosenClassIndex));
+	cb.addActionListener(this);
+
+	optionPanel = new OptionPanel(config, config.getLearningAlgorithm(),
+		learners.get(choosenClassIndex));
+	updateOptionPanel();
+
+	add(choosePanel, BorderLayout.PAGE_START);
+	add(initPanel, BorderLayout.CENTER);
+	add(optionPanel, BorderLayout.PAGE_END);
+
+    }
+
+    public void actionPerformed(ActionEvent e) {
+	// read selected Class
+	choosenClassIndex = cb.getSelectedIndex();
+
+	updateOptionPanel();
+
+	// init
+	if (e.getSource() == initButton && config.getLearningProblem() != null) {
+	    config.setLearningAlgorithm(config.getComponentManager()
+		    .learningAlgorithm(learners.get(choosenClassIndex),
+			    config.getLearningProblem(),
+			    config.getReasoningService()));
+	    updateOptionPanel();
+	    config.getLearningAlgorithm().init();
 	}
+    }
+
+    public void updateOptionPanel() {
+	// update OptionPanel
+	optionPanel.setComponent(config.getLearningAlgorithm());
+	optionPanel.setComponentOption(learners.get(choosenClassIndex));
+    }
 }
