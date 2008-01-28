@@ -126,12 +126,12 @@ function getarticle($subject,$fromCache)
 			
 			//Add Positives to Session
 			if (!isset($_SESSION['positive'])){
-				$array=array($subject => "http://dbpedia.org/resource/".str_replace(" ","_",$subject));
+				$array=array("http://dbpedia.org/resource/".str_replace(" ","_",$subject)) => "http://dbpedia.org/resource/".str_replace(" ","_",$subject));
 				$_SESSION['positive']=$array;
 			}
 			else{
 				$array=$_SESSION['positive'];
-				$array[$subject]="http://dbpedia.org/resource/".str_replace(" ","_",$subject);
+				$array["http://dbpedia.org/resource/".str_replace(" ","_",$subject)]="http://dbpedia.org/resource/".str_replace(" ","_",$subject);
 				$_SESSION['positive']=$array;
 			}
 			
