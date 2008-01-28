@@ -95,7 +95,6 @@ public class SparqlQuery {
 		for (String ngu : endpoint.getNamedGraphURIs()){
 			queryExecution.addNamedGraph(ngu);
 		}
-		queryExecution.addDefaultGraph("http://dbpedia.org");
 		p("query SPARQL server");
 		
 		
@@ -261,51 +260,6 @@ public class SparqlQuery {
 		return rs;
 		
 	}
-	
-	
-	
-	
-	/**
-	 * creates a query for subjects with the specified label
-	 * @param label a phrase that is part of the label of a subject
-	 * @param limit this limits the amount of results
-	 * @param endpoint a SparqlEndpoint
-	 * @return SparqlQuery
-	 */
-	public static SparqlQuery makeLabelQuery(String label,int limit,SparqlEndpoint endpoint){
-		//TODO maybe use http://xmlns:com/foaf/0.1/page
-		String queryString= 
-		"SELECT DISTINCT ?subject\n"+
-		"WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\""+label+"\"'@en}\n"+
-		"LIMIT "+limit;
-		return new SparqlQuery( queryString,endpoint);
-	}
-	
-	/**
-	 * creates a query for all subjects that are of the type concept
-	 * @param concept the type that subjects are searched for
-	 * @param endpoint a SparqlEndpoint
-	 * @return SparqlQuery
-	 */
-	public static SparqlQuery makeConceptQuery(String concept, SparqlEndpoint endpoint){
-		String queryString = 
-			"SELECT DISTINCT ?subject\n"+
-			"WHERE { ?subject a <"+concept+">}\n";
-		return new SparqlQuery( queryString,endpoint);
-	}
-	
-	/**
-	 * @param subject
-	 * @param endpoint a SparqlEndpoint
-	 * @return SparqlQuery
-	 */
-	public static SparqlQuery makeArticleQuery(String subject,SparqlEndpoint endpoint){
-		String queryString = 
-		"SELECT ?predicate ?object\n"+
-		"WHERE { <"+subject+"> ?predicate ?object}\n";
-		return new SparqlQuery( queryString,endpoint);
-	}	
-	
 
 	public void p(String str) {
 		if (print_flag) {
