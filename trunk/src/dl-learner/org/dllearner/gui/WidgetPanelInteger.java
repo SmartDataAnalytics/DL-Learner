@@ -39,7 +39,7 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 
 /**
- * WidgetPanel
+ * WidgetPanelInteger
  * 
  * @author Tilo Hielscher
  * 
@@ -55,38 +55,19 @@ public class WidgetPanelInteger extends JPanel implements ActionListener {
 	private JButton setButton = new JButton("Set");
 	private Component component;
 	private Class<? extends Component> componentOption;
-		
+	
+	private Integer value;
+	private JTextField integerField = new JTextField(3);
+
+	
 	public WidgetPanelInteger(Config config, Component component, Class<? extends Component> componentOption, ConfigOption<?> configOption) {
 		this.config = config;
 		this.configOption = configOption;
 		this.component = component;
 		this.componentOption = componentOption;
 		
-		System.out.println("1st: " + component);
-		
-		// default
-		nameLabel = new JLabel(configOption.getName());
-		setButton.addActionListener(this);
-		
-		// IntegerConfigOption
-		if (configOption.toString().contains("IntegerConfigOption")) {
-			JTextField integerField = new JTextField(3);
-			integerField.setText("100"); 
-			System.out.println(configOption.getDefaultValue());
-			centerPanel.add(nameLabel);
-			centerPanel.add(integerField);
-			centerPanel.add(setButton);
-		}
-		// UNKNOWN
-		else {
-			nameLabel = new JLabel(configOption.getName());
-			JLabel notImplementedLabel = new JLabel("not an integer");
-			notImplementedLabel.setForeground(Color.RED);
-			centerPanel.add(nameLabel);
-			centerPanel.add(notImplementedLabel);
-		}
-		
-		// default
+		showLabel(); // name of option and tooltip
+		showThingToChange(); // textfield, setbutton
 		add(centerPanel, BorderLayout.CENTER);
 	}
 	
@@ -96,30 +77,79 @@ public class WidgetPanelInteger extends JPanel implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == setButton) {
-			// INTEGER
-			Integer value = 10;
-			IntegerConfigOption specialOption;
-			String name = configOption.getName();
-			//Component component = config.getLearningAlgorithm();
-			System.out.println("name: " + name + " & value: " + value);
-			specialOption = (IntegerConfigOption) config.getComponentManager().getConfigOption(componentOption, name);
-			try {
-				ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(specialOption, value);
-				System.out.println("TEST specialEntry: " + specialEntry);
-				System.out.println("TEST component: " + component);
-				config.getComponentManager().applyConfigEntry(component, specialEntry);
+			setEntry();
+		}
+	}
+    
+	private void showLabel() {
+		nameLabel = new JLabel(configOption.getName());
+		centerPanel.add(nameLabel);
+	}
+	
+	
+	private void showThingToChange () {
+		if (component != null) {
+			System.out.println("show set Integer config.getComponentManager().getConfigOptionValue(component, name): " + config.getComponentManager().getConfigOptionValue(component, configOption.getName()));
+
+			// IntegerConfigOption
+			if (configOption.getClass().toString().contains("IntegerConfigOption")) {
+				// seted value
+				if (config.getComponentManager().getConfigOptionValue(component, configOption.getName()) != null) {
+					value = (Integer) config.getComponentManager().getConfigOptionValue(component, configOption.getName());
+					System.out.println("value readed: " + value);
+				}
+				// default value
+				else if (configOption.getDefaultValue() != null) {
+					System.out.println("default value null");
+					value = (Integer) configOption.getDefaultValue();
+				}
+				// then 0
+				else {
+					value = 0;
+					System.out.println("default value not null");
+				}
+				System.out.println("value: " + value);
+				integerField.setText(value.toString()); 
+				System.out.println("configOption.getDefaultValue(): " + configOption.getDefaultValue());
+				setButton.addActionListener(this);
+				centerPanel.add(integerField);
+				centerPanel.add(setButton);
 			}
-			catch (InvalidConfigOptionValueException s) {
-				s.printStackTrace();
+			// UNKNOWN
+			else {
+				nameLabel = new JLabel(configOption.getName());
+				JLabel notImplementedLabel = new JLabel("not an integer");
+				notImplementedLabel.setForeground(Color.RED);
+				centerPanel.add(nameLabel);
+				centerPanel.add(notImplementedLabel);
 			}
+		}
+		else { // configOption == NULL
+			JLabel noConfigOptionLabel = new JLabel("no init at moment");
+			noConfigOptionLabel.setForeground(Color.RED);
+			centerPanel.add(noConfigOptionLabel);
 		}
 	}
 	
-	public void setComponent (Component component) {
-		this.component = component;
-	}
-	
-	public void setComponentOption (Class<? extends Component> componentOption) {
-		this.componentOption = componentOption;
+	private void setEntry() {
+		// INTEGER
+		IntegerConfigOption specialOption;
+		value = Integer.parseInt(integerField.getText());
+		System.out.println("set Integer: " + configOption.getName() + " = " + value);
+		specialOption = (IntegerConfigOption) config.getComponentManager().getConfigOption(componentOption, configOption.getName());
+		try {
+			ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(specialOption, value);
+			//System.out.println("set Integer specialEntry: " + specialEntry);
+			//System.out.println("set Integer component: " + component);
+			//System.out.println("set Integer componentOption: " + componentOption);
+			//System.out.println("set Integer config.getComponentManager().getConfigOptionValue(component, name): " + config.getComponentManager().getConfigOptionValue(component, name));
+			config.getComponentManager().applyConfigEntry(component, specialEntry);
+			// update this
+			System.out.println("set Integer config.getComponentManager().getConfigOptionValue(component, name): " + config.getComponentManager().getConfigOptionValue(component, configOption.getName()));
+			System.out.println("seted value: " + this.value);
+		}
+		catch (InvalidConfigOptionValueException s) {
+			s.printStackTrace();
+		}
 	}
 }
