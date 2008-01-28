@@ -292,21 +292,20 @@ function learnConcept()
 			foreach ($_SESSION['negative'] as $neg)
 				$negArray[]=$neg;
 			
-		require_once("Settings.php");
 		require_once("DLLearnerConnection.php");
-		$settings=new Settings();
-		$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
+		$sc=new DLLearnerConnection($_SESSION['id'],$_SESSION['ksID']);
 		
 		
-		$concept=$sc->getConceptFromExamples($settings->sparqlttl,$posArray,$negArray);
+		$concept=$sc->getConceptFromExamples($posArray,$negArray);
 		
 		$_SESSION['lastLearnedConcept']=$concept;
-		if (strlen(substr (strrchr ($concept, "/"), 1))>0) $concept=urldecode(substr (strrchr ($concept, "/"), 1));
+		if (strlen(substr (strrchr ($concept, "/"), 1))>0) $concept="<a href=\"\" onclick=\"xajax_getSubjectsFromConcept();return false;\" />".urldecode(substr (strrchr ($concept, "/"), 1))."</a>";
+		else $concept="<a href=\"\" onclick=\"xajax_getSubjectsFromConcept();return false;\" />".$concept."</a>";
 	}
 	else $concept="You must choose at least one<br/> positive example.";
 	
 	$objResponse = new xajaxResponse();
-	$objResponse->assign("conceptcontent", "innerHTML", $concept);
+	$objResponse->assign("conceptlink", "innerHTML", $concept);
 	return $objResponse;
 }
 

@@ -68,7 +68,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   <body>
 
 <!--  <h1>DBpedia Navigator</h1> -->
-<img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />
+<img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />&nbsp;&nbsp;&nbsp;<span id="conceptlink"></span>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
