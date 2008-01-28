@@ -126,12 +126,12 @@ function getarticle($subject,$fromCache)
 			
 			//Add Positives to Session
 			if (!isset($_SESSION['positive'])){
-				$array=array($subject => $subject);
+				$array=array($subject => "http://dbpedia.org/resource/".str_replace(" ","_",$subject));
 				$_SESSION['positive']=$array;
 			}
 			else{
 				$array=$_SESSION['positive'];
-				$array[$subject]=$subject;
+				$array[$subject]="http://dbpedia.org/resource/".str_replace(" ","_",$subject);
 				$_SESSION['positive']=$array;
 			}
 			
@@ -249,11 +249,11 @@ function showInterests()
 	//add Positives and Negatives to Interests
 	$posInterests="";
 	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
-		$posInterests=$posInterests.$pos." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
+		$posInterests=$posInterests.substr (strrchr ($pos, "/"), 1)." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
 	}
 	$negInterests="";
 	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
-		$negInterests=$negInterests.$neg." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
+		$negInterests=$negInterests.substr (strrchr ($neg, "/"), 1)." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
 	}
 	
 	$objResponse=new xajaxResponse();
