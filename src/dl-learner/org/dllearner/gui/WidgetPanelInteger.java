@@ -112,8 +112,8 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
 		widgetPanel.add(notImplementedLabel);
 	    }
 	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel("no init at moment (Integer)");
-	    noConfigOptionLabel.setForeground(Color.RED);
+	    JLabel noConfigOptionLabel = new JLabel("no init (Integer)");
+	    noConfigOptionLabel.setForeground(Color.MAGENTA);
 	    widgetPanel.add(noConfigOptionLabel);
 	}
     }
