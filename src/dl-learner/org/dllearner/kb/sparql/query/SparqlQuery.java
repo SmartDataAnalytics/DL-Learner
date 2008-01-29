@@ -238,6 +238,7 @@ public class SparqlQuery {
 		if (rs==null) this.send();
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
 		ResultSetFormatter.outputAsJSON(baos, rs);
+		rs=JSONtoResultSet(baos.toString());
 		return baos.toString();
 	}
 	
