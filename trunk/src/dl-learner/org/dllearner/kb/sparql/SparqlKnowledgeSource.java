@@ -46,7 +46,6 @@ import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.dl.KB;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
-import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;

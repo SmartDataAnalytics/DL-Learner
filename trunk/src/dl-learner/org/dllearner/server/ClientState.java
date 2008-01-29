@@ -34,7 +34,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.query.SparqlQuery;
+import org.dllearner.kb.sparql.SparqlQuery;
 
 /**
  * Stores the state of a DL-Learner client session.
