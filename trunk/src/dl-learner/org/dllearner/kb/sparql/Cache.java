@@ -28,7 +28,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
@@ -49,6 +49,10 @@ import com.hp.hpl.jena.query.ResultSet;
  * If a cached result of a SPARQL query exists, but is too old, the cache
  * behaves as if the cached result would not exist.
  * 
+ * TODO: We are doing md5 hashing at the moment, so in rare cases different
+ * SPARQL queries can be mapped to the same file. Support for such scenarios
+ * needs to be included.
+ * 
  * @author Sebastian Hellmann
  * @author Sebastian Knappe
  * @author Jens Lehmann
@@ -60,12 +64,12 @@ public class Cache implements Serializable {
 	private static final long serialVersionUID = 843308736471742205L;
 
 	// maps hash of a SPARQL queries to JSON representation
-	// of its results; this 
-	private HashMap<String, String> hm;
+	// of its results; this
+	// private HashMap<String, String> hm;
 
 	private transient String cacheDir = "";
 	private transient String fileEnding = ".cache";
-	private long timestamp;
+	// private long timestamp;
 
 	// specifies after how many seconds a cached result becomes invalid
 	private long freshnessSeconds = 15 * 24 * 60 * 60;
@@ -85,22 +89,7 @@ public class Cache implements Serializable {
 		}
 	}
 
-	/**
-	 * constructor for single cache object(one entry)
-	 * 
-	 * @param sparqlQuery
-	 *            query
-	 * @param content
-	 *            that is the sparql query result as xml
-	 */
-	private Cache(String sparqlQuery, String content) {
-		// this.content = c;
-		// this.sparqlquery = sparql;
-		this.timestamp = System.currentTimeMillis();
-		this.hm = new HashMap<String, String>();
-		hm.put(sparqlQuery, content);
-	}
-
+	// compute md5-hash
 	private String getHash(String string) {
 		// calculate md5 hash of the string (code is somewhat
 		// difficult to read, but there doesn't seem to be a
@@ -122,110 +111,92 @@ public class Cache implements Serializable {
 		return hexString.toString();
 	}
 
+	// return filename where the query result should be saved
 	private String getFilename(String sparqlQuery) {
-		return getHash(sparqlQuery) + fileEnding;
+		return cacheDir + getHash(sparqlQuery) + fileEnding;
 	}
-	
+
 	/**
-	 * Gets the query result for a SPARQL query.
+	 * Gets a result for a query if it is in the cache.
 	 * 
 	 * @param sparqlQuery
 	 *            SPARQL query to check.
 	 * @return Query result or null if no result has been found or it is
 	 *         outdated.
 	 */
-	public String get(String sparqlQuery) {
-		Cache c = readFromFile(getFilename(sparqlQuery));
-		if (c == null)
+	@SuppressWarnings({"unchecked"})
+	private String getCacheEntry(String sparqlQuery) {
+		String filename = getFilename(sparqlQuery);
+		File file = new File(filename);
+		
+		// return null (indicating no result) if file does not exist
+		if(!file.exists())
 			return null;
-		// System.out.println(" file found");
-		if (!c.checkFreshness())
-			return null;
-		// System.out.println("fresh");
-		String xml = "";
+		
+		LinkedList<Object> entry = null;
 		try {
-			xml = c.hm.get(sparqlQuery);
-		} catch (Exception e) {
-			return null;
-		}
-		return xml;
-	}
-
-	/**
-	 * @param key
-	 *            is the resource, the identifier
-	 * @param sparqlquery
-	 *            is the query used as another identifier
-	 * @param content
-	 *            is the result of the query
-	 */
-	public void put(String sparqlQuery, String content) {
-		String hash = getHash(sparqlQuery);
-		Cache c = readFromFile(hash);
-		if (c == null) {
-			c = new Cache(sparqlQuery, content);
-			putIntoFile(hash, c);
-		} else {
-			c.hm.put(sparqlQuery, content);
-			putIntoFile(hash, c);
-		}
-
-	}
-
-	public void checkFile(String Filename) {
-		if (!new File(Filename).exists()) {
-			try {
-				new File(Filename).createNewFile();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-
-	}
-
-	/**
-	 * puts a cache entry in a file
-	 * 
-	 * @param filename
-	 * @param c
-	 */
-	protected void putIntoFile(String filename, Cache c) {
-		try {
-			// FileWriter fw=new FileWriter(new File(Filename),true);
-			FileOutputStream fos = new FileOutputStream(filename, false);
-			ObjectOutputStream o = new ObjectOutputStream(fos);
-			o.writeObject(c);
-			fos.flush();
-			fos.close();
-		} catch (Exception e) {
-			System.out.println("Not in cache creating: " + filename);
-		}
-	}
-
-	/**
-	 * reads a cache entry from a file
-	 * 
-	 * @param Filename
-	 * @return cache entry
-	 */
-	protected Cache readFromFile(String Filename) {
-		Cache content = null;
-		try {
-			FileInputStream fos = new FileInputStream(Filename);
+			FileInputStream fos = new FileInputStream(filename);
 			ObjectInputStream o = new ObjectInputStream(fos);
-			content = (Cache) o.readObject();
+			entry = (LinkedList<Object>) o.readObject();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+		}	
+		
+		// TODO: we need to check whether the query is correct
+		// (may not always be the case due to md5 hashing)
+		
+		// determine whether query is outdated
+		long timestamp = (Long) entry.get(0);
+		boolean fresh = checkFreshness(timestamp);
+		
+		if(!fresh) {
+			// delete file
+			file.delete();
+			// return null indicating no result
+			return null;
 		}
-		return content;
+		
+		return (String) entry.get(2);
 	}
 
-	private boolean checkFreshness() {
-		if ((System.currentTimeMillis() - this.timestamp) <= (freshnessSeconds * 1000))
-			// fresh
+	/**
+	 * Adds an entry to the cache.
+	 * 
+	 * @param sparqlQuery
+	 *            The SPARQL query.
+	 * @param result
+	 *            Result of the SPARQL query.
+	 */
+	private void addToCache(String sparqlQuery, String result) {
+		String filename = getFilename(sparqlQuery);
+		long timestamp = System.currentTimeMillis();
+
+		// create the object which will be serialised
+		LinkedList<Object> list = new LinkedList<Object>();
+		list.add(timestamp);
+		list.add(sparqlQuery);
+		list.add(result);
+
+		// create the file we want to use
+		File file = new File(filename);
+
+		try {
+			file.createNewFile();
+			FileOutputStream fos = new FileOutputStream(filename, false);
+			ObjectOutputStream o = new ObjectOutputStream(fos);
+			o.writeObject(list);
+			fos.flush();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// check whether the given timestamp is fresh
+	private boolean checkFreshness(long timestamp) {
+		if ((System.currentTimeMillis() - timestamp) <= (freshnessSeconds * 1000))
 			return true;
 		else
 			return false;
@@ -242,12 +213,15 @@ public class Cache implements Serializable {
 	 * @return Jena result set.
 	 */
 	public ResultSet executeSparqlQuery(SparqlQuery query) {
-		if (hm.containsKey(query.getQueryString())) {
-			String result = hm.get(query.getQueryString());
+		String result = getCacheEntry(query.getQueryString());
+		if (result != null) {
 			return SparqlQuery.JSONtoResultSet(result);
 		} else {
 			query.send();
-			return query.getResultSet();
+			ResultSet rs = query.getResultSet();
+			String json = SparqlQuery.getAsJSON(rs);
+			addToCache(query.getQueryString(), json);
+			return rs;
 		}
 	}
 
