@@ -2,6 +2,13 @@ package org.dllearner.kb.sparql.query;
 
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
+/**
+ * Does the same as SparqlQuery, but uses the cache. key should be an uri or
+ * something that can be mapped to a file see cache
+ * 
+ * @author Sebastian Knappe
+ * 
+ */
 public class CachedSparqlQueryTest extends SparqlQuery {
 
 	private Cache cache;
