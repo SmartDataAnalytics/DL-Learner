@@ -81,12 +81,14 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
 	}
     }
 
+    @Override
     protected void showLabel() {
 	nameLabel = new JLabel(configOption.getName());
 	nameLabel.setToolTipText(configOption.getDescription());
 	widgetPanel.add(nameLabel);
     }
 
+    @Override
     protected void showThingToChange() {
 	if (component != null) {
 	    // IntegerConfigOption
@@ -118,6 +120,7 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
 	}
     }
 
+    @Override
     protected void setEntry() {
 	IntegerConfigOption specialOption;
 	value = Integer.parseInt(integerField.getText()); // get from input

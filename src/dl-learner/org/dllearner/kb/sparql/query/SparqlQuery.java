@@ -21,12 +21,13 @@ package org.dllearner.kb.sparql.query;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.StringTuple;
 
@@ -45,7 +46,9 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  */
 public class SparqlQuery {
 
-	private boolean print_flag = false;
+	private static Logger logger = Logger
+	.getLogger(SparqlKnowledgeSource.class);
+	
 	protected boolean isRunning = false;
 	protected String queryString;
 	protected QueryEngineHTTP queryExecution;
@@ -53,18 +56,8 @@ public class SparqlQuery {
 	protected ResultSet rs=null;
 
 	/**
-	 * simplest contructor, works only with some endpoints, 
-	 * not with DBpedia
-	 * @param queryString
-	 * @param url
-	 */
-	public SparqlQuery(String queryString, URL url) {
-		this.queryString = queryString;
-		this.endpoint = new SparqlEndpoint(url);
-	}
-
-	/**
-	 * standard constructor
+	 * Standard constructor.
+	 * 
 	 * @param queryString
 	 * @param endpoint
 	 */
@@ -82,10 +75,10 @@ public class SparqlQuery {
 	 * @return jena ResultSet
 	 */
 	public void send() {
-		p(queryString);
+		logger.info(queryString);
 		
 		String service = endpoint.getURL().toString();
-		p(endpoint.getURL().toString());
+		logger.info(endpoint.getURL().toString());
 		// Jena access to SPARQL endpoint
 		queryExecution=new QueryEngineHTTP(service,queryString);
 		for (String dgu : endpoint.getDefaultGraphURIs()){
@@ -94,12 +87,11 @@ public class SparqlQuery {
 		for (String ngu : endpoint.getNamedGraphURIs()){
 			queryExecution.addNamedGraph(ngu);
 		}
-		p("query SPARQL server");
+		logger.info("query SPARQL server");
 		
 		
 		rs = queryExecution.execSelect();
-		p(rs.getResultVars().toString());
-		//p(ResultSetFormatter.asXMLString(rs));
+		logger.info(rs.getResultVars().toString());
 	}
 
 	public void stop() {
@@ -161,25 +153,6 @@ public class SparqlQuery {
 		return ResultSetFormatter.toList(rs);
 	}
 
-	
-	/**
-	 * sends a query and returns the results for variable
-	 * TODO untested and not used, feel free to change
-	 * varName as Vector<String>
-	 * @param varName
-	 * @return Vector<String>
-	 */
-	@SuppressWarnings({"unchecked"})
-	@Deprecated
-	public Vector<String> getAsVector(String varName) {
-		Vector<String> vret = new Vector<String>();
-		List<ResultBinding> l = ResultSetFormatter.toList(rs);
-		for (ResultBinding resultBinding : l) {
-			vret.add(resultBinding.get(varName).toString());
-		}
-		return vret;
-	}
-
 	/**
 	 * sends a query and returns the results for two variables
 	 * ex: getAsVectorOfTupels("predicate", "object")
@@ -205,31 +178,6 @@ public class SparqlQuery {
 		return vret;
 	}
 
-	
-	/**
-	 * sends a query and returns the results for n variables
-	 * TODO not working, finish
-	 * @param varNames
-	 * @return Vector<Vector<String>>
-	 */
-	@Deprecated
-	public Vector<Vector<String>> getAsVectorOfVectors(Vector<String> varNames) {
-		// ResultSet rs = send();
-		Vector<Vector<String>> vret = new Vector<Vector<String>>();
-		/*
-		 * Does not work yet List<ResultBinding> l =
-		 * ResultSetFormatter.toList(rs); for (ResultBinding resultBinding : l) {
-		 * vret.add(new StringTuple(resultBinding.get(varName1).toString(),
-		 * resultBinding.get(varName2).toString())); }
-		 */
-		return vret;
-	}
-
-	// probably not needed
-	/*
-	 * public Model asJenaModel(){ ResultSet rs=send(); return
-	 * ResultSetFormatter.toModel(rs); }
-	 */
 	/**
 	 * sends a query and returns JSON
 	 * @return a String representation of the Resultset as JSON
@@ -238,10 +186,11 @@ public class SparqlQuery {
 		if (rs==null) this.send();
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
 		ResultSetFormatter.outputAsJSON(baos, rs);
+		// possible Jena bug: Jena modifies the result set during
+		// JSON transformation, so we need to get it back
 		rs=JSONtoResultSet(baos.toString());
 		return baos.toString();
 	}
-	
 	
 	/**
 	 * @param json a string representation string object
@@ -259,12 +208,6 @@ public class SparqlQuery {
 	
 	public String getQueryString() {
 		return queryString;
-	}
-
-	public void p(String str) {
-		if (print_flag) {
-			System.out.println(str);
-		}
 	}
 
 }

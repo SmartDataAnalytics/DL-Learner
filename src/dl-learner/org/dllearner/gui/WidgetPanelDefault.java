@@ -54,12 +54,14 @@ public class WidgetPanelDefault extends AbstractWidgetPanel {
 	add(widgetPanel, BorderLayout.CENTER);
     }
 
+    @Override
     protected void showLabel() {
 	nameLabel = new JLabel(configOption.getName());
 	nameLabel.setToolTipText(configOption.getDescription());
 	widgetPanel.add(nameLabel);
     }
 
+    @Override
     protected void showThingToChange() {
 	JLabel notImplementedLabel = new JLabel(configOption.getClass()
 		.getSimpleName()
@@ -69,6 +71,7 @@ public class WidgetPanelDefault extends AbstractWidgetPanel {
 	widgetPanel.add(notImplementedLabel);
     }
 
+    @Override
     protected void setEntry() {
     }
 

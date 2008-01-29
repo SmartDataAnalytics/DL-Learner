@@ -7,7 +7,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URLEncoder;
 
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 public class TestHTTP {
@@ -23,7 +22,7 @@ public class TestHTTP {
 			if (i!=0) time+=TestHTTP.httpQuery(query);
 		}
 		time=time/100;
-		System.out.println("Durchschnittliche Zeit für eine Anfrage per Http-Methode: "+time);
+		System.out.println("Durchschnittliche Zeit fï¿½r eine Anfrage per Http-Methode: "+time);
 		
 		time=0;
 		for (int i=0; i<101; i++)
@@ -31,7 +30,7 @@ public class TestHTTP {
 			if (i!=0) time+=TestHTTP.jenaQuery(query);
 		}
 		time=time/100;
-		System.out.println("Durchschnittliche Zeit für eine Anfrage per Jena-Methode: "+time);
+		System.out.println("Durchschnittliche Zeit fï¿½r eine Anfrage per Jena-Methode: "+time);
 	}
 	
 	private static double jenaQuery(String query)
@@ -40,7 +39,8 @@ public class TestHTTP {
 		QueryEngineHTTP queryExecution=new QueryEngineHTTP("http://localhost:8890/sparql",query);
 		queryExecution.addDefaultGraph("http://dbpedia.org");
 		// Jena access to DBpedia SPARQL endpoint
-		ResultSet rs = queryExecution.execSelect();
+		// ResultSet rs = 
+		queryExecution.execSelect();
 		double end=System.currentTimeMillis();
 		return ((end-start)/1000);
 	}

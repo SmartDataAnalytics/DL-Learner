@@ -81,12 +81,14 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
 	}
     }
 
+    @Override
     protected void showLabel() {
 	nameLabel = new JLabel(configOption.getName());
 	nameLabel.setToolTipText(configOption.getDescription());
 	widgetPanel.add(nameLabel);
     }
 
+    @Override
     protected void showThingToChange() {
 	if (component != null) {
 	    // IntegerConfigOption
@@ -123,6 +125,7 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
 	}
     }
 
+    @Override
     protected void setEntry() {
 	BooleanConfigOption specialOption;
 	if (cb.getSelectedIndex() == 0)
