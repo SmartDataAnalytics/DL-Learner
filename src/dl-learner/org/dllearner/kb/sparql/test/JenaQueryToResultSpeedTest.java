@@ -19,8 +19,8 @@
  */
 package org.dllearner.kb.sparql.test;
 
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.kb.sparql.query.SparqlQuery;
 
 import com.hp.hpl.jena.query.ResultSet;
 

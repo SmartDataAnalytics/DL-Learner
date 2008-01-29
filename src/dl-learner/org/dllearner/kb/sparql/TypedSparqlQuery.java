@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.dllearner.kb.sparql.configuration.Configuration;
-import org.dllearner.kb.sparql.query.Cache;
-import org.dllearner.kb.sparql.query.CachedSparqlQuery;
 import org.dllearner.utilities.StringTuple;
 
 import com.hp.hpl.jena.query.ResultSet;
@@ -85,12 +83,11 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 		String sparqlQueryString = sparqlQueryMaker
 				.makeSubjectQueryUsingFilters(uri.toString());
 
-		CachedSparqlQuery csq = new CachedSparqlQuery(configuration
-				.getSparqlEndpoint(), cache, uri.toString(), sparqlQueryString);
+//		CachedSparqlQuery csq = new CachedSparqlQuery(configuration
+//				.getSparqlEndpoint(), cache, uri.toString(), sparqlQueryString);
 
-		
-		// TODO optimize
-		ResultSet rs = csq.getAsResultSet();
+		SparqlQuery query = new SparqlQuery(sparqlQueryString, configuration.getSparqlEndpoint());
+		ResultSet rs = cache.executeSparqlQuery(query);
 		
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
 		p(l.toString());

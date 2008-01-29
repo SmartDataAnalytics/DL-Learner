@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.dllearner.kb.sparql.configuration.Configuration;
-import org.dllearner.kb.sparql.query.CachedSparqlQuery;
 import org.dllearner.utilities.StringTuple;
 
 import com.hp.hpl.jena.query.ResultSet;
@@ -64,11 +63,9 @@ public class TypedSparqlQueryClasses extends TypedSparqlQuery implements
 				+ " FILTER (!regex(str(?object),'http://xmlns.com/foaf/0.1/'))"
 				+ "}";
 
-		CachedSparqlQuery csq = new CachedSparqlQuery(configuration
-				.getSparqlEndpoint(), cache, uri.toString(), sparqlQueryString);
-
-		// TODO optimize
-		ResultSet rs = csq.getAsResultSet();
+		SparqlQuery query = new SparqlQuery(sparqlQueryString, configuration.getSparqlEndpoint());
+		ResultSet rs = cache.executeSparqlQuery(query);		
+		
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
 		for (ResultBinding resultBinding : l) {
 					

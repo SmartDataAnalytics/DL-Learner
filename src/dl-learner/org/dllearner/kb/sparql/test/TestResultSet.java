@@ -25,8 +25,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.kb.sparql.query.SparqlQuery;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.core.ResultBinding;
