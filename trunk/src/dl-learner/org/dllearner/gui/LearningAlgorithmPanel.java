@@ -81,9 +81,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 	// read selected Class
 	choosenClassIndex = cb.getSelectedIndex();
-
 	updateOptionPanel();
-
 	// init
 	if (e.getSource() == initButton && config.getLearningProblem() != null) {
 	    config.setLearningAlgorithm(config.getComponentManager()
@@ -91,6 +89,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 			    config.getLearningProblem(),
 			    config.getReasoningService()));
 	    updateOptionPanel();
+	    System.out.println("init LearningAlgorithm");
 	    config.getLearningAlgorithm().init();
 	}
     }

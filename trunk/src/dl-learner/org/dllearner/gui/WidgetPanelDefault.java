@@ -29,33 +29,47 @@ import javax.swing.JPanel;
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigOption;
 
-
 /**
  * WidgetPanelDefault
  * 
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelDefault extends JPanel {
+public class WidgetPanelDefault extends AbstractWidgetPanel {
 
-	private static final long serialVersionUID = 4059515858894036769L;
-	private JLabel nameLabel;
-	private JPanel centerPanel = new JPanel();
-		
-	public WidgetPanelDefault(Config config, Component component, Class<? extends Component> componentOption, ConfigOption<?> configOption) {
-		
-		// default
-		nameLabel = new JLabel(configOption.getName());
+    private static final long serialVersionUID = 4059515858894036769L;
 
-		// text
-		nameLabel = new JLabel(configOption.getName());
-		JLabel notImplementedLabel = new JLabel(configOption.getClass().getSimpleName() + " not implemented");
-		notImplementedLabel.setForeground(Color.RED);
-		centerPanel.add(nameLabel);
-		centerPanel.add(notImplementedLabel);
-		
-		// default
-		add(centerPanel, BorderLayout.CENTER);
-	}
-	
+    private ConfigOption<?> configOption;
+    private JLabel nameLabel;
+    private JPanel widgetPanel = new JPanel();
+
+    public WidgetPanelDefault(Config config, Component component,
+	    Class<? extends Component> componentOption,
+	    ConfigOption<?> configOption) {
+
+	this.configOption = configOption;
+
+	showLabel();
+	showThingToChange();
+	add(widgetPanel, BorderLayout.CENTER);
+    }
+
+    protected void showLabel() {
+	nameLabel = new JLabel(configOption.getName());
+	nameLabel.setToolTipText(configOption.getDescription());
+	widgetPanel.add(nameLabel);
+    }
+
+    protected void showThingToChange() {
+	JLabel notImplementedLabel = new JLabel(configOption.getClass()
+		.getSimpleName()
+		+ " not implemented");
+	notImplementedLabel.setForeground(Color.RED);
+
+	widgetPanel.add(notImplementedLabel);
+    }
+
+    protected void setEntry() {
+    }
+
 }
