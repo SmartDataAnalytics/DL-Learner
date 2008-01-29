@@ -46,8 +46,6 @@ import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.dl.KB;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
-import org.dllearner.kb.sparql.query.Cache;
-import org.dllearner.kb.sparql.query.CachedSparqlQueryTest;
 import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
@@ -398,8 +396,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	public SparqlQuery sparqlQuery(String query) {
 		this.endpoint = new SparqlEndpoint(url, defaultGraphURIs,
 				namedGraphURIs);
-		if (cached) return new CachedSparqlQueryTest(endpoint, new Cache("cache"),""+query.hashCode(),query);
-		else return new SparqlQuery(query, endpoint);
+//		if (cached) 
+//			return new CachedSparqlQueryTest(endpoint, new Cache("cache"),""+query.hashCode(),query);
+//		else 
+			return new SparqlQuery(query, endpoint);
 	}
 
 	/*public static void main(String[] args) throws MalformedURLException {

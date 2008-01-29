@@ -27,7 +27,6 @@ import java.util.Set;
 import org.dllearner.kb.sparql.configuration.Configuration;
 import org.dllearner.kb.sparql.query.Cache;
 import org.dllearner.kb.sparql.query.CachedSparqlQuery;
-import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.utilities.StringTuple;
 
 import com.hp.hpl.jena.query.ResultSet;
@@ -228,13 +227,6 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 		// System.out.println(xml);
 
 		return xml;
-	}
-
-	@Deprecated
-	public String sendAndReceiveSPARQL(String queryString) {
-		// SparqlQuery sq=new SparqlQuery(configuration.getSparqlEndpoint());
-		return new SparqlQuery(queryString, configuration.getSparqlEndpoint())
-				.getAsXMLString();
 	}
 
 	public void p(String str) {
