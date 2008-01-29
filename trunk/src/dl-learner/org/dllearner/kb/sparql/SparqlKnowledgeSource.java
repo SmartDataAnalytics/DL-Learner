@@ -293,7 +293,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			// like default-graph uri
 			endpoint = new SparqlEndpoint(url);
 		}
-
+		
 		// get Options for Filters
 
 		if (predefinedFilter >= 1) {
@@ -308,6 +308,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// give everything to the manager
 		m.useConfiguration(sparqlQueryType, endpoint, manipulator,
 				recursionDepth, getAllSuperClasses, closeAfterRecursion);
+		
 		try {
 			String ont = "";
 			// the actual extraction is started here
@@ -393,7 +394,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return new SparqlQuery(query, endpoint);
 	}
 
-	public static void main(String[] args) throws MalformedURLException {
+	/*public static void main(String[] args) throws MalformedURLException {
 		String query = "SELECT ?pred ?obj\n"
 				+ "WHERE {<http://dbpedia.org/resource/Leipzig> ?pred ?obj}";
 		URL url = new URL("http://dbpedia.openlinksw.com:8890/sparql");
@@ -405,5 +406,5 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				System.out.print(array[i][j] + " ");
 			System.out.println();
 		}
-	}
+	}*/
 }
