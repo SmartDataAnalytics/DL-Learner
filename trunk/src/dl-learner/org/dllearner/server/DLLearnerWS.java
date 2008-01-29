@@ -57,6 +57,8 @@ import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
 
+import com.hp.hpl.jena.query.ResultSet;
+
 /**
  * DL-Learner web service interface.
  * 
@@ -499,14 +501,16 @@ public class DLLearnerWS {
 	public String getAsJSON(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
-		return state.getQuery(queryID).getAsJSON();
+		ResultSet rs = state.getQuery(queryID).send();
+		return SparqlQuery.getAsJSON(rs);
 	}
 	
 	@WebMethod
 	public String getAsXMLString(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
-		return state.getQuery(queryID).getAsXMLString();
+		ResultSet rs = state.getQuery(queryID).send();		
+		return SparqlQuery.getAsXMLString(rs);
 	}
 	
 	@WebMethod

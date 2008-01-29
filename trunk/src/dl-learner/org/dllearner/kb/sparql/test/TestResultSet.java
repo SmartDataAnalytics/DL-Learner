@@ -28,6 +28,7 @@ import java.util.List;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.query.SparqlQuery;
 
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 public class TestResultSet {
@@ -43,7 +44,8 @@ public class TestResultSet {
 		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 
-		String json=sqJena.getAsJSON();
+		ResultSet rs = sqJena.send();
+		String json = SparqlQuery.getAsJSON(rs);
 		System.out.println(json);
 		
 		
@@ -107,12 +109,14 @@ public class TestResultSet {
 		}
 		System.out.println("Conv total: " + (System.currentTimeMillis() - now));
 		// first query is not counted
-		sqJena.getAsXMLString();
+		ResultSet rs = sqJena.send();
+		SparqlQuery.getAsXMLString(rs);
 		now = System.currentTimeMillis();
 		tmp = now;
 		for (int i = 0; i < howOften; i++) {
 
-			sqJena.getAsXMLString();
+			rs = sqJena.send();
+			SparqlQuery.getAsXMLString(rs);			
 			System.out.println("Jena needed: "
 					+ (System.currentTimeMillis() - tmp));
 			tmp = System.currentTimeMillis();
@@ -140,7 +144,8 @@ public class TestResultSet {
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 	//	SparqlQueryConventional sqConv = new SparqlQueryConventional(sse);
 
-		System.out.println(sqJena.getAsXMLString());
+		ResultSet rs = sqJena.send();
+		System.out.println(SparqlQuery.getAsXMLString(rs));
 		//System.out.println(sqConv.getAsXMLString(queryString));
 
 	}

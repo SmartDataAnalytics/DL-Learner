@@ -8,9 +8,12 @@ import com.hp.hpl.jena.query.ResultSet;
  * Does the same as SparqlQuery, but uses the cache. key should be an uri or
  * something that can be mapped to a file see cache
  * 
+ * Do not use this class anymore, but use Cache.executeSparqlQuery instead.
+ * 
  * @author Jens Lehmann
  * 
  */
+@Deprecated
 public class CachedSparqlQuery {
 
 	String key;
@@ -52,7 +55,8 @@ public class CachedSparqlQuery {
 		// if not in cache get it from EndPoint
 		if (FromCache == null) {
 			// configuration.increaseNumberOfuncachedSparqlQueries();
-			xml = this.sparqlQuery.getAsXMLString();
+			ResultSet rs = sparqlQuery.send();
+			xml = SparqlQuery.getAsXMLString(rs);
 			// sendAndReceiveSPARQL(sparql);
 			// p(sparql);
 			// System.out.println(xml);
@@ -92,7 +96,8 @@ public class CachedSparqlQuery {
 		// if not in cache get it from EndPoint
 		if (FromCache == null) {
 			// configuration.increaseNumberOfuncachedSparqlQueries();
-			JSON = this.sparqlQuery.getAsJSON();
+			ResultSet rs = sparqlQuery.send();
+			JSON = SparqlQuery.getAsJSON(rs);
 			System.out.println(JSON);
 			// sendAndReceiveSPARQL(sparql);
 			// p(sparql);

@@ -28,30 +28,34 @@ import java.io.Serializable;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
+import com.hp.hpl.jena.query.ResultSet;
+
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. An object of
  * this class can be the cache itself or a cache object(one entry), We could
  * split that in two classes, but one entry o object only has contains data and
  * one additional function and would just be a data class
+ * TODO: decipher previous sentence
  * 
  * it writes the files according to one resource in the basedir and saves the
  * cache object in it.  Filename is the subject, a resource
  *  e.g. http://dbpedia.org/resource/Angela_Merkel which is first urlencoded 
  * and so serves as the hash for the filename.
+ * TODO: Why not just take some hash of the SPARQL query itself?
  * 
  * the cache object in the file remembers: a timestamp, 
  * a hashmap SparqlQuery -> SparqlXMLResult
  * Cache validates if timestamp too old and Sparql-Query the same 
  * before returning the SPARQL xml-result
+ * TODO: it is not JSON, not XML is it?
  * 
  * @author Sebastian Hellmann
  * @author Sebastian Knappe
+ * @author Jens Lehmann
  */
 public class Cache implements Serializable {
 
-	/**
-	 * This maps sparql query to sparql result
-	 */
+	// maps SPARQL queries to JSON represenation of results
 	protected HashMap<String, String> hm;
 
 	final static long serialVersionUID = 104;
@@ -232,4 +236,23 @@ public class Cache implements Serializable {
 			return false;
 	}
 
+	/**
+	 * Takes a SPARQL query (which has not been evaluated yet) as 
+	 * argument and returns a result set. The result set is taken from
+	 * this cache if the query is stored here. Otherwise the query is
+	 * send and its result added to the cache and returned.
+	 * 
+	 * @param query The SPARQL query.
+	 * @return Jena result set.
+	 */
+	public ResultSet executeSparqlQuery(SparqlQuery query) {
+		if(hm.containsKey(query.getQueryString())) {
+			String result = hm.get(query.getQueryString());
+			return SparqlQuery.JSONtoResultSet(result);
+		} else {
+			query.send();
+			return query.getResultSet();
+		}
+	}
+	
 }

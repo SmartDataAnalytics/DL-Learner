@@ -24,12 +24,10 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.utilities.StringTuple;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -38,22 +36,23 @@ import com.hp.hpl.jena.sparql.core.ResultBinding;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 /**
- * Represents one SPARQL query. It includes support for stopping the SPARQL query
- * (which may be necessary if a timeout is reached).
+ * Represents one SPARQL query. It includes support for stopping the SPARQL
+ * query (which may be necessary if a timeout is reached).
  * 
  * @author Jens Lehmann
  * 
  */
 public class SparqlQuery {
 
-	private static Logger logger = Logger
-	.getLogger(SparqlKnowledgeSource.class);
-	
-	protected boolean isRunning = false;
+	private static Logger logger = Logger.getLogger(SparqlKnowledgeSource.class);
+
+	private boolean isRunning = false;
+	// TODO: declare as private
 	protected String queryString;
-	protected QueryEngineHTTP queryExecution;
-	protected SparqlEndpoint endpoint;
-	protected ResultSet rs=null;
+	private QueryEngineHTTP queryExecution;
+	private SparqlEndpoint endpoint;
+	// TODO: declare as private
+	protected ResultSet rs = null;
 
 	/**
 	 * Standard constructor.
@@ -66,32 +65,34 @@ public class SparqlQuery {
 		this.endpoint = endpoint;
 	}
 
-	public void setIsRunning(boolean running){
-		this.isRunning=running;
+	@Deprecated
+	public void setIsRunning(boolean running) {
+		this.isRunning = running;
 	}
-	
+
 	/**
-	 * method used for sending over Jena
-	 * @return jena ResultSet
+	 * Sends a SPARQL query using the Jena library.
 	 */
-	public void send() {
+	public ResultSet send() {
+		isRunning = true;
 		logger.info(queryString);
-		
+
 		String service = endpoint.getURL().toString();
 		logger.info(endpoint.getURL().toString());
 		// Jena access to SPARQL endpoint
-		queryExecution=new QueryEngineHTTP(service,queryString);
-		for (String dgu : endpoint.getDefaultGraphURIs()){
+		queryExecution = new QueryEngineHTTP(service, queryString);
+		for (String dgu : endpoint.getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
 		}
-		for (String ngu : endpoint.getNamedGraphURIs()){
+		for (String ngu : endpoint.getNamedGraphURIs()) {
 			queryExecution.addNamedGraph(ngu);
 		}
 		logger.info("query SPARQL server");
-		
-		
+
 		rs = queryExecution.execSelect();
 		logger.info(rs.getResultVars().toString());
+		isRunning = false;
+		return rs;
 	}
 
 	public void stop() {
@@ -99,46 +100,62 @@ public class SparqlQuery {
 		isRunning = false;
 	}
 
+	public String getQueryString() {
+		return queryString;
+	}
+	
+	public ResultSet getResultSet() {
+		return rs;
+	}
+	
 	public boolean isRunning() {
 		return isRunning;
 	}
+
+	public boolean hasCompleted() {
+		return (rs != null);
+	}		
 	
 	/**
 	 * TODO define the format
+	 * 
 	 * @return
 	 */
-	@SuppressWarnings({"unchecked"})
-	public String[][] getAsStringArray(){
-		if (rs==null) this.send();
+	@Deprecated
+	@SuppressWarnings( { "unchecked" })
+	public String[][] getAsStringArray() {
+		if (rs == null)
+			this.send();
 		System.out.println("Starting Query");
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
-		List<String> resultVars=rs.getResultVars();
-		String[][] array=new String[l.size()][resultVars.size()];
-		Iterator<String> iter=resultVars.iterator();
-		int i=0,j=0;
-		
+		List<String> resultVars = rs.getResultVars();
+		String[][] array = new String[l.size()][resultVars.size()];
+		Iterator<String> iter = resultVars.iterator();
+		int i = 0, j = 0;
+
 		for (ResultBinding resultBinding : l) {
-			while (iter.hasNext()){
-				String varName=(String)iter.next();
-				array[i][j]=resultBinding.get(varName).toString();
+			while (iter.hasNext()) {
+				String varName = (String) iter.next();
+				array[i][j] = resultBinding.get(varName).toString();
 				j++;
 			}
-			iter=resultVars.iterator();
+			iter = resultVars.iterator();
 			i++;
-			j=0;
+			j = 0;
 		}
 		System.out.println("Query complete");
 		return array;
 	}
-	
+
 	/**
 	 * sends a query and returns XML
 	 * 
 	 * @return String xml
 	 */
-	public String getAsXMLString() {
-		if (rs==null) this.send();
-		return ResultSetFormatter.asXMLString(rs);
+	public static String getAsXMLString(ResultSet resultSet) {
+		//if (rs == null)
+		//	this.send();
+		return ResultSetFormatter.asXMLString(resultSet);
 	}
 
 	/**
@@ -147,67 +164,42 @@ public class SparqlQuery {
 	 * 
 	 * @return jena List<ResultBinding>
 	 */
-	@SuppressWarnings({"unchecked"})
+	@Deprecated
+	@SuppressWarnings( { "unchecked" })
 	public List<ResultBinding> getAsList() {
-		if (rs==null) this.send();
+		if (rs == null)
+			this.send();
 		return ResultSetFormatter.toList(rs);
 	}
 
 	/**
-	 * sends a query and returns the results for two variables
-	 * ex: getAsVectorOfTupels("predicate", "object")
-	 * TODO untested and not used, feel free to change
+	 * Converts Jena result set to JSON.
 	 * 
-	 * @param varName1
-	 * @param varName2
-	 * @return Vector<StringTuple>
+	 * @param resultSet The result set to transform.
+	 * @return JSON representation of the result set.
 	 */
-	@SuppressWarnings({"unchecked"})
-	@Deprecated
-	public Vector<StringTuple> getAsVectorOfTupels(String varName1,
-			String varName2) {
-		Vector<StringTuple> vret = new Vector<StringTuple>();
-		List<ResultBinding> l = ResultSetFormatter.toList(rs);
-		//System.out.println(l);
-		//System.out.println(ResultSetFormatter.asXMLString(rs));
-		for (ResultBinding resultBinding : l) {
-					
-			vret.add(new StringTuple(resultBinding.get(varName1).toString(),
-					resultBinding.get(varName2).toString()));
-		}
-		return vret;
+	public static String getAsJSON(ResultSet resultSet) {
+		// if (rs == null)
+		//	this.send();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ResultSetFormatter.outputAsJSON(baos, resultSet);
+		// possible Jena bug: Jena modifies the result set during
+		// JSON transformation, so we need to get it back
+		resultSet = JSONtoResultSet(baos.toString());
+		return baos.toString();
 	}
 
 	/**
-	 * sends a query and returns JSON
-	 * @return a String representation of the Resultset as JSON
+	 * Converts from JSON to internal Jena format.
+	 * 
+	 * @param json
+	 *            A JSON representation if a SPARQL query result.
+	 * @return A Jena ResultSet.
 	 */
-	public String getAsJSON(){
-		if (rs==null) this.send();
-		ByteArrayOutputStream baos=new ByteArrayOutputStream();
-		ResultSetFormatter.outputAsJSON(baos, rs);
-		// possible Jena bug: Jena modifies the result set during
-		// JSON transformation, so we need to get it back
-		rs=JSONtoResultSet(baos.toString());
-		return baos.toString();
-	}
-	
-	/**
-	 * @param json a string representation string object
-	 * @return jena ResultSet
-	 */
-	public static ResultSet JSONtoResultSet(String json){
-		ResultSet rs=null;
-		try{
-			ByteArrayInputStream bais=new ByteArrayInputStream(json.getBytes(Charset.forName("UTF-8")));
-			rs=ResultSetFactory.fromJSON(bais);
-		}catch (Exception e) {e.printStackTrace();}
-		return rs;
-		
-	}
-	
-	public String getQueryString() {
-		return queryString;
+	public static ResultSet JSONtoResultSet(String json) {
+		ByteArrayInputStream bais = new ByteArrayInputStream(json
+				.getBytes(Charset.forName("UTF-8")));
+		return ResultSetFactory.fromJSON(bais);
 	}
 
 }
