@@ -86,6 +86,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	    // set ReasoningService
 	    config.setReasoningService(config.getComponentManager()
 		    .reasoningService(config.getReasoner()));
+	    
+	    System.out.println("init Reasoner");
 	}
     }
 }

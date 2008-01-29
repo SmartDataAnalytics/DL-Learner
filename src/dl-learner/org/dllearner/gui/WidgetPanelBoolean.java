@@ -25,7 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
 
-import javax.swing.JTextField;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -34,7 +34,7 @@ import org.dllearner.core.Component; // import
 // org.dllearner.core.ComponentManager;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerConfigOption;
+import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 /**
@@ -43,11 +43,10 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelInteger extends AbstractWidgetPanel implements
+public class WidgetPanelBoolean extends AbstractWidgetPanel implements
 	ActionListener {
 
-    private static final long serialVersionUID = -1802111225835164644L;
-
+    private static final long serialVersionUID = -4800583253223939928L;
     private Config config;
     private ConfigOption<?> configOption;
     private JLabel nameLabel;
@@ -56,10 +55,11 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
     private Component component;
     private Class<? extends Component> componentOption;
 
-    private Integer value;
-    private JTextField integerField = new JTextField(3);
+    private Boolean value;
+    private String[] kbBoxItems = { "true", "false" };
+    private JComboBox cb = new JComboBox(kbBoxItems);
 
-    public WidgetPanelInteger(Config config, Component component,
+    public WidgetPanelBoolean(Config config, Component component,
 	    Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
 	this.config = config;
@@ -92,44 +92,51 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
 	if (component != null) {
 	    // IntegerConfigOption
 	    if (configOption.getClass().toString().contains(
-		    "IntegerConfigOption")) {
+		    "BooleanConfigOption")) {
 		// default value
 		if (configOption.getDefaultValue() != null) {
-		    value = (Integer) configOption.getDefaultValue();
+		    value = (Boolean) configOption.getDefaultValue();
 		}
-		// then 0
+		// then false
 		else {
-		    value = 0;
+		    value = false;
 		}
-		integerField.setText(value.toString());
+		// cb.setText(value.toString());
+		if (value == false)
+		    cb.setSelectedIndex(0);
+		else
+		    cb.setSelectedIndex(1);
 		setButton.addActionListener(this);
-		widgetPanel.add(integerField);
+		widgetPanel.add(cb);
 		widgetPanel.add(setButton);
 	    }
 	    // UNKNOWN
 	    else {
-		JLabel notImplementedLabel = new JLabel("not an integer");
+		JLabel notImplementedLabel = new JLabel("not a boolean");
 		notImplementedLabel.setForeground(Color.RED);
 		widgetPanel.add(notImplementedLabel);
 	    }
 	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel("no init at moment (Integer)");
+	    JLabel noConfigOptionLabel = new JLabel("no init at moment (Boolean)");
 	    noConfigOptionLabel.setForeground(Color.RED);
 	    widgetPanel.add(noConfigOptionLabel);
 	}
     }
 
     protected void setEntry() {
-	IntegerConfigOption specialOption;
-	value = Integer.parseInt(integerField.getText()); // get from input
-	specialOption = (IntegerConfigOption) config.getComponentManager()
+	BooleanConfigOption specialOption;
+	if (cb.getSelectedIndex() == 0)
+	    value = true;
+	else
+	    value = false;
+	specialOption = (BooleanConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
 	try {
-	    ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(
+	    ConfigEntry<Boolean> specialEntry = new ConfigEntry<Boolean>(
 		    specialOption, value);
 	    config.getComponentManager().applyConfigEntry(component,
 		    specialEntry);
-	    System.out.println("set Integer: " + configOption.getName() + " = "
+	    System.out.println("set Boolean: " + configOption.getName() + " = "
 		    + value);
 	} catch (InvalidConfigOptionValueException s) {
 	    s.printStackTrace();

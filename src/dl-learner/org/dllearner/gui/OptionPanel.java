@@ -42,85 +42,95 @@ import org.dllearner.core.config.*;
  */
 public class OptionPanel extends JPanel {
 
-	private static final long serialVersionUID = -3053205578443575240L;
-	private Config config;
-	private Class<? extends Component> componentOption;
-	private List<ConfigOption<?>> optionList;
-	private JPanel centerPanel = new JPanel();
-	private Component component;
-	private GridBagLayout gridBagLayout = new GridBagLayout();
-	private GridBagConstraints constraints = new GridBagConstraints();
+    private static final long serialVersionUID = -3053205578443575240L;
+    private Config config;
+    private Class<? extends Component> componentOption;
+    private List<ConfigOption<?>> optionList;
+    private JPanel centerPanel = new JPanel();
+    private Component component;
+    private GridBagLayout gridBagLayout = new GridBagLayout();
+    private GridBagConstraints constraints = new GridBagConstraints();
 
-	public OptionPanel(Config config, Component component, Class<? extends Component> componentOption) {
-		super(new BorderLayout());
-		
-		this.config = config;
-		this.component = component;
-		this.componentOption = componentOption;
-		
-		optionList = ComponentManager.getConfigOptions(componentOption);
-	
-		// define GridBagLayout
-		centerPanel.setLayout(gridBagLayout);
-		constraints.anchor = GridBagConstraints.NORTHWEST;
+    public OptionPanel(Config config, Component component,
+	    Class<? extends Component> componentOption) {
+	super(new BorderLayout());
 
-		// add scrollPane
-		JScrollPane centerScroller = new JScrollPane(centerPanel);
-		centerScroller.setPreferredSize(new Dimension(400, 200));
-		
-		// add Panels
-		add(centerScroller, BorderLayout.CENTER);
-		
-		showWidgets();
+	this.config = config;
+	this.component = component;
+	this.componentOption = componentOption;
 
-		System.out.println("AAA: " + ComponentManager.getConfigOptions(componentOption));
+	optionList = ComponentManager.getConfigOptions(componentOption);
 
+	// define GridBagLayout
+	centerPanel.setLayout(gridBagLayout);
+	constraints.anchor = GridBagConstraints.NORTHWEST;
+
+	// add scrollPane
+	JScrollPane centerScroller = new JScrollPane(centerPanel);
+	centerScroller.setPreferredSize(new Dimension(400, 200));
+
+	// add Panels
+	add(centerScroller, BorderLayout.CENTER);
+
+	showWidgets();
+
+	System.out.println("AAA: "
+		+ ComponentManager.getConfigOptions(componentOption));
+
+    }
+
+    public void setComponent(Component component) {
+	this.component = component;
+	showWidgets();
+    }
+
+    public void setComponentOption(Class<? extends Component> componentOption) {
+	this.componentOption = componentOption;
+	showWidgets();
+    }
+
+    /*
+     * define here what core.config.class is what type of widget
+     * WidgetPanelDefault is for none defined classes
+     */
+    private void showWidgets() {
+	JPanel widgetPanel;
+	optionList = ComponentManager.getConfigOptions(componentOption); // get
+	// class
+	// for
+	// options
+	centerPanel.removeAll(); // clear panel
+	for (int i = 0; i < optionList.size(); i++) {
+	    buildConstraints(constraints, 0, i, 1, 1, 0, 0);
+	    if (optionList.get(i).getClass().toString().contains(
+		    "IntegerConfigOption")) {
+		widgetPanel = new WidgetPanelInteger(config, component,
+			componentOption, optionList.get(i));
+	    } else if (optionList.get(i).getClass().toString().contains(
+		    "BooleanConfigOption")) {
+		widgetPanel = new WidgetPanelBoolean(config, component,
+			componentOption, optionList.get(i));
+	    } else {
+		widgetPanel = new WidgetPanelDefault(config, component,
+			componentOption, optionList.get(i));
+	    }
+	    gridBagLayout.setConstraints(widgetPanel, constraints);
+	    centerPanel.add(widgetPanel);
 	}
-	
-	public void setComponent (Component component) {
-		this.component = component;
-		showWidgets();
-	}
-	
-	public void setComponentOption (Class<? extends Component> componentOption) {
-		this.componentOption = componentOption;
-		showWidgets();
-	}
-	
-	/*
-	 * define here what core.config.class is what type of widget 
-	 * WidgetPanelDefault is for none defined classes
-	 */
-	private void showWidgets() {
-		JPanel widgetPanel;
-		optionList = ComponentManager.getConfigOptions(componentOption); // get class for options
-		centerPanel.removeAll(); // clear panel
-		for (int i=0; i<optionList.size(); i++) {
-			buildConstraints(constraints, 0, i, 1, 1, 0, 0);
-			if (optionList.get(i).getClass().toString().contains("IntegerConfigOption")) {
-				widgetPanel = new WidgetPanelInteger(config, component, componentOption, optionList.get(i)); 
-			}
-			else if (false) {
-			}
-			else {
-				widgetPanel = new WidgetPanelDefault(config, component, componentOption, optionList.get(i));
-			}
-			gridBagLayout.setConstraints(widgetPanel, constraints);
-			centerPanel.add(widgetPanel);
-		}
-		centerPanel.updateUI(); // update graphic
-	}
-	
-	/*
-	 * Define GridBagConstraints
-	 */
-	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx, int wy) {
-		gbc.gridx = gx;
-		gbc.gridy = gy;
-		gbc.gridwidth = gw;
-		gbc.gridheight = gh;
-		gbc.weightx = wx;
-		gbc.weighty = wy;
-	}
-	
+	centerPanel.updateUI(); // update graphic
+    }
+
+    /*
+     * Define GridBagConstraints
+     */
+    private void buildConstraints(GridBagConstraints gbc, int gx, int gy,
+	    int gw, int gh, int wx, int wy) {
+	gbc.gridx = gx;
+	gbc.gridy = gy;
+	gbc.gridwidth = gw;
+	gbc.gridheight = gh;
+	gbc.weightx = wx;
+	gbc.weighty = wy;
+    }
+
 }
