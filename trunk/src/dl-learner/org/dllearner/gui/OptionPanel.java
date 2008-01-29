@@ -74,9 +74,6 @@ public class OptionPanel extends JPanel {
 
 	showWidgets();
 
-	System.out.println("AAA: "
-		+ ComponentManager.getConfigOptions(componentOption));
-
     }
 
     public void setComponent(Component component) {

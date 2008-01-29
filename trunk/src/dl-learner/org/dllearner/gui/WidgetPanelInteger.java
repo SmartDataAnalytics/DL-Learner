@@ -30,8 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 
-import org.dllearner.core.Component; // import
-// org.dllearner.core.ComponentManager;
+import org.dllearner.core.Component; 
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
