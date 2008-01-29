@@ -30,7 +30,6 @@ import java.util.Vector;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.StringTuple;
 
-import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -47,11 +46,11 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 public class SparqlQuery {
 
 	private boolean print_flag = false;
-	private boolean isRunning = false;
-	private String queryString;
-	private QueryExecution queryExecution;
-	SparqlEndpoint endpoint;
-	private ResultSet rs=null;
+	protected boolean isRunning = false;
+	protected String queryString;
+	protected QueryEngineHTTP queryExecution;
+	protected SparqlEndpoint endpoint;
+	protected ResultSet rs=null;
 
 	/**
 	 * simplest contructor, works only with some endpoints, 
@@ -74,19 +73,21 @@ public class SparqlQuery {
 		this.endpoint = endpoint;
 	}
 
+	public void setIsRunning(boolean running){
+		this.isRunning=running;
+	}
 	
 	/**
 	 * method used for sending over Jena
 	 * @return jena ResultSet
 	 */
 	public void send() {
-		this.isRunning=true;
 		p(queryString);
 		
 		String service = endpoint.getURL().toString();
 		p(endpoint.getURL().toString());
 		// Jena access to SPARQL endpoint
-		QueryEngineHTTP queryExecution=new QueryEngineHTTP(service,queryString);
+		queryExecution=new QueryEngineHTTP(service,queryString);
 		for (String dgu : endpoint.getDefaultGraphURIs()){
 			queryExecution.addDefaultGraph(dgu);
 		}
@@ -99,7 +100,6 @@ public class SparqlQuery {
 		rs = queryExecution.execSelect();
 		p(rs.getResultVars().toString());
 		//p(ResultSetFormatter.asXMLString(rs));
-		this.isRunning=false;
 	}
 
 	public void stop() {
