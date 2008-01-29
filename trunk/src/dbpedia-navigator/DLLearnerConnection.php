@@ -42,7 +42,7 @@ class DLLearnerConnection
 	
 	function getConceptFromExamples($posExamples,$negExamples)
 	{
-		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",2);
+		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",1);
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
 		// $this->client->applyConfigEntryStringArray($this->id, $this->ksID, "predList", array());
 		// $this->client->applyConfigEntryStringArray($this->id, $this->ksID, "objList", array());
@@ -122,16 +122,16 @@ class DLLearnerConnection
 			sleep($sleeptime);
 				
 			
-			$running=$this->client->isSparqlQueryRunning($this->id,$this->ksID,$queryID);
+			$running=$this->client->isSparqlQueryRunning($this->id,$queryID);
 			if (!$running){
-				$result=$this->client->sparqlQuery($this->id,$this->ksID,$queryID);
+				$result=$this->client->getAsStringArray($this->id,$queryID);
 				return $result;
 			}
 			
 			$seconds = $i * $sleeptime;
 			$i++;
 		} while($seconds<$this->ttl);
-		$this->client->stopSparqlQuery($id,$ksID,$queryID);
+		$this->client->stopSparqlQuery($id,$queryID);
 	}
 	
 	function getSubjects($label)
