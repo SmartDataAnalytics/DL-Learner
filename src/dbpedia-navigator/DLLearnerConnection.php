@@ -112,6 +112,7 @@ class DLLearnerConnection
 	function getSparqlResult($query)
 	{
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "defaultGraphURIs", array("http://dbpedia.org"));
+		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "cached", true);
 		$queryID=$this->client->sparqlQueryThreaded($this->id,$this->ksID,$query);
 		$running=true;
 		$i = 1;

@@ -47,6 +47,7 @@ import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.query.SparqlQuery;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -517,7 +518,10 @@ public class DLLearnerWS {
 		Thread sparqlThread = new Thread() {
 			@Override
 			public void run() {
-				state.getQuery(id).send();
+				SparqlQuery query=state.getQuery(id);
+				query.setIsRunning(true);
+				query.send();
+				query.setIsRunning(false);
 			}
 		};
 		sparqlThread.start();
