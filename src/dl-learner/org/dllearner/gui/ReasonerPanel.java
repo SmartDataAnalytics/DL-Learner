@@ -42,6 +42,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
     private List<Class<? extends ReasonerComponent>> reasoners;
     private JPanel choosePanel = new JPanel();
     private JPanel initPanel = new JPanel();
+    private OptionPanel optionPanel;
     private JButton initButton;
     private Config config;
     private String[] cbItems = {};
@@ -59,9 +60,6 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 
 	choosePanel.add(cb);
 
-	add(choosePanel, BorderLayout.PAGE_START);
-	add(initPanel, BorderLayout.PAGE_END);
-
 	// add into comboBox
 	reasoners = config.getComponentManager().getReasonerComponents();
 	for (int i = 0; i < reasoners.size(); i++) {
@@ -70,11 +68,22 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		    reasoners.get(i)));
 	}
 
+	optionPanel = new OptionPanel(config, config.getReasoner(), reasoners
+		.get(choosenClassIndex));
+	updateOptionPanel();
+
+	cb.addActionListener(this);
+
+	add(choosePanel, BorderLayout.PAGE_START);
+	add(initPanel, BorderLayout.CENTER);
+	add(optionPanel, BorderLayout.PAGE_END);
+
     }
 
     public void actionPerformed(ActionEvent e) {
 	// read selected Class
 	choosenClassIndex = cb.getSelectedIndex();
+	updateOptionPanel();
 
 	if (e.getSource() == initButton && config.getKnowledgeSource() != null) {
 	    // set reasoner
@@ -86,8 +95,15 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	    // set ReasoningService
 	    config.setReasoningService(config.getComponentManager()
 		    .reasoningService(config.getReasoner()));
-	    
+
 	    System.out.println("init Reasoner");
+	    updateOptionPanel();
 	}
+    }
+
+    public void updateOptionPanel() {
+	// update OptionPanel
+	optionPanel.setComponent(config.getReasoner());
+	optionPanel.setComponentOption(reasoners.get(choosenClassIndex));
     }
 }

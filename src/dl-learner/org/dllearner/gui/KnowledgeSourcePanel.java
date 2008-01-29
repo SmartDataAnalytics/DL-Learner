@@ -54,6 +54,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
     private int choosenClassIndex;
     private List<Class<? extends KnowledgeSource>> sources;
     private JLabel infoLabel = new JLabel("choose local file or type URL");
+    private OptionPanel optionPanel;
 
     KnowledgeSourcePanel(final Config config) {
 	super(new BorderLayout());
@@ -122,9 +123,17 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	gridbag.setConstraints(openButton, constraints);
 	centerPanel.add(openButton);
 
+	buildConstraints(constraints, 0, 2, 2, 1, 100, 100);
+	gridbag.setConstraints(initPanel, constraints);
+	centerPanel.add(initPanel);
+
+	optionPanel = new OptionPanel(config, config.getKnowledgeSource(),
+		sources.get(choosenClassIndex));
+	updateOptionPanel();
+
 	add(choosePanel, BorderLayout.PAGE_START);
 	add(centerPanel, BorderLayout.CENTER);
-	add(initPanel, BorderLayout.PAGE_END);
+	add(optionPanel, BorderLayout.PAGE_END);
 
 	choosenClassIndex = cb.getSelectedIndex();
     }
@@ -132,6 +141,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 	// read selected KnowledgeSourceClass
 	choosenClassIndex = cb.getSelectedIndex();
+	updateOptionPanel();
 	checkIfSparql();
 
 	// open File
@@ -157,6 +167,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	    System.out.println("init KnowledgeSource with \n"
 		    + sources.get(choosenClassIndex) + " and \n"
 		    + config.getURI() + "\n");
+	    updateOptionPanel();
 	}
     }
 
@@ -183,4 +194,9 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	}
     }
 
+    public void updateOptionPanel() {
+	// update OptionPanel
+	optionPanel.setComponent(config.getKnowledgeSource());
+	optionPanel.setComponentOption(sources.get(choosenClassIndex));
+    }
 }

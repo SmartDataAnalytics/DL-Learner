@@ -60,6 +60,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
     private List<Individual> individuals;
     private JList posList = new JList();
     private JList negList = new JList();
+    private OptionPanel optionPanel;
 
     private Config config;
 
@@ -71,15 +72,12 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	initButton = new JButton("Init LearningProblem");
 	initButton.addActionListener(this);
 
-	readListButton = new JButton("Read List");
+	readListButton = new JButton("Get Instances");
 	readListButton.addActionListener(this);
 
 	choosePanel.add(cb);
 	choosePanel.add(readListButton);
 	lpPanel.add(initButton);
-	add(choosePanel, BorderLayout.PAGE_START);
-	add(centerPanel, BorderLayout.CENTER);
-	add(lpPanel, BorderLayout.PAGE_END);
 
 	problems = config.getComponentManager().getLearningProblems();
 
@@ -129,6 +127,10 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
 	gridbag.setConstraints(negListScroller, constraints);
 	centerPanel.add(negListScroller);
+	
+	buildConstraints(constraints, 0, 2, 2, 1, 100, 100);
+	gridbag.setConstraints(lpPanel, constraints);
+	centerPanel.add(lpPanel);	
 
 	add(centerPanel, BorderLayout.CENTER);
 
@@ -159,11 +161,23 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		config.setNegExampleSet(negExampleSet);
 	    }
 	});
+
+	optionPanel = new OptionPanel(config, config.getLearningProblem(),
+		problems.get(choosenClassIndex));
+	updateOptionPanel();
+
+	cb.addActionListener(this);
+	
+	add(choosePanel, BorderLayout.PAGE_START);
+	add(centerPanel, BorderLayout.CENTER);
+	add(optionPanel, BorderLayout.PAGE_END);
+	
     }
 
     public void actionPerformed(ActionEvent e) {
 	// read selected LearningProblemClass
 	choosenClassIndex = cb.getSelectedIndex();
+	updateOptionPanel();
 
 	// get list after reasoner init
 	if (e.getSource() == readListButton
@@ -196,6 +210,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		    config.getNegExampleSet());
 	    config.getLearningProblem().init();
 	    System.out.println("init LearningProblem");
+	    updateOptionPanel();
 	}
 
     }
@@ -213,4 +228,9 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	gbc.weighty = wy;
     }
 
+    public void updateOptionPanel() {
+	// update OptionPanel
+	optionPanel.setComponent(config.getLearningProblem());
+	optionPanel.setComponentOption(problems.get(choosenClassIndex));
+    }
 }
