@@ -28,7 +28,6 @@ import java.awt.Color;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JButton;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
