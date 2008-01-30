@@ -50,6 +50,7 @@ public class SparqlQuery {
 	private QueryEngineHTTP queryExecution;
 	private SparqlEndpoint endpoint;
 	private ResultSet rs = null;
+	private SparqlQueryException sendException=null;
 
 	/**
 	 * Standard constructor.
@@ -80,9 +81,13 @@ public class SparqlQuery {
 			queryExecution.addNamedGraph(ngu);
 		}
 		logger.info("query SPARQL server");
-
-		rs = queryExecution.execSelect();
-		logger.info(rs.getResultVars().toString());
+		try{
+			rs = queryExecution.execSelect();
+			logger.info(rs.getResultVars().toString());
+		} catch (Exception e){
+			sendException=new SparqlQueryException(e.getMessage());
+			logger.info("Exception when querying Sparql Endpoint");
+		}
 		isRunning = false;
 		return rs;
 	}
@@ -107,6 +112,10 @@ public class SparqlQuery {
 	public QueryEngineHTTP getExecution(){
 		return queryExecution;
 	}
+	
+	public SparqlQueryException getException(){
+		return sendException;
+	}
 
 	public boolean hasCompleted() {
 		return (rs != null);
@@ -119,10 +128,7 @@ public class SparqlQuery {
 	 */
 	@Deprecated
 	@SuppressWarnings( { "unchecked" })
-	public String[][] getAsStringArray() {
-		if (rs == null)
-			this.send();
-		System.out.println("Starting Query");
+	public static String[][] getAsStringArray(ResultSet rs) {
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
 		List<String> resultVars = rs.getResultVars();
 		String[][] array = new String[l.size()][resultVars.size()];
@@ -139,7 +145,6 @@ public class SparqlQuery {
 			i++;
 			j = 0;
 		}
-		System.out.println("Query complete");
 		return array;
 	}
 
