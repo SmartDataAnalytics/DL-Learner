@@ -48,6 +48,7 @@ import org.dllearner.core.dl.Individual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.kb.sparql.SparqlQueryException;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -491,10 +492,12 @@ public class DLLearnerWS {
 	////////////////////////////////////////
 	
 	@WebMethod
-	public String[][] getAsStringArray(int sessionID, int queryID) throws ClientNotKnownException
+	public String[][] getAsStringArray(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException
 	{
 		ClientState state = getState(sessionID);
-		return state.getQuery(queryID).getSparqlQuery().getAsStringArray();
+		SparqlQueryException exception=null;
+		if ((exception=state.getQuery(queryID).getSparqlQuery().getException())!=null) throw exception;
+		return SparqlQuery.getAsStringArray(state.getQuery(queryID).getResult());
 	}
 	
 	@WebMethod

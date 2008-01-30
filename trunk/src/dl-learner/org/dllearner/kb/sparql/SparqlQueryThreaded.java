@@ -11,6 +11,7 @@ public class SparqlQueryThreaded {
 	private boolean isRunning=false;
 	private Cache cache;
 	private SparqlQuery query;
+	private ResultSet result;
 	
 	public SparqlQueryThreaded(Cache cache, SparqlQuery query)
 	{
@@ -30,11 +31,15 @@ public class SparqlQueryThreaded {
 	public void send()
 	{
 		isRunning=true;
-		cache.executeSparqlQuery(query);
+		result=cache.executeSparqlQuery(query);
 		isRunning=false;
 	}
 	
 	public SparqlQuery getSparqlQuery(){
 		return query;
+	}
+	
+	public ResultSet getResult(){
+		return result;
 	}
 }
