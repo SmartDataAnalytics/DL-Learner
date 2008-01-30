@@ -44,11 +44,8 @@ class DLLearnerConnection
 	{
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",1);
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
-		// $this->client->applyConfigEntryStringArray($this->id, $this->ksID, "predList", array());
-		// $this->client->applyConfigEntryStringArray($this->id, $this->ksID, "objList", array());
-		// $this->client->applyConfigEntryStringArray($this->id, $this->ksID, "classList", array());
-		// $this->client->applyConfigEntryString($this->id, $this->ksID, "format", "KB");
-		// $this->client->applyConfigEntryBoolean($this->id, $this->ksID, "dumpToFile", true);
+		$this->client->applyConfigEntryInt($this->id, $this->ksID, "predefinedFilter", 5);
+		$this->client->applyConfigEntryInt($this->id, $this->ksID, "predefinedEndpoint", 1);
 		
 		$this->client->setReasoner($this->id, "dig");
 		if(empty($negExamples))
@@ -111,28 +108,31 @@ class DLLearnerConnection
 	
 	function getSparqlResult($query)
 	{
-		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "defaultGraphURIs", array("http://dbpedia.org"));
-		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "cached", true);
-		$queryID=$this->client->sparqlQueryThreaded($this->id,$this->ksID,$query);
-		$running=true;
-		$i = 1;
-		$sleeptime = 1;
-		
-		do {
-			// sleep a while
-			sleep($sleeptime);
+		try {
+			$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "defaultGraphURIs", array("http://dbpedia.org"));
+			$queryID=$this->client->sparqlQueryThreaded($this->id,$this->ksID,$query);
+			$running=true;
+			$i = 1;
+			$sleeptime = 1;
+			
+			do {
+				// sleep a while
+				sleep($sleeptime);
+					
 				
-			
-			$running=$this->client->isSparqlQueryRunning($this->id,$queryID);
-			if (!$running){
-				$result=$this->client->getAsStringArray($this->id,$queryID);
-				return $result;
-			}
-			
-			$seconds = $i * $sleeptime;
-			$i++;
-		} while($seconds<$this->ttl);
-		$this->client->stopSparqlQuery($id,$queryID);
+				$running=$this->client->isSparqlQueryRunning($this->id,$queryID);
+				if (!$running){
+					$result=$this->client->getAsStringArray($this->id,$queryID);
+					return $result;
+				}
+				
+				$seconds = $i * $sleeptime;
+				$i++;
+			} while($seconds<$this->ttl);
+			$this->client->stopSparqlQuery($id,$queryID);
+		} catch (Exception $e){
+			echo $e->getMessage();
+		}
 	}
 	
 	function getSubjects($label)
@@ -233,12 +233,10 @@ class DLLearnerConnection
 	
 	}
 }
-
-/*require_once("Settings.php");
+/*
 require_once("DLLearnerConnection.php");
-$settings=new Settings();
-$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri);
+$sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
-$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$ids[0],$ids[1]);
-$triples=$sc->getTriples($settings->sparqlttl,"dog");*/
+$sc=new DLLearnerConnection($ids[0],$ids[1]);
+$triples=$sc->getTriples("Leipzig");*/
 ?>
