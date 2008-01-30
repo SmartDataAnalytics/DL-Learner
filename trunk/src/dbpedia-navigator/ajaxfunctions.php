@@ -58,86 +58,97 @@ function getarticle($subject,$fromCache)
 	if ($fromCache<0) {
 		require_once("DLLearnerConnection.php");
 		$sc=new DLLearnerConnection($_SESSION['id'],$_SESSION['ksID']);
-		$triples=$sc->getTriples($subject);
 		$content="";
 		$searchResult="";
-		$objResponse = new xajaxResponse();
-		if (count($triples)==1)
-		{
-			// ToDo: find out why this was treated in a special way by Sebastian
-			$content.=substr($triples,7);
-		}
-		else if (count($triples)==0) {
-			$content.="Did not find an article with that name. Similar Articles are shown under 'Search Results'.";
-		} else {
-		
-			// goal: display the data in a nice (DBpedia specific way), maybe similar to
-			// dbpedia.org/search
-		
-			$content="";
+		$lastArticles="";
+		$artTitle="";
+		try{
+			$triples=$sc->getTriples($subject);
+			$objResponse = new xajaxResponse();
+			if (count($triples)==1)
+			{
+				// ToDo: find out why this was treated in a special way by Sebastian
+				$content.=substr($triples,7);
+			}
+			else if (count($triples)==0) {
+				$content.="Did not find an article with that name. Similar Articles are shown under 'Search Results'.";
+			} else {
+			
+				// goal: display the data in a nice (DBpedia specific way), maybe similar to
+				// dbpedia.org/search
+			
+				$content="";
+							
+				// replace by label(?)
+				//$subject_nice = str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)));
+				
+				// display a picture if there is one
+				if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
+					$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0].'" alt="Picture of '.$subject_nice.'" style="float:right; max-width:200px;" \>';
+					
+				// add short description in english
+				$content.="<h4>Short Description</h4><p>".urldecode($triples['http://dbpedia.org/property/abstract'][0])."</p>";
+				
+				// give the link to the corresponding Wikipedia article
+				if(isset($triples['http://xmlns.com/foaf/0.1/page']))
+					$content .= '<p><img src="images/wikipedia_favicon.png" alt"Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0].'">view Wikipedia article</a>, '; 
+				$content .= '<a href="'.$subject.'">view DBpedia resource description</a></p>';
+	
+				// display a list of classes
+				if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']))
+					$content .= '<p>classes: '.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
+				
+				if(isset($triples['http://dbpedia.org/property/reference'])) {
+					$content .= '<p>references: <ul>';
+					foreach($triples['http://dbpedia.org/property/reference'] as $reference)
+						$content .= '<li><a href="'.$reference.'">'.$reference.'</a></li>';
+					$content .= '</ul></p>';
+				}
+
+				$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'];
+				
+				
+				// filter out uninteresting properties and properties which
+				// have already been displayed
+				unset($triples['http://xmlns.com/foaf/0.1/page']);
+				unset($triples['http://xmlns.com/foaf/0.1/depiction']);
+				unset($triples['http://dbpedia.org/property/abstract']);
+				unset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']);		
+	
+				// display the remaining properties as list which can be used for further navigation
+				
+				$content .= '<br/><br/><br/><br/><br/><br/>'.get_triple_table($triples);
 						
-			// replace by label(?)
-			//$subject_nice = str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)));
-			
-			// display a picture if there is one
-			if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
-				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0].'" alt="Picture of '.$subject_nice.'" style="float:right; max-width:200px;" \>';
+				//store article in session, to navigate between last 5 articles quickly
+				$contentArray=array('content' => $content,'subject' => $subject);
+				if (!isset($_SESSION['nextArticle'])){
+					$_SESSION['nextArticle']=0;
+					$_SESSION['articles']=array();
+				}
+				if ($_SESSION['nextArticle']==5) $_SESSION['nextArticle']=0;
+				$_SESSION['articles'][$_SESSION['nextArticle']]=$contentArray;
+				$_SESSION['currentArticle']=$_SESSION['nextArticle'];
+				$_SESSION['nextArticle']++;
 				
-			// add short description in english
-			$content.="<h4>Short Description</h4><p>".urldecode($triples['http://dbpedia.org/property/abstract'][0])."</p>";
-			
-			// give the link to the corresponding Wikipedia article
-			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
-				$content .= '<p><img src="images/wikipedia_favicon.png" alt"Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0].'">view Wikipedia article</a>, '; 
-			$content .= '<a href="'.$subject.'">view DBpedia resource description</a></p>';
-
-			// display a list of classes
-			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']))
-				$content .= '<p>classes: '.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
-			
-			if(isset($triples['http://dbpedia.org/property/reference'])) {
-				$content .= '<p>references: <ul>';
-				foreach($triples['http://dbpedia.org/property/reference'] as $reference)
-					$content .= '<li><a href="'.$reference.'">'.$reference.'</a></li>';
-				$content .= '</ul></p>';
-			}
+				//Add Positives to Session
+				if (!isset($_SESSION['positive'])){
+					$array=array("http://dbpedia.org/resource/".str_replace(" ","_",$subject) => "http://dbpedia.org/resource/".str_replace(" ","_",$subject));
+					$_SESSION['positive']=$array;
+				}
+				else{
+					$array=$_SESSION['positive'];
+					$array["http://dbpedia.org/resource/".str_replace(" ","_",$subject)]="http://dbpedia.org/resource/".str_replace(" ","_",$subject);
+					$_SESSION['positive']=$array;
+				}
 				
-			// filter out uninteresting properties and properties which
-			// have already been displayed
-			unset($triples['http://xmlns.com/foaf/0.1/page']);
-			unset($triples['http://xmlns.com/foaf/0.1/depiction']);
-			unset($triples['http://dbpedia.org/property/abstract']);
-			unset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']);		
-
-			// display the remaining properties as list which can be used for further navigation
-			
-			$content .= '<br/><br/><br/><br/><br/><br/>'.get_triple_table($triples);
-			
-			//store article in session, to navigate between last 5 articles quickly
-			$contentArray=array('content' => $content,'subject' => $subject);
-			if (!isset($_SESSION['nextArticle'])){
-				$_SESSION['nextArticle']=0;
-				$_SESSION['articles']=array();
+				//build Subject and Searchresults
+				if ($fromCache==-1) 
+					$searchResult.="<a href=\"\" onclick=\"xajax_getAndShowSubjects('".$subject."');return false;\">Show more Results</a>";
 			}
-			if ($_SESSION['nextArticle']==5) $_SESSION['nextArticle']=0;
-			$_SESSION['articles'][$_SESSION['nextArticle']]=$contentArray;
-			$_SESSION['currentArticle']=$_SESSION['nextArticle'];
-			$_SESSION['nextArticle']++;
-			
-			//Add Positives to Session
-			if (!isset($_SESSION['positive'])){
-				$array=array("http://dbpedia.org/resource/".str_replace(" ","_",$subject) => "http://dbpedia.org/resource/".str_replace(" ","_",$subject));
-				$_SESSION['positive']=$array;
-			}
-			else{
-				$array=$_SESSION['positive'];
-				$array["http://dbpedia.org/resource/".str_replace(" ","_",$subject)]="http://dbpedia.org/resource/".str_replace(" ","_",$subject);
-				$_SESSION['positive']=$array;
-			}
-			
-			//build Subject and Searchresults
-			if ($fromCache==-1) 
-				$searchResult.="<a href=\"\" onclick=\"xajax_getAndShowSubjects('".$subject."');return false;\">Show more Results</a>";
+		} catch (Exception $e)
+		{
+			$content=$e->getMessage();
+			$artTitle="Fehler";
 		}
 	}
 	else {
@@ -145,7 +156,6 @@ function getarticle($subject,$fromCache)
 		$subject=$_SESSION['articles'][$fromCache]['subject'];
 	}
 	
-	$lastArticles="";
 	if (isset($_SESSION['articles']))
 		foreach ($_SESSION['articles'] as $key => $value)
 		{
@@ -154,7 +164,7 @@ function getarticle($subject,$fromCache)
 	
 	//put whole site content into session
 	$_SESSION['artContent']=$content;
-	$_SESSION['artTitle']=$triples['http://www.w3.org/2000/01/rdf-schema#label'];
+	$_SESSION['artTitle']=$artTitle;
 	$_SESSION['artLast']=$lastArticles;
 	$_SESSION['artSubjects']=$searchResult;
 	
