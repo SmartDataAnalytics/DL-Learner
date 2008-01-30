@@ -494,23 +494,23 @@ public class DLLearnerWS {
 	public String[][] getAsStringArray(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
-		return state.getQuery(queryID).getAsStringArray();
+		return state.getQuery(queryID).getSparqlQuery().getAsStringArray();
 	}
 	
 	@WebMethod
 	public String getAsJSON(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
-		ResultSet rs = state.getQuery(queryID).send();
-		return SparqlQuery.getAsJSON(rs);
+		ResultSet resultSet=state.getQuery(queryID).getSparqlQuery().getResultSet();
+		return SparqlQuery.getAsJSON(resultSet);
 	}
 	
 	@WebMethod
 	public String getAsXMLString(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
-		ResultSet rs = state.getQuery(queryID).send();		
-		return SparqlQuery.getAsXMLString(rs);
+		ResultSet resultSet=state.getQuery(queryID).getSparqlQuery().getResultSet();
+		return SparqlQuery.getAsXMLString(resultSet);
 	}
 	
 	@WebMethod
@@ -518,14 +518,11 @@ public class DLLearnerWS {
 	{
 		final ClientState state = getState(sessionID);
 		final Component component = state.getComponent(componentID);
-		final int id=state.addQuery(((SparqlKnowledgeSource)component).sparqlQuery(query));
+		final int id=state.addQuery(((SparqlKnowledgeSource)component).sparqlQueryThreaded(query));
 		Thread sparqlThread = new Thread() {
 			@Override
 			public void run() {
-				SparqlQuery query=state.getQuery(id);
-				query.setIsRunning(true);
-				query.send();
-				query.setIsRunning(false);
+				state.getQuery(id).send();
 			}
 		};
 		sparqlThread.start();
