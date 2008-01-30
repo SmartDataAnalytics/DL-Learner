@@ -50,7 +50,6 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
     private ConfigOption<?> configOption;
     private JLabel nameLabel;
     private JPanel widgetPanel = new JPanel();
-    private JButton setButton = new JButton("Set");
     private Component component;
     private Class<? extends Component> componentOption;
 
@@ -76,9 +75,7 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
     }
 
     public void actionPerformed(ActionEvent e) {
-	if (e.getSource() == setButton) {
-	    setEntry();
-	}
+	setEntry();
     }
 
     @Override
@@ -107,9 +104,9 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
 		    cb.setSelectedIndex(0);
 		else
 		    cb.setSelectedIndex(1);
-		setButton.addActionListener(this);
+		cb.addActionListener(this);
+		
 		widgetPanel.add(cb);
-		widgetPanel.add(setButton);
 	    }
 	    // UNKNOWN
 	    else {

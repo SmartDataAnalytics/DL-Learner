@@ -92,10 +92,7 @@ public class OptionPanel extends JPanel {
      */
     private void showWidgets() {
 	JPanel widgetPanel;
-	optionList = ComponentManager.getConfigOptions(componentOption); // get
-	// class
-	// for
-	// options
+	optionList = ComponentManager.getConfigOptions(componentOption); 
 	centerPanel.removeAll(); // clear panel
 	for (int i = 0; i < optionList.size(); i++) {
 	    buildConstraints(constraints, 0, i, 1, 1, 0, 0);
@@ -107,6 +104,14 @@ public class OptionPanel extends JPanel {
 		    "BooleanConfigOption")) {
 		widgetPanel = new WidgetPanelBoolean(config, component,
 			componentOption, optionList.get(i));
+	    } else if (optionList.get(i).getClass().toString().contains(
+		    "DoubleConfigOption")) {
+		widgetPanel = new WidgetPanelDouble(config, component,
+			componentOption, optionList.get(i));
+	    } else if (optionList.get(i).getClass().toString().contains(
+	    "StringConfigOption")) {
+	widgetPanel = new WidgetPanelString(config, component,
+		componentOption, optionList.get(i));
 	    } else {
 		widgetPanel = new WidgetPanelDefault(config, component,
 			componentOption, optionList.get(i));
