@@ -33,20 +33,19 @@ import javax.swing.JButton;
 import org.dllearner.core.Component; 
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerConfigOption;
+import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 /**
- * WidgetPanelInteger
+ * WidgetPanelString
  * 
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelInteger extends AbstractWidgetPanel implements
+public class WidgetPanelString extends AbstractWidgetPanel implements
 	ActionListener {
 
-    private static final long serialVersionUID = -1802111225835164644L;
-
+    private static final long serialVersionUID = -2169739820989891226L;
     private Config config;
     private ConfigOption<?> configOption;
     private JLabel nameLabel;
@@ -55,10 +54,10 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
     private Component component;
     private Class<? extends Component> componentOption;
 
-    private Integer value;
-    private JTextField integerField = new JTextField(3);
+    private String value;
+    private JTextField stringField = new JTextField(15);
 
-    public WidgetPanelInteger(Config config, Component component,
+    public WidgetPanelString(Config config, Component component,
 	    Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
 	this.config = config;
@@ -91,31 +90,31 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
     @Override
     protected void showThingToChange() {
 	if (component != null) {
-	    // IntegerConfigOption
+	    // StringConfigOption
 	    if (configOption.getClass().toString().contains(
-		    "IntegerConfigOption")) {
+		    "StringConfigOption")) {
 		// default value
 		if (configOption.getDefaultValue() != null) {
-		    value = (Integer) configOption.getDefaultValue();
+		    value = (String) configOption.getDefaultValue();
 		}
-		// then 0
+		// then ""
 		else {
-		    value = 0;
+		    value = "";
 		}
-		integerField.setText(value.toString());
-		integerField.setToolTipText(configOption.getAllowedValuesDescription());
+		stringField.setText(value.toString());
+		stringField.setToolTipText(configOption.getAllowedValuesDescription());
 		setButton.addActionListener(this);
-		widgetPanel.add(integerField);
+		widgetPanel.add(stringField);
 		widgetPanel.add(setButton);
 	    }
 	    // UNKNOWN
 	    else {
-		JLabel notImplementedLabel = new JLabel("not an integer");
+		JLabel notImplementedLabel = new JLabel("not a string");
 		notImplementedLabel.setForeground(Color.RED);
 		widgetPanel.add(notImplementedLabel);
 	    }
 	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel("no init (Integer)");
+	    JLabel noConfigOptionLabel = new JLabel("no init (String)");
 	    noConfigOptionLabel.setForeground(Color.MAGENTA);
 	    widgetPanel.add(noConfigOptionLabel);
 	}
@@ -123,16 +122,16 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
 
     @Override
     protected void setEntry() {
-	IntegerConfigOption specialOption;
-	value = Integer.parseInt(integerField.getText()); // get from input
-	specialOption = (IntegerConfigOption) config.getComponentManager()
+	StringConfigOption specialOption;
+	value = stringField.getText(); // get from input
+	specialOption = (StringConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
 	try {
-	    ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(
+	    ConfigEntry<String> specialEntry = new ConfigEntry<String>(
 		    specialOption, value);
 	    config.getComponentManager().applyConfigEntry(component,
 		    specialEntry);
-	    System.out.println("set Integer: " + configOption.getName() + " = "
+	    System.out.println("set String: " + configOption.getName() + " = "
 		    + value);
 	} catch (InvalidConfigOptionValueException s) {
 	    s.printStackTrace();
