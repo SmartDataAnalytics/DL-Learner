@@ -108,31 +108,27 @@ class DLLearnerConnection
 	
 	function getSparqlResult($query)
 	{
-		try {
-			$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "defaultGraphURIs", array("http://dbpedia.org"));
-			$queryID=$this->client->sparqlQueryThreaded($this->id,$this->ksID,$query);
-			$running=true;
-			$i = 1;
-			$sleeptime = 1;
+		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "defaultGraphURIs", array("http://dbpedia.org"));
+		$queryID=$this->client->sparqlQueryThreaded($this->id,$this->ksID,$query);
+		$running=true;
+		$i = 1;
+		$sleeptime = 1;
 			
-			do {
-				// sleep a while
-				sleep($sleeptime);
+		do {
+			// sleep a while
+			sleep($sleeptime);
 					
 				
-				$running=$this->client->isSparqlQueryRunning($this->id,$queryID);
-				if (!$running){
-					$result=$this->client->getAsStringArray($this->id,$queryID);
-					return $result;
-				}
+			$running=$this->client->isSparqlQueryRunning($this->id,$queryID);
+			if (!$running){
+				$result=$this->client->getAsStringArray($this->id,$queryID);
+				return $result;
+			}
 				
-				$seconds = $i * $sleeptime;
-				$i++;
-			} while($seconds<$this->ttl);
-			$this->client->stopSparqlQuery($id,$queryID);
-		} catch (Exception $e){
-			echo $e->getMessage();
-		}
+			$seconds = $i * $sleeptime;
+			$i++;
+		} while($seconds<$this->ttl);
+		$this->client->stopSparqlQuery($id,$queryID);
 	}
 	
 	function getSubjects($label)
