@@ -28,7 +28,7 @@ class DLLearnerConnection
 		$this->ttl=$settings->sparqlttl;
 		$this->lang=$settings->language;
 		$this->DBPediaUrl=$settings->dbpediauri;
-		$this->client=new SoapClient("main.wsdl");
+		$this->client=new SoapClient("main.wsdl",array('features' => SOAP_SINGLE_ELEMENT_ARRAYS));
 		$this->id=$id;
 		$this->ksID=$ksID;
 	}
@@ -97,12 +97,14 @@ class DLLearnerConnection
 		$query="SELECT ?pred ?obj ".
 			   "WHERE {<http://dbpedia.org/resource/".str_replace(' ','_',$label)."> ?pred ?obj}";
 		$result=$this->getSparqlResult($query);
+		if (!$result->item) throw new Exception("Your query brought no result.");
 		$ret=array();
 		foreach ($result->item as $results){
-			$value=$results->item[1];
-			if (strpos($value,"@".$this->lang)==(strlen($value)-strlen("@".$this->lang))) $ret[$results->item[0]][]=substr($value,0,strlen($value)-strlen("@".$this->lang));
-			if (strpos($value,"@")!=(strlen($value)-strlen($this->lang)-1)) $ret[$results->item[0]][]=$value;
+				$value=$results->item[1];
+				if (strpos($value,"@".$this->lang)==(strlen($value)-strlen("@".$this->lang))) $ret[$results->item[0]][]=substr($value,0,strlen($value)-strlen("@".$this->lang));
+				if (strpos($value,"@")!=(strlen($value)-strlen($this->lang)-1)) $ret[$results->item[0]][]=$value;
 		}
+		
 		return $ret;
 	}
 	
@@ -137,6 +139,7 @@ class DLLearnerConnection
 				"WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\"".$label."\"'@en}\n".
 				"LIMIT 10";
 		$result=$this->getSparqlResult($query);
+		if (!$result->item) throw new Exception("Your query brought no result.");
 		$ret=array();
 		foreach ($result->item as $results){
 			$ret[]=$results->item;
@@ -234,5 +237,5 @@ require_once("DLLearnerConnection.php");
 $sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
 $sc=new DLLearnerConnection($ids[0],$ids[1]);
-$triples=$sc->getTriples("Leipzig");*/
+$triples=$sc->getTriples("tgzt");*/
 ?>
