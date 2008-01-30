@@ -46,12 +46,10 @@ public class SparqlQuery {
 	private static Logger logger = Logger.getLogger(SparqlKnowledgeSource.class);
 
 	private boolean isRunning = false;
-	// TODO: declare as private
-	protected String queryString;
+	private String queryString;
 	private QueryEngineHTTP queryExecution;
 	private SparqlEndpoint endpoint;
-	// TODO: declare as private
-	protected ResultSet rs = null;
+	private ResultSet rs = null;
 
 	/**
 	 * Standard constructor.
@@ -62,11 +60,6 @@ public class SparqlQuery {
 	public SparqlQuery(String queryString, SparqlEndpoint endpoint) {
 		this.queryString = queryString;
 		this.endpoint = endpoint;
-	}
-
-	@Deprecated
-	public void setIsRunning(boolean running) {
-		this.isRunning = running;
 	}
 
 	/**
@@ -109,6 +102,10 @@ public class SparqlQuery {
 	
 	public boolean isRunning() {
 		return isRunning;
+	}
+	
+	public QueryEngineHTTP getExecution(){
+		return queryExecution;
 	}
 
 	public boolean hasCompleted() {
@@ -184,7 +181,7 @@ public class SparqlQuery {
 		ResultSetFormatter.outputAsJSON(baos, resultSet);
 		// possible Jena bug: Jena modifies the result set during
 		// JSON transformation, so we need to get it back
-		resultSet = JSONtoResultSet(baos.toString());
+		//resultSet = JSONtoResultSet(baos.toString());
 		return baos.toString();
 	}
 
