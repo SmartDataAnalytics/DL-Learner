@@ -295,6 +295,7 @@ function removeNegInterest($subject)
 
 function learnConcept()
 {
+	$concept="";
 	if (isset($_SESSION['positive']))
 	{
 		$posArray=array();
@@ -309,10 +310,14 @@ function learnConcept()
 		$sc=new DLLearnerConnection($_SESSION['id'],$_SESSION['ksID']);
 		
 		
-		$concept=$sc->getConceptFromExamples($posArray,$negArray);
+		$concepts=$sc->getConceptFromExamples($posArray,$negArray);
 		
-		$_SESSION['lastLearnedConcept']=$concept;
-		$concept="<a href=\"\" onclick=\"xajax_getAndShowSubjectsFromConcept();return false;\" />".$concept."</a>";
+		$_SESSION['lastLearnedConcept']=$concepts;
+		$concept.="<table border=0>\n";
+		foreach ($concepts as $con){
+			$concept.="<tr><td><a href=\"\" onclick=\"xajax_getAndShowSubjectsFromConcept('".$con."');return false;\" />".$con."</a></td></tr>";
+		}
+		$concept.="</table>";
 	}
 	else $concept="You must choose at least one positive example.";
 	
@@ -322,13 +327,13 @@ function learnConcept()
 	return $objResponse;
 }
 
-function getSubjectsFromConcept()
+function getSubjectsFromConcept($concept)
 {
 	$content="";
 	try{
 		require_once("DLLearnerConnection.php");
 		$sc=new DLLearnerConnection($_SESSION['id'],$_SESSION['ksID']);
-		$subjects=$sc->getSubjectsFromConcept($_SESSION['lastLearnedConcept']);
+		$subjects=$sc->getSubjectsFromConcept($concept);
 		foreach ($subjects as $subject)
 		{
 			$content.="<a href=\"\" onclick=\"xajax_getAndShowArticle('".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."',-2);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."</a><br/>";
@@ -370,10 +375,10 @@ function showConcept()
 	return $objResponse;
 }
 
-function getAndShowSubjectsFromConcept()
+function getAndShowSubjectsFromConcept($concept)
 {
 	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_getSubjectsFromConcept');
+	$objResponse->call('xajax_getSubjectsFromConcept',$concept);
 	$objResponse->call('xajax_showSubjectsFromConcept');
 	return $objResponse;
 }
