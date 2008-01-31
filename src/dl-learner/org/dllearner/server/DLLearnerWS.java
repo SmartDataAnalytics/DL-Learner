@@ -20,6 +20,8 @@
 package org.dllearner.server;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -321,7 +323,11 @@ public class DLLearnerWS {
 	public String[] getCurrentlyBestConcepts(int id, int nrOfConcepts) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		List<Concept> bestConcepts = state.getLearningAlgorithm().getBestSolutions(nrOfConcepts);
-		return bestConcepts.toArray(new String[bestConcepts.size()]);
+		List<String> conc=new LinkedList<String>();
+		Iterator<Concept> iter=bestConcepts.iterator();
+		while (iter.hasNext())
+			conc.add(iter.next().toString());
+		return conc.toArray(new String[conc.size()]);
 	}
 	
 	@WebMethod
