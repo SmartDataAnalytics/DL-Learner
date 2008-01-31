@@ -79,7 +79,7 @@ class DLLearnerConnection
 				sleep($sleeptime);
 				
 				// see what we have learned so far
-				$concept=$this->client->getCurrentlyBestConcept($this->id);
+				$concepts=$this->client->getCurrentlyBestConcepts($this->id,3);
 				$running=$this->client->isAlgorithmRunning($this->id);
 				
 				$seconds = $i * $sleeptime;
@@ -89,7 +89,7 @@ class DLLearnerConnection
 			
 			$this->client->stop($this->id);
 		}
-		return $concept;
+		return $concepts->item;
 	}
 			
 	function getTriples($label)
@@ -238,5 +238,5 @@ require_once("DLLearnerConnection.php");
 $sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
 $sc=new DLLearnerConnection($ids[0],$ids[1]);
-$triples=$sc->getTriples("tgzt");*/
+$triples=$sc->getConceptFromExamples(array("http://dbpedia.org/resource/Angela_Merkel"),array("http://dbpedia.org/resource/Joschka_Fischer"));*/
 ?>
