@@ -31,28 +31,18 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
     <link rel="stylesheet" href="default.css"/>
     <?php $xajax->printJavascript('xajax/'); ?>
 	<script type="text/javascript">
-        showLoadingSubjects = function() {
-            xajax.$('loadingSubject').style.display='block';
-            xajax.$('searchcontent').style.display = 'none';
+        showLoading = function() {
+            xajax.$('Loading').style.display='inline';
         };
-        hideLoadingSubjects = function() {
-            xajax.$('loadingSubject').style.display = 'none';
-            xajax.$('searchcontent').style.display='block';
-        };
-        showLoadingConcept = function() {
-            xajax.$('loadingConcept').style.display='block';
-            xajax.$('conceptcontent').style.display = 'none';
-        };
-        hideLoadingConcept = function() {
-            xajax.$('loadingConcept').style.display = 'none';
-            xajax.$('conceptcontent').style.display = 'block';
+        hideLoading = function() {
+            xajax.$('Loading').style.display = 'none';
         };
   </script>
   </head>
   <body>
 
 <!--  <h1>DBpedia Navigator</h1> -->
-<img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />&nbsp;&nbsp;&nbsp;<input type="button" value="Learn" class="button" onclick="xajax_learnAndShowConcept();return false;" />&nbsp;&nbsp;<span id="conceptlink"></span>
+<div><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Learn" class="button" onclick="xajax_learnAndShowConcept();return false;" />&nbsp;&nbsp;<span id="conceptlink"></span><span id="Loading" style="display:none">Loading...</span></div>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
