@@ -35,3 +35,11 @@ http://dbpedia.org/class/yago/Adult109605289
 ----------------
 EXISTS http://dbpedia.org/property/wappen.TOP
 EXISTS http://dbpedia.org/property/wordnet_type.TOP
+
++Germany
++Poland
++France
+-India
+-Australia
+-----------------
+EXISTS http://dbpedia.org/property/leaderName.(http://dbpedia.org/class/yago/Politician110451263 AND http://dbpedia.org/class/yago/President110468559)

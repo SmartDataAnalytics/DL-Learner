@@ -116,10 +116,10 @@ function getarticle($subject,$fromCache)
 			
 			
 			//BUILD ARTICLE TITLE
-			$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'];
+			$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0];
 			
 			//store article in session, to navigate between last 5 articles quickly
-			$contentArray=array('content' => $content,'subject' => $subject);
+			$contentArray=array('content' => $content,'subject' => $artTitle);
 			if (!isset($_SESSION['nextArticle'])){
 				$_SESSION['nextArticle']=0;
 				$_SESSION['articles']=array();
@@ -153,7 +153,7 @@ function getarticle($subject,$fromCache)
 	else {
 		//Article is in session
 		$content=$_SESSION['articles'][$fromCache]['content'];
-		$subject=$_SESSION['articles'][$fromCache]['subject'];
+		$artTitle=$_SESSION['articles'][$fromCache]['subject'];
 	}
 	
 	//Build lastArticles
@@ -312,44 +312,33 @@ function learnConcept()
 		$concept=$sc->getConceptFromExamples($posArray,$negArray);
 		
 		$_SESSION['lastLearnedConcept']=$concept;
-		if (strlen(substr (strrchr ($concept, "/"), 1))>0) $concept="<a href=\"\" onclick=\"xajax_getSubjectsFromConcept();return false;\" />".urldecode(substr (strrchr ($concept, "/"), 1))."</a>";
-		else $concept="<a href=\"\" onclick=\"xajax_getSubjectsFromConcept();return false;\" />".$concept."</a>";
+		$concept="<a href=\"\" onclick=\"xajax_getAndShowSubjectsFromConcept();return false;\" />".$concept."</a>";
 	}
-	else $concept="You must choose at least one<br/> positive example.";
+	else $concept="You must choose at least one positive example.";
+	
+	$_SESSION['conceptcontent']=$concept;
 	
 	$objResponse = new xajaxResponse();
-	$objResponse->assign("conceptlink", "innerHTML", $concept);
 	return $objResponse;
 }
 
 function getSubjectsFromConcept()
 {
-	require_once("Settings.php");
-	require_once("DLLearnerConnection.php");
-	$settings=new Settings();
-	$sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
-	
 	$content="";
-	if (isset($_SESSION['lastLearnedConcept']))
-	{
-		$subjects=$sc->getSubjectsFromConcept($settings->sparqlttl,$_SESSION['lastLearnedConcept']);
-		if (count($subjects)==1)
+	try{
+		require_once("DLLearnerConnection.php");
+		$sc=new DLLearnerConnection($_SESSION['id'],$_SESSION['ksID']);
+		$subjects=$sc->getSubjectsFromConcept($_SESSION['lastLearnedConcept']);
+		foreach ($subjects as $subject)
 		{
-			if (strpos($subjects,"[Error]")===0) $content.=substr($subjects,7);
-			else $content.="<a href=\"\" onclick=\"xajax_getarticle('".$subjects."');return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subjects, "/"), 1)))."</a><br/>";
+			$content.="<a href=\"\" onclick=\"xajax_getAndShowArticle('".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."',-2);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."</a><br/>";
 		}
-		else if (count($subjects)==0) $content.="No examples for concept found in time.";
-		else {
-			foreach ($subjects as $subject)
-			{
-				$content.="<a href=\"\" onclick=\"xajax_getarticle('".$subject."');return false;\">".str_replace("_"," ",urldecode(substr (strrchr ($subject, "/"), 1)))."</a><br/>";
-			}
-		}
+	} catch (Exception $e){
+		$content=$e->getMessage();
 	}
-	else $content.="No concept to get Subjects from.";
-	
+		
+	$_SESSION['conceptsubjectcontent']=$content;
 	$objResponse = new xajaxResponse();
-	$objResponse->assign("conceptsubjectcontent", "innerHTML", $content);
 	return $objResponse;
 }
 
@@ -358,6 +347,46 @@ function getAndShowSubjects($keyword)
 	$objResponse = new xajaxResponse();
 	$objResponse->call('xajax_getsubjects',$keyword);
 	$objResponse->call('xajax_showSubjects');
+	return $objResponse;
+}
+
+function learnAndShowConcept()
+{
+	$objResponse = new xajaxResponse();
+	$objResponse->call('xajax_learnConcept');
+	$objResponse->call('xajax_showConcept');
+	return $objResponse;
+}
+
+function showConcept()
+{
+	while (!isset($_SESSION['conceptcontent'])){
+		sleep(0.5);
+	}
+		
+	$objResponse = new xajaxResponse();
+	$objResponse->assign("conceptlink", "innerHTML", $_SESSION['conceptcontent']);
+	unset($_SESSION['conceptcontent']);
+	return $objResponse;
+}
+
+function getAndShowSubjectsFromConcept()
+{
+	$objResponse = new xajaxResponse();
+	$objResponse->call('xajax_getSubjectsFromConcept');
+	$objResponse->call('xajax_showSubjectsFromConcept');
+	return $objResponse;
+}
+
+function showSubjectsFromConcept()
+{
+	while (!isset($_SESSION['conceptsubjectcontent'])){
+		sleep(0.5);
+	}
+		
+	$objResponse = new xajaxResponse();
+	$objResponse->assign("searchcontent", "innerHTML", $_SESSION['conceptsubjectcontent']);
+	unset($_SESSION['conceptsubjectcontent']);
 	return $objResponse;
 }
 
