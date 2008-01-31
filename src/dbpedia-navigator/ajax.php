@@ -5,8 +5,8 @@ $sid = session_id();
 $xajax = new xajax("ajaxfunctions.php?sid=$sid");
 $xajax->configureMany(array('debug'=>true));
 $xajax->register(XAJAX_FUNCTION, 'showSubjects', array(
-    'onResponseDelay' => 'showLoadingSubjects',
-    'beforeResponseProcessing' => 'hideLoadingSubjects'
+    'onResponseDelay' => 'showLoading',
+    'beforeResponseProcessing' => 'hideLoading'
     ));
 $xajax->registerFunction('getarticle');
 $xajax->registerFunction('toPositive');
@@ -15,18 +15,24 @@ $xajax->registerFunction('clearPositives');
 $xajax->registerFunction('clearNegatives');
 $xajax->registerFunction('showInterests');
 $xajax->registerFunction('getAndShowArticle');
-$xajax->register(XAJAX_FUNCTION, 'learnConcept', array(
-    'onResponseDelay' => 'showLoadingConcept',
-    'beforeResponseProcessing' => 'hideLoadingConcept'
-    ));
+$xajax->registerFunction('learnConcept');
 $xajax->registerFunction('getSubjectsFromConcept');
 $xajax->registerFunction('getAndShowSubjects');
 $xajax->registerFunction('getsubjects');
-$xajax->registerFunction('showArticle');
+$xajax->register(XAJAX_FUNCTION,'showArticle', array(
+    'onResponseDelay' => 'showLoading',
+    'beforeResponseProcessing' => 'hideLoading'
+    ));
 $xajax->registerFunction('removePosInterest');
 $xajax->registerFunction('removeNegInterest');
-$xajax->registerFunction('showConcept');
+$xajax->register(XAJAX_FUNCTION,'showConcept', array(
+    'onResponseDelay' => 'showLoading',
+    'beforeResponseProcessing' => 'hideLoading'
+    ));
 $xajax->registerFunction('learnAndShowConcept');
-$xajax->registerFunction('showSubjectsFromConcept');
+$xajax->register(XAJAX_FUNCTION,'showSubjectsFromConcept', array(
+    'onResponseDelay' => 'showLoading',
+    'beforeResponseProcessing' => 'hideLoading'
+    ));
 $xajax->registerFunction('getAndShowSubjectsFromConcept');
 ?>
