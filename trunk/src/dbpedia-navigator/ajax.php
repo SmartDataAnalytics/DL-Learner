@@ -19,13 +19,14 @@ $xajax->register(XAJAX_FUNCTION, 'learnConcept', array(
     'onResponseDelay' => 'showLoadingConcept',
     'beforeResponseProcessing' => 'hideLoadingConcept'
     ));
-$xajax->register(XAJAX_FUNCTION, 'getSubjectsFromConcept', array(
-    'onResponseDelay' => 'showLoadingConceptSubjects',
-    'beforeResponseProcessing' => 'hideLoadingConceptSubjects'
-    ));
+$xajax->registerFunction('getSubjectsFromConcept');
 $xajax->registerFunction('getAndShowSubjects');
 $xajax->registerFunction('getsubjects');
 $xajax->registerFunction('showArticle');
 $xajax->registerFunction('removePosInterest');
 $xajax->registerFunction('removeNegInterest');
+$xajax->registerFunction('showConcept');
+$xajax->registerFunction('learnAndShowConcept');
+$xajax->registerFunction('showSubjectsFromConcept');
+$xajax->registerFunction('getAndShowSubjectsFromConcept');
 ?>

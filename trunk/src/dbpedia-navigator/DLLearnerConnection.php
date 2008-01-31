@@ -46,7 +46,7 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "predefinedFilter", 5);
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "predefinedEndpoint", 1);
-		
+				
 		$this->client->setReasoner($this->id, "dig");
 		if(empty($negExamples))
 			$this->client->setLearningProblem($this->id, "posOnlyDefinition");
@@ -142,7 +142,7 @@ class DLLearnerConnection
 		if (!$result->item) throw new Exception("Your query brought no result.");
 		$ret=array();
 		foreach ($result->item as $results){
-			$ret[]=$results->item;
+			$ret[]=$results->item[0];
 		}
 		return $ret;
 	}
@@ -153,6 +153,7 @@ class DLLearnerConnection
 			   "WHERE { ?subject a <".$concept.">}\n".
 			   "LIMIT 10";
 		$result=$this->getSparqlResult($query);
+		if (!$result->item) throw new Exception("Your query brought no result.");
 		$ret=array();
 		foreach ($result->item as $results){
 			$ret[]=$results->item[0];

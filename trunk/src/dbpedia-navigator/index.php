@@ -39,14 +39,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
             xajax.$('loadingSubject').style.display = 'none';
             xajax.$('searchcontent').style.display='block';
         };
-        showLoadingArticle = function() {
-            xajax.$('loadingArticle').style.display='block';
-            xajax.$('articlecontent').style.display = 'none';
-        };
-        hideLoadingArticle = function() {
-            xajax.$('loadingArticle').style.display = 'none';
-            xajax.$('articlecontent').style.display = 'block';
-        };
         showLoadingConcept = function() {
             xajax.$('loadingConcept').style.display='block';
             xajax.$('conceptcontent').style.display = 'none';
@@ -55,20 +47,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
             xajax.$('loadingConcept').style.display = 'none';
             xajax.$('conceptcontent').style.display = 'block';
         };
-        showLoadingConceptSubjects = function() {
-            xajax.$('loadingConceptSubjects').style.display='block';
-            xajax.$('conceptsubjectcontent').style.display = 'none';
-        };
-        hideLoadingConceptSubjects = function() {
-            xajax.$('loadingConceptSubjects').style.display = 'none';
-            xajax.$('conceptsubjectcontent').style.display = 'block';
-        }
   </script>
   </head>
   <body>
 
 <!--  <h1>DBpedia Navigator</h1> -->
-<img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />&nbsp;&nbsp;&nbsp;<span id="conceptlink"></span>
+<img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />&nbsp;&nbsp;&nbsp;<input type="button" value="Learn" class="button" onclick="xajax_learnAndShowConcept();return false;" />&nbsp;&nbsp;<span id="conceptlink"></span>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
@@ -96,22 +80,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
-		<div class="box" id="concept">
-		  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Learned Concept</td><td class="right"><input type="button" value="Learn" class="button" onclick="xajax_learnConcept();return false;" /></td></tr></table></div>
-		  <div class="boxcontent">
-		  <div id="conceptcontent" style="display:none"></div>
-		  <div id="loadingConcept" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
-		  </div> <!-- boxcontent -->
-		</div> <!-- box -->
-
-		<div class="box" id="conceptSubjects">
-		  <div class="boxtitlewithbutton"><table border="0" class="titletable"><tr><td class="left">Subjects From Concept</td><td class="right"><input type="button" value="Show" class="button" onclick="xajax_getSubjectsFromConcept();return false;" /></td></tr></table></div>
-		  <div class="boxcontent">
-		  <div id="conceptsubjectcontent" style="display:none"></div>
-		  <div id="loadingConceptSubjects" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
-		  </div> <!-- boxcontent -->
-		</div> <!-- box -->
-		
 		<div class="box" id="credits">
 			<p>DBpedia Navigator is powered by ... <br />
 			&nbsp; <a href="http://dl-learner.org">DL-Learner</a><br />
