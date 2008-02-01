@@ -30,7 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 
-import org.dllearner.core.Component; 
+import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
@@ -94,16 +94,23 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
 	    // IntegerConfigOption
 	    if (configOption.getClass().toString().contains(
 		    "IntegerConfigOption")) {
+		// previous set value
+		if (configOption != null) {
+		    value = (Integer) config.getComponentManager()
+			    .getConfigOptionValue(component,
+				    configOption.getName());
+		}
 		// default value
-		if (configOption.getDefaultValue() != null) {
+		else if (configOption.getDefaultValue() != null) {
 		    value = (Integer) configOption.getDefaultValue();
 		}
-		// then 0
-		else {
+		// value == null
+		if (value == null) {
 		    value = 0;
 		}
 		integerField.setText(value.toString());
-		integerField.setToolTipText(configOption.getAllowedValuesDescription());
+		integerField.setToolTipText(configOption
+			.getAllowedValuesDescription());
 		setButton.addActionListener(this);
 		widgetPanel.add(integerField);
 		widgetPanel.add(setButton);

@@ -63,14 +63,12 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	// add into comboBox
 	reasoners = config.getComponentManager().getReasonerComponents();
 	for (int i = 0; i < reasoners.size(); i++) {
-	    // cb.addItem(reasoners.get(i).getSimpleName());
 	    cb.addItem(config.getComponentManager().getComponentName(
 		    reasoners.get(i)));
 	}
 
 	optionPanel = new OptionPanel(config, config.getReasoner(), reasoners
 		.get(choosenClassIndex));
-	updateOptionPanel();
 
 	cb.addActionListener(this);
 
@@ -83,7 +81,6 @@ public class ReasonerPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 	// read selected Class
 	choosenClassIndex = cb.getSelectedIndex();
-	updateOptionPanel();
 
 	if (e.getSource() == initButton && config.getKnowledgeSource() != null) {
 	    // set reasoner
@@ -103,7 +100,6 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 
     public void updateOptionPanel() {
 	// update OptionPanel
-	optionPanel.setComponent(config.getReasoner());
-	optionPanel.setComponentOption(reasoners.get(choosenClassIndex));
+	optionPanel.update(config.getReasoner(), reasoners.get(choosenClassIndex));
     }
 }

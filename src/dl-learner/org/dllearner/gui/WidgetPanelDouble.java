@@ -30,7 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 
-import org.dllearner.core.Component; 
+import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
@@ -93,16 +93,23 @@ public class WidgetPanelDouble extends AbstractWidgetPanel implements
 	    // DoubleConfigOption
 	    if (configOption.getClass().toString().contains(
 		    "DoubleConfigOption")) {
+		// previous set value
+		if (configOption != null) {
+		    value = (Double) config.getComponentManager()
+			    .getConfigOptionValue(component,
+				    configOption.getName());
+		}
 		// default value
-		if (configOption.getDefaultValue() != null) {
+		else if (configOption.getDefaultValue() != null) {
 		    value = (Double) configOption.getDefaultValue();
 		}
-		// then 0
-		else {
+		// value == null
+		if (value == null) {
 		    value = 0.0;
 		}
 		doubleField.setText(value.toString());
-		doubleField.setToolTipText(configOption.getAllowedValuesDescription());
+		doubleField.setToolTipText(configOption
+			.getAllowedValuesDescription());
 		setButton.addActionListener(this);
 		widgetPanel.add(doubleField);
 		widgetPanel.add(setButton);
