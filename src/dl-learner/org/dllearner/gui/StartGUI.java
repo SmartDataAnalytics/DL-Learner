@@ -22,6 +22,9 @@ package org.dllearner.gui;
 
 import javax.swing.*;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -33,12 +36,13 @@ import org.apache.log4j.SimpleLayout;
  * @author Tilo Hielscher
  * 
  */
-
-public class StartGUI extends JFrame {
+public class StartGUI extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = -739265982906533775L;
 
-    public JTabbedPane tabPane = new JTabbedPane();
+    private JTabbedPane tabPane = new JTabbedPane();
+
+    private Config config = new Config();
 
     private JPanel tab1 = new JPanel();
     private JPanel tab2 = new JPanel();
@@ -46,12 +50,17 @@ public class StartGUI extends JFrame {
     private JPanel tab4 = new JPanel();
     private JPanel tab5 = new JPanel();
 
+    private JMenuBar menuBar = new JMenuBar();
+    private JMenu menuFile = new JMenu("File");
+    private JMenuItem openItem = new JMenuItem("Open Config");
+    private JMenuItem saveItem = new JMenuItem("Save Config");
+
     public StartGUI() {
-	Config config = new Config();
 	this.setTitle("DL-Learner GUI");
 	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	this.setLocationByPlatform(true);
 	this.setSize(800, 600);
+
 	tab1.add(new KnowledgeSourcePanel(config));
 	tab2.add(new ReasonerPanel(config));
 	tab3.add(new LearningProblemPanel(config));
@@ -62,6 +71,14 @@ public class StartGUI extends JFrame {
 	tabPane.addTab("Learning Problem", tab3);
 	tabPane.addTab("Learning Algorithm", tab4);
 	tabPane.addTab("Run", tab5);
+
+	this.setJMenuBar(menuBar);
+	menuBar.add(menuFile);
+	menuFile.add(openItem);
+	openItem.addActionListener(this);
+	menuFile.add(saveItem);
+	saveItem.addActionListener(this);
+
 	this.add(tabPane);
 	this.setVisible(true);
     }
@@ -78,8 +95,13 @@ public class StartGUI extends JFrame {
 	new StartGUI();
     }
 
-    protected void renew() {
-	tabPane.repaint();
+    public void actionPerformed(ActionEvent e) {
+	if (e.getSource() == openItem) {
+	    System.out.println("openItem was pressed");
+	}
+	if (e.getSource() == saveItem) {
+	    System.out.println("saveItem was pressed");
+	}
     }
 
 }

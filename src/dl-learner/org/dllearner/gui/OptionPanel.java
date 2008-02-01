@@ -76,19 +76,20 @@ public class OptionPanel extends JPanel {
 
     }
 
-    public void update(Component component, Class<? extends Component> componentOption) {
+    public void update(Component component,
+	    Class<? extends Component> componentOption) {
 	this.componentOption = componentOption;
 	this.component = component;
 	showWidgets();
     }
 
     /*
-     * define here what core.config.class is what type of widget
-     * WidgetPanelDefault is for none defined classes
+     * Define here what core.config.class is what type of widget.
+     * WidgetPanelDefault is for none defined classes.
      */
     private void showWidgets() {
 	JPanel widgetPanel;
-	optionList = ComponentManager.getConfigOptions(componentOption); 
+	optionList = ComponentManager.getConfigOptions(componentOption);
 	centerPanel.removeAll(); // clear panel
 	for (int i = 0; i < optionList.size(); i++) {
 	    buildConstraints(constraints, 0, i, 1, 1, 0, 0);
@@ -105,9 +106,9 @@ public class OptionPanel extends JPanel {
 		widgetPanel = new WidgetPanelDouble(config, component,
 			componentOption, optionList.get(i));
 	    } else if (optionList.get(i).getClass().toString().contains(
-	    "StringConfigOption")) {
-	widgetPanel = new WidgetPanelString(config, component,
-		componentOption, optionList.get(i));
+		    "StringConfigOption")) {
+		widgetPanel = new WidgetPanelString(config, component,
+			componentOption, optionList.get(i));
 	    } else {
 		widgetPanel = new WidgetPanelDefault(config, component,
 			componentOption, optionList.get(i));
