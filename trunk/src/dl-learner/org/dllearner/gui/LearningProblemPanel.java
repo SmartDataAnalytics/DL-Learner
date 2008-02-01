@@ -55,7 +55,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
     private JPanel lpPanel = new JPanel();
     private JLabel posLabel = new JLabel("positive Examples");
     private JLabel negLabel = new JLabel("negative Examples");
-    private JButton initButton, readListButton;
+    private JButton initButton;
     private int choosenClassIndex;
     private List<Individual> individuals;
     private JList posList = new JList();
@@ -72,18 +72,13 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	initButton = new JButton("Init LearningProblem");
 	initButton.addActionListener(this);
 
-	readListButton = new JButton("Get Instances");
-	readListButton.addActionListener(this);
-
 	choosePanel.add(cb);
-	choosePanel.add(readListButton);
-	lpPanel.add(initButton);
+	choosePanel.add(initButton);
 
 	problems = config.getComponentManager().getLearningProblems();
 
 	// add into comboBox
 	for (int i = 0; i < problems.size(); i++) {
-	    // cb.addItem(problems.get(i).getSimpleName());
 	    cb.addItem(config.getComponentManager().getComponentName(
 		    problems.get(i)));
 	}
@@ -127,10 +122,10 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
 	gridbag.setConstraints(negListScroller, constraints);
 	centerPanel.add(negListScroller);
-	
+
 	buildConstraints(constraints, 0, 2, 2, 1, 100, 100);
 	gridbag.setConstraints(lpPanel, constraints);
-	centerPanel.add(lpPanel);	
+	centerPanel.add(lpPanel);
 
 	add(centerPanel, BorderLayout.CENTER);
 
@@ -164,41 +159,21 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 
 	optionPanel = new OptionPanel(config, config.getLearningProblem(),
 		problems.get(choosenClassIndex));
-	updateOptionPanel();
 
 	cb.addActionListener(this);
-	
+
 	add(choosePanel, BorderLayout.PAGE_START);
 	add(centerPanel, BorderLayout.CENTER);
 	add(optionPanel, BorderLayout.PAGE_END);
-	
+
     }
 
     public void actionPerformed(ActionEvent e) {
 	// read selected LearningProblemClass
 	choosenClassIndex = cb.getSelectedIndex();
-	updateOptionPanel();
-
-	// get list after reasoner init
-	if (e.getSource() == readListButton
-		&& config.getReasoningService() != null) {
-	    // fill lists
-	    Set<Individual> individualsSet = config.getReasoningService()
-		    .getIndividuals();
-	    individuals = new LinkedList<Individual>(individualsSet);
-	    DefaultListModel listModel = new DefaultListModel();
-	    for (Individual ind : individuals) {
-		listModel.addElement(ind);
-	    }
-	    posList.setModel(listModel);
-	    negList.setModel(listModel);
-	}
 
 	// init
-	if (e.getSource() == initButton
-		&& config.getReasoningService() != null
-		&& (config.getPosExampleSet().size() > 0 || config
-			.getNegExampleSet().size() > 0)) {
+	if (e.getSource() == initButton && config.getReasoningService() != null) {
 	    config.setLearningProblem(config.getComponentManager()
 		    .learningProblem(problems.get(choosenClassIndex),
 			    config.getReasoningService()));
@@ -211,6 +186,20 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	    config.getLearningProblem().init();
 	    System.out.println("init LearningProblem");
 	    updateOptionPanel();
+
+	    // lists
+	    if (config.getReasoningService() != null) {
+		// fill lists
+		Set<Individual> individualsSet = config.getReasoningService()
+			.getIndividuals();
+		individuals = new LinkedList<Individual>(individualsSet);
+		DefaultListModel listModel = new DefaultListModel();
+		for (Individual ind : individuals) {
+		    listModel.addElement(ind);
+		}
+		posList.setModel(listModel);
+		negList.setModel(listModel);
+	    }
 	}
 
     }
@@ -230,7 +219,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 
     public void updateOptionPanel() {
 	// update OptionPanel
-	optionPanel.setComponent(config.getLearningProblem());
-	optionPanel.setComponentOption(problems.get(choosenClassIndex));
+	optionPanel.update(config.getLearningProblem(), problems
+		.get(choosenClassIndex));
     }
 }

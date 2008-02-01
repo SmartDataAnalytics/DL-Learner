@@ -129,7 +129,6 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
 	optionPanel = new OptionPanel(config, config.getKnowledgeSource(),
 		sources.get(choosenClassIndex));
-	updateOptionPanel();
 
 	add(choosePanel, BorderLayout.PAGE_START);
 	add(centerPanel, BorderLayout.CENTER);
@@ -141,7 +140,6 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 	// read selected KnowledgeSourceClass
 	choosenClassIndex = cb.getSelectedIndex();
-	updateOptionPanel();
 	checkIfSparql();
 
 	// open File
@@ -196,7 +194,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
     public void updateOptionPanel() {
 	// update OptionPanel
-	optionPanel.setComponent(config.getKnowledgeSource());
-	optionPanel.setComponentOption(sources.get(choosenClassIndex));
+	optionPanel.update(config.getKnowledgeSource(), sources
+		.get(choosenClassIndex));
     }
 }

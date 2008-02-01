@@ -30,7 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 
-import org.dllearner.core.Component; 
+import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.StringConfigOption;
@@ -93,16 +93,23 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
 	    // StringConfigOption
 	    if (configOption.getClass().toString().contains(
 		    "StringConfigOption")) {
+		// previous set value
+		if (configOption != null) {
+		    value = (String) config.getComponentManager()
+			    .getConfigOptionValue(component,
+				    configOption.getName());
+		}
 		// default value
-		if (configOption.getDefaultValue() != null) {
+		else if (configOption.getDefaultValue() != null) {
 		    value = (String) configOption.getDefaultValue();
 		}
-		// then ""
-		else {
+		// value == null
+		if (value == null) {
 		    value = "";
 		}
 		stringField.setText(value.toString());
-		stringField.setToolTipText(configOption.getAllowedValuesDescription());
+		stringField.setToolTipText(configOption
+			.getAllowedValuesDescription());
 		setButton.addActionListener(this);
 		widgetPanel.add(stringField);
 		widgetPanel.add(setButton);

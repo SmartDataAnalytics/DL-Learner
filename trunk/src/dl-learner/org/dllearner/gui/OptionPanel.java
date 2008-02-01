@@ -76,13 +76,9 @@ public class OptionPanel extends JPanel {
 
     }
 
-    public void setComponent(Component component) {
-	this.component = component;
-	showWidgets();
-    }
-
-    public void setComponentOption(Class<? extends Component> componentOption) {
+    public void update(Component component, Class<? extends Component> componentOption) {
 	this.componentOption = componentOption;
+	this.component = component;
 	showWidgets();
     }
 

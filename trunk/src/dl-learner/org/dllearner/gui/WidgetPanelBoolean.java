@@ -87,25 +87,30 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
     @Override
     protected void showThingToChange() {
 	if (component != null) {
-	    // IntegerConfigOption
+	    // BooleanConfigOption
 	    if (configOption.getClass().toString().contains(
 		    "BooleanConfigOption")) {
-		// default value
-		if (configOption.getDefaultValue() != null) {
-		    value = (Boolean) configOption.getDefaultValue();
-		    System.out.println ("TEST Boolean default: " + configOption.getDefaultValue());
+		// previous set value
+		if (configOption != null) {
+		    value = (Boolean) config.getComponentManager()
+			    .getConfigOptionValue(component,
+				    configOption.getName());
 		}
-		// then false
-		else {
+		// default value
+		else if (configOption.getDefaultValue() != null) {
+		    value = (Boolean) configOption.getDefaultValue();
+		}
+		// value == null
+		if (value == null) {
 		    value = false;
 		}
-		// cb.setText(value.toString());
+		// set cb-index
 		if (value == false)
 		    cb.setSelectedIndex(0);
 		else
 		    cb.setSelectedIndex(1);
 		cb.addActionListener(this);
-		
+
 		widgetPanel.add(cb);
 	    }
 	    // UNKNOWN
@@ -115,8 +120,7 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
 		widgetPanel.add(notImplementedLabel);
 	    }
 	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel(
-		    "no init (Boolean)");
+	    JLabel noConfigOptionLabel = new JLabel("no init (Boolean)");
 	    noConfigOptionLabel.setForeground(Color.MAGENTA);
 	    widgetPanel.add(noConfigOptionLabel);
 	}
