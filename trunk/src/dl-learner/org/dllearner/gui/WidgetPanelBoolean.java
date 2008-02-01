@@ -53,7 +53,7 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
     private Class<? extends Component> componentOption;
 
     private Boolean value;
-    private String[] kbBoxItems = { "true", "false" };
+    private String[] kbBoxItems = { "false", "true" };
     private JComboBox cb = new JComboBox(kbBoxItems);
 
     public WidgetPanelBoolean(Config config, Component component,
@@ -93,6 +93,7 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
 		// default value
 		if (configOption.getDefaultValue() != null) {
 		    value = (Boolean) configOption.getDefaultValue();
+		    System.out.println ("TEST Boolean default: " + configOption.getDefaultValue());
 		}
 		// then false
 		else {
@@ -125,9 +126,9 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
     protected void setEntry() {
 	BooleanConfigOption specialOption;
 	if (cb.getSelectedIndex() == 0)
-	    value = true;
-	else
 	    value = false;
+	else
+	    value = true;
 	specialOption = (BooleanConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
 	try {
