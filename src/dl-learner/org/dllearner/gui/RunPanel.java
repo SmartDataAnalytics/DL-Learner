@@ -38,9 +38,12 @@ public class RunPanel extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = 1643304576470046636L;
 
-    private JButton runButton;
+    private JButton runButton, stopButton;
     private JTextArea infoArea;
     private Config config;
+    
+    private ThreadRun thread;
+
 
     RunPanel(Config config) {
 	super(new BorderLayout());
@@ -49,12 +52,15 @@ public class RunPanel extends JPanel implements ActionListener {
 
 	runButton = new JButton("Run");
 	runButton.addActionListener(this);
-
+	stopButton = new JButton("Stop");
+	stopButton.addActionListener(this);
+	
 	infoArea = new JTextArea(20, 50);
 	JScrollPane infoScroll = new JScrollPane(infoArea);
 
 	JPanel showPanel = new JPanel();
 	showPanel.add(runButton);
+	showPanel.add(stopButton);
 	JPanel infoPanel = new JPanel();
 	infoPanel.add(infoScroll);
 
@@ -64,9 +70,17 @@ public class RunPanel extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == runButton && config.getLearningAlgorithm() != null) {
-	    config.getLearningAlgorithm().start();
-	    Concept solution = config.getLearningAlgorithm().getBestSolution();
-	    infoArea.setText(solution.toString());
+	    //config.getLearningAlgorithm().start();
+	    //thread = new ThreadRun(config);
+	    thread = new ThreadRun(config);
+	    thread.start();
+	    //Concept solution = config.getLearningAlgorithm().getBestSolution();
+	    //infoArea.setText(solution.toString());
+	}
+	if (e.getSource() == stopButton && config.getLearningAlgorithm() != null) {
+	    //config.getLearningAlgorithm().stop();
+	    thread.exit();
 	}
     }
+   
 }
