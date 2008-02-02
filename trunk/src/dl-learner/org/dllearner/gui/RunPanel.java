@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import org.dllearner.core.dl.Concept;
+//import org.dllearner.core.dl.Concept;
 
 /**
  * OutputPanel
@@ -70,8 +70,6 @@ public class RunPanel extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == runButton && config.getLearningAlgorithm() != null) {
-	    //config.getLearningAlgorithm().start();
-	    //thread = new ThreadRun(config);
 	    thread = new ThreadRun(config);
 	    thread.start();
 	    //Concept solution = config.getLearningAlgorithm().getBestSolution();

@@ -24,7 +24,9 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
+import java.io.File;
 
+import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -76,6 +78,16 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
 
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == setButton) {
+	    if (checkForFilename()) {
+		// file dialog
+		JFileChooser fc = new JFileChooser(new File("examples/"));
+		int returnVal = fc.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+		    value = fc.getSelectedFile().toString();
+		    stringField.setText(value);
+		    config.setURI(value); // save variable
+		}
+	    }
 	    setEntry();
 	}
     }
@@ -113,6 +125,8 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
 		setButton.addActionListener(this);
 		widgetPanel.add(stringField);
 		widgetPanel.add(setButton);
+		if (checkForFilename())
+		    setButton.setText("choose local file");
 	    }
 	    // UNKNOWN
 	    else {
@@ -144,4 +158,16 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
 	    s.printStackTrace();
 	}
     }
+
+    /*
+     * Widget filename getName() == filename you should open a file dialog in
+     * ActionPerformed
+     */
+    private Boolean checkForFilename() {
+	if (configOption.getName().equalsIgnoreCase("filename"))
+	    return true;
+	else
+	    return false;
+    }
+
 }
