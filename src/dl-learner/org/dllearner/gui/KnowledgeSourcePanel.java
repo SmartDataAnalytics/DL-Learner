@@ -20,18 +20,11 @@ package org.dllearner.gui;
  *
  */
 
-import java.io.File;
 import java.util.List;
-
 import javax.swing.*;
-import javax.swing.event.*;
-
 import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.GridBagLayout;
-
 import org.dllearner.core.KnowledgeSource;
 
 /**
@@ -44,16 +37,14 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = -7678275020058043937L;
 
-    private JFileChooser fc;
-    private JButton openButton, initButton;
-    private JTextField fileDisplay;
+    private JButton initButton, getInstancesButton;
     private String[] kbBoxItems = {};
     private JComboBox cb = new JComboBox(kbBoxItems);
-    private JPanel centerPanel, choosePanel, initPanel;
+    private JPanel choosePanel = new JPanel();
+    private JPanel initPanel = new JPanel();
     private Config config;
     private int choosenClassIndex;
     private List<Class<? extends KnowledgeSource>> sources;
-    private JLabel infoLabel = new JLabel("choose local file or type URL");
     private OptionPanel optionPanel;
 
     KnowledgeSourcePanel(final Config config) {
@@ -62,77 +53,27 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	this.config = config;
 	sources = config.getComponentManager().getKnowledgeSources();
 
-	fc = new JFileChooser(new File("examples/"));
-	openButton = new JButton("choose local file");
-	openButton.addActionListener(this);
-
+	getInstancesButton = new JButton("Get Instances");
+	getInstancesButton.addActionListener(this);
 	initButton = new JButton("Init KnowledgeSource");
 	initButton.addActionListener(this);
 
-	fileDisplay = new JTextField(35);
-	fileDisplay.setEditable(true);
-
-	// update config if textfield fileDisplay changed
-	fileDisplay.getDocument().addDocumentListener(new DocumentListener() {
-	    public void insertUpdate(DocumentEvent e) {
-		config.setURI(fileDisplay.getText());
-	    }
-
-	    public void removeUpdate(DocumentEvent e) {
-		config.setURI(fileDisplay.getText());
-	    }
-
-	    public void changedUpdate(DocumentEvent e) {
-		config.setURI(fileDisplay.getText());
-	    }
-	});
-
 	// add to comboBox
 	for (int i = 0; i < sources.size(); i++) {
-	    // cb.addItem(sources.get(i).getSimpleName());
 	    cb.addItem(config.getComponentManager().getComponentName(
 		    sources.get(i)));
 	}
-
 	cb.addActionListener(this);
 
-	choosePanel = new JPanel();
 	choosePanel.add(cb);
-
-	initPanel = new JPanel();
+	choosePanel.add(getInstancesButton);
 	initPanel.add(initButton);
-
-	centerPanel = new JPanel();
-
-	// define GridBag
-	GridBagLayout gridbag = new GridBagLayout();
-	centerPanel.setLayout(gridbag);
-	GridBagConstraints constraints = new GridBagConstraints();
-	constraints.fill = GridBagConstraints.BOTH;
-	constraints.anchor = GridBagConstraints.CENTER;
-
-	buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
-	gridbag.setConstraints(infoLabel, constraints);
-	centerPanel.add(infoLabel);
-
-	buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
-	gridbag.setConstraints(fileDisplay, constraints);
-	centerPanel.add(fileDisplay);
-
-	buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
-	gridbag.setConstraints(openButton, constraints);
-	centerPanel.add(openButton);
-
-	buildConstraints(constraints, 0, 2, 2, 1, 100, 100);
-	gridbag.setConstraints(initPanel, constraints);
-	centerPanel.add(initPanel);
-
 	optionPanel = new OptionPanel(config, config.getKnowledgeSource(),
 		sources.get(choosenClassIndex));
 
 	add(choosePanel, BorderLayout.PAGE_START);
-	add(centerPanel, BorderLayout.CENTER);
-	add(optionPanel, BorderLayout.PAGE_END);
+	add(optionPanel, BorderLayout.CENTER);
+	add(initPanel, BorderLayout.PAGE_END);
 
 	choosenClassIndex = cb.getSelectedIndex();
     }
@@ -140,60 +81,37 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 	// read selected KnowledgeSourceClass
 	choosenClassIndex = cb.getSelectedIndex();
-	checkIfSparql();
 
-	// open File
-	if (e.getSource() == openButton) {
-	    int returnVal = fc.showOpenDialog(KnowledgeSourcePanel.this);
-	    if (returnVal == JFileChooser.APPROVE_OPTION) {
-		String URI = "file://";
-		// make "file://" before local URI
-		URI = URI.concat(fc.getSelectedFile().toString());
-		config.setURI(URI); // save variable
-		fileDisplay.setText(URI);
-	    }
-	    return;
-	}
+	if (e.getSource() == getInstancesButton)
+	    getInstances();
 
-	// init
-	if (e.getSource() == initButton && config.getURI() != null) {
-	    config.setKnowledgeSource(config.getComponentManager()
-		    .knowledgeSource(sources.get(choosenClassIndex)));
-	    config.getComponentManager().applyConfigEntry(
-		    config.getKnowledgeSource(), "url", config.getURI());
-	    config.getKnowledgeSource().init();
-	    System.out.println("init KnowledgeSource with \n"
-		    + sources.get(choosenClassIndex) + " and \n"
-		    + config.getURI() + "\n");
-	    updateOptionPanel();
-	}
+	if (e.getSource() == initButton && config.getURI() != null)
+	    init();
     }
 
     /*
-     * Define GridBagConstraints
+     * after this, you can change widgets
      */
-    private void buildConstraints(GridBagConstraints gbc, int gx, int gy,
-	    int gw, int gh, int wx, int wy) {
-	gbc.gridx = gx;
-	gbc.gridy = gy;
-	gbc.gridwidth = gw;
-	gbc.gridheight = gh;
-	gbc.weightx = wx;
-	gbc.weighty = wy;
+    public void getInstances() {
+	config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
+		sources.get(choosenClassIndex)));
+	updateOptionPanel();
     }
 
-    private void checkIfSparql() {
-	if (sources.get(choosenClassIndex).toString().contains("Sparql")) {
-	    openButton.setEnabled(false);
-	    infoLabel.setText("type URL");
-	} else {
-	    openButton.setEnabled(true);
-	    infoLabel.setText("choose local file or type URL");
-	}
+    /*
+     * after this, next tab can be used
+     */
+    public void init() {
+	config.getKnowledgeSource().init();
+	System.out.println("init KnowledgeSource with \n"
+		+ sources.get(choosenClassIndex) + " and \n" + config.getURI()
+		+ "\n");
     }
 
+    /*
+     * update OptionPanel with new selection
+     */
     public void updateOptionPanel() {
-	// update OptionPanel
 	optionPanel.update(config.getKnowledgeSource(), sources
 		.get(choosenClassIndex));
     }
