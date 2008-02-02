@@ -103,6 +103,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
      */
     public void init() {
 	config.getKnowledgeSource().init();
+	config.setInitKnowledgeSource(true);
 	System.out.println("init KnowledgeSource with \n"
 		+ sources.get(choosenClassIndex) + " and \n" + config.getURI()
 		+ "\n");

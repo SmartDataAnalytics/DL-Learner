@@ -42,7 +42,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     private JPanel choosePanel = new JPanel();
     private OptionPanel optionPanel;
     private JPanel initPanel = new JPanel();
-    private JButton initButton;
+    private JButton initButton, getInstancesButton;
     private String[] cbItems = {};
     private JComboBox cb = new JComboBox(cbItems);
     private int choosenClassIndex;
@@ -51,29 +51,30 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	super(new BorderLayout());
 
 	this.config = config;
+	learners = config.getComponentManager().getLearningAlgorithms();
 
 	initButton = new JButton("Init LearingAlgorithm");
 	initButton.addActionListener(this);
-
 	initPanel.add(initButton);
-
-	choosePanel.add(cb);
+	getInstancesButton = new JButton("Get Instances");
+	getInstancesButton.addActionListener(this);
 
 	// add into comboBox
-	learners = config.getComponentManager().getLearningAlgorithms();
 	for (int i = 0; i < learners.size(); i++) {
 	    cb.addItem(config.getComponentManager().getComponentName(
 		    learners.get(i)));
 	}
 
+	choosePanel.add(cb);
+	choosePanel.add(getInstancesButton);
 	cb.addActionListener(this);
 
 	optionPanel = new OptionPanel(config, config.getLearningAlgorithm(),
 		learners.get(choosenClassIndex));
 
 	add(choosePanel, BorderLayout.PAGE_START);
-	add(initPanel, BorderLayout.CENTER);
-	add(optionPanel, BorderLayout.PAGE_END);
+	add(optionPanel, BorderLayout.CENTER);
+	add(initPanel, BorderLayout.PAGE_END);
 
     }
 
@@ -81,20 +82,42 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	// read selected Class
 	choosenClassIndex = cb.getSelectedIndex();
 
-	// init
-	if (e.getSource() == initButton && config.getLearningProblem() != null) {
+	if (e.getSource() == getInstancesButton)
+	    getInstances();
+
+	if (e.getSource() == initButton && config.getURI() != null)
+	    init();
+    }
+
+    /*
+     * after this, you can change widgets
+     */
+    public void getInstances() {
+	if (config.getLearningProblem() != null
+		&& config.getReasoningService() != null) {
 	    config.setLearningAlgorithm(config.getComponentManager()
 		    .learningAlgorithm(learners.get(choosenClassIndex),
 			    config.getLearningProblem(),
 			    config.getReasoningService()));
-	    System.out.println("init LearningAlgorithm");
-	    config.getLearningAlgorithm().init();
 	    updateOptionPanel();
 	}
     }
 
+    /*
+     * after this, next tab can be used
+     */
+    public void init() {
+	config.getLearningAlgorithm().init();
+	System.out.println("init LearningAlgorithm");
+
+    }
+
+    /*
+     * update OptionPanel with new selection
+     */
     public void updateOptionPanel() {
 	// update OptionPanel
-	optionPanel.update(config.getLearningAlgorithm(), learners.get(choosenClassIndex));
+	optionPanel.update(config.getLearningAlgorithm(), learners
+		.get(choosenClassIndex));
     }
 }
