@@ -67,9 +67,9 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
 	choosePanel.add(cb);
 	choosePanel.add(getInstancesButton);
-	initPanel.add(initButton);
 	optionPanel = new OptionPanel(config, config.getKnowledgeSource(),
 		sources.get(choosenClassIndex));
+	initPanel.add(initButton);
 
 	add(choosePanel, BorderLayout.PAGE_START);
 	add(optionPanel, BorderLayout.CENTER);
