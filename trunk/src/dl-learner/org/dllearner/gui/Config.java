@@ -49,7 +49,9 @@ public class Config {
     private Set<String> negExampleSet = new HashSet<String>();
     private LearningProblem lp;
     private LearningAlgorithm la;
-
+    private boolean[] isInit = new boolean[4];
+ 
+    
     protected ComponentManager getComponentManager() {
 	return cm;
     }
@@ -120,6 +122,72 @@ public class Config {
 
     protected LearningAlgorithm getLearningAlgorithm() {
 	return la;
+    }
+
+    /*
+     * KnowledgeSource.init has run?
+     * return true, if it was
+     */
+    protected boolean isInitKnowledgeSource() {
+	return isInit[0];
+    }
+    
+    /*
+     * set true if you run KnowwledgeSource.init
+     */
+    protected void setInitKnowledgeSource(Boolean is) {
+	isInit[0] = is;
+	for (int i=1; i<4; i++) 
+	    isInit[i] = false;
+    }
+
+    /*
+     * Reasoner.init has run?
+     * return true, if it was
+     */
+    protected boolean isInitReasoner() {
+	return isInit[1];
+    }
+    
+    /*
+     * set true if you run Reasoner.init
+     */
+    protected void setInitReasoner(Boolean is) {
+	isInit[1] = is;
+	for (int i=2; i<4; i++)
+	    isInit[i] = false;
+    }
+
+    /*
+     * LearningProblem.init has run?
+     * return true, if it was
+     */
+    protected boolean isInitLearningProblem() {
+	return isInit[2];
+    }
+    
+    /*
+     * set true if you run LearningProblem.init
+     */
+    protected void setInitLearningProblem(Boolean is) {
+	isInit[2] = is;
+	for (int i=3; i<4; i++)
+	    isInit[i] = false;
+    }
+
+    /*
+     * LearningAlgorithm.init() has run?
+     * return true, if it was
+     */
+    protected boolean isLearningAlgorithm() {
+	return isInit[3];
+    }
+    
+    /*
+     * set true if you run LearningAlgorithm.init
+     */
+    protected void setLearningAlgorithm(Boolean is) {
+	isInit[3] = is;
     }
 
 }

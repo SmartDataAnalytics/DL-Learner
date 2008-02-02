@@ -97,9 +97,12 @@ public class ReasonerPanel extends JPanel implements ActionListener {
      * after this, you can change widgets
      */
     public void getInstances() {
-	config.setReasoner(config.getComponentManager().reasoner(
-		reasoners.get(choosenClassIndex), config.getKnowledgeSource()));
-	updateOptionPanel();
+	if (config.isInitKnowledgeSource()) {
+	    config.setReasoner(config.getComponentManager().reasoner(
+		    reasoners.get(choosenClassIndex),
+		    config.getKnowledgeSource()));
+	    updateOptionPanel();
+	}
     }
 
     /*
@@ -112,6 +115,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	config.setReasoningService(config.getComponentManager()
 		.reasoningService(config.getReasoner()));
 	System.out.println("init ReasoningService");
+	config.setInitReasoner(true);
     }
 
     /*
