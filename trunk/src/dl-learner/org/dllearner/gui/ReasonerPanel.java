@@ -43,7 +43,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
     private JPanel choosePanel = new JPanel();
     private JPanel initPanel = new JPanel();
     private OptionPanel optionPanel;
-    private JButton initButton;
+    private JButton initButton, getInstancesButton;
     private Config config;
     private String[] cbItems = {};
     private JComboBox cb = new JComboBox(cbItems);
@@ -53,15 +53,17 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	super(new BorderLayout());
 
 	this.config = config;
+	reasoners = config.getComponentManager().getReasonerComponents();
 
 	initButton = new JButton("Init Reasoner");
 	initButton.addActionListener(this);
 	initPanel.add(initButton);
+	getInstancesButton = new JButton("Get Instances");
+	getInstancesButton.addActionListener(this);
 
 	choosePanel.add(cb);
 
 	// add into comboBox
-	reasoners = config.getComponentManager().getReasonerComponents();
 	for (int i = 0; i < reasoners.size(); i++) {
 	    cb.addItem(config.getComponentManager().getComponentName(
 		    reasoners.get(i)));
@@ -70,11 +72,13 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	optionPanel = new OptionPanel(config, config.getReasoner(), reasoners
 		.get(choosenClassIndex));
 
+	choosePanel.add(getInstancesButton);
+
 	cb.addActionListener(this);
 
 	add(choosePanel, BorderLayout.PAGE_START);
-	add(initPanel, BorderLayout.CENTER);
-	add(optionPanel, BorderLayout.PAGE_END);
+	add(optionPanel, BorderLayout.CENTER);
+	add(initPanel, BorderLayout.PAGE_END);
 
     }
 
@@ -82,24 +86,40 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	// read selected Class
 	choosenClassIndex = cb.getSelectedIndex();
 
-	if (e.getSource() == initButton && config.getKnowledgeSource() != null) {
-	    // set reasoner
-	    config.setReasoner(config.getComponentManager().reasoner(
-		    reasoners.get(choosenClassIndex),
-		    config.getKnowledgeSource()));
-	    config.getReasoner().init();
+	if (e.getSource() == getInstancesButton)
+	    getInstances();
 
-	    // set ReasoningService
-	    config.setReasoningService(config.getComponentManager()
-		    .reasoningService(config.getReasoner()));
-
-	    System.out.println("init Reasoner");
-	    updateOptionPanel();
-	}
+	if (e.getSource() == initButton && config.getKnowledgeSource() != null)
+	    init();
     }
 
+    /*
+     * after this, you can change widgets
+     */
+    public void getInstances() {
+	config.setReasoner(config.getComponentManager().reasoner(
+		reasoners.get(choosenClassIndex), config.getKnowledgeSource()));
+	updateOptionPanel();
+    }
+
+    /*
+     * after this, next tab can be used
+     */
+    public void init() {
+	config.getReasoner().init();
+	System.out.println("init Reasoner");
+	// set ReasoningService
+	config.setReasoningService(config.getComponentManager()
+		.reasoningService(config.getReasoner()));
+	System.out.println("init ReasoningService");
+    }
+
+    /*
+     * update OptionPanel with new selection
+     */
     public void updateOptionPanel() {
-	// update OptionPanel
-	optionPanel.update(config.getReasoner(), reasoners.get(choosenClassIndex));
+	optionPanel.update(config.getReasoner(), reasoners
+		.get(choosenClassIndex));
     }
+
 }
