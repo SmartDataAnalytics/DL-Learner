@@ -109,7 +109,11 @@ public class OptionPanel extends JPanel {
 		    "StringConfigOption")) {
 		widgetPanel = new WidgetPanelString(config, component,
 			componentOption, optionList.get(i));
-	    } else {
+/*	    } else if (optionList.get(i).getClass().toString().contains(
+		    "StringSetConfigOption")) {
+		widgetPanel = new WidgetPanelStringSet(config, component,
+			componentOption, optionList.get(i));
+*/	    } else {
 		widgetPanel = new WidgetPanelDefault(config, component,
 			componentOption, optionList.get(i));
 	    }

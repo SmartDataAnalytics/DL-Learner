@@ -82,14 +82,14 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	// read selected Class
 	choosenClassIndex = cb.getSelectedIndex();
 
-	if (e.getSource() == getInstancesButton)
+	if (e.getSource() == getInstancesButton && config.isInitLearningProblem())
 	    getInstances();
 
-	if (e.getSource() == initButton && config.getURI() != null)
+	if (e.getSource() == initButton && config.isInitLearningProblem())
 	    init();
     }
 
-    /*
+    /**
      * after this, you can change widgets
      */
     public void getInstances() {
@@ -103,7 +103,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	}
     }
 
-    /*
+    /**
      * after this, next tab can be used
      */
     public void init() {
@@ -112,7 +112,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 
     }
 
-    /*
+    /**
      * update OptionPanel with new selection
      */
     public void updateOptionPanel() {
