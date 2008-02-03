@@ -124,7 +124,7 @@ public class Config {
 	return la;
     }
 
-    /*
+    /**
      * KnowledgeSource.init has run?
      * return true, if it was
      */
@@ -132,7 +132,7 @@ public class Config {
 	return isInit[0];
     }
     
-    /*
+    /**
      * set true if you run KnowwledgeSource.init
      */
     protected void setInitKnowledgeSource(Boolean is) {
@@ -141,7 +141,7 @@ public class Config {
 	    isInit[i] = false;
     }
 
-    /*
+    /**
      * Reasoner.init has run?
      * return true, if it was
      */
@@ -149,7 +149,7 @@ public class Config {
 	return isInit[1];
     }
     
-    /*
+    /**
      * set true if you run Reasoner.init
      */
     protected void setInitReasoner(Boolean is) {
@@ -158,7 +158,7 @@ public class Config {
 	    isInit[i] = false;
     }
 
-    /*
+    /**
      * LearningProblem.init has run?
      * return true, if it was
      */
@@ -166,7 +166,7 @@ public class Config {
 	return isInit[2];
     }
     
-    /*
+    /**
      * set true if you run LearningProblem.init
      */
     protected void setInitLearningProblem(Boolean is) {
@@ -175,7 +175,7 @@ public class Config {
 	    isInit[i] = false;
     }
 
-    /*
+    /**
      * LearningAlgorithm.init() has run?
      * return true, if it was
      */
@@ -183,7 +183,7 @@ public class Config {
 	return isInit[3];
     }
     
-    /*
+    /**
      * set true if you run LearningAlgorithm.init
      */
     protected void setLearningAlgorithm(Boolean is) {

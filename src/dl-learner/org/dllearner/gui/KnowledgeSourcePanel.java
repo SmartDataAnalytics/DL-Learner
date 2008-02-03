@@ -89,7 +89,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	    init();
     }
 
-    /*
+    /**
      * after this, you can change widgets
      */
     public void getInstances() {
@@ -98,7 +98,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	updateOptionPanel();
     }
 
-    /*
+    /**
      * after this, next tab can be used
      */
     public void init() {
@@ -109,7 +109,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		+ "\n");
     }
 
-    /*
+    /**
      * update OptionPanel with new selection
      */
     public void updateOptionPanel() {

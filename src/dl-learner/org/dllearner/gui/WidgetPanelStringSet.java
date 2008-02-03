@@ -24,8 +24,9 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
+import java.util.Set;
 
-import javax.swing.JTextField;
+//import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -33,19 +34,19 @@ import javax.swing.JButton;
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.DoubleConfigOption;
+import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 /**
- * WidgetPanelDouble
+ * WidgetPanelStringSet
  * 
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelDouble extends AbstractWidgetPanel implements
+public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 	ActionListener {
 
-    private static final long serialVersionUID = 5238903690721116289L;
+    private static final long serialVersionUID = 7832726987046601916L;
     private Config config;
     private ConfigOption<?> configOption;
     private JLabel nameLabel;
@@ -54,10 +55,10 @@ public class WidgetPanelDouble extends AbstractWidgetPanel implements
     private Component component;
     private Class<? extends Component> componentOption;
 
-    private Double value;
-    private JTextField doubleField = new JTextField(5);
+    private Set<String> value;
+    //private JTextField stringField = new JTextField(15);
 
-    public WidgetPanelDouble(Config config, Component component,
+    public WidgetPanelStringSet(Config config, Component component,
 	    Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
 	this.config = config;
@@ -90,58 +91,49 @@ public class WidgetPanelDouble extends AbstractWidgetPanel implements
     @Override
     protected void showThingToChange() {
 	if (component != null) {
-	    // DoubleConfigOption
+	    // StringSetConfigOption
 	    if (configOption.getClass().toString().contains(
-		    "DoubleConfigOption")) {
-		// previous set value
-		if (configOption != null) {
-		    value = (Double) config.getComponentManager()
-			    .getConfigOptionValue(component,
-				    configOption.getName());
-		}
-		// default value
-		else if (configOption.getDefaultValue() != null) {
-		    value = (Double) configOption.getDefaultValue();
-		}
-		// value == null
-		if (value == null) {
-		    value = 0.0;
-		}
-		doubleField.setText(value.toString());
-		doubleField.setToolTipText(configOption
-			.getAllowedValuesDescription());
+		    "StringSetConfigOption")) {
 		setButton.addActionListener(this);
-		widgetPanel.add(doubleField);
+		//widgetPanel.add(stringField);
 		widgetPanel.add(setButton);
 	    }
 	    // UNKNOWN
 	    else {
-		JLabel notImplementedLabel = new JLabel("not a double");
+		JLabel notImplementedLabel = new JLabel("not a stringSet");
 		notImplementedLabel.setForeground(Color.RED);
 		widgetPanel.add(notImplementedLabel);
 	    }
 	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel("no instance (Double)");
+	    JLabel noConfigOptionLabel = new JLabel("no instance (StringSet)");
 	    noConfigOptionLabel.setForeground(Color.MAGENTA);
 	    widgetPanel.add(noConfigOptionLabel);
 	}
+	
+	//System.out.println("value: " + value);
+
+	
     }
 
     @Override
     protected void setEntry() {
-	DoubleConfigOption specialOption;
-	value = Double.parseDouble(doubleField.getText()); // get from input
-	specialOption = (DoubleConfigOption) config.getComponentManager()
+	StringSetConfigOption specialOption;
+	//value = stringField.getText(); // get from input
+	specialOption = (StringSetConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
 	try {
-	    ConfigEntry<Double> specialEntry = new ConfigEntry<Double>(
+	    ConfigEntry<Set<String>> specialEntry = new ConfigEntry<Set<String>>(
 		    specialOption, value);
 	    config.getComponentManager().applyConfigEntry(component,
 		    specialEntry);
-	    System.out.println("set Double: " + configOption.getName() + " = "
+	    System.out.println("set String: " + configOption.getName() + " = "
 		    + value);
 	} catch (InvalidConfigOptionValueException s) {
 	    s.printStackTrace();
 	}
+
+	
     }
+
+
 }

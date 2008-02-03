@@ -93,7 +93,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	    init();
     }
 
-    /*
+    /**
      * after this, you can change widgets
      */
     public void getInstances() {
@@ -105,7 +105,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	}
     }
 
-    /*
+    /**
      * after this, next tab can be used
      */
     public void init() {
@@ -118,7 +118,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	config.setInitReasoner(true);
     }
 
-    /*
+    /**
      * update OptionPanel with new selection
      */
     public void updateOptionPanel() {
