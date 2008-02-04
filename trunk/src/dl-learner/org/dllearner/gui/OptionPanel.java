@@ -68,7 +68,6 @@ public class OptionPanel extends JPanel {
 	// add scrollPane
 	JScrollPane centerScroller = new JScrollPane(centerPanel);
 	centerScroller.setPreferredSize(new Dimension(400, 200));
-
 	// add Panels
 	add(centerScroller, BorderLayout.CENTER);
 
