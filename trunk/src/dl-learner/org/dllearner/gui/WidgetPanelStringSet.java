@@ -21,15 +21,18 @@ package org.dllearner.gui;
  */
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
-import java.util.Set;
+import java.util.*;
 
-//import javax.swing.JTextField;
+import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.JScrollPane;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
@@ -51,12 +54,14 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
     private ConfigOption<?> configOption;
     private JLabel nameLabel;
     private JPanel widgetPanel = new JPanel();
-    private JButton setButton = new JButton("Set");
+    private JButton changeButton = new JButton("Change");
     private Component component;
     private Class<? extends Component> componentOption;
 
-    private Set<String> value;
-    //private JTextField stringField = new JTextField(15);
+    private Set<String> value = new HashSet<String>();
+    private JList stringList = new JList();
+    private DefaultListModel listModel = new DefaultListModel();
+
 
     public WidgetPanelStringSet(Config config, Component component,
 	    Class<? extends Component> componentOption,
@@ -76,7 +81,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
     }
 
     public void actionPerformed(ActionEvent e) {
-	if (e.getSource() == setButton) {
+	if (e.getSource() == changeButton) {
 	    setEntry();
 	}
     }
@@ -88,19 +93,40 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 	widgetPanel.add(nameLabel);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void showThingToChange() {
 	if (component != null) {
 	    // StringSetConfigOption
 	    if (configOption.getClass().toString().contains(
 		    "StringSetConfigOption")) {
-		setButton.addActionListener(this);
-		//widgetPanel.add(stringField);
-		widgetPanel.add(setButton);
+		// previous set value
+		if (configOption != null) {
+		    // take set
+		    value = (Set<String>) config.getComponentManager()
+			    .getConfigOptionValue(component,
+				    configOption.getName());
+		    // fill list
+		    if (value != null) {
+			for (Iterator<String> iterator = value.iterator(); iterator
+				.hasNext();) {
+			    String item = iterator.next();
+			    listModel.addElement(item);
+			}
+		    }
+		}
+		stringList.setModel(listModel);
+		stringList.setLayoutOrientation(JList.VERTICAL);
+		stringList.setVisibleRowCount(-1);
+		JScrollPane stringListScroller = new JScrollPane(stringList);
+		stringListScroller.setPreferredSize(new Dimension(200, 100));
+		widgetPanel.add(stringListScroller);
+		widgetPanel.add(changeButton);
+		changeButton.addActionListener(this);
 	    }
 	    // UNKNOWN
 	    else {
-		JLabel notImplementedLabel = new JLabel("not a stringSet");
+		JLabel notImplementedLabel = new JLabel("not a set of strings");
 		notImplementedLabel.setForeground(Color.RED);
 		widgetPanel.add(notImplementedLabel);
 	    }
@@ -109,31 +135,26 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 	    noConfigOptionLabel.setForeground(Color.MAGENTA);
 	    widgetPanel.add(noConfigOptionLabel);
 	}
-	
-	//System.out.println("value: " + value);
-
-	
     }
 
     @Override
     protected void setEntry() {
 	StringSetConfigOption specialOption;
-	//value = stringField.getText(); // get from input
+	// value = stringField.getText(); // get from input
 	specialOption = (StringSetConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
+
 	try {
 	    ConfigEntry<Set<String>> specialEntry = new ConfigEntry<Set<String>>(
 		    specialOption, value);
 	    config.getComponentManager().applyConfigEntry(component,
 		    specialEntry);
-	    System.out.println("set String: " + configOption.getName() + " = "
+	    System.out.println("set StringSet: " + configOption.getName() + " = "
 		    + value);
 	} catch (InvalidConfigOptionValueException s) {
 	    s.printStackTrace();
 	}
 
-	
     }
-
 
 }
