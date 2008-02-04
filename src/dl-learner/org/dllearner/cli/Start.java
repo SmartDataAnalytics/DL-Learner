@@ -94,6 +94,10 @@ public class Start {
 
 	private static Logger logger = Logger.getRootLogger();	
 	
+	private LearningAlgorithm la;
+	private LearningProblem lp;
+	private ReasoningService rs;
+	
 	/**
 	 * Entry point for CLI interface.
 	 * 
@@ -101,12 +105,11 @@ public class Start {
 	 */
 	public static void main(String[] args) {
 		File file = new File(args[args.length - 1]);
-		String baseDir = file.getParentFile().getPath();
-		
+
 		boolean inQueryMode = false;
 		if (args.length > 1 && args[0].equals("-q"))
 			inQueryMode = true;
-
+	
 		// create logger (a simple logger which outputs
 		// its messages to the console)
 		SimpleLayout layout = new SimpleLayout();
@@ -114,6 +117,17 @@ public class Start {
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.INFO);
+		
+		Start start = new Start(file);	
+		start.start(inQueryMode);
+	}
+
+	/**
+	 * Initialise all components based on conf file.
+	 * @param file Conf file to read. 
+	 */
+	public Start(File file) {
+		String baseDir = file.getParentFile().getPath();		
 		
 		// create component manager instance
 		System.out.print("starting component manager ... ");
@@ -161,12 +175,11 @@ public class Start {
 		ReasonerComponent reasoner = cm.reasoner(reasonerClass, sources);
 		configureComponent(cm, reasoner, componentPrefixMapping, parser);
 		initComponent(cm, reasoner);
-		ReasoningService rs = cm.reasoningService(reasoner);
+		rs = cm.reasoningService(reasoner);
 
 		// step 3: detect learning problem
 		ConfFileOption problemOption = parser.getConfOptionsByName("problem");
 		Class<? extends LearningProblem> lpClass = null;
-		LearningProblem lp = null;
 		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinition"))
 			lpClass = PosNegDefinitionLP.class;
 		else if (problemOption.getStringValue().equals("posNegInclusion"))
@@ -187,7 +200,6 @@ public class Start {
 		
 		// step 4: detect learning algorithm
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
-		LearningAlgorithm la = null;
 		Class<? extends LearningAlgorithm> laClass = null;
 		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
 			laClass = ROLearner.class;
@@ -229,8 +241,10 @@ public class Start {
 		}
 
 		// handle any CLI options
-		processCLIOptions(cm, parser, rs);
-
+		processCLIOptions(cm, parser, rs);		
+	}
+	
+	public void start(boolean inQueryMode) {
 		if (inQueryMode)
 			processQueryMode(lp, rs);
 		else {
@@ -240,10 +254,9 @@ public class Start {
 			long algDuration = System.nanoTime() - algStartTime;
 
 			printConclusions(rs, algDuration);
-		}
-		
+		}		
 	}
-
+	
 	// creates a mapping from components to option prefix strings
 	private static Map<Class<? extends Component>, String> createComponentPrefixMapping() {
 		Map<Class<? extends Component>, String> componentPrefixMapping = new HashMap<Class<? extends Component>, String>();
@@ -691,6 +704,10 @@ public class Start {
 	private static void handleError(String message) {
 		System.err.println(message);
 		System.exit(0);
+	}
+
+	public LearningAlgorithm getLearningAlgorithm() {
+		return la;
 	}
 
 }
