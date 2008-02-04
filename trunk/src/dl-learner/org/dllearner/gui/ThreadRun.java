@@ -34,6 +34,7 @@ public class ThreadRun extends Thread {
     }
 
     // method to start thread
+    @Override
     public void run() {
 	if (config.getLearningAlgorithm() != null)
 	    config.getLearningAlgorithm().start();

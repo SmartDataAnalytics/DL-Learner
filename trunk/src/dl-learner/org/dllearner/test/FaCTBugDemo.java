@@ -1,4 +1,4 @@
-package org.dllearner.reasoning;
+package org.dllearner.test;
 
 import org.semanticweb.owl.model.*;
 import org.semanticweb.owl.apibinding.OWLManager;

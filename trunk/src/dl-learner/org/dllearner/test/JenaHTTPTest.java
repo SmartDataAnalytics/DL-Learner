@@ -1,4 +1,4 @@
-package org.dllearner.kb.sparql.test;
+package org.dllearner.test;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.net.URLEncoder;
 
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
-public class TestHTTP {
+public class JenaHTTPTest {
 	public static void main(String[] args) throws Exception{
 		
 		String query="SELECT DISTINCT ?object\n"+
@@ -19,7 +19,7 @@ public class TestHTTP {
 		double time=0;
 		for (int i=0; i<101; i++)
 		{
-			if (i!=0) time+=TestHTTP.httpQuery(query);
+			if (i!=0) time+=JenaHTTPTest.httpQuery(query);
 		}
 		time=time/100;
 		System.out.println("Durchschnittliche Zeit f�r eine Anfrage per Http-Methode: "+time);
@@ -27,7 +27,7 @@ public class TestHTTP {
 		time=0;
 		for (int i=0; i<101; i++)
 		{
-			if (i!=0) time+=TestHTTP.jenaQuery(query);
+			if (i!=0) time+=JenaHTTPTest.jenaQuery(query);
 		}
 		time=time/100;
 		System.out.println("Durchschnittliche Zeit f�r eine Anfrage per Jena-Methode: "+time);
