@@ -17,12 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql.test;
+package org.dllearner.test;
 
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 
 
 public class JenaQueryToResultSpeedTest {
@@ -75,12 +76,15 @@ public class JenaQueryToResultSpeedTest {
 		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
-		sqJena.getAsList();
+		//sqJena.getAsList();
+		sqJena.send();
 		long now = System.currentTimeMillis();
 		long tmp = now;
 		for (int i = 0; i < howOften; i++) {
 
-			sqJena.getAsList();
+			// sqJena.getAsList();
+			ResultSet rs = sqJena.send();
+			ResultSetFormatter.toList(rs);
 			p("Jena as List needed: "
 					+ (System.currentTimeMillis() - tmp));
 			tmp = System.currentTimeMillis();

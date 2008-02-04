@@ -160,20 +160,6 @@ public class SparqlQuery {
 	}
 
 	/**
-	 * sends a query and returns complicated Jena List with ResultBindings
-	 * 
-	 * 
-	 * @return jena List<ResultBinding>
-	 */
-	@Deprecated
-	@SuppressWarnings( { "unchecked" })
-	public List<ResultBinding> getAsList() {
-		if (rs == null)
-			this.send();
-		return ResultSetFormatter.toList(rs);
-	}
-
-	/**
 	 * Converts Jena result set to JSON.
 	 * 
 	 * @param resultSet The result set to transform.

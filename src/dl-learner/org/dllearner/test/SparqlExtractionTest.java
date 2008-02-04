@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql.test;
+package org.dllearner.test;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -36,7 +36,7 @@ import org.dllearner.utilities.StringTuple;
  * @author Sebastian Hellmann
  * 
  */
-public class TestExtraction {
+public class SparqlExtractionTest {
 
 	public static void main(String[] args) {
 		System.out.println("Start");

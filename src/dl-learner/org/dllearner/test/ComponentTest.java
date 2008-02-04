@@ -17,13 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core;
+package org.dllearner.test;
 
 import java.io.File;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.RandomGuesser;
+import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.DIGReasoner;
