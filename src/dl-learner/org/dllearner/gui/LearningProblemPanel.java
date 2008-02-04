@@ -68,6 +68,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	super(new BorderLayout());
 
 	this.config = config;
+	problems = config.getComponentManager().getLearningProblems();
 
 	initButton = new JButton("Init LearningProblem");
 	initButton.addActionListener(this);
@@ -77,8 +78,6 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	choosePanel.add(cb);
 	choosePanel.add(getInstancesButton);
 	cb.addActionListener(this);
-
-	problems = config.getComponentManager().getLearningProblems();
 
 	// add into comboBox
 	for (int i = 0; i < problems.size(); i++) {
@@ -139,6 +138,10 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		for (int i : selectedIndices)
 		    posExampleSet.add(individuals.get(i).toString());
 		config.setPosExampleSet(posExampleSet);
+		config.getComponentManager().applyConfigEntry(
+			config.getLearningProblem(), "positiveExamples",
+			config.getPosExampleSet());
+		updateOptionPanel();
 	    }
 	});
 
@@ -153,6 +156,10 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		for (int i : selectedIndices)
 		    negExampleSet.add(individuals.get(i).toString());
 		config.setNegExampleSet(negExampleSet);
+		config.getComponentManager().applyConfigEntry(
+			config.getLearningProblem(), "negativeExamples",
+			config.getNegExampleSet());
+		updateOptionPanel();
 	    }
 	});
 
@@ -219,9 +226,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     public void init() {
-	config.getComponentManager().applyConfigEntry(
-		config.getLearningProblem(), "positiveExamples",
-		config.getPosExampleSet());
+
 	config.getComponentManager().applyConfigEntry(
 		config.getLearningProblem(), "negativeExamples",
 		config.getNegExampleSet());
