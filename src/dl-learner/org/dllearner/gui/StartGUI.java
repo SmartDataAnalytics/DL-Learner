@@ -44,11 +44,11 @@ public class StartGUI extends JFrame implements ActionListener {
 
     private Config config = new Config();
 
-    private JPanel tab1 = new JPanel();
-    private JPanel tab2 = new JPanel();
-    private JPanel tab3 = new JPanel();
-    private JPanel tab4 = new JPanel();
-    private JPanel tab5 = new JPanel();
+    private JPanel tab1;
+    private JPanel tab2;
+    private JPanel tab3;
+    private JPanel tab4;
+    private JPanel tab5;
 
     private JMenuBar menuBar = new JMenuBar();
     private JMenu menuFile = new JMenu("File");
@@ -61,11 +61,11 @@ public class StartGUI extends JFrame implements ActionListener {
 	this.setLocationByPlatform(true);
 	this.setSize(800, 600);
 
-	tab1.add(new KnowledgeSourcePanel(config));
-	tab2.add(new ReasonerPanel(config));
-	tab3.add(new LearningProblemPanel(config));
-	tab4.add(new LearningAlgorithmPanel(config));
-	tab5.add(new RunPanel(config));
+	tab1 = new KnowledgeSourcePanel(config);
+	tab2 = new ReasonerPanel(config);
+	tab3 = new LearningProblemPanel(config);
+	tab4 = new LearningAlgorithmPanel(config);
+	tab5 = new RunPanel(config);
 	tabPane.addTab("Knowledge Source", tab1);
 	tabPane.addTab("Reasoner", tab2);
 	tabPane.addTab("Learning Problem", tab3);
