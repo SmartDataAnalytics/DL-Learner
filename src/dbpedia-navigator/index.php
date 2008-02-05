@@ -42,7 +42,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   <body>
 
 <!--  <h1>DBpedia Navigator</h1> -->
-<div><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Learn" class="button" onclick="xajax_learnAndShowConcept();return false;" />&nbsp;&nbsp;<span id="conceptlink"></span><span id="Loading" style="display:none">Loading...</span></div>
+<div><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Learn" class="button" onclick="xajax_learnConcept();return false;" />&nbsp;&nbsp;<span id="conceptlink"></span><span id="Loading" style="display:none">Loading...</span></div>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
@@ -54,9 +54,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  <div class="boxtitle">Search DBpedia</div>
 		  <div class="boxcontent" id="search">
 			<!-- Search:<br/> -->
-			<form onSubmit="xajax_getAndShowArticle(document.getElementById('label').value,-1);return false;">
+			<form onSubmit="xajax_getarticle(document.getElementById('label').value,-1);return false;">
 			<input type="text" name="label" id="label" /><br/>
-			<input type="button" value="Search" class="button" onclick="xajax_getAndShowArticle(document.getElementById('label').value,-1);return false;" />
+			<input type="button" value="Search" class="button" onclick="xajax_getarticle(document.getElementById('label').value,-1);return false;" />
 			<!--  &nbsp;&nbsp;&nbsp; <input type="button" value="Fulltext" class="button" onclick=""/> -->
 			</form>
 		  </div> <!-- boxcontent -->
@@ -66,7 +66,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  <div class="boxtitle">Search Results</div>
 		  <div class="boxcontent">
 		  <div id="searchcontent" style="display:block"></div>
-		  <div id="loadingSubject" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
@@ -96,7 +95,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  and uses the background knowledge in DBpedia to suggest possible interesting navigation
 		  links. 
 		  </div>
-		  <div id="loadingArticle" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 	</div><!-- content -->
