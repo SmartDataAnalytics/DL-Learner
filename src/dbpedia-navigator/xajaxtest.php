@@ -7,10 +7,11 @@ $xajax->processRequest();
 
 function learnConcept()
 {
+	$start=microtime(true);
 	$client=new SoapClient("main.wsdl");
 	$id=$client->generateID();
 	$objResponse=new xajaxResponse();
-	$objResponse->append("articlecontent","innerHTML","Test");
+	$objResponse->append("articlecontent","innerHTML",microtime(true)-$start);
 	return $objResponse;
 }
 ?>
