@@ -21,26 +21,14 @@ function getsubjects($label)
 		
 		foreach ($subjects as $subject)
 		{
-			$content.="<a href=\"\" onclick=\"xajax_getAndShowArticle('".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."',-2);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."</a><br/>";
+			$content.="<a href=\"\" onclick=\"xajax_getarticle('".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."',-2);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."</a><br/>";
 		}
 	} catch (Exception $e){
 		$content=$e->getMessage();
 	}
 	
-	$_SESSION['subjects']=$content;
-		
 	$objResponse = new xajaxResponse();
-	return $objResponse;
-}
-
-function showSubjects()
-{
-	while (!isset($_SESSION['subjects'])){
-		sleep(0.5);
-	}
-	$objResponse = new xajaxResponse();
-	$objResponse->assign("searchcontent", "innerHTML", $_SESSION['subjects']);
-	unset($_SESSION['subjects']);
+	$objResponse->assign("searchcontent", "innerHTML", $content);
 	return $objResponse;
 }
 
@@ -143,7 +131,7 @@ function getarticle($subject,$fromCache)
 			
 			//BUILD SEARCHRESULT
 			if ($fromCache==-1) 
-				$searchResult.="<a href=\"\" onclick=\"xajax_getAndShowSubjects('".$subject."');return false;\">Show more Results</a>";			
+				$searchResult.="<a href=\"\" onclick=\"xajax_getsubjects('".$subject."');return false;\">Show more Results</a>";			
 		} catch (Exception $e)
 		{
 			$content=$e->getMessage();
@@ -160,46 +148,17 @@ function getarticle($subject,$fromCache)
 	if (isset($_SESSION['articles'])){
 		foreach ($_SESSION['articles'] as $key => $value)
 		{
-			$lastArticles.="<a href=\"\" onclick=\"xajax_getAndShowArticle('',".$key.");return false;\">".$value['subject']."</a><br/>";
+			$lastArticles.="<a href=\"\" onclick=\"xajax_getarticle('',".$key.");return false;\">".$value['subject']."</a><br/>";
 		}
 	}
 	
-	//put whole site content into session
-	$_SESSION['artContent']=$content;
-	$_SESSION['artTitle']=$artTitle;
-	$_SESSION['artLast']=$lastArticles;
-	$_SESSION['artSubjects']=$searchResult;
-	
 	$objResponse = new xajaxResponse();
-	return $objResponse;
-}
-
-function showArticle()
-{
-	while (!isset($_SESSION['artSubjects'])){
-		sleep(0.5);
-	}
-	$objResponse = new xajaxResponse();
-	$objResponse->assign("articlecontent", "innerHTML", $_SESSION['artContent']);
-	$objResponse->assign("ArticleTitle","innerHTML",$_SESSION['artTitle']);
-	$objResponse->assign("lastarticles","innerHTML",$_SESSION['artLast']);
-	if ($_SESSION['artSubjects']!="") $objResponse->assign("searchcontent", "innerHTML", $_SESSION['artSubjects']);
-	if (strpos($_SESSION['artContent'],"Did not find an article with that name")===0)
-		$objResponse->call('xajax_getAndShowSubjects',$_SESSION['artTitle']);
-	unset($_SESSION['artContent']);
-	unset($_SESSION['artTitle']);
-	unset($_SESSION['artLast']);
-	unset($_SESSION['artSubjects']);
-	
-	$objResponse->call('xajax_showInterests');	
-	return $objResponse;
-}
-
-function getAndShowArticle($subject,$fromCache)
-{
-	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_getarticle',$subject,$fromCache);
-	$objResponse->call('xajax_showArticle');
+	$objResponse->assign("articlecontent", "innerHTML", $content);
+	$objResponse->assign("ArticleTitle","innerHTML",$artTitle);
+	$objResponse->assign("lastarticles","innerHTML",$lastArticles);
+	$objResponse->assign("searchcontent", "innerHTML", $searchResult);
+		
+	$objResponse->call('xajax_showInterests');
 	return $objResponse;
 }
 
@@ -315,15 +274,14 @@ function learnConcept()
 		$_SESSION['lastLearnedConcept']=$concepts;
 		$concept.="<table border=0>\n";
 		foreach ($concepts as $con){
-			$concept.="<tr><td><a href=\"\" onclick=\"xajax_getAndShowSubjectsFromConcept('".$con."');return false;\" />".$con."</a></td></tr>";
+			$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".$con."');return false;\" />".$con."</a></td></tr>";
 		}
 		$concept.="</table>";
 	}
 	else $concept="You must choose at least one positive example.";
 	
-	$_SESSION['conceptcontent']=$concept;
-	
 	$objResponse = new xajaxResponse();
+	$objResponse->assign("conceptlink", "innerHTML", $concept);
 	return $objResponse;
 }
 
@@ -336,62 +294,14 @@ function getSubjectsFromConcept($concept)
 		$subjects=$sc->getSubjectsFromConcept($concept);
 		foreach ($subjects as $subject)
 		{
-			$content.="<a href=\"\" onclick=\"xajax_getAndShowArticle('".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."',-2);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."</a><br/>";
+			$content.="<a href=\"\" onclick=\"xajax_getarticle('".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."',-2);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."</a><br/>";
 		}
 	} catch (Exception $e){
 		$content=$e->getMessage();
 	}
 		
-	$_SESSION['conceptsubjectcontent']=$content;
 	$objResponse = new xajaxResponse();
-	return $objResponse;
-}
-
-function getAndShowSubjects($keyword)
-{
-	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_getsubjects',$keyword);
-	$objResponse->call('xajax_showSubjects');
-	return $objResponse;
-}
-
-function learnAndShowConcept()
-{
-	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_learnConcept');
-	$objResponse->call('xajax_showConcept');
-	return $objResponse;
-}
-
-function showConcept()
-{
-	while (!isset($_SESSION['conceptcontent'])){
-		sleep(0.5);
-	}
-		
-	$objResponse = new xajaxResponse();
-	$objResponse->assign("conceptlink", "innerHTML", $_SESSION['conceptcontent']);
-	unset($_SESSION['conceptcontent']);
-	return $objResponse;
-}
-
-function getAndShowSubjectsFromConcept($concept)
-{
-	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_getSubjectsFromConcept',$concept);
-	$objResponse->call('xajax_showSubjectsFromConcept');
-	return $objResponse;
-}
-
-function showSubjectsFromConcept()
-{
-	while (!isset($_SESSION['conceptsubjectcontent'])){
-		sleep(0.5);
-	}
-		
-	$objResponse = new xajaxResponse();
-	$objResponse->assign("searchcontent", "innerHTML", $_SESSION['conceptsubjectcontent']);
-	unset($_SESSION['conceptsubjectcontent']);
+	$objResponse->assign("searchcontent", "innerHTML", $content);
 	return $objResponse;
 }
 
