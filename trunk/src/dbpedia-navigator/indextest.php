@@ -41,9 +41,7 @@ require("xajaxtest.php");
 		  <div class="boxcontent" id="article">
 		  <div id="articlecontent" style="display:block">
 		  <br /><br />
-		  Welcome to the DBpedia Navigator interface! DBpedia Navigator allows you to search DBpedia
-		  and uses the background knowledge in DBpedia to suggest possible interesting navigation
-		  links. 
+		  Verzögerung
 		  </div>
 		  <div id="loadingArticle" style="display:none"><img src="ajax-loader.gif" alt="Loading..."/></div>
 		  </div> <!-- boxcontent -->
