@@ -19,18 +19,10 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
-import org.dllearner.core.config.CommonConfigMappings;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.Helper;
@@ -55,45 +47,10 @@ public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	@SuppressWarnings( { "unchecked" })
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if (name.equals("positiveExamples"))
-			positiveExamples = CommonConfigMappings
-					.getIndividualSet((Set<String>) entry.getValue());
-	}
-	
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringSetConfigOption("positiveExamples",
-				"positive examples"));
-		return options;
-	}	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.dllearner.core.Component#getName()
 	 */
 	public static String getName() {
 		return "positive only definition learning problem";
-	}
-	
-	/**
-	 * @return the positiveExamples
-	 */
-	public SortedSet<Individual> getPositiveExamples() {
-		return positiveExamples;
-	}
-
-	/**
-	 * @return the pseudoNegatives
-	 */
-	public SortedSet<Individual> getPseudoNegatives() {
-		return pseudoNegatives;
 	}
 
 	/* (non-Javadoc)
