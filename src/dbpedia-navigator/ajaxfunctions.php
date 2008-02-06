@@ -64,6 +64,8 @@ function getarticle($subject,$fromCache)
 	$lastArticles="";
 	$artTitle="";
 	
+	$objResponse = new xajaxResponse();
+	
 	//get the article
 	//if $fromCache is -2, no new SearchResults should be processed
 	//if $fromCache is -1, everything is normal
@@ -114,7 +116,9 @@ function getarticle($subject,$fromCache)
 				
 			$content .= '<br/><br/><br/><br/><br/><br/>'.get_triple_table($triples);
 			
-			
+			//BUILD SEARCHRESULT
+			if ($fromCache==-1) 
+				$searchResult.="<a href=\"\" onclick=\"xajax_getsubjects('".$subject."');return false;\">Show more Results</a>";
 			
 			//BUILD ARTICLE TITLE
 			$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0];
@@ -144,7 +148,8 @@ function getarticle($subject,$fromCache)
 		} catch (Exception $e)
 		{
 			$content=$e->getMessage();
-			$artTitle="Fehler";
+			$artTitle="No Result";
+			$objResponse->call('xajax_getsubjects',$subject);
 		}
 	}
 	else {
@@ -154,10 +159,6 @@ function getarticle($subject,$fromCache)
 		$artTitle=$_SESSION['articles'][$fromCache]['subject'];
 	}
 	
-	//BUILD SEARCHRESULT
-	if ($fromCache==-1) 
-		$searchResult.="<a href=\"\" onclick=\"xajax_getsubjects('".$subject."');return false;\">Show more Results</a>";
-	
 	//Build lastArticles
 	if (isset($_SESSION['articles'])){
 		foreach ($_SESSION['articles'] as $key => $value)
@@ -166,7 +167,7 @@ function getarticle($subject,$fromCache)
 		}
 	}
 	
-	$objResponse = new xajaxResponse();
+	
 	$objResponse->assign("articlecontent", "innerHTML", $content);
 	$objResponse->assign("ArticleTitle","innerHTML",$artTitle);
 	$objResponse->assign("lastarticles","innerHTML",$lastArticles);
