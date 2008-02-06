@@ -1,27 +1,51 @@
+/**
+ * Copyright (C) 2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.utilities;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Set;
 
 import org.dllearner.core.dl.Concept;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.dllearner.reasoning.KAON2Reasoner;
-import org.semanticweb.kaon2.api.DefaultOntologyResolver;
-import org.semanticweb.kaon2.api.KAON2Connection;
-import org.semanticweb.kaon2.api.KAON2Exception;
-import org.semanticweb.kaon2.api.KAON2Manager;
-import org.semanticweb.kaon2.api.Ontology;
-import org.semanticweb.kaon2.api.Request;
-import org.semanticweb.kaon2.api.formatting.OntologyFileFormat;
-import org.semanticweb.kaon2.api.owl.axioms.EquivalentClasses;
-import org.semanticweb.kaon2.api.owl.elements.Description;
-import org.semanticweb.kaon2.api.owl.elements.OWLClass;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyManager;
 
+/**
+ * Utility class to replace a definition in an OWL file by a learned
+ * definition.
+ * 
+ * TODO: Class is currently not working. There is still some KAON2 specific
+ * code (commented out), which has to be converted to OWL API code.
+ * 
+ * @author Jens Lehmann
+ *
+ */
 public class OntologyClassRewriter {
 
 	public static void main(String[] args) {
@@ -37,6 +61,7 @@ public class OntologyClassRewriter {
 		System.out.println(rewrittenOntology);
 	}
 
+	@SuppressWarnings({"unused"})
 	public static String rewriteOntology(String urlString, String className, String newConceptString) {
 		
 		try {
@@ -45,43 +70,53 @@ public class OntologyClassRewriter {
 			Concept newConceptInternal = KBParser.parseConcept(newConceptString);
 			
 			// umwandeln in interne KAON2-Darstellung (bereits im DL-Learner implementiert)
-			Description newConceptKAON2 = KAON2Reasoner.getKAON2Description(newConceptInternal);
+			// Description newConceptKAON2 = KAON2Reasoner.getKAON2Description(newConceptInternal);
+			OWLDescription newConceptOWLAPI = OWLAPIReasoner.getOWLAPIDescription(newConceptInternal);
 			
 			// Umwandlung Klassenname in atomate KAON2-Klasse
-			OWLClass classKAON2 = KAON2Manager.factory().owlClass(className);
+			// OWLClass classKAON2 = KAON2Manager.factory().owlClass(className);
+			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			OWLDataFactory factory = manager.getOWLDataFactory();
+			OWLClass classOWLAPI = factory.getOWLClass(URI.create(className));
 			
 			// Test, ob es eine richtige URL ist (ansonsten wird Exception geworfen)
 			new URL(urlString);
 			
 			// einlesen der Ontologie
-			DefaultOntologyResolver resolver = new DefaultOntologyResolver();
-			KAON2Connection connection = KAON2Manager.newConnection();
-			connection.setOntologyResolver(resolver);
-			Ontology ontology = connection.openOntology(urlString, new HashMap<String,Object>());			
+			// DefaultOntologyResolver resolver = new DefaultOntologyResolver();
+			// KAON2Connection connection = KAON2Manager.newConnection();
+			// connection.setOntologyResolver(resolver);
+			// Ontology ontology = connection.openOntology(urlString, new HashMap<String,Object>());			
+			
+			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI.create(urlString));
+			
+			// TODO
 			
 			// suchen von Äquivalenzaxiomen
-			Request<EquivalentClasses> equivalenceAxiomsRequest = ontology.createAxiomRequest(EquivalentClasses.class);
-			Set<EquivalentClasses> equivalenceAxioms = equivalenceAxiomsRequest.get();
-			
-			for(EquivalentClasses eq : equivalenceAxioms) {
-				Set<Description> eqDescriptions = eq.getDescriptions();
-				if(eqDescriptions.size() != 2)
-					System.out.println("Warning: Rewriting more than two equivalent descriptions not supported yet." +
-							" Possibly incorrect ontology returned.");
-				
-				// entfernen aller Äquivalenzaxiome, die die Klasse enthalten
-				if(eqDescriptions.contains(classKAON2))
-					ontology.removeAxiom(eq);
-			}
-			
-			// hinzufügen des neuen Äquivalenzaxioms
-			EquivalentClasses eqNew = KAON2Manager.factory().equivalentClasses(classKAON2, newConceptKAON2);
-			ontology.addAxiom(eqNew);
-			
-			// umwandeln der Ontologie in einen String
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ontology.saveOntology(OntologyFileFormat.OWL_RDF,os,"ISO-8859-1");
-			return os.toString();
+//			Request<EquivalentClasses> equivalenceAxiomsRequest = ontology.createAxiomRequest(EquivalentClasses.class);
+//			Set<EquivalentClasses> equivalenceAxioms = equivalenceAxiomsRequest.get();
+//			
+//			for(EquivalentClasses eq : equivalenceAxioms) {
+//				Set<Description> eqDescriptions = eq.getDescriptions();
+//				if(eqDescriptions.size() != 2)
+//					System.out.println("Warning: Rewriting more than two equivalent descriptions not supported yet." +
+//							" Possibly incorrect ontology returned.");
+//				
+//				// entfernen aller Äquivalenzaxiome, die die Klasse enthalten
+//				if(eqDescriptions.contains(classKAON2))
+//					ontology.removeAxiom(eq);
+//			}
+//			
+//			// hinzufügen des neuen Äquivalenzaxioms
+//			EquivalentClasses eqNew = KAON2Manager.factory().equivalentClasses(classKAON2, newConceptKAON2);
+//			ontology.addAxiom(eqNew);
+//			
+//			// umwandeln der Ontologie in einen String
+//			ByteArrayOutputStream os = new ByteArrayOutputStream();
+//			ontology.saveOntology(OntologyFileFormat.OWL_RDF,os,"ISO-8859-1");
+//			
+//			return os.toString();
+			return "";
 			
 		// in einigen der folgenden Fälle sollten im Web-Service Exceptions geworfen
 		// werden (throws ...) z.B. bei ParseException
@@ -92,16 +127,10 @@ public class OntologyClassRewriter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println("Syntactically incorrect URL.");
-		} catch (KAON2Exception e) {
+		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 	
 		throw new Error("Ontology could not be rewritten. Exiting.");
 	}

@@ -20,7 +20,6 @@
 
 package org.dllearner.core;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +33,6 @@ import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.RoleHierarchy;
 import org.dllearner.core.dl.SubsumptionHierarchy;
-import org.dllearner.reasoning.DIGReasoner;
-import org.dllearner.reasoning.KAON2Reasoner;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.SortedSetTuple;
 
@@ -398,17 +395,6 @@ public class ReasoningService {
 		otherReasoningTimeNs += reasoningDurationTmp;
 		overallReasoningTimeNs += reasoningDurationTmp;
 		return result;		
-	}
-
-	// speichern einer Ontolgie wird speziell behandelt, da kein Reasoning
-	public void saveOntology(File file, OntologyFormat format) {
-		if (getReasonerType() == ReasonerType.KAON2) {
-			((KAON2Reasoner) reasoner).saveOntology(file, format);
-		} else if (getReasonerType() == ReasonerType.DIG) {
-			// DIG erzeugt momentan auch nur einen KAON2-Reasoner und
-			// exportiert dann mit der obigen Funktion
-			((DIGReasoner) reasoner).saveOntology(file, format);
-		} 
 	}
 
 	public Set<AtomicConcept> getAtomicConcepts() {

@@ -36,12 +36,20 @@ import org.dllearner.core.dl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGConverter;
-import org.dllearner.reasoning.KAON2Reasoner;
-import org.semanticweb.kaon2.api.KAON2Exception;
-import org.semanticweb.kaon2.api.formatting.OntologyFileFormat;
-import org.semanticweb.kaon2.api.reasoner.Reasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLOntologyStorageException;
+import org.semanticweb.owl.model.UnknownOWLOntologyException;
+import org.semanticweb.owl.util.SimpleURIMapper;
 
 /**
+ * KB files are an internal convenience format used in DL-Learner. Their
+ * syntax is close to Description Logics and easy to use. KB files can be
+ * exported to OWL for usage outside of DL-Learner.
+ * 
  * @author Jens Lehmann
  *
  */
@@ -118,25 +126,47 @@ public class KBFile extends KnowledgeSource {
 	
 	@Override
 	public void export(File file, org.dllearner.core.OntologyFormat format){
-		Reasoner kaon2Reasoner = KAON2Reasoner.getKAON2Reasoner(kb);
-		
-		String kaon2Format = null;
-		if(format.equals(org.dllearner.core.OntologyFormat.RDF_XML))
-			kaon2Format = OntologyFileFormat.OWL_RDF;
-		else {
-			System.err.println("Warning: Cannot export format " + format + ". Exiting.");
-			System.exit(0);
-		}
-		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        URI ontologyURI = URI.create("http://example.com");
+        URI physicalURI = file.toURI();
+        SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
+        manager.addURIMapper(mapper);
+        OWLOntology ontology;
 		try {
-			kaon2Reasoner.getOntology().saveOntology(kaon2Format,file,"ISO-8859-1");
-		} catch (KAON2Exception e) {
+			ontology = manager.createOntology(ontologyURI);
+			OWLAPIReasoner.fillOWLAPIOntology(manager,ontology,kb);
+			manager.saveOntology(ontology);			
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (UnknownOWLOntologyException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InterruptedException e) {
+		} catch (OWLOntologyStorageException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}
+
+		
+//		Reasoner kaon2Reasoner = KAON2Reasoner.getKAON2Reasoner(kb);
+//		
+//		String kaon2Format = null;
+//		if(format.equals(org.dllearner.core.OntologyFormat.RDF_XML))
+//			kaon2Format = OntologyFileFormat.OWL_RDF;
+//		else {
+//			System.err.println("Warning: Cannot export format " + format + ". Exiting.");
+//			System.exit(0);
+//		}
+//		
+//		try {
+//			kaon2Reasoner.getOntology().saveOntology(kaon2Format,file,"ISO-8859-1");
+//		} catch (KAON2Exception e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}		
 	}
 	
 	public URL getURL() {
