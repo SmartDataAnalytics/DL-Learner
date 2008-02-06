@@ -41,7 +41,7 @@ function getarticle($subject,$fromCache)
 	$sid = $_GET['sid'];
 	session_id($sid);
 	session_start();
-	$articles=$_SESSION['articles'];
+	if (isset($_SESSION['articles'])) $articles=$_SESSION['articles'];
 	$id=$_SESSION['id'];
 	$ksID=$_SESSION['ksID'];
 	session_write_close();
