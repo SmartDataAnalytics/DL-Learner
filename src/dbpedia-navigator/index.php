@@ -42,7 +42,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   <body>
 
 <!--  <h1>DBpedia Navigator</h1> -->
-<div><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Learn" class="button" onclick="xajax_learnConcept();return false;" />&nbsp;&nbsp;<span id="conceptlink"></span><span id="Loading" style="display:none">Server Call... <input type="button" value="Stop" class="button" onclick="xajax_stopServerCall();return false;" /></span></div>
+<div><table border="0" width="100%"><tr><td width="35%"><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" /></td><td width="50%"><span id="conceptlink"></span></td><td width="15%"><span id="Loading" style="display:none">Server Call... <img src="images/remove.png" onclick="xajax_stopServerCall();return false;" /></span></td></tr></table></div>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
@@ -81,7 +81,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			<a href="http://www.w3.org/2001/sw/DataAccess/"><img src="images/sw-sparql-green.png" alt="SPARQL logo"/></a>
 		</div>
 		
-	
+		<input type="button" value="Learn" class="button" onclick="xajax_learnConcept();return false;" />	
 		
 	</div><!-- END leftSidebar -->
 

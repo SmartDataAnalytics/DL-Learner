@@ -118,7 +118,7 @@ function getarticle($subject,$fromCache)
 			
 			//BUILD ARTICLE TITLE
 			$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0];
-			
+			session_start();
 			//store article in session, to navigate between last 5 articles quickly
 			$contentArray=array('content' => $content,'subject' => $artTitle);
 			if (!isset($_SESSION['nextArticle'])){
@@ -153,6 +153,7 @@ function getarticle($subject,$fromCache)
 		}
 	}
 	else {
+		session_start();
 		//Article is in session
 		$content=$_SESSION['articles'][$fromCache]['content'];
 		$artTitle=$_SESSION['articles'][$fromCache]['subject'];
