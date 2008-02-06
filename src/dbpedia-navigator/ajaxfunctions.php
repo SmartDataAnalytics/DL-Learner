@@ -140,12 +140,7 @@ function getarticle($subject,$fromCache)
 				$array["http://dbpedia.org/resource/".str_replace(" ","_",$subject)]="http://dbpedia.org/resource/".str_replace(" ","_",$subject);
 				$_SESSION['positive']=$array;
 			}
-				
-			
-			//BUILD SEARCHRESULT
-			if ($fromCache==-1) 
-				$searchResult.="<a href=\"\" onclick=\"xajax_getsubjects('".$subject."');return false;\">Show more Results</a>";
-						
+									
 		} catch (Exception $e)
 		{
 			$content=$e->getMessage();
@@ -158,6 +153,10 @@ function getarticle($subject,$fromCache)
 		$content=$_SESSION['articles'][$fromCache]['content'];
 		$artTitle=$_SESSION['articles'][$fromCache]['subject'];
 	}
+	
+	//BUILD SEARCHRESULT
+	if ($fromCache==-1) 
+		$searchResult.="<a href=\"\" onclick=\"xajax_getsubjects('".$subject."');return false;\">Show more Results</a>";
 	
 	//Build lastArticles
 	if (isset($_SESSION['articles'])){
@@ -339,8 +338,9 @@ function getSubjectsFromConcept($concept)
 	session_start();
 	$id=$_SESSION['id'];
 	$ksID=$_SESSION['ksID'];
-	session_write_stop();
-	setRunning("true");
+	session_write_close();
+	
+	setRunning($id,"true");
 	
 	$content="";
 	try{
@@ -354,7 +354,7 @@ function getSubjectsFromConcept($concept)
 	} catch (Exception $e){
 		$content=$e->getMessage();
 	}
-		
+	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("searchcontent", "innerHTML", $content);
 	return $objResponse;
