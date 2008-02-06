@@ -106,7 +106,7 @@ class DLLearnerConnection
 		$query="SELECT ?pred ?obj ".
 			   "WHERE {<http://dbpedia.org/resource/".str_replace(' ','_',$label)."> ?pred ?obj}";
 		$result=$this->getSparqlResult($query);
-		if (!isset($result->item)) throw new Exception("Your query brought no result."); 
+		if (!isset($result->item)) throw new Exception("Your query brought no result. The Label-Search is started."); 
 		$ret=array();
 		foreach ($result->item as $results){
 				$value=$results->item[1];
