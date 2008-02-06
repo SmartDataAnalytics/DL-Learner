@@ -42,7 +42,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   <body>
 
 <!--  <h1>DBpedia Navigator</h1> -->
-<div><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Learn" class="button" onclick="xajax_learnConcept();return false;" />&nbsp;&nbsp;<span id="conceptlink"></span><span id="Loading" style="display:none">Loading...</span></div>
+<div><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Learn" class="button" onclick="xajax_learnConcept();return false;" />&nbsp;&nbsp;<span id="conceptlink"></span><span id="Loading" style="display:none">Server Call... <input type="button" value="Stop" class="button" onclick="xajax_stopServerCall();return false;" /></span></div>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>

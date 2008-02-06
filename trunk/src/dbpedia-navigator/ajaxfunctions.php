@@ -1,22 +1,26 @@
 <?php
 ini_set('max_execution_time',200);
-$sid = $_GET['sid'];
-session_id($sid);
-session_start();
 
 require("ajax.php");
 $xajax->processRequest();
 
 function getsubjects($label)
 {
-	require_once("DLLearnerConnection.php");
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
+	$id=$_SESSION['id'];
+	$ksID=$_SESSION['ksID'];
+	session_write_close();
+	
+	setRunning($id,"true");
 	
 	//initialise content
 	$content="";
 	try{
-		$sc=new DLLearnerConnection($_SESSION['id'],$_SESSION['ksID']);
-		
-		
+		require_once("DLLearnerConnection.php");
+		$sc=new DLLearnerConnection($id,$ksID);
+				
 		$subjects=$sc->getSubjects($label);
 		
 		foreach ($subjects as $subject)
@@ -34,9 +38,18 @@ function getsubjects($label)
 
 function getarticle($subject,$fromCache)
 {
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
+	$articles=$_SESSION['articles'];
+	$id=$_SESSION['id'];
+	$ksID=$_SESSION['ksID'];
+	session_write_close();
+	setRunning($id,"true");
+	
 	//if article is in session, get it out of the session
-	if (isset($_SESSION['articles'])){
-		foreach ($_SESSION['articles'] as $key => $value)
+	if (isset($articles)){
+		foreach ($articles as $key => $value)
 		{
 			if ($value['subject']==$subject){
 				$fromCache=$key;
@@ -59,7 +72,7 @@ function getarticle($subject,$fromCache)
 		//if there are errors see catch block
 		try{
 			require_once("DLLearnerConnection.php");
-			$sc=new DLLearnerConnection($_SESSION['id'],$_SESSION['ksID']);
+			$sc=new DLLearnerConnection($id,$ksID);
 			$triples=$sc->getTriples($subject);
 			
 			//BUILD ARTICLE			
@@ -68,7 +81,7 @@ function getarticle($subject,$fromCache)
 			
 			// display a picture if there is one
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
-				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0].'" alt="Picture of '.$subject_nice.'" style="float:right; max-width:200px;" \>';
+				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0].'" alt="Picture of '.$subject.'" style="float:right; max-width:200px;" \>';
 					
 			// add short description in english
 			$content.="<h4>Short Description</h4><p>".urldecode($triples['http://dbpedia.org/property/abstract'][0])."</p>";
@@ -131,7 +144,8 @@ function getarticle($subject,$fromCache)
 			
 			//BUILD SEARCHRESULT
 			if ($fromCache==-1) 
-				$searchResult.="<a href=\"\" onclick=\"xajax_getsubjects('".$subject."');return false;\">Show more Results</a>";			
+				$searchResult.="<a href=\"\" onclick=\"xajax_getsubjects('".$subject."');return false;\">Show more Results</a>";
+						
 		} catch (Exception $e)
 		{
 			$content=$e->getMessage();
@@ -164,6 +178,9 @@ function getarticle($subject,$fromCache)
 
 function toPositive($subject)
 {
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
 	unset($_SESSION['negative'][$subject]);
 	if (!isset($_SESSION['positive'])){
 		$array=array($subject => $subject);
@@ -182,6 +199,9 @@ function toPositive($subject)
 
 function toNegative($subject)
 {
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
 	unset($_SESSION['positive'][$subject]);
 	if (!isset($_SESSION['negative'])){
 		$array=array($subject => $subject);
@@ -200,6 +220,9 @@ function toNegative($subject)
 
 function clearPositives()
 {
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
 	unset($_SESSION['positive']);
 	
 	$objResponse = new xajaxResponse();
@@ -209,6 +232,9 @@ function clearPositives()
 
 function clearNegatives()
 {
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
 	unset($_SESSION['negative']);
 	
 	$objResponse = new xajaxResponse();
@@ -218,6 +244,9 @@ function clearNegatives()
 
 function showInterests()
 {
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
 	//add Positives and Negatives to Interests
 	$posInterests="";
 	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
@@ -236,6 +265,9 @@ function showInterests()
 
 function removePosInterest($subject)
 {
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
 	unset($_SESSION['positive'][$subject]);
 		
 	$objResponse = new xajaxResponse();
@@ -245,6 +277,9 @@ function removePosInterest($subject)
 
 function removeNegInterest($subject)
 {
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
 	unset($_SESSION['negative'][$subject]);
 		
 	$objResponse = new xajaxResponse();
@@ -254,29 +289,40 @@ function removeNegInterest($subject)
 
 function learnConcept()
 {
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
+		
+	$positives=$_SESSION['positive'];
+	$negatives=$_SESSION['negative'];
+	$id=$_SESSION['id'];
+	$ksID=$_SESSION['ksID'];
+	session_write_close();
+	setRunning($id,"true");
 	$concept="";
-	if (isset($_SESSION['positive']))
+	if (isset($positives))
 	{
 		$posArray=array();
-		foreach ($_SESSION['positive'] as $pos)
+		foreach ($positives as $pos)
 			$posArray[]=$pos;
 		$negArray=array();
-		if (isset($_SESSION['negative']))
-			foreach ($_SESSION['negative'] as $neg)
+		if (isset($negatives))
+			foreach ($negatives as $neg)
 				$negArray[]=$neg;
 			
 		require_once("DLLearnerConnection.php");
-		$sc=new DLLearnerConnection($_SESSION['id'],$_SESSION['ksID']);
-		
-		
-		$concepts=$sc->getConceptFromExamples($posArray,$negArray);
-		
-		$_SESSION['lastLearnedConcept']=$concepts;
-		$concept.="<table border=0>\n";
-		foreach ($concepts as $con){
-			$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".$con."');return false;\" />".$con."</a></td></tr>";
+		$sc=new DLLearnerConnection($id, $ksID);
+		try{
+			$concepts=$sc->getConceptFromExamples($posArray,$negArray);
+			
+			$concept.="<table border=0>\n";
+			foreach ($concepts as $con){
+				$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".$con."');return false;\" />".$con."</a></td></tr>";
+			}
+			$concept.="</table>";
+		} catch(Exception $e){
+			$concept.=$e->getMessage();
 		}
-		$concept.="</table>";
 	}
 	else $concept="You must choose at least one positive example.";
 	
@@ -287,10 +333,18 @@ function learnConcept()
 
 function getSubjectsFromConcept($concept)
 {
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
+	$id=$_SESSION['id'];
+	$ksID=$_SESSION['ksID'];
+	session_write_stop();
+	setRunning("true");
+	
 	$content="";
 	try{
 		require_once("DLLearnerConnection.php");
-		$sc=new DLLearnerConnection($_SESSION['id'],$_SESSION['ksID']);
+		$sc=new DLLearnerConnection($id,$ksID);
 		$subjects=$sc->getSubjectsFromConcept($concept);
 		foreach ($subjects as $subject)
 		{
@@ -305,9 +359,29 @@ function getSubjectsFromConcept($concept)
 	return $objResponse;
 }
 
+function stopServerCall()
+{
+	$sid = $_GET['sid'];
+	session_id($sid);
+	session_start();
+	$id=$_SESSION['id'];
+	session_write_close();
+	setRunning($id,"false");
+	$objResponse=new xajaxResponse();
+	//$objResponse->append("searchcontent", "innerHTML", "Stop");
+	return $objResponse;
+}
+
 ///////////////////////
 // Helper Functions. //
 ///////////////////////
+
+function setRunning($id,$running)
+{
+	$file=fopen($id.".temp","w");
+	fwrite($file, $running);
+	fclose($file);
+}
 
 function get_triple_table($triples) {
 

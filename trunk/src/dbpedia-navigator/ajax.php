@@ -28,4 +28,5 @@ $xajax->registerFunction('clearNegatives');
 $xajax->registerFunction('showInterests');
 $xajax->registerFunction('removePosInterest');
 $xajax->registerFunction('removeNegInterest');
+$xajax->registerFunction('stopServerCall');
 ?>
