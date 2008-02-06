@@ -85,6 +85,15 @@ class DLLearnerConnection
 				$seconds = $i * $sleeptime;
 				
 				$i++;
+				
+				//look, if algorithm was stopped
+				$file=fopen($this->id.".temp","r");
+				$run=fgets($file);
+				fclose($file);
+				if ($run=="false"){
+					$this->client->stop($this->id);
+					throw new Exception("Learning stopped");
+				}
 			} while($seconds<$this->ttl&&$running);
 			
 			$this->client->stop($this->id);
@@ -115,7 +124,6 @@ class DLLearnerConnection
 		$running=true;
 		$i = 1;
 		$sleeptime = 1;
-			
 		do {
 			// sleep a while
 			sleep($sleeptime);
@@ -129,6 +137,14 @@ class DLLearnerConnection
 				
 			$seconds = $i * $sleeptime;
 			$i++;
+			//look, if algorithm was stopped
+			$file=fopen($this->id.".temp","r");
+			$run=fgets($file);
+			fclose($file);
+			if ($run=="false"){
+				$this->client->stopSparqlQuery($id,$queryID);
+				throw new Exception("Query stopped");
+			}
 		} while($seconds<$this->ttl);
 		$this->client->stopSparqlQuery($id,$queryID);
 	}
