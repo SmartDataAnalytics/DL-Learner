@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -37,6 +38,9 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 
 public class ROLearner extends LearningAlgorithm {
+	
+	private static Logger logger = Logger
+	.getLogger(LearningAlgorithm.class);	
 	
 	public enum Heuristic {	LEXICOGRAPHIC, FLEXIBLE	}
 	
@@ -461,7 +465,7 @@ public class ROLearner extends LearningAlgorithm {
 			loop++;
 			
 			if(!quiet)
-				System.out.println("--- loop " + loop + " finished ---");	
+				logger.debug("--- loop " + loop + " finished ---");	
 			
 		}
 		
@@ -864,15 +868,15 @@ public class ROLearner extends LearningAlgorithm {
 			// Refinementoperator auf Konzept anwenden
 			String bestNodeString = "currently best node: " + candidatesStable.last();
 			// searchTree += bestNodeString + "\n";
-			System.out.println(bestNodeString);
+			logger.info(bestNodeString);
 			String expandedNodeString = "next expanded node: " + candidates.last();
 			// searchTree += expandedNodeString + "\n";
-			System.out.println(expandedNodeString);		
-			System.out.println("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
+			logger.debug(expandedNodeString);		
+			logger.debug("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
 			String expansionString = "horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion;
 			// searchTree += expansionString + "\n";
-			System.out.println(expansionString);
-			System.out.println("size of candidate set: " + candidates.size());
+			logger.debug(expansionString);
+			logger.debug("size of candidate set: " + candidates.size());
 			// System.out.println("properness max recursion depth: " + maxRecDepth);
 			// System.out.println("max. number of one-step refinements: " + maxNrOfRefinements);
 			// System.out.println("max. number of children of a node: " + maxNrOfChildren);
@@ -916,9 +920,9 @@ public class ROLearner extends LearningAlgorithm {
 			System.out.println("onnf time percentage: " + df.format(onnfTimePercentage) + "%");
 			System.out.println("shortening time percentage: " + df.format(shorteningTimePercentage) + "%");			
 		}
-		System.out.println("properness tests (reasoner/short concept/too weak list): " + propernessTestsReasoner + "/" + propernessTestsAvoidedByShortConceptConstruction 
+		logger.debug("properness tests (reasoner/short concept/too weak list): " + propernessTestsReasoner + "/" + propernessTestsAvoidedByShortConceptConstruction 
 				+ "/" + propernessTestsAvoidedByTooWeakList);
-		System.out.println("concept tests (reasoner/too weak list/overly general list/redundant concepts): " + conceptTestsReasoner + "/"
+		logger.debug("concept tests (reasoner/too weak list/overly general list/redundant concepts): " + conceptTestsReasoner + "/"
 				+ conceptTestsTooWeakList + "/" + conceptTestsOverlyGeneralList + "/" + redundantConcepts);	
 	}
 	

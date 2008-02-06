@@ -32,6 +32,8 @@ public class Stat {
     private int count = 0;
     private double sum = 0;
     private double squareSum = 0;
+    private double min = Double.MAX_VALUE;
+    private double max = Double.MIN_NORMAL;
 
     /**
      * Add a number to this object.
@@ -43,6 +45,10 @@ public class Stat {
         count++;
         sum += number;
         squareSum += number * number;
+        if(number<min)
+        	min=number;
+        if(number>max)
+        	max=number;
     }
 
     /**
@@ -93,5 +99,19 @@ public class Stat {
     	else
     		return root;
     }
+
+	/**
+	 * @return the min
+	 */
+	public double getMin() {
+		return min;
+	}
+
+	/**
+	 * @return the max
+	 */
+	public double getMax() {
+		return max;
+	}
 
 }

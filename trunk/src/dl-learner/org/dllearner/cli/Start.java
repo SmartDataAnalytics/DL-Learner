@@ -710,4 +710,12 @@ public class Start {
 		return la;
 	}
 
+	public LearningProblem getLearningProblem() {
+		return lp;
+	}
+
+	public ReasoningService getReasoningService() {
+		return rs;
+	}
+
 }

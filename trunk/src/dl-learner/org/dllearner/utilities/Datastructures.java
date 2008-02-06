@@ -22,6 +22,7 @@ package org.dllearner.utilities;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.core.dl.AtomicConcept;
 import org.dllearner.core.dl.AtomicRole;
@@ -97,6 +98,14 @@ public class Datastructures {
 			ret[a++]=((AtomicConcept)i.next()).getName();
 		}
 		Arrays.sort(ret);
+		return ret;
+	}	
+	
+	public static Set<String> individualSetToStringSet(Set<Individual> individuals) {
+		Set<String> ret = new TreeSet<String>();
+		for(Individual ind : individuals) {
+			ret.add(ind.toString());
+		}
 		return ret;
 	}	
 }
