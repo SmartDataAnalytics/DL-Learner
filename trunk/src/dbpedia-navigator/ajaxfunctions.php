@@ -368,7 +368,6 @@ function stopServerCall()
 	session_write_close();
 	setRunning($id,"false");
 	$objResponse=new xajaxResponse();
-	//$objResponse->append("searchcontent", "innerHTML", "Stop");
 	return $objResponse;
 }
 
