@@ -105,13 +105,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	<div id="rightSidebar">
 
 		<div class="box">
-		  <div class="boxtitlewithbutton" id="positivesboxtitle">search relevant &nbsp; <img src="images/remove.png" onclick="xajax_clearPositives()" /> </div>
+		  <div class="boxtitlewithbutton" id="positivesboxtitle">search relevant &nbsp; <img src="<?php print $path;?>images/remove.png" onclick="xajax_clearPositives()" /> </div>
 		  <div class="boxcontent" id="Positives">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
 		<div class="box">
-		  <div class="boxtitlewithbutton" id="negativesboxtitle">not relevant &nbsp; <img src="images/remove.png" onclick="xajax_clearNegatives()" /> </div>
+		  <div class="boxtitlewithbutton" id="negativesboxtitle">not relevant &nbsp; <img src="<?php print $path;?>images/remove.png" onclick="xajax_clearNegatives()" /> </div>
 		  <div class="boxcontent" id="Negatives">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
