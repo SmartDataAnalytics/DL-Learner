@@ -11,6 +11,9 @@ $ids=$sc->getIDs();
 $_SESSION['id']=$ids[0];
 $_SESSION['ksID']=$ids[1];
 
+if (isset($_GET['path'])) $path=$_GET['path'];
+else $path="";
+
 // debugging code
 // echo '<pre>';
 // $sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
@@ -28,8 +31,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   <head>
     <title>DBpedia Navigator</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="default.css"/>
-    <?php $xajax->printJavascript('xajax/'); ?>
+    <link rel="stylesheet" href="<?php print $path;?>default.css"/>
+    <?php $xajax->printJavascript($path.'xajax/'); ?>
 	<script type="text/javascript">
         showLoading = function() {
             xajax.$('Loading').style.display='inline';
@@ -39,10 +42,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
         };
   </script>
   </head>
-  <body <?php if (isset($_GET['resource'])) print "onLoad=\"xajax_getarticle('".$_GET['resource']."',-1);return false;\">";unset($_GET['resource']);?>>
+  <body <?php if (isset($_GET['resource'])) print "onLoad=\"xajax_getarticle('".$_GET['resource']."',-1);return false;\"";unset($_GET['resource']);?>>
 
 <!--  <h1>DBpedia Navigator</h1> -->
-<div><table border="0" width="100%"><tr><td width="35%"><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" /></td><td width="50%"><span id="conceptlink"></span></td><td width="15%"><span id="Loading" style="display:none">Server Call... <img src="images/remove.png" onclick="xajax_stopServerCall();return false;" /></span></td></tr></table></div>
+<div><table border="0" width="100%"><tr><td width="35%"><img src="<?php print $path;?>images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" /></td><td width="50%"><span id="conceptlink"></span></td><td width="15%"><span id="Loading" style="display:none">Server Call... <img src="<?php print $path;?>images/remove.png" onclick="xajax_stopServerCall();return false;" /></span></td></tr></table></div>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
@@ -77,8 +80,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			... and implemented by <a href="http://jens-lehmann.org">Jens Lehmann</a> and
 			Sebastian Knappe at	the <a href="http:/aksw.org">AKSW</a> research group (University of Leipzig).</p>
 			
-			<a href="http://www.w3.org/2004/OWL/"><img src="images/sw-owl-green.png" alt="OWL logo" /></a>
-			<a href="http://www.w3.org/2001/sw/DataAccess/"><img src="images/sw-sparql-green.png" alt="SPARQL logo"/></a>
+			<a href="http://www.w3.org/2004/OWL/"><img src="<?php print $path;?>images/sw-owl-green.png" alt="OWL logo" /></a>
+			<a href="http://www.w3.org/2001/sw/DataAccess/"><img src="<?php print $path;?>images/sw-sparql-green.png" alt="SPARQL logo"/></a>
 		</div>
 		
 		<input type="button" value="Learn" class="button" onclick="xajax_learnConcept();return false;" />	
@@ -132,12 +135,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			$uri = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 			
 			echo '<div><a href="http://validator.w3.org/check?uri='.$uri.'"';
-			echo '><img src="images/valid-xhtml10.png" alt="valid XHTML 1.0" /></a>'."\n";
+			echo '><img src="'.$path.'images/valid-xhtml10.png" alt="valid XHTML 1.0" /></a>'."\n";
 			echo '<a href="http://jigsaw.w3.org/css-validator/validator?uri='.$uri.'"';
-			echo '><img src="images/valid-css.png" alt="valid CSS" /></a></div>'."\n";
+			echo '><img src="'.$path.'images/valid-css.png" alt="valid CSS" /></a></div>'."\n";
 			?>	
 		</div>	
-		<p><a href='rebuild.php'>rebuild [restart session and redownload WSDL file (for debugging)]</a></p>
+		<p><a href='<?php print $path;?>rebuild.php'>rebuild [restart session and redownload WSDL file (for debugging)]</a></p>
 </div>
 
 <div id="todo">

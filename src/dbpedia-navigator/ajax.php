@@ -1,8 +1,10 @@
 <?php
 require_once ("xajax/xajax_core/xajax.inc.php");
 $sid = session_id();
+if (isset($_GET['path'])) $path=$_GET['path'];
+else $path="";
 
-$xajax = new xajax("ajaxfunctions.php?sid=$sid");
+$xajax = new xajax($path."ajaxfunctions.php?sid=$sid&path=".$path);
 $xajax->configureMany(array('debug'=>true));
 
 $xajax->register(XAJAX_FUNCTION, 'getsubjects', array(
@@ -25,7 +27,6 @@ $xajax->register(XAJAX_FUNCTION,'getSubjectsFromConcept', array(
 $xajax->registerFunction('toNegative');
 $xajax->registerFunction('clearPositives');
 $xajax->registerFunction('clearNegatives');
-$xajax->registerFunction('showInterests');
 $xajax->registerFunction('removePosInterest');
 $xajax->registerFunction('removeNegInterest');
 $xajax->registerFunction('stopServerCall');
