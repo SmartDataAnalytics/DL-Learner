@@ -389,7 +389,7 @@ function stopServerCall()
 
 function setRunning($id,$running)
 {
-	$file=fopen($id.".temp","w");
+	$file=fopen("./temp/".$id.".temp","w");
 	fwrite($file, $running);
 	fclose($file);
 }
