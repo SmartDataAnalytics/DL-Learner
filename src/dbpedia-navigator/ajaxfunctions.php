@@ -93,7 +93,7 @@ function getarticle($subject,$fromCache)
 				
 			// give the link to the corresponding Wikipedia article
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
-				$content .= '<p><img src="images/wikipedia_favicon.png" alt"Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0].'">view Wikipedia article</a>, '; 
+				$content .= '<p><img src="'.$_GET['path'].'images/wikipedia_favicon.png" alt"Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0].'">view Wikipedia article</a>, '; 
 			$content .= '<a href="'.$subject.'">view DBpedia resource description</a></p>';
 	
 			// display a list of classes
