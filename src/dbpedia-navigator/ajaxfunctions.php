@@ -177,13 +177,22 @@ function getarticle($subject,$fromCache)
 		}
 	}
 	
+	//add Positives and Negatives to Interests
+	$posInterests="";
+	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
+		$posInterests.=urldecode(substr (strrchr ($pos, "/"), 1))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	$negInterests="";
+	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
+		$negInterests.=urldecode(substr (strrchr ($neg, "/"), 1))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
 	
 	$objResponse->assign("articlecontent", "innerHTML", $content);
 	$objResponse->assign("ArticleTitle","innerHTML",$artTitle);
 	$objResponse->assign("lastarticles","innerHTML",$lastArticles);
 	$objResponse->assign("searchcontent", "innerHTML", $searchResult);
-		
-	$objResponse->call('xajax_showInterests');
+	$objResponse->assign('Positives','innerHTML',$posInterests);
+	$objResponse->assign('Negatives','innerHTML',$negInterests);	
 	return $objResponse;
 }
 
@@ -250,27 +259,6 @@ function clearNegatives()
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("Negatives", "innerHTML", "");
-	return $objResponse;
-}
-
-function showInterests()
-{
-	$sid = $_GET['sid'];
-	session_id($sid);
-	session_start();
-	//add Positives and Negatives to Interests
-	$posInterests="";
-	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
-		$posInterests.=urldecode(substr (strrchr ($pos, "/"), 1))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
-	}
-	$negInterests="";
-	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
-		$negInterests.=urldecode(substr (strrchr ($neg, "/"), 1))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
-	}
-	
-	$objResponse=new xajaxResponse();
-	$objResponse->assign('Positives','innerHTML',$posInterests);
-	$objResponse->assign('Negatives','innerHTML',$negInterests);
 	return $objResponse;
 }
 
