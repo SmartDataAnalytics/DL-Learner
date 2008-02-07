@@ -39,9 +39,9 @@ import org.dllearner.utilities.ConceptComparator;
  */
 public class ExampleBasedNode {
 
-	// TODO: add example based variables here
-	@SuppressWarnings({"unused"})
+	// example based variables here
 	private Set<Individual> coveredPositives;
+	private Set<Individual> coveredNegatives;
 	
 	// TOP ist einfach das TOP-Konzept, also das einzige welches nicht evaluiert wird
 	public enum QualityEvaluationMethod { TOP, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST };
@@ -189,6 +189,22 @@ public class ExampleBasedNode {
 
 	public void setQualityEvaluationMethod(QualityEvaluationMethod qualityEvaluationMethod) {
 		this.qualityEvaluationMethod = qualityEvaluationMethod;
+	}
+
+	public Set<Individual> getCoveredPositives() {
+		return coveredPositives;
+	}
+
+	public void setCoveredPositives(Set<Individual> coveredPositives) {
+		this.coveredPositives = coveredPositives;
+	}
+
+	public Set<Individual> getCoveredNegatives() {
+		return coveredNegatives;
+	}
+
+	public void setCoveredNegatives(Set<Individual> coveredNegatives) {
+		this.coveredNegatives = coveredNegatives;
 	}
 	
 }

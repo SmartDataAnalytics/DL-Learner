@@ -21,6 +21,7 @@ package org.dllearner.algorithms.refexamples;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.refinement.RefinementOperator;
 import org.dllearner.algorithms.refinement.RhoDown;
@@ -35,6 +37,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.Concept;
+import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Top;
@@ -56,6 +59,15 @@ import org.dllearner.utilities.Helper;
  * can be misclassified (everything above is considered a too weak
  * concept wrt. the noise percentage).
  * 
+ * TODO: Solve subsumption problems. It is easy to implement approximate fast
+ * instance checks. However, subsumption is difficult to optimise. It should by
+ * analysed whether it is reasonable to perform instance comparisions instead
+ * of subsumption checks, e.g. a concept is only included in the search tree
+ * when it covers strictly less examples than its parent. Note, that this does
+ * not mean that concepts not bearing an advantage in classification are thrown 
+ * away. They are just handled like improper refinements. [TODO: How does this 
+ * differ from not checking subsumption at all?]
+ * 
  * @author Jens Lehmann
  *
  */
@@ -68,7 +80,14 @@ public class ExampleBasedROLearner {
 	private ReasoningService rs;
 	private PosNegLP learningProblem;
 	private PosOnlyDefinitionLP posOnlyLearningProblem;
-	private boolean posOnly = false;	
+	private boolean posOnly = false;
+	private int nrOfExamples;
+	private int nrOfPositiveExamples;
+	private int nrOfNegativeExamples;
+	
+	// noise regulates how many positives can be misclassified and when the algorithm terminates
+	private double noise = 0.0;
+	private int allowedMisclassifications = 0;
 	
 	// search tree options
 	private boolean writeSearchTree;
@@ -153,7 +172,7 @@ public class ExampleBasedROLearner {
 			ExampleBasedHeuristic heuristic,
 			// Set<AtomicConcept> allowedConcepts,
 			// Set<AtomicRole> allowedRoles, 
-			double noisePercentage,
+			double noise,
 			boolean writeSearchTree, 
 			boolean replaceSearchTree, 
 			File searchTreeFile, 
@@ -162,39 +181,56 @@ public class ExampleBasedROLearner {
 			boolean useShortConceptConstruction
 	) {	
 		if(learningProblem instanceof PosNegLP) {
-			this.learningProblem = (PosNegLP) learningProblem;
+			PosNegLP lp = (PosNegLP) learningProblem;
+			this.learningProblem = lp;
 			posOnly = false;
+			nrOfPositiveExamples = lp.getPositiveExamples().size();
+			nrOfNegativeExamples = lp.getNegativeExamples().size();
 		} else if(learningProblem instanceof PosOnlyDefinitionLP) {
-			this.posOnlyLearningProblem = (PosOnlyDefinitionLP) learningProblem;
+			PosOnlyDefinitionLP lp = (PosOnlyDefinitionLP) learningProblem;
+			this.posOnlyLearningProblem = lp;
 			posOnly = true;
+			nrOfPositiveExamples = lp.getPositiveExamples().size();
+			nrOfNegativeExamples = lp.getPseudoNegatives().size();
 		}
+		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 		this.rs = rs;
 		this.operator = (RhoDown) operator;
 		// initialise candidate set with heuristic as ordering
 		candidates = new TreeSet<ExampleBasedNode>(heuristic);
-		// this.noisePercentage ...
+		this.noise = noise;
 		this.writeSearchTree = writeSearchTree;
 		this.replaceSearchTree = replaceSearchTree;
 		this.searchTreeFile = searchTreeFile;
 		this.useTooWeakList = useTooWeakList;
 		this.useOverlyGeneralList = useOverlyGeneralList;
 		this.useShortConceptConstruction = useShortConceptConstruction;
+		
+		logger.setLevel(Level.DEBUG);
 	}
 	
 	public void start() {
+		
+		// calculate quality threshold required for a solution
+		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
+		
 		// start search with most general concept
 		Top top = new Top();
 		ExampleBasedNode topNode = new ExampleBasedNode(top);
 		// top covers all negatives
 		int coveredNegativeExamples = getNumberOfNegatives();
 		topNode.setCoveredNegativeExamples(coveredNegativeExamples);
+		topNode.setCoveredPositives(learningProblem.getPositiveExamples());
+		topNode.setCoveredNegatives(learningProblem.getNegativeExamples());
 		candidates.add(topNode);
 		candidatesStable.add(topNode);
+		
 		// note that TOP may already be a solution
-		solutionFound = (coveredNegativeExamples == 0);
-		solutions = new LinkedList<Concept>();
-		if(solutionFound)
-			solutions.add(top);
+		ExampleBasedNode bestNode = topNode;
+//		solutionFound = (coveredNegativeExamples == 0);
+//		solutions = new LinkedList<Concept>();
+//		if(solutionFound)
+//			solutions.add(top);
 		
 		int loop = 0;
 		
@@ -202,14 +238,17 @@ public class ExampleBasedROLearner {
 		
 		while(!solutionFound && !stop) {		
 			
-			// besten Knoten nach Heuristik auswählen
-			ExampleBasedNode bestNode = candidates.last();
-			// besten Knoten erweitern			
-			// newCandidates = new TreeSet<Node>(nodeComparator);	
+			printStatistics(false);
+			
+			// chose best node according to heuristics
+			bestNode = candidates.last();
+			// extend best node	
 			newCandidates.clear();
+			// TODO: why is the best node tempoariliy removed from the candidates set?
 			candidates.remove(bestNode);
 			extendNodeProper(bestNode, bestNode.getHorizontalExpansion()+1);
 			candidates.add(bestNode);
+			// newCandidates has been filled during node expansion
 			candidates.addAll(newCandidates);
 			candidatesStable.addAll(newCandidates);			
 						
@@ -373,7 +412,7 @@ public class ExampleBasedROLearner {
 							propernessTestsAvoidedByTooWeakList++;
 							conceptTestsTooWeakList++;
 							propernessDetected = true;
-							tooWeakList.add(refinement);
+							// tooWeakList.add(refinement);
 							
 							// Knoten wird direkt erzeugt (es ist buganfällig zwei Plätze
 							// zu haben, an denen Knoten erzeugt werden, aber es erscheint
@@ -436,39 +475,11 @@ public class ExampleBasedROLearner {
 			// schon existiert
 			if(nonRedundant) {
 			
-				// Knoten erzeugen
+				// newly created node
 				ExampleBasedNode newNode = new ExampleBasedNode(refinement);
 				// die -1 ist wichtig, da sonst keine gleich langen Refinements 
 				// für den neuen Knoten erlaubt wären z.B. person => male
 				newNode.setHorizontalExpansion(refinement.getLength()-1);
-
-				
-				// hier finden Tests statt, die Retrieval-Anfrage vermeiden sollen
-				/*
-				Integer n = evaluationCache.get(concept);
-				// Konzept gefunden
-				if(n!=null) {
-					// Knoten erzeugen
-					Node newNode = new Node(refinement);
-					newNode.setHorizontalExpansion(refinement.getLength()-1);
-					node.addChild(newNode);
-					
-					// too weak
-					if(n==-1) {
-						newNode.setTooWeak(true);
-					// nicht too weak
-					} else {
-						// feststellen, ob proper => geht so nicht
-						// gleiche covered negatives bedeutet nicht improper
-						boolean proper = (n==node.getCoveredNegativeExamples());
-						newNode.setCoveredNegativeExamples(n);
-						
-					}
-				// Konzept nicht gefunden => muss ausgewertet werden
-				} else {
-					toEvaluateConcepts.add(refinement);
-				}
-				*/
 				
 				boolean qualityKnown = false;
 				int quality = -2;
@@ -487,9 +498,59 @@ public class ExampleBasedROLearner {
 				if(!qualityKnown) {
 					long propCalcReasoningStart2 = System.nanoTime();
 					conceptTestsReasoner++;
-					quality = coveredNegativesOrTooWeak(refinement);
+					
+					// quality = coveredNegativesOrTooWeak(refinement);
+					
+					// determine individuals which have not been covered yet (more efficient than full retrieval)
+					Set<Individual> coveredPositives = node.getCoveredPositives();
+					Set<Individual> newlyCoveredPositives = new HashSet<Individual>();
+					
+					// calculate how many pos. examples are not covered by the
+					// parent node of the refinement
+					int misclassifications = nrOfPositiveExamples - coveredPositives.size();
+					
+					// iterate through all covered examples (examples which are not
+					// covered do not need to be tested, because they remain uncovered)
+					// TODO: DIG will be slow if we send each reasoner request individually
+					// (however if we send everything in one request, too many instance checks
+					// are performed => rely on fast instance checker [still to implement])
+					for(Individual i : coveredPositives) {
+						// TODO: move code to a separate function
+						if(quality != -1) {
+							boolean covered = rs.instanceCheck(refinement, i);
+							if(!covered)
+								misclassifications++;
+							else
+								newlyCoveredPositives.add(i);
+							
+							if(misclassifications > allowedMisclassifications)
+								quality = -1;
+							
+						}
+					}
+					
+					Set<Individual> newlyCoveredNegatives = null;
+					if(quality != -1) {
+						Set<Individual> coveredNegatives = node.getCoveredNegatives();
+						newlyCoveredNegatives = new HashSet<Individual>();
+					
+						for(Individual i : coveredNegatives) {
+							boolean covered = rs.instanceCheck(refinement, i);
+							if(covered)
+								newlyCoveredNegatives.add(i);
+						}
+					}
+					
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
 					newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.REASONER);
+					if(quality != -1) {
+						// quality is the number of misclassifications (if it is not too weak)
+						quality = (nrOfPositiveExamples - newlyCoveredPositives.size())
+							+ newlyCoveredNegatives.size();
+						newNode.setCoveredNegatives(newlyCoveredNegatives);
+						newNode.setCoveredPositives(newlyCoveredPositives);
+					}
+					
 				}
 
 				if(quality == -1) {
@@ -518,66 +579,6 @@ public class ExampleBasedROLearner {
 				node.addChild(newNode);
 			}			
 		}
-		
-		
-		/*
-		Iterator<Concept> it = refinements.iterator();
-		while(it.hasNext()) {
-			Concept refinement = it.next();
-			if(refinement.getLength()>node.getHorizontalExpansion()) {
-				// Test auf properness
-				long propCalcReasoningStart = System.nanoTime();
-				boolean isProper = !learningProblem.getReasoningService().subsumes(refinement, concept);
-				propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;
-				
-				if(isProper) {
-					long redundancyCheckTimeNsStart = System.nanoTime();
-					boolean nonRedundant = properRefinements.add(refinement);
-					redundancyCheckTimeNs += System.nanoTime() - redundancyCheckTimeNsStart;
-					
-					if(!nonRedundant)
-						redundantConcepts++;
-					
-					// es wird nur ein neuer Knoten erzeugt, falls das Konzept nicht
-					// schon existiert
-					if(nonRedundant) {
-					
-						// Knoten erzeugen
-						Node newNode = new Node(refinement);
-						// die -1 ist wichtig, da sonst keine gleich langen Refinements 
-						// für den neuen Knoten erlaubt wären z.B. person => male
-						newNode.setHorizontalExpansion(refinement.getLength()-1);
-						node.addChild(newNode);
-						
-						// Qualität des Knotens auswerten
-						long propCalcReasoningStart2 = System.nanoTime();
-						int quality = learningProblem.coveredNegativeExamplesOrTooWeak(refinement);
-						propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
-						
-						if(quality == -1) {
-							newNode.setTooWeak(true);
-						} else {
-							// Lösung gefunden
-							if(quality == 0) {
-								solutionFound = true;
-								solutions.add(refinement);
-							}			
-							
-							newNode.setCoveredNegativeExamples(quality);
-							newCandidates.add(newNode);
-							
-							// System.out.print(".");
-						}
-					}
-					
-					// jedes proper Refinement wird gelöscht
-					it.remove();
-
-				}
-			}
-		}
-		*/
-		
 		
 		
 		// es sind jetzt noch alle Konzepte übrig, die improper refinements sind
@@ -662,6 +663,7 @@ public class ExampleBasedROLearner {
 				+ conceptTestsTooWeakList + "/" + conceptTestsOverlyGeneralList + "/" + redundantConcepts);	
 	}
 	
+	@SuppressWarnings({"unused"})
 	private int coveredNegativesOrTooWeak(Concept concept) {
 		if(posOnly)
 			return posOnlyLearningProblem.coveredPseudoNegativeExamplesOrTooWeak(concept);

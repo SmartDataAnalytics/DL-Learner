@@ -250,6 +250,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			Helper.checkConcepts(rs, allowedConcepts);
 			usedConcepts = allowedConcepts;
 		} else if(ignoredConcepts != null) {
+			System.out.println(ignoredConcepts);
 			usedConcepts = Helper.computeConceptsUsingIgnoreList(rs, ignoredConcepts);
 		} else {
 			usedConcepts = Helper.computeConcepts(rs);
@@ -292,7 +293,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 				algHeuristic,
 				// usedConcepts,
 				// usedRoles,
-				noisePercentage,
+				noisePercentage/(double)100,
 				writeSearchTree,
 				replaceSearchTree,
 				searchTreeFile,
