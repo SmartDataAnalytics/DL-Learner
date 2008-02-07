@@ -125,7 +125,10 @@ function getarticle($subject,$fromCache)
 			
 			//BUILD ARTICLE TITLE
 			$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0];
+			
+			//Restart the Session
 			session_start();
+			
 			//store article in session, to navigate between last 5 articles quickly
 			$contentArray=array('content' => $content,'subject' => $artTitle);
 			if (!isset($_SESSION['nextArticle'])){
@@ -139,12 +142,16 @@ function getarticle($subject,$fromCache)
 				
 			//Add Positives to Session
 			if (!isset($_SESSION['positive'])){
-				$array=array("http://dbpedia.org/resource/".str_replace(" ","_",$subject) => "http://dbpedia.org/resource/".str_replace(" ","_",$subject));
+				if (isset($triples['http://dbpedia.org/property/redirect'])){
+					$array=array($triples['http://dbpedia.org/property/redirect'][0] => $triples['http://dbpedia.org/property/redirect'][0]);
+				}
+				else $array=array("http://dbpedia.org/resource/".str_replace(" ","_",$subject) => "http://dbpedia.org/resource/".str_replace(" ","_",$subject));
 				$_SESSION['positive']=$array;
 			}
 			else{
 				$array=$_SESSION['positive'];
-				$array["http://dbpedia.org/resource/".str_replace(" ","_",$subject)]="http://dbpedia.org/resource/".str_replace(" ","_",$subject);
+				if (isset($triples['http://dbpedia.org/property/redirect'])) $array[$triples['http://dbpedia.org/property/redirect'][0]] = $triples['http://dbpedia.org/property/redirect'][0];
+				else $array["http://dbpedia.org/resource/".str_replace(" ","_",$subject)]="http://dbpedia.org/resource/".str_replace(" ","_",$subject);
 				$_SESSION['positive']=$array;
 			}
 									
@@ -254,11 +261,11 @@ function showInterests()
 	//add Positives and Negatives to Interests
 	$posInterests="";
 	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
-		$posInterests=$posInterests.substr (strrchr ($pos, "/"), 1)." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
+		$posInterests.=urldecode(substr (strrchr ($pos, "/"), 1))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
 	}
 	$negInterests="";
 	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
-		$negInterests=$negInterests.substr (strrchr ($neg, "/"), 1)." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
+		$negInterests.=urldecode(substr (strrchr ($neg, "/"), 1))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"images/remove.png\" alt=\"Minus\"/></a><br/>";
 	}
 	
 	$objResponse=new xajaxResponse();
