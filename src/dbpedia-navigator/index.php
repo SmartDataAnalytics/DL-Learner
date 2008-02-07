@@ -39,7 +39,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
         };
   </script>
   </head>
-  <body>
+  <body <?php if (isset($_GET['resource'])) print "onLoad=\"xajax_getarticle('".$_GET['resource']."',-1);return false;\">";unset($_GET['resource']);?>>
 
 <!--  <h1>DBpedia Navigator</h1> -->
 <div><table border="0" width="100%"><tr><td width="35%"><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" /></td><td width="50%"><span id="conceptlink"></span></td><td width="15%"><span id="Loading" style="display:none">Server Call... <img src="images/remove.png" onclick="xajax_stopServerCall();return false;" /></span></td></tr></table></div>
