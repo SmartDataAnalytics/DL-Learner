@@ -47,6 +47,9 @@ function getarticle($subject,$fromCache)
 	session_write_close();
 	setRunning($id,"true");
 	
+	//get first Letter of label big
+	$subject=ucfirst($subject);
+	
 	//if article is in session, get it out of the session
 	if (isset($articles)){
 		foreach ($articles as $key => $value)
