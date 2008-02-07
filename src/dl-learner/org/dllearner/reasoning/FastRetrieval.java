@@ -49,6 +49,9 @@ public class FastRetrieval {
 		} else if(concept instanceof Disjunction) {
 			return calculateDisjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
 		} else if(concept instanceof MultiConjunction) {
+			// this should never happen, but it does; we work around the issue
+			if(concept.getChildren().size()==1)
+				return calculateSetsADC(concept.getChild(0),adcSet);			
 			SortedSetTuple<String> res = 
 			calculateConjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
 			for(int i=2; i < concept.getChildren().size(); i++) {
@@ -56,6 +59,10 @@ public class FastRetrieval {
 			}
 			return res;
 		} else if(concept instanceof MultiDisjunction) {
+			// this should never happen, but it does; we work around the issue
+			if(concept.getChildren().size()==1)
+				return calculateSetsADC(concept.getChild(0),adcSet);
+			
 			SortedSetTuple<String> res = 
 			calculateDisjunctionSets(calculateSetsADC(concept.getChild(0),adcSet),calculateSetsADC(concept.getChild(1),adcSet));
 			for(int i=2; i < concept.getChildren().size(); i++) {

@@ -103,7 +103,7 @@ public class CrossValidation {
 			List<Individual> negExamplesList = new LinkedList<Individual>(negExamples);
 			
 			// sanity check whether nr. of folds makes sense for this benchmark
-			if(!leaveOneOut && (posExamples.size()<folds || negExamples.size()<folds)) {
+			if(!leaveOneOut && (posExamples.size()<folds && negExamples.size()<folds)) {
 				System.out.println("The number of folds is higher than the number of "
 						+ "positive/negative examples. This can result in empty test sets. Exiting.");
 				System.exit(0);
