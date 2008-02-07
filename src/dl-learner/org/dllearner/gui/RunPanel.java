@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-//import org.dllearner.core.dl.Concept;
+// import org.dllearner.core.dl.Concept;
 
 /**
  * OutputPanel
@@ -38,12 +38,11 @@ public class RunPanel extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = 1643304576470046636L;
 
-    private JButton runButton, stopButton;
+    private JButton runButton, stopButton, testButton;
     private JTextArea infoArea;
     private Config config;
-    
-    private ThreadRun thread;
 
+    private ThreadRun thread;
 
     RunPanel(Config config) {
 	super(new BorderLayout());
@@ -54,13 +53,17 @@ public class RunPanel extends JPanel implements ActionListener {
 	runButton.addActionListener(this);
 	stopButton = new JButton("Stop");
 	stopButton.addActionListener(this);
-	
+	testButton = new JButton("TEST");
+	testButton.addActionListener(this);
+
 	infoArea = new JTextArea(20, 50);
 	JScrollPane infoScroll = new JScrollPane(infoArea);
 
 	JPanel showPanel = new JPanel();
 	showPanel.add(runButton);
 	showPanel.add(stopButton);
+	showPanel.add(testButton);
+
 	JPanel infoPanel = new JPanel();
 	infoPanel.add(infoScroll);
 
@@ -70,15 +73,24 @@ public class RunPanel extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == runButton && config.getLearningAlgorithm() != null) {
+	    config.autoInit();
 	    thread = new ThreadRun(config);
 	    thread.start();
-	    //Concept solution = config.getLearningAlgorithm().getBestSolution();
-	    //infoArea.setText(solution.toString());
+	    // Concept solution =
+	    // config.getLearningAlgorithm().getBestSolution();
+	    // infoArea.setText(solution.toString());
 	}
-	if (e.getSource() == stopButton && config.getLearningAlgorithm() != null) {
-	    //config.getLearningAlgorithm().stop();
+	if (e.getSource() == stopButton
+		&& config.getLearningAlgorithm() != null) {
+	    // config.getLearningAlgorithm().stop();
 	    thread.exit();
+  	}
+	if (e.getSource() == testButton
+		&& config.getLearningAlgorithm() != null) {
+	    config.getLearningAlgorithm().stop();
+
 	}
+
     }
-   
+
 }

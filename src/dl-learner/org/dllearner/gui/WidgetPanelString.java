@@ -57,7 +57,7 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
     private Class<? extends Component> componentOption;
 
     private String value;
-    private JTextField stringField = new JTextField(15);
+    private JTextField stringField = new JTextField(35);
 
     public WidgetPanelString(Config config, Component component,
 	    Class<? extends Component> componentOption,
@@ -86,9 +86,16 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
 		    value = fc.getSelectedFile().toString();
 		    stringField.setText(value);
 		    config.setURI(value); // save variable
+		    System.out.println("value: " +  config.getURI());
 		}
 	    }
 	    setEntry();
+	    // if url and value not ""
+	    // necessary for init knowledge source
+	    if (configOption.getName().equalsIgnoreCase("url")
+		    && !value.equalsIgnoreCase("")) {
+		config.setURI(value);
+	    }
 	}
     }
 
@@ -164,10 +171,7 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
      * ActionPerformed
      */
     private Boolean checkForFilename() {
-	if (configOption.getName().equalsIgnoreCase("filename"))
-	    return true;
-	else
-	    return false;
+	return configOption.getName().equalsIgnoreCase("filename");
     }
 
 }

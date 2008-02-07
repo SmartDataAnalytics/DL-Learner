@@ -50,8 +50,7 @@ public class Config {
     private LearningProblem lp;
     private LearningAlgorithm la;
     private boolean[] isInit = new boolean[4];
- 
-    
+
     protected ComponentManager getComponentManager() {
 	return cm;
     }
@@ -125,69 +124,104 @@ public class Config {
     }
 
     /**
-     * KnowledgeSource.init has run?
-     * return true, if it was
+     * KnowledgeSource.init has run? return true, if it was
      */
     protected boolean isInitKnowledgeSource() {
 	return isInit[0];
     }
-    
+
     /**
      * set true if you run KnowwledgeSource.init
      */
     protected void setInitKnowledgeSource(Boolean is) {
 	isInit[0] = is;
-	for (int i=1; i<4; i++) 
+	for (int i = 1; i < 4; i++)
 	    isInit[i] = false;
     }
 
     /**
-     * Reasoner.init has run?
-     * return true, if it was
+     * Reasoner.init has run? return true, if it was
      */
     protected boolean isInitReasoner() {
 	return isInit[1];
     }
-    
+
     /**
      * set true if you run Reasoner.init
      */
     protected void setInitReasoner(Boolean is) {
 	isInit[1] = is;
-	for (int i=2; i<4; i++)
+	for (int i = 2; i < 4; i++)
 	    isInit[i] = false;
     }
 
     /**
-     * LearningProblem.init has run?
-     * return true, if it was
+     * LearningProblem.init has run? return true, if it was
      */
     protected boolean isInitLearningProblem() {
 	return isInit[2];
     }
-    
+
     /**
      * set true if you run LearningProblem.init
      */
     protected void setInitLearningProblem(Boolean is) {
 	isInit[2] = is;
-	for (int i=3; i<4; i++)
+	for (int i = 3; i < 4; i++)
 	    isInit[i] = false;
     }
 
     /**
-     * LearningAlgorithm.init() has run?
-     * return true, if it was
+     * LearningAlgorithm.init() has run? return true, if it was
      */
-    protected boolean isLearningAlgorithm() {
+    protected boolean isInitLearningAlgorithm() {
 	return isInit[3];
     }
-    
+
     /**
      * set true if you run LearningAlgorithm.init
      */
     protected void setLearningAlgorithm(Boolean is) {
 	isInit[3] = is;
+    }
+
+    protected void autoInit() {
+	// Knowledge Source
+	if (!this.isInitKnowledgeSource() && this.getKnowledgeSource() != null
+		&& this.getURI() != null) {
+	    this.getKnowledgeSource().init();
+	    this.setInitKnowledgeSource(true);
+	    System.out.println("init KnowledgeSource");
+	}
+	// Reasoner
+	if (!this.isInitReasoner() && this.getKnowledgeSource() != null
+		&& this.getReasoner() != null) {
+	    this.getReasoner().init();
+	    System.out.println("init Reasoner");
+	    // set ReasoningService
+	    this.setReasoningService(this.getComponentManager()
+		    .reasoningService(this.getReasoner()));
+	    System.out.println("init ReasoningService");
+	    this.setInitReasoner(true);
+	}
+	// Learning Problem
+	if (!this.isInitLearningProblem() && this.getReasoner() != null
+		&& this.getLearningProblem() != null) {
+	    this.getComponentManager().applyConfigEntry(
+		    this.getLearningProblem(), "negativeExamples",
+		    this.getNegExampleSet());
+	    this.getLearningProblem().init();
+	    this.setInitLearningProblem(true);
+	    System.out.println("init LearningProblem");
+	}
+	// Learning Algorithm
+	if (!this.isInitLearningAlgorithm()
+		&& this.getLearningProblem() != null
+		&& this.getLearningAlgorithm() != null) {
+	    this.getLearningAlgorithm().init();
+	    System.out.println("init LearningAlgorithm");
+	}
+
     }
 
 }
