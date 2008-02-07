@@ -1,0 +1,7 @@
+RewriteEngine On
+Options +FollowSymlinks
+RewriteBase /dbpedia-navigator/
+
+# Rule Fuer die Module
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php?resource=$1
