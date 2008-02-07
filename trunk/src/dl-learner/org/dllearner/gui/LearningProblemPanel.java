@@ -55,7 +55,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
     private JPanel initPanel = new JPanel();
     private JLabel posLabel = new JLabel("positive Examples");
     private JLabel negLabel = new JLabel("negative Examples");
-    private JButton initButton, getInstancesButton;
+    private JButton initButton, autoInitButton;
     private int choosenClassIndex;
     private List<Individual> individuals;
     private JList posList = new JList();
@@ -73,10 +73,11 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	initButton = new JButton("Init LearningProblem");
 	initButton.addActionListener(this);
 	initPanel.add(initButton);
-	getInstancesButton = new JButton("Get Instances");
-	getInstancesButton.addActionListener(this);
+	initButton.setEnabled(false);
+	autoInitButton = new JButton("AutoInit");
+	autoInitButton.addActionListener(this);
 	choosePanel.add(cb);
-	choosePanel.add(getInstancesButton);
+	choosePanel.add(autoInitButton);
 	cb.addActionListener(this);
 
 	// add into comboBox
@@ -174,16 +175,24 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	add(listPanel, BorderLayout.CENTER);
 	add(initPanel, BorderLayout.PAGE_END);
 
+	choosenClassIndex = cb.getSelectedIndex();
+	setLearningProblem();
     }
 
     public void actionPerformed(ActionEvent e) {
 	// read selected LearningProblemClass
-	choosenClassIndex = cb.getSelectedIndex();
+	// choosenClassIndex = cb.getSelectedIndex();
+	if (choosenClassIndex != cb.getSelectedIndex()) {
+	    choosenClassIndex = cb.getSelectedIndex();
+	    config.setInitLearningProblem(false);
+	    setLearningProblem();
+	}
 
-	if (e.getSource() == getInstancesButton && config.isInitReasoner())
-	    getInstances();
 
-	if (e.getSource() == initButton && config.isInitReasoner())
+	if (e.getSource() == autoInitButton)
+	    setLearningProblem();
+
+	if (e.getSource() == initButton)
 	    init();
     }
 
@@ -203,37 +212,42 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
     /**
      * after this, you can change widgets
      */
-    public void getInstances() {
-	config.setLearningProblem(config.getComponentManager().learningProblem(
-		problems.get(choosenClassIndex), config.getReasoningService()));
-	// lists
-	if (config.getReasoningService() != null) {
-	    // fill lists
-	    Set<Individual> individualsSet = config.getReasoningService()
-		    .getIndividuals();
-	    individuals = new LinkedList<Individual>(individualsSet);
-	    DefaultListModel listModel = new DefaultListModel();
-	    for (Individual ind : individuals) {
-		listModel.addElement(ind);
+    public void setLearningProblem() {
+	config.autoInit();
+	if (config.isInitReasoner()) {
+	    config.setLearningProblem(config.getComponentManager()
+		    .learningProblem(problems.get(choosenClassIndex),
+			    config.getReasoningService()));
+	    // lists
+	    if (config.getReasoningService() != null) {
+		// fill lists
+		Set<Individual> individualsSet = config.getReasoningService()
+			.getIndividuals();
+		individuals = new LinkedList<Individual>(individualsSet);
+		DefaultListModel listModel = new DefaultListModel();
+		for (Individual ind : individuals) {
+		    listModel.addElement(ind);
+		}
+		posList.setModel(listModel);
+		negList.setModel(listModel);
 	    }
-	    posList.setModel(listModel);
-	    negList.setModel(listModel);
+	    updateOptionPanel();
 	}
-	updateOptionPanel();
     }
 
     /**
      * after this, next tab can be used
      */
     public void init() {
-
-	config.getComponentManager().applyConfigEntry(
-		config.getLearningProblem(), "negativeExamples",
-		config.getNegExampleSet());
-	config.getLearningProblem().init();
-	config.setInitLearningProblem(true);
-	System.out.println("init LearningProblem");
-
+/*	if (config.isInitReasoner()) {
+	    config.getComponentManager().applyConfigEntry(
+		    config.getLearningProblem(), "negativeExamples",
+		    config.getNegExampleSet());
+	    config.getLearningProblem().init();
+	    config.setInitLearningProblem(true);
+	    System.out.println("init LearningProblem");
+	}
+*/	config.autoInit();
     }
 
     /**

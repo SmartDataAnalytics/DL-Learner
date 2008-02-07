@@ -75,6 +75,7 @@ public class OptionPanel extends JPanel {
 
     }
 
+    /** update this OptionPanel */
     public void update(Component component,
 	    Class<? extends Component> componentOption) {
 	this.componentOption = componentOption;
@@ -82,7 +83,7 @@ public class OptionPanel extends JPanel {
 	showWidgets();
     }
 
-    /*
+    /**
      * Define here what core.config.class is what type of widget.
      * WidgetPanelDefault is for none defined classes.
      */
@@ -122,7 +123,7 @@ public class OptionPanel extends JPanel {
 	centerPanel.updateUI(); // update graphic
     }
 
-    /*
+    /**
      * Define GridBagConstraints
      */
     private void buildConstraints(GridBagConstraints gbc, int gx, int gy,

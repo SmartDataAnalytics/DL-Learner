@@ -37,7 +37,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = -7678275020058043937L;
 
-    private JButton initButton, getInstancesButton;
+    private JButton initButton;
     private String[] kbBoxItems = {};
     private JComboBox cb = new JComboBox(kbBoxItems);
     private JPanel choosePanel = new JPanel();
@@ -53,10 +53,9 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	this.config = config;
 	sources = config.getComponentManager().getKnowledgeSources();
 
-	getInstancesButton = new JButton("Get Instances");
-	getInstancesButton.addActionListener(this);
 	initButton = new JButton("Init KnowledgeSource");
 	initButton.addActionListener(this);
+	initButton.setEnabled(false);
 
 	// add to comboBox
 	for (int i = 0; i < sources.size(); i++) {
@@ -66,7 +65,6 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	cb.addActionListener(this);
 
 	choosePanel.add(cb);
-	choosePanel.add(getInstancesButton);
 	optionPanel = new OptionPanel(config, config.getKnowledgeSource(),
 		sources.get(choosenClassIndex));
 	initPanel.add(initButton);
@@ -76,23 +74,27 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	add(initPanel, BorderLayout.PAGE_END);
 
 	choosenClassIndex = cb.getSelectedIndex();
+	setSource();
     }
 
     public void actionPerformed(ActionEvent e) {
 	// read selected KnowledgeSourceClass
-	choosenClassIndex = cb.getSelectedIndex();
+	// choosenClassIndex = cb.getSelectedIndex();
+	if (choosenClassIndex != cb.getSelectedIndex()) {
+	    choosenClassIndex = cb.getSelectedIndex();
+	    config.setURI(null); // default null
+	    config.setInitKnowledgeSource(false);
+	    setSource();
+	}
 
-	if (e.getSource() == getInstancesButton)
-	    getInstances();
-
-	if (e.getSource() == initButton && config.getURI() != null)
+	if (e.getSource() == initButton)
 	    init();
     }
 
     /**
      * after this, you can change widgets
      */
-    public void getInstances() {
+    public void setSource() {
 	config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
 		sources.get(choosenClassIndex)));
 	updateOptionPanel();
@@ -102,11 +104,12 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     public void init() {
-	config.getKnowledgeSource().init();
-	config.setInitKnowledgeSource(true);
-	System.out.println("init KnowledgeSource with \n"
-		+ sources.get(choosenClassIndex) + " and \n" + config.getURI()
-		+ "\n");
+/*	if (config.getKnowledgeSource() != null && config.getURI() != null) {
+	    config.getKnowledgeSource().init();
+	    config.setInitKnowledgeSource(true);
+	    System.out.println("init KnowledgeSource");
+	}
+*/	config.autoInit();
     }
 
     /**

@@ -43,5 +43,6 @@ public class ThreadRun extends Thread {
     public void exit() {
 	if (config.getLearningAlgorithm() != null)
 	    config.getLearningAlgorithm().stop();
+	System.out.println("stop");
     }
 }

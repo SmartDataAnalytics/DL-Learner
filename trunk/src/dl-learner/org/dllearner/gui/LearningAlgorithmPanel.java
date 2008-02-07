@@ -42,7 +42,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     private JPanel choosePanel = new JPanel();
     private OptionPanel optionPanel;
     private JPanel initPanel = new JPanel();
-    private JButton initButton, getInstancesButton;
+    private JButton initButton, autoInitButton;
     private String[] cbItems = {};
     private JComboBox cb = new JComboBox(cbItems);
     private int choosenClassIndex;
@@ -56,8 +56,9 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	initButton = new JButton("Init LearingAlgorithm");
 	initButton.addActionListener(this);
 	initPanel.add(initButton);
-	getInstancesButton = new JButton("Get Instances");
-	getInstancesButton.addActionListener(this);
+	initButton.setEnabled(false);
+	autoInitButton = new JButton("AutoInit");
+	autoInitButton.addActionListener(this);
 
 	// add into comboBox
 	for (int i = 0; i < learners.size(); i++) {
@@ -66,7 +67,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	}
 
 	choosePanel.add(cb);
-	choosePanel.add(getInstancesButton);
+	choosePanel.add(autoInitButton);
 	cb.addActionListener(this);
 
 	optionPanel = new OptionPanel(config, config.getLearningAlgorithm(),
@@ -80,10 +81,15 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 	// read selected Class
-	choosenClassIndex = cb.getSelectedIndex();
+	// choosenClassIndex = cb.getSelectedIndex();
+	if (choosenClassIndex != cb.getSelectedIndex()) {
+	    choosenClassIndex = cb.getSelectedIndex();
+	    config.setInitLearningProblem(false);
+	    setLearningAlgorithm();
+	}
 
-	if (e.getSource() == getInstancesButton && config.isInitLearningProblem())
-	    getInstances();
+	if (e.getSource() == autoInitButton)
+	    setLearningAlgorithm();
 
 	if (e.getSource() == initButton && config.isInitLearningProblem())
 	    init();
@@ -92,8 +98,10 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     /**
      * after this, you can change widgets
      */
-    public void getInstances() {
-	if (config.getLearningProblem() != null
+    public void setLearningAlgorithm() {
+	config.autoInit();
+	if (config.isInitLearningProblem()
+		&& config.getLearningProblem() != null
 		&& config.getReasoningService() != null) {
 	    config.setLearningAlgorithm(config.getComponentManager()
 		    .learningAlgorithm(learners.get(choosenClassIndex),
@@ -107,9 +115,11 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     public void init() {
-	config.getLearningAlgorithm().init();
-	System.out.println("init LearningAlgorithm");
-
+	/*
+	 * if (config.isInitLearningProblem()) {
+	 * config.getLearningAlgorithm().init(); System.out.println("init
+	 * LearningAlgorithm"); }
+	 */config.autoInit();
     }
 
     /**
