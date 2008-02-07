@@ -87,7 +87,7 @@ class DLLearnerConnection
 				$i++;
 				
 				//look, if algorithm was stopped
-				$file=fopen($this->id.".temp","r");
+				$file=fopen("./temp/".$this->id.".temp","r");
 				$run=fgets($file);
 				fclose($file);
 				if ($run=="false"){
@@ -138,7 +138,7 @@ class DLLearnerConnection
 			$seconds = $i * $sleeptime;
 			$i++;
 			//look, if algorithm was stopped
-			$file=fopen($this->id.".temp","r");
+			$file=fopen("./temp/".$this->id.".temp","r");
 			$run=fgets($file);
 			fclose($file);
 			if ($run=="false"){
