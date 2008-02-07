@@ -180,11 +180,11 @@ function getarticle($subject,$fromCache)
 	//add Positives and Negatives to Interests
 	$posInterests="";
 	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
-		$posInterests.=urldecode(substr (strrchr ($pos, "/"), 1))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"images/remove.png\" alt=\"Delete\"/></a><br/>";
+		$posInterests.=urldecode(substr (strrchr ($pos, "/"), 1))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"".$_GET['path']."images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
 	}
 	$negInterests="";
 	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
-		$negInterests.=urldecode(substr (strrchr ($neg, "/"), 1))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"images/remove.png\" alt=\"Delete\"/></a><br/>";
+		$negInterests.=urldecode(substr (strrchr ($neg, "/"), 1))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"".$_GET['path']."images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
 	}
 	
 	$objResponse->assign("articlecontent", "innerHTML", $content);
@@ -212,8 +212,19 @@ function toPositive($subject)
 		$_SESSION['positive']=$array;
 	}
 	
+	//add Positives and Negatives to Interests
+	$posInterests="";
+	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
+		$posInterests.=urldecode(substr (strrchr ($pos, "/"), 1))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"".$_GET['path']."images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	$negInterests="";
+	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
+		$negInterests.=urldecode(substr (strrchr ($neg, "/"), 1))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"".$_GET['path']."images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	
 	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_showInterests');
+	$objResponse->assign('Positives','innerHTML',$posInterests);
+	$objResponse->assign('Negatives','innerHTML',$negInterests);
 	return $objResponse;
 }
 
@@ -233,8 +244,19 @@ function toNegative($subject)
 		$_SESSION['negative']=$array;
 	}
 	
+	//add Positives and Negatives to Interests
+	$posInterests="";
+	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
+		$posInterests.=urldecode(substr (strrchr ($pos, "/"), 1))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"".$_GET['path']."images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	$negInterests="";
+	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
+		$negInterests.=urldecode(substr (strrchr ($neg, "/"), 1))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"".$_GET['path']."images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	
 	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_showInterests');
+	$objResponse->assign('Positives','innerHTML',$posInterests);
+	$objResponse->assign('Negatives','innerHTML',$negInterests);
 	return $objResponse;
 }
 
@@ -377,6 +399,7 @@ function stopServerCall()
 
 function setRunning($id,$running)
 {
+	if(!is_dir("temp")) mkdir("temp");
 	$file=fopen("./temp/".$id.".temp","w");
 	fwrite($file, $running);
 	fclose($file);
