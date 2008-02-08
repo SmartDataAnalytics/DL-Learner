@@ -62,15 +62,15 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
     org.dllearner.prolog.Body body = null;
     head = atom();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 18:
-      jj_consume_token(18);
+    case 19:
+      jj_consume_token(19);
       body = body();
       break;
     default:
       jj_la1[1] = jj_gen;
       ;
     }
-    jj_consume_token(19);
+    jj_consume_token(20);
                                                    {if (true) return new org.dllearner.prolog.Clause(head, body);}
     throw new Error("Missing return statement in function");
   }
@@ -83,14 +83,14 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
     label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 20:
+      case 21:
         ;
         break;
       default:
         jj_la1[2] = jj_gen;
         break label_2;
       }
-      jj_consume_token(20);
+      jj_consume_token(21);
       l = literal();
                           b.addLiteral(l);
     }
@@ -103,10 +103,10 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
     java.util.ArrayList arguments = new java.util.ArrayList() ;
     atom = jj_consume_token(IDENTIFIER);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 21:
-      jj_consume_token(21);
-      arguments = termList();
+    case 22:
       jj_consume_token(22);
+      arguments = termList();
+      jj_consume_token(23);
       break;
     default:
       jj_la1[3] = jj_gen;
@@ -171,11 +171,12 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
     Token f;
     java.util.ArrayList arguments = null;
     org.dllearner.prolog.Term l;
+    org.dllearner.prolog.Number n;
     if (jj_2_5(2)) {
       f = jj_consume_token(IDENTIFIER);
-      jj_consume_token(21);
-      arguments = termList();
       jj_consume_token(22);
+      arguments = termList();
+      jj_consume_token(23);
                                                                    {if (true) return new org.dllearner.prolog.Function(f.image, arguments);}
     } else if (jj_2_6(2)) {
       f = jj_consume_token(IDENTIFIER);
@@ -186,16 +187,16 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
         v = jj_consume_token(VAR);
                   {if (true) return new org.dllearner.prolog.Variable(v.image);}
         break;
-      case NUMBER:
-        v = jj_consume_token(NUMBER);
+      case DOUBLE:
+        v = jj_consume_token(DOUBLE);
                      {if (true) return new org.dllearner.prolog.Number(v.image);}
         break;
       case STRINGCONSTANT:
         v = jj_consume_token(STRINGCONSTANT);
                              {if (true) return new org.dllearner.prolog.StringConstant(v.image);}
         break;
-      case 23:
       case 24:
+      case 25:
         l = list();
                    {if (true) return l;}
         break;
@@ -237,14 +238,14 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 20:
+      case 21:
         ;
         break;
       default:
         jj_la1[6] = jj_gen;
         break label_3;
       }
-      jj_consume_token(20);
+      jj_consume_token(21);
       t = term();
                        l.add(t);
     }
@@ -257,23 +258,23 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
     org.dllearner.prolog.Term head;
     org.dllearner.prolog.List l;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 23:
-      jj_consume_token(23);
+    case 24:
+      jj_consume_token(24);
            {if (true) return new org.dllearner.prolog.List();}
       break;
     default:
       jj_la1[7] = jj_gen;
       if (jj_2_7(3)) {
-        jj_consume_token(24);
-        head = term();
         jj_consume_token(25);
-                                           {if (true) return new org.dllearner.prolog.List(head, null);}
-      } else if (jj_2_8(3)) {
-        jj_consume_token(24);
         head = term();
         jj_consume_token(26);
-        l = list();
+                                           {if (true) return new org.dllearner.prolog.List(head, null);}
+      } else if (jj_2_8(3)) {
         jj_consume_token(25);
+        head = term();
+        jj_consume_token(27);
+        l = list();
+        jj_consume_token(26);
                                                           {if (true) return new org.dllearner.prolog.List(head, l);}
       } else {
         jj_consume_token(-1);
@@ -355,7 +356,7 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
   }
 
   final private boolean jj_3R_10() {
-    if (jj_scan_token(NUMBER)) return true;
+    if (jj_scan_token(DOUBLE)) return true;
     return false;
   }
 
@@ -369,20 +370,11 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
     return false;
   }
 
-  final private boolean jj_3_8() {
-    if (jj_scan_token(24)) return true;
-    if (jj_3R_8()) return true;
-    if (jj_scan_token(26)) return true;
-    if (jj_3R_14()) return true;
-    if (jj_scan_token(25)) return true;
-    return false;
-  }
-
   final private boolean jj_3_5() {
     if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(21)) return true;
-    if (jj_3R_13()) return true;
     if (jj_scan_token(22)) return true;
+    if (jj_3R_13()) return true;
+    if (jj_scan_token(23)) return true;
     return false;
   }
 
@@ -408,15 +400,24 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
     return false;
   }
 
-  final private boolean jj_3_7() {
-    if (jj_scan_token(24)) return true;
-    if (jj_3R_8()) return true;
+  final private boolean jj_3_8() {
     if (jj_scan_token(25)) return true;
+    if (jj_3R_8()) return true;
+    if (jj_scan_token(27)) return true;
+    if (jj_3R_14()) return true;
+    if (jj_scan_token(26)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_7() {
+    if (jj_scan_token(25)) return true;
+    if (jj_3R_8()) return true;
+    if (jj_scan_token(26)) return true;
     return false;
   }
 
   final private boolean jj_3R_16() {
-    if (jj_scan_token(23)) return true;
+    if (jj_scan_token(24)) return true;
     return false;
   }
 
@@ -439,7 +440,7 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
   }
 
   final private boolean jj_3R_15() {
-    if (jj_scan_token(20)) return true;
+    if (jj_scan_token(21)) return true;
     if (jj_3R_8()) return true;
     return false;
   }
@@ -514,7 +515,7 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
       jj_la1_0();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1000,0x40000,0x100000,0x200000,0x1080,0x1800d00,0x100000,0x800000,};
+      jj_la1_0 = new int[] {0x2000,0x80000,0x200000,0x400000,0x2080,0x3001900,0x200000,0x1000000,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[8];
   private boolean jj_rescan = false;
@@ -691,7 +692,7 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[27];
+    boolean[] la1tokens = new boolean[28];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -705,7 +706,7 @@ public @SuppressWarnings("all") class PrologParser implements PrologParserConsta
         }
       }
     }
-    for (int i = 0; i < 27; i++) {
+    for (int i = 0; i < 28; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

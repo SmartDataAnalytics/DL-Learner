@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.PrologParser;
+import org.dllearner.prolog.Program;
 import org.dllearner.utilities.Files;
 
 /**
@@ -48,7 +49,8 @@ public class Carcinogenesis {
 			File file = new File(prologFile);
 			String content = Files.readFile(file);
 			PrologParser pp = new PrologParser();
-			pp.parseProgram(content);
+			Program program = pp.parseProgram(content);
+			System.out.println(program.toPLString());
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {

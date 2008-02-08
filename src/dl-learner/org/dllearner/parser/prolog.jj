@@ -84,7 +84,12 @@ TOKEN : /* RESERVED WORDS AND LITERALS */
 
 TOKEN : /* constants */
 {
-    < NUMBER: (<DIGIT>)+>
+	< DOUBLE:
+		"-" (<DIGIT>)+ "." (<DIGIT>)* | 	
+		(<DIGIT>)+ "." (<DIGIT>)* |	
+		"-" (<DIGIT>)+ |
+		(<DIGIT>)+ >
+    | < NUMBER: (<DIGIT>)+>
     | < #DIGIT: ["0" - "9"] >
     | < STRINGCONSTANT:  ("'" (~["'","\\","\n","\r"])* "'" | "\"" (~["'","\\","\n","\r"])* "\"" ) >
 }
@@ -161,15 +166,15 @@ org.dllearner.prolog.Term simpleTerm() : {
     Token f;
     java.util.ArrayList arguments = null;
     org.dllearner.prolog.Term l;
+    org.dllearner.prolog.Number n;
 }{
     LOOKAHEAD(2) f = <IDENTIFIER> "(" arguments = termList() ")" { return new org.dllearner.prolog.Function(f.image, arguments); }
     | LOOKAHEAD(2) f = <IDENTIFIER> { return new org.dllearner.prolog.PrologConstant(f.image); }
     | v = <VAR> { return new org.dllearner.prolog.Variable(v.image); }
-    | v = <NUMBER> { return new org.dllearner.prolog.Number(v.image); }
+    | v = <DOUBLE> { return new org.dllearner.prolog.Number(v.image); }
     | v = <STRINGCONSTANT> { return new org.dllearner.prolog.StringConstant(v.image); }
     | l = list() { return l; }
 }
-
 
 String prefixOp() : {
     Token f;
