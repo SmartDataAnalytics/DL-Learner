@@ -6,16 +6,17 @@ public @SuppressWarnings("all") interface PrologParserConstants {
   int EOF = 0;
   int SINGLE_LINE_COMMENT = 6;
   int NOT = 7;
-  int NUMBER = 8;
-  int DIGIT = 9;
-  int STRINGCONSTANT = 10;
-  int VAR = 11;
-  int IDENTIFIER = 12;
-  int OPERATOR = 13;
-  int ANYCHAR = 14;
-  int LOCASE = 15;
-  int HICASE = 16;
-  int SPECIALCHAR = 17;
+  int DOUBLE = 8;
+  int NUMBER = 9;
+  int DIGIT = 10;
+  int STRINGCONSTANT = 11;
+  int VAR = 12;
+  int IDENTIFIER = 13;
+  int OPERATOR = 14;
+  int ANYCHAR = 15;
+  int LOCASE = 16;
+  int HICASE = 17;
+  int SPECIALCHAR = 18;
 
   int DEFAULT = 0;
 
@@ -28,6 +29,7 @@ public @SuppressWarnings("all") interface PrologParserConstants {
     "\"\\f\"",
     "<SINGLE_LINE_COMMENT>",
     "\"not\"",
+    "<DOUBLE>",
     "<NUMBER>",
     "<DIGIT>",
     "<STRINGCONSTANT>",
