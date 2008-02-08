@@ -19,16 +19,40 @@
  */
 package org.dllearner.utilities;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * @author Jens Lehmann
  * 
  */
 public class Files {
+
+	/**
+	 * Reads in a file.
+	 * 
+	 * @param file
+	 *            The file to read.
+	 * @return Content of the file.
+	 */
+	public static String readFile(File file) throws FileNotFoundException, IOException {
+		FileInputStream fstream = new FileInputStream(file);
+		DataInputStream in = new DataInputStream(fstream);
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		String line;
+		StringBuffer content = new StringBuffer();
+		while ((line = br.readLine()) != null) {
+			content.append(line);
+		}
+		in.close();
+		return content.toString();
+	}
 
 	/**
 	 * Creates a new file with the given content or replaces the content of a
@@ -74,7 +98,7 @@ public class Files {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void clearFile(File file) {
 		createFile(file, "");
 	}
