@@ -87,7 +87,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	// choosenClassIndex = cb.getSelectedIndex();
 	if (choosenClassIndex != cb.getSelectedIndex()) {
 	    choosenClassIndex = cb.getSelectedIndex();
-	    config.setInitLearningProblem(false);
+	    config.setInitLearningAlgorithm(false);
 	    setLearningAlgorithm();
 	}
 
