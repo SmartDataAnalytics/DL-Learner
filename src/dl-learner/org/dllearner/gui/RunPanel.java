@@ -73,7 +73,7 @@ public class RunPanel extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == runButton && config.getLearningAlgorithm() != null) {
-	    config.autoInit();
+	    //config.autoInit();
 	    thread = new ThreadRun(config);
 	    thread.start();
 	    // Concept solution =

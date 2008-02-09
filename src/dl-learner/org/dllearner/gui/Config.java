@@ -185,6 +185,7 @@ public class Config {
 	isInit[3] = is;
     }
 
+    @Deprecated
     protected void autoInit() {
 	// Knowledge Source
 	if (!this.isInitKnowledgeSource() && this.getKnowledgeSource() != null

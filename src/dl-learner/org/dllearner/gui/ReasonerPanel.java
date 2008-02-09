@@ -39,27 +39,29 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = -7678275020058043937L;
 
+    private Config config;
+    private StartGUI startGUI;
     private List<Class<? extends ReasonerComponent>> reasoners;
     private JPanel choosePanel = new JPanel();
     private JPanel initPanel = new JPanel();
     private OptionPanel optionPanel;
     private JButton initButton, autoInitButton;
-    private Config config;
     private String[] cbItems = {};
     private JComboBox cb = new JComboBox(cbItems);
     private int choosenClassIndex;
 
-    ReasonerPanel(final Config config) {
+    ReasonerPanel(final Config config, StartGUI startGUI) {
 	super(new BorderLayout());
 
 	this.config = config;
+	this.startGUI = startGUI;
 	reasoners = config.getComponentManager().getReasonerComponents();
 
 	initButton = new JButton("Init Reasoner");
 	initButton.addActionListener(this);
 	initPanel.add(initButton);
-	initButton.setEnabled(false);
-	autoInitButton = new JButton("AutoInit");
+	initButton.setEnabled(true);
+	autoInitButton = new JButton("Set");
 	autoInitButton.addActionListener(this);
 
 	choosePanel.add(cb);
@@ -90,6 +92,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	if (choosenClassIndex != cb.getSelectedIndex()) {
 	    choosenClassIndex = cb.getSelectedIndex();
 	    config.setInitReasoner(false);
+
 	    setReasoner();
 	}
 
@@ -104,12 +107,13 @@ public class ReasonerPanel extends JPanel implements ActionListener {
      * after this, you can change widgets
      */
     public void setReasoner() {
-	config.autoInit();
+	// config.autoInit();
 	if (config.isInitKnowledgeSource()) {
 	    config.setReasoner(config.getComponentManager().reasoner(
 		    reasoners.get(choosenClassIndex),
 		    config.getKnowledgeSource()));
 	    updateOptionPanel();
+	    startGUI.updateTabColors();
 	}
     }
 
@@ -117,7 +121,19 @@ public class ReasonerPanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     public void init() {
-	config.autoInit();
+	if (/* !config.isInitReasoner() && */config.getKnowledgeSource() != null
+		&& config.getReasoner() != null) {
+	    config.getReasoner().init();
+	    System.out.println("init Reasoner");
+	    // set ReasoningService
+	    config.setReasoningService(config.getComponentManager()
+		    .reasoningService(config.getReasoner()));
+	    System.out.println("init ReasoningService");
+	    config.setInitReasoner(true);
+	    startGUI.updateTabColors();
+
+	}
+	// config.autoInit();
     }
 
     /**
