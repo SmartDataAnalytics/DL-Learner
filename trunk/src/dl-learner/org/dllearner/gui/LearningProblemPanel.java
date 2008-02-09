@@ -47,6 +47,8 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = -3819627680918930203L;
 
+    private Config config;
+    private StartGUI startGUI;
     private List<Class<? extends LearningProblem>> problems;
     private String[] lpBoxItems = {};
     private JComboBox cb = new JComboBox(lpBoxItems);
@@ -62,19 +64,18 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
     private JList negList = new JList();
     private OptionPanel optionPanel;
 
-    private Config config;
-
-    LearningProblemPanel(final Config config) {
+    LearningProblemPanel(final Config config, StartGUI startGUI) {
 	super(new BorderLayout());
 
 	this.config = config;
+	this.startGUI = startGUI;
 	problems = config.getComponentManager().getLearningProblems();
 
 	initButton = new JButton("Init LearningProblem");
 	initButton.addActionListener(this);
 	initPanel.add(initButton);
-	initButton.setEnabled(false);
-	autoInitButton = new JButton("AutoInit");
+	initButton.setEnabled(true);
+	autoInitButton = new JButton("Set");
 	autoInitButton.addActionListener(this);
 	choosePanel.add(cb);
 	choosePanel.add(autoInitButton);
@@ -143,6 +144,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 			config.getLearningProblem(), "positiveExamples",
 			config.getPosExampleSet());
 		updateOptionPanel();
+		System.out.println("POSSSSS");
 	    }
 	});
 
@@ -161,6 +163,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 			config.getLearningProblem(), "negativeExamples",
 			config.getNegExampleSet());
 		updateOptionPanel();
+		System.out.println("POSSSSS");
 	    }
 	});
 
@@ -176,18 +179,21 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	add(initPanel, BorderLayout.PAGE_END);
 
 	choosenClassIndex = cb.getSelectedIndex();
-	setLearningProblem();
+	//setLearningProblem();
     }
 
     public void actionPerformed(ActionEvent e) {
+	System.out.println("index: " + cb.getSelectedIndex());
+
 	// read selected LearningProblemClass
 	// choosenClassIndex = cb.getSelectedIndex();
 	if (choosenClassIndex != cb.getSelectedIndex()) {
-	    choosenClassIndex = cb.getSelectedIndex();
+	    this.choosenClassIndex = cb.getSelectedIndex();
 	    config.setInitLearningProblem(false);
 	    setLearningProblem();
-	}
+	    System.out.println("new_index: " + cb.getSelectedIndex());
 
+	}
 
 	if (e.getSource() == autoInitButton)
 	    setLearningProblem();
@@ -213,7 +219,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
      * after this, you can change widgets
      */
     public void setLearningProblem() {
-	config.autoInit();
+	// config.autoInit();
 	if (config.isInitReasoner()) {
 	    config.setLearningProblem(config.getComponentManager()
 		    .learningProblem(problems.get(choosenClassIndex),
@@ -232,6 +238,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		negList.setModel(listModel);
 	    }
 	    updateOptionPanel();
+	    startGUI.updateTabColors();
 	}
     }
 
@@ -239,15 +246,22 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     public void init() {
-/*	if (config.isInitReasoner()) {
+	if (/* !config.isInitLearningProblem() && */config.getReasoner() != null
+		&& config.getLearningProblem() != null) {
+	    config.getComponentManager().applyConfigEntry(
+		    config.getLearningProblem(), "positiveExamples",
+		    config.getPosExampleSet());
 	    config.getComponentManager().applyConfigEntry(
 		    config.getLearningProblem(), "negativeExamples",
 		    config.getNegExampleSet());
+
 	    config.getLearningProblem().init();
 	    config.setInitLearningProblem(true);
 	    System.out.println("init LearningProblem");
+	    startGUI.updateTabColors();
+
 	}
-*/	config.autoInit();
+	// config.autoInit();
     }
 
     /**

@@ -37,25 +37,27 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = -7678275020058043937L;
 
+    private Config config;
+    private StartGUI startGUI;
     private JButton initButton;
     private String[] kbBoxItems = {};
     private JComboBox cb = new JComboBox(kbBoxItems);
     private JPanel choosePanel = new JPanel();
     private JPanel initPanel = new JPanel();
-    private Config config;
     private int choosenClassIndex;
     private List<Class<? extends KnowledgeSource>> sources;
     private OptionPanel optionPanel;
 
-    KnowledgeSourcePanel(final Config config) {
+    KnowledgeSourcePanel(final Config config, StartGUI startGUI) {
 	super(new BorderLayout());
 
 	this.config = config;
+	this.startGUI = startGUI;
 	sources = config.getComponentManager().getKnowledgeSources();
 
 	initButton = new JButton("Init KnowledgeSource");
 	initButton.addActionListener(this);
-	initButton.setEnabled(false);
+	initButton.setEnabled(true);
 
 	// add to comboBox
 	for (int i = 0; i < sources.size(); i++) {
@@ -104,12 +106,15 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     public void init() {
-/*	if (config.getKnowledgeSource() != null && config.getURI() != null) {
+	if (/*
+	     * !config.isInitKnowledgeSource() &&
+	     */config.getKnowledgeSource() != null && config.getURI() != null) {
 	    config.getKnowledgeSource().init();
 	    config.setInitKnowledgeSource(true);
 	    System.out.println("init KnowledgeSource");
+	    startGUI.updateTabColors();
 	}
-*/	config.autoInit();
+	// config.autoInit();
     }
 
     /**

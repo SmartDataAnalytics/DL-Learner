@@ -21,7 +21,9 @@ package org.dllearner.gui;
  */
 
 import javax.swing.*;
+import javax.swing.event.*;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -44,11 +46,11 @@ public class StartGUI extends JFrame implements ActionListener {
 
     private Config config = new Config();
 
-    private JPanel tab1;
-    private JPanel tab2;
-    private JPanel tab3;
-    private JPanel tab4;
-    private JPanel tab5;
+    private KnowledgeSourcePanel tab0;
+    private ReasonerPanel tab1;
+    private LearningProblemPanel tab2;
+    private LearningAlgorithmPanel tab3;
+    private RunPanel tab4;
 
     private JMenuBar menuBar = new JMenuBar();
     private JMenu menuFile = new JMenu("File");
@@ -61,16 +63,16 @@ public class StartGUI extends JFrame implements ActionListener {
 	this.setLocationByPlatform(true);
 	this.setSize(800, 600);
 
-	tab1 = new KnowledgeSourcePanel(config);
-	tab2 = new ReasonerPanel(config);
-	tab3 = new LearningProblemPanel(config);
-	tab4 = new LearningAlgorithmPanel(config);
-	tab5 = new RunPanel(config);
-	tabPane.addTab("Knowledge Source", tab1);
-	tabPane.addTab("Reasoner", tab2);
-	tabPane.addTab("Learning Problem", tab3);
-	tabPane.addTab("Learning Algorithm", tab4);
-	tabPane.addTab("Run", tab5);
+	tab0 = new KnowledgeSourcePanel(config, this);
+	tab1 = new ReasonerPanel(config, this);
+	tab2 = new LearningProblemPanel(config, this);
+	tab3 = new LearningAlgorithmPanel(config, this);
+	tab4 = new RunPanel(config);
+	tabPane.addTab("Knowledge Source", tab0);
+	tabPane.addTab("Reasoner", tab1);
+	tabPane.addTab("Learning Problem", tab2);
+	tabPane.addTab("Learning Algorithm", tab3);
+	tabPane.addTab("Run", tab4);
 
 	this.setJMenuBar(menuBar);
 	menuBar.add(menuFile);
@@ -81,6 +83,16 @@ public class StartGUI extends JFrame implements ActionListener {
 
 	this.add(tabPane);
 	this.setVisible(true);
+	updateTabColors();
+
+	// Register a change listener
+	tabPane.addChangeListener(new ChangeListener() {
+	    // This method is called whenever the selected tab changes
+	    public void stateChanged(ChangeEvent evt) {
+
+		updateTabColors();
+	    }
+	});
     }
 
     public static void main(String[] args) {
@@ -104,4 +116,25 @@ public class StartGUI extends JFrame implements ActionListener {
 	}
     }
 
+    public void updateTabColors() {
+	if (config.isInitKnowledgeSource())
+	    tabPane.setForegroundAt(0, Color.BLACK);
+	else
+	    tabPane.setForegroundAt(0, Color.RED);
+	if (config.isInitReasoner())
+	    tabPane.setForegroundAt(1, Color.BLACK);
+	else
+	    tabPane.setForegroundAt(1, Color.RED);
+	if (config.isInitLearningProblem())
+	    tabPane.setForegroundAt(2, Color.BLACK);
+	else
+	    tabPane.setForegroundAt(2, Color.RED);
+	if (config.isInitLearningAlgorithm()) {
+	    tabPane.setForegroundAt(3, Color.BLACK);
+	    tabPane.setForegroundAt(4, Color.BLACK);
+	} else {
+	    tabPane.setForegroundAt(3, Color.RED);
+	    tabPane.setForegroundAt(4, Color.RED);
+	}
+    }
 }

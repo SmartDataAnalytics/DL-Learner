@@ -120,7 +120,7 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
 		widgetPanel.add(notImplementedLabel);
 	    }
 	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel("no instance (Boolean)");
+	    JLabel noConfigOptionLabel = new JLabel("no init (Boolean)");
 	    noConfigOptionLabel.setForeground(Color.MAGENTA);
 	    widgetPanel.add(noConfigOptionLabel);
 	}
