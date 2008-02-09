@@ -36,7 +36,6 @@ import org.apache.log4j.SimpleLayout;
  * StartGUI
  * 
  * @author Tilo Hielscher
- * 
  */
 public class StartGUI extends JFrame implements ActionListener {
 
