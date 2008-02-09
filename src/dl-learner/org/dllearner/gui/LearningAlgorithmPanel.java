@@ -121,7 +121,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     public void init() {
 	if (config.getLearningProblem() != null) {
 	    config.getLearningAlgorithm().init();
-	    config.setLearningAlgorithm(true);
+	    config.setInitLearningAlgorithm(true);
 	    System.out.println("init LearningAlgorithm");
 	    startGUI.updateTabColors();
 	}

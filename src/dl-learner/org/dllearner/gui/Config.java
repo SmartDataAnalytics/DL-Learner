@@ -181,7 +181,7 @@ public class Config {
     /**
      * set true if you run LearningAlgorithm.init
      */
-    protected void setLearningAlgorithm(Boolean is) {
+    protected void setInitLearningAlgorithm(Boolean is) {
 	isInit[3] = is;
     }
 
