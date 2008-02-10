@@ -22,6 +22,8 @@ package org.dllearner.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
@@ -33,6 +35,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
@@ -52,9 +55,16 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
     private static final long serialVersionUID = 7832726987046601916L;
     private Config config;
     private ConfigOption<?> configOption;
+    private GridBagLayout gridbag = new GridBagLayout();
+    private GridBagConstraints constraints = new GridBagConstraints();
+
     private JLabel nameLabel;
     private JPanel widgetPanel = new JPanel();
-    private JButton changeButton = new JButton("Change");
+    private JButton addButton = new JButton("add");
+    private JButton removeButton = new JButton("remove");
+    private JButton clearButton = new JButton("clear");
+    private JTextField stringField = new JTextField(25);
+
     private Component component;
     private Class<? extends Component> componentOption;
 
@@ -62,18 +72,25 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
     private JList stringList = new JList();
     private DefaultListModel listModel = new DefaultListModel();
 
-
     public WidgetPanelStringSet(Config config, Component component,
 	    Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
+
 	this.config = config;
 	this.configOption = configOption;
 	this.component = component;
 	this.componentOption = componentOption;
 
+	widgetPanel.setLayout(gridbag);
+	add(widgetPanel, BorderLayout.CENTER);
 	showLabel(); // name of option and tooltip
 	showThingToChange(); // textfield, setbutton
-	add(widgetPanel, BorderLayout.CENTER);
+
+	stringList.setModel(listModel);
+
+	addButton.addActionListener(this);
+	removeButton.addActionListener(this);
+	clearButton.addActionListener(this);
     }
 
     public JPanel getPanel() {
@@ -81,16 +98,43 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
     }
 
     public void actionPerformed(ActionEvent e) {
-	if (e.getSource() == changeButton) {
-	    setEntry();
+	Set<String> exampleSet = new HashSet<String>();
+	// add to list
+	if (e.getSource() == addButton
+		&& !listModel.contains(stringField.getText())) {
+	    listModel.addElement(stringField.getText());
 	}
+	// remove selection
+	if (e.getSource() == removeButton) {
+	    int[] selectedIndices = stringList.getSelectedIndices();
+	    int count = 0; // remove i.e. index 2 and 4: after delete 2, 4 is
+	    // now index 3
+	    for (int i : selectedIndices)
+		listModel.remove(i - count++);
+	}
+	// clear list
+	if (e.getSource() == clearButton) {
+	    listModel.clear();
+	}
+	// update
+	// stringList.setModel(listModel);
+	for (int i = 0; i < listModel.size(); i++) {
+	    if (!listModel.get(i).toString().equalsIgnoreCase(""))
+		exampleSet.add(listModel.get(i).toString());
+	}
+	// set entry
+	value = exampleSet;
+	setEntry();
     }
 
     @Override
     protected void showLabel() {
 	nameLabel = new JLabel(configOption.getName());
 	nameLabel.setToolTipText(configOption.getDescription());
-	widgetPanel.add(nameLabel);
+	buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
+	constraints.anchor = GridBagConstraints.WEST;
+	gridbag.setConstraints(nameLabel, constraints);
+	widgetPanel.add(nameLabel, constraints);
     }
 
     @SuppressWarnings("unchecked")
@@ -115,23 +159,46 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 			}
 		    }
 		}
+		buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+		gridbag.setConstraints(stringField, constraints);
+		widgetPanel.add(stringField, constraints);
+
+		buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
+		gridbag.setConstraints(addButton, constraints);
+		widgetPanel.add(addButton, constraints);
+
+		// list
 		stringList.setModel(listModel);
 		stringList.setLayoutOrientation(JList.VERTICAL);
 		stringList.setVisibleRowCount(-1);
 		JScrollPane stringListScroller = new JScrollPane(stringList);
-		stringListScroller.setPreferredSize(new Dimension(200, 100));
-		widgetPanel.add(stringListScroller);
-		widgetPanel.add(changeButton);
-		changeButton.addActionListener(this);
+		stringListScroller.setPreferredSize(new Dimension(280, 100));
+
+		buildConstraints(constraints, 0, 2, 1, 2, 100, 100);
+		gridbag.setConstraints(stringListScroller, constraints);
+		widgetPanel.add(stringListScroller, constraints);
+
+		buildConstraints(constraints, 1, 2, 1, 1, 100, 100);
+		gridbag.setConstraints(removeButton, constraints);
+		widgetPanel.add(removeButton, constraints);
+
+		buildConstraints(constraints, 1, 3, 1, 1, 100, 100);
+		gridbag.setConstraints(clearButton, constraints);
+		widgetPanel.add(clearButton, constraints);
+
+		// widgetPanel.add(setButton);
+		// setButton.addActionListener(this);
 	    }
 	    // UNKNOWN
 	    else {
 		JLabel notImplementedLabel = new JLabel("not a set of strings");
 		notImplementedLabel.setForeground(Color.RED);
+		buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+		gridbag.setConstraints(notImplementedLabel, constraints);
 		widgetPanel.add(notImplementedLabel);
 	    }
 	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel("no instance (StringSet)");
+	    JLabel noConfigOptionLabel = new JLabel("no init (StringSet)");
 	    noConfigOptionLabel.setForeground(Color.MAGENTA);
 	    widgetPanel.add(noConfigOptionLabel);
 	}
@@ -149,12 +216,25 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 		    specialOption, value);
 	    config.getComponentManager().applyConfigEntry(component,
 		    specialEntry);
-	    System.out.println("set StringSet: " + configOption.getName() + " = "
-		    + value);
+	    System.out.println("set StringSet: " + configOption.getName()
+		    + " = " + value);
 	} catch (InvalidConfigOptionValueException s) {
 	    s.printStackTrace();
 	}
 
+    }
+
+    /**
+     * Define GridBagConstraints
+     */
+    private void buildConstraints(GridBagConstraints gbc, int gx, int gy,
+	    int gw, int gh, int wx, int wy) {
+	gbc.gridx = gx;
+	gbc.gridy = gy;
+	gbc.gridwidth = gw;
+	gbc.gridheight = gh;
+	gbc.weightx = wx;
+	gbc.weighty = wy;
     }
 
 }
