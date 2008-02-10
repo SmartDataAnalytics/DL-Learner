@@ -20,13 +20,11 @@
 package org.dllearner.utilities;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * @author Jens Lehmann
@@ -42,15 +40,14 @@ public class Files {
 	 * @return Content of the file.
 	 */
 	public static String readFile(File file) throws FileNotFoundException, IOException {
-		FileInputStream fstream = new FileInputStream(file);
-		DataInputStream in = new DataInputStream(fstream);
-		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line;
 		StringBuffer content = new StringBuffer();
 		while ((line = br.readLine()) != null) {
 			content.append(line);
+			content.append(System.getProperty("line.separator"));
 		}
-		in.close();
+		br.close();
 		return content.toString();
 	}
 

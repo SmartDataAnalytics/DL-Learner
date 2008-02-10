@@ -19,6 +19,7 @@
  */
 package org.dllearner.reasoning;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -83,6 +84,9 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLOntologyStorageException;
+import org.semanticweb.owl.model.UnknownOWLOntologyException;
+import org.semanticweb.owl.util.SimpleURIMapper;
 
 /**
  * Mapping to OWL API reasoner interface. The OWL API currently 
@@ -520,6 +524,29 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private Concept owlClassToAtomicConcept(OWLClass owlClass) {
 		return new AtomicConcept(owlClass.getURI().toString());
 	}
+	
+	public static void exportKBToOWL(File owlOutputFile, KB kb, URI ontologyURI) {
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		//URI ontologyURI = URI.create("http://example.com");
+		URI physicalURI = owlOutputFile.toURI();
+		SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
+		manager.addURIMapper(mapper);
+		OWLOntology ontology;
+		try {
+			ontology = manager.createOntology(ontologyURI);
+			OWLAPIReasoner.fillOWLAPIOntology(manager, ontology, kb);
+			manager.saveOntology(ontology);
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnknownOWLOntologyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OWLOntologyStorageException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
 	
 	public static OWLObjectProperty getOWLAPIDescription(AtomicRole role) {
 		return staticFactory.getOWLObjectProperty(URI.create(role.getName()));

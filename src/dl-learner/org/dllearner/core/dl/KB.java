@@ -134,6 +134,24 @@ public class KB implements KBElement {
 		return tbox;
 	}
 
+	/**
+	 * Convenience method, which adds an axiom to ABox, RBox, or
+	 * TBox depending on whether it is an assertional, role, or
+	 * terminological axiom.
+	 * 
+	 * @param axiom Axiom to add.
+	 */
+	public void addAxiom(Axiom axiom) {
+		if(axiom instanceof AssertionalAxiom)
+			addABoxAxiom((AssertionalAxiom) axiom);
+		else if(axiom instanceof RBoxAxiom)
+			addRBoxAxiom((RBoxAxiom) axiom);
+		else if(axiom instanceof TerminologicalAxiom)
+			addTBoxAxiom((TerminologicalAxiom) axiom);
+		else
+			throw new Error(axiom + " has unsupported axiom type.");
+	}
+	
 	public void addABoxAxiom(AssertionalAxiom axiom) {
 		abox.add(axiom);
 	}

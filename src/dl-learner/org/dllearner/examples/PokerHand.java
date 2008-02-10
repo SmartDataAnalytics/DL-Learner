@@ -1,8 +1,14 @@
 package org.dllearner.examples;
 
-public class Hand {
+/**
+ * A poker hand consists of 5 cards.
+ * 
+ * @author Jens Lehmann
+ *
+ */
+public class PokerHand {
 
-	private Card[] cards;
+	private PokerCard[] cards;
 	int handType;
 	
 	/**
@@ -22,12 +28,12 @@ public class Hand {
 	 * 8: Straight flush; straight + flush 
 	 * 9: Royal flush; {Ace, King, Queen, Jack, Ten} + flush
 	 */
-	public Hand(Card[] cards, int hand) {
+	public PokerHand(PokerCard[] cards, int hand) {
 		this.cards = cards;
 		this.handType = hand;
 	}
 
-	public Card[] getCards() {
+	public PokerCard[] getCards() {
 		return cards;
 	}
 
