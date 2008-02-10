@@ -208,10 +208,13 @@ java.util.ArrayList termList() : {
 
 org.dllearner.prolog.List list() : {
     java.util.ArrayList content = null;
-    org.dllearner.prolog.Term head;
+    org.dllearner.prolog.Term head, tmp;
     org.dllearner.prolog.List l;
 }{
     "[]" { return new org.dllearner.prolog.List(); }
     | LOOKAHEAD(3) "[" head = term() "]" { return new org.dllearner.prolog.List(head, null); }
     | LOOKAHEAD(3) "[" head = term() "|" l = list() "]" { return new org.dllearner.prolog.List(head, l); }
+    | {content = new java.util.ArrayList(); } 
+      "[" ( LOOKAHEAD(2) tmp=term() {content.add(tmp);} ",")* tmp=term() {content.add(tmp);} "]"
+      { return org.dllearner.prolog.List.compose(content); }
 }
