@@ -42,6 +42,8 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.dl.AtomicConcept;
+import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Individual;
 
 /**
@@ -224,6 +226,31 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 			for (Individual ind : individuals)
 			    cBL.add(ind.getName());
 		    }
+		    // allowedConcepts or ignoredConcepts
+		    if (configOption.getName().equalsIgnoreCase(
+			    "allowedConcepts")
+			    || configOption.getName().equalsIgnoreCase(
+				    "ignoredConcepts")) {
+			// fill lists
+			Set<AtomicConcept> atomicsSet = config
+				.getReasoningService().getAtomicConcepts();
+			LinkedList<AtomicConcept> atomicConcepts = new LinkedList<AtomicConcept>(
+				atomicsSet);
+			for (AtomicConcept ind : atomicConcepts)
+			    cBL.add(ind.getName());
+		    }
+		    // allowedRoles or ignoredRoles
+		    if (configOption.getName().equalsIgnoreCase("allowedRoles")
+			    || configOption.getName().equalsIgnoreCase(
+				    "ignoredRoles")) {
+			// fill lists
+			Set<AtomicRole> atomicsSet = config
+				.getReasoningService().getAtomicRoles();
+			LinkedList<AtomicRole> atomicRoles = new LinkedList<AtomicRole>(
+				atomicsSet);
+			for (AtomicRole ind : atomicRoles)
+			    cBL.add(ind.getName());
+		    }
 		}
 	    }
 	    // UNKNOWN
@@ -279,7 +306,11 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
      */
     private boolean isSpecial() {
 	if (configOption.getName().equalsIgnoreCase("positiveExamples")
-		|| configOption.getName().equalsIgnoreCase("negativeExamples"))
+		|| configOption.getName().equalsIgnoreCase("negativeExamples")
+		|| configOption.getName().equalsIgnoreCase("allowedConcepts")
+		|| configOption.getName().equalsIgnoreCase("ignoredConcepts")
+		|| configOption.getName().equalsIgnoreCase("allowedRoles")
+		|| configOption.getName().equalsIgnoreCase("ignoredRoles"))
 	    return true;
 	else
 	    return false;
