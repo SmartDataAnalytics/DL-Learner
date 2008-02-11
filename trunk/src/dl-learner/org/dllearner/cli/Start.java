@@ -61,8 +61,8 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.KBFile;
@@ -493,7 +493,7 @@ public class Start {
 						int stringLength = rs.getAtomicConcepts().toString().length();
 						if (stringLength > maxLineLength) {
 							System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: ");
-							for (AtomicConcept ac : rs.getAtomicConcepts())
+							for (NamedClass ac : rs.getAtomicConcepts())
 								System.out.println("  " + ac);
 						} else
 							System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: "
@@ -625,7 +625,7 @@ public class Start {
 			if (!queryStr.equals("q")) {
 
 				// parse concept
-				Concept concept = null;
+				Description concept = null;
 				boolean parsedCorrectly = true;
 
 				try {
@@ -644,7 +644,7 @@ public class Start {
 
 				if (parsedCorrectly) {
 					// compute atomic roles and concepts used in concept
-					SortedSet<AtomicConcept> occurringConcepts = new TreeSet<AtomicConcept>(
+					SortedSet<NamedClass> occurringConcepts = new TreeSet<NamedClass>(
 							new ConceptComparator());
 					occurringConcepts.addAll(Helper.getAtomicConcepts(concept));
 					SortedSet<ObjectProperty> occurringRoles = new TreeSet<ObjectProperty>(
@@ -660,7 +660,7 @@ public class Start {
 					// (note that removeAll currently gives a different 
 					// result here, because the comparator of the argument 
 					// is used)
-					for (AtomicConcept ac : rs.getAtomicConcepts())
+					for (NamedClass ac : rs.getAtomicConcepts())
 						occurringConcepts.remove(ac);
 					for (ObjectProperty ar : rs.getAtomicRoles())
 						occurringRoles.remove(ar);

@@ -34,7 +34,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
 
@@ -145,7 +145,7 @@ public abstract class PosNegLP extends LearningProblem {
 		return positiveExamples;
 	}
 	
-	public abstract int coveredNegativeExamplesOrTooWeak(Concept concept);
+	public abstract int coveredNegativeExamplesOrTooWeak(Description concept);
 
 	public double getPercentPerLengthUnit() {
 		return percentPerLengthUnit;

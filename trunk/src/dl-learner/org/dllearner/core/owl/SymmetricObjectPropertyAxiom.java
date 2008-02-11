@@ -2,23 +2,23 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
-public class FunctionalRoleAxiom extends RBoxAxiom {
+public class SymmetricObjectPropertyAxiom extends PropertyAxiom {
 
 	private ObjectProperty role;
 	
-	public FunctionalRoleAxiom(ObjectProperty role) {
+	public SymmetricObjectPropertyAxiom(ObjectProperty role) {
 		this.role = role;
 	}
 
-	public ObjectPropertyExpression getRole() {
+	public ObjectProperty getRole() {
 		return role;
 	}
 
 	public int getLength() {
 		return 1 + role.getLength();
 	}
-		
+	
 	public String toString(String baseURI, Map<String,String> prefixes) {
-		return "Functional(" + role.toString(baseURI, prefixes) + ")";
-	}
+		return "Symmetric(" + role.toString(baseURI, prefixes) + ")";
+	}	
 }

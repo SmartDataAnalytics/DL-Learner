@@ -3,22 +3,22 @@ package org.dllearner.core.owl;
 import java.util.List;
 import java.util.Map;
 
-public class MultiDisjunction extends Concept {
+public class Union extends Description {
 
-	public MultiDisjunction() {
+	public Union() {
 		
 	}
 	
-	public MultiDisjunction(Concept... children) {
-		for(Concept child : children) {
+	public Union(Description... children) {
+		for(Description child : children) {
 			addChild(child);
 		}
 	}
 	
 	// Kinder müssen in einer Liste sein, sonst ist nicht garantiert,
 	// dass die Ordnung der Kinder die gleiche wie im Argument ist
-	public MultiDisjunction(List<Concept> children) {
-		for(Concept child : children) {
+	public Union(List<Description> children) {
+		for(Description child : children) {
 			addChild(child);
 		}
 	}
@@ -30,7 +30,7 @@ public class MultiDisjunction extends Concept {
 
 	public int getLength() {
 		int length = 0;
-		for(Concept child : children) {
+		for(Description child : children) {
 			length += child.getLength();
 		}
 		return length + children.size() - 1;		
@@ -50,7 +50,7 @@ public class MultiDisjunction extends Concept {
 	
 	public String toStringOld() {
 		String ret = "MULTI_OR [";
-		for(Concept child : children) {
+		for(Description child : children) {
 			ret += child.toString() + ",";
 		}
 		ret += "]";

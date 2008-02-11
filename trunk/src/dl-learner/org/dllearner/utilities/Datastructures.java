@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.AtomicConcept;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 
@@ -89,13 +89,13 @@ public class Datastructures {
 		return ret;
 	}
 	
-	public static String[] sortedSet2StringListConcepts(Set<AtomicConcept> s){
+	public static String[] sortedSet2StringListConcepts(Set<NamedClass> s){
 		
 		String[] ret=new String[s.size()];
-		Iterator<AtomicConcept> i=s.iterator();
+		Iterator<NamedClass> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((AtomicConcept)i.next()).getName();
+			ret[a++]=((NamedClass)i.next()).getName();
 		}
 		Arrays.sort(ret);
 		return ret;

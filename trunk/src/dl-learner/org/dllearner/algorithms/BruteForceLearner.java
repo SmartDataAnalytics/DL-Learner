@@ -35,16 +35,16 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.owl.All;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Bottom;
-import org.dllearner.core.owl.Concept;
-import org.dllearner.core.owl.Conjunction;
-import org.dllearner.core.owl.Disjunction;
-import org.dllearner.core.owl.Exists;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Union;
+import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Top;
+import org.dllearner.core.owl.Thing;
 
 /**
  * A brute force learning algorithm.
@@ -59,14 +59,14 @@ public class BruteForceLearner extends LearningAlgorithm {
     
 	private LearningProblem learningProblem;
 	
-    private Concept bestDefinition;
+    private Description bestDefinition;
     private Score bestScore;
     
     private Integer maxLength = 7;
     private String returnType;
     
     // list of all generated concepts sorted by length
-    private Map<Integer,List<Concept>> generatedDefinitions = new HashMap<Integer,List<Concept>>();
+    private Map<Integer,List<Description>> generatedDefinitions = new HashMap<Integer,List<Description>>();
     
     public BruteForceLearner(LearningProblem learningProblem, ReasoningService rs) {
     	this.learningProblem = learningProblem;
@@ -159,12 +159,12 @@ public class BruteForceLearner extends LearningAlgorithm {
             long startTime = System.currentTimeMillis();
             System.out.print("Testing definitions of length " + i + " ... ");
             count = 0;
-            for(Concept program : generatedDefinitions.get(i)) {
+            for(Description program : generatedDefinitions.get(i)) {
             	// if a return type is already given an appropriate tree is 
             	// generated here
-            	Concept newRoot;
+            	Description newRoot;
             	if(returnType != null) {
-            		newRoot = new Conjunction(new AtomicConcept(returnType),program);
+            		newRoot = new Intersection(new NamedClass(returnType),program);
             	} else
             		newRoot = program;
             	
@@ -189,19 +189,19 @@ public class BruteForceLearner extends LearningAlgorithm {
     }
     
     private void generatePrograms(int length) {
-        generatedDefinitions.put(length,new LinkedList<Concept>());
+        generatedDefinitions.put(length,new LinkedList<Description>());
         if(length==1) {
-            generatedDefinitions.get(1).add(new Top());
-            generatedDefinitions.get(1).add(new Bottom());
-            for(AtomicConcept atomicConcept : learningProblem.getReasoningService().getAtomicConcepts()) {
+            generatedDefinitions.get(1).add(new Thing());
+            generatedDefinitions.get(1).add(new Nothing());
+            for(NamedClass atomicConcept : learningProblem.getReasoningService().getAtomicConcepts()) {
                 generatedDefinitions.get(1).add(atomicConcept);
             }
         }
         
         if(length>1) {
             // negation
-            for(Concept childNode : generatedDefinitions.get(length-1)) {
-                Concept root = new Negation(childNode);
+            for(Description childNode : generatedDefinitions.get(length-1)) {
+                Description root = new Negation(childNode);
                 generatedDefinitions.get(length).add(root);
             }
         }
@@ -216,15 +216,15 @@ public class BruteForceLearner extends LearningAlgorithm {
                 for(int z=1; z<=Math.floor(0.5*(length-1)); z++) {
 
                 	// cycle through all concepts of length z (left subtree)
-                    for(Concept leftChild : generatedDefinitions.get(z)) { 
+                    for(Description leftChild : generatedDefinitions.get(z)) { 
                     	// cycle thorugh all concept of lengt "length-z-1" (right subtree) 
-                        for(Concept rightChild : generatedDefinitions.get(length-z-1)) {
+                        for(Description rightChild : generatedDefinitions.get(length-z-1)) {
                             // create concept tree
-                            Concept root;
+                            Description root;
                             if(i==0) {
-                            	root = new Disjunction(leftChild,rightChild);
+                            	root = new Union(leftChild,rightChild);
                             } else {
-                                root = new Conjunction(leftChild,rightChild);  
+                                root = new Intersection(leftChild,rightChild);  
                             }
                             
                             // Please not that we only set links here, i.e.:
@@ -250,12 +250,12 @@ public class BruteForceLearner extends LearningAlgorithm {
             }
             
             // EXISTS and ALL 
-            for(Concept childNode : generatedDefinitions.get(length-2)) {
+            for(Description childNode : generatedDefinitions.get(length-2)) {
             	for(ObjectProperty atomicRole : learningProblem.getReasoningService().getAtomicRoles()) {
-                    Concept root1 = new Exists(atomicRole,childNode);
+                    Description root1 = new ObjectSomeRestriction(atomicRole,childNode);
                     generatedDefinitions.get(length).add(root1);
                     
-                    Concept root2 = new All(atomicRole,childNode);
+                    Description root2 = new ObjectAllRestriction(atomicRole,childNode);
                     generatedDefinitions.get(length).add(root2);
                 }
             }            
@@ -268,7 +268,7 @@ public class BruteForceLearner extends LearningAlgorithm {
 	}
 
 	@Override
-	public Concept getBestSolution() {
+	public Description getBestSolution() {
 		return bestDefinition;
 	}
 

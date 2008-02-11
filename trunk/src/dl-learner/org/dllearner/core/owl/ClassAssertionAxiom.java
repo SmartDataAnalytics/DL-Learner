@@ -28,17 +28,17 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class ConceptAssertion extends AssertionalAxiom {
+public class ClassAssertionAxiom extends AssertionalAxiom {
 	
-	private Concept concept;
+	private Description concept;
 	private Individual individual;
 	
-	public ConceptAssertion(Concept concept, Individual individual) {
+	public ClassAssertionAxiom(Description concept, Individual individual) {
 		this.concept = concept;
 		this.individual = individual;
 	}
 
-	public Concept getConcept() {
+	public Description getConcept() {
 		return concept;
 	}
 

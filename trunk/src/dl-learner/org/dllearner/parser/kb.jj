@@ -47,7 +47,7 @@ public class KBParser {
 			return internalNamespace + name;
 	}
 	
-	public static Concept parseConcept(String string) throws ParseException {
+	public static Description parseConcept(String string) throws ParseException {
 		KBParser parser = new KBParser(new StringReader(string));
 		return parser.Concept();
 	}
@@ -96,11 +96,11 @@ TOKEN :
 
 KB KB() :
 {
-	ConceptAssertion conceptAssertion;
+	ClassAssertionAxiom conceptAssertion;
 	ObjectPropertyAssertion roleAssertion;
-	RBoxAxiom rBoxAxiom;
-	Equality equality;
-	Inclusion inclusion;
+	PropertyAxiom rBoxAxiom;
+	EquivalentClassesAxiom equality;
+	SubClassAxiom inclusion;
 	KB kb = new KB();
 }
 {
@@ -128,10 +128,10 @@ KB KB() :
   { return kb; }
 }
 
-ConceptAssertion ABoxConcept() : {Concept c; Individual i;}
+ClassAssertionAxiom ABoxConcept() : {Description c; Individual i;}
 {
 	c=Concept() "(" i=Individual() ")" <COMMAND_END>
-	{ return new ConceptAssertion(c,i); }	
+	{ return new ClassAssertionAxiom(c,i); }	
 }
 
 ObjectPropertyAssertion ABoxRole() : 
@@ -150,87 +150,87 @@ ObjectPropertyAssertion ABoxRole() :
    	}
 }
 
-TransitiveRoleAxiom Transitive() : {ObjectProperty ar;}
+TransitiveObjectPropertyAxiom Transitive() : {ObjectProperty ar;}
 {
    "Transitive" "(" ar=ObjectProperty() ")" <COMMAND_END>
-   { return new TransitiveRoleAxiom(ar); }
+   { return new TransitiveObjectPropertyAxiom(ar); }
 }
 
-FunctionalRoleAxiom Functional() : {ObjectProperty ar;}
+FunctionalObjectPropertyAxiom Functional() : {ObjectProperty ar;}
 {
    "Functional" "(" ar=ObjectProperty() ")" <COMMAND_END>
-   { return new FunctionalRoleAxiom(ar); }
+   { return new FunctionalObjectPropertyAxiom(ar); }
    
 }
 
-SymmetricRoleAxiom Symmetric() : {ObjectProperty ar;}
+SymmetricObjectPropertyAxiom Symmetric() : {ObjectProperty ar;}
 {
    "Symmetric" "(" ar=ObjectProperty() ")" <COMMAND_END>
-   { return new SymmetricRoleAxiom(ar); }
+   { return new SymmetricObjectPropertyAxiom(ar); }
 }
 
-InverseRoleAxiom Inverse() : {ObjectProperty ar1,ar2;}
+InverseObjectPropertyAxiom Inverse() : {ObjectProperty ar1,ar2;}
 {
    "Inverse" "(" ar1=ObjectProperty() "," ar2=ObjectProperty() ")" <COMMAND_END>
-   { return new InverseRoleAxiom(ar1,ar2); }
+   { return new InverseObjectPropertyAxiom(ar1,ar2); }
 }
 
-SubRoleAxiom Subrole() : {ObjectProperty ar1,ar2;}
+SubObjectPropertyAxiom Subrole() : {ObjectProperty ar1,ar2;}
 {
    "Subrole" "(" ar1=ObjectProperty() "," ar2=ObjectProperty() ")" <COMMAND_END>
-   { return new SubRoleAxiom(ar1,ar2);}
+   { return new SubObjectPropertyAxiom(ar1,ar2);}
 }
 
-Equality TBoxEquiv() : {Concept c1,c2;}
+EquivalentClassesAxiom TBoxEquiv() : {Description c1,c2;}
 {
    c1=Concept() "=" c2=Concept() <COMMAND_END>
-   { return new Equality(c1,c2); }
+   { return new EquivalentClassesAxiom(c1,c2); }
 }
 
-Inclusion TBoxSub() : {Concept c1,c2;}
+SubClassAxiom TBoxSub() : {Description c1,c2;}
 {
    c1=Concept() ("SUBCLASSOF" | "SUB" | "SUBCONCEPTOF") c2=Concept() <COMMAND_END>
-   { return new Inclusion(c1,c2);}
+   { return new SubClassAxiom(c1,c2);}
 }
 
-Concept Concept() : 
+Description Concept() : 
 {
-	Concept c,c1,c2;
-	AtomicConcept ac;
+	Description c,c1,c2;
+	NamedClass ac;
 	ObjectProperty ar;
 	String s;
 	int i;
 }
 {
-    Top() {return new Top();}
-  | Bottom() {return new Bottom();}
+    Top() {return new Thing();}
+  | Bottom() {return new Nothing();}
   | ac = AtomicConcept() {return ac;}
   // | s=Id() {return new AtomicConcept(s);}
   // | s=String() {return new AtomicConcept(s);} 
   // Parser geht bis zum n�chsten AND oder OR
   | LOOKAHEAD( "(" Concept() And())    "(" c1=Concept() And() c2=Concept() ")" 
-  	{return new Conjunction(c1,c2);}
+  	{return new Intersection(c1,c2);}
   | LOOKAHEAD( "(" Concept() Or())    "(" c1=Concept() Or() c2=Concept() ")"
-  	{return new Disjunction(c1,c2);}
+  	{return new Union(c1,c2);}
   // EXISTS oder ALL reicht aus um richtigen Zweig zu w�hlen
   // | Exists() s=Id() "." c=Concept()
   // {return new Exists(new AtomicRole(s),c); } 
   | Exists() ar=ObjectProperty() "." c=Concept()
-  	{return new Exists(ar,c); } 
+  	{return new ObjectSomeRestriction(ar,c); } 
   // | All() s=Id() "." c=Concept()
   //	{return new All(new AtomicRole(s),c); }
   | All() ar=ObjectProperty() "." c=Concept()
-	{return new All(ar,c); }	
+	{return new ObjectAllRestriction(ar,c); }	
   | Not() c=Concept()
   	{return new Negation(c); }
   // | GE() i=Integer() s=Id() "." c=Concept()
   //	{return new GreaterEqual(i,new AtomicRole(s),c);}
   | GE() i=Integer() ar=ObjectProperty() "." c=Concept()
-  	{return new GreaterEqual(i,ar,c);}  	
+  	{return new ObjectMinCardinalityRestriction(i,ar,c);}  	
   // | LE() i=Integer() s=Id() "." c=Concept()
   //	{return new LessEqual(i,new AtomicRole(s),c);}
   | LE() i=Integer() ar=ObjectProperty() "." c=Concept()
-  	{return new LessEqual(i,ar,c);}  	
+  	{return new ObjectMaxCardinalityRestriction(i,ar,c);}  	
 }
 
 void Or() : {} { <OR> }
@@ -243,14 +243,14 @@ void Not() : {} { <NOT> }
 void GE() : {} { <GE> }
 void LE() : {} { <LE> }
 
-AtomicConcept AtomicConcept() :
+NamedClass AtomicConcept() :
 {
 	String name;
 }
 {
 	(name=Id() | name=String())
 	{
-		return new AtomicConcept(getInternalURI(name));
+		return new NamedClass(getInternalURI(name));
 	}
 }
 

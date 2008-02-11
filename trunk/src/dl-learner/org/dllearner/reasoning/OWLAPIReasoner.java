@@ -38,34 +38,32 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.owl.All;
+import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.AssertionalAxiom;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Bottom;
-import org.dllearner.core.owl.Concept;
-import org.dllearner.core.owl.ConceptAssertion;
-import org.dllearner.core.owl.Conjunction;
-import org.dllearner.core.owl.Disjunction;
-import org.dllearner.core.owl.Equality;
-import org.dllearner.core.owl.Exists;
-import org.dllearner.core.owl.FunctionalRoleAxiom;
-import org.dllearner.core.owl.Inclusion;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ClassAssertionAxiom;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
+import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.InverseRoleAxiom;
+import org.dllearner.core.owl.InverseObjectPropertyAxiom;
 import org.dllearner.core.owl.KB;
-import org.dllearner.core.owl.MultiConjunction;
-import org.dllearner.core.owl.MultiDisjunction;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
-import org.dllearner.core.owl.RBoxAxiom;
-import org.dllearner.core.owl.RoleHierarchy;
-import org.dllearner.core.owl.SubRoleAxiom;
+import org.dllearner.core.owl.PropertyAxiom;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SubsumptionHierarchy;
-import org.dllearner.core.owl.SymmetricRoleAxiom;
+import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.TerminologicalAxiom;
-import org.dllearner.core.owl.Top;
-import org.dllearner.core.owl.TransitiveRoleAxiom;
+import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.RoleComparator;
@@ -111,11 +109,11 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	private RoleComparator roleComparator = new RoleComparator();
 	private SubsumptionHierarchy subsumptionHierarchy;
-	private RoleHierarchy roleHierarchy;	
-	private Set<Concept> allowedConceptsInSubsumptionHierarchy;
+	private ObjectPropertyHierarchy roleHierarchy;	
+	private Set<Description> allowedConceptsInSubsumptionHierarchy;
 	
 	// primitives
-	Set<AtomicConcept> atomicConcepts;
+	Set<NamedClass> atomicConcepts;
 	Set<ObjectProperty> atomicRoles;
 	SortedSet<Individual> individuals;	
 	
@@ -247,9 +245,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 		
 		// read in primitives
-		atomicConcepts = new TreeSet<AtomicConcept>(conceptComparator);
+		atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
 		for(OWLClass owlClass : classes)
-			atomicConcepts.add(new AtomicConcept(owlClass.getURI().toString()));
+			atomicConcepts.add(new NamedClass(owlClass.getURI().toString()));
 		atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
 		for(OWLObjectProperty owlProperty : properties)
 			atomicRoles.add(new ObjectProperty(owlProperty.getURI().toString()));
@@ -262,7 +260,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getAtomicConcepts()
 	 */
-	public Set<AtomicConcept> getAtomicConcepts() {
+	public Set<NamedClass> getAtomicConcepts() {
 		return atomicConcepts;
 	}
 
@@ -293,33 +291,33 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#prepareSubsumptionHierarchy(java.util.Set)
 	 */
-	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
+	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
 		
 		// implementation almost identical to DIG reasoner
 		// except function calls
 		
-		allowedConceptsInSubsumptionHierarchy = new TreeSet<Concept>(conceptComparator);
+		allowedConceptsInSubsumptionHierarchy = new TreeSet<Description>(conceptComparator);
 		allowedConceptsInSubsumptionHierarchy.addAll(allowedConcepts);
-		allowedConceptsInSubsumptionHierarchy.add(new Top());
-		allowedConceptsInSubsumptionHierarchy.add(new Bottom());
+		allowedConceptsInSubsumptionHierarchy.add(new Thing());
+		allowedConceptsInSubsumptionHierarchy.add(new Nothing());
 
-		TreeMap<Concept, TreeSet<Concept>> subsumptionHierarchyUp = new TreeMap<Concept, TreeSet<Concept>>(
+		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, TreeSet<Description>>(
 				conceptComparator);
-		TreeMap<Concept, TreeSet<Concept>> subsumptionHierarchyDown = new TreeMap<Concept, TreeSet<Concept>>(
+		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, TreeSet<Description>>(
 				conceptComparator);
 
 		// refinements of top
-		TreeSet<Concept> tmp = getMoreSpecialConcepts(new Top());
+		TreeSet<Description> tmp = getMoreSpecialConcepts(new Thing());
 		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-		subsumptionHierarchyDown.put(new Top(), tmp);
+		subsumptionHierarchyDown.put(new Thing(), tmp);
 
 		// refinements of bottom
-		tmp = getMoreGeneralConcepts(new Bottom());
+		tmp = getMoreGeneralConcepts(new Nothing());
 		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-		subsumptionHierarchyUp.put(new Bottom(), tmp);
+		subsumptionHierarchyUp.put(new Nothing(), tmp);
 
 		// refinements of atomic concepts
-		for (AtomicConcept atom : atomicConcepts) {
+		for (NamedClass atom : atomicConcepts) {
 			tmp = getMoreSpecialConcepts(atom);
 			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
 			subsumptionHierarchyDown.put(atom, tmp);
@@ -357,17 +355,17 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			roleHierarchyUp.put(role, getMoreGeneralRoles(role));
 		}
 
-		roleHierarchy = new RoleHierarchy(allowedRoles, roleHierarchyUp,
+		roleHierarchy = new ObjectPropertyHierarchy(allowedRoles, roleHierarchyUp,
 				roleHierarchyDown);
 	}	
 	
 	@Override
-	public RoleHierarchy getRoleHierarchy() {
+	public ObjectPropertyHierarchy getRoleHierarchy() {
 		return roleHierarchy;
 	}	
 	
 	@Override
-	public boolean subsumes(Concept superConcept, Concept subConcept) {
+	public boolean subsumes(Description superConcept, Description subConcept) {
 		try {
 			return reasoner.isSubClassOf(getOWLAPIDescription(subConcept), getOWLAPIDescription(superConcept));			
 		} catch (OWLReasonerException e) {
@@ -376,7 +374,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}
 	
-	private TreeSet<Concept> getMoreGeneralConcepts(Concept concept) {
+	private TreeSet<Description> getMoreGeneralConcepts(Description concept) {
 		Set<Set<OWLClass>> classes = null;
 		try {
 			classes = reasoner.getSuperClasses(getOWLAPIDescription(concept));
@@ -387,7 +385,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return getFirstClasses(classes);
 	}
 	
-	private TreeSet<Concept> getMoreSpecialConcepts(Concept concept) {
+	private TreeSet<Description> getMoreSpecialConcepts(Description concept) {
 		Set<Set<OWLClass>> classes = null;
 		try {
 			classes = reasoner.getSubClasses(getOWLAPIDescription(concept));
@@ -421,7 +419,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public boolean instanceCheck(Concept concept, Individual individual) {
+	public boolean instanceCheck(Description concept, Individual individual) {
 		OWLDescription d = getOWLAPIDescription(concept);
 		OWLIndividual i = factory.getOWLIndividual(URI.create(individual.getName()));
 		try {
@@ -433,7 +431,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public SortedSet<Individual> retrieval(Concept concept) {
+	public SortedSet<Individual> retrieval(Description concept) {
 		OWLDescription d = getOWLAPIDescription(concept);
 		Set<OWLIndividual> individuals = null;
 		try {
@@ -449,7 +447,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public Set<AtomicConcept> getConcepts(Individual individual) {
+	public Set<NamedClass> getConcepts(Individual individual) {
 		Set<Set<OWLClass>> result = null;
 		try {
 			 result = reasoner.getTypes(factory.getOWLIndividual(URI.create(individual.getName())),false);
@@ -473,31 +471,31 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	// OWL API often returns a set of sets of classes, where each inner
 	// set consists of equivalent classes; this method picks one class
 	// from each inner set to flatten the set of sets
-	private TreeSet<Concept> getFirstClasses(Set<Set<OWLClass>> setOfSets) {
-		TreeSet<Concept> concepts = new TreeSet<Concept>(conceptComparator);
+	private TreeSet<Description> getFirstClasses(Set<Set<OWLClass>> setOfSets) {
+		TreeSet<Description> concepts = new TreeSet<Description>(conceptComparator);
 		for(Set<OWLClass> innerSet : setOfSets) {
 			// take one element from the set and ignore the rest
 			// (TODO: we need to make sure we always ignore the same concepts)
 			OWLClass concept = innerSet.iterator().next();
 			if(concept.isOWLThing()) {
-				concepts.add(new Top());
+				concepts.add(new Thing());
 			} else if(concept.isOWLNothing()) {
-				concepts.add(new Bottom());
+				concepts.add(new Nothing());
 			} else {
-				concepts.add(new AtomicConcept(concept.getURI().toString()));
+				concepts.add(new NamedClass(concept.getURI().toString()));
 			}
 		}
 		return concepts;		
 	}
 	
-	private Set<AtomicConcept> getFirstClassesNoTopBottom(Set<Set<OWLClass>> setOfSets) {
-		Set<AtomicConcept> concepts = new HashSet<AtomicConcept>();
+	private Set<NamedClass> getFirstClassesNoTopBottom(Set<Set<OWLClass>> setOfSets) {
+		Set<NamedClass> concepts = new HashSet<NamedClass>();
 		for(Set<OWLClass> innerSet : setOfSets) {
 			// take one element from the set and ignore the rest
 			// (TODO: we need to make sure we always ignore the same concepts)
 			OWLClass concept = innerSet.iterator().next();
 			if(!concept.isOWLThing() && !concept.isOWLNothing())
-				concepts.add(new AtomicConcept(concept.getURI().toString()));
+				concepts.add(new NamedClass(concept.getURI().toString()));
 		}
 		return concepts;			
 	}
@@ -514,15 +512,15 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}	
 	
 	@SuppressWarnings({"unused"})
-	private Set<Concept> owlClassesToAtomicConcepts(Set<OWLClass> owlClasses) {
-		Set<Concept> concepts = new HashSet<Concept>();
+	private Set<Description> owlClassesToAtomicConcepts(Set<OWLClass> owlClasses) {
+		Set<Description> concepts = new HashSet<Description>();
 		for(OWLClass owlClass : owlClasses)
 			concepts.add(owlClassToAtomicConcept(owlClass));
 		return concepts;
 	}
 	
-	private Concept owlClassToAtomicConcept(OWLClass owlClass) {
-		return new AtomicConcept(owlClass.getURI().toString());
+	private Description owlClassToAtomicConcept(OWLClass owlClass) {
+		return new NamedClass(owlClass.getURI().toString());
 	}
 	
 	public static void exportKBToOWL(File owlOutputFile, KB kb, URI ontologyURI) {
@@ -552,48 +550,34 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return staticFactory.getOWLObjectProperty(URI.create(role.getName()));
 	}
 	
-	public static OWLDescription getOWLAPIDescription(Concept concept) {
-		if (concept instanceof AtomicConcept) {
-			return staticFactory.getOWLClass(URI.create(((AtomicConcept)concept).getName()));
-		} else if (concept instanceof Bottom) {
+	public static OWLDescription getOWLAPIDescription(Description concept) {
+		if (concept instanceof NamedClass) {
+			return staticFactory.getOWLClass(URI.create(((NamedClass)concept).getName()));
+		} else if (concept instanceof Nothing) {
 			return staticFactory.getOWLNothing();
-		} else if (concept instanceof Top) {
+		} else if (concept instanceof Thing) {
 			return staticFactory.getOWLThing();
 		} else if (concept instanceof Negation) {
 			return staticFactory.getOWLObjectComplementOf(
 					getOWLAPIDescription(concept.getChild(0)));
-		} else if (concept instanceof Conjunction) {
-			OWLDescription d1 = getOWLAPIDescription(concept.getChild(0));
-			OWLDescription d2 = getOWLAPIDescription(concept.getChild(1));
-			Set<OWLDescription> d = new HashSet<OWLDescription>();
-			d.add(d1);
-			d.add(d2);
-			return staticFactory.getOWLObjectIntersectionOf(d);
-		} else if (concept instanceof Disjunction) {
-			OWLDescription d1 = getOWLAPIDescription(concept.getChild(0));
-			OWLDescription d2 = getOWLAPIDescription(concept.getChild(1));
-			Set<OWLDescription> d = new HashSet<OWLDescription>();
-			d.add(d1);
-			d.add(d2);
-			return staticFactory.getOWLObjectUnionOf(d);			
-		} else if (concept instanceof All) {
+		} else if (concept instanceof ObjectAllRestriction) {
 			OWLObjectProperty role = staticFactory.getOWLObjectProperty(
-					URI.create(((All) concept).getRole().getName()));
+					URI.create(((ObjectAllRestriction) concept).getRole().getName()));
 			OWLDescription d = getOWLAPIDescription(concept.getChild(0));
 			return staticFactory.getOWLObjectAllRestriction(role, d);
-		} else if(concept instanceof Exists) {
+		} else if(concept instanceof ObjectSomeRestriction) {
 			OWLObjectProperty role = staticFactory.getOWLObjectProperty(
-					URI.create(((Exists) concept).getRole().getName()));
+					URI.create(((ObjectSomeRestriction) concept).getRole().getName()));
 			OWLDescription d = getOWLAPIDescription(concept.getChild(0));
 			return staticFactory.getOWLObjectSomeRestriction(role, d);
-		} else if(concept instanceof MultiConjunction) {
+		} else if(concept instanceof Intersection) {
 			Set<OWLDescription> descriptions = new HashSet<OWLDescription>();
-			for(Concept child : concept.getChildren())
+			for(Description child : concept.getChildren())
 				descriptions.add(getOWLAPIDescription(child));
 			return staticFactory.getOWLObjectIntersectionOf(descriptions);
-		} else if(concept instanceof MultiDisjunction) {
+		} else if(concept instanceof Union) {
 			Set<OWLDescription> descriptions = new HashSet<OWLDescription>();
-			for(Concept child : concept.getChildren())
+			for(Description child : concept.getChildren())
 				descriptions.add(getOWLAPIDescription(child));
 			return staticFactory.getOWLObjectUnionOf(descriptions);			
 		}
@@ -608,11 +592,11 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		// OWLOntology ontology = manager.createOntology(ontologyURI);
 		try {	
 			for (AssertionalAxiom axiom : kb.getAbox()) {
-				if (axiom instanceof ConceptAssertion) {
-					OWLDescription d = getOWLAPIDescription(((ConceptAssertion) axiom)
+				if (axiom instanceof ClassAssertionAxiom) {
+					OWLDescription d = getOWLAPIDescription(((ClassAssertionAxiom) axiom)
 							.getConcept());
 					OWLIndividual i = factory.getOWLIndividual(URI.create(
-							((ConceptAssertion) axiom).getIndividual().getName()));
+							((ClassAssertionAxiom) axiom).getIndividual().getName()));
 					OWLAxiom axiomOWLAPI = factory.getOWLClassAssertionAxiom(i, d);
 					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
 
@@ -631,38 +615,38 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				}
 			}
 
-			for (RBoxAxiom axiom : kb.getRbox()) {
-				if (axiom instanceof FunctionalRoleAxiom) {
+			for (PropertyAxiom axiom : kb.getRbox()) {
+				if (axiom instanceof FunctionalObjectPropertyAxiom) {
 					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((FunctionalRoleAxiom) axiom).getRole().getName()));
+							URI.create(((FunctionalObjectPropertyAxiom) axiom).getRole().getName()));
 					OWLAxiom axiomOWLAPI = factory.getOWLFunctionalObjectPropertyAxiom(role);
 					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
 					manager.applyChange(addAxiom);
-				} else if (axiom instanceof SymmetricRoleAxiom) {
+				} else if (axiom instanceof SymmetricObjectPropertyAxiom) {
 					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((SymmetricRoleAxiom) axiom).getRole().getName()));
+							URI.create(((SymmetricObjectPropertyAxiom) axiom).getRole().getName()));
 					OWLAxiom axiomOWLAPI = factory.getOWLSymmetricObjectPropertyAxiom(role);
 					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
 					manager.applyChange(addAxiom);					
-				} else if (axiom instanceof TransitiveRoleAxiom) {
+				} else if (axiom instanceof TransitiveObjectPropertyAxiom) {
 					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((SymmetricRoleAxiom) axiom).getRole().getName()));
+							URI.create(((SymmetricObjectPropertyAxiom) axiom).getRole().getName()));
 					OWLAxiom axiomOWLAPI = factory.getOWLTransitiveObjectPropertyAxiom(role);
 					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
 					manager.applyChange(addAxiom);					
-				} else if (axiom instanceof InverseRoleAxiom) {
+				} else if (axiom instanceof InverseObjectPropertyAxiom) {
 					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((InverseRoleAxiom) axiom).getRole().getName()));
+							URI.create(((InverseObjectPropertyAxiom) axiom).getRole().getName()));
 					OWLObjectProperty inverseRole = factory.getOWLObjectProperty(
-							URI.create(((InverseRoleAxiom) axiom).getInverseRole().getName()));
+							URI.create(((InverseObjectPropertyAxiom) axiom).getInverseRole().getName()));
 					OWLAxiom axiomOWLAPI = factory.getOWLInverseObjectPropertiesAxiom(role, inverseRole);
 					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
 					manager.applyChange(addAxiom);
-				} else if (axiom instanceof SubRoleAxiom) {
+				} else if (axiom instanceof SubObjectPropertyAxiom) {
 					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((SubRoleAxiom) axiom).getRole().getName()));
+							URI.create(((SubObjectPropertyAxiom) axiom).getRole().getName()));
 					OWLObjectProperty subRole = factory.getOWLObjectProperty(
-							URI.create(((SubRoleAxiom) axiom).getSubRole().getName()));
+							URI.create(((SubObjectPropertyAxiom) axiom).getSubRole().getName()));
 					OWLAxiom axiomOWLAPI = factory.getOWLSubObjectPropertyAxiom(subRole, role);
 					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
 					manager.applyChange(addAxiom);
@@ -670,19 +654,19 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			}
 
 			for (TerminologicalAxiom axiom : kb.getTbox()) {
-				if (axiom instanceof Equality) {
-					OWLDescription d1 = getOWLAPIDescription(((Equality) axiom).getConcept1());
-					OWLDescription d2 = getOWLAPIDescription(((Equality) axiom).getConcept2());
+				if (axiom instanceof EquivalentClassesAxiom) {
+					OWLDescription d1 = getOWLAPIDescription(((EquivalentClassesAxiom) axiom).getConcept1());
+					OWLDescription d2 = getOWLAPIDescription(((EquivalentClassesAxiom) axiom).getConcept2());
 					Set<OWLDescription> ds = new HashSet<OWLDescription>();
 					ds.add(d1);
 					ds.add(d2);
 					OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
 					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
 					manager.applyChange(addAxiom);					
-				} else if (axiom instanceof Inclusion) {
-					OWLDescription subConcept = getOWLAPIDescription(((Inclusion) axiom)
+				} else if (axiom instanceof SubClassAxiom) {
+					OWLDescription subConcept = getOWLAPIDescription(((SubClassAxiom) axiom)
 							.getSubConcept());
-					OWLDescription superConcept = getOWLAPIDescription(((Inclusion) axiom)
+					OWLDescription superConcept = getOWLAPIDescription(((SubClassAxiom) axiom)
 							.getSuperConcept());
 					OWLAxiom axiomOWLAPI = factory.getOWLSubClassAxiom(subConcept, superConcept);
 					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);

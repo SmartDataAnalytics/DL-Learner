@@ -35,7 +35,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
@@ -175,7 +175,7 @@ public class CrossValidation {
 			long algorithmDuration = System.nanoTime() - algorithmStartTime;
 			runtime.addNumber(algorithmDuration/(double)1000000000);
 			
-			Concept concept = la.getBestSolution();
+			Description concept = la.getBestSolution();
 			int correctExamples = getCorrectPosClassified(rs, concept, testSetsPos.get(currFold))
 			+ getCorrectNegClassified(rs, concept, testSetsNeg.get(currFold));
 			double currAccuracy = 100*((double)correctExamples/(testSetsPos.get(currFold).size()+
@@ -199,11 +199,11 @@ public class CrossValidation {
 		
 	}
 	
-	private int getCorrectPosClassified(ReasoningService rs, Concept concept, Set<Individual> posClassified) {
+	private int getCorrectPosClassified(ReasoningService rs, Description concept, Set<Individual> posClassified) {
 		return rs.instanceCheck(concept, posClassified).size();
 	}
 	
-	private int getCorrectNegClassified(ReasoningService rs, Concept concept, Set<Individual> negClassified) {
+	private int getCorrectNegClassified(ReasoningService rs, Description concept, Set<Individual> negClassified) {
 		return negClassified.size() - rs.instanceCheck(concept, negClassified).size();
 	}
 	

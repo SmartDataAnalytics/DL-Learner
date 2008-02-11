@@ -2,11 +2,11 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
-public class TransitiveRoleAxiom extends RBoxAxiom {
+public class TransitiveObjectPropertyAxiom extends PropertyAxiom {
 
 	private ObjectPropertyExpression role;
 	
-	public TransitiveRoleAxiom(ObjectPropertyExpression role) {
+	public TransitiveObjectPropertyAxiom(ObjectPropertyExpression role) {
 		this.role = role;
 	}
 

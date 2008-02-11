@@ -21,7 +21,7 @@
 package org.dllearner.algorithms.gp;
 
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 
 /**
  * This class represents a program, i.e. an individual.
@@ -33,11 +33,11 @@ public class Program {
 
 	// public static int fitnessEvaluations = 0;
 
-	private Concept hypothesis;
+	private Description hypothesis;
 
 	// private Concept extendedHypothesis;
 
-	private Concept adc;
+	private Description adc;
 
 	private Score score;
 
@@ -53,11 +53,11 @@ public class Program {
 	 * @param concept
 	 *            The program tree.
 	 */
-	public Program(Score score, Concept hypothesis) {
+	public Program(Score score, Description hypothesis) {
 		this(score, hypothesis, null);
 	}
 
-	public Program(Score score, Concept hypothesis, Concept adc) {
+	public Program(Score score, Description hypothesis, Description adc) {
 		// this.learningProblem = learningProblem;
 		this.score = score;
 		this.hypothesis = hypothesis;
@@ -126,7 +126,7 @@ public class Program {
 	 * 
 	 * @return The program tree.
 	 */
-	public Concept getTree() {
+	public Description getTree() {
 		return hypothesis;
 	}
 
@@ -134,7 +134,7 @@ public class Program {
 		return score;
 	}
 
-	public Concept getAdc() {
+	public Description getAdc() {
 		return adc;
 	}
 }

@@ -24,7 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -67,7 +67,7 @@ public class OntologyClassRewriter {
 		try {
 			// neue Definition in DL-Learner internes Format parsen
 			// (Warnung für Web-Service: Parser ist momentan noch statisch, d.h. nicht thread safe)
-			Concept newConceptInternal = KBParser.parseConcept(newConceptString);
+			Description newConceptInternal = KBParser.parseConcept(newConceptString);
 			
 			// umwandeln in interne KAON2-Darstellung (bereits im DL-Learner implementiert)
 			// Description newConceptKAON2 = KAON2Reasoner.getKAON2Description(newConceptInternal);

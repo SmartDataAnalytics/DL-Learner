@@ -11,14 +11,14 @@ import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Concept;
-import org.dllearner.core.owl.Conjunction;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.FlatABox;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.RoleHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SortedSetTuple;
@@ -27,7 +27,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 
 	FlatABox abox;
 	FastRetrieval fastRetrieval;
-	Set<AtomicConcept> atomicConcepts;
+	Set<NamedClass> atomicConcepts;
 	Set<ObjectProperty> atomicRoles;
 	SortedSet<Individual> individuals;
 	
@@ -55,9 +55,9 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		fastRetrieval = new FastRetrieval(abox);
 		
 		// atomare Konzepte und Rollen initialisieren
-		atomicConcepts = new HashSet<AtomicConcept>();
+		atomicConcepts = new HashSet<NamedClass>();
 		for(String concept : abox.concepts) {
-			atomicConcepts.add(new AtomicConcept(concept));
+			atomicConcepts.add(new NamedClass(concept));
 		}
 		atomicRoles = new HashSet<ObjectProperty>();
 		for(String role : abox.roles) {
@@ -74,22 +74,22 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	}
 
 	@Override		
-	public SortedSetTuple<Individual> doubleRetrieval(Concept concept) {
+	public SortedSetTuple<Individual> doubleRetrieval(Description concept) {
 		return Helper.getIndividualTuple(fastRetrieval.calculateSets(concept));
 	}	
 	
 	@Override		
-	public SortedSetTuple<Individual> doubleRetrieval(Concept concept, Concept adc) {
+	public SortedSetTuple<Individual> doubleRetrieval(Description concept, Description adc) {
 		SortedSetTuple<String> adcSet = fastRetrieval.calculateSets(adc);
 		return Helper.getIndividualTuple(fastRetrieval.calculateSetsADC(concept, adcSet));
 	}	
 	
 	@Override		
-	public SortedSet<Individual> retrieval(Concept concept) {
+	public SortedSet<Individual> retrieval(Description concept) {
 		return Helper.getIndividualSet(fastRetrieval.calculateSets(concept).getPosSet());
 	}
 	
-	public Set<AtomicConcept> getAtomicConcepts() {
+	public Set<NamedClass> getAtomicConcepts() {
 		return atomicConcepts;
 	}
 
@@ -107,9 +107,9 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 
 	// C \sqsubseteq D is rewritten to a retrieval for \not C \sqcap D
 	@Override
-	public boolean subsumes(Concept superConcept, Concept subConcept) {
+	public boolean subsumes(Description superConcept, Description subConcept) {
 		Negation neg = new Negation(subConcept);
-		Conjunction c = new Conjunction(neg,superConcept);
+		Intersection c = new Intersection(neg,superConcept);
 		return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
 	}
 	
@@ -119,11 +119,11 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	}	
 	
 	@Override
-	public RoleHierarchy getRoleHierarchy() {
+	public ObjectPropertyHierarchy getRoleHierarchy() {
 		return rs.getRoleHierarchy();
 	}	
 	
-	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
+	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
 		rs.prepareSubsumptionHierarchy(allowedConcepts);
 	}
 
@@ -138,7 +138,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public boolean instanceCheck(Concept concept, Individual individual) {
+	public boolean instanceCheck(Description concept, Individual individual) {
 		return fastRetrieval.calculateSets(concept).getPosSet().contains(individual.getName());
 	}
 	

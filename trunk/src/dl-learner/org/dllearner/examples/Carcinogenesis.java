@@ -29,9 +29,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.dllearner.core.owl.AtomicConcept;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.ConceptAssertion;
+import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyAssertion;
 import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
@@ -165,7 +165,7 @@ public class Carcinogenesis {
 			axioms.add(ra);
 			// atom is made instance of the correct class
 			String atomClass = getAtomClass(elementName, type);
-			ConceptAssertion ca = getConceptAssertion(atomClass,atomName);
+			ClassAssertionAxiom ca = getConceptAssertion(atomClass,atomName);
 			axioms.add(ca);
 			// charge of atom
 			DatatypePropertyAssertion dpa = getDoubleDatatypePropertyAssertion(atomName, "charge", charge);
@@ -180,10 +180,10 @@ public class Carcinogenesis {
 		return getFullElementName(element) + "-" + atomType;
 	}
 	
-	private static ConceptAssertion getConceptAssertion(String concept, String i) {
+	private static ClassAssertionAxiom getConceptAssertion(String concept, String i) {
 		Individual ind = getIndividual(i);
-		AtomicConcept c = getAtomicConcept(concept);
-		return new ConceptAssertion(c,ind);
+		NamedClass c = getAtomicConcept(concept);
+		return new ClassAssertionAxiom(c,ind);
 	}
 	
 	private static ObjectPropertyAssertion getRoleAssertion(String role, String i1, String i2) {
@@ -211,8 +211,8 @@ public class Carcinogenesis {
 		return new DatatypeProperty(ontologyURI + "#" + name);
 	}		
 	
-	private static AtomicConcept getAtomicConcept(String name) {
-		return new AtomicConcept(ontologyURI + "#" + name);
+	private static NamedClass getAtomicConcept(String name) {
+		return new NamedClass(ontologyURI + "#" + name);
 	}
 
 	private static String getFullElementName(String abbreviation) {

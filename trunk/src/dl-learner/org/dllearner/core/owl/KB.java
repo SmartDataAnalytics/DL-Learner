@@ -10,7 +10,7 @@ public class KB implements KBElement {
 
 	private Set<AssertionalAxiom> abox = new HashSet<AssertionalAxiom>();
 	private Set<TerminologicalAxiom> tbox = new HashSet<TerminologicalAxiom>();
-	private Set<RBoxAxiom> rbox = new HashSet<RBoxAxiom>();
+	private Set<PropertyAxiom> rbox = new HashSet<PropertyAxiom>();
 	
 	public SortedSet<Individual> findAllIndividuals() {
 		SortedSet<Individual> individuals = new TreeSet<Individual>();
@@ -19,8 +19,8 @@ public class KB implements KBElement {
 			if(axiom instanceof ObjectPropertyAssertion) {
 				individuals.add(((ObjectPropertyAssertion)axiom).getIndividual1());
 				individuals.add(((ObjectPropertyAssertion)axiom).getIndividual2());
-			} else if(axiom instanceof ConceptAssertion) {
-				individuals.add(((ConceptAssertion)axiom).getIndividual());
+			} else if(axiom instanceof ClassAssertionAxiom) {
+				individuals.add(((ClassAssertionAxiom)axiom).getIndividual());
 			}	
 		}		
 		
@@ -36,28 +36,28 @@ public class KB implements KBElement {
 		}
 		
 		for(Axiom axiom : tbox) {
-			if(axiom instanceof Inclusion) {
-				roleNames.addAll(findAllRoleNames(((Inclusion)axiom).getSubConcept()));
-				roleNames.addAll(findAllRoleNames(((Inclusion)axiom).getSuperConcept()));
-			} else if(axiom instanceof Equality) {
-				roleNames.addAll(findAllRoleNames(((Equality)axiom).getConcept1()));
-				roleNames.addAll(findAllRoleNames(((Equality)axiom).getConcept2()));
+			if(axiom instanceof SubClassAxiom) {
+				roleNames.addAll(findAllRoleNames(((SubClassAxiom)axiom).getSubConcept()));
+				roleNames.addAll(findAllRoleNames(((SubClassAxiom)axiom).getSuperConcept()));
+			} else if(axiom instanceof EquivalentClassesAxiom) {
+				roleNames.addAll(findAllRoleNames(((EquivalentClassesAxiom)axiom).getConcept1()));
+				roleNames.addAll(findAllRoleNames(((EquivalentClassesAxiom)axiom).getConcept2()));
 			}
 		}
 		
 		for(Axiom axiom : rbox) {
-			if(axiom instanceof SymmetricRoleAxiom)
-				roleNames.add(((SymmetricRoleAxiom)axiom).getRole().getName());
-			else if(axiom instanceof TransitiveRoleAxiom)
-				roleNames.add(((TransitiveRoleAxiom)axiom).getRole().getName());
-			else if(axiom instanceof FunctionalRoleAxiom)
-				roleNames.add(((FunctionalRoleAxiom)axiom).getRole().getName());	
-			else if(axiom instanceof SubRoleAxiom) {
-				roleNames.add(((SubRoleAxiom)axiom).getRole().getName());
-				roleNames.add(((SubRoleAxiom)axiom).getSubRole().getName());
-			} else if(axiom instanceof InverseRoleAxiom) {
-				roleNames.add(((InverseRoleAxiom)axiom).getRole().getName());
-				roleNames.add(((InverseRoleAxiom)axiom).getInverseRole().getName());
+			if(axiom instanceof SymmetricObjectPropertyAxiom)
+				roleNames.add(((SymmetricObjectPropertyAxiom)axiom).getRole().getName());
+			else if(axiom instanceof TransitiveObjectPropertyAxiom)
+				roleNames.add(((TransitiveObjectPropertyAxiom)axiom).getRole().getName());
+			else if(axiom instanceof FunctionalObjectPropertyAxiom)
+				roleNames.add(((FunctionalObjectPropertyAxiom)axiom).getRole().getName());	
+			else if(axiom instanceof SubObjectPropertyAxiom) {
+				roleNames.add(((SubObjectPropertyAxiom)axiom).getRole().getName());
+				roleNames.add(((SubObjectPropertyAxiom)axiom).getSubRole().getName());
+			} else if(axiom instanceof InverseObjectPropertyAxiom) {
+				roleNames.add(((InverseObjectPropertyAxiom)axiom).getRole().getName());
+				roleNames.add(((InverseObjectPropertyAxiom)axiom).getInverseRole().getName());
 			}		
 		}
 		
@@ -68,19 +68,19 @@ public class KB implements KBElement {
 		return ret;		
 	}
 	
-	public Set<String> findAllRoleNames(Concept concept) {
+	public Set<String> findAllRoleNames(Description concept) {
 		Set<String> ret = new TreeSet<String>();
 		
-		if(concept instanceof Quantification)
-			ret.add(((Quantification)concept).getRole().getName());
+		if(concept instanceof ObjectQuantorRestriction)
+			ret.add(((ObjectQuantorRestriction)concept).getRole().getName());
 		
-		for(Concept child : concept.getChildren())
+		for(Description child : concept.getChildren())
 			ret.addAll(findAllRoleNames(child));		
 		
 		return ret;
 	}
 	
-	public Set<AtomicConcept> findAllAtomicConcepts() {
+	public Set<NamedClass> findAllAtomicConcepts() {
 		// erstmal eine Menge von Konzeptnamen finden, dadurch ist sichergestellt,
 		// dass kein Name zweimal auftaucht (wenn später mal ein Comparator
 		// für Konzepte implementiert ist, dann ist dieser Zwischenschritt 
@@ -88,35 +88,35 @@ public class KB implements KBElement {
 		Set<String> conceptNames = new HashSet<String>();
 		
 		for(Axiom axiom : abox) {
-			if(axiom instanceof ConceptAssertion)
-				conceptNames.addAll(findAllConceptNames(((ConceptAssertion)axiom).getConcept()));
+			if(axiom instanceof ClassAssertionAxiom)
+				conceptNames.addAll(findAllConceptNames(((ClassAssertionAxiom)axiom).getConcept()));
 		}
 		
 		for(Axiom axiom : tbox) {
-			if(axiom instanceof Inclusion) {
-				conceptNames.addAll(findAllConceptNames(((Inclusion)axiom).getSubConcept()));
-				conceptNames.addAll(findAllConceptNames(((Inclusion)axiom).getSuperConcept()));
-			} else if(axiom instanceof Equality) {
-				conceptNames.addAll(findAllConceptNames(((Equality)axiom).getConcept1()));
-				conceptNames.addAll(findAllConceptNames(((Equality)axiom).getConcept2()));
+			if(axiom instanceof SubClassAxiom) {
+				conceptNames.addAll(findAllConceptNames(((SubClassAxiom)axiom).getSubConcept()));
+				conceptNames.addAll(findAllConceptNames(((SubClassAxiom)axiom).getSuperConcept()));
+			} else if(axiom instanceof EquivalentClassesAxiom) {
+				conceptNames.addAll(findAllConceptNames(((EquivalentClassesAxiom)axiom).getConcept1()));
+				conceptNames.addAll(findAllConceptNames(((EquivalentClassesAxiom)axiom).getConcept2()));
 			}
 		}
 		
-		Set<AtomicConcept> ret = new HashSet<AtomicConcept>();
+		Set<NamedClass> ret = new HashSet<NamedClass>();
 		for(String name : conceptNames) {
-			ret.add(new AtomicConcept(name));
+			ret.add(new NamedClass(name));
 		}
 		return ret;
 	}
 	
-	private Set<String> findAllConceptNames(Concept concept) {
+	private Set<String> findAllConceptNames(Description concept) {
 		Set<String> ret = new TreeSet<String>();
 
-		if(concept instanceof AtomicConcept) {
-			ret.add(((AtomicConcept)concept).getName());
+		if(concept instanceof NamedClass) {
+			ret.add(((NamedClass)concept).getName());
 		}
 			
-		for(Concept child : concept.getChildren())
+		for(Description child : concept.getChildren())
 			ret.addAll(findAllConceptNames(child));
 
 		return ret;
@@ -126,7 +126,7 @@ public class KB implements KBElement {
 		return abox;
 	}
 
-	public Set<RBoxAxiom> getRbox() {
+	public Set<PropertyAxiom> getRbox() {
 		return rbox;
 	}
 
@@ -144,8 +144,8 @@ public class KB implements KBElement {
 	public void addAxiom(Axiom axiom) {
 		if(axiom instanceof AssertionalAxiom)
 			addABoxAxiom((AssertionalAxiom) axiom);
-		else if(axiom instanceof RBoxAxiom)
-			addRBoxAxiom((RBoxAxiom) axiom);
+		else if(axiom instanceof PropertyAxiom)
+			addRBoxAxiom((PropertyAxiom) axiom);
 		else if(axiom instanceof TerminologicalAxiom)
 			addTBoxAxiom((TerminologicalAxiom) axiom);
 		else
@@ -160,7 +160,7 @@ public class KB implements KBElement {
 		tbox.add(axiom);
 	}
 	
-	public void addRBoxAxiom(RBoxAxiom axiom) {
+	public void addRBoxAxiom(PropertyAxiom axiom) {
 		rbox.add(axiom);
 	}
 

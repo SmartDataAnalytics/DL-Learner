@@ -35,7 +35,7 @@ import org.dllearner.utilities.RoleComparator;
  * @author Jens Lehmann
  *
  */
-public class RoleHierarchy {
+public class ObjectPropertyHierarchy {
 
 	RoleComparator rc = new RoleComparator();
 	TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyUp;
@@ -43,7 +43,7 @@ public class RoleHierarchy {
 	TreeSet<ObjectProperty> mostGeneralRoles = new TreeSet<ObjectProperty>(rc);
 	TreeSet<ObjectProperty> mostSpecialRoles = new TreeSet<ObjectProperty>(rc);
 	
-	public RoleHierarchy(Set<ObjectProperty> atomicRoles, TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyUp , TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyDown) {
+	public ObjectPropertyHierarchy(Set<ObjectProperty> atomicRoles, TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyUp , TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyDown) {
 		this.roleHierarchyUp = roleHierarchyUp;
 		this.roleHierarchyDown = roleHierarchyDown;
 		

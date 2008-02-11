@@ -41,8 +41,8 @@ import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.owl.Concept;
-import org.dllearner.core.owl.Top;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Helper;
 
@@ -120,7 +120,7 @@ public class GP extends LearningAlgorithm {
     private long startTime;
 
     private Score bestScore;
-    private Concept bestConcept;
+    private Description bestConcept;
     
     private PosNegLP learningProblem;
     
@@ -510,7 +510,7 @@ public class GP extends LearningAlgorithm {
             for(int i=0; i<numberOfIndividuals; i++) {
             	if(individuals[i].getTree().getLength()>maxConceptLength) {
             		System.out.println("Warning: GP produced concept longer then " + maxConceptLength + ". Replacing it with TOP.");
-            		individuals[i] = GPUtilities.createProgram(learningProblem, new Top());
+            		individuals[i] = GPUtilities.createProgram(learningProblem, new Thing());
             	}            		
             }
             
@@ -534,10 +534,10 @@ public class GP extends LearningAlgorithm {
         	// der echten Score entsprechen muss, d.h. hier muss die
         	// Konzeptlänge mit einberechnet werden => deswegen werden
         	// neue Score-Objekte generiert
-        	Set<Entry<Concept,Score>> entrySet = psi.evalCache.entrySet();
-        	for(Entry<Concept,Score> entry : entrySet) {
+        	Set<Entry<Description,Score>> entrySet = psi.evalCache.entrySet();
+        	for(Entry<Description,Score> entry : entrySet) {
         		Score tmpScore = entry.getValue();
-        		Concept c = entry.getKey();
+        		Description c = entry.getKey();
         		tmpScore = tmpScore.getModifiedLengthScore(c.getLength());
         		double tmpScoreValue = tmpScore.getScore();
         		if(tmpScoreValue>bestValue) {
@@ -820,7 +820,7 @@ public class GP extends LearningAlgorithm {
     private void printStatistics(Program fittestIndividual) {
         // output statistics: best individual, average fitness, etc.
         double averageFitness = getFitnessSum() / numberOfIndividuals;
-        Concept n = fittestIndividual.getTree();
+        Description n = fittestIndividual.getTree();
 
         int misClassifications = fittestIndividual.getScore().getNotCoveredPositives().size()
         + fittestIndividual.getScore().getCoveredNegatives().size();
@@ -947,7 +947,7 @@ public class GP extends LearningAlgorithm {
 	}
 
 	@Override
-	public Concept getBestSolution() {
+	public Description getBestSolution() {
 		// return fittestIndividual.getTree();
 		return bestConcept;
 	}

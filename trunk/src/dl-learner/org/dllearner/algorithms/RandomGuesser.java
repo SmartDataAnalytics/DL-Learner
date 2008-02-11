@@ -33,11 +33,11 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 
 public class RandomGuesser extends LearningAlgorithm {
 
-    private Concept bestDefinition = null;
+    private Description bestDefinition = null;
     private Score bestScore;
     private double bestFitness = Double.NEGATIVE_INFINITY;
     private LearningProblem learningProblem;
@@ -117,7 +117,7 @@ public class RandomGuesser extends LearningAlgorithm {
 	}
 
 	@Override
-	public Concept getBestSolution() {
+	public Description getBestSolution() {
 		return bestDefinition;
 	}
 

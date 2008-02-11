@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.MultiConjunction;
-import org.dllearner.core.owl.MultiDisjunction;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SortedSetTuple;
@@ -44,7 +44,7 @@ import org.dllearner.utilities.SortedSetTuple;
 public class EvaluationCache {
 
 	// maps a concept to a list of individuals it covers
-	private Map<Concept,SortedSet<Individual>> cache;
+	private Map<Description,SortedSet<Individual>> cache;
 	private boolean checkForEqualConcepts = false;
 	
 	// concept comparator for concept indexing 
@@ -56,10 +56,10 @@ public class EvaluationCache {
 	public EvaluationCache(SortedSet<Individual> examples) {
 		this.examples = examples;
 		conceptComparator = new ConceptComparator();
-		cache = new TreeMap<Concept,SortedSet<Individual>>(conceptComparator);
+		cache = new TreeMap<Description,SortedSet<Individual>>(conceptComparator);
 	}
 	
-	public void put(Concept concept, SortedSet<Individual> individuals) {
+	public void put(Description concept, SortedSet<Individual> individuals) {
 		cache.put(concept, individuals);
 	}
 
@@ -72,7 +72,7 @@ public class EvaluationCache {
 	 * elements, which are in neither of the sets, the cache cannot
 	 * safely determine whether they are concept instances or not.
 	 */
-	public SortedSetTuple<Individual> infer(Concept concept) {
+	public SortedSetTuple<Individual> infer(Description concept) {
 		if(checkForEqualConcepts) {
 			SortedSet<Individual> pos = cache.get(concept);
 			SortedSet<Individual> neg = Helper.difference(examples, pos);
@@ -83,12 +83,12 @@ public class EvaluationCache {
 			
 			// for a conjunction we know that the intersection of instances
 			// of all children belongs to the concept			
-			if(concept instanceof MultiConjunction) {
-				handleMultiConjunction((MultiConjunction)concept);
+			if(concept instanceof Intersection) {
+				handleMultiConjunction((Intersection)concept);
 			// disjunctions are similar to conjunctions but we use union here;
 			// note that there can be instances which are neither in a concept
 			// C nor in a concept D, but in (C OR D)				
-			} else if(concept instanceof MultiDisjunction) {
+			} else if(concept instanceof Union) {
 				SortedSet<Individual> ret = cache.get(concept.getChild(0));
 				for(int i=1; i<concept.getChildren().size(); i++) {
 					ret = Helper.union(ret, cache.get(concept.getChild(i)));
@@ -103,7 +103,7 @@ public class EvaluationCache {
 		return null;
 	}
 	
-	private SortedSetTuple<Individual> handleMultiConjunction(MultiConjunction mc) {
+	private SortedSetTuple<Individual> handleMultiConjunction(Intersection mc) {
 		SortedSet<Individual> pos = cache.get(mc.getChild(0));
 		for(int i=1; i<mc.getChildren().size(); i++) {
 			pos = Helper.intersection(pos, cache.get(mc.getChild(i)));

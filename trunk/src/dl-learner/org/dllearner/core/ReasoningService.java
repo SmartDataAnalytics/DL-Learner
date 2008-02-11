@@ -27,11 +27,11 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.RoleHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.SortedSetTuple;
@@ -72,7 +72,7 @@ public class ReasoningService {
 	private long reasoningDurationTmp;
 	
 	// Listenansicht
-	private List<AtomicConcept> atomicConceptsList;
+	private List<NamedClass> atomicConceptsList;
 	private List<ObjectProperty> atomicRolesList;
 
 	// private SortedSet<Concept> retrievalsSet = new TreeSet<Concept>(new ConceptComparator());
@@ -111,7 +111,7 @@ public class ReasoningService {
 		overallReasoningTimeNs = 0;		
 	}
 
-	public SortedSetTuple<Individual> doubleRetrieval(Concept concept) {
+	public SortedSetTuple<Individual> doubleRetrieval(Description concept) {
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSetTuple<Individual> result;
 		try {
@@ -126,7 +126,7 @@ public class ReasoningService {
 		return result;
 	}
 
-	public SortedSetTuple<Individual> doubleRetrieval(Concept concept, Concept adc) {
+	public SortedSetTuple<Individual> doubleRetrieval(Description concept, Description adc) {
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSetTuple<Individual> result;
 		try {
@@ -144,7 +144,7 @@ public class ReasoningService {
 	// nachher wieder entfernen
 	// public static List<Concept> retrievals = new LinkedList<Concept>();	
 	
-	public SortedSet<Individual> retrieval(Concept concept) {
+	public SortedSet<Individual> retrieval(Description concept) {
 		// Test, ob tatsächlich keine doppelten Retrievals ausgeführt werden
 		// retrievals.add(concept);		
 		
@@ -163,7 +163,7 @@ public class ReasoningService {
 		return result;
 	}
 
-	public boolean instanceCheck(Concept concept, Individual s) {
+	public boolean instanceCheck(Description concept, Individual s) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		try {
@@ -178,7 +178,7 @@ public class ReasoningService {
 		return result;
 	}
 
-	public SortedSet<Individual> instanceCheck(Concept concept, Set<Individual> s) {
+	public SortedSet<Individual> instanceCheck(Description concept, Set<Individual> s) {
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSet<Individual> result = null;
 		try {
@@ -195,7 +195,7 @@ public class ReasoningService {
 	}
 	
 	// c1 subsummiert c2
-	public boolean subsumes(Concept superConcept, Concept subConcept) {
+	public boolean subsumes(Description superConcept, Description subConcept) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		try {
@@ -210,9 +210,9 @@ public class ReasoningService {
 		return result;
 	}
 
-	public Set<Concept> subsumes(Set<Concept> superConcepts, Concept subConcept) {
+	public Set<Description> subsumes(Set<Description> superConcepts, Description subConcept) {
 		reasoningStartTimeTmp = System.nanoTime();
-		Set<Concept> result = null;
+		Set<Description> result = null;
 		try {
 			result = reasoner.subsumes(superConcepts, subConcept);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -274,7 +274,7 @@ public class ReasoningService {
 	 * @param concept Atomic concept, top, or bottom.
 	 * @return A set of more general concepts.
 	 */
-	public SortedSet<Concept> getMoreGeneralConcepts(Concept concept) {
+	public SortedSet<Description> getMoreGeneralConcepts(Description concept) {
 		return getSubsumptionHierarchy().getMoreGeneralConcepts(concept);
 	}
 
@@ -284,14 +284,14 @@ public class ReasoningService {
 	 * @param concept Atomic concept, top, or bottom.
 	 * @return A set of more special concepts.
 	 */
-	public SortedSet<Concept> getMoreSpecialConcepts(Concept concept) {
+	public SortedSet<Description> getMoreSpecialConcepts(Description concept) {
 		return getSubsumptionHierarchy().getMoreSpecialConcepts(concept);
 	}	
 	
 	/**
 	 * Returns more general concepts in the subsumption hierarchy.
 	 * 
-	 * @see RoleHierarchy#getMoreGeneralRoles(ObjectProperty)
+	 * @see ObjectPropertyHierarchy#getMoreGeneralRoles(ObjectProperty)
 	 * @param role Atomic concept, top, or bottom.
 	 * @return A set of more general concepts.
 	 */
@@ -302,7 +302,7 @@ public class ReasoningService {
 	/**
 	 * Returns more special concepts in the subsumption hierarchy.
 	 * 
-	 * @see RoleHierarchy#getMoreSpecialRoles(ObjectProperty)
+	 * @see ObjectPropertyHierarchy#getMoreSpecialRoles(ObjectProperty)
 	 * @param role Atomic concept, top, or bottom.
 	 * @return A set of more special concepts.
 	 */
@@ -311,7 +311,7 @@ public class ReasoningService {
 	}
 	
 	/**
-	 * @see RoleHierarchy#getMostGeneralRoles()
+	 * @see ObjectPropertyHierarchy#getMostGeneralRoles()
 	 * @return The most general roles.
 	 */
 	public TreeSet<ObjectProperty> getMostGeneralRoles() {
@@ -319,7 +319,7 @@ public class ReasoningService {
 	}
 	
 	/**
-	 * @see RoleHierarchy#getMostSpecialRoles()
+	 * @see ObjectPropertyHierarchy#getMostSpecialRoles()
 	 * @return The most special roles.
 	 */
 	public TreeSet<ObjectProperty> getMostSpecialRoles() {
@@ -330,7 +330,7 @@ public class ReasoningService {
 		reasoner.prepareSubsumptionHierarchy(getAtomicConcepts());
 	}
 	
-	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
+	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
 		reasoner.prepareSubsumptionHierarchy(allowedConcepts);
 	}
 
@@ -356,7 +356,7 @@ public class ReasoningService {
 		}
 	}
 	
-	public RoleHierarchy getRoleHierarchy() {
+	public ObjectPropertyHierarchy getRoleHierarchy() {
 		try {
 			return reasoner.getRoleHierarchy();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -397,7 +397,7 @@ public class ReasoningService {
 		return result;		
 	}
 
-	public Set<AtomicConcept> getAtomicConcepts() {
+	public Set<NamedClass> getAtomicConcepts() {
 		return reasoner.getAtomicConcepts();
 	}
 
@@ -413,9 +413,9 @@ public class ReasoningService {
 		return reasoner.getReasonerType();
 	}
 
-	public List<AtomicConcept> getAtomicConceptsList() {
+	public List<NamedClass> getAtomicConceptsList() {
 		if(atomicConceptsList == null)
-			atomicConceptsList = new LinkedList<AtomicConcept>(getAtomicConcepts());
+			atomicConceptsList = new LinkedList<NamedClass>(getAtomicConcepts());
 		return atomicConceptsList;
 	}
 

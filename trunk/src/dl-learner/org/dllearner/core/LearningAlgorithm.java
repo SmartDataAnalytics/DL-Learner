@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 
 /**
  * @author Jens Lehmann
@@ -55,10 +55,10 @@ public abstract class LearningAlgorithm extends Component {
 	 * Returns the best solutions obtained so far.
 	 * @return Best solution.
 	 */
-	public abstract Concept getBestSolution();
+	public abstract Description getBestSolution();
 	
-	public synchronized List<Concept> getBestSolutions(int nrOfSolutions) {
-		List<Concept> single = new LinkedList<Concept>();
+	public synchronized List<Description> getBestSolutions(int nrOfSolutions) {
+		List<Description> single = new LinkedList<Description>();
 		single.add(getBestSolution());
 		return single;
 	}

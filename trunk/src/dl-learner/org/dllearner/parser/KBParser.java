@@ -18,7 +18,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
                         return internalNamespace + name;
         }
 
-        public static Concept parseConcept(String string) throws ParseException {
+        public static Description parseConcept(String string) throws ParseException {
                 KBParser parser = new KBParser(new StringReader(string));
                 return parser.Concept();
         }
@@ -34,11 +34,11 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
         }
 
   final public KB KB() throws ParseException {
-        ConceptAssertion conceptAssertion;
+        ClassAssertionAxiom conceptAssertion;
         ObjectPropertyAssertion roleAssertion;
-        RBoxAxiom rBoxAxiom;
-        Equality equality;
-        Inclusion inclusion;
+        PropertyAxiom rBoxAxiom;
+        EquivalentClassesAxiom equality;
+        SubClassAxiom inclusion;
         KB kb = new KB();
     label_1:
     while (true) {
@@ -112,14 +112,14 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public ConceptAssertion ABoxConcept() throws ParseException {
-                                  Concept c; Individual i;
+  final public ClassAssertionAxiom ABoxConcept() throws ParseException {
+                                     Description c; Individual i;
     c = Concept();
     jj_consume_token(22);
     i = Individual();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-          {if (true) return new ConceptAssertion(c,i);}
+          {if (true) return new ClassAssertionAxiom(c,i);}
     throw new Error("Missing return statement in function");
   }
 
@@ -150,41 +150,41 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public TransitiveRoleAxiom Transitive() throws ParseException {
-                                    ObjectProperty ar;
+  final public TransitiveObjectPropertyAxiom Transitive() throws ParseException {
+                                              ObjectProperty ar;
     jj_consume_token(28);
     jj_consume_token(22);
     ar = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-     {if (true) return new TransitiveRoleAxiom(ar);}
+     {if (true) return new TransitiveObjectPropertyAxiom(ar);}
     throw new Error("Missing return statement in function");
   }
 
-  final public FunctionalRoleAxiom Functional() throws ParseException {
-                                    ObjectProperty ar;
+  final public FunctionalObjectPropertyAxiom Functional() throws ParseException {
+                                              ObjectProperty ar;
     jj_consume_token(29);
     jj_consume_token(22);
     ar = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-     {if (true) return new FunctionalRoleAxiom(ar);}
+     {if (true) return new FunctionalObjectPropertyAxiom(ar);}
     throw new Error("Missing return statement in function");
   }
 
-  final public SymmetricRoleAxiom Symmetric() throws ParseException {
-                                  ObjectProperty ar;
+  final public SymmetricObjectPropertyAxiom Symmetric() throws ParseException {
+                                            ObjectProperty ar;
     jj_consume_token(30);
     jj_consume_token(22);
     ar = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-     {if (true) return new SymmetricRoleAxiom(ar);}
+     {if (true) return new SymmetricObjectPropertyAxiom(ar);}
     throw new Error("Missing return statement in function");
   }
 
-  final public InverseRoleAxiom Inverse() throws ParseException {
-                              ObjectProperty ar1,ar2;
+  final public InverseObjectPropertyAxiom Inverse() throws ParseException {
+                                        ObjectProperty ar1,ar2;
     jj_consume_token(31);
     jj_consume_token(22);
     ar1 = ObjectProperty();
@@ -192,12 +192,12 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     ar2 = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-     {if (true) return new InverseRoleAxiom(ar1,ar2);}
+     {if (true) return new InverseObjectPropertyAxiom(ar1,ar2);}
     throw new Error("Missing return statement in function");
   }
 
-  final public SubRoleAxiom Subrole() throws ParseException {
-                          ObjectProperty ar1,ar2;
+  final public SubObjectPropertyAxiom Subrole() throws ParseException {
+                                    ObjectProperty ar1,ar2;
     jj_consume_token(32);
     jj_consume_token(22);
     ar1 = ObjectProperty();
@@ -205,22 +205,22 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     ar2 = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-     {if (true) return new SubRoleAxiom(ar1,ar2);}
+     {if (true) return new SubObjectPropertyAxiom(ar1,ar2);}
     throw new Error("Missing return statement in function");
   }
 
-  final public Equality TBoxEquiv() throws ParseException {
-                        Concept c1,c2;
+  final public EquivalentClassesAxiom TBoxEquiv() throws ParseException {
+                                      Description c1,c2;
     c1 = Concept();
     jj_consume_token(25);
     c2 = Concept();
     jj_consume_token(COMMAND_END);
-     {if (true) return new Equality(c1,c2);}
+     {if (true) return new EquivalentClassesAxiom(c1,c2);}
     throw new Error("Missing return statement in function");
   }
 
-  final public Inclusion TBoxSub() throws ParseException {
-                       Concept c1,c2;
+  final public SubClassAxiom TBoxSub() throws ParseException {
+                           Description c1,c2;
     c1 = Concept();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 26:
@@ -239,24 +239,24 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     }
     c2 = Concept();
     jj_consume_token(COMMAND_END);
-     {if (true) return new Inclusion(c1,c2);}
+     {if (true) return new SubClassAxiom(c1,c2);}
     throw new Error("Missing return statement in function");
   }
 
-  final public Concept Concept() throws ParseException {
-        Concept c,c1,c2;
-        AtomicConcept ac;
+  final public Description Concept() throws ParseException {
+        Description c,c1,c2;
+        NamedClass ac;
         ObjectProperty ar;
         String s;
         int i;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case TOP:
       Top();
-           {if (true) return new Top();}
+           {if (true) return new Thing();}
       break;
     case BOTTOM:
       Bottom();
-              {if (true) return new Bottom();}
+              {if (true) return new Nothing();}
       break;
     case ID:
     case STRING:
@@ -271,14 +271,14 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
         And();
         c2 = Concept();
         jj_consume_token(23);
-         {if (true) return new Conjunction(c1,c2);}
+         {if (true) return new Intersection(c1,c2);}
       } else if (jj_2_6(2147483647)) {
         jj_consume_token(22);
         c1 = Concept();
         Or();
         c2 = Concept();
         jj_consume_token(23);
-         {if (true) return new Disjunction(c1,c2);}
+         {if (true) return new Union(c1,c2);}
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case EXISTS:
@@ -286,14 +286,14 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
           ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
-         {if (true) return new Exists(ar,c);}
+         {if (true) return new ObjectSomeRestriction(ar,c);}
           break;
         case ALL:
           All();
           ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
-         {if (true) return new All(ar,c);}
+         {if (true) return new ObjectAllRestriction(ar,c);}
           break;
         case NOT:
           Not();
@@ -306,7 +306,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
           ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
-         {if (true) return new GreaterEqual(i,ar,c);}
+         {if (true) return new ObjectMinCardinalityRestriction(i,ar,c);}
           break;
         case LE:
           LE();
@@ -314,7 +314,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
           ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
-         {if (true) return new LessEqual(i,ar,c);}
+         {if (true) return new ObjectMaxCardinalityRestriction(i,ar,c);}
           break;
         default:
           jj_la1[5] = jj_gen;
@@ -362,7 +362,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     jj_consume_token(LE);
   }
 
-  final public AtomicConcept AtomicConcept() throws ParseException {
+  final public NamedClass AtomicConcept() throws ParseException {
         String name;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
@@ -376,7 +376,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-                {if (true) return new AtomicConcept(getInternalURI(name));}
+                {if (true) return new NamedClass(getInternalURI(name));}
     throw new Error("Missing return statement in function");
   }
 

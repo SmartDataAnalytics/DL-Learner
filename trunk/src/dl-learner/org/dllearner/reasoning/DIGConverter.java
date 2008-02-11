@@ -3,32 +3,30 @@ package org.dllearner.reasoning;
 import java.net.URI;
 import java.util.Set;
 
-import org.dllearner.core.owl.All;
-import org.dllearner.core.owl.AtomicConcept;
+import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.Bottom;
-import org.dllearner.core.owl.Concept;
-import org.dllearner.core.owl.ConceptAssertion;
-import org.dllearner.core.owl.Conjunction;
-import org.dllearner.core.owl.Disjunction;
-import org.dllearner.core.owl.Equality;
-import org.dllearner.core.owl.Exists;
-import org.dllearner.core.owl.FunctionalRoleAxiom;
-import org.dllearner.core.owl.Inclusion;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ClassAssertionAxiom;
+import org.dllearner.core.owl.EquivalentClassesAxiom;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
+import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
-import org.dllearner.core.owl.MultiConjunction;
-import org.dllearner.core.owl.MultiDisjunction;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectPropertyInverse;
-import org.dllearner.core.owl.Quantification;
-import org.dllearner.core.owl.SubRoleAxiom;
-import org.dllearner.core.owl.SymmetricRoleAxiom;
-import org.dllearner.core.owl.Top;
-import org.dllearner.core.owl.TransitiveRoleAxiom;
+import org.dllearner.core.owl.ObjectQuantorRestriction;
+import org.dllearner.core.owl.SubObjectPropertyAxiom;
+import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
+import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 
 /**
  * Methods for converting internal representation to DIG and
@@ -55,11 +53,11 @@ public class DIGConverter {
 		StringBuilder sb = new StringBuilder();
 		
 		// erstmal alle Konzepte, Rollen und Individuen definieren
-		Set<AtomicConcept> atomicConcepts = kb.findAllAtomicConcepts();
+		Set<NamedClass> atomicConcepts = kb.findAllAtomicConcepts();
 		Set<ObjectProperty>	atomicRoles = kb.findAllAtomicRoles();
 		Set<Individual>	individuals = kb.findAllIndividuals();				
 		
-		for(AtomicConcept ac : atomicConcepts)
+		for(NamedClass ac : atomicConcepts)
 			sb.append("<defconcept name=\""+ac.getName()+"\"/>");
 		
 		for(ObjectProperty ar : atomicRoles)
@@ -88,73 +86,73 @@ public class DIGConverter {
 			sb.append("<related>"+ "<individual name=\"" + ((ObjectPropertyAssertion)axiom).getIndividual1().getName() + "\"/>"
 					+ getDIGString(((ObjectPropertyAssertion)axiom).getRole()) +					
 					"<individual name=\"" + ((ObjectPropertyAssertion)axiom).getIndividual2().getName() + "\"/></related>\n");
-		else if(axiom instanceof ConceptAssertion)
-			sb.append("<instanceof>"+ "<individual name=\"" + ((ConceptAssertion)axiom).getIndividual().getName() + "\"/>" +
-					getDIGString(((ConceptAssertion)axiom).getConcept()) + "</instanceof>\n");
+		else if(axiom instanceof ClassAssertionAxiom)
+			sb.append("<instanceof>"+ "<individual name=\"" + ((ClassAssertionAxiom)axiom).getIndividual().getName() + "\"/>" +
+					getDIGString(((ClassAssertionAxiom)axiom).getConcept()) + "</instanceof>\n");
 		// RBox
-		else if(axiom instanceof SymmetricRoleAxiom) {
+		else if(axiom instanceof SymmetricObjectPropertyAxiom) {
 			// wird nicht direkt in DIG 1.1 unterstützt
 			// ich modelliere es hier, indem ich sage, dass eine Rolle gleich ihrem
 			// Inversen ist
 			sb.append("<equalr>");
-			sb.append("<ratom name=\""+((SymmetricRoleAxiom)axiom).getRole().getName()+"\" />\n");
-			sb.append("<inverse><ratom name=\""+((SymmetricRoleAxiom)axiom).getRole().getName()+"\" /></inverse>\n");
+			sb.append("<ratom name=\""+((SymmetricObjectPropertyAxiom)axiom).getRole().getName()+"\" />\n");
+			sb.append("<inverse><ratom name=\""+((SymmetricObjectPropertyAxiom)axiom).getRole().getName()+"\" /></inverse>\n");
 			sb.append("</equalr>");
-		} else if(axiom instanceof TransitiveRoleAxiom)
-			sb.append("<transitive>"+ getDIGString(((TransitiveRoleAxiom)axiom).getRole()) + "</transitive>\n");			
-		else if(axiom instanceof FunctionalRoleAxiom)
-			sb.append("<functional>"+ getDIGString(((FunctionalRoleAxiom)axiom).getRole()) + "</functional>\n");			
-		else if(axiom instanceof SubRoleAxiom) 
-			sb.append("<impliesr>"+ getDIGString(((SubRoleAxiom)axiom).getSubRole()) + 
-					getDIGString(((SubRoleAxiom)axiom).getRole()) + "</impliesr>\n");
+		} else if(axiom instanceof TransitiveObjectPropertyAxiom)
+			sb.append("<transitive>"+ getDIGString(((TransitiveObjectPropertyAxiom)axiom).getRole()) + "</transitive>\n");			
+		else if(axiom instanceof FunctionalObjectPropertyAxiom)
+			sb.append("<functional>"+ getDIGString(((FunctionalObjectPropertyAxiom)axiom).getRole()) + "</functional>\n");			
+		else if(axiom instanceof SubObjectPropertyAxiom) 
+			sb.append("<impliesr>"+ getDIGString(((SubObjectPropertyAxiom)axiom).getSubRole()) + 
+					getDIGString(((SubObjectPropertyAxiom)axiom).getRole()) + "</impliesr>\n");
 		// TBox
-		else if(axiom instanceof Equality)
-			sb.append("<equalc>"+ getDIGString(((Equality)axiom).getConcept1()) + 
-					getDIGString(((Equality)axiom).getConcept2()) + "</equalc>\n");			
-		else if(axiom instanceof Inclusion)
-			sb.append("<impliesc>"+ getDIGString(((Inclusion)axiom).getSubConcept()) + 
-					getDIGString(((Inclusion)axiom).getSuperConcept()) + "</impliesc>\n");		
+		else if(axiom instanceof EquivalentClassesAxiom)
+			sb.append("<equalc>"+ getDIGString(((EquivalentClassesAxiom)axiom).getConcept1()) + 
+					getDIGString(((EquivalentClassesAxiom)axiom).getConcept2()) + "</equalc>\n");			
+		else if(axiom instanceof SubClassAxiom)
+			sb.append("<impliesc>"+ getDIGString(((SubClassAxiom)axiom).getSubConcept()) + 
+					getDIGString(((SubClassAxiom)axiom).getSuperConcept()) + "</impliesc>\n");		
 		else
 			throw new RuntimeException();
 			
 		return sb;
 	}
 	
-	public static StringBuilder getDIGString(Concept concept) {
+	public static StringBuilder getDIGString(Description concept) {
 		StringBuilder sb = new StringBuilder();
 		
-		if(concept instanceof Top)
+		if(concept instanceof Thing)
 			sb.append("<top/>");
-		else if(concept instanceof Bottom)
+		else if(concept instanceof Nothing)
 			sb.append("<bottom/>");
-		else if(concept instanceof AtomicConcept)
-			sb.append("<catom name=\""+((AtomicConcept)concept).getName()+"\"/>");
+		else if(concept instanceof NamedClass)
+			sb.append("<catom name=\""+((NamedClass)concept).getName()+"\"/>");
 		else if(concept instanceof Negation)
 			sb.append("<not>");
-		else if(concept instanceof Conjunction || concept instanceof MultiConjunction)
+		else if(concept instanceof Intersection)
 			sb.append("<and>");
-		else if(concept instanceof Disjunction || concept instanceof MultiDisjunction)
+		else if(concept instanceof Union)
 			sb.append("<or>");
-		else if(concept instanceof Exists)
-			sb.append("<some>"+getDIGString(((Quantification)concept).getRole()));
-		else if(concept instanceof All)
-			sb.append("<all>"+getDIGString(((Quantification)concept).getRole()));
+		else if(concept instanceof ObjectSomeRestriction)
+			sb.append("<some>"+getDIGString(((ObjectQuantorRestriction)concept).getRole()));
+		else if(concept instanceof ObjectAllRestriction)
+			sb.append("<all>"+getDIGString(((ObjectQuantorRestriction)concept).getRole()));
 		else
 			throw new RuntimeException();
 		
-		for(Concept child : concept.getChildren()) {
+		for(Description child : concept.getChildren()) {
 			sb.append(getDIGString(child));
 		}
 		
 		if(concept instanceof Negation)
 			sb.append("</not>");
-		else if(concept instanceof Conjunction || concept instanceof MultiConjunction)
+		else if(concept instanceof Intersection)
 			sb.append("</and>");
-		else if(concept instanceof Disjunction || concept instanceof MultiDisjunction)
+		else if(concept instanceof Union)
 			sb.append("</or>");
-		else if(concept instanceof Exists)
+		else if(concept instanceof ObjectSomeRestriction)
 			sb.append("</some>");
-		else if(concept instanceof All)
+		else if(concept instanceof ObjectAllRestriction)
 			sb.append("</all>");		
 		
 		return sb;
