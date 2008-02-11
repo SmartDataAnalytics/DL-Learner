@@ -44,6 +44,11 @@ public class RunPanel extends JPanel implements ActionListener {
 
     private ThreadRun thread;
 
+    private JPanel showPanel = new JPanel();
+    private JPanel infoPanel = new JPanel();
+    private JPanel testPanel = new JPanel();
+
+
     RunPanel(Config config) {
 	super(new BorderLayout());
 
@@ -59,16 +64,15 @@ public class RunPanel extends JPanel implements ActionListener {
 	infoArea = new JTextArea(20, 50);
 	JScrollPane infoScroll = new JScrollPane(infoArea);
 
-	JPanel showPanel = new JPanel();
 	showPanel.add(runButton);
 	showPanel.add(stopButton);
 	showPanel.add(testButton);
 
-	JPanel infoPanel = new JPanel();
 	infoPanel.add(infoScroll);
 
 	add(showPanel, BorderLayout.PAGE_START);
 	add(infoPanel, BorderLayout.CENTER);
+	add(testPanel, BorderLayout.PAGE_END);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -85,9 +89,7 @@ public class RunPanel extends JPanel implements ActionListener {
 	    // config.getLearningAlgorithm().stop();
 	    thread.exit();
   	}
-	if (e.getSource() == testButton
-		&& config.getLearningAlgorithm() != null) {
-	    config.getLearningAlgorithm().stop();
+	if (e.getSource() == testButton) {
 
 	}
 
