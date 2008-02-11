@@ -203,11 +203,6 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
   }
 
   final public void Start() throws ParseException {
-        ConceptAssertion conceptAssertion;
-        RoleAssertion roleAssertion;
-        RBoxAxiom rBoxAxiom;
-        Equality equality;
-        Inclusion inclusion;
         ConfFileOption confOption;
     label_1:
     while (true) {
@@ -588,6 +583,42 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     finally { jj_save(7, xla); }
   }
 
+  final private boolean jj_3_7() {
+    if (jj_scan_token(26)) return true;
+    if (jj_scan_token(31)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_12() {
+    if (jj_scan_token(29)) return true;
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_17() {
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_6() {
+    if (jj_scan_token(28)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_15()) {
+    jj_scanpos = xsp;
+    if (jj_3R_16()) return true;
+    }
+    if (jj_scan_token(29)) return true;
+    xsp = jj_scanpos;
+    if (jj_3R_17()) {
+    jj_scanpos = xsp;
+    if (jj_3R_18()) return true;
+    }
+    if (jj_scan_token(30)) return true;
+    if (jj_scan_token(29)) return true;
+    return false;
+  }
+
   final private boolean jj_3_5() {
     Token xsp;
     xsp = jj_scanpos;
@@ -723,42 +754,6 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
 
   final private boolean jj_3R_7() {
     if (jj_3R_5()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_7() {
-    if (jj_scan_token(26)) return true;
-    if (jj_scan_token(31)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_12() {
-    if (jj_scan_token(29)) return true;
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_17() {
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_6() {
-    if (jj_scan_token(28)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_15()) {
-    jj_scanpos = xsp;
-    if (jj_3R_16()) return true;
-    }
-    if (jj_scan_token(29)) return true;
-    xsp = jj_scanpos;
-    if (jj_3R_17()) {
-    jj_scanpos = xsp;
-    if (jj_3R_18()) return true;
-    }
-    if (jj_scan_token(30)) return true;
-    if (jj_scan_token(29)) return true;
     return false;
   }
 

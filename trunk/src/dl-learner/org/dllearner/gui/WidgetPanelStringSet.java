@@ -43,8 +43,8 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
 import org.dllearner.core.dl.Individual;
+import org.dllearner.core.dl.ObjectProperty;
 
 /**
  * WidgetPanelStringSet
@@ -244,11 +244,11 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 			    || configOption.getName().equalsIgnoreCase(
 				    "ignoredRoles")) {
 			// fill lists
-			Set<AtomicRole> atomicsSet = config
+			Set<ObjectProperty> atomicsSet = config
 				.getReasoningService().getAtomicRoles();
-			LinkedList<AtomicRole> atomicRoles = new LinkedList<AtomicRole>(
+			LinkedList<ObjectProperty> atomicRoles = new LinkedList<ObjectProperty>(
 				atomicsSet);
-			for (AtomicRole ind : atomicRoles)
+			for (ObjectProperty ind : atomicRoles)
 			    cBL.add(ind.getName());
 		    }
 		}

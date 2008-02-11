@@ -97,7 +97,7 @@ TOKEN :
 KB KB() :
 {
 	ConceptAssertion conceptAssertion;
-	RoleAssertion roleAssertion;
+	ObjectPropertyAssertion roleAssertion;
 	RBoxAxiom rBoxAxiom;
 	Equality equality;
 	Inclusion inclusion;
@@ -106,7 +106,7 @@ KB KB() :
 {
   (		LOOKAHEAD(Concept() "(" Individual() ")" <COMMAND_END>) conceptAssertion=ABoxConcept()
   		{ kb.addABoxAxiom(conceptAssertion); }
-  	|	LOOKAHEAD([Not()] AtomicRole() "(" Individual() ",") roleAssertion = ABoxRole()
+  	|	LOOKAHEAD([Not()] ObjectProperty() "(" Individual() ",") roleAssertion = ABoxRole()
   		{ kb.addABoxAxiom(roleAssertion); }	
   	|	rBoxAxiom = Transitive()
   		{ kb.addRBoxAxiom(rBoxAxiom); }
@@ -134,50 +134,50 @@ ConceptAssertion ABoxConcept() : {Concept c; Individual i;}
 	{ return new ConceptAssertion(c,i); }	
 }
 
-RoleAssertion ABoxRole() : 
+ObjectPropertyAssertion ABoxRole() : 
 { 
 	boolean isNegated=false; 
-	AtomicRole ar;
+	ObjectProperty ar;
 	Individual i1,i2;
 }
 {
-   	[Not() {isNegated=true;}] ar=AtomicRole() "(" i1=Individual() "," i2=Individual() ")" <COMMAND_END>
+   	[Not() {isNegated=true;}] ar=ObjectProperty() "(" i1=Individual() "," i2=Individual() ")" <COMMAND_END>
    	{
    		if(isNegated)
    			throw new Error("negated role assertions not supported yet");
    		else
-   			return new RoleAssertion(ar,i1,i2);
+   			return new ObjectPropertyAssertion(ar,i1,i2);
    	}
 }
 
-TransitiveRoleAxiom Transitive() : {AtomicRole ar;}
+TransitiveRoleAxiom Transitive() : {ObjectProperty ar;}
 {
-   "Transitive" "(" ar=AtomicRole() ")" <COMMAND_END>
+   "Transitive" "(" ar=ObjectProperty() ")" <COMMAND_END>
    { return new TransitiveRoleAxiom(ar); }
 }
 
-FunctionalRoleAxiom Functional() : {AtomicRole ar;}
+FunctionalRoleAxiom Functional() : {ObjectProperty ar;}
 {
-   "Functional" "(" ar=AtomicRole() ")" <COMMAND_END>
+   "Functional" "(" ar=ObjectProperty() ")" <COMMAND_END>
    { return new FunctionalRoleAxiom(ar); }
    
 }
 
-SymmetricRoleAxiom Symmetric() : {AtomicRole ar;}
+SymmetricRoleAxiom Symmetric() : {ObjectProperty ar;}
 {
-   "Symmetric" "(" ar=AtomicRole() ")" <COMMAND_END>
+   "Symmetric" "(" ar=ObjectProperty() ")" <COMMAND_END>
    { return new SymmetricRoleAxiom(ar); }
 }
 
-InverseRoleAxiom Inverse() : {AtomicRole ar1,ar2;}
+InverseRoleAxiom Inverse() : {ObjectProperty ar1,ar2;}
 {
-   "Inverse" "(" ar1=AtomicRole() "," ar2=AtomicRole() ")" <COMMAND_END>
+   "Inverse" "(" ar1=ObjectProperty() "," ar2=ObjectProperty() ")" <COMMAND_END>
    { return new InverseRoleAxiom(ar1,ar2); }
 }
 
-SubRoleAxiom Subrole() : {AtomicRole ar1,ar2;}
+SubRoleAxiom Subrole() : {ObjectProperty ar1,ar2;}
 {
-   "Subrole" "(" ar1=AtomicRole() "," ar2=AtomicRole() ")" <COMMAND_END>
+   "Subrole" "(" ar1=ObjectProperty() "," ar2=ObjectProperty() ")" <COMMAND_END>
    { return new SubRoleAxiom(ar1,ar2);}
 }
 
@@ -197,7 +197,7 @@ Concept Concept() :
 {
 	Concept c,c1,c2;
 	AtomicConcept ac;
-	AtomicRole ar;
+	ObjectProperty ar;
 	String s;
 	int i;
 }
@@ -215,21 +215,21 @@ Concept Concept() :
   // EXISTS oder ALL reicht aus um richtigen Zweig zu w�hlen
   // | Exists() s=Id() "." c=Concept()
   // {return new Exists(new AtomicRole(s),c); } 
-  | Exists() ar=AtomicRole() "." c=Concept()
+  | Exists() ar=ObjectProperty() "." c=Concept()
   	{return new Exists(ar,c); } 
   // | All() s=Id() "." c=Concept()
   //	{return new All(new AtomicRole(s),c); }
-  | All() ar=AtomicRole() "." c=Concept()
+  | All() ar=ObjectProperty() "." c=Concept()
 	{return new All(ar,c); }	
   | Not() c=Concept()
   	{return new Negation(c); }
   // | GE() i=Integer() s=Id() "." c=Concept()
   //	{return new GreaterEqual(i,new AtomicRole(s),c);}
-  | GE() i=Integer() ar=AtomicRole() "." c=Concept()
+  | GE() i=Integer() ar=ObjectProperty() "." c=Concept()
   	{return new GreaterEqual(i,ar,c);}  	
   // | LE() i=Integer() s=Id() "." c=Concept()
   //	{return new LessEqual(i,new AtomicRole(s),c);}
-  | LE() i=Integer() ar=AtomicRole() "." c=Concept()
+  | LE() i=Integer() ar=ObjectProperty() "." c=Concept()
   	{return new LessEqual(i,ar,c);}  	
 }
 
@@ -254,14 +254,14 @@ AtomicConcept AtomicConcept() :
 	}
 }
 
-AtomicRole AtomicRole() :
+ObjectProperty ObjectProperty() :
 {
 	String name;
 }
 {
 	(name=Id() | name=String())
 	{
-		return new AtomicRole(getInternalURI(name));
+		return new ObjectProperty(getInternalURI(name));
 	}
 }
 

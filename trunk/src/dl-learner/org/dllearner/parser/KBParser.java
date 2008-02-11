@@ -35,7 +35,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
 
   final public KB KB() throws ParseException {
         ConceptAssertion conceptAssertion;
-        RoleAssertion roleAssertion;
+        ObjectPropertyAssertion roleAssertion;
         RBoxAxiom rBoxAxiom;
         Equality equality;
         Inclusion inclusion;
@@ -123,9 +123,9 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public RoleAssertion ABoxRole() throws ParseException {
+  final public ObjectPropertyAssertion ABoxRole() throws ParseException {
         boolean isNegated=false;
-        AtomicRole ar;
+        ObjectProperty ar;
         Individual i1,i2;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NOT:
@@ -136,7 +136,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
       jj_la1[2] = jj_gen;
       ;
     }
-    ar = AtomicRole();
+    ar = ObjectProperty();
     jj_consume_token(22);
     i1 = Individual();
     jj_consume_token(24);
@@ -146,15 +146,15 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
                 if(isNegated)
                         {if (true) throw new Error("negated role assertions not supported yet");}
                 else
-                        {if (true) return new RoleAssertion(ar,i1,i2);}
+                        {if (true) return new ObjectPropertyAssertion(ar,i1,i2);}
     throw new Error("Missing return statement in function");
   }
 
   final public TransitiveRoleAxiom Transitive() throws ParseException {
-                                    AtomicRole ar;
+                                    ObjectProperty ar;
     jj_consume_token(28);
     jj_consume_token(22);
-    ar = AtomicRole();
+    ar = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
      {if (true) return new TransitiveRoleAxiom(ar);}
@@ -162,10 +162,10 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
   }
 
   final public FunctionalRoleAxiom Functional() throws ParseException {
-                                    AtomicRole ar;
+                                    ObjectProperty ar;
     jj_consume_token(29);
     jj_consume_token(22);
-    ar = AtomicRole();
+    ar = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
      {if (true) return new FunctionalRoleAxiom(ar);}
@@ -173,10 +173,10 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
   }
 
   final public SymmetricRoleAxiom Symmetric() throws ParseException {
-                                  AtomicRole ar;
+                                  ObjectProperty ar;
     jj_consume_token(30);
     jj_consume_token(22);
-    ar = AtomicRole();
+    ar = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
      {if (true) return new SymmetricRoleAxiom(ar);}
@@ -184,12 +184,12 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
   }
 
   final public InverseRoleAxiom Inverse() throws ParseException {
-                              AtomicRole ar1,ar2;
+                              ObjectProperty ar1,ar2;
     jj_consume_token(31);
     jj_consume_token(22);
-    ar1 = AtomicRole();
+    ar1 = ObjectProperty();
     jj_consume_token(24);
-    ar2 = AtomicRole();
+    ar2 = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
      {if (true) return new InverseRoleAxiom(ar1,ar2);}
@@ -197,12 +197,12 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
   }
 
   final public SubRoleAxiom Subrole() throws ParseException {
-                          AtomicRole ar1,ar2;
+                          ObjectProperty ar1,ar2;
     jj_consume_token(32);
     jj_consume_token(22);
-    ar1 = AtomicRole();
+    ar1 = ObjectProperty();
     jj_consume_token(24);
-    ar2 = AtomicRole();
+    ar2 = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
      {if (true) return new SubRoleAxiom(ar1,ar2);}
@@ -246,7 +246,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
   final public Concept Concept() throws ParseException {
         Concept c,c1,c2;
         AtomicConcept ac;
-        AtomicRole ar;
+        ObjectProperty ar;
         String s;
         int i;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -283,14 +283,14 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case EXISTS:
           Exists();
-          ar = AtomicRole();
+          ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
          {if (true) return new Exists(ar,c);}
           break;
         case ALL:
           All();
-          ar = AtomicRole();
+          ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
          {if (true) return new All(ar,c);}
@@ -303,7 +303,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
         case GE:
           GE();
           i = Integer();
-          ar = AtomicRole();
+          ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
          {if (true) return new GreaterEqual(i,ar,c);}
@@ -311,7 +311,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
         case LE:
           LE();
           i = Integer();
-          ar = AtomicRole();
+          ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
          {if (true) return new LessEqual(i,ar,c);}
@@ -380,7 +380,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public AtomicRole AtomicRole() throws ParseException {
+  final public ObjectProperty ObjectProperty() throws ParseException {
         String name;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
@@ -394,7 +394,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-                {if (true) return new AtomicRole(getInternalURI(name));}
+                {if (true) return new ObjectProperty(getInternalURI(name));}
     throw new Error("Missing return statement in function");
   }
 

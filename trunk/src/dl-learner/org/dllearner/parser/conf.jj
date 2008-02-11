@@ -267,11 +267,6 @@ TOKEN :
 
 void Start() : 
 {
-	ConceptAssertion conceptAssertion;
-	RoleAssertion roleAssertion;
-	RBoxAxiom rBoxAxiom;
-	Equality equality;
-	Inclusion inclusion;
 	ConfFileOption confOption;
 }
 {
