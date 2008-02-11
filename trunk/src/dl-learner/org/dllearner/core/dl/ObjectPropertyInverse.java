@@ -17,40 +17,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 package org.dllearner.core.dl;
 
 import java.util.Map;
 
+import org.dllearner.utilities.Helper;
+
 /**
- * Represents a concept assertion in a knowledge base / ontology, 
- * e.g. "heiko is a person", "heiko is a male person having one child".
+ * Represents the inverse of a property expression. It can be used
+ * in axioms e.g. complex class descriptions. For instance:
+ * 
+ * father = male AND isChildOf^-1
+ * 
+ * This way, you can refer to an inverse of an object property without
+ * actually giving it a name (you could name it isParentOf in this case).
  * 
  * @author Jens Lehmann
  *
  */
-public class ConceptAssertion extends AssertionalAxiom {
+public class ObjectPropertyInverse extends ObjectPropertyExpression {
 	
-	private Concept concept;
-	private Individual individual;
-	
-	public ConceptAssertion(Concept concept, Individual individual) {
-		this.concept = concept;
-		this.individual = individual;
-	}
-
-	public Concept getConcept() {
-		return concept;
-	}
-
-	public Individual getIndividual() {
-		return individual;
+	public ObjectPropertyInverse(String name) {
+		super(name);
 	}
 
 	public int getLength() {
-		return 1 + concept.getLength();
+		return 2;
 	}
 		
 	public String toString(String baseURI, Map<String,String> prefixes) {
-		return concept.toString(baseURI, prefixes) + "(" + individual + ")";
+		return Helper.getAbbreviatedString(name, baseURI, prefixes) + "-";
 	}
 }

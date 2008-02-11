@@ -2,10 +2,10 @@ package org.dllearner.core.dl;
 
 public abstract class NumberRestriction extends Concept {
 
-	protected Role role;
+	protected ObjectPropertyExpression role;
 	protected int number;
 	
-	public NumberRestriction(int number, Role role, Concept c) {
+	public NumberRestriction(int number, ObjectPropertyExpression role, Concept c) {
 		addChild(c);
 		this.role = role;
 		this.number = number;
@@ -19,7 +19,7 @@ public abstract class NumberRestriction extends Concept {
 		return number;
 	}
 
-	public Role getRole() {
+	public ObjectPropertyExpression getRole() {
 		return role;
 	}
 

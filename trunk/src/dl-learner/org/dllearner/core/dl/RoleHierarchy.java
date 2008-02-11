@@ -38,17 +38,17 @@ import org.dllearner.utilities.RoleComparator;
 public class RoleHierarchy {
 
 	RoleComparator rc = new RoleComparator();
-	TreeMap<AtomicRole,TreeSet<AtomicRole>> roleHierarchyUp;
-	TreeMap<AtomicRole,TreeSet<AtomicRole>> roleHierarchyDown;	
-	TreeSet<AtomicRole> mostGeneralRoles = new TreeSet<AtomicRole>(rc);
-	TreeSet<AtomicRole> mostSpecialRoles = new TreeSet<AtomicRole>(rc);
+	TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyUp;
+	TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyDown;	
+	TreeSet<ObjectProperty> mostGeneralRoles = new TreeSet<ObjectProperty>(rc);
+	TreeSet<ObjectProperty> mostSpecialRoles = new TreeSet<ObjectProperty>(rc);
 	
-	public RoleHierarchy(Set<AtomicRole> atomicRoles, TreeMap<AtomicRole,TreeSet<AtomicRole>> roleHierarchyUp , TreeMap<AtomicRole,TreeSet<AtomicRole>> roleHierarchyDown) {
+	public RoleHierarchy(Set<ObjectProperty> atomicRoles, TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyUp , TreeMap<ObjectProperty,TreeSet<ObjectProperty>> roleHierarchyDown) {
 		this.roleHierarchyUp = roleHierarchyUp;
 		this.roleHierarchyDown = roleHierarchyDown;
 		
 		// find most general and most special roles
-		for(AtomicRole role : atomicRoles) {
+		for(ObjectProperty role : atomicRoles) {
 			if(getMoreGeneralRoles(role).size()==0)
 				mostGeneralRoles.add(role);
 			if(getMoreSpecialRoles(role).size()==0)
@@ -57,15 +57,15 @@ public class RoleHierarchy {
 	}
 	
 	@SuppressWarnings("unchecked")	
-	public SortedSet<AtomicRole> getMoreGeneralRoles(AtomicRole role) {
+	public SortedSet<ObjectProperty> getMoreGeneralRoles(ObjectProperty role) {
 		// we clone all concepts before returning them such that they cannot be
 		// modified externally
-		return (TreeSet<AtomicRole>) roleHierarchyUp.get(role).clone();	
+		return (TreeSet<ObjectProperty>) roleHierarchyUp.get(role).clone();	
 	}
 	
 	@SuppressWarnings("unchecked")
-	public SortedSet<AtomicRole> getMoreSpecialRoles(AtomicRole role) {
-		return (TreeSet<AtomicRole>) roleHierarchyDown.get(role).clone();
+	public SortedSet<ObjectProperty> getMoreSpecialRoles(ObjectProperty role) {
+		return (TreeSet<ObjectProperty>) roleHierarchyDown.get(role).clone();
 	}			
 	
 	
@@ -73,20 +73,20 @@ public class RoleHierarchy {
 	@Override
 	public String toString() {
 		String str = "";
-		for(AtomicRole role : mostGeneralRoles) {
+		for(ObjectProperty role : mostGeneralRoles) {
 			str += toString(roleHierarchyDown, role, 0);
 		}
 		return str;
 	}
 	
-	private String toString(TreeMap<AtomicRole,TreeSet<AtomicRole>> hierarchy, AtomicRole role, int depth) {
+	private String toString(TreeMap<ObjectProperty,TreeSet<ObjectProperty>> hierarchy, ObjectProperty role, int depth) {
 		String str = "";
 		for(int i=0; i<depth; i++)
 			str += "  ";
 		str += role.toString() + "\n";
-		Set<AtomicRole> tmp = hierarchy.get(role);
+		Set<ObjectProperty> tmp = hierarchy.get(role);
 		if(tmp!=null) {
-			for(AtomicRole c : tmp)
+			for(ObjectProperty c : tmp)
 				str += toString(hierarchy, c, depth+1);
 		}
 		return str;
@@ -95,14 +95,14 @@ public class RoleHierarchy {
 	/**
 	 * @return The most general roles.
 	 */
-	public TreeSet<AtomicRole> getMostGeneralRoles() {
+	public TreeSet<ObjectProperty> getMostGeneralRoles() {
 		return mostGeneralRoles;
 	}
 
 	/**
 	 * @return The most special roles.
 	 */
-	public TreeSet<AtomicRole> getMostSpecialRoles() {
+	public TreeSet<ObjectProperty> getMostSpecialRoles() {
 		return mostSpecialRoles;
 	}
 

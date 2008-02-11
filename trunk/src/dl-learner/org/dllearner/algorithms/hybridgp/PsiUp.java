@@ -11,7 +11,7 @@ import org.dllearner.algorithms.refinement.RefinementOperator;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Exists;
@@ -58,7 +58,7 @@ public class PsiUp implements RefinementOperator {
 			bottomSet.add(new Negation(c));
 	
 		// EXISTS r.BOTTOM und ALL r.BOTTOM für alle r
-		for(AtomicRole r : reasoningService.getAtomicRoles()) {
+		for(ObjectProperty r : reasoningService.getAtomicRoles()) {
 			bottomSet.add(new All(r, new Bottom()));
 			bottomSet.add(new Exists(r, new Bottom()));
 		}

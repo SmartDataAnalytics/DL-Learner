@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.utilities.ConceptComparator;
 
@@ -51,10 +51,10 @@ public class CommonConfigMappings {
 		return set;
 	}	
 	
-	public static SortedSet<AtomicRole> getAtomicRoleSet(Set<String> atomicRoles) {
-		SortedSet<AtomicRole> set = new TreeSet<AtomicRole>();
+	public static SortedSet<ObjectProperty> getAtomicRoleSet(Set<String> atomicRoles) {
+		SortedSet<ObjectProperty> set = new TreeSet<ObjectProperty>();
 		for(String atomicRole : atomicRoles)
-			set.add(new AtomicRole(atomicRole));
+			set.add(new ObjectProperty(atomicRole));
 		return set;
 	}
 }

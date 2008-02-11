@@ -28,13 +28,13 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class RoleAssertion extends AssertionalAxiom {
+public class ObjectPropertyAssertion extends PropertyAssertion {
 
-	private AtomicRole role;
+	private ObjectProperty role;
 	private Individual individual1;
 	private Individual individual2;
 	
-	public RoleAssertion(AtomicRole role, Individual individual1, Individual individual2) {
+	public ObjectPropertyAssertion(ObjectProperty role, Individual individual1, Individual individual2) {
 		this.role = role;
 		this.individual1 = individual1;
 		this.individual2 = individual2;
@@ -48,7 +48,7 @@ public class RoleAssertion extends AssertionalAxiom {
 		return individual2;
 	}
 
-	public AtomicRole getRole() {
+	public ObjectProperty getRole() {
 		return role;
 	}
 

@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class LessEqual extends NumberRestriction {
 
-	public LessEqual(int number, Role role, Concept c) {
+	public LessEqual(int number, ObjectPropertyExpression role, Concept c) {
 		super(number,role,c);
 	}
 

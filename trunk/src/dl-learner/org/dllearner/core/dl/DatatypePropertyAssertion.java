@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,38 +19,41 @@
  */
 package org.dllearner.core.dl;
 
-import java.util.Map;
-
 /**
- * Represents a concept assertion in a knowledge base / ontology, 
- * e.g. "heiko is a person", "heiko is a male person having one child".
+ * A datatype property assertion.
  * 
  * @author Jens Lehmann
  *
  */
-public class ConceptAssertion extends AssertionalAxiom {
+public abstract class DatatypePropertyAssertion extends PropertyAssertion {
+
+	protected DatatypeProperty datatypeProperty;
+	protected Individual individual;
 	
-	private Concept concept;
-	private Individual individual;
-	
-	public ConceptAssertion(Concept concept, Individual individual) {
-		this.concept = concept;
+	public DatatypePropertyAssertion(DatatypeProperty datatypeProperty, Individual individual) {
+		this.datatypeProperty = datatypeProperty;
 		this.individual = individual;
 	}
 
-	public Concept getConcept() {
-		return concept;
-	}
-
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.dl.KBElement#getLength()
+	 */
+	public int getLength() {
+		return 3;
+	}	
+	
+	/**
+	 * @return the individual
+	 */
 	public Individual getIndividual() {
 		return individual;
 	}
 
-	public int getLength() {
-		return 1 + concept.getLength();
+	/**
+	 * @return the datatypeProperty
+	 */
+	public DatatypeProperty getDatatypeProperty() {
+		return datatypeProperty;
 	}
-		
-	public String toString(String baseURI, Map<String,String> prefixes) {
-		return concept.toString(baseURI, prefixes) + "(" + individual + ")";
-	}
+	
 }

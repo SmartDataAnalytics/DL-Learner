@@ -12,7 +12,7 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Conjunction;
 import org.dllearner.core.dl.FlatABox;
@@ -28,7 +28,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	FlatABox abox;
 	FastRetrieval fastRetrieval;
 	Set<AtomicConcept> atomicConcepts;
-	Set<AtomicRole> atomicRoles;
+	Set<ObjectProperty> atomicRoles;
 	SortedSet<Individual> individuals;
 	
 	ReasoningService rs;
@@ -59,9 +59,9 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		for(String concept : abox.concepts) {
 			atomicConcepts.add(new AtomicConcept(concept));
 		}
-		atomicRoles = new HashSet<AtomicRole>();
+		atomicRoles = new HashSet<ObjectProperty>();
 		for(String role : abox.roles) {
-			atomicRoles.add(new AtomicRole(role));
+			atomicRoles.add(new ObjectProperty(role));
 		}
 		individuals = new TreeSet<Individual>();
 		for(String individualName : abox.domain)
@@ -93,7 +93,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		return atomicConcepts;
 	}
 
-	public Set<AtomicRole> getAtomicRoles() {
+	public Set<ObjectProperty> getAtomicRoles() {
 		return atomicRoles;
 	}
 
@@ -114,7 +114,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) {
+	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
 		rs.prepareRoleHierarchy(allowedRoles);
 	}	
 	

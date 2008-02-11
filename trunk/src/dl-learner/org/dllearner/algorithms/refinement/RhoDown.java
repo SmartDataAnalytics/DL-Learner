@@ -32,7 +32,7 @@ import java.util.TreeSet;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Conjunction;
@@ -42,7 +42,7 @@ import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Quantification;
-import org.dllearner.core.dl.Role;
+import org.dllearner.core.dl.ObjectPropertyExpression;
 import org.dllearner.core.dl.Top;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
@@ -264,7 +264,7 @@ public class RhoDown implements RefinementOperator {
 			}
 			
 		} else if (concept instanceof Exists) {
-			Role role = ((Quantification)concept).getRole();
+			ObjectPropertyExpression role = ((Quantification)concept).getRole();
 			
 			// rule 1: EXISTS r.D => EXISTS r.E
 			tmp = refine(concept.getChild(0), maxLength-2, null);
@@ -275,14 +275,14 @@ public class RhoDown implements RefinementOperator {
 			
 			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
 			// currently inverse roles are not supported
-			AtomicRole ar = (AtomicRole) role;
-			Set<AtomicRole> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
-			for(AtomicRole moreSpecialRole : moreSpecialRoles) {
+			ObjectProperty ar = (ObjectProperty) role;
+			Set<ObjectProperty> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
+			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
 				refinements.add(new Exists(moreSpecialRole, concept.getChild(0)));
 			}
 
 		} else if (concept instanceof All) {
-			Role role = ((Quantification)concept).getRole();
+			ObjectPropertyExpression role = ((Quantification)concept).getRole();
 			
 			// rule 1: ALL r.D => ALL r.E
 			tmp = refine(concept.getChild(0), maxLength-2, null);
@@ -302,9 +302,9 @@ public class RhoDown implements RefinementOperator {
 			
 			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
 			// currently inverse roles are not supported
-			AtomicRole ar = (AtomicRole) role;
-			Set<AtomicRole> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
-			for(AtomicRole moreSpecialRole : moreSpecialRoles) {
+			ObjectProperty ar = (ObjectProperty) role;
+			Set<ObjectProperty> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
+			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
 				refinements.add(new All(moreSpecialRole, concept.getChild(0)));
 			}
 			
@@ -334,8 +334,8 @@ public class RhoDown implements RefinementOperator {
 					if(c instanceof All) {
 						for(Concept child : concept.getChildren()) {
 							if(child instanceof All) {
-								Role r1 = ((All)c).getRole();
-								Role r2 = ((All)child).getRole();
+								ObjectPropertyExpression r1 = ((All)c).getRole();
+								ObjectPropertyExpression r2 = ((All)child).getRole();
 								if(r1.toString().equals(r2.toString()))
 									skip = true;
 							}
@@ -543,7 +543,7 @@ public class RhoDown implements RefinementOperator {
 				//	m3.add(new Exists(r, new Top()));
 				//}
 				// new operator: only uses most general roles
-				for(AtomicRole r : rs.getMostGeneralRoles()) {
+				for(ObjectProperty r : rs.getMostGeneralRoles()) {
 					m3.add(new Exists(r, new Top()));
 				}				
 				m.put(3,m3);
@@ -573,7 +573,7 @@ public class RhoDown implements RefinementOperator {
 							// 	m.get(i+2).add(new All(r,c));
 							// }
 							
-							for(AtomicRole r : rs.getMostGeneralRoles()) {
+							for(ObjectProperty r : rs.getMostGeneralRoles()) {
 								m.get(i+2).add(new All(r,c));
 							}
 						}

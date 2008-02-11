@@ -45,7 +45,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
@@ -84,7 +84,7 @@ public class DIGReasoner extends ReasonerComponent {
 	private String asksPrefix;
 	// Cache für Konzepte, Rollen und Individuen
 	Set<AtomicConcept> atomicConcepts;
-	Set<AtomicRole> atomicRoles;
+	Set<ObjectProperty> atomicRoles;
 	SortedSet<Individual> individuals;
 
 	// Cache für Subsumptionhierarchie
@@ -247,14 +247,14 @@ public class DIGReasoner extends ReasonerComponent {
 	 * @todo Does not yet take ignored roles into account.
 	 */
 	@Override
-	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) {
-		TreeMap<AtomicRole, TreeSet<AtomicRole>> roleHierarchyUp = new TreeMap<AtomicRole, TreeSet<AtomicRole>>(
+	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
+		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
 				roleComparator);
-		TreeMap<AtomicRole, TreeSet<AtomicRole>> roleHierarchyDown = new TreeMap<AtomicRole, TreeSet<AtomicRole>>(
+		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
 				roleComparator);
  
 		// Refinement atomarer Konzepte
-		for (AtomicRole role : atomicRoles) {
+		for (ObjectProperty role : atomicRoles) {
 			roleHierarchyDown.put(role, getMoreSpecialRolesDIG(role));
 			roleHierarchyUp.put(role, getMoreGeneralRolesDIG(role));
 		}
@@ -321,11 +321,11 @@ public class DIGReasoner extends ReasonerComponent {
 		return atomicConcepts;
 	}
 
-	public Set<AtomicRole> getAtomicRoles() {
+	public Set<ObjectProperty> getAtomicRoles() {
 		return atomicRoles;
 	}
 
-	private Set<AtomicRole> getAtomicRolesDIG() {
+	private Set<ObjectProperty> getAtomicRolesDIG() {
 		String atomicRolesDIG = asksPrefix;
 		atomicRolesDIG += "<allRoleNames id=\"ask_roles\"/></asks>";
 
@@ -335,13 +335,13 @@ public class DIGReasoner extends ReasonerComponent {
 		Rsynonyms[] synonymsArray = rd.getResponses().getRoleSetArray();
 		Roles[] rolesArray = synonymsArray[0].getSynonymsArray();
 
-		Set<AtomicRole> digAtomicRoles = new HashSet<AtomicRole>();
+		Set<ObjectProperty> digAtomicRoles = new HashSet<ObjectProperty>();
 		for (Roles roles : rolesArray) {
 			// hier koennen wiederum mehrere ratoms enthalten sein,
 			// aber wir wollen nur eins auslesen
 			Named[] ratoms = roles.getRatomArray();
 			Named role = ratoms[0];
-			digAtomicRoles.add(new AtomicRole(role.getName()));
+			digAtomicRoles.add(new ObjectProperty(role.getName()));
 
 			if (ratoms.length > 1)
 				System.out.println("Warning: Background knowledge contains synonym roles. "
@@ -543,21 +543,21 @@ public class DIGReasoner extends ReasonerComponent {
 		return resultsSet;
 	}
 
-	private TreeSet<AtomicRole> getMoreGeneralRolesDIG(AtomicRole role) {
+	private TreeSet<ObjectProperty> getMoreGeneralRolesDIG(ObjectProperty role) {
 		String moreGeneralRolesDIG = asksPrefix;
 		moreGeneralRolesDIG += "<rparents id=\"query_parents\">";
 		moreGeneralRolesDIG += "<ratom name=\"" + role.getName() + "\" />";
 		moreGeneralRolesDIG += "</rparents></asks>";
 
 		ResponsesDocument rd = connector.asks(moreGeneralRolesDIG);
-		TreeSet<AtomicRole> resultsSet = new TreeSet<AtomicRole>(roleComparator);
+		TreeSet<ObjectProperty> resultsSet = new TreeSet<ObjectProperty>(roleComparator);
 		Roles[] rolesArray = rd.getResponses().getRoleSetArray()[0].getSynonymsArray();
 
 		for (int i = 0; i < rolesArray.length; i++) {
 			Named[] atoms = rolesArray[i].getRatomArray();
 
 			for (Named atom : atoms) {
-				AtomicRole ar = new AtomicRole(atom.getName());
+				ObjectProperty ar = new ObjectProperty(atom.getName());
 				// if(Config.Refinement.allowedRoles.contains(ar))
 				resultsSet.add(ar);
 			}
@@ -568,21 +568,21 @@ public class DIGReasoner extends ReasonerComponent {
 		return resultsSet;
 	}
 
-	private TreeSet<AtomicRole> getMoreSpecialRolesDIG(AtomicRole role) {
+	private TreeSet<ObjectProperty> getMoreSpecialRolesDIG(ObjectProperty role) {
 		String moreSpecialRolesDIG = asksPrefix;
 		moreSpecialRolesDIG += "<rchildren id=\"query_children\">";
 		moreSpecialRolesDIG += "<ratom name=\"" + role.getName() + "\" />";
 		moreSpecialRolesDIG += "</rchildren></asks>";
 
 		ResponsesDocument rd = connector.asks(moreSpecialRolesDIG);
-		TreeSet<AtomicRole> resultsSet = new TreeSet<AtomicRole>(roleComparator);
+		TreeSet<ObjectProperty> resultsSet = new TreeSet<ObjectProperty>(roleComparator);
 		Roles[] rolesArray = rd.getResponses().getRoleSetArray()[0].getSynonymsArray();
 
 		for (int i = 0; i < rolesArray.length; i++) {
 			Named[] atoms = rolesArray[i].getRatomArray();
 
 			for (Named atom : atoms) {
-				AtomicRole ar = new AtomicRole(atom.getName());
+				ObjectProperty ar = new ObjectProperty(atom.getName());
 				// if(Config.Refinement.allowedRoles.contains(ar))
 				resultsSet.add(ar);
 			}
@@ -682,7 +682,7 @@ public class DIGReasoner extends ReasonerComponent {
 	// das in Responsegroup auch nicht definiert
 	// => deswegen wird hier die XML-Cursor-API verwendet
 	@Override
-	public Map<Individual, SortedSet<Individual>> getRoleMembers(AtomicRole atomicRole) {
+	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) {
 		String relatedIndividualsDIG = asksPrefix;
 		relatedIndividualsDIG += "<relatedIndividuals id=\"related_individuals\">";
 		relatedIndividualsDIG += "<ratom name=\"" + atomicRole.getName() + "\" />";

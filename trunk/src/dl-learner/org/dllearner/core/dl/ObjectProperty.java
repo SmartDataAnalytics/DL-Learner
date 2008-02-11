@@ -21,36 +21,31 @@ package org.dllearner.core.dl;
 
 import java.util.Map;
 
+import org.dllearner.utilities.Helper;
+
 /**
- * Represents a concept assertion in a knowledge base / ontology, 
- * e.g. "heiko is a person", "heiko is a male person having one child".
+ * Represents an object property in a knowledge base / ontology, 
+ * e.g. "hasChild".
  * 
  * @author Jens Lehmann
  *
  */
-public class ConceptAssertion extends AssertionalAxiom {
-	
-	private Concept concept;
-	private Individual individual;
-	
-	public ConceptAssertion(Concept concept, Individual individual) {
-		this.concept = concept;
-		this.individual = individual;
-	}
+public class ObjectProperty extends ObjectPropertyExpression implements Property {
 
-	public Concept getConcept() {
-		return concept;
-	}
-
-	public Individual getIndividual() {
-		return individual;
+	public ObjectProperty(String name) {
+		super(name);
 	}
 
 	public int getLength() {
-		return 1 + concept.getLength();
+		return 1;
 	}
-		
-	public String toString(String baseURI, Map<String,String> prefixes) {
-		return concept.toString(baseURI, prefixes) + "(" + individual + ")";
+	
+	@Override		
+	public String toString() {
+    	    return name;
 	}
+	
+    public String toString(String baseURI, Map<String,String> prefixes) {
+    	return Helper.getAbbreviatedString(name, baseURI, prefixes);
+    }
 }

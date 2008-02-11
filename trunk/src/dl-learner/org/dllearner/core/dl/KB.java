@@ -16,9 +16,9 @@ public class KB implements KBElement {
 		SortedSet<Individual> individuals = new TreeSet<Individual>();
 		
 		for(Axiom axiom : abox) {
-			if(axiom instanceof RoleAssertion) {
-				individuals.add(((RoleAssertion)axiom).getIndividual1());
-				individuals.add(((RoleAssertion)axiom).getIndividual2());
+			if(axiom instanceof ObjectPropertyAssertion) {
+				individuals.add(((ObjectPropertyAssertion)axiom).getIndividual1());
+				individuals.add(((ObjectPropertyAssertion)axiom).getIndividual2());
 			} else if(axiom instanceof ConceptAssertion) {
 				individuals.add(((ConceptAssertion)axiom).getIndividual());
 			}	
@@ -27,12 +27,12 @@ public class KB implements KBElement {
 		return individuals;
 	}
 	
-	public Set<AtomicRole> findAllAtomicRoles() {
+	public Set<ObjectProperty> findAllAtomicRoles() {
 		Set<String> roleNames = new HashSet<String>();
 		
 		for(Axiom axiom : abox) {
-			if(axiom instanceof RoleAssertion)
-				roleNames.add(((RoleAssertion)axiom).getRole().getName());
+			if(axiom instanceof ObjectPropertyAssertion)
+				roleNames.add(((ObjectPropertyAssertion)axiom).getRole().getName());
 		}
 		
 		for(Axiom axiom : tbox) {
@@ -61,9 +61,9 @@ public class KB implements KBElement {
 			}		
 		}
 		
-		Set<AtomicRole> ret = new HashSet<AtomicRole>();
+		Set<ObjectProperty> ret = new HashSet<ObjectProperty>();
 		for(String name : roleNames) {
-			ret.add(new AtomicRole(name));
+			ret.add(new ObjectProperty(name));
 		}
 		return ret;		
 	}
@@ -202,8 +202,8 @@ public class KB implements KBElement {
 		// alle direkt mit diesem Individual verbundenen Individuals finden
 		TreeSet<Individual> connectedSet = new TreeSet<Individual>();
 		for(AssertionalAxiom axiom : abox) {
-			if(axiom instanceof RoleAssertion) {
-				RoleAssertion ra = (RoleAssertion)axiom;
+			if(axiom instanceof ObjectPropertyAssertion) {
+				ObjectPropertyAssertion ra = (ObjectPropertyAssertion)axiom;
 				if(ra.getIndividual1().equals(individual))
 					connectedSet.add(ra.getIndividual2());
 			}

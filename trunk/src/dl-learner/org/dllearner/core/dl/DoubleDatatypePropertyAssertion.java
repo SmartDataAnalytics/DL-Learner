@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -21,31 +21,30 @@ package org.dllearner.core.dl;
 
 import java.util.Map;
 
-import org.dllearner.utilities.Helper;
-
 /**
- * Represents an atomic concept in a knowledge base / ontology, 
- * e.g. "hasChild".
- * 
  * @author Jens Lehmann
  *
  */
-public class AtomicRole extends Role {
+public class DoubleDatatypePropertyAssertion extends DatatypePropertyAssertion {
 
-	public AtomicRole(String name) {
-		super(name);
-	}
-
-	public int getLength() {
-		return 1;
+	private double value;
+	
+	public DoubleDatatypePropertyAssertion(DatatypeProperty datatypeProperty, Individual individual, double value) {
+		super(datatypeProperty, individual);
+		this.value = value;
 	}
 	
-	@Override		
-	public String toString() {
-    	    return name;
+
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.dl.KBElement#toString(java.lang.String, java.util.Map)
+	 */
+	public String toString(String baseURI, Map<String, String> prefixes) {
+		return datatypeProperty.toString(baseURI, prefixes) + "(" + individual.toString(baseURI, prefixes) + "," + value +")";
 	}
-	
-    public String toString(String baseURI, Map<String,String> prefixes) {
-    	return Helper.getAbbreviatedString(name, baseURI, prefixes);
-    }
+
+	public double getValue() {
+		return value;
+	}
+
 }

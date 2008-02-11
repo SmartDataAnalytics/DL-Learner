@@ -26,7 +26,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.RoleHierarchy;
@@ -69,7 +69,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public Map<Individual, SortedSet<Individual>> getRoleMembers(AtomicRole atomicRole)
+	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
@@ -108,7 +108,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) throws ReasoningMethodUnsupportedException {
+	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 

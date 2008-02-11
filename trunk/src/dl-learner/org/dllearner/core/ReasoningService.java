@@ -28,7 +28,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.RoleHierarchy;
@@ -73,7 +73,7 @@ public class ReasoningService {
 	
 	// Listenansicht
 	private List<AtomicConcept> atomicConceptsList;
-	private List<AtomicRole> atomicRolesList;
+	private List<ObjectProperty> atomicRolesList;
 
 	// private SortedSet<Concept> retrievalsSet = new TreeSet<Concept>(new ConceptComparator());
 	
@@ -291,22 +291,22 @@ public class ReasoningService {
 	/**
 	 * Returns more general concepts in the subsumption hierarchy.
 	 * 
-	 * @see RoleHierarchy#getMoreGeneralRoles(AtomicRole)
+	 * @see RoleHierarchy#getMoreGeneralRoles(ObjectProperty)
 	 * @param role Atomic concept, top, or bottom.
 	 * @return A set of more general concepts.
 	 */
-	public SortedSet<AtomicRole> getMoreGeneralRoles(AtomicRole role) {
+	public SortedSet<ObjectProperty> getMoreGeneralRoles(ObjectProperty role) {
 		return getRoleHierarchy().getMoreGeneralRoles(role);
 	}
 
 	/**
 	 * Returns more special concepts in the subsumption hierarchy.
 	 * 
-	 * @see RoleHierarchy#getMoreSpecialRoles(AtomicRole)
+	 * @see RoleHierarchy#getMoreSpecialRoles(ObjectProperty)
 	 * @param role Atomic concept, top, or bottom.
 	 * @return A set of more special concepts.
 	 */
-	public SortedSet<AtomicRole> getMoreSpecialRoles(AtomicRole role) {
+	public SortedSet<ObjectProperty> getMoreSpecialRoles(ObjectProperty role) {
 		return getRoleHierarchy().getMoreSpecialRoles(role);
 	}
 	
@@ -314,7 +314,7 @@ public class ReasoningService {
 	 * @see RoleHierarchy#getMostGeneralRoles()
 	 * @return The most general roles.
 	 */
-	public TreeSet<AtomicRole> getMostGeneralRoles() {
+	public TreeSet<ObjectProperty> getMostGeneralRoles() {
 		return getRoleHierarchy().getMostGeneralRoles();
 	}
 	
@@ -322,7 +322,7 @@ public class ReasoningService {
 	 * @see RoleHierarchy#getMostSpecialRoles()
 	 * @return The most special roles.
 	 */
-	public TreeSet<AtomicRole> getMostSpecialRoles() {
+	public TreeSet<ObjectProperty> getMostSpecialRoles() {
 		return getRoleHierarchy().getMostSpecialRoles();
 	}	
 	
@@ -348,7 +348,7 @@ public class ReasoningService {
 		prepareRoleHierarchy(getAtomicRoles());
 	}
 	
-	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) {
+	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
 		try {
 			reasoner.prepareRoleHierarchy(allowedRoles);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -382,7 +382,7 @@ public class ReasoningService {
 
 	// gibt zu einer Rolle alle Elemente zur�ck
 	// private, da es keine Standardoperation ist
-	public Map<Individual, SortedSet<Individual>> getRoleMembers(AtomicRole atomicRole) {
+	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) {
 		reasoningStartTimeTmp = System.nanoTime();
 		Map<Individual, SortedSet<Individual>> result;		
 		try {
@@ -401,7 +401,7 @@ public class ReasoningService {
 		return reasoner.getAtomicConcepts();
 	}
 
-	public Set<AtomicRole> getAtomicRoles() {
+	public Set<ObjectProperty> getAtomicRoles() {
 		return reasoner.getAtomicRoles();
 	}
 
@@ -419,9 +419,9 @@ public class ReasoningService {
 		return atomicConceptsList;
 	}
 
-	public List<AtomicRole> getAtomicRolesList() {
+	public List<ObjectProperty> getAtomicRolesList() {
 		if(atomicRolesList == null)
-			atomicRolesList = new LinkedList<AtomicRole>(getAtomicRoles());
+			atomicRolesList = new LinkedList<ObjectProperty>(getAtomicRoles());
 		return atomicRolesList;
 	}
 	

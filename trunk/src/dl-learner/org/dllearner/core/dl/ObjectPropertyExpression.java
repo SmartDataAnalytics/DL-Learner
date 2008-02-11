@@ -17,30 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.dllearner.core.dl;
 
-import java.util.Map;
-
-import org.dllearner.utilities.Helper;
-
 /**
- * An inverse role.
+ * An object property expression is an object property construct, which
+ * can be used in axioms, e.g. complex class descriptions. It can be
+ * either an object property or an inverse of an object property.
  * 
  * @author Jens Lehmann
  *
  */
-public class InverseRole extends Role {
-	
-	public InverseRole(String name) {
-		super(name);
-	}
+public abstract class ObjectPropertyExpression implements KBElement {
 
-	public int getLength() {
-		return 2;
+	protected String name;
+	
+	public ObjectPropertyExpression(String name) {
+		this.name = name;
 	}
-		
-	public String toString(String baseURI, Map<String,String> prefixes) {
-		return Helper.getAbbreviatedString(name, baseURI, prefixes) + "-";
+	
+	public String getName() {
+		return name;
 	}
+	
 }

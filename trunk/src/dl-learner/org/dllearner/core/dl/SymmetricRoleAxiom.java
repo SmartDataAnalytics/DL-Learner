@@ -4,13 +4,13 @@ import java.util.Map;
 
 public class SymmetricRoleAxiom extends RBoxAxiom {
 
-	private AtomicRole role;
+	private ObjectProperty role;
 	
-	public SymmetricRoleAxiom(AtomicRole role) {
+	public SymmetricRoleAxiom(ObjectProperty role) {
 		this.role = role;
 	}
 
-	public AtomicRole getRole() {
+	public ObjectProperty getRole() {
 		return role;
 	}
 

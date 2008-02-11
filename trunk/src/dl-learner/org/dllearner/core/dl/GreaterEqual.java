@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class GreaterEqual extends NumberRestriction {
 
-	public GreaterEqual(int number, Role role, Concept c) {
+	public GreaterEqual(int number, ObjectPropertyExpression role, Concept c) {
 		super(number,role,c);
 	}
 
