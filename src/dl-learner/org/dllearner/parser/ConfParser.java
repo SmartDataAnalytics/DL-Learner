@@ -19,7 +19,6 @@ import java.io.StringReader;
 
 import org.dllearner.Info;
 
-import org.dllearner.core.dl.*;
 import org.dllearner.cli.*;
 import org.dllearner.utilities.*;
 
@@ -583,6 +582,11 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     finally { jj_save(7, xla); }
   }
 
+  final private boolean jj_3R_7() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
   final private boolean jj_3_7() {
     if (jj_scan_token(26)) return true;
     if (jj_scan_token(31)) return true;
@@ -749,11 +753,6 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
   final private boolean jj_3_8() {
     if (jj_scan_token(27)) return true;
     if (jj_scan_token(32)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_7() {
-    if (jj_3R_5()) return true;
     return false;
   }
 

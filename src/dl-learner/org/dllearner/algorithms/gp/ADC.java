@@ -2,7 +2,7 @@ package org.dllearner.algorithms.gp;
 
 import java.util.Map;
 
-import org.dllearner.core.dl.Concept;
+import org.dllearner.core.owl.Concept;
 
 public class ADC extends Concept {
 

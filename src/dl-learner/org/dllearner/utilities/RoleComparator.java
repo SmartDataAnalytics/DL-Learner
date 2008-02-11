@@ -2,8 +2,8 @@ package org.dllearner.utilities;
 
 import java.util.Comparator;
 
-import org.dllearner.core.dl.ObjectProperty;
-import org.dllearner.core.dl.ObjectPropertyExpression;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyExpression;
 
 public class RoleComparator implements Comparator<ObjectPropertyExpression> {
 

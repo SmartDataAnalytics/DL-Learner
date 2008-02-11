@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
-import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.MultiConjunction;
-import org.dllearner.core.dl.MultiDisjunction;
+import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.MultiConjunction;
+import org.dllearner.core.owl.MultiDisjunction;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SortedSetTuple;

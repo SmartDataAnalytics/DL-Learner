@@ -2,7 +2,7 @@ package org.dllearner.core;
 
 import java.util.Set;
 
-import org.dllearner.core.dl.Individual;
+import org.dllearner.core.owl.Individual;
 
 public abstract class Score {
 	public abstract double getScore();

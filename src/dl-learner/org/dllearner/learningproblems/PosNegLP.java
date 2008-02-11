@@ -34,8 +34,8 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
-import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.Individual;
+import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
 
 /**

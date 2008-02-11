@@ -24,9 +24,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.ObjectProperty;
-import org.dllearner.core.dl.Individual;
+import org.dllearner.core.owl.AtomicConcept;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.ObjectProperty;
 
 /**
  * Conversion between different data structures.

@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dllearner.core.dl.Concept;
+import org.dllearner.core.owl.Concept;
 
 /**
  * @author Jens Lehmann

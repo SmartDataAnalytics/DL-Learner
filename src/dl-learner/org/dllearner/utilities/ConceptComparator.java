@@ -3,16 +3,16 @@ package org.dllearner.utilities;
 import java.util.Comparator;
 import java.util.Set;
 
-import org.dllearner.core.dl.All;
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.Bottom;
-import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.Exists;
-import org.dllearner.core.dl.MultiConjunction;
-import org.dllearner.core.dl.MultiDisjunction;
-import org.dllearner.core.dl.Negation;
-import org.dllearner.core.dl.Quantification;
-import org.dllearner.core.dl.Top;
+import org.dllearner.core.owl.All;
+import org.dllearner.core.owl.AtomicConcept;
+import org.dllearner.core.owl.Bottom;
+import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Exists;
+import org.dllearner.core.owl.MultiConjunction;
+import org.dllearner.core.owl.MultiDisjunction;
+import org.dllearner.core.owl.Negation;
+import org.dllearner.core.owl.Quantification;
+import org.dllearner.core.owl.Top;
 
 // Comparator ist momentan inkonsistent mit equals für Konzepte, d.h. es kann sein, dass
 // zwei Konzepte nicht als gleich deklariert werden (momentan gelten Konzepte immer als

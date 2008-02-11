@@ -19,7 +19,7 @@
  */
 package org.dllearner.core;
 
-import org.dllearner.core.dl.Concept;
+import org.dllearner.core.owl.Concept;
 
 /**
  * Base class for all learning problems.

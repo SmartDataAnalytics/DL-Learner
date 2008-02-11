@@ -12,18 +12,18 @@ import java.util.Map.Entry;
 
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.dl.AssertionalAxiom;
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.ObjectProperty;
-import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.ConceptAssertion;
-import org.dllearner.core.dl.FlatABox;
-import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.KB;
-import org.dllearner.core.dl.Negation;
-import org.dllearner.core.dl.NumberRestriction;
-import org.dllearner.core.dl.Quantification;
-import org.dllearner.core.dl.ObjectPropertyAssertion;
+import org.dllearner.core.owl.AssertionalAxiom;
+import org.dllearner.core.owl.AtomicConcept;
+import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.ConceptAssertion;
+import org.dllearner.core.owl.FlatABox;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.KB;
+import org.dllearner.core.owl.Negation;
+import org.dllearner.core.owl.NumberRestriction;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyAssertion;
+import org.dllearner.core.owl.Quantification;
 
 /**
  * Die Hilfsmethoden benutzen alle SortedSet, da die Operationen damit schneller

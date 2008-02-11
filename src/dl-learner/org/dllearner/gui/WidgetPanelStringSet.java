@@ -42,9 +42,9 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.ObjectProperty;
+import org.dllearner.core.owl.AtomicConcept;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.ObjectProperty;
 
 /**
  * WidgetPanelStringSet

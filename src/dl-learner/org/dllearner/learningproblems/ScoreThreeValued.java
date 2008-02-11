@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.core.Score;
-import org.dllearner.core.dl.Individual;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
 
 /**

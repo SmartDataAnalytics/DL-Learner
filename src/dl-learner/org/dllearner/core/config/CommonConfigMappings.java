@@ -23,9 +23,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.ObjectProperty;
-import org.dllearner.core.dl.Individual;
+import org.dllearner.core.owl.AtomicConcept;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.utilities.ConceptComparator;
 
 /**
