@@ -2,9 +2,9 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
-public class LessEqual extends NumberRestriction {
+public class ObjectMaxCardinalityRestriction extends ObjectCardinalityRestriction {
 
-	public LessEqual(int number, ObjectPropertyExpression role, Concept c) {
+	public ObjectMaxCardinalityRestriction(int number, ObjectPropertyExpression role, Description c) {
 		super(number,role,c);
 	}
 

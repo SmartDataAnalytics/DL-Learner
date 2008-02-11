@@ -1,11 +1,11 @@
 package org.dllearner.core.owl;
 
-public abstract class NumberRestriction extends Concept {
+public abstract class ObjectCardinalityRestriction extends Description {
 
 	protected ObjectPropertyExpression role;
 	protected int number;
 	
-	public NumberRestriction(int number, ObjectPropertyExpression role, Concept c) {
+	public ObjectCardinalityRestriction(int number, ObjectPropertyExpression role, Description c) {
 		addChild(c);
 		this.role = role;
 		this.number = number;

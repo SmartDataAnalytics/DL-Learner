@@ -4,7 +4,7 @@ import java.util.Map;
 
 
 
-public class Bottom extends Concept {
+public class Nothing extends Description {
 
 	/*
     @Override

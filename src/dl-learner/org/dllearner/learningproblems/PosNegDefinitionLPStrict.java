@@ -30,7 +30,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.reasoning.ReasonerType;
@@ -105,7 +105,7 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 	 * @see org.dllearner.learningproblems.DefinitionLP#computeScore(org.dllearner.core.dl.Concept)
 	 */
 	@Override
-	public Score computeScore(Concept concept) {
+	public Score computeScore(Description concept) {
 	   	if(useRetrievalForClassification) {
     		if(reasoningService.getReasonerType() == ReasonerType.FAST_RETRIEVAL) {
         		SortedSetTuple<Individual> tuple = reasoningService.doubleRetrieval(concept);
@@ -168,7 +168,7 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 	 * @see org.dllearner.learningproblems.DefinitionLP#coveredNegativeExamplesOrTooWeak(org.dllearner.core.dl.Concept)
 	 */
 	@Override
-	public int coveredNegativeExamplesOrTooWeak(Concept concept) {
+	public int coveredNegativeExamplesOrTooWeak(Description concept) {
 		throw new UnsupportedOperationException("Method not implemented for three valued definition learning problem.");
 	}
 

@@ -44,14 +44,14 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Bottom;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.RoleHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
-import org.dllearner.core.owl.Top;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -83,7 +83,7 @@ public class DIGReasoner extends ReasonerComponent {
 	URI kbURI;
 	private String asksPrefix;
 	// Cache für Konzepte, Rollen und Individuen
-	Set<AtomicConcept> atomicConcepts;
+	Set<NamedClass> atomicConcepts;
 	Set<ObjectProperty> atomicRoles;
 	SortedSet<Individual> individuals;
 
@@ -95,9 +95,9 @@ public class DIGReasoner extends ReasonerComponent {
 	ConceptComparator conceptComparator = new ConceptComparator();
 	RoleComparator roleComparator = new RoleComparator();
 	SubsumptionHierarchy subsumptionHierarchy;
-	RoleHierarchy roleHierarchy;
+	ObjectPropertyHierarchy roleHierarchy;
 	// enthält atomare Konzepte, sowie Top und Bottom
-	Set<Concept> allowedConceptsInSubsumptionHierarchy;
+	Set<Description> allowedConceptsInSubsumptionHierarchy;
 
 	private boolean writeDIGProtocol;
 	private File digProtocolFile;
@@ -201,32 +201,32 @@ public class DIGReasoner extends ReasonerComponent {
 	 * Construct a subsumption hierarchy using DIG queries. After calling this
 	 * method one can ask for children or parents in the subsumption hierarchy.
 	 */
-	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts) {
-		allowedConceptsInSubsumptionHierarchy = new TreeSet<Concept>(conceptComparator);
+	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
+		allowedConceptsInSubsumptionHierarchy = new TreeSet<Description>(conceptComparator);
 		allowedConceptsInSubsumptionHierarchy.addAll(allowedConcepts);
-		allowedConceptsInSubsumptionHierarchy.add(new Top());
-		allowedConceptsInSubsumptionHierarchy.add(new Bottom());
+		allowedConceptsInSubsumptionHierarchy.add(new Thing());
+		allowedConceptsInSubsumptionHierarchy.add(new Nothing());
 
-		TreeMap<Concept, TreeSet<Concept>> subsumptionHierarchyUp = new TreeMap<Concept, TreeSet<Concept>>(
+		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, TreeSet<Description>>(
 				conceptComparator);
-		TreeMap<Concept, TreeSet<Concept>> subsumptionHierarchyDown = new TreeMap<Concept, TreeSet<Concept>>(
+		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, TreeSet<Description>>(
 				conceptComparator);
 
 		// Subsumptionhierarchy berechnen
 		// TODO: kann man effizienter auch in einer Abfrage machen
 
 		// Refinements von Top
-		TreeSet<Concept> tmp = getMoreSpecialConceptsDIG(new Top());
+		TreeSet<Description> tmp = getMoreSpecialConceptsDIG(new Thing());
 		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-		subsumptionHierarchyDown.put(new Top(), tmp);
+		subsumptionHierarchyDown.put(new Thing(), tmp);
 
 		// Refinements von Bottom
-		tmp = getMoreGeneralConceptsDIG(new Bottom());
+		tmp = getMoreGeneralConceptsDIG(new Nothing());
 		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-		subsumptionHierarchyUp.put(new Bottom(), tmp);
+		subsumptionHierarchyUp.put(new Nothing(), tmp);
 
 		// Refinement atomarer Konzepte
-		for (AtomicConcept atom : atomicConcepts) {
+		for (NamedClass atom : atomicConcepts) {
 			tmp = getMoreSpecialConceptsDIG(atom);
 			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
 			subsumptionHierarchyDown.put(atom, tmp);
@@ -259,7 +259,7 @@ public class DIGReasoner extends ReasonerComponent {
 			roleHierarchyUp.put(role, getMoreGeneralRolesDIG(role));
 		}
 
-		roleHierarchy = new RoleHierarchy(allowedRoles, roleHierarchyUp,
+		roleHierarchy = new ObjectPropertyHierarchy(allowedRoles, roleHierarchyUp,
 				roleHierarchyDown);
 	}
 
@@ -267,7 +267,7 @@ public class DIGReasoner extends ReasonerComponent {
 	// bei null bleibt; bei der aktuellen Implementierung ist der parent-Link
 	// nicht immer null, was bei GP negative Auswirkungen haben könnte
 	// Update: wird durch klonen innerhalb der GP-Operationen erledigt
-	public Set<AtomicConcept> getAtomicConcepts() {
+	public Set<NamedClass> getAtomicConcepts() {
 		/*
 		 * if(Config.algorithm == Config.Algorithm.GP || Config.algorithm ==
 		 * Config.Algorithm.HYBRID_GP) { Set<AtomicConcept> returnSet = new
@@ -277,7 +277,7 @@ public class DIGReasoner extends ReasonerComponent {
 		return atomicConcepts;
 	}
 
-	private Set<AtomicConcept> getAtomicConceptsDIG() {
+	private Set<NamedClass> getAtomicConceptsDIG() {
 		String atomicConceptsDIG = asksPrefix;
 		atomicConceptsDIG += "<allConceptNames id=\"ask_names\"/></asks>";
 
@@ -287,7 +287,7 @@ public class DIGReasoner extends ReasonerComponent {
 		Csynonyms[] synonymsArray = rd.getResponses().getConceptSetArray();
 		Concepts[] conceptsArray = synonymsArray[0].getSynonymsArray();
 
-		Set<AtomicConcept> atomicConcepts = new TreeSet<AtomicConcept>(conceptComparator);
+		Set<NamedClass> atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
 		for (Concepts concepts : conceptsArray) {
 			boolean topOrBottomFound = false;
 			if (concepts.getBottomArray().length != 0 || concepts.getTopArray().length != 0)
@@ -297,14 +297,14 @@ public class DIGReasoner extends ReasonerComponent {
 			// oder Bottom ist
 			if (!topOrBottomFound) {
 				boolean nonAnonymousConceptFound = false;
-				AtomicConcept foundConcept = null;
+				NamedClass foundConcept = null;
 				Named[] catoms = concepts.getCatomArray();
 				for (Named catom : catoms) {
 					String name = catom.getName();
 					if (!name.startsWith("anon")) {
 						if (!nonAnonymousConceptFound) {
 							nonAnonymousConceptFound = true;
-							foundConcept = new AtomicConcept(catom.getName());
+							foundConcept = new NamedClass(catom.getName());
 							atomicConcepts.add(foundConcept);
 						} else {
 							System.out
@@ -377,7 +377,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public boolean subsumes(Concept superConcept, Concept subConcept) {
+	public boolean subsumes(Description superConcept, Description subConcept) {
 		// System.out.println("subsumes(" + superConcept + "," + subConcept +
 		// ")");
 		String subsumesDIG = asksPrefix;
@@ -390,13 +390,13 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public Set<Concept> subsumes(Concept superConcept, Set<Concept> subConcepts) {
+	public Set<Description> subsumes(Description superConcept, Set<Description> subConcepts) {
 		String subsumesDIG = asksPrefix;
 		int id = 0;
 		// ID-Konzept-Zuordnung speichern, da bei der Antwort nur die IDs
 		// ausgegeben werden
-		Map<String, Concept> queryMap = new HashMap<String, Concept>();
-		for (Concept subConcept : subConcepts) {
+		Map<String, Description> queryMap = new HashMap<String, Description>();
+		for (Description subConcept : subConcepts) {
 			queryMap.put("query" + id, subConcept);
 			subsumesDIG += "<subsumes id=\"query" + id + "\">";
 			subsumesDIG += DIGConverter.getDIGString(superConcept);
@@ -409,7 +409,7 @@ public class DIGReasoner extends ReasonerComponent {
 		ResponsesDocument rd = connector.asks(subsumesDIG);
 		IdType[] subsumedConceptsIds = rd.getResponses().getTrueArray();
 
-		Set<Concept> returnSet = new HashSet<Concept>();
+		Set<Description> returnSet = new HashSet<Description>();
 		for (IdType idType : subsumedConceptsIds) {
 			returnSet.add(queryMap.get(idType.getId()));
 		}
@@ -417,11 +417,11 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public Set<Concept> subsumes(Set<Concept> superConcepts, Concept subConcept) {
+	public Set<Description> subsumes(Set<Description> superConcepts, Description subConcept) {
 		String subsumesDIG = asksPrefix;
 		int id = 0;
-		Map<String, Concept> queryMap = new HashMap<String, Concept>();
-		for (Concept superConcept : superConcepts) {
+		Map<String, Description> queryMap = new HashMap<String, Description>();
+		for (Description superConcept : superConcepts) {
 			queryMap.put("query" + id, superConcept);
 			subsumesDIG += "<subsumes id=\"query" + id + "\">";
 			subsumesDIG += DIGConverter.getDIGString(superConcept);
@@ -434,7 +434,7 @@ public class DIGReasoner extends ReasonerComponent {
 		ResponsesDocument rd = connector.asks(subsumesDIG);
 		IdType[] subsumedConceptsIds = rd.getResponses().getTrueArray();
 
-		Set<Concept> returnSet = new HashSet<Concept>();
+		Set<Description> returnSet = new HashSet<Description>();
 		for (IdType idType : subsumedConceptsIds) {
 			returnSet.add(queryMap.get(idType.getId()));
 		}
@@ -460,18 +460,18 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public RoleHierarchy getRoleHierarchy() {
+	public ObjectPropertyHierarchy getRoleHierarchy() {
 		return roleHierarchy;
 	}
 
-	private TreeSet<Concept> getMoreGeneralConceptsDIG(Concept concept) {
+	private TreeSet<Description> getMoreGeneralConceptsDIG(Description concept) {
 		String moreGeneralDIG = asksPrefix;
 		moreGeneralDIG += "<parents id=\"query_parents\">";
 		moreGeneralDIG += DIGConverter.getDIGString(concept);
 		moreGeneralDIG += "</parents></asks>";
 
 		ResponsesDocument rd = connector.asks(moreGeneralDIG);
-		TreeSet<Concept> resultsSet = new TreeSet<Concept>(conceptComparator);
+		TreeSet<Description> resultsSet = new TreeSet<Description>(conceptComparator);
 		// ein Array, der Synomyms-Elemente enthält, die dann Mengen von
 		// äquivalenten Konzepten enthalten;
 		// (es wird hier nur das erste Element des ConceptSetArrays gelesen,
@@ -483,14 +483,14 @@ public class DIGReasoner extends ReasonerComponent {
 			Named[] atoms = conceptsArray[i].getCatomArray();
 
 			for (Named atom : atoms) {
-				AtomicConcept ac = new AtomicConcept(atom.getName());
+				NamedClass ac = new NamedClass(atom.getName());
 				if (allowedConceptsInSubsumptionHierarchy.contains(ac))
 					resultsSet.add(ac);
 			}
 
 			// hinzufügen von Top, falls notwendig
 			if (conceptsArray[i].getTopArray().length > 0)
-				resultsSet.add(new Top());
+				resultsSet.add(new Thing());
 
 			// falls bisher kein erlaubtes Konzept gefunden wurden, dann gibt es
 			// entweder keine allgemeineren Konzepte oder es handelt sich um
@@ -502,7 +502,7 @@ public class DIGReasoner extends ReasonerComponent {
 				// wir wählen das erste Konzept aus, welches ein ignoriertes
 				// Konzept ist
 				// (sonst wäre es weiter oben gefunden wurden)
-				AtomicConcept ignoredAtomicConcept = new AtomicConcept(atoms[0].getName());
+				NamedClass ignoredAtomicConcept = new NamedClass(atoms[0].getName());
 				resultsSet.addAll(getMoreGeneralConceptsDIG(ignoredAtomicConcept));
 			}
 
@@ -511,7 +511,7 @@ public class DIGReasoner extends ReasonerComponent {
 		return resultsSet;
 	}
 
-	private TreeSet<Concept> getMoreSpecialConceptsDIG(Concept concept) {
+	private TreeSet<Description> getMoreSpecialConceptsDIG(Description concept) {
 		String moreSpecialDIG = asksPrefix;
 		moreSpecialDIG += "<children id=\"query_children\">";
 		moreSpecialDIG += DIGConverter.getDIGString(concept);
@@ -519,23 +519,23 @@ public class DIGReasoner extends ReasonerComponent {
 
 		// Kommentare siehe getMoreGeneralConcepts(Concept)
 		ResponsesDocument rd = connector.asks(moreSpecialDIG);
-		TreeSet<Concept> resultsSet = new TreeSet<Concept>(conceptComparator);
+		TreeSet<Description> resultsSet = new TreeSet<Description>(conceptComparator);
 		Concepts[] conceptsArray = rd.getResponses().getConceptSetArray()[0].getSynonymsArray();
 
 		for (int i = 0; i < conceptsArray.length; i++) {
 			Named[] atoms = conceptsArray[i].getCatomArray();
 			for (Named atom : atoms) {
-				AtomicConcept ac = new AtomicConcept(atom.getName());
+				NamedClass ac = new NamedClass(atom.getName());
 				if (allowedConceptsInSubsumptionHierarchy.contains(ac))
 					resultsSet.add(ac);
 			}
 
 			// hinzufügen von Bottom, falls notwendig
 			if (conceptsArray[i].getBottomArray().length > 0)
-				resultsSet.add(new Bottom());
+				resultsSet.add(new Nothing());
 
 			if (resultsSet.size() == 0 && atoms.length > 0) {
-				AtomicConcept ignoredAtomicConcept = new AtomicConcept(atoms[0].getName());
+				NamedClass ignoredAtomicConcept = new NamedClass(atoms[0].getName());
 				resultsSet.addAll(getMoreSpecialConceptsDIG(ignoredAtomicConcept));
 			}
 		}
@@ -592,7 +592,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public boolean instanceCheck(Concept concept, Individual individual) {
+	public boolean instanceCheck(Description concept, Individual individual) {
 		String instanceCheckDIG = asksPrefix;
 		instanceCheckDIG += "<instance id= \"query_instance\">";
 		instanceCheckDIG += "<individual name=\"" + individual.getName() + "\"/>";
@@ -603,7 +603,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public SortedSet<Individual> instanceCheck(Concept concept, Set<Individual> individuals) {
+	public SortedSet<Individual> instanceCheck(Description concept, Set<Individual> individuals) {
 		String instanceCheckDIG = asksPrefix;
 		int id = 0;
 		// ID-Konzept-Zuordnung speichern, da bei der Antwort nur die IDs
@@ -630,7 +630,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public SortedSet<Individual> retrieval(Concept concept) {
+	public SortedSet<Individual> retrieval(Description concept) {
 
 		String retrievalDIG = asksPrefix;
 		retrievalDIG += "<instances id= \"query_instance\">";
@@ -649,20 +649,20 @@ public class DIGReasoner extends ReasonerComponent {
 
 	// ToDo: gibt momentan nur einen Wert bei äquivalenten Klassen aus
 	@Override
-	public Set<AtomicConcept> getConcepts(Individual individual) {
+	public Set<NamedClass> getConcepts(Individual individual) {
 		String typesDIG = asksPrefix;
 		typesDIG += "<types id=\"query_types\">";
 		typesDIG += "<individual name=\"" + individual.getName() + "\" />";
 		typesDIG += "</types></asks>";
 
 		ResponsesDocument rd = connector.asks(typesDIG);
-		TreeSet<AtomicConcept> resultsSet = new TreeSet<AtomicConcept>(conceptComparator);
+		TreeSet<NamedClass> resultsSet = new TreeSet<NamedClass>(conceptComparator);
 		Concepts[] conceptsArray = rd.getResponses().getConceptSetArray()[0].getSynonymsArray();
 
 		for (int i = 0; i < conceptsArray.length; i++) {
 			Named[] atoms = conceptsArray[i].getCatomArray();
 			for (Named atom : atoms) {
-				AtomicConcept ac = new AtomicConcept(atom.getName());
+				NamedClass ac = new NamedClass(atom.getName());
 				if (allowedConceptsInSubsumptionHierarchy.contains(ac))
 					// if(Config.Refinement.allowedConcepts.contains(ac))
 					resultsSet.add(ac);

@@ -25,7 +25,7 @@ import java.util.SortedSet;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.StringTuple;
 
@@ -67,13 +67,13 @@ public class RoleLearning extends PosNegLP implements DefinitionLP {
 
 	// TODO use basic functions
 	@Override
-	public int coveredNegativeExamplesOrTooWeak(Concept concept) {
+	public int coveredNegativeExamplesOrTooWeak(Description concept) {
 		return 0;
 	}
 
 	// TODO use basic functions
 	@Override
-	public Score computeScore(Concept concept) {
+	public Score computeScore(Description concept) {
 		return null;
 	}
 

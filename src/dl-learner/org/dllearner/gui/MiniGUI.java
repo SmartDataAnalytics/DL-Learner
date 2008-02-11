@@ -45,7 +45,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -170,7 +170,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 			// wait for a solution (note that not all learning problems have a
 			// solution (100% accuracy), so one usually has to run the algorithm in its own
 			// thread, such that it can be aborted after some time
-			Concept solution = la.getBestSolution();
+			Description solution = la.getBestSolution();
 			solutionDisplay.setText(solution.toString());
 		}
 	}

@@ -36,11 +36,11 @@ import org.dllearner.algorithms.refinement.RhoDown;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.MultiConjunction;
-import org.dllearner.core.owl.MultiDisjunction;
-import org.dllearner.core.owl.Top;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Union;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.utilities.ConceptComparator;
@@ -104,7 +104,7 @@ public class ExampleBasedROLearner {
 	
 	// solution protocol
 	private boolean solutionFound = false;
-	private List<Concept> solutions = new LinkedList<Concept>();	
+	private List<Description> solutions = new LinkedList<Description>();	
 	
 	// used refinement operator and heuristic (exchangeable)
 	private RhoDown operator;
@@ -134,11 +134,11 @@ public class ExampleBasedROLearner {
 	private List<ExampleBasedNode> newCandidates = new LinkedList<ExampleBasedNode>();
 	
 	// all concepts which have been evaluated as being proper refinements
-	private SortedSet<Concept> properRefinements = new TreeSet<Concept>(conceptComparator);
+	private SortedSet<Description> properRefinements = new TreeSet<Description>(conceptComparator);
 
 	// blacklists
-	private SortedSet<Concept> tooWeakList = new TreeSet<Concept>(conceptComparator);
-	private SortedSet<Concept> overlyGeneralList = new TreeSet<Concept>(conceptComparator);
+	private SortedSet<Description> tooWeakList = new TreeSet<Description>(conceptComparator);
+	private SortedSet<Description> overlyGeneralList = new TreeSet<Description>(conceptComparator);
 		
 	// set of expanded nodes (TODO: better explanation)
 	TreeSet<ExampleBasedNode> expandedNodes = new TreeSet<ExampleBasedNode>(nodeComparatorStable);
@@ -215,7 +215,7 @@ public class ExampleBasedROLearner {
 		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
 		
 		// start search with most general concept
-		Top top = new Top();
+		Thing top = new Thing();
 		ExampleBasedNode topNode = new ExampleBasedNode(top);
 		// top covers all negatives
 		int coveredNegativeExamples = getNumberOfNegatives();
@@ -280,7 +280,7 @@ public class ExampleBasedROLearner {
 		
 		if(solutionFound) {
 			logger.info("\nsolutions:");
-			for(Concept c : solutions) {
+			for(Description c : solutions) {
 				logger.info("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
 			}
 		}
@@ -341,7 +341,7 @@ public class ExampleBasedROLearner {
 	// für alle proper refinements von concept bis maxLength werden Kinderknoten
 	// für node erzeugt;
 	// recDepth dient nur zur Protokollierung
-	private void extendNodeProper(ExampleBasedNode node, Concept concept, int maxLength, int recDepth) {
+	private void extendNodeProper(ExampleBasedNode node, Description concept, int maxLength, int recDepth) {
 		
 		// führe Methode nicht aus, wenn Algorithmus gestoppt wurde (alle rekursiven Funktionsaufrufe
 		// werden nacheinander abgebrochen, so dass ohne weitere Reasoninganfragen relativ schnell beendet wird)
@@ -354,7 +354,7 @@ public class ExampleBasedROLearner {
 		// Refinements berechnen => hier dürfen dürfen refinements <= horizontal expansion
 		// des Konzepts nicht gelöscht werden!
 		long refinementCalcTimeNsStart = System.nanoTime();
-		Set<Concept> refinements = operator.refine(concept, maxLength, null);
+		Set<Description> refinements = operator.refine(concept, maxLength, null);
 		refinementCalcTimeNs += System.nanoTime() - refinementCalcTimeNsStart;
 		
 		if(refinements.size()>maxNrOfRefinements)
@@ -375,11 +375,11 @@ public class ExampleBasedROLearner {
 		
 		// alle Konzepte, die länger als horizontal expansion sind, müssen ausgewertet
 		// werden
-		Set<Concept> toEvaluateConcepts = new TreeSet<Concept>(conceptComparator);
-		Iterator<Concept> it = refinements.iterator();
+		Set<Description> toEvaluateConcepts = new TreeSet<Description>(conceptComparator);
+		Iterator<Description> it = refinements.iterator();
 		// for(Concept refinement : refinements) {
 		while(it.hasNext()) {
-			Concept refinement = it.next();
+			Description refinement = it.next();
 			if(refinement.getLength()>node.getHorizontalExpansion()) {
 				// TODO: an dieser Stelle könnte man Algorithmen ansetzen lassen, die
 				// versuchen properness-Anfragen zu vermeiden:
@@ -394,7 +394,7 @@ public class ExampleBasedROLearner {
 				// 1. short concept construction
 				if(useShortConceptConstruction) {
 					// kurzes Konzept konstruieren
-					Concept shortConcept = ConceptTransformation.getShortConcept(refinement, conceptComparator);
+					Description shortConcept = ConceptTransformation.getShortConcept(refinement, conceptComparator);
 					int n = conceptComparator.compare(shortConcept, concept);
 					
 					// Konzepte sind gleich also Refinement improper
@@ -406,8 +406,8 @@ public class ExampleBasedROLearner {
 				
 				// 2. too weak test
 				if(!propernessDetected && useTooWeakList) {
-					if(refinement instanceof MultiConjunction) {
-						boolean tooWeakElement = containsTooWeakElement((MultiConjunction)refinement);
+					if(refinement instanceof Intersection) {
+						boolean tooWeakElement = containsTooWeakElement((Intersection)refinement);
 						if(tooWeakElement) {
 							propernessTestsAvoidedByTooWeakList++;
 							conceptTestsTooWeakList++;
@@ -443,7 +443,7 @@ public class ExampleBasedROLearner {
 		
 		// System.out.println(toEvaluateConcepts.size());
 		
-		Set<Concept> improperConcepts = null;
+		Set<Description> improperConcepts = null;
 		if(toEvaluateConcepts.size()>0) {
 			// Test aller Konzepte auf properness (mit DIG in nur einer Anfrage)
 			long propCalcReasoningStart = System.nanoTime();
@@ -458,12 +458,12 @@ public class ExampleBasedROLearner {
 		// alle proper concepts bleiben übrig (einfache Umbenennung)
 		if(improperConcepts != null)
 			toEvaluateConcepts.removeAll(improperConcepts);
-		Set<Concept> properConcepts = toEvaluateConcepts;
+		Set<Description> properConcepts = toEvaluateConcepts;
 		// alle proper concepts von refinements löschen
 		refinements.removeAll(properConcepts);
 		improperConceptsRemovalTimeNs += System.nanoTime() - improperConceptsRemovalTimeNsStart;
 		
-		for(Concept refinement : properConcepts) {
+		for(Description refinement : properConcepts) {
 			long redundancyCheckTimeNsStart = System.nanoTime();
 			boolean nonRedundant = properRefinements.add(refinement);
 			redundancyCheckTimeNs += System.nanoTime() - redundancyCheckTimeNsStart;
@@ -485,8 +485,8 @@ public class ExampleBasedROLearner {
 				int quality = -2;
 				
 				// overly general list verwenden
-				if(useOverlyGeneralList && refinement instanceof MultiDisjunction) {
-					if(containsOverlyGeneralElement((MultiDisjunction)refinement)) {
+				if(useOverlyGeneralList && refinement instanceof Union) {
+					if(containsOverlyGeneralElement((Union)refinement)) {
 						conceptTestsOverlyGeneralList++;
 						quality = getNumberOfNegatives();
 						qualityKnown = true;
@@ -584,7 +584,7 @@ public class ExampleBasedROLearner {
 		// es sind jetzt noch alle Konzepte übrig, die improper refinements sind
 		// auf jedem dieser Konzepte wird die Funktion erneut aufgerufen, da sich
 		// proper refinements ergeben könnten
-		for(Concept refinement : refinements) {
+		for(Description refinement : refinements) {
 			// for(int i=0; i<=recDepth; i++)
 			//	System.out.print("  ");
 			// System.out.println("call: " + refinement + " [maxLength " + maxLength + "]");
@@ -664,7 +664,7 @@ public class ExampleBasedROLearner {
 	}
 	
 	@SuppressWarnings({"unused"})
-	private int coveredNegativesOrTooWeak(Concept concept) {
+	private int coveredNegativesOrTooWeak(Description concept) {
 		if(posOnly)
 			return posOnlyLearningProblem.coveredPseudoNegativeExamplesOrTooWeak(concept);
 		else
@@ -678,16 +678,16 @@ public class ExampleBasedROLearner {
 			return learningProblem.getNegativeExamples().size();
 	}	
 	
-	private boolean containsTooWeakElement(MultiConjunction mc) {
-		for(Concept child : mc.getChildren()) {
+	private boolean containsTooWeakElement(Intersection mc) {
+		for(Description child : mc.getChildren()) {
 			if(tooWeakList.contains(child))
 				return true;
 		}
 		return false;
 	}
 	
-	private boolean containsOverlyGeneralElement(MultiDisjunction md) {
-		for(Concept child : md.getChildren()) {
+	private boolean containsOverlyGeneralElement(Union md) {
+		for(Description child : md.getChildren()) {
 			if(overlyGeneralList.contains(child))
 				return true;
 		}
@@ -698,12 +698,12 @@ public class ExampleBasedROLearner {
 		stop = true;
 	}
 
-	public Concept getBestSolution() {
+	public Description getBestSolution() {
 		return candidatesStable.last().getConcept();
 	}
 
-	public synchronized List<Concept> getBestSolutions(int nrOfSolutions) {
-		List<Concept> best = new LinkedList<Concept>();
+	public synchronized List<Description> getBestSolutions(int nrOfSolutions) {
+		List<Description> best = new LinkedList<Description>();
 		int i=0;
 		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
 			best.add(n.getConcept());

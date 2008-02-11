@@ -2,21 +2,21 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
-public class Equality extends TerminologicalAxiom {
+public class EquivalentClassesAxiom extends TerminologicalAxiom {
 	
-	private Concept concept1;
-	private Concept concept2;
+	private Description concept1;
+	private Description concept2;
 	
-	public Equality(Concept concept1, Concept concept2) {
+	public EquivalentClassesAxiom(Description concept1, Description concept2) {
 		this.concept1 = concept1;
 		this.concept2 = concept2;
 	}
 
-	public Concept getConcept1() {
+	public Description getConcept1() {
 		return concept1;
 	}
 
-	public Concept getConcept2() {
+	public Description getConcept2() {
 		return concept2;
 	}
 

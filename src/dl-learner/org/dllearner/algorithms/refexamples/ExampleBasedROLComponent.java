@@ -39,8 +39,8 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -88,12 +88,12 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean replaceSearchTree = false;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 	private String heuristic = "lexicographic";
-	Set<AtomicConcept> allowedConcepts;
+	Set<NamedClass> allowedConcepts;
 	Set<ObjectProperty> allowedRoles;
-	Set<AtomicConcept> ignoredConcepts;
+	Set<NamedClass> ignoredConcepts;
 	Set<ObjectProperty> ignoredRoles;
 	// these are computed as the result of the previous four settings
-	Set<AtomicConcept> usedConcepts;
+	Set<NamedClass> usedConcepts;
 	Set<ObjectProperty> usedRoles;	
 	private boolean applyAllFilter = true;
 	private boolean applyExistsFilter = true;	
@@ -321,12 +321,12 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	}
 	
 	@Override
-	public Concept getBestSolution() {
+	public Description getBestSolution() {
 		return algorithm.getBestSolution();
 	}
 	
 	@Override
-	public synchronized List<Concept> getBestSolutions(int nrOfSolutions) {
+	public synchronized List<Description> getBestSolutions(int nrOfSolutions) {
 		return algorithm.getBestSolutions(nrOfSolutions);
 	}	
 

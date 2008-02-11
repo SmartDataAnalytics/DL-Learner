@@ -3,20 +3,20 @@ package org.dllearner.core.owl;
 import java.util.List;
 import java.util.Map;
 
-public class MultiConjunction extends Concept {
+public class Intersection extends Description {
 
-	public MultiConjunction() {
+	public Intersection() {
 		
 	}
 	
-	public MultiConjunction(Concept... children) {
-		for(Concept child : children) {
+	public Intersection(Description... children) {
+		for(Description child : children) {
 			addChild(child);
 		}
 	}
 	
-	public MultiConjunction(List<Concept> children) {
-		for(Concept child : children) {
+	public Intersection(List<Description> children) {
+		for(Description child : children) {
 			addChild(child);
 		}
 	}
@@ -28,7 +28,7 @@ public class MultiConjunction extends Concept {
 
 	public int getLength() {
 		int length = 0;
-		for(Concept child : children) {
+		for(Description child : children) {
 			length += child.getLength();
 		}
 		return length + children.size() - 1;
@@ -48,7 +48,7 @@ public class MultiConjunction extends Concept {
 	
 	public String toStringOld() {
 		String ret = "MULTI_AND [";
-		for(Concept child : children) {
+		for(Description child : children) {
 			ret += child.toString() + ",";
 		}
 		ret += "]";

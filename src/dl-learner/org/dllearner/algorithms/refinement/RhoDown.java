@@ -30,20 +30,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.owl.All;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Bottom;
-import org.dllearner.core.owl.Concept;
-import org.dllearner.core.owl.Conjunction;
-import org.dllearner.core.owl.Disjunction;
-import org.dllearner.core.owl.Exists;
-import org.dllearner.core.owl.MultiConjunction;
-import org.dllearner.core.owl.MultiDisjunction;
+import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
-import org.dllearner.core.owl.Quantification;
-import org.dllearner.core.owl.Top;
+import org.dllearner.core.owl.ObjectQuantorRestriction;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 
@@ -68,7 +66,7 @@ public class RhoDown implements RefinementOperator {
 	private int topRefinementsLength = 0;
 	
 	// die Menge M im Refinement-Operator indiziert nach ihrer L�nge
-	Map<Integer,Set<Concept>> m = new HashMap<Integer,Set<Concept>>();
+	Map<Integer,Set<Description>> m = new HashMap<Integer,Set<Description>>();
 	
 	// Zerlegungen der Zahl n in Mengen
 	// Map<Integer,Set<IntegerCombo>> combos = new HashMap<Integer,Set<IntegerCombo>>();
@@ -77,8 +75,8 @@ public class RhoDown implements RefinementOperator {
 	// private List<List<Integer>> combosTmp;	
 	
 	// Refinements des Top-Konzept indiziert nach Länge
-	Map<Integer, TreeSet<Concept>> topRefinements = new HashMap<Integer, TreeSet<Concept>>();
-	Map<Integer, TreeSet<Concept>> topRefinementsCumulative = new HashMap<Integer, TreeSet<Concept>>();
+	Map<Integer, TreeSet<Description>> topRefinements = new HashMap<Integer, TreeSet<Description>>();
+	Map<Integer, TreeSet<Description>> topRefinementsCumulative = new HashMap<Integer, TreeSet<Description>>();
 	
 	// comparator für Konzepte
 	private ConceptComparator conceptComparator = new ConceptComparator();
@@ -108,7 +106,7 @@ public class RhoDown implements RefinementOperator {
 //		rs = learningProblem.getReasoningService();
 	}
 
-	public Set<Concept> refine(Concept concept) {
+	public Set<Description> refine(Description concept) {
 		throw new RuntimeException();
 		// TODO Auto-generated method stub
 		// return null;
@@ -121,29 +119,29 @@ public class RhoDown implements RefinementOperator {
 	// von Minimallänge eine Möglichkeit (alle Refinements, auch improper, müssten
 	// dann im Algorithmus gespeichert werden)
 	@SuppressWarnings("unchecked")
-	public SortedSet<Concept> refine(Concept concept, int maxLength,
-			List<Concept> knownRefinements) {
+	public SortedSet<Description> refine(Description concept, int maxLength,
+			List<Description> knownRefinements) {
 		
 		
 		
 		// Set<Concept> refinements = new HashSet<Concept>();
-		SortedSet<Concept> refinements = new TreeSet<Concept>(conceptComparator);
-		Set<Concept> tmp = new HashSet<Concept>();
+		SortedSet<Description> refinements = new TreeSet<Description>(conceptComparator);
+		Set<Description> tmp = new HashSet<Description>();
 		// SortedSet<Concept> tmp = new TreeSet<Concept>(conceptComparator);
 		
-		if (concept instanceof Top) {
+		if (concept instanceof Thing) {
 
 			// ggf. Refinements von Top erweitern
 			if(maxLength>topRefinementsLength)
 				computeTopRefinements(maxLength);
 			// System.out.println(topRefinements);
-			refinements = (TreeSet<Concept>) topRefinementsCumulative.get(maxLength).clone();
+			refinements = (TreeSet<Description>) topRefinementsCumulative.get(maxLength).clone();
 			// refinements = copyTopRefinements(maxLength);
 			// refinements = topRefinementsCumulative.get(maxLength);
 
-		} else if (concept instanceof Bottom) {
+		} else if (concept instanceof Nothing) {
 			// return new HashSet<Concept>();
-		} else if (concept instanceof AtomicConcept) {
+		} else if (concept instanceof NamedClass) {
 			// Erkenntnisse aus Benchmarks: dieser Teil wird sehr häufig aufgerufen,
 			// allerdings lässt er sich kaum weiter verbessern (selbst ohne klonen
 			// der Konzepte im DIG-Reasoner, was durch das entfernen von Bottom notwendig
@@ -164,10 +162,10 @@ public class RhoDown implements RefinementOperator {
 			//		it.remove();
 			// }
 			// geht jetzt auch schneller durch conceptComparator
-			refinements.remove(new Bottom());		
+			refinements.remove(new Nothing());		
 			
 		// negiertes atomares Konzept
-		} else if (concept instanceof Negation && concept.getChild(0) instanceof AtomicConcept) {
+		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
 		
 			tmp = rs.getMoreGeneralConcepts(concept.getChild(0));
 			
@@ -180,15 +178,15 @@ public class RhoDown implements RefinementOperator {
 			
 			// tmp.remove(new Top());
 			
-			for(Concept c : tmp) {
-				if(!(c instanceof Top))
+			for(Description c : tmp) {
+				if(!(c instanceof Thing))
 					refinements.add(new Negation(c));
 			}
 		
-		} else if (concept instanceof MultiConjunction) {
+		} else if (concept instanceof Intersection) {
 				
 			// eines der Elemente kann verfeinert werden
-			for(Concept child : concept.getChildren()) {
+			for(Description child : concept.getChildren()) {
 				
 				// Refinement für das Kind ausführen
 				// System.out.println("child: " + child);
@@ -197,7 +195,7 @@ public class RhoDown implements RefinementOperator {
 				tmp = refine(child, maxLength - concept.getLength()+child.getLength(),null);
 				
 				// neue MultiConjunction konstruieren
-				for(Concept c : tmp) {
+				for(Description c : tmp) {
 					// TODO: müssen auch alle Konzepte geklont werden??
 					// hier wird nur eine neue Liste erstellt
 					// => eigentlich muss nicht geklont werden (d.h. deep copy) da
@@ -206,7 +204,7 @@ public class RhoDown implements RefinementOperator {
 					// werden dürfen
 					// List<Concept> newChildren = new LinkedList<Concept>(concept.getChildren());
 					// TODO: Class Cast ist nur ein Hack
-					List<Concept> newChildren = (List<Concept>)((LinkedList)concept.getChildren()).clone();
+					List<Description> newChildren = (List<Description>)((LinkedList)concept.getChildren()).clone();
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					// int index = newChildren.indexOf(child);
@@ -218,7 +216,7 @@ public class RhoDown implements RefinementOperator {
 					// neu sortiert wird
 					newChildren.add(c);
 					newChildren.remove(child);
-					MultiConjunction mc = new MultiConjunction(newChildren);
+					Intersection mc = new Intersection(newChildren);
 					
 					// sicherstellten, dass Konzept in negation normal form ist
 					ConceptTransformation.cleanConceptNonRecursive(mc);
@@ -229,9 +227,9 @@ public class RhoDown implements RefinementOperator {
 				
 			}
 				
-		} else if (concept instanceof MultiDisjunction) {
+		} else if (concept instanceof Union) {
 			// eines der Elemente kann verfeinert werden
-			for(Concept child : concept.getChildren()) {
+			for(Description child : concept.getChildren()) {
 				
 				// Refinement für das Kind ausführen
 				// tmp = refine(child);
@@ -240,15 +238,15 @@ public class RhoDown implements RefinementOperator {
 
 				
 				// neue MultiConjunction konstruieren
-				for(Concept c : tmp) {
-					List<Concept> newChildren = new LinkedList<Concept>(concept.getChildren());
+				for(Description c : tmp) {
+					List<Description> newChildren = new LinkedList<Description>(concept.getChildren());
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					// int index = newChildren.indexOf(child);
 					// newChildren.add(index, c);
 					newChildren.remove(child);						
 					newChildren.add(c);
-					MultiDisjunction md = new MultiDisjunction(newChildren);
+					Union md = new Union(newChildren);
 						
 					// sicherstellten, dass Konzept in negation normal form ist
 					// ConceptTransformation.cleanConcept(md); // nicht notwendig, da kein Element einer 
@@ -263,14 +261,14 @@ public class RhoDown implements RefinementOperator {
 				
 			}
 			
-		} else if (concept instanceof Exists) {
-			ObjectPropertyExpression role = ((Quantification)concept).getRole();
+		} else if (concept instanceof ObjectSomeRestriction) {
+			ObjectPropertyExpression role = ((ObjectQuantorRestriction)concept).getRole();
 			
 			// rule 1: EXISTS r.D => EXISTS r.E
 			tmp = refine(concept.getChild(0), maxLength-2, null);
 
-			for(Concept c : tmp) {
-				refinements.add(new Exists(((Quantification)concept).getRole(),c));
+			for(Description c : tmp) {
+				refinements.add(new ObjectSomeRestriction(((ObjectQuantorRestriction)concept).getRole(),c));
 			}
 			
 			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
@@ -278,17 +276,17 @@ public class RhoDown implements RefinementOperator {
 			ObjectProperty ar = (ObjectProperty) role;
 			Set<ObjectProperty> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
-				refinements.add(new Exists(moreSpecialRole, concept.getChild(0)));
+				refinements.add(new ObjectSomeRestriction(moreSpecialRole, concept.getChild(0)));
 			}
 
-		} else if (concept instanceof All) {
-			ObjectPropertyExpression role = ((Quantification)concept).getRole();
+		} else if (concept instanceof ObjectAllRestriction) {
+			ObjectPropertyExpression role = ((ObjectQuantorRestriction)concept).getRole();
 			
 			// rule 1: ALL r.D => ALL r.E
 			tmp = refine(concept.getChild(0), maxLength-2, null);
 
-			for(Concept c : tmp) {
-				refinements.add(new All(((Quantification)concept).getRole(),c));
+			for(Description c : tmp) {
+				refinements.add(new ObjectAllRestriction(((ObjectQuantorRestriction)concept).getRole(),c));
 			}		
 			
 			// rule 2: ALL r.D => ALL r.BOTTOM if D is a most specific atomic concept
@@ -296,8 +294,8 @@ public class RhoDown implements RefinementOperator {
 			// bottom angehangen => nur wenn es ein atomares Konzept (insbesondere != bottom)
 			// ist
 			// if(tmp.size()==0) {
-			if(concept.getChild(0) instanceof AtomicConcept && tmp.size()==0) {
-				refinements.add(new All(((Quantification)concept).getRole(),new Bottom()));
+			if(concept.getChild(0) instanceof NamedClass && tmp.size()==0) {
+				refinements.add(new ObjectAllRestriction(((ObjectQuantorRestriction)concept).getRole(),new Nothing()));
 			}
 			
 			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
@@ -305,16 +303,15 @@ public class RhoDown implements RefinementOperator {
 			ObjectProperty ar = (ObjectProperty) role;
 			Set<ObjectProperty> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
-				refinements.add(new All(moreSpecialRole, concept.getChild(0)));
+				refinements.add(new ObjectAllRestriction(moreSpecialRole, concept.getChild(0)));
 			}
 			
-		} else if(concept instanceof Disjunction || concept instanceof Conjunction)
-			throw new RuntimeException("only multi disjunction/conjunction allowed");
+		}
 		
 		// falls Konzept ungleich Bottom oder Top, dann kann ein Refinement von Top
 		// angehangen werden
-		if(concept instanceof MultiDisjunction || concept instanceof AtomicConcept ||
-				concept instanceof Negation || concept instanceof Exists || concept instanceof All) {
+		if(concept instanceof Union || concept instanceof NamedClass ||
+				concept instanceof Negation || concept instanceof ObjectSomeRestriction || concept instanceof ObjectAllRestriction) {
 			// long someTimeNsStart = System.nanoTime();
 			// someCount++;
 			// Refinement von Top anhängen
@@ -324,18 +321,18 @@ public class RhoDown implements RefinementOperator {
 				computeTopRefinements(topRefLength);
 			if(topRefLength>0) {
 				// Set<Concept> topRefs = copyTopRefinements(topRefLength);
-				Set<Concept> topRefs = topRefinementsCumulative.get(topRefLength);
-				for(Concept c : topRefs) {
+				Set<Description> topRefs = topRefinementsCumulative.get(topRefLength);
+				for(Description c : topRefs) {
 					boolean skip = false;
 					
 					// falls Refinement von der Form ALL r ist, dann prüfen, ob
 					// ALL r nicht bereits vorkommt
 					if(applyAllFilter) {
-					if(c instanceof All) {
-						for(Concept child : concept.getChildren()) {
-							if(child instanceof All) {
-								ObjectPropertyExpression r1 = ((All)c).getRole();
-								ObjectPropertyExpression r2 = ((All)child).getRole();
+					if(c instanceof ObjectAllRestriction) {
+						for(Description child : concept.getChildren()) {
+							if(child instanceof ObjectAllRestriction) {
+								ObjectPropertyExpression r1 = ((ObjectAllRestriction)c).getRole();
+								ObjectPropertyExpression r2 = ((ObjectAllRestriction)child).getRole();
 								if(r1.toString().equals(r2.toString()))
 									skip = true;
 							}
@@ -345,7 +342,7 @@ public class RhoDown implements RefinementOperator {
 					
 					if(!skip) {
 						// MultiConjunction md = new MultiConjunction(concept.getChildren());
-						MultiConjunction mc = new MultiConjunction();
+						Intersection mc = new Intersection();
 						mc.addChild(concept);
 						mc.addChild(c);				
 						
@@ -390,10 +387,10 @@ public class RhoDown implements RefinementOperator {
 	// sichergestellt werden, dass die refine-Methode an den
 	// kumulativen Top-Refinements nichts ändert
 	@SuppressWarnings("unused")
-	private SortedSet<Concept> copyTopRefinements(int maxLength) {
+	private SortedSet<Description> copyTopRefinements(int maxLength) {
 		// return topRefinementsCumulative.get(maxLength);
-		SortedSet<Concept> ret = new TreeSet<Concept>(conceptComparator);
-		for(Concept c : topRefinementsCumulative.get(maxLength))
+		SortedSet<Description> ret = new TreeSet<Description>(conceptComparator);
+		for(Description c : topRefinementsCumulative.get(maxLength))
 			ret.add(c);
 		return ret;
 	}
@@ -409,7 +406,7 @@ public class RhoDown implements RefinementOperator {
 		// berechnen aller möglichen Kombinationen für Disjunktion,
 		for(int i = topRefinementsLength+1; i <= maxLength; i++) {
 			combos.put(i,getCombos(i));
-			topRefinements.put(i, new TreeSet<Concept>(conceptComparator));
+			topRefinements.put(i, new TreeSet<Description>(conceptComparator));
 			// topRefinements.put(i, new HashSet<Concept>());
 			
 			for(List<Integer> combo : combos.get(i)) {
@@ -446,28 +443,28 @@ public class RhoDown implements RefinementOperator {
 					topRefinements.get(i).addAll(m.get(i));
 				// Kombination besteht aus mehreren Zahlen => Disjunktion erzeugen
 				} else {
-					Set<MultiDisjunction> baseSet = new HashSet<MultiDisjunction>();
+					Set<Union> baseSet = new HashSet<Union>();
 					for(Integer j : combo) { // combo.getNumbers()) {
 						baseSet = incCrossProduct2(baseSet, m.get(j));
 					}
 					
 					// Umwandlung aller Konzepte in Negationsnormalform
-					for(Concept concept : baseSet) {
+					for(Description concept : baseSet) {
 						ConceptTransformation.transformToOrderedNegationNormalForm(concept, conceptComparator);
 					}
 					
 					if(applyExistsFilter) {
-					Iterator<MultiDisjunction> it = baseSet.iterator();
+					Iterator<Union> it = baseSet.iterator();
 					while(it.hasNext()) {
-						MultiDisjunction md = it.next();
+						Union md = it.next();
 						boolean remove = false;
 						// falls Exists r für gleiche Rolle zweimal vorkommt,
 						// dann rausschmeißen
 						// Map<AtomicRole,Boolean> roleOccured = new HashMap<AtomicRole,Boolean>();
 						Set<String> roles = new TreeSet<String>();
-						for(Concept c : md.getChildren()) {
-							if(c instanceof Exists) {
-								String role = ((Exists)c).getRole().getName();								
+						for(Description c : md.getChildren()) {
+							if(c instanceof ObjectSomeRestriction) {
+								String role = ((ObjectSomeRestriction)c).getRole().getName();								
 								boolean roleExists = !roles.add(role);
 								// falls Rolle schon vorkommt, dann kann ganzes
 								// Refinement ignoriert werden (man könnte dann auch
@@ -489,7 +486,7 @@ public class RhoDown implements RefinementOperator {
 			
 			// neu berechnete Refinements kumulieren, damit sie schneller abgefragt werden können
 			// computeCumulativeTopRefinements(i);
-			TreeSet<Concept> cumulativeRefinements = new TreeSet<Concept>(conceptComparator);
+			TreeSet<Description> cumulativeRefinements = new TreeSet<Description>(conceptComparator);
 			// Set<Concept> cumulativeRefinements = new HashSet<Concept>();
 			for(int j=1; j<=i; j++) {
 				cumulativeRefinements.addAll(topRefinements.get(j));
@@ -511,23 +508,23 @@ public class RhoDown implements RefinementOperator {
 		// initialise all not yet initialised lengths
 		// (avoids null pointers in some cases)
 		for(int i=topRefinementsLength+1; i<=maxLength; i++) {
-			m.put(i, new TreeSet<Concept>(conceptComparator));
+			m.put(i, new TreeSet<Description>(conceptComparator));
 		}
 		
 		// Berechnung der Basiskonzepte in M
 		// TODO: Spezialfälle, dass zwischen Top und Bottom nichts liegt behandeln
 		if(topRefinementsLength==0 && maxLength>0) {
 			// Konzepte der Länge 1 = alle Konzepte, die in der Subsumptionhierarchie unter Top liegen
-			Set<Concept> m1 = rs.getMoreSpecialConcepts(new Top()); 
+			Set<Description> m1 = rs.getMoreSpecialConcepts(new Thing()); 
 			m.put(1,m1);
 		}
 		
 		if(topRefinementsLength<2 && maxLength>1) {	
 			// Konzepte der Länge 2 = Negation aller Konzepte, die über Bottom liegen
 			if(useNegation) {
-				Set<Concept> m2tmp = rs.getMoreGeneralConcepts(new Bottom());
-				Set<Concept> m2 = new TreeSet<Concept>(conceptComparator);
-				for(Concept c : m2tmp) {
+				Set<Description> m2tmp = rs.getMoreGeneralConcepts(new Nothing());
+				Set<Description> m2 = new TreeSet<Description>(conceptComparator);
+				for(Description c : m2tmp) {
 					m2.add(new Negation(c));
 				}
 				m.put(2,m2);
@@ -537,14 +534,14 @@ public class RhoDown implements RefinementOperator {
 		if(topRefinementsLength<3 && maxLength>2) {
 			// Konzepte der Länge 3: EXISTS r.TOP
 			if(useExistsConstructor) {
-				Set<Concept> m3 = new TreeSet<Concept>(conceptComparator);
+				Set<Description> m3 = new TreeSet<Description>(conceptComparator);
 				// previous operator: uses all roles
 				// for(AtomicRole r : Config.Refinement.allowedRoles) {
 				//	m3.add(new Exists(r, new Top()));
 				//}
 				// new operator: only uses most general roles
 				for(ObjectProperty r : rs.getMostGeneralRoles()) {
-					m3.add(new Exists(r, new Top()));
+					m3.add(new ObjectSomeRestriction(r, new Thing()));
 				}				
 				m.put(3,m3);
 			}
@@ -562,7 +559,7 @@ public class RhoDown implements RefinementOperator {
 					if(i>=1) {
 						
 						// alle Konzepte durchgehen
-						for(Concept c : m.get(i)) {
+						for(Description c : m.get(i)) {
 							// Fall wird jetzt weiter oben schon abgehandelt
 							// if(!m.containsKey(i+2))
 							//	m.put(i+2, new TreeSet<Concept>(conceptComparator));
@@ -574,7 +571,7 @@ public class RhoDown implements RefinementOperator {
 							// }
 							
 							for(ObjectProperty r : rs.getMostGeneralRoles()) {
-								m.get(i+2).add(new All(r,c));
+								m.get(i+2).add(new ObjectAllRestriction(r,c));
 							}
 						}
 					}
@@ -684,21 +681,21 @@ public class RhoDown implements RefinementOperator {
 	
 	// neue Implementierung, die nicht mehr zur incompleteness führen soll,
 	// da die Konzepte in einer MultiDisjunction als Liste gespeichert werden
-	private Set<MultiDisjunction> incCrossProduct2(Set<MultiDisjunction> baseSet, Set<Concept> newSet) {
-		Set<MultiDisjunction> retSet = new HashSet<MultiDisjunction>();
+	private Set<Union> incCrossProduct2(Set<Union> baseSet, Set<Description> newSet) {
+		Set<Union> retSet = new HashSet<Union>();
 		
 		if(baseSet.isEmpty()) {
-			for(Concept c : newSet) {
-				MultiDisjunction md = new MultiDisjunction();
+			for(Description c : newSet) {
+				Union md = new Union();
 				md.addChild(c);
 				retSet.add(md);
 			}
 			return retSet;
 		}
 		
-		for(MultiDisjunction md : baseSet) {
-			for(Concept c : newSet) {
-				MultiDisjunction mdNew = new MultiDisjunction(md.getChildren());
+		for(Union md : baseSet) {
+			for(Description c : newSet) {
+				Union mdNew = new Union(md.getChildren());
 				mdNew.addChild(c);
 				retSet.add(mdNew);
 			}
@@ -710,15 +707,15 @@ public class RhoDown implements RefinementOperator {
 	// incremental cross product
 	// es müssen Listen statt Sets verwendet werden
 	@SuppressWarnings({"unused"})
-	private Set<Set<Concept>> incCrossProduct(Set<Set<Concept>> baseSet, Set<Concept> newSet) {
-		Set<Set<Concept>> retSet = new HashSet<Set<Concept>>();
+	private Set<Set<Description>> incCrossProduct(Set<Set<Description>> baseSet, Set<Description> newSet) {
+		Set<Set<Description>> retSet = new HashSet<Set<Description>>();
 		
 		// falls erste Menge leer ist, dann wird Menge mit jeweils Singletons aus der
 		// zweiten Menge zurückgegeben => das müsste dem Fall entsprechen, dass das
 		// baseSet nur die leere Menge enthält
 		if(baseSet.isEmpty()) {
-			for(Concept c : newSet) {
-				Set<Concept> singleton = new HashSet<Concept>();
+			for(Description c : newSet) {
+				Set<Description> singleton = new HashSet<Description>();
 				singleton.add(c);
 				retSet.add(singleton);
 			}
@@ -726,8 +723,8 @@ public class RhoDown implements RefinementOperator {
 			return retSet;
 		}
 		
-		for(Set<Concept> set : baseSet) {
-			for(Concept c : newSet) {
+		for(Set<Description> set : baseSet) {
+			for(Description c : newSet) {
 				// neues Konzept zu alter Konzeptmenge hinzufügen, indem altes
 				// Konzept kopiert und ergänzt wird
 				// beachte: dadurch, dass die Konzepte nach ihrem Hash eingefügt werden,
@@ -738,7 +735,7 @@ public class RhoDown implements RefinementOperator {
 				// Lösungen! (Es könnte z.B. sein, dass die Lösung eine Disjunktion von
 				// 3 atomaren Konzepten ist, die nur über male erreichbar sind.) D.h. diese
 				// Implementierung führt zur incompleteness des Operators.
-				Set<Concept> newConcept = new HashSet<Concept>(set);
+				Set<Description> newConcept = new HashSet<Description>(set);
 				newConcept.add(c);
 				retSet.add(newConcept);
 			}

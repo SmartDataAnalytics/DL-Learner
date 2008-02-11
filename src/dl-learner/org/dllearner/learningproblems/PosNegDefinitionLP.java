@@ -27,7 +27,7 @@ import java.util.TreeSet;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
 
@@ -83,7 +83,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 	 *         examples otherwise.
 	 */
 	@Override
-	public int coveredNegativeExamplesOrTooWeak(Concept concept) {
+	public int coveredNegativeExamplesOrTooWeak(Description concept) {
 
 		if (useRetrievalForClassification) {
 			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
@@ -159,7 +159,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 	 * @return Corresponding Score object.
 	 */
 	@Override
-	public Score computeScore(Concept concept) {
+	public Score computeScore(Description concept) {
 		if (useRetrievalForClassification) {
 			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
 			SortedSet<Individual> posAsPos = Helper.intersection(positiveExamples, posClassified);

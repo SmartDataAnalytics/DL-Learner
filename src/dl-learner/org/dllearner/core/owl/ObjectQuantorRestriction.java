@@ -1,10 +1,10 @@
 package org.dllearner.core.owl;
 
-public abstract class Quantification extends Concept {
+public abstract class ObjectQuantorRestriction extends Description {
 
 	ObjectPropertyExpression role;
 	
-	public Quantification(ObjectPropertyExpression role, Concept c) {
+	public ObjectQuantorRestriction(ObjectPropertyExpression role, Description c) {
 		this.role = role;
 		addChild(c);
 	}

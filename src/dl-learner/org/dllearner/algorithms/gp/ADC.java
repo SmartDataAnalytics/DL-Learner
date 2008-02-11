@@ -2,9 +2,9 @@ package org.dllearner.algorithms.gp;
 
 import java.util.Map;
 
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 
-public class ADC extends Concept {
+public class ADC extends Description {
 
 	/*
 	@Override

@@ -3,12 +3,12 @@ package org.dllearner.algorithms.refinement;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 
 public interface RefinementOperator {
 
-	public Set<Concept> refine(Concept concept);
+	public Set<Description> refine(Description concept);
 	// SortedSet zu erzwingen ist nicht so elegant
-	public Set<Concept> refine(Concept concept, int maxLength, List<Concept> knownRefinements);
+	public Set<Description> refine(Description concept, int maxLength, List<Description> knownRefinements);
 	
 }

@@ -2,12 +2,12 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
-public class SubRoleAxiom extends RBoxAxiom {
+public class SubObjectPropertyAxiom extends PropertyAxiom {
 
 	private ObjectProperty role;
 	private ObjectProperty subRole;
 	
-	public SubRoleAxiom(ObjectProperty subRole, ObjectProperty role) {
+	public SubObjectPropertyAxiom(ObjectProperty subRole, ObjectProperty role) {
 		this.role = role;
 		this.subRole = subRole;
 	}

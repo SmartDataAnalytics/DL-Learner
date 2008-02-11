@@ -13,17 +13,17 @@ import java.util.Map.Entry;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.AssertionalAxiom;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Concept;
-import org.dllearner.core.owl.ConceptAssertion;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.FlatABox;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.NumberRestriction;
+import org.dllearner.core.owl.ObjectCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
-import org.dllearner.core.owl.Quantification;
+import org.dllearner.core.owl.ObjectQuantorRestriction;
 
 /**
  * Die Hilfsmethoden benutzen alle SortedSet, da die Operationen damit schneller
@@ -35,13 +35,13 @@ import org.dllearner.core.owl.Quantification;
 public class Helper {
 
 	// findet alle atomaren Konzepte in einem Konzept
-	public static List<AtomicConcept> getAtomicConcepts(Concept concept) {
-		List<AtomicConcept> ret = new LinkedList<AtomicConcept>();
-		if (concept instanceof AtomicConcept) {
-			ret.add((AtomicConcept) concept);
+	public static List<NamedClass> getAtomicConcepts(Description concept) {
+		List<NamedClass> ret = new LinkedList<NamedClass>();
+		if (concept instanceof NamedClass) {
+			ret.add((NamedClass) concept);
 			return ret;
 		} else {
-			for (Concept child : concept.getChildren()) {
+			for (Description child : concept.getChildren()) {
 				ret.addAll(getAtomicConcepts(child));
 			}
 			return ret;
@@ -49,19 +49,19 @@ public class Helper {
 	}
 
 	// findet alle atomaren Rollen in einem Konzept
-	public static List<ObjectProperty> getAtomicRoles(Concept concept) {
+	public static List<ObjectProperty> getAtomicRoles(Description concept) {
 		List<ObjectProperty> ret = new LinkedList<ObjectProperty>();
 
-		if (concept instanceof Quantification) {
-			ret.add(new ObjectProperty(((Quantification) concept).getRole().getName()));
-		} else if (concept instanceof NumberRestriction) {
-			ret.add(new ObjectProperty(((NumberRestriction) concept).getRole().getName()));
+		if (concept instanceof ObjectQuantorRestriction) {
+			ret.add(new ObjectProperty(((ObjectQuantorRestriction) concept).getRole().getName()));
+		} else if (concept instanceof ObjectCardinalityRestriction) {
+			ret.add(new ObjectProperty(((ObjectCardinalityRestriction) concept).getRole().getName()));
 		}
 
 		// auch NumberRestrictions und Quantifications können weitere Rollen
 		// enthalten,
 		// deshalb hier kein else-Zweig
-		for (Concept child : concept.getChildren()) {
+		for (Description child : concept.getChildren()) {
 			ret.addAll(getAtomicRoles(child));
 		}
 		return ret;
@@ -416,8 +416,8 @@ public class Helper {
 	 * @param concepts
 	 * @return
 	 */
-	public static void removeUninterestingConcepts(Set<AtomicConcept> concepts) {
-		Iterator<AtomicConcept> it = concepts.iterator();
+	public static void removeUninterestingConcepts(Set<NamedClass> concepts) {
+		Iterator<NamedClass> it = concepts.iterator();
 		while (it.hasNext()) {
 			String conceptName = it.next().getName();
 			
@@ -446,19 +446,19 @@ public class Helper {
 	}
 	
 	// concepts case 1: no ignore or allowed list
-	public static Set<AtomicConcept> computeConcepts(ReasoningService rs) {
+	public static Set<NamedClass> computeConcepts(ReasoningService rs) {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
-		Set<AtomicConcept> concepts = rs.getAtomicConcepts();
+		Set<NamedClass> concepts = rs.getAtomicConcepts();
 		Helper.removeUninterestingConcepts(concepts);
 		return concepts;
 	}
 	
 	// concepts case 2: ignore list
-	public static Set<AtomicConcept> computeConceptsUsingIgnoreList(ReasoningService rs, Set<AtomicConcept> ignoredConcepts) {
-		Set<AtomicConcept> concepts = rs.getAtomicConcepts();
+	public static Set<NamedClass> computeConceptsUsingIgnoreList(ReasoningService rs, Set<NamedClass> ignoredConcepts) {
+		Set<NamedClass> concepts = rs.getAtomicConcepts();
 		Helper.removeUninterestingConcepts(concepts);
-		for (AtomicConcept ac : ignoredConcepts) {
+		for (NamedClass ac : ignoredConcepts) {
 			boolean success = concepts.remove(ac);
 			if (!success) {
 				System.out.println("Warning: Ignored concept " + ac
@@ -508,9 +508,9 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static AtomicConcept checkConcepts(ReasoningService rs, Set<AtomicConcept> concepts) {
-		Set<AtomicConcept> existingConcepts = rs.getAtomicConcepts();
-		for (AtomicConcept ar : concepts) {
+	public static NamedClass checkConcepts(ReasoningService rs, Set<NamedClass> concepts) {
+		Set<NamedClass> existingConcepts = rs.getAtomicConcepts();
+		for (NamedClass ar : concepts) {
 			if(!existingConcepts.contains(ar)) 
 				return ar;
 		}
@@ -523,7 +523,7 @@ public class Helper {
 		long dematStartTime = System.currentTimeMillis();
 
 		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
-		for (AtomicConcept atomicConcept : rs.getAtomicConcepts()) {
+		for (NamedClass atomicConcept : rs.getAtomicConcepts()) {
 			aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
 					.retrieval(atomicConcept)));
 			Negation negatedAtomicConcept = new Negation(atomicConcept);
@@ -572,8 +572,8 @@ public class Helper {
 					System.out.println("remove " + ra);
 					it.remove();
 				}
-			} else if (a instanceof ConceptAssertion) {
-				if (connectedIndividuals.contains(((ConceptAssertion) a).getIndividual())) {
+			} else if (a instanceof ClassAssertionAxiom) {
+				if (connectedIndividuals.contains(((ClassAssertionAxiom) a).getIndividual())) {
 					System.out.println("remove " + a);
 					it.remove();
 				}

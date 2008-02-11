@@ -30,11 +30,11 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class AtomicConcept extends Concept {
+public class NamedClass extends Description {
 
     String name;
     
-	public AtomicConcept(String name) {
+	public NamedClass(String name) {
         this.name = name;
     }    
     

@@ -3,9 +3,9 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 
-public class Exists extends Quantification {
+public class ObjectSomeRestriction extends ObjectQuantorRestriction {
 
-    public Exists(ObjectPropertyExpression role, Concept c) {
+    public ObjectSomeRestriction(ObjectPropertyExpression role, Description c) {
     	super(role,c);
     }
     

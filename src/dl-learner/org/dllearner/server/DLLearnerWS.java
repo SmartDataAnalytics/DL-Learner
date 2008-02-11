@@ -43,8 +43,8 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.OWLFile;
@@ -322,9 +322,9 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getCurrentlyBestConcepts(int id, int nrOfConcepts) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		List<Concept> bestConcepts = state.getLearningAlgorithm().getBestSolutions(nrOfConcepts);
+		List<Description> bestConcepts = state.getLearningAlgorithm().getBestSolutions(nrOfConcepts);
 		List<String> conc=new LinkedList<String>();
-		Iterator<Concept> iter=bestConcepts.iterator();
+		Iterator<Description> iter=bestConcepts.iterator();
 		while (iter.hasNext())
 			conc.add(iter.next().toString());
 		return conc.toArray(new String[conc.size()]);
@@ -436,7 +436,7 @@ public class DLLearnerWS {
 	
 	@WebMethod
 	public String[] getAtomicConcepts(int id) throws ClientNotKnownException {
-		Set<AtomicConcept> atomicConcepts = getState(id).getReasoningService().getAtomicConcepts();
+		Set<NamedClass> atomicConcepts = getState(id).getReasoningService().getAtomicConcepts();
 		return Datastructures.sortedSet2StringListConcepts(atomicConcepts);
 	}
 	
@@ -449,7 +449,7 @@ public class DLLearnerWS {
 	public String[] retrieval(int id, String conceptString) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		// call parser to parse concept
-		Concept concept = null;
+		Description concept = null;
 		try {
 			concept = KBParser.parseConcept(conceptString);
 		} catch (ParseException e) {
@@ -462,7 +462,7 @@ public class DLLearnerWS {
 	@WebMethod
 	public int getConceptLength(String conceptString) {
 		// call parser to parse concept
-		Concept concept = null;
+		Description concept = null;
 		try {
 			concept = KBParser.parseConcept(conceptString);
 		} catch (ParseException e) {

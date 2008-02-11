@@ -2,21 +2,21 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
-public class Inclusion extends TerminologicalAxiom {
+public class SubClassAxiom extends TerminologicalAxiom {
 	
-	private Concept subConcept;
-	private Concept superConcept;
+	private Description subConcept;
+	private Description superConcept;
 	
-	public Inclusion(Concept subConcept, Concept superConcept) {
+	public SubClassAxiom(Description subConcept, Description superConcept) {
 		this.subConcept = subConcept;
 		this.superConcept = superConcept;
 	}
 
-	public Concept getSubConcept() {
+	public Description getSubConcept() {
 		return subConcept;
 	}
 
-	public Concept getSuperConcept() {
+	public Description getSuperConcept() {
 		return superConcept;
 	}
 

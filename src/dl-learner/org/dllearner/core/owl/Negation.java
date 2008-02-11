@@ -3,7 +3,7 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 
-public class Negation extends Concept {
+public class Negation extends Description {
 
 	/*
     @Override
@@ -14,7 +14,7 @@ public class Negation extends Concept {
     }
     */
 
-	public Negation(Concept c) {
+	public Negation(Description c) {
 		addChild(c);
 	}
 	

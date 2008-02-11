@@ -10,10 +10,10 @@ import java.util.List;
  * @author jl
  *
  */
-public abstract class Concept implements Cloneable, KBElement {
+public abstract class Description implements Cloneable, KBElement {
 	
-    protected Concept parent = null;
-    protected List<Concept> children = new LinkedList<Concept>();
+    protected Description parent = null;
+    protected List<Description> children = new LinkedList<Description>();
     //protected SortedSet<String> posSet = new TreeSet<String>();
     //protected SortedSet<String> negSet = new TreeSet<String>();
     
@@ -86,7 +86,7 @@ public abstract class Concept implements Cloneable, KBElement {
      */
     public int getNumberOfNodes() {
         int sum = 1;
-        for (Concept child : children)
+        for (Description child : children)
             sum += child.getNumberOfNodes();
         return sum;
     }
@@ -112,7 +112,7 @@ public abstract class Concept implements Cloneable, KBElement {
      * (Implementation does not work if any node has more than two children.)
      * @return The selected subtree.
      */
-    public Concept getSubtree(int i) {
+    public Description getSubtree(int i) {
         if (children.size() == 0)
             return this;
         else if (children.size() == 1) {
@@ -144,7 +144,7 @@ public abstract class Concept implements Cloneable, KBElement {
         // compute the max over all children
         int depth = 1;
         
-        for(Concept child : children) {
+        for(Description child : children) {
             int depthChild = child.getDepth();
             if(depthChild+1>depth)
                 depth = 1 + depthChild;
@@ -160,9 +160,9 @@ public abstract class Concept implements Cloneable, KBElement {
     @SuppressWarnings("unchecked")
 	@Override    
     public Object clone() {
-        Concept node = null;
+        Description node = null;
         try {
-            node = (Concept) super.clone();
+            node = (Description) super.clone();
         } catch (CloneNotSupportedException e) {
             // this should never happen
             throw new InternalError(e.toString());
@@ -186,9 +186,9 @@ public abstract class Concept implements Cloneable, KBElement {
         // und dort die Knoten eingef�gt, die zuvor geklont werden. Durch aufrufen von
         // addChild wird auch sichergestellt, dass der parent-Link auf den geklonten
         // Knoten zeigt. 
-        node.children = new LinkedList<Concept>();
-        for(Concept child : children) {
-        	Concept clonedChild = (Concept) child.clone();
+        node.children = new LinkedList<Description>();
+        for(Description child : children) {
+        	Description clonedChild = (Description) child.clone();
         	node.addChild(clonedChild);
         }
         // Beim durchlaufen des Algorithmus werden posSet und negSet ge�ndert. Es ist
@@ -225,7 +225,7 @@ public abstract class Concept implements Cloneable, KBElement {
      * @param child
      * @return
      */
-    public boolean addChild(Concept child) {
+    public boolean addChild(Description child) {
         child.setParent(this);
         return children.add(child);
     }
@@ -235,13 +235,13 @@ public abstract class Concept implements Cloneable, KBElement {
      * @param index
      * @param child
      */
-    public void addChild(int index, Concept child) {
+    public void addChild(int index, Description child) {
         child.setParent(this);
         children.add(index, child);
     }
 
     // relativ neue Methode
-    public void removeChild(Concept child) {
+    public void removeChild(Description child) {
     	child.setParent(null);
     	children.remove(child);
     }
@@ -254,19 +254,19 @@ public abstract class Concept implements Cloneable, KBElement {
         return (parent == null);
     }    
     
-    public Concept getParent() {
+    public Description getParent() {
         return parent;
     }
 
-    public void setParent(Concept parent) {
+    public void setParent(Description parent) {
         this.parent = parent;
     }
 
-    public List<Concept> getChildren() {
+    public List<Description> getChildren() {
         return children;
     }
     
-    public Concept getChild(int i) {
+    public Description getChild(int i) {
         return children.get(i);
     }
     

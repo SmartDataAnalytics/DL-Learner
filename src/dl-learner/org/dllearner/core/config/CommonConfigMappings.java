@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.AtomicConcept;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.utilities.ConceptComparator;
@@ -44,10 +44,10 @@ public class CommonConfigMappings {
 		return set;
 	}
 	
-	public static SortedSet<AtomicConcept> getAtomicConceptSet(Set<String> atomicConcepts) {
-		SortedSet<AtomicConcept> set = new TreeSet<AtomicConcept>(cm);
+	public static SortedSet<NamedClass> getAtomicConceptSet(Set<String> atomicConcepts) {
+		SortedSet<NamedClass> set = new TreeSet<NamedClass>(cm);
 		for(String atomicConcept : atomicConcepts)
-			set.add(new AtomicConcept(atomicConcept));
+			set.add(new NamedClass(atomicConcept));
 		return set;
 	}	
 	

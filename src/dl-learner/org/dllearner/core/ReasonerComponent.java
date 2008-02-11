@@ -25,11 +25,11 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.RoleHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.utilities.SortedSetTuple;
 
@@ -39,32 +39,32 @@ import org.dllearner.utilities.SortedSetTuple;
  */
 public abstract class ReasonerComponent extends Component implements Reasoner {
 
-	public boolean subsumes(Concept superConcept, Concept subConcept)
+	public boolean subsumes(Description superConcept, Description subConcept)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public Set<Concept> subsumes(Concept superConcept, Set<Concept> subConcepts)
+	public Set<Description> subsumes(Description superConcept, Set<Description> subConcepts)
 			throws ReasoningMethodUnsupportedException {
-		Set<Concept> returnSet = new HashSet<Concept>();
-		for (Concept subConcept : subConcepts) {
+		Set<Description> returnSet = new HashSet<Description>();
+		for (Description subConcept : subConcepts) {
 			if (subsumes(superConcept, subConcept))
 				returnSet.add(subConcept);
 		}
 		return returnSet;
 	}
 
-	public Set<Concept> subsumes(Set<Concept> superConcepts, Concept subConcept)
+	public Set<Description> subsumes(Set<Description> superConcepts, Description subConcept)
 			throws ReasoningMethodUnsupportedException {
-		Set<Concept> returnSet = new HashSet<Concept>();
-		for (Concept superConcept : superConcepts) {
+		Set<Description> returnSet = new HashSet<Description>();
+		for (Description superConcept : superConcepts) {
 			if (subsumes(superConcept, subConcept))
 				returnSet.add(superConcept);
 		}
 		return returnSet;
 	}
 
-	public SortedSet<Individual> retrieval(Concept concept)
+	public SortedSet<Individual> retrieval(Description concept)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
@@ -74,12 +74,12 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public boolean instanceCheck(Concept concept, Individual individual)
+	public boolean instanceCheck(Description concept, Individual individual)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public SortedSet<Individual> instanceCheck(Concept concept, Set<Individual> individuals)
+	public SortedSet<Individual> instanceCheck(Description concept, Set<Individual> individuals)
 			throws ReasoningMethodUnsupportedException {
 		SortedSet<Individual> returnSet = new TreeSet<Individual>();
 		for (Individual individual : individuals) {
@@ -89,12 +89,12 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return returnSet;
 	}
 
-	public SortedSetTuple<Individual> doubleRetrieval(Concept concept)
+	public SortedSetTuple<Individual> doubleRetrieval(Description concept)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public SortedSetTuple<Individual> doubleRetrieval(Concept concept, Concept adc)
+	public SortedSetTuple<Individual> doubleRetrieval(Description concept, Description adc)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
@@ -112,11 +112,11 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public RoleHierarchy getRoleHierarchy() throws ReasoningMethodUnsupportedException {
+	public ObjectPropertyHierarchy getRoleHierarchy() throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public Set<AtomicConcept> getConcepts(Individual i) throws ReasoningMethodUnsupportedException {
+	public Set<NamedClass> getConcepts(Individual i) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 

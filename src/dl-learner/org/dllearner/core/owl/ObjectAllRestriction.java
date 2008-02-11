@@ -3,9 +3,9 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 
-public class All extends Quantification {
+public class ObjectAllRestriction extends ObjectQuantorRestriction {
     
-	public All(ObjectPropertyExpression role, Concept c) {
+	public ObjectAllRestriction(ObjectPropertyExpression role, Description c) {
 		super(role, c);
 	}
 	

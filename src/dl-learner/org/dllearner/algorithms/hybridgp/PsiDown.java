@@ -9,17 +9,17 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.refinement.RefinementOperator;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.owl.All;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Bottom;
-import org.dllearner.core.owl.Concept;
-import org.dllearner.core.owl.Exists;
-import org.dllearner.core.owl.MultiConjunction;
-import org.dllearner.core.owl.MultiDisjunction;
+import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Quantification;
-import org.dllearner.core.owl.Top;
+import org.dllearner.core.owl.ObjectQuantorRestriction;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 
@@ -42,7 +42,7 @@ public class PsiDown implements RefinementOperator {
 	PosNegLP learningProblem;
 	ReasoningService reasoningService;
 	
-	private TreeSet<Concept> topSet;
+	private TreeSet<Description> topSet;
 	
 	public PsiDown(PosNegLP learningProblem) {
 		this.learningProblem = learningProblem;
@@ -53,140 +53,140 @@ public class PsiDown implements RefinementOperator {
 	}
 	
 	private void createTopSet() {
-		topSet = new TreeSet<Concept>(conceptComparator);
+		topSet = new TreeSet<Description>(conceptComparator);
 		
 		// TOP OR TOP => Was soll mit Refinements passieren, die immer improper sind?
-		MultiDisjunction md = new MultiDisjunction();
-		md.addChild(new Top());
-		md.addChild(new Top());
+		Union md = new Union();
+		md.addChild(new Thing());
+		md.addChild(new Thing());
 		topSet.add(md);
 		
 		// allgemeinste Konzepte
-		topSet.addAll(reasoningService.getMoreSpecialConcepts(new Top()));
+		topSet.addAll(reasoningService.getMoreSpecialConcepts(new Thing()));
 		
 		// negierte speziellste Konzepte
-		Set<Concept> tmp = learningProblem.getReasoningService().getMoreGeneralConcepts(new Bottom());
-		for(Concept c : tmp) 
+		Set<Description> tmp = learningProblem.getReasoningService().getMoreGeneralConcepts(new Nothing());
+		for(Description c : tmp) 
 			topSet.add(new Negation(c));
 	
 		// EXISTS r.TOP und ALL r.TOP für alle r
 		for(ObjectProperty r : reasoningService.getAtomicRoles()) {
-			topSet.add(new All(r, new Top()));
-			topSet.add(new Exists(r, new Top()));
+			topSet.add(new ObjectAllRestriction(r, new Thing()));
+			topSet.add(new ObjectSomeRestriction(r, new Thing()));
 		}		
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<Concept> refine(Concept concept) {
+	public Set<Description> refine(Description concept) {
 		
-		Set<Concept> refinements = new HashSet<Concept>();
-		Set<Concept> tmp = new HashSet<Concept>();
+		Set<Description> refinements = new HashSet<Description>();
+		Set<Description> tmp = new HashSet<Description>();
 		
-		if (concept instanceof Top) {
-			return (Set<Concept>) topSet.clone();
-		} else if (concept instanceof Bottom) {
+		if (concept instanceof Thing) {
+			return (Set<Description>) topSet.clone();
+		} else if (concept instanceof Nothing) {
 			// return new TreeSet<Concept>(conceptComparator);
-			return new HashSet<Concept>();
-		} else if (concept instanceof AtomicConcept) {
+			return new HashSet<Description>();
+		} else if (concept instanceof NamedClass) {
 			// beachte: die Funktion gibt bereits nur nicht-äquivalente Konzepte zurück
 			// beachte weiter: die zurückgegebenen Instanzen dürfen nicht verändert werden,
 			// da beim Caching der Subsumptionhierarchie (momentan) keine Kopien gemacht werden
 			// Bottom wird hier ggf. automatisch mit zurückgegeben
 			refinements.addAll(reasoningService.getMoreSpecialConcepts(concept));
 		// negiertes atomares Konzept
-		} else if (concept instanceof Negation && concept.getChild(0) instanceof AtomicConcept) {
+		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
 			tmp.addAll(reasoningService.getMoreGeneralConcepts(concept.getChild(0)));
 			
 			// Top rausschmeissen
 			boolean containsTop = false;
-			Iterator<Concept> it = tmp.iterator();
+			Iterator<Description> it = tmp.iterator();
 			while(it.hasNext()) {
-				Concept c = it.next();
-				if(c instanceof Top) {
+				Description c = it.next();
+				if(c instanceof Thing) {
 					it.remove();
 					containsTop = true;
 				}
 			}			
 			if(containsTop)
-				refinements.add(new Bottom());
+				refinements.add(new Nothing());
 			
-			for(Concept c : tmp) {
+			for(Description c : tmp) {
 				refinements.add(new Negation(c));
 			}
-		} else if (concept instanceof MultiConjunction) {
+		} else if (concept instanceof Intersection) {
 			// eines der Elemente kann verfeinert werden
-			for(Concept child : concept.getChildren()) {
+			for(Description child : concept.getChildren()) {
 				
 				// Refinement für das Kind ausführen
 				tmp = refine(child);
 				
 				// neue MultiConjunction konstruieren
-				for(Concept c : tmp) {
+				for(Description c : tmp) {
 					// TODO: müssen auch alle Konzepte geklont werden??
 					// hier wird nur eine neue Liste erstellt
 					// => eigentlich muss nicht geklont werden (d.h. deep copy) da
 					// die Konzepte nicht verändert werden während des Algorithmus
-					List<Concept> newChildren = new LinkedList<Concept>(concept.getChildren());
+					List<Description> newChildren = new LinkedList<Description>(concept.getChildren());
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					int index = newChildren.indexOf(child);
 					newChildren.add(index, c);					
 					newChildren.remove(child);
-					MultiConjunction mc = new MultiConjunction(newChildren);
+					Intersection mc = new Intersection(newChildren);
 					refinements.add(mc);	
 				}
 			}
-		} else if (concept instanceof MultiDisjunction) {
+		} else if (concept instanceof Union) {
 			// eines der Elemente kann verfeinert werden
-			for(Concept child : concept.getChildren()) {
+			for(Description child : concept.getChildren()) {
 				
 				// Refinement für das Kind ausführen
 				// tmp = refine(child);
 				tmp = refine(child);
 				// neue MultiConjunction konstruieren
-				for(Concept c : tmp) {
-					List<Concept> newChildren = new LinkedList<Concept>(concept.getChildren());
+				for(Description c : tmp) {
+					List<Description> newChildren = new LinkedList<Description>(concept.getChildren());
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					int index = newChildren.indexOf(child);
 					newChildren.add(index, c);					
 					newChildren.remove(child);					
-					MultiDisjunction md = new MultiDisjunction(newChildren);
+					Union md = new Union(newChildren);
 					refinements.add(md);	
 				}
 			}
 			
 			// ein Element der Disjunktion kann weggelassen werden
-			for(Concept child : concept.getChildren()) {
-				List<Concept> newChildren = new LinkedList<Concept>(concept.getChildren());
+			for(Description child : concept.getChildren()) {
+				List<Description> newChildren = new LinkedList<Description>(concept.getChildren());
 				newChildren.remove(child);
 				// wenn nur ein Kind da ist, dann wird Disjunktion gleich weggelassen
 				if(newChildren.size()==1)
 					refinements.add(newChildren.get(0));
 				else {
-					MultiDisjunction md = new MultiDisjunction(newChildren);
+					Union md = new Union(newChildren);
 					refinements.add(md);
 				}
 			}
 			
-		} else if (concept instanceof Exists) {
+		} else if (concept instanceof ObjectSomeRestriction) {
 			tmp = refine(concept.getChild(0));
-			for(Concept c : tmp) {
-				refinements.add(new Exists(((Quantification)concept).getRole(),c));
+			for(Description c : tmp) {
+				refinements.add(new ObjectSomeRestriction(((ObjectQuantorRestriction)concept).getRole(),c));
 			}		
 			
 			// falls Kind Bottom ist, dann kann exists weggelassen werden
-			if(concept.getChild(0) instanceof Bottom)
-				refinements.add(new Bottom());
+			if(concept.getChild(0) instanceof Nothing)
+				refinements.add(new Nothing());
 			
-		} else if (concept instanceof All) {
+		} else if (concept instanceof ObjectAllRestriction) {
 			tmp = refine(concept.getChild(0));
-			for(Concept c : tmp) {
-				refinements.add(new All(((Quantification)concept).getRole(),c));
+			for(Description c : tmp) {
+				refinements.add(new ObjectAllRestriction(((ObjectQuantorRestriction)concept).getRole(),c));
 			}		
 			
-			if(concept.getChild(0) instanceof Bottom)
-				refinements.add(new Bottom());
+			if(concept.getChild(0) instanceof Nothing)
+				refinements.add(new Nothing());
 			
 			// falls es keine spezielleren atomaren Konzepte gibt, dann wird 
 			// bottom angehangen => nur wenn es ein atomares Konzept (insbesondere != bottom)
@@ -200,13 +200,13 @@ public class PsiDown implements RefinementOperator {
 		
 		// falls Konzept ungleich Bottom oder Top, dann kann ein Refinement von Top
 		// angehangen werden
-		if(concept instanceof MultiDisjunction || concept instanceof AtomicConcept ||
-				concept instanceof Negation || concept instanceof Exists || concept instanceof All) {
+		if(concept instanceof Union || concept instanceof NamedClass ||
+				concept instanceof Negation || concept instanceof ObjectSomeRestriction || concept instanceof ObjectAllRestriction) {
 			
 			// es wird AND TOP angehangen
-			MultiConjunction mc = new MultiConjunction();
+			Intersection mc = new Intersection();
 			mc.addChild(concept);
-			mc.addChild(new Top());					
+			mc.addChild(new Thing());					
 			refinements.add(mc);
 		}
 
@@ -237,8 +237,8 @@ public class PsiDown implements RefinementOperator {
 		
 	}
 
-	public Set<Concept> refine(Concept concept, int maxLength,
-			List<Concept> knownRefinements) {
+	public Set<Description> refine(Description concept, int maxLength,
+			List<Description> knownRefinements) {
 		throw new RuntimeException();
 	}
 

@@ -23,7 +23,7 @@ import java.util.SortedSet;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
 
@@ -73,7 +73,7 @@ public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 	 * @see org.dllearner.core.LearningProblemNew#computeScore(org.dllearner.core.dl.Concept)
 	 */
 	@Override
-	public Score computeScore(Concept concept) {
+	public Score computeScore(Description concept) {
 		// TODO need to implement class <code>ScoreOneValued</code>
 		return null;
 	}
@@ -83,7 +83,7 @@ public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 	 * @param concept
 	 * @return -1 for too weak, otherwise the number of pseudo-negatives (more is usually worse).
 	 */
-	public int coveredPseudoNegativeExamplesOrTooWeak(Concept concept) {
+	public int coveredPseudoNegativeExamplesOrTooWeak(Description concept) {
 		return definitionLP.coveredNegativeExamplesOrTooWeak(concept);
 	}
 	

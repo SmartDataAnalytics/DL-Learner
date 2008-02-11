@@ -9,17 +9,17 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.refinement.RefinementOperator;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.owl.All;
-import org.dllearner.core.owl.AtomicConcept;
-import org.dllearner.core.owl.Bottom;
-import org.dllearner.core.owl.Concept;
-import org.dllearner.core.owl.Exists;
-import org.dllearner.core.owl.MultiConjunction;
-import org.dllearner.core.owl.MultiDisjunction;
+import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Quantification;
-import org.dllearner.core.owl.Top;
+import org.dllearner.core.owl.ObjectQuantorRestriction;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 
@@ -30,7 +30,7 @@ public class PsiUp implements RefinementOperator {
 	PosNegLP learningProblem;
 	ReasoningService reasoningService;
 	
-	private TreeSet<Concept> bottomSet;
+	private TreeSet<Description> bottomSet;
 	
 	public PsiUp(PosNegLP learningProblem) {
 		this.learningProblem = learningProblem;
@@ -41,53 +41,53 @@ public class PsiUp implements RefinementOperator {
 	}
 	
 	private void createBottomSet() {
-		bottomSet = new TreeSet<Concept>(conceptComparator);
+		bottomSet = new TreeSet<Description>(conceptComparator);
 		
 		// BOTTOM AND BOTTOM
-		MultiConjunction mc = new MultiConjunction();
-		mc.addChild(new Bottom());
-		mc.addChild(new Bottom());
+		Intersection mc = new Intersection();
+		mc.addChild(new Nothing());
+		mc.addChild(new Nothing());
 		bottomSet.add(mc);
 		
 		// speziellste Konzepte
-		bottomSet.addAll(reasoningService.getMoreGeneralConcepts(new Bottom()));
+		bottomSet.addAll(reasoningService.getMoreGeneralConcepts(new Nothing()));
 		
 		// negierte allgemeinste Konzepte
-		Set<Concept> tmp = reasoningService.getMoreSpecialConcepts(new Top());
-		for(Concept c : tmp) 
+		Set<Description> tmp = reasoningService.getMoreSpecialConcepts(new Thing());
+		for(Description c : tmp) 
 			bottomSet.add(new Negation(c));
 	
 		// EXISTS r.BOTTOM und ALL r.BOTTOM für alle r
 		for(ObjectProperty r : reasoningService.getAtomicRoles()) {
-			bottomSet.add(new All(r, new Bottom()));
-			bottomSet.add(new Exists(r, new Bottom()));
+			bottomSet.add(new ObjectAllRestriction(r, new Nothing()));
+			bottomSet.add(new ObjectSomeRestriction(r, new Nothing()));
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Set<Concept> refine(Concept concept) {
+	public Set<Description> refine(Description concept) {
 		
-		Set<Concept> refinements = new HashSet<Concept>();
-		Set<Concept> tmp = new HashSet<Concept>();
+		Set<Description> refinements = new HashSet<Description>();
+		Set<Description> tmp = new HashSet<Description>();
 		
-		if (concept instanceof Top) {
-			return new TreeSet<Concept>(conceptComparator);
-		} else if (concept instanceof Bottom) {
-			return (Set<Concept>) bottomSet.clone();			
-		} else if (concept instanceof AtomicConcept) {
+		if (concept instanceof Thing) {
+			return new TreeSet<Description>(conceptComparator);
+		} else if (concept instanceof Nothing) {
+			return (Set<Description>) bottomSet.clone();			
+		} else if (concept instanceof NamedClass) {
 			// Top darf hier mit dabei sein
 			refinements.addAll(reasoningService.getMoreGeneralConcepts(concept));
 			
 		// negiertes atomares Konzept
-		} else if (concept instanceof Negation && concept.getChild(0) instanceof AtomicConcept) {
+		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
 			tmp.addAll(reasoningService.getMoreSpecialConcepts(concept.getChild(0)));
 			
 			// Bottom rausschmeissen
 			boolean containsBottom = false;
-			Iterator<Concept> it = tmp.iterator();
+			Iterator<Description> it = tmp.iterator();
 			while(it.hasNext()) {
-				Concept c = it.next();
-				if(c instanceof Bottom) {
+				Description c = it.next();
+				if(c instanceof Nothing) {
 					it.remove();
 					containsBottom = true;
 				}
@@ -95,82 +95,82 @@ public class PsiUp implements RefinementOperator {
 			// es soll z.B. NOT male auch zu NOT BOTTOM d.h. zu TOP verfeinert
 			// werden können
 			if(containsBottom)
-				refinements.add(new Top());
+				refinements.add(new Thing());
 			
-			for(Concept c : tmp) {
+			for(Description c : tmp) {
 				refinements.add(new Negation(c));
 			}
-		} else if (concept instanceof MultiConjunction) {
+		} else if (concept instanceof Intersection) {
 			// eines der Elemente kann verfeinert werden
-			for(Concept child : concept.getChildren()) {
+			for(Description child : concept.getChildren()) {
 				
 				// Refinement für das Kind ausführen
 				tmp = refine(child);
 				
 				// neue MultiConjunction konstruieren
-				for(Concept c : tmp) {
+				for(Description c : tmp) {
 					// TODO: müssen auch alle Konzepte geklont werden??
 					// hier wird nur eine neue Liste erstellt
 					// => eigentlich muss nicht geklont werden (d.h. deep copy) da
 					// die Konzepte nicht verändert werden während des Algorithmus
-					List<Concept> newChildren = new LinkedList<Concept>(concept.getChildren());
+					List<Description> newChildren = new LinkedList<Description>(concept.getChildren());
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					int index = newChildren.indexOf(child);
 					newChildren.add(index, c);					
 					newChildren.remove(child);
-					MultiConjunction mc = new MultiConjunction(newChildren);
+					Intersection mc = new Intersection(newChildren);
 					refinements.add(mc);	
 				}
 			}
 			
 			// ein Element der Konjunktion kann weggelassen werden
-			for(Concept child : concept.getChildren()) {
-				List<Concept> newChildren = new LinkedList<Concept>(concept.getChildren());
+			for(Description child : concept.getChildren()) {
+				List<Description> newChildren = new LinkedList<Description>(concept.getChildren());
 				newChildren.remove(child);
 				if(newChildren.size()==1)
 					refinements.add(newChildren.get(0));
 				else {
-					MultiConjunction md = new MultiConjunction(newChildren);
+					Intersection md = new Intersection(newChildren);
 					refinements.add(md);
 				}
 			}			
-		} else if (concept instanceof MultiDisjunction) {
+		} else if (concept instanceof Union) {
 			// eines der Elemente kann verfeinert werden
-			for(Concept child : concept.getChildren()) {
+			for(Description child : concept.getChildren()) {
 				
 				// Refinement für das Kind ausführen
 				// tmp = refine(child);
 				tmp = refine(child);
 				// neue MultiConjunction konstruieren
-				for(Concept c : tmp) {
-					List<Concept> newChildren = new LinkedList<Concept>(concept.getChildren());
+				for(Description c : tmp) {
+					List<Description> newChildren = new LinkedList<Description>(concept.getChildren());
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					int index = newChildren.indexOf(child);
 					newChildren.add(index, c);					
 					newChildren.remove(child);					
-					MultiDisjunction md = new MultiDisjunction(newChildren);
+					Union md = new Union(newChildren);
 					refinements.add(md);	
 				}
 			}
-		} else if (concept instanceof Exists) {
+		} else if (concept instanceof ObjectSomeRestriction) {
 			tmp = refine(concept.getChild(0));
-			for(Concept c : tmp) {
-				refinements.add(new Exists(((Quantification)concept).getRole(),c));
+			for(Description c : tmp) {
+				refinements.add(new ObjectSomeRestriction(((ObjectQuantorRestriction)concept).getRole(),c));
 			}		
 			
-			if(concept.getChild(0) instanceof Top)
-				refinements.add(new Top());
+			if(concept.getChild(0) instanceof Thing)
+				refinements.add(new Thing());
 			
-		} else if (concept instanceof All) {
+		} else if (concept instanceof ObjectAllRestriction) {
 			tmp = refine(concept.getChild(0));
-			for(Concept c : tmp) {
-				refinements.add(new All(((Quantification)concept).getRole(),c));
+			for(Description c : tmp) {
+				refinements.add(new ObjectAllRestriction(((ObjectQuantorRestriction)concept).getRole(),c));
 			}		
 			
-			if(concept.getChild(0) instanceof Top)
-				refinements.add(new Top());			
+			if(concept.getChild(0) instanceof Thing)
+				refinements.add(new Thing());			
 			
 			// falls es keine spezielleren atomaren Konzepte gibt, dann wird 
 			// bottom angehangen => nur wenn es ein atomares Konzept (insbesondere != bottom)
@@ -182,13 +182,13 @@ public class PsiUp implements RefinementOperator {
 		} else
 			throw new RuntimeException(concept.toString());
 		
-		if(concept instanceof MultiDisjunction || concept instanceof AtomicConcept ||
-				concept instanceof Negation || concept instanceof Exists || concept instanceof All) {
+		if(concept instanceof Union || concept instanceof NamedClass ||
+				concept instanceof Negation || concept instanceof ObjectSomeRestriction || concept instanceof ObjectAllRestriction) {
 			
 			// es wird OR BOTTOM angehangen
-			MultiDisjunction md = new MultiDisjunction();
+			Union md = new Union();
 			md.addChild(concept);
-			md.addChild(new Bottom());					
+			md.addChild(new Nothing());					
 			refinements.add(md);
 		}
 
@@ -213,8 +213,8 @@ public class PsiUp implements RefinementOperator {
 		return refinements;
 	}
 
-	public Set<Concept> refine(Concept concept, int maxLength,
-			List<Concept> knownRefinements) {
+	public Set<Description> refine(Description concept, int maxLength,
+			List<Description> knownRefinements) {
 		throw new RuntimeException();
 	}
 

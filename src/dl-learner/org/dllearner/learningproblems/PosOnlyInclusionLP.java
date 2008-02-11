@@ -23,7 +23,7 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 
 /**
  * @author Jens Lehmann
@@ -39,7 +39,7 @@ public class PosOnlyInclusionLP extends PosOnlyLP implements InclusionLP {
 	 * @see org.dllearner.core.LearningProblemNew#computeScore(org.dllearner.core.dl.Concept)
 	 */
 	@Override
-	public Score computeScore(Concept concept) {
+	public Score computeScore(Description concept) {
 		// TODO Auto-generated method stub
 		return null;
 	}

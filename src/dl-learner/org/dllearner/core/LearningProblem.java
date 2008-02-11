@@ -19,7 +19,7 @@
  */
 package org.dllearner.core;
 
-import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Description;
 
 /**
  * Base class for all learning problems.
@@ -47,7 +47,7 @@ public abstract class LearningProblem extends Component {
 		this.reasoningService = reasoningService;
 	}
 	
-	public abstract Score computeScore(Concept concept);
+	public abstract Score computeScore(Description concept);
 	
 	// TODO: remove? reasoning service should probably not be accessed via
 	// learning problem

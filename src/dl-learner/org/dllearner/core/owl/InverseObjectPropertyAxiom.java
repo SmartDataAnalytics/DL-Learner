@@ -2,12 +2,12 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
-public class InverseRoleAxiom extends RBoxAxiom {
+public class InverseObjectPropertyAxiom extends PropertyAxiom {
 
 	private ObjectProperty inverseRole;
 	private ObjectProperty role;
 	
-	public InverseRoleAxiom(ObjectProperty inverseRole, ObjectProperty role) {
+	public InverseObjectPropertyAxiom(ObjectProperty inverseRole, ObjectProperty role) {
 		this.inverseRole = inverseRole;
 		this.role = role;
 	}

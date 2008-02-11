@@ -2,7 +2,7 @@ package org.dllearner.core.owl;
 
 import java.util.Map;
 
-public class Top extends Concept {
+public class Thing extends Description {
 
 	/*
     @Override
