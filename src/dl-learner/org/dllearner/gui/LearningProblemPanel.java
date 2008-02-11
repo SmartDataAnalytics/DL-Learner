@@ -183,7 +183,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-	System.out.println("index: " + cb.getSelectedIndex());
+	//System.out.println("index: " + cb.getSelectedIndex());
 
 	// read selected LearningProblemClass
 	// choosenClassIndex = cb.getSelectedIndex();
@@ -191,7 +191,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	    this.choosenClassIndex = cb.getSelectedIndex();
 	    config.setInitLearningProblem(false);
 	    setLearningProblem();
-	    System.out.println("new_index: " + cb.getSelectedIndex());
+	    //System.out.println("new_index: " + cb.getSelectedIndex());
 
 	}
 

@@ -42,6 +42,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.dl.Individual;
 
 /**
  * WidgetPanelStringSet
@@ -72,6 +73,9 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
     private JList stringList = new JList();
     private DefaultListModel listModel = new DefaultListModel();
 
+    private JButton setButton = new JButton("set");
+    private CheckBoxList cBL = new CheckBoxList();
+
     public WidgetPanelStringSet(Config config, Component component,
 	    Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
@@ -85,46 +89,54 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 	add(widgetPanel, BorderLayout.CENTER);
 	showLabel(); // name of option and tooltip
 	showThingToChange(); // textfield, setbutton
-
 	stringList.setModel(listModel);
-
+	// ActionListeners
 	addButton.addActionListener(this);
 	removeButton.addActionListener(this);
 	clearButton.addActionListener(this);
-    }
-
-    public JPanel getPanel() {
-	return this;
+	setButton.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent e) {
-	Set<String> exampleSet = new HashSet<String>();
-	// add to list
-	if (e.getSource() == addButton
-		&& !listModel.contains(stringField.getText())) {
-	    listModel.addElement(stringField.getText());
+	if (!isSpecial()) {
+	    // NORMAL LAYOUT
+	    Set<String> exampleSet = new HashSet<String>();
+	    // add to list
+	    if (e.getSource() == addButton
+		    && !listModel.contains(stringField.getText())) {
+		listModel.addElement(stringField.getText());
+	    }
+	    // remove selection
+	    if (e.getSource() == removeButton) {
+		int[] selectedIndices = stringList.getSelectedIndices();
+		int count = 0; // remove i.e. index 2 and 4: after delete 2, 4
+		// is
+		// now index 3
+		for (int i : selectedIndices)
+		    listModel.remove(i - count++);
+	    }
+	    // clear list
+	    if (e.getSource() == clearButton) {
+		listModel.clear();
+	    }
+	    // update
+	    // stringList.setModel(listModel);
+	    for (int i = 0; i < listModel.size(); i++) {
+		if (!listModel.get(i).toString().equalsIgnoreCase(""))
+		    exampleSet.add(listModel.get(i).toString());
+	    }
+	    // set entry
+	    value = exampleSet;
+	    setEntry();
+	} else {
+	    // SPECIAL LAYOUT
+	    // setButton
+	    if (e.getSource() == setButton) {
+		value = cBL.getSelections();
+		setEntry();
+	    }
 	}
-	// remove selection
-	if (e.getSource() == removeButton) {
-	    int[] selectedIndices = stringList.getSelectedIndices();
-	    int count = 0; // remove i.e. index 2 and 4: after delete 2, 4 is
-	    // now index 3
-	    for (int i : selectedIndices)
-		listModel.remove(i - count++);
-	}
-	// clear list
-	if (e.getSource() == clearButton) {
-	    listModel.clear();
-	}
-	// update
-	// stringList.setModel(listModel);
-	for (int i = 0; i < listModel.size(); i++) {
-	    if (!listModel.get(i).toString().equalsIgnoreCase(""))
-		exampleSet.add(listModel.get(i).toString());
-	}
-	// set entry
-	value = exampleSet;
-	setEntry();
+
     }
 
     @Override
@@ -150,6 +162,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 		    value = (Set<String>) config.getComponentManager()
 			    .getConfigOptionValue(component,
 				    configOption.getName());
+
 		    // fill list
 		    if (value != null) {
 			for (Iterator<String> iterator = value.iterator(); iterator
@@ -159,35 +172,59 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 			}
 		    }
 		}
-		buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
-		gridbag.setConstraints(stringField, constraints);
-		widgetPanel.add(stringField, constraints);
-
-		buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
-		gridbag.setConstraints(addButton, constraints);
-		widgetPanel.add(addButton, constraints);
-
-		// list
-		stringList.setModel(listModel);
-		stringList.setLayoutOrientation(JList.VERTICAL);
-		stringList.setVisibleRowCount(-1);
-		JScrollPane stringListScroller = new JScrollPane(stringList);
-		stringListScroller.setPreferredSize(new Dimension(280, 100));
-
-		buildConstraints(constraints, 0, 2, 1, 2, 100, 100);
-		gridbag.setConstraints(stringListScroller, constraints);
-		widgetPanel.add(stringListScroller, constraints);
-
-		buildConstraints(constraints, 1, 2, 1, 1, 100, 100);
-		gridbag.setConstraints(removeButton, constraints);
-		widgetPanel.add(removeButton, constraints);
-
-		buildConstraints(constraints, 1, 3, 1, 1, 100, 100);
-		gridbag.setConstraints(clearButton, constraints);
-		widgetPanel.add(clearButton, constraints);
-
-		// widgetPanel.add(setButton);
-		// setButton.addActionListener(this);
+		if (!isSpecial()) {
+		    // NORMAL LAYOUT
+		    // stringField
+		    buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+		    gridbag.setConstraints(stringField, constraints);
+		    widgetPanel.add(stringField, constraints);
+		    // addButton
+		    buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
+		    gridbag.setConstraints(addButton, constraints);
+		    widgetPanel.add(addButton, constraints);
+		    // list
+		    stringList.setModel(listModel);
+		    stringList.setLayoutOrientation(JList.VERTICAL);
+		    stringList.setVisibleRowCount(-1);
+		    JScrollPane stringListScroller = new JScrollPane(stringList);
+		    stringListScroller
+			    .setPreferredSize(new Dimension(280, 100));
+		    buildConstraints(constraints, 0, 2, 1, 2, 100, 100);
+		    gridbag.setConstraints(stringListScroller, constraints);
+		    widgetPanel.add(stringListScroller, constraints);
+		    // removeButton
+		    buildConstraints(constraints, 1, 2, 1, 1, 100, 100);
+		    gridbag.setConstraints(removeButton, constraints);
+		    widgetPanel.add(removeButton, constraints);
+		    // clearButton
+		    buildConstraints(constraints, 1, 3, 1, 1, 100, 100);
+		    gridbag.setConstraints(clearButton, constraints);
+		    widgetPanel.add(clearButton, constraints);
+		} else {
+		    // SPECIAL LAYOUT
+		    // ComboBoxList
+		    buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+		    gridbag.setConstraints(cBL, constraints);
+		    widgetPanel.add(cBL, constraints);
+		    // setButton
+		    buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
+		    gridbag.setConstraints(setButton, constraints);
+		    widgetPanel.add(setButton, constraints);
+		    // DEFINE LIST
+		    // positiveExamples or negativeExamples
+		    if (configOption.getName().equalsIgnoreCase(
+			    "positiveExamples")
+			    || configOption.getName().equalsIgnoreCase(
+				    "negativeExamples")) {
+			// fill lists
+			Set<Individual> individualsSet = config
+				.getReasoningService().getIndividuals();
+			LinkedList<Individual> individuals = new LinkedList<Individual>(
+				individualsSet);
+			for (Individual ind : individuals)
+			    cBL.add(ind.getName());
+		    }
+		}
 	    }
 	    // UNKNOWN
 	    else {
@@ -235,6 +272,17 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 	gbc.gridheight = gh;
 	gbc.weightx = wx;
 	gbc.weighty = wy;
+    }
+
+    /**
+     * special layout returns true if 2nd layout should used
+     */
+    private boolean isSpecial() {
+	if (configOption.getName().equalsIgnoreCase("positiveExamples")
+		|| configOption.getName().equalsIgnoreCase("negativeExamples"))
+	    return true;
+	else
+	    return false;
     }
 
 }
