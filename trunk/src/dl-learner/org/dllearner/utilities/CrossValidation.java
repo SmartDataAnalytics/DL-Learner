@@ -35,8 +35,8 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.Individual;
+import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 

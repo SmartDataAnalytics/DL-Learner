@@ -41,8 +41,8 @@ import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.Top;
+import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Top;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Helper;
 

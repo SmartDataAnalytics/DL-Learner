@@ -24,9 +24,9 @@ import java.util.SortedSet;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
-import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.Negation;
+import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Negation;
 import org.dllearner.utilities.Helper;
 
 /**
@@ -172,7 +172,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	 * Calls the same method on the standard definition learning problem, but 
 	 * negates the concept before and permutes positive and negative examples.
 	 * 
-	 * @see org.dllearner.core.LearningProblemNew#computeScore(org.dllearner.core.dl.Concept)
+	 * @see org.dllearner.core.LearningProblemNew#computeScore(org.dllearner.core.owl.Concept)
 	 */
 	@Override
 	public Score computeScore(Concept concept) {

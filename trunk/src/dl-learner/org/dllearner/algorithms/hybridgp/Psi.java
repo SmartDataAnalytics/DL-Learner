@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.core.Score;
-import org.dllearner.core.dl.Concept;
+import org.dllearner.core.owl.Concept;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;

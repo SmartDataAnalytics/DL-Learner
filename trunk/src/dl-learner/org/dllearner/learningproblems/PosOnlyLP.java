@@ -31,7 +31,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringSetConfigOption;
-import org.dllearner.core.dl.Individual;
+import org.dllearner.core.owl.Individual;
 
 /**
  * A learning problem, where we learn from positive examples only.

@@ -43,7 +43,7 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
-import org.dllearner.core.dl.KB;
+import org.dllearner.core.owl.KB;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
 import org.dllearner.parser.KBParser;

@@ -3,7 +3,7 @@ package org.dllearner.learningproblems;
 import java.util.Set;
 
 import org.dllearner.core.Score;
-import org.dllearner.core.dl.Individual;
+import org.dllearner.core.owl.Individual;
 
 /**
  * 

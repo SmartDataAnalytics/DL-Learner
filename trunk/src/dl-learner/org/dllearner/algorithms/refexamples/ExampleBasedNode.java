@@ -23,8 +23,8 @@ package org.dllearner.algorithms.refexamples;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.dl.Concept;
-import org.dllearner.core.dl.Individual;
+import org.dllearner.core.owl.Concept;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.ConceptComparator;
 
 /**

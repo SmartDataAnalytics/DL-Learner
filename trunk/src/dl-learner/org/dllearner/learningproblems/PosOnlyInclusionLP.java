@@ -23,7 +23,7 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.dl.Concept;
+import org.dllearner.core.owl.Concept;
 
 /**
  * @author Jens Lehmann

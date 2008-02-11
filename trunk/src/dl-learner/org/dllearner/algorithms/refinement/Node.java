@@ -3,7 +3,7 @@ package org.dllearner.algorithms.refinement;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.dl.Concept;
+import org.dllearner.core.owl.Concept;
 import org.dllearner.utilities.ConceptComparator;
 
 public class Node {
