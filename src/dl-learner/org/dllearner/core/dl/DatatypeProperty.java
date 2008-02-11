@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -21,36 +21,32 @@ package org.dllearner.core.dl;
 
 import java.util.Map;
 
+import org.dllearner.utilities.Helper;
+
 /**
- * Represents a concept assertion in a knowledge base / ontology, 
- * e.g. "heiko is a person", "heiko is a male person having one child".
- * 
  * @author Jens Lehmann
  *
  */
-public class ConceptAssertion extends AssertionalAxiom {
+public class DatatypeProperty implements Property {
+
+	protected String name;
 	
-	private Concept concept;
-	private Individual individual;
+	public DatatypeProperty(String name) {
+		this.name=name;
+	}	
 	
-	public ConceptAssertion(Concept concept, Individual individual) {
-		this.concept = concept;
-		this.individual = individual;
-	}
-
-	public Concept getConcept() {
-		return concept;
-	}
-
-	public Individual getIndividual() {
-		return individual;
-	}
-
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.dl.KBElement#getLength()
+	 */
 	public int getLength() {
-		return 1 + concept.getLength();
+		return 1;
 	}
-		
-	public String toString(String baseURI, Map<String,String> prefixes) {
-		return concept.toString(baseURI, prefixes) + "(" + individual + ")";
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.dl.KBElement#toString(java.lang.String, java.util.Map)
+	 */
+	public String toString(String baseURI, Map<String, String> prefixes) {
+		return Helper.getAbbreviatedString(name, baseURI, prefixes);
 	}
+
 }

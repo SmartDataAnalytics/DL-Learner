@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class All extends Quantification {
     
-	public All(Role role, Concept c) {
+	public All(ObjectPropertyExpression role, Concept c) {
 		super(role, c);
 	}
 	

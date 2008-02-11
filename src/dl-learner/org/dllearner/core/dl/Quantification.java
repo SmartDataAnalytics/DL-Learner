@@ -2,14 +2,14 @@ package org.dllearner.core.dl;
 
 public abstract class Quantification extends Concept {
 
-	Role role;
+	ObjectPropertyExpression role;
 	
-	public Quantification(Role role, Concept c) {
+	public Quantification(ObjectPropertyExpression role, Concept c) {
 		this.role = role;
 		addChild(c);
 	}
 	
-	public Role getRole() {
+	public ObjectPropertyExpression getRole() {
 		return role;
 	}
 	

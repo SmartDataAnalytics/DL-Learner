@@ -37,7 +37,7 @@ import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Conjunction;
@@ -251,7 +251,7 @@ public class BruteForceLearner extends LearningAlgorithm {
             
             // EXISTS and ALL 
             for(Concept childNode : generatedDefinitions.get(length-2)) {
-            	for(AtomicRole atomicRole : learningProblem.getReasoningService().getAtomicRoles()) {
+            	for(ObjectProperty atomicRole : learningProblem.getReasoningService().getAtomicRoles()) {
                     Concept root1 = new Exists(atomicRole,childNode);
                     generatedDefinitions.get(length).add(root1);
                     

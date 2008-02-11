@@ -4,9 +4,9 @@ import java.util.Map;
 
 public class TransitiveRoleAxiom extends RBoxAxiom {
 
-	private Role role;
+	private ObjectPropertyExpression role;
 	
-	public TransitiveRoleAxiom(Role role) {
+	public TransitiveRoleAxiom(ObjectPropertyExpression role) {
 		this.role = role;
 	}
 
@@ -14,7 +14,7 @@ public class TransitiveRoleAxiom extends RBoxAxiom {
 		return 1 + role.getLength();
 	}
 
-	public Role getRole() {
+	public ObjectPropertyExpression getRole() {
 		return role;
 	}
 	

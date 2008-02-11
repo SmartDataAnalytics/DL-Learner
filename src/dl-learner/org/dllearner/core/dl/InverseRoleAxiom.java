@@ -4,19 +4,19 @@ import java.util.Map;
 
 public class InverseRoleAxiom extends RBoxAxiom {
 
-	private AtomicRole inverseRole;
-	private AtomicRole role;
+	private ObjectProperty inverseRole;
+	private ObjectProperty role;
 	
-	public InverseRoleAxiom(AtomicRole inverseRole, AtomicRole role) {
+	public InverseRoleAxiom(ObjectProperty inverseRole, ObjectProperty role) {
 		this.inverseRole = inverseRole;
 		this.role = role;
 	}
 
-	public AtomicRole getInverseRole() {
+	public ObjectProperty getInverseRole() {
 		return inverseRole;
 	}
 
-	public AtomicRole getRole() {
+	public ObjectProperty getRole() {
 		return role;
 	}
 

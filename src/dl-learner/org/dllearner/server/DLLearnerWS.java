@@ -44,7 +44,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.kb.OWLFile;
@@ -474,7 +474,7 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getAtomicRoles(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		Set<AtomicRole> roles = state.getReasoningService().getAtomicRoles();
+		Set<ObjectProperty> roles = state.getReasoningService().getAtomicRoles();
 		return Datastructures.sortedSet2StringListRoles(roles);
 	}
 	
@@ -488,7 +488,7 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getIndividualsForARole(int id, String role) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		Map<Individual,SortedSet<Individual>> m = state.getReasoningService().getRoleMembers(new AtomicRole(role));
+		Map<Individual,SortedSet<Individual>> m = state.getReasoningService().getRoleMembers(new ObjectProperty(role));
 		Set<Individual> individuals = m.keySet();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}

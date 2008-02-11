@@ -41,7 +41,7 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AssertionalAxiom;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.ConceptAssertion;
@@ -58,7 +58,7 @@ import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.RBoxAxiom;
-import org.dllearner.core.dl.RoleAssertion;
+import org.dllearner.core.dl.ObjectPropertyAssertion;
 import org.dllearner.core.dl.RoleHierarchy;
 import org.dllearner.core.dl.SubRoleAxiom;
 import org.dllearner.core.dl.SubsumptionHierarchy;
@@ -116,7 +116,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	// primitives
 	Set<AtomicConcept> atomicConcepts;
-	Set<AtomicRole> atomicRoles;
+	Set<ObjectProperty> atomicRoles;
 	SortedSet<Individual> individuals;	
 	
 	public OWLAPIReasoner(Set<KnowledgeSource> sources) {
@@ -250,9 +250,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		atomicConcepts = new TreeSet<AtomicConcept>(conceptComparator);
 		for(OWLClass owlClass : classes)
 			atomicConcepts.add(new AtomicConcept(owlClass.getURI().toString()));
-		atomicRoles = new TreeSet<AtomicRole>(roleComparator);
+		atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
 		for(OWLObjectProperty owlProperty : properties)
-			atomicRoles.add(new AtomicRole(owlProperty.getURI().toString()));
+			atomicRoles.add(new ObjectProperty(owlProperty.getURI().toString()));
 		individuals = new TreeSet<Individual>();
 		for(OWLIndividual owlIndividual : owlIndividuals)
 			individuals.add(new Individual(owlIndividual.getURI().toString()));
@@ -269,7 +269,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getAtomicRoles()
 	 */
-	public Set<AtomicRole> getAtomicRoles() {
+	public Set<ObjectProperty> getAtomicRoles() {
 		return atomicRoles;
 	}
 
@@ -343,16 +343,16 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @see org.dllearner.core.Reasoner#prepareRoleHierarchy(java.util.Set)
 	 */
 	@Override
-	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) {
+	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
 		// code copied from DIG reasoner
 		
-		TreeMap<AtomicRole, TreeSet<AtomicRole>> roleHierarchyUp = new TreeMap<AtomicRole, TreeSet<AtomicRole>>(
+		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
 				roleComparator);
-		TreeMap<AtomicRole, TreeSet<AtomicRole>> roleHierarchyDown = new TreeMap<AtomicRole, TreeSet<AtomicRole>>(
+		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
 				roleComparator);
  
 		// refinement of atomic concepts
-		for (AtomicRole role : atomicRoles) {
+		for (ObjectProperty role : atomicRoles) {
 			roleHierarchyDown.put(role, getMoreSpecialRoles(role));
 			roleHierarchyUp.put(role, getMoreGeneralRoles(role));
 		}
@@ -398,7 +398,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return getFirstClasses(classes);
 	}	
 	
-	private TreeSet<AtomicRole> getMoreGeneralRoles(AtomicRole role) {
+	private TreeSet<ObjectProperty> getMoreGeneralRoles(ObjectProperty role) {
 		Set<Set<OWLObjectProperty>> properties;
 		try {
 			properties = reasoner.getSuperProperties(getOWLAPIDescription(role));
@@ -409,7 +409,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return getFirstProperties(properties);
 	}
 	
-	private TreeSet<AtomicRole> getMoreSpecialRoles(AtomicRole role) {
+	private TreeSet<ObjectProperty> getMoreSpecialRoles(ObjectProperty role) {
 		Set<Set<OWLObjectProperty>> properties;
 		try {
 			properties = reasoner.getSubProperties(getOWLAPIDescription(role));
@@ -502,13 +502,13 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return concepts;			
 	}
 	
-	private TreeSet<AtomicRole> getFirstProperties(Set<Set<OWLObjectProperty>> setOfSets) {
-		TreeSet<AtomicRole> roles = new TreeSet<AtomicRole>(roleComparator);
+	private TreeSet<ObjectProperty> getFirstProperties(Set<Set<OWLObjectProperty>> setOfSets) {
+		TreeSet<ObjectProperty> roles = new TreeSet<ObjectProperty>(roleComparator);
 		for(Set<OWLObjectProperty> innerSet : setOfSets) {
 			// take one element from the set and ignore the rest
 			// (TODO: we need to make sure we always ignore the same concepts)
 			OWLObjectProperty property = innerSet.iterator().next();
-			roles.add(new AtomicRole(property.getURI().toString()));
+			roles.add(new ObjectProperty(property.getURI().toString()));
 		}
 		return roles;		
 	}	
@@ -548,7 +548,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}	
 	
-	public static OWLObjectProperty getOWLAPIDescription(AtomicRole role) {
+	public static OWLObjectProperty getOWLAPIDescription(ObjectProperty role) {
 		return staticFactory.getOWLObjectProperty(URI.create(role.getName()));
 	}
 	
@@ -618,13 +618,13 @@ public class OWLAPIReasoner extends ReasonerComponent {
 
 						manager.applyChange(addAxiom);
 
-				} else if (axiom instanceof RoleAssertion) {
+				} else if (axiom instanceof ObjectPropertyAssertion) {
 					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((RoleAssertion) axiom).getRole().getName()));
+							URI.create(((ObjectPropertyAssertion) axiom).getRole().getName()));
 					OWLIndividual i1 = factory.getOWLIndividual(
-							URI.create(((RoleAssertion) axiom).getIndividual1().getName()));
+							URI.create(((ObjectPropertyAssertion) axiom).getIndividual1().getName()));
 					OWLIndividual i2 = factory.getOWLIndividual(
-							URI.create(((RoleAssertion) axiom).getIndividual2().getName()));
+							URI.create(((ObjectPropertyAssertion) axiom).getIndividual2().getName()));
 					OWLAxiom axiomOWLAPI = factory.getOWLObjectPropertyAssertionAxiom(i1, role, i2);
 					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
 					manager.applyChange(addAxiom);

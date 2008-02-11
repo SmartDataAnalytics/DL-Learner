@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Individual;
 
 /**
@@ -77,13 +77,13 @@ public class Datastructures {
 		return ret;
 	}
 	
-	public static String[] sortedSet2StringListRoles(Set<AtomicRole> s){
+	public static String[] sortedSet2StringListRoles(Set<ObjectProperty> s){
 		
 		String[] ret=new String[s.size()];
-		Iterator<AtomicRole> i=s.iterator();
+		Iterator<ObjectProperty> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((AtomicRole)i.next()).getName();
+			ret[a++]=((ObjectProperty)i.next()).getName();
 		}
 		Arrays.sort(ret);
 		return ret;

@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.core.dl.RoleHierarchy;
@@ -48,7 +48,7 @@ public interface Reasoner {
 	// => erstellt auch vereinfachte Sichten auf Subsumptionhierarchie
 	// (siehe einfacher Traversal in Diplomarbeit)
 	public void prepareSubsumptionHierarchy(Set<AtomicConcept> allowedConcepts);
-	public void prepareRoleHierarchy(Set<AtomicRole> allowedRoles) throws ReasoningMethodUnsupportedException;
+	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) throws ReasoningMethodUnsupportedException;
 	
 	public boolean subsumes(Concept superConcept, Concept subConcept) throws ReasoningMethodUnsupportedException;
 	
@@ -68,7 +68,7 @@ public interface Reasoner {
 	
 	public SortedSet<Individual> retrieval(Concept concept) throws ReasoningMethodUnsupportedException;
 	
-	public Map<Individual, SortedSet<Individual>> getRoleMembers(AtomicRole atomicRole) throws ReasoningMethodUnsupportedException;
+	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) throws ReasoningMethodUnsupportedException;
 	
 	public boolean instanceCheck(Concept concept, Individual individual) throws ReasoningMethodUnsupportedException;
 	
@@ -86,7 +86,7 @@ public interface Reasoner {
 	
 	public Set<AtomicConcept> getAtomicConcepts();
 
-	public Set<AtomicRole> getAtomicRoles();
+	public Set<ObjectProperty> getAtomicRoles();
 
 	public SortedSet<Individual> getIndividuals();
 }

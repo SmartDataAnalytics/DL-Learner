@@ -20,7 +20,7 @@ import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Quantification;
-import org.dllearner.core.dl.Role;
+import org.dllearner.core.dl.ObjectPropertyExpression;
 import org.dllearner.core.dl.Top;
 
 // ev. kann man diese Klasse später in ein anderes Paket ziehen, da sie nicht direkt mit
@@ -130,7 +130,7 @@ public class ConceptTransformation {
 					// doppelte Negation hebt sich auf
 					return transformToNegationNormalForm(child.getChild(0));
 				} else if(child instanceof Quantification) {
-					Role r = ((Quantification)child).getRole();
+					ObjectPropertyExpression r = ((Quantification)child).getRole();
 					// Negation nach innen
 					Concept c = new Negation(child.getChild(0));
 					// Exists

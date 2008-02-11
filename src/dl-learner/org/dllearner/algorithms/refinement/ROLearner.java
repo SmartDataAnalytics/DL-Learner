@@ -25,7 +25,7 @@ import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
@@ -51,12 +51,12 @@ public class ROLearner extends LearningAlgorithm {
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 	private Heuristic heuristic = Heuristic.LEXICOGRAPHIC;
 	Set<AtomicConcept> allowedConcepts;
-	Set<AtomicRole> allowedRoles;
+	Set<ObjectProperty> allowedRoles;
 	Set<AtomicConcept> ignoredConcepts;
-	Set<AtomicRole> ignoredRoles;
+	Set<ObjectProperty> ignoredRoles;
 	// these are computed as the result of the previous four settings
 	Set<AtomicConcept> usedConcepts;
-	Set<AtomicRole> usedRoles;	
+	Set<ObjectProperty> usedRoles;	
 	private boolean applyAllFilter = true;
 	private boolean applyExistsFilter = true;	
 	private boolean useTooWeakList = true;

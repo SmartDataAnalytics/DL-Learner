@@ -12,7 +12,7 @@ import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.Score;
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Exists;
@@ -439,12 +439,12 @@ public class GPUtilities {
     		name = bestNeighbours.get(3).get(nr-sizeSum2);
     		// returnNode = new Exists(new AtomicRole(name));
     		// returnNode.addChild(node);
-    		returnNode = new Exists(new AtomicRole(name),node);
+    		returnNode = new Exists(new ObjectProperty(name),node);
     	} else {
     		name = bestNeighbours.get(4).get(nr-sizeSum3);
     		// returnNode = new All(new AtomicRole(name));
     		// returnNode.addChild(node);   
-    		returnNode = new All(new AtomicRole(name),node);
+    		returnNode = new All(new ObjectProperty(name),node);
     	}
     		
     	return returnNode;

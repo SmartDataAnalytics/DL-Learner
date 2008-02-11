@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.dllearner.core.dl.All;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Axiom;
 import org.dllearner.core.dl.Bottom;
 import org.dllearner.core.dl.Concept;
@@ -17,14 +17,14 @@ import org.dllearner.core.dl.Exists;
 import org.dllearner.core.dl.FunctionalRoleAxiom;
 import org.dllearner.core.dl.Inclusion;
 import org.dllearner.core.dl.Individual;
-import org.dllearner.core.dl.InverseRole;
+import org.dllearner.core.dl.ObjectPropertyInverse;
 import org.dllearner.core.dl.KB;
 import org.dllearner.core.dl.MultiConjunction;
 import org.dllearner.core.dl.MultiDisjunction;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.Quantification;
-import org.dllearner.core.dl.Role;
-import org.dllearner.core.dl.RoleAssertion;
+import org.dllearner.core.dl.ObjectPropertyExpression;
+import org.dllearner.core.dl.ObjectPropertyAssertion;
 import org.dllearner.core.dl.SubRoleAxiom;
 import org.dllearner.core.dl.SymmetricRoleAxiom;
 import org.dllearner.core.dl.Top;
@@ -56,13 +56,13 @@ public class DIGConverter {
 		
 		// erstmal alle Konzepte, Rollen und Individuen definieren
 		Set<AtomicConcept> atomicConcepts = kb.findAllAtomicConcepts();
-		Set<AtomicRole>	atomicRoles = kb.findAllAtomicRoles();
+		Set<ObjectProperty>	atomicRoles = kb.findAllAtomicRoles();
 		Set<Individual>	individuals = kb.findAllIndividuals();				
 		
 		for(AtomicConcept ac : atomicConcepts)
 			sb.append("<defconcept name=\""+ac.getName()+"\"/>");
 		
-		for(AtomicRole ar : atomicRoles)
+		for(ObjectProperty ar : atomicRoles)
 			sb.append("<defrole name=\""+ar.getName()+"\"/>");
 		
 		for(Individual individual : individuals)
@@ -84,10 +84,10 @@ public class DIGConverter {
 		StringBuilder sb = new StringBuilder();
 		
 		// ABox
-		if(axiom instanceof RoleAssertion)
-			sb.append("<related>"+ "<individual name=\"" + ((RoleAssertion)axiom).getIndividual1().getName() + "\"/>"
-					+ getDIGString(((RoleAssertion)axiom).getRole()) +					
-					"<individual name=\"" + ((RoleAssertion)axiom).getIndividual2().getName() + "\"/></related>\n");
+		if(axiom instanceof ObjectPropertyAssertion)
+			sb.append("<related>"+ "<individual name=\"" + ((ObjectPropertyAssertion)axiom).getIndividual1().getName() + "\"/>"
+					+ getDIGString(((ObjectPropertyAssertion)axiom).getRole()) +					
+					"<individual name=\"" + ((ObjectPropertyAssertion)axiom).getIndividual2().getName() + "\"/></related>\n");
 		else if(axiom instanceof ConceptAssertion)
 			sb.append("<instanceof>"+ "<individual name=\"" + ((ConceptAssertion)axiom).getIndividual().getName() + "\"/>" +
 					getDIGString(((ConceptAssertion)axiom).getConcept()) + "</instanceof>\n");
@@ -160,11 +160,11 @@ public class DIGConverter {
 		return sb;
 	}
 	
-	public static StringBuilder getDIGString(Role role) {
-		if(role instanceof AtomicRole)
-			return new StringBuilder("<ratom name=\"" + ((AtomicRole)role).getName() + "\"/>");
-		else if(role instanceof InverseRole)
-			return new StringBuilder("<inverse><ratom name=\"" + ((InverseRole)role).getName() + "\"/></inverse>");
+	public static StringBuilder getDIGString(ObjectPropertyExpression role) {
+		if(role instanceof ObjectProperty)
+			return new StringBuilder("<ratom name=\"" + ((ObjectProperty)role).getName() + "\"/>");
+		else if(role instanceof ObjectPropertyInverse)
+			return new StringBuilder("<inverse><ratom name=\"" + ((ObjectPropertyInverse)role).getName() + "\"/></inverse>");
 		
 		throw new RuntimeException("Can only create DIG Strings for atomic and inverse roles, not for " + role + ".");
 	}

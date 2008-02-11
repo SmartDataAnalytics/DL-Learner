@@ -14,7 +14,7 @@ import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.dl.AssertionalAxiom;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.ConceptAssertion;
 import org.dllearner.core.dl.FlatABox;
@@ -23,7 +23,7 @@ import org.dllearner.core.dl.KB;
 import org.dllearner.core.dl.Negation;
 import org.dllearner.core.dl.NumberRestriction;
 import org.dllearner.core.dl.Quantification;
-import org.dllearner.core.dl.RoleAssertion;
+import org.dllearner.core.dl.ObjectPropertyAssertion;
 
 /**
  * Die Hilfsmethoden benutzen alle SortedSet, da die Operationen damit schneller
@@ -49,13 +49,13 @@ public class Helper {
 	}
 
 	// findet alle atomaren Rollen in einem Konzept
-	public static List<AtomicRole> getAtomicRoles(Concept concept) {
-		List<AtomicRole> ret = new LinkedList<AtomicRole>();
+	public static List<ObjectProperty> getAtomicRoles(Concept concept) {
+		List<ObjectProperty> ret = new LinkedList<ObjectProperty>();
 
 		if (concept instanceof Quantification) {
-			ret.add(new AtomicRole(((Quantification) concept).getRole().getName()));
+			ret.add(new ObjectProperty(((Quantification) concept).getRole().getName()));
 		} else if (concept instanceof NumberRestriction) {
-			ret.add(new AtomicRole(((NumberRestriction) concept).getRole().getName()));
+			ret.add(new ObjectProperty(((NumberRestriction) concept).getRole().getName()));
 		}
 
 		// auch NumberRestrictions und Quantifications können weitere Rollen
@@ -492,9 +492,9 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static AtomicRole checkRoles(ReasoningService rs, Set<AtomicRole> roles) {
-		Set<AtomicRole> existingRoles = rs.getAtomicRoles();
-		for (AtomicRole ar : roles) {
+	public static ObjectProperty checkRoles(ReasoningService rs, Set<ObjectProperty> roles) {
+		Set<ObjectProperty> existingRoles = rs.getAtomicRoles();
+		for (ObjectProperty ar : roles) {
 			if(!existingRoles.contains(ar)) 
 				return ar;
 		}
@@ -532,7 +532,7 @@ public class Helper {
 			aBox.concepts.add(atomicConcept.getName());
 		}
 
-		for (AtomicRole atomicRole : rs.getAtomicRoles()) {
+		for (ObjectProperty atomicRole : rs.getAtomicRoles()) {
 			aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getRoleMembers(atomicRole)));
 			aBox.roles.add(atomicRole.getName());
 		}
@@ -565,8 +565,8 @@ public class Helper {
 		Iterator<AssertionalAxiom> it = abox.iterator();
 		while (it.hasNext()) {
 			AssertionalAxiom a = it.next();
-			if (a instanceof RoleAssertion) {
-				RoleAssertion ra = (RoleAssertion) a;
+			if (a instanceof ObjectPropertyAssertion) {
+				ObjectPropertyAssertion ra = (ObjectPropertyAssertion) a;
 				if (connectedIndividuals.contains(ra.getIndividual1())
 						|| connectedIndividuals.contains(ra.getIndividual2())) {
 					System.out.println("remove " + ra);

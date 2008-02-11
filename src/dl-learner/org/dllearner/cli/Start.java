@@ -62,7 +62,7 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.dl.AtomicConcept;
-import org.dllearner.core.dl.AtomicRole;
+import org.dllearner.core.dl.ObjectProperty;
 import org.dllearner.core.dl.Concept;
 import org.dllearner.core.dl.Individual;
 import org.dllearner.kb.KBFile;
@@ -504,7 +504,7 @@ public class Start {
 						int stringLength = rs.getAtomicRoles().toString().length();
 						if (stringLength > maxLineLength) {
 							System.out.println("roles[" + rs.getAtomicRoles().size() + "]: ");
-							for (AtomicRole r : rs.getAtomicRoles())
+							for (ObjectProperty r : rs.getAtomicRoles())
 								System.out.println("  " + r);
 						} else
 							System.out.println("roles[" + rs.getAtomicRoles().size() + "]: "
@@ -647,7 +647,7 @@ public class Start {
 					SortedSet<AtomicConcept> occurringConcepts = new TreeSet<AtomicConcept>(
 							new ConceptComparator());
 					occurringConcepts.addAll(Helper.getAtomicConcepts(concept));
-					SortedSet<AtomicRole> occurringRoles = new TreeSet<AtomicRole>(
+					SortedSet<ObjectProperty> occurringRoles = new TreeSet<ObjectProperty>(
 							new RoleComparator());
 					occurringRoles.addAll(Helper.getAtomicRoles(concept));
 
@@ -662,7 +662,7 @@ public class Start {
 					// is used)
 					for (AtomicConcept ac : rs.getAtomicConcepts())
 						occurringConcepts.remove(ac);
-					for (AtomicRole ar : rs.getAtomicRoles())
+					for (ObjectProperty ar : rs.getAtomicRoles())
 						occurringRoles.remove(ar);
 
 					boolean nonExistingConstructs = false;

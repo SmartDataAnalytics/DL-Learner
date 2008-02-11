@@ -4,19 +4,19 @@ import java.util.Map;
 
 public class SubRoleAxiom extends RBoxAxiom {
 
-	private AtomicRole role;
-	private AtomicRole subRole;
+	private ObjectProperty role;
+	private ObjectProperty subRole;
 	
-	public SubRoleAxiom(AtomicRole subRole, AtomicRole role) {
+	public SubRoleAxiom(ObjectProperty subRole, ObjectProperty role) {
 		this.role = role;
 		this.subRole = subRole;
 	}
 	
-	public AtomicRole getRole() {
+	public ObjectProperty getRole() {
 		return role;
 	}
 
-	public AtomicRole getSubRole() {
+	public ObjectProperty getSubRole() {
 		return subRole;
 	}
 

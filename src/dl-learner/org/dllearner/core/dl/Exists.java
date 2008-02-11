@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Exists extends Quantification {
 
-    public Exists(Role role, Concept c) {
+    public Exists(ObjectPropertyExpression role, Concept c) {
     	super(role,c);
     }
     
