@@ -21,22 +21,11 @@ package org.dllearner.gui;
  */
 
 import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.dl.Individual;
 
 /**
  * LearningProblemPanel
@@ -53,16 +42,10 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
     private String[] lpBoxItems = {};
     private JComboBox cb = new JComboBox(lpBoxItems);
     private JPanel choosePanel = new JPanel();
-    private JPanel listPanel = new JPanel();
-    private JPanel initPanel = new JPanel();
-    private JLabel posLabel = new JLabel("positive Examples");
-    private JLabel negLabel = new JLabel("negative Examples");
-    private JButton initButton, autoInitButton;
-    private int choosenClassIndex;
-    private List<Individual> individuals;
-    private JList posList = new JList();
-    private JList negList = new JList();
     private OptionPanel optionPanel;
+    private JPanel initPanel = new JPanel();
+    private JButton initButton, setButton;
+    private int choosenClassIndex;
 
     LearningProblemPanel(final Config config, StartGUI startGUI) {
 	super(new BorderLayout());
@@ -75,10 +58,10 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	initButton.addActionListener(this);
 	initPanel.add(initButton);
 	initButton.setEnabled(true);
-	autoInitButton = new JButton("Set");
-	autoInitButton.addActionListener(this);
+	setButton = new JButton("Set");
+	setButton.addActionListener(this);
 	choosePanel.add(cb);
-	choosePanel.add(autoInitButton);
+	choosePanel.add(setButton);
 	cb.addActionListener(this);
 
 	// add into comboBox
@@ -90,112 +73,26 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	// read choosen LearningProblem
 	choosenClassIndex = cb.getSelectedIndex();
 
-	// create a scrollable list of positive examples
-	posList = new JList();
-	posList.setLayoutOrientation(JList.VERTICAL);
-	posList.setVisibleRowCount(-1);
-	JScrollPane posListScroller = new JScrollPane(posList);
-	posListScroller.setPreferredSize(new Dimension(300, 200));
-
-	// create a scrollable list of negative examples
-	negList = new JList();
-	negList.setLayoutOrientation(JList.VERTICAL);
-	negList.setVisibleRowCount(-1);
-	JScrollPane negListScroller = new JScrollPane(negList);
-	negListScroller.setPreferredSize(new Dimension(300, 200));
-
-	// define GridBag
-	GridBagLayout gridbag = new GridBagLayout();
-	listPanel.setLayout(gridbag);
-	GridBagConstraints constraints = new GridBagConstraints();
-	constraints.fill = GridBagConstraints.BOTH;
-	constraints.anchor = GridBagConstraints.CENTER;
-
-	buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
-	gridbag.setConstraints(posLabel, constraints);
-	listPanel.add(posLabel);
-
-	buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
-	gridbag.setConstraints(negLabel, constraints);
-	listPanel.add(negLabel);
-
-	buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
-	gridbag.setConstraints(posListScroller, constraints);
-	listPanel.add(posListScroller);
-
-	buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
-	gridbag.setConstraints(negListScroller, constraints);
-	listPanel.add(negListScroller);
-
-	add(listPanel, BorderLayout.CENTER);
-
-	// listener for posList
-	posList.addListSelectionListener(new ListSelectionListener() {
-	    public void valueChanged(ListSelectionEvent evt) {
-		if (evt.getValueIsAdjusting())
-		    return;
-		// detect witch examples have been selected
-		Set<String> posExampleSet = new HashSet<String>();
-		int[] selectedIndices = posList.getSelectedIndices();
-		for (int i : selectedIndices)
-		    posExampleSet.add(individuals.get(i).toString());
-		config.setPosExampleSet(posExampleSet);
-		config.getComponentManager().applyConfigEntry(
-			config.getLearningProblem(), "positiveExamples",
-			config.getPosExampleSet());
-		updateOptionPanel();
-		System.out.println("POSSSSS");
-	    }
-	});
-
-	// listener for negList
-	negList.addListSelectionListener(new ListSelectionListener() {
-	    public void valueChanged(ListSelectionEvent evt) {
-		if (evt.getValueIsAdjusting())
-		    return;
-		// detect witch examples have been selected
-		Set<String> negExampleSet = new HashSet<String>();
-		int[] selectedIndices = negList.getSelectedIndices();
-		for (int i : selectedIndices)
-		    negExampleSet.add(individuals.get(i).toString());
-		config.setNegExampleSet(negExampleSet);
-		config.getComponentManager().applyConfigEntry(
-			config.getLearningProblem(), "negativeExamples",
-			config.getNegExampleSet());
-		updateOptionPanel();
-		System.out.println("POSSSSS");
-	    }
-	});
-
 	optionPanel = new OptionPanel(config, config.getLearningProblem(),
 		problems.get(choosenClassIndex));
 
-	buildConstraints(constraints, 0, 2, 2, 1, 100, 100);
-	gridbag.setConstraints(optionPanel, constraints);
-	listPanel.add(optionPanel);
-
 	add(choosePanel, BorderLayout.PAGE_START);
-	add(listPanel, BorderLayout.CENTER);
+	add(optionPanel, BorderLayout.CENTER);
 	add(initPanel, BorderLayout.PAGE_END);
 
 	choosenClassIndex = cb.getSelectedIndex();
-	//setLearningProblem();
+	// setLearningProblem();
     }
 
     public void actionPerformed(ActionEvent e) {
-	//System.out.println("index: " + cb.getSelectedIndex());
-
 	// read selected LearningProblemClass
-	// choosenClassIndex = cb.getSelectedIndex();
 	if (choosenClassIndex != cb.getSelectedIndex()) {
 	    this.choosenClassIndex = cb.getSelectedIndex();
 	    config.setInitLearningProblem(false);
 	    setLearningProblem();
-	    //System.out.println("new_index: " + cb.getSelectedIndex());
-
 	}
 
-	if (e.getSource() == autoInitButton)
+	if (e.getSource() == setButton)
 	    setLearningProblem();
 
 	if (e.getSource() == initButton)
@@ -203,40 +100,13 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
     }
 
     /**
-     * Define GridBagConstraints
-     */
-    private void buildConstraints(GridBagConstraints gbc, int gx, int gy,
-	    int gw, int gh, int wx, int wy) {
-	gbc.gridx = gx;
-	gbc.gridy = gy;
-	gbc.gridwidth = gw;
-	gbc.gridheight = gh;
-	gbc.weightx = wx;
-	gbc.weighty = wy;
-    }
-
-    /**
      * after this, you can change widgets
      */
-    public void setLearningProblem() {
-	// config.autoInit();
+    private void setLearningProblem() {
 	if (config.isInitReasoner()) {
 	    config.setLearningProblem(config.getComponentManager()
 		    .learningProblem(problems.get(choosenClassIndex),
 			    config.getReasoningService()));
-	    // lists
-	    if (config.getReasoningService() != null) {
-		// fill lists
-		Set<Individual> individualsSet = config.getReasoningService()
-			.getIndividuals();
-		individuals = new LinkedList<Individual>(individualsSet);
-		DefaultListModel listModel = new DefaultListModel();
-		for (Individual ind : individuals) {
-		    listModel.addElement(ind);
-		}
-		posList.setModel(listModel);
-		negList.setModel(listModel);
-	    }
 	    updateOptionPanel();
 	    startGUI.updateTabColors();
 	}
@@ -245,29 +115,19 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
     /**
      * after this, next tab can be used
      */
-    public void init() {
-	if (/* !config.isInitLearningProblem() && */config.getReasoner() != null
-		&& config.getLearningProblem() != null) {
-	    config.getComponentManager().applyConfigEntry(
-		    config.getLearningProblem(), "positiveExamples",
-		    config.getPosExampleSet());
-	    config.getComponentManager().applyConfigEntry(
-		    config.getLearningProblem(), "negativeExamples",
-		    config.getNegExampleSet());
-
+    private void init() {
+	if (config.getReasoner() != null && config.getLearningProblem() != null) {
 	    config.getLearningProblem().init();
 	    config.setInitLearningProblem(true);
 	    System.out.println("init LearningProblem");
 	    startGUI.updateTabColors();
-
 	}
-	// config.autoInit();
     }
 
     /**
      * update OptionPanel with new selection
      */
-    public void updateOptionPanel() {
+    private void updateOptionPanel() {
 	// update OptionPanel
 	optionPanel.update(config.getLearningProblem(), problems
 		.get(choosenClassIndex));
