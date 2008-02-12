@@ -23,6 +23,6 @@ package org.dllearner.core.owl;
  * @author Jens Lehmann
  *
  */
-public abstract class CardinalityRestriction extends Description {
+public abstract class CardinalityRestriction extends Restriction {
 
 }

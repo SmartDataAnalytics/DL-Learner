@@ -25,7 +25,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class ValueRestriction extends Description {
+public abstract class ValueRestriction extends Description {
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Concept#getArity()

@@ -19,6 +19,8 @@
  */
 package org.dllearner.core.owl;
 
+import org.dllearner.algorithms.gp.ADC;
+
 /**
  * Visitor for elements in complex class descriptions (it supports 
  * the currently relevant ones - needs to be extended when further
@@ -28,12 +30,18 @@ package org.dllearner.core.owl;
  *
  */
 public interface DescriptionVisitor {
-
+	
+	public void visit(NamedClass description);
+	
+	public void visit(ADC description);
+	
 	public void visit(Negation description);
 	
 	public void visit(ObjectAllRestriction description);
 	
 	public void visit(ObjectSomeRestriction description);
+	
+	public void visit(DatatypeSomeRestriction description);
 	
 	public void visit(Nothing description);
 	
@@ -51,5 +59,12 @@ public interface DescriptionVisitor {
 	
 	public void visit(ObjectValueRestriction description);
 	
+	public void visit(DatatypeMinCardinalityRestriction description);
+	
+	public void visit(DatatypeExactCardinalityRestriction description);
+	
+	public void visit(DatatypeMaxCardinalityRestriction description);	
+	
 	public void visit(DatatypeValueRestriction description);
+	
 }

@@ -3,6 +3,7 @@ package org.dllearner.algorithms.gp;
 import java.util.Map;
 
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.DescriptionVisitor;
 
 public class ADC extends Description {
 
@@ -29,4 +30,13 @@ public class ADC extends Description {
 	public int getArity() {
 		return 0;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
+	 */
+	@Override
+	public void accept(DescriptionVisitor visitor) {
+		visitor.visit(this);
+	}
+
 }

@@ -60,4 +60,11 @@ public class NamedClass extends Description {
     	return Helper.getAbbreviatedString(name, baseURI, prefixes);
     }
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
+	 */
+	@Override
+	public void accept(DescriptionVisitor visitor) {
+		visitor.visit(this);
+	}    
 }

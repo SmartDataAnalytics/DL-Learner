@@ -19,32 +19,26 @@
  */
 package org.dllearner.core.owl;
 
-import java.util.Map;
-
 /**
+ * Double data range restricted by a maximum value, e.g. 
+ * hasAge <= 65.
+ * 
  * @author Jens Lehmann
  *
  */
-public class ObjectExactCardinalityRestriction extends ObjectCardinalityRestriction {
+public class DoubleMaxValue extends DoubleDataRange {
 
-	public ObjectExactCardinalityRestriction(int number, ObjectPropertyExpression role, Description c) {
-		super(number,role,c);
+	private double value;
+	
+	public DoubleMaxValue(double value) {
+		this.value = value;
 	}
 
-	@Override
-	public int getArity() {
-		return 1;
-	}	
-
-	public String toString(String baseURI, Map<String,String> prefixes) {
-		return "= " + number + " " + role.toString(baseURI, prefixes) + " " + getChild(0).toString(baseURI, prefixes);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
+	/**
+	 * @return The maximum value.
 	 */
-	@Override
-	public void accept(DescriptionVisitor visitor) {
-		visitor.visit(this);
-	}	
+	public double getValue() {
+		return value;
+	}
+	
 }

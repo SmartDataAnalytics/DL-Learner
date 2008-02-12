@@ -22,13 +22,20 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 /**
+ * This class represents restrictions on datatypes, such as
+ * Man AND EXISTS hasAge >= 18.
+ * 
+ * TODO: connect this with a data range and a datatype property
+ * 
  * @author Jens Lehmann
  *
  */
-public class DatatypeMinCardinalityRestriction extends DatatypeCardinalityRestriction {
+public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
+
+
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Concept#getArity()
+	 * @see org.dllearner.core.owl.Description#getArity()
 	 */
 	@Override
 	public int getArity() {
@@ -59,4 +66,5 @@ public class DatatypeMinCardinalityRestriction extends DatatypeCardinalityRestri
 	public void accept(DescriptionVisitor visitor) {
 		visitor.visit(this);
 	}	
+	
 }

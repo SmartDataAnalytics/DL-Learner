@@ -95,5 +95,13 @@ public class ObjectSomeRestriction extends ObjectQuantorRestriction {
 	public int getLength() {
 		return 2;
 	}
-	*/       
+	*/ 
+    
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
+	 */
+	@Override
+	public void accept(DescriptionVisitor visitor) {
+		visitor.visit(this);
+	}    
 }
