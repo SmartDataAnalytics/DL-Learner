@@ -36,4 +36,12 @@ public interface PropertyAxiomVisitor {
 	public void visit(TransitiveObjectPropertyAxiom axiom);
 	
 	public void visit(SubObjectPropertyAxiom axiom);
+	
+	void visit(DatatypePropertyDomainAxiom axiom);
+
+	void visit(ObjectPropertyDomainAxiom axiom);
+	
+	void visit(DatatypePropertyRangeAxiom axiom);
+
+	void visit(ObjectPropertyRangeAxiom axiom);	
 }

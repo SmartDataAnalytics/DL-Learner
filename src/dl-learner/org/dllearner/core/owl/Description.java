@@ -10,7 +10,7 @@ import java.util.List;
  * @author jl
  *
  */
-public abstract class Description implements Cloneable, KBElement {
+public abstract class Description implements Cloneable, PropertyRange, KBElement {
 	
     protected Description parent = null;
     protected List<Description> children = new LinkedList<Description>();

@@ -20,23 +20,27 @@
 package org.dllearner.core.owl;
 
 /**
- * Visitor for all elements of a knowledge base.
+ * Axiom to specifiy the domain of a property.
  * 
  * @author Jens Lehmann
  *
  */
-public interface KBElementVisitor extends AxiomVisitor, DescriptionVisitor, PropertyExpressionVisitor {
+public abstract class PropertyDomainAxiom extends PropertyAxiom {
 
-	void visit(Datatype datatype);	
+	Description domain;
+	Property property;
 	
-	void visit(BooleanDataRange booleanDataRange);
+	public PropertyDomainAxiom(Property property, Description domain) {
+		this.property = property;
+		this.domain = domain;
+	}
 
-	void visit(DoubleMaxValue doubleMaxValue);
+	public Description getDomain() {
+		return domain;
+	}
 
-	void visit(DoubleMinValue doubleMinValue);
-
-	void visit(Individual individual);
-
-	void visit(KB kb);
-
+	public Property getProperty() {
+		return property;
+	}
+	
 }
