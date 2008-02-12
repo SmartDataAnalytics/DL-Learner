@@ -20,23 +20,21 @@
 package org.dllearner.core.owl;
 
 /**
- * Visitor for all elements of a knowledge base.
- * 
  * @author Jens Lehmann
  *
  */
-public interface KBElementVisitor extends AxiomVisitor, DescriptionVisitor, PropertyExpressionVisitor {
+public abstract class PropertyRangeAxiom extends PropertyAxiom {
 
-	void visit(Datatype datatype);	
+	Property property;
+	PropertyRange range;
 	
-	void visit(BooleanDataRange booleanDataRange);
+	public PropertyRangeAxiom(Property property, PropertyRange range) {
+		this.property = property;
+		this.range = range;
+	}
 
-	void visit(DoubleMaxValue doubleMaxValue);
-
-	void visit(DoubleMinValue doubleMinValue);
-
-	void visit(Individual individual);
-
-	void visit(KB kb);
-
+	public Property getProperty() {
+		return property;
+	}
+	
 }

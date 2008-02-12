@@ -26,12 +26,16 @@ import java.util.Set;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.AxiomVisitor;
 import org.dllearner.core.owl.ClassAssertionAxiom;
+import org.dllearner.core.owl.DatatypePropertyDomainAxiom;
+import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.InverseObjectPropertyAxiom;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
+import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
+import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
 import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
@@ -230,6 +234,38 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		ds.add(d2);
 		OWLAxiom axiomOWLAPI = factory.getOWLSubClassAxiom(d1,d2);
 		addAxiom(axiomOWLAPI);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.DatatypePropertyDomainAxiom)
+	 */
+	public void visit(DatatypePropertyDomainAxiom datatypePropertyDomainAxiom) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.ObjectPropertyDomainAxiom)
+	 */
+	public void visit(ObjectPropertyDomainAxiom objectPropertyDomainAxiom) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.DatatypePropertyRangeAxiom)
+	 */
+	public void visit(DatatypePropertyRangeAxiom axiom) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.ObjectPropertyRangeAxiom)
+	 */
+	public void visit(ObjectPropertyRangeAxiom axiom) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

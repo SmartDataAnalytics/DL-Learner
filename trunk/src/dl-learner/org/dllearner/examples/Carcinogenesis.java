@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Axiom;
@@ -39,6 +41,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
+import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.PrologParser;
 import org.dllearner.prolog.Atom;
@@ -73,6 +76,14 @@ public class Carcinogenesis {
 	
 	// mapping of symbols to names of chemical elements
 	private static Map<String,String> chemElements;
+	
+	// types of atoms and bonds
+	private static Set<String> atomTypes = new TreeSet<String>();
+	private static Set<String> bondTypes = new TreeSet<String>();
+	
+	// we need a counter for bonds, because they are instances in OWL
+	// but not in Prolog
+	private static int bondNr = 0;
 	
 	/**
 	 * @param args
@@ -120,13 +131,22 @@ public class Carcinogenesis {
 		}
 
 		// prepare mapping
+		KB kb = new KB();		
 		createChemElementsMapping();
+		// create subclasses of atom
+		NamedClass atomClass = getAtomicConcept("Atom");
+		for(String element : chemElements.values()) {
+			NamedClass elClass = getAtomicConcept(element);
+			SubClassAxiom sc = new SubClassAxiom(elClass, atomClass);
+			kb.addAxiom(sc);
+		}
+		// define properties including domain and range
+		// ... TODO ...
 		
 		// mapping clauses to axioms
 		System.out.print("Mapping clauses to axioms ... ");
 		startTime = System.nanoTime();		
 		ArrayList<Clause> clauses = program.getClauses();
-		KB kb = new KB();
 		for (Clause clause : clauses) {
 			List<Axiom> axioms = mapClause(clause);
 			for (Axiom axiom : axioms)
@@ -153,8 +173,7 @@ public class Carcinogenesis {
 		// ArrayList<Literal> literals = body.getLiterals();
 		// handle: atm(compound,atom,element,atomtype,charge)
 		if (headName.equals("atm")) {
-			// System.out.println(clause.toPLString());
-			// System.out.println(clause);
+
 			String compoundName = head.getArgument(0).toPLString();
 			String atomName = head.getArgument(1).toPLString();
 			String elementName = head.getArgument(2).toPLString();
@@ -167,11 +186,47 @@ public class Carcinogenesis {
 			String atomClass = getAtomClass(elementName, type);
 			ClassAssertionAxiom ca = getConceptAssertion(atomClass,atomName);
 			axioms.add(ca);
+			// write subclass axiom if doesn't exist already
+			if(!atomTypes.contains(atomClass)) {
+				NamedClass subClass = getAtomicConcept(atomClass);
+				NamedClass superClass = getAtomicConcept(getFullElementName(elementName));
+				SubClassAxiom sc = new SubClassAxiom(subClass, superClass);
+				axioms.add(sc);
+				atomTypes.add(atomClass);
+			}
 			// charge of atom
 			DatatypePropertyAssertion dpa = getDoubleDatatypePropertyAssertion(atomName, "charge", charge);
 			axioms.add(dpa);
+		} else if(headName.equals("bond")) {
+			String compoundName = head.getArgument(0).toPLString();
+			String atom1Name = head.getArgument(1).toPLString();
+			String atom2Name = head.getArgument(2).toPLString();
+			String bondType = head.getArgument(3).toPLString();
+			String bondClass = "Bond-" + bondType;
+			String bondInstance = "bond" + bondNr;
+			ObjectPropertyAssertion op = getRoleAssertion("hasBond", compoundName, "bond" + bondNr);
+			axioms.add(op);
+			// make Bond-X subclass of Bond if that hasn't been done already
+			if(!bondTypes.contains(bondClass)) {
+				NamedClass subClass = getAtomicConcept(bondClass);
+				SubClassAxiom sc = new SubClassAxiom(subClass, getAtomicConcept("Bond"));
+				axioms.add(sc);	
+				bondTypes.add(bondClass);
+			}
+			// make e.g. bond382 instance of Bond-3
+			ClassAssertionAxiom ca = getConceptAssertion(bondClass, bondInstance);
+			axioms.add(ca);
+			bondNr++;
+			// connect atoms with bond
+			ObjectPropertyAssertion op1 = getRoleAssertion("inBond", bondInstance, atom1Name);
+			ObjectPropertyAssertion op2 = getRoleAssertion("inBond", bondInstance, atom2Name);
+			axioms.add(op1);
+			axioms.add(op2);
 		} else {
 			// print clauses which are not supported yet
+			System.out.println("unsupported clause");
+			System.out.println(clause.toPLString());
+			System.out.println(clause);			
 		}
 		return axioms;
 	}
@@ -193,8 +248,8 @@ public class Carcinogenesis {
 		return new ObjectPropertyAssertion(ar,ind1,ind2);
 	}
 	
-	private static DoubleDatatypePropertyAssertion getDoubleDatatypePropertyAssertion(String datatypeProperty, String i, double value) {
-		Individual ind = getIndividual(i);
+	private static DoubleDatatypePropertyAssertion getDoubleDatatypePropertyAssertion(String individual, String datatypeProperty, double value) {
+		Individual ind = getIndividual(individual);
 		DatatypeProperty dp = getDatatypeProperty(datatypeProperty);
 		return new DoubleDatatypePropertyAssertion(dp,ind,value);
 	}	

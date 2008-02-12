@@ -23,6 +23,6 @@ package org.dllearner.core.owl;
  * @author Jens Lehmann
  *
  */
-public abstract class DataRange implements KBElement {
+public abstract class DataRange implements PropertyRange {
 
 }
