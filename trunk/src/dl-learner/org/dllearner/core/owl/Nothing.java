@@ -26,4 +26,12 @@ public class Nothing extends Description {
 	public int getArity() {
 		return 0;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
+	 */
+	@Override
+	public void accept(DescriptionVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

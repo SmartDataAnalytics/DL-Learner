@@ -25,4 +25,11 @@ package org.dllearner.core.owl;
  */
 public class DatatypeValueRestriction extends ValueRestriction {
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
+	 */
+	@Override
+	public void accept(DescriptionVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

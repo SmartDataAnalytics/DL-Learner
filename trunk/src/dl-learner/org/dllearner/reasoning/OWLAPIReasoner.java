@@ -546,10 +546,12 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}	
 	
+	@Deprecated
 	public static OWLObjectProperty getOWLAPIDescription(ObjectProperty role) {
 		return staticFactory.getOWLObjectProperty(URI.create(role.getName()));
 	}
 	
+	@Deprecated
 	public static OWLDescription getOWLAPIDescription(Description concept) {
 		if (concept instanceof NamedClass) {
 			return staticFactory.getOWLClass(URI.create(((NamedClass)concept).getName()));
@@ -585,6 +587,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		throw new IllegalArgumentException("Unsupported concept type.");
 	}	
 	
+	@Deprecated
 	public static void fillOWLAPIOntology(OWLOntologyManager manager, OWLOntology ontology, KB kb) {
 
 		// OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -630,7 +633,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					manager.applyChange(addAxiom);					
 				} else if (axiom instanceof TransitiveObjectPropertyAxiom) {
 					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((SymmetricObjectPropertyAxiom) axiom).getRole().getName()));
+							URI.create(((TransitiveObjectPropertyAxiom) axiom).getRole().getName()));
 					OWLAxiom axiomOWLAPI = factory.getOWLTransitiveObjectPropertyAxiom(role);
 					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
 					manager.applyChange(addAxiom);					

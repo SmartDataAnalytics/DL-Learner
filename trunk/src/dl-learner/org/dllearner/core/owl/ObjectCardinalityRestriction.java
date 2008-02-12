@@ -1,6 +1,6 @@
 package org.dllearner.core.owl;
 
-public abstract class ObjectCardinalityRestriction extends Description {
+public abstract class ObjectCardinalityRestriction extends CardinalityRestriction {
 
 	protected ObjectPropertyExpression role;
 	protected int number;

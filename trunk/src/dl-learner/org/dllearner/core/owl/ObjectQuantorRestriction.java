@@ -1,6 +1,6 @@
 package org.dllearner.core.owl;
 
-public abstract class ObjectQuantorRestriction extends Description {
+public abstract class ObjectQuantorRestriction extends QuantorRestriction {
 
 	ObjectPropertyExpression role;
 	

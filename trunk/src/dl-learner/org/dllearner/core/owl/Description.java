@@ -274,5 +274,6 @@ public abstract class Description implements Cloneable, KBElement {
 	public String toString() {
 		return toString(null, null);
 	}
-    
+	
+	public abstract void accept(DescriptionVisitor visitor);
 }
