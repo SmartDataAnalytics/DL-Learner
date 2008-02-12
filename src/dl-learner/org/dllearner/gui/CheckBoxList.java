@@ -41,7 +41,6 @@ public class CheckBoxList extends JPanel {
     private LinkedList<JCheckBox> list = new LinkedList<JCheckBox>();
     private GridBagLayout gridbag = new GridBagLayout();
     private GridBagConstraints constraints = new GridBagConstraints();
-    private Set<String> selectionSet = new HashSet<String>();
 
     /**
      * get a JPanel
@@ -53,9 +52,9 @@ public class CheckBoxList extends JPanel {
     }
 
     /**
-     * add new entry
+     * Add new entry and make a new JCheckBox.
      * 
-     * @param label
+     * @param label This text will be shown.
      */
     public void add(String label) {
 	list.add(new JCheckBox(label));
@@ -63,15 +62,30 @@ public class CheckBoxList extends JPanel {
     }
 
     /**
-     * return a set of selected items
+     * Return a set of selected items.
      */
     public Set<String> getSelections() {
+	Set<String> selectionSet = new HashSet<String>();
 	selectionSet.clear(); // remove all
 	for (int i = 0; i < list.size(); i++) {
 	    if (list.get(i).isSelected())
-		this.selectionSet.add(list.get(i).getText());
+		selectionSet.add(list.get(i).getText());
 	}
-	return this.selectionSet;
+	return selectionSet;
+    }
+
+    /**
+     * Select items.
+     * 
+     * @param selectionSet Is a Set of Strings.
+     */
+    public void setSelections(Set<String> selectionSet) {
+	for (int i = 0; i < list.size(); i++) {
+	    if (selectionSet.contains(list.get(i).getText()))
+		list.get(i).setSelected(true);
+	    else
+		list.get(i).setSelected(false);
+	}
     }
 
     /**
