@@ -56,7 +56,7 @@ import org.dllearner.core.owl.ObjectProperty;
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelStringSet extends AbstractWidgetPanel implements
+public class WidgetPanelStringSet extends WidgetPanelAbstract implements
 	ActionListener {
 
     private static final long serialVersionUID = 7832726987046601916L;

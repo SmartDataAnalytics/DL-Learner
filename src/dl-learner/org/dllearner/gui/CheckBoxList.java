@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 /**
- * CheckBoxList is a list of CheckBox's
+ * CheckBoxList constitute a list of CheckBox's
  * 
  * @author Tilo Hielscher
  */
@@ -41,7 +41,7 @@ public class CheckBoxList extends JPanel {
     private GridBagConstraints constraints = new GridBagConstraints();
 
     /**
-     * get a JPanel
+     * Make a JPanel with GridBagLayout.
      */
     public CheckBoxList() {
 	checkBoxPanel.setLayout(gridbag);
@@ -52,7 +52,9 @@ public class CheckBoxList extends JPanel {
     /**
      * Add new entry and make a new JCheckBox.
      * 
-     * @param label This text will be shown.
+     * @param label
+     *                This text will be shown. It is the name of new JCheckBox
+     *                and will add to list.
      */
     public void add(String label) {
 	list.add(new JCheckBox(label));
@@ -75,7 +77,8 @@ public class CheckBoxList extends JPanel {
     /**
      * Select items.
      * 
-     * @param selectionSet Is a Set of Strings.
+     * @param selectionSet
+     *                Is a Set of Strings.
      */
     public void setSelections(Set<String> selectionSet) {
 	for (int i = 0; i < list.size(); i++) {

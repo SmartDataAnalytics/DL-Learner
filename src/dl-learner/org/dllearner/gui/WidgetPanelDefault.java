@@ -35,7 +35,7 @@ import org.dllearner.core.config.ConfigOption;
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelDefault extends AbstractWidgetPanel {
+public class WidgetPanelDefault extends WidgetPanelAbstract {
 
     private static final long serialVersionUID = 4059515858894036769L;
 

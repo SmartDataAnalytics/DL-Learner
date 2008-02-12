@@ -43,7 +43,7 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelDouble extends AbstractWidgetPanel implements
+public class WidgetPanelDouble extends WidgetPanelAbstract implements
 	ActionListener {
 
     private static final long serialVersionUID = 5238903690721116289L;
