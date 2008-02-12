@@ -13,4 +13,6 @@ public interface KBElement {
 	public int getLength();
 	
     public String toString(String baseURI, Map<String,String> prefixes);
+    
+    public void accept(KBElementVisitor visitor);
 }

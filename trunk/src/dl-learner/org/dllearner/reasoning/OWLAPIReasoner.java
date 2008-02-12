@@ -532,7 +532,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		OWLOntology ontology;
 		try {
 			ontology = manager.createOntology(ontologyURI);
-			OWLAPIReasoner.fillOWLAPIOntology(manager, ontology, kb);
+			// OWLAPIReasoner.fillOWLAPIOntology(manager, ontology, kb);
+			OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
 			manager.saveOntology(ontology);
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block

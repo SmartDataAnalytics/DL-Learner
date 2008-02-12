@@ -30,7 +30,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class NamedClass extends Description {
+public class NamedClass extends Description implements NamedKBElement {
 
     String name;
     
@@ -66,5 +66,9 @@ public class NamedClass extends Description {
 	@Override
 	public void accept(DescriptionVisitor visitor) {
 		visitor.visit(this);
-	}    
+	}   
+	
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

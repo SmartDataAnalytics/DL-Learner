@@ -19,47 +19,15 @@
  */
 package org.dllearner.core.owl;
 
-import java.util.Map;
-
 /**
- * Double data range restricted by a maximum value, e.g. 
- * hasAge <= 65.
+ * Marker interface for those OWL elements, which have a name, e.g.
+ * the name of an individual, an object property, a data type property
+ * or a named class.
  * 
  * @author Jens Lehmann
  *
  */
-public class DoubleMaxValue extends DoubleDataRange {
+public interface NamedKBElement extends KBElement {
 
-	private double value;
-	
-	public DoubleMaxValue(double value) {
-		this.value = value;
-	}
-
-	/**
-	 * @return The maximum value.
-	 */
-	public double getValue() {
-		return value;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#getLength()
-	 */
-	public int getLength() {
-		return 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
-	 */
-	public String toString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public void accept(KBElementVisitor visitor) {
-		visitor.visit(this);
-	}	
-	
+	public String getName();
 }

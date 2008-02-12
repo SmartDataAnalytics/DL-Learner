@@ -19,10 +19,47 @@
  */
 package org.dllearner.core.owl;
 
+import java.util.Map;
+
 /**
+ * Allows to specify the value of a boolean datatype restriction,
+ * e.g. ChemicalSubstance AND EXISTS acidTest = true
+ * 
  * @author Jens Lehmann
  *
  */
 public class BooleanDataRange extends DataRange {
 
+	private boolean isTrue;
+	
+	public BooleanDataRange(boolean isTrue) {
+		this.isTrue = isTrue;
+	}
+	
+	/**
+	 * @return The boolean value of this restriction.
+	 */
+	public boolean isTrue() {
+		return isTrue;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#getLength()
+	 */
+	public int getLength() {
+		// length is 1, because we have either true or false
+		return 1;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
+	 */
+	public String toString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

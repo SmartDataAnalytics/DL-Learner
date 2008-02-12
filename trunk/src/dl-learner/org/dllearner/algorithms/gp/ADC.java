@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DescriptionVisitor;
+import org.dllearner.core.owl.KBElementVisitor;
 
 public class ADC extends Description {
 
@@ -36,6 +37,10 @@ public class ADC extends Description {
 	 */
 	@Override
 	public void accept(DescriptionVisitor visitor) {
+		visitor.visit(this);
+	}
+
+	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
 	}
 

@@ -20,6 +20,9 @@
 package org.dllearner.core.owl;
 
 /**
+ * Restricts the value of an object property to a single individual
+ * (corresponds to owl:hasValue).
+ * 
  * @author Jens Lehmann
  *
  */
@@ -33,4 +36,7 @@ public class ObjectValueRestriction extends ValueRestriction {
 		visitor.visit(this);
 	}	
 	
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

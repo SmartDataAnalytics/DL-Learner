@@ -51,6 +51,11 @@ public class ObjectPropertyAssertion extends PropertyAssertion {
 	public ObjectProperty getRole() {
 		return role;
 	}
+	
+	@Override
+	public void accept(AxiomVisitor visitor) {
+		visitor.visit(this);
+	}	
 
 	public int getLength() {
 		return 2 + role.getLength();
@@ -59,4 +64,8 @@ public class ObjectPropertyAssertion extends PropertyAssertion {
 	public String toString(String baseURI, Map<String,String> prefixes) {
 		return role.toString(baseURI, prefixes) + "(" + individual1.toString(baseURI, prefixes) + "," + individual2.toString(baseURI, prefixes) +")";
 	}
+	
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }
