@@ -28,7 +28,8 @@ import javax.swing.*;
 import org.dllearner.core.LearningProblem;
 
 /**
- * LearningProblemPanel
+ * LearningProblemPanel tab 3. Choose LearingProblem, change Options and final
+ * initiate LearningProblem.
  * 
  * @author Tilo Hielscher
  */

@@ -35,7 +35,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.config.*;
 
 /**
- * OptionPanel
+ * OptionPanel reads all possible options and use all widgets. Definition map is here.
  * 
  * @author Tilo Hielscher
  * 

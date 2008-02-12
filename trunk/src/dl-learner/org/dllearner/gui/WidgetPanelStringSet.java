@@ -47,7 +47,11 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 
 /**
- * WidgetPanelStringSet
+ * Panel for option StringSet, defined in
+ * org.dllearner.core.config.StringSetConfigOption.
+ * 
+ * There are 2 layouts defined. First for normal option and a second for special
+ * options. Second layout shows a list of JCheckBox's.
  * 
  * @author Tilo Hielscher
  * 
@@ -141,7 +145,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
     }
 
     @Override
-    protected void showLabel() {
+    public void showLabel() {
 	nameLabel = new JLabel(configOption.getName());
 	nameLabel.setToolTipText(configOption.getDescription());
 	buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
@@ -152,7 +156,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void showThingToChange() {
+    public void showThingToChange() {
 	if (component != null) {
 	    // StringSetConfigOption
 	    if (configOption.getClass().toString().contains(
@@ -272,7 +276,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
     }
 
     @Override
-    protected void setEntry() {
+    public void setEntry() {
 	StringSetConfigOption specialOption;
 	specialOption = (StringSetConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());

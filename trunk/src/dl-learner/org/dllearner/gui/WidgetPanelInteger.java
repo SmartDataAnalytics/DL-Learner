@@ -37,7 +37,8 @@ import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 /**
- * WidgetPanelInteger
+ * Panel for option Integer, defined in
+ * org.dllearner.core.config.IntegerConfigOption.
  * 
  * @author Tilo Hielscher
  * 
@@ -71,10 +72,6 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
 	add(widgetPanel, BorderLayout.CENTER);
     }
 
-    public JPanel getPanel() {
-	return this;
-    }
-
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == setButton) {
 	    setEntry();
@@ -82,14 +79,14 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
     }
 
     @Override
-    protected void showLabel() {
+    public void showLabel() {
 	nameLabel = new JLabel(configOption.getName());
 	nameLabel.setToolTipText(configOption.getDescription());
 	widgetPanel.add(nameLabel);
     }
 
     @Override
-    protected void showThingToChange() {
+    public void showThingToChange() {
 	if (component != null) {
 	    // IntegerConfigOption
 	    if (configOption.getClass().toString().contains(
@@ -129,7 +126,7 @@ public class WidgetPanelInteger extends AbstractWidgetPanel implements
     }
 
     @Override
-    protected void setEntry() {
+    public void setEntry() {
 	IntegerConfigOption specialOption;
 	value = Integer.parseInt(integerField.getText()); // get from input
 	specialOption = (IntegerConfigOption) config.getComponentManager()

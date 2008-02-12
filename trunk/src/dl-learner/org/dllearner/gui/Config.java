@@ -20,209 +20,219 @@ package org.dllearner.gui;
  *
  */
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.ReasonerComponent;
 
 /**
- * config
- * 
- * this class save all together used variables
+ * Config save all together used variables: ComponentManager, KnowledgeSource,
+ * Reasoner, ReasoningService, LearningProblem, LearningAlgorithm; also inits of
+ * these components
  * 
  * @author Tilo Hielscher
- * 
  */
-
 public class Config {
     private ComponentManager cm = ComponentManager.getInstance();
     private KnowledgeSource source;
     private String uri;
     private ReasonerComponent reasoner;
     private ReasoningService rs;
-    private Set<String> posExampleSet = new HashSet<String>();
-    private Set<String> negExampleSet = new HashSet<String>();
     private LearningProblem lp;
     private LearningAlgorithm la;
     private boolean[] isInit = new boolean[4];
 
-    protected ComponentManager getComponentManager() {
-	return cm;
-    }
-
-    protected void setComponentManager(ComponentManager input) {
-	cm = input;
-    }
-
-    protected String getURI() {
-	return uri;
-    }
-
-    protected void setURI(String input) {
-	uri = input;
-    }
-
-    protected ReasonerComponent getReasoner() {
-	return reasoner;
-    }
-
-    protected void setReasoner(ReasonerComponent input) {
-	reasoner = input;
-    }
-
-    protected ReasoningService getReasoningService() {
-	return rs;
-    }
-
-    protected void setReasoningService(ReasoningService input) {
-	rs = input;
-    }
-
-    protected KnowledgeSource getKnowledgeSource() {
-	return source;
-    }
-
-    protected void setKnowledgeSource(KnowledgeSource input) {
-	source = input;
-    }
-
-    protected void setPosExampleSet(Set<String> posExampleSet) {
-	this.posExampleSet = posExampleSet;
-    }
-
-    protected Set<String> getPosExampleSet() {
-	return this.posExampleSet;
-    }
-
-    protected void setNegExampleSet(Set<String> negExampleSet) {
-	this.negExampleSet = negExampleSet;
-    }
-
-    protected Set<String> getNegExampleSet() {
-	return this.negExampleSet;
-    }
-
-    protected void setLearningProblem(LearningProblem input) {
-	lp = input;
-    }
-
-    protected LearningProblem getLearningProblem() {
-	return lp;
-    }
-
-    protected void setLearningAlgorithm(LearningAlgorithm input) {
-	la = input;
-    }
-
-    protected LearningAlgorithm getLearningAlgorithm() {
-	return la;
+    /**
+     * Get ComponentManager.
+     * 
+     * @return ComponentManager
+     */
+    public ComponentManager getComponentManager() {
+	return this.cm;
     }
 
     /**
-     * KnowledgeSource.init has run? return true, if it was
+     * It is necessary for init KnowledgeSource.
+     * 
+     * @return URI
      */
-    protected boolean isInitKnowledgeSource() {
+    public String getURI() {
+	return this.uri;
+    }
+
+    /**
+     * Set an URI.
+     * 
+     * @param uri
+     *                it's a Link like "http://example.com" or "file://myfile"
+     */
+    public void setURI(String uri) {
+	this.uri = uri;
+    }
+
+    /**
+     * Get Reasoner.
+     * 
+     * @return reasoner
+     */
+    public ReasonerComponent getReasoner() {
+	return this.reasoner;
+    }
+
+    /**
+     * Set Reasoner.
+     * 
+     * @param reasoner
+     */
+    public void setReasoner(ReasonerComponent reasoner) {
+	this.reasoner = reasoner;
+    }
+
+    /**
+     * Get ReasoningService.
+     * 
+     * @return ReasoningService
+     */
+    public ReasoningService getReasoningService() {
+	return this.rs;
+    }
+
+    /**
+     * Set ReasoningService.
+     * 
+     * @param reasoningService
+     */
+    public void setReasoningService(ReasoningService reasoningService) {
+	this.rs = reasoningService;
+    }
+
+    /**
+     * Get KnowledgeSource.
+     * 
+     * @return KnowledgeSource
+     */
+    public KnowledgeSource getKnowledgeSource() {
+	return this.source;
+    }
+
+    /**
+     * Set KnowledgeSource.
+     * 
+     * @param knowledgeSource
+     */
+    public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
+	this.source = knowledgeSource;
+    }
+
+    /**
+     * Set LearningProblem.
+     * 
+     * @param learningProblem
+     */
+    public void setLearningProblem(LearningProblem learningProblem) {
+	this.lp = learningProblem;
+    }
+
+    /**
+     * Get LearningProblem.
+     * 
+     * @return learningProblem
+     */
+    public LearningProblem getLearningProblem() {
+	return this.lp;
+    }
+
+    /**
+     * Set LearningAlgorithm.
+     * 
+     * @param learningAlgorithm
+     */
+    public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
+	this.la = learningAlgorithm;
+    }
+
+    /**
+     * Get LearningAlgorithm.
+     * 
+     * @return LearningAlgorithm
+     */
+    public LearningAlgorithm getLearningAlgorithm() {
+	return this.la;
+    }
+
+    /**
+     * KnowledgeSource.init has run?
+     * 
+     * @return true, if init was made, false if not
+     */
+    public boolean isInitKnowledgeSource() {
 	return isInit[0];
     }
 
     /**
-     * set true if you run KnowwledgeSource.init
+     * Set true if you run KnowwledgeSource.init. The inits from other tabs
+     * behind will automatic set to false.
      */
-    protected void setInitKnowledgeSource(Boolean is) {
+    public void setInitKnowledgeSource(Boolean is) {
 	isInit[0] = is;
 	for (int i = 1; i < 4; i++)
 	    isInit[i] = false;
     }
 
     /**
-     * Reasoner.init has run? return true, if it was
+     * Reasoner.init has run?
+     * 
+     * @return true, if init was made, false if not
      */
-    protected boolean isInitReasoner() {
+    public boolean isInitReasoner() {
 	return isInit[1];
     }
 
     /**
-     * set true if you run Reasoner.init
+     * Set true if you run Reasoner.init. The inits from other tabs behind will
+     * automatic set to false.
      */
-    protected void setInitReasoner(Boolean is) {
+    public void setInitReasoner(Boolean is) {
 	isInit[1] = is;
 	for (int i = 2; i < 4; i++)
 	    isInit[i] = false;
     }
 
     /**
-     * LearningProblem.init has run? return true, if it was
+     * LearningProblem.init has run?
+     * 
+     * @return true, if init was made, false if not
      */
-    protected boolean isInitLearningProblem() {
+    public boolean isInitLearningProblem() {
 	return isInit[2];
     }
 
     /**
-     * set true if you run LearningProblem.init
+     * Set true if you run LearningProblem.init. The inits from other tabs
+     * behind will automatic set to false.
      */
-    protected void setInitLearningProblem(Boolean is) {
+    public void setInitLearningProblem(Boolean is) {
 	isInit[2] = is;
 	for (int i = 3; i < 4; i++)
 	    isInit[i] = false;
     }
 
     /**
-     * LearningAlgorithm.init() has run? return true, if it was
+     * LearningAlgorithm.init() has run?
+     * 
+     * @return true, if init was made, false if not
      */
-    protected boolean isInitLearningAlgorithm() {
+    public boolean isInitLearningAlgorithm() {
 	return isInit[3];
     }
 
     /**
      * set true if you run LearningAlgorithm.init
      */
-    protected void setInitLearningAlgorithm(Boolean is) {
+    public void setInitLearningAlgorithm(Boolean is) {
 	isInit[3] = is;
-    }
-
-    @Deprecated
-    protected void autoInit() {
-	// Knowledge Source
-	if (!this.isInitKnowledgeSource() && this.getKnowledgeSource() != null
-		&& this.getURI() != null) {
-	    this.getKnowledgeSource().init();
-	    this.setInitKnowledgeSource(true);
-	    System.out.println("init KnowledgeSource");
-	}
-	// Reasoner
-	if (!this.isInitReasoner() && this.getKnowledgeSource() != null
-		&& this.getReasoner() != null) {
-	    this.getReasoner().init();
-	    System.out.println("init Reasoner");
-	    // set ReasoningService
-	    this.setReasoningService(this.getComponentManager()
-		    .reasoningService(this.getReasoner()));
-	    System.out.println("init ReasoningService");
-	    this.setInitReasoner(true);
-	}
-	// Learning Problem
-	if (!this.isInitLearningProblem() && this.getReasoner() != null
-		&& this.getLearningProblem() != null) {
-	    this.getComponentManager().applyConfigEntry(
-		    this.getLearningProblem(), "negativeExamples",
-		    this.getNegExampleSet());
-	    this.getLearningProblem().init();
-	    this.setInitLearningProblem(true);
-	    System.out.println("init LearningProblem");
-	}
-	// Learning Algorithm
-	if (!this.isInitLearningAlgorithm()
-		&& this.getLearningProblem() != null
-		&& this.getLearningAlgorithm() != null) {
-	    this.getLearningAlgorithm().init();
-	    System.out.println("init LearningAlgorithm");
-	}
-
     }
 
 }

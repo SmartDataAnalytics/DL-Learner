@@ -28,10 +28,10 @@ import java.awt.event.ActionListener;
 import org.dllearner.core.KnowledgeSource;
 
 /**
- * KnowledgeSourcePanel
+ * KnowledgeSourcePanel, tab 1. Choose Source, change Options and final initiate
+ * KnowledgeSource.
  * 
  * @author Tilo Hielscher
- * 
  */
 public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
