@@ -21,7 +21,7 @@ package org.dllearner.gui;
  */
 
 /**
- * Start algorihtm in a new thread.
+ * Start algorithm in a new thread.
  * 
  * @author Tilo Hielscher
  */

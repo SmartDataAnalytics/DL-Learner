@@ -23,11 +23,11 @@ package org.dllearner.gui;
 import javax.swing.JPanel;
 
 /**
- * AbstractWidgetPanel
+ * WidgetPanelAbstract defines all Widgets in an abstract way.
  * 
  * @author Tilo Hielscher
  */
-public abstract class AbstractWidgetPanel extends JPanel {
+public abstract class WidgetPanelAbstract extends JPanel {
 
     /**
      * Show label and tooltip.
