@@ -57,11 +57,14 @@ public class StartGUI extends JFrame implements ActionListener {
     private JMenuItem saveItem = new JMenuItem("Save Config");
 
     public StartGUI() {
-	this.setTitle("DL-Learner GUI");
+	this.setTitle("DL-Learner");
 	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	this.setLocationByPlatform(true);
 	this.setSize(800, 600);
-
+	
+	// set icon
+	setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("icon.gif")));
+	
 	tab0 = new KnowledgeSourcePanel(config, this);
 	tab1 = new ReasonerPanel(config, this);
 	tab2 = new LearningProblemPanel(config, this);
