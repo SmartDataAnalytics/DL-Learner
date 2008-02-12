@@ -30,7 +30,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class ObjectProperty extends ObjectPropertyExpression implements Property {
+public class ObjectProperty extends ObjectPropertyExpression implements Property, NamedKBElement {
 
 	public ObjectProperty(String name) {
 		super(name);
@@ -48,4 +48,8 @@ public class ObjectProperty extends ObjectPropertyExpression implements Property
     public String toString(String baseURI, Map<String,String> prefixes) {
     	return Helper.getAbbreviatedString(name, baseURI, prefixes);
     }
+    
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}    
 }

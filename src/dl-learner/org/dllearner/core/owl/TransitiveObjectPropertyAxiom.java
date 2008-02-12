@@ -21,4 +21,13 @@ public class TransitiveObjectPropertyAxiom extends PropertyAxiom {
 	public String toString(String baseURI, Map<String,String> prefixes) {
 		return "Transitive(" + role.toString(baseURI, prefixes) + ")";
 	}
+	
+	@Override
+	public void accept(AxiomVisitor visitor) {
+		visitor.visit(this);
+	}	
+	
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

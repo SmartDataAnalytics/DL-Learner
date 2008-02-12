@@ -27,4 +27,14 @@ package org.dllearner.core.owl;
  */
 public interface KBElementVisitor extends AxiomVisitor, DescriptionVisitor, PropertyExpressionVisitor {
 
+	void visit(BooleanDataRange booleanDataRange);
+
+	void visit(DoubleMaxValue doubleMaxValue);
+
+	void visit(DoubleMinValue doubleMinValue);
+
+	void visit(Individual individual);
+
+	void visit(KB kb);
+
 }

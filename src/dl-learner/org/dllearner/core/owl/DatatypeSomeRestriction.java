@@ -66,5 +66,8 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	public void accept(DescriptionVisitor visitor) {
 		visitor.visit(this);
 	}	
-	
+
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

@@ -223,4 +223,8 @@ public class KB implements KBElement {
 		return (abox.size() + tbox.size() + rbox.size());
 	}
 	
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
+	
 }

@@ -27,7 +27,5 @@ package org.dllearner.core.owl;
  *
  */
 public interface AxiomVisitor extends AssertionalAxiomVisitor, PropertyAxiomVisitor, TerminologicalAxiomVisitor {
-
-
 	
 }

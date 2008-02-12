@@ -65,4 +65,7 @@ public class Union extends Description {
 		visitor.visit(this);
 	}	
 	
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

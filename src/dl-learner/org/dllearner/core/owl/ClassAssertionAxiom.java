@@ -53,4 +53,13 @@ public class ClassAssertionAxiom extends AssertionalAxiom {
 	public String toString(String baseURI, Map<String,String> prefixes) {
 		return concept.toString(baseURI, prefixes) + "(" + individual + ")";
 	}
+	
+	@Override
+	public void accept(AxiomVisitor visitor) {
+		visitor.visit(this);
+	}	
+	
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

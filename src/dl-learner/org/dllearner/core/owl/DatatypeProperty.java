@@ -27,7 +27,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class DatatypeProperty extends PropertyExpression implements Property {
+public class DatatypeProperty extends PropertyExpression implements Property, NamedKBElement {
 
 	protected String name;
 	
@@ -42,6 +42,10 @@ public class DatatypeProperty extends PropertyExpression implements Property {
 		return 1;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.dl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
@@ -49,4 +53,7 @@ public class DatatypeProperty extends PropertyExpression implements Property {
 		return Helper.getAbbreviatedString(name, baseURI, prefixes);
 	}
 
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

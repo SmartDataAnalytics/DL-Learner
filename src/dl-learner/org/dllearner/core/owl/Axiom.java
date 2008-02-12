@@ -7,4 +7,5 @@ public abstract class Axiom implements KBElement {
 		return toString(null, null);
 	}
 	
+	public abstract void accept(AxiomVisitor visitor);	
 }

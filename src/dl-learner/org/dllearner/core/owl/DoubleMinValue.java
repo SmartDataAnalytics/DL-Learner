@@ -19,6 +19,8 @@
  */
 package org.dllearner.core.owl;
 
+import java.util.Map;
+
 /**
  * Double data range restricted by a maximum value, e.g. 
  * hasAge >= 18. 
@@ -39,6 +41,24 @@ public class DoubleMinValue extends DoubleDataRange {
 	 */
 	public double getValue() {
 		return value;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#getLength()
+	 */
+	public int getLength() {
+		return 2;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
+	 */
+	public String toString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 	
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }

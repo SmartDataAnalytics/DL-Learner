@@ -33,8 +33,6 @@ public class DoubleDatatypePropertyAssertion extends DatatypePropertyAssertion {
 		super(datatypeProperty, individual);
 		this.value = value;
 	}
-	
-
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.dl.KBElement#toString(java.lang.String, java.util.Map)
@@ -47,4 +45,12 @@ public class DoubleDatatypePropertyAssertion extends DatatypePropertyAssertion {
 		return value;
 	}
 
+	@Override
+	public void accept(AxiomVisitor visitor) {
+		visitor.visit(this);
+	}
+
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
 }
