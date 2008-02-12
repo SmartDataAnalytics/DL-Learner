@@ -111,9 +111,8 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 	    // remove selection
 	    if (e.getSource() == removeButton) {
 		int[] selectedIndices = stringList.getSelectedIndices();
-		int count = 0; // remove i.e. index 2 and 4: after delete 2, 4
-		// is
-		// now index 3
+		int count = 0;
+		// remove i.e. 2 and 4: after delete 2: 4 is now 3
 		for (int i : selectedIndices)
 		    listModel.remove(i - count++);
 	    }
@@ -212,6 +211,8 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 		    buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
 		    gridbag.setConstraints(setButton, constraints);
 		    widgetPanel.add(setButton, constraints);
+		    // set selections
+		    cBL.setSelections(value);
 		    // DEFINE LIST
 		    // positiveExamples or negativeExamples
 		    if (configOption.getName().equalsIgnoreCase(
@@ -255,23 +256,24 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel implements
 	    }
 	    // UNKNOWN
 	    else {
-		JLabel notImplementedLabel = new JLabel("not a set of strings");
+		JLabel notImplementedLabel = new JLabel(" not a set of strings");
 		notImplementedLabel.setForeground(Color.RED);
-		buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+		buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
 		gridbag.setConstraints(notImplementedLabel, constraints);
 		widgetPanel.add(notImplementedLabel);
 	    }
 	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel("no init (StringSet)");
+	    JLabel noConfigOptionLabel = new JLabel(" no init (StringSet)");
 	    noConfigOptionLabel.setForeground(Color.MAGENTA);
-	    widgetPanel.add(noConfigOptionLabel);
+	    buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
+	    gridbag.setConstraints(noConfigOptionLabel, constraints);
+	    widgetPanel.add(noConfigOptionLabel, constraints);
 	}
     }
 
     @Override
     protected void setEntry() {
 	StringSetConfigOption specialOption;
-	// value = stringField.getText(); // get from input
 	specialOption = (StringSetConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
 
