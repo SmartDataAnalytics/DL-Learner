@@ -36,10 +36,10 @@ import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 /**
- * WidgetPanelInteger
+ * Panel for option Boolean, defined in
+ * org.dllearner.core.config.BooleanConfigOption.
  * 
  * @author Tilo Hielscher
- * 
  */
 public class WidgetPanelBoolean extends AbstractWidgetPanel implements
 	ActionListener {
@@ -69,23 +69,19 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
 	add(widgetPanel, BorderLayout.CENTER);
     }
 
-    public JPanel getPanel() {
-	return this;
-    }
-
     public void actionPerformed(ActionEvent e) {
 	setEntry();
     }
 
     @Override
-    protected void showLabel() {
+    public void showLabel() {
 	nameLabel = new JLabel(configOption.getName());
 	nameLabel.setToolTipText(configOption.getDescription());
 	widgetPanel.add(nameLabel);
     }
 
     @Override
-    protected void showThingToChange() {
+    public void showThingToChange() {
 	if (component != null) {
 	    // BooleanConfigOption
 	    if (configOption.getClass().toString().contains(
@@ -127,7 +123,7 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel implements
     }
 
     @Override
-    protected void setEntry() {
+    public void setEntry() {
 	BooleanConfigOption specialOption;
 	if (cb.getSelectedIndex() == 0)
 	    value = false;

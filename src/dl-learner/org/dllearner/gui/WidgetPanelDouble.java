@@ -37,7 +37,8 @@ import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 /**
- * WidgetPanelDouble
+ * Panel for option Double, defined in
+ * org.dllearner.core.config.DoubleConfigOption.
  * 
  * @author Tilo Hielscher
  * 
@@ -70,10 +71,6 @@ public class WidgetPanelDouble extends AbstractWidgetPanel implements
 	add(widgetPanel, BorderLayout.CENTER);
     }
 
-    public JPanel getPanel() {
-	return this;
-    }
-
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == setButton) {
 	    setEntry();
@@ -81,14 +78,14 @@ public class WidgetPanelDouble extends AbstractWidgetPanel implements
     }
 
     @Override
-    protected void showLabel() {
+    public void showLabel() {
 	nameLabel = new JLabel(configOption.getName());
 	nameLabel.setToolTipText(configOption.getDescription());
 	widgetPanel.add(nameLabel);
     }
 
     @Override
-    protected void showThingToChange() {
+    public void showThingToChange() {
 	if (component != null) {
 	    // DoubleConfigOption
 	    if (configOption.getClass().toString().contains(
@@ -128,7 +125,7 @@ public class WidgetPanelDouble extends AbstractWidgetPanel implements
     }
 
     @Override
-    protected void setEntry() {
+    public void setEntry() {
 	DoubleConfigOption specialOption;
 	value = Double.parseDouble(doubleField.getText()); // get from input
 	specialOption = (DoubleConfigOption) config.getComponentManager()

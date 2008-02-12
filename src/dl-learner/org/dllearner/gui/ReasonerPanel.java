@@ -30,10 +30,10 @@ import javax.swing.*;
 import org.dllearner.core.ReasonerComponent;
 
 /**
- * ReasonerPanel
+ * ReasonerPanel, tab 2. Choose Resoner, change Options and final initiate
+ * Reasoner and ReasoningService.
  * 
  * @author Tilo Hielscher
- * 
  */
 public class ReasonerPanel extends JPanel implements ActionListener {
 

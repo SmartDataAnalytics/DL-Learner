@@ -29,9 +29,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 /**
- * CheckBoxList
- * 
- * a list of CheckBoxes
+ * CheckBoxList is a list of CheckBox's
  * 
  * @author Tilo Hielscher
  */

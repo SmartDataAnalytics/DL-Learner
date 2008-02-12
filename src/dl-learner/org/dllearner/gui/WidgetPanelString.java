@@ -39,7 +39,8 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 /**
- * WidgetPanelString
+ * Panel for option String, defined in
+ * org.dllearner.core.config.StringConfigOption.
  * 
  * @author Tilo Hielscher
  * 
@@ -72,10 +73,6 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
 	add(widgetPanel, BorderLayout.CENTER);
     }
 
-    public JPanel getPanel() {
-	return this;
-    }
-
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == setButton) {
 	    if (checkForFilename()) {
@@ -86,7 +83,7 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
 		    value = fc.getSelectedFile().toString();
 		    stringField.setText(value);
 		    config.setURI(value); // save variable
-		    System.out.println("value: " +  config.getURI());
+		    System.out.println("value: " + config.getURI());
 		}
 	    }
 	    setEntry();
@@ -100,14 +97,14 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
     }
 
     @Override
-    protected void showLabel() {
+    public void showLabel() {
 	nameLabel = new JLabel(configOption.getName());
 	nameLabel.setToolTipText(configOption.getDescription());
 	widgetPanel.add(nameLabel);
     }
 
     @Override
-    protected void showThingToChange() {
+    public void showThingToChange() {
 	if (component != null) {
 	    // StringConfigOption
 	    if (configOption.getClass().toString().contains(
@@ -149,7 +146,7 @@ public class WidgetPanelString extends AbstractWidgetPanel implements
     }
 
     @Override
-    protected void setEntry() {
+    public void setEntry() {
 	StringConfigOption specialOption;
 	value = stringField.getText(); // get from input
 	specialOption = (StringConfigOption) config.getComponentManager()

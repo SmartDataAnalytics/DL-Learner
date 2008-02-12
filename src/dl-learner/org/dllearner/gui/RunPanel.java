@@ -29,7 +29,7 @@ import javax.swing.*;
 // import org.dllearner.core.dl.Concept;
 
 /**
- * OutputPanel
+ * RunPanel let algorithm start and stop and show informations about.
  * 
  * @author Tilo Hielscher
  * 

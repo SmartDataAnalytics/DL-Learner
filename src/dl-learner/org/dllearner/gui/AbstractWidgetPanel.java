@@ -26,24 +26,22 @@ import javax.swing.JPanel;
  * AbstractWidgetPanel
  * 
  * @author Tilo Hielscher
- * 
  */
 public abstract class AbstractWidgetPanel extends JPanel {
 
-  
-    /*
-     * show label and tooltip
+    /**
+     * Show label and tooltip.
      */
-    protected abstract void showLabel();
+    public abstract void showLabel();
 
-    /*
-     * show textfield, setbutton and so on
+    /**
+     * Show textfield, setbutton and so on, make layout.
      */
-    protected abstract void showThingToChange();
+    public abstract void showThingToChange();
 
-    /*
-     * set entry you got from showThingToChange()
+    /**
+     * Set entry you got from showThingToChange().
      */
-    protected abstract void setEntry();
-    
+    public abstract void setEntry();
+
 }

@@ -29,10 +29,10 @@ import java.util.List;
 import org.dllearner.core.LearningAlgorithm;
 
 /**
- * LearningAlgorithmPanel
+ * LearningAlgorithmPanel, tab 4. Choose LearningAlgorithm, change Options and
+ * final initiate LearningAlgorithm.
  * 
  * @author Tilo Hielscher
- * 
  */
 public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 

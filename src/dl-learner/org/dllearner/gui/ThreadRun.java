@@ -21,7 +21,7 @@ package org.dllearner.gui;
  */
 
 /**
- * threadRun
+ * Start algorihtm in a new thread.
  * 
  * @author Tilo Hielscher
  */
@@ -33,13 +33,18 @@ public class ThreadRun extends Thread {
 	this.config = config;
     }
 
-    // method to start thread
+    /**
+     *  method to start thread
+     */
     @Override
     public void run() {
 	if (config.getLearningAlgorithm() != null)
 	    config.getLearningAlgorithm().start();
     }
 
+    /**
+     * stop thread
+     */
     public void exit() {
 	if (config.getLearningAlgorithm() != null)
 	    config.getLearningAlgorithm().stop();

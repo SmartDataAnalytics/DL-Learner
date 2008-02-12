@@ -30,7 +30,7 @@ import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigOption;
 
 /**
- * WidgetPanelDefault
+ * Panel for not defined options.
  * 
  * @author Tilo Hielscher
  * 
@@ -55,14 +55,14 @@ public class WidgetPanelDefault extends AbstractWidgetPanel {
     }
 
     @Override
-    protected void showLabel() {
+    public void showLabel() {
 	nameLabel = new JLabel(configOption.getName());
 	nameLabel.setToolTipText(configOption.getDescription());
 	widgetPanel.add(nameLabel);
     }
 
     @Override
-    protected void showThingToChange() {
+    public void showThingToChange() {
 	JLabel notImplementedLabel = new JLabel(configOption.getClass()
 		.getSimpleName()
 		+ " not implemented");
@@ -72,7 +72,7 @@ public class WidgetPanelDefault extends AbstractWidgetPanel {
     }
 
     @Override
-    protected void setEntry() {
+    public void setEntry() {
     }
 
 }
