@@ -130,12 +130,13 @@ public class Start {
 		String baseDir = file.getParentFile().getPath();		
 		
 		// create component manager instance
-		System.out.print("starting component manager ... ");
+		String message = "starting component manager ... ";
 		long cmStartTime = System.nanoTime();
 		ComponentManager cm = ComponentManager.getInstance();
 		long cmTime = System.nanoTime() - cmStartTime;
-		System.out.println("OK (" + Helper.prettyPrintNanoSeconds(cmTime) + ")");
-
+		message += "OK (" + Helper.prettyPrintNanoSeconds(cmTime) + ")";
+		logger.info(message);
+		
 		// create a mapping between components and prefixes in the conf file
 		Map<Class<? extends Component>, String> componentPrefixMapping = createComponentPrefixMapping();
 
@@ -355,7 +356,7 @@ public class Start {
 					cm.applyConfigEntry(component, entry);
 
 				} else {
-					handleError("The type of conf file entry " + option + " is not correct.");
+					handleError("The type of conf file entry \"" + option.getFullName() + "\" is not correct: value \"" + option.getValue() + "\" not valid for option type \"" + configOption.getClass().getName() + "\".");
 				}
 
 			} catch (InvalidConfigOptionValueException e) {
@@ -702,7 +703,7 @@ public class Start {
 	}
 
 	private static void handleError(String message) {
-		System.err.println(message);
+		logger.error(message);
 		System.exit(0);
 	}
 

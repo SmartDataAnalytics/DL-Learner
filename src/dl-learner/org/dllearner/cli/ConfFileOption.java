@@ -81,7 +81,7 @@ public class ConfFileOption {
 		this.option = option;
 		this.subOption = subOption;
 		doubleValue = value;
-		isDoubleOption = false;
+		isDoubleOption = true;
 	}
 	
 	public ConfFileOption(String option, Set<String> values) {
