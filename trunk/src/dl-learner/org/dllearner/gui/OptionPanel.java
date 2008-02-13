@@ -35,7 +35,8 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.config.*;
 
 /**
- * OptionPanel reads all possible options and use all widgets. Definition map is here.
+ * OptionPanel reads all possible options and use all widgets. Definition map is
+ * here.
  * 
  * @author Tilo Hielscher
  * 
@@ -112,6 +113,10 @@ public class OptionPanel extends JPanel {
 	    } else if (optionList.get(i).getClass().toString().contains(
 		    "StringSetConfigOption")) {
 		widgetPanel = new WidgetPanelStringSet(config, component,
+			componentOption, optionList.get(i));
+	    } else if (optionList.get(i).getClass().toString().contains(
+		    "StringTupleListConfigOption")) {
+		widgetPanel = new WidgetPanelStringTupleList(config, component,
 			componentOption, optionList.get(i));
 	    } else {
 		widgetPanel = new WidgetPanelDefault(config, component,
