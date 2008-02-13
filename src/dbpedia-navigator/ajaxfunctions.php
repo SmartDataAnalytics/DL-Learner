@@ -321,6 +321,7 @@ function learnConcept()
 	session_write_close();
 	setRunning($id,"true");
 	$concept="";
+	$conceptinformation="";
 	if (isset($positives))
 	{
 		$posArray=array();
@@ -337,8 +338,12 @@ function learnConcept()
 			$concepts=$sc->getConceptFromExamples($posArray,$negArray);
 			
 			$concept.="<table border=0>\n";
+			$i=1;
 			foreach ($concepts as $con){
-				$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".$con."');return false;\" />".$con."</a></td></tr>";
+				$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".$con."');return false;\" onMouseOver=\"showdiv('div".$i."');showdiv('ConceptBox');\" onMouseOut=\"hidediv('div".$i."');hidediv('ConceptBox');\" />".$con."</a></td></tr>";
+				//put information about concepts in divs
+				$conceptinformation.="<div id=\"div".$i."\">".$con."</div>";
+				$i++;
 			}
 			$concept.="</table>";
 		} catch(Exception $e){
@@ -349,6 +354,7 @@ function learnConcept()
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("conceptlink", "innerHTML", $concept);
+	$objResponse->assign("ConceptInformation", "innerHTML", $conceptinformation);
 	return $objResponse;
 }
 
