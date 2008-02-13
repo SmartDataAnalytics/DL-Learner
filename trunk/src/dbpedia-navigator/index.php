@@ -42,6 +42,14 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
             xajax.$('SearchResultBox').style.display = 'block';
             xajax.$('LastArticlesBox').style.display = 'block';
         };
+        
+        function showdiv(id){
+        	document.getElementById(id).style.display='block';
+        }
+        
+        function hidediv(id) {
+        	document.getElementById(id).style.display='none';
+        } 
   </script>
   </head>
   <body <?php if (isset($_GET['resource'])) print "onLoad=\"xajax_getarticle('".$_GET['resource']."',-1);return false;\"";unset($_GET['resource']);?>>
@@ -154,16 +162,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	two months, so it would be nice to have a script based partly automated or at least documented solution for
 	creating a DBpedia mirror).</li>
 	<li>Improve stability: Fix sometimes occurring PHP errors and warnings (check PHP error log).</li>
-	<li>Currently there are three SPARQL query methods: for labels, subjects, and article. These should
-	probably be replaced by a single web service method which allows to execute a SPARQL query. This will
-	greatly simplify the DL-Learner code while making the PHP code only slightly more complex. Such a method
-	also makes much more sense as a web service method, because other applications will need different SPARQL
-	queries. Similar to the learn method, there should be a threaded and a non-threaded version of the SPARQL
-	query method. This allows not to have the overhead of creating a separate thread for simple SPARQL queries
-	(especially since we assume that the DBpedia SPARQL endpoint is local).</li>
 	<li>Automatically learn concepts whenever an example has been added (and there is at least one
 	positive example present).</li>
-	<li>Show n (for example 5) instead of 1 best concept.</li>
 	<li>For each result, display a "+" which shows more information about the concept in an overlay box, e.g. its 
 	Description Logic or OWL syntax, its classification accuracy on the examples, and which
 	examples it classifies (in-)correctly.</li>
@@ -206,6 +206,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 </ul>
 </div>
 
+  <div class="box" id="ConceptBox" style="position:absolute;top:0px;right:20px;opacity:0.90;display:none;z-index:5;">
+  	<div class="boxtitle">Detailed Concept Information</div>
+  	<div class="boxcontent" id="ConceptInformation"></div>
+  </div>
 
   </body>
 </html>
