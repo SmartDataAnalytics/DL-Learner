@@ -21,10 +21,13 @@ refinement.horizontalExpansionFactor = 0.6;
 refinement.quiet = false;
 refinement.useTooWeakList = true;
 
+//learning problems
+problem = posOnlyDefinition;
 
 // search tree protocol
 refinement.writeSearchTree = false;
 refinement.searchTreeFile = "log/SearchTree.txt";
+refinement.replaceSearchTree = false;
 
 
 //dig protocol
