@@ -7,6 +7,8 @@ showRoles = true;
 showInternalKB = true;
 showSubsumptionHierarchy = true;
 
+// do not display http://localhost/foo# in concepts 
+// and roles to make the output more readable
 hidePrefix("http://localhost/foo#");
 
 // reasoner settings
@@ -20,6 +22,8 @@ algorithm = refinement;
 refinement.horizontalExpansionFactor = 0.6;
 refinement.quiet = false;
 refinement.useTooWeakList = true;
+refinement.heuristic = flexible;
+percentPerLengthUnit = 0.05;
 
 //learning problems
 problem = posOnlyDefinition;
