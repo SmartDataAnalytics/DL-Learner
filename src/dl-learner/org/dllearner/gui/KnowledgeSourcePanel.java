@@ -67,7 +67,9 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	cb.addActionListener(this);
 
 	choosePanel.add(cb);
-	optionPanel = new OptionPanel(config, config.getKnowledgeSource(),
+	optionPanel = new OptionPanel(config, 
+		config.getKnowledgeSource(), 
+		config.getOldKnowledgeSource(), 
 		sources.get(choosenClassIndex));
 	initPanel.add(initButton);
 
@@ -121,7 +123,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
      * update OptionPanel with new selection
      */
     public void updateOptionPanel() {
-	optionPanel.update(config.getKnowledgeSource(), sources
-		.get(choosenClassIndex));
+	optionPanel.update(config.getKnowledgeSource(), config
+		.getOldKnowledgeSource(), sources.get(choosenClassIndex));
     }
 }

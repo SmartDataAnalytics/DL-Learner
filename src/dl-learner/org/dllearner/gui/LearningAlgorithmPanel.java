@@ -74,7 +74,8 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	cb.addActionListener(this);
 
 	optionPanel = new OptionPanel(config, config.getLearningAlgorithm(),
-		learners.get(choosenClassIndex));
+		config.getOldLearningAlgorithm(), learners
+			.get(choosenClassIndex));
 
 	add(choosePanel, BorderLayout.PAGE_START);
 	add(optionPanel, BorderLayout.CENTER);
@@ -133,7 +134,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
      */
     public void updateOptionPanel() {
 	// update OptionPanel
-	optionPanel.update(config.getLearningAlgorithm(), learners
-		.get(choosenClassIndex));
+	optionPanel.update(config.getLearningAlgorithm(), config
+		.getOldLearningAlgorithm(), learners.get(choosenClassIndex));
     }
 }
