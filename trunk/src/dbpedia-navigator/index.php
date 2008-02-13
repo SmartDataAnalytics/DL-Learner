@@ -39,6 +39,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
         };
         hideLoading = function() {
             xajax.$('Loading').style.display = 'none';
+            xajax.$('SearchResultBox').style.display = 'block';
+            xajax.$('LastArticlesBox').style.display = 'block';
         };
   </script>
   </head>
@@ -65,7 +67,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
-		<div class="box">
+		<div class="box" id="SearchResultBox" style="display:none">
 		  <div class="boxtitle">Search Results</div>
 		  <div class="boxcontent">
 		  <div id="searchcontent" style="display:block"></div>
@@ -116,7 +118,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
-		<div class="box">
+		<div class="box" id="LastArticlesBox" style="display:none">
 		  <div class="boxtitle">Articles Last Viewed</div>
 		  <div class="boxcontent" id="lastarticles">
 		  </div> <!-- boxcontent -->
