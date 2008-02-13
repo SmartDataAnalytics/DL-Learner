@@ -75,7 +75,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	choosenClassIndex = cb.getSelectedIndex();
 
 	optionPanel = new OptionPanel(config, config.getLearningProblem(),
-		problems.get(choosenClassIndex));
+		config.getOldLearningProblem(), problems.get(choosenClassIndex));
 
 	add(choosePanel, BorderLayout.PAGE_START);
 	add(optionPanel, BorderLayout.CENTER);
@@ -108,8 +108,23 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	    config.setLearningProblem(config.getComponentManager()
 		    .learningProblem(problems.get(choosenClassIndex),
 			    config.getReasoningService()));
-	    updateOptionPanel();
+	    // TEST
+	    // previous set value in old component
+	    if (config.getLearningProblem() != null
+		    && config.getOldLearningProblem() != null) {
+		System.out.println("NOW: "
+			+ config.getLearningProblem().getClass());
+		System.out.println("OLD: " + config.getOldLearningProblem());
+		System.out.println("OLD contains?: "
+			+ config.getOldLearningProblem().contains(
+				config.getLearningProblem().getClass()));
+		if (config.getLearningProblem().getClass().equals(
+			config.getOldLearningProblem().getClass())) {
+		    System.out.println("--> THE SAME");
+		}
+	    }
 	    startGUI.updateTabColors();
+	    updateOptionPanel();
 	}
     }
 
@@ -130,7 +145,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
      */
     private void updateOptionPanel() {
 	// update OptionPanel
-	optionPanel.update(config.getLearningProblem(), problems
-		.get(choosenClassIndex));
+	optionPanel.update(config.getLearningProblem(), config
+		.getOldLearningProblem(), problems.get(choosenClassIndex));
     }
 }

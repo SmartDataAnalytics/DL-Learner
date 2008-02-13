@@ -72,8 +72,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		    reasoners.get(i)));
 	}
 
-	optionPanel = new OptionPanel(config, config.getReasoner(), reasoners
-		.get(choosenClassIndex));
+	optionPanel = new OptionPanel(config, config.getReasoner(), config
+		.getOldReasonerSet(), reasoners.get(choosenClassIndex));
 
 	choosePanel.add(autoInitButton);
 	cb.addActionListener(this);
@@ -92,12 +92,13 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	if (choosenClassIndex != cb.getSelectedIndex()) {
 	    choosenClassIndex = cb.getSelectedIndex();
 	    config.setInitReasoner(false);
-
 	    setReasoner();
 	}
 
-	if (e.getSource() == autoInitButton)
+	if (e.getSource() == autoInitButton) {
+	    config.setInitReasoner(false);
 	    setReasoner();
+	}
 
 	if (e.getSource() == initButton)
 	    init();
@@ -121,7 +122,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     public void init() {
-	if (/* !config.isInitReasoner() && */config.getKnowledgeSource() != null
+	if (config.getKnowledgeSource() != null
 		&& config.getReasoner() != null) {
 	    config.getReasoner().init();
 	    System.out.println("init Reasoner");
@@ -140,8 +141,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
      * update OptionPanel with new selection
      */
     public void updateOptionPanel() {
-	optionPanel.update(config.getReasoner(), reasoners
-		.get(choosenClassIndex));
+	optionPanel.update(config.getReasoner(), config.getOldReasonerSet(),
+		reasoners.get(choosenClassIndex));
     }
 
 }

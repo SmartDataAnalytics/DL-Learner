@@ -29,6 +29,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import java.util.Set;
+
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
@@ -50,18 +52,20 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements
     private JLabel nameLabel;
     private JPanel widgetPanel = new JPanel();
     private Component component;
+    private Set<Component> oldComponentSet;
     private Class<? extends Component> componentOption;
-
     private Boolean value;
     private String[] kbBoxItems = { "false", "true" };
     private JComboBox cb = new JComboBox(kbBoxItems);
 
     public WidgetPanelBoolean(Config config, Component component,
+	    Set<Component> oldComponentSet,
 	    Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
 	this.config = config;
 	this.configOption = configOption;
 	this.component = component;
+	this.oldComponentSet = oldComponentSet;
 	this.componentOption = componentOption;
 
 	showLabel(); // name of option and tooltip
@@ -70,6 +74,7 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements
     }
 
     public void actionPerformed(ActionEvent e) {
+
 	setEntry();
     }
 
@@ -92,11 +97,34 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements
 			    .getConfigOptionValue(component,
 				    configOption.getName());
 		}
+		// previous set value from old
+		/*
+		 * if (component != null && componentOld != null) { if
+		 * (component.getClass().equals(componentOld.getClass())) {
+		 * value = (Boolean) config.getComponentManager()
+		 * .getConfigOptionValue(componentOld, configOption.getName());
+		 */
+		if (component != null && oldComponentSet != null) {
+		    if (oldComponentSet.contains(component)) {
+			System.out.println("oldComponentSet: "
+				+ oldComponentSet);
+			// value = (Boolean)
+			// config.getComponentManager().getConfigOptionValue(componentOld,
+			// configOption.getName());
+
+			// set cb-index
+			if (value == false)
+			    cb.setSelectedIndex(0);
+			else
+			    cb.setSelectedIndex(1);
+			setEntry();
+		    }
+		}
 		// default value
-		else if (configOption.getDefaultValue() != null) {
+		if (value != null && configOption.getDefaultValue() != null) {
 		    value = (Boolean) configOption.getDefaultValue();
 		}
-		// value == null
+		// value == null?
 		if (value == null) {
 		    value = false;
 		}
@@ -142,4 +170,5 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements
 	    s.printStackTrace();
 	}
     }
+
 }

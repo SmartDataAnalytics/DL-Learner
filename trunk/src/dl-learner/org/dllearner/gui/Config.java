@@ -20,28 +20,36 @@ package org.dllearner.gui;
  *
  */
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.Component;
 
 /**
  * Config save all together used variables: ComponentManager, KnowledgeSource,
  * Reasoner, ReasoningService, LearningProblem, LearningAlgorithm; also inits of
- * these components
+ * these components.
  * 
  * @author Tilo Hielscher
  */
 public class Config {
     private ComponentManager cm = ComponentManager.getInstance();
     private KnowledgeSource source;
+    private Set<Component> oldKnowledgeSourceSet = new HashSet<Component>();
     private String uri;
     private ReasonerComponent reasoner;
+    private Set<Component> oldReasonerSet = new HashSet<Component>();
     private ReasoningService rs;
     private LearningProblem lp;
+    private Set<Component> oldLearningProblemSet = new HashSet<Component>();
     private LearningAlgorithm la;
+    private Set<Component> oldLearningAlgorithmSet = new HashSet<Component>();
     private boolean[] isInit = new boolean[4];
 
     /**
@@ -73,39 +81,13 @@ public class Config {
     }
 
     /**
-     * Get Reasoner.
+     * Set KnowledgeSource.
      * 
-     * @return reasoner
+     * @param knowledgeSource
      */
-    public ReasonerComponent getReasoner() {
-	return this.reasoner;
-    }
-
-    /**
-     * Set Reasoner.
-     * 
-     * @param reasoner
-     */
-    public void setReasoner(ReasonerComponent reasoner) {
-	this.reasoner = reasoner;
-    }
-
-    /**
-     * Get ReasoningService.
-     * 
-     * @return ReasoningService
-     */
-    public ReasoningService getReasoningService() {
-	return this.rs;
-    }
-
-    /**
-     * Set ReasoningService.
-     * 
-     * @param reasoningService
-     */
-    public void setReasoningService(ReasoningService reasoningService) {
-	this.rs = reasoningService;
+    public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
+	this.oldKnowledgeSourceSet.add(this.source);
+	this.source = knowledgeSource;
     }
 
     /**
@@ -118,12 +100,58 @@ public class Config {
     }
 
     /**
-     * Set KnowledgeSource.
+     * Get old KnowledgeSource.
      * 
-     * @param knowledgeSource
+     * @return old KnowledgeSource
      */
-    public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
-	this.source = knowledgeSource;
+    public Set<Component> getOldKnowledgeSource() {
+	return this.oldKnowledgeSourceSet;
+    }
+
+    /**
+     * Set Reasoner.
+     * 
+     * @param reasoner
+     */
+    public void setReasoner(ReasonerComponent reasoner) {
+	this.oldReasonerSet.add(this.reasoner);
+	this.reasoner = reasoner;
+    }
+
+    /**
+     * Get Reasoner.
+     * 
+     * @return reasoner
+     */
+    public ReasonerComponent getReasoner() {
+	return this.reasoner;
+    }
+
+    /**
+     * Get old Reasoner as a set.
+     * 
+     * @return oldReasonerSet.
+     */
+    public Set<Component> getOldReasonerSet() {
+	return this.oldReasonerSet;
+    }
+
+    /**
+     * Set ReasoningService.
+     * 
+     * @param reasoningService
+     */
+    public void setReasoningService(ReasoningService reasoningService) {
+	this.rs = reasoningService;
+    }
+
+    /**
+     * Get ReasoningService.
+     * 
+     * @return ReasoningService
+     */
+    public ReasoningService getReasoningService() {
+	return this.rs;
     }
 
     /**
@@ -132,6 +160,7 @@ public class Config {
      * @param learningProblem
      */
     public void setLearningProblem(LearningProblem learningProblem) {
+	this.oldLearningProblemSet.add(this.lp);
 	this.lp = learningProblem;
     }
 
@@ -145,11 +174,21 @@ public class Config {
     }
 
     /**
+     * Get old LearningProblem as a set.
+     * 
+     * @return old learningProblemSet.
+     */
+    public Set<Component> getOldLearningProblem() {
+	return this.oldLearningProblemSet;
+    }
+
+    /**
      * Set LearningAlgorithm.
      * 
      * @param learningAlgorithm
      */
     public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
+	this.oldLearningAlgorithmSet.add(this.la);
 	this.la = learningAlgorithm;
     }
 
@@ -160,6 +199,15 @@ public class Config {
      */
     public LearningAlgorithm getLearningAlgorithm() {
 	return this.la;
+    }
+
+    /**
+     * Get old LearningAlgorithmSet.
+     * 
+     * @return old LearningAlgorithmSet
+     */
+    public Set<Component> getOldLearningAlgorithm() {
+	return this.oldLearningAlgorithmSet;
     }
 
     /**

@@ -25,7 +25,9 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -49,15 +51,18 @@ public class OptionPanel extends JPanel {
     private List<ConfigOption<?>> optionList;
     private JPanel centerPanel = new JPanel();
     private Component component;
+    private Set<Component> oldComponentSet = new HashSet<Component>();
     private GridBagLayout gridBagLayout = new GridBagLayout();
     private GridBagConstraints constraints = new GridBagConstraints();
 
     public OptionPanel(Config config, Component component,
+	    Set<Component> oldComponentSet,
 	    Class<? extends Component> componentOption) {
 	super(new BorderLayout());
 
 	this.config = config;
 	this.component = component;
+	this.oldComponentSet = oldComponentSet;
 	this.componentOption = componentOption;
 
 	optionList = ComponentManager.getConfigOptions(componentOption);
@@ -71,17 +76,18 @@ public class OptionPanel extends JPanel {
 	centerScroller.setPreferredSize(new Dimension(400, 200));
 	// add Panels
 	add(centerScroller, BorderLayout.CENTER);
-
+	// show widgets
 	showWidgets();
-
     }
 
     /** update this OptionPanel */
-    public void update(Component component,
+    public void update(Component component, Set<Component> oldComponentSet,
 	    Class<? extends Component> componentOption) {
-	this.componentOption = componentOption;
 	this.component = component;
+	this.oldComponentSet = oldComponentSet;
+	this.componentOption = componentOption;
 	showWidgets();
+
     }
 
     /**
@@ -101,7 +107,7 @@ public class OptionPanel extends JPanel {
 	    } else if (optionList.get(i).getClass().toString().contains(
 		    "BooleanConfigOption")) {
 		widgetPanel = new WidgetPanelBoolean(config, component,
-			componentOption, optionList.get(i));
+			oldComponentSet, componentOption, optionList.get(i));
 	    } else if (optionList.get(i).getClass().toString().contains(
 		    "DoubleConfigOption")) {
 		widgetPanel = new WidgetPanelDouble(config, component,
