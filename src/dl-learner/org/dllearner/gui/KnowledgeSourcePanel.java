@@ -40,6 +40,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
     private Config config;
     private StartGUI startGUI;
     private JButton initButton;
+    private JButton setButton;
     private String[] kbBoxItems = {};
     private JComboBox cb = new JComboBox(kbBoxItems);
     private JPanel choosePanel = new JPanel();
@@ -55,6 +56,8 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	this.startGUI = startGUI;
 	sources = config.getComponentManager().getKnowledgeSources();
 
+	setButton = new JButton ("Set");
+	setButton.addActionListener(this);
 	initButton = new JButton("Init KnowledgeSource");
 	initButton.addActionListener(this);
 	initButton.setEnabled(true);
@@ -67,10 +70,9 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	cb.addActionListener(this);
 
 	choosePanel.add(cb);
-	optionPanel = new OptionPanel(config, 
-		config.getKnowledgeSource(), 
-		config.getOldKnowledgeSource(), 
-		sources.get(choosenClassIndex));
+	choosePanel.add(setButton);
+	optionPanel = new OptionPanel(config, config.getKnowledgeSource(),
+		config.getOldKnowledgeSource(), sources.get(choosenClassIndex));
 	initPanel.add(initButton);
 
 	add(choosePanel, BorderLayout.PAGE_START);
@@ -91,6 +93,9 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	    setSource();
 	}
 
+	if (e.getSource() == setButton)
+	    setSource();
+	
 	if (e.getSource() == initButton)
 	    init();
     }

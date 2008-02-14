@@ -20,16 +20,12 @@ package org.dllearner.gui;
  *
  */
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Component;
 
 /**
  * Config save all together used variables: ComponentManager, KnowledgeSource,
@@ -41,15 +37,15 @@ import org.dllearner.core.Component;
 public class Config {
     private ComponentManager cm = ComponentManager.getInstance();
     private KnowledgeSource source;
-    private Set<Component> oldKnowledgeSourceSet = new HashSet<Component>();
+    private KnowledgeSource oldSource;
     private String uri;
     private ReasonerComponent reasoner;
-    private Set<Component> oldReasonerSet = new HashSet<Component>();
+    private ReasonerComponent oldReasoner;
     private ReasoningService rs;
     private LearningProblem lp;
-    private Set<Component> oldLearningProblemSet = new HashSet<Component>();
+    private LearningProblem oldLearningProblem;
     private LearningAlgorithm la;
-    private Set<Component> oldLearningAlgorithmSet = new HashSet<Component>();
+    private LearningAlgorithm oldLearningAlgorithm;
     private boolean[] isInit = new boolean[4];
 
     /**
@@ -86,7 +82,7 @@ public class Config {
      * @param knowledgeSource
      */
     public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
-	this.oldKnowledgeSourceSet.add(this.source);
+	this.oldSource = this.source;
 	this.source = knowledgeSource;
     }
 
@@ -104,8 +100,8 @@ public class Config {
      * 
      * @return old KnowledgeSource
      */
-    public Set<Component> getOldKnowledgeSource() {
-	return this.oldKnowledgeSourceSet;
+    public KnowledgeSource getOldKnowledgeSource() {
+	return this.oldSource;
     }
 
     /**
@@ -114,7 +110,7 @@ public class Config {
      * @param reasoner
      */
     public void setReasoner(ReasonerComponent reasoner) {
-	this.oldReasonerSet.add(this.reasoner);
+	this.oldReasoner = this.reasoner;
 	this.reasoner = reasoner;
     }
 
@@ -132,8 +128,8 @@ public class Config {
      * 
      * @return oldReasonerSet.
      */
-    public Set<Component> getOldReasonerSet() {
-	return this.oldReasonerSet;
+    public ReasonerComponent getOldReasonerSet() {
+	return this.oldReasoner;
     }
 
     /**
@@ -160,7 +156,7 @@ public class Config {
      * @param learningProblem
      */
     public void setLearningProblem(LearningProblem learningProblem) {
-	this.oldLearningProblemSet.add(this.lp);
+	this.oldLearningProblem = this.lp;
 	this.lp = learningProblem;
     }
 
@@ -178,8 +174,8 @@ public class Config {
      * 
      * @return old learningProblemSet.
      */
-    public Set<Component> getOldLearningProblem() {
-	return this.oldLearningProblemSet;
+    public LearningProblem getOldLearningProblem() {
+	return this.oldLearningProblem;
     }
 
     /**
@@ -188,7 +184,7 @@ public class Config {
      * @param learningAlgorithm
      */
     public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
-	this.oldLearningAlgorithmSet.add(this.la);
+	this.oldLearningAlgorithm = this.la;
 	this.la = learningAlgorithm;
     }
 
@@ -206,8 +202,8 @@ public class Config {
      * 
      * @return old LearningAlgorithmSet
      */
-    public Set<Component> getOldLearningAlgorithm() {
-	return this.oldLearningAlgorithmSet;
+    public LearningAlgorithm getOldLearningAlgorithm() {
+	return this.oldLearningAlgorithm;
     }
 
     /**

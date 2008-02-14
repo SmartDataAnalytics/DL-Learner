@@ -73,6 +73,7 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements
     private JTextField stringField = new JTextField(25);
 
     private Component component;
+    private Component oldComponent;
     private Class<? extends Component> componentOption;
 
     private Set<String> value = new HashSet<String>();
@@ -83,12 +84,13 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements
     private CheckBoxList cBL = new CheckBoxList();
 
     public WidgetPanelStringSet(Config config, Component component,
-	    Class<? extends Component> componentOption,
+	    Component oldComponent, Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
 
 	this.config = config;
 	this.configOption = configOption;
 	this.component = component;
+	this.oldComponent = oldComponent;
 	this.componentOption = componentOption;
 
 	widgetPanel.setLayout(gridbag);
@@ -167,7 +169,18 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements
 		    value = (Set<String>) config.getComponentManager()
 			    .getConfigOptionValue(component,
 				    configOption.getName());
-
+		    // previous set value from old
+		    if (component != null && oldComponent != null) {
+			if (oldComponent.getClass()
+				.equals(component.getClass())) {
+			    value = (Set<String>) config.getComponentManager()
+				    .getConfigOptionValue(oldComponent,
+					    configOption.getName());
+			    if (value != null) {
+				setEntry();
+			    }
+			}
+		    }
 		    // fill list
 		    if (value != null) {
 			for (Iterator<String> iterator = value.iterator(); iterator
@@ -177,6 +190,7 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements
 			}
 		    }
 		}
+
 		if (!isSpecial()) {
 		    // NORMAL LAYOUT
 		    // stringField
@@ -215,8 +229,6 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements
 		    buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
 		    gridbag.setConstraints(setButton, constraints);
 		    widgetPanel.add(setButton, constraints);
-		    // set selections
-		    cBL.setSelections(value);
 		    // DEFINE LIST
 		    // positiveExamples or negativeExamples
 		    if (configOption.getName().equalsIgnoreCase(
@@ -256,6 +268,9 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements
 			for (ObjectProperty ind : atomicRoles)
 			    cBL.add(ind.getName());
 		    }
+		    // set selections
+		    if (value != null)
+			cBL.setSelections(value);
 		}
 	    }
 	    // UNKNOWN

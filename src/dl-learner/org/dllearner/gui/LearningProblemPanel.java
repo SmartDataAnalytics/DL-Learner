@@ -108,21 +108,6 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	    config.setLearningProblem(config.getComponentManager()
 		    .learningProblem(problems.get(choosenClassIndex),
 			    config.getReasoningService()));
-	    // TEST
-	    // previous set value in old component
-	    if (config.getLearningProblem() != null
-		    && config.getOldLearningProblem() != null) {
-		System.out.println("NOW: "
-			+ config.getLearningProblem().getClass());
-		System.out.println("OLD: " + config.getOldLearningProblem());
-		System.out.println("OLD contains?: "
-			+ config.getOldLearningProblem().contains(
-				config.getLearningProblem().getClass()));
-		if (config.getLearningProblem().getClass().equals(
-			config.getOldLearningProblem().getClass())) {
-		    System.out.println("--> THE SAME");
-		}
-	    }
 	    startGUI.updateTabColors();
 	    updateOptionPanel();
 	}

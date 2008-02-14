@@ -54,17 +54,19 @@ public class WidgetPanelInteger extends WidgetPanelAbstract implements
     private JPanel widgetPanel = new JPanel();
     private JButton setButton = new JButton("Set");
     private Component component;
+    private Component oldComponent;
     private Class<? extends Component> componentOption;
 
     private Integer value;
     private JTextField integerField = new JTextField(3);
 
     public WidgetPanelInteger(Config config, Component component,
-	    Class<? extends Component> componentOption,
+	    Component oldComponent, Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
 	this.config = config;
 	this.configOption = configOption;
 	this.component = component;
+	this.oldComponent = oldComponent;
 	this.componentOption = componentOption;
 
 	showLabel(); // name of option and tooltip
@@ -96,6 +98,20 @@ public class WidgetPanelInteger extends WidgetPanelAbstract implements
 		    value = (Integer) config.getComponentManager()
 			    .getConfigOptionValue(component,
 				    configOption.getName());
+		}
+		// previous set value from old
+		if (component != null && oldComponent != null) {
+		    if (oldComponent.getClass().equals(component.getClass())) {
+			value = (Integer) config.getComponentManager()
+				.getConfigOptionValue(oldComponent,
+					configOption.getName());
+			if (value == null)
+			    value = 0;
+			else {
+			    integerField.setText(value.toString());
+			    setEntry();
+			}
+		    }
 		}
 		// default value
 		else if (configOption.getDefaultValue() != null) {

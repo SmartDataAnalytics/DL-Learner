@@ -81,11 +81,11 @@ public class CheckBoxList extends JPanel {
      *                Is a Set of Strings.
      */
     public void setSelections(Set<String> selectionSet) {
-	for (int i = 0; i < list.size(); i++) {
+	for (int i = 0; i < this.list.size(); i++) {
 	    if (selectionSet.contains(list.get(i).getText()))
 		list.get(i).setSelected(true);
 	    else
-		list.get(i).setSelected(false);
+		this.list.get(i).setSelected(false);
 	}
     }
 

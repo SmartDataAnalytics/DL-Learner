@@ -72,6 +72,7 @@ public class WidgetPanelStringTupleList extends WidgetPanelAbstract implements
     private List<StringTuple> exampleList = new LinkedList<StringTuple>();
 
     private Component component;
+    private Component oldComponent;
     private Class<? extends Component> componentOption;
 
     private List<StringTuple> value = new LinkedList<StringTuple>();
@@ -81,12 +82,13 @@ public class WidgetPanelStringTupleList extends WidgetPanelAbstract implements
     private JButton setButton = new JButton("set");
 
     public WidgetPanelStringTupleList(Config config, Component component,
-	    Class<? extends Component> componentOption,
+	    Component oldComponent, Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
 
 	this.config = config;
 	this.configOption = configOption;
 	this.component = component;
+	this.oldComponent = oldComponent;
 	this.componentOption = componentOption;
 
 	widgetPanel.setLayout(gridbag);
@@ -156,7 +158,20 @@ public class WidgetPanelStringTupleList extends WidgetPanelAbstract implements
 		    value = (List<StringTuple>) config.getComponentManager()
 			    .getConfigOptionValue(component,
 				    configOption.getName());
-
+		    // previous set value from old
+		    if (component != null && oldComponent != null) {
+			if (oldComponent.getClass()
+				.equals(component.getClass())) {
+			    value = (List<StringTuple>) config
+				    .getComponentManager()
+				    .getConfigOptionValue(oldComponent,
+					    configOption.getName());
+			    if (value != null) {
+				setEntry();
+				exampleList = value;
+			    }
+			}
+		    }
 		    // fill list
 		    if (value != null) {
 			for (Iterator<StringTuple> iterator = value.iterator(); iterator

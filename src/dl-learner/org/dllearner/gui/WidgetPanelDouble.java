@@ -53,17 +53,19 @@ public class WidgetPanelDouble extends WidgetPanelAbstract implements
     private JPanel widgetPanel = new JPanel();
     private JButton setButton = new JButton("Set");
     private Component component;
+    private Component oldComponent;
     private Class<? extends Component> componentOption;
 
     private Double value;
     private JTextField doubleField = new JTextField(5);
 
     public WidgetPanelDouble(Config config, Component component,
-	    Class<? extends Component> componentOption,
+	    Component oldComponent, Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
 	this.config = config;
 	this.configOption = configOption;
 	this.component = component;
+	this.oldComponent = oldComponent;
 	this.componentOption = componentOption;
 
 	showLabel(); // name of option and tooltip
@@ -95,6 +97,20 @@ public class WidgetPanelDouble extends WidgetPanelAbstract implements
 		    value = (Double) config.getComponentManager()
 			    .getConfigOptionValue(component,
 				    configOption.getName());
+		}
+		// previous set value from old
+		if (component != null && oldComponent != null) {
+		    if (oldComponent.getClass().equals(component.getClass())) {
+			value = (Double) config.getComponentManager()
+				.getConfigOptionValue(oldComponent,
+					configOption.getName());
+			if (value == null)
+			    value = 0.0;
+			else {
+			    doubleField.setText(value.toString());
+			    setEntry();
+			}
+		    }
 		}
 		// default value
 		else if (configOption.getDefaultValue() != null) {
