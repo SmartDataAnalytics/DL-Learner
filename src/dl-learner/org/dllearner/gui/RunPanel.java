@@ -26,8 +26,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-// import org.dllearner.core.dl.Concept;
-
 /**
  * RunPanel let algorithm start and stop and show informations about.
  * 
@@ -38,16 +36,17 @@ public class RunPanel extends JPanel implements ActionListener {
 
     private static final long serialVersionUID = 1643304576470046636L;
 
-    private JButton runButton, stopButton, testButton;
+    private JButton runButton, stopButton, getBestSolutionButton,
+	    getSolutionScoreButton;
     private JTextArea infoArea;
     private Config config;
 
     private ThreadRun thread;
+    private Boolean runBoolean = new Boolean(false);
 
     private JPanel showPanel = new JPanel();
     private JPanel infoPanel = new JPanel();
-    private JPanel testPanel = new JPanel();
-
+    private JPanel solutionPanel = new JPanel();
 
     RunPanel(Config config) {
 	super(new BorderLayout());
@@ -58,41 +57,51 @@ public class RunPanel extends JPanel implements ActionListener {
 	runButton.addActionListener(this);
 	stopButton = new JButton("Stop");
 	stopButton.addActionListener(this);
-	testButton = new JButton("TEST");
-	testButton.addActionListener(this);
+
+	getBestSolutionButton = new JButton("GetBestSolution");
+	getBestSolutionButton.addActionListener(this);
+
+	getSolutionScoreButton = new JButton("GetSolutionScore");
+	getSolutionScoreButton.addActionListener(this);
 
 	infoArea = new JTextArea(20, 50);
 	JScrollPane infoScroll = new JScrollPane(infoArea);
 
 	showPanel.add(runButton);
 	showPanel.add(stopButton);
-	showPanel.add(testButton);
 
 	infoPanel.add(infoScroll);
 
+	solutionPanel.add(getBestSolutionButton);
+	solutionPanel.add(getSolutionScoreButton);
+
 	add(showPanel, BorderLayout.PAGE_START);
 	add(infoPanel, BorderLayout.CENTER);
-	add(testPanel, BorderLayout.PAGE_END);
+	add(solutionPanel, BorderLayout.PAGE_END);
     }
 
     public void actionPerformed(ActionEvent e) {
+	// start
 	if (e.getSource() == runButton && config.getLearningAlgorithm() != null) {
-	    //config.autoInit();
 	    thread = new ThreadRun(config);
 	    thread.start();
-	    // Concept solution =
-	    // config.getLearningAlgorithm().getBestSolution();
-	    // infoArea.setText(solution.toString());
+	    this.runBoolean = true;
 	}
+	// stop
 	if (e.getSource() == stopButton
 		&& config.getLearningAlgorithm() != null) {
-	    // config.getLearningAlgorithm().stop();
 	    thread.exit();
-  	}
-	if (e.getSource() == testButton) {
-
 	}
-
+	// getBestSolution
+	if (e.getSource() == getBestSolutionButton && runBoolean) {
+	    infoArea.setText(config.getLearningAlgorithm().getBestSolution()
+		    .toString());
+	}
+	// getSolutionScore
+	if (e.getSource() == getSolutionScoreButton && runBoolean) {
+	    infoArea.setText(config.getLearningAlgorithm().getSolutionScore()
+		    .toString());
+	}
     }
 
 }
