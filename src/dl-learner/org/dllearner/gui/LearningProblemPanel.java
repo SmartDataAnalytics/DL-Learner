@@ -21,6 +21,7 @@ package org.dllearner.gui;
  */
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -83,6 +84,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 
 	choosenClassIndex = cb.getSelectedIndex();
 	// setLearningProblem();
+	updateInitButtonColor();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -117,6 +119,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     private void init() {
+	setLearningProblem();
 	if (config.getReasoner() != null && config.getLearningProblem() != null) {
 	    config.getLearningProblem().init();
 	    config.setInitLearningProblem(true);
@@ -132,5 +135,15 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	// update OptionPanel
 	optionPanel.update(config.getLearningProblem(), config
 		.getOldLearningProblem(), problems.get(choosenClassIndex));
+    }
+
+    /**
+     * make init-button red if you have to click
+     */
+    public void updateInitButtonColor() {
+	if (!config.isInitLearningProblem()) {
+	    initButton.setForeground(Color.RED);
+	} else
+	    initButton.setForeground(Color.BLACK);
     }
 }

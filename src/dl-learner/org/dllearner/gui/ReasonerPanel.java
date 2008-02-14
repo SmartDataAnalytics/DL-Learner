@@ -21,6 +21,7 @@ package org.dllearner.gui;
  */
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -45,7 +46,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
     private JPanel choosePanel = new JPanel();
     private JPanel initPanel = new JPanel();
     private OptionPanel optionPanel;
-    private JButton initButton, autoInitButton;
+    private JButton initButton, setButton;
     private String[] cbItems = {};
     private JComboBox cb = new JComboBox(cbItems);
     private int choosenClassIndex;
@@ -61,8 +62,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	initButton.addActionListener(this);
 	initPanel.add(initButton);
 	initButton.setEnabled(true);
-	autoInitButton = new JButton("Set");
-	autoInitButton.addActionListener(this);
+	setButton = new JButton("Set");
+	setButton.addActionListener(this);
 
 	choosePanel.add(cb);
 
@@ -75,7 +76,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	optionPanel = new OptionPanel(config, config.getReasoner(), config
 		.getOldReasonerSet(), reasoners.get(choosenClassIndex));
 
-	choosePanel.add(autoInitButton);
+	choosePanel.add(setButton);
 	cb.addActionListener(this);
 
 	add(choosePanel, BorderLayout.PAGE_START);
@@ -84,6 +85,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 
 	choosenClassIndex = cb.getSelectedIndex();
 	setReasoner();
+	updateInitButtonColor();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -95,7 +97,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	    setReasoner();
 	}
 
-	if (e.getSource() == autoInitButton) {
+	if (e.getSource() == setButton) {
 	    config.setInitReasoner(false);
 	    setReasoner();
 	}
@@ -108,13 +110,14 @@ public class ReasonerPanel extends JPanel implements ActionListener {
      * after this, you can change widgets
      */
     public void setReasoner() {
-	// config.autoInit();
 	if (config.isInitKnowledgeSource()) {
 	    config.setReasoner(config.getComponentManager().reasoner(
 		    reasoners.get(choosenClassIndex),
 		    config.getKnowledgeSource()));
 	    updateOptionPanel();
 	    startGUI.updateTabColors();
+	    config.setInitReasoner(false);
+	    updateInitButtonColor();
 	}
     }
 
@@ -122,8 +125,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     public void init() {
-	if (config.getKnowledgeSource() != null
-		&& config.getReasoner() != null) {
+	setReasoner();
+	if (config.getKnowledgeSource() != null && config.getReasoner() != null) {
 	    config.getReasoner().init();
 	    System.out.println("init Reasoner");
 	    // set ReasoningService
@@ -132,9 +135,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	    System.out.println("init ReasoningService");
 	    config.setInitReasoner(true);
 	    startGUI.updateTabColors();
-
 	}
-	// config.autoInit();
     }
 
     /**
@@ -145,4 +146,13 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		reasoners.get(choosenClassIndex));
     }
 
+    /**
+     * make init-button red if you have to click
+     */
+    public void updateInitButtonColor() {
+	if (!config.isInitReasoner()) {
+	    initButton.setForeground(Color.RED);
+	} else
+	    initButton.setForeground(Color.BLACK);
+    }
 }
