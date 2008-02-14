@@ -138,5 +138,10 @@ public class StartGUI extends JFrame implements ActionListener {
 	    tabPane.setForegroundAt(3, Color.RED);
 	    tabPane.setForegroundAt(4, Color.RED);
 	}
+	tab0.updateInitButtonColor();
+	tab1.updateInitButtonColor();
+	tab2.updateInitButtonColor();
+	tab3.updateInitButtonColor();
+
     }
 }

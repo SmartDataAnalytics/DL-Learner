@@ -23,6 +23,7 @@ package org.dllearner.gui;
 import java.util.List;
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.dllearner.core.KnowledgeSource;
@@ -81,6 +82,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
 	choosenClassIndex = cb.getSelectedIndex();
 	setSource();
+	updateInitButtonColor();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -113,15 +115,12 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     public void init() {
-	if (/*
-	     * !config.isInitKnowledgeSource() &&
-	     */config.getKnowledgeSource() != null && config.getURI() != null) {
+	if (config.getKnowledgeSource() != null && config.getURI() != null) {
 	    config.getKnowledgeSource().init();
 	    config.setInitKnowledgeSource(true);
 	    System.out.println("init KnowledgeSource");
 	    startGUI.updateTabColors();
 	}
-	// config.autoInit();
     }
 
     /**
@@ -130,5 +129,15 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
     public void updateOptionPanel() {
 	optionPanel.update(config.getKnowledgeSource(), config
 		.getOldKnowledgeSource(), sources.get(choosenClassIndex));
+    }
+    
+    /**
+     * make init-button red if you have to click
+     */
+    public void updateInitButtonColor() {
+	if (!config.isInitKnowledgeSource()) {
+	    initButton.setForeground(Color.RED);
+	} else
+	    initButton.setForeground(Color.BLACK);
     }
 }

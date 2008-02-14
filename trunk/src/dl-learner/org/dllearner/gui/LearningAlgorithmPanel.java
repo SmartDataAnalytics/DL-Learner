@@ -22,6 +22,7 @@ package org.dllearner.gui;
 import javax.swing.*;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -81,6 +82,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	add(optionPanel, BorderLayout.CENTER);
 	add(initPanel, BorderLayout.PAGE_END);
 
+	updateInitButtonColor();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -103,10 +105,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
      * after this, you can change widgets
      */
     public void setLearningAlgorithm() {
-	// config.autoInit();
-	if (/*
-	     * config.isInitLearningProblem() &&
-	     */config.getLearningProblem() != null
+	if (config.getLearningProblem() != null
 		&& config.getReasoningService() != null) {
 	    config.setLearningAlgorithm(config.getComponentManager()
 		    .learningAlgorithm(learners.get(choosenClassIndex),
@@ -120,13 +119,13 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
      * after this, next tab can be used
      */
     public void init() {
+	setLearningAlgorithm();
 	if (config.getLearningProblem() != null) {
 	    config.getLearningAlgorithm().init();
 	    config.setInitLearningAlgorithm(true);
 	    System.out.println("init LearningAlgorithm");
 	    startGUI.updateTabColors();
 	}
-	// config.autoInit();
     }
 
     /**
@@ -136,5 +135,15 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	// update OptionPanel
 	optionPanel.update(config.getLearningAlgorithm(), config
 		.getOldLearningAlgorithm(), learners.get(choosenClassIndex));
+    }
+
+    /**
+     * make init-button red if you have to click
+     */
+    public void updateInitButtonColor() {
+	if (!config.isInitLearningAlgorithm()) {
+	    initButton.setForeground(Color.RED);
+	} else
+	    initButton.setForeground(Color.BLACK);
     }
 }
