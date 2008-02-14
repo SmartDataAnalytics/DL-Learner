@@ -55,17 +55,19 @@ public class WidgetPanelString extends WidgetPanelAbstract implements
     private JPanel widgetPanel = new JPanel();
     private JButton setButton = new JButton("Set");
     private Component component;
+    private Component oldComponent;
     private Class<? extends Component> componentOption;
 
     private String value;
     private JTextField stringField = new JTextField(35);
 
     public WidgetPanelString(Config config, Component component,
-	    Class<? extends Component> componentOption,
+	    Component oldComponent, Class<? extends Component> componentOption,
 	    ConfigOption<?> configOption) {
 	this.config = config;
 	this.configOption = configOption;
 	this.component = component;
+	this.oldComponent = oldComponent;
 	this.componentOption = componentOption;
 
 	showLabel(); // name of option and tooltip
@@ -114,6 +116,18 @@ public class WidgetPanelString extends WidgetPanelAbstract implements
 		    value = (String) config.getComponentManager()
 			    .getConfigOptionValue(component,
 				    configOption.getName());
+		}
+		// previous set value from old
+		if (component != null && oldComponent != null) {
+		    if (oldComponent.getClass().equals(component.getClass())) {
+			value = (String) config.getComponentManager()
+				.getConfigOptionValue(oldComponent,
+					configOption.getName());
+			if (value != null) {	
+			    stringField.setText(value.toString());
+			    setEntry();
+			}
+		    }
 		}
 		// default value
 		else if (configOption.getDefaultValue() != null) {
