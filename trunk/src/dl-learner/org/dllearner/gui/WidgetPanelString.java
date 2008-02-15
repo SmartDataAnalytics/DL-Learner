@@ -123,7 +123,7 @@ public class WidgetPanelString extends WidgetPanelAbstract implements
 			value = (String) config.getComponentManager()
 				.getConfigOptionValue(oldComponent,
 					configOption.getName());
-			if (value != null) {	
+			if (value != null) {
 			    stringField.setText(value.toString());
 			    setEntry();
 			}
@@ -165,16 +165,19 @@ public class WidgetPanelString extends WidgetPanelAbstract implements
 	value = stringField.getText(); // get from input
 	specialOption = (StringConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
-	try {
-	    ConfigEntry<String> specialEntry = new ConfigEntry<String>(
-		    specialOption, value);
-	    config.getComponentManager().applyConfigEntry(component,
-		    specialEntry);
-	    System.out.println("set String: " + configOption.getName() + " = "
-		    + value);
-	} catch (InvalidConfigOptionValueException s) {
-	    s.printStackTrace();
-	}
+	if (specialOption.isValidValue(value)) {
+	    try {
+		ConfigEntry<String> specialEntry = new ConfigEntry<String>(
+			specialOption, value);
+		config.getComponentManager().applyConfigEntry(component,
+			specialEntry);
+		System.out.println("set String: " + configOption.getName()
+			+ " = " + value);
+	    } catch (InvalidConfigOptionValueException s) {
+		s.printStackTrace();
+	    }
+	} else
+	    System.out.println("String: not valid value");
     }
 
     /*

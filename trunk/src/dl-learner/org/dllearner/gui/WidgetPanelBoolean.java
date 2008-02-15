@@ -150,16 +150,19 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements
 	    value = true;
 	specialOption = (BooleanConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
-	try {
-	    ConfigEntry<Boolean> specialEntry = new ConfigEntry<Boolean>(
-		    specialOption, value);
-	    config.getComponentManager().applyConfigEntry(component,
-		    specialEntry);
-	    System.out.println("set Boolean: " + configOption.getName() + " = "
-		    + value);
-	} catch (InvalidConfigOptionValueException s) {
-	    s.printStackTrace();
-	}
+	if (specialOption.isValidValue(value)) {
+	    try {
+		ConfigEntry<Boolean> specialEntry = new ConfigEntry<Boolean>(
+			specialOption, value);
+		config.getComponentManager().applyConfigEntry(component,
+			specialEntry);
+		System.out.println("set Boolean: " + configOption.getName()
+			+ " = " + value);
+	    } catch (InvalidConfigOptionValueException s) {
+		s.printStackTrace();
+	    }
+	} else
+	    System.out.println("Boolean: not valid value");
     }
 
 }

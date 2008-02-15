@@ -242,17 +242,19 @@ public class WidgetPanelStringTupleList extends WidgetPanelAbstract implements
 	specialOption = (StringTupleListConfigOption) config
 		.getComponentManager().getConfigOption(componentOption,
 			configOption.getName());
-
-	try {
-	    ConfigEntry<List<StringTuple>> specialEntry = new ConfigEntry<List<StringTuple>>(
-		    specialOption, value);
-	    config.getComponentManager().applyConfigEntry(component,
-		    specialEntry);
-	    System.out.println("set StringTupleList: " + configOption.getName()
-		    + " = " + value);
-	} catch (InvalidConfigOptionValueException s) {
-	    s.printStackTrace();
-	}
+	if (specialOption.isValidValue(value)) {
+	    try {
+		ConfigEntry<List<StringTuple>> specialEntry = new ConfigEntry<List<StringTuple>>(
+			specialOption, value);
+		config.getComponentManager().applyConfigEntry(component,
+			specialEntry);
+		System.out.println("set StringTupleList: "
+			+ configOption.getName() + " = " + value);
+	    } catch (InvalidConfigOptionValueException s) {
+		s.printStackTrace();
+	    }
+	} else
+	    System.out.println("StringTupleList: not valid value");
     }
 
     /**
