@@ -35,6 +35,10 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.dllearner.Info;
+import org.dllearner.algorithms.BruteForceLearner;
+import org.dllearner.algorithms.RandomGuesser;
+import org.dllearner.algorithms.gp.GP;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
@@ -57,6 +61,7 @@ import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
 
@@ -87,10 +92,15 @@ public class DLLearnerWS {
 		knowledgeSourceMapping.put("owlfile", OWLFile.class);
 		knowledgeSourceMapping.put("sparql", SparqlKnowledgeSource.class);
 		reasonerMapping.put("dig", DIGReasoner.class);
+		reasonerMapping.put("owlapi", OWLAPIReasoner.class);
 		learningProblemMapping.put("posNegDefinition", PosNegDefinitionLP.class);
 		learningProblemMapping.put("posNegInclusion", PosNegInclusionLP.class);
 		learningProblemMapping.put("posOnlyDefinition", PosOnlyDefinitionLP.class);
-		learningAlgorithmMapping.put("refinement", ROLearner.class);
+		learningAlgorithmMapping.put("random", RandomGuesser.class);
+		learningAlgorithmMapping.put("bruteForce", BruteForceLearner.class);		
+		learningAlgorithmMapping.put("genetic", ROLearner.class);
+		learningAlgorithmMapping.put("refinement", GP.class);
+		learningAlgorithmMapping.put("refexamples", ExampleBasedROLComponent.class);
 		components = Helper.union(knowledgeSourceMapping.keySet(),reasonerMapping.keySet());
 		components = Helper.union(components, learningProblemMapping.keySet());
 		components = Helper.union(components, learningAlgorithmMapping.keySet());
