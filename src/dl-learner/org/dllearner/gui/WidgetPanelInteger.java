@@ -147,15 +147,18 @@ public class WidgetPanelInteger extends WidgetPanelAbstract implements
 	value = Integer.parseInt(integerField.getText()); // get from input
 	specialOption = (IntegerConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
-	try {
-	    ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(
-		    specialOption, value);
-	    config.getComponentManager().applyConfigEntry(component,
-		    specialEntry);
-	    System.out.println("set Integer: " + configOption.getName() + " = "
-		    + value);
-	} catch (InvalidConfigOptionValueException s) {
-	    s.printStackTrace();
-	}
+	if (specialOption.isValidValue(value)) {
+	    try {
+		ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(
+			specialOption, value);
+		config.getComponentManager().applyConfigEntry(component,
+			specialEntry);
+		System.out.println("set Integer: " + configOption.getName()
+			+ " = " + value);
+	    } catch (InvalidConfigOptionValueException s) {
+		s.printStackTrace();
+	    }
+	} else
+	    System.out.println("Integer: not valid value");
     }
 }

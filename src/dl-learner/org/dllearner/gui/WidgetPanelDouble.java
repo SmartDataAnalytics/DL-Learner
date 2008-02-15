@@ -146,15 +146,18 @@ public class WidgetPanelDouble extends WidgetPanelAbstract implements
 	value = Double.parseDouble(doubleField.getText()); // get from input
 	specialOption = (DoubleConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
-	try {
-	    ConfigEntry<Double> specialEntry = new ConfigEntry<Double>(
-		    specialOption, value);
-	    config.getComponentManager().applyConfigEntry(component,
-		    specialEntry);
-	    System.out.println("set Double: " + configOption.getName() + " = "
-		    + value);
-	} catch (InvalidConfigOptionValueException s) {
-	    s.printStackTrace();
-	}
+	if (specialOption.isValidValue(value)) {
+	    try {
+		ConfigEntry<Double> specialEntry = new ConfigEntry<Double>(
+			specialOption, value);
+		config.getComponentManager().applyConfigEntry(component,
+			specialEntry);
+		System.out.println("set Double: " + configOption.getName()
+			+ " = " + value);
+	    } catch (InvalidConfigOptionValueException s) {
+		s.printStackTrace();
+	    }
+	} else
+	    System.out.println("Double: not valid value");
     }
 }

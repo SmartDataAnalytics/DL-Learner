@@ -295,17 +295,19 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements
 	StringSetConfigOption specialOption;
 	specialOption = (StringSetConfigOption) config.getComponentManager()
 		.getConfigOption(componentOption, configOption.getName());
-
-	try {
-	    ConfigEntry<Set<String>> specialEntry = new ConfigEntry<Set<String>>(
-		    specialOption, value);
-	    config.getComponentManager().applyConfigEntry(component,
-		    specialEntry);
-	    System.out.println("set StringSet: " + configOption.getName()
-		    + " = " + value);
-	} catch (InvalidConfigOptionValueException s) {
-	    s.printStackTrace();
-	}
+	if (specialOption.isValidValue(value)) {
+	    try {
+		ConfigEntry<Set<String>> specialEntry = new ConfigEntry<Set<String>>(
+			specialOption, value);
+		config.getComponentManager().applyConfigEntry(component,
+			specialEntry);
+		System.out.println("set StringSet: " + configOption.getName()
+			+ " = " + value);
+	    } catch (InvalidConfigOptionValueException s) {
+		s.printStackTrace();
+	    }
+	} else
+	    System.out.println("StringSet: not valid value");
 
     }
 
