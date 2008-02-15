@@ -291,8 +291,19 @@ function removePosInterest($subject)
 	session_start();
 	unset($_SESSION['positive'][$subject]);
 		
+	//add Positives and Negatives to Interests
+	$posInterests="";
+	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
+		$posInterests.=urldecode(substr (strrchr ($pos, "/"), 1))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"".$_GET['path']."images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	$negInterests="";
+	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
+		$negInterests.=urldecode(substr (strrchr ($neg, "/"), 1))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"".$_GET['path']."images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	
 	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_showInterests');
+	$objResponse->assign('Positives','innerHTML',$posInterests);
+	$objResponse->assign('Negatives','innerHTML',$negInterests);
 	return $objResponse;
 }
 
@@ -303,8 +314,19 @@ function removeNegInterest($subject)
 	session_start();
 	unset($_SESSION['negative'][$subject]);
 		
+	//add Positives and Negatives to Interests
+	$posInterests="";
+	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
+		$posInterests.=urldecode(substr (strrchr ($pos, "/"), 1))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"".$_GET['path']."images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	$negInterests="";
+	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
+		$negInterests.=urldecode(substr (strrchr ($neg, "/"), 1))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"".$_GET['path']."images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	
 	$objResponse = new xajaxResponse();
-	$objResponse->call('xajax_showInterests');
+	$objResponse->assign('Positives','innerHTML',$posInterests);
+	$objResponse->assign('Negatives','innerHTML',$negInterests);
 	return $objResponse;
 }
 
@@ -336,13 +358,15 @@ function learnConcept()
 		$sc=new DLLearnerConnection($id, $ksID);
 		try{
 			$concepts=$sc->getConceptFromExamples($posArray,$negArray);
+			$conceptDepth=$sc->getConceptDepth();
+			$conceptArity=$sc->getConceptArity();
 			
 			$concept.="<table border=0>\n";
 			$i=1;
 			foreach ($concepts as $con){
 				$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".$con."');return false;\" onMouseOver=\"showdiv('div".$i."');showdiv('ConceptBox');\" onMouseOut=\"hidediv('div".$i."');hidediv('ConceptBox');\" />".$con."</a></td></tr>";
 				//put information about concepts in divs
-				$conceptinformation.="<div id=\"div".$i."\" style=\"display:none\">".$con."</div>";
+				$conceptinformation.="<div id=\"div".$i."\" style=\"display:none\">Concept Depth: ".$conceptDepth[$i-1]."<br/>Concept Arity: ".$conceptArity[$i-1]."<br/>Concept Length: ".$sc->getConceptLength($con)."</div>";
 				$i++;
 			}
 			$concept.="</table>";

@@ -206,7 +206,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 </ul>
 </div>
 
-  <div class="box" id="ConceptBox" style="position:absolute;top:0px;right:20px;opacity:0.90;display:none;z-index:5;">
+  <div class="box" id="ConceptBox" style="position:absolute;top:15px;right:15px;width:18%;opacity:0.90;display:none;z-index:5;">
   	<div class="boxtitle">Detailed Concept Information</div>
   	<div class="boxcontent" id="ConceptInformation"></div>
   </div>

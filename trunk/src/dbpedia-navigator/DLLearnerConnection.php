@@ -100,6 +100,21 @@ class DLLearnerConnection
 		}
 		return $concepts->item;
 	}
+	
+	function getConceptDepth()
+	{
+		return $this->client->getConceptDepth($this->id,3)->item;
+	}
+	
+	function getConceptArity()
+	{
+		return $this->client->getConceptArity($this->id,3)->item;
+	}
+	
+	function getConceptLength($concept)
+	{
+		return $this->client->getConceptLength($concept);
+	}
 			
 	function getTriples($label)
 	{
