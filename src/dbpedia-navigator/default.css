@@ -80,14 +80,6 @@ h2 {
 	right: 15px;*/
 }
 
-#clear {
-	clear: both;
-}
-
-#validation {
-	padding: 0.5em; 
-}
-
 /*
  * sidebar content (boxes)
  */
@@ -384,4 +376,9 @@ input.button:hover {
 #todo {
 	padding: 15px;
 	margin: 10px;
+}
+
+#redirectedFrom {
+	color: #666;
+	font-size: 85%;
 }
