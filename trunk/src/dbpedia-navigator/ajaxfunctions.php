@@ -97,7 +97,7 @@ function getarticle($subject,$fromCache)
 				
 			// give the link to the corresponding Wikipedia article
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
-				$content .= '<p><img src="'.$_GET['path'].'images/wikipedia_favicon.png" alt"Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0].'">view Wikipedia article</a>, '; 
+				$content .= '<p><img src="'.$_GET['path'].'images/wikipedia_favicon.png" alt="Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0].'">view Wikipedia article</a>, '; 
 			$content .= '<a href="'.$uri.'">view DBpedia resource description</a></p>';
 	
 			// display a list of classes
@@ -110,9 +110,9 @@ function getarticle($subject,$fromCache)
 					$content .= '<li><a href="'.$reference.'">'.$reference.'</a></li>';
 				$content .= '</ul></p>';
 			}
-			
+			//display a Google Map if Geo-koordinates are available
 			if (isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'])&&isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'])){
-				$content.="<br/><a href=\"\" onClick=\"loadGoogleMap(".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'][0].",".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'][0].");return false;\">a map of the location</a><div id=\"map\" style=\"width: 500px; height: 300px;display:none;\"></div>";
+				$content.="<br/><img src=\"".$_GET['path']."images/mobmaps_googlemapsicon.jpg\" alt=\"Google Maps\" style=\"max-width:30px;\" /> <a href=\"\" onClick=\"loadGoogleMap(".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'][0].",".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'][0].");return false;\">a map of the location</a><div id=\"map\" style=\"width: 500px; height: 300px;display:none;\"></div>";
 			}
 			
 			

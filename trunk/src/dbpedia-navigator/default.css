@@ -45,8 +45,8 @@ h2 {
 }
 
 #content {
-	/*margin: 0 19em;
-	overflow: hidden;*/
+	/*margin: 0 19em;*/
+	overflow: hidden;
 	/*width: 10%;*/
 	width: 60%; 
 	float: left;

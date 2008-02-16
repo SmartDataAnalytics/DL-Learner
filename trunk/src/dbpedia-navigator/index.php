@@ -17,6 +17,16 @@ else $path="";
 require_once 'Settings.php';
 $settings=new Settings();
 
+//what happens onLoad
+$onload="";
+if (isset($_GET['resource'])){ 
+	$onLoad.="onLoad=\"xajax_getarticle('".$_GET['resource']."',-1);return false;\"";
+	unset($_GET['resource']);
+}
+else if (isset($_SESSION['currentArticle'])){
+	$onLoad.="onLoad=\"xajax_getarticle('',".$_SESSION['currentArticle'].");return false;\"";
+}
+
 require("ajax.php"); 
   
 echo '<?xml version="1.0" encoding="UTF-8"?>';
@@ -55,14 +65,14 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			if (GBrowserIsCompatible()) {
       	  		// Create and Center a Map
           		var map = new GMap2(document.getElementById("map"));
-          		map.setCenter(new GLatLng(Lat, Lng), 10);
+          		map.setCenter(new GLatLng(Lat, Lng), 12);
           		map.addControl(new GLargeMapControl());
           		map.addControl(new GMapTypeControl());
       		}
     	} 
   </script>
   </head>
-  <body <?php if (isset($_GET['resource'])) print "onLoad=\"xajax_getarticle('".$_GET['resource']."',-1);return false;\"";unset($_GET['resource']);?>>
+  <body <?php print $onLoad;?>>
 
 <!--  <h1>DBpedia Navigator</h1> -->
 <div><table border="0" width="100%"><tr><td width="35%"><img src="<?php print $path;?>images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" /></td><td width="50%"><span id="conceptlink"></span></td><td width="15%"><span id="Loading" style="display:none">Server Call... <img src="<?php print $path;?>images/remove.png" onclick="xajax_stopServerCall();return false;" /></span></td></tr></table></div>
