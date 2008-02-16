@@ -112,7 +112,7 @@ function getarticle($subject,$fromCache)
 			}
 			//display a Google Map if Geo-koordinates are available
 			if (isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'])&&isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'])){
-				$content.="<br/><img src=\"".$_GET['path']."images/mobmaps_googlemapsicon.jpg\" alt=\"Google Maps\" style=\"max-width:30px;\" /> <a href=\"\" onClick=\"loadGoogleMap(".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'][0].",".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'][0].");return false;\">a map of the location</a><div id=\"map\" style=\"width: 500px; height: 300px;display:none;\"></div>";
+				$content.="<br/><img src=\"".$_GET['path']."images/mobmaps_googlemapsicon.jpg\" alt=\"Google Maps\" style=\"max-width:30px;\" /> <a href=\"\" onClick=\"loadGoogleMap(".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'][0].",".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'][0].",'".$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]."');return false;\">a map of the location</a><div id=\"map\" style=\"width: 500px; height: 300px;display:none;\"></div>";
 			}
 			
 			
