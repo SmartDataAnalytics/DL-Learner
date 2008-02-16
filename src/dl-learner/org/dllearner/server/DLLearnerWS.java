@@ -474,6 +474,7 @@ public class DLLearnerWS {
 		// call parser to parse concept
 		Description concept = null;
 		try {
+			System.out.println(conceptString);
 			concept = KBParser.parseConcept(conceptString);
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -517,18 +518,19 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public String getAsJSON(int sessionID, int queryID) throws ClientNotKnownException
+	public String getAsJSON(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException
 	{
 		ClientState state = getState(sessionID);
-		ResultSet resultSet=state.getQuery(queryID).getSparqlQuery().getResultSet();
-		return SparqlQuery.getAsJSON(resultSet);
+		SparqlQueryException exception=null;
+		if ((exception=state.getQuery(queryID).getSparqlQuery().getException())!=null) throw exception;
+		return SparqlQuery.getAsJSON(state.getQuery(queryID).getResult());
 	}
 	
 	@WebMethod
 	public String getAsXMLString(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
-		ResultSet resultSet=state.getQuery(queryID).getSparqlQuery().getResultSet();
+		ResultSet resultSet=state.getQuery(queryID).getResult();
 		return SparqlQuery.getAsXMLString(resultSet);
 	}
 	
@@ -561,6 +563,34 @@ public class DLLearnerWS {
 		ClientState state = getState(sessionID);
 		
 		state.getQuery(queryID).stop();
+	}
+	
+	@WebMethod
+	public int[] getConceptDepth(int id, int nrOfConcepts) throws ClientNotKnownException {
+		ClientState state = getState(id);
+		List<Description> bestConcepts = state.getLearningAlgorithm().getBestSolutions(nrOfConcepts);
+		Iterator<Description> iter=bestConcepts.iterator();
+		int[] length=new int[bestConcepts.size()];
+		int i=0;
+		while (iter.hasNext()){
+			length[i]=iter.next().getDepth();
+			i++;
+		}
+		return length;
+	}
+	
+	@WebMethod
+	public int[] getConceptArity(int id, int nrOfConcepts) throws ClientNotKnownException {
+		ClientState state = getState(id);
+		List<Description> bestConcepts = state.getLearningAlgorithm().getBestSolutions(nrOfConcepts);
+		Iterator<Description> iter=bestConcepts.iterator();
+		int[] arity=new int[bestConcepts.size()];
+		int i=0;
+		while (iter.hasNext()){
+			arity[i]=iter.next().getArity();
+			i++;
+		}
+		return arity;
 	}
 	
 	@WebMethod
