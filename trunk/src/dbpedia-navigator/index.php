@@ -14,11 +14,8 @@ $_SESSION['ksID']=$ids[1];
 if (isset($_GET['path'])) $path=$_GET['path'];
 else $path="";
 
-// debugging code
-// echo '<pre>';
-// $sc=new DLLearnerConnection($settings->dbpediauri,$settings->wsdluri,$_SESSION['id'],$_SESSION['ksID']);
-// print_r($sc->getTriples($settings->sparqlttl,'http://dbpedia.org/resource/Dog'));
-// echo '</pre>';
+require_once 'Settings.php';
+$settings=new Settings();
 
 require("ajax.php"); 
   
@@ -33,6 +30,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="<?php print $path;?>default.css"/>
     <?php $xajax->printJavascript($path.'xajax/'); ?>
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php print $settings->googleMapsKey;?>"
+      type="text/javascript"></script>
 	<script type="text/javascript">
         showLoading = function() {
             xajax.$('Loading').style.display='inline';
@@ -49,7 +48,18 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
         
         function hidediv(id) {
         	document.getElementById(id).style.display='none';
-        } 
+        }
+        
+        function loadGoogleMap(Lat,Lng) {
+        	document.getElementById("map").style.display='block';
+			if (GBrowserIsCompatible()) {
+      	  		// Create and Center a Map
+          		var map = new GMap2(document.getElementById("map"));
+          		map.setCenter(new GLatLng(Lat, Lng), 10);
+          		map.addControl(new GLargeMapControl());
+          		map.addControl(new GMapTypeControl());
+      		}
+    	} 
   </script>
   </head>
   <body <?php if (isset($_GET['resource'])) print "onLoad=\"xajax_getarticle('".$_GET['resource']."',-1);return false;\"";unset($_GET['resource']);?>>

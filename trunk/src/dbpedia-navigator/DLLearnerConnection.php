@@ -120,13 +120,12 @@ class DLLearnerConnection
 	{
 		$query="SELECT ?pred ?obj ".
 			   "WHERE {{<http://dbpedia.org/resource/".str_replace(' ','_',$label)."> ?pred ?obj}UNION{<http://dbpedia.org/resource/".str_replace(' ','_',$label)."> <http://dbpedia.org/property/redirect> ?Conc.?Conc ?pred ?obj}}";
-		$result=$this->getSparqlResult($query);
-		if (!isset($result->item)) throw new Exception("Your query brought no result. The Label-Search is started."); 
+		$result=json_decode($this->getSparqlResult($query),true);
+		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result. The Label-Search is started."); 
 		$ret=array();
-		foreach ($result->item as $results){
-				$value=$results->item[1];
-				if (strpos($value,"@".$this->lang)==(strlen($value)-strlen("@".$this->lang))) $ret[$results->item[0]][]=substr($value,0,strlen($value)-strlen("@".$this->lang));
-				if (strpos($value,"@")!=(strlen($value)-strlen($this->lang)-1)) $ret[$results->item[0]][]=$value;
+		foreach ($result['results']['bindings'] as $results){
+				$value=$results['obj'];
+				if (!(isset($value['xml:lang'])&&($value['xml:lang']!=$this->lang))) $ret[$results['pred']['value']][]=$value['value'];
 		}
 		
 		return $ret;
@@ -146,7 +145,7 @@ class DLLearnerConnection
 				
 			$running=$this->client->isSparqlQueryRunning($this->id,$queryID);
 			if (!$running){
-				$result=$this->client->getAsStringArray($this->id,$queryID);
+				$result=$this->client->getAsJSON($this->id,$queryID);
 				return $result;
 			}
 				
@@ -163,17 +162,17 @@ class DLLearnerConnection
 		} while($seconds<$this->ttl);
 		$this->client->stopSparqlQuery($id,$queryID);
 	}
-	
+
 	function getSubjects($label)
 	{
 		$query="SELECT DISTINCT ?subject\n".
 				"WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\"".$label."\"'@en}\n".
 				"LIMIT 10";
-		$result=$this->getSparqlResult($query);
-		if (!$result->item) throw new Exception("Your query brought no result.");
+		$result=json_decode($this->getSparqlResult($query),true);
+		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result.");
 		$ret=array();
-		foreach ($result->item as $results){
-			$ret[]=$results->item[0];
+		foreach ($result['results']['bindings'] as $results){
+			$ret[]=$results['subject']['value'];
 		}
 		return $ret;
 	}
@@ -183,11 +182,11 @@ class DLLearnerConnection
 		$query="SELECT DISTINCT ?subject\n".
 			   "WHERE { ?subject a <".$concept.">}\n".
 			   "LIMIT 10";
-		$result=$this->getSparqlResult($query);
-		if (!$result->item) throw new Exception("Your query brought no result.");
+		$result=json_decode($this->getSparqlResult($query),true);
+		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result.");
 		$ret=array();
-		foreach ($result->item as $results){
-			$ret[]=$results->item[0];
+		foreach ($result['results']['bindings'] as $results){
+			$ret[]=$results['subject']['value'];
 		}
 		return $ret;
 	}
@@ -265,9 +264,9 @@ class DLLearnerConnection
 	}
 }
 /*
-require_once("DLLearnerConnection.php");
 $sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
 $sc=new DLLearnerConnection($ids[0],$ids[1]);
-$triples=$sc->getConceptFromExamples(array("http://dbpedia.org/resource/Angela_Merkel"),array("http://dbpedia.org/resource/Joschka_Fischer"));*/
+$triples=$sc->getSubjects("Angela Merkel");
+var_dump($triples);*/
 ?>

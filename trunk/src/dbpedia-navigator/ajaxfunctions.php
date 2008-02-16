@@ -49,6 +49,7 @@ function getarticle($subject,$fromCache)
 	
 	//get first Letter of label big
 	$subject=ucfirst($subject);
+	$uri="http://dbpedia.org/resource/".str_replace(' ','_',$subject);
 	
 	//if article is in session, get it out of the session
 	if (isset($articles)){
@@ -87,14 +88,17 @@ function getarticle($subject,$fromCache)
 			// display a picture if there is one
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
 				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0].'" alt="Picture of '.$subject.'" style="float:right; max-width:200px;" \>';
-					
+			
+			//display where it was redirected from, if it was redirected
+			if (isset($triples['http://dbpedia.org/property/redirect'])) $content.="<span id=\"redirectedFrom\">redirected from '$subject'</span>";
+			
 			// add short description in english
 			$content.="<h4>Short Description</h4><p>".urldecode($triples['http://dbpedia.org/property/abstract'][0])."</p>";
 				
 			// give the link to the corresponding Wikipedia article
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
 				$content .= '<p><img src="'.$_GET['path'].'images/wikipedia_favicon.png" alt"Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0].'">view Wikipedia article</a>, '; 
-			$content .= '<a href="'.$subject.'">view DBpedia resource description</a></p>';
+			$content .= '<a href="'.$uri.'">view DBpedia resource description</a></p>';
 	
 			// display a list of classes
 			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']))
@@ -105,6 +109,10 @@ function getarticle($subject,$fromCache)
 				foreach($triples['http://dbpedia.org/property/reference'] as $reference)
 					$content .= '<li><a href="'.$reference.'">'.$reference.'</a></li>';
 				$content .= '</ul></p>';
+			}
+			
+			if (isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'])&&isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'])){
+				$content.="<br/><a href=\"\" onClick=\"loadGoogleMap(".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'][0].",".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'][0].");return false;\">a map of the location</a><div id=\"map\" style=\"width: 500px; height: 300px;display:none;\"></div>";
 			}
 			
 			
@@ -190,7 +198,7 @@ function getarticle($subject,$fromCache)
 	$objResponse->assign("articlecontent", "innerHTML", $content);
 	$objResponse->assign("ArticleTitle","innerHTML",$artTitle);
 	$objResponse->assign("lastarticles","innerHTML",$lastArticles);
-	$objResponse->assign("searchcontent", "innerHTML", $searchResult);
+	if ($searchResult!="") $objResponse->assign("searchcontent", "innerHTML", $searchResult);
 	$objResponse->assign('Positives','innerHTML',$posInterests);
 	$objResponse->assign('Negatives','innerHTML',$negInterests);	
 	return $objResponse;

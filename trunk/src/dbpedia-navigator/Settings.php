@@ -37,8 +37,10 @@ class Settings{
 	// public $dbpediauri='http://dbpedia2.openlinksw.com:8890/isparql';
 	
 	public $sparqlttl=60;
-	//not yet used
+	
 	public $language="en";
+	
+	public $googleMapsKey="ABQIAAAAWwHG9WuZ8hxFSPjRX2-D-hSOxlJeL3USfakgDtFzmQkGhQTW0xTFM1Yr38ho8qREnjt-6oLs37o4xg";
 }
 
 ?>
