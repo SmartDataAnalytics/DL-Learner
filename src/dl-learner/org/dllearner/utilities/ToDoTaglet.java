@@ -6,16 +6,20 @@ import com.sun.javadoc.Tag;
 import com.sun.tools.doclets.Taglet;
 
 /**
- * Small taglet for showing todo-markers in Javadoc-runs.
+ * Small taglet for showing todo-markers in Javadoc-runs. You can insert
+ * the following in comments:
  * 
- * Parts of the code are taken from the JDK Javadoc.
+ * @.todo task
+ *   
+ * (Note the dot, which avoids conflicts with a possible future @todo
+ * standard tag.) Parts of the code are taken from the JDK Javadoc.
  * 
  * @author Jens Lehmann
  *
  */
 public class ToDoTaglet implements Taglet {
 
-    private static final String NAME = "todo";
+    private static final String NAME = ".todo";
     private static final String HEADER = "To Do:";
     
     /**
@@ -26,9 +30,9 @@ public class ToDoTaglet implements Taglet {
     }
     
     /**
-     * Will return true since <code>@todo</code>
+     * Will return true since <code>@.todo</code>
      * can be used in field documentation.
-     * @return true since <code>@todo</code>
+     * @return true since <code>@.todo</code>
      * can be used in field documentation and false
      * otherwise.
      */
