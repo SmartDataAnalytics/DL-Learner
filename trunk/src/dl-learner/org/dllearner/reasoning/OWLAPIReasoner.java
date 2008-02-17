@@ -25,13 +25,20 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 
+import org.apache.commons.logging.impl.Log4JLogger;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerRepository;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigEntry;
@@ -66,6 +73,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.Logging;
 import org.dllearner.utilities.RoleComparator;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
@@ -97,7 +105,7 @@ import org.semanticweb.owl.util.SimpleURIMapper;
  */
 public class OWLAPIReasoner extends ReasonerComponent {
 
-	private String reasonerType = "fact";
+	private String reasonerType = "pellet";
 	
 	private Set<KnowledgeSource> sources;
 	private OWLReasoner reasoner;
@@ -127,9 +135,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet", "FaCT++");
+		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet", "pellet");
 		type.setAllowedValues(new String[] {"fact", "pellet"});
-		// closure-Option? siehe:
+		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
 		options.add(type);
 		return options;
@@ -204,6 +212,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		} else {
 			// instantiate Pellet reasoner
 			reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
+			
+			Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
+			pelletLogger.setLevel(Level.WARN);
 		}
 		
 		/*
