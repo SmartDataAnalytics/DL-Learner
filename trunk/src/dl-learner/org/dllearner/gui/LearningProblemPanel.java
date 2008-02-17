@@ -124,14 +124,13 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	setLearningProblem();
 	if (config.getReasoner() != null && config.getLearningProblem() != null) {
 	    try {
-			config.getLearningProblem().init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    config.setInitLearningProblem(true);
-	    System.out.println("init LearningProblem");
-	    startGUI.updateTabColors();
+		config.getLearningProblem().init();
+		config.setInitLearningProblem(true);
+		System.out.println("init LearningProblem");
+		startGUI.updateTabColors();
+	    } catch (ComponentInitException e) {
+		e.printStackTrace();
+	    }
 	}
     }
 

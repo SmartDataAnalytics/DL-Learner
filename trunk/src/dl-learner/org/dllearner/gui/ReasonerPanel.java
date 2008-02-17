@@ -129,18 +129,18 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	setReasoner();
 	if (config.getKnowledgeSource() != null && config.getReasoner() != null) {
 	    try {
-			config.getReasoner().init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    System.out.println("init Reasoner");
-	    // set ReasoningService
-	    config.setReasoningService(config.getComponentManager()
-		    .reasoningService(config.getReasoner()));
-	    System.out.println("init ReasoningService");
-	    config.setInitReasoner(true);
-	    startGUI.updateTabColors();
+		config.getReasoner().init();
+		System.out.println("init Reasoner");
+		// set ReasoningService
+		config.setReasoningService(config.getComponentManager()
+			.reasoningService(config.getReasoner()));
+		System.out.println("init ReasoningService");
+		config.setInitReasoner(true);
+		startGUI.updateTabColors();
+	    } catch (ComponentInitException e) {
+		e.printStackTrace();
+	    }
+
 	}
     }
 

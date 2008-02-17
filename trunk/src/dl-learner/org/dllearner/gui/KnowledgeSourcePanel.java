@@ -59,7 +59,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	this.startGUI = startGUI;
 	sources = config.getComponentManager().getKnowledgeSources();
 
-	setButton = new JButton ("Set");
+	setButton = new JButton("Set");
 	setButton.addActionListener(this);
 	initButton = new JButton("Init KnowledgeSource");
 	initButton.addActionListener(this);
@@ -99,7 +99,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
 	if (e.getSource() == setButton)
 	    setSource();
-	
+
 	if (e.getSource() == initButton)
 	    init();
     }
@@ -119,14 +119,13 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
     public void init() {
 	if (config.getKnowledgeSource() != null && config.getURI() != null) {
 	    try {
-			config.getKnowledgeSource().init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    config.setInitKnowledgeSource(true);
-	    System.out.println("init KnowledgeSource");
-	    startGUI.updateTabColors();
+		config.getKnowledgeSource().init();
+		config.setInitKnowledgeSource(true);
+		System.out.println("init KnowledgeSource");
+		startGUI.updateTabColors();
+	    } catch (ComponentInitException e) {
+		e.printStackTrace();
+	    }
 	}
     }
 
@@ -137,7 +136,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	optionPanel.update(config.getKnowledgeSource(), config
 		.getOldKnowledgeSource(), sources.get(choosenClassIndex));
     }
-    
+
     /**
      * make init-button red if you have to click
      */

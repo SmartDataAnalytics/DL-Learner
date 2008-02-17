@@ -110,15 +110,14 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	if (config.getLearningProblem() != null
 		&& config.getReasoningService() != null) {
 	    try {
-			config.setLearningAlgorithm(config.getComponentManager()
-			    .learningAlgorithm(learners.get(choosenClassIndex),
-				    config.getLearningProblem(),
-				    config.getReasoningService()));
-		} catch (LearningProblemUnsupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    updateOptionPanel();
+		config.setLearningAlgorithm(config.getComponentManager()
+			.learningAlgorithm(learners.get(choosenClassIndex),
+				config.getLearningProblem(),
+				config.getReasoningService()));
+		updateOptionPanel();
+	    } catch (LearningProblemUnsupportedException e) {
+		e.printStackTrace();
+	    }
 	}
     }
 
@@ -129,11 +128,11 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	setLearningAlgorithm();
 	if (config.getLearningProblem() != null) {
 	    try {
-			config.getLearningAlgorithm().init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		config.getLearningAlgorithm().init();
+	    } catch (ComponentInitException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
 	    config.setInitLearningAlgorithm(true);
 	    System.out.println("init LearningAlgorithm");
 	    startGUI.updateTabColors();
