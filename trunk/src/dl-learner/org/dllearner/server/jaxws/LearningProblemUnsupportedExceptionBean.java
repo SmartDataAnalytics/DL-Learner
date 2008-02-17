@@ -13,10 +13,10 @@ import javax.xml.bind.annotation.XmlType;
  * Generated source version: 2.0_02
  * 
  */
-@XmlRootElement(name = "SparqlQueryException", namespace = "http://server.dllearner.org/")
+@XmlRootElement(name = "LearningProblemUnsupportedException", namespace = "http://server.dllearner.org/")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SparqlQueryException", namespace = "http://server.dllearner.org/")
-public class SparqlQueryExceptionBean {
+@XmlType(name = "LearningProblemUnsupportedException", namespace = "http://server.dllearner.org/")
+public class LearningProblemUnsupportedExceptionBean {
 
     private String message;
 
