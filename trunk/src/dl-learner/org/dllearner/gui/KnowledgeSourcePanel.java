@@ -26,6 +26,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 
 /**
@@ -116,7 +118,12 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
      */
     public void init() {
 	if (config.getKnowledgeSource() != null && config.getURI() != null) {
-	    config.getKnowledgeSource().init();
+	    try {
+			config.getKnowledgeSource().init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    config.setInitKnowledgeSource(true);
 	    System.out.println("init KnowledgeSource");
 	    startGUI.updateTabColors();

@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.RandomGuesser;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -45,8 +46,9 @@ public class ComponentTest {
 
 	/**
 	 * @param args
+	 * @throws ComponentInitException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ComponentInitException {
 		
 		// get singleton instance of component manager
 		ComponentManager cm = ComponentManager.getInstance();

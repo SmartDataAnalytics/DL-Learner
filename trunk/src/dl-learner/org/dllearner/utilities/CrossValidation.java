@@ -31,6 +31,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.cli.Start;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
@@ -84,7 +85,13 @@ public class CrossValidation {
 		// the first read of the file is used to detect the examples
 		// and set up the splits correctly according to our validation
 		// method
-		Start start = new Start(file);
+		Start start = null;
+		try {
+			start = new Start(file);
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		LearningProblem lp = start.getLearningProblem();
 		ReasoningService rs = start.getReasoningService();
@@ -162,7 +169,12 @@ public class CrossValidation {
 		for(int currFold=0; currFold<folds; currFold++) {
 			// we always perform a full initialisation to make sure that
 			// no objects are reused
-			start = new Start(file);
+			try {
+				start = new Start(file);
+			} catch (ComponentInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			lp = start.getLearningProblem();
 			Set<String> pos = Datastructures.individualSetToStringSet(trainingSetsPos.get(currFold));
 			Set<String> neg = Datastructures.individualSetToStringSet(trainingSetsNeg.get(currFold));

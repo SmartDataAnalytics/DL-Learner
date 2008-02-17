@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
 
@@ -127,7 +128,12 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     public void init() {
 	setLearningAlgorithm();
 	if (config.getLearningProblem() != null) {
-	    config.getLearningAlgorithm().init();
+	    try {
+			config.getLearningAlgorithm().init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    config.setInitLearningAlgorithm(true);
 	    System.out.println("init LearningAlgorithm");
 	    startGUI.updateTabColors();

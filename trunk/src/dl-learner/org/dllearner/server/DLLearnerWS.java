@@ -41,6 +41,7 @@ import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -262,9 +263,10 @@ public class DLLearnerWS {
 	/**
 	 * Initialise all components.
 	 * @param id Session ID.
+	 * @throws ComponentInitException 
 	 */
 	@WebMethod
-	public void initAll(int id) throws ClientNotKnownException {
+	public void initAll(int id) throws ClientNotKnownException, ComponentInitException {
 		ClientState state = getState(id);
 		for(KnowledgeSource ks : state.getKnowledgeSources())
 			ks.init();
@@ -279,9 +281,10 @@ public class DLLearnerWS {
 	 * @param componentID Component-ID.
 	 * @throws ClientNotKnownException Thrown if the client ID is nor registered.
 	 * @throws UnknownComponentException Thrown if the component is unknown.
+	 * @throws ComponentInitException 
 	 */
 	@WebMethod
-	public void init(int id, int componentID) throws ClientNotKnownException, UnknownComponentException {
+	public void init(int id, int componentID) throws ClientNotKnownException, UnknownComponentException, ComponentInitException {
 		ClientState state = getState(id);
 		Component component = state.getComponent(componentID);
 		component.init();

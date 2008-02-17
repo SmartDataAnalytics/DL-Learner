@@ -20,6 +20,7 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -36,6 +37,7 @@ import java.util.TreeSet;
 import javax.xml.namespace.QName;
 
 import org.apache.xmlbeans.XmlCursor;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
@@ -112,7 +114,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
 		// if a DIG protocol is written clear the file first
 		if(writeDIGProtocol) {
 			if(digProtocolFile == null)
@@ -123,7 +125,11 @@ public class DIGReasoner extends ReasonerComponent {
 			connector = new DIGHTTPConnector(reasonerURL);
 		}
 		
-		identifier = connector.getIdentifier();
+		try {
+			identifier = connector.getIdentifier();
+		} catch (IOException e1) {
+			throw new ComponentInitException("Communication problem with DIG Reasoner. Please make sure there is a DIG reasoner running at " + reasonerURL + " and try again.", e1);
+		}
 		kbURI = connector.newKB();
 
 		// asks-Prefix entsprechend der KB-URI initialisieren
@@ -144,7 +150,13 @@ public class DIGReasoner extends ReasonerComponent {
 		for (KnowledgeSource source : sources) {
 			sb.append(source.toDIG(kbURI));
 
-			ResponseDocument rd = connector.tells(sb.toString());
+			ResponseDocument rd = null;
+			try {
+				rd = connector.tells(sb.toString());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if (!rd.getResponse().isSetOk()) {
 				System.err.println("DIG-Reasoner cannot read knowledgebase.");
 				System.exit(0);
