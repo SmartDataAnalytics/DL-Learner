@@ -13,17 +13,11 @@
 	<property name="release_tmp_dir" value="release/${version_dir}" />
 	<property name="release_php_client_tmp_dir" value="release/php-client-${today}" />	
 	
-	<!-- KAON2 must not be distributed with the official release -->
-	<property name="kaon2" value="${lib_dir}/kaon2.jar"/>
-
 	<!-- set up classpath -->
 	<path id="classpath">
 		<pathelement location="."/>
 	    <fileset dir="${lib_dir}">
 	        <include name="**/*.jar"/>
-	    	<include name="**/modules/*.jar"/>
-	        <include name="**/jena/*.jar"/>
-	        <include name="**/owlapi/*.jar"/>
 	   </fileset>
 	</path>
 	
@@ -55,8 +49,7 @@ public class Info {
 		
 		<!-- copy all other libraries -->
 		<copy toDir="${release_tmp_dir}/lib">
-			<!-- KAON2 has to be excluded, because it cannot be freely distributed -->			
-			<fileset dir="${lib_dir}" excludes="${kaon2}" />
+			<fileset dir="${lib_dir}" />
 		</copy>	
 		
 		<!-- copy binary files and examples -->
@@ -197,7 +190,7 @@ public class Info {
     	<pathconvert refid="classpath" property="jdocclasspath"/>
         <javadoc access="public"
         	author="true" 
-        	classpath="${jdocclasspath}"
+        	classpath="${jdocclasspath};${java.home}/../lib/tools.jar"
         	destdir="doc/javadoc" 
         	doctitle="DL-Learner Javadoc" 
         	nodeprecated="false" 
