@@ -32,6 +32,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.sparql.core.ResultBinding;
+import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 /**
@@ -82,6 +83,7 @@ public class SparqlQuery {
 		}
 		logger.info("query SPARQL server");
 		try{
+			HttpQuery.urlLimit = 3*1024 ;
 			rs = queryExecution.execSelect();
 			logger.info(rs.getResultVars().toString());
 		} catch (Exception e){

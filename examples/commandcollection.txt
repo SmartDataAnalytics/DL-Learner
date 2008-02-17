@@ -19,6 +19,7 @@ refinement.useDIGMultiInstanceChecks = twoChecks;
 
 // algorithm settings
 algorithm = refinement;
+algorithm = refexamples
 refinement.horizontalExpansionFactor = 0.6;
 refinement.quiet = false;
 refinement.useTooWeakList = true;

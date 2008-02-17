@@ -2,6 +2,7 @@ package org.dllearner.test;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 
@@ -63,6 +64,7 @@ public class JenaLongQueryTest {
 		ResultSet rs;
 		String xml;
 		QueryEngineHTTP queryExecution;
+		HttpQuery.urlLimit = 3*1024 ;
 		queryExecution = new QueryEngineHTTP(url, shortQuery);
 		queryExecution.addDefaultGraph(defaultgraph);
 		rs = queryExecution.execSelect();
@@ -72,14 +74,17 @@ public class JenaLongQueryTest {
 		try{
 		queryExecution=new QueryEngineHTTP(url,longQuery);
 		queryExecution.addDefaultGraph(defaultgraph);
+		
+		//queryExecution.getContext().
 		rs = queryExecution.execSelect();
 		xml = ResultSetFormatter.asXMLString(rs);
 		System.out.println("Long Query ResultSet length: "+xml.length()+"\n");
 		System.out.println("Long query XML: "+xml);
 		}catch (Exception e) {e.printStackTrace();}
+		//
 		
 		String queryWithIncreasingLength="";
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 100; i++) {
 			queryWithIncreasingLength = makeQueryString ( i);
 			queryExecution=new QueryEngineHTTP(url,queryWithIncreasingLength);
 			queryExecution.addDefaultGraph(defaultgraph);
