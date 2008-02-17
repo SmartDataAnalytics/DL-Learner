@@ -65,6 +65,8 @@ public class BruteForceLearner extends LearningAlgorithm {
     private Integer maxLength = 7;
     private String returnType;
     
+    private boolean stop = false;
+    
     // list of all generated concepts sorted by length
     private Map<Integer,List<Description>> generatedDefinitions = new HashMap<Integer,List<Description>>();
     
@@ -126,6 +128,9 @@ public class BruteForceLearner extends LearningAlgorithm {
         for(int i=1; i<=maxLength; i++)
             generatePrograms(i);
         
+        if(stop)
+        	return;
+        	
         long generationTime = System.currentTimeMillis() - generationStartTime;
         System.out.println("OK (" + generationTime + " ms)");
         
@@ -155,11 +160,15 @@ public class BruteForceLearner extends LearningAlgorithm {
         Score tmp;
         double score;
         
-        for(int i=1; i<=maxLength; i++) {
+        for(int i=1; i<=maxLength && !stop; i++) {
             long startTime = System.currentTimeMillis();
             System.out.print("Testing definitions of length " + i + " ... ");
             count = 0;
             for(Description program : generatedDefinitions.get(i)) {
+            	// stop testing further when algorithm is stopped
+            	if(stop)
+            		break;
+            	
             	// if a return type is already given an appropriate tree is 
             	// generated here
             	Description newRoot;
@@ -274,6 +283,7 @@ public class BruteForceLearner extends LearningAlgorithm {
 
 	@Override
 	public void stop() {
+		stop = true;
 	}
 
 }
