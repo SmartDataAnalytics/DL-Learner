@@ -39,6 +39,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -134,12 +135,22 @@ public class MiniGUI extends JPanel implements ActionListener {
 				// (everything else will cause an exception)
 				KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 				cm.applyConfigEntry(source, "url", selectedFile.toURI().toString());				
-				source.init();
+				try {
+					source.init();
+				} catch (ComponentInitException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				
 				// use a reasoner to find out which instances exist
 				// in the background knowledge
 				ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, source);
-				reasoner.init();
+				try {
+					reasoner.init();
+				} catch (ComponentInitException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				rs = cm.reasoningService(reasoner);
 				Set<Individual> individualsSet = rs.getIndividuals();
 				individuals = new LinkedList<Individual>(individualsSet);
@@ -160,7 +171,12 @@ public class MiniGUI extends JPanel implements ActionListener {
 			// create a positive only learning problem
 			LearningProblem lp = cm.learningProblem(PosOnlyDefinitionLP.class, rs);
 			cm.applyConfigEntry(lp, "positiveExamples", exampleSet);
-			lp.init();
+			try {
+				lp.init();
+			} catch (ComponentInitException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
 			
 			// try the refinement operator based learning algorithm to solve
 			// the problem
@@ -171,7 +187,12 @@ public class MiniGUI extends JPanel implements ActionListener {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			la.init();
+			try {
+				la.init();
+			} catch (ComponentInitException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			la.start();
 			
 			// wait for a solution (note that not all learning problems have a

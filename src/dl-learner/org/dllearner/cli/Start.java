@@ -44,6 +44,7 @@ import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -119,15 +120,22 @@ public class Start {
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.INFO);
 		
-		Start start = new Start(file);	
+		Start start = null;
+		try {
+			start = new Start(file);
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 		start.start(inQueryMode);
 	}
 
 	/**
 	 * Initialise all components based on conf file.
 	 * @param file Conf file to read. 
+	 * @throws ComponentInitException 
 	 */
-	public Start(File file) {
+	public Start(File file) throws ComponentInitException {
 		String baseDir = file.getParentFile().getPath();		
 		
 		// create component manager instance
@@ -542,7 +550,7 @@ public class Start {
 		}
 	}
 
-	private static void initComponent(ComponentManager cm, Component component) {
+	private static void initComponent(ComponentManager cm, Component component) throws ComponentInitException {
 		String startMessage = "initialising component \"" + cm.getComponentName(component.getClass())
 				+ "\" ... ";
 		long initStartTime = System.nanoTime();

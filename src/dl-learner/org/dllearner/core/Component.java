@@ -52,7 +52,7 @@ public abstract class Component {
 	/**
 	 * Method to be called after the component has been configured.
 	 */
-	public abstract void init();
+	public abstract void init() throws ComponentInitException;
 	
 	/**
 	 * Applies a configuration option to this component.

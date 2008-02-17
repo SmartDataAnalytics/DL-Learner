@@ -67,7 +67,13 @@ public class DIGHTTPConnector {
 	public URI newKB() {
 		NewKBDocument newKB = NewKBDocument.Factory.newInstance();
 		newKB.addNewNewKB();
-		String answer = sendAndReceive(newKB.toString());
+		String answer = "";
+		try {
+			answer = sendAndReceive(newKB.toString());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		ResponseDocument rd = parse(answer);
 		
 		IdRespType rt = rd.getResponse();
@@ -89,15 +95,22 @@ public class DIGHTTPConnector {
 	public boolean releaseKB(URI kbURI) {
 		ReleaseKBDocument releaseKB = ReleaseKBDocument.Factory.newInstance();
 		releaseKB.addNewReleaseKB().setUri(kbURI.toString());
-		String answer = sendAndReceive(releaseKB.toString());
+		String answer = "";
+		try {
+			answer = sendAndReceive(releaseKB.toString());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		ResponseDocument rd = parse(answer);
 		return rd.getResponse().isSetOk();
 	}
 
-	public String getIdentifier() {
+	public String getIdentifier() throws IOException {
 		GetIdentifierDocument gid = GetIdentifierDocument.Factory.newInstance();
 		gid.addNewGetIdentifier();
-		String answer = sendAndReceive(gid.toString());
+		String answer = "";
+		answer = sendAndReceive(gid.toString());
 		IdentifierDocument id = null;
 		try {			
 			id = IdentifierDocument.Factory.parse(answer);
@@ -111,7 +124,7 @@ public class DIGHTTPConnector {
 	}
 
 	// tell-Anfrage als XML-String schicken
-	public ResponseDocument tells(String tells) {
+	public ResponseDocument tells(String tells) throws IOException {
 		return parse(sendAndReceive(tells));
 	}
 
@@ -121,7 +134,13 @@ public class DIGHTTPConnector {
 	public ResponsesDocument asks(String asks) {
 		askCounter++;
 		
-		String answer = sendAndReceive(asks);
+		String answer = "";
+		try {
+			answer = sendAndReceive(asks);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		ResponsesDocument rd = null;
 		try {
 			rd = ResponsesDocument.Factory.parse(answer);
@@ -142,13 +161,13 @@ public class DIGHTTPConnector {
 		return rd;
 	}
 	
-	private String sendAndReceive(String send) {
+	private String sendAndReceive(String send) throws IOException {
 		StringBuilder answer = new StringBuilder();	
 		
 		// String an DIG-Reasoner schicken
 		HttpURLConnection connection;
 			
-		try {
+//		try {
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setDoOutput(true);
 			
@@ -174,10 +193,10 @@ public class DIGHTTPConnector {
 			
 			br.close();
 
-		} catch (IOException e) {		
-			System.out.println("Communication problem with DIG Reasoner. Please make sure there is a DIG reasoner running at " + url + " and try again.");
-			System.exit(0);
-		}	
+//		} catch (IOException e) {		
+//			System.out.println("Communication problem with DIG Reasoner. Please make sure there is a DIG reasoner running at " + url + " and try again.");
+//			System.exit(0);
+//		}	
 		
 		if(protocolFile != null)
 			Files.appendFile(protocolFile, "DIG code received from reasoner:\n\n"+answer+"\n\n");

@@ -26,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.*;
+
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblem;
 
 /**
@@ -121,7 +123,12 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
     private void init() {
 	setLearningProblem();
 	if (config.getReasoner() != null && config.getLearningProblem() != null) {
-	    config.getLearningProblem().init();
+	    try {
+			config.getLearningProblem().init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    config.setInitLearningProblem(true);
 	    System.out.println("init LearningProblem");
 	    startGUI.updateTabColors();

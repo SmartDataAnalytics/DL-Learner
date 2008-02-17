@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.swing.*;
 
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ReasonerComponent;
 
 /**
@@ -127,7 +128,12 @@ public class ReasonerPanel extends JPanel implements ActionListener {
     public void init() {
 	setReasoner();
 	if (config.getKnowledgeSource() != null && config.getReasoner() != null) {
-	    config.getReasoner().init();
+	    try {
+			config.getReasoner().init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    System.out.println("init Reasoner");
 	    // set ReasoningService
 	    config.setReasoningService(config.getComponentManager()

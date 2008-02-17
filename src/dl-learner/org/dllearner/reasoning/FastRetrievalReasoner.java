@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
@@ -36,7 +37,12 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	
 	public FastRetrievalReasoner(Set<KnowledgeSource> sources) {
 		rc = new DIGReasoner(sources);
-		rc.init();
+		try {
+			rc.init();
+		} catch (ComponentInitException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		atomicConcepts = rc.getAtomicConcepts();
 		atomicRoles = rc.getAtomicRoles();
 		individuals = rc.getIndividuals();
