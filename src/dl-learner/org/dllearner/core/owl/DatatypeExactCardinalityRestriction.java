@@ -52,6 +52,15 @@ public class DatatypeExactCardinalityRestriction extends DatatypeCardinalityRest
 		return null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString()
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}		
+	
 	@Override
 	public void accept(DescriptionVisitor visitor) {
 		visitor.visit(this);
@@ -59,5 +68,7 @@ public class DatatypeExactCardinalityRestriction extends DatatypeCardinalityRest
 
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}	
+	}
+
+
 }

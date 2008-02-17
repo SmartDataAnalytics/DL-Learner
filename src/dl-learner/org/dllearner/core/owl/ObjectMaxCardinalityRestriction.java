@@ -17,6 +17,11 @@ public class ObjectMaxCardinalityRestriction extends ObjectCardinalityRestrictio
 		return "<= " + number + " " + role.toString(baseURI, prefixes) + " " + getChild(0).toString(baseURI, prefixes);
 	}	
 	
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return role.toString(baseURI, prefixes) + " max " + number + " " + getChild(0).toManchesterSyntaxString(baseURI, prefixes);
+	}	
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
 	 */

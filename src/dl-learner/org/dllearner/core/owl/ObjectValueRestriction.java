@@ -19,6 +19,8 @@
  */
 package org.dllearner.core.owl;
 
+import java.util.Map;
+
 /**
  * Restricts the value of an object property to a single individual
  * (corresponds to owl:hasValue).
@@ -38,5 +40,14 @@ public class ObjectValueRestriction extends ValueRestriction {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString(java.lang.String, java.util.Map)
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

@@ -46,6 +46,23 @@ public class Intersection extends Description {
 		return ret;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString()
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
+		if(children.size()==0)
+			return "EMPTY_AND";
+		
+		String ret = "(";
+		for(int i=0; i<children.size()-1; i++) {
+			ret += children.get(i).toManchesterSyntaxString(baseURI, prefixes) + " and "; 
+		}
+		ret += children.get(children.size()-1).toManchesterSyntaxString(baseURI, prefixes) + ")";
+		return ret;
+	}		
+	
+	@Deprecated
 	public String toStringOld() {
 		String ret = "MULTI_AND [";
 		for(Description child : children) {
@@ -65,5 +82,7 @@ public class Intersection extends Description {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}	
+	}
+
+
 }

@@ -57,7 +57,7 @@ public class NamedClass extends Description implements NamedKBElement {
     }	
 	
     public String toString(String baseURI, Map<String,String> prefixes) {
-    	return Helper.getAbbreviatedString(name, baseURI, prefixes);
+    	return "\"" + Helper.getAbbreviatedString(name, baseURI, prefixes) + "\"";
     }
 	
 	/* (non-Javadoc)
@@ -70,5 +70,13 @@ public class NamedClass extends Description implements NamedKBElement {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString(java.lang.String, java.util.Map)
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return Helper.getAbbreviatedString(name, baseURI, prefixes);
 	}	
 }

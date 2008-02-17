@@ -16,6 +16,11 @@ public class Thing extends Description {
         return "TOP";
     }
 
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return "owl:Thing";
+	}	    
+    
 	public int getLength() {
 		return 1;
 	}
@@ -35,5 +40,7 @@ public class Thing extends Description {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}	
+	}
+
+
 }
