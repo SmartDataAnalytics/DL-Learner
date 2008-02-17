@@ -61,19 +61,24 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
         }
         
         function loadGoogleMap(Lat,Lng,Label) {
-        	document.getElementById("map").style.display='block';
-			if (GBrowserIsCompatible()) {
-      	  		// Create and Center a Map
-          		var map = new GMap2(document.getElementById("map"));
-          		map.setCenter(new GLatLng(Lat, Lng), 12);
-          		map.addControl(new GLargeMapControl());
-          		map.addControl(new GMapTypeControl());
-          		var marker=new GMarker(new GLatLng(Lat, Lng));
-          		GEvent.addListener(marker, "click", function() {
-            		marker.openInfoWindowHtml(Label);
-          		});
-          		map.addOverlay(marker);
-      		}
+        	if (document.getElementById("map").style.display=="none"){
+        		document.getElementById("map").style.display='block';
+				if (GBrowserIsCompatible()) {
+	      	  		// Create and Center a Map
+	          		var map = new GMap2(document.getElementById("map"));
+	          		map.setCenter(new GLatLng(Lat, Lng), 12);
+	          		map.addControl(new GLargeMapControl());
+	          		map.addControl(new GMapTypeControl());
+	          		var marker=new GMarker(new GLatLng(Lat, Lng));
+	          		GEvent.addListener(marker, "click", function() {
+	            		marker.openInfoWindowHtml(Label);
+	          		});
+	          		map.addOverlay(marker);
+	      		}
+        	}
+        	else {
+	        	document.getElementById("map").style.display='none';
+	      	}
     	}
   </script>
   </head>
