@@ -32,6 +32,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
@@ -237,7 +238,12 @@ public class PaperStatistics {
 						// if(exampleNr==3 || exampleNr==5 || exampleNr == 6)
 						//	Config.percentPerLengthUnit = 0.002;
 						// learningAlgorithm = new GP(learningProblem);
-						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
+						try {
+							learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
+						} catch (LearningProblemUnsupportedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					} else if(algorithmNr==2) {
 						// Config.algorithm = Algorithm.HYBRID_GP;
 //						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
@@ -255,7 +261,12 @@ public class PaperStatistics {
 						// if(exampleNr == 3 || exampleNr==5 || exampleNr==6)
 //							Config.percentPerLengthUnit = 0.002;						
 						// learningAlgorithm = new GP(learningProblem);
-						learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
+						try {
+							learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
+						} catch (LearningProblemUnsupportedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					
 					// rs.resetStatistics();
