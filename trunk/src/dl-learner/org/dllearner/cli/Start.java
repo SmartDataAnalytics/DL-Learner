@@ -231,27 +231,8 @@ public class Start {
 		// perform file exports
 		performExports(parser, baseDir, sources, rs);
 
-		// show examples (display each one if they do not take up much space,
-		// otherwise just show the number of examples)
-		boolean oneLineExampleInfo = true;
-		int maxExampleStringLength = Math.max(posExamples.toString().length(), negExamples
-				.toString().length());
-		if (maxExampleStringLength > 100)
-			oneLineExampleInfo = false;
-		if (oneLineExampleInfo) {
-			System.out.println("positive examples[" + posExamples.size() + "]: " + posExamples);
-			System.out.println("negative examples[" + negExamples.size() + "]: " + negExamples);
-		} else {
-			System.out.println("positive examples[" + posExamples.size() + "]: ");
-			for (String ex : posExamples)
-				System.out.println("  " + ex);
-			System.out.println("negative examples[" + negExamples.size() + "]: ");
-			for (String ex : negExamples)
-				System.out.println("  " + ex);
-		}
-
 		// handle any CLI options
-		processCLIOptions(cm, parser, rs);		
+		processCLIOptions(cm, parser, rs, lp);		
 	}
 	
 	public void start(boolean inQueryMode) {
@@ -479,7 +460,7 @@ public class Start {
 	}
 
 	private static void processCLIOptions(ComponentManager cm, ConfParser parser,
-			ReasoningService rs) {
+			ReasoningService rs, LearningProblem lp) {
 		// CLI options (i.e. options which are related to the CLI
 		// user interface but not to one of the components)
 		List<ConfFileOption> cliOptions = parser.getConfOptionsByPrefix("cli");
@@ -487,7 +468,28 @@ public class Start {
 			int maxLineLength = 100;
 			for (ConfFileOption cliOption : cliOptions) {
 				String name = cliOption.getSubOption();
-				if (name.equals("showIndividuals")) {
+				if (name.equals("showExamples")) {
+					// show examples (display each one if they do not take up much space,
+					// otherwise just show the number of examples)
+					SortedSet<String> posExamples = parser.getPositiveExamples();
+					SortedSet<String> negExamples = parser.getNegativeExamples();					
+					boolean oneLineExampleInfo = true;
+					int maxExampleStringLength = Math.max(posExamples.toString().length(), negExamples
+							.toString().length());
+					if (maxExampleStringLength > 100)
+						oneLineExampleInfo = false;
+					if (oneLineExampleInfo) {
+						System.out.println("positive examples[" + posExamples.size() + "]: " + posExamples);
+						System.out.println("negative examples[" + negExamples.size() + "]: " + negExamples);
+					} else {
+						System.out.println("positive examples[" + posExamples.size() + "]: ");
+						for (String ex : posExamples)
+							System.out.println("  " + ex);
+						System.out.println("negative examples[" + negExamples.size() + "]: ");
+						for (String ex : negExamples)
+							System.out.println("  " + ex);
+					}				
+				} else if (name.equals("showIndividuals")) {
 					if (cliOption.getStringValue().equals("true")) {
 						int stringLength = rs.getIndividuals().toString().length();
 						if (stringLength > maxLineLength) {

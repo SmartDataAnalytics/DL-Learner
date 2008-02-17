@@ -115,6 +115,10 @@ public class ROLearner extends LearningAlgorithm {
 	// Variablen zur Einstellung der Protokollierung
 	// boolean quiet = false;
 	boolean showBenchmarkInformation = false;
+	// the previous best node (used only for logging, such that we can
+	// detect whether a new best node has been found since the last time
+	// statistics were printed)
+	private Node previousBestNode;
 	// boolean createTreeString = false;
 	// String searchTree = new String();
 	TreeSet<Node> expandedNodes = new TreeSet<Node>(nodeComparatorStable);
@@ -865,10 +869,20 @@ public class ROLearner extends LearningAlgorithm {
 		long algorithmRuntime = System.nanoTime() - algorithmStartTime;
 		
 		if(!finalStats) {
+			Node bestNode = candidatesStable.last();
+			boolean newBestNodeFound = false;
+			if(!bestNode.equals(previousBestNode)) {
+				newBestNodeFound = true;
+				previousBestNode = bestNode;
+			}
+			if(newBestNodeFound)
+				logger.info("currently best node: " + bestNode);
+			
 			// Refinementoperator auf Konzept anwenden
 			String bestNodeString = "currently best node: " + candidatesStable.last();
 			// searchTree += bestNodeString + "\n";
-			logger.info(bestNodeString);
+			if(!newBestNodeFound)
+				logger.debug(bestNodeString);
 			String expandedNodeString = "next expanded node: " + candidates.last();
 			// searchTree += expandedNodeString + "\n";
 			logger.debug(expandedNodeString);		
