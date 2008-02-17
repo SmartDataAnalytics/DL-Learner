@@ -66,7 +66,7 @@ public class DLLearnerWSStart {
 		server.setExecutor(threads);
 		server.start();
 
-		System.out.println("Starting DL-Learner web service at http://" + isa.getHostName() + ":"
+		System.out.print("Starting DL-Learner web service at http://" + isa.getHostName() + ":"
 				+ isa.getPort() + "/services ... ");
 		Endpoint endpoint = Endpoint.create(new DLLearnerWS());
 		// Endpoint endpoint = Endpoint.create(new CustomDataClass());
