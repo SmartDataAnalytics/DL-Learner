@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
@@ -96,13 +97,13 @@ public class KBFile extends KnowledgeSource {
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
 		try {
 			kb = KBParser.parseKBFile(url);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new ComponentInitException("KB file " + url + " could not be read.", e);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			throw new ComponentInitException("KB file " + url + " could not be parsed correctly.", e);
 		}
 	}
 	
