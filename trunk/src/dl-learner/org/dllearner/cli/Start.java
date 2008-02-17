@@ -105,7 +105,7 @@ public class Start {
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ComponentInitException {
 		File file = new File(args[args.length - 1]);
 
 		boolean inQueryMode = false;
@@ -121,12 +121,7 @@ public class Start {
 		logger.setLevel(Level.INFO);
 		
 		Start start = null;
-		try {
-			start = new Start(file);
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
+		start = new Start(file);
 		start.start(inQueryMode);
 	}
 

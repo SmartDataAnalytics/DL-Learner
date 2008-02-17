@@ -154,8 +154,7 @@ public class DIGReasoner extends ReasonerComponent {
 			try {
 				rd = connector.tells(sb.toString());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new ComponentInitException("Could not read knowledge source " + source + ".", e);
 			}
 			if (!rd.getResponse().isSetOk()) {
 				System.err.println("DIG-Reasoner cannot read knowledgebase.");
