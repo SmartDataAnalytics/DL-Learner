@@ -43,6 +43,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
@@ -163,7 +164,13 @@ public class MiniGUI extends JPanel implements ActionListener {
 			
 			// try the refinement operator based learning algorithm to solve
 			// the problem
-			LearningAlgorithm la = cm.learningAlgorithm(ROLearner.class, lp, rs);
+			LearningAlgorithm la = null;
+			try {
+				la = cm.learningAlgorithm(ROLearner.class, lp, rs);
+			} catch (LearningProblemUnsupportedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			la.init();
 			la.start();
 			

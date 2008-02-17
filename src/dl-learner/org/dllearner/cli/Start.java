@@ -48,6 +48,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
@@ -215,7 +216,12 @@ public class Start {
 		else
 			handleError("Unknown value in " + algorithmOption);
 
-		la = cm.learningAlgorithm(laClass, lp, rs);
+		try {
+			la = cm.learningAlgorithm(laClass, lp, rs);
+		} catch (LearningProblemUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		configureComponent(cm, la, componentPrefixMapping, parser);
 		initComponent(cm, la);
 

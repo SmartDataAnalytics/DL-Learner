@@ -28,6 +28,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
@@ -77,7 +78,13 @@ public class ComponentTest {
 		lp.init();
 		
 		// create the learning algorithm
-		LearningAlgorithm la = cm.learningAlgorithm(RandomGuesser.class, lp, rs);
+		LearningAlgorithm la = null;
+		try {
+			la = cm.learningAlgorithm(RandomGuesser.class, lp, rs);
+		} catch (LearningProblemUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		cm.applyConfigEntry(la, "numberOfTrees", 100);
 		cm.applyConfigEntry(la, "maxDepth", 5);
 		la.init();

@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblemUnsupportedException;
 
 /**
  * LearningAlgorithmPanel, tab 4. Choose LearningAlgorithm, change Options and
@@ -107,10 +108,15 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
     public void setLearningAlgorithm() {
 	if (config.getLearningProblem() != null
 		&& config.getReasoningService() != null) {
-	    config.setLearningAlgorithm(config.getComponentManager()
-		    .learningAlgorithm(learners.get(choosenClassIndex),
-			    config.getLearningProblem(),
-			    config.getReasoningService()));
+	    try {
+			config.setLearningAlgorithm(config.getComponentManager()
+			    .learningAlgorithm(learners.get(choosenClassIndex),
+				    config.getLearningProblem(),
+				    config.getReasoningService()));
+		} catch (LearningProblemUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    updateOptionPanel();
 	}
     }

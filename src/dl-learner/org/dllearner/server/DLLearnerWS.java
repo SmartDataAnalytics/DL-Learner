@@ -45,6 +45,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.NamedClass;
@@ -248,7 +249,7 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public int setLearningAlgorithm(int id, String component) throws ClientNotKnownException, UnknownComponentException {
+	public int setLearningAlgorithm(int id, String component) throws ClientNotKnownException, UnknownComponentException, LearningProblemUnsupportedException {
 		ClientState state = getState(id);
 		Class<? extends LearningAlgorithm> laClass = learningAlgorithmMapping.get(component);
 		if(laClass == null)

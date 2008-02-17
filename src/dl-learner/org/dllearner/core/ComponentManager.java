@@ -316,7 +316,7 @@ public class ComponentManager {
 	}
 
 	// automagically calls the right constructor for the given learning problem
-	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasoningService rs) {
+	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasoningService rs) throws LearningProblemUnsupportedException {
 		if (!learningAlgorithms.contains(laClass))
 			System.err.println("Warning: learning algorithm " + laClass
 					+ " is not a registered learning algorithm component.");
@@ -330,11 +330,12 @@ public class ComponentManager {
 		}
 
 		if (constructorArgument == null) {
-			System.err.println("Warning: No suitable constructor registered for algorithm "
-					+ laClass.getName() + " and problem " + lp.getClass().getName()
-					+ ". Registered constructors for " + laClass.getName() + ": "
-					+ algorithmProblemsMapping.get(laClass) + ".");
-			return null;
+			throw new LearningProblemUnsupportedException(lp.getClass(), laClass, algorithmProblemsMapping.get(laClass));
+//			System.err.println("Warning: No suitable constructor registered for algorithm "
+//					+ laClass.getName() + " and problem " + lp.getClass().getName()
+//					+ ". Registered constructors for " + laClass.getName() + ": "
+//					+ algorithmProblemsMapping.get(laClass) + ".");
+//			return null;
 		}
 
 		T la = invokeConstructor(laClass, new Class[] { constructorArgument, ReasoningService.class }, new Object[] { lp, rs });
