@@ -1,100 +1,47 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.core.owl;
 
 import java.util.Map;
 
-
+/**
+ * All quantified restriction on objects, e.g. \forall hasChild.description
+ * stands for all objects having only children satisfying description.
+ * 
+ * @author Jens Lehmann
+ *
+ */
 public class ObjectAllRestriction extends ObjectQuantorRestriction {
     
 	public ObjectAllRestriction(ObjectPropertyExpression role, Description c) {
 		super(role, c);
 	}
-	
-	/*
-    public All(String roleName) {
-        this.roleName = roleName;
-    }
-        
-    public String getRoleName() {
-		return roleName;
-	}
-	*/
-
-    /*
-	@Override
-    protected void calculateSets(FlatABox abox, SortedSet<String> adcPosSet, SortedSet<String> adcNegSet) {
-        children.get(0).calculateSets(abox, posSet, negSet);
-
-        // Daten zu R+ und R-
-        Map<String, SortedSet<String>> rplus = abox.rolesPos.get(roleName);
-        Map<String, SortedSet<String>> rminus = abox.rolesNeg.get(roleName);
-        // Daten zu C und C+
-        Set<String> cPlus = children.get(0).posSet;
-        Set<String> cMinus = children.get(0).negSet;
-
-        // Fallunterscheidungen einbauen, da R+ und R- leer sein können
-        // und es nicht für jedes a der Domain ein (a,b) \in R+ bzw. R- geben muss;
-        // man beachte, dass viele Regeln nur gelten, weil als Domain die Menge aller
-        // Individuen angenommen wird!
-        
-        // R- ist leer
-        if(rminus==null) {
-            // falls C die ganze Domain umfasst, dann erüllt jedes Individual
-            // All R.C, ansonsten keines (es muss nichts gemacht werden)
-            if(cPlus.equals(abox.domain))
-                // keine Kopie notwendig, da Domain unveränderlich
-                posSet = abox.domain;
-        } else {
-            for (String a : abox.domain) {
-                if(!rminus.containsKey(a)) {
-                    // a erfüllt die Bedingung, falls alle b in C+ sind
-                    if(cPlus.equals(abox.domain))
-                        posSet.add(a);
-                }
-                else if (checkAll(Helper.difference(abox.domain, rminus.get(a)), cPlus))
-                    posSet.add(a);
-            }                    
-        }
-        
-        // falls R+ leer ist, dann ist Bedingung nie erfüllt
-        if(rplus!=null) {
-            for (String a : rplus.keySet()) {
-                // falls R+ Schlüssel nicht enthält, ist Bedingung nicht erfüllt
-                if (rplus.containsKey(a) && checkExist(rplus.get(a), cMinus))
-                    negSet.add(a);
-            }
-        }
-
-
-
-    }
-
-    // aus Exists-Klasse übernommen
-    private static boolean checkExist(Set<String> s1, Set<String> s2) {
-        for (String b : s1) {
-            if (s2.contains(b))
-                return true;
-        }
-        return false;
-    }
-
-    private static boolean checkAll(Set<String> s1, Set<String> s2) {
-        for (String b : s1) {
-            if (!s2.contains(b)) 
-                return false;
-        }
-        return true;
-    }    
-    */
-    	
+		
     public String toString(String baseURI, Map<String,String> prefixes) {
         return "ALL " + role + "." + children.get(0).toString(baseURI, prefixes);
     }
-
-    /*
-	public int getLength() {
-		return 2;
-	}
-	*/         
+      
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+	    return role.toString(baseURI, prefixes) + " some " + children.get(0).toManchesterSyntaxString(baseURI, prefixes);
+	}	   
     
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
@@ -106,5 +53,5 @@ public class ObjectAllRestriction extends ObjectQuantorRestriction {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}	
+	}
 }

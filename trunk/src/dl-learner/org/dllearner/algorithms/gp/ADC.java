@@ -27,6 +27,15 @@ public class ADC extends Description {
 		return "ADC";
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString()
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}	
+	
 	@Override
 	public int getArity() {
 		return 0;
@@ -43,5 +52,7 @@ public class ADC extends Description {
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
 	}
+
+
 
 }

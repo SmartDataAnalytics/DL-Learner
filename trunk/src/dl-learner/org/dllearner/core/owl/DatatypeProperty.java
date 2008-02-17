@@ -50,7 +50,7 @@ public class DatatypeProperty extends PropertyExpression implements Property, Na
 	 * @see org.dllearner.core.dl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return Helper.getAbbreviatedString(name, baseURI, prefixes);
+		return "\"" + Helper.getAbbreviatedString(name, baseURI, prefixes) + "\"";
 	}
 
 	public void accept(KBElementVisitor visitor) {

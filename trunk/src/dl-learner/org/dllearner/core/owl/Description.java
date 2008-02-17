@@ -1,87 +1,45 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.core.owl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * TODO: alless was fast retrieval algorithm angeht, sollte 
- * ausgegliedert werden!
+ * A class description is sometimes also called "complex class" or "concept". 
  * 
- * @author jl
+ * @author Jens Lehmann
  *
  */
 public abstract class Description implements Cloneable, PropertyRange, KBElement {
 	
     protected Description parent = null;
     protected List<Description> children = new LinkedList<Description>();
-    //protected SortedSet<String> posSet = new TreeSet<String>();
-    //protected SortedSet<String> negSet = new TreeSet<String>();
-    
-    /*
-    public Node(List<Node> children) {
-        this.children = children;
-        for(Node n : children)
-            n.setParent(this);
-    }
-    */
-    
-    // TODO: die Methode noch hinzuf�gen
+
     public abstract int getArity();
     
     /**
-     * Berechnet die + und - Menge. Wenn die Mengen berechnet sind, dann können
-     * sie über die get-Methoden abgefragt werden. Der Algorithmus ist relativ
-     * einfach zu implementieren, aber ein großer Teil des Codes wird zum
-     * vermeiden von Nullpointern (bei unvollständigen Daten) eingesetzt.
+     * Calculate the number of nodes for this description tree (each
+     * description can be seen as a tree).
      * 
-     * Die �bergebenen Mengen 
-     */
-    // protected abstract void calculatePosSet(FlatABox abox);
-    // protected abstract void calculateSets(FlatABox abox, SortedSet<String> adcPosSet, SortedSet<String> adcNegSet);
-    /*
-    // Score ohne ADF berechnen
-    public Score computeScore() {
-    	return computeScore(null,null);
-    }
-    */
-    
-    // Score mit ADF berechnen
-    
-    //public Score computeScore(SortedSet<String> adcPosSet, SortedSet<String> adcNegSet) {
-        /*
-        Set<String> posExamples = null;
-        Set<String> negExamples = null;
-        
-        FlatABox abox = FlatABox.getInstance();
-        
-        // es wird angenommen, dass nur ein Konzept gelernt wird
-        for(String s : abox.exampleConceptsPos.keySet()) {
-            posExamples = abox.exampleConceptsPos.get(s);
-        }
-        for(String s : abox.exampleConceptsNeg.keySet()) {
-            negExamples = abox.exampleConceptsNeg.get(s); 
-        }
-        
-        // Algorithmus anwenden
-        calculateSets(abox);
-        //Set<String> posSet = program.getPosSet();
-        //Set<String> negSet = program.getNegSet();
-    
-        // Punktzahl sind die abgedeckten positiven Beispiele +
-        // die nicht abgedeckten negativen Beispiele
-        int points = Helper.intersection(posSet,posExamples).size()
-        + Helper.intersection(negSet,negExamples).size();
-        
-        // besser: Abzüge wenn pos. Beispiel negativ wird bzw. umgekehrt
-        
-        return points;
-        */
-    //    calculateSets(FlatABox.getInstance(),posSet,negSet);
-    //    return new Score(posSet,negSet);
-    //}    
-    
-    /**
-     * Calculate the number of nodes for this tree.
      * @return The number of nodes.
      */
     public int getNumberOfNodes() {
@@ -90,26 +48,13 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
             sum += child.getNumberOfNodes();
         return sum;
     }
-
-    // protected abstract int getLength();
-    
-    /**
-     * Calculate the number of nodes for this tree.
-     * @return The number of nodes.
-     */
-    /*
-    public int getConceptLength() {
-        int length = getLength();
-        for (Concept child : children)
-            length += child.getConceptLength();
-        return length;
-    }*/    
     
     /**
      * Selects a sub tree.
      * @param i A position in the tree. Positions are iteratively given to nodes
      * by leftmost depth-first search. This allows efficient selection of subtrees.
-     * (Implementation does not work if any node has more than two children.)
+     * (TODO: Implementation does not work if any node has more than two children
+     * like conjunction and disjunction.)
      * @return The selected subtree.
      */
     public Description getSubtree(int i) {
@@ -137,8 +82,8 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     }
     
     /**
-     * Calculates the tree depth.
-     * @return The depth of this tree.
+     * Calculates the description tree depth.
+     * @return The depth of this description.
      */
     public int getDepth() {
         // compute the max over all children
@@ -154,8 +99,7 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     }    
     
     /**
-     * Returns a clone of this programm tree. Die positiven und negativen Sets
-     * werden dabei nicht mitgeklont, sondern nur parent und children. 
+     * Returns a clone of this description.
      */
     @SuppressWarnings("unchecked")
 	@Override    
@@ -164,64 +108,27 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
         try {
             node = (Description) super.clone();
         } catch (CloneNotSupportedException e) {
-            // this should never happen
+            // should never happen
             throw new InternalError(e.toString());
         }
-        // parent kann man ev. auf null setzen bzw. testen, ob er null ist und
-        // in diesem Fall auf null setzen
-        // node.parent = (Node) parent.clone();
-        // node.parent = null;
-        // eventuell sollte man jedes einzelne Kind durchgehen und klonen, da die clone()
-        // Methode von LinkedList nur eine "shallow copy" erzeugt
-        // node.children = (List<Node>) ((LinkedList)children).clone();
-        // List<Node> childList = new LinkedList<Node>();
-        
-        // Die Kopie des Knotens wird folgenderma�en angelegt: Zuerst wird mit 
-        // super.clone() ein Klon des Knotens erstellt. Dabei handelt es sich um
-        // eine flache Kopie, d.h. bei nichtprimitiven Objekten wird einfach auf
-        // das gleiche Objekt gezeigt. Bei der Liste von Kindern ist das nicht
-        // erw�nscht. Es ist auch nicht m�glich nur clone() auf der Kinderliste
-        // selbst aufzurufen, weil dabei nur die Liste und nich die Elemente der Liste
-        // geklont werden. Aus dem Grund wird eine komplett neue Kinderliste erzeugt
-        // und dort die Knoten eingef�gt, die zuvor geklont werden. Durch aufrufen von
-        // addChild wird auch sichergestellt, dass der parent-Link auf den geklonten
-        // Knoten zeigt. 
+
+        // Create a deep copy, i.e. we iterate over all children and clone them.
+        // The addChild operation is used to ensure that the parent links are 
+        // correct, i.e. all parent links point to the new clones instead of the
+        // old descriptions.
         node.children = new LinkedList<Description>();
         for(Description child : children) {
         	Description clonedChild = (Description) child.clone();
         	node.addChild(clonedChild);
         }
-        // Beim durchlaufen des Algorithmus werden posSet und negSet ge�ndert. Es ist
-        // nicht erw�nscht, dass sich diese Mengen, dann auch in anderen B�umen
-        // �ndern, da diese mittlerweile durch Crossover, Mutation etc. ge�ndert
-        // worden sein k�nnten. Momentan ist das nicht von Bedeutung (man k�nnte also
-        // die beiden folgenden Zeilen auch weglassen), da immer nur eine baumweise
-        // Abarbeitung des Algorithmus erfolgt und diese Mengen nicht wiederverwendet
-        // werden.
-        //node.posSet = new TreeSet<String>();
-        //node.negSet = new TreeSet<String>();
 
         return node;        
     }    
     
-    /*
-    protected Set<String> getPosSet() {
-        return posSet;
-    }
-    
-    protected Set<String> getNegSet() {
-        return negSet;
-    }
-    */
-    
-    /*
-    public Concept getChildren(int index) {
-        return children.get(index);
-    }
-    */
-
     /**
-     * Adds child and sets this node as parent.
+     * Adds a description as child of this one. The parent link
+     * of the concept will point to this one.
+     * 
      * @param child
      * @return
      */
@@ -231,7 +138,9 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     }
 
     /**
-     * Adds child and sets this node as parent.
+     * Adds a child description at the specified index.
+     * 
+     * @see #addChild(Description)
      * @param index
      * @param child
      */
@@ -240,15 +149,21 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
         children.add(index, child);
     }
 
-    // relativ neue Methode
+    /**
+     * Remove the specified child description (its parent link is set
+     * to null).
+     * @param child The child to remove.
+     */
     public void removeChild(Description child) {
     	child.setParent(null);
     	children.remove(child);
     }
     
     /**
-     * Tests if this node is the root of a tree.
-     * @return True if this node is the root of a program tree, false otherwise.
+     * Tests whether this description is at the root, i.e.
+     * does not have a parent.
+     * 
+     * @return True if this node is the root of a description, false otherwise.
      */
     public boolean isRoot() {
         return (parent == null);
@@ -274,6 +189,15 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 	public String toString() {
 		return toString(null, null);
 	}
+	
+	/**
+	 * Returns a manchester syntax string of this description. For a
+	 * reference, see 
+	 * <a href="http://www.co-ode.org/resources/reference/manchester_syntax">here</a>
+	 * and <a href="http://owl-workshop.man.ac.uk/acceptedLong/submission_9.pdf">here</a> (PDF).
+	 * @return The manchester syntax string for this description.
+	 */
+	public abstract String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes);
 	
 	public abstract void accept(DescriptionVisitor visitor);
 }

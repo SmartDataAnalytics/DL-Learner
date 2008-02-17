@@ -41,5 +41,13 @@ public class Negation extends Description {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString(java.lang.String, java.util.Map)
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+        return "(not " +children.get(0).toString(baseURI, prefixes) + ")";		
 	}	
 }

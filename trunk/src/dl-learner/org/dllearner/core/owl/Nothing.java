@@ -18,6 +18,15 @@ public class Nothing extends Description {
         return "BOTTOM";
     }
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString(java.lang.String, java.util.Map)
+	 */
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO: check whether this is correct
+		return "owl:Nothing";
+	}	    
+    
 	public int getLength() {
 		return 1;
 	}
@@ -37,5 +46,7 @@ public class Nothing extends Description {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}	
+	}
+
+
 }

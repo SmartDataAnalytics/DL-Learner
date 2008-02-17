@@ -48,6 +48,19 @@ public class Union extends Description {
 		return ret;
 	}	
 	
+	@Override
+	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
+		if(children.size()==0)
+			return "EMPTY_OR";
+		
+		String ret = "(";
+		for(int i=0; i<children.size()-1; i++) {
+			ret += children.get(i).toManchesterSyntaxString(baseURI, prefixes) + " or "; 
+		}
+		ret += children.get(children.size()-1).toManchesterSyntaxString(baseURI, prefixes) + ")";
+		return ret;
+	}	
+	
 	public String toStringOld() {
 		String ret = "MULTI_OR [";
 		for(Description child : children) {
