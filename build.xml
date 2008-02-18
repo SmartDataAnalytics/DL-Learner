@@ -61,7 +61,7 @@ public class Info {
 		</copy>
 		
 		<!-- create file containing the build info -->
-		<echo file="${release_tmp_dir}/build.txt" append="false">DL-Leaner Build ${today}</echo>
+		<echo file="${release_tmp_dir}/build.txt" append="false">DL-Learner Build ${today}</echo>
 		
 		<!-- create empty log directory for release -->
 		<mkdir dir="${release_tmp_dir}/log" />
