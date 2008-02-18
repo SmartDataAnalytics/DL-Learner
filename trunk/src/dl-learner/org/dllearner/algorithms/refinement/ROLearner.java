@@ -119,6 +119,11 @@ public class ROLearner extends LearningAlgorithm {
 	// detect whether a new best node has been found since the last time
 	// statistics were printed)
 	private Node previousBestNode;
+	
+	// record start node such that other applications can
+	// get information about the search tree
+	private Node startNode;
+	
 	// boolean createTreeString = false;
 	// String searchTree = new String();
 	TreeSet<Node> expandedNodes = new TreeSet<Node>(nodeComparatorStable);
@@ -348,6 +353,7 @@ public class ROLearner extends LearningAlgorithm {
 		// der Länge 1 untersucht wurden
 		candidates.add(topNode);
 		candidatesStable.add(topNode);
+		startNode = topNode;
 		// Abbruchvariable => beachten, dass bereits TOP eine Lösung sein kann
 		solutionFound = (coveredNegativeExamples == 0);
 		solutions = new LinkedList<Description>();
@@ -985,6 +991,13 @@ public class ROLearner extends LearningAlgorithm {
 	@Override
 	public void stop() {
 		stop = true;
+	}
+
+	/**
+	 * @return the startNode
+	 */
+	public Node getStartNode() {
+		return startNode;
 	}
 
 }
