@@ -33,7 +33,8 @@ import org.junit.runner.JUnitCore;
 public class AllTestsRunner {
 
 	public static void main(String[] args) {
-		JUnitCore.main("org.dllearner.test.ComponentTests");
+		JUnitCore.main("org.dllearner.test.junit.ComponentTests",
+				"org.dllearner.test.junit.ReasonerTests");
 	}
 
 }

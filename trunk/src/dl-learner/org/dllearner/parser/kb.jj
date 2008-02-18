@@ -52,6 +52,11 @@ public class KBParser {
 		return parser.Concept();
 	}
 
+	public static KB parseKBFile(String content) throws IOException, ParseException {
+		KBParser parser = new KBParser(new StringReader(content));
+		return parser.KB();
+	}
+
 	public static KB parseKBFile(URL url) throws IOException, ParseException {
 		KBParser parser = new KBParser(url.openStream());
 		return parser.KB();

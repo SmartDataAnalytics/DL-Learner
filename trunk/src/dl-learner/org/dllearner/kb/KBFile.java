@@ -60,6 +60,18 @@ public class KBFile extends KnowledgeSource {
 	private URL url;
 	private KB kb;
 
+	/**
+	 * Constructor allowing you to treat an already existing KB object
+	 * as a KBFile knowledge source. Use it sparingly, because the
+	 * standard way to create components is via 
+	 * {@link org.dllearner.core.ComponentManager}.
+	 * 
+	 * @param kb A KB object.
+	 */
+	public KBFile(KB kb) {
+		this.kb = kb;
+	}
+	
 	public static String getName() {
 		return "KB file";
 	}
@@ -99,7 +111,8 @@ public class KBFile extends KnowledgeSource {
 	@Override
 	public void init() throws ComponentInitException {
 		try {
-			kb = KBParser.parseKBFile(url);
+			if(kb == null)
+				kb = KBParser.parseKBFile(url);
 		} catch (IOException e) {
 			throw new ComponentInitException("KB file " + url + " could not be read.", e);
 		} catch (ParseException e) {
