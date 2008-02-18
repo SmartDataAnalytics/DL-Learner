@@ -51,5 +51,17 @@ sparql.recursionDepth = 1;
 sparql.predefinedFilter = 5;
 sparql.predefinedEndpoint = 1;
 
+//*********SKOS specific
+// replace skos with owl properties
+sparql.replacePredicate = [
+("http://www.w3.org/2004/02/skos/core#subject","http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+("http://www.w3.org/2004/02/skos/core#broader","http://www.w3.org/2000/01/rdf-schema#subClassOf")];
+
+// because skos is cyclic this stops it 
+//manually after retrieving the specified amount of classes
+sparql.breakSuperClassRetrievalAfter=200;
+
+
 import("http://dbpedia.openlinksw.com:8890/sparql","SPARQL");
 sparql.instances = {};
+
