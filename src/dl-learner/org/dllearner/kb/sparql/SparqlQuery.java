@@ -21,6 +21,10 @@ package org.dllearner.kb.sparql;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
@@ -176,7 +180,11 @@ public class SparqlQuery {
 		// possible Jena bug: Jena modifies the result set during
 		// JSON transformation, so we need to get it back
 		//resultSet = JSONtoResultSet(baos.toString());
-		return baos.toString();
+		try{
+			return baos.toString("UTF-8");
+		}catch (Exception e){
+			return baos.toString();
+		}
 	}
 
 	/**
