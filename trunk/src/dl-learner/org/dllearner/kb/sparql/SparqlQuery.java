@@ -83,6 +83,7 @@ public class SparqlQuery {
 		}
 		logger.info("query SPARQL server");
 		try{
+			//TODO after overnext Jena release
 			HttpQuery.urlLimit = 3*1024 ;
 			rs = queryExecution.execSelect();
 			logger.info(rs.getResultVars().toString());
