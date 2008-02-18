@@ -23,6 +23,11 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
                 return parser.Concept();
         }
 
+        public static KB parseKBFile(String content) throws IOException, ParseException {
+                KBParser parser = new KBParser(new StringReader(content));
+                return parser.KB();
+        }
+
         public static KB parseKBFile(URL url) throws IOException, ParseException {
                 KBParser parser = new KBParser(url.openStream());
                 return parser.KB();
@@ -494,31 +499,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     finally { jj_save(5, xla); }
   }
 
-  final private boolean jj_3R_13() {
-    if (jj_scan_token(19)) return true;
-    if (jj_3R_20()) return true;
-    if (jj_3R_4()) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
-    if (jj_3R_2()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_22() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_2() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(18)) jj_scanpos = xsp;
-    if (jj_3R_4()) return true;
-    if (jj_scan_token(22)) return true;
-    if (jj_3R_3()) return true;
-    if (jj_scan_token(24)) return true;
-    return false;
-  }
-
   final private boolean jj_3_6() {
     if (jj_scan_token(22)) return true;
     if (jj_3R_2()) return true;
@@ -724,6 +704,31 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_16()) return true;
     }
+    return false;
+  }
+
+  final private boolean jj_3R_13() {
+    if (jj_scan_token(19)) return true;
+    if (jj_3R_20()) return true;
+    if (jj_3R_4()) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    if (jj_3R_2()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_22() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_2() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(18)) jj_scanpos = xsp;
+    if (jj_3R_4()) return true;
+    if (jj_scan_token(22)) return true;
+    if (jj_3R_3()) return true;
+    if (jj_scan_token(24)) return true;
     return false;
   }
 
