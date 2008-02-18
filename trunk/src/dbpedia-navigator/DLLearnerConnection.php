@@ -160,7 +160,7 @@ class DLLearnerConnection
 				throw new Exception("Query stopped");
 			}
 		} while($seconds<$this->ttl);
-		$this->client->stopSparqlQuery($id,$queryID);
+		$this->client->stopSparqlThread($id,$queryID);
 	}
 
 	function getSubjects($label)
