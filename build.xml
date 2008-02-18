@@ -92,7 +92,7 @@ public class Info {
 		<!-- copy source code -->
 		<mkdir dir="${release_tmp_dir}/src/"/>
 		<copy toDir="${release_tmp_dir}/src/">
-			<fileset dir="${source_dir}" includes="**/*.java,**/*.jjt,build.xml"/>
+			<fileset dir="${source_dir}" includes="**/*.java,**/*.html,**/*.gif,**/*.jjt,build.xml"/>
 		</copy>
 		
 		<!-- create copy developer documentation -->
