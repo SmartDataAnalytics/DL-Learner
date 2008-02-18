@@ -118,7 +118,7 @@ public class Start {
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.INFO);
+		logger.setLevel(Level.DEBUG);
 		
 		Start start = null;
 		start = new Start(file);
@@ -541,6 +541,22 @@ public class Start {
 						if (!satisfiable)
 							System.exit(0);
 					}
+				} else if( name.equals("logLevel")) {
+					String level = cliOption.getStringValue();
+					if(level.equals("off"))
+						logger.setLevel(Level.OFF);
+					else if(level.equals("trace"))
+						logger.setLevel(Level.TRACE);					
+					else if(level.equals("info"))
+						logger.setLevel(Level.INFO);
+					else if(level.equals("debug"))
+						logger.setLevel(Level.DEBUG);
+					else if(level.equals("warn"))
+						logger.setLevel(Level.WARN);
+					else if(level.equals("error"))
+						logger.setLevel(Level.ERROR);
+					else if(level.equals("fatal"))
+						logger.setLevel(Level.FATAL);	
 				} else
 					handleError("Unknown CLI option \"" + name + "\".");
 			}
