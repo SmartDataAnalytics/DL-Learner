@@ -87,17 +87,21 @@ function getarticle($subject,$fromCache)
 			
 			// display a picture if there is one
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
-				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0].'" alt="Picture of '.$subject.'" style="float:right; max-width:200px;" \>';
+				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="Picture of '.$subject.'" style="float:right; max-width:200px;" \>';
 			
 			//display where it was redirected from, if it was redirected
-			if (isset($triples['http://dbpedia.org/property/redirect'])) $content.="<span id=\"redirectedFrom\">redirected from '$subject'</span>";
+			$redirect="";
+			if (isset($triples['http://dbpedia.org/property/redirect'])){
+				$content.="<span id=\"redirectedFrom\">redirected from '$subject'</span>";
+				$redirect=$triples['http://dbpedia.org/property/redirect'][0]['value'];
+			}
 			
 			// add short description in english
-			$content.="<h4>Short Description</h4><p>".urldecode($triples['http://dbpedia.org/property/abstract'][0])."</p>";
+			$content.="<h4>Short Description</h4><p>".urldecode($triples['http://dbpedia.org/property/abstract'][0]['value'])."</p>";
 				
 			// give the link to the corresponding Wikipedia article
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
-				$content .= '<p><img src="'.$_GET['path'].'images/wikipedia_favicon.png" alt="Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0].'">view Wikipedia article</a>, '; 
+				$content .= '<p><img src="'.$_GET['path'].'images/wikipedia_favicon.png" alt="Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0]['value'].'">view Wikipedia article</a>, '; 
 			$content .= '<a href="'.$uri.'">view DBpedia resource description</a></p>';
 	
 			// display a list of classes
@@ -107,15 +111,30 @@ function getarticle($subject,$fromCache)
 			if(isset($triples['http://dbpedia.org/property/reference'])) {
 				$content .= '<p>references: <ul>';
 				foreach($triples['http://dbpedia.org/property/reference'] as $reference)
-					$content .= '<li><a href="'.$reference.'">'.$reference.'</a></li>';
+					$content .= '<li><a href="'.$reference['value'].'">'.$reference['value'].'</a></li>';
 				$content .= '</ul></p>';
 			}
 			
 			//display a Google Map if Geo-koordinates are available
 			if (isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'])&&isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'])){
-				$content.="<br/><img src=\"".$_GET['path']."images/mobmaps_googlemapsicon.jpg\" alt=\"Google Maps\" style=\"max-width:30px;\" /> <a href=\"\" onClick=\"loadGoogleMap(".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'][0].",".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'][0].",'".$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]."');return false;\">Toggle a map of the location</a><br/><br/><div id=\"map\" style=\"width: 500px; height: 300px;display:none;\"></div>";
+				$content.="<br/><img src=\"".$_GET['path']."images/mobmaps_googlemapsicon.jpg\" alt=\"Google Maps\" style=\"max-width:25px;\" /> <a href=\"\" onClick=\"loadGoogleMap(".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'][0]['value'].",".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'][0]['value'].",'".$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value']."');return false;\">Toggle a map of the location</a><br/><br/><div id=\"map\" style=\"width: 500px; height: 300px;display:none;\"></div>";
 			}
 			
+			//display photo collection, if there is one
+			if (isset($triples['http://dbpedia.org/property/hasPhotoCollection'])){
+				$content.="<br/><img src=\"".$_GET['path']."images/flickr.jpg\" alt=\"Flickr\" style=\"max-width:25px;\" /> <a href=\"".$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value']."\">view a photo collection</a><br/>";
+			}
+			
+			//skos-subjects
+			if (isset($triples['http://www.w3.org/2004/02/skos/core#subject'])){
+				$content .= '<br/><p>skos subjects: <ul>';
+				foreach($triples['http://www.w3.org/2004/02/skos/core#subject'] as $skos)
+					$content .= '<li><a href="'.$skos['value'].'">'.$skos['value'].'</a></li>';
+				$content .= '</ul></p>';			
+			}
+			
+			//BUILD ARTICLE TITLE
+			$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
 			
 			// filter out uninteresting properties and properties which
 			// have already been displayed
@@ -123,17 +142,21 @@ function getarticle($subject,$fromCache)
 			unset($triples['http://xmlns.com/foaf/0.1/depiction']);
 			unset($triples['http://dbpedia.org/property/abstract']);
 			unset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']);
+			unset($triples['http://dbpedia.org/property/redirect']);
+			unset($triples['http://dbpedia.org/property/reference']);
+			unset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#long']);
+			unset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat']);
+			unset($triples['http://dbpedia.org/property/hasPhotoCollection']);
+			unset($triples['http://www.w3.org/2004/02/skos/core#subject']);
+			unset($triples['http://www.w3.org/2000/01/rdf-schema#label']);
 			
 			// display the remaining properties as list which can be used for further navigation
-				
-			$content .= '<br/><br/><br/><br/><br/><br/>'.get_triple_table($triples);
+			$content .= '<br/><br/><br/>'.get_triple_table($triples);
 			
 			//BUILD SEARCHRESULT
 			if ($fromCache==-1) 
 				$searchResult.="<a href=\"\" onclick=\"xajax_getsubjects('".$subject."');return false;\">Show more Results</a>";
 			
-			//BUILD ARTICLE TITLE
-			$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0];
 			
 			//Restart the Session
 			session_start();
@@ -151,15 +174,15 @@ function getarticle($subject,$fromCache)
 				
 			//Add Positives to Session
 			if (!isset($_SESSION['positive'])){
-				if (isset($triples['http://dbpedia.org/property/redirect'])){
-					$array=array($triples['http://dbpedia.org/property/redirect'][0] => $triples['http://dbpedia.org/property/redirect'][0]);
+				if ($redirect!=""){
+					$array=array($redirect => $redirect);
 				}
 				else $array=array("http://dbpedia.org/resource/".str_replace(" ","_",$subject) => "http://dbpedia.org/resource/".str_replace(" ","_",$subject));
 				$_SESSION['positive']=$array;
 			}
 			else{
 				$array=$_SESSION['positive'];
-				if (isset($triples['http://dbpedia.org/property/redirect'])) $array[$triples['http://dbpedia.org/property/redirect'][0]] = $triples['http://dbpedia.org/property/redirect'][0];
+				if ($redirect!="") $array[$redirect] = $redirect;
 				else $array["http://dbpedia.org/resource/".str_replace(" ","_",$subject)]="http://dbpedia.org/resource/".str_replace(" ","_",$subject);
 				$_SESSION['positive']=$array;
 			}
@@ -446,23 +469,57 @@ function setRunning($id,$running)
 
 function get_triple_table($triples) {
 
-	$table = '<table border="1"><tr><td>predicate</td><td>object</td></tr>';
+	$table = '<table border="0"><tr><td>predicate</td><td>object</td></tr>';
+	$i=1;
 	foreach($triples as $predicate=>$object) {
-		$table .= '<tr><td>'.$predicate.'</td>';
+		if ($i>0) $backgroundcolor="eee";
+		else $backgroundcolor="ffffff";
+		$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'">'.nicePredicate($predicate).'</a></td>';
 		$table .= '<td><ul>';
 		foreach($object as $element) {
-			$table .= '<li>'.$element.'</li>';
+			if ($element['type']=="uri") $table .= '<li><a href="'.$element['value'].'">'.$element['value'].'</a></li>';
+			else $table .= '<li>'.$element['value'].'</li>';
 		}
 		$table .= '</ul></td>';
+		$i*=-1;
 	}
 	$table .= '</table>';
 	return $table;
 }
 
+function nicePredicate($predicate)
+{
+	if (strripos ($predicate, "#")>strripos ($predicate, "/")){
+		$namespace=substr ($predicate,0,strripos ($predicate, "#"));
+		$name=substr ($predicate,strripos ($predicate, "#")+1);
+	}
+	else{
+		$namespace=substr ($predicate,0,strripos ($predicate, "/"));
+		$name=substr ($predicate,strripos ($predicate, "/")+1);
+	}
+	
+	switch ($namespace){
+		case "http://www.w3.org/2000/01/rdf-schema": 	$namespace="rdfs";
+													 	break;
+		case "http://www.w3.org/2002/07/owl": 		 	$namespace="owl";
+													 	break;
+		case "http://xmlns.com/foaf/0.1":			 	$namespace="foaf";
+													 	break;
+		case "http://dbpedia.org/property":			 	$namespace="p";
+													 	break;
+		case "http://www.w3.org/2003/01/geo/wgs84_pos":	$namespace="geo";
+													 	break;
+		case "http://www.w3.org/2004/02/skos/core":		$namespace="skos";
+													 	break;	
+	}
+	
+	return $namespace.':'.$name;
+}
+
 function formatClassArray($ar) {
 	$string = formatClass($ar[0]);
 	for($i=1; $i<count($ar); $i++) {
-		$string .= ', ' . formatClass($ar[$i]);
+		$string .= ', ' . formatClass($ar[$i]['value']);
 	}
 	return $string;
 }

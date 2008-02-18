@@ -125,7 +125,7 @@ class DLLearnerConnection
 		$ret=array();
 		foreach ($result['results']['bindings'] as $results){
 				$value=$results['obj'];
-				if (!(isset($value['xml:lang'])&&($value['xml:lang']!=$this->lang))) $ret[$results['pred']['value']][]=$value['value'];
+				if (!(isset($value['xml:lang'])&&($value['xml:lang']!=$this->lang))) $ret[$results['pred']['value']][]=$value;
 		}
 		
 		return $ret;
