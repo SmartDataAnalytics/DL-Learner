@@ -32,7 +32,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ReasonerComponent;
 
 /**
- * ReasonerPanel, tab 2. Choose Resoner, change Options and final initiate
+ * ReasonerPanel, tab 1. Choose Resoner, change Options and final initiate
  * Reasoner and ReasoningService.
  * 
  * @author Tilo Hielscher

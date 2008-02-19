@@ -32,6 +32,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
+import java.io.File;
+import javax.swing.filechooser.FileFilter;
+
 /**
  * StartGUI
  * 
@@ -44,6 +47,7 @@ public class StartGUI extends JFrame implements ActionListener {
     private JTabbedPane tabPane = new JTabbedPane();
 
     private Config config = new Config();
+    private ConfigLoad configLoad = new ConfigLoad(config, this);;
 
     private KnowledgeSourcePanel tab0;
     private ReasonerPanel tab1;
@@ -61,10 +65,11 @@ public class StartGUI extends JFrame implements ActionListener {
 	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	this.setLocationByPlatform(true);
 	this.setSize(800, 600);
-	
+
 	// set icon
-	setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("icon.gif")));
-	
+	setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(
+		this.getClass().getResource("icon.gif")));
+
 	tab0 = new KnowledgeSourcePanel(config, this);
 	tab1 = new ReasonerPanel(config, this);
 	tab2 = new LearningProblemPanel(config, this);
@@ -110,14 +115,37 @@ public class StartGUI extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+	// open config file
 	if (e.getSource() == openItem) {
-	    System.out.println("openItem was pressed");
+	    // file dialog
+	    JFileChooser fc = new JFileChooser(new File("examples/"));
+	    // FileFilter only *.conf
+	    fc.addChoosableFileFilter(new FileFilter() {
+		public boolean accept(File f) {
+		    if (f.isDirectory())
+			return true;
+		    return f.getName().toLowerCase().endsWith(".conf");
+		}
+
+		public String getDescription() {
+		    return "*.conf"; // name for filter
+		}
+	    });
+	    if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+		System.out.println("FILE: " + fc.getSelectedFile());
+		configLoad.openFile(fc.getSelectedFile());
+		configLoad.startParser();
+	    }
 	}
+	// save config file
 	if (e.getSource() == saveItem) {
 	    System.out.println("saveItem was pressed");
 	}
     }
 
+    /**
+     * Update colors of tabulators; red should be clicked, black for OK.
+     */
     public void updateTabColors() {
 	if (config.isInitKnowledgeSource())
 	    tabPane.setForegroundAt(0, Color.BLACK);
@@ -138,7 +166,7 @@ public class StartGUI extends JFrame implements ActionListener {
 	    tabPane.setForegroundAt(3, Color.RED);
 	    tabPane.setForegroundAt(4, Color.RED);
 	}
-	tab0.updateInitButtonColor();
+	tab0.updateAll();
 	tab1.updateInitButtonColor();
 	tab2.updateInitButtonColor();
 	tab3.updateInitButtonColor();

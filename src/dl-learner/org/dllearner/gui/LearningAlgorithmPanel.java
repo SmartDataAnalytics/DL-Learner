@@ -32,7 +32,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
 
 /**
- * LearningAlgorithmPanel, tab 4. Choose LearningAlgorithm, change Options and
+ * LearningAlgorithmPanel, tab 3. Choose LearningAlgorithm, change Options and
  * final initiate LearningAlgorithm.
  * 
  * @author Tilo Hielscher
