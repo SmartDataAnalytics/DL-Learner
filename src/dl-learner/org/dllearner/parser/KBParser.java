@@ -63,6 +63,11 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
       case 30:
       case 31:
       case 32:
+      case 34:
+      case 35:
+      case 36:
+      case 37:
+      case 38:
         ;
         break;
       default:
@@ -95,6 +100,17 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
           break;
         case 32:
           rBoxAxiom = Subrole();
+                  kb.addRBoxAxiom(rBoxAxiom);
+          break;
+        case 34:
+        case 35:
+        case 36:
+          rBoxAxiom = ObjectPropertyDomainAxiom();
+                  kb.addRBoxAxiom(rBoxAxiom);
+          break;
+        case 37:
+        case 38:
+          rBoxAxiom = DatatypePropertyDomainAxiom();
                   kb.addRBoxAxiom(rBoxAxiom);
           break;
         default:
@@ -248,6 +264,125 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     throw new Error("Missing return statement in function");
   }
 
+  final public ObjectPropertyDomainAxiom ObjectPropertyDomainAxiom() throws ParseException {
+                                                         ObjectProperty op; Description domain;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 34:
+      jj_consume_token(34);
+      break;
+    case 35:
+      jj_consume_token(35);
+      break;
+    case 36:
+      jj_consume_token(36);
+      break;
+    default:
+      jj_la1[4] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    jj_consume_token(22);
+    op = ObjectProperty();
+    jj_consume_token(23);
+    jj_consume_token(25);
+    domain = Concept();
+    jj_consume_token(COMMAND_END);
+          {if (true) return new ObjectPropertyDomainAxiom(op, domain);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public DatatypePropertyDomainAxiom DatatypePropertyDomainAxiom() throws ParseException {
+                                                             DatatypeProperty op; Description domain;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 37:
+      jj_consume_token(37);
+      break;
+    case 38:
+      jj_consume_token(38);
+      break;
+    default:
+      jj_la1[5] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    jj_consume_token(22);
+    op = DatatypeProperty();
+    jj_consume_token(23);
+    jj_consume_token(25);
+    domain = Concept();
+    jj_consume_token(COMMAND_END);
+          {if (true) return new DatatypePropertyDomainAxiom(op, domain);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public ObjectPropertyRangeAxiom ObjectPropertyRangeAxiom() throws ParseException {
+                                                       ObjectProperty op; Description range;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 39:
+      jj_consume_token(39);
+      break;
+    case 40:
+      jj_consume_token(40);
+      break;
+    case 41:
+      jj_consume_token(41);
+      break;
+    default:
+      jj_la1[6] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    jj_consume_token(22);
+    op = ObjectProperty();
+    jj_consume_token(23);
+    jj_consume_token(25);
+    range = Concept();
+    jj_consume_token(COMMAND_END);
+          {if (true) return new ObjectPropertyRangeAxiom(op, range);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public DatatypePropertyRangeAxiom DatatypePropertyRangeAxiom() throws ParseException {
+                                                           DatatypeProperty op; DataRange range;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 42:
+      jj_consume_token(42);
+      break;
+    case 43:
+      jj_consume_token(43);
+      break;
+    default:
+      jj_la1[7] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    jj_consume_token(22);
+    op = DatatypeProperty();
+    jj_consume_token(23);
+    jj_consume_token(25);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 44:
+      jj_consume_token(44);
+                     range = new Datatype(Datatype.Type.DOUBLE);
+      break;
+    case 45:
+      jj_consume_token(45);
+                      range = new Datatype(Datatype.Type.BOOLEAN);
+      break;
+    case 46:
+      jj_consume_token(46);
+                      range = new Datatype(Datatype.Type.INT);
+      break;
+    default:
+      jj_la1[8] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    jj_consume_token(COMMAND_END);
+          {if (true) return new DatatypePropertyRangeAxiom(op, range);}
+    throw new Error("Missing return statement in function");
+  }
+
   final public Description Concept() throws ParseException {
         Description c,c1,c2;
         NamedClass ac;
@@ -269,7 +404,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
                           {if (true) return ac;}
       break;
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[9] = jj_gen;
       if (jj_2_5(2147483647)) {
         jj_consume_token(22);
         c1 = Concept();
@@ -322,7 +457,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
          {if (true) return new ObjectMaxCardinalityRestriction(i,ar,c);}
           break;
         default:
-          jj_la1[5] = jj_gen;
+          jj_la1[10] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -377,11 +512,29 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
       name = String();
       break;
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[11] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
                 {if (true) return new NamedClass(getInternalURI(name));}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public DatatypeProperty DatatypeProperty() throws ParseException {
+        String name;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ID:
+      name = Id();
+      break;
+    case STRING:
+      name = String();
+      break;
+    default:
+      jj_la1[12] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+                {if (true) return new DatatypeProperty(getInternalURI(name));}
     throw new Error("Missing return statement in function");
   }
 
@@ -395,7 +548,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
       name = String();
       break;
     default:
-      jj_la1[7] = jj_gen;
+      jj_la1[13] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -413,7 +566,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
       name = String();
       break;
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[14] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -499,6 +652,53 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     finally { jj_save(5, xla); }
   }
 
+  final private boolean jj_3_1() {
+    if (jj_3R_2()) return true;
+    if (jj_scan_token(22)) return true;
+    if (jj_3R_3()) return true;
+    if (jj_scan_token(23)) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_22() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_14() {
+    if (jj_scan_token(20)) return true;
+    if (jj_3R_20()) return true;
+    if (jj_3R_4()) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    if (jj_3R_2()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_17() {
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_4() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_17()) {
+    jj_scanpos = xsp;
+    if (jj_3R_18()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_13() {
+    if (jj_scan_token(19)) return true;
+    if (jj_3R_20()) return true;
+    if (jj_3R_4()) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    if (jj_3R_2()) return true;
+    return false;
+  }
+
   final private boolean jj_3_6() {
     if (jj_scan_token(22)) return true;
     if (jj_3R_2()) return true;
@@ -512,12 +712,8 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     return false;
   }
 
-  final private boolean jj_3_1() {
-    if (jj_3R_2()) return true;
-    if (jj_scan_token(22)) return true;
-    if (jj_3R_3()) return true;
-    if (jj_scan_token(23)) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
+  final private boolean jj_3R_20() {
+    if (jj_scan_token(NUMBER)) return true;
     return false;
   }
 
@@ -541,21 +737,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_17() {
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_4() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_17()) {
-    jj_scanpos = xsp;
-    if (jj_3R_18()) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3R_10() {
     if (jj_scan_token(16)) return true;
     if (jj_3R_4()) return true;
@@ -573,8 +754,14 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_20() {
-    if (jj_scan_token(NUMBER)) return true;
+  final private boolean jj_3_4() {
+    if (jj_3R_2()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(26)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(27)) return true;
+    }
     return false;
   }
 
@@ -584,6 +771,12 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     if (jj_scan_token(14)) return true;
     if (jj_3R_2()) return true;
     if (jj_scan_token(23)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_3() {
+    if (jj_3R_2()) return true;
+    if (jj_scan_token(25)) return true;
     return false;
   }
 
@@ -599,6 +792,11 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_24()) return true;
     }
+    return false;
+  }
+
+  final private boolean jj_3R_16() {
+    if (jj_3R_22()) return true;
     return false;
   }
 
@@ -651,28 +849,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_16() {
-    if (jj_3R_22()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_4() {
-    if (jj_3R_2()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(26)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(27)) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3_3() {
-    if (jj_3R_2()) return true;
-    if (jj_scan_token(25)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_21() {
     if (jj_scan_token(ID)) return true;
     return false;
@@ -680,15 +856,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
 
   final private boolean jj_3R_18() {
     if (jj_3R_22()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_14() {
-    if (jj_scan_token(20)) return true;
-    if (jj_3R_20()) return true;
-    if (jj_3R_4()) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
-    if (jj_3R_2()) return true;
     return false;
   }
 
@@ -704,20 +871,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_16()) return true;
     }
-    return false;
-  }
-
-  final private boolean jj_3R_13() {
-    if (jj_scan_token(19)) return true;
-    if (jj_3R_20()) return true;
-    if (jj_3R_4()) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
-    if (jj_3R_2()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_22() {
-    if (jj_scan_token(STRING)) return true;
     return false;
   }
 
@@ -741,7 +894,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
   public boolean lookingAhead = false;
   private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[9];
+  final private int[] jj_la1 = new int[15];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -749,10 +902,10 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
       jj_la1_1();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0xf07f3200,0xf0000000,0x40000,0xc000000,0x203200,0x1f0000,0x200200,0x200200,0x200200,};
+      jj_la1_0 = new int[] {0xf07f3200,0xf0000000,0x40000,0xc000000,0x0,0x0,0x0,0x0,0x0,0x203200,0x1f0000,0x200200,0x200200,0x200200,0x200200,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x1,0x1,0x0,0x2,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0x7d,0x7d,0x0,0x2,0x1c,0x60,0x380,0xc00,0x7000,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[6];
   private boolean jj_rescan = false;
@@ -767,7 +920,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -780,7 +933,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -790,7 +943,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -800,7 +953,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -809,7 +962,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -818,7 +971,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -929,12 +1082,12 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[34];
+    boolean[] la1tokens = new boolean[47];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 15; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -946,7 +1099,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
         }
       }
     }
-    for (int i = 0; i < 34; i++) {
+    for (int i = 0; i < 47; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

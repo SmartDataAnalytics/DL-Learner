@@ -123,6 +123,10 @@ KB KB() :
   		{ kb.addRBoxAxiom(rBoxAxiom); }
   	|	rBoxAxiom = Subrole()
   		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	| 	rBoxAxiom = ObjectPropertyDomainAxiom()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	| 	rBoxAxiom = DatatypePropertyDomainAxiom()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }  		
   		// da Konfigurationsoptionen ausgeschlossen sind, reicht es bis zum "=" zu suchen
   	|	LOOKAHEAD(Concept() "=") equality = TBoxEquiv()
   		{ kb.addTBoxAxiom(equality); }
@@ -198,6 +202,34 @@ SubClassAxiom TBoxSub() : {Description c1,c2;}
    { return new SubClassAxiom(c1,c2);}
 }
 
+ObjectPropertyDomainAxiom ObjectPropertyDomainAxiom() : {ObjectProperty op; Description domain; }
+{
+	("DOMAIN" | "OPDOMAIN" | "OBJECTPROPERTYDOMAIN") "(" op=ObjectProperty() ")" "=" domain=Concept() <COMMAND_END>
+	{ return new ObjectPropertyDomainAxiom(op, domain); }
+}
+
+DatatypePropertyDomainAxiom DatatypePropertyDomainAxiom() : {DatatypeProperty op; Description domain; }
+{
+	( "DPDOMAIN" | "DATATYPEPROPERTYDOMAIN" ) "(" op=DatatypeProperty() ")" "=" domain=Concept() <COMMAND_END>
+	{ return new DatatypePropertyDomainAxiom(op, domain); }
+}
+
+ObjectPropertyRangeAxiom ObjectPropertyRangeAxiom() : {ObjectProperty op; Description range; }
+{
+	("RANGE" | "OPRANGE" | "OBJECTPROPERTYRANGE") "(" op=ObjectProperty() ")" "=" range=Concept() <COMMAND_END>
+	{ return new ObjectPropertyRangeAxiom(op, range); }
+}
+
+DatatypePropertyRangeAxiom DatatypePropertyRangeAxiom() : {DatatypeProperty op; DataRange range; }
+{
+	( "DPRANGE" | "DATATYPEPROPERTYRANGE") "(" op=DatatypeProperty() ")" "=" 
+	( "DOUBLE" { range = new Datatype(Datatype.Type.DOUBLE); }
+	| "BOOLEAN" { range = new Datatype(Datatype.Type.BOOLEAN); }
+	| "INTEGER" { range = new Datatype(Datatype.Type.INT); } )
+	<COMMAND_END>
+	{ return new DatatypePropertyRangeAxiom(op, range); }
+}
+
 Description Concept() : 
 {
 	Description c,c1,c2;
@@ -256,6 +288,17 @@ NamedClass AtomicConcept() :
 	(name=Id() | name=String())
 	{
 		return new NamedClass(getInternalURI(name));
+	}
+}
+
+DatatypeProperty DatatypeProperty() :
+{
+	String name;
+}
+{
+	(name=Id() | name=String())
+	{
+		return new DatatypeProperty(getInternalURI(name));
 	}
 }
 

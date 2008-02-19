@@ -59,6 +59,19 @@ public @SuppressWarnings("all") interface KBParserConstants {
     "\"Inverse\"",
     "\"Subrole\"",
     "\"SUBCONCEPTOF\"",
+    "\"DOMAIN\"",
+    "\"OPDOMAIN\"",
+    "\"OBJECTPROPERTYDOMAIN\"",
+    "\"DPDOMAIN\"",
+    "\"DATATYPEPROPERTYDOMAIN\"",
+    "\"RANGE\"",
+    "\"OPRANGE\"",
+    "\"OBJECTPROPERTYRANGE\"",
+    "\"DPRANGE\"",
+    "\"DATATYPEPROPERTYRANGE\"",
+    "\"DOUBLE\"",
+    "\"BOOLEAN\"",
+    "\"INTEGER\"",
   };
 
 }

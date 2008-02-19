@@ -42,6 +42,7 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.SubClassAxiom;
+import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.PrologParser;
 import org.dllearner.prolog.Atom;
@@ -139,7 +140,9 @@ public class Carcinogenesis {
 			kb.addAxiom(sc);
 		}
 		// define properties including domain and range
-		// ... TODO ...
+		String kbString = "DPDOMAIN(" + getURI2("charge") + ") = " + getURI2("Atom") + ".";
+		KB kb2 = KBParser.parseKBFile(kbString);
+		kb.addKB(kb2);
 
 		// mapping clauses to axioms
 		System.out.print("Mapping clauses to axioms ... ");
@@ -332,6 +335,15 @@ public class Carcinogenesis {
 		return new NamedClass(ontologyURI + "#" + name);
 	}
 
+	private static String getURI(String name) {
+		return ontologyURI + "#" + name;
+	}
+	
+	// returns URI including quotationsmark (need for KBparser)
+	private static String getURI2(String name) {
+		return "\"" + getURI(name) + "\"";
+	}	
+	
 	private static String getFullElementName(String abbreviation) {
 		// return corresponding element or throw an error if it
 		// is not in the list

@@ -165,6 +165,19 @@ public class KB implements KBElement {
 		rbox.add(axiom);
 	}
 
+	/**
+	 * Add another knowledge base to this one.
+	 * @param kb The knowledge base to add.
+	 */
+	public void addKB(KB kb) {
+		for(AssertionalAxiom axiom : kb.getAbox())
+			abox.add(axiom);
+		for(PropertyAxiom axiom : kb.getRbox())
+			rbox.add(axiom);
+		for(TerminologicalAxiom axiom : kb.getTbox())
+			tbox.add(axiom);		
+	}
+	
 	public int getLength() {
 		int length = 0;
 		for(Axiom a : abox)
