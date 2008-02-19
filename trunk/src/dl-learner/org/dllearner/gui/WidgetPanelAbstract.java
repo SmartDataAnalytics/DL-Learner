@@ -29,19 +29,19 @@ import javax.swing.JPanel;
  */
 public abstract class WidgetPanelAbstract extends JPanel {
 
-    /**
-     * Show label and tooltip.
-     */
-    public abstract void showLabel();
+	/**
+	 * Show label and tooltip.
+	 */
+	public abstract void showLabel();
 
-    /**
-     * Show textfield, setbutton and so on, make layout.
-     */
-    public abstract void showThingToChange();
+	/**
+	 * Show textfield, setbutton and so on, make layout.
+	 */
+	public abstract void showThingToChange();
 
-    /**
-     * Set entry you got from showThingToChange().
-     */
-    public abstract void setEntry();
+	/**
+	 * Set entry you got from showThingToChange().
+	 */
+	public abstract void setEntry();
 
 }

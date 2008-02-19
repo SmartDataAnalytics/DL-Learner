@@ -39,126 +39,124 @@ import org.dllearner.core.ReasonerComponent;
  */
 public class ReasonerPanel extends JPanel implements ActionListener {
 
-    private static final long serialVersionUID = -7678275020058043937L;
+	private static final long serialVersionUID = -7678275020058043937L;
 
-    private Config config;
-    private StartGUI startGUI;
-    private List<Class<? extends ReasonerComponent>> reasoners;
-    private JPanel choosePanel = new JPanel();
-    private JPanel initPanel = new JPanel();
-    private OptionPanel optionPanel;
-    private JButton initButton, setButton;
-    private String[] cbItems = {};
-    private JComboBox cb = new JComboBox(cbItems);
-    private int choosenClassIndex;
+	private Config config;
+	private StartGUI startGUI;
+	private List<Class<? extends ReasonerComponent>> reasoners;
+	private JPanel choosePanel = new JPanel();
+	private JPanel initPanel = new JPanel();
+	private OptionPanel optionPanel;
+	private JButton initButton, setButton;
+	private String[] cbItems = {};
+	private JComboBox cb = new JComboBox(cbItems);
+	private int choosenClassIndex;
 
-    ReasonerPanel(final Config config, StartGUI startGUI) {
-	super(new BorderLayout());
+	ReasonerPanel(final Config config, StartGUI startGUI) {
+		super(new BorderLayout());
 
-	this.config = config;
-	this.startGUI = startGUI;
-	reasoners = config.getComponentManager().getReasonerComponents();
+		this.config = config;
+		this.startGUI = startGUI;
+		reasoners = config.getComponentManager().getReasonerComponents();
 
-	initButton = new JButton("Init Reasoner");
-	initButton.addActionListener(this);
-	initPanel.add(initButton);
-	initButton.setEnabled(true);
-	setButton = new JButton("Set");
-	setButton.addActionListener(this);
+		initButton = new JButton("Init Reasoner");
+		initButton.addActionListener(this);
+		initPanel.add(initButton);
+		initButton.setEnabled(true);
+		setButton = new JButton("Set");
+		setButton.addActionListener(this);
 
-	choosePanel.add(cb);
+		choosePanel.add(cb);
 
-	// add into comboBox
-	for (int i = 0; i < reasoners.size(); i++) {
-	    cb.addItem(config.getComponentManager().getComponentName(
-		    reasoners.get(i)));
+		// add into comboBox
+		for (int i = 0; i < reasoners.size(); i++) {
+			cb.addItem(config.getComponentManager().getComponentName(reasoners.get(i)));
+		}
+
+		optionPanel = new OptionPanel(config, config.getReasoner(), config.getOldReasonerSet(),
+				reasoners.get(choosenClassIndex));
+
+		choosePanel.add(setButton);
+		cb.addActionListener(this);
+
+		add(choosePanel, BorderLayout.PAGE_START);
+		add(optionPanel, BorderLayout.CENTER);
+		add(initPanel, BorderLayout.PAGE_END);
+
+		choosenClassIndex = cb.getSelectedIndex();
+		setReasoner();
+		updateInitButtonColor();
 	}
 
-	optionPanel = new OptionPanel(config, config.getReasoner(), config
-		.getOldReasonerSet(), reasoners.get(choosenClassIndex));
+	public void actionPerformed(ActionEvent e) {
+		// read selected Class
+		// choosenClassIndex = cb.getSelectedIndex();
+		if (choosenClassIndex != cb.getSelectedIndex()) {
+			choosenClassIndex = cb.getSelectedIndex();
+			config.setInitReasoner(false);
+			setReasoner();
+		}
 
-	choosePanel.add(setButton);
-	cb.addActionListener(this);
+		if (e.getSource() == setButton) {
+			config.setInitReasoner(false);
+			setReasoner();
+		}
 
-	add(choosePanel, BorderLayout.PAGE_START);
-	add(optionPanel, BorderLayout.CENTER);
-	add(initPanel, BorderLayout.PAGE_END);
-
-	choosenClassIndex = cb.getSelectedIndex();
-	setReasoner();
-	updateInitButtonColor();
-    }
-
-    public void actionPerformed(ActionEvent e) {
-	// read selected Class
-	// choosenClassIndex = cb.getSelectedIndex();
-	if (choosenClassIndex != cb.getSelectedIndex()) {
-	    choosenClassIndex = cb.getSelectedIndex();
-	    config.setInitReasoner(false);
-	    setReasoner();
+		if (e.getSource() == initButton)
+			init();
 	}
 
-	if (e.getSource() == setButton) {
-	    config.setInitReasoner(false);
-	    setReasoner();
+	/**
+	 * after this, you can change widgets
+	 */
+	public void setReasoner() {
+		if (config.isInitKnowledgeSource()) {
+			config.setReasoner(config.getComponentManager().reasoner(
+					reasoners.get(choosenClassIndex), config.getKnowledgeSource()));
+			updateOptionPanel();
+			startGUI.updateTabColors();
+			config.setInitReasoner(false);
+			updateInitButtonColor();
+		}
 	}
 
-	if (e.getSource() == initButton)
-	    init();
-    }
+	/**
+	 * after this, next tab can be used
+	 */
+	public void init() {
+		setReasoner();
+		if (config.getKnowledgeSource() != null && config.getReasoner() != null) {
+			try {
+				config.getReasoner().init();
+				System.out.println("init Reasoner");
+				// set ReasoningService
+				config.setReasoningService(config.getComponentManager().reasoningService(
+						config.getReasoner()));
+				System.out.println("init ReasoningService");
+				config.setInitReasoner(true);
+				startGUI.updateTabColors();
+			} catch (ComponentInitException e) {
+				e.printStackTrace();
+			}
 
-    /**
-     * after this, you can change widgets
-     */
-    public void setReasoner() {
-	if (config.isInitKnowledgeSource()) {
-	    config.setReasoner(config.getComponentManager().reasoner(
-		    reasoners.get(choosenClassIndex),
-		    config.getKnowledgeSource()));
-	    updateOptionPanel();
-	    startGUI.updateTabColors();
-	    config.setInitReasoner(false);
-	    updateInitButtonColor();
+		}
 	}
-    }
 
-    /**
-     * after this, next tab can be used
-     */
-    public void init() {
-	setReasoner();
-	if (config.getKnowledgeSource() != null && config.getReasoner() != null) {
-	    try {
-		config.getReasoner().init();
-		System.out.println("init Reasoner");
-		// set ReasoningService
-		config.setReasoningService(config.getComponentManager()
-			.reasoningService(config.getReasoner()));
-		System.out.println("init ReasoningService");
-		config.setInitReasoner(true);
-		startGUI.updateTabColors();
-	    } catch (ComponentInitException e) {
-		e.printStackTrace();
-	    }
-
+	/**
+	 * update OptionPanel with new selection
+	 */
+	public void updateOptionPanel() {
+		optionPanel.update(config.getReasoner(), config.getOldReasonerSet(), reasoners
+				.get(choosenClassIndex));
 	}
-    }
 
-    /**
-     * update OptionPanel with new selection
-     */
-    public void updateOptionPanel() {
-	optionPanel.update(config.getReasoner(), config.getOldReasonerSet(),
-		reasoners.get(choosenClassIndex));
-    }
-
-    /**
-     * make init-button red if you have to click
-     */
-    public void updateInitButtonColor() {
-	if (!config.isInitReasoner()) {
-	    initButton.setForeground(Color.RED);
-	} else
-	    initButton.setForeground(Color.BLACK);
-    }
+	/**
+	 * make init-button red if you have to click
+	 */
+	public void updateInitButtonColor() {
+		if (!config.isInitReasoner()) {
+			initButton.setForeground(Color.RED);
+		} else
+			initButton.setForeground(Color.BLACK);
+	}
 }

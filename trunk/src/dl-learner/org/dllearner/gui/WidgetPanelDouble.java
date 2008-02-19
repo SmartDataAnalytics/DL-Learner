@@ -43,121 +43,112 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelDouble extends WidgetPanelAbstract implements
-	ActionListener {
+public class WidgetPanelDouble extends WidgetPanelAbstract implements ActionListener {
 
-    private static final long serialVersionUID = 5238903690721116289L;
-    private Config config;
-    private ConfigOption<?> configOption;
-    private JLabel nameLabel;
-    private JPanel widgetPanel = new JPanel();
-    private JButton setButton = new JButton("Set");
-    private Component component;
-    private Component oldComponent;
-    private Class<? extends Component> componentOption;
+	private static final long serialVersionUID = 5238903690721116289L;
+	private Config config;
+	private ConfigOption<?> configOption;
+	private JLabel nameLabel;
+	private JPanel widgetPanel = new JPanel();
+	private JButton setButton = new JButton("Set");
+	private Component component;
+	private Component oldComponent;
+	private Class<? extends Component> componentOption;
 
-    private Double value;
-    private JTextField doubleField = new JTextField(5);
+	private Double value;
+	private JTextField doubleField = new JTextField(5);
 
-    public WidgetPanelDouble(Config config, Component component,
-	    Component oldComponent, Class<? extends Component> componentOption,
-	    ConfigOption<?> configOption) {
-	this.config = config;
-	this.configOption = configOption;
-	this.component = component;
-	this.oldComponent = oldComponent;
-	this.componentOption = componentOption;
+	public WidgetPanelDouble(Config config, Component component, Component oldComponent,
+			Class<? extends Component> componentOption, ConfigOption<?> configOption) {
+		this.config = config;
+		this.configOption = configOption;
+		this.component = component;
+		this.oldComponent = oldComponent;
+		this.componentOption = componentOption;
 
-	showLabel(); // name of option and tooltip
-	showThingToChange(); // textfield, setbutton
-	add(widgetPanel, BorderLayout.CENTER);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-	if (e.getSource() == setButton) {
-	    setEntry();
+		showLabel(); // name of option and tooltip
+		showThingToChange(); // textfield, setbutton
+		add(widgetPanel, BorderLayout.CENTER);
 	}
-    }
 
-    @Override
-    public void showLabel() {
-	nameLabel = new JLabel(configOption.getName());
-	nameLabel.setToolTipText(configOption.getDescription());
-	widgetPanel.add(nameLabel);
-    }
-
-    @Override
-    public void showThingToChange() {
-	if (component != null) {
-	    // DoubleConfigOption
-	    if (configOption.getClass().toString().contains(
-		    "DoubleConfigOption")) {
-		// previous set value
-		if (configOption != null) {
-		    value = (Double) config.getComponentManager()
-			    .getConfigOptionValue(component,
-				    configOption.getName());
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == setButton) {
+			setEntry();
 		}
-		// previous set value from old
-		if (component != null && oldComponent != null) {
-		    if (oldComponent.getClass().equals(component.getClass())) {
-			value = (Double) config.getComponentManager()
-				.getConfigOptionValue(oldComponent,
-					configOption.getName());
-			if (value == null)
-			    value = 0.0;
-			else {
-			    doubleField.setText(value.toString());
-			    setEntry();
+	}
+
+	@Override
+	public void showLabel() {
+		nameLabel = new JLabel(configOption.getName());
+		nameLabel.setToolTipText(configOption.getDescription());
+		widgetPanel.add(nameLabel);
+	}
+
+	@Override
+	public void showThingToChange() {
+		if (component != null) {
+			// DoubleConfigOption
+			if (configOption.getClass().toString().contains("DoubleConfigOption")) {
+				// previous set value
+				if (configOption != null) {
+					value = (Double) config.getComponentManager().getConfigOptionValue(component,
+							configOption.getName());
+				}
+				// previous set value from old
+				if (component != null && oldComponent != null) {
+					if (oldComponent.getClass().equals(component.getClass())) {
+						value = (Double) config.getComponentManager().getConfigOptionValue(
+								oldComponent, configOption.getName());
+						if (value == null)
+							value = 0.0;
+						else {
+							doubleField.setText(value.toString());
+							setEntry();
+						}
+					}
+				}
+				// default value
+				else if (configOption.getDefaultValue() != null) {
+					value = (Double) configOption.getDefaultValue();
+				}
+				// value == null
+				if (value == null) {
+					value = 0.0;
+				}
+				doubleField.setText(value.toString());
+				doubleField.setToolTipText(configOption.getAllowedValuesDescription());
+				setButton.addActionListener(this);
+				widgetPanel.add(doubleField);
+				widgetPanel.add(setButton);
 			}
-		    }
+			// UNKNOWN
+			else {
+				JLabel notImplementedLabel = new JLabel("not a double");
+				notImplementedLabel.setForeground(Color.RED);
+				widgetPanel.add(notImplementedLabel);
+			}
+		} else { // configOption == NULL
+			JLabel noConfigOptionLabel = new JLabel("no instance (Double)");
+			noConfigOptionLabel.setForeground(Color.MAGENTA);
+			widgetPanel.add(noConfigOptionLabel);
 		}
-		// default value
-		else if (configOption.getDefaultValue() != null) {
-		    value = (Double) configOption.getDefaultValue();
-		}
-		// value == null
-		if (value == null) {
-		    value = 0.0;
-		}
-		doubleField.setText(value.toString());
-		doubleField.setToolTipText(configOption
-			.getAllowedValuesDescription());
-		setButton.addActionListener(this);
-		widgetPanel.add(doubleField);
-		widgetPanel.add(setButton);
-	    }
-	    // UNKNOWN
-	    else {
-		JLabel notImplementedLabel = new JLabel("not a double");
-		notImplementedLabel.setForeground(Color.RED);
-		widgetPanel.add(notImplementedLabel);
-	    }
-	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel("no instance (Double)");
-	    noConfigOptionLabel.setForeground(Color.MAGENTA);
-	    widgetPanel.add(noConfigOptionLabel);
 	}
-    }
 
-    @Override
-    public void setEntry() {
-	DoubleConfigOption specialOption;
-	value = Double.parseDouble(doubleField.getText()); // get from input
-	specialOption = (DoubleConfigOption) config.getComponentManager()
-		.getConfigOption(componentOption, configOption.getName());
-	if (specialOption.isValidValue(value)) {
-	    try {
-		ConfigEntry<Double> specialEntry = new ConfigEntry<Double>(
-			specialOption, value);
-		config.getComponentManager().applyConfigEntry(component,
-			specialEntry);
-		System.out.println("set Double: " + configOption.getName()
-			+ " = " + value);
-	    } catch (InvalidConfigOptionValueException s) {
-		s.printStackTrace();
-	    }
-	} else
-	    System.out.println("Double: not valid value");
-    }
+	@Override
+	public void setEntry() {
+		DoubleConfigOption specialOption;
+		value = Double.parseDouble(doubleField.getText()); // get from input
+		specialOption = (DoubleConfigOption) config.getComponentManager().getConfigOption(
+				componentOption, configOption.getName());
+		if (specialOption.isValidValue(value)) {
+			try {
+				ConfigEntry<Double> specialEntry = new ConfigEntry<Double>(specialOption, value);
+				config.getComponentManager().applyConfigEntry(component, specialEntry);
+				System.out.println("set Double: " + configOption.getName() + " = " + value);
+			} catch (InvalidConfigOptionValueException s) {
+				s.printStackTrace();
+			}
+		} else
+			System.out.println("Double: not valid value");
+	}
 }

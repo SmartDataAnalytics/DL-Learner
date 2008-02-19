@@ -43,105 +43,100 @@ import org.dllearner.core.config.*;
  */
 public class OptionPanel extends JPanel {
 
-    private static final long serialVersionUID = -3053205578443575240L;
-    private Config config;
-    private Class<? extends Component> componentOption;
-    private List<ConfigOption<?>> optionList;
-    private JPanel centerPanel = new JPanel();
-    private Component component;
-    private Component oldComponent;
-    private GridBagLayout gridBagLayout = new GridBagLayout();
-    private GridBagConstraints constraints = new GridBagConstraints();
+	private static final long serialVersionUID = -3053205578443575240L;
+	private Config config;
+	private Class<? extends Component> componentOption;
+	private List<ConfigOption<?>> optionList;
+	private JPanel centerPanel = new JPanel();
+	private Component component;
+	private Component oldComponent;
+	private GridBagLayout gridBagLayout = new GridBagLayout();
+	private GridBagConstraints constraints = new GridBagConstraints();
 
-    public OptionPanel(Config config, Component component,
-	    Component oldComponent, Class<? extends Component> componentOption) {
-	super(new BorderLayout());
+	public OptionPanel(Config config, Component component, Component oldComponent,
+			Class<? extends Component> componentOption) {
+		super(new BorderLayout());
 
-	this.config = config;
-	this.component = component;
-	this.oldComponent = oldComponent;
-	this.componentOption = componentOption;
+		this.config = config;
+		this.component = component;
+		this.oldComponent = oldComponent;
+		this.componentOption = componentOption;
 
-	optionList = ComponentManager.getConfigOptions(componentOption);
+		optionList = ComponentManager.getConfigOptions(componentOption);
 
-	// define GridBagLayout
-	centerPanel.setLayout(gridBagLayout);
-	constraints.anchor = GridBagConstraints.NORTHWEST;
+		// define GridBagLayout
+		centerPanel.setLayout(gridBagLayout);
+		constraints.anchor = GridBagConstraints.NORTHWEST;
 
-	// add scrollPane
-	JScrollPane centerScroller = new JScrollPane(centerPanel);
-	centerScroller.setPreferredSize(new Dimension(400, 200));
-	// add Panels
-	add(centerScroller, BorderLayout.CENTER);
-	// show widgets
-	showWidgets();
-    }
-
-    /** update this OptionPanel */
-    public void update(Component component, Component oldComponent,
-	    Class<? extends Component> componentOption) {
-	this.component = component;
-	this.oldComponent = oldComponent;
-	this.componentOption = componentOption;
-	showWidgets();
-
-    }
-
-    /**
-     * Define here what core.config.class is what type of widget.
-     * WidgetPanelDefault is for none defined classes.
-     */
-    private void showWidgets() {
-	JPanel widgetPanel;
-	optionList = ComponentManager.getConfigOptions(componentOption);
-	centerPanel.removeAll(); // clear panel
-	for (int i = 0; i < optionList.size(); i++) {
-	    buildConstraints(constraints, 0, i, 1, 1, 0, 0);
-	    if (optionList.get(i).getClass().toString().contains(
-		    "IntegerConfigOption")) {
-		widgetPanel = new WidgetPanelInteger(config, component,
-			oldComponent, componentOption, optionList.get(i));
-	    } else if (optionList.get(i).getClass().toString().contains(
-		    "BooleanConfigOption")) {
-		widgetPanel = new WidgetPanelBoolean(config, component,
-			oldComponent, componentOption, optionList.get(i));
-	    } else if (optionList.get(i).getClass().toString().contains(
-		    "DoubleConfigOption")) {
-		widgetPanel = new WidgetPanelDouble(config, component,
-			oldComponent, componentOption, optionList.get(i));
-	    } else if (optionList.get(i).getClass().toString().contains(
-		    "StringConfigOption")) {
-		widgetPanel = new WidgetPanelString(config, component,
-			oldComponent, componentOption, optionList.get(i));
-	    } else if (optionList.get(i).getClass().toString().contains(
-		    "StringSetConfigOption")) {
-		widgetPanel = new WidgetPanelStringSet(config, component,
-			oldComponent, componentOption, optionList.get(i));
-	    } else if (optionList.get(i).getClass().toString().contains(
-		    "StringTupleListConfigOption")) {
-		widgetPanel = new WidgetPanelStringTupleList(config, component,
-			oldComponent, componentOption, optionList.get(i));
-	    } else {
-		widgetPanel = new WidgetPanelDefault(config, component,
-		/* oldComponent, */componentOption, optionList.get(i));
-	    }
-	    gridBagLayout.setConstraints(widgetPanel, constraints);
-	    centerPanel.add(widgetPanel);
+		// add scrollPane
+		JScrollPane centerScroller = new JScrollPane(centerPanel);
+		centerScroller.setPreferredSize(new Dimension(400, 200));
+		// add Panels
+		add(centerScroller, BorderLayout.CENTER);
+		// show widgets
+		showWidgets();
 	}
-	centerPanel.updateUI(); // update graphic
-    }
 
-    /**
-     * Define GridBagConstraints
-     */
-    private void buildConstraints(GridBagConstraints gbc, int gx, int gy,
-	    int gw, int gh, int wx, int wy) {
-	gbc.gridx = gx;
-	gbc.gridy = gy;
-	gbc.gridwidth = gw;
-	gbc.gridheight = gh;
-	gbc.weightx = wx;
-	gbc.weighty = wy;
-    }
+	/** update this OptionPanel */
+	public void update(Component component, Component oldComponent,
+			Class<? extends Component> componentOption) {
+		this.component = component;
+		this.oldComponent = oldComponent;
+		this.componentOption = componentOption;
+		showWidgets();
+
+	}
+
+	/**
+	 * Define here what core.config.class is what type of widget.
+	 * WidgetPanelDefault is for none defined classes.
+	 */
+	private void showWidgets() {
+		JPanel widgetPanel;
+		optionList = ComponentManager.getConfigOptions(componentOption);
+		centerPanel.removeAll(); // clear panel
+		for (int i = 0; i < optionList.size(); i++) {
+			buildConstraints(constraints, 0, i, 1, 1, 0, 0);
+			if (optionList.get(i).getClass().toString().contains("IntegerConfigOption")) {
+				widgetPanel = new WidgetPanelInteger(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else if (optionList.get(i).getClass().toString().contains("BooleanConfigOption")) {
+				widgetPanel = new WidgetPanelBoolean(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else if (optionList.get(i).getClass().toString().contains("DoubleConfigOption")) {
+				widgetPanel = new WidgetPanelDouble(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else if (optionList.get(i).getClass().toString().contains("StringConfigOption")) {
+				widgetPanel = new WidgetPanelString(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else if (optionList.get(i).getClass().toString().contains("StringSetConfigOption")) {
+				widgetPanel = new WidgetPanelStringSet(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else if (optionList.get(i).getClass().toString().contains(
+					"StringTupleListConfigOption")) {
+				widgetPanel = new WidgetPanelStringTupleList(config, component, oldComponent,
+						componentOption, optionList.get(i));
+			} else {
+				widgetPanel = new WidgetPanelDefault(config, component,
+				/* oldComponent, */componentOption, optionList.get(i));
+			}
+			gridBagLayout.setConstraints(widgetPanel, constraints);
+			centerPanel.add(widgetPanel);
+		}
+		centerPanel.updateUI(); // update graphic
+	}
+
+	/**
+	 * Define GridBagConstraints
+	 */
+	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx,
+			int wy) {
+		gbc.gridx = gx;
+		gbc.gridy = gy;
+		gbc.gridwidth = gw;
+		gbc.gridheight = gh;
+		gbc.weightx = wx;
+		gbc.weighty = wy;
+	}
 
 }

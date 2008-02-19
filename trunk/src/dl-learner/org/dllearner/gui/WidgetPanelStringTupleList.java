@@ -53,221 +53,206 @@ import org.dllearner.utilities.StringTuple;
  * 
  * @author Tilo Hielscher
  */
-public class WidgetPanelStringTupleList extends WidgetPanelAbstract implements
-	ActionListener {
+public class WidgetPanelStringTupleList extends WidgetPanelAbstract implements ActionListener {
 
-    private static final long serialVersionUID = 7832726987046601916L;
-    private Config config;
-    private ConfigOption<?> configOption;
-    private GridBagLayout gridbag = new GridBagLayout();
-    private GridBagConstraints constraints = new GridBagConstraints();
+	private static final long serialVersionUID = 7832726987046601916L;
+	private Config config;
+	private ConfigOption<?> configOption;
+	private GridBagLayout gridbag = new GridBagLayout();
+	private GridBagConstraints constraints = new GridBagConstraints();
 
-    private JLabel nameLabel;
-    private JPanel widgetPanel = new JPanel();
-    private JButton addButton = new JButton("add");
-    private JButton removeButton = new JButton("remove");
-    private JButton clearButton = new JButton("clear");
-    private JTextField stringFieldA = new JTextField(10);
-    private JTextField stringFieldB = new JTextField(10);
-    private List<StringTuple> exampleList = new LinkedList<StringTuple>();
+	private JLabel nameLabel;
+	private JPanel widgetPanel = new JPanel();
+	private JButton addButton = new JButton("add");
+	private JButton removeButton = new JButton("remove");
+	private JButton clearButton = new JButton("clear");
+	private JTextField stringFieldA = new JTextField(10);
+	private JTextField stringFieldB = new JTextField(10);
+	private List<StringTuple> exampleList = new LinkedList<StringTuple>();
 
-    private Component component;
-    private Component oldComponent;
-    private Class<? extends Component> componentOption;
+	private Component component;
+	private Component oldComponent;
+	private Class<? extends Component> componentOption;
 
-    private List<StringTuple> value = new LinkedList<StringTuple>();
-    private JList stringList = new JList();
-    private DefaultListModel listModel = new DefaultListModel();
+	private List<StringTuple> value = new LinkedList<StringTuple>();
+	private JList stringList = new JList();
+	private DefaultListModel listModel = new DefaultListModel();
 
-    private JButton setButton = new JButton("set");
+	private JButton setButton = new JButton("set");
 
-    public WidgetPanelStringTupleList(Config config, Component component,
-	    Component oldComponent, Class<? extends Component> componentOption,
-	    ConfigOption<?> configOption) {
+	public WidgetPanelStringTupleList(Config config, Component component, Component oldComponent,
+			Class<? extends Component> componentOption, ConfigOption<?> configOption) {
 
-	this.config = config;
-	this.configOption = configOption;
-	this.component = component;
-	this.oldComponent = oldComponent;
-	this.componentOption = componentOption;
+		this.config = config;
+		this.configOption = configOption;
+		this.component = component;
+		this.oldComponent = oldComponent;
+		this.componentOption = componentOption;
 
-	widgetPanel.setLayout(gridbag);
-	add(widgetPanel, BorderLayout.CENTER);
-	showLabel(); // name of option and tooltip
-	showThingToChange(); // textfield, setbutton
-	stringList.setModel(listModel);
-	// ActionListeners
-	addButton.addActionListener(this);
-	removeButton.addActionListener(this);
-	clearButton.addActionListener(this);
-	setButton.addActionListener(this);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-	// add to list
-	if (e.getSource() == addButton
-		&& !listModel.contains(stringFieldA.getText() + " --> "
-			+ stringFieldB.getText())
-		&& !stringFieldA.getText().equalsIgnoreCase("")
-		&& !stringFieldB.getText().equalsIgnoreCase("")) {
-	    listModel.addElement(stringFieldA.getText() + " --> "
-		    + stringFieldB.getText());
-	    exampleList.add(new StringTuple(stringFieldA.getText(),
-		    stringFieldB.getText()));
-	}
-	// remove selection
-	if (e.getSource() == removeButton) {
-	    int[] selectedIndices = stringList.getSelectedIndices();
-	    int count = 0;
-	    // remove i.e. 2 and 4: after delete 2: 4 is now 3
-	    for (int i : selectedIndices) {
-		listModel.remove(i - count);
-		exampleList.remove(i - count++);
-	    }
-	}
-	// clear list
-	if (e.getSource() == clearButton) {
-	    listModel.clear();
-	    exampleList.clear();
-	}
-	// set entry
-	value = exampleList;
-	setEntry();
-    }
-
-    @Override
-    public void showLabel() {
-	nameLabel = new JLabel(configOption.getName());
-	nameLabel.setToolTipText(configOption.getDescription());
-	buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
-	constraints.anchor = GridBagConstraints.WEST;
-	gridbag.setConstraints(nameLabel, constraints);
-	widgetPanel.add(nameLabel, constraints);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void showThingToChange() {
-	if (component != null) {
-	    // StringTupleListConfigOption
-	    if (configOption.getClass().toString().contains(
-		    "StringTupleListConfigOption")) {
-		// previous set value
-		if (configOption != null) {
-		    // take list
-		    value = (List<StringTuple>) config.getComponentManager()
-			    .getConfigOptionValue(component,
-				    configOption.getName());
-		    // previous set value from old
-		    if (component != null && oldComponent != null) {
-			if (oldComponent.getClass()
-				.equals(component.getClass())) {
-			    value = (List<StringTuple>) config
-				    .getComponentManager()
-				    .getConfigOptionValue(oldComponent,
-					    configOption.getName());
-			    if (value != null) {
-				setEntry();
-				exampleList = value;
-			    }
-			}
-		    }
-		    // fill list
-		    if (value != null) {
-			for (Iterator<StringTuple> iterator = value.iterator(); iterator
-				.hasNext();) {
-			    StringTuple item = iterator.next();
-			    listModel.addElement(item);
-			}
-		    }
-		}
-		// stringFieldA
-		buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
-		gridbag.setConstraints(stringFieldA, constraints);
-		widgetPanel.add(stringFieldA, constraints);
-		// arrow
-		JLabel arrowLabel = new JLabel(" --> ");
-		buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
-		constraints.anchor = GridBagConstraints.WEST;
-		gridbag.setConstraints(arrowLabel, constraints);
-		widgetPanel.add(arrowLabel, constraints);
-		// stringFieldB
-		buildConstraints(constraints, 2, 1, 1, 1, 100, 100);
-		gridbag.setConstraints(stringFieldB, constraints);
-		widgetPanel.add(stringFieldB, constraints);
-		// addButton
-		buildConstraints(constraints, 3, 1, 1, 1, 100, 100);
-		gridbag.setConstraints(addButton, constraints);
-		widgetPanel.add(addButton, constraints);
-		// list
+		widgetPanel.setLayout(gridbag);
+		add(widgetPanel, BorderLayout.CENTER);
+		showLabel(); // name of option and tooltip
+		showThingToChange(); // textfield, setbutton
 		stringList.setModel(listModel);
-		stringList.setLayoutOrientation(JList.VERTICAL);
-		stringList.setVisibleRowCount(-1);
-		JScrollPane stringListScroller = new JScrollPane(stringList);
-		stringListScroller.setPreferredSize(new Dimension(280, 100));
-		buildConstraints(constraints, 0, 2, 3, 2, 100, 100);
-		gridbag.setConstraints(stringListScroller, constraints);
-		widgetPanel.add(stringListScroller, constraints);
-		// removeButton
-		buildConstraints(constraints, 3, 2, 1, 1, 100, 100);
-		gridbag.setConstraints(removeButton, constraints);
-		widgetPanel.add(removeButton, constraints);
-		// clearButton
-		buildConstraints(constraints, 3, 3, 1, 1, 100, 100);
-		gridbag.setConstraints(clearButton, constraints);
-		widgetPanel.add(clearButton, constraints);
-	    }
-	    // UNKNOWN
-	    else {
-		JLabel notImplementedLabel = new JLabel(
-			" not a StringTupleList");
-		notImplementedLabel.setForeground(Color.RED);
-		buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
-		gridbag.setConstraints(notImplementedLabel, constraints);
-		widgetPanel.add(notImplementedLabel);
-	    }
-	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel(
-		    " no init (StringTupleList)");
-	    noConfigOptionLabel.setForeground(Color.MAGENTA);
-	    buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
-	    gridbag.setConstraints(noConfigOptionLabel, constraints);
-	    widgetPanel.add(noConfigOptionLabel, constraints);
+		// ActionListeners
+		addButton.addActionListener(this);
+		removeButton.addActionListener(this);
+		clearButton.addActionListener(this);
+		setButton.addActionListener(this);
 	}
-    }
 
-    @Override
-    public void setEntry() {
-	StringTupleListConfigOption specialOption;
-	specialOption = (StringTupleListConfigOption) config
-		.getComponentManager().getConfigOption(componentOption,
-			configOption.getName());
-	if (specialOption.isValidValue(value)) {
-	    try {
-		ConfigEntry<List<StringTuple>> specialEntry = new ConfigEntry<List<StringTuple>>(
-			specialOption, value);
-		config.getComponentManager().applyConfigEntry(component,
-			specialEntry);
-		System.out.println("set StringTupleList: "
-			+ configOption.getName() + " = " + value);
-	    } catch (InvalidConfigOptionValueException s) {
-		s.printStackTrace();
-	    }
-	} else
-	    System.out.println("StringTupleList: not valid value");
-    }
+	public void actionPerformed(ActionEvent e) {
+		// add to list
+		if (e.getSource() == addButton
+				&& !listModel.contains(stringFieldA.getText() + " --> " + stringFieldB.getText())
+				&& !stringFieldA.getText().equalsIgnoreCase("")
+				&& !stringFieldB.getText().equalsIgnoreCase("")) {
+			listModel.addElement(stringFieldA.getText() + " --> " + stringFieldB.getText());
+			exampleList.add(new StringTuple(stringFieldA.getText(), stringFieldB.getText()));
+		}
+		// remove selection
+		if (e.getSource() == removeButton) {
+			int[] selectedIndices = stringList.getSelectedIndices();
+			int count = 0;
+			// remove i.e. 2 and 4: after delete 2: 4 is now 3
+			for (int i : selectedIndices) {
+				listModel.remove(i - count);
+				exampleList.remove(i - count++);
+			}
+		}
+		// clear list
+		if (e.getSource() == clearButton) {
+			listModel.clear();
+			exampleList.clear();
+		}
+		// set entry
+		value = exampleList;
+		setEntry();
+	}
 
-    /**
-     * Define GridBagConstraints
-     */
-    private void buildConstraints(GridBagConstraints gbc, int gx, int gy,
-	    int gw, int gh, int wx, int wy) {
-	gbc.gridx = gx;
-	gbc.gridy = gy;
-	gbc.gridwidth = gw;
-	gbc.gridheight = gh;
-	gbc.weightx = wx;
-	gbc.weighty = wy;
-    }
+	@Override
+	public void showLabel() {
+		nameLabel = new JLabel(configOption.getName());
+		nameLabel.setToolTipText(configOption.getDescription());
+		buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
+		constraints.anchor = GridBagConstraints.WEST;
+		gridbag.setConstraints(nameLabel, constraints);
+		widgetPanel.add(nameLabel, constraints);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void showThingToChange() {
+		if (component != null) {
+			// StringTupleListConfigOption
+			if (configOption.getClass().toString().contains("StringTupleListConfigOption")) {
+				// previous set value
+				if (configOption != null) {
+					// take list
+					value = (List<StringTuple>) config.getComponentManager().getConfigOptionValue(
+							component, configOption.getName());
+					// previous set value from old
+					if (component != null && oldComponent != null) {
+						if (oldComponent.getClass().equals(component.getClass())) {
+							value = (List<StringTuple>) config.getComponentManager()
+									.getConfigOptionValue(oldComponent, configOption.getName());
+							if (value != null) {
+								setEntry();
+								exampleList = value;
+							}
+						}
+					}
+					// fill list
+					if (value != null) {
+						for (Iterator<StringTuple> iterator = value.iterator(); iterator.hasNext();) {
+							StringTuple item = iterator.next();
+							listModel.addElement(item);
+						}
+					}
+				}
+				// stringFieldA
+				buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+				gridbag.setConstraints(stringFieldA, constraints);
+				widgetPanel.add(stringFieldA, constraints);
+				// arrow
+				JLabel arrowLabel = new JLabel(" --> ");
+				buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
+				constraints.anchor = GridBagConstraints.WEST;
+				gridbag.setConstraints(arrowLabel, constraints);
+				widgetPanel.add(arrowLabel, constraints);
+				// stringFieldB
+				buildConstraints(constraints, 2, 1, 1, 1, 100, 100);
+				gridbag.setConstraints(stringFieldB, constraints);
+				widgetPanel.add(stringFieldB, constraints);
+				// addButton
+				buildConstraints(constraints, 3, 1, 1, 1, 100, 100);
+				gridbag.setConstraints(addButton, constraints);
+				widgetPanel.add(addButton, constraints);
+				// list
+				stringList.setModel(listModel);
+				stringList.setLayoutOrientation(JList.VERTICAL);
+				stringList.setVisibleRowCount(-1);
+				JScrollPane stringListScroller = new JScrollPane(stringList);
+				stringListScroller.setPreferredSize(new Dimension(280, 100));
+				buildConstraints(constraints, 0, 2, 3, 2, 100, 100);
+				gridbag.setConstraints(stringListScroller, constraints);
+				widgetPanel.add(stringListScroller, constraints);
+				// removeButton
+				buildConstraints(constraints, 3, 2, 1, 1, 100, 100);
+				gridbag.setConstraints(removeButton, constraints);
+				widgetPanel.add(removeButton, constraints);
+				// clearButton
+				buildConstraints(constraints, 3, 3, 1, 1, 100, 100);
+				gridbag.setConstraints(clearButton, constraints);
+				widgetPanel.add(clearButton, constraints);
+			}
+			// UNKNOWN
+			else {
+				JLabel notImplementedLabel = new JLabel(" not a StringTupleList");
+				notImplementedLabel.setForeground(Color.RED);
+				buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
+				gridbag.setConstraints(notImplementedLabel, constraints);
+				widgetPanel.add(notImplementedLabel);
+			}
+		} else { // configOption == NULL
+			JLabel noConfigOptionLabel = new JLabel(" no init (StringTupleList)");
+			noConfigOptionLabel.setForeground(Color.MAGENTA);
+			buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
+			gridbag.setConstraints(noConfigOptionLabel, constraints);
+			widgetPanel.add(noConfigOptionLabel, constraints);
+		}
+	}
+
+	@Override
+	public void setEntry() {
+		StringTupleListConfigOption specialOption;
+		specialOption = (StringTupleListConfigOption) config.getComponentManager().getConfigOption(
+				componentOption, configOption.getName());
+		if (specialOption.isValidValue(value)) {
+			try {
+				ConfigEntry<List<StringTuple>> specialEntry = new ConfigEntry<List<StringTuple>>(
+						specialOption, value);
+				config.getComponentManager().applyConfigEntry(component, specialEntry);
+				System.out
+						.println("set StringTupleList: " + configOption.getName() + " = " + value);
+			} catch (InvalidConfigOptionValueException s) {
+				s.printStackTrace();
+			}
+		} else
+			System.out.println("StringTupleList: not valid value");
+	}
+
+	/**
+	 * Define GridBagConstraints
+	 */
+	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx,
+			int wy) {
+		gbc.gridx = gx;
+		gbc.gridy = gy;
+		gbc.gridwidth = gw;
+		gbc.gridheight = gh;
+		gbc.weightx = wx;
+		gbc.weighty = wy;
+	}
 
 }

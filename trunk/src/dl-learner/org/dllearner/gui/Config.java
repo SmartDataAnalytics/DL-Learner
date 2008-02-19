@@ -37,242 +37,242 @@ import org.dllearner.core.ReasonerComponent;
  * @author Tilo Hielscher
  */
 public class Config {
-    private ComponentManager cm = ComponentManager.getInstance();
-    private KnowledgeSource source;
-    private KnowledgeSource oldSource;
-    private ReasonerComponent reasoner;
-    private ReasonerComponent oldReasoner;
-    private ReasoningService rs;
-    private LearningProblem lp;
-    private LearningProblem oldLearningProblem;
-    private LearningAlgorithm la;
-    private LearningAlgorithm oldLearningAlgorithm;
-    private boolean[] isInit = new boolean[4];
+	private ComponentManager cm = ComponentManager.getInstance();
+	private KnowledgeSource source;
+	private KnowledgeSource oldSource;
+	private ReasonerComponent reasoner;
+	private ReasonerComponent oldReasoner;
+	private ReasoningService rs;
+	private LearningProblem lp;
+	private LearningProblem oldLearningProblem;
+	private LearningAlgorithm la;
+	private LearningAlgorithm oldLearningAlgorithm;
+	private boolean[] isInit = new boolean[4];
 
-    /**
-     * Get ComponentManager.
-     * 
-     * @return ComponentManager
-     */
-    public ComponentManager getComponentManager() {
-	return this.cm;
-    }
+	/**
+	 * Get ComponentManager.
+	 * 
+	 * @return ComponentManager
+	 */
+	public ComponentManager getComponentManager() {
+		return this.cm;
+	}
 
-    /**
-     * It is necessary for init KnowledgeSource.
-     * 
-     * @return true, if url was set otherwise false
-     */
-    public Boolean isSetURL() {
-	// return this.isURL;
-	// String value = (String) cm.getConfigOptionValue(source, "url");
-	if (cm.getConfigOptionValue(source, "url") != null)
-	    return true;
-	else
-	    return false;
-    }
+	/**
+	 * It is necessary for init KnowledgeSource.
+	 * 
+	 * @return true, if url was set otherwise false
+	 */
+	public Boolean isSetURL() {
+		// return this.isURL;
+		// String value = (String) cm.getConfigOptionValue(source, "url");
+		if (cm.getConfigOptionValue(source, "url") != null)
+			return true;
+		else
+			return false;
+	}
 
-    /**
-     * Set KnowledgeSource.
-     * 
-     * @param knowledgeSource
-     */
-    public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
-	this.oldSource = this.source;
-	this.source = knowledgeSource;
-    }
+	/**
+	 * Set KnowledgeSource.
+	 * 
+	 * @param knowledgeSource
+	 */
+	public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
+		this.oldSource = this.source;
+		this.source = knowledgeSource;
+	}
 
-    /**
-     * Get KnowledgeSource.
-     * 
-     * @return KnowledgeSource
-     */
-    public KnowledgeSource getKnowledgeSource() {
-	return this.source;
-    }
+	/**
+	 * Get KnowledgeSource.
+	 * 
+	 * @return KnowledgeSource
+	 */
+	public KnowledgeSource getKnowledgeSource() {
+		return this.source;
+	}
 
-    /**
-     * Get old KnowledgeSource.
-     * 
-     * @return old KnowledgeSource
-     */
-    public KnowledgeSource getOldKnowledgeSource() {
-	return this.oldSource;
-    }
+	/**
+	 * Get old KnowledgeSource.
+	 * 
+	 * @return old KnowledgeSource
+	 */
+	public KnowledgeSource getOldKnowledgeSource() {
+		return this.oldSource;
+	}
 
-    /**
-     * Set Reasoner.
-     * 
-     * @param reasoner
-     */
-    public void setReasoner(ReasonerComponent reasoner) {
-	this.oldReasoner = this.reasoner;
-	this.reasoner = reasoner;
-    }
+	/**
+	 * Set Reasoner.
+	 * 
+	 * @param reasoner
+	 */
+	public void setReasoner(ReasonerComponent reasoner) {
+		this.oldReasoner = this.reasoner;
+		this.reasoner = reasoner;
+	}
 
-    /**
-     * Get Reasoner.
-     * 
-     * @return reasoner
-     */
-    public ReasonerComponent getReasoner() {
-	return this.reasoner;
-    }
+	/**
+	 * Get Reasoner.
+	 * 
+	 * @return reasoner
+	 */
+	public ReasonerComponent getReasoner() {
+		return this.reasoner;
+	}
 
-    /**
-     * Get old Reasoner as a set.
-     * 
-     * @return oldReasonerSet.
-     */
-    public ReasonerComponent getOldReasonerSet() {
-	return this.oldReasoner;
-    }
+	/**
+	 * Get old Reasoner as a set.
+	 * 
+	 * @return oldReasonerSet.
+	 */
+	public ReasonerComponent getOldReasonerSet() {
+		return this.oldReasoner;
+	}
 
-    /**
-     * Set ReasoningService.
-     * 
-     * @param reasoningService
-     */
-    public void setReasoningService(ReasoningService reasoningService) {
-	this.rs = reasoningService;
-    }
+	/**
+	 * Set ReasoningService.
+	 * 
+	 * @param reasoningService
+	 */
+	public void setReasoningService(ReasoningService reasoningService) {
+		this.rs = reasoningService;
+	}
 
-    /**
-     * Get ReasoningService.
-     * 
-     * @return ReasoningService
-     */
-    public ReasoningService getReasoningService() {
-	return this.rs;
-    }
+	/**
+	 * Get ReasoningService.
+	 * 
+	 * @return ReasoningService
+	 */
+	public ReasoningService getReasoningService() {
+		return this.rs;
+	}
 
-    /**
-     * Set LearningProblem.
-     * 
-     * @param learningProblem
-     */
-    public void setLearningProblem(LearningProblem learningProblem) {
-	this.oldLearningProblem = this.lp;
-	this.lp = learningProblem;
-    }
+	/**
+	 * Set LearningProblem.
+	 * 
+	 * @param learningProblem
+	 */
+	public void setLearningProblem(LearningProblem learningProblem) {
+		this.oldLearningProblem = this.lp;
+		this.lp = learningProblem;
+	}
 
-    /**
-     * Get LearningProblem.
-     * 
-     * @return learningProblem
-     */
-    public LearningProblem getLearningProblem() {
-	return this.lp;
-    }
+	/**
+	 * Get LearningProblem.
+	 * 
+	 * @return learningProblem
+	 */
+	public LearningProblem getLearningProblem() {
+		return this.lp;
+	}
 
-    /**
-     * Get old LearningProblem as a set.
-     * 
-     * @return old learningProblemSet.
-     */
-    public LearningProblem getOldLearningProblem() {
-	return this.oldLearningProblem;
-    }
+	/**
+	 * Get old LearningProblem as a set.
+	 * 
+	 * @return old learningProblemSet.
+	 */
+	public LearningProblem getOldLearningProblem() {
+		return this.oldLearningProblem;
+	}
 
-    /**
-     * Set LearningAlgorithm.
-     * 
-     * @param learningAlgorithm
-     */
-    public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
-	this.oldLearningAlgorithm = this.la;
-	this.la = learningAlgorithm;
-    }
+	/**
+	 * Set LearningAlgorithm.
+	 * 
+	 * @param learningAlgorithm
+	 */
+	public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
+		this.oldLearningAlgorithm = this.la;
+		this.la = learningAlgorithm;
+	}
 
-    /**
-     * Get LearningAlgorithm.
-     * 
-     * @return LearningAlgorithm
-     */
-    public LearningAlgorithm getLearningAlgorithm() {
-	return this.la;
-    }
+	/**
+	 * Get LearningAlgorithm.
+	 * 
+	 * @return LearningAlgorithm
+	 */
+	public LearningAlgorithm getLearningAlgorithm() {
+		return this.la;
+	}
 
-    /**
-     * Get old LearningAlgorithmSet.
-     * 
-     * @return old LearningAlgorithmSet
-     */
-    public LearningAlgorithm getOldLearningAlgorithm() {
-	return this.oldLearningAlgorithm;
-    }
+	/**
+	 * Get old LearningAlgorithmSet.
+	 * 
+	 * @return old LearningAlgorithmSet
+	 */
+	public LearningAlgorithm getOldLearningAlgorithm() {
+		return this.oldLearningAlgorithm;
+	}
 
-    /**
-     * KnowledgeSource.init has run?
-     * 
-     * @return true, if init was made, false if not
-     */
-    public boolean isInitKnowledgeSource() {
-	return isInit[0];
-    }
+	/**
+	 * KnowledgeSource.init has run?
+	 * 
+	 * @return true, if init was made, false if not
+	 */
+	public boolean isInitKnowledgeSource() {
+		return isInit[0];
+	}
 
-    /**
-     * Set true if you run KnowwledgeSource.init. The inits from other tabs
-     * behind will automatic set to false.
-     */
-    public void setInitKnowledgeSource(Boolean is) {
-	isInit[0] = is;
-	for (int i = 1; i < 4; i++)
-	    isInit[i] = false;
-    }
+	/**
+	 * Set true if you run KnowwledgeSource.init. The inits from other tabs
+	 * behind will automatic set to false.
+	 */
+	public void setInitKnowledgeSource(Boolean is) {
+		isInit[0] = is;
+		for (int i = 1; i < 4; i++)
+			isInit[i] = false;
+	}
 
-    /**
-     * Reasoner.init has run?
-     * 
-     * @return true, if init was made, false if not
-     */
-    public boolean isInitReasoner() {
-	return isInit[1];
-    }
+	/**
+	 * Reasoner.init has run?
+	 * 
+	 * @return true, if init was made, false if not
+	 */
+	public boolean isInitReasoner() {
+		return isInit[1];
+	}
 
-    /**
-     * Set true if you run Reasoner.init. The inits from other tabs behind will
-     * automatic set to false.
-     */
-    public void setInitReasoner(Boolean is) {
-	isInit[1] = is;
-	for (int i = 2; i < 4; i++)
-	    isInit[i] = false;
-    }
+	/**
+	 * Set true if you run Reasoner.init. The inits from other tabs behind will
+	 * automatic set to false.
+	 */
+	public void setInitReasoner(Boolean is) {
+		isInit[1] = is;
+		for (int i = 2; i < 4; i++)
+			isInit[i] = false;
+	}
 
-    /**
-     * LearningProblem.init has run?
-     * 
-     * @return true, if init was made, false if not
-     */
-    public boolean isInitLearningProblem() {
-	return isInit[2];
-    }
+	/**
+	 * LearningProblem.init has run?
+	 * 
+	 * @return true, if init was made, false if not
+	 */
+	public boolean isInitLearningProblem() {
+		return isInit[2];
+	}
 
-    /**
-     * Set true if you run LearningProblem.init. The inits from other tabs
-     * behind will automatic set to false.
-     */
-    public void setInitLearningProblem(Boolean is) {
-	isInit[2] = is;
-	for (int i = 3; i < 4; i++)
-	    isInit[i] = false;
-    }
+	/**
+	 * Set true if you run LearningProblem.init. The inits from other tabs
+	 * behind will automatic set to false.
+	 */
+	public void setInitLearningProblem(Boolean is) {
+		isInit[2] = is;
+		for (int i = 3; i < 4; i++)
+			isInit[i] = false;
+	}
 
-    /**
-     * LearningAlgorithm.init() has run?
-     * 
-     * @return true, if init was made, false if not
-     */
-    public boolean isInitLearningAlgorithm() {
-	return isInit[3];
-    }
+	/**
+	 * LearningAlgorithm.init() has run?
+	 * 
+	 * @return true, if init was made, false if not
+	 */
+	public boolean isInitLearningAlgorithm() {
+		return isInit[3];
+	}
 
-    /**
-     * set true if you run LearningAlgorithm.init
-     */
-    public void setInitLearningAlgorithm(Boolean is) {
-	isInit[3] = is;
-    }
+	/**
+	 * set true if you run LearningAlgorithm.init
+	 */
+	public void setInitLearningAlgorithm(Boolean is) {
+		isInit[3] = is;
+	}
 
 }
