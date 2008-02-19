@@ -106,6 +106,7 @@ public class KB implements KBElement {
 		for(String name : conceptNames) {
 			ret.add(new NamedClass(name));
 		}
+
 		return ret;
 	}
 	

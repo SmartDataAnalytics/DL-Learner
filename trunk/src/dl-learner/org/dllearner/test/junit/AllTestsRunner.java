@@ -19,6 +19,10 @@
  */
 package org.dllearner.test.junit;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.junit.runner.JUnitCore;
 
 /**
@@ -33,6 +37,15 @@ import org.junit.runner.JUnitCore;
 public class AllTestsRunner {
 
 	public static void main(String[] args) {
+		
+		// create logger
+		SimpleLayout layout = new SimpleLayout();
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		Logger logger = Logger.getRootLogger();
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.setLevel(Level.INFO);
+		
 		JUnitCore.main("org.dllearner.test.junit.ComponentTests",
 				"org.dllearner.test.junit.ReasonerTests");
 	}

@@ -118,9 +118,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private Set<Description> allowedConceptsInSubsumptionHierarchy;
 	
 	// primitives
-	Set<NamedClass> atomicConcepts;
-	Set<ObjectProperty> atomicRoles;
-	SortedSet<Individual> individuals;	
+	Set<NamedClass> atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
+	Set<ObjectProperty> atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
+	SortedSet<Individual> individuals = new TreeSet<Individual>();	
 	
 	public OWLAPIReasoner(Set<KnowledgeSource> sources) {
 		this.sources = sources;
@@ -179,9 +179,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					allImports.addAll(manager.getImportsClosure(ontology));
 					classes.addAll(ontology.getReferencedClasses());
 					properties.addAll(ontology.getReferencedObjectProperties());
-					// does not seem to work => workaround: query all instances of Top
-					// maybe one can also query for instances of OWLObjectProperty,
-					// OWLClass, OWLIndividual
 					owlIndividuals.addAll(ontology.getReferencedIndividuals());
 				} catch (OWLOntologyCreationException e) {
 					e.printStackTrace();
@@ -192,6 +189,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			// OWL API ontology
 			} else {
 				KB kb = source.toKB();
+//				System.out.println(kb.toString(null,null));
+				
 				URI ontologyURI = URI.create("http://example.com");
 				OWLOntology ontology = null;
 				try {
@@ -200,6 +199,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					e.printStackTrace();
 				}
 				OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
+				allImports.add(ontology);
+				atomicConcepts.addAll(kb.findAllAtomicConcepts());
+				atomicRoles.addAll(kb.findAllAtomicRoles());
+				individuals.addAll(kb.findAllIndividuals());				
 			}
 		}
 		
@@ -214,6 +217,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			// instantiate Pellet reasoner
 			reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
 			
+			// change log level to WARN for Pellet, because otherwise log
+			// output will be very large
 			Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
 			pelletLogger.setLevel(Level.WARN);
 		}
@@ -257,13 +262,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 //		}
 		
 		// read in primitives
-		atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
 		for(OWLClass owlClass : classes)
 			atomicConcepts.add(new NamedClass(owlClass.getURI().toString()));
-		atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
 		for(OWLObjectProperty owlProperty : properties)
 			atomicRoles.add(new ObjectProperty(owlProperty.getURI().toString()));
-		individuals = new TreeSet<Individual>();
 		for(OWLIndividual owlIndividual : owlIndividuals)
 			individuals.add(new Individual(owlIndividual.getURI().toString()));
 		

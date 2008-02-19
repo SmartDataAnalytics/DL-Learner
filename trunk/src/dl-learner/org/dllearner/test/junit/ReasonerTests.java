@@ -20,7 +20,9 @@
 package org.dllearner.test.junit;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -32,7 +34,6 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.kb.KBFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -45,10 +46,18 @@ import static org.junit.Assert.*;
  */
 public class ReasonerTests {
 
+	private static Logger logger = Logger.getLogger(ReasonerTests.class);
+
 	private KB getSimpleKnowledgeBase() {
 		String kb = "person SUB TOP.";
 		kb += "man SUB person.";
+		kb += "man SUB male.";
 		kb += "woman SUB person.";
+		kb += "woman SUB female.";
+		kb += "(male AND female) = BOTTOM.";
+		kb += "man(stephen).";
+		kb += "woman(maria).";
+		kb += "hasChild(stephen,maria).";
 		KB kbObject = null;
 		try {
 			kbObject = KBParser.parseKBFile(kb);
@@ -60,6 +69,10 @@ public class ReasonerTests {
 		return kbObject;
 	}
 
+	/**
+	 * Performs an instance checks on all reasoner components to verify that
+	 * they all return the correct result.
+	 */
 	@Test
 	public void instanceCheckTest() {
 		try {
@@ -67,13 +80,18 @@ public class ReasonerTests {
 			KB kb = getSimpleKnowledgeBase();
 			KnowledgeSource ks = new KBFile(kb);
 			ks.init();
-			ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
-			reasoner.init();
 			Description d;
-			d = KBParser.parseConcept("man");
-			Individual i = new Individual("alex");
-			boolean result = reasoner.instanceCheck(d, i);
-			assertFalse(result);
+			// d = KBParser.parseConcept("man");
+			d = KBParser.parseConcept("(person AND EXISTS hasChild.female)");
+			Individual i = new Individual(KBParser.getInternalURI("stephen"));
+			List<Class<? extends ReasonerComponent>> reasonerClasses = cm.getReasonerComponents();
+			for (Class<? extends ReasonerComponent> reasonerClass : reasonerClasses) {
+				ReasonerComponent reasoner = cm.reasoner(reasonerClass, ks);
+				reasoner.init();
+				boolean result = reasoner.instanceCheck(d, i);
+				logger.debug("instance check: " + reasoner + " " + d + " " + i + " " + result);
+				assertTrue(result);
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (ReasoningMethodUnsupportedException e) {

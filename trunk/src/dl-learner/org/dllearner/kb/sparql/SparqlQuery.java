@@ -21,10 +21,6 @@ package org.dllearner.kb.sparql;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
