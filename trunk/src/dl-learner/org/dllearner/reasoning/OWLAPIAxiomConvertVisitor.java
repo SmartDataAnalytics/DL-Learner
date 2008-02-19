@@ -240,8 +240,10 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.DatatypePropertyDomainAxiom)
 	 */
 	public void visit(DatatypePropertyDomainAxiom datatypePropertyDomainAxiom) {
-		// TODO Auto-generated method stub
-		
+		OWLDescription d = getOWLDescription(datatypePropertyDomainAxiom.getDomain());
+		OWLDataProperty dp = factory.getOWLDataProperty(URI.create(datatypePropertyDomainAxiom.getProperty().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyDomainAxiom(dp, d);
+		addAxiom(axiomOWLAPI);
 	}
 
 	/* (non-Javadoc)
