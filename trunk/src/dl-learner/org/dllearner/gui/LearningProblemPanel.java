@@ -31,7 +31,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblem;
 
 /**
- * LearningProblemPanel tab 3. Choose LearingProblem, change Options and final
+ * LearningProblemPanel tab 2. Choose LearingProblem, change Options and final
  * initiate LearningProblem.
  * 
  * @author Tilo Hielscher

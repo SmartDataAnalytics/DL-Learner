@@ -27,6 +27,8 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
 
+// import org.dllearner.core.Component;
+
 /**
  * Config save all together used variables: ComponentManager, KnowledgeSource,
  * Reasoner, ReasoningService, LearningProblem, LearningAlgorithm; also inits of
@@ -38,7 +40,6 @@ public class Config {
     private ComponentManager cm = ComponentManager.getInstance();
     private KnowledgeSource source;
     private KnowledgeSource oldSource;
-    private String uri;
     private ReasonerComponent reasoner;
     private ReasonerComponent oldReasoner;
     private ReasoningService rs;
@@ -60,20 +61,15 @@ public class Config {
     /**
      * It is necessary for init KnowledgeSource.
      * 
-     * @return URI
+     * @return true, if url was set otherwise false
      */
-    public String getURI() {
-	return this.uri;
-    }
-
-    /**
-     * Set an URI.
-     * 
-     * @param uri
-     *                it's a Link like "http://example.com" or "file://myfile"
-     */
-    public void setURI(String uri) {
-	this.uri = uri;
+    public Boolean isSetURL() {
+	// return this.isURL;
+	// String value = (String) cm.getConfigOptionValue(source, "url");
+	if (cm.getConfigOptionValue(source, "url") != null)
+	    return true;
+	else
+	    return false;
     }
 
     /**

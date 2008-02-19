@@ -84,8 +84,6 @@ public class WidgetPanelString extends WidgetPanelAbstract implements
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 		    value = fc.getSelectedFile().toString();
 		    stringField.setText(value);
-		    config.setURI(value); // save variable
-		    System.out.println("value: " + config.getURI());
 		}
 	    }
 	    setEntry();
@@ -93,7 +91,6 @@ public class WidgetPanelString extends WidgetPanelAbstract implements
 	    // necessary for init knowledge source
 	    if (configOption.getName().equalsIgnoreCase("url")
 		    && !value.equalsIgnoreCase("")) {
-		config.setURI(value);
 	    }
 	}
     }
@@ -180,7 +177,7 @@ public class WidgetPanelString extends WidgetPanelAbstract implements
 	    System.out.println("String: not valid value");
     }
 
-    /*
+    /**
      * Widget filename getName() == filename you should open a file dialog in
      * ActionPerformed
      */
