@@ -34,74 +34,70 @@ import javax.swing.*;
  */
 public class RunPanel extends JPanel implements ActionListener {
 
-    private static final long serialVersionUID = 1643304576470046636L;
+	private static final long serialVersionUID = 1643304576470046636L;
 
-    private JButton runButton, stopButton, getBestSolutionButton,
-	    getSolutionScoreButton;
-    private JTextArea infoArea;
-    private Config config;
+	private JButton runButton, stopButton, getBestSolutionButton, getSolutionScoreButton;
+	private JTextArea infoArea;
+	private Config config;
 
-    private ThreadRun thread;
-    private Boolean runBoolean = new Boolean(false);
+	private ThreadRun thread;
+	private Boolean runBoolean = new Boolean(false);
 
-    private JPanel showPanel = new JPanel();
-    private JPanel infoPanel = new JPanel();
-    private JPanel solutionPanel = new JPanel();
+	private JPanel showPanel = new JPanel();
+	private JPanel infoPanel = new JPanel();
+	private JPanel solutionPanel = new JPanel();
 
-    RunPanel(Config config) {
-	super(new BorderLayout());
+	RunPanel(Config config) {
+		super(new BorderLayout());
 
-	this.config = config;
+		this.config = config;
 
-	runButton = new JButton("Run");
-	runButton.addActionListener(this);
-	stopButton = new JButton("Stop");
-	stopButton.addActionListener(this);
+		runButton = new JButton("Run");
+		runButton.addActionListener(this);
+		stopButton = new JButton("Stop");
+		stopButton.addActionListener(this);
 
-	getBestSolutionButton = new JButton("GetBestSolution");
-	getBestSolutionButton.addActionListener(this);
+		getBestSolutionButton = new JButton("GetBestSolution");
+		getBestSolutionButton.addActionListener(this);
 
-	getSolutionScoreButton = new JButton("GetSolutionScore");
-	getSolutionScoreButton.addActionListener(this);
+		getSolutionScoreButton = new JButton("GetSolutionScore");
+		getSolutionScoreButton.addActionListener(this);
 
-	infoArea = new JTextArea(20, 50);
-	JScrollPane infoScroll = new JScrollPane(infoArea);
+		infoArea = new JTextArea(20, 50);
+		JScrollPane infoScroll = new JScrollPane(infoArea);
 
-	showPanel.add(runButton);
-	showPanel.add(stopButton);
+		showPanel.add(runButton);
+		showPanel.add(stopButton);
 
-	infoPanel.add(infoScroll);
+		infoPanel.add(infoScroll);
 
-	solutionPanel.add(getBestSolutionButton);
-	solutionPanel.add(getSolutionScoreButton);
+		solutionPanel.add(getBestSolutionButton);
+		solutionPanel.add(getSolutionScoreButton);
 
-	add(showPanel, BorderLayout.PAGE_START);
-	add(infoPanel, BorderLayout.CENTER);
-	add(solutionPanel, BorderLayout.PAGE_END);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-	// start
-	if (e.getSource() == runButton && config.getLearningAlgorithm() != null) {
-	    thread = new ThreadRun(config);
-	    thread.start();
-	    this.runBoolean = true;
+		add(showPanel, BorderLayout.PAGE_START);
+		add(infoPanel, BorderLayout.CENTER);
+		add(solutionPanel, BorderLayout.PAGE_END);
 	}
-	// stop
-	if (e.getSource() == stopButton
-		&& config.getLearningAlgorithm() != null) {
-	    thread.exit();
+
+	public void actionPerformed(ActionEvent e) {
+		// start
+		if (e.getSource() == runButton && config.getLearningAlgorithm() != null) {
+			thread = new ThreadRun(config);
+			thread.start();
+			this.runBoolean = true;
+		}
+		// stop
+		if (e.getSource() == stopButton && config.getLearningAlgorithm() != null) {
+			thread.exit();
+		}
+		// getBestSolution
+		if (e.getSource() == getBestSolutionButton && runBoolean) {
+			infoArea.setText(config.getLearningAlgorithm().getBestSolution().toString());
+		}
+		// getSolutionScore
+		if (e.getSource() == getSolutionScoreButton && runBoolean) {
+			infoArea.setText(config.getLearningAlgorithm().getSolutionScore().toString());
+		}
 	}
-	// getBestSolution
-	if (e.getSource() == getBestSolutionButton && runBoolean) {
-	    infoArea.setText(config.getLearningAlgorithm().getBestSolution()
-		    .toString());
-	}
-	// getSolutionScore
-	if (e.getSource() == getSolutionScoreButton && runBoolean) {
-	    infoArea.setText(config.getLearningAlgorithm().getSolutionScore()
-		    .toString());
-	}
-    }
 
 }

@@ -38,118 +38,116 @@ import org.dllearner.core.LearningProblem;
  */
 public class LearningProblemPanel extends JPanel implements ActionListener {
 
-    private static final long serialVersionUID = -3819627680918930203L;
+	private static final long serialVersionUID = -3819627680918930203L;
 
-    private Config config;
-    private StartGUI startGUI;
-    private List<Class<? extends LearningProblem>> problems;
-    private String[] lpBoxItems = {};
-    private JComboBox cb = new JComboBox(lpBoxItems);
-    private JPanel choosePanel = new JPanel();
-    private OptionPanel optionPanel;
-    private JPanel initPanel = new JPanel();
-    private JButton initButton, setButton;
-    private int choosenClassIndex;
+	private Config config;
+	private StartGUI startGUI;
+	private List<Class<? extends LearningProblem>> problems;
+	private String[] lpBoxItems = {};
+	private JComboBox cb = new JComboBox(lpBoxItems);
+	private JPanel choosePanel = new JPanel();
+	private OptionPanel optionPanel;
+	private JPanel initPanel = new JPanel();
+	private JButton initButton, setButton;
+	private int choosenClassIndex;
 
-    LearningProblemPanel(final Config config, StartGUI startGUI) {
-	super(new BorderLayout());
+	LearningProblemPanel(final Config config, StartGUI startGUI) {
+		super(new BorderLayout());
 
-	this.config = config;
-	this.startGUI = startGUI;
-	problems = config.getComponentManager().getLearningProblems();
+		this.config = config;
+		this.startGUI = startGUI;
+		problems = config.getComponentManager().getLearningProblems();
 
-	initButton = new JButton("Init LearningProblem");
-	initButton.addActionListener(this);
-	initPanel.add(initButton);
-	initButton.setEnabled(true);
-	setButton = new JButton("Set");
-	setButton.addActionListener(this);
-	choosePanel.add(cb);
-	choosePanel.add(setButton);
-	cb.addActionListener(this);
+		initButton = new JButton("Init LearningProblem");
+		initButton.addActionListener(this);
+		initPanel.add(initButton);
+		initButton.setEnabled(true);
+		setButton = new JButton("Set");
+		setButton.addActionListener(this);
+		choosePanel.add(cb);
+		choosePanel.add(setButton);
+		cb.addActionListener(this);
 
-	// add into comboBox
-	for (int i = 0; i < problems.size(); i++) {
-	    cb.addItem(config.getComponentManager().getComponentName(
-		    problems.get(i)));
+		// add into comboBox
+		for (int i = 0; i < problems.size(); i++) {
+			cb.addItem(config.getComponentManager().getComponentName(problems.get(i)));
+		}
+
+		// read choosen LearningProblem
+		choosenClassIndex = cb.getSelectedIndex();
+
+		optionPanel = new OptionPanel(config, config.getLearningProblem(), config
+				.getOldLearningProblem(), problems.get(choosenClassIndex));
+
+		add(choosePanel, BorderLayout.PAGE_START);
+		add(optionPanel, BorderLayout.CENTER);
+		add(initPanel, BorderLayout.PAGE_END);
+
+		choosenClassIndex = cb.getSelectedIndex();
+		// setLearningProblem();
+		updateInitButtonColor();
 	}
 
-	// read choosen LearningProblem
-	choosenClassIndex = cb.getSelectedIndex();
+	public void actionPerformed(ActionEvent e) {
+		// read selected LearningProblemClass
+		if (choosenClassIndex != cb.getSelectedIndex()) {
+			this.choosenClassIndex = cb.getSelectedIndex();
+			config.setInitLearningProblem(false);
+			setLearningProblem();
+		}
 
-	optionPanel = new OptionPanel(config, config.getLearningProblem(),
-		config.getOldLearningProblem(), problems.get(choosenClassIndex));
+		if (e.getSource() == setButton)
+			setLearningProblem();
 
-	add(choosePanel, BorderLayout.PAGE_START);
-	add(optionPanel, BorderLayout.CENTER);
-	add(initPanel, BorderLayout.PAGE_END);
-
-	choosenClassIndex = cb.getSelectedIndex();
-	// setLearningProblem();
-	updateInitButtonColor();
-    }
-
-    public void actionPerformed(ActionEvent e) {
-	// read selected LearningProblemClass
-	if (choosenClassIndex != cb.getSelectedIndex()) {
-	    this.choosenClassIndex = cb.getSelectedIndex();
-	    config.setInitLearningProblem(false);
-	    setLearningProblem();
+		if (e.getSource() == initButton)
+			init();
 	}
 
-	if (e.getSource() == setButton)
-	    setLearningProblem();
-
-	if (e.getSource() == initButton)
-	    init();
-    }
-
-    /**
-     * after this, you can change widgets
-     */
-    private void setLearningProblem() {
-	if (config.isInitReasoner()) {
-	    config.setLearningProblem(config.getComponentManager()
-		    .learningProblem(problems.get(choosenClassIndex),
-			    config.getReasoningService()));
-	    startGUI.updateTabColors();
-	    updateOptionPanel();
+	/**
+	 * after this, you can change widgets
+	 */
+	private void setLearningProblem() {
+		if (config.isInitReasoner()) {
+			config.setLearningProblem(config.getComponentManager().learningProblem(
+					problems.get(choosenClassIndex), config.getReasoningService()));
+			startGUI.updateTabColors();
+			updateOptionPanel();
+		}
 	}
-    }
 
-    /**
-     * after this, next tab can be used
-     */
-    private void init() {
-	setLearningProblem();
-	if (config.getReasoner() != null && config.getLearningProblem() != null) {
-	    try {
-		config.getLearningProblem().init();
-		config.setInitLearningProblem(true);
-		System.out.println("init LearningProblem");
-		startGUI.updateTabColors();
-	    } catch (ComponentInitException e) {
-		e.printStackTrace();
-	    }
+	/**
+	 * after this, next tab can be used
+	 */
+	private void init() {
+		setLearningProblem();
+		if (config.getReasoner() != null && config.getLearningProblem() != null) {
+			try {
+				config.getLearningProblem().init();
+				config.setInitLearningProblem(true);
+				System.out.println("init LearningProblem");
+				startGUI.updateTabColors();
+			} catch (ComponentInitException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-    }
 
-    /**
-     * update OptionPanel with new selection
-     */
-    private void updateOptionPanel() {
-	// update OptionPanel
-	optionPanel.update(config.getLearningProblem(), config
-		.getOldLearningProblem(), problems.get(choosenClassIndex));
-    }
+	/**
+	 * update OptionPanel with new selection
+	 */
+	private void updateOptionPanel() {
+		// update OptionPanel
+		optionPanel.update(config.getLearningProblem(), config.getOldLearningProblem(), problems
+				.get(choosenClassIndex));
+	}
 
-    /**
-     * make init-button red if you have to click
-     */
-    public void updateInitButtonColor() {
-	if (!config.isInitLearningProblem()) {
-	    initButton.setForeground(Color.RED);
-	} else
-	    initButton.setForeground(Color.BLACK);
-    }
+	/**
+	 * make init-button red if you have to click
+	 */
+	public void updateInitButtonColor() {
+		if (!config.isInitLearningProblem()) {
+			initButton.setForeground(Color.RED);
+		} else
+			initButton.setForeground(Color.BLACK);
+	}
 }

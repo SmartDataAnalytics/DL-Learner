@@ -41,128 +41,120 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
  * 
  * @author Tilo Hielscher
  */
-public class WidgetPanelBoolean extends WidgetPanelAbstract implements
-	ActionListener {
+public class WidgetPanelBoolean extends WidgetPanelAbstract implements ActionListener {
 
-    private static final long serialVersionUID = -4800583253223939928L;
-    private Config config;
-    private ConfigOption<?> configOption;
-    private JLabel nameLabel;
-    private JPanel widgetPanel = new JPanel();
-    private Component component;
-    private Component oldComponent;
-    private Class<? extends Component> componentOption;
-    private Boolean value;
-    private String[] kbBoxItems = { "false", "true" };
-    private JComboBox cb = new JComboBox(kbBoxItems);
+	private static final long serialVersionUID = -4800583253223939928L;
+	private Config config;
+	private ConfigOption<?> configOption;
+	private JLabel nameLabel;
+	private JPanel widgetPanel = new JPanel();
+	private Component component;
+	private Component oldComponent;
+	private Class<? extends Component> componentOption;
+	private Boolean value;
+	private String[] kbBoxItems = { "false", "true" };
+	private JComboBox cb = new JComboBox(kbBoxItems);
 
-    public WidgetPanelBoolean(Config config, Component component,
-	    Component oldComponent, Class<? extends Component> componentOption,
-	    ConfigOption<?> configOption) {
-	this.config = config;
-	this.configOption = configOption;
-	this.component = component;
-	this.oldComponent = oldComponent;
-	this.componentOption = componentOption;
+	public WidgetPanelBoolean(Config config, Component component, Component oldComponent,
+			Class<? extends Component> componentOption, ConfigOption<?> configOption) {
+		this.config = config;
+		this.configOption = configOption;
+		this.component = component;
+		this.oldComponent = oldComponent;
+		this.componentOption = componentOption;
 
-	showLabel(); // name of option and tooltip
-	showThingToChange(); // textfield, setbutton
-	add(widgetPanel, BorderLayout.CENTER);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-
-	setEntry();
-    }
-
-    @Override
-    public void showLabel() {
-	nameLabel = new JLabel(configOption.getName());
-	nameLabel.setToolTipText(configOption.getDescription());
-	widgetPanel.add(nameLabel);
-    }
-
-    @Override
-    public void showThingToChange() {
-	if (component != null) {
-	    // BooleanConfigOption
-	    if (configOption.getClass().toString().contains(
-		    "BooleanConfigOption")) {
-		// previous set value
-		if (configOption != null) {
-		    value = (Boolean) config.getComponentManager()
-			    .getConfigOptionValue(component,
-				    configOption.getName());
-		}
-		// previous set value from old
-		if (component != null && oldComponent != null) {
-		    if (oldComponent.getClass().equals(component.getClass())) {
-			value = (Boolean) config.getComponentManager()
-				.getConfigOptionValue(oldComponent,
-					configOption.getName());
-			if (value == null)
-			    value = false;
-			else
-			    setEntry();
-			// set cb-index
-			if (value == false)
-			    cb.setSelectedIndex(0);
-			else
-			    cb.setSelectedIndex(1);
-		    }
-		}
-		// default value
-		if (value != null && configOption.getDefaultValue() != null) {
-		    value = (Boolean) configOption.getDefaultValue();
-		}
-		// value == null?
-		if (value == null) {
-		    value = false;
-		}
-		// set cb-index
-		if (value == false)
-		    cb.setSelectedIndex(0);
-		else
-		    cb.setSelectedIndex(1);
-		cb.addActionListener(this);
-
-		widgetPanel.add(cb);
-	    }
-	    // UNKNOWN
-	    else {
-		JLabel notImplementedLabel = new JLabel("not a boolean");
-		notImplementedLabel.setForeground(Color.RED);
-		widgetPanel.add(notImplementedLabel);
-	    }
-	} else { // configOption == NULL
-	    JLabel noConfigOptionLabel = new JLabel("no init (Boolean)");
-	    noConfigOptionLabel.setForeground(Color.MAGENTA);
-	    widgetPanel.add(noConfigOptionLabel);
+		showLabel(); // name of option and tooltip
+		showThingToChange(); // textfield, setbutton
+		add(widgetPanel, BorderLayout.CENTER);
 	}
-    }
 
-    @Override
-    public void setEntry() {
-	BooleanConfigOption specialOption;
-	if (cb.getSelectedIndex() == 0)
-	    value = false;
-	else
-	    value = true;
-	specialOption = (BooleanConfigOption) config.getComponentManager()
-		.getConfigOption(componentOption, configOption.getName());
-	if (specialOption.isValidValue(value)) {
-	    try {
-		ConfigEntry<Boolean> specialEntry = new ConfigEntry<Boolean>(
-			specialOption, value);
-		config.getComponentManager().applyConfigEntry(component,
-			specialEntry);
-		System.out.println("set Boolean: " + configOption.getName()
-			+ " = " + value);
-	    } catch (InvalidConfigOptionValueException s) {
-		s.printStackTrace();
-	    }
-	} else
-	    System.out.println("Boolean: not valid value");
-    }
+	public void actionPerformed(ActionEvent e) {
+
+		setEntry();
+	}
+
+	@Override
+	public void showLabel() {
+		nameLabel = new JLabel(configOption.getName());
+		nameLabel.setToolTipText(configOption.getDescription());
+		widgetPanel.add(nameLabel);
+	}
+
+	@Override
+	public void showThingToChange() {
+		if (component != null) {
+			// BooleanConfigOption
+			if (configOption.getClass().toString().contains("BooleanConfigOption")) {
+				// previous set value
+				if (configOption != null) {
+					value = (Boolean) config.getComponentManager().getConfigOptionValue(component,
+							configOption.getName());
+				}
+				// previous set value from old
+				if (component != null && oldComponent != null) {
+					if (oldComponent.getClass().equals(component.getClass())) {
+						value = (Boolean) config.getComponentManager().getConfigOptionValue(
+								oldComponent, configOption.getName());
+						if (value == null)
+							value = false;
+						else
+							setEntry();
+						// set cb-index
+						if (value == false)
+							cb.setSelectedIndex(0);
+						else
+							cb.setSelectedIndex(1);
+					}
+				}
+				// default value
+				if (value != null && configOption.getDefaultValue() != null) {
+					value = (Boolean) configOption.getDefaultValue();
+				}
+				// value == null?
+				if (value == null) {
+					value = false;
+				}
+				// set cb-index
+				if (value == false)
+					cb.setSelectedIndex(0);
+				else
+					cb.setSelectedIndex(1);
+				cb.addActionListener(this);
+
+				widgetPanel.add(cb);
+			}
+			// UNKNOWN
+			else {
+				JLabel notImplementedLabel = new JLabel("not a boolean");
+				notImplementedLabel.setForeground(Color.RED);
+				widgetPanel.add(notImplementedLabel);
+			}
+		} else { // configOption == NULL
+			JLabel noConfigOptionLabel = new JLabel("no init (Boolean)");
+			noConfigOptionLabel.setForeground(Color.MAGENTA);
+			widgetPanel.add(noConfigOptionLabel);
+		}
+	}
+
+	@Override
+	public void setEntry() {
+		BooleanConfigOption specialOption;
+		if (cb.getSelectedIndex() == 0)
+			value = false;
+		else
+			value = true;
+		specialOption = (BooleanConfigOption) config.getComponentManager().getConfigOption(
+				componentOption, configOption.getName());
+		if (specialOption.isValidValue(value)) {
+			try {
+				ConfigEntry<Boolean> specialEntry = new ConfigEntry<Boolean>(specialOption, value);
+				config.getComponentManager().applyConfigEntry(component, specialEntry);
+				System.out.println("set Boolean: " + configOption.getName() + " = " + value);
+			} catch (InvalidConfigOptionValueException s) {
+				s.printStackTrace();
+			}
+		} else
+			System.out.println("Boolean: not valid value");
+	}
 
 }

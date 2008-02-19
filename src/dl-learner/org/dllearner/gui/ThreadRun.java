@@ -27,27 +27,27 @@ package org.dllearner.gui;
  */
 public class ThreadRun extends Thread {
 
-    Config config;
+	Config config;
 
-    public ThreadRun(Config config) {
-	this.config = config;
-    }
+	public ThreadRun(Config config) {
+		this.config = config;
+	}
 
-    /**
-     *  method to start thread
-     */
-    @Override
-    public void run() {
-	if (config.getLearningAlgorithm() != null)
-	    config.getLearningAlgorithm().start();
-    }
+	/**
+	 * method to start thread
+	 */
+	@Override
+	public void run() {
+		if (config.getLearningAlgorithm() != null)
+			config.getLearningAlgorithm().start();
+	}
 
-    /**
-     * stop thread
-     */
-    public void exit() {
-	if (config.getLearningAlgorithm() != null)
-	    config.getLearningAlgorithm().stop();
-	System.out.println("stop");
-    }
+	/**
+	 * stop thread
+	 */
+	public void exit() {
+		if (config.getLearningAlgorithm() != null)
+			config.getLearningAlgorithm().stop();
+		System.out.println("stop");
+	}
 }

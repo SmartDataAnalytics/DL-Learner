@@ -37,42 +37,40 @@ import org.dllearner.core.config.ConfigOption;
  */
 public class WidgetPanelDefault extends WidgetPanelAbstract {
 
-    private static final long serialVersionUID = 4059515858894036769L;
+	private static final long serialVersionUID = 4059515858894036769L;
 
-    private ConfigOption<?> configOption;
-    private JLabel nameLabel;
-    private JPanel widgetPanel = new JPanel();
+	private ConfigOption<?> configOption;
+	private JLabel nameLabel;
+	private JPanel widgetPanel = new JPanel();
 
-    public WidgetPanelDefault(Config config, Component component,
-	    Class<? extends Component> componentOption,
-	    ConfigOption<?> configOption) {
+	public WidgetPanelDefault(Config config, Component component,
+			Class<? extends Component> componentOption, ConfigOption<?> configOption) {
 
-	this.configOption = configOption;
+		this.configOption = configOption;
 
-	showLabel();
-	showThingToChange();
-	add(widgetPanel, BorderLayout.CENTER);
-    }
+		showLabel();
+		showThingToChange();
+		add(widgetPanel, BorderLayout.CENTER);
+	}
 
-    @Override
-    public void showLabel() {
-	nameLabel = new JLabel(configOption.getName());
-	nameLabel.setToolTipText(configOption.getDescription());
-	widgetPanel.add(nameLabel);
-    }
+	@Override
+	public void showLabel() {
+		nameLabel = new JLabel(configOption.getName());
+		nameLabel.setToolTipText(configOption.getDescription());
+		widgetPanel.add(nameLabel);
+	}
 
-    @Override
-    public void showThingToChange() {
-	JLabel notImplementedLabel = new JLabel(configOption.getClass()
-		.getSimpleName()
-		+ " not implemented");
-	notImplementedLabel.setForeground(Color.RED);
+	@Override
+	public void showThingToChange() {
+		JLabel notImplementedLabel = new JLabel(configOption.getClass().getSimpleName()
+				+ " not implemented");
+		notImplementedLabel.setForeground(Color.RED);
 
-	widgetPanel.add(notImplementedLabel);
-    }
+		widgetPanel.add(notImplementedLabel);
+	}
 
-    @Override
-    public void setEntry() {
-    }
+	@Override
+	public void setEntry() {
+	}
 
 }

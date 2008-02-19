@@ -29,7 +29,8 @@ import java.awt.event.ActionListener;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.kb.*;
+
+// import org.dllearner.kb.*;
 
 /**
  * KnowledgeSourcePanel, tab 0. Choose Source, change Options and final initiate
@@ -39,154 +40,149 @@ import org.dllearner.kb.*;
  */
 public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
-    private static final long serialVersionUID = -7678275020058043937L;
+	private static final long serialVersionUID = -7678275020058043937L;
 
-    private Config config;
-    private StartGUI startGUI;
-    private JButton initButton;
-    private JButton setButton;
-    private String[] kbBoxItems = {};
-    private JComboBox cb = new JComboBox(kbBoxItems);
-    private JPanel choosePanel = new JPanel();
-    private JPanel initPanel = new JPanel();
-    private int choosenClassIndex;
-    private List<Class<? extends KnowledgeSource>> sources;
-    private OptionPanel optionPanel;
+	private Config config;
+	private StartGUI startGUI;
+	private JButton initButton;
+	private JButton setButton;
+	private String[] kbBoxItems = {};
+	private JComboBox cb = new JComboBox(kbBoxItems);
+	private JPanel choosePanel = new JPanel();
+	private JPanel initPanel = new JPanel();
+	private int choosenClassIndex;
+	private List<Class<? extends KnowledgeSource>> sources;
+	private OptionPanel optionPanel;
 
-    KnowledgeSourcePanel(final Config config, StartGUI startGUI) {
-	super(new BorderLayout());
+	KnowledgeSourcePanel(final Config config, StartGUI startGUI) {
+		super(new BorderLayout());
 
-	this.config = config;
-	this.startGUI = startGUI;
-	sources = config.getComponentManager().getKnowledgeSources();
+		this.config = config;
+		this.startGUI = startGUI;
+		sources = config.getComponentManager().getKnowledgeSources();
 
-	System.out.println("SOURCES: " + sources);
+		System.out.println("SOURCES: " + sources);
 
-	setButton = new JButton("Set");
-	setButton.addActionListener(this);
-	initButton = new JButton("Init KnowledgeSource");
-	initButton.addActionListener(this);
-	initButton.setEnabled(true);
+		setButton = new JButton("Set");
+		setButton.addActionListener(this);
+		initButton = new JButton("Init KnowledgeSource");
+		initButton.addActionListener(this);
+		initButton.setEnabled(true);
 
-	// add to comboBox
-	for (int i = 0; i < sources.size(); i++) {
-	    cb.addItem(config.getComponentManager().getComponentName(
-		    sources.get(i)));
-	}
-	cb.addActionListener(this);
-
-	choosePanel.add(cb);
-	choosePanel.add(setButton);
-	choosenClassIndex = cb.getSelectedIndex();
-
-	optionPanel = new OptionPanel(config, config.getKnowledgeSource(),
-		config.getOldKnowledgeSource(), sources.get(choosenClassIndex));
-	initPanel.add(initButton);
-
-	add(choosePanel, BorderLayout.PAGE_START);
-	add(optionPanel, BorderLayout.CENTER);
-	add(initPanel, BorderLayout.PAGE_END);
-
-	// setSource();
-	updateAll();
-    }
-
-    public void actionPerformed(ActionEvent e) {
-	// read selected KnowledgeSourceClass
-	// choosenClassIndex = cb.getSelectedIndex();
-	if (choosenClassIndex != cb.getSelectedIndex()) {
-	    choosenClassIndex = cb.getSelectedIndex();
-	    config.setInitKnowledgeSource(false);
-	    setSource();
-	}
-
-	if (e.getSource() == setButton) {
-	    setSource();
-	}
-
-	if (e.getSource() == initButton)
-	    init();
-    }
-
-    /**
-     * after this, you can change widgets
-     */
-    public void setSource() {
-	System.out.println("cm: " + config.getComponentManager());
-	System.out.println("setSOURCE :" + sources.get(choosenClassIndex));
-	
-	config.setKnowledgeSource(config.getComponentManager().knowledgeSource(sources.get(choosenClassIndex)));
-// KBFile.class doesn't work 
-//	config.setKnowledgeSource(config.getComponentManager().knowledgeSource(KBFile.class));
-	
-	
-	System.out.println("KNOWLEDGE_SOURCE: " + config.getKnowledgeSource());
-	System.out
-		.println("ABC: "
-			+ config.getComponentManager().getComponentName(
-				sources.get(0)));
-
-	config.setInitKnowledgeSource(false);
-	updateAll();
-    }
-
-    /**
-     * after this, next tab can be used
-     */
-    public void init() {
-	System.out.println("KNOWLEDGE_SOURCE: " + config.getKnowledgeSource());
-	System.out.println("isSetURL: " + config.isSetURL());
-	if (config.getKnowledgeSource() != null && config.isSetURL()) {
-	    try {
-		config.getKnowledgeSource().init();
-		config.setInitKnowledgeSource(true);
-		System.out.println("init KnowledgeSource");
-		startGUI.updateTabColors();
-	    } catch (ComponentInitException e) {
-		e.printStackTrace();
-	    }
-	}
-    }
-
-    /**
-     * updateAll
-     */
-    public void updateAll() {
-	updateComboBox();
-	updateOptionPanel();
-	updateInitButtonColor();
-    }
-
-    /**
-     * set ComboBox to selected class
-     */
-    public void updateComboBox() {
-	if (config.getKnowledgeSource() != null)
-	    for (int i = 0; i < sources.size(); i++)
-		if (config.getKnowledgeSource().getClass().equals(
-			config.getComponentManager().getKnowledgeSources().get(
-				i))) {
-		    cb.setSelectedIndex(i);
+		// add to comboBox
+		for (int i = 0; i < sources.size(); i++) {
+			cb.addItem(config.getComponentManager().getComponentName(sources.get(i)));
 		}
-	this.choosenClassIndex = cb.getSelectedIndex();
-    }
+		cb.addActionListener(this);
 
-    /**
-     * update OptionPanel with new selection
-     */
-    public void updateOptionPanel() {
-	optionPanel.update(config.getKnowledgeSource(), config
-		.getOldKnowledgeSource(), sources.get(choosenClassIndex));
-    }
+		choosePanel.add(cb);
+		choosePanel.add(setButton);
+		choosenClassIndex = cb.getSelectedIndex();
 
-    /**
-     * make init-button red if you have to click
-     */
-    public void updateInitButtonColor() {
-	if (!config.isInitKnowledgeSource()) {
-	    initButton.setForeground(Color.RED);
-	} else
-	    initButton.setForeground(Color.BLACK);
-    }
+		optionPanel = new OptionPanel(config, config.getKnowledgeSource(), config
+				.getOldKnowledgeSource(), sources.get(choosenClassIndex));
+		initPanel.add(initButton);
+
+		add(choosePanel, BorderLayout.PAGE_START);
+		add(optionPanel, BorderLayout.CENTER);
+		add(initPanel, BorderLayout.PAGE_END);
+
+		// setSource();
+		updateAll();
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		// read selected KnowledgeSourceClass
+		// choosenClassIndex = cb.getSelectedIndex();
+		if (choosenClassIndex != cb.getSelectedIndex()) {
+			choosenClassIndex = cb.getSelectedIndex();
+			config.setInitKnowledgeSource(false);
+			setSource();
+		}
+
+		if (e.getSource() == setButton) {
+			setSource();
+		}
+
+		if (e.getSource() == initButton)
+			init();
+	}
+
+	/**
+	 * after this, you can change widgets
+	 */
+	public void setSource() {
+		System.out.println("cm: " + config.getComponentManager());
+		System.out.println("setSOURCE :" + sources.get(choosenClassIndex));
+
+		config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
+				sources.get(choosenClassIndex)));
+		// KBFile.class doesn't work
+		// config.setKnowledgeSource(config.getComponentManager().knowledgeSource(KBFile.class));
+
+		System.out.println("KNOWLEDGE_SOURCE: " + config.getKnowledgeSource());
+		System.out.println("ABC: " + config.getComponentManager().getComponentName(sources.get(0)));
+
+		config.setInitKnowledgeSource(false);
+		updateAll();
+	}
+
+	/**
+	 * after this, next tab can be used
+	 */
+	public void init() {
+		System.out.println("KNOWLEDGE_SOURCE: " + config.getKnowledgeSource());
+		System.out.println("isSetURL: " + config.isSetURL());
+		if (config.getKnowledgeSource() != null && config.isSetURL()) {
+			try {
+				config.getKnowledgeSource().init();
+				config.setInitKnowledgeSource(true);
+				System.out.println("init KnowledgeSource");
+				startGUI.updateTabColors();
+			} catch (ComponentInitException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * updateAll
+	 */
+	public void updateAll() {
+		updateComboBox();
+		updateOptionPanel();
+		updateInitButtonColor();
+	}
+
+	/**
+	 * set ComboBox to selected class
+	 */
+	public void updateComboBox() {
+		if (config.getKnowledgeSource() != null)
+			for (int i = 0; i < sources.size(); i++)
+				if (config.getKnowledgeSource().getClass().equals(
+						config.getComponentManager().getKnowledgeSources().get(i))) {
+					cb.setSelectedIndex(i);
+				}
+		this.choosenClassIndex = cb.getSelectedIndex();
+	}
+
+	/**
+	 * update OptionPanel with new selection
+	 */
+	public void updateOptionPanel() {
+		optionPanel.update(config.getKnowledgeSource(), config.getOldKnowledgeSource(), sources
+				.get(choosenClassIndex));
+	}
+
+	/**
+	 * make init-button red if you have to click
+	 */
+	public void updateInitButtonColor() {
+		if (!config.isInitKnowledgeSource()) {
+			initButton.setForeground(Color.RED);
+		} else
+			initButton.setForeground(Color.BLACK);
+	}
 
 }
