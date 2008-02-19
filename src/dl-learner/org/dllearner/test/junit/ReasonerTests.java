@@ -32,7 +32,6 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.kb.KBFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
 

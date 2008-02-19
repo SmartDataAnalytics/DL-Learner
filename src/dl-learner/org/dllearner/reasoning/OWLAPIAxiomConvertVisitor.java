@@ -79,7 +79,7 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		this.ontology = ontology;
 		factory = manager.getOWLDataFactory();
 	}
-
+	
 	public static void fillOWLOntology(OWLOntologyManager manager, OWLOntology ontology, KB kb) {
 		OWLAPIAxiomConvertVisitor converter = new OWLAPIAxiomConvertVisitor(manager, ontology, kb);
 		for(Axiom axiom : kb.getTbox())

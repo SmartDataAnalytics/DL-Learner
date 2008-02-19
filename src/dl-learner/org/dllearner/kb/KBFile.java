@@ -37,7 +37,7 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGConverter;
-import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.OWLAPIAxiomConvertVisitor;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
@@ -148,7 +148,8 @@ public class KBFile extends KnowledgeSource {
         OWLOntology ontology;
 		try {
 			ontology = manager.createOntology(ontologyURI);
-			OWLAPIReasoner.fillOWLAPIOntology(manager,ontology,kb);
+			// OWLAPIReasoner.fillOWLAPIOntology(manager,ontology,kb);
+			OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
 			manager.saveOntology(ontology);			
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
@@ -185,6 +186,11 @@ public class KBFile extends KnowledgeSource {
 	
 	public URL getURL() {
 		return url;
+	}
+
+	@Override
+	public KB toKB() {
+		return kb;
 	}
 	
 }

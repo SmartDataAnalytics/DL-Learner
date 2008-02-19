@@ -27,7 +27,7 @@ import java.net.URL;
 import org.dllearner.core.owl.Description;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -71,7 +71,8 @@ public class OntologyClassRewriter {
 			
 			// umwandeln in interne KAON2-Darstellung (bereits im DL-Learner implementiert)
 			// Description newConceptKAON2 = KAON2Reasoner.getKAON2Description(newConceptInternal);
-			OWLDescription newConceptOWLAPI = OWLAPIReasoner.getOWLAPIDescription(newConceptInternal);
+			// OWLDescription newConceptOWLAPI = OWLAPIReasoner.getOWLAPIDescription(newConceptInternal);
+			OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(newConceptInternal);
 			
 			// Umwandlung Klassenname in atomate KAON2-Klasse
 			// OWLClass classKAON2 = KAON2Manager.factory().owlClass(className);
