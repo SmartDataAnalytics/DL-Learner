@@ -75,7 +75,7 @@ public class Carcinogenesis {
 	private static URI ontologyURI = URI.create("http://dl-learner.org/carcinogenesis");
 
 	// directory of Prolog files
-	private static String prologDirectory = "examples/carcinogenesis/prolog/";	
+	private static final String prologDirectory = "examples/carcinogenesis/prolog/";	
 	
 	// mapping of symbols to names of chemical elements
 	private static Map<String, String> chemElements;
@@ -163,10 +163,12 @@ public class Carcinogenesis {
 		System.out.println("OK (" + time + ").");
 
 		// generating conf files
-		File confTrainFile = new File("examples/carcinogenesis/train.conf");		
-		String confHeader = "";
+		File confTrainFile = new File("examples/carcinogenesis/train.conf");
+		Files.clearFile(confTrainFile);
+		String confHeader = "import(\"pte.owl\");\n\n";
+		confHeader += "reasoner = owlAPI;\n";
 		Files.appendFile(confTrainFile, confHeader);
-
+		
 		// generating training examples
 		File trainingFilePositives = new File(prologDirectory + "train.f");
 		File trainingFileNegatives = new File(prologDirectory + "train.n");
@@ -176,11 +178,21 @@ public class Carcinogenesis {
 		appendPosExamples(confTrainFile, posTrainExamples);
 		appendNegExamples(confTrainFile, negTrainExamples);
 		
-		// generating testExamples
-//		File confTestFile = new File("examples/carcinogenesis/test.conf");
-//		File testFilePositives = new File(prologDirectory + "train.f");
-//		File testFileNegatives = new File(prologDirectory + "train.n");
-//		
+		// generating test examples for PTE-1
+		File confPTE1File = new File("examples/carcinogenesis/testpte1.conf");
+		Files.clearFile(confPTE1File);
+		File testPTE1Positives = new File(prologDirectory + "pte1.f");
+		File testPTE1Negatives = new File(prologDirectory + "pte1.n");
+		
+		List<Individual> posPTE1Examples = getExamples(testPTE1Positives);
+		List<Individual> negPTE1Examples = getExamples(testPTE1Negatives);
+		appendPosExamples(confPTE1File, posPTE1Examples);
+		appendNegExamples(confPTE1File, negPTE1Examples);		
+		
+		// TODO: how to get PTE-2 predictions? the pte-2 directory suggests
+		// that all are positive which is not true (according to the papers)
+		// solution: go to "http://ntp-server.niehs.nih.gov/" and click
+		// on "Testing Status of Agents at NTP"
 	}
 
 	private static List<Axiom> mapClause(Clause clause) {
@@ -253,7 +265,7 @@ public class Carcinogenesis {
 	// takes a *.f or *.n file as input and returns the 
 	// contained examples
 	private static List<Individual> getExamples(File file) throws FileNotFoundException, IOException, ParseException {
-		String content = Files.readFile(new File(prologDirectory + file));
+		String content = Files.readFile(file);
 		PrologParser pp = new PrologParser();
 		Program programPos = pp.parseProgram(content);
 		List<Individual> ret = new LinkedList<Individual>();
@@ -267,7 +279,7 @@ public class Carcinogenesis {
 	private static void appendPosExamples(File file, List<Individual> examples) {
 		StringBuffer content = new StringBuffer();
 		for(Individual example : examples) {
-			content.append("+\""+example.toString()+"\"");
+			content.append("+\""+example.toString()+"\"\n");
 		}
 		Files.appendFile(file, content.toString());
 	}
@@ -275,7 +287,7 @@ public class Carcinogenesis {
 	private static void appendNegExamples(File file, List<Individual> examples) {
 		StringBuffer content = new StringBuffer();
 		for(Individual example : examples) {
-			content.append("-\""+example.toString()+"\"");
+			content.append("-\""+example.toString()+"\"\n");
 		}
 		Files.appendFile(file, content.toString());
 	}	

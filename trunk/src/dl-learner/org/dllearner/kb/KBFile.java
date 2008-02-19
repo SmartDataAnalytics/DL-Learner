@@ -118,7 +118,7 @@ public class KBFile extends KnowledgeSource {
 	@Override
 	public void init() throws ComponentInitException {
 		try {
-			if(kb == null)
+			if(url != null)
 				kb = KBParser.parseKBFile(url);
 		} catch (IOException e) {
 			throw new ComponentInitException("KB file " + url + " could not be read.", e);
