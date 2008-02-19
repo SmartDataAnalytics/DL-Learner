@@ -61,6 +61,13 @@ public class KBFile extends KnowledgeSource {
 	private KB kb;
 
 	/**
+	 * Default constructor (needed for reflection in ComponentManager).
+	 */
+	public KBFile() {
+		
+	}
+	
+	/**
 	 * Constructor allowing you to treat an already existing KB object
 	 * as a KBFile knowledge source. Use it sparingly, because the
 	 * standard way to create components is via 
