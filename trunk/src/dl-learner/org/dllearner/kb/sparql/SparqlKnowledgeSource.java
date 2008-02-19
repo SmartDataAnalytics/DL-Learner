@@ -396,6 +396,15 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return new SparqlQueryThreaded(new Cache("cache"),this.sparqlQuery(query));
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.KnowledgeSource#toKB()
+	 */
+	@Override
+	public KB toKB() {
+		// TODO Does this work?
+		return kb;
+	}
+
 	/*public static void main(String[] args) throws MalformedURLException {
 		String query = "SELECT ?pred ?obj\n"
 				+ "WHERE {<http://dbpedia.org/resource/Leipzig> ?pred ?obj}";

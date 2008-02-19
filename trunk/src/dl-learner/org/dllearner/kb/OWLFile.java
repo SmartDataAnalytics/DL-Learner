@@ -33,6 +33,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.owl.KB;
 import org.dllearner.reasoning.OWLAPIDIGConverter;
 
 /**
@@ -105,6 +106,14 @@ public class OWLFile extends KnowledgeSource {
 	public void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException {
 		// currently no export functions implemented, so we just throw an exception
 		throw new OntologyFormatUnsupportedException("export", format);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.KnowledgeSource#toKB()
+	 */
+	@Override
+	public KB toKB() {
+		throw new Error("OWL -> KB conversion not implemented yet.");
 	}
 
 }

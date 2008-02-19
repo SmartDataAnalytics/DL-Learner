@@ -99,6 +99,9 @@ import org.semanticweb.owl.util.SimpleURIMapper;
  */
 public class OWLAPIReasoner extends ReasonerComponent {
 
+//	private static Logger logger = Logger
+//	.getLogger(OWLAPIReasoner.class);	
+	
 	private String reasonerType = "pellet";
 	
 	private Set<KnowledgeSource> sources;
@@ -167,18 +170,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		
 		for(KnowledgeSource source : sources) {
-			if(!(source instanceof OWLFile)) {
-				System.out.println("Currently, only OWL files are supported. Ignoring knowledge source " + source + ".");
-			} else {
+			// OWL files are read directly
+			if(source instanceof OWLFile) {
 				URL url = ((OWLFile)source).getURL();
-				/*
-				try {
-					url = new URL("http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl");
-				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				*/
+
 				try {
 					OWLOntology ontology = manager.loadOntologyFromPhysicalURI(url.toURI());
 					allImports.addAll(manager.getImportsClosure(ontology));
@@ -193,6 +188,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
 				}
+			// all other sources are converted to KB and then to an
+			// OWL API ontology
+			} else {
+				KB kb = source.toKB();
+				URI ontologyURI = URI.create("http://example.com");
+				OWLOntology ontology = null;
+				try {
+					ontology = manager.createOntology(ontologyURI);
+				} catch (OWLOntologyCreationException e) {
+					e.printStackTrace();
+				}
+				OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
 			}
 		}
 		
@@ -221,9 +228,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			e1.printStackTrace();
 		}*/		
 		
-		System.out.println(classes);
-		System.out.println(properties);
-		System.out.println(individuals);
+//		System.out.println(classes);
+//		System.out.println(properties);
+//		System.out.println(individuals);
 		
 		// compute class hierarchy and types of individuals
 		// (done here to speed up later reasoner calls)
@@ -239,15 +246,15 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		
 		
 		
-		try {
-			if(reasoner.isDefined(factory.getOWLIndividual(URI.create("http://example.com/father#female"))))
-				System.out.println("DEFINED.");
-			else
-				System.out.println("NOT DEFINED.");
-		} catch (OWLReasonerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			if(reasoner.isDefined(factory.getOWLIndividual(URI.create("http://example.com/father#female"))))
+//				System.out.println("DEFINED.");
+//			else
+//				System.out.println("NOT DEFINED.");
+//		} catch (OWLReasonerException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		// read in primitives
 		atomicConcepts = new TreeSet<NamedClass>(conceptComparator);

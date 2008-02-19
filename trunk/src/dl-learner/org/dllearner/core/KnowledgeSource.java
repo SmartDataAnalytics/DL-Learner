@@ -22,6 +22,8 @@ package org.dllearner.core;
 import java.io.File;
 import java.net.URI;
 
+import org.dllearner.core.owl.KB;
+
 /**
  * Represents a knowledge source component.
  * 
@@ -29,6 +31,8 @@ import java.net.URI;
  *
  */
 public abstract class KnowledgeSource extends Component {
+	
+	public abstract KB toKB();
 	
 	public abstract String toDIG(URI kbURI);
 
