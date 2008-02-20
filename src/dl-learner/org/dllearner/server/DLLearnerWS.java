@@ -100,8 +100,8 @@ public class DLLearnerWS {
 		learningProblemMapping.put("posOnlyDefinition", PosOnlyDefinitionLP.class);
 		learningAlgorithmMapping.put("random", RandomGuesser.class);
 		learningAlgorithmMapping.put("bruteForce", BruteForceLearner.class);		
-		learningAlgorithmMapping.put("genetic", ROLearner.class);
-		learningAlgorithmMapping.put("refinement", GP.class);
+		learningAlgorithmMapping.put("gp", GP.class);
+		learningAlgorithmMapping.put("refinement", ROLearner.class);
 		learningAlgorithmMapping.put("refexamples", ExampleBasedROLComponent.class);
 		components = Helper.union(knowledgeSourceMapping.keySet(),reasonerMapping.keySet());
 		components = Helper.union(components, learningProblemMapping.keySet());
