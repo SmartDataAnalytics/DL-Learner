@@ -94,12 +94,12 @@ import org.dllearner.utilities.StringTuple;
  */
 public class Start {
 
-	private static Logger logger = Logger.getRootLogger();	
-	
+	private static Logger logger = Logger.getRootLogger();
+
 	private LearningAlgorithm la;
 	private LearningProblem lp;
 	private ReasoningService rs;
-	
+
 	/**
 	 * Entry point for CLI interface.
 	 * 
@@ -111,7 +111,7 @@ public class Start {
 		boolean inQueryMode = false;
 		if (args.length > 1 && args[0].equals("-q"))
 			inQueryMode = true;
-	
+
 		// create logger (a simple logger which outputs
 		// its messages to the console)
 		SimpleLayout layout = new SimpleLayout();
@@ -119,7 +119,7 @@ public class Start {
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.DEBUG);
-		
+
 		Start start = null;
 		start = new Start(file);
 		start.start(inQueryMode);
@@ -127,12 +127,14 @@ public class Start {
 
 	/**
 	 * Initialise all components based on conf file.
-	 * @param file Conf file to read. 
-	 * @throws ComponentInitException 
+	 * 
+	 * @param file
+	 *            Conf file to read.
+	 * @throws ComponentInitException
 	 */
 	public Start(File file) throws ComponentInitException {
-		String baseDir = file.getParentFile().getPath();		
-		
+		String baseDir = file.getParentFile().getPath();
+
 		// create component manager instance
 		String message = "starting component manager ... ";
 		long cmStartTime = System.nanoTime();
@@ -140,7 +142,7 @@ public class Start {
 		long cmTime = System.nanoTime() - cmStartTime;
 		message += "OK (" + Helper.prettyPrintNanoSeconds(cmTime) + ")";
 		logger.info(message);
-		
+
 		// create a mapping between components and prefixes in the conf file
 		Map<Class<? extends Component>, String> componentPrefixMapping = createComponentPrefixMapping();
 
@@ -169,9 +171,9 @@ public class Start {
 		// default value
 		if (reasonerOption == null || reasonerOption.getStringValue().equals("dig"))
 			reasonerClass = DIGReasoner.class;
-		else if(reasonerOption.getStringValue().equals("owlAPI"))
+		else if (reasonerOption.getStringValue().equals("owlAPI"))
 			reasonerClass = OWLAPIReasoner.class;
-		else if(reasonerOption.getStringValue().equals("fastRetrieval"))
+		else if (reasonerOption.getStringValue().equals("fastRetrieval"))
 			reasonerClass = FastRetrievalReasoner.class;
 		else {
 			handleError("Unknown value " + reasonerOption.getStringValue()
@@ -198,24 +200,24 @@ public class Start {
 		SortedSet<String> posExamples = parser.getPositiveExamples();
 		SortedSet<String> negExamples = parser.getNegativeExamples();
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
-		if(lpClass != PosOnlyDefinitionLP.class)
+		if (lpClass != PosOnlyDefinitionLP.class)
 			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 		configureComponent(cm, lp, componentPrefixMapping, parser);
 		initComponent(cm, lp);
-		
+
 		// step 4: detect learning algorithm
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
 		Class<? extends LearningAlgorithm> laClass = null;
 		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
 			laClass = ROLearner.class;
-		else if(algorithmOption.getStringValue().equals("refexamples"))
-			laClass = ExampleBasedROLComponent.class;		
-		else if(algorithmOption.getStringValue().equals("gp"))
+		else if (algorithmOption.getStringValue().equals("refexamples"))
+			laClass = ExampleBasedROLComponent.class;
+		else if (algorithmOption.getStringValue().equals("gp"))
 			laClass = GP.class;
-		else if(algorithmOption.getStringValue().equals("bruteForce"))
+		else if (algorithmOption.getStringValue().equals("bruteForce"))
 			laClass = BruteForceLearner.class;
-		else if(algorithmOption.getStringValue().equals("randomGuesser"))
-			laClass = RandomGuesser.class;		
+		else if (algorithmOption.getStringValue().equals("randomGuesser"))
+			laClass = RandomGuesser.class;
 		else
 			handleError("Unknown value in " + algorithmOption);
 
@@ -232,9 +234,9 @@ public class Start {
 		performExports(parser, baseDir, sources, rs);
 
 		// handle any CLI options
-		processCLIOptions(cm, parser, rs, lp);		
+		processCLIOptions(cm, parser, rs, lp);
 	}
-	
+
 	public void start(boolean inQueryMode) {
 		if (inQueryMode)
 			processQueryMode(lp, rs);
@@ -245,11 +247,13 @@ public class Start {
 			long algDuration = System.nanoTime() - algStartTime;
 
 			printConclusions(rs, algDuration);
-		}		
+		}
 	}
-	
-	// creates a mapping from components to option prefix strings
-	private static Map<Class<? extends Component>, String> createComponentPrefixMapping() {
+
+	/**
+	 * creates a mapping from components to option prefix strings
+	 */
+	public static Map<Class<? extends Component>, String> createComponentPrefixMapping() {
 		Map<Class<? extends Component>, String> componentPrefixMapping = new HashMap<Class<? extends Component>, String>();
 		// knowledge sources
 		componentPrefixMapping.put(SparqlKnowledgeSource.class, "sparql");
@@ -265,12 +269,13 @@ public class Start {
 		return componentPrefixMapping;
 	}
 
-	// convenience method
-	// basically every prefix (e.g. "refinement" in
-	// "refinement.horizontalExpFactor)
-	// corresponds to a specific component - this way the CLI will automatically
-	// support any configuration options supported by the component
-	private static void configureComponent(ComponentManager cm, Component component,
+	/**
+	 * convenience method basically every prefix (e.g. "refinement" in
+	 * "refinement.horizontalExpFactor) corresponds to a specific component -
+	 * this way the CLI will automatically support any configuration options
+	 * supported by the component
+	 */
+	public static void configureComponent(ComponentManager cm, Component component,
 			Map<Class<? extends Component>, String> componentPrefixMapping, ConfParser parser) {
 		String prefix = componentPrefixMapping.get(component.getClass());
 		if (prefix != null)
@@ -292,7 +297,7 @@ public class Start {
 		// the name of the option is suboption-part (the first part refers
 		// to its component)
 		String optionName = option.getSubOption();
-		
+
 		ConfigOption<?> configOption = cm.getConfigOption(component.getClass(), optionName);
 		// check whether such an option exists
 		if (configOption != null) {
@@ -339,14 +344,18 @@ public class Start {
 							(StringSetConfigOption) configOption, option.getSetValues());
 					cm.applyConfigEntry(component, entry);
 
-				} else if (configOption instanceof StringTupleListConfigOption && option.isListOption()) {
+				} else if (configOption instanceof StringTupleListConfigOption
+						&& option.isListOption()) {
 
 					ConfigEntry<List<StringTuple>> entry = new ConfigEntry<List<StringTuple>>(
 							(StringTupleListConfigOption) configOption, option.getListTuples());
 					cm.applyConfigEntry(component, entry);
 
 				} else {
-					handleError("The type of conf file entry \"" + option.getFullName() + "\" is not correct: value \"" + option.getValue() + "\" not valid for option type \"" + configOption.getClass().getName() + "\".");
+					handleError("The type of conf file entry \"" + option.getFullName()
+							+ "\" is not correct: value \"" + option.getValue()
+							+ "\" not valid for option type \"" + configOption.getClass().getName()
+							+ "\".");
 				}
 
 			} catch (InvalidConfigOptionValueException e) {
@@ -358,85 +367,88 @@ public class Start {
 			handleError("Unknow option " + option + ".");
 	}
 
-	// detects all imported files and their format
+	/**
+	 * detects all imported files and their format
+	 */
 	public static Map<URL, Class<? extends KnowledgeSource>> getImportedFiles(ConfParser parser,
 			String baseDir) {
 		List<List<String>> imports = parser.getFunctionCalls().get("import");
 		Map<URL, Class<? extends KnowledgeSource>> importedFiles = new HashMap<URL, Class<? extends KnowledgeSource>>();
 
-		if(imports != null) {
-		for (List<String> arguments : imports) {
-			// step 1: detect URL
-			URL url = null;
-			try {
-				String fileString = arguments.get(0);
-				if (fileString.startsWith("http:")) {
-					url = new URL(fileString);
+		if (imports != null) {
+			for (List<String> arguments : imports) {
+				// step 1: detect URL
+				URL url = null;
+				try {
+					String fileString = arguments.get(0);
+					if (fileString.startsWith("http:")) {
+						url = new URL(fileString);
+					} else {
+						File f = new File(baseDir, arguments.get(0));
+						url = f.toURI().toURL();
+					}
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+
+				// step 2: detect format
+				Class<? extends KnowledgeSource> ksClass;
+				if (arguments.size() == 1) {
+					String filename = url.getPath();
+					String ending = filename.substring(filename.lastIndexOf(".") + 1);
+
+					if (ending.equals("rdf") || ending.equals("owl"))
+						ksClass = OWLFile.class;
+					else if (ending.equals("nt"))
+						ksClass = OWLFile.class;
+					else if (ending.equals("kb"))
+						ksClass = KBFile.class;
+					else {
+						System.err.println("Warning: no format given for " + arguments.get(0)
+								+ " and could not detect it. Chosing RDF/XML.");
+						ksClass = OWLFile.class;
+					}
+
+					importedFiles.put(url, ksClass);
 				} else {
-					File f = new File(baseDir, arguments.get(0));
-					url = f.toURI().toURL();
+					String formatString = arguments.get(1);
+
+					if (formatString.equals("RDF/XML"))
+						ksClass = OWLFile.class;
+					else if (formatString.equals("KB"))
+						ksClass = KBFile.class;
+					else if (formatString.equals("SPARQL"))
+						ksClass = SparqlKnowledgeSource.class;
+					else if (formatString.equals("NT"))
+						ksClass = OWLFile.class;
+					else {
+						throw new RuntimeException("Unsupported knowledge source format "
+								+ formatString + ". Exiting.");
+					}
+
+					importedFiles.put(url, ksClass);
 				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
 			}
-
-			// step 2: detect format
-			Class<? extends KnowledgeSource> ksClass;
-			if (arguments.size() == 1) {
-				String filename = url.getPath();
-				String ending = filename.substring(filename.lastIndexOf(".") + 1);
-
-				if (ending.equals("rdf") || ending.equals("owl"))
-					ksClass = OWLFile.class;
-				else if (ending.equals("nt"))
-					ksClass = OWLFile.class;
-				else if (ending.equals("kb"))
-					ksClass = KBFile.class;
-				else {
-					System.err.println("Warning: no format given for " + arguments.get(0)
-							+ " and could not detect it. Chosing RDF/XML.");
-					ksClass = OWLFile.class;
-				}
-
-				importedFiles.put(url, ksClass);
-			} else {
-				String formatString = arguments.get(1);
-
-				if (formatString.equals("RDF/XML"))
-					ksClass = OWLFile.class;
-				else if (formatString.equals("KB"))
-					ksClass = KBFile.class;
-				else if (formatString.equals("SPARQL"))
-					ksClass = SparqlKnowledgeSource.class;
-				else if (formatString.equals("NT"))
-					ksClass = OWLFile.class;
-				else {
-					throw new RuntimeException("Unsupported knowledge source format "
-							+ formatString + ". Exiting.");
-				}
-
-				importedFiles.put(url, ksClass);
-			}
-		}
 		}
 
 		return importedFiles;
 	}
 
-	private static void performExports(ConfParser parser, String baseDir, Set<KnowledgeSource> sources, ReasoningService rs) {
+	private static void performExports(ConfParser parser, String baseDir,
+			Set<KnowledgeSource> sources, ReasoningService rs) {
 		List<List<String>> exports = parser.getFunctionCalls().get("export");
 
 		if (exports == null)
 			return;
-		
+
 		File file = null;
-		OntologyFormat format = null;		
+		OntologyFormat format = null;
 		for (List<String> export : exports) {
 			file = new File(baseDir, export.get(0));
 			if (export.size() == 1)
 				// use RDF/XML by default
 				format = OntologyFormat.RDF_XML;
-				// rs.saveOntology(file, OntologyFileFormat.RDF_XML);
+			// rs.saveOntology(file, OntologyFileFormat.RDF_XML);
 			else {
 				String formatString = export.get(1);
 				// OntologyFileFormat format;
@@ -448,14 +460,14 @@ public class Start {
 			}
 		}
 		// hack: ideally we would have the possibility to export each knowledge
-		// source to specified files with specified formats (and maybe including 
+		// source to specified files with specified formats (and maybe including
 		// the option to merge them all in one file)
 		// however implementing this requires quite some effort so for the
 		// moment we just stick to exporting KB files (moreover all but the last
 		// export statement are ignored)
-		for(KnowledgeSource source : sources) {
-			if(source instanceof KBFile)
-				((KBFile)source).export(file, format);
+		for (KnowledgeSource source : sources) {
+			if (source instanceof KBFile)
+				((KBFile) source).export(file, format);
 		}
 	}
 
@@ -469,18 +481,21 @@ public class Start {
 			for (ConfFileOption cliOption : cliOptions) {
 				String name = cliOption.getSubOption();
 				if (name.equals("showExamples")) {
-					// show examples (display each one if they do not take up much space,
+					// show examples (display each one if they do not take up
+					// much space,
 					// otherwise just show the number of examples)
 					SortedSet<String> posExamples = parser.getPositiveExamples();
-					SortedSet<String> negExamples = parser.getNegativeExamples();					
+					SortedSet<String> negExamples = parser.getNegativeExamples();
 					boolean oneLineExampleInfo = true;
-					int maxExampleStringLength = Math.max(posExamples.toString().length(), negExamples
-							.toString().length());
+					int maxExampleStringLength = Math.max(posExamples.toString().length(),
+							negExamples.toString().length());
 					if (maxExampleStringLength > 100)
 						oneLineExampleInfo = false;
 					if (oneLineExampleInfo) {
-						System.out.println("positive examples[" + posExamples.size() + "]: " + posExamples);
-						System.out.println("negative examples[" + negExamples.size() + "]: " + negExamples);
+						System.out.println("positive examples[" + posExamples.size() + "]: "
+								+ posExamples);
+						System.out.println("negative examples[" + negExamples.size() + "]: "
+								+ negExamples);
 					} else {
 						System.out.println("positive examples[" + posExamples.size() + "]: ");
 						for (String ex : posExamples)
@@ -488,7 +503,7 @@ public class Start {
 						System.out.println("negative examples[" + negExamples.size() + "]: ");
 						for (String ex : negExamples)
 							System.out.println("  " + ex);
-					}				
+					}
 				} else if (name.equals("showIndividuals")) {
 					if (cliOption.getStringValue().equals("true")) {
 						int stringLength = rs.getIndividuals().toString().length();
@@ -541,31 +556,32 @@ public class Start {
 						if (!satisfiable)
 							System.exit(0);
 					}
-				} else if( name.equals("logLevel")) {
+				} else if (name.equals("logLevel")) {
 					String level = cliOption.getStringValue();
-					if(level.equals("off"))
+					if (level.equals("off"))
 						logger.setLevel(Level.OFF);
-					else if(level.equals("trace"))
-						logger.setLevel(Level.TRACE);					
-					else if(level.equals("info"))
+					else if (level.equals("trace"))
+						logger.setLevel(Level.TRACE);
+					else if (level.equals("info"))
 						logger.setLevel(Level.INFO);
-					else if(level.equals("debug"))
+					else if (level.equals("debug"))
 						logger.setLevel(Level.DEBUG);
-					else if(level.equals("warn"))
+					else if (level.equals("warn"))
 						logger.setLevel(Level.WARN);
-					else if(level.equals("error"))
+					else if (level.equals("error"))
 						logger.setLevel(Level.ERROR);
-					else if(level.equals("fatal"))
-						logger.setLevel(Level.FATAL);	
+					else if (level.equals("fatal"))
+						logger.setLevel(Level.FATAL);
 				} else
 					handleError("Unknown CLI option \"" + name + "\".");
 			}
 		}
 	}
 
-	private static void initComponent(ComponentManager cm, Component component) throws ComponentInitException {
-		String startMessage = "initialising component \"" + cm.getComponentName(component.getClass())
-				+ "\" ... ";
+	private static void initComponent(ComponentManager cm, Component component)
+			throws ComponentInitException {
+		String startMessage = "initialising component \""
+				+ cm.getComponentName(component.getClass()) + "\" ... ";
 		long initStartTime = System.nanoTime();
 		component.init();
 		// standard messsage is just "OK" but can be more detailed for certain
@@ -580,8 +596,8 @@ public class Start {
 		}
 
 		long initTime = System.nanoTime() - initStartTime;
-		logger.info(startMessage + message + " (" + Helper.prettyPrintNanoSeconds(initTime, false, false)
-				+ ")");
+		logger.info(startMessage + message + " ("
+				+ Helper.prettyPrintNanoSeconds(initTime, false, false) + ")");
 	}
 
 	private static void printConclusions(ReasoningService rs, long algorithmDuration) {
@@ -635,8 +651,8 @@ public class Start {
 	private static void processQueryMode(LearningProblem lp, ReasoningService rs) {
 
 		System.out.println("Entering query mode. Enter a concept for performing "
-				+ "retrieval or q to quit. Use brackets for complex expresssions," +
-						"e.g. (a AND b).");
+				+ "retrieval or q to quit. Use brackets for complex expresssions,"
+				+ "e.g. (a AND b).");
 		String queryStr = "";
 		do {
 
@@ -649,7 +665,7 @@ public class Start {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			if (!queryStr.equals("q")) {
 
 				// parse concept
@@ -682,11 +698,11 @@ public class Start {
 					// substract existing roles/concepts from detected
 					// roles/concepts -> the resulting sets should be
 					// empty, otherwise print a warning (the DIG reasoner
-					// will just treat them as concepts about which it 
+					// will just treat them as concepts about which it
 					// has no knowledge - this makes it hard to
-					// detect typos 
-					// (note that removeAll currently gives a different 
-					// result here, because the comparator of the argument 
+					// detect typos
+					// (note that removeAll currently gives a different
+					// result here, because the comparator of the argument
 					// is used)
 					for (NamedClass ac : rs.getAtomicConcepts())
 						occurringConcepts.remove(ac);
@@ -705,13 +721,15 @@ public class Start {
 					}
 
 					if (!nonExistingConstructs) {
-						
-						if(!queryStr.startsWith("(") && (queryStr.contains("AND") || queryStr.contains("OR"))) {
-							System.out.println("Make sure you did not forget to use outer brackets.");					
+
+						if (!queryStr.startsWith("(")
+								&& (queryStr.contains("AND") || queryStr.contains("OR"))) {
+							System.out
+									.println("Make sure you did not forget to use outer brackets.");
 						}
-						
+
 						System.out.println("The query is: " + concept + ".");
-						
+
 						// pose retrieval query
 						Set<Individual> result = null;
 						result = rs.retrieval(concept);
@@ -729,7 +747,13 @@ public class Start {
 
 	}
 
-	private static void handleError(String message) {
+	/**
+	 * error handling over the logger
+	 * 
+	 * @param message
+	 *            is a string and you message for problem
+	 */
+	public static void handleError(String message) {
 		logger.error(message);
 		System.exit(0);
 	}
