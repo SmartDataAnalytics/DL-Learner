@@ -43,7 +43,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 
 	private Config config;
 	private StartGUI startGUI;
-	private List<Class<? extends LearningAlgorithm>> learners;
+	private List<Class<? extends LearningAlgorithm>> learner;
 	private JPanel choosePanel = new JPanel();
 	private OptionPanel optionPanel;
 	private JPanel initPanel = new JPanel();
@@ -57,7 +57,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 
 		this.config = config;
 		this.startGUI = startGUI;
-		learners = config.getComponentManager().getLearningAlgorithms();
+		learner = config.getComponentManager().getLearningAlgorithms();
 
 		initButton = new JButton("Init LearingAlgorithm");
 		initButton.addActionListener(this);
@@ -67,8 +67,8 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		autoInitButton.addActionListener(this);
 
 		// add into comboBox
-		for (int i = 0; i < learners.size(); i++) {
-			cb.addItem(config.getComponentManager().getComponentName(learners.get(i)));
+		for (int i = 0; i < learner.size(); i++) {
+			cb.addItem(config.getComponentManager().getComponentName(learner.get(i)));
 		}
 
 		choosePanel.add(cb);
@@ -76,7 +76,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		cb.addActionListener(this);
 
 		optionPanel = new OptionPanel(config, config.getLearningAlgorithm(), config
-				.getOldLearningAlgorithm(), learners.get(choosenClassIndex));
+				.getOldLearningAlgorithm(), learner.get(choosenClassIndex));
 
 		add(choosePanel, BorderLayout.PAGE_START);
 		add(optionPanel, BorderLayout.CENTER);
@@ -108,7 +108,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		if (config.getLearningProblem() != null && config.getReasoningService() != null) {
 			try {
 				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(
-						learners.get(choosenClassIndex), config.getLearningProblem(),
+						learner.get(choosenClassIndex), config.getLearningProblem(),
 						config.getReasoningService()));
 				updateOptionPanel();
 			} catch (LearningProblemUnsupportedException e) {
@@ -126,7 +126,6 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 			try {
 				config.getLearningAlgorithm().init();
 			} catch (ComponentInitException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			config.setInitLearningAlgorithm(true);
@@ -136,12 +135,34 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	}
 
 	/**
+	 * updateAll
+	 */
+	public void updateAll() {
+		updateComboBox();
+		updateOptionPanel();
+		updateInitButtonColor();
+	}
+
+	/**
+	 * set ComboBox to selected class
+	 */
+	public void updateComboBox() {
+		if (config.getLearningAlgorithm() != null)
+			for (int i = 0; i < learner.size(); i++)
+				if (config.getLearningAlgorithm().getClass().equals(
+						config.getComponentManager().getLearningAlgorithms().get(i))) {
+					cb.setSelectedIndex(i);
+				}
+		this.choosenClassIndex = cb.getSelectedIndex();
+	}
+
+	/**
 	 * update OptionPanel with new selection
 	 */
 	public void updateOptionPanel() {
 		// update OptionPanel
-		optionPanel.update(config.getLearningAlgorithm(), config.getOldLearningAlgorithm(),
-				learners.get(choosenClassIndex));
+		optionPanel.update(config.getLearningAlgorithm(), config.getOldLearningAlgorithm(), learner
+				.get(choosenClassIndex));
 	}
 
 	/**

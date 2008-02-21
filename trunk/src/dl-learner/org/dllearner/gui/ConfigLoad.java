@@ -21,22 +21,41 @@ package org.dllearner.gui;
  */
 
 import java.io.File; // import java.net.URL;
-// import java.util.List;
+import java.net.URL; // import java.util.HashSet;
+import java.util.Map; // import java.util.Set;
+import java.util.SortedSet; // import java.util.List;
 // import java.util.Map;
+import org.dllearner.algorithms.BruteForceLearner;
+import org.dllearner.algorithms.RandomGuesser;
+import org.dllearner.algorithms.gp.GP;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource; // import
-// org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.ReasonerComponent; // org.dllearner.core.LearningProblem;
 // import org.dllearner.core.ReasoningService;
 // import org.dllearner.core.LearningAlgorithm;
 // import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.config.StringConfigOption;
+// import org.dllearner.core.config.ConfigEntry;
+// import org.dllearner.core.config.InvalidConfigOptionValueException;
+// import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.parser.ConfParser;
-import org.dllearner.kb.KBFile;
-import org.dllearner.kb.OWLFile;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.core.Component;
+import org.dllearner.reasoning.DIGReasoner;
+import org.dllearner.reasoning.FastRetrievalReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner; // import
+// org.dllearner.kb.KBFile;
+// import org.dllearner.kb.OWLFile;
+// import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.core.Component; // import
+// org.dllearner.cli.ConfFileOption;
+import org.dllearner.cli.ConfFileOption;
+import org.dllearner.cli.Start;
 
 /**
  * Open a config file.
@@ -49,7 +68,9 @@ public class ConfigLoad {
 	private Config config;
 	private StartGUI startGUI;
 
-	private Class<? extends KnowledgeSource> componentOption;
+	// private Start cli;
+
+	// private Class<? extends KnowledgeSource> componentOption;
 
 	/**
 	 * set config and startGUI
@@ -79,63 +100,146 @@ public class ConfigLoad {
 	public void startParser() {
 		if (this.file.exists()) {
 			ConfParser parser = ConfParser.parseFile(file);
+			// create a mapping between components and prefixes in the conf file
+			Map<Class<? extends Component>, String> componentPrefixMapping = Start
+					.createComponentPrefixMapping();
+
 			// KNOWLEDGE SOURCE
-			// filename
-			String value = parser.getFunctionCalls().get("import").get(0).get(0);
-			// only first of imported files
-			if (value.endsWith(".kb")) {
-				componentOption = KBFile.class;
-			} else if (value.endsWith(".owl")) {
-				componentOption = OWLFile.class;
-			} else if (parser.getFunctionCalls().get("import").get(0).size() > 1) {
-				if (parser.getFunctionCalls().get("import").get(0).get(1)
-						.equalsIgnoreCase("sparql")) {
-					System.out.println("IT IS SPARQL");
-					componentOption = SparqlKnowledgeSource.class;
+			Map<URL, Class<? extends KnowledgeSource>> importedFiles = Start.getImportedFiles(
+					parser, file.getParentFile().getPath());
+			for (Map.Entry<URL, Class<? extends KnowledgeSource>> entry : importedFiles.entrySet()) {
+				config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
+						entry.getValue()));
+				config.getComponentManager().applyConfigEntry(config.getKnowledgeSource(), "url",
+						entry.getKey().toString());
+				// sources.add(ks);
+				// TODO more then 1 KnowledgeSource
+				config.setKnowledgeSource(config.getKnowledgeSource());
+				Start.configureComponent(config.getComponentManager(), config.getKnowledgeSource(),
+						componentPrefixMapping, parser);
+				// init
+				if (config.getKnowledgeSource() != null && config.isSetURL()) {
+					try {
+						config.getKnowledgeSource().init();
+						config.setInitKnowledgeSource(true);
+						System.out.println("init KnowledgeSource");
+					} catch (ComponentInitException e) {
+						e.printStackTrace();
+					}
 				}
 			}
-			// check if class was set and set knwoledgeSource
-			if (componentOption != null)
-				config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
-						componentOption));
-			// set url
-			value = makeURL(value);
-			Component component = config.getKnowledgeSource();
-			StringConfigOption specialOption = (StringConfigOption) config.getComponentManager()
-					.getConfigOption(componentOption, "url");
-			try {
-				ConfigEntry<String> specialEntry = new ConfigEntry<String>(specialOption, value);
-				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				System.out.println("set String: " + "url" + " = " + value);
-			} catch (InvalidConfigOptionValueException s) {
-				s.printStackTrace();
+
+			// REASONER
+			ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
+			Class<? extends ReasonerComponent> reasonerClass = null;
+			// default value
+			if (reasonerOption == null || reasonerOption.getStringValue().equals("dig"))
+				reasonerClass = DIGReasoner.class;
+			else if (reasonerOption.getStringValue().equals("owlAPI"))
+				reasonerClass = OWLAPIReasoner.class;
+			else if (reasonerOption.getStringValue().equals("fastRetrieval"))
+				reasonerClass = FastRetrievalReasoner.class;
+			else {
+				Start.handleError("Unknown value " + reasonerOption.getStringValue()
+						+ " for option \"reasoner\".");
 			}
-			// widgets
-			
-			
-			// startGUI.updateTabColors();
-			// init
-			if (config.getKnowledgeSource() != null && config.isSetURL()) {
+			config.setReasoner(config.getComponentManager().reasoner(reasonerClass,
+					config.getKnowledgeSource()));
+			Start.configureComponent(config.getComponentManager(), config.getReasoner(),
+					componentPrefixMapping, parser);
+			if (config.getKnowledgeSource() != null && config.getReasoner() != null) {
 				try {
-					config.getKnowledgeSource().init();
-					config.setInitKnowledgeSource(true);
-					System.out.println("init KnowledgeSource");
+					config.getReasoner().init();
+					System.out.println("init Reasoner");
+					// set ReasoningService
+					config.setReasoningService(config.getComponentManager().reasoningService(
+							config.getReasoner()));
+					System.out.println("init ReasoningService");
+					config.setInitReasoner(true);
+					startGUI.updateTabColors();
 				} catch (ComponentInitException e) {
 					e.printStackTrace();
 				}
 			}
 
-			// update
+			// LEARNING PROBLEM
+			ConfFileOption problemOption = parser.getConfOptionsByName("problem");
+			Class<? extends LearningProblem> lpClass = null;
+			if (problemOption == null || problemOption.getStringValue().equals("posNegDefinition"))
+				lpClass = PosNegDefinitionLP.class;
+			else if (problemOption.getStringValue().equals("posNegInclusion"))
+				lpClass = PosNegInclusionLP.class;
+			else if (problemOption.getStringValue().equals("posOnlyDefinition"))
+				lpClass = PosOnlyDefinitionLP.class;
+			else
+				Start.handleError("Unknown value " + problemOption.getValue()
+						+ " for option \"problem\".");
+			config.setLearningProblem(config.getComponentManager().learningProblem(lpClass,
+					config.getReasoningService()));
+			SortedSet<String> posExamples = parser.getPositiveExamples();
+			SortedSet<String> negExamples = parser.getNegativeExamples();
+			config.getComponentManager().applyConfigEntry(config.getLearningProblem(),
+					"positiveExamples", posExamples);
+			if (lpClass != PosOnlyDefinitionLP.class)
+				config.getComponentManager().applyConfigEntry(config.getLearningProblem(),
+						"negativeExamples", negExamples);
+			Start.configureComponent(config.getComponentManager(), config.getLearningProblem(),
+					componentPrefixMapping, parser);
+			if (config.getReasoner() != null && config.getLearningProblem() != null) {
+				try {
+					config.getLearningProblem().init();
+					config.setInitLearningProblem(true);
+					System.out.println("init LearningProblem");
+					startGUI.updateTabColors();
+				} catch (ComponentInitException e) {
+					e.printStackTrace();
+				}
+			}
+
+			// LEARNING ALGORITHM
+			ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
+			Class<? extends LearningAlgorithm> laClass = null;
+			if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
+				laClass = ROLearner.class;
+			else if(algorithmOption.getStringValue().equals("refexamples"))
+				laClass = ExampleBasedROLComponent.class;		
+			else if(algorithmOption.getStringValue().equals("gp"))
+				laClass = GP.class;
+			else if(algorithmOption.getStringValue().equals("bruteForce"))
+				laClass = BruteForceLearner.class;
+			else if(algorithmOption.getStringValue().equals("randomGuesser"))
+				laClass = RandomGuesser.class;		
+			else
+				Start.handleError("Unknown value in " + algorithmOption);
+
+			if (config.getLearningProblem() != null && config.getReasoningService() != null) {
+				try {
+					config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(
+							laClass, config.getLearningProblem(),
+							config.getReasoningService()));
+				} catch (LearningProblemUnsupportedException e) {
+					e.printStackTrace();
+				}
+			}
+			Start.configureComponent(config.getComponentManager(), config.getLearningAlgorithm(), componentPrefixMapping, parser);
+			if (config.getLearningProblem() != null) {
+				try {
+					config.getLearningAlgorithm().init();
+					config.setInitLearningAlgorithm(true);
+					System.out.println("init LearningAlgorithm");
+				} catch (ComponentInitException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			// update graphic
 			startGUI.updateTabColors();
 
-			System.out.println("reasoner: " + parser.getConfOptionsByName("reasoner"));
-			System.out.println("confoptions: " + parser.getConfOptions());
-			System.out.println("posExamples: " + parser.getPositiveExamples());
-			System.out.println("confoptionbyname: " + parser.getConfOptionsByName());
+			//System.out.println("reasoner: " + parser.getConfOptionsByName("reasoner"));
+			//System.out.println("confoptions: " + parser.getConfOptions());
+			//System.out.println("posExamples: " + parser.getPositiveExamples());
+			//System.out.println("confoptionbyname: " + parser.getConfOptionsByName());
 
-			// do it
-			// only url from first entry, ignore others
-			// parser.getFunctionCalls().get("import").get(0);
 		}
 	}
 
