@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.core.owl;
 
 import java.util.HashMap;
@@ -6,28 +25,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * TODO: Später mal eine Singleton-Klasse daraus machen und get-und set-Methoden
- * für alle Klassenvariablen.
- * TODO: Diese Klasse soll später mal alles geparstes DL-Wissen enthalten. Es muss
- * also irgendwie die "geparste ABox" (für eigenen Algorithmus) und das unveränderte
- * Wissen enthalten (für KAON2). Eventuell ist auch eine Trennung in 2 Klassen möglich.
- * 
- * TODO: Singleton wieder rueckgaengig machen, da FlatABox nur noch
- * Mittel zum Zweck fuer die neue abstrakte Reasoner-Klasse ist
+ * A flat ABox can be used to store knowledge of a completely dematerialised knowledge base.
  * 
  * @author Jens Lehmann
  *
  */
 public class FlatABox {
-
-    // singleton-instance
-    // private static FlatABox singleton = new FlatABox();
     
     public SortedSet<String> roles = new TreeSet<String>();
     public SortedSet<String> concepts = new TreeSet<String>();
     public SortedSet<String> domain = new TreeSet<String>();
     public SortedSet<String> top = new TreeSet<String>();
-    public SortedSet<String> bottom = new TreeSet<String>();
+    public SortedSet<String> bottom = new TreeSet<String>();   
     
     public Map<String,SortedSet<String>> atomicConceptsPos = new HashMap<String,SortedSet<String>>();
     public Map<String,SortedSet<String>> atomicConceptsNeg = new HashMap<String,SortedSet<String>>();
@@ -37,27 +46,8 @@ public class FlatABox {
     public Map<String,SortedSet<String>> exampleConceptsPos = new HashMap<String,SortedSet<String>>();
     public Map<String,SortedSet<String>> exampleConceptsNeg = new HashMap<String,SortedSet<String>>();
     
-    // f�r bessere GP-Initialisierungs-Performance
-    private Object[] roleArray;
-    private Object[] conceptArray;    
-    
     public FlatABox() {
         
-    }
-    
-    /*
-    public static FlatABox getInstance() {
-        return singleton;
-    }
-    */
-    
-    // ABox vorbereiten f�r Algorithmus, hier wird nur eine Listenansicht auf
-    // Konzepte und Rollen erstellt, damit diese bei der GP-Initialisierung
-    // verwendet werden kann (es ist ansonsten nicht m�glich auf ein zuf�lliges
-    // Konzept zuzugreifen)
-    public void prepare() {
-    	roleArray = roles.toArray();
-    	conceptArray = concepts.toArray();
     }
     
     public SortedSet<String> getPositiveInstances(String conceptName) {
@@ -67,14 +57,6 @@ public class FlatABox {
     public SortedSet<String> getNegativeInstances(String conceptName) {
     	return atomicConceptsPos.get(conceptName);
     }
-    
-    public String getConcept(int nr) {
-    	return (String) conceptArray[nr];
-    }        
-    
-    public String getRole(int nr) {
-    	return (String) roleArray[nr];
-    }    
     
 	@Override	    
     public String toString() {
@@ -95,42 +77,41 @@ public class FlatABox {
     	return (String) exampleConceptsPos.keySet().toArray()[0];
     }
     
-    /*
-    public void createExampleABox() {
-        domain = new TreeSet<String>();
-        domain.add("stefan");
-        domain.add("markus");
-        
-        top = domain;
-        bottom = new TreeSet<String>();
-        
-        atomicConceptsPos = new HashMap<String,Set<String>>();
-        Set<String> male = new TreeSet<String>();
-        male.add("stefan");
-        male.add("markus");
-        atomicConceptsPos.put("male",male);
-        
-        atomicConceptsNeg = new HashMap<String,Set<String>>();
-        Set<String> maleNeg = new TreeSet<String>();  
-        atomicConceptsNeg.put("male",maleNeg);
-        
-        rolesPos = new HashMap<String,Map<String,Set<String>>>();
-        Map<String,Set<String>> hasChild = new HashMap<String,Set<String>>();
-        Set<String> childsStefan = new TreeSet<String>();
-        childsStefan.add("markus");
-        hasChild.put("stefan",childsStefan);
-        Set<String> childsMarkus = new TreeSet<String>();
-        hasChild.put("markus", childsMarkus);
-        rolesPos.put("hasChild", hasChild);
-        
-        rolesNeg = new HashMap<String,Map<String,Set<String>>>();
-        Map<String,Set<String>> hasChildNeg = new HashMap<String,Set<String>>();
-        Set<String> childsStefanNeg = new TreeSet<String>();
-        hasChildNeg.put("stefan",childsStefanNeg);
-        Set<String> childsMarkusNeg = new TreeSet<String>();
-        hasChildNeg.put("markus", childsMarkusNeg);
-        rolesNeg.put("hasChild", hasChildNeg);
-    }
-    */
+//    public void createExampleABox() {
+//        domain = new TreeSet<String>();
+//        domain.add("stefan");
+//        domain.add("markus");
+//        
+//        top = domain;
+//        bottom = new TreeSet<String>();
+//        
+//        atomicConceptsPos = new HashMap<String,Set<String>>();
+//        Set<String> male = new TreeSet<String>();
+//        male.add("stefan");
+//        male.add("markus");
+//        atomicConceptsPos.put("male",male);
+//        
+//        atomicConceptsNeg = new HashMap<String,Set<String>>();
+//        Set<String> maleNeg = new TreeSet<String>();  
+//        atomicConceptsNeg.put("male",maleNeg);
+//        
+//        rolesPos = new HashMap<String,Map<String,Set<String>>>();
+//        Map<String,Set<String>> hasChild = new HashMap<String,Set<String>>();
+//        Set<String> childsStefan = new TreeSet<String>();
+//        childsStefan.add("markus");
+//        hasChild.put("stefan",childsStefan);
+//        Set<String> childsMarkus = new TreeSet<String>();
+//        hasChild.put("markus", childsMarkus);
+//        rolesPos.put("hasChild", hasChild);
+//        
+//        rolesNeg = new HashMap<String,Map<String,Set<String>>>();
+//        Map<String,Set<String>> hasChildNeg = new HashMap<String,Set<String>>();
+//        Set<String> childsStefanNeg = new TreeSet<String>();
+//        hasChildNeg.put("stefan",childsStefanNeg);
+//        Set<String> childsMarkusNeg = new TreeSet<String>();
+//        hasChildNeg.put("markus", childsMarkusNeg);
+//        rolesNeg.put("hasChild", hasChildNeg);
+//    }
+    
     
 }

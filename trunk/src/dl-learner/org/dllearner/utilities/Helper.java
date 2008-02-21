@@ -539,8 +539,6 @@ public class Helper {
 
 		aBox.domain = getStringSet(rs.getIndividuals());
 		aBox.top = aBox.domain;
-		// ab hier keine �nderungen mehr an FlatABox
-		aBox.prepare();
 
 		// System.out.println(aBox);
 
