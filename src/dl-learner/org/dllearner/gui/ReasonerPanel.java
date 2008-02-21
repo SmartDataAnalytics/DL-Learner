@@ -43,7 +43,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 
 	private Config config;
 	private StartGUI startGUI;
-	private List<Class<? extends ReasonerComponent>> reasoners;
+	private List<Class<? extends ReasonerComponent>> reasoner;
 	private JPanel choosePanel = new JPanel();
 	private JPanel initPanel = new JPanel();
 	private OptionPanel optionPanel;
@@ -57,7 +57,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 
 		this.config = config;
 		this.startGUI = startGUI;
-		reasoners = config.getComponentManager().getReasonerComponents();
+		reasoner = config.getComponentManager().getReasonerComponents();
 
 		initButton = new JButton("Init Reasoner");
 		initButton.addActionListener(this);
@@ -69,12 +69,12 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		choosePanel.add(cb);
 
 		// add into comboBox
-		for (int i = 0; i < reasoners.size(); i++) {
-			cb.addItem(config.getComponentManager().getComponentName(reasoners.get(i)));
+		for (int i = 0; i < reasoner.size(); i++) {
+			cb.addItem(config.getComponentManager().getComponentName(reasoner.get(i)));
 		}
 
 		optionPanel = new OptionPanel(config, config.getReasoner(), config.getOldReasonerSet(),
-				reasoners.get(choosenClassIndex));
+				reasoner.get(choosenClassIndex));
 
 		choosePanel.add(setButton);
 		cb.addActionListener(this);
@@ -112,7 +112,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	public void setReasoner() {
 		if (config.isInitKnowledgeSource()) {
 			config.setReasoner(config.getComponentManager().reasoner(
-					reasoners.get(choosenClassIndex), config.getKnowledgeSource()));
+					reasoner.get(choosenClassIndex), config.getKnowledgeSource()));
 			updateOptionPanel();
 			startGUI.updateTabColors();
 			config.setInitReasoner(false);
@@ -143,10 +143,32 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	}
 
 	/**
+	 * updateAll
+	 */
+	public void updateAll() {
+		updateComboBox();
+		updateOptionPanel();
+		updateInitButtonColor();
+	}
+
+	/**
+	 * set ComboBox to selected class
+	 */
+	public void updateComboBox() {
+		if (config.getReasoner() != null)
+			for (int i = 0; i < reasoner.size(); i++)
+				if (config.getKnowledgeSource().getClass().equals(
+						config.getComponentManager().getKnowledgeSources().get(i))) {
+					cb.setSelectedIndex(i);
+				}
+		this.choosenClassIndex = cb.getSelectedIndex();
+	}
+
+	/**
 	 * update OptionPanel with new selection
 	 */
 	public void updateOptionPanel() {
-		optionPanel.update(config.getReasoner(), config.getOldReasonerSet(), reasoners
+		optionPanel.update(config.getReasoner(), config.getOldReasonerSet(), reasoner
 				.get(choosenClassIndex));
 	}
 

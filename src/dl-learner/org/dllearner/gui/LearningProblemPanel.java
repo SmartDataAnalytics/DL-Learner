@@ -42,7 +42,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 
 	private Config config;
 	private StartGUI startGUI;
-	private List<Class<? extends LearningProblem>> problems;
+	private List<Class<? extends LearningProblem>> problem;
 	private String[] lpBoxItems = {};
 	private JComboBox cb = new JComboBox(lpBoxItems);
 	private JPanel choosePanel = new JPanel();
@@ -56,7 +56,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 
 		this.config = config;
 		this.startGUI = startGUI;
-		problems = config.getComponentManager().getLearningProblems();
+		problem = config.getComponentManager().getLearningProblems();
 
 		initButton = new JButton("Init LearningProblem");
 		initButton.addActionListener(this);
@@ -69,15 +69,15 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		cb.addActionListener(this);
 
 		// add into comboBox
-		for (int i = 0; i < problems.size(); i++) {
-			cb.addItem(config.getComponentManager().getComponentName(problems.get(i)));
+		for (int i = 0; i < problem.size(); i++) {
+			cb.addItem(config.getComponentManager().getComponentName(problem.get(i)));
 		}
 
 		// read choosen LearningProblem
 		choosenClassIndex = cb.getSelectedIndex();
 
 		optionPanel = new OptionPanel(config, config.getLearningProblem(), config
-				.getOldLearningProblem(), problems.get(choosenClassIndex));
+				.getOldLearningProblem(), problem.get(choosenClassIndex));
 
 		add(choosePanel, BorderLayout.PAGE_START);
 		add(optionPanel, BorderLayout.CENTER);
@@ -109,7 +109,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	private void setLearningProblem() {
 		if (config.isInitReasoner()) {
 			config.setLearningProblem(config.getComponentManager().learningProblem(
-					problems.get(choosenClassIndex), config.getReasoningService()));
+					problem.get(choosenClassIndex), config.getReasoningService()));
 			startGUI.updateTabColors();
 			updateOptionPanel();
 		}
@@ -133,11 +133,33 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	}
 
 	/**
+	 * updateAll
+	 */
+	public void updateAll() {
+		updateComboBox();
+		updateOptionPanel();
+		updateInitButtonColor();
+	}
+
+	/**
+	 * set ComboBox to selected class
+	 */
+	public void updateComboBox() {
+		if (config.getLearningProblem() != null)
+			for (int i = 0; i < problem.size(); i++)
+				if (config.getLearningProblem().getClass().equals(
+						config.getComponentManager().getLearningProblems().get(i))) {
+					cb.setSelectedIndex(i);
+				}
+		this.choosenClassIndex = cb.getSelectedIndex();
+	}
+
+	/**
 	 * update OptionPanel with new selection
 	 */
 	private void updateOptionPanel() {
 		// update OptionPanel
-		optionPanel.update(config.getLearningProblem(), config.getOldLearningProblem(), problems
+		optionPanel.update(config.getLearningProblem(), config.getOldLearningProblem(), problem
 				.get(choosenClassIndex));
 	}
 
