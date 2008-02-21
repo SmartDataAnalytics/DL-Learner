@@ -368,7 +368,7 @@ public class Start {
 	}
 
 	/**
-	 * detects all imported files and their format
+	 * detects all imported files and their format 
 	 */
 	public static Map<URL, Class<? extends KnowledgeSource>> getImportedFiles(ConfParser parser,
 			String baseDir) {
