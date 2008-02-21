@@ -19,12 +19,9 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.SortedSet;
-
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
 
 /**
@@ -34,9 +31,6 @@ import org.dllearner.utilities.Helper;
  *
  */
 public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
-
-	protected SortedSet<Individual> positiveExamples;
-	protected SortedSet<Individual> pseudoNegatives;
 	
 	private PosNegDefinitionLP definitionLP;
 	
