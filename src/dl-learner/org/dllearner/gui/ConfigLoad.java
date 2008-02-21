@@ -94,12 +94,11 @@ public class ConfigLoad {
 					componentOption = SparqlKnowledgeSource.class;
 				}
 			}
-			// check if class was set
+			// check if class was set and set knwoledgeSource
 			if (componentOption != null)
 				config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
 						componentOption));
 			// set url
-			// value = parser.getFunctionCalls().get("import").get(0).get(0);
 			value = makeURL(value);
 			Component component = config.getKnowledgeSource();
 			StringConfigOption specialOption = (StringConfigOption) config.getComponentManager()
@@ -111,6 +110,9 @@ public class ConfigLoad {
 			} catch (InvalidConfigOptionValueException s) {
 				s.printStackTrace();
 			}
+			// widgets
+			
+			
 			// startGUI.updateTabColors();
 			// init
 			if (config.getKnowledgeSource() != null && config.isSetURL()) {
