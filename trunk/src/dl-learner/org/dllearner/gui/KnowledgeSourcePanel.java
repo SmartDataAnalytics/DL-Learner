@@ -61,8 +61,6 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		this.startGUI = startGUI;
 		sources = config.getComponentManager().getKnowledgeSources();
 
-		System.out.println("SOURCES: " + sources);
-
 		setButton = new JButton("Set");
 		setButton.addActionListener(this);
 		initButton = new JButton("Init KnowledgeSource");
@@ -87,7 +85,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		add(optionPanel, BorderLayout.CENTER);
 		add(initPanel, BorderLayout.PAGE_END);
 
-		// setSource();
+		setSource();
 		updateAll();
 	}
 
@@ -112,17 +110,8 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	 * after this, you can change widgets
 	 */
 	public void setSource() {
-		System.out.println("cm: " + config.getComponentManager());
-		System.out.println("setSOURCE :" + sources.get(choosenClassIndex));
-
 		config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
 				sources.get(choosenClassIndex)));
-		// KBFile.class doesn't work
-		// config.setKnowledgeSource(config.getComponentManager().knowledgeSource(KBFile.class));
-
-		System.out.println("KNOWLEDGE_SOURCE: " + config.getKnowledgeSource());
-		System.out.println("ABC: " + config.getComponentManager().getComponentName(sources.get(0)));
-
 		config.setInitKnowledgeSource(false);
 		updateAll();
 	}
@@ -131,8 +120,6 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	 * after this, next tab can be used
 	 */
 	public void init() {
-		System.out.println("KNOWLEDGE_SOURCE: " + config.getKnowledgeSource());
-		System.out.println("isSetURL: " + config.isSetURL());
 		if (config.getKnowledgeSource() != null && config.isSetURL()) {
 			try {
 				config.getKnowledgeSource().init();

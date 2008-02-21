@@ -64,9 +64,8 @@ public class Config {
 	 * @return true, if url was set otherwise false
 	 */
 	public Boolean isSetURL() {
-		// return this.isURL;
-		// String value = (String) cm.getConfigOptionValue(source, "url");
-		if (cm.getConfigOptionValue(source, "url") != null)
+		if (cm.getConfigOptionValue(source, "url") != null
+				|| cm.getConfigOptionValue(source, "filename") != null)
 			return true;
 		else
 			return false;
