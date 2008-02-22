@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.dllearner.core.owl.BooleanDatatypePropertyAssertion;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassAssertionAxiom;
@@ -88,7 +89,7 @@ public class Carcinogenesis {
 	// we need a counter for bonds, because they are instances in OWL
 	// but not in Prolog
 	private static int bondNr = 0;
-
+	
 	/**
 	 * @param args
 	 *            No arguments supported.
@@ -216,13 +217,27 @@ public class Carcinogenesis {
 		// Body body = clause.getBody();
 		// ArrayList<Literal> literals = body.getLiterals();
 		// handle: atm(compound,atom,element,atomtype,charge)
-		if (headName.equals("atm")) {
-
+		
+		// Ames-Test: http://en.wikipedia.org/wiki/Ames_test
+		// problem: the file apparently mentions only positive
+		// tests (why is it different from the other tests e.g. in
+		// gentoxprops.pl?) => we need to add negative axioms for the
+		// remaining stuff or use closed world assumption in the 
+		// TBox dematerialisation later on
+		if(headName.equals("ames")) {
+			String compoundName = head.getArgument(0).toPLString();
+			BooleanDatatypePropertyAssertion ames = getBooleanDatatypePropertyAssertion(compoundName, "amesTestPositive", true);
+			axioms.add(ames);
+			
+		} else if (headName.equals("atm")) {
 			String compoundName = head.getArgument(0).toPLString();
 			String atomName = head.getArgument(1).toPLString();
 			String elementName = head.getArgument(2).toPLString();
 			String type = head.getArgument(3).toPLString();
 			double charge = Double.parseDouble(head.getArgument(4).toPLString());
+			// make the compound an instance of the Compound class
+			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Compound", compoundName);
+			axioms.add(cmpAxiom);			
 			// relate compound and atom
 			ObjectPropertyAssertion ra = getRoleAssertion("hasAtom", compoundName, atomName);
 			axioms.add(ra);
@@ -272,6 +287,7 @@ public class Carcinogenesis {
 			System.out.println("unsupported clause");
 			System.out.println(clause.toPLString());
 			System.out.println(clause);
+//			System.exit(0);
 		}
 		return axioms;
 	}
@@ -323,6 +339,13 @@ public class Carcinogenesis {
 		return new ObjectPropertyAssertion(ar, ind1, ind2);
 	}
 
+	private static BooleanDatatypePropertyAssertion getBooleanDatatypePropertyAssertion(
+			String individual, String datatypeProperty, boolean value) {
+		Individual ind = getIndividual(individual);
+		DatatypeProperty dp = getDatatypeProperty(datatypeProperty);
+		return new BooleanDatatypePropertyAssertion(dp, ind, value);
+	}	
+	
 	private static DoubleDatatypePropertyAssertion getDoubleDatatypePropertyAssertion(
 			String individual, String datatypeProperty, double value) {
 		Individual ind = getIndividual(individual);
