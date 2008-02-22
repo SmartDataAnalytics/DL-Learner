@@ -30,7 +30,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class NamedClass extends Description implements NamedKBElement {
+public class NamedClass extends Description implements NamedKBElement, Comparable<NamedClass> {
 
     String name;
     
@@ -78,5 +78,9 @@ public class NamedClass extends Description implements NamedKBElement {
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
 		return Helper.getAbbreviatedString(name, baseURI, prefixes);
+	}	
+	
+	public int compareTo(NamedClass o) {
+		return name.compareTo(o.name);
 	}	
 }

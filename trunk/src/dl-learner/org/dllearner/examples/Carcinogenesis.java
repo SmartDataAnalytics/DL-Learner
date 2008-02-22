@@ -169,6 +169,8 @@ public class Carcinogenesis {
 		File confTrainFile = new File("examples/carcinogenesis/train.conf");
 		Files.clearFile(confTrainFile);
 		String confHeader = "import(\"pte.owl\");\n\n";
+		confHeader += "refinement.writeSearchTree = true;";
+		confHeader += "refinement.searchTreeFile = \"log/carcinogenesis/searchTree.log\"";
 		confHeader += "reasoner = owlAPI;\n";
 		Files.appendFile(confTrainFile, confHeader);
 		

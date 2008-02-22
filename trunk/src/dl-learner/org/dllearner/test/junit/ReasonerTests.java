@@ -88,7 +88,12 @@ public class ReasonerTests {
 			for (Class<? extends ReasonerComponent> reasonerClass : reasonerClasses) {
 				ReasonerComponent reasoner = cm.reasoner(reasonerClass, ks);
 				reasoner.init();
-				boolean result = reasoner.instanceCheck(d, i);
+//				long startTime = System.nanoTime();
+				boolean result = false;
+//				for(int n=0; n<10000; n++) {
+					result = reasoner.instanceCheck(d, i);
+//				}
+//				long time = System.nanoTime() - startTime;
 				logger.debug("instance check: " + reasoner + " " + d + " " + i + " " + result);
 				assertTrue(result);
 			}
