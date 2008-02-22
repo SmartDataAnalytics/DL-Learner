@@ -157,8 +157,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	public void updateComboBox() {
 		if (config.getReasoner() != null)
 			for (int i = 0; i < reasoner.size(); i++)
-				if (config.getKnowledgeSource().getClass().equals(
-						config.getComponentManager().getKnowledgeSources().get(i))) {
+				if (config.getReasoner().getClass().equals(
+						config.getComponentManager().getReasonerComponents().get(i))) {
 					cb.setSelectedIndex(i);
 				}
 		this.choosenClassIndex = cb.getSelectedIndex();
