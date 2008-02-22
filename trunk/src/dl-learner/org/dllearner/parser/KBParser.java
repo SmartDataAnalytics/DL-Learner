@@ -7,7 +7,7 @@ import java.net.URL;
 
 public @SuppressWarnings("all") class KBParser implements KBParserConstants {
 
-        public static final String internalNamespace = "http://localhost/foo#";
+        public static String internalNamespace = "http://localhost/foo#";
 
         // method to give all internal stuff an URI (not necessary for DLs, but for OWL ontologies
         // and it should be possible to represent the internal KB as OWL ontology)
