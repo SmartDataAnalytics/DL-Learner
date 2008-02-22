@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.AxiomVisitor;
+import org.dllearner.core.owl.BooleanDatatypePropertyAssertion;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
@@ -146,6 +147,19 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		addAxiom(axiomOWLAPI);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.AssertionalAxiomVisitor#visit(org.dllearner.core.owl.BooleanDatatypePropertyAssertion)
+	 */
+	public void visit(BooleanDatatypePropertyAssertion axiom) {
+		OWLIndividual i = factory.getOWLIndividual(URI.create(axiom.getIndividual().getName()));
+		OWLDataProperty dp = factory.getOWLDataProperty(URI.create(axiom.getDatatypeProperty().getName()));
+		Boolean value = axiom.getValue();
+		OWLDataType booleanType = factory.getOWLDataType(XSDVocabulary.BOOLEAN.getURI());
+		OWLTypedConstant valueConstant = factory.getOWLTypedConstant(value.toString(), booleanType);
+		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyAssertionAxiom(i, dp, valueConstant);
+		addAxiom(axiomOWLAPI);		
+	}	
+	
 	/*
 	 * (non-Javadoc)
 	 * 

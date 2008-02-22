@@ -19,20 +19,36 @@
  */
 package org.dllearner.core.owl;
 
+import java.util.Map;
+
 /**
- * Visitor for assertional (ABox) axioms.
- * 
  * @author Jens Lehmann
  *
  */
-public interface AssertionalAxiomVisitor {
+public class BooleanDatatypePropertyAssertion extends DatatypePropertyAssertion {
 
-	public void visit(ClassAssertionAxiom axiom);
+	private boolean value;
 	
-	public void visit(ObjectPropertyAssertion axiom);
+	public BooleanDatatypePropertyAssertion(DatatypeProperty datatypeProperty, Individual individual, boolean value) {
+		super(datatypeProperty, individual);
+		this.value = value;
+	}
 	
-	public void visit(DoubleDatatypePropertyAssertion axiom);
+	public String toString(String baseURI, Map<String, String> prefixes) {
+		return datatypeProperty.toString(baseURI, prefixes) + "(" + individual.toString(baseURI, prefixes) + "," + value +")";
+	}
+
+	public boolean getValue() {
+		return value;
+	}
 	
-	public void visit(BooleanDatatypePropertyAssertion axiom);
-	
+	@Override
+	public void accept(AxiomVisitor visitor) {
+		visitor.visit(this);
+	}
+
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
+	}	
+
 }
