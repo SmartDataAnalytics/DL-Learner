@@ -140,7 +140,14 @@ public class Carcinogenesis {
 			kb.addAxiom(sc);
 		}
 		// define properties including domain and range
-		String kbString = "DPDOMAIN(" + getURI2("charge") + ") = " + getURI2("Atom") + ".";
+		String kbString = "DPDOMAIN(" + getURI2("charge") + ") = " + getURI2("Atom") + ".\n";
+		kbString += "DPRANGE(" + getURI2("charge") + ") = DOUBLE.\n";
+		kbString += "OPDOMAIN(" + getURI2("hasAtom") + ") = " + getURI2("Compound") + ".\n";
+		kbString += "OPRANGE(" + getURI2("hasAtom") + ") = " + getURI2("Atom") + ".\n";
+		kbString += "OPDOMAIN(" + getURI2("hasBond") + ") = " + getURI2("Compound") + ".\n";
+		kbString += "OPRANGE(" + getURI2("hasBond") + ") = " + getURI2("Bond") + ".\n";
+		kbString += "OPDOMAIN(" + getURI2("inBond") + ") = " + getURI2("Bond") + ".\n";
+		kbString += "OPRANGE(" + getURI2("inBond") + ") = " + getURI2("Atom") + ".\n";		
 		KB kb2 = KBParser.parseKBFile(kbString);
 		kb.addKB(kb2);
 
@@ -169,9 +176,11 @@ public class Carcinogenesis {
 		File confTrainFile = new File("examples/carcinogenesis/train.conf");
 		Files.clearFile(confTrainFile);
 		String confHeader = "import(\"pte.owl\");\n\n";
-		confHeader += "refinement.writeSearchTree = true;";
-		confHeader += "refinement.searchTreeFile = \"log/carcinogenesis/searchTree.log\"";
-		confHeader += "reasoner = owlAPI;\n";
+		confHeader += "reasoner = fastInstanceChecker;\n";
+		confHeader += "algorithm = refexamples;\n";
+//		confHeader += "refinement.writeSearchTree = true;";
+//		confHeader += "refinement.searchTreeFile = \"log/carcinogenesis/searchTree.log\"";
+		confHeader += "\n\n";
 		Files.appendFile(confTrainFile, confHeader);
 		
 		// generating training examples

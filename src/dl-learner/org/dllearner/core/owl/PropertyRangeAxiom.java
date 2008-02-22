@@ -36,5 +36,9 @@ public abstract class PropertyRangeAxiom extends PropertyAxiom {
 	public Property getProperty() {
 		return property;
 	}
+
+	public PropertyRange getRange() {
+		return range;
+	}
 	
 }

@@ -23,6 +23,6 @@ package org.dllearner.core.owl;
  * @author Jens Lehmann
  *
  */
-public interface Property extends KBElement {
+public interface Property extends NamedKBElement {
 
 }

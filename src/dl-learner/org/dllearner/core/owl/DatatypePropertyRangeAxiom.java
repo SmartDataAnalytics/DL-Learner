@@ -38,6 +38,11 @@ public class DatatypePropertyRangeAxiom extends PropertyRangeAxiom {
 		return range.getLength() + 2;
 	}
 
+	@Override
+	public DataRange getRange() {
+		return (DataRange) range;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
