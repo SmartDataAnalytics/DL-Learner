@@ -68,6 +68,11 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
       case 36:
       case 37:
       case 38:
+      case 39:
+      case 40:
+      case 41:
+      case 42:
+      case 43:
         ;
         break;
       default:
@@ -111,6 +116,17 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
         case 37:
         case 38:
           rBoxAxiom = DatatypePropertyDomainAxiom();
+                  kb.addRBoxAxiom(rBoxAxiom);
+          break;
+        case 39:
+        case 40:
+        case 41:
+          rBoxAxiom = ObjectPropertyRangeAxiom();
+                  kb.addRBoxAxiom(rBoxAxiom);
+          break;
+        case 42:
+        case 43:
+          rBoxAxiom = DatatypePropertyRangeAxiom();
                   kb.addRBoxAxiom(rBoxAxiom);
           break;
         default:
@@ -661,11 +677,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_22() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_14() {
     if (jj_scan_token(20)) return true;
     if (jj_3R_20()) return true;
@@ -874,6 +885,11 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     return false;
   }
 
+  final private boolean jj_3R_22() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
   final private boolean jj_3_2() {
     Token xsp;
     xsp = jj_scanpos;
@@ -905,7 +921,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
       jj_la1_0 = new int[] {0xf07f3200,0xf0000000,0x40000,0xc000000,0x0,0x0,0x0,0x0,0x0,0x203200,0x1f0000,0x200200,0x200200,0x200200,0x200200,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x7d,0x7d,0x0,0x2,0x1c,0x60,0x380,0xc00,0x7000,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0xffd,0xffd,0x0,0x2,0x1c,0x60,0x380,0xc00,0x7000,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[6];
   private boolean jj_rescan = false;
