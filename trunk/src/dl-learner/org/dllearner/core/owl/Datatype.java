@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+import java.net.URI;
 import java.util.Map;
 
 /**
@@ -33,6 +34,8 @@ public class Datatype extends DataRange {
 	public enum Type { DOUBLE, INT, BOOLEAN };
 	
 	private Type type;
+	
+	private static final String xsd = "http://www.w3.org/2001/XMLSchema#";
 	
 	public Datatype(Type type) {
 		this.type = type;
@@ -60,6 +63,15 @@ public class Datatype extends DataRange {
 		return null;
 	}
 
+	public URI getURI() {
+		switch(type) {
+		case DOUBLE: return URI.create(xsd + "double");
+		case INT: return URI.create(xsd + "int");
+		case BOOLEAN: return URI.create(xsd + "Boolean");
+		default: throw new Error("Unknown tpye " + type + ".");
+		}
+	}
+	
 	/**
 	 * @return the type
 	 */

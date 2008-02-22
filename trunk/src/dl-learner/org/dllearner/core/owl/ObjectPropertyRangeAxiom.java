@@ -28,12 +28,10 @@ import java.util.Map;
 public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 
 
-	public ObjectPropertyRangeAxiom(ObjectProperty property, Description domain) {
-		super(property, domain);
+	public ObjectPropertyRangeAxiom(ObjectProperty property, Description range) {
+		super(property, range);
 	}	
 	
-
-
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#getLength()
 	 */
@@ -49,6 +47,11 @@ public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 		return null;
 	}
 
+	@Override
+	public Description getRange() {
+		return (Description) range;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Axiom#accept(org.dllearner.core.owl.AxiomVisitor)
 	 */
@@ -62,6 +65,7 @@ public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 	 */
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}	
+	}
+
 	
 }

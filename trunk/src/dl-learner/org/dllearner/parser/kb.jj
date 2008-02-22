@@ -126,7 +126,11 @@ KB KB() :
   	| 	rBoxAxiom = ObjectPropertyDomainAxiom()
   		{ kb.addRBoxAxiom(rBoxAxiom); }
   	| 	rBoxAxiom = DatatypePropertyDomainAxiom()
-  		{ kb.addRBoxAxiom(rBoxAxiom); }  		
+  		{ kb.addRBoxAxiom(rBoxAxiom); }  
+  	| 	rBoxAxiom = ObjectPropertyRangeAxiom()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }
+  	| 	rBoxAxiom = DatatypePropertyRangeAxiom()
+  		{ kb.addRBoxAxiom(rBoxAxiom); }  
   		// da Konfigurationsoptionen ausgeschlossen sind, reicht es bis zum "=" zu suchen
   	|	LOOKAHEAD(Concept() "=") equality = TBoxEquiv()
   		{ kb.addTBoxAxiom(equality); }

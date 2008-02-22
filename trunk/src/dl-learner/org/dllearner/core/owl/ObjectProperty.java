@@ -30,7 +30,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class ObjectProperty extends ObjectPropertyExpression implements Property, NamedKBElement, Comparable<ObjectProperty> {
+public class ObjectProperty extends ObjectPropertyExpression implements Property, Comparable<ObjectProperty> {
 
 	public ObjectProperty(String name) {
 		super(name);

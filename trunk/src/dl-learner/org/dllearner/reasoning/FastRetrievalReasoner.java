@@ -16,8 +16,6 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.FlatABox;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;

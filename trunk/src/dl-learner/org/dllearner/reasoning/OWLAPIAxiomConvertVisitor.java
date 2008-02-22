@@ -26,6 +26,8 @@ import java.util.Set;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.AxiomVisitor;
 import org.dllearner.core.owl.ClassAssertionAxiom;
+import org.dllearner.core.owl.DataRange;
+import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypePropertyDomainAxiom;
 import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
 import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
@@ -250,26 +252,32 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.ObjectPropertyDomainAxiom)
 	 */
 	public void visit(ObjectPropertyDomainAxiom objectPropertyDomainAxiom) {
-		// TODO Auto-generated method stub
-		
+		OWLDescription d = getOWLDescription(objectPropertyDomainAxiom.getDomain());
+		OWLObjectProperty op = factory.getOWLObjectProperty(URI.create(objectPropertyDomainAxiom.getProperty().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLObjectPropertyDomainAxiom(op, d);
+		addAxiom(axiomOWLAPI);		
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.DatatypePropertyRangeAxiom)
 	 */
 	public void visit(DatatypePropertyRangeAxiom axiom) {
-		// TODO Auto-generated method stub
-		
+		DataRange dr = axiom.getRange();
+		Datatype dt = (Datatype) dr;
+		OWLDataType odt = factory.getOWLDataType(dt.getURI());
+		OWLDataProperty dp = factory.getOWLDataProperty(URI.create(axiom.getProperty().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLDataPropertyRangeAxiom(dp, odt);
+		addAxiom(axiomOWLAPI);		
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.PropertyAxiomVisitor#visit(org.dllearner.core.owl.ObjectPropertyRangeAxiom)
 	 */
 	public void visit(ObjectPropertyRangeAxiom axiom) {
-		// TODO Auto-generated method stub
-		
+		OWLDescription d = getOWLDescription(axiom.getRange());
+		OWLObjectProperty op = factory.getOWLObjectProperty(URI.create(axiom.getProperty().getName()));
+		OWLAxiom axiomOWLAPI = factory.getOWLObjectPropertyRangeAxiom(op, d);
+		addAxiom(axiomOWLAPI);		
 	}
-
-
 
 }

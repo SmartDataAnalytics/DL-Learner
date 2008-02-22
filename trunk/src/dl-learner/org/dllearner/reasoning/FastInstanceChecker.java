@@ -108,9 +108,14 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
-		rc = new DIGReasoner(sources);
+		rc = new OWLAPIReasoner(sources);
+		// DIG will only be used to get the role pairs;
+		// outside the constructor, OWL API will be used because 
+		// it is fast than DIG
+		DIGReasoner rcDIG = new DIGReasoner(sources);
 		try {
 			rc.init();
+			rcDIG.init();
 		} catch (ComponentInitException e1) {
 			e1.printStackTrace();
 		}
@@ -130,7 +135,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		}
 
 		for (ObjectProperty atomicRole : rs.getAtomicRoles()) {
-			opPos.put(atomicRole, rs.getRoleMembers(atomicRole));
+			opPos.put(atomicRole, rcDIG.getRoleMembers(atomicRole));
 		}
 
 		long dematDuration = System.currentTimeMillis() - dematStartTime;
