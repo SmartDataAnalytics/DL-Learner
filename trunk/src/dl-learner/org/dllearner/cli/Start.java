@@ -167,62 +167,26 @@ public class Start {
 
 		// step 2: detect used reasoner
 		ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
-		Class<? extends ReasonerComponent> reasonerClass = null;
-		// default value
-		if (reasonerOption == null || reasonerOption.getStringValue().equals("dig"))
-			reasonerClass = DIGReasoner.class;
-		else if (reasonerOption.getStringValue().equals("owlAPI"))
-			reasonerClass = OWLAPIReasoner.class;
-		else if (reasonerOption.getStringValue().equals("fastRetrieval"))
-			reasonerClass = FastRetrievalReasoner.class;
-		else {
-			handleError("Unknown value " + reasonerOption.getStringValue()
-					+ " for option \"reasoner\".");
-		}
-		ReasonerComponent reasoner = cm.reasoner(reasonerClass, sources);
+		ReasonerComponent reasoner = cm.reasoner(getReasonerClass(reasonerOption), sources);
 		configureComponent(cm, reasoner, componentPrefixMapping, parser);
 		initComponent(cm, reasoner);
 		rs = cm.reasoningService(reasoner);
 
 		// step 3: detect learning problem
 		ConfFileOption problemOption = parser.getConfOptionsByName("problem");
-		Class<? extends LearningProblem> lpClass = null;
-		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinition"))
-			lpClass = PosNegDefinitionLP.class;
-		else if (problemOption.getStringValue().equals("posNegInclusion"))
-			lpClass = PosNegInclusionLP.class;
-		else if (problemOption.getStringValue().equals("posOnlyDefinition"))
-			lpClass = PosOnlyDefinitionLP.class;
-		else
-			handleError("Unknown value " + problemOption.getValue() + " for option \"problem\".");
-
-		lp = cm.learningProblem(lpClass, rs);
+		lp = cm.learningProblem(getLearningProblemClass(problemOption), rs);
 		SortedSet<String> posExamples = parser.getPositiveExamples();
 		SortedSet<String> negExamples = parser.getNegativeExamples();
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
-		if (lpClass != PosOnlyDefinitionLP.class)
+		if (getLearningProblemClass(problemOption) != PosOnlyDefinitionLP.class)
 			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 		configureComponent(cm, lp, componentPrefixMapping, parser);
 		initComponent(cm, lp);
 
 		// step 4: detect learning algorithm
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
-		Class<? extends LearningAlgorithm> laClass = null;
-		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
-			laClass = ROLearner.class;
-		else if (algorithmOption.getStringValue().equals("refexamples"))
-			laClass = ExampleBasedROLComponent.class;
-		else if (algorithmOption.getStringValue().equals("gp"))
-			laClass = GP.class;
-		else if (algorithmOption.getStringValue().equals("bruteForce"))
-			laClass = BruteForceLearner.class;
-		else if (algorithmOption.getStringValue().equals("randomGuesser"))
-			laClass = RandomGuesser.class;
-		else
-			handleError("Unknown value in " + algorithmOption);
-
 		try {
-			la = cm.learningAlgorithm(laClass, lp, rs);
+			la = cm.learningAlgorithm(getLearningAlgorithm(algorithmOption), lp, rs);
 		} catch (LearningProblemUnsupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -368,7 +332,7 @@ public class Start {
 	}
 
 	/**
-	 * detects all imported files and their format 
+	 * detects all imported files and their format
 	 */
 	public static Map<URL, Class<? extends KnowledgeSource>> getImportedFiles(ConfParser parser,
 			String baseDir) {
@@ -770,4 +734,73 @@ public class Start {
 		return rs;
 	}
 
+	// edit by Tilo Hielscher
+
+	/**
+	 * Set Reasoner class. Define here all possible reasoners.
+	 * 
+	 * @param reasonerOption
+	 *            from config file
+	 * @return reasonerClass reasoner class
+	 */
+	public static Class<? extends ReasonerComponent> getReasonerClass(ConfFileOption reasonerOption) {
+		Class<? extends ReasonerComponent> reasonerClass = null;
+		if (reasonerOption == null || reasonerOption.getStringValue().equals("dig"))
+			reasonerClass = DIGReasoner.class;
+		else if (reasonerOption.getStringValue().equals("owlAPI"))
+			reasonerClass = OWLAPIReasoner.class;
+		else if (reasonerOption.getStringValue().equals("fastRetrieval"))
+			reasonerClass = FastRetrievalReasoner.class;
+		else {
+			handleError("Unknown value " + reasonerOption.getStringValue()
+					+ " for option \"reasoner\".");
+		}
+		return reasonerClass;
+	}
+
+	/**
+	 * Set LearningProblem class. Define here all possible problems.
+	 * 
+	 * @param problemOption
+	 *            from config file
+	 * @return lpClass learning problem class
+	 */
+	public static Class<? extends LearningProblem> getLearningProblemClass(ConfFileOption problemOption) {
+		Class<? extends LearningProblem> lpClass = null;
+		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinition"))
+			lpClass = PosNegDefinitionLP.class;
+		else if (problemOption.getStringValue().equals("posNegInclusion"))
+			lpClass = PosNegInclusionLP.class;
+		else if (problemOption.getStringValue().equals("posOnlyDefinition"))
+			lpClass = PosOnlyDefinitionLP.class;
+		else
+			handleError("Unknown value " + problemOption.getValue() + " for option \"problem\".");
+
+		return lpClass;
+	}
+
+	/**
+	 * Set LearningAlorithm class. Define here all possible learning algorithms.
+	 * 
+	 * @param algorithmOption
+	 *            from config file
+	 * @return laClass learning algorithm class
+	 */
+	public static Class<? extends LearningAlgorithm> getLearningAlgorithm(ConfFileOption algorithmOption) {
+		Class<? extends LearningAlgorithm> laClass = null;
+		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
+			laClass = ROLearner.class;
+		else if (algorithmOption.getStringValue().equals("refexamples"))
+			laClass = ExampleBasedROLComponent.class;
+		else if (algorithmOption.getStringValue().equals("gp"))
+			laClass = GP.class;
+		else if (algorithmOption.getStringValue().equals("bruteForce"))
+			laClass = BruteForceLearner.class;
+		else if (algorithmOption.getStringValue().equals("randomGuesser"))
+			laClass = RandomGuesser.class;
+		else
+			handleError("Unknown value in " + algorithmOption);
+
+		return laClass;
+	}
 }

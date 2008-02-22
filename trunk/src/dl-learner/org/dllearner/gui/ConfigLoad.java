@@ -20,40 +20,16 @@ package org.dllearner.gui;
  *
  */
 
-import java.io.File; // import java.net.URL;
-import java.net.URL; // import java.util.HashSet;
-import java.util.Map; // import java.util.Set;
-import java.util.SortedSet; // import java.util.List;
-// import java.util.Map;
-import org.dllearner.algorithms.BruteForceLearner;
-import org.dllearner.algorithms.RandomGuesser;
-import org.dllearner.algorithms.gp.GP;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
-import org.dllearner.algorithms.refinement.ROLearner;
+import java.io.File;
+import java.net.URL;
+import java.util.Map;
+import java.util.SortedSet;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource; // import
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent; // org.dllearner.core.LearningProblem;
-// import org.dllearner.core.ReasoningService;
-// import org.dllearner.core.LearningAlgorithm;
-// import org.dllearner.core.ReasonerComponent;
-// import org.dllearner.core.config.ConfigEntry;
-// import org.dllearner.core.config.InvalidConfigOptionValueException;
-// import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
-import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.parser.ConfParser;
-import org.dllearner.reasoning.DIGReasoner;
-import org.dllearner.reasoning.FastRetrievalReasoner;
-import org.dllearner.reasoning.OWLAPIReasoner; // import
-// org.dllearner.kb.KBFile;
-// import org.dllearner.kb.OWLFile;
-// import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.core.Component; // import
-// org.dllearner.cli.ConfFileOption;
+import org.dllearner.core.Component;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.cli.Start;
 
@@ -131,20 +107,8 @@ public class ConfigLoad {
 
 			// REASONER
 			ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
-			Class<? extends ReasonerComponent> reasonerClass = null;
-			// default value
-			if (reasonerOption == null || reasonerOption.getStringValue().equals("dig"))
-				reasonerClass = DIGReasoner.class;
-			else if (reasonerOption.getStringValue().equals("owlAPI"))
-				reasonerClass = OWLAPIReasoner.class;
-			else if (reasonerOption.getStringValue().equals("fastRetrieval"))
-				reasonerClass = FastRetrievalReasoner.class;
-			else {
-				Start.handleError("Unknown value " + reasonerOption.getStringValue()
-						+ " for option \"reasoner\".");
-			}
-			config.setReasoner(config.getComponentManager().reasoner(reasonerClass,
-					config.getKnowledgeSource()));
+			config.setReasoner(config.getComponentManager().reasoner(
+					Start.getReasonerClass(reasonerOption), config.getKnowledgeSource()));
 			Start.configureComponent(config.getComponentManager(), config.getReasoner(),
 					componentPrefixMapping, parser);
 			if (config.getKnowledgeSource() != null && config.getReasoner() != null) {
@@ -164,23 +128,13 @@ public class ConfigLoad {
 
 			// LEARNING PROBLEM
 			ConfFileOption problemOption = parser.getConfOptionsByName("problem");
-			Class<? extends LearningProblem> lpClass = null;
-			if (problemOption == null || problemOption.getStringValue().equals("posNegDefinition"))
-				lpClass = PosNegDefinitionLP.class;
-			else if (problemOption.getStringValue().equals("posNegInclusion"))
-				lpClass = PosNegInclusionLP.class;
-			else if (problemOption.getStringValue().equals("posOnlyDefinition"))
-				lpClass = PosOnlyDefinitionLP.class;
-			else
-				Start.handleError("Unknown value " + problemOption.getValue()
-						+ " for option \"problem\".");
-			config.setLearningProblem(config.getComponentManager().learningProblem(lpClass,
-					config.getReasoningService()));
+			config.setLearningProblem(config.getComponentManager().learningProblem(
+					Start.getLearningProblemClass(problemOption), config.getReasoningService()));
 			SortedSet<String> posExamples = parser.getPositiveExamples();
 			SortedSet<String> negExamples = parser.getNegativeExamples();
 			config.getComponentManager().applyConfigEntry(config.getLearningProblem(),
 					"positiveExamples", posExamples);
-			if (lpClass != PosOnlyDefinitionLP.class)
+			if (Start.getLearningProblemClass(problemOption) != PosOnlyDefinitionLP.class)
 				config.getComponentManager().applyConfigEntry(config.getLearningProblem(),
 						"negativeExamples", negExamples);
 			Start.configureComponent(config.getComponentManager(), config.getLearningProblem(),
@@ -198,30 +152,17 @@ public class ConfigLoad {
 
 			// LEARNING ALGORITHM
 			ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
-			Class<? extends LearningAlgorithm> laClass = null;
-			if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
-				laClass = ROLearner.class;
-			else if(algorithmOption.getStringValue().equals("refexamples"))
-				laClass = ExampleBasedROLComponent.class;		
-			else if(algorithmOption.getStringValue().equals("gp"))
-				laClass = GP.class;
-			else if(algorithmOption.getStringValue().equals("bruteForce"))
-				laClass = BruteForceLearner.class;
-			else if(algorithmOption.getStringValue().equals("randomGuesser"))
-				laClass = RandomGuesser.class;		
-			else
-				Start.handleError("Unknown value in " + algorithmOption);
-
 			if (config.getLearningProblem() != null && config.getReasoningService() != null) {
 				try {
 					config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(
-							laClass, config.getLearningProblem(),
-							config.getReasoningService()));
+							Start.getLearningAlgorithm(algorithmOption),
+							config.getLearningProblem(), config.getReasoningService()));
 				} catch (LearningProblemUnsupportedException e) {
 					e.printStackTrace();
 				}
 			}
-			Start.configureComponent(config.getComponentManager(), config.getLearningAlgorithm(), componentPrefixMapping, parser);
+			Start.configureComponent(config.getComponentManager(), config.getLearningAlgorithm(),
+					componentPrefixMapping, parser);
 			if (config.getLearningProblem() != null) {
 				try {
 					config.getLearningAlgorithm().init();
@@ -231,15 +172,9 @@ public class ConfigLoad {
 					e.printStackTrace();
 				}
 			}
-			
+
 			// update graphic
 			startGUI.updateTabColors();
-
-			//System.out.println("reasoner: " + parser.getConfOptionsByName("reasoner"));
-			//System.out.println("confoptions: " + parser.getConfOptions());
-			//System.out.println("posExamples: " + parser.getPositiveExamples());
-			//System.out.println("confoptionbyname: " + parser.getConfOptionsByName());
-
 		}
 	}
 
