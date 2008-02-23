@@ -35,4 +35,6 @@ public interface AssertionalAxiomVisitor {
 	
 	public void visit(BooleanDatatypePropertyAssertion axiom);
 	
+	public void visit(DifferentIndividualsAxiom axiom);
+	
 }

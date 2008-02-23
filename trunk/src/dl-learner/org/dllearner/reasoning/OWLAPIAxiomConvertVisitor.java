@@ -31,9 +31,13 @@ import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypePropertyDomainAxiom;
 import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.DifferentIndividualsAxiom;
+import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.DoubleDatatypePropertyAssertion;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.InverseObjectPropertyAxiom;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
@@ -291,6 +295,30 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		OWLDescription d = getOWLDescription(axiom.getRange());
 		OWLObjectProperty op = factory.getOWLObjectProperty(URI.create(axiom.getProperty().getName()));
 		OWLAxiom axiomOWLAPI = factory.getOWLObjectPropertyRangeAxiom(op, d);
+		addAxiom(axiomOWLAPI);		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.AssertionalAxiomVisitor#visit(org.dllearner.core.owl.DifferentIndividualsAxiom)
+	 */
+	public void visit(DifferentIndividualsAxiom axiom) {
+		Set<Individual> individuals = axiom.getIndividuals();
+		Set<OWLIndividual> owlAPIIndividuals = new HashSet<OWLIndividual>();
+		for(Individual individual : individuals)
+			owlAPIIndividuals.add(factory.getOWLIndividual(URI.create(individual.getName())));
+		OWLAxiom axiomOWLAPI = factory.getOWLDifferentIndividualsAxiom(owlAPIIndividuals);
+		addAxiom(axiomOWLAPI);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.TerminologicalAxiomVisitor#visit(org.dllearner.core.owl.DisjointClassesAxiom)
+	 */
+	public void visit(DisjointClassesAxiom axiom) {
+		Set<Description> descriptions = axiom.getDescriptions();
+		Set<OWLDescription> owlAPIDescriptions = new HashSet<OWLDescription>();
+		for(Description description : descriptions)
+			owlAPIDescriptions.add(getOWLDescription(description));
+		OWLAxiom axiomOWLAPI = factory.getOWLDisjointClassesAxiom(owlAPIDescriptions);
 		addAxiom(axiomOWLAPI);		
 	}
 
