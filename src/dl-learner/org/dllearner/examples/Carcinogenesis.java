@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.owl.BooleanDatatypePropertyAssertion;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.DifferentIndividualsAxiom;
+import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassAssertionAxiom;
@@ -96,10 +100,14 @@ public class Carcinogenesis {
 	private static int bondNr = 0;
 	private static int structureNr = 0;
 	
+	// list of all individuals in the knowlege base
+//	private static Set<String> individuals = new TreeSet<String>();	
 	// list of all compounds
 	private static Set<String> compounds = new TreeSet<String>(); 
 	// compounds with positive ames test
 	private static Set<String> compoundsAmes = new TreeSet<String>();
+	// list of all bonds
+	private static Set<String> bonds = new TreeSet<String>();
 	
 	// list of all "hasProperty" test
 	private static Set<String> tests = new TreeSet<String>();
@@ -187,8 +195,16 @@ public class Carcinogenesis {
 			}
 		}
 		
-		// TODO: disjoint classes axioms
-		// TODO: all different axiom (UNA)
+		// disjoint classes axioms
+		DisjointClassesAxiom disjointAtomTypes = getDisjointClassesAxiom(atomTypes);
+		kb.addAxiom(disjointAtomTypes);
+		
+		// all different axiom (UNA)
+		// exporting differentIndividuals axioms is broken in OWL API
+//		individuals.addAll(compounds);
+//		individuals.addAll(bonds);
+//		DifferentIndividualsAxiom una = getDifferentIndividualsAxiom(individuals);
+//		kb.addAxiom(una);
 		
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
@@ -294,6 +310,7 @@ public class Carcinogenesis {
 			String bondType = head.getArgument(3).toPLString();
 			String bondClass = "Bond-" + bondType;
 			String bondInstance = "bond" + bondNr;
+			bonds.add(bondInstance);
 			ObjectPropertyAssertion op = getRoleAssertion("hasBond", compoundName, "bond" + bondNr);
 			axioms.add(op);
 			// make Bond-X subclass of Bond if that hasn't been done already
@@ -426,6 +443,21 @@ public class Carcinogenesis {
 		return new DoubleDatatypePropertyAssertion(dp, ind, value);
 	}
 
+	private static DisjointClassesAxiom getDisjointClassesAxiom(Set<String> classes) {
+		Set<Description> descriptions = new HashSet<Description>();
+		for(String namedClass : classes)
+			descriptions.add(new NamedClass(namedClass));
+		return new DisjointClassesAxiom(descriptions);
+	}
+	
+	@SuppressWarnings({"unused"})
+	private static DifferentIndividualsAxiom getDifferentIndividualsAxiom(Set<String> individuals) {
+		Set<Individual> inds = new HashSet<Individual>();
+		for(String i : individuals)
+			inds.add(new Individual(i));
+		return new DifferentIndividualsAxiom(inds);
+	}	
+	
 	private static Individual getIndividual(String name) {
 		return new Individual(ontologyURI + "#" + name);
 	}
