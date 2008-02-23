@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,13 +83,26 @@ public class Carcinogenesis {
 	// mapping of symbols to names of chemical elements
 	private static Map<String, String> chemElements;
 
-	// types of atoms and bonds
+	// structures in newgroups.pl
+	private static Set<String> newGroups = new TreeSet<String>();
+	
+	// types of atoms, bonds, and structures
 	private static Set<String> atomTypes = new TreeSet<String>();
 	private static Set<String> bondTypes = new TreeSet<String>();
+	private static Set<String> structureTypes = new TreeSet<String>();
 
 	// we need a counter for bonds, because they are instances in OWL
 	// but not in Prolog
 	private static int bondNr = 0;
+	private static int structureNr = 0;
+	
+	// list of all compounds
+	private static Set<String> compounds = new TreeSet<String>(); 
+	// compounds with positive ames test
+	private static Set<String> compoundsAmes = new TreeSet<String>();
+	
+	// list of all "hasProperty" test
+	private static Set<String> tests = new TreeSet<String>();
 	
 	/**
 	 * @param args
@@ -100,8 +114,8 @@ public class Carcinogenesis {
 	public static void main(String[] args) throws FileNotFoundException, IOException,
 			ParseException {
 
-		String[] files = new String[] { "ames.pl", "atoms.pl", "bonds.pl", "gentoxprops.pl",
-				"ind_nos.pl", "ind_pos.pl", "newgroups.pl",
+		String[] files = new String[] { "newgroups.pl", "ames.pl", "atoms.pl", "bonds.pl", "gentoxprops.pl",
+				"ind_nos.pl", "ind_pos.pl", 
 		// "train.b" => not a pure Prolog file but Progol/Aleph specific
 		};
 		File owlFile = new File("examples/carcinogenesis/pte.owl");
@@ -133,6 +147,7 @@ public class Carcinogenesis {
 		// prepare mapping
 		KB kb = new KB();
 		createChemElementsMapping();
+		createNewGroups();
 		// create subclasses of atom
 		NamedClass atomClass = getAtomicConcept("Atom");
 		for (String element : chemElements.values()) {
@@ -161,6 +176,20 @@ public class Carcinogenesis {
 			for (Axiom axiom : axioms)
 				kb.addAxiom(axiom);
 		}
+		// special handling for ames test (we assume the ames test
+		// was performed on all compounds but only the positive ones
+		// are in ames.pl [the rest is negative in Prolog by CWA], so
+		// we add negative test results here)
+		for(String compound : compounds) {
+			if(!compoundsAmes.contains(compound)) {
+				BooleanDatatypePropertyAssertion ames = getBooleanDatatypePropertyAssertion(compound, "amesTestPositive", false);
+				kb.addAxiom(ames);
+			}
+		}
+		
+		// TODO: disjoint classes axioms
+		// TODO: all different axiom (UNA)
+		
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");
@@ -210,7 +239,7 @@ public class Carcinogenesis {
 		// on "Testing Status of Agents at NTP"
 	}
 
-	private static List<Axiom> mapClause(Clause clause) {
+	private static List<Axiom> mapClause(Clause clause) throws IOException, ParseException {
 		List<Axiom> axioms = new LinkedList<Axiom>();
 		Atom head = clause.getHead();
 		String headName = head.getName();
@@ -228,7 +257,7 @@ public class Carcinogenesis {
 			String compoundName = head.getArgument(0).toPLString();
 			BooleanDatatypePropertyAssertion ames = getBooleanDatatypePropertyAssertion(compoundName, "amesTestPositive", true);
 			axioms.add(ames);
-			
+			compoundsAmes.add(compoundName);
 		} else if (headName.equals("atm")) {
 			String compoundName = head.getArgument(0).toPLString();
 			String atomName = head.getArgument(1).toPLString();
@@ -237,7 +266,8 @@ public class Carcinogenesis {
 			double charge = Double.parseDouble(head.getArgument(4).toPLString());
 			// make the compound an instance of the Compound class
 			ClassAssertionAxiom cmpAxiom = getConceptAssertion("Compound", compoundName);
-			axioms.add(cmpAxiom);			
+			axioms.add(cmpAxiom);
+			compounds.add(compoundName);
 			// relate compound and atom
 			ObjectPropertyAssertion ra = getRoleAssertion("hasAtom", compoundName, atomName);
 			axioms.add(ra);
@@ -282,12 +312,55 @@ public class Carcinogenesis {
 			ObjectPropertyAssertion op2 = getRoleAssertion("inBond", bondInstance, atom2Name);
 			axioms.add(op1);
 			axioms.add(op2);
+		} else if (headName.equals("has_property")) {
+			String compoundName = head.getArgument(0).toPLString();
+			String testName = head.getArgument(1).toPLString();
+			boolean testResult = Boolean.parseBoolean(head.getArgument(2).toPLString());
+			// create a new datatype property if it does not exist already
+			if(!tests.contains(testName)) {
+				String axiom1 = "DPDOMAIN(" + getURI2(testName) + ") = " + getURI2("Compound") + ".\n";
+				String axiom2 = "DPRANGE(" + getURI2(testName) + ") = BOOLEAN.\n";
+				KB kb = KBParser.parseKBFile(axiom1 + axiom2);
+				axioms.addAll(kb.getAxioms());
+			}
+			// create an axiom with the test result
+			DatatypePropertyAssertion dpa = getBooleanDatatypePropertyAssertion(compoundName, testName,
+					testResult);
+			axioms.add(dpa);
+		// either parse this or ashby_alert - not both - ashby_alert contains
+		// all information in ind already
+		} else if (headName.equals("ind")) {
+			String compoundName = head.getArgument(0).toPLString();
+			String structureName = head.getArgument(1).toPLString();
+			int count = Integer.parseInt(head.getArgument(2).toPLString());
+			// upper case first letter
+			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);;
+			String structureInstance = structureName + "-" + structureNr;
+			
+			if (!bondTypes.contains(structureClass)) {
+				NamedClass subClass = getAtomicConcept(structureClass);
+				SubClassAxiom sc = new SubClassAxiom(subClass, getAtomicConcept("Structure"));
+				axioms.add(sc);
+				structureTypes.add(structureClass);
+			}			
+			
+			for(int i=0; i<count; i++) {
+				ObjectPropertyAssertion op = getRoleAssertion("hasStructure", compoundName, structureInstance);
+				axioms.add(op);
+				// make e.g. halide10-382 instance of Bond-3
+				ClassAssertionAxiom ca = getConceptAssertion(structureClass, structureInstance);
+				axioms.add(ca);
+				structureNr++;
+			}
+		} else if (headName.equals("ashby_alert")) {
+			// ... currently ignored ...
+		} else if (newGroups.contains(headName)) {
 		} else {
 			// print clauses which are not supported yet
 			System.out.println("unsupported clause");
 			System.out.println(clause.toPLString());
 			System.out.println(clause);
-//			System.exit(0);
+			System.exit(0);
 		}
 		return axioms;
 	}
@@ -419,4 +492,19 @@ public class Carcinogenesis {
 		chemElements.put("v", "Vanadium");
 		chemElements.put("zn", "Zinc");
 	}
+	
+	private static void createNewGroups() {		
+		String[] groups = new String[] {"six_ring", "non_ar_6c_ring",
+				"ketone", "amine", "alcohol", "ether", "ar_halide",
+				"five_ring", "non_ar_5c_ring", "alkyl_halide",
+				"methyl", "non_ar_hetero_5_ring", "nitro", "sulfo",
+				"methoxy", "amine", "aldehyde", "sulfide",
+				"non_ar_hetero_6_ring", "phenol", "carboxylic_acid",
+				"ester", "imine", 
+		};
+		
+		List<String> list = Arrays.asList(groups);
+		newGroups.addAll(list);
+	}
+
 }

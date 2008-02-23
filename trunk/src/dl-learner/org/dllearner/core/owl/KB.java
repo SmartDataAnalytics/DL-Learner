@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 public class KB implements KBElement {
 
+	// private Set<Axiom> axioms = new HashSet<Axiom>();
 	private Set<AssertionalAxiom> abox = new HashSet<AssertionalAxiom>();
 	private Set<TerminologicalAxiom> tbox = new HashSet<TerminologicalAxiom>();
 	private Set<PropertyAxiom> rbox = new HashSet<PropertyAxiom>();
@@ -239,6 +240,23 @@ public class KB implements KBElement {
 	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
-	}	
+	}
+
+	/**
+	 * Returns all axioms in the ontology. Note that calling this
+	 * method is not efficient for large knowledge bases, since
+	 * internally all axioms are separated into ABox, RBox, and 
+	 * TBox, which means that a union of these sets is computed
+	 * and returned here.
+	 * 
+	 * @return All axioms in the ontology.
+	 */
+	public Set<Axiom> getAxioms() {
+		Set<Axiom> axioms = new HashSet<Axiom>();
+		axioms.addAll(abox);
+		axioms.addAll(rbox);
+		axioms.addAll(tbox);
+		return axioms;
+	}
 	
 }
