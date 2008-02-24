@@ -47,7 +47,7 @@ public class TypedConstant extends Constant {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return literal + datatype.toString(baseURI, prefixes);
+		return literal + "^^" + datatype;
 	}
 
 	/**

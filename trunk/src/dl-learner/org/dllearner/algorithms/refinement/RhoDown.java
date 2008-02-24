@@ -42,6 +42,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.ValueRestriction;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 
@@ -143,7 +144,8 @@ public class RhoDown implements RefinementOperator {
 
 		} else if (concept instanceof Nothing) {
 			// return new HashSet<Concept>();
-//		} else if (concept instanceof )
+		} else if (concept instanceof ValueRestriction) {
+			// value restrictions cannot be further refined	
 		} else if (concept instanceof NamedClass) {
 			// Erkenntnisse aus Benchmarks: dieser Teil wird sehr häufig aufgerufen,
 			// allerdings lässt er sich kaum weiter verbessern (selbst ohne klonen

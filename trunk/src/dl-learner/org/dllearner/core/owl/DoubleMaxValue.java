@@ -28,7 +28,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class DoubleMaxValue extends DoubleDataRange {
+public class DoubleMaxValue implements DoubleDataRange {
 
 	private double value;
 	

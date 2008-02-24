@@ -28,7 +28,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class BooleanDataRange extends DataRange {
+public class BooleanDataRange implements DataRange {
 
 	private boolean isTrue;
 	
