@@ -379,15 +379,15 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 44:
       jj_consume_token(44);
-                     range = new Datatype(Datatype.Type.DOUBLE);
+                     range = Datatype.DOUBLE;
       break;
     case 45:
       jj_consume_token(45);
-                      range = new Datatype(Datatype.Type.BOOLEAN);
+                      range = Datatype.BOOLEAN;
       break;
     case 46:
       jj_consume_token(46);
-                      range = new Datatype(Datatype.Type.INT);
+                      range = Datatype.INT;
       break;
     default:
       jj_la1[8] = jj_gen;
