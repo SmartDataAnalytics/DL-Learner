@@ -25,4 +25,8 @@ package org.dllearner.core.owl;
  */
 public abstract class QuantorRestriction extends Restriction {
 
+	public QuantorRestriction(PropertyExpression restrictedPropertyExpression) {
+		super(restrictedPropertyExpression);
+	}
+
 }

@@ -20,10 +20,21 @@
 package org.dllearner.core.owl;
 
 /**
+ * A restriction always acts along a property expression.
+ * 
  * @author Jens Lehmann
  *
  */
 public abstract class Restriction extends Description {
+	
+	PropertyExpression restrictedPropertyExpression;
+	
+	public Restriction(PropertyExpression restrictedPropertyExpression) {
+		this.restrictedPropertyExpression = restrictedPropertyExpression;
+	}
 
-
+	public PropertyExpression getRestrictedPropertyExpression() {
+		return restrictedPropertyExpression;
+	}
+	
 }

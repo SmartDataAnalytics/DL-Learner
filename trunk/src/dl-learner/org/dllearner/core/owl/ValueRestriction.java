@@ -19,37 +19,22 @@
  */
 package org.dllearner.core.owl;
 
-import java.util.Map;
-
 /**
+ * 
+ * 
  * @author Jens Lehmann
  *
  */
-public abstract class ValueRestriction extends Description {
+public abstract class ValueRestriction extends Restriction {
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Concept#getArity()
-	 */
-	@Override
-	public int getArity() {
-		// TODO Auto-generated method stub
-		return 0;
+	KBElement value;
+	
+	public ValueRestriction(PropertyExpression propertyExpression, KBElement value) {
+		super(propertyExpression);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#getLength()
-	 */
-	public int getLength() {
-		// TODO Auto-generated method stub
-		return 0;
+	public KBElement getValue() {
+		return value;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
-	 */
-	public String toString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 }

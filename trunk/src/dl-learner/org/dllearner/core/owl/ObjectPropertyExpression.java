@@ -27,7 +27,7 @@ package org.dllearner.core.owl;
  * @author Jens Lehmann
  *
  */
-public abstract class ObjectPropertyExpression extends PropertyExpression implements KBElement {
+public abstract class ObjectPropertyExpression implements PropertyExpression {
 
 	protected String name;
 	

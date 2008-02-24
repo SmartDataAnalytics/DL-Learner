@@ -35,12 +35,12 @@ public class ObjectAllRestriction extends ObjectQuantorRestriction {
 	}
 		
     public String toString(String baseURI, Map<String,String> prefixes) {
-        return "ALL " + role + "." + children.get(0).toString(baseURI, prefixes);
+        return "ALL " + restrictedPropertyExpression.toString(baseURI, prefixes) + "." + children.get(0).toString(baseURI, prefixes);
     }
       
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-	    return role.toString(baseURI, prefixes) + " some " + children.get(0).toManchesterSyntaxString(baseURI, prefixes);
+	    return restrictedPropertyExpression.toString(baseURI, prefixes) + " some " + children.get(0).toManchesterSyntaxString(baseURI, prefixes);
 	}	   
     
 	/* (non-Javadoc)
