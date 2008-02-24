@@ -550,6 +550,15 @@ public class RhoDown implements RefinementOperator {
 				}				
 				m.put(3,m3);
 			}
+			
+			// boolean datatypes, e.g. testPositive = true
+			if(useBooleanDatatypes) {
+//				Set<Description> m3 = new TreeSet<Description>(conceptComparator);
+				// TODO: code for getting boolean datatypes
+//				m.put(3,m3);
+				// TODO: do not use put here because we overwrite the
+				// EXISTS quantor stuff
+			}
 		}
 		
 		if(maxLength>2) {

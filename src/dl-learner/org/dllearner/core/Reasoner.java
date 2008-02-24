@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -88,5 +89,11 @@ public interface Reasoner {
 
 	public Set<ObjectProperty> getAtomicRoles();
 
+	// currently, we do not require that datatype properties can be returned;
+	// the main reason is that DIG does not distinguish between datatype and
+	// object properties (of course one could implement it but it is not easy)
+	public Set<DatatypeProperty> getDatatypeProperties() throws ReasoningMethodUnsupportedException;
+	
 	public SortedSet<Individual> getIndividuals();
+	
 }

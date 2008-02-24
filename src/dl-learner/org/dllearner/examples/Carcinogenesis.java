@@ -196,8 +196,10 @@ public class Carcinogenesis {
 		}
 		
 		// disjoint classes axioms
-		DisjointClassesAxiom disjointAtomTypes = getDisjointClassesAxiom(atomTypes);
-		kb.addAxiom(disjointAtomTypes);
+		// OWL API is also buggy here, it adds a strange unused prefix
+		// and cannot parser its own generated file
+//		DisjointClassesAxiom disjointAtomTypes = getDisjointClassesAxiom(atomTypes);
+//		kb.addAxiom(disjointAtomTypes);
 		
 		// all different axiom (UNA)
 		// exporting differentIndividuals axioms is broken in OWL API
@@ -443,6 +445,7 @@ public class Carcinogenesis {
 		return new DoubleDatatypePropertyAssertion(dp, ind, value);
 	}
 
+	@SuppressWarnings({"unused"})
 	private static DisjointClassesAxiom getDisjointClassesAxiom(Set<String> classes) {
 		Set<Description> descriptions = new HashSet<Description>();
 		for(String namedClass : classes)
