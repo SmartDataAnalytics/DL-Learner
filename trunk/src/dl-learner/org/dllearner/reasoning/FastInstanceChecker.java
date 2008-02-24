@@ -35,6 +35,7 @@ import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -59,8 +60,8 @@ import org.dllearner.parser.ParseException;
  * model of the knowledge base (TODO: more explanation), which is neither correct nor
  * complete, but sufficient in many cases. A big advantage of the algorithm is that it
  * does not need even need to perform any set modifications (union, intersection, difference),
- * so it avoids any object creation, which makes it very fast compared to standard
- * reasoners (TODO: maybe add some benchmarks once it is implemented).
+ * so it avoids any Java object creation, which makes it extremely fast compared to standard
+ * reasoners.
  * 
  * Note: This algorithm works only on concepts in negation normal form!
  * 
@@ -74,10 +75,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 	
 	private Set<NamedClass> atomicConcepts;
 	private Set<ObjectProperty> atomicRoles;
+	private Set<DatatypeProperty> datatypeProperties;
 	private SortedSet<Individual> individuals;
 	
 	private ReasoningService rs;
-	private ReasonerComponent rc;
+	private OWLAPIReasoner rc;
 	private Set<KnowledgeSource> sources;
 	
 	// we use sorted sets (map indices) here, because they have only log(n)
@@ -94,7 +96,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 		this.sources = sources;
 	}
 	
-	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.config.ConfigEntry)
 	 */
@@ -109,17 +110,10 @@ public class FastInstanceChecker extends ReasonerComponent {
 	@Override
 	public void init() throws ComponentInitException {
 		rc = new OWLAPIReasoner(sources);
-		// DIG will only be used to get the role pairs;
-		// outside the constructor, OWL API will be used because 
-		// it is fast than DIG
-		DIGReasoner rcDIG = new DIGReasoner(sources);
-		try {
-			rc.init();
-			rcDIG.init();
-		} catch (ComponentInitException e1) {
-			e1.printStackTrace();
-		}
+		rc.init();
+
 		atomicConcepts = rc.getAtomicConcepts();
+		datatypeProperties = rc.getDatatypeProperties();
 		atomicRoles = rc.getAtomicRoles();
 		individuals = rc.getIndividuals();
 		rs = new ReasoningService(rc);
@@ -135,7 +129,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		}
 
 		for (ObjectProperty atomicRole : rs.getAtomicRoles()) {
-			opPos.put(atomicRole, rcDIG.getRoleMembers(atomicRole));
+			opPos.put(atomicRole, rc.getRoleMembers(atomicRole));
 		}
 
 		long dematDuration = System.currentTimeMillis() - dematStartTime;
@@ -233,6 +227,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return atomicRoles;
 	}
 
+	@Override
+	public Set<DatatypeProperty> getDatatypeProperties() {
+		return datatypeProperties;
+	}	
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getIndividuals()
 	 */

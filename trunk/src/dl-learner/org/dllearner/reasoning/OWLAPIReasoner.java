@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -42,6 +43,7 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.owl.AssertionalAxiom;
 import org.dllearner.core.owl.ClassAssertionAxiom;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
@@ -76,6 +78,7 @@ import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLNamedObject;
@@ -120,6 +123,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	// primitives
 	Set<NamedClass> atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
 	Set<ObjectProperty> atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
+	Set<DatatypeProperty> datatypeProperties = new TreeSet<DatatypeProperty>();
+//	Set<DatatypeProperty> datatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<Individual> individuals = new TreeSet<Individual>();	
 	
 	public OWLAPIReasoner(Set<KnowledgeSource> sources) {
@@ -164,7 +169,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			}	
 		};		
 		Set<OWLClass> classes = new TreeSet<OWLClass>(namedObjectComparator);
-		Set<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>(namedObjectComparator);
+		Set<OWLObjectProperty> owlObjectProperties = new TreeSet<OWLObjectProperty>(namedObjectComparator);
+		Set<OWLDataProperty> owlDatatypeProperties = new TreeSet<OWLDataProperty>(namedObjectComparator);
 		Set<OWLIndividual> owlIndividuals = new TreeSet<OWLIndividual>(namedObjectComparator);
 		
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
@@ -178,7 +184,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					OWLOntology ontology = manager.loadOntologyFromPhysicalURI(url.toURI());
 					allImports.addAll(manager.getImportsClosure(ontology));
 					classes.addAll(ontology.getReferencedClasses());
-					properties.addAll(ontology.getReferencedObjectProperties());
+					owlObjectProperties.addAll(ontology.getReferencedObjectProperties());
+					owlDatatypeProperties.addAll(ontology.getReferencedDataProperties());				
 					owlIndividuals.addAll(ontology.getReferencedIndividuals());
 				} catch (OWLOntologyCreationException e) {
 					e.printStackTrace();
@@ -202,7 +209,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				allImports.add(ontology);
 				atomicConcepts.addAll(kb.findAllAtomicConcepts());
 				atomicRoles.addAll(kb.findAllAtomicRoles());
-				individuals.addAll(kb.findAllIndividuals());				
+				individuals.addAll(kb.findAllIndividuals());
+				// TODO: add method to find datatypes
 			}
 		}
 		
@@ -264,11 +272,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		// read in primitives
 		for(OWLClass owlClass : classes)
 			atomicConcepts.add(new NamedClass(owlClass.getURI().toString()));
-		for(OWLObjectProperty owlProperty : properties)
+		for(OWLObjectProperty owlProperty : owlObjectProperties)
 			atomicRoles.add(new ObjectProperty(owlProperty.getURI().toString()));
+		for(OWLDataProperty owlProperty : owlDatatypeProperties) {
+			// empty ranges are returned for ames test positive
+//			Set<OWLDataRange> ranges = owlProperty.getRanges(allImports);
+//			System.out.println(owlProperty);
+//			System.out.println(ranges);
+			datatypeProperties.add(new DatatypeProperty(owlProperty.getURI().toString()));
+			System.exit(0);
+		}
 		for(OWLIndividual owlIndividual : owlIndividuals)
 			individuals.add(new Individual(owlIndividual.getURI().toString()));
-		
 	}
 
 	/* (non-Javadoc)
@@ -285,6 +300,11 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return atomicRoles;
 	}
 
+	@Override
+	public Set<DatatypeProperty> getDatatypeProperties() {
+		return datatypeProperties;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getIndividuals()
 	 */
@@ -482,6 +502,31 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}
 	
+	@Override
+	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) {
+		OWLObjectProperty prop = getOWLAPIDescription(atomicRole);
+		Map<Individual, SortedSet<Individual>> map = new TreeMap<Individual, SortedSet<Individual>>();
+		for(Individual i : individuals) {
+			OWLIndividual ind = factory.getOWLIndividual(URI.create(i.getName()));
+			
+			// get all related individuals via OWL API
+			Set<OWLIndividual> inds = null;
+			try {
+				inds = reasoner.getRelatedIndividuals(ind, prop);
+			} catch (OWLReasonerException e) {
+				e.printStackTrace();
+			}
+			
+			// convert data back to DL-Learner structures
+			SortedSet<Individual> is = new TreeSet<Individual>();
+			for(OWLIndividual oi : inds)
+				is.add(new Individual(oi.getURI().toString()));
+			map.put(i, is);
+		}
+		return map;
+	}
+		
+	
 	// OWL API often returns a set of sets of classes, where each inner
 	// set consists of equivalent classes; this method picks one class
 	// from each inner set to flatten the set of sets
@@ -561,8 +606,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}	
 	
-	@Deprecated
-	public static OWLObjectProperty getOWLAPIDescription(ObjectProperty role) {
+	private static OWLObjectProperty getOWLAPIDescription(ObjectProperty role) {
 		return staticFactory.getOWLObjectProperty(URI.create(role.getName()));
 	}
 	

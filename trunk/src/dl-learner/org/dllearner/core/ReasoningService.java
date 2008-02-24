@@ -486,6 +486,7 @@ public class ReasoningService {
 	// Reasoning-Resultate
 	// zur�ckgegeben werden k�nnten
 	private void handleExceptions(ReasoningMethodUnsupportedException e) {
+		e.printStackTrace();
 		throw new Error("Reasoning method not supported.");
 	}
 
