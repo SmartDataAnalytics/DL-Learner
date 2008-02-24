@@ -67,6 +67,7 @@ public class ROLearner extends LearningAlgorithm {
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
 	private boolean useNegation = true;	
+	private boolean useBooleanDatatypes = true;
 	
 	private boolean quiet = false;
 	
@@ -208,6 +209,7 @@ public class ROLearner extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
 		options.add(CommonConfigOptions.useNegation());		
+		options.add(CommonConfigOptions.useBooleanDatatypes());
 		return options;
 	}
 	
@@ -258,6 +260,8 @@ public class ROLearner extends LearningAlgorithm {
 			useExistsConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useNegation")) {
 			useNegation = (Boolean) entry.getValue();
+		} else if(name.equals("useBooleanDatatypes")) {
+			useBooleanDatatypes = (Boolean) entry.getValue();
 		}
 			
 	}
@@ -284,7 +288,7 @@ public class ROLearner extends LearningAlgorithm {
 		}
 		
 		// this.learningProblem2 = learningProblem2;
-		operator = new RhoDown(rs, applyAllFilter, applyExistsFilter, useAllConstructor, useExistsConstructor, useNegation);
+		operator = new RhoDown(rs, applyAllFilter, applyExistsFilter, useAllConstructor, useExistsConstructor, useNegation, useBooleanDatatypes);
 		
 		// candidate sets entsprechend der gewählten Heuristik initialisieren
 		candidates = new TreeSet<Node>(nodeComparator);

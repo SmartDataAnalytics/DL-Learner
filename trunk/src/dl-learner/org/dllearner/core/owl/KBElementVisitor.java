@@ -39,4 +39,8 @@ public interface KBElementVisitor extends AxiomVisitor, DescriptionVisitor, Prop
 
 	void visit(KB kb);
 
+	void visit(TypedConstant typedConstant);
+
+	void visit(UntypedConstant untypedConstant);
+
 }

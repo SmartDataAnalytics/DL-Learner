@@ -22,35 +22,46 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 /**
- * Examples for datatype value restrictions:
- * Male AND hasAge HASVALUE 18
- * Male AND hasDriverLicense HASVALUE true
+ * A constant which has an explicitly assigned datatype.
  * 
  * @author Jens Lehmann
  *
  */
-public class DatatypeValueRestriction extends ValueRestriction {
+public class TypedConstant extends Constant {
 
-//	public DatatypeValueRestriction(DatatypeProperty)
+	private Datatype datatype;
+	
+	public TypedConstant(String literal, Datatype datatype) {
+		super(literal);
+		this.datatype = datatype;
+	}
 	
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
+	 * @see org.dllearner.core.owl.KBElement#getLength()
 	 */
-	@Override
-	public void accept(DescriptionVisitor visitor) {
-		visitor.visit(this);
-	}	
-	
-	public void accept(KBElementVisitor visitor) {
-		visitor.visit(this);
+	public int getLength() {
+		return 1;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString()
+	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+	public String toString(String baseURI, Map<String, String> prefixes) {
+		return literal + datatype.toString(baseURI, prefixes);
+	}
+
+	/**
+	 * @return the datatype
+	 */
+	public Datatype getDatatype() {
+		return datatype;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#accept(org.dllearner.core.owl.KBElementVisitor)
+	 */
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
 	}	
+
 }
