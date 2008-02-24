@@ -25,4 +25,27 @@ package org.dllearner.core.owl;
  */
 public abstract class CardinalityRestriction extends Restriction {
 
+	int cardinality;
+	PropertyRange propertyRange;
+	
+	public CardinalityRestriction(PropertyExpression propertyExpression, PropertyRange propertyRange, int cardinality) {
+		super(propertyExpression);
+		this.propertyRange = propertyRange;
+		this.cardinality = cardinality;
+	}
+
+	/**
+	 * @return the cardinality
+	 */
+	public int getCardinality() {
+		return cardinality;
+	}
+
+	/**
+	 * @return the propertyRange
+	 */
+	public PropertyRange getPropertyRange() {
+		return propertyRange;
+	}
+
 }

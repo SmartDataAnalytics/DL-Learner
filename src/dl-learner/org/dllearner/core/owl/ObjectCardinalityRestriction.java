@@ -6,6 +6,7 @@ public abstract class ObjectCardinalityRestriction extends CardinalityRestrictio
 	protected int number;
 	
 	public ObjectCardinalityRestriction(int number, ObjectPropertyExpression role, Description c) {
+		super(role, c, number);
 		addChild(c);
 		this.role = role;
 		this.number = number;

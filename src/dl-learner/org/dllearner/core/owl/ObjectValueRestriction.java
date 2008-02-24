@@ -30,16 +30,11 @@ import java.util.Map;
  */
 public class ObjectValueRestriction extends ValueRestriction {
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
+	/**
+	 * @param property
 	 */
-	@Override
-	public void accept(DescriptionVisitor visitor) {
-		visitor.visit(this);
-	}	
-	
-	public void accept(KBElementVisitor visitor) {
-		visitor.visit(this);
+	public ObjectValueRestriction(Property property, Individual value) {
+		super(property, value);
 	}
 
 	/* (non-Javadoc)
@@ -49,5 +44,43 @@ public class ObjectValueRestriction extends ValueRestriction {
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#getArity()
+	 */
+	@Override
+	public int getArity() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#getLength()
+	 */
+	public int getLength() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
+	 */
+	public String toString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}	
+	
+	public Individual getIndividual() {
+		return (Individual) value;
+	}
+	
+	@Override
+	public void accept(DescriptionVisitor visitor) {
+		visitor.visit(this);
+	}	
+	
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
 	}	
 }

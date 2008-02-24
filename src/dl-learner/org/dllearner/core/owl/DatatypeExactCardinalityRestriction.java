@@ -27,6 +27,17 @@ import java.util.Map;
  */
 public class DatatypeExactCardinalityRestriction extends DatatypeCardinalityRestriction {
 
+	/**
+	 * @param datatypeProperty
+	 * @param dataRange
+	 * @param cardinality
+	 */
+	public DatatypeExactCardinalityRestriction(DatatypeProperty datatypeProperty,
+			DataRange dataRange, int cardinality) {
+		super(datatypeProperty, dataRange, cardinality);
+		// TODO Auto-generated constructor stub
+	}
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Concept#getArity()
 	 */

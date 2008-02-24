@@ -25,4 +25,11 @@ package org.dllearner.core.owl;
  */
 public abstract class DatatypeQuantorRestriction extends QuantorRestriction {
 
+	/**
+	 * @param propertyExpression
+	 */
+	public DatatypeQuantorRestriction(DatatypeProperty datatypeProperty) {
+		super(datatypeProperty);
+	}
+
 }

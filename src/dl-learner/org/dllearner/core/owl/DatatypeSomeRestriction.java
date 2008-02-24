@@ -32,7 +32,12 @@ import java.util.Map;
  */
 public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 
-
+	/**
+	 * @param datatypeProperty
+	 */
+	public DatatypeSomeRestriction(DatatypeProperty datatypeProperty) {
+		super(datatypeProperty);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Description#getArity()

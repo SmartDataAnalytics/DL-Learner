@@ -25,4 +25,9 @@ package org.dllearner.core.owl;
  */
 public abstract class DatatypeCardinalityRestriction extends CardinalityRestriction {
 
+	public DatatypeCardinalityRestriction(DatatypeProperty datatypeProperty,
+			DataRange dataRange, int cardinality) {
+		super(datatypeProperty, dataRange, cardinality);
+	}
+
 }

@@ -31,20 +31,10 @@ import java.util.Map;
  */
 public class DatatypeValueRestriction extends ValueRestriction {
 
-//	public DatatypeValueRestriction(DatatypeProperty)
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
-	 */
-	@Override
-	public void accept(DescriptionVisitor visitor) {
-		visitor.visit(this);
-	}	
-	
-	public void accept(KBElementVisitor visitor) {
-		visitor.visit(this);
+	public DatatypeValueRestriction(DatatypeProperty restrictedPropertyExpression, Constant value) {
+		super(restrictedPropertyExpression, value);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString()
 	 */
@@ -52,5 +42,42 @@ public class DatatypeValueRestriction extends ValueRestriction {
 	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.Description#getArity()
+	 */
+	@Override
+	public int getArity() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#getLength()
+	 */
+	public int getLength() {
+		return 1 + restrictedPropertyExpression.getLength() + value.getLength();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
+	 */
+	public String toString(String baseURI, Map<String, String> prefixes) {
+		return restrictedPropertyExpression.toString(baseURI, prefixes) + " = " + value.toString(baseURI, prefixes);
+	}
+
+	@Override
+	public Constant getValue() {
+		return (Constant) value;
+	}	
+	
+	@Override
+	public void accept(DescriptionVisitor visitor) {
+		visitor.visit(this);
+	}	
+	
+	public void accept(KBElementVisitor visitor) {
+		visitor.visit(this);
 	}	
 }

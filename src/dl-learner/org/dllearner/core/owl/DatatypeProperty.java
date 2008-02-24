@@ -27,7 +27,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class DatatypeProperty extends PropertyExpression implements Property, NamedKBElement {
+public class DatatypeProperty implements Property, NamedKBElement {
 
 	protected String name;
 	
