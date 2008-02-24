@@ -19,38 +19,24 @@
  */
 package org.dllearner.core.owl;
 
-import java.util.Map;
-
 /**
- * Examples for datatype value restrictions:
- * Male AND hasAge HASVALUE 18
- * Male AND hasDriverLicense HASVALUE true
+ * A constant value.
  * 
  * @author Jens Lehmann
  *
  */
-public class DatatypeValueRestriction extends ValueRestriction {
+public abstract class Constant implements KBElement {
 
-//	public DatatypeValueRestriction(DatatypeProperty)
+	String literal;
 	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)
-	 */
-	@Override
-	public void accept(DescriptionVisitor visitor) {
-		visitor.visit(this);
-	}	
-	
-	public void accept(KBElementVisitor visitor) {
-		visitor.visit(this);
+	public Constant(String literal) {
+		this.literal = literal;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString()
+	/**
+	 * @return the literal
 	 */
-	@Override
-	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
-	}	
+	public String getLiteral() {
+		return literal;
+	}
 }

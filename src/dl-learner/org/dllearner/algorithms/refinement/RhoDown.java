@@ -89,18 +89,20 @@ public class RhoDown implements RefinementOperator {
 	private boolean applyExistsFilter = true;
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
-	private boolean useNegation = true;	
+	private boolean useNegation = true;
+	private boolean useBooleanDatatypes = true;
 	
 	// braucht man wirklich das learningProblem oder reicht der Reasoning-Service?
 	// TODO: conceptComparator könnte auch noch Parameter sein
 	public RhoDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
-	boolean useExistsConstructor, boolean useNegation) {
+	boolean useExistsConstructor, boolean useNegation, boolean useBooleanDatatypes) {
 		this.rs = reasoningService;
 		this.applyAllFilter = applyAllFilter;
 		this.applyExistsFilter = applyExistsFilter;
 		this.useAllConstructor = useAllConstructor;
 		this.useExistsConstructor = useExistsConstructor;
 		this.useNegation = useNegation;
+		this.useBooleanDatatypes = useBooleanDatatypes;
 		
 //		this.learningProblem = learningProblem;
 //		rs = learningProblem.getReasoningService();
@@ -141,6 +143,7 @@ public class RhoDown implements RefinementOperator {
 
 		} else if (concept instanceof Nothing) {
 			// return new HashSet<Concept>();
+//		} else if (concept instanceof )
 		} else if (concept instanceof NamedClass) {
 			// Erkenntnisse aus Benchmarks: dieser Teil wird sehr häufig aufgerufen,
 			// allerdings lässt er sich kaum weiter verbessern (selbst ohne klonen

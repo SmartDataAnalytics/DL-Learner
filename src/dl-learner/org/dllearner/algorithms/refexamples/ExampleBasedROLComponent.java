@@ -103,7 +103,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean improveSubsumptionHierarchy = true;
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
-	private boolean useNegation = true;	
+	private boolean useNegation = true;
+	private boolean useBooleanDatatypes = true;
 	private double noisePercentage = 0.0;
 	
 	// Variablen zur Einstellung der Protokollierung
@@ -161,6 +162,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
 		options.add(CommonConfigOptions.useNegation());
+		options.add(CommonConfigOptions.useBooleanDatatypes());
 		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples");
 		noisePercentage.setLowerLimit(0.0);
 		noisePercentage.setUpperLimit(1.0);
@@ -215,6 +217,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			useNegation = (Boolean) entry.getValue();
 		} else if(name.equals("noisePercentage")) {
 			noisePercentage = (Double) entry.getValue();
+		} else if(name.equals("useBooleanDatatypes")) {
+			useBooleanDatatypes = (Boolean) entry.getValue();
 		}
 			
 	}
@@ -281,7 +285,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 				applyExistsFilter,
 				useAllConstructor,
 				useExistsConstructor,
-				useNegation
+				useNegation,
+				useBooleanDatatypes
 		);
 		
 		// create an algorithm object and pass all configuration
