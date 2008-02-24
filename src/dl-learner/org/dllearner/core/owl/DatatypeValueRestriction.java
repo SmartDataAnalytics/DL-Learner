@@ -67,6 +67,10 @@ public class DatatypeValueRestriction extends ValueRestriction {
 		return restrictedPropertyExpression.toString(baseURI, prefixes) + " = " + value.toString(baseURI, prefixes);
 	}
 
+	public DatatypeProperty getRestrictedPropertyExpresssion() {
+		return (DatatypeProperty) restrictedPropertyExpression;
+	}
+	
 	@Override
 	public Constant getValue() {
 		return (Constant) value;

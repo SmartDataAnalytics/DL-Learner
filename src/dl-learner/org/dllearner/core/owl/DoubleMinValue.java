@@ -28,7 +28,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class DoubleMinValue extends DoubleDataRange {
+public class DoubleMinValue implements DoubleDataRange {
 
 	private double value;
 	
