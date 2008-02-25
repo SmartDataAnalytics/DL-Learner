@@ -85,4 +85,6 @@ public abstract class ConfigOption<T> {
 		return "option name: " + name + "\ndescription: " + description + "\nvalues: " + getAllowedValuesDescription() + "\ndefault value: " + defaultValue + "\n";
 	}
 	
+	public abstract String getValueFormatting(T value);
+
 }

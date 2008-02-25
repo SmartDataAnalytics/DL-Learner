@@ -97,4 +97,14 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 		return str;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
+	 */
+	@Override
+	public String getValueFormatting(Double value) {
+		return value.toString();
+	}
+
 }

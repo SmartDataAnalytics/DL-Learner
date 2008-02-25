@@ -50,4 +50,12 @@ public class BooleanConfigOption extends ConfigOption<Boolean> {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
+	 */
+	@Override
+	public String getValueFormatting(Boolean value) {
+		return value.toString();
+	}
+
 }
