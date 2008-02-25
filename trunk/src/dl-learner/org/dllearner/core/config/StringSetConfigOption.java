@@ -21,20 +21,21 @@ package org.dllearner.core.config;
 
 import java.util.Set;
 
-
 /**
  * A set of strings.
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public class StringSetConfigOption extends ConfigOption<Set<String>> {
 
 	public StringSetConfigOption(String name, String description) {
 		super(name, description);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
 	 */
 	@Override
@@ -42,21 +43,33 @@ public class StringSetConfigOption extends ConfigOption<Set<String>> {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
 	 */
 	@Override
 	public boolean checkType(Object object) {
-		if(!(object instanceof Set))
+		if (!(object instanceof Set))
 			return false;
-		
+
 		Set<?> set = (Set<?>) object;
-		for(Object element : set)  {
-			if(!(element instanceof String))
+		for (Object element : set) {
+			if (!(element instanceof String))
 				return false;
 		}
-		
+
 		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
+	 */
+	@Override
+	public String getValueFormatting(Set<String> value) {
+		return value.toString();
 	}
 
 }

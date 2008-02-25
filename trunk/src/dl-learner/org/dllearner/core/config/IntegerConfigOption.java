@@ -19,38 +19,39 @@
  */
 package org.dllearner.core.config;
 
-
 /**
  * A configuration option, which allows values of type integer. A minimum and
  * maximum value of the argument can optionally be specified.
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public class IntegerConfigOption extends ConfigOption<Integer> {
 
 	private int lowerLimit = Integer.MIN_VALUE;
 	private int upperLimit = Integer.MAX_VALUE;
-	
+
 	public IntegerConfigOption(String name, String description) {
 		super(name, description);
 	}
-		
+
 	public IntegerConfigOption(String name, String description, int defaultValue) {
 		super(name, description, defaultValue);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
 	 */
 	@Override
 	public boolean isValidValue(Integer value) {
-		if(value >= lowerLimit && value <= upperLimit)
+		if (value >= lowerLimit && value <= upperLimit)
 			return true;
 		else
-			return false;		
+			return false;
 	}
-	
+
 	/**
 	 * @return the The lowest possible value for this configuration option.
 	 */
@@ -59,7 +60,8 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 	}
 
 	/**
-	 * @param lowerLimit The lowest possible value for this configuration option.
+	 * @param lowerLimit
+	 *            The lowest possible value for this configuration option.
 	 */
 	public void setLowerLimit(int lowerLimit) {
 		this.lowerLimit = lowerLimit;
@@ -73,13 +75,16 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 	}
 
 	/**
-	 * @param upperLimit The highest possible value for this configuration option.
+	 * @param upperLimit
+	 *            The highest possible value for this configuration option.
 	 */
 	public void setUpperLimit(int upperLimit) {
 		this.upperLimit = upperLimit;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
 	 */
 	@Override
@@ -90,11 +95,20 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 	@Override
 	public String getAllowedValuesDescription() {
 		String str = getClass().toString();
-		if(lowerLimit != Integer.MIN_VALUE)
+		if (lowerLimit != Integer.MIN_VALUE)
 			str += " min " + lowerLimit;
-		if(upperLimit != Integer.MAX_VALUE)
+		if (upperLimit != Integer.MAX_VALUE)
 			str += " max " + upperLimit;
 		return str;
-	}	
-	
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
+	 */
+	@Override
+	public String getValueFormatting(Integer value) {
+		return value.toString();
+	}
 }

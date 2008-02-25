@@ -24,8 +24,8 @@ import java.util.List;
 import org.dllearner.utilities.StringTuple;
 
 /**
- * A list if string tuples, for instance for specifying several
- * parameters or replacement rules.
+ * A list if string tuples, for instance for specifying several parameters or
+ * replacement rules.
  * 
  * @author Jens Lehmann
  */
@@ -34,34 +34,49 @@ public class StringTupleListConfigOption extends ConfigOption<List<StringTuple>>
 	public StringTupleListConfigOption(String name, String description) {
 		this(name, description, null);
 	}
-	
-	public StringTupleListConfigOption(String name, String description, List<StringTuple> defaultValue) {
+
+	public StringTupleListConfigOption(String name, String description,
+			List<StringTuple> defaultValue) {
 		super(name, description, defaultValue);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.config.ConfigOption#checkType(java.lang.Object)
 	 */
 	@Override
 	public boolean checkType(Object object) {
-		if(!(object instanceof List))
+		if (!(object instanceof List))
 			return false;
-		
+
 		List<?> set = (List<?>) object;
-		for(Object element : set)  {
-			if(!(element instanceof StringTuple))
+		for (Object element : set) {
+			if (!(element instanceof StringTuple))
 				return false;
 		}
-		
+
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.config.ConfigOption#isValidValue(java.lang.Object)
 	 */
 	@Override
 	public boolean isValidValue(List<StringTuple> value) {
 		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
+	 */
+	@Override
+	public String getValueFormatting(List<StringTuple> value) {
+		return value.toString();
 	}
 
 }

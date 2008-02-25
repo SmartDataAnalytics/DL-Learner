@@ -48,6 +48,7 @@ public class StartGUI extends JFrame implements ActionListener {
 
 	private Config config = new Config();
 	private ConfigLoad configLoad = new ConfigLoad(config, this);;
+	private ConfigSave configSave = new ConfigSave(config, this);;
 
 	private KnowledgeSourcePanel tab0;
 	private ReasonerPanel tab1;
@@ -142,6 +143,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		// save config file
 		if (e.getSource() == saveItem) {
 			System.out.println("saveItem was pressed");
+			configSave.startParser();
 		}
 	}
 

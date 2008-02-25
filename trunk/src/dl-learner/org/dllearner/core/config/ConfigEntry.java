@@ -52,4 +52,12 @@ public class ConfigEntry<T> {
 		return value;
 	}
 	
+	/**
+	 * Get a string to save into a configuration file.
+	 * 
+	 * @return a formatted string
+	 */
+	public String toConfString(String componentName) {
+		return componentName.toString() + "." + option.getName() + " = " + option.getValueFormatting(value);
+	}
 }
