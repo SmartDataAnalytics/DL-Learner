@@ -21,32 +21,46 @@ package org.dllearner.utilities;
 
 import java.util.Comparator;
 
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyExpression;
+import org.dllearner.core.owl.ObjectPropertyInverse;
+import org.dllearner.core.owl.PropertyExpression;
 
 /**
- * Compares two object properties.
+ * Compares two property expressions. The order is:
+ * datatype properties first, then inverse object properties, then
+ * object properties. For equal types, the URI or toString (inverses)
+ * is used to fix an order.
  * 
  * @author Jens Lehmann
  *
  */
-public class RoleComparator implements Comparator<ObjectPropertyExpression> {
+public class RoleComparator implements Comparator<PropertyExpression> {
 
-	public int compare(ObjectPropertyExpression r1, ObjectPropertyExpression r2) {
+	public int compare(PropertyExpression r1, PropertyExpression r2) {
 		
 		if(r1 instanceof ObjectProperty) {
 			if(r2 instanceof ObjectProperty) {
-				return r1.getName().compareTo(r2.getName());
-				// zweite Rolle ist invers
+				return ((ObjectProperty)r1).getName().compareTo(((ObjectProperty)r2).getName());
+				// second role is inverse or datatype property
 			} else {
 				return -1;
 			}
-		// 1. Rolle ist invers
-		} else {
-			if(r1 instanceof ObjectProperty) {
+		// first property is an inverse object property
+		} else if(r1 instanceof ObjectPropertyInverse){
+			if(r2 instanceof ObjectProperty) {
 				return 1;
+			} else if(r2 instanceof ObjectPropertyInverse){
+				return r1.toString().compareTo(r2.toString());
 			} else {
-				return r1.getName().compareTo(r2.getName());
+				return -1;
+			}
+		// r1 is datatype property
+		} else {
+			if(r2 instanceof DatatypeProperty) {
+				return ((DatatypeProperty)r1).getName().compareTo(((DatatypeProperty)r2).getName());
+			} else {
+				return 1;
 			}
 		}
 		
