@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -405,6 +406,42 @@ public class ReasoningService {
 		return reasoner.getAtomicRoles();
 	}
 
+	public Set<DatatypeProperty> getDatatypeProperties() {
+		try {
+			return reasoner.getDatatypeProperties();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
+	public Set<DatatypeProperty> getBooleanDatatypeProperties() {
+		try {
+			return reasoner.getBooleanDatatypeProperties();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
+	public Set<DatatypeProperty> getIntDatatypeProperties() {
+		try {
+			return reasoner.getIntDatatypeProperties();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
+	public Set<DatatypeProperty> getDoubleDatatypeProperties() {
+		try {
+			return reasoner.getDoubleDatatypeProperties();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}	
+	
 	public SortedSet<Individual> getIndividuals() {
 		return reasoner.getIndividuals();
 	}

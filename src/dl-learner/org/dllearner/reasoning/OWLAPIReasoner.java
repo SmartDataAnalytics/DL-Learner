@@ -419,7 +419,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	@Override
 	public boolean subsumes(Description superConcept, Description subConcept) {
 		try {
-			return reasoner.isSubClassOf(getOWLAPIDescription(subConcept), getOWLAPIDescription(superConcept));			
+			return reasoner.isSubClassOf(OWLAPIDescriptionConvertVisitor.getOWLDescription(subConcept), OWLAPIDescriptionConvertVisitor.getOWLDescription(superConcept));			
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 			throw new Error("Subsumption Error in OWL API.");

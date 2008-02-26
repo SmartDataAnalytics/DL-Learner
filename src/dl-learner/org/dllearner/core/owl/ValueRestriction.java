@@ -31,6 +31,7 @@ public abstract class ValueRestriction extends Restriction {
 	
 	public ValueRestriction(PropertyExpression propertyExpression, KBElement value) {
 		super(propertyExpression);
+		this.value = value;
 	}
 
 	public KBElement getValue() {

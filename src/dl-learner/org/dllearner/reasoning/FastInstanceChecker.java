@@ -258,7 +258,16 @@ public class FastInstanceChecker extends ReasonerComponent {
 			}
 			return true;
 		} else if (description instanceof BooleanValueRestriction) {
-
+			DatatypeProperty dp = ((BooleanValueRestriction)description).getRestrictedPropertyExpresssion();
+			boolean value = ((BooleanValueRestriction)description).getBooleanValue();
+			
+			if(value) {
+				// check whether the individual is in the set of individuals mapped
+				// to true by this datatype property
+				return bd.get(dp).contains(individual);
+			} else {
+				return !bd.get(dp).contains(individual);
+			}
 		}
 
 		throw new ReasoningMethodUnsupportedException("Instance check for description "

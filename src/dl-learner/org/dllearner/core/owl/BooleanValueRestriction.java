@@ -27,6 +27,8 @@ package org.dllearner.core.owl;
  */
 public class BooleanValueRestriction extends DatatypeValueRestriction {
 
+	private boolean booleanValue;
+	
 	/**
 	 * TODO: Internally a typed constant with datatype boolean and 
 	 * strings "true" or "false" is created. This is a clean way to
@@ -42,6 +44,11 @@ public class BooleanValueRestriction extends DatatypeValueRestriction {
 	 */
 	public BooleanValueRestriction(DatatypeProperty restrictedPropertyExpression, Boolean value) {
 		super(restrictedPropertyExpression, new TypedConstant(value.toString(), Datatype.BOOLEAN));
+		booleanValue = value;
 	}
 
+	public boolean getBooleanValue() {
+		return booleanValue;
+	}
+	
 }

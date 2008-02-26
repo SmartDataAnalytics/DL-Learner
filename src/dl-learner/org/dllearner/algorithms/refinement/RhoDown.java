@@ -30,6 +30,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.owl.BooleanValueRestriction;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
@@ -538,8 +540,8 @@ public class RhoDown implements RefinementOperator {
 			
 		if(topRefinementsLength<3 && maxLength>2) {
 			// Konzepte der Länge 3: EXISTS r.TOP
+			Set<Description> m3 = new TreeSet<Description>(conceptComparator);
 			if(useExistsConstructor) {
-				Set<Description> m3 = new TreeSet<Description>(conceptComparator);
 				// previous operator: uses all roles
 				// for(AtomicRole r : Config.Refinement.allowedRoles) {
 				//	m3.add(new Exists(r, new Top()));
@@ -548,17 +550,19 @@ public class RhoDown implements RefinementOperator {
 				for(ObjectProperty r : rs.getMostGeneralRoles()) {
 					m3.add(new ObjectSomeRestriction(r, new Thing()));
 				}				
-				m.put(3,m3);
+
 			}
 			
 			// boolean datatypes, e.g. testPositive = true
 			if(useBooleanDatatypes) {
-//				Set<Description> m3 = new TreeSet<Description>(conceptComparator);
-				// TODO: code for getting boolean datatypes
-//				m.put(3,m3);
-				// TODO: do not use put here because we overwrite the
-				// EXISTS quantor stuff
+				Set<DatatypeProperty> booleanDPs = rs.getBooleanDatatypeProperties();
+				for(DatatypeProperty dp : booleanDPs) {
+					m3.add(new BooleanValueRestriction(dp,true));
+					m3.add(new BooleanValueRestriction(dp,false));
+				}
 			}
+			
+			m.put(3,m3);			
 		}
 		
 		if(maxLength>2) {

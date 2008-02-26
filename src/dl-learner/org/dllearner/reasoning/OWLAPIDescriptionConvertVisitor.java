@@ -25,9 +25,12 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.dllearner.algorithms.gp.ADC;
+import org.dllearner.core.owl.Constant;
+import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMinCardinalityRestriction;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
@@ -43,11 +46,16 @@ import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.Union;
+import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
@@ -171,7 +179,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 */
 	public void visit(ObjectMinCardinalityRestriction description) {
 		// TODO Auto-generated method stub
-
+		throw new Error("OWLAPIDescriptionConverter: not implemented");
 	}
 
 	/* (non-Javadoc)
@@ -179,7 +187,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 */
 	public void visit(ObjectExactCardinalityRestriction description) {
 		// TODO Auto-generated method stub
-
+		throw new Error("OWLAPIDescriptionConverter: not implemented");
 	}
 
 	/* (non-Javadoc)
@@ -187,7 +195,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 */
 	public void visit(ObjectMaxCardinalityRestriction description) {
 		// TODO Auto-generated method stub
-
+		throw new Error("OWLAPIDescriptionConverter: not implemented");
 	}
 
 	/* (non-Javadoc)
@@ -195,15 +203,34 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 */
 	public void visit(ObjectValueRestriction description) {
 		// TODO Auto-generated method stub
-
+		throw new Error("OWLAPIDescriptionConverter: not implemented");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeValueRestriction)
 	 */
 	public void visit(DatatypeValueRestriction description) {
-		// TODO Auto-generated method stub
-
+		// convert OWL constant to OWL API constant
+		Constant c = description.getValue();
+		OWLConstant constant;
+		if(c instanceof TypedConstant) {
+			Datatype dt = ((TypedConstant)c).getDatatype();
+			OWLDataType odt = convertDatatype(dt);
+			constant = factory.getOWLTypedConstant(c.getLiteral(), odt);
+		} else {
+			UntypedConstant uc = (UntypedConstant) c;
+			if(uc.hasLang()) {
+				constant = factory.getOWLUntypedConstant(uc.getLiteral(), uc.getLang());
+			} else {
+				constant = factory.getOWLUntypedConstant(uc.getLiteral());
+			}
+		}
+				
+		// get datatype property
+		DatatypeProperty dtp = description.getRestrictedPropertyExpresssion();
+		OWLDataProperty prop = factory.getOWLDataProperty(URI.create(dtp.getName()));
+		
+		stack.push(factory.getOWLDataValueRestriction(prop, constant));	
 	}
 
 	/* (non-Javadoc)
@@ -218,7 +245,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 */
 	public void visit(ADC description) {
 		// TODO Auto-generated method stub
-		
+		throw new Error("OWLAPIDescriptionConverter: not implemented");
 	}
 
 	/* (non-Javadoc)
@@ -226,7 +253,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 */
 	public void visit(DatatypeMinCardinalityRestriction description) {
 		// TODO Auto-generated method stub
-		
+		throw new Error("OWLAPIDescriptionConverter: not implemented");
 	}
 
 	/* (non-Javadoc)
@@ -234,7 +261,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 */
 	public void visit(DatatypeExactCardinalityRestriction description) {
 		// TODO Auto-generated method stub
-		
+		throw new Error("OWLAPIDescriptionConverter: not implemented");
 	}
 
 	/* (non-Javadoc)
@@ -242,7 +269,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 */
 	public void visit(DatatypeMaxCardinalityRestriction description) {
 		// TODO Auto-generated method stub
-		
+		throw new Error("OWLAPIDescriptionConverter: not implemented");
 	}
 
 	/* (non-Javadoc)
@@ -250,7 +277,18 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 */
 	public void visit(DatatypeSomeRestriction description) {
 		// TODO Auto-generated method stub
-		
+		throw new Error("OWLAPIDescriptionConverter: not implemented");
 	}
 
+	public OWLDataType convertDatatype(Datatype datatype) {
+		if(datatype.equals(Datatype.BOOLEAN))
+			return factory.getOWLDataType(Datatype.BOOLEAN.getURI());
+		else if(datatype.equals(Datatype.INT))
+			return factory.getOWLDataType(Datatype.INT.getURI());
+		else if(datatype.equals(Datatype.DOUBLE))
+			return factory.getOWLDataType(Datatype.DOUBLE.getURI());		
+		
+		throw new Error("OWLAPIDescriptionConverter: datatype not implemented");			
+	}
+	
 }

@@ -3,6 +3,7 @@ package org.dllearner.utilities;
 import java.util.Comparator;
 import java.util.Set;
 
+import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
@@ -51,6 +52,9 @@ public class ConceptComparator implements Comparator<Description> {
 	// Ordnung für atomare Konzepte: Stringvergleich
 	// Ordnung für atomare Rollen: Stringvergleich
 	public int compare(Description concept1, Description concept2) {
+		// classes higher up are in the source code have lower value
+		// (they appear first in class descriptions, because sorted sets
+		// usually use an ascending order)
 		if(concept1 instanceof Nothing) {
 			if(concept2 instanceof Nothing)
 				return 0;
@@ -98,6 +102,17 @@ public class ConceptComparator implements Comparator<Description> {
 					return compare(concept1.getChild(0), concept2.getChild(0));
 				else
 					return roleCompare;
+			} else
+				return -1;
+		} else if(concept1 instanceof BooleanValueRestriction) {
+			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction) {
+				return 1;
+			} else if(concept2 instanceof BooleanValueRestriction) {
+				int cmp = rc.compare(((BooleanValueRestriction)concept1).getRestrictedPropertyExpresssion(), ((BooleanValueRestriction)concept2).getRestrictedPropertyExpresssion());
+				if(cmp == 0)
+					return compare(concept1.getChild(0), concept2.getChild(0));
+				else
+					return cmp;				
 			} else
 				return -1;
 		} else if(concept1 instanceof Intersection) {

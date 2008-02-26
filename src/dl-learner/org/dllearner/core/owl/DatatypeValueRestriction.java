@@ -49,8 +49,7 @@ public class DatatypeValueRestriction extends ValueRestriction {
 	 */
 	@Override
 	public int getArity() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 2;
 	}
 
 	/* (non-Javadoc)
