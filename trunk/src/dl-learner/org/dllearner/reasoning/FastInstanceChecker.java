@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
@@ -76,6 +77,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 	private Set<NamedClass> atomicConcepts;
 	private Set<ObjectProperty> atomicRoles;
 	private Set<DatatypeProperty> datatypeProperties;
+	private Set<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
+	private Set<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
+	private Set<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
 	private SortedSet<Individual> individuals;
 	
 	private ReasoningService rs;
@@ -112,10 +116,18 @@ public class FastInstanceChecker extends ReasonerComponent {
 		rc = new OWLAPIReasoner(sources);
 		rc.init();
 
-		atomicConcepts = rc.getAtomicConcepts();
-		datatypeProperties = rc.getDatatypeProperties();
-		atomicRoles = rc.getAtomicRoles();
-		individuals = rc.getIndividuals();
+		try {
+			atomicConcepts = rc.getAtomicConcepts();
+			datatypeProperties = rc.getDatatypeProperties();			
+			booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
+			doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
+			intDatatypeProperties = rc.getIntDatatypeProperties();
+			atomicRoles = rc.getAtomicRoles();
+			individuals = rc.getIndividuals();			
+		} catch (ReasoningMethodUnsupportedException e) {
+			throw new ComponentInitException("Underlying reasoner does not support all necessary reasoning methods.", e);
+		}		
+
 		rs = new ReasoningService(rc);
 		
 		// TODO: some code taken from Helper.createFlatABox, but pasted here because additional things need to 
@@ -231,6 +243,21 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public Set<DatatypeProperty> getDatatypeProperties() {
 		return datatypeProperties;
 	}	
+	
+	@Override
+	public Set<DatatypeProperty> getBooleanDatatypeProperties() {
+		return booleanDatatypeProperties;
+	}	
+	
+	@Override
+	public Set<DatatypeProperty> getDoubleDatatypeProperties() {
+		return doubleDatatypeProperties;
+	}	
+	
+	@Override
+	public Set<DatatypeProperty> getIntDatatypeProperties() {
+		return intDatatypeProperties;
+	}		
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getIndividuals()

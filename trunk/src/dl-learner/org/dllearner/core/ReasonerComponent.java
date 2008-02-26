@@ -124,5 +124,17 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	public Set<DatatypeProperty> getDatatypeProperties() throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
+
+	public Set<DatatypeProperty> getBooleanDatatypeProperties() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+
+	public Set<DatatypeProperty> getDoubleDatatypeProperties() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+
+	public Set<DatatypeProperty> getIntDatatypeProperties() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
 	
 }
