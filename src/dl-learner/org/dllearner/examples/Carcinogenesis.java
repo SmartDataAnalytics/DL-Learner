@@ -166,6 +166,8 @@ public class Carcinogenesis {
 		// define properties including domain and range
 		String kbString = "DPDOMAIN(" + getURI2("charge") + ") = " + getURI2("Atom") + ".\n";
 		kbString += "DPRANGE(" + getURI2("charge") + ") = DOUBLE.\n";
+		kbString += "DPDOMAIN(" + getURI2("amesTestPositive") + ") = " + getURI2("Compound") + ".\n";
+		kbString += "DPRANGE(" + getURI2("amesTestPositive") + ") = BOOLEAN.\n";
 		kbString += "OPDOMAIN(" + getURI2("hasAtom") + ") = " + getURI2("Compound") + ".\n";
 		kbString += "OPRANGE(" + getURI2("hasAtom") + ") = " + getURI2("Atom") + ".\n";
 		kbString += "OPDOMAIN(" + getURI2("hasBond") + ") = " + getURI2("Compound") + ".\n";

@@ -94,6 +94,12 @@ public interface Reasoner {
 	// object properties (of course one could implement it but it is not easy)
 	public Set<DatatypeProperty> getDatatypeProperties() throws ReasoningMethodUnsupportedException;
 	
+	public Set<DatatypeProperty> getBooleanDatatypeProperties() throws ReasoningMethodUnsupportedException;
+	
+	public Set<DatatypeProperty> getDoubleDatatypeProperties() throws ReasoningMethodUnsupportedException;
+	
+	public Set<DatatypeProperty> getIntDatatypeProperties() throws ReasoningMethodUnsupportedException;
+			
 	public SortedSet<Individual> getIndividuals();
 	
 }

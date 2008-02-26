@@ -30,7 +30,7 @@ public enum Datatype implements DataRange {
 	
     DOUBLE ("http://www.w3.org/2001/XMLSchema#double"),
     INT ("http://www.w3.org/2001/XMLSchema#int"),
-    BOOLEAN   ("http://www.w3.org/2001/XMLSchema#Boolean");
+    BOOLEAN   ("http://www.w3.org/2001/XMLSchema#boolean");
 
     private URI uri;
 

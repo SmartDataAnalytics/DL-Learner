@@ -43,6 +43,7 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.owl.AssertionalAxiom;
 import org.dllearner.core.owl.ClassAssertionAxiom;
+import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
@@ -79,6 +80,8 @@ import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.OWLDataRange;
+import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLNamedObject;
@@ -124,7 +127,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	Set<NamedClass> atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
 	Set<ObjectProperty> atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
 	Set<DatatypeProperty> datatypeProperties = new TreeSet<DatatypeProperty>();
-//	Set<DatatypeProperty> datatypeProperties = new TreeSet<DatatypeProperty>();
+	Set<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
+	Set<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
+	Set<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<Individual> individuals = new TreeSet<Individual>();	
 	
 	public OWLAPIReasoner(Set<KnowledgeSource> sources) {
@@ -275,12 +280,19 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		for(OWLObjectProperty owlProperty : owlObjectProperties)
 			atomicRoles.add(new ObjectProperty(owlProperty.getURI().toString()));
 		for(OWLDataProperty owlProperty : owlDatatypeProperties) {
-			// empty ranges are returned for ames test positive
-//			Set<OWLDataRange> ranges = owlProperty.getRanges(allImports);
-//			System.out.println(owlProperty);
-//			System.out.println(ranges);
-			datatypeProperties.add(new DatatypeProperty(owlProperty.getURI().toString()));
-			System.exit(0);
+			DatatypeProperty dtp = new DatatypeProperty(owlProperty.getURI().toString());
+			Set<OWLDataRange> ranges = owlProperty.getRanges(allImports);
+			OWLDataRange range = ranges.iterator().next();
+			if(range.isDataType()) {
+				URI uri = ((OWLDataType)range).getURI();
+				if(uri.equals(Datatype.BOOLEAN.getURI()))
+					booleanDatatypeProperties.add(dtp);
+				else if(uri.equals(Datatype.DOUBLE.getURI()))
+					doubleDatatypeProperties.add(dtp);
+				else if(uri.equals(Datatype.INT.getURI()))
+					intDatatypeProperties.add(dtp);				
+			}
+			datatypeProperties.add(dtp);
 		}
 		for(OWLIndividual owlIndividual : owlIndividuals)
 			individuals.add(new Individual(owlIndividual.getURI().toString()));
