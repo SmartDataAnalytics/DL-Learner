@@ -27,7 +27,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class DatatypeProperty implements Property, NamedKBElement {
+public class DatatypeProperty implements Comparable<DatatypeProperty>, Property, NamedKBElement {
 
 	protected String name;
 	
@@ -46,14 +46,23 @@ public class DatatypeProperty implements Property, NamedKBElement {
 		return name;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.dl.KBElement#toString(java.lang.String, java.util.Map)
-	 */
+	@Override
+	public String toString() {
+		return toString(null, null);
+	}
+	
 	public String toString(String baseURI, Map<String, String> prefixes) {
 		return "\"" + Helper.getAbbreviatedString(name, baseURI, prefixes) + "\"";
 	}
 
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(DatatypeProperty o) {
+		return name.compareTo(o.name);
 	}	
 }

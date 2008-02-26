@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
@@ -70,6 +71,8 @@ public interface Reasoner {
 	public SortedSet<Individual> retrieval(Description concept) throws ReasoningMethodUnsupportedException;
 	
 	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) throws ReasoningMethodUnsupportedException;
+	
+	public Map<Individual, SortedSet<Constant>> getDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;
 	
 	public boolean instanceCheck(Description concept, Individual individual) throws ReasoningMethodUnsupportedException;
 	

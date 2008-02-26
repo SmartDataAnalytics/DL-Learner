@@ -43,6 +43,7 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.owl.AssertionalAxiom;
 import org.dllearner.core.owl.ClassAssertionAxiom;
+import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
@@ -68,7 +69,9 @@ import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.TerminologicalAxiom;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
+import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.Union;
+import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.RoleComparator;
@@ -78,6 +81,7 @@ import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDataRange;
@@ -91,6 +95,8 @@ import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLOntologyStorageException;
+import org.semanticweb.owl.model.OWLTypedConstant;
+import org.semanticweb.owl.model.OWLUntypedConstant;
 import org.semanticweb.owl.model.UnknownOWLOntologyException;
 import org.semanticweb.owl.util.SimpleURIMapper;
 
@@ -537,7 +543,46 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 		return map;
 	}
-		
+	
+	@Override
+	public Map<Individual, SortedSet<Constant>> getDatatypeMembers(DatatypeProperty datatypeProperty) {
+		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
+		Map<Individual, SortedSet<Constant>> map = new TreeMap<Individual, SortedSet<Constant>>();
+		for(Individual i : individuals) {
+			OWLIndividual ind = factory.getOWLIndividual(URI.create(i.getName()));
+			
+			// get all related values via OWL API
+			Set<OWLConstant> constants = null;
+			try {
+				constants = reasoner.getRelatedValues(ind, prop);
+			} catch (OWLReasonerException e) {
+				e.printStackTrace();
+			}
+			
+			// convert data back to DL-Learner structures
+			SortedSet<Constant> is = new TreeSet<Constant>();
+			for(OWLConstant oi : constants) {
+				// for typed constants we have to figure out the correct
+				// data type and value
+				if(oi instanceof OWLTypedConstant) {
+					Datatype dt = convertDatatype(((OWLTypedConstant)oi).getDataType());
+					is.add(new TypedConstant(oi.getLiteral(),dt));
+				// for untyped constants we have to figure out the value
+				// and language tag (if any)
+				} else {
+					OWLUntypedConstant ouc = (OWLUntypedConstant) oi;
+					if(ouc.hasLang())
+						is.add(new UntypedConstant(ouc.getLiteral(), ouc.getLang()));
+					else
+						is.add(new UntypedConstant(ouc.getLiteral()));
+				}
+			}	
+			// only add individuals using the datatype property
+			if(is.size()>0)
+				map.put(i, is);
+		}
+		return map;
+	}
 	
 	// OWL API often returns a set of sets of classes, where each inner
 	// set consists of equivalent classes; this method picks one class
@@ -618,9 +663,25 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}	
 	
+	public static Datatype convertDatatype(OWLDataType dataType) {
+		URI uri = dataType.getURI();
+		if(uri.equals(Datatype.BOOLEAN.getURI()))
+			return Datatype.BOOLEAN;
+		else if(uri.equals(Datatype.DOUBLE.getURI()))
+			return Datatype.DOUBLE;
+		else if(uri.equals(Datatype.INT.getURI()))
+			return Datatype.INT;			
+		
+		throw new Error("Unsupported datatype " + dataType + ". Please inform a DL-Learner developer to add it.");
+	}
+	
 	private static OWLObjectProperty getOWLAPIDescription(ObjectProperty role) {
 		return staticFactory.getOWLObjectProperty(URI.create(role.getName()));
 	}
+	
+	private static OWLDataProperty getOWLAPIDescription(DatatypeProperty datatypeProperty) {
+		return staticFactory.getOWLDataProperty(URI.create(datatypeProperty.getName()));
+	}	
 	
 	@Deprecated
 	public static OWLDescription getOWLAPIDescription(Description concept) {
@@ -771,6 +832,30 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * @return the booleanDatatypeProperties
+	 */
+	@Override
+	public Set<DatatypeProperty> getBooleanDatatypeProperties() {
+		return booleanDatatypeProperties;
+	}
+
+	/**
+	 * @return the doubleDatatypeProperties
+	 */
+	@Override
+	public Set<DatatypeProperty> getDoubleDatatypeProperties() {
+		return doubleDatatypeProperties;
+	}
+
+	/**
+	 * @return the intDatatypeProperties
+	 */
+	@Override
+	public Set<DatatypeProperty> getIntDatatypeProperties() {
+		return intDatatypeProperties;
 	}
 
 }
