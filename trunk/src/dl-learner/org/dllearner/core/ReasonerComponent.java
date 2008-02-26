@@ -23,8 +23,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
+import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
@@ -75,6 +78,75 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
+	public Map<Individual, SortedSet<Constant>> getDatatypeMembers(DatatypeProperty datatypeProperty) 	
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
+	// convenience method to get int value mappings of a datatype property
+	public Map<Individual, SortedSet<Integer>> getIntDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembers(datatypeProperty);
+		Map<Individual, SortedSet<Integer>> ret = new TreeMap<Individual, SortedSet<Integer>>();
+		for(Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			SortedSet<Integer> valuesInt = new TreeSet<Integer>();
+			for(Constant c : values) {
+				int v = Integer.parseInt(c.getLiteral());
+				valuesInt.add(v);
+			}
+			ret.put(e.getKey(),valuesInt);
+		}
+		return ret;
+	}	
+	
+	// convenience method to get double value mappings of a datatype property
+	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembers(datatypeProperty);
+		Map<Individual, SortedSet<Double>> ret = new TreeMap<Individual, SortedSet<Double>>();
+		for(Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			SortedSet<Double> valuesDouble = new TreeSet<Double>();
+			for(Constant c : values) {
+				double v = Double.parseDouble(c.getLiteral());
+				valuesDouble.add(v);
+			}
+			ret.put(e.getKey(),valuesDouble);
+		}
+		return ret;
+	}
+	
+	// convenience method to get boolean value mappings of a datatype property
+	public Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembers(datatypeProperty);
+		Map<Individual, SortedSet<Boolean>> ret = new TreeMap<Individual, SortedSet<Boolean>>();
+		for(Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			SortedSet<Boolean> valuesBoolean = new TreeSet<Boolean>();
+			for(Constant c : values) {
+				boolean v = Boolean.parseBoolean(c.getLiteral());
+				valuesBoolean.add(v);
+			}
+			ret.put(e.getKey(),valuesBoolean);
+		}
+		return ret;
+	}	
+	
+	// convenience method returning those values which have value "true" for this
+	// datatype property
+	public SortedSet<Individual> getTrueDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembers(datatypeProperty);
+		SortedSet<Individual> ret = new TreeSet<Individual>();
+		for(Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			for(Constant c : values) {
+				boolean v = Boolean.parseBoolean(c.getLiteral());
+				if(v == true)
+					ret.add(e.getKey());
+			}
+		}
+		return ret;
+	}	
+	
 	public boolean instanceCheck(Description concept, Individual individual)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
