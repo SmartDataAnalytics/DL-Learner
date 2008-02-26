@@ -19,8 +19,15 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
         }
 
         public static Description parseConcept(String string) throws ParseException {
-                KBParser parser = new KBParser(new StringReader(string));
-                return parser.Concept();
+                // when just parsing the string as concept, we have no guarantee
+                // that the parser uses all symbols, e.g. a AND b returns just a
+                // because the brackets were forgotten;
+                // so instead we create an equivalent class axiom and return its
+                // right hand side
+                String eq = "tmp = " + string + ".";
+                KBParser parser = new KBParser(new StringReader(eq));
+                EquivalentClassesAxiom eqAxiom = parser.TBoxEquiv();
+                return eqAxiom.getConcept2();
         }
 
         public static KB parseKBFile(String content) throws IOException, ParseException {
@@ -668,39 +675,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     finally { jj_save(5, xla); }
   }
 
-  final private boolean jj_3_1() {
-    if (jj_3R_2()) return true;
-    if (jj_scan_token(22)) return true;
-    if (jj_3R_3()) return true;
-    if (jj_scan_token(23)) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_14() {
-    if (jj_scan_token(20)) return true;
-    if (jj_3R_20()) return true;
-    if (jj_3R_4()) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
-    if (jj_3R_2()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_17() {
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_4() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_17()) {
-    jj_scanpos = xsp;
-    if (jj_3R_18()) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3R_13() {
     if (jj_scan_token(19)) return true;
     if (jj_3R_20()) return true;
@@ -898,6 +872,39 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     if (jj_scan_token(22)) return true;
     if (jj_3R_3()) return true;
     if (jj_scan_token(24)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_2()) return true;
+    if (jj_scan_token(22)) return true;
+    if (jj_3R_3()) return true;
+    if (jj_scan_token(23)) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_14() {
+    if (jj_scan_token(20)) return true;
+    if (jj_3R_20()) return true;
+    if (jj_3R_4()) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    if (jj_3R_2()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_17() {
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_4() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_17()) {
+    jj_scanpos = xsp;
+    if (jj_3R_18()) return true;
+    }
     return false;
   }
 

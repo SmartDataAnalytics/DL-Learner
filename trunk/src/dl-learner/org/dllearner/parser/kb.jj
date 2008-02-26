@@ -48,8 +48,15 @@ public class KBParser {
 	}
 	
 	public static Description parseConcept(String string) throws ParseException {
-		KBParser parser = new KBParser(new StringReader(string));
-		return parser.Concept();
+		// when just parsing the string as concept, we have no guarantee
+		// that the parser uses all symbols, e.g. a AND b returns just a
+		// because the brackets were forgotten;
+		// so instead we create an equivalent class axiom and return its
+		// right hand side
+		String eq = "tmp = " + string + ".";
+		KBParser parser = new KBParser(new StringReader(eq));
+		EquivalentClassesAxiom eqAxiom = parser.TBoxEquiv();
+		return eqAxiom.getConcept2();
 	}
 
 	public static KB parseKBFile(String content) throws IOException, ParseException {

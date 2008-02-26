@@ -460,31 +460,20 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public String[] retrieval(int id, String conceptString) throws ClientNotKnownException {
+	public String[] retrieval(int id, String conceptString) throws ClientNotKnownException, ParseException {
 		ClientState state = getState(id);
 		// call parser to parse concept
 		Description concept = null;
-		try {
-			concept = KBParser.parseConcept(conceptString);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		concept = KBParser.parseConcept(conceptString);
 		Set<Individual> individuals = state.getReasoningService().retrieval(concept);
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
 	
 	@WebMethod
-	public int getConceptLength(String conceptString) {
+	public int getConceptLength(String conceptString) throws ParseException {
 		// call parser to parse concept
-		Description concept = null;
-		try {
-			System.out.println(conceptString);
-			concept = KBParser.parseConcept(conceptString);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return concept.getLength();
-	}	
+		return KBParser.parseConcept(conceptString).getLength();
+	}
 	
 	@WebMethod
 	public String[] getAtomicRoles(int id) throws ClientNotKnownException {
