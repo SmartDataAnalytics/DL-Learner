@@ -42,7 +42,7 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
-import org.dllearner.operators.RhoDown;
+import org.dllearner.refinementoperators.RhoDown;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 import org.dllearner.utilities.Files;
