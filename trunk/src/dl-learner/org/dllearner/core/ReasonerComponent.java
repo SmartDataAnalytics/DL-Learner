@@ -28,6 +28,7 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.dllearner.core.owl.Constant;
+import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
@@ -193,6 +194,22 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
+	public Description getDomain(ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+		
+	public Description getDomain(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+	
+	public Description getRange(ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+		
+	public DataRange getRange(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
 	public Set<DatatypeProperty> getDatatypeProperties() throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}

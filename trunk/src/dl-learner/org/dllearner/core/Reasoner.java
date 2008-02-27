@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.core.owl.Constant;
+import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
@@ -96,6 +97,14 @@ public interface Reasoner {
 	
 	public Map<String, String> getPrefixes();
 	
+	public Description getDomain(ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException;
+	
+	public Description getDomain(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;
+	
+	public Description getRange(ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException;
+	
+	public DataRange getRange(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;
+		
 	// currently, we do not require that datatype properties can be returned;
 	// the main reason is that DIG does not distinguish between datatype and
 	// object properties (of course one could implement it but it is not easy)
