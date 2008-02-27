@@ -779,4 +779,18 @@ public class DIGReasoner extends ReasonerComponent {
 		return reasonerURL;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Reasoner#getBaseURI()
+	 */
+	public String getBaseURI() {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Reasoner#getPrefixes()
+	 */
+	public Map<String, String> getPrefixes() {
+		return null;
+	}
+
 }
