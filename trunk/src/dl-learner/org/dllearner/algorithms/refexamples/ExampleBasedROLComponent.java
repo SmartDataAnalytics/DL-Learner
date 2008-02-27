@@ -164,8 +164,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
 		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples");
-		noisePercentage.setLowerLimit(0.0);
-		noisePercentage.setUpperLimit(1.0);
+		noisePercentage.setLowerLimit(0);
+		noisePercentage.setUpperLimit(100);
 		options.add(noisePercentage);
 		return options;
 	}
@@ -228,12 +228,13 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	 */
 	@Override
 	public void init() {
+
 		if(searchTreeFile == null)
 			searchTreeFile = new File(defaultSearchTreeFile);
 
 		if(writeSearchTree)
 			Files.clearFile(searchTreeFile);
-		
+
 		// adjust heuristic
 		ExampleBasedHeuristic algHeuristic;
 		
@@ -243,8 +244,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			if(learningProblem instanceof PosOnlyDefinitionLP) {
 				throw new RuntimeException("does not work with positive examples only yet");
 			}
-			algHeuristic = null;
-			// algHeuristic = new FlexibleHeuristic(learningProblem.getNegativeExamples().size(), learningProblem.getPercentPerLengthUnit());
+			algHeuristic = new FlexibleHeuristic(((PosNegLP)learningProblem).getNegativeExamples().size(), ((PosNegLP)learningProblem).getPercentPerLengthUnit());
 		}
 		
 		// compute used concepts/roles from allowed/ignored

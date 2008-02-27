@@ -119,6 +119,10 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 	}
 
+	public static String getName() {
+		return "fast instance checker";
+	}	
+	
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -318,7 +318,8 @@ public class RhoDown implements RefinementOperator {
 		// falls Konzept ungleich Bottom oder Top, dann kann ein Refinement von Top
 		// angehangen werden
 		if(concept instanceof Union || concept instanceof NamedClass ||
-				concept instanceof Negation || concept instanceof ObjectSomeRestriction || concept instanceof ObjectAllRestriction) {
+				concept instanceof Negation || concept instanceof ObjectQuantorRestriction
+				|| concept instanceof ValueRestriction) {
 			// long someTimeNsStart = System.nanoTime();
 			// someCount++;
 			// Refinement von Top anhängen

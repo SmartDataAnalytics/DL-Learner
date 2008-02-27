@@ -324,7 +324,7 @@ public class Start {
 				}
 
 			} catch (InvalidConfigOptionValueException e) {
-				// e.printStackTrace();
+				e.printStackTrace();
 				System.exit(0);
 			}
 
