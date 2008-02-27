@@ -210,6 +210,7 @@ public class ExampleBasedROLearner {
 	}
 	
 	public void start() {
+
 		
 		// calculate quality threshold required for a solution
 		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
@@ -559,7 +560,7 @@ public class ExampleBasedROLearner {
 					tooWeakList.add(refinement);
 				} else {
 					// Lösung gefunden
-					if(quality == 0) {
+					if(quality >= 0 && quality<allowedMisclassifications) {
 						solutionFound = true;
 						solutions.add(refinement);
 					}			
@@ -609,8 +610,11 @@ public class ExampleBasedROLearner {
 		long algorithmRuntime = System.nanoTime() - algorithmStartTime;
 		
 		if(!finalStats) {
+			ExampleBasedNode bestNode = candidatesStable.last();
+			double accuracy = 100 * ((bestNode.getCoveredPositives().size()
+			+ nrOfNegativeExamples - bestNode.getCoveredNegatives().size())/(double)nrOfExamples);
 			// Refinementoperator auf Konzept anwenden
-			String bestNodeString = "currently best node: " + candidatesStable.last();
+			String bestNodeString = "currently best node: " + bestNode + " accuracy: " + df.format(accuracy) + "%";
 			// searchTree += bestNodeString + "\n";
 			System.out.println(bestNodeString);
 			String expandedNodeString = "next expanded node: " + candidates.last();

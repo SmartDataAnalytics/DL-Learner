@@ -92,6 +92,10 @@ public interface Reasoner {
 
 	public Set<ObjectProperty> getAtomicRoles();
 
+//	public String getBaseURI;
+//	
+//	public Map<String, String> getPrefixes();
+	
 	// currently, we do not require that datatype properties can be returned;
 	// the main reason is that DIG does not distinguish between datatype and
 	// object properties (of course one could implement it but it is not easy)

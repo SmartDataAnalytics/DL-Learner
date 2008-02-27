@@ -67,7 +67,7 @@ public class ROLearner extends LearningAlgorithm {
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
 	private boolean useNegation = true;	
-	private boolean useBooleanDatatypes = true;
+	private boolean useBooleanDatatypes = false;
 	
 	private boolean quiet = false;
 	
