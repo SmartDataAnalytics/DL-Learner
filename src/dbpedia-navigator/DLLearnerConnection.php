@@ -283,6 +283,6 @@ class DLLearnerConnection
 $sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
 $sc=new DLLearnerConnection($ids[0],$ids[1]);
-$triples=$sc->getYagoSubCategories("http://dbpedia.org/class/yago/Eliminator109272468");
+$triples=$sc->getSubjects("Leipzig");
 var_dump($triples);*/
 ?>
