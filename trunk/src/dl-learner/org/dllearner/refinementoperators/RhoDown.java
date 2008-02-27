@@ -414,7 +414,7 @@ public class RhoDown implements RefinementOperator {
 		
 		// berechnen aller möglichen Kombinationen für Disjunktion,
 		for(int i = topRefinementsLength+1; i <= maxLength; i++) {
-			combos.put(i,getCombos(i));
+			combos.put(i,MathOperations.getCombos(i));
 			topRefinements.put(i, new TreeSet<Description>(conceptComparator));
 			// topRefinements.put(i, new HashSet<Concept>());
 			
@@ -454,7 +454,7 @@ public class RhoDown implements RefinementOperator {
 				} else {
 					Set<Union> baseSet = new HashSet<Union>();
 					for(Integer j : combo) { // combo.getNumbers()) {
-						baseSet = incCrossProduct2(baseSet, m.get(j));
+						baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
 					}
 					
 					// Umwandlung aller Konzepte in Negationsnormalform
@@ -603,6 +603,7 @@ public class RhoDown implements RefinementOperator {
 	}
 	
 	
+	// wird nicht mehr verwendet
 	public static void summen(int zahl, int max, String bisher, int recDepth)
 	{
 		for(int j=0; j<recDepth; j++)
@@ -635,99 +636,14 @@ public class RhoDown implements RefinementOperator {
 	    }
 	}	
 	
-	@SuppressWarnings("unchecked")
-	private LinkedList<Integer> cloneList(LinkedList<Integer> list) {
-		return (LinkedList<Integer>) list.clone();
-	}
-	
-	/**
-	 * 
-	 * Dadurch das max das Maximum der vorkommenden Zahl regelt, kommen
-	 * keine doppelten Kombinationen vor.
-	 * 
-	 * TODO: Implementierung mit Speicherung in Datenstruktur statt
-	 * direkter Ausgabe; IntegerCombo wird hier gar nicht benötigt, da
-	 * alle Elemente bereits in richtiger Reihenfolge vorliegen und
-	 * es keine doppelten Nennungen gibt
-	 * 
-	 * @param zahl Zu zerlegende Zahl.
-	 * @param max Maximal in Summenzerlegung vorkommende Zahl.
-	 * @param bisher
-	 */
-	private void zerlege(int zahl, int max, LinkedList<Integer> bisher, List<List<Integer>> combosTmp) {
-		
-	    for (int i = Math.min(zahl, max); i >= 1; i--)
-	    {
-	    	
-	    	LinkedList<Integer> newBisher = null;
-	    	// für i==0 wird aus Effizienzgründen die bisherige Liste genommen
-	    	if(i==0) {
-	    		newBisher = bisher;
-	    		newBisher.add(i);
-	    	// für zahl - i == 1 muss gar keine Liste erstellt werden, da dann keine
-	    	// Zerlegung mehr möglich ist
-	    	} else if(zahl - i != 1) {
-	    		newBisher = cloneList(bisher);
-	    		newBisher.add(i);
-	    	}
-	    	
-	        
-	        if (zahl - i > 1)
-	        {
-	            // i wird hinzugefügt, d.h.
-	            // - es muss nur noch zahl - i - 1 zerlegt werden (-1 wegen OR-Symbol)
-	            // - es darf keine größere Zahl als i mehr vorkommen
-	            // (dadurch gehen keine Kombinationen verloren)
-	            zerlege(zahl - i - 1, i, newBisher,combosTmp);
-	        }
-	        // Fall zahl == i, d.h. es muss nicht weiter zerlegt werden
-	        else if(zahl - i == 0){
-	        	combosTmp.add(newBisher);
-	        }
-	        
 
-	    }	
-	    
-	    // numbers.add(bisher);
-	}
 	
-	// auf Notebook: Länge 70 in 17 Sekunden, Länge 50 in 800ms, Länge 30 in 15ms
-	// http://88.198.173.90/tud/forum/messages?topic=304392
-	public List<List<Integer>> getCombos(int length) {
-		LinkedList<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
-		zerlege(length, length, new LinkedList<Integer>(), combosTmp);
-		return combosTmp;
-	}
-	
-	// neue Implementierung, die nicht mehr zur incompleteness führen soll,
-	// da die Konzepte in einer MultiDisjunction als Liste gespeichert werden
-	private Set<Union> incCrossProduct2(Set<Union> baseSet, Set<Description> newSet) {
-		Set<Union> retSet = new HashSet<Union>();
-		
-		if(baseSet.isEmpty()) {
-			for(Description c : newSet) {
-				Union md = new Union();
-				md.addChild(c);
-				retSet.add(md);
-			}
-			return retSet;
-		}
-		
-		for(Union md : baseSet) {
-			for(Description c : newSet) {
-				Union mdNew = new Union(md.getChildren());
-				mdNew.addChild(c);
-				retSet.add(mdNew);
-			}
-		}
-		
-		return retSet;
-	}
+
 	
 	// incremental cross product
 	// es müssen Listen statt Sets verwendet werden
 	@SuppressWarnings({"unused"})
-	private Set<Set<Description>> incCrossProduct(Set<Set<Description>> baseSet, Set<Description> newSet) {
+	private Set<Set<Description>> incCrossProductOld(Set<Set<Description>> baseSet, Set<Description> newSet) {
 		Set<Set<Description>> retSet = new HashSet<Set<Description>>();
 		
 		// falls erste Menge leer ist, dann wird Menge mit jeweils Singletons aus der

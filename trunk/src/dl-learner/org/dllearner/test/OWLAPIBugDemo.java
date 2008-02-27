@@ -63,11 +63,11 @@ public class OWLAPIBugDemo {
             
             // class cast exception
             Set<Set<OWLDescription>> test = reasoner.getDomains(p);
-            OWLClass oc = (OWLClass) test.iterator().next();
-            System.out.println(oc);
-//            for(Set<OWLDescription> test2 : test) {
-//            	System.out.println(test2);
-//            }
+//            OWLClass oc = (OWLClass) test.iterator().next();
+//            System.out.println(oc);
+            for(Set<OWLDescription> test2 : test) {
+            	System.out.println(test2);
+            }
             
             // save ontology
             manager.saveOntology(ontology);
