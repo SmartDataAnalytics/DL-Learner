@@ -119,17 +119,19 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		<div class="box" id="NavigationBox">
 		  <div class="boxtitle">Navigate</div>
 		  <div class="boxcontent">
-		  	<div id="treeboxbox_tree" style="width:250; height:218;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;">
-		  		<script>
-					tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
-					tree.setImagePath("<?php print $path;?>images/csh_bluebooks/");
-					tree.setXMLAutoLoading("processTreeMenu.php");
-					tree.loadXML("processTreeMenu.php?id=0");
-				</script>
+		  	<div id="treeboxbox_tree" style="height:218px;overflow:auto;">
 		  	</div>
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
-
+		<script>
+					tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+					tree.setImagePath("<?php print $path;?>images/csh_bluebooks/");
+					tree.enableCheckBoxes(1);
+					tree.setXMLAutoLoading("processTreeMenu.php");
+					tree.loadXML("processTreeMenu.php?id=0");
+		</script>
+		
+		
 		<div class="box" id="credits">
 			<p>DBpedia Navigator is powered by ... <br />
 			&nbsp; <a href="http://dl-learner.org">DL-Learner</a><br />
