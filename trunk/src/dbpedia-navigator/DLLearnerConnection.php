@@ -137,7 +137,7 @@ class DLLearnerConnection
 		$queryID=$this->client->sparqlQueryThreaded($this->id,$this->ksID,$query);
 		$running=true;
 		$i = 1;
-		$sleeptime = 1;
+		$sleeptime = 0.5;
 		do {
 			// sleep a while
 			sleep($sleeptime);
@@ -180,8 +180,20 @@ class DLLearnerConnection
 	function getSubjectsFromConcept($concept)
 	{
 		$query="SELECT DISTINCT ?subject\n".
-			   "WHERE { ?subject a <".$concept.">}\n".
-			   "LIMIT 10";
+			   "WHERE { ?subject a <".$concept.">}\n";
+		$result=json_decode($this->getSparqlResult($query),true);
+		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result.");
+		$ret=array();
+		foreach ($result['results']['bindings'] as $results){
+			$ret[]=$results['subject']['value'];
+		}
+		return $ret;
+	}
+	
+	function getYagoSubCategories($category)
+	{
+		$query="SELECT DISTINCT ?subject\n".
+			   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#subClassOf> <".$category.">}\n";
 		$result=json_decode($this->getSparqlResult($query),true);
 		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result.");
 		$ret=array();

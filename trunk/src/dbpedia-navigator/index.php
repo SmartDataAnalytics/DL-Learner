@@ -18,14 +18,15 @@ require_once 'Settings.php';
 $settings=new Settings();
 
 //what happens onLoad
-$onload="";
+$onLoad="onLoad=\"";
 if (isset($_GET['resource'])){ 
-	$onLoad.="onLoad=\"xajax_getarticle('".$_GET['resource']."',-1);return false;\"";
+	$onLoad.="xajax_getarticle('".$_GET['resource']."',-1);";
 	unset($_GET['resource']);
 }
 else if (isset($_SESSION['currentArticle'])){
-	$onLoad.="onLoad=\"xajax_getarticle('',".$_SESSION['currentArticle'].");return false;\"";
+	$onLoad.="xajax_getarticle('',".$_SESSION['currentArticle'].");";
 }
+$onLoad.="\"";
 
 require("ajax.php"); 
   
@@ -39,10 +40,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
     <title>DBpedia Navigator</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="<?php print $path;?>default.css"/>
+    <link rel="stylesheet" type="text/css" href="<?php print $path;?>treemenu/dhtmlxtree.css">
     <?php $xajax->printJavascript($path.'xajax/'); ?>
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php print $settings->googleMapsKey;?>"
       type="text/javascript"></script>
-	<script type="text/javascript">
+    <script  src="<?php print $path;?>treemenu/dhtmlxcommon.js"></script>
+	<script  src="<?php print $path;?>treemenu/dhtmlxtree.js"></script>
+    <script type="text/javascript">
         showLoading = function() {
             xajax.$('Loading').style.display='inline';
         };
@@ -109,6 +113,20 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  <div class="boxtitle">Search Results</div>
 		  <div class="boxcontent">
 		  <div id="searchcontent" style="display:block"></div>
+		  </div> <!-- boxcontent -->
+		</div> <!-- box -->
+		
+		<div class="box" id="NavigationBox">
+		  <div class="boxtitle">Navigate</div>
+		  <div class="boxcontent">
+		  	<div id="treeboxbox_tree" style="width:250; height:218;background-color:#f5f5f5;border :1px solid Silver;; overflow:auto;">
+		  		<script>
+					tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
+					tree.setImagePath("<?php print $path;?>images/csh_bluebooks/");
+					tree.setXMLAutoLoading("processTreeMenu.php");
+					tree.loadXML("processTreeMenu.php?id=0");
+				</script>
+		  	</div>
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
