@@ -14,8 +14,11 @@ print("<tree id='".$url_var."'>");
 		$ids=$sc->getIDs();
 		$sc=new DLLearnerConnection($ids[0],$ids[1]);
 		$categories=$sc->getYagoSubCategories($url_var);
-		foreach ($categories as $category)
-			print("<item child=\"1\" id=\"".$category['value']."\" text=\"".$category['label']."\"><userdata name=\"myurl\">".$category."</userdata></item>");
+		foreach ($categories as $category){
+			if ($category['subclasses']=="0") $child=0;
+			else $child=1;
+			print("<item child=\"".$child."\" id=\"".$category['value']."\" text=\"".$category['label']."\"><userdata name=\"myurl\">".$category."</userdata></item>");
+		}
 	}
 print("</tree>");
 ?> 
