@@ -1,4 +1,4 @@
-package org.dllearner.operators;
+package org.dllearner.refinementoperators;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,57 +23,45 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.ConceptComparator;
 
-/**
- * Operatoren Psi-Down und Psi-Up müssen noch so umgeschrieben werden, dass sie
- * nur konsistente Konzepte (mit korrekten parent-Links) enthalten. Dazu müssen
- * alle verwendeten atomaren Konzepte geklont werden. 
- * 
- * Außerdem erscheint es ratsam weitere konzeptverkürzende Maßnahmen einzuführen,
- * z.B. EXISTS r.A => BOTTOM für down bzw. TOP für up
- * => Konzepte erreichen etwa eine Länge von 20
- * 
- * @author jl
- *
- */
-public class PsiDown implements RefinementOperator {
+public class PsiUp implements RefinementOperator {
 
 	ConceptComparator conceptComparator = new ConceptComparator();
 	
 	PosNegLP learningProblem;
 	ReasoningService reasoningService;
 	
-	private TreeSet<Description> topSet;
+	private TreeSet<Description> bottomSet;
 	
-	public PsiDown(PosNegLP learningProblem) {
+	public PsiUp(PosNegLP learningProblem) {
 		this.learningProblem = learningProblem;
 		reasoningService = learningProblem.getReasoningService();
 		
 		// Top-Menge erstellen
-		createTopSet();
+		createBottomSet();
 	}
 	
-	private void createTopSet() {
-		topSet = new TreeSet<Description>(conceptComparator);
+	private void createBottomSet() {
+		bottomSet = new TreeSet<Description>(conceptComparator);
 		
-		// TOP OR TOP => Was soll mit Refinements passieren, die immer improper sind?
-		Union md = new Union();
-		md.addChild(new Thing());
-		md.addChild(new Thing());
-		topSet.add(md);
+		// BOTTOM AND BOTTOM
+		Intersection mc = new Intersection();
+		mc.addChild(new Nothing());
+		mc.addChild(new Nothing());
+		bottomSet.add(mc);
 		
-		// allgemeinste Konzepte
-		topSet.addAll(reasoningService.getMoreSpecialConcepts(new Thing()));
+		// speziellste Konzepte
+		bottomSet.addAll(reasoningService.getMoreGeneralConcepts(new Nothing()));
 		
-		// negierte speziellste Konzepte
-		Set<Description> tmp = learningProblem.getReasoningService().getMoreGeneralConcepts(new Nothing());
+		// negierte allgemeinste Konzepte
+		Set<Description> tmp = reasoningService.getMoreSpecialConcepts(new Thing());
 		for(Description c : tmp) 
-			topSet.add(new Negation(c));
+			bottomSet.add(new Negation(c));
 	
-		// EXISTS r.TOP und ALL r.TOP für alle r
+		// EXISTS r.BOTTOM und ALL r.BOTTOM für alle r
 		for(ObjectProperty r : reasoningService.getAtomicRoles()) {
-			topSet.add(new ObjectAllRestriction(r, new Thing()));
-			topSet.add(new ObjectSomeRestriction(r, new Thing()));
-		}		
+			bottomSet.add(new ObjectAllRestriction(r, new Nothing()));
+			bottomSet.add(new ObjectSomeRestriction(r, new Nothing()));
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -83,32 +71,31 @@ public class PsiDown implements RefinementOperator {
 		Set<Description> tmp = new HashSet<Description>();
 		
 		if (concept instanceof Thing) {
-			return (Set<Description>) topSet.clone();
+			return new TreeSet<Description>(conceptComparator);
 		} else if (concept instanceof Nothing) {
-			// return new TreeSet<Concept>(conceptComparator);
-			return new HashSet<Description>();
+			return (Set<Description>) bottomSet.clone();			
 		} else if (concept instanceof NamedClass) {
-			// beachte: die Funktion gibt bereits nur nicht-äquivalente Konzepte zurück
-			// beachte weiter: die zurückgegebenen Instanzen dürfen nicht verändert werden,
-			// da beim Caching der Subsumptionhierarchie (momentan) keine Kopien gemacht werden
-			// Bottom wird hier ggf. automatisch mit zurückgegeben
-			refinements.addAll(reasoningService.getMoreSpecialConcepts(concept));
+			// Top darf hier mit dabei sein
+			refinements.addAll(reasoningService.getMoreGeneralConcepts(concept));
+			
 		// negiertes atomares Konzept
 		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
-			tmp.addAll(reasoningService.getMoreGeneralConcepts(concept.getChild(0)));
+			tmp.addAll(reasoningService.getMoreSpecialConcepts(concept.getChild(0)));
 			
-			// Top rausschmeissen
-			boolean containsTop = false;
+			// Bottom rausschmeissen
+			boolean containsBottom = false;
 			Iterator<Description> it = tmp.iterator();
 			while(it.hasNext()) {
 				Description c = it.next();
-				if(c instanceof Thing) {
+				if(c instanceof Nothing) {
 					it.remove();
-					containsTop = true;
+					containsBottom = true;
 				}
-			}			
-			if(containsTop)
-				refinements.add(new Nothing());
+			}
+			// es soll z.B. NOT male auch zu NOT BOTTOM d.h. zu TOP verfeinert
+			// werden können
+			if(containsBottom)
+				refinements.add(new Thing());
 			
 			for(Description c : tmp) {
 				refinements.add(new Negation(c));
@@ -136,6 +123,18 @@ public class PsiDown implements RefinementOperator {
 					refinements.add(mc);	
 				}
 			}
+			
+			// ein Element der Konjunktion kann weggelassen werden
+			for(Description child : concept.getChildren()) {
+				List<Description> newChildren = new LinkedList<Description>(concept.getChildren());
+				newChildren.remove(child);
+				if(newChildren.size()==1)
+					refinements.add(newChildren.get(0));
+				else {
+					Intersection md = new Intersection(newChildren);
+					refinements.add(md);
+				}
+			}			
 		} else if (concept instanceof Union) {
 			// eines der Elemente kann verfeinert werden
 			for(Description child : concept.getChildren()) {
@@ -155,29 +154,14 @@ public class PsiDown implements RefinementOperator {
 					refinements.add(md);	
 				}
 			}
-			
-			// ein Element der Disjunktion kann weggelassen werden
-			for(Description child : concept.getChildren()) {
-				List<Description> newChildren = new LinkedList<Description>(concept.getChildren());
-				newChildren.remove(child);
-				// wenn nur ein Kind da ist, dann wird Disjunktion gleich weggelassen
-				if(newChildren.size()==1)
-					refinements.add(newChildren.get(0));
-				else {
-					Union md = new Union(newChildren);
-					refinements.add(md);
-				}
-			}
-			
 		} else if (concept instanceof ObjectSomeRestriction) {
 			tmp = refine(concept.getChild(0));
 			for(Description c : tmp) {
 				refinements.add(new ObjectSomeRestriction(((ObjectQuantorRestriction)concept).getRole(),c));
 			}		
 			
-			// falls Kind Bottom ist, dann kann exists weggelassen werden
-			if(concept.getChild(0) instanceof Nothing)
-				refinements.add(new Nothing());
+			if(concept.getChild(0) instanceof Thing)
+				refinements.add(new Thing());
 			
 		} else if (concept instanceof ObjectAllRestriction) {
 			tmp = refine(concept.getChild(0));
@@ -185,8 +169,8 @@ public class PsiDown implements RefinementOperator {
 				refinements.add(new ObjectAllRestriction(((ObjectQuantorRestriction)concept).getRole(),c));
 			}		
 			
-			if(concept.getChild(0) instanceof Nothing)
-				refinements.add(new Nothing());
+			if(concept.getChild(0) instanceof Thing)
+				refinements.add(new Thing());			
 			
 			// falls es keine spezielleren atomaren Konzepte gibt, dann wird 
 			// bottom angehangen => nur wenn es ein atomares Konzept (insbesondere != bottom)
@@ -198,16 +182,14 @@ public class PsiDown implements RefinementOperator {
 		} else
 			throw new RuntimeException(concept.toString());
 		
-		// falls Konzept ungleich Bottom oder Top, dann kann ein Refinement von Top
-		// angehangen werden
 		if(concept instanceof Union || concept instanceof NamedClass ||
 				concept instanceof Negation || concept instanceof ObjectSomeRestriction || concept instanceof ObjectAllRestriction) {
 			
-			// es wird AND TOP angehangen
-			Intersection mc = new Intersection();
-			mc.addChild(concept);
-			mc.addChild(new Thing());					
-			refinements.add(mc);
+			// es wird OR BOTTOM angehangen
+			Union md = new Union();
+			md.addChild(concept);
+			md.addChild(new Nothing());					
+			refinements.add(md);
 		}
 
 		// Refinements werden jetzt noch bereinigt, d.h. Verschachtelungen von Konjunktionen
@@ -219,7 +201,6 @@ public class PsiDown implements RefinementOperator {
 		// sind
 		// SortedSet<Concept> returnSet = new TreeSet<Concept>(conceptComparator);
 		/*
-		
 		Set<Concept> returnSet = new HashSet<Concept>();
 		for(Concept c : refinements) {
 			ConceptTransformation.cleanConcept(c);
@@ -229,12 +210,7 @@ public class PsiDown implements RefinementOperator {
 		
 		return returnSet;
 		*/
-		
-		// Zwischenschritt wird weggelassen - man muss nicht alle Konzepte cleanen,
-		// um dann nur eins davon auszuwählen
-		
 		return refinements;
-		
 	}
 
 	public Set<Description> refine(Description concept, int maxLength,
