@@ -156,11 +156,11 @@ class DLLearnerConnection
 			$run=fgets($file);
 			fclose($file);
 			if ($run=="false"){
-				$this->client->stopSparqlQuery($id,$queryID);
+				$this->client->stopSparqlQuery($this->id,$queryID);
 				throw new Exception("Query stopped");
 			}
 		} while($seconds<$this->ttl);
-		$this->client->stopSparqlThread($id,$queryID);
+		$this->client->stopSparqlThread($this->id,$queryID);
 	}
 
 	function getSubjects($label)

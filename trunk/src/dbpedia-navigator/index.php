@@ -127,6 +127,11 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 					tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
 					tree.setImagePath("<?php print $path;?>images/csh_bluebooks/");
 					tree.enableCheckBoxes(1);
+					tree.setOnClickHandler(doOnClick);
+					function doOnClick(nodeId){ 
+						var myUrl = tree.getUserData(nodeId,"myurl");
+						xajax_getSubjectsFromConcept(myUrl);
+					}
 					tree.setXMLAutoLoading("processTreeMenu.php");
 					tree.loadXML("processTreeMenu.php?id=0");
 		</script>
