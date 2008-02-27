@@ -192,13 +192,16 @@ class DLLearnerConnection
 	
 	function getYagoSubCategories($category)
 	{
-		$query="SELECT DISTINCT ?subject\n".
-			   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#subClassOf> <".$category.">}\n";
+		$query="SELECT ?subject ?label\n".
+			   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#subClassOf> <".$category.">.?subject <http://www.w3.org/2000/01/rdf-schema#label> ?label}\n";
 		$result=json_decode($this->getSparqlResult($query),true);
 		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result.");
 		$ret=array();
 		foreach ($result['results']['bindings'] as $results){
-			$ret[]=$results['subject']['value'];
+			$res=array();
+			$res['value']=$results['subject']['value'];
+			$res['label']=$results['label']['value'];
+			if (strlen($res['label'])>0) $ret[]=$res;
 		}
 		return $ret;
 	}
