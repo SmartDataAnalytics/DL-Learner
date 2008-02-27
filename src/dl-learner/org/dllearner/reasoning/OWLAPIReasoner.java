@@ -93,12 +93,14 @@ import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyFormat;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLOntologyStorageException;
 import org.semanticweb.owl.model.OWLTypedConstant;
 import org.semanticweb.owl.model.OWLUntypedConstant;
 import org.semanticweb.owl.model.UnknownOWLOntologyException;
 import org.semanticweb.owl.util.SimpleURIMapper;
+import org.semanticweb.owl.vocab.NamespaceOWLOntologyFormat;
 
 /**
  * Mapping to OWL API reasoner interface. The OWL API currently 
@@ -137,6 +139,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	Set<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
 	Set<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<Individual> individuals = new TreeSet<Individual>();	
+	
+	// namespaces
+	private Map<String, String> prefixes = new TreeMap<String,String>();
+	private String baseURI;
 	
 	public OWLAPIReasoner(Set<KnowledgeSource> sources) {
 		this.sources = sources;
@@ -198,6 +204,14 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					owlObjectProperties.addAll(ontology.getReferencedObjectProperties());
 					owlDatatypeProperties.addAll(ontology.getReferencedDataProperties());				
 					owlIndividuals.addAll(ontology.getReferencedIndividuals());
+					
+					OWLOntologyFormat format = manager.getOntologyFormat(ontology);
+					if(format instanceof NamespaceOWLOntologyFormat) {
+						prefixes = ((NamespaceOWLOntologyFormat)format).getNamespacesByPrefixMap();
+						prefixes.remove("");
+						baseURI = prefixes.get("");
+					}
+					
 				} catch (OWLOntologyCreationException e) {
 					e.printStackTrace();
 				} catch (URISyntaxException e) {
@@ -267,8 +281,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 		
 		factory = manager.getOWLDataFactory();
-		
-		
 		
 //		try {
 //			if(reasoner.isDefined(factory.getOWLIndividual(URI.create("http://example.com/father#female"))))
@@ -856,6 +868,20 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	@Override
 	public Set<DatatypeProperty> getIntDatatypeProperties() {
 		return intDatatypeProperties;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Reasoner#getBaseURI()
+	 */
+	public String getBaseURI() {
+		return baseURI;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Reasoner#getPrefixes()
+	 */
+	public Map<String, String> getPrefixes() {
+		return prefixes;
 	}
 
 }

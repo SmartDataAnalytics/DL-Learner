@@ -394,4 +394,18 @@ public class FastInstanceChecker extends ReasonerComponent {
 		System.out.println(reasoner.instanceCheck(d, i));
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Reasoner#getBaseURI()
+	 */
+	public String getBaseURI() {
+		return rc.getBaseURI();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Reasoner#getPrefixes()
+	 */
+	public Map<String, String> getPrefixes() {
+		return rc.getPrefixes();
+	}
+
 }

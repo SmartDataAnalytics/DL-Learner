@@ -1,5 +1,6 @@
 package org.dllearner.reasoning;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.SortedSet;
@@ -168,4 +169,18 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Reasoner#getBaseURI()
+	 */
+	public String getBaseURI() {
+		return rc.getBaseURI();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Reasoner#getPrefixes()
+	 */
+	public Map<String, String> getPrefixes() {
+		return rc.getPrefixes();
+	}	
 }

@@ -236,10 +236,18 @@ public class ExampleBasedROLearner {
 		int loop = 0;
 		
 		algorithmStartTime = System.nanoTime();
+		long lastPrintTime = 0;
+		long currentTime;
 		
 		while(!solutionFound && !stop) {		
 			
-			printStatistics(false);
+			// print statistics at most once a second
+			currentTime = System.nanoTime();
+			if(currentTime - lastPrintTime > 1000000000) {
+				printStatistics(false);
+				lastPrintTime = currentTime;
+				logger.debug("--- loop " + loop + " started ---");				
+			}
 			
 			// chose best node according to heuristics
 			bestNode = candidates.last();
@@ -275,7 +283,7 @@ public class ExampleBasedROLearner {
 			// Anzahl Schleifendurchläufe
 			loop++;
 			
-			logger.debug("--- loop " + loop + " finished ---");	
+	
 			
 		}
 		
