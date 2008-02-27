@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.algorithms.refinement.RhoDown;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -44,6 +43,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.refinementoperators.RhoDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 

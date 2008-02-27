@@ -9,6 +9,8 @@ import org.dllearner.algorithms.gp.Program;
 import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.refinementoperators.PsiDown;
+import org.dllearner.refinementoperators.PsiUp;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 

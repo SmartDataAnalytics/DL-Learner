@@ -5,7 +5,18 @@ import java.util.Map;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DescriptionVisitor;
 import org.dllearner.core.owl.KBElementVisitor;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDescriptionVisitor;
+import org.semanticweb.owl.model.OWLObjectVisitor;
 
+/**
+ * ADC stand for "automatically defined concept". It is used for
+ * concept invention in the Genetic Programming Algorithm. 
+ * However, it is not used 
+ * 
+ * @author Jens Lehmann
+ *
+ */
 public class ADC extends Description {
 
 	/*
@@ -51,6 +62,54 @@ public class ADC extends Description {
 
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.semanticweb.owl.model.OWLDescription#accept(org.semanticweb.owl.model.OWLDescriptionVisitor)
+	 */
+	public void accept(OWLDescriptionVisitor arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.semanticweb.owl.model.OWLDescription#asOWLClass()
+	 */
+	public OWLClass asOWLClass() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.semanticweb.owl.model.OWLDescription#isAnonymous()
+	 */
+	public boolean isAnonymous() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.semanticweb.owl.model.OWLDescription#isOWLNothing()
+	 */
+	public boolean isOWLNothing() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.semanticweb.owl.model.OWLDescription#isOWLThing()
+	 */
+	public boolean isOWLThing() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.semanticweb.owl.model.OWLObject#accept(org.semanticweb.owl.model.OWLObjectVisitor)
+	 */
+	public void accept(OWLObjectVisitor arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

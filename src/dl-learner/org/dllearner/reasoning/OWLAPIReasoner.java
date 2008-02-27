@@ -205,6 +205,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					owlDatatypeProperties.addAll(ontology.getReferencedDataProperties());				
 					owlIndividuals.addAll(ontology.getReferencedIndividuals());
 					
+					// TODO: this obviously works only for exactly one knowledge source
 					OWLOntologyFormat format = manager.getOntologyFormat(ontology);
 					if(format instanceof NamespaceOWLOntologyFormat) {
 						prefixes = ((NamespaceOWLOntologyFormat)format).getNamespacesByPrefixMap();
@@ -530,6 +531,23 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			e.printStackTrace();
 			throw new Error("Satisfiability check error in OWL API.");
 		}
+	}
+	
+	@Override
+	public Description getDomain(ObjectProperty objectProperty) {
+		OWLObjectProperty prop = getOWLAPIDescription(objectProperty);
+		try {
+			// TODO: look up why OWL API return a two dimensional set here
+			// instead of only one description (probably there can be several
+			// domain axiom for one property and the inner set is a conjunction
+			// of descriptions (?))
+			OWLDescription d = reasoner.getDomains(prop).iterator().next().iterator().next();
+//			OWLAPIDescriptionConvertVisitor.getOWLDescription(d);
+		} catch (OWLReasonerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	@Override
