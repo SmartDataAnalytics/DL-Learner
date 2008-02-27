@@ -4,7 +4,7 @@ ini_set('max_execution_time',200);
 require("ajax.php");
 $xajax->processRequest();
 
-function getsubjects($label)
+function getsubjects($label,$list)
 {
 	$sid = $_GET['sid'];
 	session_id($sid);
@@ -14,6 +14,9 @@ function getsubjects($label)
 	session_write_close();
 	
 	setRunning($id,"true");
+	
+	//get parts of the list
+	$checkedInstances=preg_split("[,]",$list);
 	
 	//initialise content
 	$content="";
@@ -155,7 +158,7 @@ function getarticle($subject,$fromCache)
 			
 			//BUILD SEARCHRESULT
 			if ($fromCache==-1) 
-				$searchResult.="<a href=\"\" onclick=\"xajax_getsubjects('".$subject."');return false;\">Show more Results</a>";
+				$searchResult.="<a href=\"\" onclick=\"var list=tree.getAllChecked();xajax_getsubjects('".$subject."',list);return false;\">Show more Results</a>";
 			
 			
 			//Restart the Session
