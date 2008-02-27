@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.refinementoperators;
+package org.dllearner.operators;
 
 import java.util.HashMap;
 import java.util.HashSet;
