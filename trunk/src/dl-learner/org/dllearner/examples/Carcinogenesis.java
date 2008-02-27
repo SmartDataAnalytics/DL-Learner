@@ -173,7 +173,9 @@ public class Carcinogenesis {
 		kbString += "OPDOMAIN(" + getURI2("hasBond") + ") = " + getURI2("Compound") + ".\n";
 		kbString += "OPRANGE(" + getURI2("hasBond") + ") = " + getURI2("Bond") + ".\n";
 		kbString += "OPDOMAIN(" + getURI2("inBond") + ") = " + getURI2("Bond") + ".\n";
-		kbString += "OPRANGE(" + getURI2("inBond") + ") = " + getURI2("Atom") + ".\n";		
+		kbString += "OPRANGE(" + getURI2("inBond") + ") = " + getURI2("Atom") + ".\n";
+		kbString += "OPDOMAIN(" + getURI2("hasStructure") + ") = " + getURI2("Compound") + ".\n";
+		kbString += "OPRANGE(" + getURI2("hasStructure") + ") = " + getURI2("Structure") + ".\n";			
 		KB kb2 = KBParser.parseKBFile(kbString);
 		kb.addKB(kb2);
 

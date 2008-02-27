@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
@@ -446,6 +447,42 @@ public class ReasoningService {
 		return reasoner.getIndividuals();
 	}
 
+	public Description getDomain(ObjectProperty objectProperty) {
+		try {
+			return reasoner.getDomain(objectProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;			
+		}
+	}
+	
+	public Description getDomain(DatatypeProperty datatypeProperty) {
+		try {
+			return reasoner.getDomain(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;			
+		}
+	}
+	
+	public Description getRange(ObjectProperty objectProperty) {
+		try {
+			return reasoner.getRange(objectProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;			
+		}		
+	}
+	
+	public DataRange getRange(DatatypeProperty datatypeProperty) {
+		try {
+			return reasoner.getRange(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;			
+		}			
+	}
+	
 	public ReasonerType getReasonerType() {
 		return reasoner.getReasonerType();
 	}
