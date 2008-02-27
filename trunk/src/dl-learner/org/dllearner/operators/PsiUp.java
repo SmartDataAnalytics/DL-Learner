@@ -1,4 +1,4 @@
-package org.dllearner.refinementoperators;
+package org.dllearner.operators;
 
 import java.util.HashSet;
 import java.util.Iterator;

@@ -43,7 +43,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
-import org.dllearner.refinementoperators.RhoDown;
+import org.dllearner.operators.RhoDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 
