@@ -192,8 +192,8 @@ class DLLearnerConnection
 	
 	function getYagoSubCategories($category)
 	{
-		$query="SELECT ?subject ?label\n".
-			   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#subClassOf> <".$category.">.?subject <http://www.w3.org/2000/01/rdf-schema#label> ?label}\n";
+		$query="SELECT ?subject ?label count(?subclass) as ?numberOfSubclasses\n".
+			   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#subClassOf> <".$category.">.?subject <http://www.w3.org/2000/01/rdf-schema#label> ?label.OPTIONAL {?subclass  <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?subject} }";
 		$result=json_decode($this->getSparqlResult($query),true);
 		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result.");
 		$ret=array();
@@ -201,6 +201,7 @@ class DLLearnerConnection
 			$res=array();
 			$res['value']=$results['subject']['value'];
 			$res['label']=$results['label']['value'];
+			$res['subclasses']=$results['numberOfSubclasses']['value'];
 			if (strlen($res['label'])>0) $ret[]=$res;
 		}
 		return $ret;
@@ -282,6 +283,6 @@ class DLLearnerConnection
 $sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
 $sc=new DLLearnerConnection($ids[0],$ids[1]);
-$triples=$sc->getSubjects("Angela Merkel");
+$triples=$sc->getYagoSubCategories("http://dbpedia.org/class/yago/Eliminator109272468");
 var_dump($triples);*/
 ?>
