@@ -19,11 +19,21 @@
  */
 package org.dllearner.refinementoperators;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.dllearner.algorithms.refinement.RefinementOperator;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.Thing;
 
 /**
  * A downward refinement operator, which makes use of domains
@@ -38,6 +48,31 @@ import org.dllearner.core.owl.Description;
  */
 public class RhoDRDown implements RefinementOperator {
 
+	private ReasoningService rs;
+	
+	// hierarchies
+	private SubsumptionHierarchy subHierarchy;
+	
+	// domains and ranges
+	private Map<ObjectProperty,Description> opDomains = new TreeMap<ObjectProperty,Description>();
+	private Map<DatatypeProperty,Description> dpDomains = new TreeMap<DatatypeProperty,Description>();
+	private Map<ObjectProperty,Description> opRanges = new TreeMap<ObjectProperty,Description>();
+	
+	public RhoDRDown(ReasoningService rs) {
+		this.rs = rs;
+		subHierarchy = rs.getSubsumptionHierarchy();
+		
+		// query reasoner for domains and ranges
+		// (because they are used often in the operator)
+		for(ObjectProperty op : rs.getAtomicRoles()) {
+			opDomains.put(op, rs.getDomain(op));
+			opRanges.put(op, rs.getRange(op));
+		}
+		for(DatatypeProperty dp : rs.getDatatypeProperties()) {
+			dpDomains.put(dp, rs.getDomain(dp));
+		}		
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.refinement.RefinementOperator#refine(org.dllearner.core.owl.Description)
 	 */
@@ -48,10 +83,31 @@ public class RhoDRDown implements RefinementOperator {
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.refinement.RefinementOperator#refine(org.dllearner.core.owl.Description, int, java.util.List)
 	 */
-	public Set<Description> refine(Description concept, int maxLength,
+	public Set<Description> refine(Description description, int maxLength,
 			List<Description> knownRefinements) {
-		
-		return null;
+		return refine(description, maxLength, knownRefinements, new Thing());
 	}
 
+	public Set<Description> refine(Description description, int maxLength,
+			List<Description> knownRefinements, Description currDomain) {
+		// TODO: check whether using list or set makes more sense 
+		// here; and whether HashSet or TreeSet should be used
+		Set<Description> refinements = new HashSet<Description>();
+		
+		// .. do most general rules here ...
+		// (easier because it may be possible to add return 
+		// statements instead of going through the complete 
+		// function)
+		
+		if(description instanceof Thing) {
+			refinements.addAll(subHierarchy.getMoreSpecialConcepts(description));
+		} else if(description instanceof Nothing) {
+			// cannot be further refined
+		} else if(description instanceof NamedClass) {
+			refinements.addAll(subHierarchy.getMoreSpecialConcepts(description));
+		}
+		
+		return refinements;		
+	}
+	
 }

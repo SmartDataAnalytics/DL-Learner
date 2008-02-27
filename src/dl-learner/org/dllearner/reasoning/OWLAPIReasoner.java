@@ -209,8 +209,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					OWLOntologyFormat format = manager.getOntologyFormat(ontology);
 					if(format instanceof NamespaceOWLOntologyFormat) {
 						prefixes = ((NamespaceOWLOntologyFormat)format).getNamespacesByPrefixMap();
-						prefixes.remove("");
 						baseURI = prefixes.get("");
+						prefixes.remove("");						
 					}
 					
 				} catch (OWLOntologyCreationException e) {
@@ -541,13 +541,48 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			// instead of only one description (probably there can be several
 			// domain axiom for one property and the inner set is a conjunction
 			// of descriptions (?))
-			OWLDescription d = reasoner.getDomains(prop).iterator().next().iterator().next();
-//			OWLAPIDescriptionConvertVisitor.getOWLDescription(d);
+			// Answer: this function is just horribly broken in OWL API
+			Set<Set<OWLDescription>> set = reasoner.getDomains(prop);
+			if(set.size()==0)
+				return new Thing();
+			OWLClass oc = (OWLClass) set.iterator().next();
+			return new NamedClass(oc.getURI().toString());
 		} catch (OWLReasonerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Error(e);
 		}
-		return null;
+	}
+	
+	@Override
+	public Description getDomain(DatatypeProperty datatypeProperty) {
+		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
+		try {
+			// TODO: look up why OWL API return a two dimensional set here
+			// instead of only one description (probably there can be several
+			// domain axiom for one property and the inner set is a conjunction
+			// of descriptions (?))
+			// Answer: this function is just horribly broken in OWL API
+			Set<Set<OWLDescription>> set = reasoner.getDomains(prop);
+			if(set.size()==0)
+				return new Thing();
+			OWLClass oc = (OWLClass) set.iterator().next();
+			return new NamedClass(oc.getURI().toString());
+		} catch (OWLReasonerException e) {
+			throw new Error(e);
+		}		
+	}
+	
+	@Override
+	public Description getRange(ObjectProperty objectProperty) {
+		OWLObjectProperty prop = getOWLAPIDescription(objectProperty);
+		try {
+			Set<OWLDescription> set = reasoner.getRanges(prop);
+			if(set.size()==0)
+				return new Thing();
+			OWLClass oc = (OWLClass) set.iterator().next();
+			return new NamedClass(oc.getURI().toString());
+		} catch (OWLReasonerException e) {
+			throw new Error(e);
+		}		
 	}
 	
 	@Override

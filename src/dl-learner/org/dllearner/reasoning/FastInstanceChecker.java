@@ -408,4 +408,19 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return rc.getPrefixes();
 	}
 
+	@Override
+	public Description getDomain(ObjectProperty objectProperty) {
+		return rc.getDomain(objectProperty);
+	}
+	
+	@Override
+	public Description getDomain(DatatypeProperty datatypeProperty) {
+		return rc.getDomain(datatypeProperty);
+	}
+	
+	@Override
+	public Description getRange(ObjectProperty objectProperty) {
+		return rc.getRange(objectProperty);
+	}	
+	
 }

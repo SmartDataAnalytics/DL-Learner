@@ -48,7 +48,7 @@ public class ReasonerTests {
 
 	private static Logger logger = Logger.getLogger(ReasonerTests.class);
 
-	private KB getSimpleKnowledgeBase() {
+	public KB getSimpleKnowledgeBase() {
 		String kb = "person SUB TOP.";
 		kb += "man SUB person.";
 		kb += "man SUB male.";

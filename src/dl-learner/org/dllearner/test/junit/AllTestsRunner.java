@@ -47,7 +47,8 @@ public class AllTestsRunner {
 		logger.setLevel(Level.INFO);
 		
 		JUnitCore.main("org.dllearner.test.junit.ComponentTests",
-				"org.dllearner.test.junit.ReasonerTests");
+				"org.dllearner.test.junit.ReasonerTests",
+				"org.dllearner.test.junit.RefinementOperatorTests");
 	}
 
 }
