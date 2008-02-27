@@ -430,16 +430,14 @@ function getSubjectsFromConcept($concept)
 		require_once("DLLearnerConnection.php");
 		$sc=new DLLearnerConnection($id,$ksID);
 		$subjects=$sc->getSubjectsFromConcept($concept);
-		foreach ($subjects as $subject)
-		{
-			$content.="<a href=\"\" onclick=\"xajax_getarticle('".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."',-2);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."</a><br/>";
-		}
+		$content.=getResultsTable($subjects);
 	} catch (Exception $e){
 		$content=$e->getMessage();
 	}
 	
 	$objResponse = new xajaxResponse();
-	$objResponse->assign("searchcontent", "innerHTML", $content);
+	$objResponse->assign("articlecontent", "innerHTML", $content);
+	$objResponse->assign("ArticleTitle", "innerHTML", "Search Results");
 	return $objResponse;
 }
 
@@ -458,6 +456,37 @@ function stopServerCall()
 ///////////////////////
 // Helper Functions. //
 ///////////////////////
+
+function getResultsTable($results)
+{
+	$ret="<p>Your search brought ".count($results)." results.</p><br/>";
+	$i=0;
+	$display="block";
+	while($i*30<count($results))
+	{
+		$ret.="<div id='results".$i."' style='display:".$display."'>Seite ".($i+1)."<br/><br/>";
+		for ($j=0;($j<30)&&(($i*30+$j)<count($results));$j++)
+		{
+			$result=$results[$i*30+$j];
+			$ret.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"\" onclick=\"xajax_getarticle('".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."',-2);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."</a><br/>";
+		}
+		$ret.="</div>";
+		$i++;
+		$display="none";
+	}
+	$ret.="<br/><p style='width:100%;text-align:center;'>";
+	for ($k=0;$k<$i;$k++){
+		$ret.="<a href=\"\" onClick=\"showdiv('results".($k)."');";
+		for ($l=0;$l<$i;$l++)
+		{
+			if ($l!=$k) $ret.="hidediv('results".$l."');";
+		}
+		$ret.="return false;\">".($k+1)."</a>";
+		if ($k!=($i-1)) $ret.=" | ";
+	}
+	$ret.="</p>";
+	return $ret;
+}
 
 function setRunning($id,$running)
 {
@@ -517,7 +546,7 @@ function nicePredicate($predicate)
 }
 
 function formatClassArray($ar) {
-	$string = formatClass($ar[0]);
+	$string = formatClass($ar[0]['value']);
 	for($i=1; $i<count($ar); $i++) {
 		$string .= ', ' . formatClass($ar[$i]['value']);
 	}
