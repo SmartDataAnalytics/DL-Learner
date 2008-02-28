@@ -87,7 +87,7 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 //				.getSparqlEndpoint(), cache, uri.toString(), sparqlQueryString);
 
 		SparqlQuery query = new SparqlQuery(sparqlQueryString, configuration.getSparqlEndpoint());
-		ResultSet rs = cache.executeSparqlQuery(query);
+		ResultSet rs = SparqlQuery.JSONtoResultSet(cache.executeSparqlQuery(query));
 		
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
 		p(l.toString());

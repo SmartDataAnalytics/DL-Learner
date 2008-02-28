@@ -8,38 +8,36 @@ import com.hp.hpl.jena.query.ResultSet;
  *
  */
 public class SparqlQueryThreaded {
-	private boolean isRunning=false;
 	private Cache cache;
 	private SparqlQuery query;
-	private ResultSet result;
+	private String result;
 	
 	public SparqlQueryThreaded(Cache cache, SparqlQuery query)
 	{
 		this.cache=cache;
 		this.query=query;
+		this.result=null;
 	}
 	
 	public void stop() {
 		query.getExecution().abort();
-		isRunning = false;
+		result=null;
 	}
 	
 	public boolean isRunning() {
-		return isRunning;
+		return result==null;
 	}
 	
 	public void send()
 	{
-		isRunning=true;
 		result=cache.executeSparqlQuery(query);
-		isRunning=false;
 	}
 	
 	public SparqlQuery getSparqlQuery(){
 		return query;
 	}
 	
-	public ResultSet getResult(){
+	public String getResult(){
 		return result;
 	}
 }

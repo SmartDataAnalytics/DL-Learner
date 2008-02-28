@@ -57,6 +57,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryException;
+import org.dllearner.kb.sparql.SparqlQueryThreaded;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -501,29 +502,21 @@ public class DLLearnerWS {
 	//     SPARQL component methods       //
 	////////////////////////////////////////
 	
-	@WebMethod
-	public String[][] getAsStringArray(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException
-	{
-		ClientState state = getState(sessionID);
-		SparqlQueryException exception=null;
-		if ((exception=state.getQuery(queryID).getSparqlQuery().getException())!=null) throw exception;
-		return SparqlQuery.getAsStringArray(state.getQuery(queryID).getResult());
-	}
-	
+		
 	@WebMethod
 	public String getAsJSON(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException
 	{
 		ClientState state = getState(sessionID);
 		SparqlQueryException exception=null;
 		if ((exception=state.getQuery(queryID).getSparqlQuery().getException())!=null) throw exception;
-		return SparqlQuery.getAsJSON(state.getQuery(queryID).getResult());
+		return state.getQuery(queryID).getResult();
 	}
 	
 	@WebMethod
 	public String getAsXMLString(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
-		ResultSet resultSet=state.getQuery(queryID).getResult();
+		ResultSet resultSet=SparqlQuery.JSONtoResultSet(state.getQuery(queryID).getResult());
 		return SparqlQuery.getAsXMLString(resultSet);
 	}
 	
@@ -541,6 +534,16 @@ public class DLLearnerWS {
 		};
 		sparqlThread.start();
 		return id;
+	}
+	
+	@WebMethod
+	public String sparqlQuery(int sessionID, int componentID, String query) throws ClientNotKnownException
+	{
+		ClientState state = getState(sessionID);
+		Component component = state.getComponent(componentID);
+		SparqlQueryThreaded sparql=((SparqlKnowledgeSource)component).sparqlQueryThreaded(query);
+		sparql.send();
+		return sparql.getResult();
 	}
 	
 	@WebMethod
