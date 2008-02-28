@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. The queries
@@ -217,13 +218,14 @@ public class Cache implements Serializable {
 		if (result != null) {
 			return SparqlQuery.JSONtoResultSet(result);
 		} else {
-			ResultSet rs = query.send();
+			query.send();
+			ResultSet rs = query.getResultSet();
 			if (rs!=null){
 				String json = SparqlQuery.getAsJSON(rs);
 				addToCache(query.getQueryString(), json);
 				return SparqlQuery.JSONtoResultSet(json);
 			}
-			else return rs;
+			return rs;
 		}
 	}
 
