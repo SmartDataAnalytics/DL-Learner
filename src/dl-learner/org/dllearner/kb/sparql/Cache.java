@@ -33,7 +33,6 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
 
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. The queries
@@ -213,19 +212,18 @@ public class Cache implements Serializable {
 	 *            The SPARQL query.
 	 * @return Jena result set.
 	 */
-	public ResultSet executeSparqlQuery(SparqlQuery query) {
+	public String executeSparqlQuery(SparqlQuery query) {
 		String result = getCacheEntry(query.getQueryString());
 		if (result != null) {
-			return SparqlQuery.JSONtoResultSet(result);
+			return result;
 		} else {
 			query.send();
-			ResultSet rs = query.getResultSet();
-			if (rs!=null){
-				String json = SparqlQuery.getAsJSON(rs);
+			String json = query.getResult();
+			if (json!=null){
 				addToCache(query.getQueryString(), json);
-				return SparqlQuery.JSONtoResultSet(json);
 			}
-			return rs;
+			else json="";
+			return json;
 		}
 	}
 

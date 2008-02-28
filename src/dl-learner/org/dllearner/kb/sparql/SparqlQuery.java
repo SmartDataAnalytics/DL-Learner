@@ -50,7 +50,7 @@ public class SparqlQuery {
 	private String queryString;
 	private QueryEngineHTTP queryExecution;
 	private SparqlEndpoint endpoint;
-	private ResultSet rs = null;
+	private String json = null;
 	private SparqlQueryException sendException=null;
 
 	/**
@@ -69,6 +69,7 @@ public class SparqlQuery {
 	 */
 	public ResultSet send() {
 		isRunning = true;
+		ResultSet rs=null;
 		logger.info(queryString);
 
 		String service = endpoint.getURL().toString();
@@ -86,6 +87,7 @@ public class SparqlQuery {
 			//TODO after overnext Jena release
 			HttpQuery.urlLimit = 3*1024 ;
 			rs = queryExecution.execSelect();
+			json=SparqlQuery.getAsJSON(rs);
 			logger.info(rs.getResultVars().toString());
 		} catch (Exception e){
 			sendException=new SparqlQueryException(e.getMessage());
@@ -104,8 +106,8 @@ public class SparqlQuery {
 		return queryString;
 	}
 	
-	public ResultSet getResultSet() {
-		return rs;
+	public String getResult() {
+		return json;
 	}
 	
 	public boolean isRunning() {
@@ -121,36 +123,9 @@ public class SparqlQuery {
 	}
 
 	public boolean hasCompleted() {
-		return (rs != null);
+		return (json != null);
 	}		
 	
-	/**
-	 * TODO define the format
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	@SuppressWarnings( { "unchecked" })
-	public static String[][] getAsStringArray(ResultSet rs) {
-		List<ResultBinding> l = ResultSetFormatter.toList(rs);
-		List<String> resultVars = rs.getResultVars();
-		String[][] array = new String[l.size()][resultVars.size()];
-		Iterator<String> iter = resultVars.iterator();
-		int i = 0, j = 0;
-
-		for (ResultBinding resultBinding : l) {
-			while (iter.hasNext()) {
-				String varName = (String) iter.next();
-				array[i][j] = resultBinding.get(varName).toString();
-				j++;
-			}
-			iter = resultVars.iterator();
-			i++;
-			j = 0;
-		}
-		return array;
-	}
-
 	/**
 	 * sends a query and returns XML
 	 * 
