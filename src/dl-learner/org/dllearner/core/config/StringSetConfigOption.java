@@ -85,14 +85,14 @@ public class StringSetConfigOption extends ConfigOption<Set<String>> {
 		// positive examples
 		if (value != null && special == 1) {
 			for (String i : value) {
-				back += "\n+" + i;
+				back += "\n+\"" + i + "\"";
 			}
 			return back + "\n";
 		}
 		// negative examples
 		if (value != null && special == 2) {
 			for (String i : value) {
-				back += "\n-" + i;
+				back += "\n-\"" + i + "\"";
 			}
 			return back + "\n";
 		}
