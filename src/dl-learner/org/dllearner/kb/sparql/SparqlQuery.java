@@ -175,7 +175,7 @@ public class SparqlQuery {
 		ResultSetFormatter.outputAsJSON(baos, resultSet);
 		// possible Jena bug: Jena modifies the result set during
 		// JSON transformation, so we need to get it back
-		//resultSet = JSONtoResultSet(baos.toString());
+		resultSet = JSONtoResultSet(baos.toString());
 		try{
 			return baos.toString("UTF-8");
 		}catch (Exception e){
