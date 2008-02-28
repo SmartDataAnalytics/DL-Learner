@@ -57,7 +57,7 @@ public class ConfigEntry<T> {
 	 * @return a formatted string
 	 */
 	public String toConfString(String componentName) {
-		if (option.getName().equalsIgnoreCase("positiveExamples")) {
+		if (option.getName() == "positiveExamples") {
 			return option.getValueFormatting(value, 1);
 		} else if (option.getName() == "negativeExamples") {
 			return option.getValueFormatting(value, 2);
