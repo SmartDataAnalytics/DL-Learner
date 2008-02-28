@@ -169,9 +169,10 @@ class DLLearnerConnection
 		$ret=array();
 		do{
 			if (strlen($checkedInstances[0])>0){
-				$query="SELECT ?zw\n".
-					   "WHERE {?zw a <".$checkedInstances[0].">.{SELECT ?subject as ?zw\n".
-					   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\"".$label."\"'@en}\nLimit 100}}";
+				$query="SELECT DISTINCT ?subject\n".
+					   "WHERE {?subject a <".$checkedInstances[0].">.{SELECT ?zw as ?subject\n".
+					   "WHERE { ?zw <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\"".$label."\"'@en}\n".
+					   "LIMIT 1000 OFFSET ".$offset."}}";
 			}else {
 				$query="SELECT DISTINCT ?subject\n".
 					   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\"".$label."\"'@en}".
