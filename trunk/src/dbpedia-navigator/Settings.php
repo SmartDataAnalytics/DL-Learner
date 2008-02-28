@@ -36,7 +36,7 @@ class Settings{
 	// public DBpedia mirror
 	// public $dbpediauri='http://dbpedia2.openlinksw.com:8890/isparql';
 	
-	public $sparqlttl=60;
+	public $sparqlttl=60000000;
 	
 	public $language="en";
 	
