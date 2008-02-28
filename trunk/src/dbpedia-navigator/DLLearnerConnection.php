@@ -156,24 +156,34 @@ class DLLearnerConnection
 			$run=fgets($file);
 			fclose($file);
 			if ($run=="false"){
-				$this->client->stopSparqlQuery($this->id,$queryID);
+				$this->client->stopSparqlThread($this->id,$queryID);
 				throw new Exception("Query stopped");
 			}
 		} while($seconds<$this->ttl);
 		$this->client->stopSparqlThread($this->id,$queryID);
 	}
 
-	function getSubjects($label)
+	function getSubjects($label,$checkedInstances)
 	{
-		$query="SELECT DISTINCT ?subject\n".
-				"WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\"".$label."\"'@en}\n".
-				"LIMIT 10";
-		$result=json_decode($this->getSparqlResult($query),true);
-		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result.");
+		$offset=1;
 		$ret=array();
-		foreach ($result['results']['bindings'] as $results){
-			$ret[]=$results['subject']['value'];
-		}
+		do{
+			if (strlen($checkedInstances[0])>0){
+				$query="SELECT ?zw\n".
+					   "WHERE {?zw a <".$checkedInstances[0].">.{SELECT ?subject as ?zw\n".
+					   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\"".$label."\"'@en}\nLimit 100}}";
+			}else {
+				$query="SELECT DISTINCT ?subject\n".
+					   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '\"".$label."\"'@en}".
+					   "LIMIT 1000 OFFSET ".$offset;			
+			}
+			$result=json_decode($this->getSparqlResult($query),true);
+			if ((count($result['results']['bindings'])==0)&&($offset==1)) throw new Exception("Your query brought no result.");
+			foreach ($result['results']['bindings'] as $results){
+				$ret[]=$results['subject']['value'];
+			}
+			$offset+=1000;
+		} while(count($result['results']['bindings'])==1000);
 		return $ret;
 	}
 	
@@ -283,6 +293,6 @@ class DLLearnerConnection
 $sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
 $sc=new DLLearnerConnection($ids[0],$ids[1]);
-$triples=$sc->getSubjects("Leipzig");
+$triples=$sc->getSubjects("Paris");
 var_dump($triples);*/
 ?>

@@ -103,7 +103,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			<!-- Search:<br/> -->
 			<form onSubmit="xajax_getarticle(document.getElementById('label').value,-1);return false;">
 			<input type="text" name="label" id="label" /><br/>
-			<input type="button" value="Search" class="button" onclick="xajax_getarticle(document.getElementById('label').value,-1);return false;" />
+			<input type="button" value="Article" class="button" onclick="xajax_getarticle(document.getElementById('label').value,-1);return false;" />&nbsp;&nbsp;<input type="button" value="Search" class="button" onclick="var list=tree.getAllChecked();xajax_getsubjects(document.getElementById('label').value,list);return false;" />
 			<!--  &nbsp;&nbsp;&nbsp; <input type="button" value="Fulltext" class="button" onclick=""/> -->
 			</form>
 		  </div> <!-- boxcontent -->
