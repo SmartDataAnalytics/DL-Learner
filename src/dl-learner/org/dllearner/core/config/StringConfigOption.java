@@ -90,8 +90,11 @@ public class StringConfigOption extends ConfigOption<String> {
 	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
 	 */
 	@Override
-	public String getValueFormatting(String value) {
-		return value.toString();
+	public String getValueFormatting(String value, Integer special) {
+		if (value != null)
+			return value.toString();
+		else
+			return null;
 	}
 
 }

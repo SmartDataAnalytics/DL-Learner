@@ -68,8 +68,34 @@ public class StringSetConfigOption extends ConfigOption<Set<String>> {
 	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
 	 */
 	@Override
-	public String getValueFormatting(Set<String> value) {
-		return value.toString();
+	public String getValueFormatting(Set<String> value, Integer special) {
+		String back = "";
+		if (value != null && special == 0) {
+			Integer count = 0;
+			back = "{";
+			for (String i : value) {
+				if (count > 0)
+					back += ",";
+				back += "\n\"" + i + "\"";
+				count++;
+			}
+			back += "};";
+			return back;
+		}
+		// positive examples
+		if (value != null && special == 1) {
+			for (String i : value) {
+				back += "\n+" + i;
+			}
+			return back + "\n";
+		}
+		// negative examples
+		if (value != null && special == 2) {
+			for (String i : value) {
+				back += "\n-" + i;
+			}
+			return back + "\n";
+		}
+		return null;
 	}
-
 }

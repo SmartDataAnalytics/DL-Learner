@@ -69,7 +69,10 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements ActionLis
 	}
 
 	public void actionPerformed(ActionEvent e) {
-
+		if (cb.getSelectedIndex() == 0)
+			value = false;
+		else
+			value = true;
 		setEntry();
 	}
 
@@ -100,14 +103,14 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements ActionLis
 						else
 							setEntry();
 						// set cb-index
-						if (value == false)
+						if (!value)
 							cb.setSelectedIndex(0);
 						else
 							cb.setSelectedIndex(1);
 					}
 				}
 				// default value
-				if (value != null && configOption.getDefaultValue() != null) {
+				else if (value != null && configOption.getDefaultValue() != null) {
 					value = (Boolean) configOption.getDefaultValue();
 				}
 				// value == null?
@@ -115,12 +118,11 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements ActionLis
 					value = false;
 				}
 				// set cb-index
-				if (value == false)
+				if (!value)
 					cb.setSelectedIndex(0);
 				else
 					cb.setSelectedIndex(1);
 				cb.addActionListener(this);
-
 				widgetPanel.add(cb);
 			}
 			// UNKNOWN
@@ -139,10 +141,6 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements ActionLis
 	@Override
 	public void setEntry() {
 		BooleanConfigOption specialOption;
-		if (cb.getSelectedIndex() == 0)
-			value = false;
-		else
-			value = true;
 		specialOption = (BooleanConfigOption) config.getComponentManager().getConfigOption(
 				componentOption, configOption.getName());
 		if (specialOption.isValidValue(value)) {

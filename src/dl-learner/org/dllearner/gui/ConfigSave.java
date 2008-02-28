@@ -23,18 +23,14 @@ package org.dllearner.gui;
 //import java.io.File;
 //import java.net.URL;
 import java.util.List; //import java.util.Map;
-//import java.util.SortedSet;
-//import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager; //import org.dllearner.core.KnowledgeSource;
-//import org.dllearner.core.LearningProblemUnsupportedException;
-//import org.dllearner.learningproblems.PosOnlyDefinitionLP;
-//import org.dllearner.parser.ConfParser;
-import org.dllearner.core.Component;
-import org.dllearner.core.config.ConfigOption;
+import java.util.Map;
 
-//import org.dllearner.cli.ConfFileOption;
-//import org.dllearner.cli.Start;
-//import org.dllearner.core.config.*;
+import org.dllearner.core.ComponentManager; //import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.Component;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.cli.*;
 
 /**
  * Open a config file.
@@ -62,11 +58,10 @@ public class ConfigSave {
 	/**
 	 * parse to file
 	 */
+	@SuppressWarnings("unchecked")
 	public void startParser() {
-		// KNOWLEDGE SOURCE
+		// KNOWLEDGE SOURCE (sparql or nothing)
 		if (config.getKnowledgeSource() != null) {
-			// System.out.println("knowledge_source: " +
-			// config.getKnowledgeSource().getClass());
 			// KBFile or OWLFile
 			if (config.getKnowledgeSource().getClass().toString().endsWith("KBFile")
 					|| config.getKnowledgeSource().getClass().toString().endsWith("OWLFile")) {
@@ -76,11 +71,13 @@ public class ConfigSave {
 				if (url != null) {
 					System.out.println("import(\"" + url + "\");");
 				}
-				// filename
-				String filename = (String) config.getComponentManager().getConfigOptionValue(
-						config.getKnowledgeSource(), "filename");
-				if (filename != null) {
-					System.out.println("import(\"" + filename + "\");");
+				// filename (only for KBFile)
+				if (config.getKnowledgeSource().getClass().toString().endsWith("KBFile")) {
+					String filename = (String) config.getComponentManager().getConfigOptionValue(
+							config.getKnowledgeSource(), "filename");
+					if (filename != null) {
+						System.out.println("import(\"" + filename + "\");");
+					}
 				}
 			}
 			// sparql
@@ -88,36 +85,59 @@ public class ConfigSave {
 				String url = (String) config.getComponentManager().getConfigOptionValue(
 						config.getKnowledgeSource(), "url");
 				if (url != null) {
-					System.out.println("import(\"" + url + "\",\"SPARQL\");");
-					// widgets
-					String prefix = "sparql";
-					Component component = config.getKnowledgeSource();
-
-					Class<? extends Component> componentOption = component.getClass(); // config.getKnowledgeSource().getClass();
-					List<ConfigOption<?>> optionList;
-					optionList = ComponentManager.getConfigOptions(componentOption);
-					// System.out.println(optionList);
-					// System.out.println(config.getComponentManager().getConfigOptionValue(component,
-					// optionName));
-					for (int i = 0; i < optionList.size(); i++) {
-						// if
-						// (optionList.get(i).getClass().toString().contains("IntegerConfigOption"))
-						// {
-						// widgetPanel = new WidgetPanelInteger(config,
-						// component, oldComponent, componentOption,
-						// optionList.get(i));
-						// System.out.println(optionList.get(i));
-						System.out.println(prefix
-								+ "."
-								+ optionList.get(i).getName()
-								+ " = "
-								+ config.getComponentManager().getConfigOptionValue(component,
-										optionList.get(i).getName()));
-						System.out.println(config.getComponentManager().getKnowledgeSources()
-								.get(0));
-						// }
-					}
+					setFileEntry(config.getKnowledgeSource());
 				}
+			}
+		}
+		// REASONER
+		if (config.getReasoner() != null) {
+			setFileEntry(config.getReasoner());
+		}
+		// LEARNING PROBLEM
+		if (config.getLearningProblem() != null) {
+			setFileEntry(config.getLearningProblem());
+		}
+		// LEARNING ALGORITHM
+		if (config.getLearningAlgorithm() != null) {
+			setFileEntry(config.getLearningAlgorithm());
+		}
+
+	}
+
+	/**
+	 * Set all entrys to file.
+	 * 
+	 * @param component
+	 *            i.e. config.getKnowledgeSource(), config.getResaoner(), ...
+	 */
+	@SuppressWarnings("unchecked")
+	public void setFileEntry(Component component) {
+		// get prefix map
+		Map<Class<? extends Component>, String> componentPrefixMapping = Start
+				.createComponentPrefixMapping();
+		String prefix = componentPrefixMapping.get(component.getClass());
+		if (prefix == null)
+			return;
+		Class<? extends Component> componentOption = component.getClass();
+		List<ConfigOption<?>> optionList = ComponentManager.getConfigOptions(componentOption);
+		for (int i = 0; i < optionList.size(); i++) {
+			try {
+				Object dflt = optionList.get(i).getDefaultValue();
+				Object value = config.getComponentManager().getConfigOptionValue(component,
+						optionList.get(i).getName());
+				// System.out.println("default: " + dflt);
+				if (optionList.get(i).getName() != "url"
+						&& optionList.get(i).getName() != "filename" && value != null) {
+					if (value != null)
+						if (!value.equals(dflt)) {
+							ConfigOption specialOption = config.getComponentManager()
+									.getConfigOption(componentOption, optionList.get(i).getName());
+							ConfigEntry entry = new ConfigEntry(specialOption, value);
+							System.out.println(entry.toConfString(prefix));
+						}
+				}
+			} catch (InvalidConfigOptionValueException e) {
+				e.printStackTrace();
 			}
 		}
 	}
