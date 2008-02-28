@@ -153,11 +153,6 @@ function getarticle($subject,$fromCache)
 			// display the remaining properties as list which can be used for further navigation
 			$content .= '<br/><br/><br/>'.get_triple_table($triples);
 			
-			//BUILD SEARCHRESULT
-			if ($fromCache==-1) 
-				$searchResult.="<a href=\"\" onclick=\"var list=tree.getAllChecked();xajax_getsubjects('".$subject."',list);return false;\">Show more Results</a>";
-			
-			
 			//Restart the Session
 			session_start();
 			
@@ -222,7 +217,6 @@ function getarticle($subject,$fromCache)
 	$objResponse->assign("articlecontent", "innerHTML", $content);
 	$objResponse->assign("ArticleTitle","innerHTML",$artTitle);
 	$objResponse->assign("lastarticles","innerHTML",$lastArticles);
-	if ($searchResult!="") $objResponse->assign("searchcontent", "innerHTML", $searchResult);
 	$objResponse->assign('Positives','innerHTML',$posInterests);
 	$objResponse->assign('Negatives','innerHTML',$negInterests);	
 	return $objResponse;
@@ -468,7 +462,7 @@ function getResultsTable($results)
 		for ($j=0;($j<30)&&(($i*30+$j)<count($results));$j++)
 		{
 			$result=$results[$i*30+$j];
-			$ret.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"\" onclick=\"xajax_getarticle('".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."',-2);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."</a><br/>";
+			$ret.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"\" onclick=\"xajax_getarticle('".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."',-1);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."</a><br/>";
 		}
 		$ret.="</div>";
 		$i++;
