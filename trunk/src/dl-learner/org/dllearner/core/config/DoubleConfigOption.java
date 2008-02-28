@@ -19,38 +19,39 @@
  */
 package org.dllearner.core.config;
 
-
 /**
- * Represents a configuration option with values of type value. Similar
- * to the integer option a minimum and a maximum value can specified.
+ * Represents a configuration option with values of type value. Similar to the
+ * integer option a minimum and a maximum value can specified.
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public class DoubleConfigOption extends ConfigOption<Double> {
 
 	private double lowerLimit = Double.MIN_VALUE;
 	private double upperLimit = Double.MAX_VALUE;
-	
+
 	public DoubleConfigOption(String name, String description) {
 		super(name, description);
 	}
-		
+
 	public DoubleConfigOption(String name, String description, double defaultValue) {
 		super(name, description, defaultValue);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
 	 */
 	@Override
 	public boolean isValidValue(Double value) {
-		if(value >= lowerLimit && value <= upperLimit)
+		if (value >= lowerLimit && value <= upperLimit)
 			return true;
 		else
-			return false;		
+			return false;
 	}
-	
+
 	/**
 	 * @return the The lowest possible value for this configuration option.
 	 */
@@ -59,7 +60,8 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	}
 
 	/**
-	 * @param lowerLimit The lowest possible value for this configuration option.
+	 * @param lowerLimit
+	 *            The lowest possible value for this configuration option.
 	 */
 	public void setLowerLimit(double lowerLimit) {
 		this.lowerLimit = lowerLimit;
@@ -73,26 +75,29 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	}
 
 	/**
-	 * @param upperLimit The highest possible value for this configuration option.
+	 * @param upperLimit
+	 *            The highest possible value for this configuration option.
 	 */
 	public void setUpperLimit(double upperLimit) {
 		this.upperLimit = upperLimit;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
 	 */
 	@Override
 	public boolean checkType(Object object) {
 		return (object instanceof Double);
 	}
-	
+
 	@Override
 	public String getAllowedValuesDescription() {
 		String str = getClass().toString();
-		if(lowerLimit != Double.MIN_VALUE)
+		if (lowerLimit != Double.MIN_VALUE)
 			str += " min " + lowerLimit;
-		if(upperLimit != Double.MAX_VALUE)
+		if (upperLimit != Double.MAX_VALUE)
 			str += " max " + upperLimit;
 		return str;
 	}
@@ -103,8 +108,11 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
 	 */
 	@Override
-	public String getValueFormatting(Double value) {
-		return value.toString();
+	public String getValueFormatting(Double value, Integer special) {
+		if (value != null)
+			return value.toString();
+		else
+			return null;
 	}
 
 }

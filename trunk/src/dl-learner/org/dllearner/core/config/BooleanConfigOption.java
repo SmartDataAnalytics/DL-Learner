@@ -19,10 +19,9 @@
  */
 package org.dllearner.core.config;
 
-
 /**
  * @author Jens Lehmann
- *
+ * 
  */
 public class BooleanConfigOption extends ConfigOption<Boolean> {
 
@@ -33,8 +32,10 @@ public class BooleanConfigOption extends ConfigOption<Boolean> {
 	public BooleanConfigOption(String name, String description, boolean defaultValue) {
 		super(name, description, defaultValue);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.ConfigOption#checkType(java.lang.Object)
 	 */
 	@Override
@@ -42,7 +43,9 @@ public class BooleanConfigOption extends ConfigOption<Boolean> {
 		return (object instanceof Boolean);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.ConfigOption#isValidValue(java.lang.Object)
 	 */
 	@Override
@@ -50,12 +53,20 @@ public class BooleanConfigOption extends ConfigOption<Boolean> {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
 	 */
 	@Override
-	public String getValueFormatting(Boolean value) {
-		return value.toString();
+	public String getValueFormatting(Boolean value, Integer special) {
+		if (value != null) {
+			if (value)
+				return "true";
+			else
+				return "false";
+		} else
+			return null;
 	}
 
 }

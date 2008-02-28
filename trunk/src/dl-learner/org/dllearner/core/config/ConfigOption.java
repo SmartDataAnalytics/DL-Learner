@@ -23,68 +23,81 @@ package org.dllearner.core.config;
  * This class represents a configuration option (without a value for the
  * option).
  * 
- * Note: Currently, handling the type of a configuration option is not 
- * straightforward to implement, because Java Generics information is 
- * erased at runtime. This will be fixed in Java 7, in particular JSR 308,
- * which is due at approx. the end of 2008.
+ * Note: Currently, handling the type of a configuration option is not
+ * straightforward to implement, because Java Generics information is erased at
+ * runtime. This will be fixed in Java 7, in particular JSR 308, which is due at
+ * approx. the end of 2008.
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public abstract class ConfigOption<T> {
 
 	protected String name;
-	
+
 	protected String description;
-	
+
 	protected T defaultValue;
-	
+
 	public ConfigOption(String name, String description) {
 		this(name, description, null);
 	}
-	
+
 	public ConfigOption(String name, String description, T defaultValue) {
 		this.name = name;
 		this.description = description;
 		this.defaultValue = defaultValue;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getDescription() {
 		return description;
-	}	
-	
+	}
+
 	/**
 	 * @return the defaultValue
 	 */
 	public T getDefaultValue() {
 		return defaultValue;
-	}	
-	
+	}
+
 	/**
-	 * Checks whether the object has the correct type to be used as
-	 * a value for this option (this method is necessary, because
-	 * generic information is erased at runtime in Java).
-	 *  
-	 * @param object The object to check.
+	 * Checks whether the object has the correct type to be used as a value for
+	 * this option (this method is necessary, because generic information is
+	 * erased at runtime in Java).
+	 * 
+	 * @param object
+	 *            The object to check.
 	 * @return
 	 */
 	public abstract boolean checkType(Object object);
-	
+
 	public abstract boolean isValidValue(T value);
-	
+
 	public String getAllowedValuesDescription() {
 		return getClass().toString();
 	}
-	
+
 	@Override
 	public String toString() {
-		return "option name: " + name + "\ndescription: " + description + "\nvalues: " + getAllowedValuesDescription() + "\ndefault value: " + defaultValue + "\n";
+		return "option name: " + name + "\ndescription: " + description + "\nvalues: "
+				+ getAllowedValuesDescription() + "\ndefault value: " + defaultValue + "\n";
 	}
-	
-	public abstract String getValueFormatting(T value);
+
+	/**
+	 * Get a formatted value to put into configuration file.
+	 * 
+	 * @param value
+	 * @param special
+	 *            0 for normal output. 
+	 *            1 for positiveExamples. 
+	 *            2 for negativeExamples.
+	 * 
+	 * @return a string to put into a file
+	 */
+	public abstract String getValueFormatting(T value, Integer special);
 
 }
