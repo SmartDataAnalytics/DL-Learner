@@ -16,7 +16,7 @@ function getsubjects($label,$list)
 	setRunning($id,"true");
 	
 	//get parts of the list
-	$checkedInstances=preg_split("[,]",$list);
+	$checkedInstances=preg_split("[,]",$list,-1,PREG_SPLIT_NO_EMPTY);
 	
 	//initialise content
 	$content="";
@@ -24,18 +24,15 @@ function getsubjects($label,$list)
 		require_once("DLLearnerConnection.php");
 		$sc=new DLLearnerConnection($id,$ksID);
 				
-		$subjects=$sc->getSubjects($label);
+		$subjects=$sc->getSubjects($label,$checkedInstances);
 		
-		foreach ($subjects as $subject)
-		{
-			$content.="<a href=\"\" onclick=\"xajax_getarticle('".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."',-2);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($subject, "/"), 1)))."</a><br/>";
-		}
+		$content.=getResultsTable($subjects);
 	} catch (Exception $e){
 		$content=$e->getMessage();
 	}
 	
 	$objResponse = new xajaxResponse();
-	$objResponse->assign("searchcontent", "innerHTML", $content);
+	$objResponse->assign("articlecontent", "innerHTML", $content);
 	return $objResponse;
 }
 
