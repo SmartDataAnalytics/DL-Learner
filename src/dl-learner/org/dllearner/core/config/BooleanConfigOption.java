@@ -62,9 +62,9 @@ public class BooleanConfigOption extends ConfigOption<Boolean> {
 	public String getValueFormatting(Boolean value, Integer special) {
 		if (value != null) {
 			if (value)
-				return "true";
+				return "true;";
 			else
-				return "false";
+				return "false;";
 		} else
 			return null;
 	}

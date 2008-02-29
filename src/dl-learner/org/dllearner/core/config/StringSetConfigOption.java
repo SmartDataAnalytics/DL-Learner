@@ -91,8 +91,13 @@ public class StringSetConfigOption extends ConfigOption<Set<String>> {
 		}
 		// negative examples
 		if (value != null && special == 2) {
+			Integer count = 0;
 			for (String i : value) {
-				back += "\n-\"" + i + "\"";
+				count++;
+				if (count == 1)
+					back += "-\"" + i + "\"";
+				else
+					back += "\n-\"" + i + "\"";
 			}
 			return back + "\n";
 		}

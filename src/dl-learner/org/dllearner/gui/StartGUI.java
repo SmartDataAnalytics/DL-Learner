@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.FileWriter;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -59,7 +61,7 @@ public class StartGUI extends JFrame implements ActionListener {
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu menuFile = new JMenu("File");
 	private JMenuItem openItem = new JMenuItem("Open Config");
-	private JMenuItem saveItem = new JMenuItem("Save Config");
+	private JMenuItem saveItem = new JMenuItem("Save As Config");
 
 	public StartGUI() {
 		this.setTitle("DL-Learner");
@@ -140,10 +142,37 @@ public class StartGUI extends JFrame implements ActionListener {
 				configLoad.startParser();
 			}
 		}
-		// save config file
+		// save as config file
 		if (e.getSource() == saveItem) {
-			System.out.println("saveItem was pressed");
-			configSave.startParser();
+			JFileChooser fc = new JFileChooser(new File("examples/"));
+			// FileFilter only *.conf
+			fc.addChoosableFileFilter(new FileFilter() {
+				@Override
+				public boolean accept(File f) {
+					if (f.isDirectory())
+						return true;
+					return f.getName().toLowerCase().endsWith(".conf");
+				}
+
+				@Override
+				public String getDescription() {
+					return "*.conf"; // name for filter
+				}
+			});
+			if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+				// System.out.println("FILE: " + fc.getSelectedFile());
+				File file = fc.getSelectedFile();
+				try {
+					PrintWriter out = new PrintWriter(new FileWriter(file));
+					// out.println("test");
+					configSave.startParser(out);
+					out.flush();
+					out.close();
+				} catch (Exception ex2) {
+					System.out.println(ex2);
+				}
+			}
+			System.out.println("config file saved");
 		}
 	}
 
