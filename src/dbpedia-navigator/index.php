@@ -52,7 +52,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
         };
         hideLoading = function() {
             xajax.$('Loading').style.display = 'none';
-            xajax.$('SearchResultBox').style.display = 'block';
+            //xajax.$('SearchResultBox').style.display = 'block';
             xajax.$('LastArticlesBox').style.display = 'block';
         };
         
