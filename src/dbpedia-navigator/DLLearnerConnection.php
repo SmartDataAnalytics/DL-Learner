@@ -174,26 +174,55 @@ class DLLearnerConnection
 	{
 		$offset=1;
 		$ret=array();
+		$labels=preg_split("[\040]",$label,-1,PREG_SPLIT_NO_EMPTY);
+		//TODO if instances are checked the offset no longer works
 		do{
 			if (isset($checkedInstances[0])){
-				$query="SELECT DISTINCT ?subject\n".
+				$query="SELECT DISTINCT ?subject ?cat ?label\n".
 					   "WHERE {?subject a <".$checkedInstances[0].">.{SELECT ?zw as ?subject\n".
-					   "WHERE { ?zw <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains \"".$label."\"@en}\n".
-					   "LIMIT 1000 OFFSET ".$offset."}}";
+					   "WHERE { ?zw <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '";
+				$i=0;
+				foreach ($labels as $l){
+					if ($i==0) $query.="\"".$l."\"";
+					else $query.=" and \"".$l."\"";
+					$i=1;
+				}
+				$query.="'@en.?subject a ?cat.?cat <http://www.w3.org/2000/01/rdf-schema#label> ?label}\n".
+					   "LIMIT 100 OFFSET ".$offset."}}";
 			}else {
-				$query="SELECT DISTINCT ?subject\n".
-					   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains \"".$label."\"@en}".
-					   "LIMIT 1000 OFFSET ".$offset;			
+				$query="SELECT DISTINCT ?subject ?cat ?label\n".
+					   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '";
+				$i=0;
+				foreach ($labels as $l){
+					if ($i==0) $query.="\"".$l."\"";
+					else $query.=" and \"".$l."\"";
+					$i=1;
+				}
+				$query.="'@en.?subject a ?cat.?cat <http://www.w3.org/2000/01/rdf-schema#label> ?label}".
+					   "LIMIT 100 OFFSET ".$offset;			
 			}
 			$result=json_decode($this->getSparqlResultThreaded($query),true);
 			$count=count($result['results']['bindings']);
 			if (($count==0)&&($offset==1)) throw new Exception("Your query brought no result.");
 			foreach ($result['results']['bindings'] as $results){
-				$ret[]=$results['subject']['value'];
+				$ret[$results['subject']['value']]=$results['subject']['value'];
+				//tagcloud
+				if (!isset($tagcloud[$results['cat']['value']])){
+					$tagcloud[$results['cat']['value']]=1;
+					$tagcloudLabel[$results['cat']['value']]=$results['label']['value'];
+				}
+				else $tagcloud[$results['cat']['value']]++;
+				
 			}
-			$offset+=1000;
-		} while($count==1000);
-		return $ret;
+			$offset+=100;
+		} while($count==100);
+		//have to do this, because distinct doesn't work, and i use the key to eliminate doubles
+		unset($tagcloud['http://www.w3.org/2004/02/skos/core#Concept']);
+		foreach ($ret as $r)
+			$return['subjects'][]=$r;
+		$return['tagcloud']=$tagcloud;
+		$return['tagcloudlabel']=$tagcloudLabel;
+		return $return;
 	}
 	
 	function getSubjectsFromConcept($concept)
@@ -303,6 +332,6 @@ ini_set('default_socket_timeout',200);
 $sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
 $sc=new DLLearnerConnection($ids[0],$ids[1]);
-$triples=$sc->getSubjects("Paris");
+$triples=$sc->getSubjects("Leipzig");
 var_dump($triples);*/
 ?>
