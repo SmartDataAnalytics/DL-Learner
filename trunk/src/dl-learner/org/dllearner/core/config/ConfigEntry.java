@@ -57,12 +57,12 @@ public class ConfigEntry<T> {
 	 * @return a formatted string
 	 */
 	public String toConfString(String componentName) {
-		if (option.getName() == "positiveExamples") {
+		if (option.getName().equalsIgnoreCase("positiveExamples")) {
 			return option.getValueFormatting(value, 1);
-		} else if (option.getName() == "negativeExamples") {
+		} else if (option.getName().equalsIgnoreCase("negativeExamples")) {
 			return option.getValueFormatting(value, 2);
-		} else
-			return componentName.toString() + "." + option.getName() + " = "
+		} 
+		return componentName.toString() + "." + option.getName() + " = "
 					+ option.getValueFormatting(value, 0);
 	}
 }

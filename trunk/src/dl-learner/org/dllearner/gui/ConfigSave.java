@@ -31,6 +31,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.cli.*;
+import java.io.PrintWriter;
 
 /**
  * Open a config file.
@@ -57,9 +58,12 @@ public class ConfigSave {
 
 	/**
 	 * parse to file
+	 * 
+	 * @param out
+	 *            is a PrintWriter to a file
 	 */
 	@SuppressWarnings("unchecked")
-	public void startParser() {
+	public void startParser(PrintWriter out) {
 		// KNOWLEDGE SOURCE (sparql or nothing)
 		if (config.getKnowledgeSource() != null) {
 			// KBFile or OWLFile
@@ -69,14 +73,19 @@ public class ConfigSave {
 				String url = (String) config.getComponentManager().getConfigOptionValue(
 						config.getKnowledgeSource(), "url");
 				if (url != null) {
-					System.out.println("import(\"" + url + "\");");
+					if (url.startsWith("file"))
+						url = url.substring(url.lastIndexOf("/") + 1);
+					// System.out.println("import(\"" + url + "\");");
+					out.println("import(\"" + url + "\");");
 				}
 				// filename (only for KBFile)
 				if (config.getKnowledgeSource().getClass().toString().endsWith("KBFile")) {
 					String filename = (String) config.getComponentManager().getConfigOptionValue(
 							config.getKnowledgeSource(), "filename");
 					if (filename != null) {
-						System.out.println("import(\"" + filename + "\");");
+						filename = filename.substring(filename.lastIndexOf("/") + 1);
+						// System.out.println("import(\"" + filename + "\");");
+						out.println("import(\"" + filename + "\");");
 					}
 				}
 			}
@@ -85,21 +94,22 @@ public class ConfigSave {
 				String url = (String) config.getComponentManager().getConfigOptionValue(
 						config.getKnowledgeSource(), "url");
 				if (url != null) {
-					setFileEntry(config.getKnowledgeSource());
+					out.println("import(\"" + url + "\",\"SPARQL\");");
+					setFileEntry(config.getKnowledgeSource(), out);
 				}
 			}
 		}
 		// REASONER
 		if (config.getReasoner() != null) {
-			setFileEntry(config.getReasoner());
+			setFileEntry(config.getReasoner(), out);
 		}
 		// LEARNING PROBLEM
 		if (config.getLearningProblem() != null) {
-			setFileEntry(config.getLearningProblem());
+			setFileEntry(config.getLearningProblem(), out);
 		}
 		// LEARNING ALGORITHM
 		if (config.getLearningAlgorithm() != null) {
-			setFileEntry(config.getLearningAlgorithm());
+			setFileEntry(config.getLearningAlgorithm(), out);
 		}
 
 	}
@@ -111,7 +121,7 @@ public class ConfigSave {
 	 *            i.e. config.getKnowledgeSource(), config.getResaoner(), ...
 	 */
 	@SuppressWarnings("unchecked")
-	public void setFileEntry(Component component) {
+	public void setFileEntry(Component component, PrintWriter out) {
 		// get prefix map
 		Map<Class<? extends Component>, String> componentPrefixMapping = Start
 				.createComponentPrefixMapping();
@@ -125,7 +135,7 @@ public class ConfigSave {
 				Object dflt = optionList.get(i).getDefaultValue();
 				Object value = config.getComponentManager().getConfigOptionValue(component,
 						optionList.get(i).getName());
-				// System.out.println("default: " + dflt);
+				// not for url or filename
 				if (optionList.get(i).getName() != "url"
 						&& optionList.get(i).getName() != "filename" && value != null) {
 					if (value != null)
@@ -133,7 +143,7 @@ public class ConfigSave {
 							ConfigOption specialOption = config.getComponentManager()
 									.getConfigOption(componentOption, optionList.get(i).getName());
 							ConfigEntry entry = new ConfigEntry(specialOption, value);
-							System.out.println(entry.toConfString(prefix));
+							out.println(entry.toConfString(prefix));
 						}
 				}
 			} catch (InvalidConfigOptionValueException e) {

@@ -110,7 +110,7 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	@Override
 	public String getValueFormatting(Double value, Integer special) {
 		if (value != null)
-			return value.toString();
+			return value.toString() + ";";
 		else
 			return null;
 	}

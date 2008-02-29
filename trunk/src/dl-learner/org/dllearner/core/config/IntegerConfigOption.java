@@ -110,7 +110,7 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 	@Override
 	public String getValueFormatting(Integer value, Integer special) {
 		if (value != null)
-			return value.toString();
+			return value.toString() + ";";
 		else
 			return null;
 	}

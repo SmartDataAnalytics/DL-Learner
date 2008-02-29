@@ -93,6 +93,7 @@ public class ConfigLoad {
 				config.setKnowledgeSource(config.getKnowledgeSource());
 				Start.configureComponent(config.getComponentManager(), config.getKnowledgeSource(),
 						componentPrefixMapping, parser);
+				startGUI.updateTabColors();
 				// init
 				if (config.getKnowledgeSource() != null && config.isSetURL()) {
 					try {
