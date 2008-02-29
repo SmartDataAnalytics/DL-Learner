@@ -34,6 +34,7 @@ function getsubjects($label,$list)
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("articlecontent", "innerHTML", $content);
+	$objResponse->assign("ArticleTitle","innerHTML","Searchresult for ".$label);
 	return $objResponse;
 }
 
