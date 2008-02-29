@@ -26,7 +26,8 @@ function getsubjects($label,$list)
 				
 		$subjects=$sc->getSubjects($label,$checkedInstances);
 		
-		$content.=getResultsTable($subjects);
+		$content.=getTagCloud($subjects['tagcloud'],$subjects['tagcloudlabel']);
+		$content.=getResultsTable($subjects['subjects']);
 	} catch (Exception $e){
 		$content=$e->getMessage();
 	}
@@ -450,6 +451,27 @@ function stopServerCall()
 ///////////////////////
 // Helper Functions. //
 ///////////////////////
+
+function getTagCloud($tags,$label)
+{
+	$max=max($tags);
+	$min=min($tags);
+	$diff=$max-$min;
+	$distribution=$diff/3;
+	
+	$ret="<p>";
+	foreach ($tags as $tag=>$count){
+		if ($count==$min) $style="font-size:xx-small;";
+		else if ($count==$max) $style="font-size:xx-large;";
+		else if ($count>($min+2*$distribution)) $style="font-size:large;";
+		else if ($count>($min+$distribution)) $style="font-size:medium;";
+		else $style="font-size:small;";
+		
+		$ret.="<a style='".$style."' href='".$tag."'>".$label[$tag]."</a> ";
+	}
+	$ret.="</p>";
+	return $ret;
+}
 
 function getResultsTable($results)
 {
