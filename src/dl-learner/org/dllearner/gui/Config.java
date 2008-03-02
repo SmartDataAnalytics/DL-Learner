@@ -48,6 +48,9 @@ public class Config {
 	private LearningAlgorithm la;
 	private LearningAlgorithm oldLearningAlgorithm;
 	private boolean[] isInit = new boolean[4];
+	private Boolean threadIsRunning = false;
+	private Long algorithmRunStartTime = null;
+	private Long algorithmRunStopTime = null;
 
 	/**
 	 * Get ComponentManager.
@@ -274,4 +277,38 @@ public class Config {
 		isInit[3] = is;
 	}
 
+	/**
+	 * Set true if you start the algorithm.
+	 * 
+	 * @param isThreadRunning
+	 */
+	public void setThreadIsRunning(Boolean isThreadRunning) {
+		if (isThreadRunning)
+			algorithmRunStartTime = System.nanoTime();
+		else if (algorithmRunStartTime != null)
+			if (algorithmRunStartTime < System.nanoTime())
+				algorithmRunStopTime = System.nanoTime();
+		this.threadIsRunning = isThreadRunning;
+	}
+
+	/**
+	 * Get true if algorithm has started, false if not.
+	 * 
+	 * @return true if algorithm is running, false if not.
+	 */
+	public Boolean getThreadIsRunning() {
+		return this.threadIsRunning;
+	}
+
+	/**
+	 * Get time in ns for run of algorithm.
+	 * 
+	 * @return time in ns
+	 */
+	public Long getAlgorithmRunTime() {
+		if (algorithmRunStartTime != null && algorithmRunStopTime != null)
+			if (algorithmRunStartTime < algorithmRunStopTime)
+				return algorithmRunStopTime - algorithmRunStartTime;
+		return null;
+	}
 }
