@@ -34,7 +34,7 @@ import org.dllearner.cli.*;
 import java.io.PrintWriter;
 
 /**
- * Open a config file.
+ * Save a config file.
  * 
  * @author Tilo Hielscher
  */

@@ -38,8 +38,11 @@ public class ThreadRun extends Thread {
 	 */
 	@Override
 	public void run() {
-		if (config.getLearningAlgorithm() != null)
+		if (config.getLearningAlgorithm() != null) {
+			config.setThreadIsRunning(true);
 			config.getLearningAlgorithm().start();
+			config.setThreadIsRunning(false);
+		}
 	}
 
 	/**
