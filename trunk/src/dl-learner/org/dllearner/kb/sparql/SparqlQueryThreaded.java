@@ -1,7 +1,5 @@
 package org.dllearner.kb.sparql;
 
-import com.hp.hpl.jena.query.ResultSet;
-
 /**
  * The class is used for threaded querying of a Sparql Endpoint.
  * @author Sebastian Knappe

@@ -33,6 +33,7 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
@@ -51,7 +52,8 @@ import org.dllearner.utilities.ConceptTransformation;
  * development. Its aim is to span a much "cleaner" and smaller search
  * tree compared to RhoDown by omitting many class descriptions,
  * which are obviously too weak, because they violate 
- * domain/range restrictions.
+ * domain/range restrictions. Furthermore, it makes use of disjoint
+ * classes in the knowledge base.
  * 
  * @author Jens Lehmann
  *
@@ -68,22 +70,38 @@ public class RhoDRDown implements RefinementOperator {
 	private Map<DatatypeProperty,Description> dpDomains = new TreeMap<DatatypeProperty,Description>();
 	private Map<ObjectProperty,Description> opRanges = new TreeMap<ObjectProperty,Description>();
 	
-	// gibt die Gr��e an bis zu der die Refinements des Top-Konzepts
-	// bereits berechnet worden => entspricht der max. L�nge der Menge M
+	// start concept (can be used to start from an arbitrary concept, needs
+	// to be Thing or NamedClass), note that when you use e.g. Compound as 
+	// start class, then the algorithm should start the search with class
+	// Compound (and not with Thing), because otherwise concepts like
+	// NOT Carbon-87 will be returned which itself is not a subclass of Compound
+	private Description startClass = new Thing();
+	
+	// the length of concepts of top refinements, the first values is
+	// for refinements of \rho_\top(\top), the second one for \rho_A(\top)
 	private int topRefinementsLength = 0;
+	private Map<NamedClass, Integer> topARefinementsLength = new TreeMap<NamedClass, Integer>();
 	
-	// die Menge M im Refinement-Operator indiziert nach ihrer L�nge
-	private Map<Integer,Set<Description>> m = new HashMap<Integer,Set<Description>>();
+	// the sets M_\top and M_A
+	private Map<Integer,Set<Description>> m = new TreeMap<Integer,Set<Description>>();
+	private Map<NamedClass,Map<Integer,Set<Description>>> mA = new TreeMap<NamedClass,Map<Integer,Set<Description>>>();
 	
-	// Zerlegungen der Zahl n in Mengen
-	// Map<Integer,Set<IntegerCombo>> combos = new HashMap<Integer,Set<IntegerCombo>>();
+	// @see MathOperations.getCombos
 	private Map<Integer, List<List<Integer>>> combos = new HashMap<Integer, List<List<Integer>>>();
-	// abspeichern von Kombinationen während diese rekursiv berechnet werden
-	// private List<List<Integer>> combosTmp;	
+
+	// refinements of the top concept ordered by length
+	private Map<Integer, TreeSet<Description>> topRefinements = new TreeMap<Integer, TreeSet<Description>>();
+	private Map<NamedClass,Map<Integer, TreeSet<Description>>> topARefinements = new TreeMap<NamedClass,Map<Integer, TreeSet<Description>>>();
 	
-	// Refinements des Top-Konzept indiziert nach Länge
-	private Map<Integer, TreeSet<Description>> topRefinements = new HashMap<Integer, TreeSet<Description>>();
+	// cumulated refinements of top (all from length one to the specified length)
 	private Map<Integer, TreeSet<Description>> topRefinementsCumulative = new HashMap<Integer, TreeSet<Description>>();
+	private Map<NamedClass,Map<Integer, TreeSet<Description>>> topARefinementsCumulative = new TreeMap<NamedClass,Map<Integer, TreeSet<Description>>>();
+	
+	// app_A set of applicable properties for a given class (separte for
+	// object properties, boolean datatypes, and double data types)
+	private Map<NamedClass, Set<ObjectProperty>> appOP = new TreeMap<NamedClass, Set<ObjectProperty>>();
+	private Map<NamedClass, Set<DatatypeProperty>> appBD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
+	private Map<NamedClass, Set<DatatypeProperty>> appDD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
 	
 	// comparator für Konzepte
 	private ConceptComparator conceptComparator = new ConceptComparator();
@@ -100,6 +118,10 @@ public class RhoDRDown implements RefinementOperator {
 	private boolean useBooleanDatatypes = true;	
 	
 	public RhoDRDown(ReasoningService rs) {
+		this(rs, null);
+	}
+	
+	public RhoDRDown(ReasoningService rs, NamedClass startClass) {
 		this.rs = rs;
 		subHierarchy = rs.getSubsumptionHierarchy();
 		
@@ -111,7 +133,10 @@ public class RhoDRDown implements RefinementOperator {
 		}
 		for(DatatypeProperty dp : rs.getDatatypeProperties()) {
 			dpDomains.put(dp, rs.getDomain(dp));
-		}		
+		}
+		
+		if(startClass != null)
+			this.startClass = startClass;
 	}
 	
 	/* (non-Javadoc)
@@ -129,6 +154,7 @@ public class RhoDRDown implements RefinementOperator {
 		return refine(description, maxLength, knownRefinements, new Thing());
 	}
 
+	@SuppressWarnings({"unchecked"})
 	public Set<Description> refine(Description description, int maxLength,
 			List<Description> knownRefinements, Description currDomain) {
 		// TODO: check whether using list or set makes more sense 
@@ -141,7 +167,18 @@ public class RhoDRDown implements RefinementOperator {
 		// function)
 		
 		if(description instanceof Thing) {
-			refinements.addAll(subHierarchy.getMoreSpecialConcepts(description));
+			// extends top refinements if necessary
+			if(currDomain instanceof Thing) {
+				if(maxLength>topRefinementsLength)
+					computeTopRefinements(maxLength);
+				refinements = (TreeSet<Description>) topRefinementsCumulative.get(maxLength).clone();
+			} else {
+				if(maxLength>topARefinementsLength.get(currDomain))
+					computeTopRefinements(maxLength);
+				refinements = (TreeSet<Description>) topRefinementsCumulative.get(maxLength).clone();					
+			}
+			
+//			refinements.addAll(subHierarchy.getMoreSpecialConcepts(description));
 		} else if(description instanceof Nothing) {
 			// cannot be further refined
 		} else if(description instanceof NamedClass) {
@@ -151,8 +188,11 @@ public class RhoDRDown implements RefinementOperator {
 		return refinements;		
 	}
 	
-	// TODO: später private
-	public void computeTopRefinements(int maxLength) {
+	private void computeTopRefinements(int maxLength) {
+		computeTopRefinements(maxLength, null);
+	}
+	
+	private void computeTopRefinements(int maxLength, NamedClass domain) {
 		long topComputationTimeStartNs = System.nanoTime();
 		
 		// M erweiteren
@@ -229,98 +269,86 @@ public class RhoDRDown implements RefinementOperator {
 		topComputationTimeNs += System.nanoTime() - topComputationTimeStartNs;
 	}
 	
-	// computation of the set M 
+	// compute M_\top
 	private void computeM(int maxLength) {
+		computeM(maxLength, null);
+	}
+	
+	// computation of the set M_A
+	// a major difference compared to the ILP 2007 \rho operator is that
+	// M is finite and contains elements of length (currently) at most 3
+	private void computeM(int maxLength, NamedClass domain) {
 		long mComputationTimeStartNs = System.nanoTime();
-		// System.out.println("compute M from " + (topRefinementsLength+1) + " up to " + maxLength);
-		
-		// initialise all not yet initialised lengths
-		// (avoids null pointers in some cases)
-		for(int i=topRefinementsLength+1; i<=maxLength; i++) {
+
+		// initialise all possible lengths (1 to 3)
+		for(int i=1; i<=3; i++) {
 			m.put(i, new TreeSet<Description>(conceptComparator));
 		}
 		
-		// Berechnung der Basiskonzepte in M
-		// TODO: Spezialfälle, dass zwischen Top und Bottom nichts liegt behandeln
-		if(topRefinementsLength==0 && maxLength>0) {
-			// Konzepte der Länge 1 = alle Konzepte, die in der Subsumptionhierarchie unter Top liegen
-			Set<Description> m1 = rs.getMoreSpecialConcepts(new Thing()); 
-			m.put(1,m1);
+		Set<Description> m1 = rs.getMoreSpecialConcepts(new Thing()); 
+		m.put(1,m1);		
+		
+		if(useNegation) {
+			Set<Description> m2tmp = rs.getMoreGeneralConcepts(new Nothing());
+			Set<Description> m2 = new TreeSet<Description>(conceptComparator);
+			for(Description c : m2tmp) {
+				m2.add(new Negation(c));
+			}
+			m.put(2,m2);
+		}
+			
+		Set<Description> m3 = new TreeSet<Description>(conceptComparator);
+		if(useExistsConstructor) {
+			// only uses most general roles
+			for(ObjectProperty r : rs.getMostGeneralRoles()) {
+				m3.add(new ObjectSomeRestriction(r, new Thing()));
+			}				
 		}
 		
-		if(topRefinementsLength<2 && maxLength>1) {	
-			// Konzepte der Länge 2 = Negation aller Konzepte, die über Bottom liegen
-			if(useNegation) {
-				Set<Description> m2tmp = rs.getMoreGeneralConcepts(new Nothing());
-				Set<Description> m2 = new TreeSet<Description>(conceptComparator);
-				for(Description c : m2tmp) {
-					m2.add(new Negation(c));
-				}
-				m.put(2,m2);
+		if(useAllConstructor) {
+			// we allow \forall r.\top here because otherwise the operator
+			// becomes too difficult to manage due to dependencies between
+			// M_A and M_A' where A'=ran(r)
+			for(ObjectProperty r : rs.getMostGeneralRoles()) {
+				m3.add(new ObjectAllRestriction(r, new Thing()));
+			}				
+		}		
+		
+		// boolean datatypes, e.g. testPositive = true
+		if(useBooleanDatatypes) {
+			Set<DatatypeProperty> booleanDPs = rs.getBooleanDatatypeProperties();
+			for(DatatypeProperty dp : booleanDPs) {
+				m3.add(new BooleanValueRestriction(dp,true));
+				m3.add(new BooleanValueRestriction(dp,false));
 			}
-		}
-			
-		if(topRefinementsLength<3 && maxLength>2) {
-			// Konzepte der Länge 3: EXISTS r.TOP
-			Set<Description> m3 = new TreeSet<Description>(conceptComparator);
-			if(useExistsConstructor) {
-				// previous operator: uses all roles
-				// for(AtomicRole r : Config.Refinement.allowedRoles) {
-				//	m3.add(new Exists(r, new Top()));
-				//}
-				// new operator: only uses most general roles
-				for(ObjectProperty r : rs.getMostGeneralRoles()) {
-					m3.add(new ObjectSomeRestriction(r, new Thing()));
-				}				
-
-			}
-			
-			// boolean datatypes, e.g. testPositive = true
-			if(useBooleanDatatypes) {
-				Set<DatatypeProperty> booleanDPs = rs.getBooleanDatatypeProperties();
-				for(DatatypeProperty dp : booleanDPs) {
-					m3.add(new BooleanValueRestriction(dp,true));
-					m3.add(new BooleanValueRestriction(dp,false));
-				}
-			}
-			
-			m.put(3,m3);			
 		}
 		
-		if(maxLength>2) {
-			if(useAllConstructor) {
-				// Konzepte, die mit ALL r starten
-				// alle existierenden Konzepte durchgehen, die maximal 2 k�rzer als 
-				// die maximale L�nge sind
-				// topRefinementsLength - 1, damit Konzepte der Länge mindestens
-				// topRefinementsLength + 1 erzeugt werden (ALL r)
-				for(int i=topRefinementsLength-1; i<=maxLength-2; i++) {
-					// i muss natürlich mindestens 1 sein
-					if(i>=1) {
-						
-						// alle Konzepte durchgehen
-						for(Description c : m.get(i)) {
-							// Fall wird jetzt weiter oben schon abgehandelt
-							// if(!m.containsKey(i+2))
-							//	m.put(i+2, new TreeSet<Concept>(conceptComparator));
-							
-							// previous operator: uses all roles
-							// for(AtomicRole r : Config.Refinement.allowedRoles) {
-								// Mehrfacheinf�gen ist bei einer Menge kein Problem
-							// 	m.get(i+2).add(new All(r,c));
-							// }
-							
-							for(ObjectProperty r : rs.getMostGeneralRoles()) {
-								m.get(i+2).add(new ObjectAllRestriction(r,c));
-							}
-						}
-					}
-				}
-			}
-		}
+		m.put(3,m3);
 		
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
 		
+	// computes the set of applicable properties for a given class
+	private void computeApp(NamedClass domain) {
+		// TODO: also implement this for boolean/double datatype properties
+		Set<ObjectProperty> mostGeneral = rs.getAtomicRoles();
+		Set<ObjectProperty> applicableRoles = new TreeSet<ObjectProperty>();
+		for(ObjectProperty role : mostGeneral) {
+			// TODO: currently we just rely on named classes as roles,
+			// instead of computing dom(r) and ran(r)
+			NamedClass nc = (NamedClass) rs.getDomain(role);
+			if(!isDisjoint(domain,nc))
+				applicableRoles.add(role);
+		}
+		appOP.put(domain, applicableRoles);
+	}
+	
+	// computes whether two classes are disjoint; this should be computed
+	// by the reasoner only ones and otherwise taken from a matrix
+	private boolean isDisjoint(NamedClass class1, NamedClass class2) {
+		// we need to test whether A AND B is equivalent to BOTTOM
+		Description d = new Intersection(class1, class2);
+		return rs.subsumes(new Nothing(), d);
+	}
 	
 }
