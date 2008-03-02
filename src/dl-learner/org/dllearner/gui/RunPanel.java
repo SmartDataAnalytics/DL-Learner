@@ -25,7 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
-import java.lang.Long;
+import org.dllearner.utilities.Helper;
 
 /**
  * RunPanel let algorithm start and stop and show informations about.
@@ -105,8 +105,8 @@ public class RunPanel extends JPanel implements ActionListener {
 			infoArea.setText(config.getLearningAlgorithm().getSolutionScore().toString());
 		}
 		// ReasonerStats
-		if (e.getSource() == getReasonerStatsButton && runBoolean) {
-			infoArea.setText("");
+		if (e.getSource() == getReasonerStatsButton /* && runBoolean*/) {
+/*			infoArea.setText("");
 			infoArea.append("Algorithm Runtime: "
 					+ makeTime(config.getAlgorithmRunTime()) + "\n");
 			infoArea.append("OverallReasoningTime: "
@@ -128,6 +128,9 @@ public class RunPanel extends JPanel implements ActionListener {
 			infoArea.append("Subsumption ("
 					+ config.getReasoningService().getNrOfSubsumptionChecks() + "): "
 					+ makeTime(config.getReasoningService().getTimePerSubsumptionCheckNs()) + "\n");
+	
+*/  infoArea.setText(makeTime(9927255727L));
+			
 		}
 	}
 
@@ -138,23 +141,48 @@ public class RunPanel extends JPanel implements ActionListener {
 	 *            is type of Long and represent a time interval in ns
 	 * @return a string like this: 3h 12min 46s 753ms
 	 */
-	public String makeTime(Long nanoSeconds) {
+	public String makeTime(long nanoSeconds) {
 		String time = "";
-		Integer hours = 0, minutes = 0, seconds = 0, miliSeconds = 0;
-		nanoSeconds /= 1000000; // miliSeconds
-		hours = Math.round(nanoSeconds / 1000 / 60 / 60);
-		minutes = Math.round(nanoSeconds / 1000 / 60);
-		seconds = Math.round(nanoSeconds / 1000);
-		miliSeconds = Math.round(nanoSeconds - (hours * 1000 * 60 * 60) - (minutes * 1000 * 60)
-				- (seconds * 1000));
+		long hours, minutes, seconds, millis, mikros, nanos;
+
+		// it cuts last decimals
+		nanos = nanoSeconds;
+		mikros = nanos / 1000;
+		millis = mikros / 1000;
+		seconds = millis / 1000;
+		minutes = seconds / 60;
+		hours = minutes / 60;
+		
+		// and calculate back
+		minutes -= hours * 60; 
+		seconds -= minutes * 60; 
+		millis -= seconds * 1000;
+		mikros -= millis * 1000;
+		nanos -= mikros * 1000;
+		
+		System.out.println("TEST: " + hours + "h " + minutes + "min " + seconds + "s " + millis + "ms " + mikros + "mikro " + nanos + "nano ");
+		
+		
+		
+		
+		
+		System.out.println(Helper.prettyPrintNanoSeconds(nanoSeconds, true, true));
+		
+		
+		
 		if (hours > 0)
 			time += hours + "h ";
 		if (minutes > 0)
 			time += minutes + "min ";
 		if (seconds > 0)
 			time += seconds + "s ";
-		if (miliSeconds > 0)
-			time += miliSeconds + "ms ";
+		if (millis > 0)
+			time += millis + "ms ";
+		if (mikros > 0)
+			time += mikros + "ms ";
+		if (nanos > 0)
+			time += nanos + "ms ";
+		
 		// System.out.println("time: " + time);
 		return time;
 	}
