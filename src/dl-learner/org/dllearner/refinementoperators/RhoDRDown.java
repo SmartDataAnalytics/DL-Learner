@@ -22,6 +22,7 @@ package org.dllearner.refinementoperators;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +41,8 @@ import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyExpression;
+import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.core.owl.Thing;
@@ -119,7 +122,7 @@ public class RhoDRDown implements RefinementOperator {
 	private long mComputationTimeNs = 0;
 	private long topComputationTimeNs = 0;
 	
-//	private boolean applyAllFilter = true;
+	private boolean applyAllFilter = true;
 	private boolean applyExistsFilter = true;
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
@@ -168,12 +171,10 @@ public class RhoDRDown implements RefinementOperator {
 			List<Description> knownRefinements, Description currDomain) {
 		// TODO: check whether using list or set makes more sense 
 		// here; and whether HashSet or TreeSet should be used
-		Set<Description> refinements = new HashSet<Description>();
+		Set<Description> refinements = new TreeSet<Description>(conceptComparator);
 		
-		// .. do most general rules here ...
-		// (easier because it may be possible to add return 
-		// statements instead of going through the complete 
-		// function)
+		// used as temporary variable
+		Set<Description> tmp = new HashSet<Description>();
 		
 		if(description instanceof Thing) {
 			// extends top refinements if necessary
@@ -192,6 +193,161 @@ public class RhoDRDown implements RefinementOperator {
 			// cannot be further refined
 		} else if(description instanceof NamedClass) {
 			refinements.addAll(subHierarchy.getMoreSpecialConcepts(description));
+			refinements.remove(new Nothing());
+		} else if (description instanceof Negation && description.getChild(0) instanceof NamedClass) {
+		
+			tmp = rs.getMoreGeneralConcepts(description.getChild(0));
+				
+			for(Description c : tmp) {
+				if(!(c instanceof Thing))
+					refinements.add(new Negation(c));
+			}
+		
+		} else if (description instanceof Intersection) {
+				
+			// refine one of the elements
+			for(Description child : description.getChildren()) {
+				
+				// refine the child; the new max length is the current max length minus
+				// the currently considered concept plus the length of the child
+				// TODO: add better explanation
+				tmp = refine(child, maxLength - description.getLength()+child.getLength(),null,currDomain);
+				
+				// create new intersection
+				for(Description c : tmp) {
+					List<Description> newChildren = (List<Description>)((LinkedList)description.getChildren()).clone();
+					newChildren.add(c);
+					newChildren.remove(child);
+					Intersection mc = new Intersection(newChildren);
+					
+					// clean concept and transform it to ordered negation normal form
+					// (non-recursive variant because only depth 1 was modified)
+					ConceptTransformation.cleanConceptNonRecursive(mc);
+					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
+					
+					refinements.add(mc);	
+				}
+				
+			}
+				
+		} else if (description instanceof Union) {
+			// refine one of the elements
+			for(Description child : description.getChildren()) {
+				
+				// refine child
+				tmp = refine(child, maxLength - description.getLength()+child.getLength(),null,currDomain);
+				
+				// construct intersection (see above)
+				for(Description c : tmp) {
+					List<Description> newChildren = new LinkedList<Description>(description.getChildren());
+					newChildren.remove(child);						
+					newChildren.add(c);
+					Union md = new Union(newChildren);
+						
+					// transform to ordered negation normal form
+					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(md, conceptComparator);
+					// note that we do not have to call clean here because a disjunction will
+					// never be nested in another disjunction in this operator
+					
+					refinements.add(md);	
+				}
+				
+			}
+			
+		} else if (description instanceof ObjectSomeRestriction) {
+			ObjectPropertyExpression role = ((ObjectQuantorRestriction)description).getRole();
+			Description range = opRanges.get(role);
+			
+			// rule 1: EXISTS r.D => EXISTS r.E
+			tmp = refine(description.getChild(0), maxLength-2, null, range);
+
+			for(Description c : tmp)
+				refinements.add(new ObjectSomeRestriction(((ObjectQuantorRestriction)description).getRole(),c));
+			
+			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
+			// currently inverse roles are not supported
+			ObjectProperty ar = (ObjectProperty) role;
+			Set<ObjectProperty> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
+			for(ObjectProperty moreSpecialRole : moreSpecialRoles)
+				refinements.add(new ObjectSomeRestriction(moreSpecialRole, description.getChild(0)));
+
+		} else if (description instanceof ObjectAllRestriction) {
+			ObjectPropertyExpression role = ((ObjectQuantorRestriction)description).getRole();
+			Description range = opRanges.get(role);
+			
+			// rule 1: ALL r.D => ALL r.E
+			tmp = refine(description.getChild(0), maxLength-2, null, range);
+
+			for(Description c : tmp) {
+				refinements.add(new ObjectAllRestriction(((ObjectQuantorRestriction)description).getRole(),c));
+			}		
+			
+			// rule 2: ALL r.D => ALL r.BOTTOM if D is a most specific atomic concept
+			if(description.getChild(0) instanceof NamedClass && tmp.size()==0) {
+				refinements.add(new ObjectAllRestriction(((ObjectQuantorRestriction)description).getRole(),new Nothing()));
+			}
+			
+			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
+			// currently inverse roles are not supported
+			ObjectProperty ar = (ObjectProperty) role;
+			Set<ObjectProperty> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
+			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
+				refinements.add(new ObjectAllRestriction(moreSpecialRole, description.getChild(0)));
+			}
+			
+		}
+		
+		// if a refinement is neither Bottom nor Top a refinement of top can be appended
+		if(!(description instanceof Thing) && !(description instanceof Nothing)) {
+			// -1 because of the AND symbol which is appended
+			int topRefLength = maxLength - description.getLength() - 1; 
+			
+			// maybe we have to compute new top refinements here
+			if(currDomain instanceof Thing && topRefLength > topRefinementsLength)
+				computeTopRefinements(topRefLength);
+			else if(topRefLength > topARefinementsLength.get(currDomain))
+				computeTopRefinements(topRefLength,(NamedClass)currDomain);
+			
+			if(topRefLength>0) {
+				Set<Description> topRefs;
+				if(currDomain instanceof Thing)
+					topRefs = topRefinementsCumulative.get(topRefLength);
+				else
+					topRefs = topARefinementsCumulative.get(currDomain).get(topRefLength);
+				
+				for(Description c : topRefs) {
+					// true if refinement should be skipped due to filters,
+					// false otherwise
+					boolean skip = false;
+					
+					// if a refinement of of the form ALL r, we check whether ALL r
+					// does not occur already
+					if(applyAllFilter) {
+						if(c instanceof ObjectAllRestriction) {
+							for(Description child : description.getChildren()) {
+								if(child instanceof ObjectAllRestriction) {
+									ObjectPropertyExpression r1 = ((ObjectAllRestriction)c).getRole();
+									ObjectPropertyExpression r2 = ((ObjectAllRestriction)child).getRole();
+									if(r1.toString().equals(r2.toString()))
+										skip = true;
+								}
+							}
+						}
+					}
+					
+					if(!skip) {
+						Intersection mc = new Intersection();
+						mc.addChild(description);
+						mc.addChild(c);				
+						
+						// clean and transform to ordered negation normal form
+						ConceptTransformation.cleanConceptNonRecursive(mc);
+						ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
+											
+						refinements.add(mc);
+					}
+				}
+			}
 		}
 		
 		return refinements;		
@@ -214,8 +370,7 @@ public class RhoDRDown implements RefinementOperator {
 		int refinementsLength = (domain == null) ? topRefinementsLength : topARefinementsLength.get(domain);
 		for(int i = refinementsLength+1; i <= maxLength; i++) {
 			combos.put(i,MathOperations.getCombos(i, mMaxLength));
-//			topRefinements.put(i, new TreeSet<Description>(conceptComparator));
-			
+
 			for(List<Integer> combo : combos.get(i)) {
 				
 				// combination is a single number => try to use M
