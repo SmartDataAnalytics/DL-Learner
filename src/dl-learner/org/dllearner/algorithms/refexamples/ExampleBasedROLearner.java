@@ -42,7 +42,7 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
-import org.dllearner.refinementoperators.RhoDown;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 import org.dllearner.utilities.Files;
@@ -107,7 +107,8 @@ public class ExampleBasedROLearner {
 	private List<Description> solutions = new LinkedList<Description>();	
 	
 	// used refinement operator and heuristic (exchangeable)
-	private RhoDown operator;
+	private RhoDRDown operator;
+//	private RefinementOperator operator;
 	// private ExampleBasedHeuristic heuristic;
 	
 	// specifies whether to compute and log benchmark information
@@ -195,7 +196,7 @@ public class ExampleBasedROLearner {
 		}
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 		this.rs = rs;
-		this.operator = (RhoDown) operator;
+		this.operator = (RhoDRDown) operator;
 		// initialise candidate set with heuristic as ordering
 		candidates = new TreeSet<ExampleBasedNode>(heuristic);
 		this.noise = noise;
@@ -568,7 +569,7 @@ public class ExampleBasedROLearner {
 					tooWeakList.add(refinement);
 				} else {
 					// Lösung gefunden
-					if(quality >= 0 && quality<allowedMisclassifications) {
+					if(quality >= 0 && quality<=allowedMisclassifications) {
 						solutionFound = true;
 						solutions.add(refinement);
 					}			
