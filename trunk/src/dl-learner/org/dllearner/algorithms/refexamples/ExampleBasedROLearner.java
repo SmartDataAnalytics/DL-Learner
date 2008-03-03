@@ -80,6 +80,7 @@ public class ExampleBasedROLearner {
 	private ReasoningService rs;
 	private PosNegLP learningProblem;
 	private PosOnlyDefinitionLP posOnlyLearningProblem;
+	private Description startDescription;
 	private boolean posOnly = false;
 	private int nrOfExamples;
 	private int nrOfPositiveExamples;
@@ -171,6 +172,7 @@ public class ExampleBasedROLearner {
 			ReasoningService rs,
 			RefinementOperator operator, 
 			ExampleBasedHeuristic heuristic,
+			Description startDescription,
 			// Set<AtomicConcept> allowedConcepts,
 			// Set<AtomicRole> allowedRoles, 
 			double noise,
@@ -197,6 +199,7 @@ public class ExampleBasedROLearner {
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 		this.rs = rs;
 		this.operator = (RhoDRDown) operator;
+		this.startDescription = startDescription;
 		// initialise candidate set with heuristic as ordering
 		candidates = new TreeSet<ExampleBasedNode>(heuristic);
 		this.noise = noise;
@@ -216,19 +219,28 @@ public class ExampleBasedROLearner {
 		// calculate quality threshold required for a solution
 		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
 		
-		// start search with most general concept
-		Thing top = new Thing();
-		ExampleBasedNode topNode = new ExampleBasedNode(top);
-		// top covers all negatives
-		int coveredNegativeExamples = getNumberOfNegatives();
-		topNode.setCoveredNegativeExamples(coveredNegativeExamples);
-		topNode.setCoveredPositives(learningProblem.getPositiveExamples());
-		topNode.setCoveredNegatives(learningProblem.getNegativeExamples());
-		candidates.add(topNode);
-		candidatesStable.add(topNode);
+		// start search with start class
+		ExampleBasedNode startNode;
+		if(startDescription == null) {
+			Thing top = new Thing();
+			startNode = new ExampleBasedNode(top);
+			// top covers all negatives
+			int coveredNegativeExamples = getNumberOfNegatives();
+			startNode.setCoveredNegativeExamples(coveredNegativeExamples);
+			startNode.setCoveredPositives(learningProblem.getPositiveExamples());
+			startNode.setCoveredNegatives(learningProblem.getNegativeExamples());
+		} else {
+			startNode = new ExampleBasedNode(startDescription);
+			Set<Individual> coveredNegatives = rs.instanceCheck(startDescription, learningProblem.getNegativeExamples());
+			startNode.setCoveredPositives(rs.instanceCheck(startDescription, learningProblem.getPositiveExamples()));
+			startNode.setCoveredNegatives(coveredNegatives);
+			startNode.setCoveredNegativeExamples(coveredNegatives.size());
+		}
 		
+		candidates.add(startNode);
+		candidatesStable.add(startNode);		
 		// note that TOP may already be a solution
-		ExampleBasedNode bestNode = topNode;
+		ExampleBasedNode bestNode = startNode;
 //		solutionFound = (coveredNegativeExamples == 0);
 //		solutions = new LinkedList<Concept>();
 //		if(solutionFound)
@@ -272,7 +284,7 @@ public class ExampleBasedROLearner {
 					}
 				}
 				expandedNodes.clear();
-				treeString += topNode.getTreeString();
+				treeString += startNode.getTreeString();
 				treeString += "\n";
 
 				if(replaceSearchTree)

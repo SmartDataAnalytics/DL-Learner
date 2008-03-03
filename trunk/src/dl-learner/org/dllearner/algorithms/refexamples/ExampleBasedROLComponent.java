@@ -299,6 +299,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 				rs,
 				operator,
 				algHeuristic,
+				startClass,
 				// usedConcepts,
 				// usedRoles,
 				noisePercentage/(double)100,
