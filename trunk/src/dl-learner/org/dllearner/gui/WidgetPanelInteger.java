@@ -145,7 +145,8 @@ public class WidgetPanelInteger extends WidgetPanelAbstract implements ActionLis
 			try {
 				ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(specialOption, value);
 				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				System.out.println("set Integer: " + configOption.getName() + " = " + value);
+				// System.out.println("set Integer: " + configOption.getName() +
+				// " = " + value);
 			} catch (InvalidConfigOptionValueException s) {
 				s.printStackTrace();
 			}

@@ -286,7 +286,8 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 				ConfigEntry<Set<String>> specialEntry = new ConfigEntry<Set<String>>(specialOption,
 						value);
 				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				System.out.println("set StringSet: " + configOption.getName() + " = " + value);
+				// System.out.println("set StringSet: " + configOption.getName()
+				// + " = " + value);
 			} catch (InvalidConfigOptionValueException s) {
 				s.printStackTrace();
 			}

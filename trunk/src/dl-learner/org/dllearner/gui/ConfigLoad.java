@@ -169,6 +169,7 @@ public class ConfigLoad {
 					config.getLearningAlgorithm().init();
 					config.setInitLearningAlgorithm(true);
 					System.out.println("init LearningAlgorithm");
+					startGUI.updateTabColors();
 				} catch (ComponentInitException e) {
 					e.printStackTrace();
 				}

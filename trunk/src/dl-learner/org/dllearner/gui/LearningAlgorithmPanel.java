@@ -82,16 +82,16 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		add(optionPanel, BorderLayout.CENTER);
 		add(initPanel, BorderLayout.PAGE_END);
 
+		choosenClassIndex = cb.getSelectedIndex();
 		updateInitButtonColor();
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		// read selected Class
-		// choosenClassIndex = cb.getSelectedIndex();
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			choosenClassIndex = cb.getSelectedIndex();
 			config.setInitLearningAlgorithm(false);
-			setLearningAlgorithm();
+			init();
 		}
 
 		if (e.getSource() == autoInitButton)

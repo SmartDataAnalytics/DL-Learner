@@ -95,7 +95,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			choosenClassIndex = cb.getSelectedIndex();
 			config.setInitKnowledgeSource(false);
-			setSource();
+			init();
 		}
 
 		if (e.getSource() == setButton) {
@@ -120,6 +120,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	 * after this, next tab can be used
 	 */
 	public void init() {
+		setSource();
 		if (config.getKnowledgeSource() != null && config.isSetURL()) {
 			try {
 				config.getKnowledgeSource().init();

@@ -23,9 +23,7 @@ package org.dllearner.gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.*;
-import org.dllearner.utilities.Helper;
 
 /**
  * RunPanel let algorithm start and stop and show informations about.
@@ -87,8 +85,10 @@ public class RunPanel extends JPanel implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		// start
-		if (e.getSource() == runButton && config.getLearningAlgorithm() != null) {
+		if (e.getSource() == runButton && config.getLearningAlgorithm() != null
+				&& !config.getThreadIsRunning()) {
 			thread = new ThreadRun(config);
+			config.getReasoningService().resetStatistics();
 			thread.start();
 			this.runBoolean = true;
 		}
@@ -98,17 +98,20 @@ public class RunPanel extends JPanel implements ActionListener {
 		}
 		// getBestSolution
 		if (e.getSource() == getBestSolutionButton && runBoolean) {
-			infoArea.setText(config.getLearningAlgorithm().getBestSolution().toString());
+			if (config.getLearningAlgorithm().getBestSolution() != null)
+				infoArea.setText(config.getLearningAlgorithm().getBestSolution().toString());
 		}
 		// getSolutionScore
 		if (e.getSource() == getSolutionScoreButton && runBoolean) {
-			infoArea.setText(config.getLearningAlgorithm().getSolutionScore().toString());
+			if (config.getLearningAlgorithm().getSolutionScore() != null)
+				infoArea.setText(config.getLearningAlgorithm().getSolutionScore().toString());
 		}
 		// ReasonerStats
-		if (e.getSource() == getReasonerStatsButton /* && runBoolean*/) {
-/*			infoArea.setText("");
-			infoArea.append("Algorithm Runtime: "
-					+ makeTime(config.getAlgorithmRunTime()) + "\n");
+		if (e.getSource() == getReasonerStatsButton && runBoolean) {
+			infoArea.setText("");
+			if (config.getAlgorithmRunTime() != null)
+				infoArea.append("Algorithm Runtime: " + makeTime(config.getAlgorithmRunTime())
+						+ "\n");
 			infoArea.append("OverallReasoningTime: "
 					+ makeTime(config.getReasoningService().getOverallReasoningTimeNs()) + "\n");
 			infoArea.append("Instances (" + config.getReasoningService().getNrOfInstanceChecks()
@@ -128,48 +131,32 @@ public class RunPanel extends JPanel implements ActionListener {
 			infoArea.append("Subsumption ("
 					+ config.getReasoningService().getNrOfSubsumptionChecks() + "): "
 					+ makeTime(config.getReasoningService().getTimePerSubsumptionCheckNs()) + "\n");
-	
-*/  infoArea.setText(makeTime(9927255727L));
-			
 		}
 	}
 
 	/**
-	 * Build a String form nanoSeconds.
+	 * Build a String from nanoSeconds.
 	 * 
 	 * @param nanoSeconds
 	 *            is type of Long and represent a time interval in ns
-	 * @return a string like this: 3h 12min 46s 753ms
+	 * @return a string like this: 3h 10min 46s 753ms
 	 */
-	public String makeTime(long nanoSeconds) {
+	public String makeTime(Long nanoSeconds) {
+		Long hours = 0L, minutes = 0L, seconds = 0L, millis = 0L, mikros = 0L, nanos = 0L;
 		String time = "";
-		long hours, minutes, seconds, millis, mikros, nanos;
 
-		// it cuts last decimals
-		nanos = nanoSeconds;
-		mikros = nanos / 1000;
-		millis = mikros / 1000;
-		seconds = millis / 1000;
-		minutes = seconds / 60;
-		hours = minutes / 60;
-		
-		// and calculate back
-		minutes -= hours * 60; 
-		seconds -= minutes * 60; 
-		millis -= seconds * 1000;
-		mikros -= millis * 1000;
-		nanos -= mikros * 1000;
-		
-		System.out.println("TEST: " + hours + "h " + minutes + "min " + seconds + "s " + millis + "ms " + mikros + "mikro " + nanos + "nano ");
-		
-		
-		
-		
-		
-		System.out.println(Helper.prettyPrintNanoSeconds(nanoSeconds, true, true));
-		
-		
-		
+		nanos = nanoSeconds % 1000;
+		nanoSeconds /= 1000;
+		mikros = nanoSeconds % 1000;
+		nanoSeconds /= 1000;
+		millis = nanoSeconds % 1000;
+		nanoSeconds /= 1000;
+		seconds = nanoSeconds % 60;
+		nanoSeconds /= 60;
+		minutes = nanoSeconds % 60;
+		nanoSeconds /= 60;
+		hours = nanoSeconds;
+
 		if (hours > 0)
 			time += hours + "h ";
 		if (minutes > 0)
@@ -178,12 +165,10 @@ public class RunPanel extends JPanel implements ActionListener {
 			time += seconds + "s ";
 		if (millis > 0)
 			time += millis + "ms ";
-		if (mikros > 0)
-			time += mikros + "ms ";
-		if (nanos > 0)
-			time += nanos + "ms ";
-		
-		// System.out.println("time: " + time);
+		if (false)
+			time += mikros + "µs ";
+		if (false)
+			time += nanos + "ns ";
 		return time;
 	}
 }
