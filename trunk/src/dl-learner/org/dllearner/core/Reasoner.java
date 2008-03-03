@@ -27,6 +27,7 @@ import java.util.SortedSet;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -52,6 +53,7 @@ public interface Reasoner {
 	// (siehe einfacher Traversal in Diplomarbeit)
 	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts);
 	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) throws ReasoningMethodUnsupportedException;
+	public void prepareDatatypePropertyHierarchy(Set<DatatypeProperty> allowedDatatypeProperties) throws ReasoningMethodUnsupportedException;		
 	
 	public boolean subsumes(Description superConcept, Description subConcept) throws ReasoningMethodUnsupportedException;
 	
@@ -68,6 +70,8 @@ public interface Reasoner {
 	public SubsumptionHierarchy getSubsumptionHierarchy() throws ReasoningMethodUnsupportedException;
 	
 	public ObjectPropertyHierarchy getRoleHierarchy() throws ReasoningMethodUnsupportedException;
+	
+	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() throws ReasoningMethodUnsupportedException;	
 	
 	public SortedSet<Individual> retrieval(Description concept) throws ReasoningMethodUnsupportedException;
 	

@@ -46,6 +46,7 @@ import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.EquivalentClassesAxiom;
 import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
@@ -129,6 +130,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private RoleComparator roleComparator = new RoleComparator();
 	private SubsumptionHierarchy subsumptionHierarchy;
 	private ObjectPropertyHierarchy roleHierarchy;	
+	private DatatypePropertyHierarchy datatypePropertyHierarchy;
 	private Set<Description> allowedConceptsInSubsumptionHierarchy;
 	
 	// primitives
@@ -430,6 +432,30 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}	
 	
 	@Override
+	public void prepareDatatypePropertyHierarchy(Set<DatatypeProperty> allowedRoles) {
+		// code copied from DIG reasoner
+		
+		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyUp = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
+				roleComparator);
+		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyDown = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
+				roleComparator);
+ 
+		// refinement of atomic concepts
+		for (DatatypeProperty role : datatypeProperties) {
+			datatypePropertyHierarchyDown.put(role, getMoreSpecialDatatypeProperties(role));
+			datatypePropertyHierarchyUp.put(role, getMoreGeneralDatatypeProperties(role));
+		}
+
+		datatypePropertyHierarchy = new DatatypePropertyHierarchy(allowedRoles, datatypePropertyHierarchyUp,
+				datatypePropertyHierarchyDown);
+	}	
+	
+	@Override
+	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
+		return datatypePropertyHierarchy;
+	}		
+	
+	@Override
 	public boolean subsumes(Description superConcept, Description subConcept) {
 		try {
 			return reasoner.isSubClassOf(OWLAPIDescriptionConvertVisitor.getOWLDescription(subConcept), OWLAPIDescriptionConvertVisitor.getOWLDescription(superConcept));			
@@ -469,7 +495,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			e.printStackTrace();
 			throw new Error("OWL API classification error.");
 		}		
-		return getFirstProperties(properties);
+		return getFirstObjectProperties(properties);
 	}
 	
 	private TreeSet<ObjectProperty> getMoreSpecialRoles(ObjectProperty role) {
@@ -480,8 +506,30 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			e.printStackTrace();
 			throw new Error("OWL API classification error.");
 		}		
-		return getFirstProperties(properties);		
+		return getFirstObjectProperties(properties);		
 	}
+	
+	private TreeSet<DatatypeProperty> getMoreGeneralDatatypeProperties(DatatypeProperty role) {
+		Set<Set<OWLDataProperty>> properties;
+		try {
+			properties = reasoner.getSuperProperties(getOWLAPIDescription(role));
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("OWL API classification error.");
+		}		
+		return getFirstDatatypeProperties(properties);
+	}
+	
+	private TreeSet<DatatypeProperty> getMoreSpecialDatatypeProperties(DatatypeProperty role) {
+		Set<Set<OWLDataProperty>> properties;
+		try {
+			properties = reasoner.getSubProperties(getOWLAPIDescription(role));
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("OWL API classification error.");
+		}		
+		return getFirstDatatypeProperties(properties);		
+	}	
 	
 	@Override
 	public boolean instanceCheck(Description concept, Individual individual) {
@@ -681,7 +729,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return concepts;			
 	}
 	
-	private TreeSet<ObjectProperty> getFirstProperties(Set<Set<OWLObjectProperty>> setOfSets) {
+	private TreeSet<ObjectProperty> getFirstObjectProperties(Set<Set<OWLObjectProperty>> setOfSets) {
 		TreeSet<ObjectProperty> roles = new TreeSet<ObjectProperty>(roleComparator);
 		for(Set<OWLObjectProperty> innerSet : setOfSets) {
 			// take one element from the set and ignore the rest
@@ -691,6 +739,15 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 		return roles;		
 	}	
+	
+	private TreeSet<DatatypeProperty> getFirstDatatypeProperties(Set<Set<OWLDataProperty>> setOfSets) {
+		TreeSet<DatatypeProperty> roles = new TreeSet<DatatypeProperty>(roleComparator);
+		for(Set<OWLDataProperty> innerSet : setOfSets) {
+			OWLDataProperty property = innerSet.iterator().next();
+			roles.add(new DatatypeProperty(property.getURI().toString()));
+		}
+		return roles;		
+	}		
 	
 	@SuppressWarnings({"unused"})
 	private Set<Description> owlClassesToAtomicConcepts(Set<OWLClass> owlClasses) {

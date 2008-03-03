@@ -103,6 +103,9 @@ public class RhoDRDown implements RefinementOperator {
 	private Map<NamedClass, Set<DatatypeProperty>> appBD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
 	private Map<NamedClass, Set<DatatypeProperty>> appDD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
 	
+	// most general applicable properties
+	private Map<NamedClass,Set<ObjectProperty>> mgr = new TreeMap<NamedClass,Set<ObjectProperty>>();
+	
 	// comparator für Konzepte
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
@@ -328,6 +331,23 @@ public class RhoDRDown implements RefinementOperator {
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
 		
+	private void computeMgr(NamedClass domain) {
+		// compute the applicable properties if this has not been done yet
+		if(appOP.get(domain) == null)
+			computeApp(domain);
+		Set<ObjectProperty> mostGeneral = rs.getMostGeneralRoles();
+		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
+	}
+	
+	private void computeMgrRecursive(NamedClass domain, Set<ObjectProperty> currProperties, Set<ObjectProperty> mgrTmp) {
+		for(ObjectProperty prop : currProperties) {
+			if(appOP.get(domain).contains(prop))
+				mgrTmp.add(prop);
+			else
+				computeMgrRecursive(domain, rs.getMoreSpecialRoles(prop), mgrTmp);
+		}
+	}
+	
 	// computes the set of applicable properties for a given class
 	private void computeApp(NamedClass domain) {
 		// TODO: also implement this for boolean/double datatype properties
