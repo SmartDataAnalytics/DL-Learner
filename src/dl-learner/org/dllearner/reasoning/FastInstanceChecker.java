@@ -38,6 +38,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -358,6 +359,16 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return rs.getRoleHierarchy();
 	}
 
+	@Override
+	public void prepareDatatypePropertyHierarchy(Set<DatatypeProperty> allowedRoles) {
+		rs.prepareDatatypePropertyHierarchy(allowedRoles);
+	}
+
+	@Override
+	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
+		return rs.getDatatypePropertyHierarchy();
+	}
+	
 	@Override
 	public boolean subsumes(Description superConcept, Description subConcept) {
 		// Negation neg = new Negation(subConcept);

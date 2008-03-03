@@ -29,6 +29,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -328,6 +329,44 @@ public class ReasoningService {
 		return getRoleHierarchy().getMostSpecialRoles();
 	}	
 	
+	/**
+	 * Returns more general concepts in the subsumption hierarchy.
+	 * 
+	 * @see ObjectPropertyHierarchy#getMoreGeneralRoles(ObjectProperty)
+	 * @param role Atomic concept, top, or bottom.
+	 * @return A set of more general concepts.
+	 */
+	public SortedSet<DatatypeProperty> getMoreGeneralDatatypeProperties(DatatypeProperty role) {
+		return getDatatypePropertyHierarchy().getMoreGeneralRoles(role);
+	}
+
+	/**
+	 * Returns more special concepts in the subsumption hierarchy.
+	 * 
+	 * @see ObjectPropertyHierarchy#getMoreSpecialRoles(ObjectProperty)
+	 * @param role Atomic concept, top, or bottom.
+	 * @return A set of more special concepts.
+	 */
+	public SortedSet<DatatypeProperty> getMoreSpecialDatatypeProperties(DatatypeProperty role) {
+		return getDatatypePropertyHierarchy().getMoreSpecialRoles(role);
+	}
+	
+	/**
+	 * @see ObjectPropertyHierarchy#getMostGeneralRoles()
+	 * @return The most general roles.
+	 */
+	public TreeSet<DatatypeProperty> getMostGeneralDatatypeProperties() {
+		return getDatatypePropertyHierarchy().getMostGeneralRoles();
+	}
+	
+	/**
+	 * @see ObjectPropertyHierarchy#getMostSpecialRoles()
+	 * @return The most special roles.
+	 */
+	public TreeSet<DatatypeProperty> getMostSpecialDatatypeProperties() {
+		return getDatatypePropertyHierarchy().getMostSpecialRoles();
+	}		
+	
 	public void prepareSubsumptionHierarchy() {
 		reasoner.prepareSubsumptionHierarchy(getAtomicConcepts());
 	}
@@ -366,6 +405,27 @@ public class ReasoningService {
 			return null;
 		}
 	}
+	
+	public void prepareDatatypePropertyHierarchy() {
+		prepareDatatypePropertyHierarchy(getDatatypeProperties());
+	}
+	
+	public void prepareDatatypePropertyHierarchy(Set<DatatypeProperty> allowedRoles) {
+		try {
+			reasoner.prepareDatatypePropertyHierarchy(allowedRoles);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+		}
+	}
+	
+	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
+		try {
+			return reasoner.getDatatypePropertyHierarchy();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}	
 	
 	public boolean isSatisfiable() {
 		reasoningStartTimeTmp = System.nanoTime();
