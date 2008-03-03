@@ -136,10 +136,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	// primitives
 	Set<NamedClass> atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
 	Set<ObjectProperty> atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
-	Set<DatatypeProperty> datatypeProperties = new TreeSet<DatatypeProperty>();
-	Set<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
-	Set<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
-	Set<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
+	SortedSet<DatatypeProperty> datatypeProperties = new TreeSet<DatatypeProperty>();
+	SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
+	SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
+	SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
 	SortedSet<Individual> individuals = new TreeSet<Individual>();	
 	
 	// namespaces
@@ -334,7 +334,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public Set<DatatypeProperty> getDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getDatatypeProperties() {
 		return datatypeProperties;
 	}
 	
@@ -960,7 +960,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @return the booleanDatatypeProperties
 	 */
 	@Override
-	public Set<DatatypeProperty> getBooleanDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getBooleanDatatypeProperties() {
 		return booleanDatatypeProperties;
 	}
 
@@ -968,7 +968,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @return the doubleDatatypeProperties
 	 */
 	@Override
-	public Set<DatatypeProperty> getDoubleDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getDoubleDatatypeProperties() {
 		return doubleDatatypeProperties;
 	}
 
@@ -976,7 +976,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @return the intDatatypeProperties
 	 */
 	@Override
-	public Set<DatatypeProperty> getIntDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getIntDatatypeProperties() {
 		return intDatatypeProperties;
 	}
 

@@ -78,10 +78,10 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 	private Set<NamedClass> atomicConcepts;
 	private Set<ObjectProperty> atomicRoles;
-	private Set<DatatypeProperty> datatypeProperties;
-	private Set<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
-	private Set<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
-	private Set<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
+	private SortedSet<DatatypeProperty> datatypeProperties;
+	private SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
+	private SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
+	private SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
 	private SortedSet<Individual> individuals;
 
 	private ReasoningService rs;
@@ -298,22 +298,22 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
-	public Set<DatatypeProperty> getDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getDatatypeProperties() {
 		return datatypeProperties;
 	}
 
 	@Override
-	public Set<DatatypeProperty> getBooleanDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getBooleanDatatypeProperties() {
 		return booleanDatatypeProperties;
 	}
 
 	@Override
-	public Set<DatatypeProperty> getDoubleDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getDoubleDatatypeProperties() {
 		return doubleDatatypeProperties;
 	}
 
 	@Override
-	public Set<DatatypeProperty> getIntDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getIntDatatypeProperties() {
 		return intDatatypeProperties;
 	}
 

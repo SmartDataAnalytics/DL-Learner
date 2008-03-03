@@ -467,7 +467,7 @@ public class ReasoningService {
 		return reasoner.getAtomicRoles();
 	}
 
-	public Set<DatatypeProperty> getDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getDatatypeProperties() {
 		try {
 			return reasoner.getDatatypeProperties();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -476,7 +476,7 @@ public class ReasoningService {
 		}
 	}
 	
-	public Set<DatatypeProperty> getBooleanDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getBooleanDatatypeProperties() {
 		try {
 			return reasoner.getBooleanDatatypeProperties();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -485,7 +485,7 @@ public class ReasoningService {
 		}
 	}
 	
-	public Set<DatatypeProperty> getIntDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getIntDatatypeProperties() {
 		try {
 			return reasoner.getIntDatatypeProperties();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -494,7 +494,7 @@ public class ReasoningService {
 		}
 	}
 	
-	public Set<DatatypeProperty> getDoubleDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getDoubleDatatypeProperties() {
 		try {
 			return reasoner.getDoubleDatatypeProperties();
 		} catch (ReasoningMethodUnsupportedException e) {

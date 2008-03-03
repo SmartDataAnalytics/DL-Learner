@@ -23,9 +23,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Union;
+import org.dllearner.utilities.ConceptComparator;
 
 /**
  * Math operations related to refinement operators.
@@ -114,20 +118,44 @@ public class MathOperations {
 		return combosTmp;
 	}
 	
+	/**
+	 * @see #getCombos(int)
+	 * @param length Length of construct.
+	 * @param maxValue Maximum value which can occur in sum.
+	 * @return
+	 */
+	public static List<List<Integer>> getCombos(int length, int maxValue) {		
+		LinkedList<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
+		decompose(length, maxValue, new LinkedList<Integer>(), combosTmp);
+		return combosTmp;
+	}	
+	
 	@SuppressWarnings("unchecked")
 	private static LinkedList<Integer> cloneList(LinkedList<Integer> list) {
 		return (LinkedList<Integer>) list.clone();
-	}	
-	
-	public static void main(String args[]) {
-		System.out.println(getCombos(7));
 	}
 	
-	// neue Implementierung, die nicht mehr zur incompleteness führen soll,
-	// da die Konzepte in einer MultiDisjunction als Liste gespeichert werden
-	public static Set<Union> incCrossProduct(Set<Union> baseSet, Set<Description> newSet) {
-		Set<Union> retSet = new HashSet<Union>();
-		
+	/**
+	 * Implements a cross product in the sense that each union description in the
+	 * base set is extended by each description in the new set. 
+	 * 
+	 * Example:
+	 * baseSet = {A1 OR A2, A1 or A3}
+	 * newSet = {A1, EXISTS r.A3}
+	 * 
+	 * Returns:
+	 * {A1 OR A2 OR A1, A1 OR A2 OR EXISTS r.A3, A1 OR A3 OR A1, A1 OR A3 OR EXISTS r.A3}
+	 * 
+	 * If the base set is empty, then the return value are union class descriptions
+	 * for each value in newSet (a union with only one concept).
+	 * 
+	 * @param baseSet A set of union class descriptions.
+	 * @param newSet The descriptions to add to each union class descriptions.
+	 * @return The "cross product" of baseSet and newSet.
+	 */
+	public static SortedSet<Union> incCrossProduct(Set<Union> baseSet, Set<Description> newSet) {
+		SortedSet<Union> retSet = new TreeSet<Union>(new ConceptComparator());
+	
 		if(baseSet.isEmpty()) {
 			for(Description c : newSet) {
 				Union md = new Union();
@@ -148,4 +176,26 @@ public class MathOperations {
 		return retSet;
 	}	
 	
+	/**
+	 * Returns true if the same property is used twice in an object some
+	 * restriction, e.g. (EXISTS r.A1 AND A2 AND EXISTS r.A3) returns true,
+	 * while (A1 OR A2) and (EXISTS r.A1 AND A2 AND EXISTS s.A3) return false.
+	 * Note that the method does not work recursively, e.g. it return false 
+	 * for EXISTS r.(EXISTS r.A1 AND A2 AND EXISTS r.A3).
+	 * 
+	 * @param d Description to test.
+	 * @return See description.
+	 */
+	public static boolean containsDoubleObjectSomeRestriction(Description d) {
+		Set<String> roles = new TreeSet<String>();
+		for(Description c : d.getChildren()) {
+			if(c instanceof ObjectSomeRestriction) {
+				String role = ((ObjectSomeRestriction)c).getRole().getName();								
+				boolean roleExists = !roles.add(role);
+				if(roleExists)
+					return true;
+			}
+		}
+		return false;
+	}
 }
