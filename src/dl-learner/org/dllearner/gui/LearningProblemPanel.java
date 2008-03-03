@@ -93,7 +93,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			this.choosenClassIndex = cb.getSelectedIndex();
 			config.setInitLearningProblem(false);
-			setLearningProblem();
+			init();
 		}
 
 		if (e.getSource() == setButton)

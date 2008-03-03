@@ -144,7 +144,8 @@ public class WidgetPanelDouble extends WidgetPanelAbstract implements ActionList
 			try {
 				ConfigEntry<Double> specialEntry = new ConfigEntry<Double>(specialOption, value);
 				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				System.out.println("set Double: " + configOption.getName() + " = " + value);
+				// System.out.println("set Double: " + configOption.getName() +
+				// " = " + value);
 			} catch (InvalidConfigOptionValueException s) {
 				s.printStackTrace();
 			}

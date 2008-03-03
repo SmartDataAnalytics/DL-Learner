@@ -147,7 +147,8 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements ActionLis
 			try {
 				ConfigEntry<Boolean> specialEntry = new ConfigEntry<Boolean>(specialOption, value);
 				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				System.out.println("set Boolean: " + configOption.getName() + " = " + value);
+				// System.out.println("set Boolean: " + configOption.getName() +
+				// " = " + value);
 			} catch (InvalidConfigOptionValueException s) {
 				s.printStackTrace();
 			}

@@ -301,14 +301,18 @@ public class Config {
 	}
 
 	/**
-	 * Get time in ns for run of algorithm.
+	 * Get time in ns for run of algorithm. If algorithm is still running return
+	 * time between RunStartTime and now.
 	 * 
 	 * @return time in ns
 	 */
 	public Long getAlgorithmRunTime() {
-		if (algorithmRunStartTime != null && algorithmRunStopTime != null)
-			if (algorithmRunStartTime < algorithmRunStopTime)
-				return algorithmRunStopTime - algorithmRunStartTime;
+		if (algorithmRunStartTime != null)
+			if (algorithmRunStopTime != null) {
+				if (algorithmRunStartTime < algorithmRunStopTime)
+					return algorithmRunStopTime - algorithmRunStartTime;
+			} else
+				return System.nanoTime() - algorithmRunStartTime;
 		return null;
 	}
 }

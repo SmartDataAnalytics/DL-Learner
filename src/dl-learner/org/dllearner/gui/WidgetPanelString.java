@@ -159,7 +159,8 @@ public class WidgetPanelString extends WidgetPanelAbstract implements ActionList
 			try {
 				ConfigEntry<String> specialEntry = new ConfigEntry<String>(specialOption, value);
 				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				System.out.println("set String: " + configOption.getName() + " = " + value);
+				// System.out.println("set String: " + configOption.getName() +
+				// " = " + value);
 			} catch (InvalidConfigOptionValueException s) {
 				s.printStackTrace();
 			}

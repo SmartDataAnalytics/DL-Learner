@@ -94,7 +94,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			choosenClassIndex = cb.getSelectedIndex();
 			config.setInitReasoner(false);
-			setReasoner();
+			init();
 		}
 
 		if (e.getSource() == setButton) {
