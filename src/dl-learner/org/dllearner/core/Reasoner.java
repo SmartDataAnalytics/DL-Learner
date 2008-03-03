@@ -112,13 +112,13 @@ public interface Reasoner {
 	// currently, we do not require that datatype properties can be returned;
 	// the main reason is that DIG does not distinguish between datatype and
 	// object properties (of course one could implement it but it is not easy)
-	public Set<DatatypeProperty> getDatatypeProperties() throws ReasoningMethodUnsupportedException;
+	public SortedSet<DatatypeProperty> getDatatypeProperties() throws ReasoningMethodUnsupportedException;
 	
-	public Set<DatatypeProperty> getBooleanDatatypeProperties() throws ReasoningMethodUnsupportedException;
+	public SortedSet<DatatypeProperty> getBooleanDatatypeProperties() throws ReasoningMethodUnsupportedException;
 	
-	public Set<DatatypeProperty> getDoubleDatatypeProperties() throws ReasoningMethodUnsupportedException;
+	public SortedSet<DatatypeProperty> getDoubleDatatypeProperties() throws ReasoningMethodUnsupportedException;
 	
-	public Set<DatatypeProperty> getIntDatatypeProperties() throws ReasoningMethodUnsupportedException;
+	public SortedSet<DatatypeProperty> getIntDatatypeProperties() throws ReasoningMethodUnsupportedException;
 			
 	public SortedSet<Individual> getIndividuals();
 	
