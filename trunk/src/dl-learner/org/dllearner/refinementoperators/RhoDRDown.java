@@ -97,8 +97,8 @@ public class RhoDRDown implements RefinementOperator {
 	private Map<Integer, List<List<Integer>>> combos = new HashMap<Integer, List<List<Integer>>>();
 
 	// refinements of the top concept ordered by length
-	private Map<Integer, SortedSet<? extends Description>> topRefinements = new TreeMap<Integer, SortedSet<? extends Description>>();
-	private Map<NamedClass,Map<Integer, SortedSet<? extends Description>>> topARefinements = new TreeMap<NamedClass,Map<Integer, SortedSet<? extends Description>>>();
+	private Map<Integer, SortedSet<Description>> topRefinements = new TreeMap<Integer, SortedSet<Description>>();
+	private Map<NamedClass,Map<Integer, SortedSet<Description>>> topARefinements = new TreeMap<NamedClass,Map<Integer, SortedSet<Description>>>();
 	
 	// cumulated refinements of top (all from length one to the specified length)
 	private Map<Integer, TreeSet<Description>> topRefinementsCumulative = new HashMap<Integer, TreeSet<Description>>();
@@ -119,8 +119,8 @@ public class RhoDRDown implements RefinementOperator {
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
 	// Statistik
-	private long mComputationTimeNs = 0;
-	private long topComputationTimeNs = 0;
+	public long mComputationTimeNs = 0;
+	public long topComputationTimeNs = 0;
 	
 	private boolean applyAllFilter = true;
 	private boolean applyExistsFilter = true;
@@ -129,12 +129,20 @@ public class RhoDRDown implements RefinementOperator {
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;	
 	
-	public RhoDRDown(ReasoningService rs) {
-		this(rs, null);
+	public RhoDRDown(ReasoningService reasoningService) {
+		this(reasoningService, true, true, true, true, true, true, null);
 	}
 	
-	public RhoDRDown(ReasoningService rs, NamedClass startClass) {
-		this.rs = rs;
+	public RhoDRDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
+			boolean useExistsConstructor, boolean useNegation, boolean useBooleanDatatypes, NamedClass startClass) {
+		this.rs = reasoningService;
+		this.applyAllFilter = applyAllFilter;
+		this.applyExistsFilter = applyExistsFilter;
+		this.useAllConstructor = useAllConstructor;
+		this.useExistsConstructor = useExistsConstructor;
+		this.useNegation = useNegation;
+		this.useBooleanDatatypes = useBooleanDatatypes;
+		
 		subHierarchy = rs.getSubsumptionHierarchy();
 		
 		// query reasoner for domains and ranges
@@ -169,6 +177,14 @@ public class RhoDRDown implements RefinementOperator {
 	@SuppressWarnings({"unchecked"})
 	public Set<Description> refine(Description description, int maxLength,
 			List<Description> knownRefinements, Description currDomain) {
+		
+//		System.out.println(description + " " + currDomain);
+		
+		// actions needing to be performed if this is the first time the
+		// current domain is used
+		if(!(currDomain instanceof Thing) && !topARefinementsLength.containsKey(currDomain))
+			topARefinementsLength.put((NamedClass)currDomain, 0);
+		
 		// TODO: check whether using list or set makes more sense 
 		// here; and whether HashSet or TreeSet should be used
 		Set<Description> refinements = new TreeSet<Description>(conceptComparator);
@@ -184,8 +200,8 @@ public class RhoDRDown implements RefinementOperator {
 				refinements = (TreeSet<Description>) topRefinementsCumulative.get(maxLength).clone();
 			} else {
 				if(maxLength>topARefinementsLength.get(currDomain))
-					computeTopRefinements(maxLength);
-				refinements = (TreeSet<Description>) topRefinementsCumulative.get(maxLength).clone();					
+					computeTopRefinements(maxLength, (NamedClass) currDomain);
+				refinements = (TreeSet<Description>) topARefinementsCumulative.get(currDomain).get(maxLength).clone();
 			}
 			
 //			refinements.addAll(subHierarchy.getMoreSpecialConcepts(description));
@@ -303,9 +319,10 @@ public class RhoDRDown implements RefinementOperator {
 			int topRefLength = maxLength - description.getLength() - 1; 
 			
 			// maybe we have to compute new top refinements here
-			if(currDomain instanceof Thing && topRefLength > topRefinementsLength)
-				computeTopRefinements(topRefLength);
-			else if(topRefLength > topARefinementsLength.get(currDomain))
+			if(currDomain instanceof Thing) {
+				if(topRefLength > topRefinementsLength)
+					computeTopRefinements(topRefLength);
+			} else if(topRefLength > topARefinementsLength.get(currDomain))
 				computeTopRefinements(topRefLength,(NamedClass)currDomain);
 			
 			if(topRefLength>0) {
@@ -366,24 +383,48 @@ public class RhoDRDown implements RefinementOperator {
 		if(domain != null && !mA.containsKey(domain))
 			computeM(domain);
 		
+		int refinementsLength;
+		
+		if(domain == null) {
+			refinementsLength = topRefinementsLength;
+		} else {
+			if(!topARefinementsLength.containsKey(domain))
+				topARefinementsLength.put(domain,0);
+
+			refinementsLength = topARefinementsLength.get(domain);
+		}
+
 		// compute all possible combinations of the disjunction
-		int refinementsLength = (domain == null) ? topRefinementsLength : topARefinementsLength.get(domain);
 		for(int i = refinementsLength+1; i <= maxLength; i++) {
 			combos.put(i,MathOperations.getCombos(i, mMaxLength));
 
+			// initialise the refinements with empty sets
+			if(domain == null) {
+				topRefinements.put(i, new TreeSet<Description>(conceptComparator));
+			} else {
+				if(!topARefinements.containsKey(domain))
+					topARefinements.put(domain, new TreeMap<Integer,SortedSet<Description>>());
+				topARefinements.get(domain).put(i, new TreeSet<Description>(conceptComparator));
+			}
+				
 			for(List<Integer> combo : combos.get(i)) {
 				
 				// combination is a single number => try to use M
 				if(combo.size()==1) {
+					// note we cannot use "put" instead of "addAll" because there
+					// can be several combos for one length
 					if(domain == null)
-						topRefinements.put(i,m.get(i));
+						topRefinements.get(i).addAll(m.get(i));
 					else
-						topARefinements.get(domain).put(i,mA.get(domain).get(i));
+						topARefinements.get(domain).get(i).addAll(mA.get(domain).get(i));
 				// combinations has several numbers => generate disjunct
 				} else {
 					SortedSet<Union> baseSet = new TreeSet<Union>(conceptComparator);
 					for(Integer j : combo) {
-						baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
+						if(domain == null)
+							baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
+						else
+							baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
 					}
 					
 					// convert all concepts in ordered negation normal form
@@ -405,9 +446,9 @@ public class RhoDRDown implements RefinementOperator {
 						
 					// add computed refinements
 					if(domain == null)
-						topRefinements.put(new Integer(i), baseSet);
+						topRefinements.get(i).addAll(baseSet);
 					else
-						topARefinements.get(domain).put(new Integer(i), baseSet);
+						topARefinements.get(domain).get(i).addAll(baseSet);
 				}
 			}
 			
@@ -415,15 +456,20 @@ public class RhoDRDown implements RefinementOperator {
 			// be accessed easily
 			TreeSet<Description> cumulativeRefinements = new TreeSet<Description>(conceptComparator);
 			for(int j=1; j<=i; j++) {
-				if(domain == null)
+				if(domain == null) {
 					cumulativeRefinements.addAll(topRefinements.get(j));
-				else
+				} else {
 					cumulativeRefinements.addAll(topARefinements.get(domain).get(j));
+				}
 			}			
-			if(domain == null)
+			
+			if(domain == null) {
 				topRefinementsCumulative.put(i, cumulativeRefinements);
-			else
+			} else {
+				if(!topARefinementsCumulative.containsKey(domain))
+					topARefinementsCumulative.put(domain, new TreeMap<Integer, TreeSet<Description>>());
 				topARefinementsCumulative.get(domain).put(i, cumulativeRefinements);
+			}
 		}
 		
 		// register new top refinements length
@@ -495,12 +541,12 @@ public class RhoDRDown implements RefinementOperator {
 
 		mA.put(nc, new TreeMap<Integer,SortedSet<Description>>());
 		// initialise all possible lengths (1 to 3)
-		for(int i=1; i<=3; i++) {
+		for(int i=1; i<=mMaxLength; i++) {
 			mA.get(nc).put(i, new TreeSet<Description>(conceptComparator));
 		}
 		
 		SortedSet<Description> m1 = rs.getMoreSpecialConcepts(nc); 
-		m.put(1,m1);
+		mA.get(nc).put(1,m1);
 		
 		if(useNegation) {
 			// the definition in the paper is more complex, but acutally
@@ -516,11 +562,11 @@ public class RhoDRDown implements RefinementOperator {
 					m2.add(c);
 				else {
 					NamedClass a = (NamedClass) c;
-					if(!isNotADisjoint(a, nc) && !isNotAMeaningFul(a, nc))
+					if(!isNotADisjoint(a, nc) && isNotAMeaningFul(a, nc))
 						m2.add(new Negation(a));
 				}
 			}
-			m.put(2,m2);
+			mA.get(nc).put(2,m2);
 		}
 			
 		// compute applicable properties
@@ -551,7 +597,7 @@ public class RhoDRDown implements RefinementOperator {
 			}
 		}
 		
-		m.put(3,m3);
+		mA.get(nc).put(3,m3);
 		
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
@@ -560,6 +606,12 @@ public class RhoDRDown implements RefinementOperator {
 		// compute the applicable properties if this has not been done yet
 		if(appOP.get(domain) == null)
 			computeApp(domain);	
+		
+		// initialise mgr, mgbd, mgdd
+		mgr.put(domain, new TreeSet<ObjectProperty>());
+		mgbd.put(domain, new TreeSet<DatatypeProperty>());
+		mgdd.put(domain, new TreeSet<DatatypeProperty>());
+		
 		SortedSet<ObjectProperty> mostGeneral = rs.getMostGeneralRoles();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
 		SortedSet<DatatypeProperty> mostGeneralDP = rs.getMostGeneralDatatypeProperties();
@@ -606,8 +658,8 @@ public class RhoDRDown implements RefinementOperator {
 		for(ObjectProperty role : mostGeneral) {
 			// TODO: currently we just rely on named classes as roles,
 			// instead of computing dom(r) and ran(r)
-			NamedClass nc = (NamedClass) rs.getDomain(role);
-			if(!isDisjoint(domain,nc))
+			Description d = rs.getDomain(role);
+			if(!isDisjoint(domain,d))
 				applicableRoles.add(role);
 		}
 		appOP.put(domain, applicableRoles);
@@ -616,8 +668,8 @@ public class RhoDRDown implements RefinementOperator {
 		Set<DatatypeProperty> mostGeneralBDPs = rs.getBooleanDatatypeProperties();
 		Set<DatatypeProperty> applicableBDPs = new TreeSet<DatatypeProperty>();
 		for(DatatypeProperty role : mostGeneralBDPs) {
-			NamedClass nc = (NamedClass) rs.getDomain(role);
-			if(!isDisjoint(domain,nc))
+			Description d = (NamedClass) rs.getDomain(role);
+			if(!isDisjoint(domain,d))
 				applicableBDPs.add(role);
 		}
 		appBD.put(domain, applicableBDPs);	
@@ -626,8 +678,8 @@ public class RhoDRDown implements RefinementOperator {
 		Set<DatatypeProperty> mostGeneralDDPs = rs.getBooleanDatatypeProperties();
 		Set<DatatypeProperty> applicableDDPs = new TreeSet<DatatypeProperty>();
 		for(DatatypeProperty role : mostGeneralDDPs) {
-			NamedClass nc = (NamedClass) rs.getDomain(role);
-			if(!isDisjoint(domain,nc))
+			Description d = (NamedClass) rs.getDomain(role);
+			if(!isDisjoint(domain,d))
 				applicableDDPs.add(role);
 		}
 		appDD.put(domain, applicableDDPs);			
@@ -637,10 +689,10 @@ public class RhoDRDown implements RefinementOperator {
 	// by the reasoner only ones and otherwise taken from a matrix
 	// => this has low importance in the long run, because M is cached anyway,
 	// but avoids many duplicate queries when computing M
-	private boolean isDisjoint(NamedClass a, NamedClass b) {
+	private boolean isDisjoint(NamedClass a, Description d) {
 		// we need to test whether A AND B is equivalent to BOTTOM
-		Description d = new Intersection(a, b);
-		return rs.subsumes(new Nothing(), d);
+		Description d2 = new Intersection(a, d);
+		return rs.subsumes(new Nothing(), d2);
 	}
 	
 	// we need to test whether NOT A AND B is equivalent to BOTTOM
@@ -656,7 +708,8 @@ public class RhoDRDown implements RefinementOperator {
 	private boolean isNotAMeaningFul(NamedClass a, NamedClass b) {
 		Description notA = new Negation(a);
 		Description d = new Intersection(notA, b);
-		return !rs.subsumes(b, d);
+		// check b subClassOf b AND NOT A (if yes then it is not meaningful)
+		return !rs.subsumes(d, b);
 	}	
 	
 }

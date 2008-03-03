@@ -279,6 +279,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 				+ description + " unsupported.");
 	}
 
+	@Override
+	public SortedSet<Individual> retrieval(Description concept) {
+		return rs.retrieval(concept);
+	}	
+	
 	/*
 	 * (non-Javadoc)
 	 * 

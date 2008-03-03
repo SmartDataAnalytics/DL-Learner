@@ -43,7 +43,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
-import org.dllearner.refinementoperators.RhoDown;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 
@@ -53,8 +53,6 @@ import org.dllearner.utilities.Helper;
  * configuration options, creates the corresponding objects and
  * passes them to the actual refinement operator, heuristic, and
  * learning algorithm implementations.
- * 
- * Note: The component is not working yet.
  * 
  * Note: The options supported by the ROLearner component and this
  * one are not equal. Options that have been dropped for now:
@@ -106,6 +104,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;
 	private double noisePercentage = 0.0;
+	private NamedClass startClass = null;
 	
 	// Variablen zur Einstellung der Protokollierung
 	// boolean quiet = false;
@@ -167,6 +166,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		noisePercentage.setLowerLimit(0);
 		noisePercentage.setUpperLimit(100);
 		options.add(noisePercentage);
+		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
 		return options;
 	}
 	
@@ -219,8 +219,9 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			noisePercentage = (Double) entry.getValue();
 		} else if(name.equals("useBooleanDatatypes")) {
 			useBooleanDatatypes = (Boolean) entry.getValue();
+		} else if(name.equals("startClass")) {
+			startClass = new NamedClass((String)entry.getValue());
 		}
-			
 	}
 
 	/* (non-Javadoc)
@@ -276,19 +277,21 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		if(improveSubsumptionHierarchy)
 			rs.getSubsumptionHierarchy().improveSubsumptionHierarchy();
 		rs.prepareRoleHierarchy(usedRoles);
+		rs.prepareDatatypePropertyHierarchy();
 		
 		// create a refinement operator and pass all configuration
 		// variables to it
-		RhoDown operator = new RhoDown(
-				rs,
-				applyAllFilter,
-				applyExistsFilter,
-				useAllConstructor,
-				useExistsConstructor,
-				useNegation,
-				useBooleanDatatypes
-		);
-		
+		RhoDRDown operator = new RhoDRDown(
+					rs,
+					applyAllFilter,
+					applyExistsFilter,
+					useAllConstructor,
+					useExistsConstructor,
+					useNegation,
+					useBooleanDatatypes,
+					startClass
+			);		
+			
 		// create an algorithm object and pass all configuration
 		// options to it
 		algorithm = new ExampleBasedROLearner(
