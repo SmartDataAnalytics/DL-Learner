@@ -394,7 +394,7 @@ function learnConcept()
 			foreach ($concepts as $con){
 				$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".$con."');return false;\" onMouseOver=\"showdiv('div".$i."');showdiv('ConceptBox');\" onMouseOut=\"hidediv('div".$i."');hidediv('ConceptBox');\" />".$con."</a></td></tr>";
 				//put information about concepts in divs
-				$conceptinformation.="<div id=\"div".$i."\" style=\"display:none\">Concept Depth: ".$conceptDepth[$i-1]."<br/>Concept Arity: ".$conceptArity[$i-1]."<br/>Concept Length: ".$sc->getConceptLength($con)."</div>";
+				$conceptinformation.="<div id=\"div".$i."\" style=\"display:none\">Concept Depth: ".$conceptDepth[$i-1]."<br/>Concept Arity: ".$conceptArity[$i-1]."</div>";
 				$i++;
 			}
 			$concept.="</table>";
