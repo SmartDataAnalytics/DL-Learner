@@ -41,6 +41,11 @@ public class ThreadStatistics extends Thread {
 	@Override
 	public void run() {
 		if (config.getThreadIsRunning()) {
+			try {
+				sleep(1000); // sleep 1 second
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			while (config.getThreadIsRunning()) {
 				try {
 					runPanel.showStats();
