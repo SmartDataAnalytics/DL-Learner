@@ -35,13 +35,12 @@ public class RunPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1643304576470046636L;
 
-	private JButton runButton, stopButton, getBestSolutionButton, getSolutionScoreButton,
-			getReasonerStatsButton;
+	private JButton runButton, stopButton;
 	private JTextArea infoArea;
 	private Config config;
 
 	private ThreadRun thread;
-	private Boolean runBoolean = new Boolean(false);
+	// private Boolean runBoolean = new Boolean(false);
 
 	private JPanel showPanel = new JPanel();
 	private JPanel infoPanel = new JPanel();
@@ -57,15 +56,6 @@ public class RunPanel extends JPanel implements ActionListener {
 		stopButton = new JButton("Stop");
 		stopButton.addActionListener(this);
 
-		getBestSolutionButton = new JButton("GetBestSolution");
-		getBestSolutionButton.addActionListener(this);
-
-		getSolutionScoreButton = new JButton("GetSolutionScore");
-		getSolutionScoreButton.addActionListener(this);
-
-		getReasonerStatsButton = new JButton("GetReasonerStats");
-		getReasonerStatsButton.addActionListener(this);
-
 		infoArea = new JTextArea(20, 50);
 		JScrollPane infoScroll = new JScrollPane(infoArea);
 
@@ -73,10 +63,6 @@ public class RunPanel extends JPanel implements ActionListener {
 		showPanel.add(stopButton);
 
 		infoPanel.add(infoScroll);
-
-		solutionPanel.add(getBestSolutionButton);
-		solutionPanel.add(getSolutionScoreButton);
-		solutionPanel.add(getReasonerStatsButton);
 
 		add(showPanel, BorderLayout.PAGE_START);
 		add(infoPanel, BorderLayout.CENTER);
@@ -90,48 +76,50 @@ public class RunPanel extends JPanel implements ActionListener {
 			thread = new ThreadRun(config);
 			config.getReasoningService().resetStatistics();
 			thread.start();
-			this.runBoolean = true;
+			// this.runBoolean = true;
+			ThreadStatistics threadStatistics = new ThreadStatistics(config, this);
+			threadStatistics.start();
 		}
 		// stop
 		if (e.getSource() == stopButton && config.getLearningAlgorithm() != null) {
 			thread.exit();
 		}
-		// getBestSolution
-		if (e.getSource() == getBestSolutionButton && runBoolean) {
-			if (config.getLearningAlgorithm().getBestSolution() != null)
-				infoArea.setText(config.getLearningAlgorithm().getBestSolution().toString());
-		}
-		// getSolutionScore
-		if (e.getSource() == getSolutionScoreButton && runBoolean) {
-			if (config.getLearningAlgorithm().getSolutionScore() != null)
-				infoArea.setText(config.getLearningAlgorithm().getSolutionScore().toString());
-		}
-		// ReasonerStats
-		if (e.getSource() == getReasonerStatsButton && runBoolean) {
-			infoArea.setText("");
-			if (config.getAlgorithmRunTime() != null)
-				infoArea.append("Algorithm Runtime: " + makeTime(config.getAlgorithmRunTime())
-						+ "\n");
-			infoArea.append("OverallReasoningTime: "
-					+ makeTime(config.getReasoningService().getOverallReasoningTimeNs()) + "\n");
-			infoArea.append("Instances (" + config.getReasoningService().getNrOfInstanceChecks()
-					+ "): ");
-			if (config.getReasoningService().getNrOfInstanceChecks() > 0)
-				infoArea.append(makeTime(config.getReasoningService().getTimePerInstanceCheckNs())
-						+ "\n");
-			else
-				infoArea.append(" - \n");
-			infoArea.append("Retrieval (" + config.getReasoningService().getNrOfRetrievals()
-					+ "): ");
-			if (config.getReasoningService().getNrOfRetrievals() > 0)
-				infoArea.append(makeTime(config.getReasoningService().getTimePerRetrievalNs())
-						+ "\n");
-			else
-				infoArea.append(" - \n");
+	}
+
+	/**
+	 * Show Statistics.
+	 */
+	public void showStats() {
+		infoArea.setText("");
+		// best solution
+		if (config.getLearningAlgorithm().getBestSolution() != null)
+			infoArea.append("BestSolution:\n"
+					+ config.getLearningAlgorithm().getBestSolution().toString() + "\n\n");
+		// solution score
+//		if (config.getLearningAlgorithm().getSolutionScore() != null)
+//			infoArea.append("SolutionScore:\n"
+//					+ config.getLearningAlgorithm().getSolutionScore().toString() + "\n\n");
+		// reasoner statistics
+		if (config.getAlgorithmRunTime() != null)
+			infoArea.append("Algorithm Runtime: " + makeTime(config.getAlgorithmRunTime()) + "\n");
+		infoArea.append("OverallReasoningTime: "
+				+ makeTime(config.getReasoningService().getOverallReasoningTimeNs()) + "\n");
+		infoArea.append("Instances (" + config.getReasoningService().getNrOfInstanceChecks()
+				+ "): ");
+		if (config.getReasoningService().getNrOfInstanceChecks() > 0)
+			infoArea.append(makeTime(config.getReasoningService().getTimePerInstanceCheckNs())
+					+ "\n");
+		else
+			infoArea.append(" - \n");
+		infoArea.append("Retrieval (" + config.getReasoningService().getNrOfRetrievals() + "): ");
+		if (config.getReasoningService().getNrOfRetrievals() > 0)
+			infoArea.append(makeTime(config.getReasoningService().getTimePerRetrievalNs()) + "\n");
+		else
+			infoArea.append(" - \n");
+		if (config.getReasoningService().getNrOfSubsumptionChecks() > 0)
 			infoArea.append("Subsumption ("
 					+ config.getReasoningService().getNrOfSubsumptionChecks() + "): "
 					+ makeTime(config.getReasoningService().getTimePerSubsumptionCheckNs()) + "\n");
-		}
 	}
 
 	/**
@@ -142,6 +130,8 @@ public class RunPanel extends JPanel implements ActionListener {
 	 * @return a string like this: 3h 10min 46s 753ms
 	 */
 	public String makeTime(Long nanoSeconds) {
+		if (nanoSeconds == null)
+			return null;
 		Long hours = 0L, minutes = 0L, seconds = 0L, millis = 0L, mikros = 0L, nanos = 0L;
 		String time = "";
 
