@@ -66,3 +66,4 @@ sparql.breakSuperClassRetrievalAfter=200;
 import("http://dbpedia.openlinksw.com:8890/sparql","SPARQL");
 sparql.instances = {};
 
+posNegDefinition.percentPerLengthUnit = 0.10;

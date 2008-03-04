@@ -149,6 +149,22 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return ret;
 	}	
 	
+	// convenience method returning those values which have value "false" for this
+	// datatype property	
+	public SortedSet<Individual> getFalseDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembers(datatypeProperty);
+		SortedSet<Individual> ret = new TreeSet<Individual>();
+		for(Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			for(Constant c : values) {
+				boolean v = Boolean.parseBoolean(c.getLiteral());
+				if(v == false)
+					ret.add(e.getKey());
+			}
+		}
+		return ret;
+	}		
+	
 	public boolean instanceCheck(Description concept, Individual individual)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();

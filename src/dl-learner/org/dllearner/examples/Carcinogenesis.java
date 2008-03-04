@@ -204,6 +204,10 @@ public class Carcinogenesis {
 		// and cannot parser its own generated file
 //		DisjointClassesAxiom disjointAtomTypes = getDisjointClassesAxiom(atomTypes);
 //		kb.addAxiom(disjointAtomTypes);
+		String[] mainClasses = new String[] {"Compound", "Atom", "Bond", "Structure"};
+		Set<String> mainClassesSet = new HashSet<String>(Arrays.asList(mainClasses));
+		DisjointClassesAxiom disjointAtomTypes = getDisjointClassesAxiom(mainClassesSet);
+		kb.addAxiom(disjointAtomTypes);		
 		
 		// all different axiom (UNA)
 		// exporting differentIndividuals axioms is broken in OWL API
@@ -230,9 +234,12 @@ public class Carcinogenesis {
 		String confHeader = "import(\"pte.owl\");\n\n";
 		confHeader += "reasoner = fastInstanceChecker;\n";
 		confHeader += "algorithm = refexamples;\n";
-//		confHeader += "refinement.writeSearchTree = true;";
-//		confHeader += "refinement.searchTreeFile = \"log/carcinogenesis/searchTree.log\"";
-		confHeader += "\n\n";
+		confHeader += "refexamples.noisePercentage = 35;\n";
+		confHeader += "refexamples.startClass = " + getURI2("Compound") + ";\n";
+		confHeader += "refexamples.writeSearchTree = false;\n";
+		confHeader += "refexamples.searchTreeFile = \"log/carcinogenesis/searchTree.log\";\n";
+		confHeader += "posNegDefinition.percentPerLengthUnit = 0.10;\n";
+		confHeader += "\n";
 		Files.appendFile(confTrainFile, confHeader);
 		
 		// generating training examples
@@ -338,7 +345,9 @@ public class Carcinogenesis {
 		} else if (headName.equals("has_property")) {
 			String compoundName = head.getArgument(0).toPLString();
 			String testName = head.getArgument(1).toPLString();
-			boolean testResult = Boolean.parseBoolean(head.getArgument(2).toPLString());
+			String resultStr = head.getArgument(2).toPLString();
+			boolean testResult = (resultStr.equals("p")) ? true : false;
+				
 			// create a new datatype property if it does not exist already
 			if(!tests.contains(testName)) {
 				String axiom1 = "DPDOMAIN(" + getURI2(testName) + ") = " + getURI2("Compound") + ".\n";
@@ -453,7 +462,7 @@ public class Carcinogenesis {
 	private static DisjointClassesAxiom getDisjointClassesAxiom(Set<String> classes) {
 		Set<Description> descriptions = new HashSet<Description>();
 		for(String namedClass : classes)
-			descriptions.add(new NamedClass(namedClass));
+			descriptions.add(new NamedClass(getURI(namedClass)));
 		return new DisjointClassesAxiom(descriptions);
 	}
 	
