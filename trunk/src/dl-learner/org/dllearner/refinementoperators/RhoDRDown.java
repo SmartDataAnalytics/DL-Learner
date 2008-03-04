@@ -115,7 +115,7 @@ public class RhoDRDown implements RefinementOperator {
 	private Map<NamedClass,Set<DatatypeProperty>> mgbd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
 	private Map<NamedClass,Set<DatatypeProperty>> mgdd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
 	
-	// comparator für Konzepte
+	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
 	// Statistik
@@ -128,6 +128,11 @@ public class RhoDRDown implements RefinementOperator {
 	private boolean useExistsConstructor = true;
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;	
+	
+	// caches for reasoner queries
+//	private Map<NamedClass,Map<NamedClass,Boolean>> abDisjoint = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
+	private Map<NamedClass,Map<NamedClass,Boolean>> notABDisjoint = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
+//	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 	
 	public RhoDRDown(ReasoningService reasoningService) {
 		this(reasoningService, true, true, true, true, true, true, null);
@@ -562,7 +567,7 @@ public class RhoDRDown implements RefinementOperator {
 					m2.add(c);
 				else {
 					NamedClass a = (NamedClass) c;
-					if(!isNotADisjoint(a, nc) && isNotAMeaningFul(a, nc))
+					if(!isNotADisjoint(a, nc) && isNotAMeaningful(a, nc))
 						m2.add(new Negation(a));
 				}
 			}
@@ -697,19 +702,29 @@ public class RhoDRDown implements RefinementOperator {
 	
 	// we need to test whether NOT A AND B is equivalent to BOTTOM
 	private boolean isNotADisjoint(NamedClass a, NamedClass b) {
-		Description notA = new Negation(a);
-		Description d = new Intersection(notA, b);
-		return rs.subsumes(new Nothing(), d);
+		Map<NamedClass,Boolean> tmp = notABDisjoint.get(a);
+		Boolean tmp2 = null;
+		if(tmp != null)
+			tmp2 = tmp.get(b);
+		
+		if(tmp2==null) {
+			Description notA = new Negation(a);
+			Description d = new Intersection(notA, b);
+			Boolean result = rs.subsumes(new Nothing(), d);
+			// ... add to cache ...
+			return result;
+		} else
+			return tmp2;
 	}
 	
 	// we need to test whether NOT A AND B = B
 	// (if not then NOT A is not meaningful in the sense that it does
 	// not semantically add anything to B) 	
-	private boolean isNotAMeaningFul(NamedClass a, NamedClass b) {
+	private boolean isNotAMeaningful(NamedClass a, NamedClass b) {
 		Description notA = new Negation(a);
 		Description d = new Intersection(notA, b);
 		// check b subClassOf b AND NOT A (if yes then it is not meaningful)
 		return !rs.subsumes(d, b);
-	}	
+	}
 	
 }

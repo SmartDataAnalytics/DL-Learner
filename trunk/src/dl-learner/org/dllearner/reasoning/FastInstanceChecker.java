@@ -56,6 +56,7 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
+import org.dllearner.utilities.Helper;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -76,6 +77,8 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 	private static Logger logger = Logger.getLogger(FastInstanceChecker.class);
 
+	private boolean defaultNegation = true;
+	
 	private Set<NamedClass> atomicConcepts;
 	private Set<ObjectProperty> atomicRoles;
 	private SortedSet<DatatypeProperty> datatypeProperties;
@@ -96,10 +99,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 	// object property mappings
 	private Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos = new TreeMap<ObjectProperty, Map<Individual, SortedSet<Individual>>>();
 	// datatype property mappings
-	// (for booleans we assume that just one mapping exists, e.g.
-	// hasValue(object,true) and hasValue(object,false) will
-	// lead to undefined behaviour (they are logical contradictions)
-	private Map<DatatypeProperty, SortedSet<Individual>> bd = new TreeMap<DatatypeProperty, SortedSet<Individual>>();
+	// we have one mapping for true and false for efficiency reasons
+	private Map<DatatypeProperty, SortedSet<Individual>> bdPos = new TreeMap<DatatypeProperty, SortedSet<Individual>>();
+	private Map<DatatypeProperty, SortedSet<Individual>> bdNeg = new TreeMap<DatatypeProperty, SortedSet<Individual>>();
 	// for int and double we assume that a property can have several values,
 	// althoug this should be rare,
 	// e.g. hasValue(object,2) and hasValue(object,3)
@@ -151,20 +153,39 @@ public class FastInstanceChecker extends ReasonerComponent {
 			// FastRetrievalReasoner later)
 			long dematStartTime = System.currentTimeMillis();
 
-			for (NamedClass atomicConcept : rs.getAtomicConcepts()) {
-				classInstancesPos.put(atomicConcept, rs.retrieval(atomicConcept));
-				Negation negatedAtomicConcept = new Negation(atomicConcept);
-				classInstancesNeg.put(atomicConcept, rs.retrieval(negatedAtomicConcept));
+			logger.debug("dematerialising concepts");
+			
+			for (NamedClass atomicConcept : rs.getAtomicConcepts()) {				
+				
+				SortedSet<Individual> pos = rs.retrieval(atomicConcept);
+				classInstancesPos.put(atomicConcept, pos);
+				
+				if(defaultNegation) {
+					classInstancesNeg.put(atomicConcept, Helper.difference(individuals,pos));
+				} else {
+					// Pellet needs approximately infinite time to answer negated queries
+					// on the carcinogenesis data set (and probably others), so we have to
+					// be careful here
+					Negation negatedAtomicConcept = new Negation(atomicConcept);
+					classInstancesNeg.put(atomicConcept, rs.retrieval(negatedAtomicConcept));
+				}
+
+
 			}
 
+			logger.debug("dematerialising object properties");
+			
 			for (ObjectProperty atomicRole : atomicRoles) {
 				opPos.put(atomicRole, rc.getRoleMembers(atomicRole));
 			}
 
+			logger.debug("dematerialising datatype properties");
+			
 			for (DatatypeProperty dp : booleanDatatypeProperties) {
-				bd.put(dp, rc.getTrueDatatypeMembers(dp));
+				bdPos.put(dp, rc.getTrueDatatypeMembers(dp));
+				bdNeg.put(dp, rc.getFalseDatatypeMembers(dp));
 			}
-
+			
 			for (DatatypeProperty dp : intDatatypeProperties) {
 				id.put(dp, rc.getIntDatatypeMembers(dp));
 			}			
@@ -269,9 +290,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 			if(value) {
 				// check whether the individual is in the set of individuals mapped
 				// to true by this datatype property
-				return bd.get(dp).contains(individual);
+				return bdPos.get(dp).contains(individual);
 			} else {
-				return !bd.get(dp).contains(individual);
+				return bdNeg.get(dp).contains(individual);
 			}
 		}
 

@@ -27,7 +27,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class TypedConstant extends Constant {
+public class TypedConstant extends Constant implements Comparable<TypedConstant> {
 
 	private Datatype datatype;
 	
@@ -47,7 +47,8 @@ public class TypedConstant extends Constant {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return literal + "^^" + datatype;
+		return literal;
+//		return literal + "^^" + datatype;
 	}
 
 	/**
@@ -62,6 +63,19 @@ public class TypedConstant extends Constant {
 	 */
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(TypedConstant o) {
+		// the first criteria is the datatype
+		int datatypeComparision = datatype.getURI().compareTo(datatype.getURI());
+		if(datatypeComparision == 0) {
+			// the second criterion is the literal value
+			return literal.compareTo(o.literal);
+		} else
+			return datatypeComparision;
 	}	
 
 }

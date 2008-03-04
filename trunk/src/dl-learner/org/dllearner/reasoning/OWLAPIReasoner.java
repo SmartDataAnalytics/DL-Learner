@@ -248,7 +248,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				reasoner = new uk.ac.manchester.cs.factplusplus.owlapi.Reasoner(manager);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}			
+			}		
+			System.out.println("Using FaCT++.");
 		} else {
 			// instantiate Pellet reasoner
 			reasoner = new org.mindswap.pellet.owlapi.Reasoner(manager);
