@@ -90,36 +90,53 @@ public class RunPanel extends JPanel implements ActionListener {
 	 * Show Statistics.
 	 */
 	public void showStats() {
+		Long algorithmRunTime = null;
+		Long overallReasoningTime = null;
+		Long instanceCheckReasoningTime = null;
+		Long retrievalReasoningTime = null;
+		Long subsumptionReasoningTime = null;
 		infoArea.setText("");
-		// best solution
-		if (config.getLearningAlgorithm().getBestSolution() != null)
+		// best solutions
+		if (config.getLearningAlgorithm().getBestSolutions(5) != null)
 			infoArea.append("BestSolution:\n"
-					+ config.getLearningAlgorithm().getBestSolution().toString() + "\n\n");
+					+ config.getLearningAlgorithm().getBestSolutions(5).toString() + "\n\n");
 		// solution score
-//		if (config.getLearningAlgorithm().getSolutionScore() != null)
-//			infoArea.append("SolutionScore:\n"
-//					+ config.getLearningAlgorithm().getSolutionScore().toString() + "\n\n");
+		// if (config.getLearningAlgorithm().getSolutionScore() != null)
+		// infoArea.append("SolutionScore:\n"
+		// + config.getLearningAlgorithm().getSolutionScore().toString()
+		// + "\n\n");
+
 		// reasoner statistics
-		if (config.getAlgorithmRunTime() != null)
-			infoArea.append("Algorithm Runtime: " + makeTime(config.getAlgorithmRunTime()) + "\n");
-		infoArea.append("OverallReasoningTime: "
-				+ makeTime(config.getReasoningService().getOverallReasoningTimeNs()) + "\n");
+		if (config.getAlgorithmRunTime() != null) {
+			algorithmRunTime = config.getAlgorithmRunTime();
+			infoArea.append("Algorithm Runtime: " + makeTime(algorithmRunTime) + "\n");
+		}
+		overallReasoningTime = config.getReasoningService().getOverallReasoningTimeNs();
+		infoArea.append("OverallReasoningTime: " + makeTime(overallReasoningTime)
+				+ Percent(overallReasoningTime, algorithmRunTime) + "\n");
 		infoArea.append("Instances (" + config.getReasoningService().getNrOfInstanceChecks()
 				+ "): ");
-		if (config.getReasoningService().getNrOfInstanceChecks() > 0)
-			infoArea.append(makeTime(config.getReasoningService().getTimePerInstanceCheckNs())
-					+ "\n");
-		else
+		if (config.getReasoningService().getNrOfInstanceChecks() > 0) {
+			instanceCheckReasoningTime = config.getReasoningService()
+					.getInstanceCheckReasoningTimeNs();
+			infoArea.append(makeTime(instanceCheckReasoningTime)
+					+ Percent(instanceCheckReasoningTime, algorithmRunTime) + "\n");
+		} else
 			infoArea.append(" - \n");
 		infoArea.append("Retrieval (" + config.getReasoningService().getNrOfRetrievals() + "): ");
-		if (config.getReasoningService().getNrOfRetrievals() > 0)
-			infoArea.append(makeTime(config.getReasoningService().getTimePerRetrievalNs()) + "\n");
-		else
+		if (config.getReasoningService().getNrOfRetrievals() > 0) {
+			retrievalReasoningTime = config.getReasoningService().getRetrievalReasoningTimeNs();
+			infoArea.append(makeTime(retrievalReasoningTime)
+					+ Percent(retrievalReasoningTime, algorithmRunTime) + "\n");
+		} else
 			infoArea.append(" - \n");
-		if (config.getReasoningService().getNrOfSubsumptionChecks() > 0)
+		if (config.getReasoningService().getNrOfSubsumptionChecks() > 0) {
+			subsumptionReasoningTime = config.getReasoningService().getSubsumptionReasoningTimeNs();
 			infoArea.append("Subsumption ("
 					+ config.getReasoningService().getNrOfSubsumptionChecks() + "): "
-					+ makeTime(config.getReasoningService().getTimePerSubsumptionCheckNs()) + "\n");
+					+ makeTime(subsumptionReasoningTime)
+					+ Percent(subsumptionReasoningTime, algorithmRunTime) + "\n");
+		}
 	}
 
 	/**
@@ -160,5 +177,21 @@ public class RunPanel extends JPanel implements ActionListener {
 		if (false)
 			time += nanos + "ns ";
 		return time;
+	}
+
+	/**
+	 * Get a percent string like this: "(10,5 %)"
+	 * 
+	 * @param a 
+	 * @param b
+	 * @return
+	 */
+	public String Percent(Long a, Long b) {
+		if (a != null && b != null) {
+			Double c = (double) a / (double) b * (double) 100;
+			c = Math.ceil(c * 10) / 10;
+			return " (" + c.toString() + " %) ";
+		}
+		return null;
 	}
 }
