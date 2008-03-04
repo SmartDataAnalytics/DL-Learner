@@ -51,11 +51,6 @@ public class NamedClass extends Description implements NamedKBElement, Comparabl
 		return 0;
 	}
 
-    @Override
-    public String toString() {
-    	    return name;
-    }	
-	
     public String toString(String baseURI, Map<String,String> prefixes) {
     	return "\"" + Helper.getAbbreviatedString(name, baseURI, prefixes) + "\"";
     }
