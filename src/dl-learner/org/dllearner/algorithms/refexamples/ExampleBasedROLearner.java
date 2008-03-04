@@ -103,6 +103,9 @@ public class ExampleBasedROLearner {
 	// setting to true gracefully stops the algorithm
 	private boolean stop = false;
 	
+	// node from which algorithm has started
+	private ExampleBasedNode startNode;	
+	
 	// solution protocol
 	private boolean solutionFound = false;
 	private List<Description> solutions = new LinkedList<Description>();	
@@ -220,7 +223,6 @@ public class ExampleBasedROLearner {
 		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
 		
 		// start search with start class
-		ExampleBasedNode startNode;
 		if(startDescription == null) {
 			Thing top = new Thing();
 			startNode = new ExampleBasedNode(top);
@@ -748,6 +750,8 @@ public class ExampleBasedROLearner {
 			return learningProblem.computeScore(getBestSolution());
 	}	
 	
-
+	public ExampleBasedNode getStartNode() {
+		return startNode;
+	}
 	
 }
