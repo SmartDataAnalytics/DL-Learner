@@ -170,6 +170,9 @@ public class ExampleBasedROLearner {
 	private long evaluateSetCreationTimeNs = 0;
 	private long improperConceptsRemovalTimeNs = 0;
 	
+	// prefixes
+	private String baseURI;
+	
 	public ExampleBasedROLearner(
 			LearningProblem learningProblem,
 			ReasoningService rs,
@@ -212,13 +215,14 @@ public class ExampleBasedROLearner {
 		this.useTooWeakList = useTooWeakList;
 		this.useOverlyGeneralList = useOverlyGeneralList;
 		this.useShortConceptConstruction = useShortConceptConstruction;
+		baseURI = rs.getBaseURI();
 		
 		logger.setLevel(Level.DEBUG);
 	}
 	
 	public void start() {
 		// calculate quality threshold required for a solution
-		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
+		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);	
 		
 		// start search with start class
 		if(startDescription == null) {
@@ -266,15 +270,15 @@ public class ExampleBasedROLearner {
 						
 			if(writeSearchTree) {
 				// String treeString = "";
-				String treeString = "best expanded node: " + bestNode+ "\n";
+				String treeString = "best node: " + bestNode+ "\n";
 				if(expandedNodes.size()>1) {
-					treeString += "all expanded nodes:\n"; // due to minimum horizontal expansion:\n";
+					treeString += "all expanded nodes:\n";
 					for(ExampleBasedNode n : expandedNodes) {
 						treeString += "   " + n + "\n";
 					}
 				}
 				expandedNodes.clear();
-				treeString += startNode.getTreeString();
+				treeString += startNode.getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
 				treeString += "\n";
 
 				if(replaceSearchTree)
@@ -291,6 +295,7 @@ public class ExampleBasedROLearner {
 		}
 		
 		if(solutionFound) {
+			logger.info("best node " + candidatesStable.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
 			logger.info("\nsolutions:");
 			for(Description c : solutions) {
 				logger.info("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
@@ -305,10 +310,9 @@ public class ExampleBasedROLearner {
 			System.out.println("Algorithm terminated succesfully.");		
 	}
 	
+	// we apply the operator recursively until all proper refinements up
+	// to the maxmimum length are reached
 	private void extendNodeProper(ExampleBasedNode node, int maxLength) {
-		// Rekursionsanfang ist das Konzept am Knoten selbst; danach wird der Operator
-		// so lange darauf angewandt bis alle proper refinements bis zu maxLength
-		// gefunden wurden
 		long propCalcNsStart = System.nanoTime();
 		
 		if(writeSearchTree)
@@ -317,54 +321,27 @@ public class ExampleBasedROLearner {
 		if(node.getChildren().size()>maxNrOfChildren)
 			maxNrOfChildren = node.getChildren().size();
 		
-		// Knoten in instabiler Menge muss aktualisiert werden
-		// => wird jetzt schon vom Algorithmus entfernt
-		/*
-		boolean remove = candidates.remove(node);
-		
-		if(!remove) {
-			System.out.println(candidates);
-			System.out.println(candidatesStable);
-			System.out.println(node);
-			
-			throw new RuntimeException("remove failed");
-		}*/
-		
 		extendNodeProper(node, node.getConcept(), maxLength, 0);
 		node.setHorizontalExpansion(maxLength);
 		
-		// wird jetzt schon im Kernalgorithmus hinzugefügt
-		/*
-		boolean add = candidates.add(node);
-		if(!add) {
-			throw new RuntimeException("add failed");
-		}*/
-		
-		// Knoten wird entfernt und wieder hinzugefügt, da sich seine
-		// Position geändert haben könnte => geht noch nicht wg. ConcurrentModification
-		// falls Knoten wg. min. horiz. exp. expandiert werden 
-		// candidates.remove(node);
-		// candidates.add(node);
 		propernessCalcTimeNs += (System.nanoTime()-propCalcNsStart);
 	}
 	
-
-	
-	// für alle proper refinements von concept bis maxLength werden Kinderknoten
-	// für node erzeugt;
-	// recDepth dient nur zur Protokollierung
+	// for all refinements of concept up to max length, we check whether they are properr
+	// and call the method recursively if not
+	// recDepth is used only for statistics
 	private void extendNodeProper(ExampleBasedNode node, Description concept, int maxLength, int recDepth) {
 		
-		// führe Methode nicht aus, wenn Algorithmus gestoppt wurde (alle rekursiven Funktionsaufrufe
-		// werden nacheinander abgebrochen, so dass ohne weitere Reasoninganfragen relativ schnell beendet wird)
+		// do not execute methods if algorithm has been stopped (this means that the algorithm
+		// will terminate without further reasoning queries)
 		if(stop)
 			return;
 		
 		if(recDepth > maxRecDepth)
 			maxRecDepth = recDepth;
 		
-		// Refinements berechnen => hier dürfen dürfen refinements <= horizontal expansion
-		// des Konzepts nicht gelöscht werden!
+		// compute refinements => we must not delete refinements with low horizontal expansion,
+		// because they are used in recursive calls of this method later on
 		long refinementCalcTimeNsStart = System.nanoTime();
 		Set<Description> refinements = operator.refine(concept, maxLength, null);
 		refinementCalcTimeNs += System.nanoTime() - refinementCalcTimeNsStart;
@@ -393,18 +370,13 @@ public class ExampleBasedROLearner {
 		while(it.hasNext()) {
 			Description refinement = it.next();
 			if(refinement.getLength()>node.getHorizontalExpansion()) {
-				// TODO: an dieser Stelle könnte man Algorithmen ansetzen lassen, die
-				// versuchen properness-Anfragen zu vermeiden:
-				// 1. Konzept kürzen und schauen, ob es Mutterkonzept entspricht
-				// 2. Blacklist, die überprüft, ob Konzept too weak ist
-				// (dann ist es auch proper)
-				
 				// sagt aus, ob festgestellt wurde, ob refinement proper ist
 				// (sagt nicht aus, dass das refinement proper ist!)
 				boolean propernessDetected = false;
 				
 				// 1. short concept construction
 				if(useShortConceptConstruction) {
+					
 					// kurzes Konzept konstruieren
 					Description shortConcept = ConceptTransformation.getShortConcept(refinement, conceptComparator);
 					int n = conceptComparator.compare(shortConcept, concept);
@@ -503,9 +475,11 @@ public class ExampleBasedROLearner {
 						quality = getNumberOfNegatives();
 						qualityKnown = true;
 						newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.OVERLY_GENERAL_LIST);
+						newNode.setCoveredExamples(learningProblem.getPositiveExamples(), learningProblem.getNegativeExamples());
 					}	
+					
 				}
-				
+
 				// Qualität des Knotens auswerten
 				if(!qualityKnown) {
 					long propCalcReasoningStart2 = System.nanoTime();
@@ -519,23 +493,23 @@ public class ExampleBasedROLearner {
 					
 					// calculate how many pos. examples are not covered by the
 					// parent node of the refinement
-					int misclassifications = nrOfPositiveExamples - coveredPositives.size();
+					int misclassifiedPositives = nrOfPositiveExamples - coveredPositives.size();
 					
 					// iterate through all covered examples (examples which are not
-					// covered do not need to be tested, because they remain uncovered)
-					// TODO: DIG will be slow if we send each reasoner request individually
+					// covered do not need to be tested, because they remain uncovered);
+					// DIG will be slow if we send each reasoner request individually
 					// (however if we send everything in one request, too many instance checks
-					// are performed => rely on fast instance checker [still to implement])
+					// are performed => rely on fast instance checker)
 					for(Individual i : coveredPositives) {
 						// TODO: move code to a separate function
 						if(quality != -1) {
 							boolean covered = rs.instanceCheck(refinement, i);
 							if(!covered)
-								misclassifications++;
+								misclassifiedPositives++;
 							else
 								newlyCoveredPositives.add(i);
 							
-							if(misclassifications > allowedMisclassifications)
+							if(misclassifiedPositives > allowedMisclassifications)
 								quality = -1;
 							
 						}
@@ -561,7 +535,7 @@ public class ExampleBasedROLearner {
 							+ newlyCoveredNegatives.size();
 						newNode.setCoveredExamples(newlyCoveredPositives, newlyCoveredNegatives);
 					}
-					
+
 				}
 
 				if(quality == -1) {
@@ -575,18 +549,17 @@ public class ExampleBasedROLearner {
 						solutions.add(refinement);
 					}			
 					
-//					newNode.setCoveredNegativeExamples(quality);
+
 					newCandidates.add(newNode);
-					// candidates.add(newNode);
-					// candidatesStable.add(newNode);
-				
-					
-					if(quality == getNumberOfNegatives())
+	
+					// we need to make sure that all positives are covered
+					// before adding something to the overly general list
+					if((newNode.getCoveredPositives().size() == nrOfPositiveExamples) && quality == getNumberOfNegatives()) 
 						overlyGeneralList.add(refinement);
-					
-					// System.out.print(".");
+						
 				}
 				
+//				System.out.println(newNode.getConcept() + " " + quality);
 				node.addChild(newNode);
 			}			
 		}
@@ -673,6 +646,7 @@ public class ExampleBasedROLearner {
 			System.out.println("onnf time percentage: " + df.format(onnfTimePercentage) + "%");
 			System.out.println("shortening time percentage: " + df.format(shorteningTimePercentage) + "%");			
 		}
+		
 		System.out.println("properness tests (reasoner/short concept/too weak list): " + propernessTestsReasoner + "/" + propernessTestsAvoidedByShortConceptConstruction 
 				+ "/" + propernessTestsAvoidedByTooWeakList);
 		System.out.println("concept tests (reasoner/too weak list/overly general list/redundant concepts): " + conceptTestsReasoner + "/"
@@ -709,6 +683,22 @@ public class ExampleBasedROLearner {
 		}
 		return false;
 	}		
+/*
+	private Set<Individual> computeQuality(Description refinement, Set<Individual> coveredPositives) {
+		Set<Individual> ret = new TreeSet<Individual>();
+		int misclassifications;
+		for(Individual i : coveredPositives) {
+			boolean covered = rs.instanceCheck(refinement, i);
+			if(!covered)
+				misclassifications++;
+			else
+				ret.add(i);
+				
+			if(misclassifications > allowedMisclassifications)
+				return null;
+		}
+	}
+*/
 	
 	public void stop() {
 		stop = true;

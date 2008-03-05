@@ -85,7 +85,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private File searchTreeFile;
 	private boolean replaceSearchTree = false;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
-	private String heuristic = "lexicographic";
+	private String heuristic = "multi";
 	Set<NamedClass> allowedConcepts;
 	Set<ObjectProperty> allowedRoles;
 	Set<NamedClass> ignoredConcepts;
@@ -241,11 +241,16 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		
 		if(heuristic == "lexicographic")
 			algHeuristic = new LexicographicHeuristic();
-		else {
+		else if(heuristic == "flexible") {
 			if(learningProblem instanceof PosOnlyDefinitionLP) {
 				throw new RuntimeException("does not work with positive examples only yet");
 			}
 			algHeuristic = new FlexibleHeuristic(((PosNegLP)learningProblem).getNegativeExamples().size(), ((PosNegLP)learningProblem).getPercentPerLengthUnit());
+		} else {
+			if(learningProblem instanceof PosOnlyDefinitionLP) {
+				throw new RuntimeException("does not work with positive examples only yet");
+			}	
+			algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size());
 		}
 		
 		// compute used concepts/roles from allowed/ignored

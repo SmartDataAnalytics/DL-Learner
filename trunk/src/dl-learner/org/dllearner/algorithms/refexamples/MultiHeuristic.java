@@ -57,6 +57,11 @@ import org.dllearner.utilities.ConceptComparator;
  * N = number of negative examples<br />
  * </code></p>
  * 
+ * TODO: Maybe the number of children of a node could be used instead of
+ * horiz. exp, because if a node has a very high number of children, the
+ * algorithm gets stuck easily, while it could still be very agile in other
+ * parts of the search space.
+ * 
  * @author Jens Lehmann
  *
  */
@@ -65,12 +70,17 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
 	// heuristic parameters
-	private double expansionPenaltyFactor = 0.01;
-	private double gainBonusFactor = 1.00;
+	private double expansionPenaltyFactor;
+	private double gainBonusFactor;
+	private double nodeChildPenalty = 0.0001;
 	
 	// examples
 	private int nrOfNegativeExamples;
 	private int nrOfExamples;
+	
+	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples) {
+		this(nrOfPositiveExamples, nrOfNegativeExamples, 0.03, 0.5);
+	}
 	
 	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
@@ -104,11 +114,17 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 			double parentAccuracy =  getAccuracy(parent.getCoveredPositives().size(),parent.getCoveredNegatives().size());
 			gain = accuracy - parentAccuracy;
 		}
-		return accuracy + gainBonusFactor * gain - expansionPenaltyFactor * node.getHorizontalExpansion();
+		return accuracy + gainBonusFactor * gain - expansionPenaltyFactor * node.getHorizontalExpansion() - nodeChildPenalty * node.getChildren().size();
 	}
 	
 	private double getAccuracy(int coveredPositives, int coveredNegatives) {
 		return (coveredPositives + nrOfNegativeExamples - coveredNegatives)/(double)nrOfExamples;
 		
 	}
+	
+	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples) {
+		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples);
+		return multi.getNodeScore(node);
+	}
+	
 }

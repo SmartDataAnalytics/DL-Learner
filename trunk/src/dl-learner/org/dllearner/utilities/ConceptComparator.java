@@ -67,8 +67,35 @@ public class ConceptComparator implements Comparator<Description> {
 				return ((NamedClass)concept1).getName().compareTo(((NamedClass)concept2).getName());
 			else
 				return -1;
+		} else if(concept1 instanceof BooleanValueRestriction) {
+			if(concept2 instanceof Nothing || concept2 instanceof NamedClass) {
+				return 1;
+			} else if(concept2 instanceof BooleanValueRestriction) {
+				// first criterion: name of the properties
+				int cmp = rc.compare(((BooleanValueRestriction)concept1).getRestrictedPropertyExpresssion(), ((BooleanValueRestriction)concept2).getRestrictedPropertyExpresssion());
+
+				// second criterion: value of the properties (it should rarely happen that
+				// both boolean values are present since this is a contradiction or superfluous)
+				if(cmp == 0) {
+					boolean val1 = ((BooleanValueRestriction)concept1).getBooleanValue();
+					boolean val2 = ((BooleanValueRestriction)concept2).getBooleanValue();
+					if(val1) {
+						if(val2)
+							return 0;
+						else
+							return 1;
+					} else {
+						if(val2)
+							return -1;
+						else
+							return 0;						
+					}
+				} else
+					return cmp;				
+			} else
+				return -1;
 		} else if(concept1 instanceof Thing) {
-			if(concept2 instanceof Nothing || concept2 instanceof NamedClass)
+			if(concept2 instanceof Nothing || concept2 instanceof NamedClass || concept2 instanceof BooleanValueRestriction)
 				return 1;
 			else if(concept2 instanceof Thing)
 				return 0;
@@ -102,17 +129,6 @@ public class ConceptComparator implements Comparator<Description> {
 					return compare(concept1.getChild(0), concept2.getChild(0));
 				else
 					return roleCompare;
-			} else
-				return -1;
-		} else if(concept1 instanceof BooleanValueRestriction) {
-			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction) {
-				return 1;
-			} else if(concept2 instanceof BooleanValueRestriction) {
-				int cmp = rc.compare(((BooleanValueRestriction)concept1).getRestrictedPropertyExpresssion(), ((BooleanValueRestriction)concept2).getRestrictedPropertyExpresssion());
-				if(cmp == 0)
-					return compare(concept1.getChild(0), concept2.getChild(0));
-				else
-					return cmp;				
 			} else
 				return -1;
 		} else if(concept1 instanceof Intersection) {
@@ -162,12 +178,6 @@ public class ConceptComparator implements Comparator<Description> {
 		} else
 			throw new RuntimeException(concept1.toString());
 	}
-	
-	/*
-	private int compareRole(Role r1, Role r2) {
-		return r1.toString().compareTo(r2.toString());
-	}
-	*/
 
 	// TODO: Vergleich zwischen ConceptComparators: immer identisch
 	// (testen, ob das bessere Performance bringt)

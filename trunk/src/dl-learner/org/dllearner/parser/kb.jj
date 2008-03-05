@@ -246,13 +246,14 @@ Description Concept() :
 	Description c,c1,c2;
 	NamedClass ac;
 	ObjectProperty ar;
+	DatatypeProperty dp;
 	String s;
 	int i;
 }
 {
     Top() {return new Thing();}
   | Bottom() {return new Nothing();}
-  | ac = AtomicConcept() {return ac;}
+  | LOOKAHEAD(2) ac = AtomicConcept() {return ac;}
   // | s=Id() {return new AtomicConcept(s);}
   // | s=String() {return new AtomicConcept(s);} 
   // Parser geht bis zum n�chsten AND oder OR
@@ -278,7 +279,9 @@ Description Concept() :
   // | LE() i=Integer() s=Id() "." c=Concept()
   //	{return new LessEqual(i,new AtomicRole(s),c);}
   | LE() i=Integer() ar=ObjectProperty() "." c=Concept()
-  	{return new ObjectMaxCardinalityRestriction(i,ar,c);}  	
+  	{return new ObjectMaxCardinalityRestriction(i,ar,c);}
+  | LOOKAHEAD(4) "(" dp=DatatypeProperty() "IS" "TRUE" ")" { return new BooleanValueRestriction(dp, true); }
+  | "(" dp=DatatypeProperty() "IS" "FALSE" ")" { return new BooleanValueRestriction(dp, false); }    	
 }
 
 void Or() : {} { <OR> }
