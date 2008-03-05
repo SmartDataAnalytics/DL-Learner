@@ -217,37 +217,25 @@ public class ExampleBasedROLearner {
 	}
 	
 	public void start() {
-
-		
 		// calculate quality threshold required for a solution
 		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
 		
 		// start search with start class
 		if(startDescription == null) {
-			Thing top = new Thing();
-			startNode = new ExampleBasedNode(top);
-			// top covers all negatives
-			int coveredNegativeExamples = getNumberOfNegatives();
-			startNode.setCoveredNegativeExamples(coveredNegativeExamples);
-			startNode.setCoveredPositives(learningProblem.getPositiveExamples());
-			startNode.setCoveredNegatives(learningProblem.getNegativeExamples());
+			startNode = new ExampleBasedNode(Thing.instance);
+			startNode.setCoveredExamples(learningProblem.getPositiveExamples(), learningProblem.getNegativeExamples());
 		} else {
 			startNode = new ExampleBasedNode(startDescription);
 			Set<Individual> coveredNegatives = rs.instanceCheck(startDescription, learningProblem.getNegativeExamples());
-			startNode.setCoveredPositives(rs.instanceCheck(startDescription, learningProblem.getPositiveExamples()));
-			startNode.setCoveredNegatives(coveredNegatives);
-			startNode.setCoveredNegativeExamples(coveredNegatives.size());
+			Set<Individual> coveredPositives =  rs.instanceCheck(startDescription, learningProblem.getPositiveExamples());
+			startNode.setCoveredExamples(coveredPositives, coveredNegatives);
 		}
 		
 		candidates.add(startNode);
 		candidatesStable.add(startNode);		
-		// note that TOP may already be a solution
+
 		ExampleBasedNode bestNode = startNode;
-//		solutionFound = (coveredNegativeExamples == 0);
-//		solutions = new LinkedList<Concept>();
-//		if(solutionFound)
-//			solutions.add(top);
-		
+
 		int loop = 0;
 		
 		algorithmStartTime = System.nanoTime();
@@ -571,8 +559,7 @@ public class ExampleBasedROLearner {
 						// quality is the number of misclassifications (if it is not too weak)
 						quality = (nrOfPositiveExamples - newlyCoveredPositives.size())
 							+ newlyCoveredNegatives.size();
-						newNode.setCoveredNegatives(newlyCoveredNegatives);
-						newNode.setCoveredPositives(newlyCoveredPositives);
+						newNode.setCoveredExamples(newlyCoveredPositives, newlyCoveredNegatives);
 					}
 					
 				}
@@ -588,7 +575,7 @@ public class ExampleBasedROLearner {
 						solutions.add(refinement);
 					}			
 					
-					newNode.setCoveredNegativeExamples(quality);
+//					newNode.setCoveredNegativeExamples(quality);
 					newCandidates.add(newNode);
 					// candidates.add(newNode);
 					// candidatesStable.add(newNode);

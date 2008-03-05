@@ -39,16 +39,15 @@ import org.dllearner.utilities.ConceptComparator;
  */
 public class ExampleBasedNode {
 
-	// example based variables here
+	// example based variables
 	private Set<Individual> coveredPositives;
 	private Set<Individual> coveredNegatives;
 	
-	// TOP ist einfach das TOP-Konzept, also das einzige welches nicht evaluiert wird
+	// the method by which quality was evaluated in this node
 	public enum QualityEvaluationMethod { TOP, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST };
-	
 	private QualityEvaluationMethod qualityEvaluationMethod = QualityEvaluationMethod.TOP;
 	
-	// alle Eigenschaften eines Knotens im Suchbaum
+	// all properties of a node in the search tree
 	private Description concept;
 	private int horizontalExpansion;
 	private int coveredNegativeExamples;
@@ -59,27 +58,16 @@ public class ExampleBasedNode {
 	private static ConceptComparator conceptComparator = new ConceptComparator();
 	private static NodeComparatorStable nodeComparator = new NodeComparatorStable();
 	
-	// Einbettung in Suchbaum
+	// link to parent in search tree
 	private ExampleBasedNode parent = null;
-	// private Set<Node> children = new HashSet<Node>();
 	private Set<ExampleBasedNode> children = new TreeSet<ExampleBasedNode>(nodeComparator);
-	// es wird auch eine Liste von Kindern gehalten
+	// apart from the child nodes, we also keep child concepts
 	private Set<Description> childConcepts = new TreeSet<Description>(conceptComparator);
-	
-	// verwendeter Operator für Expansion des Knotens
-	// private RefinementOperator operator;
 	
 	public ExampleBasedNode(Description concept) {
 		this.concept = concept;
 		horizontalExpansion = 0;
 		isQualityEvaluated = false;
-	}
-	
-	public void setCoveredNegativeExamples(int coveredNegativeExamples) {
-		if(isQualityEvaluated)
-			throw new RuntimeException("Cannot set quality of a node more than once.");
-		this.coveredNegativeExamples = coveredNegativeExamples;
-		isQualityEvaluated = true;
 	}
 
 	public void setHorizontalExpansion(int horizontalExpansion) {
@@ -104,25 +92,16 @@ public class ExampleBasedNode {
         return children.add(child);
     }
 	
-	public Description getConcept() {
-		return concept;
+	public void setQualityEvaluationMethod(QualityEvaluationMethod qualityEvaluationMethod) {
+		this.qualityEvaluationMethod = qualityEvaluationMethod;
 	}
-	public int getCoveredNegativeExamples() {
-		return coveredNegativeExamples;
+
+	public void setCoveredExamples(Set<Individual> coveredPositives, Set<Individual> coveredNegatives) {
+		this.coveredPositives = coveredPositives;
+		this.coveredNegatives = coveredNegatives;
+		isQualityEvaluated = true;
 	}
-	public int getHorizontalExpansion() {
-		return horizontalExpansion;
-	}
-	public boolean isQualityEvaluated() {
-		return isQualityEvaluated;
-	}
-	public boolean isRedundant() {
-		return isRedundant;
-	}
-	public boolean isTooWeak() {
-		return isTooWeak;
-	}
-	
+
 	@Override		
 	public String toString() {
 		String ret = concept.toString() + " [q:";
@@ -134,7 +113,7 @@ public class ExampleBasedNode {
 		return ret;
 	}
 	
-	// gibt die Refinement-Chain zurück, die zu dem Knoten geführt hat
+	// returns the refinement chain leading to this node as string
 	public String getRefinementChainString() {
 		if(parent!=null) {
 			String ret = parent.getRefinementChainString();
@@ -143,8 +122,8 @@ public class ExampleBasedNode {
 		} else {
 			return concept.toString();
 		}
-	}
-
+	}	
+	
 	public String getTreeString() {
 		return getTreeString(0).toString();
 	}
@@ -173,6 +152,14 @@ public class ExampleBasedNode {
 		
 		ret += " ("+qualityEvaluationMethod+"), he:" + horizontalExpansion + "]";
 		return ret;
+	}	
+	
+	public Set<Individual> getCoveredPositives() {
+		return coveredPositives;
+	}	
+	
+	public Set<Individual> getCoveredNegatives() {
+		return coveredNegatives;
 	}
 	
 	public Set<ExampleBasedNode> getChildren() {
@@ -183,28 +170,35 @@ public class ExampleBasedNode {
 		return childConcepts;
 	}
 
+	public Description getConcept() {
+		return concept;
+	}	
+	
 	public QualityEvaluationMethod getQualityEvaluationMethod() {
 		return qualityEvaluationMethod;
-	}
-
-	public void setQualityEvaluationMethod(QualityEvaluationMethod qualityEvaluationMethod) {
-		this.qualityEvaluationMethod = qualityEvaluationMethod;
-	}
-
-	public Set<Individual> getCoveredPositives() {
-		return coveredPositives;
-	}
-
-	public void setCoveredPositives(Set<Individual> coveredPositives) {
-		this.coveredPositives = coveredPositives;
-	}
-
-	public Set<Individual> getCoveredNegatives() {
-		return coveredNegatives;
-	}
-
-	public void setCoveredNegatives(Set<Individual> coveredNegatives) {
-		this.coveredNegatives = coveredNegatives;
-	}
+	}	
 	
+	public int getCoveredNegativeExamples() {
+		return coveredNegativeExamples;
+	}
+	public int getHorizontalExpansion() {
+		return horizontalExpansion;
+	}
+	public boolean isQualityEvaluated() {
+		return isQualityEvaluated;
+	}
+	public boolean isRedundant() {
+		return isRedundant;
+	}
+	public boolean isTooWeak() {
+		return isTooWeak;
+	}
+
+	/**
+	 * @return the parent
+	 */
+	public ExampleBasedNode getParent() {
+		return parent;
+	}	
+
 }

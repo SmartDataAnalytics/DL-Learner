@@ -1,0 +1,114 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+package org.dllearner.algorithms.refexamples;
+
+import org.dllearner.utilities.ConceptComparator;
+
+/**
+ * This heuristic combines the following criteria to assign a
+ * double score value to a node:
+ * <ul>
+ * <li>quality/accuracy of a concept (based on the full training set, not
+ *   the negative example coverage as the flexible heuristic)</li>
+ * <li>horizontal expansion</li>
+ * <li>accuracy gain: The heuristic takes into account the accuracy
+ *   difference between a node and its parent. If there is no gain (even
+ *   though we know that the refinement is proper) it is unlikely (although
+ *   not excluded) that the refinement is a necessary path to take towards a
+ *   solution.</li>
+ * </ul> 
+ *
+ * The heuristic has two parameters:
+ * <ul>
+ * <li>expansion penalty factor: describes how much accuracy gain is worth
+ *   an increase of horizontal expansion by one (typical value: 0.01)</li>
+ * <li>gain bonus factor: describes how accuracy gain should be weighted
+ *   versus accuracy itself (typical value: 1.00)</li>
+ * </ul>
+ *   
+ * The value of a node is calculated as follows:
+ * 
+ * <p><code>value = accuracy + gain bonus factor * accuracy gain - expansion penalty
+ * factor * horizontal expansion</code></p>
+ * 
+ * <p><code>accuracy = (TP + TN)/(P + N)</code></p>
+ * 
+ * <p><code>
+ * TP = number of true positives (= covered positives)<br />
+ * TN = number of true negatives (= nr of negatives examples - covered negatives)<br />
+ * P = number of positive examples<br />
+ * N = number of negative examples<br />
+ * </code></p>
+ * 
+ * @author Jens Lehmann
+ *
+ */
+public class MultiHeuristic implements ExampleBasedHeuristic {
+	
+	private ConceptComparator conceptComparator = new ConceptComparator();
+	
+	// heuristic parameters
+	private double expansionPenaltyFactor = 0.01;
+	private double gainBonusFactor = 1.00;
+	
+	// examples
+	private int nrOfNegativeExamples;
+	private int nrOfExamples;
+	
+	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {
+		this.nrOfNegativeExamples = nrOfNegativeExamples;
+		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
+		this.expansionPenaltyFactor = expansionPenaltyFactor;
+		this.gainBonusFactor = gainBonusFactor;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 */
+	public int compare(ExampleBasedNode node1, ExampleBasedNode node2) {
+		double score1 = getNodeScore(node1);
+		double score2 = getNodeScore(node2);
+		double diff = score1 - score2;
+		if(diff>0)
+			return 1;
+		else if(diff<0)
+			return -1;
+		else
+			// TODO: would it be OK to simply return 0 here (?)
+			// could improve performance a bit
+			return conceptComparator.compare(node1.getConcept(), node2.getConcept());
+	}
+
+	public double getNodeScore(ExampleBasedNode node) {
+		double accuracy = getAccuracy(node.getCoveredPositives().size(),node.getCoveredNegatives().size());
+		ExampleBasedNode parent = node.getParent();
+		double gain = 0;
+		if(parent != null) {
+			double parentAccuracy =  getAccuracy(parent.getCoveredPositives().size(),parent.getCoveredNegatives().size());
+			gain = accuracy - parentAccuracy;
+		}
+		return accuracy + gainBonusFactor * gain - expansionPenaltyFactor * node.getHorizontalExpansion();
+	}
+	
+	private double getAccuracy(int coveredPositives, int coveredNegatives) {
+		return (coveredPositives + nrOfNegativeExamples - coveredNegatives)/(double)nrOfExamples;
+		
+	}
+}
