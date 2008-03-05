@@ -53,6 +53,7 @@ public class ScoreTwoValued extends Score {
 	public String toString() {
 		String str = "";
 		str += "score: " + score + "\n";
+		str += "accuracy: " + (1 + classificationScore) + "\n";
 		str += "posAsPos: " + posAsPos + "\n";
 		str += "positive examples classified as negative: " + posAsNeg + "\n";
 		str += "negative examples classified as positive: " + negAsPos + "\n";

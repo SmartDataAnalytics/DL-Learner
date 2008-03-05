@@ -66,10 +66,10 @@ public class FlexibleHeuristic implements ExampleBasedHeuristic {
 		if(n1.isQualityEvaluated() && n2.isQualityEvaluated() && !n1.isTooWeak() && !n2.isTooWeak()) {
 			
 			// alle scores sind negativ, größere scores sind besser
-			double score1 = -n1.getCoveredNegativeExamples()/(double)nrOfNegativeExamples;
+			double score1 = -n1.getCoveredNegatives().size()/(double)nrOfNegativeExamples;
 			score1 -= percentPerLengthUnit * n1.getConcept().getLength();
 			
-			double score2 = -n2.getCoveredNegativeExamples()/(double)nrOfNegativeExamples;
+			double score2 = -n2.getCoveredNegatives().size()/(double)nrOfNegativeExamples;
 			score2 -= percentPerLengthUnit * n2.getConcept().getLength();
 			
 			double diff = score1 - score2;

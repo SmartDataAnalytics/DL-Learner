@@ -20,6 +20,7 @@
 
 package org.dllearner.algorithms.refexamples;
 
+import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -39,6 +40,8 @@ import org.dllearner.utilities.ConceptComparator;
  */
 public class ExampleBasedNode {
 
+	private static DecimalFormat df = new DecimalFormat();
+	
 	// example based variables
 	private Set<Individual> coveredPositives;
 	private Set<Individual> coveredNegatives;
@@ -50,7 +53,8 @@ public class ExampleBasedNode {
 	// all properties of a node in the search tree
 	private Description concept;
 	private int horizontalExpansion;
-	private int coveredNegativeExamples;
+	// specifies whether the node is too weak (exceeds the max. nr allowed
+	// misclassifications of positive examples)
 	private boolean isTooWeak;
 	private boolean isQualityEvaluated;
 	private boolean isRedundant;
@@ -104,11 +108,12 @@ public class ExampleBasedNode {
 
 	@Override		
 	public String toString() {
+//		System.out.println(concept);
 		String ret = concept.toString() + " [q:";
 		if(isTooWeak)
 			ret += "tw";
 		else
-			ret += coveredNegativeExamples;
+			ret += coveredNegatives.size();
 		ret += ", he:" + horizontalExpansion + ", children:" + children.size() + "]";
 		return ret;
 	}
@@ -124,35 +129,50 @@ public class ExampleBasedNode {
 		}
 	}	
 	
-	public String getTreeString() {
-		return getTreeString(0).toString();
+	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples) {
+		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,null).toString();
 	}
 	
-	private StringBuilder getTreeString(int depth) {
+	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
+		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,baseURI).toString();
+	}	
+	
+	private StringBuilder getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, int depth, String baseURI) {
 		StringBuilder treeString = new StringBuilder();
 		for(int i=0; i<depth-1; i++)
 			treeString.append("  ");
 		if(depth!=0)
 			// treeString.append("|-→ ");
 			treeString.append("|--> ");
-		treeString.append(getShortDescription()+"\n");
+		treeString.append(getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI)+"\n");
 		for(ExampleBasedNode child : children) {
-			treeString.append(child.getTreeString(depth+1));
+			treeString.append(child.getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, depth+1,baseURI));
 		}
 		return treeString;
 	}
 	
-	private String getShortDescription() {
-		String ret = concept.toString() + " [q:";
+	public String getShortDescription(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
+		String ret = concept.toString(baseURI,null) + " [";
 		
 		if(isTooWeak)
-			ret += "tw";
-		else
-			ret += coveredNegativeExamples;
+			ret += "q:tw";
+		else {
+			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
+			ret += "acc:" + df.format(accuracy) + "% ";			
+			
+			// comment this out to display the heuristic score with default parameters
+			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples);
+			ret += "h:" +df.format(heuristicScore) + " ";
+			
+			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
+			ret += "q:" + wrongPositives + "p-" + coveredNegatives.size() + "n";
+		}
 		
-		ret += " ("+qualityEvaluationMethod+"), he:" + horizontalExpansion + "]";
+		ret += " ("+qualityEvaluationMethod+"), he:" + horizontalExpansion;
+		ret += " c:" + children.size() + "]";
+		
 		return ret;
-	}	
+	}
 	
 	public Set<Individual> getCoveredPositives() {
 		return coveredPositives;
@@ -178,9 +198,6 @@ public class ExampleBasedNode {
 		return qualityEvaluationMethod;
 	}	
 	
-	public int getCoveredNegativeExamples() {
-		return coveredNegativeExamples;
-	}
 	public int getHorizontalExpansion() {
 		return horizontalExpansion;
 	}
@@ -199,6 +216,6 @@ public class ExampleBasedNode {
 	 */
 	public ExampleBasedNode getParent() {
 		return parent;
-	}	
+	}
 
 }

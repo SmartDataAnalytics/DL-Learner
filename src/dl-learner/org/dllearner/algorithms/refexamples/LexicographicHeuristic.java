@@ -32,9 +32,9 @@ public class LexicographicHeuristic implements ExampleBasedHeuristic {
 		
 		// sicherstellen, dass Qualität ausgewertet wurde
 		if(n1.isQualityEvaluated() && n2.isQualityEvaluated() && !n1.isTooWeak() && !n2.isTooWeak()) {
-			if(n1.getCoveredNegativeExamples()<n2.getCoveredNegativeExamples()) 
+			if(n1.getCoveredNegatives().size()<n2.getCoveredNegatives().size()) 
 				return 1;
-			else if(n1.getCoveredNegativeExamples()>n2.getCoveredNegativeExamples())
+			else if(n1.getCoveredNegatives().size()>n2.getCoveredNegatives().size())
 				return -1;
 			else {
 				//TODO: es wäre geringfügig effizienter die Länge nicht mehrfach zu berechnen

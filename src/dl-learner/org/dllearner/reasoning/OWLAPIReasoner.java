@@ -546,7 +546,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	@Override
 	public SortedSet<Individual> retrieval(Description concept) {
-		OWLDescription d = getOWLAPIDescription(concept);
+//		OWLDescription d = getOWLAPIDescription(concept);
+		OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
 		Set<OWLIndividual> individuals = null;
 		try {
 			individuals = reasoner.getIndividuals(d, false);

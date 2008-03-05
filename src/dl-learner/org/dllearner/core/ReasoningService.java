@@ -559,6 +559,14 @@ public class ReasoningService {
 		return atomicRolesList;
 	}
 	
+	public String getBaseURI() {
+		return reasoner.getBaseURI();
+	}
+	
+	public Map<String, String> getPrefixes() {
+		return reasoner.getPrefixes();
+	}
+	
 	public long getInstanceCheckReasoningTimeNs() {
 		return instanceCheckReasoningTimeNs;
 	}
