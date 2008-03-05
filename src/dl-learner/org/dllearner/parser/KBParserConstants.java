@@ -72,6 +72,9 @@ public @SuppressWarnings("all") interface KBParserConstants {
     "\"DOUBLE\"",
     "\"BOOLEAN\"",
     "\"INTEGER\"",
+    "\"IS\"",
+    "\"TRUE\"",
+    "\"FALSE\"",
   };
 
 }
