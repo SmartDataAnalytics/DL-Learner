@@ -594,13 +594,14 @@ public class ExampleBasedROLearner {
 		
 		if(!finalStats) {
 			ExampleBasedNode bestNode = candidatesStable.last();
-			double accuracy = 100 * ((bestNode.getCoveredPositives().size()
-			+ nrOfNegativeExamples - bestNode.getCoveredNegatives().size())/(double)nrOfExamples);
+//			double accuracy = 100 * ((bestNode.getCoveredPositives().size()
+//			+ nrOfNegativeExamples - bestNode.getCoveredNegatives().size())/(double)nrOfExamples);
 			// Refinementoperator auf Konzept anwenden
-			String bestNodeString = "currently best node: " + bestNode + " accuracy: " + df.format(accuracy) + "%";
+//			String bestNodeString = "currently best node: " + bestNode + " accuracy: " + df.format(accuracy) + "%";
+			String bestNodeString = "currently best node: " + bestNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
 			// searchTree += bestNodeString + "\n";
 			System.out.println(bestNodeString);
-			String expandedNodeString = "next expanded node: " + candidates.last();
+			String expandedNodeString = "next expanded node: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
 			// searchTree += expandedNodeString + "\n";
 			System.out.println(expandedNodeString);		
 			System.out.println("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
