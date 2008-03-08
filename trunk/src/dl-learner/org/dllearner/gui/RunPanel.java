@@ -21,13 +21,13 @@ package org.dllearner.gui;
  */
 
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
 /**
- * RunPanel let algorithm start and stop and show informations about.
- * 
  * @author Tilo Hielscher
  * 
  */
@@ -40,11 +40,24 @@ public class RunPanel extends JPanel implements ActionListener {
 	private Config config;
 
 	private ThreadRun thread;
-	// private Boolean runBoolean = new Boolean(false);
+
+	private GridBagLayout gridbag = new GridBagLayout();
+	private GridBagConstraints constraints = new GridBagConstraints();
+	private GridBagLayout gridbag2 = new GridBagLayout();
+	private GridBagConstraints constraints2 = new GridBagConstraints();
 
 	private JPanel showPanel = new JPanel();
-	private JPanel infoPanel = new JPanel();
+	private JPanel centerPanel = new JPanel();
 	private JPanel solutionPanel = new JPanel();
+	private JPanel infoPanel = new JPanel();
+
+	private String[] names = { "Algorithm Runtime", "OverallReasoningTime", "Instances",
+			"Retrieval", "Subsumption" };
+
+	private JLabel[] name = new JLabel[5];
+	private Bar[] bar = new Bar[5];
+	private JLabel[] time = new JLabel[5];
+	private JLabel[] percent = new JLabel[5];
 
 	RunPanel(Config config) {
 		super(new BorderLayout());
@@ -56,16 +69,68 @@ public class RunPanel extends JPanel implements ActionListener {
 		stopButton = new JButton("Stop");
 		stopButton.addActionListener(this);
 
-		infoArea = new JTextArea(20, 50);
-		JScrollPane infoScroll = new JScrollPane(infoArea);
-
 		showPanel.add(runButton);
 		showPanel.add(stopButton);
 
-		infoPanel.add(infoScroll);
+		infoPanel.setLayout(gridbag);
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.ipadx = 20;
 
+		// make names
+		for (int i = 0; i < 5; i++) {
+			name[i] = new JLabel(names[i]);
+		}
+
+		// make bars
+		for (int i = 0; i < 5; i++) {
+			bar[i] = new Bar(100, 10, 0.0);
+		}
+
+		// make time
+		for (int i = 0; i < 5; i++) {
+			time[i] = new JLabel("-");
+		}
+
+		// make percent
+		for (int i = 0; i < 5; i++) {
+			percent[i] = new JLabel("-");
+		}
+
+		// name, bar, time
+		for (int i = 0; i < 5; i++) {
+			buildConstraints(constraints, 0, i, 1, 1, 1, 1);
+			gridbag.setConstraints(name[i], constraints);
+			infoPanel.add(name[i], constraints);
+			buildConstraints(constraints, 1, i, 1, 1, 1, 1);
+			gridbag.setConstraints(bar[i], constraints);
+			infoPanel.add(bar[i], constraints);
+			buildConstraints(constraints, 2, i, 1, 1, 1, 1);
+			gridbag.setConstraints(time[i], constraints);
+			infoPanel.add(time[i], constraints);
+			buildConstraints(constraints, 3, i, 1, 1, 1, 1);
+			gridbag.setConstraints(percent[i], constraints);
+			infoPanel.add(percent[i], constraints);
+		}
+
+		// text area
+		infoArea = new JTextArea(20, 50);
+		JScrollPane infoScroll = new JScrollPane(infoArea);
+
+		// layout for centerPanel
+		centerPanel.setLayout(gridbag2);
+		constraints2.anchor = GridBagConstraints.CENTER;
+		constraints2.fill = GridBagConstraints.BOTH;
+		constraints2.ipadx = 10;
+		buildConstraints(constraints2, 0, 0, 1, 1, 1, 1);
+		gridbag2.setConstraints(infoPanel, constraints2);
+		centerPanel.add(infoPanel, constraints2);
+		buildConstraints(constraints2, 0, 1, 1, 1, 1, 1);
+		gridbag2.setConstraints(infoScroll, constraints2);
+		centerPanel.add(infoScroll, constraints2);
+
+		// layout for this panel
 		add(showPanel, BorderLayout.PAGE_START);
-		add(infoPanel, BorderLayout.CENTER);
+		add(centerPanel, BorderLayout.CENTER);
 		add(solutionPanel, BorderLayout.PAGE_END);
 	}
 
@@ -76,7 +141,6 @@ public class RunPanel extends JPanel implements ActionListener {
 			thread = new ThreadRun(config);
 			config.getReasoningService().resetStatistics();
 			thread.start();
-			// this.runBoolean = true;
 			ThreadStatistics threadStatistics = new ThreadStatistics(config, this);
 			threadStatistics.start();
 		}
@@ -95,10 +159,11 @@ public class RunPanel extends JPanel implements ActionListener {
 		Long instanceCheckReasoningTime = null;
 		Long retrievalReasoningTime = null;
 		Long subsumptionReasoningTime = null;
+
 		infoArea.setText("");
 		// best solutions
 		if (config.getLearningAlgorithm().getBestSolutions(5) != null)
-			infoArea.append("BestSolution:\n"
+			infoArea.append("BestSolutions:\n"
 					+ config.getLearningAlgorithm().getBestSolutions(5).toString() + "\n\n");
 		// solution score
 		// if (config.getLearningAlgorithm().getSolutionScore() != null)
@@ -109,34 +174,40 @@ public class RunPanel extends JPanel implements ActionListener {
 		// reasoner statistics
 		if (config.getAlgorithmRunTime() != null) {
 			algorithmRunTime = config.getAlgorithmRunTime();
-			infoArea.append("Algorithm Runtime: " + makeTime(algorithmRunTime) + "\n");
+			bar[0].update(1.0);
+			time[0].setText(makeTime(algorithmRunTime));
+			percent[0].setText("100%");
 		}
 		overallReasoningTime = config.getReasoningService().getOverallReasoningTimeNs();
-		infoArea.append("OverallReasoningTime: " + makeTime(overallReasoningTime)
-				+ Percent(overallReasoningTime, algorithmRunTime) + "\n");
-		infoArea.append("Instances (" + config.getReasoningService().getNrOfInstanceChecks()
-				+ "): ");
+		bar[1].update((double) overallReasoningTime / (double) algorithmRunTime);
+		time[1].setText(makeTime(overallReasoningTime));
+		percent[1].setText(Percent(overallReasoningTime, algorithmRunTime));
 		if (config.getReasoningService().getNrOfInstanceChecks() > 0) {
 			instanceCheckReasoningTime = config.getReasoningService()
 					.getInstanceCheckReasoningTimeNs();
-			infoArea.append(makeTime(instanceCheckReasoningTime)
-					+ Percent(instanceCheckReasoningTime, algorithmRunTime) + "\n");
-		} else
-			infoArea.append(" - \n");
-		infoArea.append("Retrieval (" + config.getReasoningService().getNrOfRetrievals() + "): ");
+			name[2].setText(names[2] + " (" + config.getReasoningService().getNrOfInstanceChecks()
+					+ ")");
+			bar[2].update((double) instanceCheckReasoningTime / (double) algorithmRunTime);
+			time[2].setText(makeTime(instanceCheckReasoningTime));
+			percent[2].setText(Percent(instanceCheckReasoningTime, algorithmRunTime));
+		}
 		if (config.getReasoningService().getNrOfRetrievals() > 0) {
 			retrievalReasoningTime = config.getReasoningService().getRetrievalReasoningTimeNs();
-			infoArea.append(makeTime(retrievalReasoningTime)
-					+ Percent(retrievalReasoningTime, algorithmRunTime) + "\n");
-		} else
-			infoArea.append(" - \n");
+			name[3].setText(names[3] + " (" + config.getReasoningService().getNrOfRetrievals()
+					+ ")");
+			bar[3].update((double) retrievalReasoningTime / (double) algorithmRunTime);
+			time[3].setText(makeTime(retrievalReasoningTime));
+			percent[3].setText(Percent(retrievalReasoningTime, algorithmRunTime));
+		}
 		if (config.getReasoningService().getNrOfSubsumptionChecks() > 0) {
 			subsumptionReasoningTime = config.getReasoningService().getSubsumptionReasoningTimeNs();
-			infoArea.append("Subsumption ("
-					+ config.getReasoningService().getNrOfSubsumptionChecks() + "): "
-					+ makeTime(subsumptionReasoningTime)
-					+ Percent(subsumptionReasoningTime, algorithmRunTime) + "\n");
+			name[4].setText(names[4] + " ("
+					+ config.getReasoningService().getNrOfSubsumptionChecks() + ")");
+			bar[4].update((double) subsumptionReasoningTime / (double) algorithmRunTime);
+			time[4].setText(makeTime(subsumptionReasoningTime));
+			percent[4].setText(Percent(subsumptionReasoningTime, algorithmRunTime));
 		}
+		repaint();
 	}
 
 	/**
@@ -180,9 +251,9 @@ public class RunPanel extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Get a percent string like this: "(10,5 %)"
+	 * Get a percent string like this: "10,5%"
 	 * 
-	 * @param a 
+	 * @param a
 	 * @param b
 	 * @return
 	 */
@@ -190,8 +261,21 @@ public class RunPanel extends JPanel implements ActionListener {
 		if (a != null && b != null) {
 			Double c = (double) a / (double) b * (double) 100;
 			c = Math.ceil(c * 10) / 10;
-			return " (" + c.toString() + " %) ";
+			return c.toString() + "% ";
 		}
 		return null;
+	}
+
+	/**
+	 * Define GridBagConstraints
+	 */
+	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx,
+			int wy) {
+		gbc.gridx = gx;
+		gbc.gridy = gy;
+		gbc.gridwidth = gw;
+		gbc.gridheight = gh;
+		gbc.weightx = wx;
+		gbc.weighty = wy;
 	}
 }
