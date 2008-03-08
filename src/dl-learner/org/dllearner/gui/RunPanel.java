@@ -25,7 +25,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import javax.swing.*;
+
 
 /**
  * @author Tilo Hielscher
@@ -162,9 +164,10 @@ public class RunPanel extends JPanel implements ActionListener {
 
 		infoArea.setText("");
 		// best solutions
-		if (config.getLearningAlgorithm().getBestSolutions(5) != null)
-			infoArea.append("BestSolutions:\n"
-					+ config.getLearningAlgorithm().getBestSolutions(5).toString() + "\n\n");
+		if (config.getLearningAlgorithm().getBestSolutions(5) != null) {
+			infoArea.append("Best solutions: \n\n"
+					+ listToString(config.getLearningAlgorithm().getBestSolutions(10)) + "\n");
+		}
 		// solution score
 		// if (config.getLearningAlgorithm().getSolutionScore() != null)
 		// infoArea.append("SolutionScore:\n"
@@ -277,5 +280,20 @@ public class RunPanel extends JPanel implements ActionListener {
 		gbc.gridheight = gh;
 		gbc.weightx = wx;
 		gbc.weighty = wy;
+	}
+
+	/**
+	 * Make a string from list, every entry in new line.
+	 * 
+	 * @param listDescription
+	 *            it is the list.
+	 * @return the string.
+	 */
+	public String listToString(List<?> list) {
+		String string = "";
+		for (int i = 0; i < list.size(); i++) {
+			string += list.get(i) + "\n";
+		}
+		return string;
 	}
 }
