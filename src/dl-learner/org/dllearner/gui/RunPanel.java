@@ -28,7 +28,6 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.*;
 
-
 /**
  * @author Tilo Hielscher
  * 
@@ -98,7 +97,7 @@ public class RunPanel extends JPanel implements ActionListener {
 			percent[i] = new JLabel("-");
 		}
 
-		// name, bar, time
+		// layout for name, bar, time
 		for (int i = 0; i < 5; i++) {
 			buildConstraints(constraints, 0, i, 1, 1, 1, 1);
 			gridbag.setConstraints(name[i], constraints);
@@ -181,10 +180,12 @@ public class RunPanel extends JPanel implements ActionListener {
 			time[0].setText(makeTime(algorithmRunTime));
 			percent[0].setText("100%");
 		}
-		overallReasoningTime = config.getReasoningService().getOverallReasoningTimeNs();
-		bar[1].update((double) overallReasoningTime / (double) algorithmRunTime);
-		time[1].setText(makeTime(overallReasoningTime));
-		percent[1].setText(Percent(overallReasoningTime, algorithmRunTime));
+		if (config.getReasoningService() != null) {
+			overallReasoningTime = config.getReasoningService().getOverallReasoningTimeNs();
+			bar[1].update((double) overallReasoningTime / (double) algorithmRunTime);
+			time[1].setText(makeTime(overallReasoningTime));
+			percent[1].setText(Percent(overallReasoningTime, algorithmRunTime));
+		}
 		if (config.getReasoningService().getNrOfInstanceChecks() > 0) {
 			instanceCheckReasoningTime = config.getReasoningService()
 					.getInstanceCheckReasoningTimeNs();
@@ -285,7 +286,7 @@ public class RunPanel extends JPanel implements ActionListener {
 	/**
 	 * Make a string from list, every entry in new line.
 	 * 
-	 * @param listDescription
+	 * @param list
 	 *            it is the list.
 	 * @return the string.
 	 */
