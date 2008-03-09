@@ -153,6 +153,7 @@ public class RunPanel extends JPanel implements ActionListener {
 		}
 		// tree
 		if (e.getSource() == treeButton) {
+			@SuppressWarnings("unused")
 			TreeWindow a = new TreeWindow(config);
 		}
 	}

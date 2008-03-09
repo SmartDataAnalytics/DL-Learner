@@ -20,7 +20,8 @@
 package org.dllearner.gui;
 
 import javax.swing.*;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -33,17 +34,19 @@ import java.util.Set;
  * 
  * @author Tilo Hielscher
  */
-public class CheckBoxList extends JPanel {
+public class CheckBoxList extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -7119007550662195455L;
 	private JPanel checkBoxPanel = new JPanel();
 	private LinkedList<JCheckBox> list = new LinkedList<JCheckBox>();
 	private GridBagLayout gridbag = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
+	private WidgetPanelStringSet panel;
 
 	/**
 	 * Make a JPanel with GridBagLayout.
 	 */
-	public CheckBoxList() {
+	public CheckBoxList(WidgetPanelStringSet panel) {
+		this.panel = panel;
 		checkBoxPanel.setLayout(gridbag);
 		add(checkBoxPanel, BorderLayout.CENTER);
 		constraints.anchor = GridBagConstraints.WEST;
@@ -57,7 +60,9 @@ public class CheckBoxList extends JPanel {
 	 *            will add to list.
 	 */
 	public void add(String label) {
-		list.add(new JCheckBox(label));
+		JCheckBox chkBox = new JCheckBox(label);
+		list.add(chkBox);
+		chkBox.addActionListener(this);
 		update();
 	}
 
@@ -112,5 +117,9 @@ public class CheckBoxList extends JPanel {
 		gbc.gridheight = gh;
 		gbc.weightx = wx;
 		gbc.weighty = wy;
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		panel.specialSet();
 	}
 }
