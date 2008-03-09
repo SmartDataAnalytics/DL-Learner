@@ -36,7 +36,7 @@ public class RunPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1643304576470046636L;
 
-	private JButton runButton, stopButton;
+	private JButton runButton, stopButton, treeButton;
 	private JTextArea infoArea;
 	private Config config;
 
@@ -67,11 +67,13 @@ public class RunPanel extends JPanel implements ActionListener {
 
 		runButton = new JButton("Run");
 		runButton.addActionListener(this);
+		showPanel.add(runButton);
 		stopButton = new JButton("Stop");
 		stopButton.addActionListener(this);
-
-		showPanel.add(runButton);
 		showPanel.add(stopButton);
+		treeButton = new JButton("Tree");
+		treeButton.addActionListener(this);
+		showPanel.add(treeButton);
 
 		infoPanel.setLayout(gridbag);
 		constraints.anchor = GridBagConstraints.WEST;
@@ -148,6 +150,10 @@ public class RunPanel extends JPanel implements ActionListener {
 		// stop
 		if (e.getSource() == stopButton && config.getLearningAlgorithm() != null) {
 			thread.exit();
+		}
+		// tree
+		if (e.getSource() == treeButton) {
+			TreeWindow a = new TreeWindow(config);
 		}
 	}
 
