@@ -35,6 +35,7 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
@@ -127,11 +128,14 @@ public class RhoDRDown implements RefinementOperator {
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
 	private boolean useNegation = true;
-	private boolean useBooleanDatatypes = true;	
+	private boolean useBooleanDatatypes = true;
+	private boolean instanceBasedDisjoints = true;
 	
 	// caches for reasoner queries
+	private Map<Description,Map<Description,Boolean>> cachedDisjoints = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);
+
 //	private Map<NamedClass,Map<NamedClass,Boolean>> abDisjoint = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
-	private Map<NamedClass,Map<NamedClass,Boolean>> notABDisjoint = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
+//	private Map<NamedClass,Map<NamedClass,Boolean>> notABDisjoint = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 	
 	public RhoDRDown(ReasoningService reasoningService) {
@@ -159,6 +163,18 @@ public class RhoDRDown implements RefinementOperator {
 		for(DatatypeProperty dp : rs.getDatatypeProperties()) {
 			dpDomains.put(dp, rs.getDomain(dp));
 		}
+		
+
+//		NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Structure");
+//		computeTopRefinements(3,struc);		
+//		for(Description d : topARefinements.get(struc).get(1)) {
+		// bei 3 ist noch alles OK, bei 4 seltsamer Fehler mit Union
+//		for(Description d : refine(Thing.instance,3,null,struc)) {
+//			if(d instanceof Union)
+//				System.out.println(d);
+//		}
+//		System.out.println(refine(Thing.instance,7,null,struc).size());
+//		System.exit(0);
 		
 		if(startClass != null)
 			this.startClass = startClass;
@@ -245,8 +261,7 @@ public class RhoDRDown implements RefinementOperator {
 					// (non-recursive variant because only depth 1 was modified)
 					ConceptTransformation.cleanConceptNonRecursive(mc);
 					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
-					
-					refinements.add(mc);	
+						
 				}
 				
 			}
@@ -318,8 +333,9 @@ public class RhoDRDown implements RefinementOperator {
 			
 		}
 		
-		// if a refinement is neither Bottom nor Top a refinement of top can be appended
-		if(!(description instanceof Thing) && !(description instanceof Nothing)) {
+		// if a refinement is not Bottom, Top, ALL r.Bottom a refinement of top can be appended
+		if(!(description instanceof Thing) && !(description instanceof Nothing) 
+				&& !(description instanceof ObjectAllRestriction && description.getChild(0) instanceof Nothing)) {
 			// -1 because of the AND symbol which is appended
 			int topRefLength = maxLength - description.getLength() - 1; 
 			
@@ -357,6 +373,14 @@ public class RhoDRDown implements RefinementOperator {
 						}
 					}
 					
+					// perform a disjointness check when named classes are added;
+					// this can avoid a lot of superfluous computation in the algorithm e.g.
+					// when A1 looks good, so many refinements of the form (A1 OR (A2 AND A3))
+					// are generated which are all equal to A1 due to disjointness of A2 and A3
+					if(c instanceof NamedClass && isDisjoint(description, c))
+						// refinements.add(mc);
+						skip = true;
+					
 					if(!skip) {
 						Intersection mc = new Intersection();
 						mc.addChild(description);
@@ -365,12 +389,19 @@ public class RhoDRDown implements RefinementOperator {
 						// clean and transform to ordered negation normal form
 						ConceptTransformation.cleanConceptNonRecursive(mc);
 						ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
-											
+						
 						refinements.add(mc);
 					}
 				}
 			}
 		}
+		
+//		for(Description refinement : refinements) {
+//			if((refinement instanceof Intersection || refinement instanceof Union) && refinement.getChildren().size()<2) {
+//				System.out.println(description + " " + refinement + " " + currDomain + " " + maxLength);
+//				System.exit(0);
+//			}
+//		}
 		
 		return refinements;		
 	}
@@ -424,36 +455,52 @@ public class RhoDRDown implements RefinementOperator {
 						topARefinements.get(domain).get(i).addAll(mA.get(domain).get(i));
 				// combinations has several numbers => generate disjunct
 				} else {
-					SortedSet<Union> baseSet = new TreeSet<Union>(conceptComparator);
+					
+					// check whether the combination makes sense, i.e. whether
+					// all lengths mentioned in it have corresponding elements
+					// e.g. when negation is deactivated there won't be elements of
+					// length 2 in M
+					boolean validCombo = true;
 					for(Integer j : combo) {
-						if(domain == null)
-							baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
-						else
-							baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
+						if((domain == null && m.get(j).size()==0) || 
+								(domain != null && mA.get(domain).get(j).size()==0))
+							validCombo = false;
 					}
 					
-					// convert all concepts in ordered negation normal form
-					for(Description concept : baseSet) {
-						ConceptTransformation.transformToOrderedNegationNormalForm(concept, conceptComparator);
-					}
-					
-					// apply the exists filter (throwing out all refinements with
-					// double \exists r for any r)
-					// TODO: similar filtering can be done for boolean datatype
-					// properties
-					if(applyExistsFilter) {
-						Iterator<Union> it = baseSet.iterator();
-						while(it.hasNext()) {
-							if(MathOperations.containsDoubleObjectSomeRestriction(it.next()))
-								it.remove();							
-						}
-					}
+					if(validCombo) {
 						
-					// add computed refinements
-					if(domain == null)
-						topRefinements.get(i).addAll(baseSet);
-					else
-						topARefinements.get(domain).get(i).addAll(baseSet);
+						SortedSet<Union> baseSet = new TreeSet<Union>(conceptComparator);
+						for(Integer j : combo) {
+							if(domain == null)
+								baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
+							else
+								baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
+						}
+						
+						// convert all concepts in ordered negation normal form
+						for(Description concept : baseSet) {
+							ConceptTransformation.transformToOrderedNegationNormalForm(concept, conceptComparator);
+						}
+						
+						// apply the exists filter (throwing out all refinements with
+						// double \exists r for any r)
+						// TODO: similar filtering can be done for boolean datatype
+						// properties
+						if(applyExistsFilter) {
+							Iterator<Union> it = baseSet.iterator();
+							while(it.hasNext()) {
+								if(MathOperations.containsDoubleObjectSomeRestriction(it.next()))
+									it.remove();							
+							}
+						}
+							
+						// add computed refinements
+						if(domain == null)
+							topRefinements.get(i).addAll(baseSet);
+						else
+							topARefinements.get(domain).get(i).addAll(baseSet);
+						
+					}
 				}
 			}
 			
@@ -690,31 +737,99 @@ public class RhoDRDown implements RefinementOperator {
 		appDD.put(domain, applicableDDPs);			
 	}
 	
+	// returns true of the intersection contains elements disjoint
+	// to the given description (if true adding the description to
+	// the intersection results in a description equivalent to bottom)
+	// e.g. OldPerson AND YoungPerson; Nitrogen-34 AND Tin-113
+	// Note: currently we only check named classes in the intersection,
+	// it would be interesting to see whether it makes sense to extend this
+	// (advantage: less refinements, drawback: operator will need infinitely many
+	// reasoner queries in the long run)
+	@SuppressWarnings({"unused"})
+	private boolean containsDisjoints(Intersection intersection, Description d) {
+		List<Description> children = intersection.getChildren();
+		for(Description child : children) {
+			if(d instanceof Nothing)
+				return true;
+			else if(child instanceof NamedClass) {
+				if(isDisjoint((NamedClass)child, d))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isDisjoint(Description d1, Description d2) {
+		// equal concepts are not disjoint (unless equivalent to bottom)
+//		if(conceptComparator.compare(d1, d2)==0)
+//			return false;
+		
+		// check whether we have cached this query
+		Map<Description,Boolean> tmp = cachedDisjoints.get(d1);
+		Boolean tmp2 = null;
+		if(tmp != null)
+			tmp2 = tmp.get(d2);
+		
+		if(tmp2==null) {
+			Boolean result;
+			if(instanceBasedDisjoints) {
+				result = isDisjointInstanceBased(d1,d2);
+			} else {
+				Description d = new Intersection(d1, d2);
+				result = rs.subsumes(new Nothing(), d);				
+			}
+			// add the result to the cache (we add it twice such that
+			// the order of access does not matter)
+			
+			// create new entries if necessary
+			Map<Description,Boolean> map = new TreeMap<Description,Boolean>(conceptComparator);
+			if(tmp == null)
+				cachedDisjoints.put(d1, map);
+			if(!cachedDisjoints.containsKey(d2))
+				cachedDisjoints.put(d2, map);
+			
+			// add result symmetrically in the description matrix
+			cachedDisjoints.get(d1).put(d2, result);
+			cachedDisjoints.get(d2).put(d1, result);
+			return result;
+		} else
+			return tmp2;
+	}	
+	
+	private boolean isDisjointInstanceBased(Description d1, Description d2) {
+		Set<Individual> d1Instances = rs.retrieval(d1);
+		Set<Individual> d2Instances = rs.retrieval(d2);
+		for(Individual d1Instance : d1Instances) {
+			if(d2Instances.contains(d1Instance))
+				return false;
+		}
+		return true;
+	}
+	
+	/*
 	// computes whether two classes are disjoint; this should be computed
 	// by the reasoner only ones and otherwise taken from a matrix
-	// => this has low importance in the long run, because M is cached anyway,
-	// but avoids many duplicate queries when computing M
 	private boolean isDisjoint(NamedClass a, Description d) {
 		// we need to test whether A AND B is equivalent to BOTTOM
 		Description d2 = new Intersection(a, d);
 		return rs.subsumes(new Nothing(), d2);
-	}
+	}*/
 	
 	// we need to test whether NOT A AND B is equivalent to BOTTOM
 	private boolean isNotADisjoint(NamedClass a, NamedClass b) {
-		Map<NamedClass,Boolean> tmp = notABDisjoint.get(a);
-		Boolean tmp2 = null;
-		if(tmp != null)
-			tmp2 = tmp.get(b);
-		
-		if(tmp2==null) {
+//		Map<NamedClass,Boolean> tmp = notABDisjoint.get(a);
+//		Boolean tmp2 = null;
+//		if(tmp != null)
+//			tmp2 = tmp.get(b);
+//		
+//		if(tmp2==null) {
 			Description notA = new Negation(a);
 			Description d = new Intersection(notA, b);
 			Boolean result = rs.subsumes(new Nothing(), d);
 			// ... add to cache ...
 			return result;
-		} else
-			return tmp2;
+//		} else
+//			return tmp2;
 	}
 	
 	// we need to test whether NOT A AND B = B

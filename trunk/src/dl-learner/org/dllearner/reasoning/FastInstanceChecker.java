@@ -302,6 +302,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 	@Override
 	public SortedSet<Individual> retrieval(Description concept) throws ReasoningMethodUnsupportedException {
+		if(concept instanceof NamedClass)
+			return classInstancesPos.get((NamedClass)concept);
+		else if(concept instanceof Negation && concept.getChild(0) instanceof NamedClass)
+			return classInstancesNeg.get((NamedClass)concept.getChild(0));
+		
 //		return rs.retrieval(concept);
 		SortedSet<Individual> inds = new TreeSet<Individual>();
 		for(Individual i : individuals) {

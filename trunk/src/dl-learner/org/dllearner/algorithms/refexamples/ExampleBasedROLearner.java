@@ -260,7 +260,8 @@ public class ExampleBasedROLearner {
 			bestNode = candidates.last();
 			// extend best node	
 			newCandidates.clear();
-			// TODO: why is the best node tempoariliy removed from the candidates set?
+			// best node is removed temporarily, because extending it can
+			// change its evaluation
 			candidates.remove(bestNode);
 			extendNodeProper(bestNode, bestNode.getHorizontalExpansion()+1);
 			candidates.add(bestNode);
