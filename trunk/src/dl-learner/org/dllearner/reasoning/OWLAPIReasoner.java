@@ -659,6 +659,31 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return map;
 	}
 	
+	public Map<Individual, SortedSet<Double>> getDoubleValues(DatatypeProperty datatypeProperty) {
+		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
+		Map<Individual, SortedSet<Double>> map = new TreeMap<Individual, SortedSet<Double>>();
+		for(Individual i : individuals) {
+			OWLIndividual ind = factory.getOWLIndividual(URI.create(i.getName()));
+			
+			// get all related individuals via OWL API
+			Set<OWLConstant> inds = null;
+			try {
+				inds = reasoner.getRelatedValues(ind, prop);
+			} catch (OWLReasonerException e) {
+				e.printStackTrace();
+			}
+			
+			// convert data back to DL-Learner structures
+			SortedSet<Double> is = new TreeSet<Double>();
+			for(OWLConstant oi : inds) {
+				Double d = Double.parseDouble(oi.getLiteral());
+				is.add(d);
+			}
+			map.put(i, is);
+		}
+		return map;
+	}	
+	
 	@Override
 	public Map<Individual, SortedSet<Constant>> getDatatypeMembers(DatatypeProperty datatypeProperty) {
 		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);

@@ -599,6 +599,7 @@ public class ExampleBasedROLearner {
 //			+ nrOfNegativeExamples - bestNode.getCoveredNegatives().size())/(double)nrOfExamples);
 			// Refinementoperator auf Konzept anwenden
 //			String bestNodeString = "currently best node: " + bestNode + " accuracy: " + df.format(accuracy) + "%";
+			System.out.println("start node: " + startNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
 			String bestNodeString = "currently best node: " + bestNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
 			// searchTree += bestNodeString + "\n";
 			System.out.println(bestNodeString);
@@ -612,6 +613,7 @@ public class ExampleBasedROLearner {
 			// System.out.println("max. number of children of a node: " + maxNrOfChildren);
 			System.out.println("subsumption time: " + Helper.prettyPrintNanoSeconds(rs.getSubsumptionReasoningTimeNs()));
 			System.out.println("instance check time: " + Helper.prettyPrintNanoSeconds(rs.getInstanceCheckReasoningTimeNs()));
+			System.out.println("retrieval time: " + Helper.prettyPrintNanoSeconds(rs.getRetrievalReasoningTimeNs()));
 		}
 		
 		if(computeBenchmarkInformation) {

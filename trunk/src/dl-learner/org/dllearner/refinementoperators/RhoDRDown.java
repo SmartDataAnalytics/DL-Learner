@@ -129,6 +129,7 @@ public class RhoDRDown implements RefinementOperator {
 	private boolean useExistsConstructor = true;
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;
+	private boolean disjointChecks = true;
 	private boolean instanceBasedDisjoints = true;
 	
 	// caches for reasoner queries
@@ -164,17 +165,37 @@ public class RhoDRDown implements RefinementOperator {
 			dpDomains.put(dp, rs.getDomain(dp));
 		}
 		
-
-//		NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Structure");
+		/*
+		NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Compound");
+		ObjectProperty op = new ObjectProperty("http://dl-learner.org/carcinogenesis#hasAtom");
+		ObjectAllRestriction oar = new ObjectAllRestriction(op,struc);
+		String str = "((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS FALSE) OR ALL \"http://dl-learner.org/carcinogenesis#hasAtom\".TOP)";
+		Description desc = null;
+		try {
+			desc = KBParser.parseConcept(str);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		System.out.println(oar.getLength());
 //		computeTopRefinements(3,struc);		
 //		for(Description d : topARefinements.get(struc).get(1)) {
 		// bei 3 ist noch alles OK, bei 4 seltsamer Fehler mit Union
-//		for(Description d : refine(Thing.instance,3,null,struc)) {
+		Set<Description> ds = refine(struc,10,null,struc);
+		Set<Description> improper = new HashSet<Description>();
+		for(Description d : ds) {
 //			if(d instanceof Union)
-//				System.out.println(d);
-//		}
+			if(rs.subsumes(d, struc)) {
+				improper.add(d);
+				System.out.println(d);
+			}
+		}
 //		System.out.println(refine(Thing.instance,7,null,struc).size());
-//		System.exit(0);
+		System.out.println(ds.size());
+		System.out.println(improper.size());
+		System.exit(0);
+		*/
+		
 		
 		if(startClass != null)
 			this.startClass = startClass;
@@ -199,15 +220,16 @@ public class RhoDRDown implements RefinementOperator {
 	public Set<Description> refine(Description description, int maxLength,
 			List<Description> knownRefinements, Description currDomain) {
 		
-//		System.out.println(description + " " + currDomain);
+//		System.out.println(description + " " + currDomain + " " + maxLength);
 		
 		// actions needing to be performed if this is the first time the
 		// current domain is used
 		if(!(currDomain instanceof Thing) && !topARefinementsLength.containsKey(currDomain))
 			topARefinementsLength.put((NamedClass)currDomain, 0);
 		
-		// TODO: check whether using list or set makes more sense 
+		// check whether using list or set makes more sense 
 		// here; and whether HashSet or TreeSet should be used
+		// => TreeSet because duplicates are possible
 		Set<Description> refinements = new TreeSet<Description>(conceptComparator);
 		
 		// used as temporary variable
@@ -261,7 +283,8 @@ public class RhoDRDown implements RefinementOperator {
 					// (non-recursive variant because only depth 1 was modified)
 					ConceptTransformation.cleanConceptNonRecursive(mc);
 					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
-						
+					
+					refinements.add(mc);
 				}
 				
 			}
@@ -269,6 +292,8 @@ public class RhoDRDown implements RefinementOperator {
 		} else if (description instanceof Union) {
 			// refine one of the elements
 			for(Description child : description.getChildren()) {
+				
+//				System.out.println("union child: " + child + " " + maxLength + " " + description.getLength() + " " + child.getLength());
 				
 				// refine child
 				tmp = refine(child, maxLength - description.getLength()+child.getLength(),null,currDomain);
@@ -377,9 +402,10 @@ public class RhoDRDown implements RefinementOperator {
 					// this can avoid a lot of superfluous computation in the algorithm e.g.
 					// when A1 looks good, so many refinements of the form (A1 OR (A2 AND A3))
 					// are generated which are all equal to A1 due to disjointness of A2 and A3
-					if(c instanceof NamedClass && isDisjoint(description, c))
-						// refinements.add(mc);
+					if(disjointChecks && c instanceof NamedClass && description instanceof NamedClass && isDisjoint(description, c)) {
 						skip = true;
+//						System.out.println(c + " ignored when refining " + description);
+					}	
 					
 					if(!skip) {
 						Intersection mc = new Intersection();
@@ -545,14 +571,23 @@ public class RhoDRDown implements RefinementOperator {
 		SortedSet<Description> m1 = rs.getMoreSpecialConcepts(new Thing()); 
 		m.put(1,m1);		
 		
+		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
 		if(useNegation) {
 			Set<Description> m2tmp = rs.getMoreGeneralConcepts(new Nothing());
-			SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
 			for(Description c : m2tmp) {
 				m2.add(new Negation(c));
 			}
-			m.put(2,m2);
 		}
+		
+		// boolean datatypes, e.g. testPositive = true
+		if(useBooleanDatatypes) {
+			Set<DatatypeProperty> booleanDPs = rs.getBooleanDatatypeProperties();
+			for(DatatypeProperty dp : booleanDPs) {
+				m2.add(new BooleanValueRestriction(dp,true));
+				m2.add(new BooleanValueRestriction(dp,false));
+			}
+		}		
+		m.put(2,m2);
 			
 		SortedSet<Description> m3 = new TreeSet<Description>(conceptComparator);
 		if(useExistsConstructor) {
@@ -570,15 +605,6 @@ public class RhoDRDown implements RefinementOperator {
 				m3.add(new ObjectAllRestriction(r, new Thing()));
 			}				
 		}		
-		
-		// boolean datatypes, e.g. testPositive = true
-		if(useBooleanDatatypes) {
-			Set<DatatypeProperty> booleanDPs = rs.getBooleanDatatypeProperties();
-			for(DatatypeProperty dp : booleanDPs) {
-				m3.add(new BooleanValueRestriction(dp,true));
-				m3.add(new BooleanValueRestriction(dp,false));
-			}
-		}
 		
 		m.put(3,m3);
 		
@@ -600,6 +626,7 @@ public class RhoDRDown implements RefinementOperator {
 		SortedSet<Description> m1 = rs.getMoreSpecialConcepts(nc); 
 		mA.get(nc).put(1,m1);
 		
+		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
 		if(useNegation) {
 			// the definition in the paper is more complex, but acutally
 			// we only have to insert the most specific concepts satisfying
@@ -608,7 +635,7 @@ public class RhoDRDown implements RefinementOperator {
 			// subClassOf A and thus: if A and B are disjoint then also A'
 			// and B; if not A AND B = B then also not A' AND B = B
 			SortedSet<Description> m2tmp = rs.getMoreGeneralConcepts(new Nothing());
-			SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
+			
 			for(Description c : m2tmp) {
 				if(c instanceof Thing)
 					m2.add(c);
@@ -617,13 +644,23 @@ public class RhoDRDown implements RefinementOperator {
 					if(!isNotADisjoint(a, nc) && isNotAMeaningful(a, nc))
 						m2.add(new Negation(a));
 				}
-			}
-			mA.get(nc).put(2,m2);
+			}	
 		}
-			
-		// compute applicable properties
-		computeMg(nc);
 		
+		// compute applicable properties
+		computeMg(nc);		
+		
+		// boolean datatypes, e.g. testPositive = true
+		if(useBooleanDatatypes) {
+			Set<DatatypeProperty> booleanDPs = mgbd.get(nc);
+			for(DatatypeProperty dp : booleanDPs) {
+				m2.add(new BooleanValueRestriction(dp,true));
+				m2.add(new BooleanValueRestriction(dp,false));
+			}
+		}
+		
+		mA.get(nc).put(2,m2);
+			
 		SortedSet<Description> m3 = new TreeSet<Description>(conceptComparator);
 		if(useExistsConstructor) {
 			for(ObjectProperty r : mgr.get(nc)) {
@@ -639,15 +676,6 @@ public class RhoDRDown implements RefinementOperator {
 				m3.add(new ObjectAllRestriction(r, new Thing()));
 			}				
 		}		
-		
-		// boolean datatypes, e.g. testPositive = true
-		if(useBooleanDatatypes) {
-			Set<DatatypeProperty> booleanDPs = mgbd.get(nc);
-			for(DatatypeProperty dp : booleanDPs) {
-				m3.add(new BooleanValueRestriction(dp,true));
-				m3.add(new BooleanValueRestriction(dp,false));
-			}
-		}
 		
 		mA.get(nc).put(3,m3);
 		
