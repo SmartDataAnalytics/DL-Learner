@@ -79,8 +79,7 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 	private JList stringList = new JList();
 	private DefaultListModel listModel = new DefaultListModel();
 
-	private JButton setButton = new JButton("set");
-	private CheckBoxList cBL = new CheckBoxList();
+	private CheckBoxList cBL = new CheckBoxList(this);
 
 	public WidgetPanelStringSet(Config config, Component component, Component oldComponent,
 			Class<? extends Component> componentOption, ConfigOption<?> configOption) {
@@ -100,7 +99,6 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 		addButton.addActionListener(this);
 		removeButton.addActionListener(this);
 		clearButton.addActionListener(this);
-		setButton.addActionListener(this);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -132,15 +130,17 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 			// set entry
 			value = exampleSet;
 			setEntry();
-		} else {
-			// SPECIAL LAYOUT
-			// setButton
-			if (e.getSource() == setButton) {
-				value = cBL.getSelections();
-				setEntry();
-			}
 		}
+	}
 
+	/**
+	 * Use this, to set entry for layout 2.
+	 */
+	public void specialSet() {
+		if (isSpecial()) {
+			this.value = cBL.getSelections();
+			setEntry();
+		}
 	}
 
 	@Override
@@ -216,10 +216,6 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 					buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
 					gridbag.setConstraints(cBL, constraints);
 					widgetPanel.add(cBL, constraints);
-					// setButton
-					buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
-					gridbag.setConstraints(setButton, constraints);
-					widgetPanel.add(setButton, constraints);
 					// DEFINE LIST
 					// positiveExamples or negativeExamples
 					if (configOption.getName().equalsIgnoreCase("positiveExamples")
