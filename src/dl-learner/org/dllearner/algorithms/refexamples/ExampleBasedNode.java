@@ -47,8 +47,8 @@ public class ExampleBasedNode {
 	private Set<Individual> coveredNegatives;
 	
 	// the method by which quality was evaluated in this node
-	public enum QualityEvaluationMethod { TOP, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST };
-	private QualityEvaluationMethod qualityEvaluationMethod = QualityEvaluationMethod.TOP;
+	public enum QualityEvaluationMethod { START, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST };
+	private QualityEvaluationMethod qualityEvaluationMethod = QualityEvaluationMethod.START;
 	
 	// all properties of a node in the search tree
 	private Description concept;

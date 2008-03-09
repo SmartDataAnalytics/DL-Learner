@@ -29,7 +29,7 @@ import java.util.Map;
  * @author Jens Lehmann
  *
  */
-public class DatatypeValueRestriction extends ValueRestriction {
+public abstract class DatatypeValueRestriction extends ValueRestriction {
 
 	public DatatypeValueRestriction(DatatypeProperty restrictedPropertyExpression, Constant value) {
 		super(restrictedPropertyExpression, value);
@@ -55,9 +55,12 @@ public class DatatypeValueRestriction extends ValueRestriction {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#getLength()
 	 */
-	public int getLength() {
-		return 1 + restrictedPropertyExpression.getLength() + value.getLength();
-	}
+	// we do not add the + 1 here because e.g. for boolean values we
+	// probably do not want to add it while for double value we may
+	// add it (because "<=" ">=" are possible while boolean has only "=") 
+//	public int getLength() {
+//		return 1 + restrictedPropertyExpression.getLength() + value.getLength();
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)

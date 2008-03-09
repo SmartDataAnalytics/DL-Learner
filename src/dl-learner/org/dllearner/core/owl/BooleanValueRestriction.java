@@ -50,5 +50,12 @@ public class BooleanValueRestriction extends DatatypeValueRestriction {
 	public boolean getBooleanValue() {
 		return booleanValue;
 	}
-	
+
+	/**
+	 * Boolean value restrictions have length 2, because they encode two
+	 * pieces of information: the property and the boolean value.
+	 */
+	public int getLength() {
+		return 2;
+	}
 }

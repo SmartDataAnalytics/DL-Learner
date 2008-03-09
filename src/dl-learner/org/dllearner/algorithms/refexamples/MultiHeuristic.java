@@ -19,6 +19,10 @@
  */
 package org.dllearner.algorithms.refexamples;
 
+import java.util.List;
+
+import org.dllearner.core.owl.BooleanValueRestriction;
+import org.dllearner.core.owl.Description;
 import org.dllearner.utilities.ConceptComparator;
 
 /**
@@ -73,13 +77,14 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	private double expansionPenaltyFactor;
 	private double gainBonusFactor;
 	private double nodeChildPenalty = 0.0001;
+	private double startNodeBonus = 0.8;
 	
 	// examples
 	private int nrOfNegativeExamples;
 	private int nrOfExamples;
 	
 	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples) {
-		this(nrOfPositiveExamples, nrOfNegativeExamples, 0.03, 0.5);
+		this(nrOfPositiveExamples, nrOfNegativeExamples, 0.02, 0.5);
 	}
 	
 	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {
@@ -113,8 +118,11 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		if(parent != null) {
 			double parentAccuracy =  getAccuracy(parent.getCoveredPositives().size(),parent.getCoveredNegatives().size());
 			gain = accuracy - parentAccuracy;
+		} else {
+			accuracy += startNodeBonus;
 		}
-		return accuracy + gainBonusFactor * gain - expansionPenaltyFactor * node.getHorizontalExpansion() - nodeChildPenalty * node.getChildren().size();
+		int he = node.getHorizontalExpansion() - getHeuristicLengthBonus(node.getConcept());
+		return accuracy + gainBonusFactor * gain - expansionPenaltyFactor * he - nodeChildPenalty * node.getChildren().size();
 	}
 	
 	private double getAccuracy(int coveredPositives, int coveredNegatives) {
@@ -127,4 +135,18 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		return multi.getNodeScore(node);
 	}
 	
+	// this function can be used to give some constructs a length bonus
+	// compared to their syntactic length
+	private static int getHeuristicLengthBonus(Description description) {
+		int bonus = 0;
+		
+		if(description instanceof BooleanValueRestriction)
+			bonus = 1;
+		
+		List<Description> children = description.getChildren();
+		for(Description child : children) {
+			bonus += getHeuristicLengthBonus(child);
+		}
+		return bonus;
+	}
 }
