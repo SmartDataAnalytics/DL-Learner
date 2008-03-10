@@ -32,11 +32,14 @@ import java.util.Map;
  */
 public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 
+	DataRange dataRange;
+	
 	/**
 	 * @param datatypeProperty
 	 */
-	public DatatypeSomeRestriction(DatatypeProperty datatypeProperty) {
+	public DatatypeSomeRestriction(DatatypeProperty datatypeProperty, DataRange dataRange) {
 		super(datatypeProperty);
+		this.dataRange = dataRange;
 	}
 
 	/* (non-Javadoc)
@@ -44,7 +47,6 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	 */
 	@Override
 	public int getArity() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -52,16 +54,14 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	 * @see org.dllearner.core.owl.KBElement#getLength()
 	 */
 	public int getLength() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 1 + dataRange.getLength();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return restrictedPropertyExpression.toString(baseURI, prefixes) + dataRange.toString(baseURI, prefixes);
 	}
 
 	/* (non-Javadoc)
@@ -83,5 +83,12 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	public String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * @return the dataRange
+	 */
+	public DataRange getDataRange() {
+		return dataRange;
 	}	
 }

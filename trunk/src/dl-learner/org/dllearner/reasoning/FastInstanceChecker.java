@@ -37,9 +37,13 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.BooleanValueRestriction;
+import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.DoubleMaxValue;
+import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -206,6 +210,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 	@Override
 	public boolean instanceCheck(Description description, Individual individual)
 			throws ReasoningMethodUnsupportedException {
+		
+//		System.out.println(description + " " + individual);
+		
 		if (description instanceof NamedClass) {
 			return classInstancesPos.get((NamedClass) description).contains(individual);
 		} else if (description instanceof Negation) {
@@ -294,6 +301,28 @@ public class FastInstanceChecker extends ReasonerComponent {
 			} else {
 				return bdNeg.get(dp).contains(individual);
 			}
+		} else if (description instanceof DatatypeSomeRestriction) {
+			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
+			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
+			DataRange dr = dsr.getDataRange();
+			SortedSet<Double> values = dd.get(dp).get(individual);
+			
+			// if there is no filler for this individual and property we
+			// need to return false
+			if(values == null)
+				return false;
+			
+			if(dr instanceof DoubleMaxValue) {
+				if(values.first() <= ((DoubleMaxValue)dr).getValue())
+					return true;
+				else
+					return false;
+			} else if(dr instanceof DoubleMinValue) {
+				if(values.last() >= ((DoubleMinValue)dr).getValue())
+					return true;
+				else
+					return false;
+			}
 		}
 
 		throw new ReasoningMethodUnsupportedException("Instance check for description "
@@ -325,6 +354,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return atomicConcepts;
 	}
 
+	@Override
+	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		return rc.getDoubleDatatypeMembers(datatypeProperty);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

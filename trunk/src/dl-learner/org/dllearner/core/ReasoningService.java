@@ -459,6 +459,42 @@ public class ReasoningService {
 		return result;		
 	}
 
+	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(DatatypeProperty datatypeProperty) {
+		try {
+			return reasoner.getDoubleDatatypeMembers(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
+	public Map<Individual, SortedSet<Double>> getIntDatatypeMembers(DatatypeProperty datatypeProperty) {
+		try {
+			return reasoner.getDoubleDatatypeMembers(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}	
+	
+	public Map<Individual, SortedSet<Double>> getTrueDatatypeMembers(DatatypeProperty datatypeProperty) {
+		try {
+			return reasoner.getDoubleDatatypeMembers(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
+	public Map<Individual, SortedSet<Double>> getFalseDatatypeMembers(DatatypeProperty datatypeProperty) {
+		try {
+			return reasoner.getDoubleDatatypeMembers(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}	
+	
 	public Set<NamedClass> getAtomicConcepts() {
 		return reasoner.getAtomicConcepts();
 	}

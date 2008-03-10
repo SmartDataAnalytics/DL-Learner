@@ -79,6 +79,12 @@ public interface Reasoner {
 	
 	public Map<Individual, SortedSet<Constant>> getDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;
 	
+	// some convenience methods
+	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;
+	public Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;
+	public SortedSet<Individual> getTrueDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;
+	public SortedSet<Individual> getFalseDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;
+	
 	public boolean instanceCheck(Description concept, Individual individual) throws ReasoningMethodUnsupportedException;
 	
 	// mehrere instance checks für ein Konzept - spart bei DIG Anfragen
