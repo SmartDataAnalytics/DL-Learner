@@ -4,12 +4,17 @@ import java.util.Comparator;
 import java.util.Set;
 
 import org.dllearner.core.owl.BooleanValueRestriction;
+import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypeSomeRestriction;
+import org.dllearner.core.owl.DoubleMaxValue;
+import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.SimpleDoubleDataRange;
 import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
@@ -94,8 +99,44 @@ public class ConceptComparator implements Comparator<Description> {
 					return cmp;				
 			} else
 				return -1;
+		} else if(concept1 instanceof DatatypeSomeRestriction) {
+			if(concept2 instanceof Nothing || concept2 instanceof NamedClass || concept2 instanceof BooleanValueRestriction) {
+				return 1;
+			} else if(concept2 instanceof DatatypeSomeRestriction) {
+				DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) concept1;
+				DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
+				DatatypeSomeRestriction dsr2 = (DatatypeSomeRestriction) concept2;
+				DatatypeProperty dp2 = (DatatypeProperty) dsr2.getRestrictedPropertyExpression();				
+				
+				// first criterion: name of the properties
+				int cmp = rc.compare(dp, dp2);
+
+				if(cmp == 0) {
+					SimpleDoubleDataRange dr = (SimpleDoubleDataRange) dsr.getDataRange();
+					SimpleDoubleDataRange dr2 = (SimpleDoubleDataRange) dsr2.getDataRange();					
+					
+					// equal classes
+					if((dr instanceof DoubleMaxValue && dr2 instanceof DoubleMaxValue)
+							|| (dr instanceof DoubleMinValue && dr2 instanceof DoubleMinValue)) {
+						double val1 = dr.getValue();
+						double val2 = dr2.getValue();
+						if(val1 > val2)
+							return 1;
+						else if(val1 == val2)
+							return 0;
+						else
+							return -1;		
+						
+					} else if(dr instanceof DoubleMaxValue)
+						return 1;
+					else
+						return -1;
+				} else
+					return cmp;				
+			} else
+				return -1;
 		} else if(concept1 instanceof Thing) {
-			if(concept2 instanceof Nothing || concept2 instanceof NamedClass || concept2 instanceof BooleanValueRestriction)
+			if(concept2 instanceof Nothing || concept2 instanceof NamedClass || concept2 instanceof BooleanValueRestriction || concept2 instanceof DatatypeSomeRestriction)
 				return 1;
 			else if(concept2 instanceof Thing)
 				return 0;

@@ -19,46 +19,15 @@
  */
 package org.dllearner.core.owl;
 
-import java.util.Map;
-
 /**
- * Double data range restricted by a maximum value, e.g. 
- * hasAge <= 65.
+ * A double data range with a single value used for restrictions,
+ * e.g. hasAge >= 18 (but not 65 >= hasAge >= 18).
  * 
  * @author Jens Lehmann
  *
  */
-public class DoubleMaxValue implements SimpleDoubleDataRange {
+public interface SimpleDoubleDataRange extends DoubleDataRange {
 
-	private double value;
-	
-	public DoubleMaxValue(double value) {
-		this.value = value;
-	}
-
-	/**
-	 * @return The maximum value.
-	 */
-	public double getValue() {
-		return value;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#getLength()
-	 */
-	public int getLength() {
-		return 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
-	 */
-	public String toString(String baseURI, Map<String, String> prefixes) {
-		return " <= " + value;
-	}
-	
-	public void accept(KBElementVisitor visitor) {
-		visitor.visit(this);
-	}	
+	public double getValue();
 	
 }

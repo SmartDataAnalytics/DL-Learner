@@ -35,6 +35,7 @@ import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DescriptionVisitor;
+import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
@@ -45,6 +46,7 @@ import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
+import org.dllearner.core.owl.SimpleDoubleDataRange;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.Union;
@@ -55,9 +57,13 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.OWLDataRange;
 import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owl.model.OWLTypedConstant;
+import org.semanticweb.owl.vocab.OWLRestrictedDataRangeFacetVocabulary;
+import org.semanticweb.owl.vocab.XSDVocabulary;
 
 /**
  * Converter from DL-Learner descriptions to OWL API descriptions based
@@ -212,7 +218,8 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	public void visit(DatatypeValueRestriction description) {
 		// convert OWL constant to OWL API constant
 		Constant c = description.getValue();
-		OWLConstant constant;
+		OWLConstant constant = convertConstant(c);
+		/*
 		if(c instanceof TypedConstant) {
 			Datatype dt = ((TypedConstant)c).getDatatype();
 			OWLDataType odt = convertDatatype(dt);
@@ -225,6 +232,7 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 				constant = factory.getOWLUntypedConstant(uc.getLiteral());
 			}
 		}
+		*/
 				
 		// get datatype property
 		DatatypeProperty dtp = description.getRestrictedPropertyExpresssion();
@@ -276,8 +284,28 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeSomeRestriction)
 	 */
 	public void visit(DatatypeSomeRestriction description) {
-		// TODO Auto-generated method stub
-		throw new Error("OWLAPIDescriptionConverter: not implemented");
+		
+		// TODO: currently works only for double min/max
+		
+		DatatypeProperty dp = (DatatypeProperty) description.getRestrictedPropertyExpression();
+		// currently only double restrictions implemented
+		SimpleDoubleDataRange dr = (SimpleDoubleDataRange) description.getDataRange();
+		Double value = dr.getValue();
+		
+		OWLDataType doubleDataType = factory.getOWLDataType(XSDVocabulary.DOUBLE.getURI());
+        OWLTypedConstant constant = factory.getOWLTypedConstant(value.toString(), doubleDataType);
+
+        OWLRestrictedDataRangeFacetVocabulary facet;
+        if(dr instanceof DoubleMinValue)
+        	facet = OWLRestrictedDataRangeFacetVocabulary.MIN_INCLUSIVE;
+        else 
+        	facet = OWLRestrictedDataRangeFacetVocabulary.MAX_INCLUSIVE;
+        
+        OWLDataRange owlDataRange = factory.getOWLDataRangeRestriction(doubleDataType, facet, constant);
+        OWLDataProperty odp = factory.getOWLDataProperty(URI.create(dp.getName()));
+        OWLDescription d = factory.getOWLDataSomeRestriction(odp, owlDataRange);
+
+		stack.push(d);	
 	}
 
 	public OWLDataType convertDatatype(Datatype datatype) {
@@ -291,4 +319,20 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 		throw new Error("OWLAPIDescriptionConverter: datatype not implemented");			
 	}
 	
+	private OWLConstant convertConstant(Constant constant) {
+		OWLConstant owlConstant;
+		if(constant instanceof TypedConstant) {
+			Datatype dt = ((TypedConstant)constant).getDatatype();
+			OWLDataType odt = convertDatatype(dt);
+			owlConstant = factory.getOWLTypedConstant(constant.getLiteral(), odt);
+		} else {
+			UntypedConstant uc = (UntypedConstant) constant;
+			if(uc.hasLang()) {
+				owlConstant = factory.getOWLUntypedConstant(uc.getLiteral(), uc.getLang());
+			} else {
+				owlConstant = factory.getOWLUntypedConstant(uc.getLiteral());
+			}
+		}
+		return owlConstant;
+	}
 }

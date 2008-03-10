@@ -100,6 +100,12 @@ public class ExampleBasedROLearner {
 	private boolean useOverlyGeneralList = true;
 	private boolean useShortConceptConstruction = true;
 	
+	// if set to false we do not test properness; this may seem wrong
+	// but the disadvantage of properness testing are additional reasoner
+	// queries and a search bias towards ALL r.something because 
+	// ALL r.TOP is improper and automatically expanded further
+	private boolean testProperness = false;
+	
 	// setting to true gracefully stops the algorithm
 	private boolean stop = false;
 	
@@ -431,11 +437,13 @@ public class ExampleBasedROLearner {
 		Set<Description> improperConcepts = null;
 		if(toEvaluateConcepts.size()>0) {
 			// Test aller Konzepte auf properness (mit DIG in nur einer Anfrage)
-			long propCalcReasoningStart = System.nanoTime();
-			improperConcepts = rs.subsumes(toEvaluateConcepts, concept);
-			propernessTestsReasoner+=toEvaluateConcepts.size();
-			// boolean isProper = !learningProblem.getReasoningService().subsumes(refinement, concept);
-			propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;
+			if(testProperness) {
+				long propCalcReasoningStart = System.nanoTime();
+				improperConcepts = rs.subsumes(toEvaluateConcepts, concept);
+				propernessTestsReasoner+=toEvaluateConcepts.size();
+				// boolean isProper = !learningProblem.getReasoningService().subsumes(refinement, concept);
+				propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;
+			}
 		}
 
 		long improperConceptsRemovalTimeNsStart = System.nanoTime();

@@ -19,6 +19,7 @@
  */
 package org.dllearner.refinementoperators;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,12 +30,17 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.dllearner.algorithms.refinement.RefinementOperator;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.BooleanValueRestriction;
+import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.DoubleMaxValue;
+import org.dllearner.core.owl.DoubleMinValue;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -119,7 +125,11 @@ public class RhoDRDown implements RefinementOperator {
 	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
-	// Statistik
+	// splits for double datatype properties in ascening order
+	private Map<DatatypeProperty,List<Double>> splits = new TreeMap<DatatypeProperty,List<Double>>();
+	private int maxNrOfSplits = 20;
+	
+	// staistics
 	public long mComputationTimeNs = 0;
 	public long topComputationTimeNs = 0;
 	
@@ -129,6 +139,7 @@ public class RhoDRDown implements RefinementOperator {
 	private boolean useExistsConstructor = true;
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;
+	private boolean useDoubleDatatypes = true;
 	private boolean disjointChecks = true;
 	private boolean instanceBasedDisjoints = true;
 	
@@ -165,38 +176,29 @@ public class RhoDRDown implements RefinementOperator {
 			dpDomains.put(dp, rs.getDomain(dp));
 		}
 		
+		// compute splits for double datatype properties
+		for(DatatypeProperty dp : rs.getDoubleDatatypeProperties()) {
+			computeSplits(dp);
+		}
+		
 		/*
-		NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Compound");
+		NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Atom");
 		ObjectProperty op = new ObjectProperty("http://dl-learner.org/carcinogenesis#hasAtom");
-		ObjectAllRestriction oar = new ObjectAllRestriction(op,struc);
-		String str = "((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS FALSE) OR ALL \"http://dl-learner.org/carcinogenesis#hasAtom\".TOP)";
-		Description desc = null;
-		try {
-			desc = KBParser.parseConcept(str);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-//		System.out.println(oar.getLength());
-//		computeTopRefinements(3,struc);		
-//		for(Description d : topARefinements.get(struc).get(1)) {
-		// bei 3 ist noch alles OK, bei 4 seltsamer Fehler mit Union
-		Set<Description> ds = refine(struc,10,null,struc);
-		Set<Description> improper = new HashSet<Description>();
+		ObjectSomeRestriction oar = new ObjectSomeRestriction(op,Thing.instance);
+
+		Set<Description> ds = refine(Thing.instance,3,null,struc);
+//		Set<Description> improper = new HashSet<Description>();
 		for(Description d : ds) {
-//			if(d instanceof Union)
-			if(rs.subsumes(d, struc)) {
-				improper.add(d);
+//			if(rs.subsumes(d, struc)) {
+//				improper.add(d);
 				System.out.println(d);
-			}
+//			}
 		}
-//		System.out.println(refine(Thing.instance,7,null,struc).size());
 		System.out.println(ds.size());
-		System.out.println(improper.size());
+//		System.out.println(improper.size());
 		System.exit(0);
 		*/
-		
-		
+		 
 		if(startClass != null)
 			this.startClass = startClass;
 	}
@@ -356,6 +358,36 @@ public class RhoDRDown implements RefinementOperator {
 				refinements.add(new ObjectAllRestriction(moreSpecialRole, description.getChild(0)));
 			}
 			
+		} else if (description instanceof DatatypeSomeRestriction) {
+			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
+			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
+			DataRange dr = dsr.getDataRange();
+			if(dr instanceof DoubleMaxValue) {
+				double value = ((DoubleMaxValue)dr).getValue();
+				// find out which split value was used
+				int splitIndex = splits.get(dp).lastIndexOf(value);
+				if(splitIndex == -1)
+					throw new Error("split error");
+				int newSplitIndex = splitIndex - 1;
+				if(newSplitIndex >= 0) {
+					DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(newSplitIndex));
+					DatatypeSomeRestriction newDSR = new DatatypeSomeRestriction(dp,max);
+					refinements.add(newDSR);
+//					System.out.println(description + " => " + newDSR);
+				}
+			} else if(dr instanceof DoubleMinValue) {
+				double value = ((DoubleMinValue)dr).getValue();
+				// find out which split value was used
+				int splitIndex = splits.get(dp).lastIndexOf(value);
+				if(splitIndex == -1)
+					throw new Error("split error");
+				int newSplitIndex = splitIndex + 1;
+				if(newSplitIndex < splits.get(dp).size()) {
+					DoubleMinValue min = new DoubleMinValue(splits.get(dp).get(newSplitIndex));
+					DatatypeSomeRestriction newDSR = new DatatypeSomeRestriction(dp,min);
+					refinements.add(newDSR);
+				}
+			}
 		}
 		
 		// if a refinement is not Bottom, Top, ALL r.Bottom a refinement of top can be appended
@@ -606,6 +638,16 @@ public class RhoDRDown implements RefinementOperator {
 			}				
 		}		
 		
+		if(useDoubleDatatypes) {
+			Set<DatatypeProperty> doubleDPs = rs.getDoubleDatatypeProperties();
+			for(DatatypeProperty dp : doubleDPs) {
+				DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
+				DoubleMinValue min = new DoubleMinValue(splits.get(dp).get(0));
+				m3.add(new DatatypeSomeRestriction(dp,max));
+				m3.add(new DatatypeSomeRestriction(dp,min));
+			}
+		}		
+		
 		m.put(3,m3);
 		
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
@@ -676,6 +718,24 @@ public class RhoDRDown implements RefinementOperator {
 				m3.add(new ObjectAllRestriction(r, new Thing()));
 			}				
 		}		
+		
+		if(useDoubleDatatypes) {
+			Set<DatatypeProperty> doubleDPs = mgdd.get(nc);
+//			System.out.println("cached disjoints " + cachedDisjoints);
+//			System.out.println("appOP " + appOP);
+//			System.out.println("appBD " + appBD);
+//			System.out.println("appDD " + appDD);
+//			System.out.println("mgr " + mgr);
+//			System.out.println("mgbd " + mgbd);
+//			System.out.println("mgdd " + mgdd);
+			
+			for(DatatypeProperty dp : doubleDPs) {
+				DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
+				DoubleMinValue min = new DoubleMinValue(splits.get(dp).get(0));
+				m3.add(new DatatypeSomeRestriction(dp,max));
+				m3.add(new DatatypeSomeRestriction(dp,min));
+			}
+		}			
 		
 		mA.get(nc).put(3,m3);
 		
@@ -755,10 +815,11 @@ public class RhoDRDown implements RefinementOperator {
 		appBD.put(domain, applicableBDPs);	
 		
 		// double datatype properties
-		Set<DatatypeProperty> mostGeneralDDPs = rs.getBooleanDatatypeProperties();
+		Set<DatatypeProperty> mostGeneralDDPs = rs.getDoubleDatatypeProperties();
 		Set<DatatypeProperty> applicableDDPs = new TreeSet<DatatypeProperty>();
 		for(DatatypeProperty role : mostGeneralDDPs) {
 			Description d = (NamedClass) rs.getDomain(role);
+//			System.out.println("domain: " + d);
 			if(!isDisjoint(domain,d))
 				applicableDDPs.add(role);
 		}
@@ -788,15 +849,17 @@ public class RhoDRDown implements RefinementOperator {
 	}
 	
 	private boolean isDisjoint(Description d1, Description d2) {
-		// equal concepts are not disjoint (unless equivalent to bottom)
-//		if(conceptComparator.compare(d1, d2)==0)
-//			return false;
+		
+//		System.out.println("| " + d1 + " " + d2);
+//		System.out.println("| " + cachedDisjoints);
 		
 		// check whether we have cached this query
 		Map<Description,Boolean> tmp = cachedDisjoints.get(d1);
 		Boolean tmp2 = null;
 		if(tmp != null)
 			tmp2 = tmp.get(d2);
+		
+//		System.out.println("| " + tmp + " " + tmp2);
 		
 		if(tmp2==null) {
 			Boolean result;
@@ -809,24 +872,33 @@ public class RhoDRDown implements RefinementOperator {
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
 			
+//			System.out.println("| result: " + result);
+			
 			// create new entries if necessary
-			Map<Description,Boolean> map = new TreeMap<Description,Boolean>(conceptComparator);
+			Map<Description,Boolean> map1 = new TreeMap<Description,Boolean>(conceptComparator);
+			Map<Description,Boolean> map2 = new TreeMap<Description,Boolean>(conceptComparator);
 			if(tmp == null)
-				cachedDisjoints.put(d1, map);
+				cachedDisjoints.put(d1, map1);
 			if(!cachedDisjoints.containsKey(d2))
-				cachedDisjoints.put(d2, map);
+				cachedDisjoints.put(d2, map2);
 			
 			// add result symmetrically in the description matrix
 			cachedDisjoints.get(d1).put(d2, result);
 			cachedDisjoints.get(d2).put(d1, result);
+//			System.out.println("---");
 			return result;
-		} else
+		} else {
+//			System.out.println("===");
 			return tmp2;
+		}
 	}	
 	
 	private boolean isDisjointInstanceBased(Description d1, Description d2) {
-		Set<Individual> d1Instances = rs.retrieval(d1);
-		Set<Individual> d2Instances = rs.retrieval(d2);
+		SortedSet<Individual> d1Instances = rs.retrieval(d1);
+		SortedSet<Individual> d2Instances = rs.retrieval(d2);
+//		System.out.println(d1 + " " + d2);
+//		System.out.println(d1 + " " + d1Instances);
+//		System.out.println(d2 + " " + d2Instances);
 		for(Individual d1Instance : d1Instances) {
 			if(d2Instances.contains(d1Instance))
 				return false;
@@ -870,4 +942,34 @@ public class RhoDRDown implements RefinementOperator {
 		return !rs.subsumes(d, b);
 	}
 	
+	private void computeSplits(DatatypeProperty dp) {
+		Set<Double> valuesSet = new TreeSet<Double>();
+//		Set<Individual> individuals = rs.getIndividuals();
+		Map<Individual,SortedSet<Double>> valueMap = rs.getDoubleDatatypeMembers(dp);
+		// add all values to the set (duplicates will be remove automatically)
+		for(Entry<Individual,SortedSet<Double>> e : valueMap.entrySet())
+			valuesSet.addAll(e.getValue());
+		// convert set to a list where values are sorted
+		List<Double> values = new LinkedList<Double>(valuesSet);
+		Collections.sort(values);
+		
+		int nrOfValues = values.size();
+		// create split set
+		List<Double> splitsDP = new LinkedList<Double>();
+		for(int splitNr=0; splitNr < maxNrOfSplits; splitNr++) {
+			int index;
+			if(nrOfValues<=maxNrOfSplits)
+				index = splitNr;
+			else
+				index = (int) Math.floor(splitNr * (double)nrOfValues/(maxNrOfSplits+1));
+			
+			double value = 0.5*(values.get(index)+values.get(index+1));
+			splitsDP.add(value);
+		}
+		splits.put(dp, splitsDP);
+		
+//		System.out.println(values);
+//		System.out.println(splits);
+//		System.exit(0);
+	}
 }
