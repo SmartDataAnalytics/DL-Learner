@@ -174,6 +174,10 @@ public class ExampleBasedNode {
 		return ret;
 	}
 	
+	public double getAccuracy(int nrOfPositiveExamples, int nrOfNegativeExamples) {
+		return (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
+	}
+	
 	public Set<Individual> getCoveredPositives() {
 		return coveredPositives;
 	}	

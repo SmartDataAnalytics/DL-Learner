@@ -122,8 +122,10 @@ public class Carcinogenesis {
 	public static void main(String[] args) throws FileNotFoundException, IOException,
 			ParseException {
 
+		// TODO: newgroups are not mapped currently
 		String[] files = new String[] { "newgroups.pl", "ames.pl", "atoms.pl", "bonds.pl", "gentoxprops.pl",
-				"ind_nos.pl", "ind_pos.pl", 
+				"ind_nos.pl", "ind_pos.pl", "pte2/canc_nos.pl", "pte2/pte2ames.pl", "pte2/pte2atoms.pl",
+				"pte2/pte2bonds.pl", "pte2/pte2gentox.pl", "pte2/pte2ind_nos.pl", "pte2/pte2newgroups.pl"
 		// "train.b" => not a pure Prolog file but Progol/Aleph specific
 		};
 		File owlFile = new File("examples/carcinogenesis/pte.owl");
@@ -252,20 +254,23 @@ public class Carcinogenesis {
 		appendNegExamples(confTrainFile, negTrainExamples);
 		
 		// generating test examples for PTE-1
-		File confPTE1File = new File("examples/carcinogenesis/testpte1.conf");
-		Files.clearFile(confPTE1File);
+		// => put all in one file, because they were used as training for PTE-2
+		// File confPTE1File = new File("examples/carcinogenesis/testpte1.conf");
+		// Files.clearFile(confPTE1File);
 		File testPTE1Positives = new File(prologDirectory + "pte1.f");
 		File testPTE1Negatives = new File(prologDirectory + "pte1.n");
 		
 		List<Individual> posPTE1Examples = getExamples(testPTE1Positives);
 		List<Individual> negPTE1Examples = getExamples(testPTE1Negatives);
-		appendPosExamples(confPTE1File, posPTE1Examples);
-		appendNegExamples(confPTE1File, negPTE1Examples);		
+		appendPosExamples(confTrainFile, posPTE1Examples);
+		appendNegExamples(confTrainFile, negPTE1Examples);		
 		
-		// TODO: how to get PTE-2 predictions? the pte-2 directory suggests
-		// that all are positive which is not true (according to the papers)
-		// solution: go to "http://ntp-server.niehs.nih.gov/" and click
-		// on "Testing Status of Agents at NTP"
+		// create a PTE-2 test file
+		File confPTE2File = new File("examples/carcinogenesis/testpte2.conf");
+		Files.clearFile(confPTE2File);
+		Files.appendFile(confPTE2File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
+		Files.appendFile(confPTE2File, getPTE2Examples());
+
 	}
 
 	private static List<Axiom> mapClause(Clause clause) throws IOException, ParseException {
@@ -361,7 +366,7 @@ public class Carcinogenesis {
 			axioms.add(dpa);
 		// either parse this or ashby_alert - not both - ashby_alert contains
 		// all information in ind already
-		} else if (headName.equals("ind")) {
+		} else if (headName.equals("ind") || headName.equals("ring_no")) {
 			String compoundName = head.getArgument(0).toPLString();
 			String structureName = head.getArgument(1).toPLString();
 			int count = Integer.parseInt(head.getArgument(2).toPLString());
@@ -555,4 +560,86 @@ public class Carcinogenesis {
 		newGroups.addAll(list);
 	}
 
+	/**
+	 * <p>To find out whether a substance is carinogenetic go to 
+	 * "http://ntp-server.niehs.nih.gov/" and click
+	 * on "Testing Status of Agents at NTP".</p>
+	 * 
+	 * Levels:
+	 * <ul>
+	 * 	<li>CE = clear evidence</li>
+	 *  <li>SE = some evidence</li>
+	 *  <li>E = equivocal evidence</li>
+	 *  <li>NE = no evidence</li>
+	 * </ul>
+	 * Levels CE and SE are positive examples. E and NE negative examples.
+	 * Experiments are performed on rats and mice of both genders, so we
+	 * have four evidence values. An example is positive if at least one
+	 * value is SE or CE.
+	 * 
+	 * <p>Some values are taken from the IJCAI-97 paper of Muggleton.</p>
+	 * 
+	 * <p>Positives (19): <br />
+	 * <ul>
+	 * <li>t3 (SE+3NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCACAFD4-123F-7908-7B521E4F665EFBD9</li>
+	 * <li>t5: paper</li>
+	 * <li>t7: paper</li>
+	 * <li>t8: paper</li>
+	 * <li>t9 (3CE+SE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD7C6869-123F-7908-7BDEA4CFAA55CEA8</li>
+	 * <li>t10: paper</li>
+	 * <li>t12 (2SE+E+NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCB0ADE0-123F-7908-7BEC101C7309C4DE</li>
+	 * <li>t14 (2CE+2NE) probably 111-42-2 instead of 11-42-2: http://ntp.niehs.nih.gov/index.cfm?objectid=BCC60FF1-123F-7908-7B2D579AA48DE90C</li>
+	 * <li>t15: paper</li>
+	 * <li>t16 (2CE+SE+E): http://ntp.niehs.nih.gov/index.cfm?objectid=BCC5D9CE-123F-7908-7B959CCE5262468A</li>
+	 * <li>t18 (2SE+E+NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCA087AA-123F-7908-7B79FDFDE3CDCF87</li>
+	 * <li>t19 (2CE+E+NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCAE5690-123F-7908-7B02E35E2BB57694</li>
+	 * <li>t20 (2SE+E+NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCF95607-123F-7908-7B0761D3C515CC12</li>
+	 * <li>t21 (CE+3NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCFCB63C-123F-7908-7BF910C2783AE9FE</li>
+	 * <li>t22 (SE+3NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD8345C2-123F-7908-7BC52FEF80F110E1</li>
+	 * <li>t23 (4CE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCADD2D9-123F-7908-7B5C8180FE80B22F</li>
+	 * <li>t24 (CE+E): http://ntp.niehs.nih.gov/index.cfm?objectid=BCFB19FF-123F-7908-7B845E176F13E6E1</li>
+	 * <li>t25 (3CE+SE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD2D2A62-123F-7908-7B0DA824E782754C</li>
+	 * <li>t30 (2CE+SE+E) : http://ntp.niehs.nih.gov/index.cfm?objectid=BCB13734-123F-7908-7BEBA533E35A48B7</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * <p>Negatives (10):
+	 * <ul>
+	 * <li>t1 (4NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD9FF53C-123F-7908-7B123DAE0A25B122 </li>
+	 * <li>t2 (4NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCF8651E-123F-7908-7B21DD5ED83CD0FF </li>
+	 * <li>t4: paper</li>
+	 * <li>t6: paper</li>
+	 * <li>t11: paper</li>
+	 * <li>t13 (4NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD136ED6-123F-7908-7B619EE79F2FD062</li>
+	 * <li>t17: paper</li>
+	 * <li>t26 (2E+2NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD1E6209-123F-7908-7B95EB8BAE662CE7</li>
+	 * <li>t27 (E+3NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BCAC5D00-123F-7908-7BC46ECB72A6C91B</li>
+	 * <li>t28 (E+3NE): http://ntp.niehs.nih.gov/index.cfm?objectid=BD34E02A-123F-7908-7BC6791917B591DF</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * <p>Unclear (1):
+	 * <ul>
+	 * <li>t29: probably a negative (see http://ntp.niehs.nih.gov/index.cfm?objectid=BD855EA1-123F-7908-7B573FC3C08188DC) but
+	 * no tests directly for this substance</li>
+	 * </ul>
+	 * </p>
+	 * @return A string for all examples as used in the conf file.
+	 */
+	public static String getPTE2Examples() {
+		String[] pos = new String[] {"t3","t5","t7","t8","t9","t10","t12",
+				"t14","t15","t16","t18","t19","t20","t21","t22","t23","t24",
+				"t25","t30"};
+		String[] neg = new String[] {"t1", "t2", "t4", "t6", "t11", "t13",
+				"t17","t26","t27","t28"};
+
+		String ret = "";
+		for(String posEx : pos)
+			ret += "+" + getURI2(posEx) + "\n";
+		for(String negEx : neg)
+			ret += "-" + getURI2(negEx) + "\n";		
+		
+		return ret;
+	}
+	
 }
