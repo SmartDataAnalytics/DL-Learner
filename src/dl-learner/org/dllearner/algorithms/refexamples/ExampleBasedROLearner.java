@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -105,6 +106,18 @@ public class ExampleBasedROLearner {
 	// queries and a search bias towards ALL r.something because 
 	// ALL r.TOP is improper and automatically expanded further
 	private boolean testProperness = false;
+	
+	// tree traversal means to run through the most promising concepts
+	// and connect them in an intersection to find a solution
+	// (this is called irregularly e.g. every 100 seconds)
+	private boolean useTreeTraversal = false;
+	
+	// candidate reduction: using this mechanism we can simulate
+	// the divide&conquer approach in many ILP programs using a
+	// clause by clause search; after a period of time the candidate
+	// set is reduced to focus CPU time on the most promising concepts
+	private boolean useCandidateReduction = true;
+	private int candidatePostReductionSize = 30;
 	
 	// setting to true gracefully stops the algorithm
 	private boolean stop = false;
@@ -228,7 +241,7 @@ public class ExampleBasedROLearner {
 	
 	public void start() {
 		// calculate quality threshold required for a solution
-		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);	
+		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
 		
 		// start search with start class
 		if(startDescription == null) {
@@ -250,6 +263,11 @@ public class ExampleBasedROLearner {
 		
 		algorithmStartTime = System.nanoTime();
 		long lastPrintTime = 0;
+		long lastTreeTraversalTime = System.nanoTime();
+		long lastReductionTime = System.nanoTime();
+		// try a traversal after 100 seconds
+		long traversalInterval = 1000l * 1000000000l;
+		long reductionInterval = 100l * 1000000000l;
 		long currentTime;
 		
 		while(!solutionFound && !stop) {		
@@ -261,6 +279,18 @@ public class ExampleBasedROLearner {
 				lastPrintTime = currentTime;
 				logger.debug("--- loop " + loop + " started ---");				
 			}
+			
+			// traverse the current search tree to find a solution
+			if(useTreeTraversal && (currentTime - lastTreeTraversalTime > traversalInterval)) {
+				traverseTree();
+				lastTreeTraversalTime = System.nanoTime();
+			}
+			
+			// reduce candidates to focus on promising concepts
+			if(useCandidateReduction && (currentTime - lastReductionTime > reductionInterval)) {
+				reduceCandidates();
+				lastReductionTime = System.nanoTime();
+			}			
 			
 			// chose best node according to heuristics
 			bestNode = candidates.last();
@@ -695,6 +725,130 @@ public class ExampleBasedROLearner {
 		}
 		return false;
 	}		
+	
+	// TODO: investigate whether it makes sense not to store all individuals
+	// in the nodes, but instead perform instance checks in tree traversal
+	// (it is only run in large intervals so it shouldn't be too expensive)
+	private void traverseTree() {
+//		ExampleBasedNode startNode = candidatesStable.last();
+		ExampleBasedNode startNode = findBestTraversalStartNode();
+		Description currentDescription = startNode.getConcept();
+		Set<Individual> currentCoveredPos = startNode.getCoveredPositives();
+		Set<Individual> currentCoveredNeg = startNode.getCoveredNegatives();
+		double currentAccuracy = startNode.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
+		int currentMisclassifications = nrOfPositiveExamples - currentCoveredPos.size() + currentCoveredNeg.size();
+		System.out.println("tree traversal start node " + startNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+		System.out.println("tree traversal start accuracy: " + currentAccuracy);
+		int i=0;
+		// start from the most promising nodes
+		NavigableSet<ExampleBasedNode> reverseView = candidatesStable.descendingSet();
+		for(ExampleBasedNode currNode : reverseView) {
+			// compute covered positives and negatives
+			SortedSet<Individual> newCoveredPositives = new TreeSet<Individual>(currentCoveredPos);
+			newCoveredPositives.retainAll(currNode.getCoveredPositives());
+			SortedSet<Individual> newCoveredNegatives = new TreeSet<Individual>(currentCoveredNeg);
+			newCoveredNegatives.retainAll(currNode.getCoveredNegatives());
+			
+			// compute the accuracy we would get by adding this node
+			double accuracy = (newCoveredPositives.size() + nrOfNegativeExamples - newCoveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
+			int misclassifications = nrOfPositiveExamples - newCoveredPositives.size() + newCoveredNegatives.size();
+			int misclassifiedPositives = nrOfPositiveExamples - newCoveredPositives.size();
+			
+			int lostPositives = currentCoveredPos.size() - newCoveredPositives.size();
+			
+			// TODO: maybe we should also consider a minimum improvement when adding something
+			// otherwise we could overfit 
+			// we give double weith to lost positives, i.e. when one positive is lost at least 
+			// two negatives need to be uncovered
+			boolean consider = (misclassifications + lostPositives < currentMisclassifications) &&
+				(misclassifiedPositives <= allowedMisclassifications);
+//			boolean consider = (misclassifications < currentMisclassifications) &&
+//			(misclassifiedPositives <= allowedMisclassifications);			
+			
+			// concept has been chosen, so construct it
+			if(consider) {
+				
+				// construct a new concept as intersection of both
+				Intersection mc = new Intersection(currentDescription, currNode.getConcept());
+				
+				ConceptTransformation.cleanConceptNonRecursive(mc);
+				ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
+					
+//				System.out.println("extended concept to: " + mc);
+				System.out.println("misclassifications: " + misclassifications);
+				System.out.println("misclassified positives: " + misclassifiedPositives);
+				System.out.println("accuracy: " + accuracy);				
+				
+				// update variables
+				currentDescription = mc;
+				currentCoveredPos = newCoveredPositives;
+				currentCoveredNeg = newCoveredNegatives;
+				currentMisclassifications = misclassifications;
+				currentAccuracy = accuracy;
+				
+				if(accuracy > 1 - noise) {
+					System.out.println("traversal found " + mc);
+					System.out.println("accuracy: " + accuracy);
+					System.exit(0);
+				}
+			}
+			
+			i++;
+			if(i==1000)
+				break;
+		}
+		
+	}
+	
+	// we look for a node covering many positives and hopefully
+	// few negatives; we give a strong penalty on uncovered positives
+	private ExampleBasedNode findBestTraversalStartNode() {
+		// 2 points for each covered pos + 1 point for each uncovered neg
+		int currScore = 0;
+		int i = 0;
+		ExampleBasedNode currNode = null;
+		NavigableSet<ExampleBasedNode> reverseView = candidatesStable.descendingSet();
+		for(ExampleBasedNode node : reverseView) {
+			int score = 2 * node.getCoveredPositives().size() + (nrOfNegativeExamples - node.getCoveredNegatives().size());
+			if(score > currScore) {
+				currScore = score;
+				currNode = node;
+			}
+			i++;
+			// limit search because stable candidate set can grow very large
+			if(i == 10000)
+				break;
+		}
+		return currNode;
+	}
+	
+	private void reduceCandidates() {
+		Iterator<ExampleBasedNode> it = candidatesStable.descendingIterator();
+		Set<ExampleBasedNode> promisingNodes = new HashSet<ExampleBasedNode>();
+		int i = 0;
+		while(it.hasNext() && promisingNodes.size()<candidatePostReductionSize) {
+			ExampleBasedNode node = it.next();
+//			System.out.println(node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+			// first criterion: the considered node should have an accuracy gain over its parent
+			// (avoids to use only the most promising node + all its refinements with equal accuracy)
+			boolean hasAccuracyGain = (node.getParent() == null) || (node.getCoveredPositives().size() != node.getParent().getCoveredPositives().size())
+				|| (node.getCoveredNegatives().size() != node.getParent().getCoveredNegatives().size());
+			// second criterion: uncovered positives; it does not make much sense to pick nodes with
+			// low potential for reaching a solution (already at the limit of misclassified positives)
+			int misclassifiedPositives = nrOfPositiveExamples - node.getCoveredPositives().size();
+			boolean hasRefinementPotential = (misclassifiedPositives <= Math.floor(0.65d*allowedMisclassifications));
+			boolean keep = hasAccuracyGain && hasRefinementPotential;
+			if(keep) {
+				promisingNodes.add(node);
+			}
+			i++;
+		}
+		candidates.retainAll(promisingNodes);
+		System.out.println("searched " + i + " nodes and picked the following promising descriptions:");
+		for(ExampleBasedNode node : promisingNodes)
+			System.out.println(node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+	}
+	
 /*
 	private Set<Individual> computeQuality(Description refinement, Set<Individual> coveredPositives) {
 		Set<Individual> ret = new TreeSet<Individual>();

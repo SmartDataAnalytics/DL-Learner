@@ -127,7 +127,7 @@ public class RhoDRDown implements RefinementOperator {
 	
 	// splits for double datatype properties in ascening order
 	private Map<DatatypeProperty,List<Double>> splits = new TreeMap<DatatypeProperty,List<Double>>();
-	private int maxNrOfSplits = 20;
+	private int maxNrOfSplits = 10;
 	
 	// staistics
 	public long mComputationTimeNs = 0;
@@ -359,6 +359,7 @@ public class RhoDRDown implements RefinementOperator {
 			}
 			
 		} else if (description instanceof DatatypeSomeRestriction) {
+			
 			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
 			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
 			DataRange dr = dsr.getDataRange();
@@ -956,7 +957,7 @@ public class RhoDRDown implements RefinementOperator {
 		int nrOfValues = values.size();
 		// create split set
 		List<Double> splitsDP = new LinkedList<Double>();
-		for(int splitNr=0; splitNr < maxNrOfSplits; splitNr++) {
+		for(int splitNr=0; splitNr < Math.min(maxNrOfSplits,nrOfValues-1); splitNr++) {
 			int index;
 			if(nrOfValues<=maxNrOfSplits)
 				index = splitNr;
