@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dllearner.algorithms.refexamples.ExampleBasedNode;
 import org.dllearner.core.owl.Description;
 
 /**
@@ -70,4 +71,9 @@ public abstract class LearningAlgorithm extends Component {
 		return new LinkedList<Class<? extends LearningProblem>>();
 	}
 	
+	/**
+	 * Root for search tree.
+	 * @return 
+	 */
+	public abstract ExampleBasedNode getStartNode();
 }
