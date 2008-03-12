@@ -55,9 +55,13 @@ public class TreeWindow extends JFrame {
 			for (int leaf = 1; leaf < 4; leaf++)
 				node.add(new DefaultMutableTreeNode("leaf " + (knot * 3 + leaf)));
 		}
-
-		ExampleBasedNode rootNode = config.getLearningAlgorithm().getStartNode();
-		EBNodeTreeModel root = new EBNodeTreeModel(rootNode);
+		
+		// tree model
+		EBNodeTreeModel root = null;
+		if (config.getLearningAlgorithm() != null) {
+			ExampleBasedNode rootNode = config.getLearningAlgorithm().getStartNode();
+			root = new EBNodeTreeModel(rootNode);
+		}
 		
 		// show tree
 		if (root != null) {
