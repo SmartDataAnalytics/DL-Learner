@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.dllearner.algorithms.refexamples.ExampleBasedNode;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -287,8 +286,4 @@ public class BruteForceLearner extends LearningAlgorithm {
 		stop = true;
 	}
 
-	@Override
-	public ExampleBasedNode getStartNode() {
-		return null;
-	}
 }

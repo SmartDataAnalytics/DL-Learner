@@ -349,7 +349,6 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		algorithm.stop();
 	}
 
-	@Override
 	public ExampleBasedNode getStartNode() {
 		return algorithm.getStartNode();
 	}

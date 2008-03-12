@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.algorithms.gp.GPUtilities;
-import org.dllearner.algorithms.refexamples.ExampleBasedNode;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -126,11 +125,6 @@ public class RandomGuesser extends LearningAlgorithm {
 	public void stop() {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public ExampleBasedNode getStartNode() {
-		return null;
 	}
 
 }
