@@ -22,6 +22,7 @@ package org.dllearner.gui;
 
 import javax.swing.*;
 import javax.swing.tree.*;
+import org.dllearner.algorithms.refexamples.*;
 
 /**
  * TreeWindow
@@ -45,21 +46,29 @@ public class TreeWindow extends JFrame {
 		// set icon
 		setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(
 				this.getClass().getResource("icon.gif")));
-	
-		// tree
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode( "root" ); 
-		for ( int knot = 0; knot < 4; knot++ ) 
-		{ 
-		  DefaultMutableTreeNode node = new DefaultMutableTreeNode( "knot " + knot ); 
-		  root.add( node ); 
-		  for ( int leaf = 1; leaf < 4; leaf++ ) 
-		    node.add( new DefaultMutableTreeNode("leaf " + (knot*3+leaf )) ); 
-		} 
-		JTree tree = new JTree( root );
-		this.add( new JScrollPane( tree ) ); 
 
+		// tree
+		DefaultMutableTreeNode exampleRoot = new DefaultMutableTreeNode("root");
+		for (int knot = 0; knot < 4; knot++) {
+			DefaultMutableTreeNode node = new DefaultMutableTreeNode("knot " + knot);
+			exampleRoot.add(node);
+			for (int leaf = 1; leaf < 4; leaf++)
+				node.add(new DefaultMutableTreeNode("leaf " + (knot * 3 + leaf)));
+		}
+
+		ExampleBasedNode rootNode = config.getLearningAlgorithm().getStartNode();
+		EBNodeTreeModel root = new EBNodeTreeModel(rootNode);
+		
+		// show tree
+		if (root != null) {
+			JTree tree = new JTree(root);
+			this.add(new JScrollPane(tree));
+		}
+		else {
+			JTree tree = new JTree(exampleRoot);
+			this.add(new JScrollPane(tree));
+		}
 		this.setVisible(true);
 	}
-	
-	
+
 }
