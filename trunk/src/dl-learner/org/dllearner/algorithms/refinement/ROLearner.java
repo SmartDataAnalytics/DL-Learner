@@ -12,7 +12,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.refexamples.ExampleBasedNode;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -1004,12 +1003,8 @@ public class ROLearner extends LearningAlgorithm {
 	/**
 	 * @return the startNode
 	 */
-	public Node getStartNode_original() {
+	public Node getStartNode() {
 		return startNode;
 	}
 
-	@Override
-	public ExampleBasedNode getStartNode() {
-		return null;
-	}
 }

@@ -22,7 +22,6 @@ package org.dllearner.gui;
 
 import javax.swing.*;
 import javax.swing.tree.*;
-import org.dllearner.algorithms.refexamples.*;
 
 /**
  * TreeWindow
@@ -59,14 +58,14 @@ public class TreeWindow extends JFrame {
 		// tree model
 		EBNodeTreeModel root = null;
 		if (config.getLearningAlgorithm() != null) {
-			ExampleBasedNode rootNode = config.getLearningAlgorithm().getStartNode();
-			root = new EBNodeTreeModel(rootNode);
+			//ExampleBasedNode rootNode = config.getLearningAlgorithm().getStartNode();
+			//root = new EBNodeTreeModel(rootNode);
 		}
 		
 		// show tree
 		if (root != null) {
-			JTree tree = new JTree(root);
-			this.add(new JScrollPane(tree));
+			//JTree tree = new JTree(root);
+			//this.add(new JScrollPane(tree));
 		}
 		else {
 			JTree tree = new JTree(exampleRoot);

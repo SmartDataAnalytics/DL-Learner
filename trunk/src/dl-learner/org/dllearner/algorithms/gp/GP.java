@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.dllearner.algorithms.hybridgp.Psi;
-import org.dllearner.algorithms.refexamples.ExampleBasedNode;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -1005,8 +1004,4 @@ public class GP extends LearningAlgorithm {
     //    this.algorithmType = algorithmType;
     //}
 	
-	@Override
-	public ExampleBasedNode getStartNode() {
-		return null;
-	}
 }
