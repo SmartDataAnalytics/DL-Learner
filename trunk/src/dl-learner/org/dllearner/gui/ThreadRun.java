@@ -40,6 +40,7 @@ public class ThreadRun extends Thread {
 	public void run() {
 		if (config.getLearningAlgorithm() != null) {
 			config.setThreadIsRunning(true);
+			this.setPriority(Thread.MIN_PRIORITY);
 			config.getLearningAlgorithm().start();
 			config.setThreadIsRunning(false);
 		}
