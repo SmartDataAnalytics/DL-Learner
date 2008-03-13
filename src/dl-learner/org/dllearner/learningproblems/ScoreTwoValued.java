@@ -54,9 +54,9 @@ public class ScoreTwoValued extends Score {
 		String str = "";
 		str += "score: " + score + "\n";
 		str += "accuracy: " + (1 + classificationScore) + "\n";
-		str += "posAsPos: " + posAsPos + "\n";
-		str += "positive examples classified as negative: " + posAsNeg + "\n";
-		str += "negative examples classified as positive: " + negAsPos + "\n";
+		str += "posAsPos (" + posAsPos.size() + "): " + posAsPos + "\n";
+		str += "positive examples classified as negative (" + posAsNeg.size() + "): " + posAsNeg + "\n";
+		str += "negative examples classified as positive (" + negAsPos.size() + "): " + negAsPos + "\n";
 		return str;
 	}
 

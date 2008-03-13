@@ -267,7 +267,7 @@ public class ExampleBasedROLearner {
 		long lastReductionTime = System.nanoTime();
 		// try a traversal after 100 seconds
 		long traversalInterval = 1000l * 1000000000l;
-		long reductionInterval = 100l * 1000000000l;
+		long reductionInterval = 300l * 1000000000l;
 		long currentTime;
 		
 		while(!solutionFound && !stop) {		
