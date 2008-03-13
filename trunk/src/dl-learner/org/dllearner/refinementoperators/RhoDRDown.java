@@ -286,7 +286,9 @@ public class RhoDRDown implements RefinementOperator {
 					ConceptTransformation.cleanConceptNonRecursive(mc);
 					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
 					
-					refinements.add(mc);
+					// check whether the intersection is OK (sanity checks), then add it
+					if(checkIntersection(mc))
+						refinements.add(mc);
 				}
 				
 			}
@@ -431,6 +433,17 @@ public class RhoDRDown implements RefinementOperator {
 						}
 					}
 					
+					// check for double datatype properties
+					if(c instanceof DatatypeSomeRestriction && 
+							description instanceof DatatypeSomeRestriction) {
+						DataRange dr = ((DatatypeSomeRestriction)c).getDataRange();
+						DataRange dr2 = ((DatatypeSomeRestriction)description).getDataRange();
+						// it does not make sense to have statements like height >= 1.8 AND height >= 1.7
+						if((dr instanceof DoubleMaxValue && dr2 instanceof DoubleMaxValue)
+							||(dr instanceof DoubleMinValue && dr2 instanceof DoubleMinValue))
+							skip = true;
+					}
+					
 					// perform a disjointness check when named classes are added;
 					// this can avoid a lot of superfluous computation in the algorithm e.g.
 					// when A1 looks good, so many refinements of the form (A1 OR (A2 AND A3))
@@ -463,6 +476,33 @@ public class RhoDRDown implements RefinementOperator {
 //		}
 		
 		return refinements;		
+	}
+	
+	// when a child of an intersection is refined and reintegrated into the
+	// intersection, we can perform some sanity checks;
+	// method returns true if everything is OK and false otherwise
+	private boolean checkIntersection(Intersection intersection) {
+		// rule 1: max. restrictions at most once
+		boolean maxDoubleOccurence = false;
+		// rule 2: min restrictions at most once
+		boolean minDoubleOccurence = false;
+		for(Description child : intersection.getChildren()) {
+			if(child instanceof DatatypeSomeRestriction) {
+				DataRange dr = ((DatatypeSomeRestriction)child).getDataRange();
+				if(dr instanceof DoubleMaxValue) {
+					if(maxDoubleOccurence)
+						return false;
+					else
+						maxDoubleOccurence = true;
+				} else if(dr instanceof DoubleMinValue) {
+					if(minDoubleOccurence)
+						return false;
+					else
+						minDoubleOccurence = true;
+				}		
+			}
+		}
+		return true;
 	}
 	
 	private void computeTopRefinements(int maxLength) {

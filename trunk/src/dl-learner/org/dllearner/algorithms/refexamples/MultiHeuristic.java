@@ -21,7 +21,8 @@ package org.dllearner.algorithms.refexamples;
 
 import java.util.List;
 
-import org.dllearner.core.owl.DatatypeValueRestriction;
+import org.dllearner.core.owl.BooleanValueRestriction;
+import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.ConceptComparator;
@@ -78,7 +79,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	private double expansionPenaltyFactor;
 	private double gainBonusFactor;
 	private double nodeChildPenalty = 0.0001;
-	private double startNodeBonus = 0.8;
+	private double startNodeBonus = 1.0;
 	
 	// examples
 	private int nrOfNegativeExamples;
@@ -144,11 +145,16 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		// do not count TOP symbols (in particular in ALL r.TOP and EXISTS r.TOP)
 		// as they provide no extra information
 		if(description instanceof Thing)
-			bonus = 1;
+			bonus = 2;
+		
+		if(description instanceof BooleanValueRestriction)
+			bonus = -1;
 		
 		// some bonus for doubles because they are already penalised by length 3
-		if(description instanceof DatatypeValueRestriction)
-			bonus = 1;
+		if(description instanceof DatatypeSomeRestriction) {
+//			System.out.println(description);
+			bonus = 3;
+		}
 		
 		List<Description> children = description.getChildren();
 		for(Description child : children) {
