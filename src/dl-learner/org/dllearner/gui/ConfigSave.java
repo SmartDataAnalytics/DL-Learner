@@ -177,7 +177,6 @@ public class ConfigSave {
 	 * @return a string to write
 	 */
 	public String getTypeForFile(Class<?> componentClass) {
-		System.out.println("getTypeForFile: " + componentClass);
 		// reasoner
 		if (DIGReasoner.class == componentClass)
 			return ("dig");
