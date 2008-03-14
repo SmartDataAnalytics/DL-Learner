@@ -24,13 +24,24 @@ package org.dllearner.gui;
 //import java.net.URL;
 import java.util.List; //import java.util.Map;
 import java.util.Map;
-
-import org.dllearner.core.ComponentManager; //import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.cli.*;
+import org.dllearner.reasoning.DIGReasoner;
+import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.FastRetrievalReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.algorithms.BruteForceLearner;
+import org.dllearner.algorithms.RandomGuesser;
+import org.dllearner.algorithms.gp.GP;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement.ROLearner;
 import java.io.PrintWriter;
 
 /**
@@ -95,21 +106,21 @@ public class ConfigSave {
 						config.getKnowledgeSource(), "url");
 				if (url != null) {
 					out.println("import(\"" + url + "\",\"SPARQL\");");
-					setFileEntry(config.getKnowledgeSource(), out);
+					setFileEntry(null, config.getKnowledgeSource(), out);
 				}
 			}
 		}
 		// REASONER
 		if (config.getReasoner() != null) {
-			setFileEntry(config.getReasoner(), out);
+			setFileEntry("reasoner", config.getReasoner(), out);
 		}
 		// LEARNING PROBLEM
 		if (config.getLearningProblem() != null) {
-			setFileEntry(config.getLearningProblem(), out);
+			setFileEntry("problem", config.getLearningProblem(), out);
 		}
 		// LEARNING ALGORITHM
 		if (config.getLearningAlgorithm() != null) {
-			setFileEntry(config.getLearningAlgorithm(), out);
+			setFileEntry("algorithm", config.getLearningAlgorithm(), out);
 		}
 
 	}
@@ -121,7 +132,13 @@ public class ConfigSave {
 	 *            i.e. config.getKnowledgeSource(), config.getResaoner(), ...
 	 */
 	@SuppressWarnings("unchecked")
-	public void setFileEntry(Component component, PrintWriter out) {
+	public void setFileEntry(String type, Component component, PrintWriter out) {
+		// write used algorithm
+		if (type != null) {
+			String alg = getTypeForFile(component.getClass());
+			if (alg != null)
+				out.println(type + " = \"" + alg + "\";");
+		}
 		// get prefix map
 		Map<Class<? extends Component>, String> componentPrefixMapping = Start
 				.createComponentPrefixMapping();
@@ -150,6 +167,45 @@ public class ConfigSave {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Get type to write into configuration file.
+	 * 
+	 * @param componentClass
+	 *            is your class for reasoner, problem, algorithm
+	 * @return a string to write
+	 */
+	public String getTypeForFile(Class<?> componentClass) {
+		System.out.println("getTypeForFile: " + componentClass);
+		// reasoner
+		if (DIGReasoner.class == componentClass)
+			return ("dig");
+		if (OWLAPIReasoner.class == componentClass)
+			return ("owlAPI");
+		if (FastRetrievalReasoner.class == componentClass)
+			return ("fastRetrieval");
+		if (FastInstanceChecker.class == componentClass)
+			return ("fastInstanceChecker");
+		// problem
+		if (PosNegDefinitionLP.class == componentClass)
+			return ("posNegDefinition");
+		if (PosNegInclusionLP.class == componentClass)
+			return ("posNegInclusion");
+		if (PosOnlyDefinitionLP.class == componentClass)
+			return ("posOnlyDefinition");
+		// algorithm
+		if (ROLearner.class == componentClass)
+			return ("refinement");
+		if (ExampleBasedROLComponent.class == componentClass)
+			return ("refexamples");
+		if (GP.class == componentClass)
+			return ("gp");
+		if (BruteForceLearner.class == componentClass)
+			return ("bruteForce");
+		if (RandomGuesser.class == componentClass)
+			return ("randomGuesser");
+		return null;
 	}
 
 }
