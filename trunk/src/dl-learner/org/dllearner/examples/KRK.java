@@ -18,6 +18,7 @@ import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.InverseObjectPropertyAxiom;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
@@ -67,6 +68,12 @@ public class KRK {
 	static ObjectProperty hasFile = getRole("hasFile");
 	static ObjectProperty hasPiece = getRole("hasPiece");
 	static ObjectProperty lessThan = getRole("strictLessThan");
+
+	
+	static ObjectProperty hasRankInv = getRole("hasRankInv");
+	static ObjectProperty hasFileInv = getRole("hasFileInv");
+	static ObjectProperty hasPieceInv = getRole("hasPieceInv");
+	static ObjectProperty lessThanInv = getRole("strictLessThanInv");
 
 	// static HashMap<String,SortedSet<String>> classToInd;
 	/**
@@ -215,6 +222,15 @@ public class KRK {
 			rankSet.add("r" + count);
 		}
 
+		for (String oneFile : fileSet) {
+			kb.addTBoxAxiom(new SubClassAxiom(getAtomicConcept(oneFile.toUpperCase()),File));
+			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept(oneFile.toUpperCase()),getIndividual(oneFile)));
+		}
+		for (String oneRank : rankSet) {
+			kb.addTBoxAxiom(new SubClassAxiom(getAtomicConcept(oneRank.toUpperCase()),Rank));
+			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept(oneRank.toUpperCase()),getIndividual(oneRank)));
+		}
+		
 		SortedSet<Description> DisJointClasses1 = new TreeSet<Description>();
 		DisJointClasses1.add(Piece);
 		DisJointClasses1.add(Rank);
@@ -227,9 +243,9 @@ public class KRK {
 		DisJointClasses2.add(WKing);
 		DisJointClasses2.add(WRook);
 		DisJointClasses2.add(BKing);
-		DisJointClasses2.add(Rank);
-		DisJointClasses2.add(File);
-		DisJointClasses2.add(Game);
+		//DisJointClasses2.add(Rank);
+		//DisJointClasses2.add(File);
+		//DisJointClasses2.add(Game);
 
 		kb.addTBoxAxiom(new DisjointClassesAxiom(DisJointClasses2));
 
@@ -239,19 +255,19 @@ public class KRK {
 		kb.addTBoxAxiom(new SubClassAxiom(BKing, Piece));
 
 		// Classes for files
-		Iterator<String> it = fileSet.iterator();
-		Individual next;
-		while (it.hasNext()) {
-			next = getIndividual(it.next());
-			kb.addABoxAxiom(new ClassAssertionAxiom(File, next));
-		}
+		//Iterator<String> it = fileSet.iterator();
+		//Individual next;
+		//while (it.hasNext()) {
+			//next = getIndividual(it.next());
+			//kb.addABoxAxiom(new ClassAssertionAxiom(File, next));
+		//}
 
 		// Classes for rank
-		it = rankSet.iterator();
+		/*it = rankSet.iterator();
 		while (it.hasNext()) {
 			next = getIndividual(it.next());
 			kb.addABoxAxiom(new ClassAssertionAxiom(Rank, next));
-		}
+		}*/
 
 	}// end init
 
@@ -269,7 +285,12 @@ public class KRK {
 		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasFile, File));
 		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasPiece, Game));
 		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasPiece, Piece));
-
+		
+		kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasPiece,hasPieceInv));
+		kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasRank,hasRankInv));
+		kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasFile,hasFileInv));
+		kb.addRBoxAxiom(new InverseObjectPropertyAxiom(lessThan,lessThanInv));
+		
 		// assigning lessthan to file
 		Iterator<String> it = fileSet.iterator();
 		Individual current = getIndividual(it.next());
@@ -315,6 +336,10 @@ public class KRK {
 						filearray[inner]));
 
 			}
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(getRole(str+(count+1)), new Union(Rank,File)));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(getRole(str+(count+1)), new Union(Rank,File)));
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(getRole(str2+(count+1)), new Union(Rank,File)));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(getRole(str2+(count+1)), new Union(Rank,File)));
 		}
 		// make it symmetric + subproperty of
 		for (int count = 1; count < 8; count++) {
