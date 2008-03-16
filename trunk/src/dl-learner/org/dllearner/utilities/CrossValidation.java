@@ -21,9 +21,11 @@ package org.dllearner.utilities;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.ConsoleAppender;
@@ -65,20 +67,27 @@ public class CrossValidation {
 		else
 			leaveOneOut = true;
 		
+		if(folds < 2) {
+			System.out.println("At least 2 fold needed.");
+			System.exit(0);
+		}
+		
 		// create logger (a simple logger which outputs
 		// its messages to the console)
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.WARN);		
+		logger.setLevel(Level.WARN);
+		// disable OWL API info output
+		java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.WARNING);
 		
 		new CrossValidation(file, folds, leaveOneOut);
 		
 	}
 	
 	public CrossValidation(File file, int folds, boolean leaveOneOut) {
-	
+			
 		DecimalFormat df = new DecimalFormat();	
 		ComponentManager cm = ComponentManager.getInstance();
 		
@@ -104,10 +113,13 @@ public class CrossValidation {
 		
 		if(lp instanceof PosNegLP) {
 
+			// get examples and shuffle them to 
 			Set<Individual> posExamples = ((PosNegLP)lp).getPositiveExamples();
 			List<Individual> posExamplesList = new LinkedList<Individual>(posExamples);
+			Collections.shuffle(posExamplesList, new Random(1));			
 			Set<Individual> negExamples = ((PosNegLP)lp).getNegativeExamples();
 			List<Individual> negExamplesList = new LinkedList<Individual>(negExamples);
+			Collections.shuffle(negExamplesList, new Random(2));
 			
 			// sanity check whether nr. of folds makes sense for this benchmark
 			if(!leaveOneOut && (posExamples.size()<folds && negExamples.size()<folds)) {
@@ -137,6 +149,9 @@ public class CrossValidation {
 				// e.g. with 3 folds, 4 pos. examples, 4 neg. examples)
 				int[] splitsPos = calculateSplits(posExamples.size(),folds);
 				int[] splitsNeg = calculateSplits(negExamples.size(),folds);
+				
+//				System.out.println(splitsPos[0]);
+//				System.out.println(splitsNeg[0]);
 				
 				// calculating training and test sets
 				for(int i=0; i<folds; i++) {
@@ -180,16 +195,45 @@ public class CrossValidation {
 			Set<String> neg = Datastructures.individualSetToStringSet(trainingSetsNeg.get(currFold));
 			cm.applyConfigEntry(lp, "positiveExamples", pos);
 			cm.applyConfigEntry(lp, "negativeExamples", neg);
+//			System.out.println("pos: " + pos.size());
+//			System.out.println("neg: " + neg.size());
+//			System.exit(0);
+			
+			// es fehlt init zwischendurch
 			
 			LearningAlgorithm la = start.getLearningAlgorithm();
+			// init again, because examples have changed
+			try {
+				la.init();
+			} catch (ComponentInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			long algorithmStartTime = System.nanoTime();
 			la.start();
 			long algorithmDuration = System.nanoTime() - algorithmStartTime;
 			runtime.addNumber(algorithmDuration/(double)1000000000);
 			
 			Description concept = la.getBestSolution();
-			int correctExamples = getCorrectPosClassified(rs, concept, testSetsPos.get(currFold))
-			+ getCorrectNegClassified(rs, concept, testSetsNeg.get(currFold));
+			
+			Set<Individual> tmp = rs.instanceCheck(concept, testSetsPos.get(currFold));
+			Set<Individual> tmp2 = Helper.difference(testSetsPos.get(currFold), tmp);
+			Set<Individual> tmp3 = rs.instanceCheck(concept, testSetsNeg.get(currFold));
+			
+			System.out.println("test set errors pos: " + tmp2);
+			System.out.println("test set errors neg: " + tmp3);
+			
+			// calculate training accuracies 
+			int trainingCorrectPosClassified = getCorrectPosClassified(rs, concept, trainingSetsPos.get(currFold));
+			int trainingCorrectNegClassified = getCorrectNegClassified(rs, concept, trainingSetsNeg.get(currFold));
+			int trainingCorrectExamples = trainingCorrectPosClassified + trainingCorrectNegClassified;
+			double trainingAccuracy = 100*((double)trainingCorrectExamples/(trainingSetsPos.get(currFold).size()+
+					trainingSetsNeg.get(currFold).size()));			
+			
+			// calculate test accuracies
+			int correctPosClassified = getCorrectPosClassified(rs, concept, testSetsPos.get(currFold));
+			int correctNegClassified = getCorrectNegClassified(rs, concept, testSetsNeg.get(currFold));
+			int correctExamples = correctPosClassified + correctNegClassified;
 			double currAccuracy = 100*((double)correctExamples/(testSetsPos.get(currFold).size()+
 					testSetsNeg.get(currFold).size()));
 			accuracy.addNumber(currAccuracy);
@@ -197,10 +241,17 @@ public class CrossValidation {
 			length.addNumber(concept.getLength());
 			
 			System.out.println("fold " + currFold + " (" + file + "):");
+			System.out.println("  training: " + pos.size() + " positive and " + neg.size() + " negative examples");
+			System.out.println("  testing: " + correctPosClassified + "/" + testSetsPos.get(currFold).size() + " correct positives, " 
+					+ correctNegClassified + "/" + testSetsNeg.get(currFold).size() + " correct negatives");
 			System.out.println("  concept: " + concept);
-			System.out.println("  accuracy: " + df.format(currAccuracy) + "%");
+			System.out.println("  accuracy: " + df.format(currAccuracy) + "% (" + df.format(trainingAccuracy) + "% on training set)");
 			System.out.println("  length: " + df.format(concept.getLength()));
 			System.out.println("  runtime: " + df.format(algorithmDuration/(double)1000000000) + "s");
+			
+			// free all resources
+			start.getReasoningService().releaseKB();
+			cm.freeAllComponents();			
 		}
 		
 		System.out.println();
@@ -211,12 +262,12 @@ public class CrossValidation {
 		
 	}
 	
-	private int getCorrectPosClassified(ReasoningService rs, Description concept, Set<Individual> posClassified) {
-		return rs.instanceCheck(concept, posClassified).size();
+	private int getCorrectPosClassified(ReasoningService rs, Description concept, Set<Individual> testSetPos) {
+		return rs.instanceCheck(concept, testSetPos).size();
 	}
 	
-	private int getCorrectNegClassified(ReasoningService rs, Description concept, Set<Individual> negClassified) {
-		return negClassified.size() - rs.instanceCheck(concept, negClassified).size();
+	private int getCorrectNegClassified(ReasoningService rs, Description concept, Set<Individual> testSetNeg) {
+		return testSetNeg.size() - rs.instanceCheck(concept, testSetNeg).size();
 	}
 	
 	private Set<Individual> getTestingSet(List<Individual> examples, int[] splits, int fold) {
@@ -228,6 +279,8 @@ public class CrossValidation {
 			fromIndex = splits[fold-1];
 		// the split corresponds to the ends of the folds
 		int toIndex = splits[fold];
+		
+//		System.out.println("from " + fromIndex + " to " + toIndex);
 		
 		Set<Individual> testingSet = new HashSet<Individual>();
 		// +1 because 2nd element is exclusive in subList method

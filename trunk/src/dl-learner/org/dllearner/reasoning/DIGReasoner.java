@@ -760,6 +760,7 @@ public class DIGReasoner extends ReasonerComponent {
 		return identifier;
 	}
 
+	@Override
 	public void releaseKB() {
 		connector.releaseKB(kbURI);
 	}

@@ -603,6 +603,10 @@ public class ReasoningService {
 		return reasoner.getPrefixes();
 	}
 	
+	public void releaseKB() {
+		reasoner.releaseKB();
+	}
+	
 	public long getInstanceCheckReasoningTimeNs() {
 		return instanceCheckReasoningTimeNs;
 	}

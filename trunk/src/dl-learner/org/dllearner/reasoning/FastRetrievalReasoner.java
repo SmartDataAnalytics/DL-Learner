@@ -182,5 +182,13 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	 */
 	public Map<String, String> getPrefixes() {
 		return rc.getPrefixes();
-	}	
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ReasonerComponent#releaseKB()
+	 */
+	@Override
+	public void releaseKB() {
+		rc.releaseKB();
+	}
 }

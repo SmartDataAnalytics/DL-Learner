@@ -1021,4 +1021,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return prefixes;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ReasonerComponent#releaseKB()
+	 */
+	@Override
+	public void releaseKB() {
+		try {
+			reasoner.clearOntologies();
+			reasoner.dispose();
+		} catch (OWLReasonerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }

@@ -355,6 +355,10 @@ public class ComponentManager {
 		pool.unregisterComponent(component);
 	}
 	
+	public void freeAllComponents() {
+		pool.clearComponents();
+	}
+	
 	public <T> T getConfigOptionValue(Component component, ConfigOption<T> option) {
 		T object = pool.getLastValidConfigValue(component, option);
 		if(object==null)

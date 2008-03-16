@@ -118,6 +118,7 @@ public class Carcinogenesis {
 	private static boolean ignoreAmes = false;
 	private static boolean ignoreSalmonella = false;;
 	private static boolean ignoreCytogenCa = false;
+	private static boolean includeMutagenesis = true;
 	// if true we learn carcinogenic, if false we learn non-carcinogenic
 	private static boolean learnCarcinogenic = true;
 	private static boolean useNewGroups = true;
@@ -134,10 +135,11 @@ public class Carcinogenesis {
 
 		// TODO: newgroups are not mapped currently
 		String[] files = new String[] { "newgroups.pl", "ames.pl", "atoms.pl", "bonds.pl", "gentoxprops.pl",
-				"ind_nos.pl", "ind_pos.pl", "pte2/canc_nos.pl", "pte2/pte2ames.pl", "pte2/pte2atoms.pl",
-				"pte2/pte2bonds.pl", "pte2/pte2gentox.pl", "pte2/pte2ind_nos.pl", "pte2/pte2newgroups.pl"
+				"ind_nos.pl", "ind_pos.pl"};
+		// "pte2/canc_nos.pl", "pte2/pte2ames.pl", "pte2/pte2atoms.pl",
+		//		"pte2/pte2bonds.pl", "pte2/pte2gentox.pl", "pte2/pte2ind_nos.pl", "pte2/pte2newgroups.pl"
 		// "train.b" => not a pure Prolog file but Progol/Aleph specific
-		};
+		// };
 		File owlFile = new File("examples/carcinogenesis/pte.owl");
 
 		Program program = null;
@@ -182,6 +184,10 @@ public class Carcinogenesis {
 			kbString += "DPDOMAIN(" + getURI2("amesTestPositive") + ") = " + getURI2("Compound") + ".\n";
 			kbString += "DPRANGE(" + getURI2("amesTestPositive") + ") = BOOLEAN.\n";
 		}
+		if(includeMutagenesis) {
+			kbString += "DPDOMAIN(" + getURI2("isMutagenic") + ") = " + getURI2("Compound") + ".\n";
+			kbString += "DPRANGE(" + getURI2("isMutagenic") + ") = BOOLEAN.\n";
+		}
 		kbString += "OPDOMAIN(" + getURI2("hasAtom") + ") = " + getURI2("Compound") + ".\n";
 		kbString += "OPRANGE(" + getURI2("hasAtom") + ") = " + getURI2("Atom") + ".\n";
 		kbString += "OPDOMAIN(" + getURI2("hasBond") + ") = " + getURI2("Compound") + ".\n";
@@ -205,6 +211,10 @@ public class Carcinogenesis {
 			for (Axiom axiom : axioms)
 				kb.addAxiom(axiom);
 		}
+		
+		if(includeMutagenesis)
+			addMutagenesis(kb);
+		
 		// special handling for ames test (we assume the ames test
 		// was performed on all compounds but only the positive ones
 		// are in ames.pl [the rest is negative in Prolog by CWA], so
@@ -395,21 +405,21 @@ public class Carcinogenesis {
 //			if(!useNewGroups) {
 			String compoundName = head.getArgument(0).toPLString();
 			String structureName = head.getArgument(1).toPLString();
-//			int count = Integer.parseInt(head.getArgument(2).toPLString());
+			int count = Integer.parseInt(head.getArgument(2).toPLString());
 			// upper case first letter
 			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);;
 			String structureInstance = structureName + "-" + structureNr;
 			
 			addStructureSubclass(axioms, structureClass);	
 			
-//			for(int i=0; i<count; i++) {
+			for(int i=0; i<count; i++) {
 				ObjectPropertyAssertion op = getRoleAssertion("hasStructure", compoundName, structureInstance);
 				axioms.add(op);
 				// make e.g. halide10-382 instance of Bond-3
 				ClassAssertionAxiom ca = getConceptAssertion(structureClass, structureInstance);
 				axioms.add(ca);
 				structureNr++;
-//			}
+			}
 //			}
 		} else if (headName.equals("ashby_alert")) {
 			// ... currently ignored ...
@@ -417,20 +427,17 @@ public class Carcinogenesis {
 			if(useNewGroups) {
 			String compoundName = head.getArgument(0).toPLString();
 			String structureName = headName;
-//			int count = Integer.parseInt(head.getArgument(2).toPLString());
 			// upper case first letter
 			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);;
 			String structureInstance = structureName + "-" + structureNr;
 			
 			addStructureSubclass(axioms, structureClass);
 			
-//			for(int i=0; i<count; i++) {
 				ObjectPropertyAssertion op = getRoleAssertion("hasStructure", compoundName, structureInstance);
 				axioms.add(op);
 				ClassAssertionAxiom ca = getConceptAssertion(structureClass, structureInstance);
 				axioms.add(ca);
 				structureNr++;
-//			}
 			}
 		} else {
 			// print clauses which are not supported yet
@@ -732,4 +739,36 @@ public class Carcinogenesis {
 		return ret;
 	}
 	
+	private static void addMutagenesis(KB kb) {
+		String[] mutagenicCompounds = new String[] {
+			"d101", "d104", "d106", "d107", "d112", "d113", "d117", 
+			"d121", "d123", "d126", "d128", "d13", "d135", "d137", 
+			"d139", "d140", "d143", "d144", "d145", "d146", "d147",
+			"d152", "d153", "d154", "d155", "d156", "d159", "d160",
+			"d161", "d163", "d164", "d166", "d168", "d171", "d173",
+			"d174", "d177", "d179", "d18", "d180", "d182", "d183",
+			"d185", "d186", "d187", "d188", "d189", "d19", "d191",
+			"d192", "d193", "d195", "d197", "d2", "d201", "d202", 
+			"d205", "d206", "d207", "d211", "d214", "d215", "d216",
+			"d224", "d225", "d227", "d228", "d229", "d231", "d235",
+			"d237", "d239", "d242", "d245", "d246", "d249", "d251",
+			"d254", "d257", "d258", "d261", "d264", "d266", "d269",
+			"d27", "d270", "d271", "d28", "d288", "d292", "d297",
+			"d300", "d308", "d309", "d311", "d313", "d314", "d322",
+			"d323", "d324", "d329", "d330", "d332", "d334", "d35",
+			"d36", "d37", "d38", "d41", "d42", "d48", "d50", "d51",
+			"d54", "d58", "d61", "d62", "d63", "d66", "d69", "d72",
+			"d76", "d77", "d78", "d84", "d86", "d89", "d92", "d96"};
+		TreeSet<String> mutagenic = new TreeSet<String>(Arrays.asList(mutagenicCompounds));
+	
+		for(String compound : compounds) {
+			if(mutagenic.contains(compound)) {
+				BooleanDatatypePropertyAssertion muta = getBooleanDatatypePropertyAssertion(compound, "isMutagenic", true);
+				kb.addAxiom(muta);
+			} else {
+				BooleanDatatypePropertyAssertion muta = getBooleanDatatypePropertyAssertion(compound, "isMutagenic", false);
+				kb.addAxiom(muta);
+			}
+		}
+	}
 }

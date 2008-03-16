@@ -21,7 +21,6 @@ package org.dllearner.algorithms.refexamples;
 
 import java.util.List;
 
-import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
@@ -145,10 +144,10 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		// do not count TOP symbols (in particular in ALL r.TOP and EXISTS r.TOP)
 		// as they provide no extra information
 		if(description instanceof Thing)
-			bonus = 2;
+			bonus = 1;
 		
-		if(description instanceof BooleanValueRestriction)
-			bonus = -1;
+//		if(description instanceof BooleanValueRestriction)
+//			bonus = -1;
 		
 		// some bonus for doubles because they are already penalised by length 3
 		if(description instanceof DatatypeSomeRestriction) {

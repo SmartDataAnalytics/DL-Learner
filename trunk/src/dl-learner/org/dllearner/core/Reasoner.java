@@ -128,4 +128,5 @@ public interface Reasoner {
 			
 	public SortedSet<Individual> getIndividuals();
 	
+	public void releaseKB();
 }

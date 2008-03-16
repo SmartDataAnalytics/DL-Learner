@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.refinement.RefinementOperator;
 import org.dllearner.core.LearningProblem;
@@ -39,8 +38,8 @@ import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -116,7 +115,7 @@ public class ExampleBasedROLearner {
 	// the divide&conquer approach in many ILP programs using a
 	// clause by clause search; after a period of time the candidate
 	// set is reduced to focus CPU time on the most promising concepts
-	private boolean useCandidateReduction = true;
+	private boolean useCandidateReduction = false;
 	private int candidatePostReductionSize = 30;
 	
 	// setting to true gracefully stops the algorithm
@@ -214,6 +213,11 @@ public class ExampleBasedROLearner {
 			posOnly = false;
 			nrOfPositiveExamples = lp.getPositiveExamples().size();
 			nrOfNegativeExamples = lp.getNegativeExamples().size();
+			
+//			System.out.println(nrOfPositiveExamples);
+//			System.out.println(nrOfNegativeExamples);
+//			System.exit(0);
+			
 		} else if(learningProblem instanceof PosOnlyDefinitionLP) {
 			PosOnlyDefinitionLP lp = (PosOnlyDefinitionLP) learningProblem;
 			this.posOnlyLearningProblem = lp;
@@ -236,10 +240,40 @@ public class ExampleBasedROLearner {
 		this.useShortConceptConstruction = useShortConceptConstruction;
 		baseURI = rs.getBaseURI();
 		
-		logger.setLevel(Level.DEBUG);
+//		logger.setLevel(Level.DEBUG);
 	}
 	
 	public void start() {
+		/*
+//		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 2 \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Ar_halide\" OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND >= 5 \"http://dl-learner.org/carcinogenesis#hasBond\". TOP)))";
+		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND (\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE)))";
+		try {
+			NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Compound");
+			Description d = KBParser.parseConcept(conceptStr);
+//			SortedSet<Description> ds = (SortedSet<Description>) operator.refine(d,15,null,struc);
+//			System.out.println(ds);
+			
+			System.out.println(RhoDRDown.checkIntersection((Intersection)d));
+			
+			
+			Set<Individual> coveredNegatives = rs.instanceCheck(d, learningProblem.getNegativeExamples());
+			Set<Individual> coveredPositives =  rs.instanceCheck(d, learningProblem.getPositiveExamples());
+			ExampleBasedNode ebn = new ExampleBasedNode(d);
+			ebn.setCoveredExamples(coveredPositives, coveredNegatives);
+			extendNodeProper(ebn,15);
+			
+			// Individual i = new Individual("http://dl-learner.org/carcinogenesis#d101");
+//			for(Individual i : learningProblem.getPositiveExamples())
+//				rs.instanceCheck(ds.last(), i);
+			
+			System.out.println("finished");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.exit(0);		
+		*/
+		
 		// calculate quality threshold required for a solution
 		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
 		
@@ -290,8 +324,10 @@ public class ExampleBasedROLearner {
 			if(useCandidateReduction && (currentTime - lastReductionTime > reductionInterval)) {
 				reduceCandidates();
 				lastReductionTime = System.nanoTime();
+//				Logger.getRootLogger().setLevel(Level.TRACE);
 			}			
 			
+			System.out.println("next expanded: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));			
 			// chose best node according to heuristics
 			bestNode = candidates.last();
 			// extend best node	
@@ -304,7 +340,8 @@ public class ExampleBasedROLearner {
 			// newCandidates has been filled during node expansion
 			candidates.addAll(newCandidates);
 			candidatesStable.addAll(newCandidates);			
-						
+//			System.out.println("done");			
+			
 			if(writeSearchTree) {
 				// String treeString = "";
 				String treeString = "best node: " + bestNode+ "\n";
@@ -338,13 +375,13 @@ public class ExampleBasedROLearner {
 				logger.info("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
 			}
 		}
-		System.out.println("size of candidate set: " + candidates.size());
+		logger.debug("size of candidate set: " + candidates.size());
 		printStatistics(true);
 		
 		if(stop)
-			System.out.println("Algorithm stopped.");
+			logger.info("Algorithm stopped.");
 		else
-			System.out.println("Algorithm terminated succesfully.");		
+			logger.info("Algorithm terminated succesfully.");		
 	}
 	
 	// we apply the operator recursively until all proper refinements up
@@ -397,14 +434,18 @@ public class ExampleBasedROLearner {
 
 		childConceptsDeletionTimeNs += System.nanoTime() - childConceptsDeletionTimeNsStart;
 		
+//		if(refinements.size()<30)
+//			System.out.println("refinements: " + refinements);
+		
 		long evaluateSetCreationTimeNsStart = System.nanoTime();
 		
 		// alle Konzepte, die länger als horizontal expansion sind, müssen ausgewertet
 		// werden
-		Set<Description> toEvaluateConcepts = new TreeSet<Description>(conceptComparator);
+		TreeSet<Description> toEvaluateConcepts = new TreeSet<Description>(conceptComparator);
 		Iterator<Description> it = refinements.iterator();
 		// for(Concept refinement : refinements) {
-		while(it.hasNext()) {
+		while(it.hasNext()) {			
+			
 			Description refinement = it.next();
 			if(refinement.getLength()>node.getHorizontalExpansion()) {
 				// sagt aus, ob festgestellt wurde, ob refinement proper ist
@@ -413,7 +454,6 @@ public class ExampleBasedROLearner {
 				
 				// 1. short concept construction
 				if(useShortConceptConstruction) {
-					
 					// kurzes Konzept konstruieren
 					Description shortConcept = ConceptTransformation.getShortConcept(refinement, conceptComparator);
 					int n = conceptComparator.compare(shortConcept, concept);
@@ -422,11 +462,14 @@ public class ExampleBasedROLearner {
 					if(n==0) {
 						propernessTestsAvoidedByShortConceptConstruction++;
 						propernessDetected = true;
+						
+						System.out.println("refinement " + refinement + " can be shortened");
+//						System.exit(0);
 					}
 				}
 				
 				// 2. too weak test
-				if(!propernessDetected && useTooWeakList) {
+				if(!propernessDetected && useTooWeakList) {			
 					if(refinement instanceof Intersection) {
 						boolean tooWeakElement = containsTooWeakElement((Intersection)refinement);
 						if(tooWeakElement) {
@@ -454,13 +497,27 @@ public class ExampleBasedROLearner {
 				}
 				
 				// properness konnte nicht vorher ermittelt werden
-				if(!propernessDetected)
+				if(!propernessDetected) {
 					toEvaluateConcepts.add(refinement);
+//					if(!res) {
+//						System.out.println("already in: " + refinement);
+//						Comparator comp = toEvaluateConcepts.comparator();
+//						for(Description d : toEvaluateConcepts) {
+//							if(comp.compare(d,refinement)==0)
+//								System.out.println("see: " + d);
+//						}						
+//					}
+				}
 				
 					
 			}
+			
+//			System.out.println("handled " + refinement + " length: " + refinement.getLength() + " (new size: " + toEvaluateConcepts.size() + ")");			
+			
 		}
 		evaluateSetCreationTimeNs += System.nanoTime() - evaluateSetCreationTimeNsStart;
+		
+//		System.out.println("intermediate 1");		
 		
 		// System.out.println(toEvaluateConcepts.size());
 		
@@ -476,6 +533,11 @@ public class ExampleBasedROLearner {
 			}
 		}
 
+//		if(toEvaluateConcepts.size()<10)
+//			System.out.println("to evaluate: " + toEvaluateConcepts);
+//		else
+//			System.out.println("to evaluate: more than 10");
+		
 		long improperConceptsRemovalTimeNsStart = System.nanoTime();
 		// die improper Konzepte werden von den auszuwertenden gelöscht, d.h.
 		// alle proper concepts bleiben übrig (einfache Umbenennung)
@@ -485,6 +547,13 @@ public class ExampleBasedROLearner {
 		// alle proper concepts von refinements löschen
 		refinements.removeAll(properConcepts);
 		improperConceptsRemovalTimeNs += System.nanoTime() - improperConceptsRemovalTimeNsStart;
+		
+//		if(refinements.size()<10)
+//			System.out.println("refinements: " + refinements);
+//		else
+//			System.out.println("refinements: more than 10");
+//		
+//		System.out.println("improper concepts: " + improperConcepts);		
 		
 		for(Description refinement : properConcepts) {
 			long redundancyCheckTimeNsStart = System.nanoTime();
@@ -603,18 +672,18 @@ public class ExampleBasedROLearner {
 			}			
 		}
 		
-		
 		// es sind jetzt noch alle Konzepte übrig, die improper refinements sind
 		// auf jedem dieser Konzepte wird die Funktion erneut aufgerufen, da sich
 		// proper refinements ergeben könnten
 		for(Description refinement : refinements) {
 			// for(int i=0; i<=recDepth; i++)
 			//	System.out.print("  ");
-			// System.out.println("call: " + refinement + " [maxLength " + maxLength + "]");
+//			System.out.println("call: " + refinement + " [maxLength " + maxLength + "]");
 			extendNodeProper(node, refinement, maxLength, recDepth+1);
 			// for(int i=0; i<=recDepth; i++)
 			//	System.out.print("  ");
-			// System.out.println("finished: " + refinement + " [maxLength " + maxLength + "]");			
+			// System.out.println("finished: " + refinement + " [maxLength " + maxLength + "]");
+//			System.exit(0);
 		}
 	}
 	
@@ -637,26 +706,25 @@ public class ExampleBasedROLearner {
 //			+ nrOfNegativeExamples - bestNode.getCoveredNegatives().size())/(double)nrOfExamples);
 			// Refinementoperator auf Konzept anwenden
 //			String bestNodeString = "currently best node: " + bestNode + " accuracy: " + df.format(accuracy) + "%";
-			System.out.println("start node: " + startNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+			logger.debug("start node: " + startNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
 			String bestNodeString = "currently best node: " + bestNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
 			// searchTree += bestNodeString + "\n";
-			System.out.println(bestNodeString);
+			logger.debug(bestNodeString);
 			String expandedNodeString = "next expanded node: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
 			// searchTree += expandedNodeString + "\n";
-			System.out.println(expandedNodeString);		
-			System.out.println("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
-			System.out.println("size of candidate set: " + candidates.size());
+			logger.debug(expandedNodeString);		
+			logger.debug("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
+			logger.debug("size of candidate set: " + candidates.size());
 			// System.out.println("properness max recursion depth: " + maxRecDepth);
 			// System.out.println("max. number of one-step refinements: " + maxNrOfRefinements);
 			// System.out.println("max. number of children of a node: " + maxNrOfChildren);
-			System.out.println("subsumption time: " + Helper.prettyPrintNanoSeconds(rs.getSubsumptionReasoningTimeNs()));
-			System.out.println("instance check time: " + Helper.prettyPrintNanoSeconds(rs.getInstanceCheckReasoningTimeNs()));
-			System.out.println("retrieval time: " + Helper.prettyPrintNanoSeconds(rs.getRetrievalReasoningTimeNs()));
+			logger.debug("subsumption time: " + Helper.prettyPrintNanoSeconds(rs.getSubsumptionReasoningTimeNs()));
+			logger.debug("instance check time: " + Helper.prettyPrintNanoSeconds(rs.getInstanceCheckReasoningTimeNs()));
+			logger.debug("retrieval time: " + Helper.prettyPrintNanoSeconds(rs.getRetrievalReasoningTimeNs()));
 		}
 		
 		if(computeBenchmarkInformation) {
 			
-
 			long reasoningTime = rs.getOverallReasoningTimeNs();
 			double reasoningPercentage = 100 * reasoningTime/(double)algorithmRuntime;
 			long propWithoutReasoning = propernessCalcTimeNs-propernessCalcReasoningTimeNs;
@@ -674,24 +742,24 @@ public class ExampleBasedROLearner {
 			double onnfTimePercentage = 100 * ConceptTransformation.onnfTimeNs/(double)algorithmRuntime;
 			double shorteningTimePercentage = 100 * ConceptTransformation.shorteningTimeNs/(double)algorithmRuntime;
 			
-			System.out.println("reasoning percentage: " + df.format(reasoningPercentage) + "%");
-			System.out.println("   subsumption check time: " + df.format(subPercentage) + "%");		
-			System.out.println("proper calculation percentage (wo. reasoning): " + df.format(propPercentage) + "%");
-			System.out.println("   deletion time percentage: " + df.format(deletionPercentage) + "%");
-			System.out.println("   refinement calculation percentage: " + df.format(refinementPercentage) + "%");
-			System.out.println("      m calculation percentage: " + df.format(mComputationTimePercentage) + "%");
-			System.out.println("      top calculation percentage: " + df.format(topComputationTimePercentage) + "%");
-			System.out.println("   redundancy check percentage: " + df.format(redundancyCheckPercentage) + "%");
-			System.out.println("   evaluate set creation time percentage: " + df.format(evaluateSetCreationTimePercentage) + "%");
-			System.out.println("   improper concepts removal time percentage: " + df.format(improperConceptsRemovalTimePercentage) + "%");
-			System.out.println("clean time percentage: " + df.format(cleanTimePercentage) + "%");
-			System.out.println("onnf time percentage: " + df.format(onnfTimePercentage) + "%");
-			System.out.println("shortening time percentage: " + df.format(shorteningTimePercentage) + "%");			
+			logger.debug("reasoning percentage: " + df.format(reasoningPercentage) + "%");
+			logger.debug("   subsumption check time: " + df.format(subPercentage) + "%");		
+			logger.debug("proper calculation percentage (wo. reasoning): " + df.format(propPercentage) + "%");
+			logger.debug("   deletion time percentage: " + df.format(deletionPercentage) + "%");
+			logger.debug("   refinement calculation percentage: " + df.format(refinementPercentage) + "%");
+			logger.debug("      m calculation percentage: " + df.format(mComputationTimePercentage) + "%");
+			logger.debug("      top calculation percentage: " + df.format(topComputationTimePercentage) + "%");
+			logger.debug("   redundancy check percentage: " + df.format(redundancyCheckPercentage) + "%");
+			logger.debug("   evaluate set creation time percentage: " + df.format(evaluateSetCreationTimePercentage) + "%");
+			logger.debug("   improper concepts removal time percentage: " + df.format(improperConceptsRemovalTimePercentage) + "%");
+			logger.debug("clean time percentage: " + df.format(cleanTimePercentage) + "%");
+			logger.debug("onnf time percentage: " + df.format(onnfTimePercentage) + "%");
+			logger.debug("shortening time percentage: " + df.format(shorteningTimePercentage) + "%");			
 		}
 		
-		System.out.println("properness tests (reasoner/short concept/too weak list): " + propernessTestsReasoner + "/" + propernessTestsAvoidedByShortConceptConstruction 
+		logger.debug("properness tests (reasoner/short concept/too weak list): " + propernessTestsReasoner + "/" + propernessTestsAvoidedByShortConceptConstruction 
 				+ "/" + propernessTestsAvoidedByTooWeakList);
-		System.out.println("concept tests (reasoner/too weak list/overly general list/redundant concepts): " + conceptTestsReasoner + "/"
+		logger.debug("concept tests (reasoner/too weak list/overly general list/redundant concepts): " + conceptTestsReasoner + "/"
 				+ conceptTestsTooWeakList + "/" + conceptTestsOverlyGeneralList + "/" + redundantConcepts);	
 	}
 	
@@ -737,8 +805,8 @@ public class ExampleBasedROLearner {
 		Set<Individual> currentCoveredNeg = startNode.getCoveredNegatives();
 		double currentAccuracy = startNode.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
 		int currentMisclassifications = nrOfPositiveExamples - currentCoveredPos.size() + currentCoveredNeg.size();
-		System.out.println("tree traversal start node " + startNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
-		System.out.println("tree traversal start accuracy: " + currentAccuracy);
+		logger.debug("tree traversal start node " + startNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+		logger.debug("tree traversal start accuracy: " + currentAccuracy);
 		int i=0;
 		// start from the most promising nodes
 		NavigableSet<ExampleBasedNode> reverseView = candidatesStable.descendingSet();
@@ -775,9 +843,9 @@ public class ExampleBasedROLearner {
 				ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
 					
 //				System.out.println("extended concept to: " + mc);
-				System.out.println("misclassifications: " + misclassifications);
-				System.out.println("misclassified positives: " + misclassifiedPositives);
-				System.out.println("accuracy: " + accuracy);				
+				logger.debug("misclassifications: " + misclassifications);
+				logger.debug("misclassified positives: " + misclassifiedPositives);
+				logger.debug("accuracy: " + accuracy);				
 				
 				// update variables
 				currentDescription = mc;
@@ -787,8 +855,8 @@ public class ExampleBasedROLearner {
 				currentAccuracy = accuracy;
 				
 				if(accuracy > 1 - noise) {
-					System.out.println("traversal found " + mc);
-					System.out.println("accuracy: " + accuracy);
+					logger.info("traversal found " + mc);
+					logger.info("accuracy: " + accuracy);
 					System.exit(0);
 				}
 			}
@@ -844,9 +912,9 @@ public class ExampleBasedROLearner {
 			i++;
 		}
 		candidates.retainAll(promisingNodes);
-		System.out.println("searched " + i + " nodes and picked the following promising descriptions:");
+		logger.debug("searched " + i + " nodes and picked the following promising descriptions:");
 		for(ExampleBasedNode node : promisingNodes)
-			System.out.println(node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+			logger.debug(node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
 	}
 	
 /*

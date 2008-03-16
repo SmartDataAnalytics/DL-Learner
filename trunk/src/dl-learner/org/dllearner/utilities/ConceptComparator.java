@@ -12,6 +12,9 @@ import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ObjectCardinalityRestriction;
+import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
+import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.SimpleDoubleDataRange;
@@ -172,6 +175,46 @@ public class ConceptComparator implements Comparator<Description> {
 					return roleCompare;
 			} else
 				return -1;
+		} else if(concept1 instanceof ObjectMinCardinalityRestriction) {
+			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction)
+				return 1;
+			// first criterion: object property
+			// second criterion: number
+			// third criterion: children
+			else if(concept2 instanceof ObjectMinCardinalityRestriction) {
+				int roleCompare = rc.compare(((ObjectCardinalityRestriction)concept1).getRole(), ((ObjectCardinalityRestriction)concept2).getRole());
+				if(roleCompare == 0) {
+					Integer number1 = ((ObjectCardinalityRestriction)concept1).getNumber();
+					Integer number2 = ((ObjectCardinalityRestriction)concept2).getNumber();
+					int numberCompare = number1.compareTo(number2);
+					if(numberCompare == 0)
+						return compare(concept1.getChild(0), concept2.getChild(0));
+					else
+						return numberCompare;
+				} else
+					return roleCompare;
+			} else
+				return -1;			
+		} else if(concept1 instanceof ObjectMaxCardinalityRestriction) {
+			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction || concept2 instanceof ObjectMinCardinalityRestriction)
+				return 1;
+			// first criterion: object property
+			// second criterion: number
+			// third criterion: children
+			else if(concept2 instanceof ObjectMaxCardinalityRestriction) {
+				int roleCompare = rc.compare(((ObjectCardinalityRestriction)concept1).getRole(), ((ObjectCardinalityRestriction)concept2).getRole());
+				if(roleCompare == 0) {
+					Integer number1 = ((ObjectCardinalityRestriction)concept1).getNumber();
+					Integer number2 = ((ObjectCardinalityRestriction)concept2).getNumber();
+					int numberCompare = number1.compareTo(number2);
+					if(numberCompare == 0)
+						return compare(concept1.getChild(0), concept2.getChild(0));
+					else
+						return numberCompare;
+				} else
+					return roleCompare;
+			} else
+				return -1;			
 		} else if(concept1 instanceof Intersection) {
 			if(concept2.getChildren().size()<2)
 				return 1;
