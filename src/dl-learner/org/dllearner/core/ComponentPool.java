@@ -70,4 +70,11 @@ public class ComponentPool {
 			lastValidConfigValue.get(component).put(entry.getOption(), entry.getValue());
 	}
 	
+	// unregisters all components
+	public void clearComponents() {
+		components = new LinkedList<Component>();
+		lastValidConfigValue = new HashMap<Component,Map<ConfigOption<?>,Object>>();
+		configEntryHistory = new HashMap<Component,List<ConfigEntry<?>>>();		
+	}
+	
 }

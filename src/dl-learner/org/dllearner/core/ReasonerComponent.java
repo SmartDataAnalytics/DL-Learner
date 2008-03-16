@@ -251,4 +251,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 	
+	public abstract void releaseKB();
+	
 }

@@ -13,7 +13,7 @@ public abstract class ObjectCardinalityRestriction extends CardinalityRestrictio
 	}
 	
 	public int getLength() {
-		return 1 + role.getLength() + getChild(0).getLength();
+		return 2 + role.getLength() + getChild(0).getLength();
 	}
 
 	public int getNumber() {

@@ -50,6 +50,9 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.ObjectCardinalityRestriction;
+import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
+import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
@@ -290,6 +293,82 @@ public class FastInstanceChecker extends ReasonerComponent {
 					return false;
 			}
 			return true;
+		} else if (description instanceof ObjectMinCardinalityRestriction) {
+			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty))
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+
+			if (mapping == null) {
+				logger.warn("Instance check of a description with an undefinied property (" + op
+						+ ").");
+				return true;
+			}
+			
+			int number = ((ObjectCardinalityRestriction) description).getNumber();
+			int nrOfFillers = 0;			
+			
+			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			// return false if there are none or not enough role fillers
+			if (roleFillers == null || roleFillers.size() < number)
+				return false;
+			 
+			int index = 0;
+			for (Individual roleFiller : roleFillers) {
+				index++;
+				if (instanceCheck(child, roleFiller)) {
+					nrOfFillers++;
+					if(nrOfFillers == number)
+						return true;
+				// earyl abort:	e.g. >= 10 hasStructure.Methyl;
+				// if there are 11 fillers and 2 are not Methyl, the result is false
+				} /* else {
+					if(roleFillers.size() - index < number)
+						return false;
+				}*/
+			}
+			return false;
+		} else if (description instanceof ObjectMaxCardinalityRestriction) {
+			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty))
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+
+			if (mapping == null) {
+				logger.warn("Instance check of a description with an undefinied property (" + op
+						+ ").");
+				return true;
+			}
+			
+			int number = ((ObjectCardinalityRestriction) description).getNumber();
+			int nrOfFillers = 0;			
+			
+			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			// return false if there are none or not enough role fillers
+			if (roleFillers == null || roleFillers.size() > number)
+				return true;
+			
+			int index = 0;
+			for (Individual roleFiller : roleFillers) {
+				index++;
+				if (instanceCheck(child, roleFiller)) {
+					nrOfFillers++;
+					if(nrOfFillers == number)
+						return false;
+				// earyl abort:	e.g. <= 5 hasStructure.Methyl;
+				// if there are 6 fillers and 2 are not Methyl, the result is true						
+				} /* else {
+					if(roleFillers.size() - index <= number)
+						return true;
+				} */
+			}
+			return true;
 		} else if (description instanceof BooleanValueRestriction) {
 			DatatypeProperty dp = ((BooleanValueRestriction)description).getRestrictedPropertyExpresssion();
 			boolean value = ((BooleanValueRestriction)description).getBooleanValue();
@@ -503,6 +582,19 @@ public class FastInstanceChecker extends ReasonerComponent {
 	@Override
 	public Description getRange(ObjectProperty objectProperty) {
 		return rc.getRange(objectProperty);
+	}
+
+	@Override
+	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole)	 {
+		return opPos.get(atomicRole);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ReasonerComponent#releaseKB()
+	 */
+	@Override
+	public void releaseKB() {
+		rc.releaseKB();
 	}	
 	
 }

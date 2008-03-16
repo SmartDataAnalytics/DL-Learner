@@ -32,6 +32,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.refinement.RefinementOperator;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.BooleanValueRestriction;
@@ -47,6 +48,9 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.ObjectCardinalityRestriction;
+import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
+import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
@@ -72,6 +76,10 @@ import org.dllearner.utilities.Helper;
  */
 public class RhoDRDown implements RefinementOperator {
 
+	@SuppressWarnings({"unused"})
+	private static Logger logger = Logger
+	.getLogger(RhoDRDown.class);	
+	
 	private ReasoningService rs;
 	
 	// hierarchies
@@ -81,6 +89,9 @@ public class RhoDRDown implements RefinementOperator {
 	private Map<ObjectProperty,Description> opDomains = new TreeMap<ObjectProperty,Description>();
 	private Map<DatatypeProperty,Description> dpDomains = new TreeMap<DatatypeProperty,Description>();
 	private Map<ObjectProperty,Description> opRanges = new TreeMap<ObjectProperty,Description>();
+	
+	// maximum number of fillers for eeach role
+	private Map<ObjectProperty,Integer> maxNrOfFillers = new TreeMap<ObjectProperty,Integer>();
 	
 	// start concept (can be used to start from an arbitrary concept, needs
 	// to be Thing or NamedClass), note that when you use e.g. Compound as 
@@ -137,6 +148,7 @@ public class RhoDRDown implements RefinementOperator {
 	private boolean applyExistsFilter = true;
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
+	private boolean useCardinalityRestrictions = true;
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;
 	private boolean useDoubleDatatypes = true;
@@ -181,6 +193,35 @@ public class RhoDRDown implements RefinementOperator {
 			computeSplits(dp);
 		}
 		
+		// determine the maximum number of fillers for each role
+		for(ObjectProperty op : rs.getAtomicRoles()) {
+			int maxFillers = 0;
+			Map<Individual,SortedSet<Individual>> opMembers = rs.getRoleMembers(op);
+			for(SortedSet<Individual> inds : opMembers.values()) {
+				if(inds.size()>maxFillers)
+					maxFillers = inds.size();
+			}
+			maxNrOfFillers.put(op, maxFillers);
+		}
+		
+		/*
+		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 2 \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Ar_halide\" OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND >= 5 \"http://dl-learner.org/carcinogenesis#hasBond\". TOP)))";
+		try {
+			NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Compound");
+			Description d = KBParser.parseConcept(conceptStr);
+			SortedSet<Description> ds = (SortedSet<Description>) refine(d,15,null,struc);
+			System.out.println(ds);
+			
+			Individual i = new Individual("http://dl-learner.org/carcinogenesis#d101");
+			rs.instanceCheck(ds.first(), i);
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.exit(0);
+		*/
+		
 		/*
 		NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Atom");
 		ObjectProperty op = new ObjectProperty("http://dl-learner.org/carcinogenesis#hasAtom");
@@ -222,7 +263,7 @@ public class RhoDRDown implements RefinementOperator {
 	public Set<Description> refine(Description description, int maxLength,
 			List<Description> knownRefinements, Description currDomain) {
 		
-//		System.out.println(description + " " + currDomain + " " + maxLength);
+//		logger.trace(description + " " + currDomain + " " + maxLength);
 		
 		// actions needing to be performed if this is the first time the
 		// current domain is used
@@ -336,6 +377,15 @@ public class RhoDRDown implements RefinementOperator {
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles)
 				refinements.add(new ObjectSomeRestriction(moreSpecialRole, description.getChild(0)));
 
+			// rule 3: EXISTS r.D => >= 2 r.D
+			// (length increases by 1 so we have to check whether max length is sufficient)
+			if(useCardinalityRestrictions) {
+				if(maxLength > description.getLength() && maxNrOfFillers.get(ar)>1) {
+					ObjectMinCardinalityRestriction min = new ObjectMinCardinalityRestriction(2,role,description.getChild(0));
+					refinements.add(min);
+				}
+			}
+			
 		} else if (description instanceof ObjectAllRestriction) {
 			ObjectPropertyExpression role = ((ObjectQuantorRestriction)description).getRole();
 			Description range = opRanges.get(role);
@@ -360,6 +410,28 @@ public class RhoDRDown implements RefinementOperator {
 				refinements.add(new ObjectAllRestriction(moreSpecialRole, description.getChild(0)));
 			}
 			
+			// rule 4: ALL r.D => <= (maxFillers-1) r.D
+			// (length increases by 1 so we have to check whether max length is sufficient)
+			if(useCardinalityRestrictions) {
+				if(maxLength > description.getLength() && maxNrOfFillers.get(ar)>1) {
+					ObjectMaxCardinalityRestriction max = new ObjectMaxCardinalityRestriction(maxNrOfFillers.get(ar)-1,role,description.getChild(0));
+					refinements.add(max);
+				}
+			}
+		} else if (description instanceof ObjectCardinalityRestriction) {
+			if(description instanceof ObjectMaxCardinalityRestriction) {
+				// <= x r.C  =>  <= (x-1) r.C
+				ObjectMaxCardinalityRestriction max = (ObjectMaxCardinalityRestriction) description;
+				int number = max.getNumber();
+				if(number > 0)
+					refinements.add(new ObjectMaxCardinalityRestriction(number-1,max.getRole(),max.getChild(0)));
+			} else if(description instanceof ObjectMinCardinalityRestriction) {
+				// >= x r.C  =>  >= (x+1) r.C
+				ObjectMinCardinalityRestriction min = (ObjectMinCardinalityRestriction) description;
+				int number = min.getNumber();
+				if(number < maxNrOfFillers.get(min.getRole()))
+					refinements.add(new ObjectMinCardinalityRestriction(number+1,min.getRole(),min.getChild(0)));				
+			}
 		} else if (description instanceof DatatypeSomeRestriction) {
 			
 			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
@@ -434,6 +506,7 @@ public class RhoDRDown implements RefinementOperator {
 					}
 					
 					// check for double datatype properties
+					/*
 					if(c instanceof DatatypeSomeRestriction && 
 							description instanceof DatatypeSomeRestriction) {
 						DataRange dr = ((DatatypeSomeRestriction)c).getDataRange();
@@ -442,7 +515,7 @@ public class RhoDRDown implements RefinementOperator {
 						if((dr instanceof DoubleMaxValue && dr2 instanceof DoubleMaxValue)
 							||(dr instanceof DoubleMinValue && dr2 instanceof DoubleMinValue))
 							skip = true;
-					}
+					}*/
 					
 					// perform a disjointness check when named classes are added;
 					// this can avoid a lot of superfluous computation in the algorithm e.g.
@@ -462,7 +535,9 @@ public class RhoDRDown implements RefinementOperator {
 						ConceptTransformation.cleanConceptNonRecursive(mc);
 						ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
 						
-						refinements.add(mc);
+						// last check before intersection is added
+						if(checkIntersection(mc))
+							refinements.add(mc);
 					}
 				}
 			}
@@ -481,11 +556,15 @@ public class RhoDRDown implements RefinementOperator {
 	// when a child of an intersection is refined and reintegrated into the
 	// intersection, we can perform some sanity checks;
 	// method returns true if everything is OK and false otherwise
-	private boolean checkIntersection(Intersection intersection) {
+	// TODO: can be implemented more efficiently if the newly added child
+	// is given as parameter
+	public static boolean checkIntersection(Intersection intersection) {
 		// rule 1: max. restrictions at most once
 		boolean maxDoubleOccurence = false;
 		// rule 2: min restrictions at most once
 		boolean minDoubleOccurence = false;
+		// rule 3: no double boolean datatypes
+		TreeSet<DatatypeProperty> occuredDP = new TreeSet<DatatypeProperty>();
 		for(Description child : intersection.getChildren()) {
 			if(child instanceof DatatypeSomeRestriction) {
 				DataRange dr = ((DatatypeSomeRestriction)child).getDataRange();
@@ -500,7 +579,14 @@ public class RhoDRDown implements RefinementOperator {
 					else
 						minDoubleOccurence = true;
 				}		
+			} else if(child instanceof BooleanValueRestriction) {
+				DatatypeProperty dp = (DatatypeProperty) ((BooleanValueRestriction)child).getRestrictedPropertyExpression();
+//				System.out.println("dp: " + dp);
+				// return false if the boolean property exists already
+				if(!occuredDP.add(dp))
+					return false;
 			}
+//			System.out.println(child.getClass());
 		}
 		return true;
 	}
