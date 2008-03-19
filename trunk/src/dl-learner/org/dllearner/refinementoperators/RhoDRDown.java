@@ -92,6 +92,10 @@ public class RhoDRDown implements RefinementOperator {
 	
 	// maximum number of fillers for eeach role
 	private Map<ObjectProperty,Integer> maxNrOfFillers = new TreeMap<ObjectProperty,Integer>();
+	// limit for cardinality restrictions (this makes sense if we e.g. have compounds with up to
+	// more than 200 atoms but we are only interested in atoms with certain characteristics and do
+	// not want something like e.g. >= 204 hasAtom.NOT Carbon-87; which blows up the search space
+	private int cardinalityLimit = 5;
 	
 	// start concept (can be used to start from an arbitrary concept, needs
 	// to be Thing or NamedClass), note that when you use e.g. Compound as 
@@ -105,7 +109,7 @@ public class RhoDRDown implements RefinementOperator {
 	private int topRefinementsLength = 0;
 	private Map<NamedClass, Integer> topARefinementsLength = new TreeMap<NamedClass, Integer>();
 	// M is finite and this value is the maximum length of any value in M
-	private static int mMaxLength = 3;
+	private static int mMaxLength = 4;
 	
 	// the sets M_\top and M_A
 	private Map<Integer,SortedSet<Description>> m = new TreeMap<Integer,SortedSet<Description>>();
@@ -194,14 +198,21 @@ public class RhoDRDown implements RefinementOperator {
 		}
 		
 		// determine the maximum number of fillers for each role
+		// (up to a specified cardinality maximum)
+		if(useCardinalityRestrictions) {
 		for(ObjectProperty op : rs.getAtomicRoles()) {
 			int maxFillers = 0;
 			Map<Individual,SortedSet<Individual>> opMembers = rs.getRoleMembers(op);
 			for(SortedSet<Individual> inds : opMembers.values()) {
 				if(inds.size()>maxFillers)
 					maxFillers = inds.size();
+				if(maxFillers >= cardinalityLimit) {
+					maxFillers = cardinalityLimit;
+					break;
+				}	
 			}
 			maxNrOfFillers.put(op, maxFillers);
+		}
 		}
 		
 		/*
@@ -412,23 +423,41 @@ public class RhoDRDown implements RefinementOperator {
 			
 			// rule 4: ALL r.D => <= (maxFillers-1) r.D
 			// (length increases by 1 so we have to check whether max length is sufficient)
-			if(useCardinalityRestrictions) {
-				if(maxLength > description.getLength() && maxNrOfFillers.get(ar)>1) {
-					ObjectMaxCardinalityRestriction max = new ObjectMaxCardinalityRestriction(maxNrOfFillers.get(ar)-1,role,description.getChild(0));
-					refinements.add(max);
-				}
-			}
+			// => commented out because this is acutally not a downward refinement
+//			if(useCardinalityRestrictions) {
+//				if(maxLength > description.getLength() && maxNrOfFillers.get(ar)>1) {
+//					ObjectMaxCardinalityRestriction max = new ObjectMaxCardinalityRestriction(maxNrOfFillers.get(ar)-1,role,description.getChild(0));
+//					refinements.add(max);
+//				}
+//			}
 		} else if (description instanceof ObjectCardinalityRestriction) {
+			ObjectPropertyExpression role = ((ObjectCardinalityRestriction)description).getRole();
+			Description range = opRanges.get(role);	
+			int number = ((ObjectCardinalityRestriction)description).getCardinality();
 			if(description instanceof ObjectMaxCardinalityRestriction) {
-				// <= x r.C  =>  <= (x-1) r.C
+				// rule 1: <= x r.C =>  <= x r.D
+				tmp = refine(description.getChild(0), maxLength-3, null, range);
+
+				for(Description d : tmp) {
+					refinements.add(new ObjectMaxCardinalityRestriction(number,role,d));
+				}				
+				
+				// rule 2: <= x r.C  =>  <= (x-1) r.C
 				ObjectMaxCardinalityRestriction max = (ObjectMaxCardinalityRestriction) description;
-				int number = max.getNumber();
-				if(number > 0)
+//				int number = max.getNumber();
+				if(number > 1)
 					refinements.add(new ObjectMaxCardinalityRestriction(number-1,max.getRole(),max.getChild(0)));
+				
 			} else if(description instanceof ObjectMinCardinalityRestriction) {
+				tmp = refine(description.getChild(0), maxLength-3, null, range);
+
+				for(Description d : tmp) {
+					refinements.add(new ObjectMinCardinalityRestriction(number,role,d));
+				}
+				
 				// >= x r.C  =>  >= (x+1) r.C
 				ObjectMinCardinalityRestriction min = (ObjectMinCardinalityRestriction) description;
-				int number = min.getNumber();
+//				int number = min.getNumber();
 				if(number < maxNrOfFillers.get(min.getRole()))
 					refinements.add(new ObjectMinCardinalityRestriction(number+1,min.getRole(),min.getChild(0)));				
 			}
@@ -723,7 +752,7 @@ public class RhoDRDown implements RefinementOperator {
 		long mComputationTimeStartNs = System.nanoTime();
 
 		// initialise all possible lengths (1 to 3)
-		for(int i=1; i<=3; i++) {
+		for(int i=1; i<=mMaxLength; i++) {
 			m.put(i, new TreeSet<Description>(conceptComparator));
 		}
 		
@@ -776,6 +805,15 @@ public class RhoDRDown implements RefinementOperator {
 		}		
 		
 		m.put(3,m3);
+		
+		SortedSet<Description> m4 = new TreeSet<Description>(conceptComparator);
+		if(useCardinalityRestrictions) {
+			for(ObjectProperty r : rs.getMostGeneralRoles()) {
+				int maxFillers = maxNrOfFillers.get(r);
+				m4.add(new ObjectMaxCardinalityRestriction(maxFillers-1, r, new Thing()));
+			}			
+		}
+		m.put(4,m4);
 		
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
@@ -865,6 +903,15 @@ public class RhoDRDown implements RefinementOperator {
 		}			
 		
 		mA.get(nc).put(3,m3);
+		
+		SortedSet<Description> m4 = new TreeSet<Description>(conceptComparator);
+		if(useCardinalityRestrictions) {
+			for(ObjectProperty r : mgr.get(nc)) {
+				int maxFillers = maxNrOfFillers.get(r);
+				m4.add(new ObjectMaxCardinalityRestriction(maxFillers-1, r, new Thing()));
+			}
+		}
+		mA.get(nc).put(4,m4);
 		
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}

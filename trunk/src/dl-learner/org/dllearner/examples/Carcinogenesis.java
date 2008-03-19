@@ -123,6 +123,9 @@ public class Carcinogenesis {
 	private static boolean learnCarcinogenic = true;
 	private static boolean useNewGroups = true;
 	
+	private static boolean createPTE1Conf = false;
+	private static boolean createPTE2Conf = false;
+	
 	/**
 	 * @param args
 	 *            No arguments supported.
@@ -133,14 +136,13 @@ public class Carcinogenesis {
 	public static void main(String[] args) throws FileNotFoundException, IOException,
 			ParseException {
 
-		// TODO: newgroups are not mapped currently
 		String[] files = new String[] { "newgroups.pl", "ames.pl", "atoms.pl", "bonds.pl", "gentoxprops.pl",
 				"ind_nos.pl", "ind_pos.pl"};
 		// "pte2/canc_nos.pl", "pte2/pte2ames.pl", "pte2/pte2atoms.pl",
 		//		"pte2/pte2bonds.pl", "pte2/pte2gentox.pl", "pte2/pte2ind_nos.pl", "pte2/pte2newgroups.pl"
 		// "train.b" => not a pure Prolog file but Progol/Aleph specific
 		// };
-		File owlFile = new File("examples/carcinogenesis/pte.owl");
+		File owlFile = new File("examples/carcinogenesis/carcinogenesis.owl");
 
 		Program program = null;
 		long startTime, duration;
@@ -281,7 +283,6 @@ public class Carcinogenesis {
 		// generating test examples for PTE-1
 		// => put all in one file, because they were used as training for PTE-2
 		File confPTE1File = new File("examples/carcinogenesis/testpte1.conf");
-		Files.clearFile(confPTE1File);
 		File testPTE1Positives = new File(prologDirectory + "pte1.f");
 		File testPTE1Negatives = new File(prologDirectory + "pte1.n");
 		
@@ -289,16 +290,20 @@ public class Carcinogenesis {
 		List<Individual> negPTE1Examples = getExamples(testPTE1Negatives);
 		appendPosExamples(confTrainFile, posPTE1Examples);
 		appendNegExamples(confTrainFile, negPTE1Examples);
-		Files.clearFile(confPTE1File);
-		Files.appendFile(confPTE1File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
-		appendPosExamples(confPTE1File, posPTE1Examples);
-		appendNegExamples(confPTE1File, negPTE1Examples);		
+		if(createPTE1Conf) {
+			Files.clearFile(confPTE1File);
+			Files.appendFile(confPTE1File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
+			appendPosExamples(confPTE1File, posPTE1Examples);
+			appendNegExamples(confPTE1File, negPTE1Examples);
+		}
 		
 		// create a PTE-2 test file
-		File confPTE2File = new File("examples/carcinogenesis/testpte2.conf");
-		Files.clearFile(confPTE2File);
-		Files.appendFile(confPTE2File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
-		Files.appendFile(confPTE2File, getPTE2Examples());
+		if(createPTE2Conf) {
+			File confPTE2File = new File("examples/carcinogenesis/testpte2.conf");
+			Files.clearFile(confPTE2File);
+			Files.appendFile(confPTE2File, "import(\"pte.owl\");\nreasoner=fastInstanceChecker;\n\n");
+			Files.appendFile(confPTE2File, getPTE2Examples());
+		}
 
 	}
 
