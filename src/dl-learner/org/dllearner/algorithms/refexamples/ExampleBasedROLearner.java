@@ -115,7 +115,7 @@ public class ExampleBasedROLearner {
 	// the divide&conquer approach in many ILP programs using a
 	// clause by clause search; after a period of time the candidate
 	// set is reduced to focus CPU time on the most promising concepts
-	private boolean useCandidateReduction = false;
+	private boolean useCandidateReduction = true;
 	private int candidatePostReductionSize = 30;
 	
 	// setting to true gracefully stops the algorithm
@@ -244,23 +244,35 @@ public class ExampleBasedROLearner {
 	}
 	
 	public void start() {
+		
+		// TODO: write a JUnit test for this problem (long-lasting or infinite loops because
+		// redundant children of a node are called recursively after when the node is extended
+		// twice)
 		/*
 //		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 2 \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Ar_halide\" OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND >= 5 \"http://dl-learner.org/carcinogenesis#hasBond\". TOP)))";
-		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND (\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE)))";
+//		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND (\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE)))";
+		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 3 \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Halide\" OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND ALL \"http://dl-learner.org/carcinogenesis#hasAtom\".TOP)))";
+		String conceptStr2 = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 4 \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Halide\" OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND ALL \"http://dl-learner.org/carcinogenesis#hasAtom\".TOP)))";
 		try {
 			NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Compound");
 			Description d = KBParser.parseConcept(conceptStr);
+			Description d2 = KBParser.parseConcept(conceptStr2);
 //			SortedSet<Description> ds = (SortedSet<Description>) operator.refine(d,15,null,struc);
 //			System.out.println(ds);
 			
-			System.out.println(RhoDRDown.checkIntersection((Intersection)d));
+//			System.out.println(RhoDRDown.checkIntersection((Intersection)d));
 			
 			
 			Set<Individual> coveredNegatives = rs.instanceCheck(d, learningProblem.getNegativeExamples());
 			Set<Individual> coveredPositives =  rs.instanceCheck(d, learningProblem.getPositiveExamples());
 			ExampleBasedNode ebn = new ExampleBasedNode(d);
 			ebn.setCoveredExamples(coveredPositives, coveredNegatives);
-			extendNodeProper(ebn,15);
+			
+			properRefinements.add(d2);
+			extendNodeProper(ebn,13);
+			extendNodeProper(ebn,14);
+			for(Description refinement: ebn.getChildConcepts())
+				System.out.println("refinement: " + refinement);			
 			
 			// Individual i = new Individual("http://dl-learner.org/carcinogenesis#d101");
 //			for(Individual i : learningProblem.getPositiveExamples())
@@ -308,7 +320,7 @@ public class ExampleBasedROLearner {
 			
 			// print statistics at most once a second
 			currentTime = System.nanoTime();
-			if(currentTime - lastPrintTime > 1000000000) {
+			if(currentTime - lastPrintTime > 3000000000l) {
 				printStatistics(false);
 				lastPrintTime = currentTime;
 				logger.debug("--- loop " + loop + " started ---");				
@@ -327,7 +339,7 @@ public class ExampleBasedROLearner {
 //				Logger.getRootLogger().setLevel(Level.TRACE);
 			}			
 			
-			System.out.println("next expanded: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));			
+//			System.out.println("next expanded: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));			
 			// chose best node according to heuristics
 			bestNode = candidates.last();
 			// extend best node	
@@ -434,8 +446,11 @@ public class ExampleBasedROLearner {
 
 		childConceptsDeletionTimeNs += System.nanoTime() - childConceptsDeletionTimeNsStart;
 		
-//		if(refinements.size()<30)
-//			System.out.println("refinements: " + refinements);
+//		if(refinements.size()<30) {
+////			System.out.println("refinements: " + refinements);
+//			for(Description refinement: refinements)
+//				System.out.println("refinement: " + refinement);
+//		}
 		
 		long evaluateSetCreationTimeNsStart = System.nanoTime();
 		
@@ -463,7 +478,7 @@ public class ExampleBasedROLearner {
 						propernessTestsAvoidedByShortConceptConstruction++;
 						propernessDetected = true;
 						
-						System.out.println("refinement " + refinement + " can be shortened");
+//						System.out.println("refinement " + refinement + " can be shortened");
 //						System.exit(0);
 					}
 				}
@@ -517,7 +532,7 @@ public class ExampleBasedROLearner {
 		}
 		evaluateSetCreationTimeNs += System.nanoTime() - evaluateSetCreationTimeNsStart;
 		
-//		System.out.println("intermediate 1");		
+//		System.out.println("intermediate 1 " + node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));		
 		
 		// System.out.println(toEvaluateConcepts.size());
 		
@@ -678,8 +693,17 @@ public class ExampleBasedROLearner {
 		for(Description refinement : refinements) {
 			// for(int i=0; i<=recDepth; i++)
 			//	System.out.print("  ");
-//			System.out.println("call: " + refinement + " [maxLength " + maxLength + "]");
-			extendNodeProper(node, refinement, maxLength, recDepth+1);
+//			System.out.println("call: " + refinement + " [maxLength " + maxLength + ", rec depth " + recDepth + "]");
+			
+			// check for redundancy (otherwise we may run into very time-intensive loops,
+			// see planned JUnit test case $x)
+			
+			long redundancyCheckTimeNsStart = System.nanoTime();
+			boolean redundant = properRefinements.contains(refinement);
+			redundancyCheckTimeNs += System.nanoTime() - redundancyCheckTimeNsStart;
+						
+			if(!redundant)
+				extendNodeProper(node, refinement, maxLength, recDepth+1);
 			// for(int i=0; i<=recDepth; i++)
 			//	System.out.print("  ");
 			// System.out.println("finished: " + refinement + " [maxLength " + maxLength + "]");

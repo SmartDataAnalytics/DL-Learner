@@ -79,6 +79,9 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	private double gainBonusFactor;
 	private double nodeChildPenalty = 0.0001;
 	private double startNodeBonus = 1.0;
+	// penalise errors on positive examples harder than on negative examples
+	// (positive weight = 1)
+	private double negativeWeight = 0.8;
 	
 	// examples
 	private int nrOfNegativeExamples;
@@ -113,11 +116,11 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	}
 
 	public double getNodeScore(ExampleBasedNode node) {
-		double accuracy = getAccuracy(node.getCoveredPositives().size(),node.getCoveredNegatives().size());
+		double accuracy = getWeightedAccuracy(node.getCoveredPositives().size(),node.getCoveredNegatives().size());
 		ExampleBasedNode parent = node.getParent();
 		double gain = 0;
 		if(parent != null) {
-			double parentAccuracy =  getAccuracy(parent.getCoveredPositives().size(),parent.getCoveredNegatives().size());
+			double parentAccuracy =  getWeightedAccuracy(parent.getCoveredPositives().size(),parent.getCoveredNegatives().size());
 			gain = accuracy - parentAccuracy;
 		} else {
 			accuracy += startNodeBonus;
@@ -126,9 +129,8 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		return accuracy + gainBonusFactor * gain - expansionPenaltyFactor * he - nodeChildPenalty * node.getChildren().size();
 	}
 	
-	private double getAccuracy(int coveredPositives, int coveredNegatives) {
-		return (coveredPositives + nrOfNegativeExamples - coveredNegatives)/(double)nrOfExamples;
-		
+	private double getWeightedAccuracy(int coveredPositives, int coveredNegatives) {
+		return (coveredPositives + negativeWeight * (nrOfNegativeExamples - coveredNegatives))/(double)nrOfExamples;
 	}
 	
 	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples) {

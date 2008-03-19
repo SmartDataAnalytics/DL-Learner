@@ -325,10 +325,10 @@ public class FastInstanceChecker extends ReasonerComponent {
 						return true;
 				// earyl abort:	e.g. >= 10 hasStructure.Methyl;
 				// if there are 11 fillers and 2 are not Methyl, the result is false
-				} /* else {
+				} else {
 					if(roleFillers.size() - index < number)
 						return false;
-				}*/
+				}
 			}
 			return false;
 		} else if (description instanceof ObjectMaxCardinalityRestriction) {
@@ -363,10 +363,10 @@ public class FastInstanceChecker extends ReasonerComponent {
 						return false;
 				// earyl abort:	e.g. <= 5 hasStructure.Methyl;
 				// if there are 6 fillers and 2 are not Methyl, the result is true						
-				} /* else {
+				} else {
 					if(roleFillers.size() - index <= number)
 						return true;
-				} */
+				}
 			}
 			return true;
 		} else if (description instanceof BooleanValueRestriction) {
