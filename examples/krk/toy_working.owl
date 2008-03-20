@@ -1,0 +1,697 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY test "http://www.test.de/test#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl11 "http://www.w3.org/2006/12/owl11#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl11xml "http://www.w3.org/2006/12/owl11-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.test.de/test#"
+     xml:base="http://www.test.de/test"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl11="http://www.w3.org/2006/12/owl11#"
+     xmlns:owl11xml="http://www.w3.org/2006/12/owl11-xml#"
+     xmlns:test="http://www.test.de/test#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.test.de/test#fileDistance0 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance0">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan1"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance1 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance1">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan2"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance2 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance2">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan3"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance3 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance3">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan4"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance4 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance4">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan5"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance5 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance5">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan6"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance6 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance6">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan7"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistance7 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistance7">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan8"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan0 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan0">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan1"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan1 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan1">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan2"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan2 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan2">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan3"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan3 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan3">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan4"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan4 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan4">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan5"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan5 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan5">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan6"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan6 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan6">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan7"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan7 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan7">
+        <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan8"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#fileDistanceLessThan8 -->
+
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan8"/>
+    
+
+
+    <!-- http://www.test.de/test#hasLowerFileThan -->
+
+    <owl:ObjectProperty rdf:about="#hasLowerFileThan">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#hasLowerRankThan -->
+
+    <owl:ObjectProperty rdf:about="#hasLowerRankThan">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#hasPiece -->
+
+    <owl:ObjectProperty rdf:about="#hasPiece">
+        <rdfs:domain rdf:resource="#Game"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#hasPieceInv -->
+
+    <owl:ObjectProperty rdf:about="#hasPieceInv">
+        <owl:inverseOf rdf:resource="#hasPiece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance0 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance0">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan1"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance1 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance1">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan2"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance2 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance2">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan3"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance3 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance3">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan4"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance4 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance4">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan5"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance5 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance5">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan6"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance6 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance6">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan7"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistance7 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistance7">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan8"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan0 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan0">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan1"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan1 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan1">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan2"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan2 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan2">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan3"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan3 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan3">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan4"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan4 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan4">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan5"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan5 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan5">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan6"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan6 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan6">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan7"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan7 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan7">
+        <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan8"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.test.de/test#rankDistanceLessThan8 -->
+
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan8"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.test.de/test#BKing -->
+
+    <owl:Class rdf:about="#BKing">
+        <rdfs:subClassOf rdf:resource="#Piece"/>
+        <owl:disjointWith rdf:resource="#WKing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.test.de/test#Game -->
+
+    <owl:Class rdf:about="#Game"/>
+    
+
+
+    <!-- http://www.test.de/test#ONE -->
+
+    <owl:Class rdf:about="#ONE"/>
+    
+
+
+    <!-- http://www.test.de/test#Piece -->
+
+    <owl:Class rdf:about="#Piece">
+        <owl:disjointWith rdf:resource="#Game"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.test.de/test#WKing -->
+
+    <owl:Class rdf:about="#WKing">
+        <rdfs:subClassOf rdf:resource="#Piece"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.test.de/test#WRook -->
+
+    <owl:Class rdf:about="#WRook">
+        <rdfs:subClassOf rdf:resource="#Piece"/>
+        <owl:disjointWith rdf:resource="#BKing"/>
+        <owl:disjointWith rdf:resource="#WKing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.test.de/test#ZERO -->
+
+    <owl:Class rdf:about="#ZERO"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_4 -->
+
+    <BKing rdf:about="#bking_a2_4">
+        <hasLowerFileThan rdf:resource="#wking_c1_4"/>
+        <hasLowerRankThan rdf:resource="#wrook_c3_4"/>
+        <hasLowerFileThan rdf:resource="#wrook_c3_4"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_5 -->
+
+    <BKing rdf:about="#bking_a2_5">
+        <hasLowerFileThan rdf:resource="#wrook_d3_5"/>
+        <hasLowerFileThan rdf:resource="#wking_c1_5"/>
+        <hasLowerRankThan rdf:resource="#wrook_d3_5"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_a2_6 -->
+
+    <BKing rdf:about="#bking_a2_6">
+        <hasLowerFileThan rdf:resource="#wking_c1_6"/>
+        <hasLowerFileThan rdf:resource="#wrook_e3_6"/>
+        <hasLowerRankThan rdf:resource="#wrook_e3_6"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_1 -->
+
+    <BKing rdf:about="#bking_d1_1">
+        <hasLowerRankThan rdf:resource="#wking_d3_1"/>
+        <hasLowerFileThan rdf:resource="#wrook_f1_1"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_2 -->
+
+    <BKing rdf:about="#bking_d1_2">
+        <hasLowerRankThan rdf:resource="#wking_d3_2"/>
+        <hasLowerFileThan rdf:resource="#wrook_g1_2"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#bking_d1_3 -->
+
+    <BKing rdf:about="#bking_d1_3">
+        <hasLowerRankThan rdf:resource="#wking_d3_3"/>
+        <hasLowerFileThan rdf:resource="#wrook_h1_3"/>
+    </BKing>
+    
+
+
+    <!-- http://www.test.de/test#game1 -->
+
+    <ZERO rdf:about="#game1">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_f1_1"/>
+        <hasPiece rdf:resource="#bking_d1_1"/>
+        <hasPiece rdf:resource="#wking_d3_1"/>
+    </ZERO>
+    
+
+
+    <!-- http://www.test.de/test#game2 -->
+
+    <Game rdf:about="#game2">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#wrook_g1_2"/>
+        <hasPiece rdf:resource="#wking_d3_2"/>
+        <hasPiece rdf:resource="#bking_d1_2"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game3 -->
+
+    <Game rdf:about="#game3">
+        <rdf:type rdf:resource="#ZERO"/>
+        <hasPiece rdf:resource="#wrook_h1_3"/>
+        <hasPiece rdf:resource="#wking_d3_3"/>
+        <hasPiece rdf:resource="#bking_d1_3"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game4 -->
+
+    <Game rdf:about="#game4">
+        <rdf:type rdf:resource="#ONE"/>
+        <hasPiece rdf:resource="#wking_c1_4"/>
+        <hasPiece rdf:resource="#bking_a2_4"/>
+        <hasPiece rdf:resource="#wrook_c3_4"/>
+    </Game>
+    
+
+
+    <!-- http://www.test.de/test#game5 -->
+
+    <ONE rdf:about="#game5">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wrook_d3_5"/>
+        <hasPiece rdf:resource="#bking_a2_5"/>
+        <hasPiece rdf:resource="#wking_c1_5"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#game6 -->
+
+    <ONE rdf:about="#game6">
+        <rdf:type rdf:resource="#Game"/>
+        <hasPiece rdf:resource="#wking_c1_6"/>
+        <hasPiece rdf:resource="#bking_a2_6"/>
+        <hasPiece rdf:resource="#wrook_e3_6"/>
+    </ONE>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_4 -->
+
+    <WKing rdf:about="#wking_c1_4">
+        <rankDistance2 rdf:resource="#wrook_c3_4"/>
+        <hasLowerRankThan rdf:resource="#bking_a2_4"/>
+        <hasLowerRankThan rdf:resource="#wrook_c3_4"/>
+        <rankDistance1 rdf:resource="#bking_a2_4"/>
+        <fileDistance0 rdf:resource="#wrook_c3_4"/>
+        <fileDistance2 rdf:resource="#bking_a2_4"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_5 -->
+
+    <WKing rdf:about="#wking_c1_5">
+        <rankDistance1 rdf:resource="#bking_a2_5"/>
+        <fileDistance2 rdf:resource="#bking_a2_5"/>
+        <hasLowerRankThan rdf:resource="#bking_a2_5"/>
+        <hasLowerFileThan rdf:resource="#wrook_d3_5"/>
+        <rankDistance2 rdf:resource="#wrook_d3_5"/>
+        <hasLowerRankThan rdf:resource="#wrook_d3_5"/>
+        <fileDistance1 rdf:resource="#wrook_d3_5"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_c1_6 -->
+
+    <WKing rdf:about="#wking_c1_6">
+        <rankDistance2 rdf:resource="#wrook_e3_6"/>
+        <hasLowerFileThan rdf:resource="#wrook_e3_6"/>
+        <rankDistance1 rdf:resource="#bking_a2_6"/>
+        <fileDistance2 rdf:resource="#bking_a2_6"/>
+        <fileDistance2 rdf:resource="#wrook_e3_6"/>
+        <hasLowerRankThan rdf:resource="#bking_a2_6"/>
+        <hasLowerRankThan rdf:resource="#wrook_e3_6"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_1 -->
+
+    <WKing rdf:about="#wking_d3_1">
+        <fileDistance0 rdf:resource="#bking_d1_1"/>
+        <rankDistance2 rdf:resource="#wrook_f1_1"/>
+        <hasLowerFileThan rdf:resource="#wrook_f1_1"/>
+        <fileDistance2 rdf:resource="#wrook_f1_1"/>
+        <rankDistance2 rdf:resource="#bking_d1_1"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_2 -->
+
+    <WKing rdf:about="#wking_d3_2">
+        <hasLowerFileThan rdf:resource="#wrook_g1_2"/>
+        <fileDistance0 rdf:resource="#bking_d1_2"/>
+        <rankDistance2 rdf:resource="#wrook_g1_2"/>
+        <rankDistance2 rdf:resource="#bking_d1_2"/>
+        <fileDistance3 rdf:resource="#wrook_g1_2"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wking_d3_3 -->
+
+    <WKing rdf:about="#wking_d3_3">
+        <fileDistance0 rdf:resource="#bking_d1_3"/>
+        <rankDistance2 rdf:resource="#bking_d1_3"/>
+        <fileDistance4 rdf:resource="#wrook_h1_3"/>
+        <hasLowerFileThan rdf:resource="#wrook_h1_3"/>
+        <rankDistance2 rdf:resource="#wrook_h1_3"/>
+    </WKing>
+    
+
+
+    <!-- http://www.test.de/test#wrook_c3_4 -->
+
+    <WRook rdf:about="#wrook_c3_4">
+        <fileDistance2 rdf:resource="#bking_a2_4"/>
+        <rankDistance1 rdf:resource="#bking_a2_4"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_d3_5 -->
+
+    <WRook rdf:about="#wrook_d3_5">
+        <rankDistance1 rdf:resource="#bking_a2_5"/>
+        <fileDistance3 rdf:resource="#bking_a2_5"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_e3_6 -->
+
+    <WRook rdf:about="#wrook_e3_6">
+        <rankDistance1 rdf:resource="#bking_a2_6"/>
+        <fileDistance4 rdf:resource="#bking_a2_6"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_f1_1 -->
+
+    <WRook rdf:about="#wrook_f1_1">
+        <rankDistance0 rdf:resource="#bking_d1_1"/>
+        <fileDistance2 rdf:resource="#bking_d1_1"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_1"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_g1_2 -->
+
+    <WRook rdf:about="#wrook_g1_2">
+        <fileDistance3 rdf:resource="#bking_d1_2"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_2"/>
+        <rankDistance0 rdf:resource="#bking_d1_2"/>
+    </WRook>
+    
+
+
+    <!-- http://www.test.de/test#wrook_h1_3 -->
+
+    <WRook rdf:about="#wrook_h1_3">
+        <rankDistance0 rdf:resource="#bking_d1_3"/>
+        <fileDistance4 rdf:resource="#bking_d1_3"/>
+        <hasLowerRankThan rdf:resource="#wking_d3_3"/>
+    </WRook>
+</rdf:RDF>
