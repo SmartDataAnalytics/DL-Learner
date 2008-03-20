@@ -29,7 +29,6 @@ import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
-import org.dllearner.core.owl.Union;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
 /*
@@ -47,10 +46,11 @@ public class KRK {
 	// RANKS are numbers
 
 	static URI ontologyURI = URI.create("http://www.test.de/test");
-	static SortedSet<String> fileSet = new TreeSet<String>();
-	static SortedSet<String> rankSet = new TreeSet<String>();
+	//static SortedSet<String> fileSet = new TreeSet<String>();
+	//static SortedSet<String> rankSet = new TreeSet<String>();
 	static SortedSet<String> classSet = new TreeSet<String>();
-	// static SortedSet<String> instances = new TreeSet<String>();
+	static SortedSet<String> symmetricRoleSet = new TreeSet<String>();
+	
 	static HashMap<String, SortedSet<String>> classToInd = new HashMap<String, SortedSet<String>>();
 
 	// static LinkedList<String> words;
@@ -64,16 +64,20 @@ public class KRK {
 	static NamedClass Rank = getAtomicConcept("Rank");
 	static NamedClass Piece = getAtomicConcept("Piece");
 
-	static ObjectProperty hasRank = getRole("hasRank");
-	static ObjectProperty hasFile = getRole("hasFile");
+	//static ObjectProperty hasRank = getRole("hasRank");
+	//static ObjectProperty hasFile = getRole("hasFile");
 	static ObjectProperty hasPiece = getRole("hasPiece");
-	static ObjectProperty lessThan = getRole("strictLessThan");
+	static ObjectProperty hasPieceInv = getRole("hasPieceInv");
+	
+	static ObjectProperty rankLessThan = getRole("hasLowerRankThan");
+	static ObjectProperty fileLessThan = getRole("hasLowerFileThan");
+	//static ObjectProperty lessThan = getRole("strictLessThan");
 
 	
-	static ObjectProperty hasRankInv = getRole("hasRankInv");
-	static ObjectProperty hasFileInv = getRole("hasFileInv");
-	static ObjectProperty hasPieceInv = getRole("hasPieceInv");
-	static ObjectProperty lessThanInv = getRole("strictLessThanInv");
+	//static ObjectProperty hasRankInv = getRole("hasRankInv");
+	//static ObjectProperty hasFileInv = getRole("hasFileInv");
+	//
+	//static ObjectProperty lessThanInv = getRole("strictLessThanInv");
 
 	// static HashMap<String,SortedSet<String>> classToInd;
 	/**
@@ -85,8 +89,8 @@ public class KRK {
 		boolean writeOWL = true;
 
 		// classToInd = new HashMap<String,SortedSet<String>>();
-		initVarsAndClasses();
-		initBackgroundRoles();
+		init();
+		
 
 		Individual gameind;
 		Individual wkingind;
@@ -116,13 +120,14 @@ public class KRK {
 				ar = tokenize(line);
 
 				gameind = getIndividual("game" + x);
-				wkingind = getIndividual("wking" + x);
-				wrookind = getIndividual("wrook" + x);
-				bkingind = getIndividual("bking" + x);
+				wkingind = getIndividual("wking_"+ar[0]+ar[1]+"_" + x);
+				wrookind = getIndividual("wrook_" +ar[2]+ar[3]+"_" +x);
+				bkingind = getIndividual("bking_" +ar[4]+ar[5]+"_" + x);
 
 				//if (x == 1)
 					//currentClass = ar[6];
 
+				//save it for examplegeneration
 				addToHM(ar[6], gameind.getName());
 				// .add(gameind.getName());
 				classSet.add(ar[6]);
@@ -143,7 +148,22 @@ public class KRK {
 				kb.addABoxAxiom(new ObjectPropertyAssertion(hasPiece, gameind,
 						bkingind));
 
-				kb.addABoxAxiom(new ObjectPropertyAssertion(hasFile, wkingind,
+				
+				//labels
+				
+				
+				KRKPiece WKingPiece=new KRKPiece(wkingind,ar[0],Integer.parseInt(ar[1]));
+				KRKPiece WRookPiece=new KRKPiece(wrookind,ar[2],Integer.parseInt(ar[3]));
+				KRKPiece BKingPiece=new KRKPiece(bkingind,ar[4],Integer.parseInt(ar[5]));
+				
+				makeDistanceRoles(WKingPiece, WRookPiece);
+				makeDistanceRoles(WKingPiece, BKingPiece);
+				makeDistanceRoles(WRookPiece, BKingPiece);
+				
+				
+				
+				//FILERANK
+				/*kb.addABoxAxiom(new ObjectPropertyAssertion(hasFile, wkingind,
 						getIndividual(ar[0])));
 				kb.addABoxAxiom(new ObjectPropertyAssertion(hasRank, wkingind,
 						getIndividual("r" + ar[1])));
@@ -156,61 +176,95 @@ public class KRK {
 				kb.addABoxAxiom(new ObjectPropertyAssertion(hasFile, bkingind,
 						getIndividual(ar[4])));
 				kb.addABoxAxiom(new ObjectPropertyAssertion(hasRank, bkingind,
-						getIndividual("r" + ar[5])));
+						getIndividual("r" + ar[5])));*/
 
-				// kb.addABoxAxiom(new ClassAssertionAxiom(new
-				// NamedClass("Game"),new Individual(names[0]+(x++))));
-				// kb.addABoxAxiom(new ClassAssertionAxiom(new
-				// NamedClass("Game"),new Individual(names[0]+(x++))));
-
-				// System.out.println(line);
-
-				// instances
+				
 
 			}// endWhile
 
-			String collect1 = "", collect2 = "";
-
-			for (String keys : classToInd.keySet()) {
-				SortedSet<String> tmpset = classToInd.get(keys);
-				for (String individuals : tmpset) {
-					collect1 += "+\"" + individuals + "\"\n";
-					collect2 += "-\"" + individuals + "\"\n";
-				}
-
-				writeToFile("examples/krk/" + keys + ".txt", collect1 + "\n\n"
-						+ collect2 + "\n");
-				collect1 = "";
-				collect2 = "";
-			}
-
-			String outputfile = "test.owl";
-			Iterator<String> it = classSet.iterator();
-			System.out.println("import(\"" + outputfile + "\");");
-			String collect = "refinement.ignoredConcepts={";
-			while (it.hasNext()) {
-				String tmp = (String) it.next();
-				collect += "\n\"" + getAtomicConcept(tmp).getName() + "\",";
-			}
-			collect = collect.substring(0, collect.length() - 1);
-			System.out.println(collect + "};");
-
-			System.out.println("Writing owl");
-			File owlfile = new File("examples/krk/" + outputfile);
-			// System.out.println(kb.toString("http://www.test.de/test", new
-			// HashMap<String, String>()));
-			if (writeOWL)
-				OWLAPIReasoner.exportKBToOWL(owlfile, kb, ontologyURI);
+			finishBackgroundForRoles();
+			
+			//WRITE
+			writeExampleSets();
+			if(writeOWL)writeOWLFile("test.owl");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.out.println("Done");
 	}// end main
+	
+	static void makeDistanceRoles(KRKPiece A, KRKPiece B){
+		int Fdist=A.getFileDistance(B);
+		int Rdist=A.getRankDistance(B);
+		String rdistance = "rankDistance";
+		String fdistance = "fileDistance";
+		
+		
+		kb.addABoxAxiom(new ObjectPropertyAssertion(getRole(rdistance+Rdist), A.id,
+				B.id));
+		symmetricRoleSet.add(rdistance+Rdist);
+		kb.addABoxAxiom(new ObjectPropertyAssertion(getRole(fdistance+Fdist), A.id,
+				B.id));
+		symmetricRoleSet.add(fdistance+Fdist);
+		
+		if(A.meHasLowerFileThan(B))
+			kb.addABoxAxiom(new ObjectPropertyAssertion(fileLessThan, A.id,
+					B.id));
+		//18:00
+		else if(B.meHasLowerFileThan(A))
+			kb.addABoxAxiom(new ObjectPropertyAssertion(fileLessThan, B.id,
+					A.id));
+			
+		if(A.meHasLowerRankThan(B))
+			kb.addABoxAxiom(new ObjectPropertyAssertion(rankLessThan, A.id,
+				B.id));
+		else if(B.meHasLowerRankThan(A))
+			kb.addABoxAxiom(new ObjectPropertyAssertion(rankLessThan, B.id,
+					A.id));
+	}
+	
 
-	static void initVarsAndClasses() {
+	public static void init(){
 		kb = new KB();
-		fileSet.add("a");
+		initClassHierarchy();
+		initDisJointClasses();
+			
+		initClassesForRankAndFile();
+		initDomainRangeForRoles();
+	}
+	
+	public static void initDisJointClasses(){
+		SortedSet<Description> DisJointClasses1 = new TreeSet<Description>();
+		DisJointClasses1.add(Piece);
+		//DisJointClasses1.add(Rank);
+		//DisJointClasses1.add(File);
+		DisJointClasses1.add(Game);
+		kb.addTBoxAxiom(new DisjointClassesAxiom(DisJointClasses1));
+
+		SortedSet<Description> DisJointClasses2 = new TreeSet<Description>();
+		DisJointClasses2 = new TreeSet<Description>();
+		DisJointClasses2.add(WKing);
+		DisJointClasses2.add(WRook);
+		DisJointClasses2.add(BKing);
+		//DisJointClasses2.add(Rank);
+		//DisJointClasses2.add(File);
+		//DisJointClasses2.add(Game);
+
+		kb.addTBoxAxiom(new DisjointClassesAxiom(DisJointClasses2));
+	}
+	
+	public static void initClassHierarchy(){
+
+		// all sub of piece
+		kb.addTBoxAxiom(new SubClassAxiom(WKing, Piece));
+		kb.addTBoxAxiom(new SubClassAxiom(WRook, Piece));
+		kb.addTBoxAxiom(new SubClassAxiom(BKing, Piece));
+	}
+	
+	static void initClassesForRankAndFile() {
+		
+		/*fileSet.add("a");
 		fileSet.add("b");
 		fileSet.add("c");
 		fileSet.add("d");
@@ -229,49 +283,56 @@ public class KRK {
 		for (String oneRank : rankSet) {
 			kb.addTBoxAxiom(new SubClassAxiom(getAtomicConcept(oneRank.toUpperCase()),Rank));
 			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept(oneRank.toUpperCase()),getIndividual(oneRank)));
-		}
-		
-		SortedSet<Description> DisJointClasses1 = new TreeSet<Description>();
-		DisJointClasses1.add(Piece);
-		DisJointClasses1.add(Rank);
-		DisJointClasses1.add(File);
-		DisJointClasses1.add(Game);
-		kb.addTBoxAxiom(new DisjointClassesAxiom(DisJointClasses1));
-
-		SortedSet<Description> DisJointClasses2 = new TreeSet<Description>();
-		DisJointClasses2 = new TreeSet<Description>();
-		DisJointClasses2.add(WKing);
-		DisJointClasses2.add(WRook);
-		DisJointClasses2.add(BKing);
-		//DisJointClasses2.add(Rank);
-		//DisJointClasses2.add(File);
-		//DisJointClasses2.add(Game);
-
-		kb.addTBoxAxiom(new DisjointClassesAxiom(DisJointClasses2));
-
-		// all sub of piece
-		kb.addTBoxAxiom(new SubClassAxiom(WKing, Piece));
-		kb.addTBoxAxiom(new SubClassAxiom(WRook, Piece));
-		kb.addTBoxAxiom(new SubClassAxiom(BKing, Piece));
-
-		// Classes for files
-		//Iterator<String> it = fileSet.iterator();
-		//Individual next;
-		//while (it.hasNext()) {
-			//next = getIndividual(it.next());
-			//kb.addABoxAxiom(new ClassAssertionAxiom(File, next));
-		//}
-
-		// Classes for rank
-		/*it = rankSet.iterator();
-		while (it.hasNext()) {
-			next = getIndividual(it.next());
-			kb.addABoxAxiom(new ClassAssertionAxiom(Rank, next));
 		}*/
 
 	}// end init
 
-	static void initBackgroundRoles() {
+	static void initDomainRangeForRoles() {
+		
+		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasPiece, Game));
+		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasPiece, Piece));
+		kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasPiece,hasPieceInv));
+	
+		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(rankLessThan, Piece));
+		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(rankLessThan, Piece));
+		
+		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(fileLessThan, Piece));
+		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(fileLessThan, Piece));
+	}
+	
+	
+	
+	static void finishBackgroundForRoles() {
+		
+		kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(rankLessThan));
+		kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(fileLessThan));
+		
+		for (String oneRole : symmetricRoleSet) {
+			kb.addRBoxAxiom(new SymmetricObjectPropertyAxiom(getRole(oneRole)));
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(getRole(oneRole), Piece));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(getRole(oneRole), Piece));
+		}
+		
+		for (int i = 8; i > 0; i--) {
+			kb.addRBoxAxiom(new SubObjectPropertyAxiom(getRole("rankDistanceLessThan"+(i-1)),
+					getRole("rankDistanceLessThan"+i)));
+			kb.addRBoxAxiom(new SubObjectPropertyAxiom(getRole("fileDistanceLessThan"+(i-1)),
+					getRole("fileDistanceLessThan"+i)));
+			
+			kb.addRBoxAxiom(new SubObjectPropertyAxiom(getRole("rankDistance"+(i-1)),
+					getRole("rankDistanceLessThan"+i)));
+			kb.addRBoxAxiom(new SubObjectPropertyAxiom(getRole("fileDistance"+(i-1)),
+					getRole("fileDistanceLessThan"+i)));
+		}
+		
+		
+		
+		//kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(rankLessThan, Piece));
+		//kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(fileLessThan, Piece));
+	}
+	
+	
+	/*static void initBackgroundForRankAndFileRoles() {
 
 		kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(lessThan));
 		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(lessThan, new Union(Rank,
@@ -283,10 +344,9 @@ public class KRK {
 		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasRank, Rank));
 		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasFile, Piece));
 		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasFile, File));
-		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasPiece, Game));
-		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasPiece, Piece));
 		
-		kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasPiece,hasPieceInv));
+		
+		
 		kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasRank,hasRankInv));
 		kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasFile,hasFileInv));
 		kb.addRBoxAxiom(new InverseObjectPropertyAxiom(lessThan,lessThanInv));
@@ -352,7 +412,7 @@ public class KRK {
 		}
 
 	}
-
+*/
 	public static String[] tokenize(String s) {
 		StringTokenizer st = new StringTokenizer(s, ",");
 
@@ -370,6 +430,43 @@ public class KRK {
 
 	}
 
+	protected static void writeExampleSets() {
+		String collect1 = "", collect2 = "";
+
+		for (String keys : classToInd.keySet()) {
+			SortedSet<String> tmpset = classToInd.get(keys);
+			for (String individuals : tmpset) {
+				collect1 += "+\"" + individuals + "\"\n";
+				collect2 += "-\"" + individuals + "\"\n";
+			}
+
+			writeToFile("examples/krk/examples_for_" + keys + ".txt", collect1 + "\n\n"
+					+ collect2 + "\n");
+			collect1 = "";
+			collect2 = "";
+		}
+	}
+	
+	protected static void writeOWLFile(String filename) {
+		
+		Iterator<String> it = classSet.iterator();
+		System.out.println("import(\"" + filename + "\");");
+		String collect = "refinement.ignoredConcepts={";
+		while (it.hasNext()) {
+			String tmp = (String) it.next();
+			collect += "\n\"" + getAtomicConcept(tmp).getName() + "\",";
+		}
+		collect = collect.substring(0, collect.length() - 1);
+		System.out.println(collect + "};");
+
+		System.out.println("Writing owl");
+		File owlfile = new File("examples/krk/" + filename);
+		// System.out.println(kb.toString("http://www.test.de/test", new
+		// HashMap<String, String>()));
+		OWLAPIReasoner.exportKBToOWL(owlfile, kb, ontologyURI);
+		
+	}
+	
 	protected static Individual getIndividual(String name) {
 		return new Individual(ontologyURI + "#" + name);
 	}
