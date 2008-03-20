@@ -55,7 +55,7 @@ public class ComponentTest {
 		
 		// create knowledge source
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		String example = "examples/father.owl";
+		String example = "examples/family/father.owl";
 		cm.applyConfigEntry(source, "url", new File(example).toURI().toString());
 		source.init();
 		
