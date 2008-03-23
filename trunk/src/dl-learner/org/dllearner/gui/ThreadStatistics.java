@@ -40,7 +40,7 @@ public class ThreadStatistics extends Thread {
 	 */
 	@Override
 	public void run() {
-		this.setPriority(4);
+		//this.setPriority(4);
 		if (config.getThreadIsRunning()) {
 			try {
 				sleep(1000); // sleep 1 second

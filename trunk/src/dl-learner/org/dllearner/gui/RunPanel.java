@@ -266,7 +266,7 @@ public class RunPanel extends JPanel implements ActionListener {
 	 * 
 	 * @param a
 	 * @param b
-	 * @return
+	 * @return string that shows percent
 	 */
 	public String Percent(Long a, Long b) {
 		if (a != null && b != null) {
