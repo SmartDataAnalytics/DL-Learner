@@ -70,8 +70,9 @@ public class StartGUI extends JFrame implements ActionListener {
 		this.setSize(800, 600);
 
 		// set icon
-		setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(
-				this.getClass().getResource("icon.gif")));
+		if (this.getClass().getResource("icon.gif") != null)
+			setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(
+					this.getClass().getResource("icon.gif")));
 
 		tab0 = new KnowledgeSourcePanel(config, this);
 		tab1 = new ReasonerPanel(config, this);

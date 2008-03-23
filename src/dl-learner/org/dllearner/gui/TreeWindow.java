@@ -21,43 +21,88 @@ package org.dllearner.gui;
  */
 
 import javax.swing.*;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import org.dllearner.algorithms.refexamples.*;
+
 
 /**
  * TreeWindow
  * 
  * @author Tilo Hielscher
  */
-public class TreeWindow extends JFrame {
+public class TreeWindow extends JFrame implements TreeExpansionListener {
 
 	private static final long serialVersionUID = -5807192061389763835L;
 
 	@SuppressWarnings("unused")
 	private Config config;
-
+	private EBNodeTreeModel ebNodeModel;
+	private ExampleBasedNode rootNode;
+	
 	public TreeWindow(Config config) {
 		this.config = config;
 		this.setTitle("DL-Learner Tree");
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		this.setLocationByPlatform(true);
-		this.setSize(300, 400);
+		this.setSize(640, 300);
 
 		// set icon
-		setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(
-				this.getClass().getResource("icon.gif")));
+		if (this.getClass().getResource("icon.gif") != null)
+			setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(
+					this.getClass().getResource("icon.gif")));
 
 		// tree model
 		if (config.getLearningAlgorithm() instanceof ExampleBasedROLComponent) {
 			ExampleBasedROLComponent ebrol = (ExampleBasedROLComponent) config
 					.getLearningAlgorithm();
-			ExampleBasedNode rootNode = ebrol.getStartNode();
-			JTree tree = new JTree(new EBNodeTreeModel(rootNode));
+			this.rootNode = ebrol.getStartNode();
+			
+			System.out.println("childs1: " + rootNode.getChildren());
+			
+			this.ebNodeModel = new EBNodeTreeModel(rootNode);
+
+			// childrens to treeModel 
+			Object first = ebNodeModel.getChild(rootNode, 0);
+			System.out.println("getIndexOfChild: " + ebNodeModel.getIndexOfChild(rootNode, first));
+
+			//System.out.println("childs2: " + ebNodeModel.getChildren((ExampleBasedNode) first));
+
+			
+			JTree tree = new JTree(ebNodeModel);
+			tree.addTreeExpansionListener(this);
 			this.add(new JScrollPane(tree));
 		}
 
 		// }
 		this.repaint();
 		this.setVisible(true);
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.event.TreeExpansionListener#treeCollapsed(javax.swing.event.TreeExpansionEvent)
+	 */
+	@Override
+	public void treeCollapsed(TreeExpansionEvent event) {
+		System.out.println("collapsed");
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.event.TreeExpansionListener#treeExpanded(javax.swing.event.TreeExpansionEvent)
+	 */
+	@Override
+	public void treeExpanded(TreeExpansionEvent event) {
+		System.out.println("expanded: " + event.getPath());
+		//Object path = event.getPath();
+		
+		//System.out.println("childcount: " + ebNodeModel.getChildCount(path));
+		
+		
+		//ebNodeModel.getChild(event.getSource(), 0);
+		System.out.println("getIndexOfChild: " + ebNodeModel.getIndexOfChild(rootNode, event.getPath()));
+		
+		
+		ebNodeModel.getChild(rootNode, 9);
 	}
 
 }
