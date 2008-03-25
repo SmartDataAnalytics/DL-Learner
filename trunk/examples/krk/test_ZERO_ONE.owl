@@ -135,7 +135,9 @@
     <!-- http://www.test.de/test#fileDistanceLessThan1 -->
 
     <owl:ObjectProperty rdf:about="#fileDistanceLessThan1">
+        <rdfs:range rdf:resource="#Piece"/>
         <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan2"/>
+        <rdfs:domain rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
@@ -144,6 +146,8 @@
 
     <owl:ObjectProperty rdf:about="#fileDistanceLessThan2">
         <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan3"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
@@ -152,6 +156,8 @@
 
     <owl:ObjectProperty rdf:about="#fileDistanceLessThan3">
         <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan4"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
@@ -159,7 +165,9 @@
     <!-- http://www.test.de/test#fileDistanceLessThan4 -->
 
     <owl:ObjectProperty rdf:about="#fileDistanceLessThan4">
+        <rdfs:range rdf:resource="#Piece"/>
         <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan5"/>
+        <rdfs:domain rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
@@ -167,6 +175,8 @@
     <!-- http://www.test.de/test#fileDistanceLessThan5 -->
 
     <owl:ObjectProperty rdf:about="#fileDistanceLessThan5">
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
         <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan6"/>
     </owl:ObjectProperty>
     
@@ -175,6 +185,8 @@
     <!-- http://www.test.de/test#fileDistanceLessThan6 -->
 
     <owl:ObjectProperty rdf:about="#fileDistanceLessThan6">
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
         <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan7"/>
     </owl:ObjectProperty>
     
@@ -184,13 +196,18 @@
 
     <owl:ObjectProperty rdf:about="#fileDistanceLessThan7">
         <rdfs:subPropertyOf rdf:resource="#fileDistanceLessThan8"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://www.test.de/test#fileDistanceLessThan8 -->
 
-    <owl:ObjectProperty rdf:about="#fileDistanceLessThan8"/>
+    <owl:ObjectProperty rdf:about="#fileDistanceLessThan8">
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
     
 
 
@@ -219,14 +236,6 @@
     <owl:ObjectProperty rdf:about="#hasPiece">
         <rdfs:domain rdf:resource="#Game"/>
         <rdfs:range rdf:resource="#Piece"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.test.de/test#hasPieceInv -->
-
-    <owl:ObjectProperty rdf:about="#hasPieceInv">
-        <owl:inverseOf rdf:resource="#hasPiece"/>
     </owl:ObjectProperty>
     
 
@@ -330,6 +339,8 @@
     <!-- http://www.test.de/test#rankDistanceLessThan1 -->
 
     <owl:ObjectProperty rdf:about="#rankDistanceLessThan1">
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
         <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan2"/>
     </owl:ObjectProperty>
     
@@ -339,6 +350,8 @@
 
     <owl:ObjectProperty rdf:about="#rankDistanceLessThan2">
         <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan3"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
@@ -347,6 +360,8 @@
 
     <owl:ObjectProperty rdf:about="#rankDistanceLessThan3">
         <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan4"/>
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
@@ -354,7 +369,9 @@
     <!-- http://www.test.de/test#rankDistanceLessThan4 -->
 
     <owl:ObjectProperty rdf:about="#rankDistanceLessThan4">
+        <rdfs:range rdf:resource="#Piece"/>
         <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan5"/>
+        <rdfs:domain rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
@@ -363,6 +380,8 @@
 
     <owl:ObjectProperty rdf:about="#rankDistanceLessThan5">
         <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan6"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
@@ -371,6 +390,8 @@
 
     <owl:ObjectProperty rdf:about="#rankDistanceLessThan6">
         <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan7"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+        <rdfs:range rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
@@ -378,14 +399,19 @@
     <!-- http://www.test.de/test#rankDistanceLessThan7 -->
 
     <owl:ObjectProperty rdf:about="#rankDistanceLessThan7">
+        <rdfs:domain rdf:resource="#Piece"/>
         <rdfs:subPropertyOf rdf:resource="#rankDistanceLessThan8"/>
+        <rdfs:range rdf:resource="#Piece"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://www.test.de/test#rankDistanceLessThan8 -->
 
-    <owl:ObjectProperty rdf:about="#rankDistanceLessThan8"/>
+    <owl:ObjectProperty rdf:about="#rankDistanceLessThan8">
+        <rdfs:range rdf:resource="#Piece"/>
+        <rdfs:domain rdf:resource="#Piece"/>
+    </owl:ObjectProperty>
     
 
 
@@ -1915,8 +1941,8 @@
     <ONE rdf:about="#game36">
         <rdf:type rdf:resource="#Game"/>
         <hasPiece rdf:resource="#wrook_b5_36"/>
-        <hasPiece rdf:resource="#wking_c2_36"/>
         <hasPiece rdf:resource="#bking_a1_36"/>
+        <hasPiece rdf:resource="#wking_c2_36"/>
     </ONE>
     
 
@@ -2791,8 +2817,8 @@
         <hasLowerRankThan rdf:resource="#wrook_h3_33"/>
         <hasLowerRankThan rdf:resource="#bking_a2_33"/>
         <fileDistance2 rdf:resource="#bking_a2_33"/>
-        <hasLowerFileThan rdf:resource="#wrook_h3_33"/>
         <fileDistance5 rdf:resource="#wrook_h3_33"/>
+        <hasLowerFileThan rdf:resource="#wrook_h3_33"/>
         <rankDistance2 rdf:resource="#wrook_h3_33"/>
         <rankDistance1 rdf:resource="#bking_a2_33"/>
     </WKing>
@@ -2924,8 +2950,8 @@
     <WKing rdf:about="#wking_c2_17">
         <fileDistance2 rdf:resource="#wrook_a8_17"/>
         <hasLowerRankThan rdf:resource="#wrook_a8_17"/>
-        <rankDistance6 rdf:resource="#wrook_a8_17"/>
         <fileDistance2 rdf:resource="#bking_a2_17"/>
+        <rankDistance6 rdf:resource="#wrook_a8_17"/>
         <rankDistance0 rdf:resource="#bking_a2_17"/>
     </WKing>
     
@@ -3237,8 +3263,8 @@
 
     <WKing rdf:about="#wking_c2_58">
         <hasLowerFileThan rdf:resource="#wrook_e6_58"/>
-        <fileDistance2 rdf:resource="#bking_a1_58"/>
         <rankDistance1 rdf:resource="#bking_a1_58"/>
+        <fileDistance2 rdf:resource="#bking_a1_58"/>
         <fileDistance2 rdf:resource="#wrook_e6_58"/>
         <hasLowerRankThan rdf:resource="#wrook_e6_58"/>
         <rankDistance4 rdf:resource="#wrook_e6_58"/>
@@ -3791,8 +3817,8 @@
         <rankDistance2 rdf:resource="#bking_d1_93"/>
         <fileDistance2 rdf:resource="#wrook_e8_93"/>
         <fileDistance1 rdf:resource="#bking_d1_93"/>
-        <hasLowerRankThan rdf:resource="#wrook_e8_93"/>
         <hasLowerFileThan rdf:resource="#wrook_e8_93"/>
+        <hasLowerRankThan rdf:resource="#wrook_e8_93"/>
     </WKing>
     
 
@@ -4231,8 +4257,8 @@
     <!-- http://www.test.de/test#wrook_a8_16 -->
 
     <WRook rdf:about="#wrook_a8_16">
-        <rankDistance7 rdf:resource="#bking_a1_16"/>
         <fileDistance0 rdf:resource="#bking_a1_16"/>
+        <rankDistance7 rdf:resource="#bking_a1_16"/>
         <hasLowerFileThan rdf:resource="#wking_c2_16"/>
     </WRook>
     

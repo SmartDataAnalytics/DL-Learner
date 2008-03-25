@@ -45,6 +45,12 @@ public class KRK {
 	// FILES are letters
 	// RANKS are numbers
 
+	// FLAGS
+	// 
+	static boolean useInverse = false;
+	//dependent, love and marriage, horse and carriage
+	static boolean useTripleSubProps = useInverse && false;
+
 	static URI ontologyURI = URI.create("http://www.test.de/test");
 	// static SortedSet<String> fileSet = new TreeSet<String>();
 	// static SortedSet<String> rankSet = new TreeSet<String>();
@@ -64,10 +70,15 @@ public class KRK {
 	static NamedClass Rank = getAtomicConcept("Rank");
 	static NamedClass Piece = getAtomicConcept("Piece");
 
-	// static ObjectProperty hasRank = getRole("hasRank");
-	// static ObjectProperty hasFile = getRole("hasFile");
 	static ObjectProperty hasPiece = getRole("hasPiece");
-	static ObjectProperty hasPieceInv = getRole("hasPieceInv");
+	static ObjectProperty hasWKing = getRole("hasWKing");
+	static ObjectProperty hasWRook = getRole("hasWRook");
+	static ObjectProperty hasBKing = getRole("hasBKing");
+
+	static ObjectProperty hasPieceInv = getRole("hasGame");
+	static ObjectProperty hasWKingInv = getRole("hasWKingInv");
+	static ObjectProperty hasWRookInv = getRole("hasWRookInv");
+	static ObjectProperty hasBKingInv = getRole("hasBKingInv");
 
 	static ObjectProperty rankLessThan = getRole("hasLowerRankThan");
 	static ObjectProperty fileLessThan = getRole("hasLowerFileThan");
@@ -283,19 +294,63 @@ public class KRK {
 
 		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasPiece, Game));
 		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasPiece, Piece));
-		kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasPiece, hasPieceInv));
+
+		if (useTripleSubProps) {
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasWKing, Game));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasWKing, WKing));
+
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasWRook, Game));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasWRook, WRook));
+
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasBKing, Game));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasBKing, BKing));
+		}
+
+		if (useInverse) {
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasPieceInv, Piece));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasPieceInv, Game));
+
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasWKingInv, WKing));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasWKingInv, Game));
+
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasWRookInv, WRook));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasWRookInv, Game));
+
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(hasBKingInv, BKing));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(hasBKingInv, Game));
+		}
 
 		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(rankLessThan, Piece));
 		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(rankLessThan, Piece));
 
 		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(fileLessThan, Piece));
 		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(fileLessThan, Piece));
+
 	}
 
 	static void finishBackgroundForRoles() {
 
 		kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(rankLessThan));
 		kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(fileLessThan));
+
+		if (useInverse)
+		// INVERSE
+		{
+			kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasPiece,
+					hasPieceInv));
+			kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasWKing,
+					hasWKingInv));
+			kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasWRook,
+					hasWRookInv));
+			kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasBKing,
+					hasBKingInv));
+		}
+
+		if (useTripleSubProps) {
+			kb.addRBoxAxiom(new SubObjectPropertyAxiom(hasWKing, hasPiece));
+			kb.addRBoxAxiom(new SubObjectPropertyAxiom(hasWRook, hasPiece));
+			kb.addRBoxAxiom(new SubObjectPropertyAxiom(hasBKing, hasPiece));
+		}
 
 		for (String oneRole : symmetricRoleSet) {
 			kb.addRBoxAxiom(new SymmetricObjectPropertyAxiom(getRole(oneRole)));
@@ -317,6 +372,16 @@ public class KRK {
 					+ (i - 1)), getRole("rankDistanceLessThan" + i)));
 			kb.addRBoxAxiom(new SubObjectPropertyAxiom(getRole("fileDistance"
 					+ (i - 1)), getRole("fileDistanceLessThan" + i)));
+
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(
+					getRole("rankDistanceLessThan" + i), Piece));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(
+					getRole("rankDistanceLessThan" + i), Piece));
+
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(
+					getRole("fileDistanceLessThan" + i), Piece));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(
+					getRole("fileDistanceLessThan" + i), Piece));
 		}
 
 		// kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(rankLessThan, Piece));
@@ -340,42 +405,39 @@ public class KRK {
 	 * 
 	 * kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasRank,hasRankInv));
 	 * kb.addRBoxAxiom(new InverseObjectPropertyAxiom(hasFile,hasFileInv));
-	 * kb.addRBoxAxiom(new InverseObjectPropertyAxiom(lessThan,lessThanInv));
-	 *  // assigning lessthan to file Iterator<String> it = fileSet.iterator();
+	 * kb.addRBoxAxiom(new InverseObjectPropertyAxiom(lessThan,lessThanInv)); //
+	 * assigning lessthan to file Iterator<String> it = fileSet.iterator();
 	 * Individual current = getIndividual(it.next()); Individual next; while
 	 * (it.hasNext()) { next = getIndividual(it.next()); kb .addABoxAxiom(new
-	 * ObjectPropertyAssertion(lessThan, current, next)); current = next;
-	 *  } // assigning lessthan to rank it = rankSet.iterator(); current =
+	 * ObjectPropertyAssertion(lessThan, current, next)); current = next; } //
+	 * assigning lessthan to rank it = rankSet.iterator(); current =
 	 * getIndividual(it.next()); next = null; while (it.hasNext()) { next =
 	 * getIndividual(it.next()); kb .addABoxAxiom(new
-	 * ObjectPropertyAssertion(lessThan, current, next)); current = next;
-	 *  }
-	 *  // new PropertyRangeAxiom(rank, (PropertyRange) nc[5]);
+	 * ObjectPropertyAssertion(lessThan, current, next)); current = next; } //
+	 * new PropertyRangeAxiom(rank, (PropertyRange) nc[5]);
 	 * 
 	 * String str = "hasDistanceOf"; String str2 = "hasDistanceLessThan"; //
 	 * ObjectProperty tmp; String[] rankarray = new String[8]; String[]
 	 * filearray = new String[8]; rankSet.toArray(rankarray);
-	 * fileSet.toArray(filearray);
-	 *  // assigning has DistanceOf to Rank and File for (int count = 0; count <
-	 * filearray.length; count++) { for (int inner = count + 1, dist = 1; inner <
-	 * filearray.length; inner++, dist++) { // ObjectProperty op =
-	 * getRole(str+inner); kb.addABoxAxiom(getRoleAssertion(str + dist,
-	 * rankarray[count], rankarray[inner]));
-	 * kb.addABoxAxiom(getRoleAssertion(str + dist, filearray[count],
-	 * filearray[inner]));
-	 *  } kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(getRole(str+(count+1)),
-	 * new Union(Rank,File))); kb.addRBoxAxiom(new
-	 * ObjectPropertyRangeAxiom(getRole(str+(count+1)), new Union(Rank,File)));
-	 * kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(getRole(str2+(count+1)),
-	 * new Union(Rank,File))); kb.addRBoxAxiom(new
+	 * fileSet.toArray(filearray); // assigning has DistanceOf to Rank and File
+	 * for (int count = 0; count < filearray.length; count++) { for (int inner =
+	 * count + 1, dist = 1; inner < filearray.length; inner++, dist++) { //
+	 * ObjectProperty op = getRole(str+inner);
+	 * kb.addABoxAxiom(getRoleAssertion(str + dist, rankarray[count],
+	 * rankarray[inner])); kb.addABoxAxiom(getRoleAssertion(str + dist,
+	 * filearray[count], filearray[inner])); } kb.addRBoxAxiom(new
+	 * ObjectPropertyDomainAxiom(getRole(str+(count+1)), new Union(Rank,File)));
+	 * kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(getRole(str+(count+1)), new
+	 * Union(Rank,File))); kb.addRBoxAxiom(new
+	 * ObjectPropertyDomainAxiom(getRole(str2+(count+1)), new
+	 * Union(Rank,File))); kb.addRBoxAxiom(new
 	 * ObjectPropertyRangeAxiom(getRole(str2+(count+1)), new Union(Rank,File))); } //
 	 * make it symmetric + subproperty of for (int count = 1; count < 8;
 	 * count++) { kb.addRBoxAxiom(new SymmetricObjectPropertyAxiom(getRole(str +
 	 * count))); kb.addRBoxAxiom(new SubObjectPropertyAxiom(getRole(str +
 	 * count), getRole(str2 + (count + 1)))); kb.addRBoxAxiom(new
 	 * SubObjectPropertyAxiom(getRole(str2 + count), getRole(str2 + (count +
-	 * 1)))); }
-	 *  }
+	 * 1)))); } }
 	 */
 	public static String[] tokenize(String s) {
 		StringTokenizer st = new StringTokenizer(s, ",");
