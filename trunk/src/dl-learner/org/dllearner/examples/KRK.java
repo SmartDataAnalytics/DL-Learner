@@ -48,7 +48,7 @@ public class KRK {
 	// FLAGS
 	// 
 	static boolean useInverse = false;
-	//dependent, love and marriage, horse and carriage
+	// dependent, love and marriage, horse and carriage
 	static boolean useTripleSubProps = useInverse && false;
 
 	static URI ontologyURI = URI.create("http://www.test.de/test");
@@ -471,6 +471,31 @@ public class KRK {
 			collect1 = "";
 			collect2 = "";
 		}
+
+		collect1 = "";
+		collect1 = "";
+		for (String key : classToInd.keySet()) {
+
+			SortedSet<String> tmpset = classToInd.get(key);
+
+			if (key.equals("ZERO")) {
+				collect1 += "/**" + key + "**/\n";
+				for (String individuals : tmpset) {
+					collect1 += "+\"" + individuals + "\"\n";
+				}
+
+				continue;
+			} else {
+				collect2 += "/**" + key + "**/\n";
+				for (String individuals : tmpset) {
+					collect2 += "-\"" + individuals + "\"\n";
+				}
+			}
+
+		}
+		writeToFile("examples/krk/examples_for_ZERO_and_Rest.txt", collect1
+				+ "\n\n" + collect2 + "\n");
+
 	}
 
 	protected static void writeOWLFile(String filename) {
