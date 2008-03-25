@@ -471,7 +471,7 @@ public class KRK {
 			collect1 = "";
 			collect2 = "";
 		}
-
+ 
 		collect1 = "";
 		collect1 = "";
 		for (String key : classToInd.keySet()) {
