@@ -56,6 +56,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.SparqlQueryException;
 import org.dllearner.kb.sparql.SparqlQueryThreaded;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -587,6 +588,13 @@ public class DLLearnerWS {
 			i++;
 		}
 		return arity;
+	}
+	
+	@WebMethod
+	public String getSparqlForConcept(int id) throws ClientNotKnownException {
+		ClientState state = getState(id);
+		Description solution=state.getLearningAlgorithm().getBestSolution();
+		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(solution);
 	}
 	
 	@WebMethod
