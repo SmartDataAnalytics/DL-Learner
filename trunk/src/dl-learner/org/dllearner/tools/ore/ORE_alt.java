@@ -85,13 +85,14 @@ import org.dllearner.utilities.StringTuple;
  * @author Lorenz Buehmann.
  *
  */
-public class ORE {
+public class ORE_alt {
 
 	private static Logger logger = Logger.getRootLogger();
 
 	private static LearningAlgorithm la;
 	private ReasoningService rs;
-
+	private KnowledgeSource ks; 
+	
 	/**
 	 * Entry point for CLI interface.
 	 * 
@@ -109,11 +110,19 @@ public class ORE {
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.DEBUG);
 
-		ORE ore = null;
-		ore = new ORE(file);
+		ORE_alt ore = null;
+		ore = new ORE_alt(file);
 		ore.start();
 	}
 
+	public ORE_alt(){
+		
+	}
+	
+	public void setKnowledgeSource(File file){
+		
+	}
+	
 	/**
 	 * Initialise all components based on conf file.
 	 * 
@@ -121,7 +130,7 @@ public class ORE {
 	 *            Conf file to read.
 	 * @throws ComponentInitException
 	 */
-	public ORE(File file) throws ComponentInitException {
+	public ORE_alt(File file) throws ComponentInitException {
 		String baseDir = file.getParentFile().getPath();
 
 		// create component manager instance
