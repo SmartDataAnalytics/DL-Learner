@@ -95,7 +95,7 @@ public class KRK {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
+		System.out.println("Start");
 		// turn off to not write the owl, needs about 30 seconds or more
 		boolean writeOWL = true;
 
@@ -125,8 +125,7 @@ public class KRK {
 			int x = 0;
 			while ((line = in.readLine()) != null) {
 				x++;
-				// if(x % 3000 == 0 ) System.out.println("Currently at line
-				// "+x);
+				 if(x % 3000 == 0 ) System.out.println("Currently at line"+x);
 				ar = tokenize(line);
 
 				gameind = getIndividual("game" + x);
@@ -192,7 +191,7 @@ public class KRK {
 			}// endWhile
 
 			finishBackgroundForRoles();
-
+			System.out.println("Finished Background");
 			// WRITE
 			writeExampleSets();
 			if (writeOWL)
@@ -457,45 +456,48 @@ public class KRK {
 	}
 
 	protected static void writeExampleSets() {
-		String collect1 = "", collect2 = "";
-
+		StringBuffer collect1 = new StringBuffer(); 
+		StringBuffer collect2 = new StringBuffer();
+		System.out.println("start writing sets");
+		
 		for (String keys : classToInd.keySet()) {
+			System.out.println(keys);
 			SortedSet<String> tmpset = classToInd.get(keys);
 			for (String individuals : tmpset) {
-				collect1 += "+\"" + individuals + "\"\n";
-				collect2 += "-\"" + individuals + "\"\n";
+				collect1.append( "+\"" + individuals + "\"\n");
+				collect2.append("-\"" + individuals + "\"\n");
 			}
 
 			writeToFile("examples/krk/examples_for_" + keys + ".txt", collect1
 					+ "\n\n" + collect2 + "\n");
-			collect1 = "";
-			collect2 = "";
+			collect1 = new StringBuffer();
+			collect2 = new StringBuffer();
 		}
- 
-		collect1 = "";
-		collect1 = "";
+		//System.out.println("Sets written");
+		collect1 = new StringBuffer();
+		collect2 = new StringBuffer();
 		for (String key : classToInd.keySet()) {
 
 			SortedSet<String> tmpset = classToInd.get(key);
 
 			if (key.equals("ZERO")) {
-				collect1 += "/**" + key + "**/\n";
+				collect1.append( "/**" + key + "**/\n");
 				for (String individuals : tmpset) {
-					collect1 += "+\"" + individuals + "\"\n";
+					collect1.append( "+\"" + individuals + "\"\n");
 				}
 
 				continue;
 			} else {
-				collect2 += "/**" + key + "**/\n";
+				collect2.append( "/**" + key + "**/\n");
 				for (String individuals : tmpset) {
-					collect2 += "-\"" + individuals + "\"\n";
+					collect2.append( "-\"" + individuals + "\"\n");
 				}
 			}
 
 		}
 		writeToFile("examples/krk/examples_for_ZERO_and_Rest.txt", collect1
 				+ "\n\n" + collect2 + "\n");
-
+		System.out.println("Example sets written");
 	}
 
 	protected static void writeOWLFile(String filename) {
