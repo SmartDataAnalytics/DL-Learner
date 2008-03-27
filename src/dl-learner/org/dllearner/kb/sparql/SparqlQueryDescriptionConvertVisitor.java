@@ -1,6 +1,8 @@
 package org.dllearner.kb.sparql;
 
 
+import java.util.Stack;
+
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
@@ -32,9 +34,16 @@ import org.dllearner.parser.ParseException;
  */
 public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 
+	private Stack<String> stack = new Stack<String>();
+	
 	private String query="";
 	
 	private int currentObject=0;
+	
+	public SparqlQueryDescriptionConvertVisitor()
+	{
+		stack.push("subject");
+	}
 	
 	public String getSparqlQuery()
 	{
@@ -42,6 +51,14 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		query+="}\n";
 		query+="LIMIT 5";
 		return query;
+	}
+	
+	public static String getSparqlQuery(String description) throws ParseException
+	{
+		Description d = KBParser.parseConcept(description);
+		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor();
+		d.accept(visitor);
+		return visitor.getSparqlQuery();
 	}
 	
 	public static String getSparqlQuery(Description description)
@@ -58,7 +75,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 */
 	public static void main(String[] args) {
 		try {
-			Description d = KBParser.parseConcept("EXISTS \"http://dbpedia.org/property/disambiguates\".TOP");
+			String d = "EXISTS \"http://dbpedia.org/property/disambiguates\".TOP";
 			String query = SparqlQueryDescriptionConvertVisitor.getSparqlQuery(d);
 			System.out.println(d);
 			System.out.println(query);
@@ -87,10 +104,11 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 */
 	public void visit(ObjectSomeRestriction description) {
 		System.out.println("ObjectSomeRestriction");
-		query+="?"+description.getSparqlVar()+" <"+description.getRole()+"> ?object"+currentObject+".";
-		description.getChild(0).setSparqlVar("object"+currentObject);
+		query+="?"+stack.peek()+" <"+description.getRole()+"> ?object"+currentObject+".";
+		stack.push("object"+currentObject);
 		currentObject++;
 		description.getChild(0).accept(this);
+		stack.pop();
 		System.out.println(description.getRole());
 		System.out.println(description.getChild(0));
 	}
@@ -173,7 +191,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 */
 	public void visit(NamedClass description) {
 		System.out.println("NamedClass");
-		query+="?"+description.getSparqlVar()+" a <"+description.getName()+">";
+		query+="?"+stack.peek()+" a <"+description.getName()+">";
 	}
 
 	/* (non-Javadoc)

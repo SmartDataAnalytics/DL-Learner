@@ -33,8 +33,7 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 	
     protected Description parent = null;
     protected List<Description> children = new LinkedList<Description>();
-    protected String sparqlVar = "subject";
-
+    
     public abstract int getArity();
     
     /**
@@ -202,11 +201,4 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 	
 	public abstract void accept(DescriptionVisitor visitor);
 
-	public String getSparqlVar() {
-		return sparqlVar;
-	}
-
-	public void setSparqlVar(String sparqlVar) {
-		this.sparqlVar = sparqlVar;
-	}
 }
