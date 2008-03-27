@@ -21,17 +21,19 @@ package org.dllearner.gui;
  */
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import org.dllearner.algorithms.refexamples.*;
 
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.ExpandVetoException;
+
+import org.dllearner.algorithms.refexamples.*;
 
 /**
  * TreeWindow
  * 
  * @author Tilo Hielscher
  */
-public class TreeWindow extends JFrame implements TreeExpansionListener {
+public class TreeWindow extends JFrame implements TreeWillExpandListener {
 
 	private static final long serialVersionUID = -5807192061389763835L;
 
@@ -39,7 +41,8 @@ public class TreeWindow extends JFrame implements TreeExpansionListener {
 	private Config config;
 	private EBNodeTreeModel ebNodeModel;
 	private ExampleBasedNode rootNode;
-	
+	private JTree tree;
+
 	public TreeWindow(Config config) {
 		this.config = config;
 		this.setTitle("DL-Learner Tree");
@@ -57,20 +60,20 @@ public class TreeWindow extends JFrame implements TreeExpansionListener {
 			ExampleBasedROLComponent ebrol = (ExampleBasedROLComponent) config
 					.getLearningAlgorithm();
 			this.rootNode = ebrol.getStartNode();
-			
+
 			System.out.println("childs1: " + rootNode.getChildren());
-			
+
 			this.ebNodeModel = new EBNodeTreeModel(rootNode);
 
-			// childrens to treeModel 
+			// childrens to treeModel
 			Object first = ebNodeModel.getChild(rootNode, 0);
 			System.out.println("getIndexOfChild: " + ebNodeModel.getIndexOfChild(rootNode, first));
 
-			//System.out.println("childs2: " + ebNodeModel.getChildren((ExampleBasedNode) first));
+			// System.out.println("childs2: " +
+			// ebNodeModel.getChildren((ExampleBasedNode) first));
 
-			
-			JTree tree = new JTree(ebNodeModel);
-			tree.addTreeExpansionListener(this);
+			tree = new JTree(ebNodeModel);
+			tree.addTreeWillExpandListener(this);
 			this.add(new JScrollPane(tree));
 		}
 
@@ -79,30 +82,30 @@ public class TreeWindow extends JFrame implements TreeExpansionListener {
 		this.setVisible(true);
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.event.TreeExpansionListener#treeCollapsed(javax.swing.event.TreeExpansionEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.event.TreeWillExpandListener#treeWillCollapse(javax.swing.event.TreeExpansionEvent)
 	 */
 	@Override
-	public void treeCollapsed(TreeExpansionEvent event) {
-		System.out.println("collapsed");
+	public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.event.TreeExpansionListener#treeExpanded(javax.swing.event.TreeExpansionEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.event.TreeWillExpandListener#treeWillExpand(javax.swing.event.TreeExpansionEvent)
 	 */
 	@Override
-	public void treeExpanded(TreeExpansionEvent event) {
-		System.out.println("expanded: " + event.getPath());
-		//Object path = event.getPath();
-		
-		//System.out.println("childcount: " + ebNodeModel.getChildCount(path));
-		
-		
-		//ebNodeModel.getChild(event.getSource(), 0);
-		System.out.println("getIndexOfChild: " + ebNodeModel.getIndexOfChild(rootNode, event.getPath()));
-		
-		
-		ebNodeModel.getChild(rootNode, 9);
+	public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+		//System.out.println("getIndexOfChild: "+ ebNodeModel.getIndexOfChild(rootNode, event.getPath()));
+
+		//System.out.println("row_for_path: " + this.tree.getRowForPath(event.getPath()));
+		int index = this.tree.getRowForPath(event.getPath());
+		// ebNodeModel.getChild(rootNode, 9);
+		if (index > 0)
+			ebNodeModel.getChild(rootNode, index);
+
 	}
 
 }
