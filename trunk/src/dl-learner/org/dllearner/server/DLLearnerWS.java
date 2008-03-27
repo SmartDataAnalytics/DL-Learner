@@ -522,10 +522,10 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public int sparqlQueryThreaded(int sessionID, int componentID, final String query) throws ClientNotKnownException
+	public int sparqlQueryThreaded(int sessionID, int componentID, String query) throws ClientNotKnownException
 	{
 		final ClientState state = getState(sessionID);
-		final Component component = state.getComponent(componentID);
+		Component component = state.getComponent(componentID);
 		final int id=state.addQuery(((SparqlKnowledgeSource)component).sparqlQueryThreaded(query));
 		Thread sparqlThread = new Thread() {
 			@Override
@@ -591,10 +591,11 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public String getSparqlForConcept(int id) throws ClientNotKnownException {
+	public void SparqlRetrievalThreaded(int id, int componentID, String conceptString) throws ClientNotKnownException, ParseException {
 		ClientState state = getState(id);
-		Description solution=state.getLearningAlgorithm().getBestSolution();
-		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(solution);
+		// call parser to parse concept
+		String sparqlQuery = SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString);
+		sparqlQueryThreaded(id, componentID,sparqlQuery);
 	}
 	
 	@WebMethod
