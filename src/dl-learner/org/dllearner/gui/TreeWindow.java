@@ -87,7 +87,7 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 	 * 
 	 * @see javax.swing.event.TreeWillExpandListener#treeWillCollapse(javax.swing.event.TreeExpansionEvent)
 	 */
-	@Override
+	// @Override
 	public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
 	}
 
@@ -96,11 +96,13 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 	 * 
 	 * @see javax.swing.event.TreeWillExpandListener#treeWillExpand(javax.swing.event.TreeExpansionEvent)
 	 */
-	@Override
+	// @Override
 	public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
-		//System.out.println("getIndexOfChild: "+ ebNodeModel.getIndexOfChild(rootNode, event.getPath()));
+		// System.out.println("getIndexOfChild: "+
+		// ebNodeModel.getIndexOfChild(rootNode, event.getPath()));
 
-		//System.out.println("row_for_path: " + this.tree.getRowForPath(event.getPath()));
+		// System.out.println("row_for_path: " +
+		// this.tree.getRowForPath(event.getPath()));
 		int index = this.tree.getRowForPath(event.getPath());
 		// ebNodeModel.getChild(rootNode, 9);
 		if (index > 0)
