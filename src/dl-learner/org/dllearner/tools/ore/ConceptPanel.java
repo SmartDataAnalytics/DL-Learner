@@ -65,9 +65,8 @@ public class ConceptPanel extends JPanel{
 		
 			
 		conceptList = new JList(model);
-		scroll.setSize(100,100);
+		scroll.setPreferredSize(new Dimension(200,200));
 		scroll.setViewportView(conceptList);
-				
 		contentPanel1.add(scroll);
 		
 		
