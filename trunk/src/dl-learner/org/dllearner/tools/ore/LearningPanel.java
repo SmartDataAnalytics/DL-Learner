@@ -1,6 +1,7 @@
 package org.dllearner.tools.ore;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
 import javax.swing.DefaultListModel;
@@ -51,7 +52,7 @@ public class LearningPanel extends JPanel{
 		
 			
 		conceptList = new JList(model);
-		scroll.setSize(100,100);
+		scroll.setPreferredSize(new Dimension(300, 300));
 		scroll.setViewportView(conceptList);
 				
 		contentPanel1.add(scroll);
@@ -79,6 +80,10 @@ public class LearningPanel extends JPanel{
 
 	public JButton getStopButton() {
 		return stopButton;
+	}
+
+	public DefaultListModel getModel() {
+		return model;
 	}
 	
 	
