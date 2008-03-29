@@ -20,17 +20,26 @@ public class LearningPanel extends JPanel{
 	
 	private DefaultListModel model;
 	private JLabel result;
-	private JButton run;
+	private JButton startButton;
+	private JButton stopButton;
 	
 	public LearningPanel() {
 		
 		super();
 		model = new DefaultListModel();
 		result = new JLabel();
-		run = new JButton("Run");
+		JPanel buttonPanel = new JPanel();
+		startButton = new JButton("Start");
+		
+		stopButton = new JButton("Stop");
+		stopButton.setEnabled(false);
+		
+		buttonPanel.add(startButton);
+		buttonPanel.add(stopButton);
 		contentPanel = getContentPanel();
 		setLayout(new java.awt.BorderLayout());
-		add(run,BorderLayout.EAST);
+		
+		add(buttonPanel, BorderLayout.EAST);
 		add(contentPanel,BorderLayout.CENTER);
 		add(result, BorderLayout.SOUTH);
 	}
@@ -52,12 +61,24 @@ public class LearningPanel extends JPanel{
 		return contentPanel1;
 	}
 	
-	public void addButtonListener(ActionListener a){
-		run.addActionListener(a);
+	public void addStartButtonListener(ActionListener a){
+		startButton.addActionListener(a);
+	}
+	
+	public void addStopButtonListener(ActionListener a){
+		stopButton.addActionListener(a);
 	}
 	
 	public void setResult(String resultStr){
 		result.setText(resultStr);
+	}
+
+	public JButton getStartButton() {
+		return startButton;
+	}
+
+	public JButton getStopButton() {
+		return stopButton;
 	}
 	
 	

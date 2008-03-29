@@ -66,7 +66,7 @@ public class WizardController implements ActionListener {
         
         //TODO nochmal überdenken
         if(nextPanelDescriptor.equals("CONCEPT_CHOOSE_PANEL")){
-        	//((ConceptPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel3.getModel().clear();
+        	((ConceptPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel3.getModel().clear();
         	new ConceptRetriever(nextPanelDescriptor).execute();
         }
         

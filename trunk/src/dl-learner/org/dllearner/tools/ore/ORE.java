@@ -20,6 +20,8 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
+import java.util.List;
+
 public class ORE {
 	
 	private LearningAlgorithm la;
@@ -125,15 +127,11 @@ public class ORE {
 
 	
 	public void startLearningThread(){
-		Thread laThread = new Thread()
-		{
-			@Override
-			public void run(){
+		
+		
 				la.start();
 				
-			}
-		};
-		laThread.start();
+	
 	}
 
 	public void start(){
@@ -146,6 +144,10 @@ public class ORE {
 	
 	public Description getLearningResult(){
 		return la.getBestSolution();
+	}
+	
+	public List<Description> getLearningResults(int anzahl){
+		return la.getBestSolutions(anzahl);
 	}
 
 		
