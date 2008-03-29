@@ -65,9 +65,10 @@ public class WizardController implements ActionListener {
         Object nextPanelDescriptor = descriptor.getNextPanelDescriptor();
         
         //TODO nochmal überdenken
-        if(nextPanelDescriptor.equals("CONCEPT_CHOOSE_PANEL"))
+        if(nextPanelDescriptor.equals("CONCEPT_CHOOSE_PANEL")){
+        	//((ConceptPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel3.getModel().clear();
         	new ConceptRetriever(nextPanelDescriptor).execute();
-        
+        }
         
         if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {
             wizard.close(Wizard.FINISH_RETURN_CODE);
@@ -169,21 +170,22 @@ public class WizardController implements ActionListener {
     	nextPanelID = nextPanelDescriptor;
     }
     	
-      @Override 
-      public Set<NamedClass> doInBackground()
-      {		
-    	  ((ConceptPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelID)).panel3.getBlinkLabel().start();
-    	  System.out.println("test1");
-    	  wizard.getModel().getOre().detectReasoner();
-    	  System.out.println("test2");
-    	  Set<NamedClass> ind = wizard.getModel().getOre().getReasoningService().getAtomicConcepts();
-    	  System.out.println("test3");
-    	  
-    	  System.out.println("test4");
-    	  
-      	
-      	return ind;
-      }
+      
+      public Set<NamedClass> doInBackground() {
+
+			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
+					nextPanelID)).panel3.getStatusLabel().setText(
+					"Loading concepts");
+			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
+					nextPanelID)).panel3.getLoadingLabel().setBusy(true);
+
+			wizard.getModel().getOre().detectReasoner();
+
+			Set<NamedClass> ind = wizard.getModel().getOre()
+					.getReasoningService().getAtomicConcepts();
+
+			return ind;
+		}
       
       public void done(){
     	  Set<NamedClass> ind = null;
@@ -202,10 +204,13 @@ public class WizardController implements ActionListener {
     	  for (NamedClass cl : ind){
         		dm.addElement(cl);
     		    //nextPanel.panel3.getModel().addElement(cl);
-        		System.out.println(cl.toString());
+        		System.out.println(cl.getName());
     	  }
     	  nextPanel.panel3.getList().setModel(dm);
-    	  ((ConceptPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelID)).panel3.getBlinkLabel().stop();
+    	  ((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
+					nextPanelID)).panel3.getStatusLabel().setText(
+					"Concepts loaded");
+    	  ((ConceptPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelID)).panel3.getLoadingLabel().setBusy(false);
       }
       
       
