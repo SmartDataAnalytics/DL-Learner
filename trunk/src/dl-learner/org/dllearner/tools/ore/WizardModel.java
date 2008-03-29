@@ -51,10 +51,10 @@ public class WizardModel {
     
     private WizardPanelDescriptor currentPanel;
     
-    private HashMap panelHashmap;
+    private HashMap<Object, WizardPanelDescriptor> panelHashmap;
     
-    private HashMap buttonTextHashmap;
-    private HashMap buttonEnabledHashmap;
+    private HashMap<String, Object> buttonTextHashmap;
+    private HashMap<String, Boolean> buttonEnabledHashmap;
     
     private PropertyChangeSupport propertyChangeSupport;
     
@@ -65,10 +65,10 @@ public class WizardModel {
      */    
     public WizardModel() {
         
-        panelHashmap = new HashMap();
+        panelHashmap = new HashMap<Object, WizardPanelDescriptor>();
         
-        buttonTextHashmap = new HashMap();
-        buttonEnabledHashmap = new HashMap();
+        buttonTextHashmap = new HashMap<String, Object>();
+        buttonEnabledHashmap = new HashMap<String, Boolean>();
         
         propertyChangeSupport = new PropertyChangeSupport(this);
         ore = new ORE();
@@ -107,8 +107,7 @@ public class WizardModel {
         //  First, get the hashtable reference to the panel that should
         //  be displayed.
         
-        WizardPanelDescriptor nextPanel =
-            (WizardPanelDescriptor)panelHashmap.get(id);
+        WizardPanelDescriptor nextPanel = panelHashmap.get(id);
         
         //  If we couldn't find the panel that should be displayed, return
         //  false.
@@ -168,7 +167,7 @@ public class WizardModel {
         
     
     Boolean getBackButtonEnabled() {
-        return (Boolean)buttonEnabledHashmap.get(BACK_BUTTON_ENABLED_PROPERTY);
+        return buttonEnabledHashmap.get(BACK_BUTTON_ENABLED_PROPERTY);
     }
     
     void setBackButtonEnabled(Boolean newValue) {
@@ -181,7 +180,7 @@ public class WizardModel {
     }
 
     Boolean getNextFinishButtonEnabled() {
-        return (Boolean)buttonEnabledHashmap.get(NEXT_FINISH_BUTTON_ENABLED_PROPERTY);
+        return buttonEnabledHashmap.get(NEXT_FINISH_BUTTON_ENABLED_PROPERTY);
     }
     
     void setNextFinishButtonEnabled(Boolean newValue) {
@@ -194,7 +193,7 @@ public class WizardModel {
     }
     
     Boolean getCancelButtonEnabled() {
-        return (Boolean)buttonEnabledHashmap.get(CANCEL_BUTTON_ENABLED_PROPERTY);
+        return buttonEnabledHashmap.get(CANCEL_BUTTON_ENABLED_PROPERTY);
     }
     
     void setCancelButtonEnabled(Boolean newValue) {
@@ -228,7 +227,7 @@ public class WizardModel {
 		this.ore = ore;
 	}
 	
-	public HashMap getPanelHashMap(){
+	public HashMap<Object, WizardPanelDescriptor> getPanelHashMap(){
 		return panelHashmap;
 	}
     

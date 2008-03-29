@@ -17,13 +17,11 @@ public class KnowledgeSourcePanel extends JPanel{
 	private javax.swing.JButton browseButton;
 	
 	private JPanel contentPanel;
-	private LeftPanel leftPanel;
 	private JLabel message;
 	
 	public KnowledgeSourcePanel() {
 
-//		super();
-		leftPanel = new LeftPanel(1);
+new LeftPanel(1);
 		contentPanel = getContentPanel();
 		
 		setLayout(new java.awt.BorderLayout());

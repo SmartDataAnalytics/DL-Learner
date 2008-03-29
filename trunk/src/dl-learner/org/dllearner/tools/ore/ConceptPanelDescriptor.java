@@ -3,6 +3,8 @@ package org.dllearner.tools.ore;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.dllearner.core.owl.NamedClass;
+
 
 
 
@@ -39,7 +41,7 @@ public class ConceptPanelDescriptor extends WizardPanelDescriptor implements Lis
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected(); 
 		if (!e.getValueIsAdjusting()) 
-			 getWizardModel().getOre().setConcept(panel3.getList().getSelectedValue().toString());
+			 getWizardModel().getOre().setConcept((NamedClass)panel3.getList().getSelectedValue());
 			
 	}
 	

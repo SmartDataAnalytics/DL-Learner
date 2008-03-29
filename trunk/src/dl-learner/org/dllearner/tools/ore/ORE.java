@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -16,11 +15,10 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
-import org.dllearner.parser.KBParser;
-import org.dllearner.parser.ParseException;
-import org.dllearner.reasoning.DIGReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
 
 public class ORE {
 	
@@ -31,34 +29,30 @@ public class ORE {
 	private ComponentManager cm;
 	SortedSet<Individual> posExamples;
 	SortedSet<Individual> negExamples;
-	Description concept;
+	NamedClass concept;
 	
-	public ORE(){
-		
+	public ORE() {
+
 		cm = ComponentManager.getInstance();
-	
-		
+
 	}
 	
 	// step 1: detect knowledge sources
 	
-	public void setKnowledgeSource(File f){
-	
+	public void setKnowledgeSource(File f) {
+
 		Class<OWLFile> owl = OWLFile.class;
-		
-		
-			ks = cm.knowledgeSource(owl);
-		
-			cm.applyConfigEntry(ks, "url", f.toURI().toString());
-			
-			try {
-				ks.init();
-			} catch (ComponentInitException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
-				
+		ks = cm.knowledgeSource(owl);
+
+		cm.applyConfigEntry(ks, "url", f.toURI().toString());
+
+		try {
+			ks.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 	
@@ -66,7 +60,7 @@ public class ORE {
 	public void detectReasoner(){
 		
 		ReasonerComponent reasoner = cm.reasoner(
-				DIGReasoner.class, ks);
+				OWLAPIReasoner.class, ks);
 		
 		try {
 			reasoner.init();
@@ -97,7 +91,7 @@ public class ORE {
 	}
 	
 	public void setLearningProblem(){
-		lp = new PosNegDefinitionLP(rs,posExamples, negExamples);
+		lp = new PosNegDefinitionLP(rs, posExamples, negExamples);
 		lp.init();
 	}
 	
@@ -111,8 +105,8 @@ public class ORE {
 		//la = new ROLearner(lp, rs);
 		
 		Set<String> t = new TreeSet<String>();
-		t.add(concept.toString());
-		//cm.applyConfigEntry(la, "ignoredConcepts", t );
+		t.add(concept.getName());
+		cm.applyConfigEntry(la, "ignoredConcepts", t );
 		try {
 			la.init();
 		} catch (ComponentInitException e) {
@@ -121,13 +115,12 @@ public class ORE {
 		}
 		
 	}
-	public void setConcept(String conceptStr){
-		try {
-			concept = KBParser.parseConcept(conceptStr);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//	public void setConcept(String conceptStr){
+//		concept = new NamedClass(conceptStr);
+//	}
+	
+	public void setConcept(NamedClass concept){
+		this.concept = concept;
 	}
 
 	
@@ -170,7 +163,7 @@ public class ORE {
 		
 		
 		
-		test.setConcept("http://example.com/father#father");
+		test.setConcept(new NamedClass("http://example.com/father#father"));
 		test.setPosNegExamples();
 		System.out.println(test.posExamples);
 		System.out.println(test.negExamples);

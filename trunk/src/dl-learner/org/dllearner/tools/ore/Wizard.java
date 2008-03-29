@@ -174,8 +174,8 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         
         wizardDialog.setModal(true);
         //wizardDialog.pack();
-       
-        wizardDialog.show();
+       wizardDialog.setVisible(true);
+        
         
         return returnCode;
     }
