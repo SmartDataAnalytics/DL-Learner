@@ -2,12 +2,14 @@ package org.dllearner.tools.ore;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
 
 
@@ -45,49 +47,63 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
     	
     }
     
-    class ResultSwingWorker extends SwingWorker<Description, Description>
-    {
-      @Override 
-      public Description doInBackground() {
-			
-			getWizardModel().getOre().start();
+    class ResultSwingWorker extends
+			SwingWorker<List<Description>, List<Description>> {
+		LearningAlgorithm la;
+
+		@Override
+		public List<Description> doInBackground() {
+
+			la = getWizardModel().getOre().start();
 			timer = new Timer();
-			timer.schedule(new TimerTask(){
+			timer.schedule(new TimerTask() {
 
 				public void run() {
-					System.err.println(getWizardModel().getOre()
-							.getLearningResults(3));
+					publish(getWizardModel().getOre().getLearningResults(5));
 				}
-				
+
 			}, 0, 1000);
-      
-			
-			Description result = getWizardModel().getOre().getLearningResult();
+
+			List<Description> result = getWizardModel().getOre()
+					.getLearningResults(5);
 
 			return result;
 		}
-      
-      public void done() {
-    	  timer.cancel();
-    	  Description result = null;
+
+		public void done() {
+			timer.cancel();
+			List<Description> result = null;
 			try {
 				result = get();
 			} catch (InterruptedException e) {
-			
+
 				e.printStackTrace();
 			} catch (ExecutionException e) {
-			
+
 				e.printStackTrace();
 			}
 			panel4.getStartButton().setEnabled(true);
 			panel4.getStopButton().setEnabled(false);
 
-			panel4.setResult(result.toString());
+			for (Description d : result)
+				panel4.getModel().addElement(d);
+
 		}
-      
-      
-      
-    }
+
+		@Override
+		protected void process(List<List<Description>> resultLists) {
+			panel4.getModel().clear();
+			for (List<Description> list : resultLists) {
+				for (Description d : list)
+					panel4.getModel().addElement(d);
+			}
+		}
+
+		public LearningAlgorithm getLa() {
+			return la;
+		}
+
+	}
 
 	
 	public void actionPerformed(ActionEvent event) {
@@ -99,7 +115,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		}
 		else{
 			panel4.getStopButton().setEnabled(false);
-            worker.cancel(true);
+            worker.getLa().stop();
         	panel4.getStartButton().setEnabled(true);
 		}
 		

@@ -126,20 +126,14 @@ public class ORE {
 	}
 
 	
-	public void startLearningThread(){
-		
-		
-				la.start();
-				
-	
-	}
-
-	public void start(){
+	public LearningAlgorithm start(){
 		this.setPosNegExamples();
 		this.setLearningProblem();
 		this.setLearningAlgorithm();
 		la.start();
-		this.startLearningThread();
+		
+		return la;
+		
 	}
 	
 	public Description getLearningResult(){
@@ -171,7 +165,7 @@ public class ORE {
 		System.out.println(test.negExamples);
 		test.setLearningProblem();
 		test.setLearningAlgorithm();
-		test.startLearningThread();
+		test.start();
 	}
 	
 	
