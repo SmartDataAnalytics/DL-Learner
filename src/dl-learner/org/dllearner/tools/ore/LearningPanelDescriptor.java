@@ -7,6 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.dllearner.core.LearningAlgorithm;
@@ -42,10 +43,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
         return ConceptPanelDescriptor.IDENTIFIER;
     }
     
- 
-    public void displayingPanel(){
-    	
-    }
+   
     
     class ResultSwingWorker extends
 			SwingWorker<List<Description>, List<Description>> {
@@ -76,17 +74,13 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			try {
 				result = get();
 			} catch (InterruptedException e) {
-
 				e.printStackTrace();
 			} catch (ExecutionException e) {
-
 				e.printStackTrace();
 			}
 			panel4.getStartButton().setEnabled(true);
 			panel4.getStopButton().setEnabled(false);
-
-			for (Description d : result)
-				panel4.getModel().addElement(d);
+			updateList(result);
 
 		}
 
@@ -94,9 +88,26 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		protected void process(List<List<Description>> resultLists) {
 			panel4.getModel().clear();
 			for (List<Description> list : resultLists) {
-				for (Description d : list)
-					panel4.getModel().addElement(d);
+				for( Description d : list)
+					System.out.println(d);
+				updateList(list);
 			}
+		}
+		
+		void updateList(final List<Description> result) {
+			Runnable doUpdateList = new Runnable() {
+
+				@Override
+				public void run() {
+					panel4.getModel().clear();
+					for (Description d : result) {
+						panel4.getModel().addElement(d);
+					}
+
+				}
+			};
+			SwingUtilities.invokeLater(doUpdateList);
+
 		}
 
 		public LearningAlgorithm getLa() {
