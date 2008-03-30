@@ -15,7 +15,7 @@ public class LearningPanel extends JPanel{
 
 
 
-	private javax.swing.JList conceptList;
+	private javax.swing.JList resultList;
 	
 	private JPanel contentPanel;
 	
@@ -51,9 +51,9 @@ public class LearningPanel extends JPanel{
 		JScrollPane scroll = new JScrollPane();
 		
 			
-		conceptList = new JList(model);
+		resultList = new JList(model);
 		scroll.setPreferredSize(new Dimension(300, 300));
-		scroll.setViewportView(conceptList);
+		scroll.setViewportView(resultList);
 				
 		contentPanel1.add(scroll);
 		
@@ -84,6 +84,10 @@ public class LearningPanel extends JPanel{
 
 	public DefaultListModel getModel() {
 		return model;
+	}
+
+	public javax.swing.JList getResultList() {
+		return resultList;
 	}
 	
 	
