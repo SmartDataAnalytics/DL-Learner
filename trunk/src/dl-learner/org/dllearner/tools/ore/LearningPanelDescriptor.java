@@ -97,7 +97,6 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		void updateList(final List<Description> result) {
 			Runnable doUpdateList = new Runnable() {
 
-				@Override
 				public void run() {
 					panel4.getModel().clear();
 					for (Description d : result) {

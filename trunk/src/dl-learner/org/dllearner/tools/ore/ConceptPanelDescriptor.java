@@ -37,7 +37,6 @@ public class ConceptPanelDescriptor extends WizardPanelDescriptor implements Lis
     }    
 
 
-	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected(); 
 		if (!e.getValueIsAdjusting()) 
