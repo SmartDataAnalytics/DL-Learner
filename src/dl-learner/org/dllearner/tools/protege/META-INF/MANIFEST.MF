@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Hallo Welt
+Bundle-SymbolicName: org.dllearner.tools.protege;singleton:=true
+Bundle-Category: protege
+Bundle-Description: blablabla
+Bundle-Vendor: blablabla
+Bundle-DocURL: blablabla
+Bundle-ClassPath: .,lib/xbean.jar,lib/dig1.1-xmlbeans.jar,lib/junit-4.4.jar,log4j.jar,lib/components.ini
+Import-Package: org.osgi.framework,org.apache.log4j
+Export-Package: lib
+Bundle-Version: 1.0.0
+Bundle-Activator: org.protege.editor.core.plugin.DefaultPluginActivator
+Require-Bundle: org.eclipse.equinox.registry,org.eclipse.equinox.common,org.protege.editor.core.application,org.protege.editor.owl,org.semanticweb.owl.owlapi

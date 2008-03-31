@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+  <plugin>
+  	<extension id="org.dllearner.tools.protege.ProtegePlugin"
+			point="org.protege.editor.core.application.ViewComponent">
+  		<label value="Hallo Welt"/>
+  		<class value="org.dllearner.tools.protege.ProtegePlugin"/>
+  		<headerColor value="@org.protege.classcolor"/>
+  		<category value="@org.protege.classcategory"/>
+  	</extension>
+  </plugin>
