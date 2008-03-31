@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -146,6 +147,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private Map<String, String> prefixes = new TreeMap<String,String>();
 	private String baseURI;
 	
+	// references to OWL API ontologies
+	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
+	
 	public OWLAPIReasoner(Set<KnowledgeSource> sources) {
 		this.sources = sources;
 	}
@@ -201,6 +205,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 
 				try {
 					OWLOntology ontology = manager.loadOntologyFromPhysicalURI(url.toURI());
+					owlAPIOntologies.add(ontology);
 					allImports.addAll(manager.getImportsClosure(ontology));
 					classes.addAll(ontology.getReferencedClasses());
 					owlObjectProperties.addAll(ontology.getReferencedObjectProperties());
@@ -234,6 +239,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					e.printStackTrace();
 				}
 				OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
+				owlAPIOntologies.add(ontology);
 				allImports.add(ontology);
 				atomicConcepts.addAll(kb.findAllAtomicConcepts());
 				atomicRoles.addAll(kb.findAllAtomicRoles());
@@ -1033,6 +1039,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public List<OWLOntology> getOWLAPIOntologies() {
+		return owlAPIOntologies;
 	}
 
 }

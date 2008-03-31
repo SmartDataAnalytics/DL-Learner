@@ -71,7 +71,7 @@ public class ComponentManager {
 	// you can either use the components.ini file or directly specify the classes to use
 	private static String componentsFile = "lib/components.ini";
 	private static String[] componentClasses = new String[]{}; 
-	private static ComponentManager cm = new ComponentManager();	
+	private static ComponentManager cm = null;	
 
 	// list of all configuration options of all components
 	private static Map<Class<? extends Component>, String> componentNames;
