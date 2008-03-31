@@ -168,6 +168,8 @@ public class ComponentManager {
 	 * @return The singleton <code>ComponentManager</code> instance.
 	 */
 	public static ComponentManager getInstance() {
+		if(cm == null)
+			cm = new ComponentManager();
 		return cm;
 	}
 
