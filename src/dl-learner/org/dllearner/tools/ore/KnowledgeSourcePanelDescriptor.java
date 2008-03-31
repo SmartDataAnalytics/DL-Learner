@@ -72,19 +72,16 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     }
    
 
-	@Override
 	public void changedUpdate(DocumentEvent e) {
 		setNextButtonAccordingToExistingOWLFile();
 		
 	}
 
-	@Override
 	public void insertUpdate(DocumentEvent e) {
 		setNextButtonAccordingToExistingOWLFile();
 		
 	}
 
-	@Override
 	public void removeUpdate(DocumentEvent e) {
 		setNextButtonAccordingToExistingOWLFile();
 		

@@ -78,7 +78,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	private double expansionPenaltyFactor;
 	private double gainBonusFactor;
 	private double nodeChildPenalty = 0.0001;
-	private double startNodeBonus = 1.0;
+	private double startNodeBonus = 2.0;
 	// penalise errors on positive examples harder than on negative examples
 	// (positive weight = 1)
 	private double negativeWeight = 0.8;
@@ -146,7 +146,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		// do not count TOP symbols (in particular in ALL r.TOP and EXISTS r.TOP)
 		// as they provide no extra information
 		if(description instanceof Thing)
-			bonus = 1;
+			bonus = 2;
 		
 //		if(description instanceof BooleanValueRestriction)
 //			bonus = -1;
@@ -154,7 +154,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		// some bonus for doubles because they are already penalised by length 3
 		if(description instanceof DatatypeSomeRestriction) {
 //			System.out.println(description);
-			bonus = 3;
+			bonus = 2;
 		}
 		
 		List<Description> children = description.getChildren();

@@ -260,14 +260,13 @@ public class Carcinogenesis {
 		// generating conf files
 		File confTrainFile = new File("examples/carcinogenesis/train.conf");
 		Files.clearFile(confTrainFile);
-		String confHeader = "import(\"pte.owl\");\n\n";
+		String confHeader = "import(\"carcinogenesis.owl\");\n\n";
 		confHeader += "reasoner = fastInstanceChecker;\n";
 		confHeader += "algorithm = refexamples;\n";
-		confHeader += "refexamples.noisePercentage = 35;\n";
+		confHeader += "refexamples.noisePercentage = 31;\n";
 		confHeader += "refexamples.startClass = " + getURI2("Compound") + ";\n";
 		confHeader += "refexamples.writeSearchTree = false;\n";
 		confHeader += "refexamples.searchTreeFile = \"log/carcinogenesis/searchTree.log\";\n";
-		confHeader += "posNegDefinition.percentPerLengthUnit = 0.10;\n";
 		confHeader += "\n";
 		Files.appendFile(confTrainFile, confHeader);
 		

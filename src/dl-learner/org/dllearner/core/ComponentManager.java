@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -61,14 +62,16 @@ public class ComponentManager {
 
 	private ComponentPool pool = new ComponentPool();
 	
-	// these variables are valid for the complete lifetime of DL-Learner
-	private static String componentsFile = "lib/components.ini";
-	private static ComponentManager cm = new ComponentManager();
+	// these variables are valid for the complete lifetime of a DL-Learner session
 	private static Collection<Class<? extends Component>> components;
 	private static Collection<Class<? extends KnowledgeSource>> knowledgeSources;
 	private static Collection<Class<? extends ReasonerComponent>> reasonerComponents;
 	private static Collection<Class<? extends LearningProblem>> learningProblems;
 	private static Collection<Class<? extends LearningAlgorithm>> learningAlgorithms;
+	// you can either use the components.ini file or directly specify the classes to use
+	private static String componentsFile = "lib/components.ini";
+	private static String[] componentClasses = new String[]{}; 
+	private static ComponentManager cm = new ComponentManager();	
 
 	// list of all configuration options of all components
 	private static Map<Class<? extends Component>, String> componentNames;
@@ -90,7 +93,11 @@ public class ComponentManager {
 	@SuppressWarnings( { "unchecked" })
 	private ComponentManager() {
 		// read in components file
-		List<String> componentsString = readComponentsFile();
+		List<String> componentsString;
+		if(componentClasses.length > 0)
+			componentsString = Arrays.asList(componentClasses);
+		else
+			componentsString = readComponentsFile();
 
 		// component list
 		components = new TreeSet<Class<? extends Component>>(classComparator);
@@ -164,6 +171,10 @@ public class ComponentManager {
 		return cm;
 	}
 
+	public static void setComponentClasses(String[] componentClasses) {
+		ComponentManager.componentClasses = componentClasses;
+	}
+	
 	private static List<String> readComponentsFile() {
 		List<String> componentStrings = new LinkedList<String>();
 
