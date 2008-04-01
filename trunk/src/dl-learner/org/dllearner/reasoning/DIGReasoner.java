@@ -173,6 +173,10 @@ public class DIGReasoner extends ReasonerComponent {
 	public static String getName() {
 		return "DIG reasoner";
 	}
+	
+	public static String getUsage() {
+		return "reasoner = dig;";
+	}	
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();

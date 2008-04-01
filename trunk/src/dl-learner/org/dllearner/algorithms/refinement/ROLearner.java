@@ -327,6 +327,10 @@ public class ROLearner extends LearningAlgorithm {
 		return "refinement operator based learning algorithm";
 	}
 	
+	public static String getUsage() {
+		return "algorithm = refinement;";
+	}
+	
 	private int coveredNegativesOrTooWeak(Description concept) {
 		if(posOnly)
 			return posOnlyLearningProblem.coveredPseudoNegativeExamplesOrTooWeak(concept);

@@ -82,6 +82,10 @@ public class KBFile extends KnowledgeSource {
 	public static String getName() {
 		return "KB file";
 	}
+	
+	public static String getUsage() {
+		return "import(\"kbFileName.kb\");";
+	}
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
