@@ -104,9 +104,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	public static String getName() {
 		return "SPARQL Endpoint";
 	}
-	public static String getUsage() {
-		return "Example: import(\"http://dbpedia.openlinksw.com:8890/sparql\",\"SPARQL\");";
-	}
+	
 
 	private static Logger logger = Logger
 			.getLogger(SparqlKnowledgeSource.class);

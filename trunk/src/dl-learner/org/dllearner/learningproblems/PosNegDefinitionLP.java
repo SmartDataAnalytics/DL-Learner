@@ -65,9 +65,6 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 		return "two valued definition learning problem";
 	}
 	
-	public static String getUsage() {
-		return "problem = XXX DEFAULT";
-	}
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		return PosNegLP.createConfigOptions();

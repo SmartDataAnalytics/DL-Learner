@@ -152,9 +152,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		return "fast retrieval reasoner";
 	} 	
 	
-	public static String getUsage() {
-		return "reasoner = XXX;";
-	}	
+	
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)

@@ -158,9 +158,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return "OWL API reasoner";
 	}	
 	
-	public static String getUsage() {
-		return "reasoner = owlAPI;";
-	}	
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();

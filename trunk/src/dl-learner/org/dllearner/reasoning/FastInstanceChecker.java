@@ -133,10 +133,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return "fast instance checker";
 	}	
 	
-	public static String getUsage() {
-		return "reasoner = fastInstanceChecker;";
-	}	
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 

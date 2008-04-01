@@ -46,10 +46,7 @@ public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 	public static String getName() {
 		return "positive only definition learning problem";
 	}
-	
-	public static String getUsage() {
-		return "problem = posOnlyDefinition;";
-	}	
+		
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
