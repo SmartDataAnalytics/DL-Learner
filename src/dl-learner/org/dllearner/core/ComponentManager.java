@@ -423,21 +423,22 @@ public class ComponentManager {
 		String str = componentDescription + "\n";
 		String usage ="";
 		
-		usage =  invokeStaticMethod(component,"getUsage")+"";
+		//usage =  invokeStaticMethod(component,"getUsage")+"";
 		
 		
-		if(usage.equals("null")) {
+		/*if(usage.equals("null")) {
 			System.out.println("Component "+component.getName()+" needs Usage definition");
 		}
 		else	{
 			System.out.println(usage +" |in| "+ component.getName());
 		}
+		*/
 		
 		for(int i=0; i<componentDescription.length(); i++)
 			str += "=";
 		str += "\n\n";
 		
-		str += "Usage:\n"+usage+"\n\n";
+		//str += "Usage:\n"+usage+"\n\n";
 		
 		for(ConfigOption<?> option : componentOptions.get(component)) {
 			str += option.toString() + "\n";

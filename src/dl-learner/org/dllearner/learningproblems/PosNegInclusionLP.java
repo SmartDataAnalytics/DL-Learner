@@ -76,11 +76,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 		return "inclusion learning problem";
 	}
 
-	public static String getUsage() {
-		return "problem = posNegInclusion;";
-	}
-	
-	
+		
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -48,9 +48,6 @@ public class OWLFile extends KnowledgeSource {
 		return "OWL file";
 	}
 	
-	public static String getUsage() {
-		return "import(\"owlFileName.owl\");";
-	}
 	
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
