@@ -324,6 +324,10 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		return "example driven refinement operator based learning algorithm";
 	}
 	
+	public static String getUsage() {
+		return "algorithm = refexamples;";
+	}
+	
 	@Override
 	public void start() {
 		algorithm.start();
