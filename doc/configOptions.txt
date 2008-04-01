@@ -7,6 +7,9 @@ This file contains an automatically generated files of all components and their 
 component: KB file (org.dllearner.kb.KBFile)
 ============================================
 
+Usage:
+import("kbFileName.kb");
+
 option name: filename
 description: pointer to the KB file on local file system
 values: class org.dllearner.core.config.StringConfigOption
@@ -20,6 +23,9 @@ default value: null
 component: OWL file (org.dllearner.kb.OWLFile)
 ==============================================
 
+Usage:
+import("owlFileName.owl");
+
 option name: url
 description: URL pointing to the OWL file
 values: class org.dllearner.core.config.StringConfigOption
@@ -27,6 +33,9 @@ default value: null
 
 component: SPARQL Endpoint (org.dllearner.kb.sparql.SparqlKnowledgeSource)
 ==========================================================================
+
+Usage:
+Example: import("http://dbpedia.openlinksw.com:8890/sparql","SPARQL");
 
 option name: url
 description: URL of SPARQL Endpoint
@@ -160,6 +169,9 @@ default value: null
 component: DIG reasoner (org.dllearner.reasoning.DIGReasoner)
 =============================================================
 
+Usage:
+reasoner = dig;
+
 option name: reasonerUrl
 description: URL of the DIG reasoner
 values: class org.dllearner.core.config.StringConfigOption
@@ -175,11 +187,23 @@ description: the file to store the DIG protocol
 values: class org.dllearner.core.config.StringConfigOption
 default value: log/digProtocol.txt
 
+component: fast instance checker (org.dllearner.reasoning.FastInstanceChecker)
+==============================================================================
+
+Usage:
+reasoner = fastInstanceChecker;
+
 component: fast retrieval reasoner (org.dllearner.reasoning.FastRetrievalReasoner)
 ==================================================================================
 
+Usage:
+reasoner = XXX;
+
 component: OWL API reasoner (org.dllearner.reasoning.OWLAPIReasoner)
 ====================================================================
+
+Usage:
+reasoner = owlAPI;
 
 option name: reasonerType
 description: FaCT++ or Pellet
@@ -192,6 +216,9 @@ default value: pellet
 
 component: two valued definition learning problem (org.dllearner.learningproblems.PosNegDefinitionLP)
 =====================================================================================================
+
+Usage:
+problem = XXX DEFAULT
 
 option name: positiveExamples
 description: positive examples
@@ -221,6 +248,9 @@ default value: null
 component: inclusion learning problem (org.dllearner.learningproblems.PosNegInclusionLP)
 ========================================================================================
 
+Usage:
+problem = posNegInclusion;
+
 option name: positiveExamples
 description: positive examples
 values: class org.dllearner.core.config.StringSetConfigOption
@@ -249,6 +279,9 @@ default value: null
 component: positive only definition learning problem (org.dllearner.learningproblems.PosOnlyDefinitionLP)
 =========================================================================================================
 
+Usage:
+problem = posOnlyDefinition;
+
 option name: positiveExamples
 description: positive examples
 values: class org.dllearner.core.config.StringSetConfigOption
@@ -260,6 +293,9 @@ default value: null
 
 component: brute force learning algorithm (org.dllearner.algorithms.BruteForceLearner)
 ======================================================================================
+
+Usage:
+null
 
 option name: maxLength
 description: maximum length of generated concepts
@@ -274,6 +310,9 @@ default value: null
 component: random guesser learning algorithm (org.dllearner.algorithms.RandomGuesser)
 =====================================================================================
 
+Usage:
+null
+
 option name: numberOfTrees
 description: number of randomly generated concepts/trees
 values: class org.dllearner.core.config.IntegerConfigOption
@@ -286,6 +325,9 @@ default value: null
 
 component: genetic programming learning algorithm (org.dllearner.algorithms.gp.GP)
 ==================================================================================
+
+Usage:
+null
 
 option name: selectionType
 description: selection type
@@ -369,6 +411,9 @@ default value: 75
 
 component: example driven refinement operator based learning algorithm (org.dllearner.algorithms.refexamples.ExampleBasedROLComponent)
 ======================================================================================================================================
+
+Usage:
+algorithm = refexamples;
 
 option name: writeSearchTree
 description: specifies whether to write a search tree
@@ -460,13 +505,26 @@ description: specifies whether negation is used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
 
+option name: useBooleanDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
+values: class org.dllearner.core.config.BooleanConfigOption
+default value: null
+
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
-values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 1.0
+values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 100.0
+default value: null
+
+option name: startClass
+description: the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)
+values: class org.dllearner.core.config.StringConfigOption
 default value: null
 
 component: refinement operator based learning algorithm (org.dllearner.algorithms.refinement.ROLearner)
 =======================================================================================================
+
+Usage:
+algorithm = refinement;
 
 option name: writeSearchTree
 description: specifies whether to write a search tree
@@ -560,6 +618,11 @@ default value: null
 
 option name: useNegation
 description: specifies whether negation is used in the learning algorothm
+values: class org.dllearner.core.config.BooleanConfigOption
+default value: null
+
+option name: useBooleanDatatypes
+description: specifies whether boolean datatypes are used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
 
