@@ -192,8 +192,15 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectExactCardinalityRestriction)
 	 */
 	public void visit(ObjectExactCardinalityRestriction description) {
-		// TODO Auto-generated method stub
-		throw new Error("OWLAPIDescriptionConverter: not implemented");
+		// TODO Taken from ObjectSomeRestriction above, hope its correct
+		//throw new Error("OWLAPIDescriptionConverter: not implemented");
+		OWLObjectProperty role = factory.getOWLObjectProperty(
+				URI.create(description.getRole().getName()));
+		description.getChild(0).accept(this);
+		OWLDescription d = stack.pop();
+		int minmax = description.getCardinality();
+		stack.push(factory.getOWLObjectExactCardinalityRestriction(role, minmax, d));
+		
 	}
 
 	/* (non-Javadoc)
