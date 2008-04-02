@@ -227,7 +227,7 @@ CLI usage: reasoner = fastInstanceChecker;
 component: fast retrieval reasoner (org.dllearner.reasoning.FastRetrievalReasoner)
 ==================================================================================
 
-CLI usage: reasoner = ;
+CLI usage: reasoner = fastRetrieval;
 
 
 component: OWL API reasoner (org.dllearner.reasoning.OWLAPIReasoner)
@@ -337,37 +337,37 @@ CLI usage: posOnlyDefinitionLP.positiveExamples = null;
 component: brute force learning algorithm (org.dllearner.algorithms.BruteForceLearner)
 ======================================================================================
 
-CLI usage: algorithm = ;
+CLI usage: algorithm = bruteForce;
 
 option name: maxLength
 description: maximum length of generated concepts
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: null
-CLI usage: .maxLength = null;
+CLI usage: bruteForce.maxLength = null;
 
 option name: returnType
 description: Specifies the type which the solution has to belong to (if already) known. This means we inform the learning algorithm that the solution is a subclass of this type.
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
-CLI usage: .returnType = null;
+CLI usage: bruteForce.returnType = null;
 
 
 component: random guesser learning algorithm (org.dllearner.algorithms.RandomGuesser)
 =====================================================================================
 
-CLI usage: algorithm = ;
+CLI usage: algorithm = random;
 
 option name: numberOfTrees
 description: number of randomly generated concepts/trees
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: null
-CLI usage: .numberOfTrees = null;
+CLI usage: random.numberOfTrees = null;
 
 option name: maxDepth
 description: maximum depth of generated concepts/trees
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: null
-CLI usage: .maxDepth = null;
+CLI usage: random.maxDepth = null;
 
 
 component: genetic programming learning algorithm (org.dllearner.algorithms.gp.GP)
