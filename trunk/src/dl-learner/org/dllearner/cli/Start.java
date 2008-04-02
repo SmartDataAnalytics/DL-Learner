@@ -224,9 +224,12 @@ public class Start {
 		componentPrefixMapping.put(SparqlKnowledgeSource.class, "sparql");
 		// reasoners
 		componentPrefixMapping.put(DIGReasoner.class, "digReasoner");
+		componentPrefixMapping.put(FastInstanceChecker.class, "fastInstanceChecker");
 		componentPrefixMapping.put(OWLAPIReasoner.class, "owlAPIReasoner");
 		// learning problems - configured via + and - flags for examples
 		componentPrefixMapping.put(PosNegDefinitionLP.class, "posNegDefinitionLP");
+		componentPrefixMapping.put(PosNegInclusionLP.class, "posNegInclusionLP");
+		componentPrefixMapping.put(PosOnlyDefinitionLP.class, "posOnlyDefinitionLP");
 		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
 		componentPrefixMapping.put(ExampleBasedROLComponent.class, "refexamples");
