@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.dllearner.cli.Start;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
@@ -421,30 +422,42 @@ public class ComponentManager {
 	private String getComponentConfigString(Class<? extends Component> component) {
 		String componentDescription =  "component: " + invokeStaticMethod(component,"getName") + " (" + component.getName() + ")";
 		String str = componentDescription + "\n";
+		String CLI = getCLIMapping(component.getSuperclass().getSimpleName()+"");
 		String usage ="";
 		
-		//usage =  invokeStaticMethod(component,"getUsage")+"";
-		
-		
-		/*if(usage.equals("null")) {
-			System.out.println("Component "+component.getName()+" needs Usage definition");
+		Map<Class<? extends Component>, String> m=Start.createComponentPrefixMapping();
+		for (Class<? extends Component> c : m.keySet()) {
+			if(c.getCanonicalName().equals(component.getCanonicalName()))
+			{	usage=m.get(c);
+			}
 		}
-		else	{
-			System.out.println(usage +" |in| "+ component.getName());
-		}
-		*/
-		
-		for(int i=0; i<componentDescription.length(); i++)
+	
+		for(int i=0; i<componentDescription.length(); i++) {
 			str += "=";
+		}
 		str += "\n\n";
+		str += "CLI usage: "+CLI+" = "+usage+";\n\n";
 		
-		//str += "Usage:\n"+usage+"\n\n";
 		
 		for(ConfigOption<?> option : componentOptions.get(component)) {
-			str += option.toString() + "\n";
+			str += option.toString() + 
+			"CLI usage: "+usage+"."+
+			option.getName()+" = "+option.getDefaultValue()+
+			";\n\n";
 		}		
-		return str;
+		return str+"\n";
 	}
+	
+	public static String getCLIMapping(String componentSuperClass){
+		HashMap<String, String> m = new HashMap<String, String>();
+		m.put("KnowledgeSource", "import");
+		m.put("ReasonerComponent", "reasoner");
+		m.put("PosNegLP", "problem");
+		m.put("PosOnlyLP", "problem");
+		m.put("LearningAlgorithm", "algorithm");
+		return m.get(componentSuperClass);
+	}
+	
 	
 	private Object invokeStaticMethod(Class<?> clazz, String methodName, Object... args) {
 		// unfortunately Java does not seem to offer a way to call

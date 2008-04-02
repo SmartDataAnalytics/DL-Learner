@@ -77,10 +77,12 @@ public abstract class ConfigOption<T> {
 
 	public abstract boolean isValidValue(T value);
 
+	//TODO maybe change the function getClass in the options to get simpleName
 	public String getAllowedValuesDescription() {
 		return getClass().toString();
 	}
 
+	
 	@Override
 	public String toString() {
 		return "option name: " + name + "\ndescription: " + description + "\nvalues: "
