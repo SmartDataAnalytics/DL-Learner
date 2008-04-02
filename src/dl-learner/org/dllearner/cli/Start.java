@@ -226,14 +226,23 @@ public class Start {
 		componentPrefixMapping.put(DIGReasoner.class, "digReasoner");
 		componentPrefixMapping.put(FastInstanceChecker.class, "fastInstanceChecker");
 		componentPrefixMapping.put(OWLAPIReasoner.class, "owlAPIReasoner");
+		componentPrefixMapping.put(FastRetrievalReasoner.class, "fastRetrieval");
+		
+		
 		// learning problems - configured via + and - flags for examples
 		componentPrefixMapping.put(PosNegDefinitionLP.class, "posNegDefinitionLP");
 		componentPrefixMapping.put(PosNegInclusionLP.class, "posNegInclusionLP");
 		componentPrefixMapping.put(PosOnlyDefinitionLP.class, "posOnlyDefinitionLP");
+		
+		
 		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
 		componentPrefixMapping.put(ExampleBasedROLComponent.class, "refexamples");
 		componentPrefixMapping.put(GP.class, "gp");
+		componentPrefixMapping.put(BruteForceLearner.class, "bruteForce");
+		componentPrefixMapping.put(RandomGuesser.class, "random");
+		
+		
 		return componentPrefixMapping;
 	}
 
