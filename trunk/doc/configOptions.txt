@@ -7,160 +7,188 @@ This file contains an automatically generated files of all components and their 
 component: KB file (org.dllearner.kb.KBFile)
 ============================================
 
-Usage:
-import("kbFileName.kb");
+CLI usage: import = ;
 
 option name: filename
 description: pointer to the KB file on local file system
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: .filename = null;
 
 option name: url
 description: URL pointer to the KB file
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: .url = null;
+
 
 component: OWL file (org.dllearner.kb.OWLFile)
 ==============================================
 
-Usage:
-import("owlFileName.owl");
+CLI usage: import = ;
 
 option name: url
 description: URL pointing to the OWL file
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: .url = null;
+
 
 component: SPARQL Endpoint (org.dllearner.kb.sparql.SparqlKnowledgeSource)
 ==========================================================================
 
-Usage:
-Example: import("http://dbpedia.openlinksw.com:8890/sparql","SPARQL");
+CLI usage: import = sparql;
 
 option name: url
 description: URL of SPARQL Endpoint
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: sparql.url = null;
 
 option name: instances
 description: relevant instances e.g. positive and negative examples in a learning problem
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: sparql.instances = null;
 
 option name: recursionDepth
 description: recursion depth of KB fragment selection
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: 2
+CLI usage: sparql.recursionDepth = 2;
 
 option name: predefinedFilter
 description: the mode of the SPARQL Filter
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: null
+CLI usage: sparql.predefinedFilter = null;
 
 option name: predefinedEndpoint
 description: the mode of the SPARQL Filter
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: null
+CLI usage: sparql.predefinedEndpoint = null;
 
 option name: predList
 description: list of all ignored roles
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: sparql.predList = null;
 
 option name: objList
 description: list of all ignored objects
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: sparql.objList = null;
 
 option name: classList
 description: list of all ignored classes
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: sparql.classList = null;
 
 option name: format
 description: N-TRIPLES or KB format
 values: class org.dllearner.core.config.StringConfigOption
 default value: N-TRIPLES
+CLI usage: sparql.format = N-TRIPLES;
 
 option name: dumpToFile
 description: Specifies whether the extracted ontology is written to a file or not.
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: sparql.dumpToFile = true;
 
 option name: useLits
 description: use Literals in SPARQL query
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: sparql.useLits = null;
 
 option name: getAllSuperClasses
 description: If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: sparql.getAllSuperClasses = true;
 
 option name: learnDomain
 description: learns the Domain for a Role
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: sparql.learnDomain = null;
 
 option name: learnRange
 description: learns the Range for a Role
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: sparql.learnRange = null;
 
 option name: role
 description: role to learn Domain/Range from
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: sparql.role = null;
 
 option name: blankNodeIdentifier
 description: used to identify blanknodes in Tripels
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: sparql.blankNodeIdentifier = null;
 
 option name: example
 description: example
 values: class org.dllearner.core.config.StringTupleListConfigOption
 default value: null
+CLI usage: sparql.example = null;
 
 option name: replacePredicate
 description: rule for replacing predicates
 values: class org.dllearner.core.config.StringTupleListConfigOption
 default value: null
+CLI usage: sparql.replacePredicate = null;
 
 option name: replaceObject
 description: rule for replacing predicates
 values: class org.dllearner.core.config.StringTupleListConfigOption
 default value: null
+CLI usage: sparql.replaceObject = null;
 
 option name: breakSuperClassRetrievalAfter
 description: stops a cyclic hierarchy after specified number of classes
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: null
+CLI usage: sparql.breakSuperClassRetrievalAfter = null;
 
 option name: numberOfInstancesUsedForRoleLearning
 description: 
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: null
+CLI usage: sparql.numberOfInstancesUsedForRoleLearning = null;
 
 option name: closeAfterRecursion
 description: gets all classes for all instances
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: sparql.closeAfterRecursion = null;
 
 option name: verbosity
 description: control verbosity of output for this component
 values: class org.dllearner.core.config.StringConfigOption
 default value: warning
+CLI usage: sparql.verbosity = warning;
 
 option name: defaultGraphURIs
 description: a list of all default Graph URIs
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: sparql.defaultGraphURIs = null;
 
 option name: namedGraphURIs
 description: a list of all named Graph URIs
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: sparql.namedGraphURIs = null;
+
 
 *************
 * Reasoners *
@@ -169,46 +197,50 @@ default value: null
 component: DIG reasoner (org.dllearner.reasoning.DIGReasoner)
 =============================================================
 
-Usage:
-reasoner = dig;
+CLI usage: reasoner = digReasoner;
 
 option name: reasonerUrl
 description: URL of the DIG reasoner
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: digReasoner.reasonerUrl = null;
 
 option name: writeDIGProtocol
 description: specifies whether or not to write a protocoll of send and received DIG requests
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: false
+CLI usage: digReasoner.writeDIGProtocol = false;
 
 option name: digProtocolFile
 description: the file to store the DIG protocol
 values: class org.dllearner.core.config.StringConfigOption
 default value: log/digProtocol.txt
+CLI usage: digReasoner.digProtocolFile = log/digProtocol.txt;
+
 
 component: fast instance checker (org.dllearner.reasoning.FastInstanceChecker)
 ==============================================================================
 
-Usage:
-reasoner = fastInstanceChecker;
+CLI usage: reasoner = fastInstanceChecker;
+
 
 component: fast retrieval reasoner (org.dllearner.reasoning.FastRetrievalReasoner)
 ==================================================================================
 
-Usage:
-reasoner = XXX;
+CLI usage: reasoner = ;
+
 
 component: OWL API reasoner (org.dllearner.reasoning.OWLAPIReasoner)
 ====================================================================
 
-Usage:
-reasoner = owlAPI;
+CLI usage: reasoner = owlAPIReasoner;
 
 option name: reasonerType
 description: FaCT++ or Pellet
 values: class org.dllearner.core.config.StringConfigOption
 default value: pellet
+CLI usage: owlAPIReasoner.reasonerType = pellet;
+
 
 *********************
 * Learning Problems *
@@ -217,75 +249,86 @@ default value: pellet
 component: two valued definition learning problem (org.dllearner.learningproblems.PosNegDefinitionLP)
 =====================================================================================================
 
-Usage:
-problem = XXX DEFAULT
+CLI usage: problem = posNegDefinitionLP;
 
 option name: positiveExamples
 description: positive examples
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: posNegDefinitionLP.positiveExamples = null;
 
 option name: negativeExamples
 description: negative examples
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: posNegDefinitionLP.negativeExamples = null;
 
 option name: useRetrievalForClassficiation
 description: Specifies whether to use retrieval or instance checks for testing a concept.
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: posNegDefinitionLP.useRetrievalForClassficiation = null;
 
 option name: percentPerLenghtUnit
 description: describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one
 values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 1.0
 default value: 0.05
+CLI usage: posNegDefinitionLP.percentPerLenghtUnit = 0.05;
 
 option name: useMultiInstanceChecks
 description: See UseMultiInstanceChecks enum.
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: posNegDefinitionLP.useMultiInstanceChecks = null;
+
 
 component: inclusion learning problem (org.dllearner.learningproblems.PosNegInclusionLP)
 ========================================================================================
 
-Usage:
-problem = posNegInclusion;
+CLI usage: problem = posNegInclusionLP;
 
 option name: positiveExamples
 description: positive examples
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: posNegInclusionLP.positiveExamples = null;
 
 option name: negativeExamples
 description: negative examples
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: posNegInclusionLP.negativeExamples = null;
 
 option name: useRetrievalForClassficiation
 description: Specifies whether to use retrieval or instance checks for testing a concept.
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: posNegInclusionLP.useRetrievalForClassficiation = null;
 
 option name: percentPerLenghtUnit
 description: describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one
 values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 1.0
 default value: 0.05
+CLI usage: posNegInclusionLP.percentPerLenghtUnit = 0.05;
 
 option name: useMultiInstanceChecks
 description: See UseMultiInstanceChecks enum.
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: posNegInclusionLP.useMultiInstanceChecks = null;
+
 
 component: positive only definition learning problem (org.dllearner.learningproblems.PosOnlyDefinitionLP)
 =========================================================================================================
 
-Usage:
-problem = posOnlyDefinition;
+CLI usage: problem = posOnlyDefinitionLP;
 
 option name: positiveExamples
 description: positive examples
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: posOnlyDefinitionLP.positiveExamples = null;
+
 
 ***********************
 * Learning Algorithms *
@@ -294,335 +337,396 @@ default value: null
 component: brute force learning algorithm (org.dllearner.algorithms.BruteForceLearner)
 ======================================================================================
 
-Usage:
-null
+CLI usage: algorithm = ;
 
 option name: maxLength
 description: maximum length of generated concepts
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: null
+CLI usage: .maxLength = null;
 
 option name: returnType
 description: Specifies the type which the solution has to belong to (if already) known. This means we inform the learning algorithm that the solution is a subclass of this type.
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: .returnType = null;
+
 
 component: random guesser learning algorithm (org.dllearner.algorithms.RandomGuesser)
 =====================================================================================
 
-Usage:
-null
+CLI usage: algorithm = ;
 
 option name: numberOfTrees
 description: number of randomly generated concepts/trees
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: null
+CLI usage: .numberOfTrees = null;
 
 option name: maxDepth
 description: maximum depth of generated concepts/trees
 values: class org.dllearner.core.config.IntegerConfigOption
 default value: null
+CLI usage: .maxDepth = null;
+
 
 component: genetic programming learning algorithm (org.dllearner.algorithms.gp.GP)
 ==================================================================================
 
-Usage:
-null
+CLI usage: algorithm = gp;
 
 option name: selectionType
 description: selection type
 values: class org.dllearner.core.config.StringConfigOption
 default value: rankSelection
+CLI usage: gp.selectionType = rankSelection;
 
 option name: tournamentSize
 description: tournament size (applies only to tournament selection)
 values: class org.dllearner.core.config.IntegerConfigOption min 2 max 20
 default value: 3
+CLI usage: gp.tournamentSize = 3;
 
 option name: elitism
 description: specifies whether to use elitism in selection
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: gp.elitism = true;
 
 option name: mutationProbablitiy
 description: mutation probability
 values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 1.0
 default value: 0.03
+CLI usage: gp.mutationProbablitiy = 0.03;
 
 option name: crossoverProbablitiy
 description: crossover probability
 values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 1.0
 default value: 0.95
+CLI usage: gp.crossoverProbablitiy = 0.95;
 
 option name: hillClimbingProbablitiy
 description: hill climbing probability
 values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 1.0
 default value: 0.0
+CLI usage: gp.hillClimbingProbablitiy = 0.0;
 
 option name: refinementProbablitiy
 description: refinement operator probability (values higher than 0 turn this into a hybrid GP algorithm - see publication)
 values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 1.0
 default value: 0.0
+CLI usage: gp.refinementProbablitiy = 0.0;
 
 option name: numberOfIndividuals
 description: number of individuals
 values: class org.dllearner.core.config.IntegerConfigOption min 1
 default value: 100
+CLI usage: gp.numberOfIndividuals = 100;
 
 option name: numberOfSelectedIndividuals
 description: number of selected individuals
 values: class org.dllearner.core.config.IntegerConfigOption min 1
 default value: 92
+CLI usage: gp.numberOfSelectedIndividuals = 92;
 
 option name: useFixedNumberOfGenerations
 description: specifies whether to use a fixed number of generations
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: false
+CLI usage: gp.useFixedNumberOfGenerations = false;
 
 option name: generations
 description: number of generations (only valid if a fixed number of generations is used)
 values: class org.dllearner.core.config.IntegerConfigOption min 1
 default value: 20
+CLI usage: gp.generations = 20;
 
 option name: postConvergenceGenerations
 description: number of generations after which to stop if no improvement wrt. the best solution has been achieved
 values: class org.dllearner.core.config.IntegerConfigOption min 1
 default value: 50
+CLI usage: gp.postConvergenceGenerations = 50;
 
 option name: adc
 description: whether to use automatically defined concept (this invents new helper concepts, but enlarges the search space
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: false
+CLI usage: gp.adc = false;
 
 option name: initMinDepth
 description: minimum depth to use when creating the initial population
 values: class org.dllearner.core.config.IntegerConfigOption min 1
 default value: 4
+CLI usage: gp.initMinDepth = 4;
 
 option name: initMaxDepth
 description: maximum depth to use when creating the initial population
 values: class org.dllearner.core.config.IntegerConfigOption min 1
 default value: 6
+CLI usage: gp.initMaxDepth = 6;
 
 option name: maxConceptLength
 description: maximum concept length (higher length means lowest possible fitness)
 values: class org.dllearner.core.config.IntegerConfigOption min 1
 default value: 75
+CLI usage: gp.maxConceptLength = 75;
+
 
 component: example driven refinement operator based learning algorithm (org.dllearner.algorithms.refexamples.ExampleBasedROLComponent)
 ======================================================================================================================================
 
-Usage:
-algorithm = refexamples;
+CLI usage: algorithm = refexamples;
 
 option name: writeSearchTree
 description: specifies whether to write a search tree
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: false
+CLI usage: refexamples.writeSearchTree = false;
 
 option name: searchTreeFile
 description: file to use for the search tree
 values: class org.dllearner.core.config.StringConfigOption
 default value: log/searchTree.txt
+CLI usage: refexamples.searchTreeFile = log/searchTree.txt;
 
 option name: replaceSearchTree
 description: specifies whether to replace the search tree in the log file after each run or append the new search tree
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: false
+CLI usage: refexamples.replaceSearchTree = false;
 
 option name: heuristic
 description: specifiy the heuristic to use
 values: class org.dllearner.core.config.StringConfigOption
 default value: lexicographic
+CLI usage: refexamples.heuristic = lexicographic;
 
 option name: applyAllFilter
 description: usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refexamples.applyAllFilter = true;
 
 option name: applyExistsFilter
 description: usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refexamples.applyExistsFilter = true;
 
 option name: useTooWeakList
 description: try to filter out too weak concepts without sending them to the reasoner
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refexamples.useTooWeakList = true;
 
 option name: useOverlyGeneralList
 description: try to find overly general concept without sending them to the reasoner
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refexamples.useOverlyGeneralList = true;
 
 option name: useShortConceptConstruction
 description: shorten concept to see whether they already exist
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refexamples.useShortConceptConstruction = true;
 
 option name: horizontalExpansionFactor
 description: horizontal expansion factor (see publication for description)
 values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 1.0
 default value: 0.6
+CLI usage: refexamples.horizontalExpansionFactor = 0.6;
 
 option name: improveSubsumptionHierarchy
 description: simplify subsumption hierarchy to reduce search space (see publication for description)
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refexamples.improveSubsumptionHierarchy = true;
 
 option name: allowedConcepts
 description: concepts the algorithm is allowed to use
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: refexamples.allowedConcepts = null;
 
 option name: ignoredConcepts
 description: concepts the algorithm must ignore
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: refexamples.ignoredConcepts = null;
 
 option name: allowedRoles
 description: roles the algorithm is allowed to use
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: refexamples.allowedRoles = null;
 
 option name: ignoredRoles
 description: roles the algorithm must ignore
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: refexamples.ignoredRoles = null;
 
 option name: useAllConstructor
 description: specifies whether to universal concept constructor is used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: refexamples.useAllConstructor = null;
 
 option name: useExistsConstructor
 description: specifies whether to existential concept constructor is used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: refexamples.useExistsConstructor = null;
 
 option name: useNegation
 description: specifies whether negation is used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: refexamples.useNegation = null;
 
 option name: useBooleanDatatypes
 description: specifies whether boolean datatypes are used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: refexamples.useBooleanDatatypes = null;
 
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
 values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 100.0
 default value: null
+CLI usage: refexamples.noisePercentage = null;
 
 option name: startClass
 description: the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)
 values: class org.dllearner.core.config.StringConfigOption
 default value: null
+CLI usage: refexamples.startClass = null;
+
 
 component: refinement operator based learning algorithm (org.dllearner.algorithms.refinement.ROLearner)
 =======================================================================================================
 
-Usage:
-algorithm = refinement;
+CLI usage: algorithm = refinement;
 
 option name: writeSearchTree
 description: specifies whether to write a search tree
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: false
+CLI usage: refinement.writeSearchTree = false;
 
 option name: searchTreeFile
 description: file to use for the search tree
 values: class org.dllearner.core.config.StringConfigOption
 default value: log/searchTree.txt
+CLI usage: refinement.searchTreeFile = log/searchTree.txt;
 
 option name: replaceSearchTree
 description: specifies whether to replace the search tree in the log file after each run or append the new search tree
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: false
+CLI usage: refinement.replaceSearchTree = false;
 
 option name: heuristic
 description: specifiy the heuristic to use
 values: class org.dllearner.core.config.StringConfigOption
 default value: lexicographic
+CLI usage: refinement.heuristic = lexicographic;
 
 option name: applyAllFilter
 description: usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refinement.applyAllFilter = true;
 
 option name: applyExistsFilter
 description: usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refinement.applyExistsFilter = true;
 
 option name: useTooWeakList
 description: try to filter out too weak concepts without sending them to the reasoner
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refinement.useTooWeakList = true;
 
 option name: useOverlyGeneralList
 description: try to find overly general concept without sending them to the reasoner
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refinement.useOverlyGeneralList = true;
 
 option name: useShortConceptConstruction
 description: shorten concept to see whether they already exist
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refinement.useShortConceptConstruction = true;
 
 option name: horizontalExpansionFactor
 description: horizontal expansion factor (see publication for description)
 values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 1.0
 default value: 0.6
+CLI usage: refinement.horizontalExpansionFactor = 0.6;
 
 option name: improveSubsumptionHierarchy
 description: simplify subsumption hierarchy to reduce search space (see publication for description)
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
+CLI usage: refinement.improveSubsumptionHierarchy = true;
 
 option name: quiet
 description: may be deprecated soon
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: false
+CLI usage: refinement.quiet = false;
 
 option name: allowedConcepts
 description: concepts the algorithm is allowed to use
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: refinement.allowedConcepts = null;
 
 option name: ignoredConcepts
 description: concepts the algorithm must ignore
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: refinement.ignoredConcepts = null;
 
 option name: allowedRoles
 description: roles the algorithm is allowed to use
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: refinement.allowedRoles = null;
 
 option name: ignoredRoles
 description: roles the algorithm must ignore
 values: class org.dllearner.core.config.StringSetConfigOption
 default value: null
+CLI usage: refinement.ignoredRoles = null;
 
 option name: useAllConstructor
 description: specifies whether to universal concept constructor is used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: refinement.useAllConstructor = null;
 
 option name: useExistsConstructor
 description: specifies whether to existential concept constructor is used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: refinement.useExistsConstructor = null;
 
 option name: useNegation
 description: specifies whether negation is used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: refinement.useNegation = null;
 
 option name: useBooleanDatatypes
 description: specifies whether boolean datatypes are used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
 default value: null
+CLI usage: refinement.useBooleanDatatypes = null;
+
 
