@@ -21,6 +21,7 @@ package org.dllearner.algorithms.refexamples;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -385,6 +386,8 @@ public class ExampleBasedROLearner {
 			logger.info("\nsolutions:");
 			for(Description c : solutions) {
 				logger.info("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
+				//TODO remove this line
+				logger.info( "Manchester: " + c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()) );
 			}
 		}
 		logger.debug("size of candidate set: " + candidates.size());
