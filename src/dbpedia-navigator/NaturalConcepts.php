@@ -50,10 +50,72 @@ class NaturalConcepts
 		print $query;
 		return $query;
 	}
+	
+	function getSparqlQuery()
+	{
+		$temp=$this->concept;
+		$andOrParts=$this->getAndOrParts($temp);
+		print_r($andOrParts);
+	}
+	
+	function getAndOrParts($temp)
+	{
+		$split=preg_split("/(OR)|(AND)/",$temp,-1,PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
+		$bracket=0;
+		$arr=array();
+		$temppart="";
+		foreach ($split as $part){
+			$part=trim($part);
+			if (strpos($part,"(")===0){
+				$bracket+=substr_count($part,"(");
+			}
+			if ($bracket>0){
+				if (($part=="AND")||($part=="OR")) $temppart.=" ".$part." ";
+				else $temppart.=$part;
+			}
+			else{
+				if ((!strpos($part,"AND"))&&(!strpos($part,"OR"))) $arr[]=$part;
+				else $arr[]=$this->getAndOrParts($part);
+			}
+			if ((strrpos($part,')')==(strlen($part)-1))&&($bracket>0)){
+				$bracket-=substr_count($part,")");
+				if ($bracket==0){
+					if ((!strpos($temppart,"AND"))&&(!strpos($temppart,"OR"))) $arr[]=substr($temppart,1,strlen($temppart)-2);
+					else $arr[]=$this->getAndOrParts(substr($temppart,1,strlen($temppart)-2));
+					$temppart="";
+				}
+			}
+		}
+		return $arr;
+	}
+	
+	function isExistsConstruct($construct)
+	{
+		if (!(strpos($construct,"EXISTS")===0)) return false;
+		$split=preg_split("/(EXISTS \".*\")\./",$construct,-1,PREG_SPLIT_NO_EMPTY);
+		$afterdot=$split[0];
+		print $afterdot;
+		$bracket=0;
+		$offset=0;
+		do{
+			$nextBracketOn=strpos($afterdot,"(",$offset);
+			$nextBracketOff=strpos($afterdot,")",$offset);
+			print "On: ".$nextBracketOn+1;
+			print "Off: ".$nextBracketOff+1;
+			$min=min($nextBracketOn,$nextBracketOff);
+			print $min+1;
+			if ($nextBracketOn==$min) $bracket++;
+			if ($nextBracketOff==$min) $bracket--;
+			$offset=$min;
+		} while(($bracket>0)||($offset>=strlen($afterdot)-1));
+		print ($offset);
+		return true;
+	}
 }
 
-$conc="EXISTS http://dbpedia.org/property/website.TOP AND http://dbpedia.org/resource/Berlin";
+//$conc="(EXISTS http://dbpedia.org/property/website.(http://dbpedia.org/resource/Berlin AND http://dbpedia.org/resource/Berlin) OR (http://dbpedia.org/resource/Berlin AND http://dbpedia.org/resource/Berlin)) OR http://dbpedia.org/resource/Berlin";
+$conc="EXISTS \"http://dbpedia.org/property/website\".(http://dbpedia.org/resource/Berlin AND http://dbpedia.org/resource/Berlin)";
 $nc=new NaturalConcepts($conc);
-$ic=$nc->getNaturalConcept();
+$ic=$nc->isExistsConstruct($conc);
 //print_r($ic);
 ?>
