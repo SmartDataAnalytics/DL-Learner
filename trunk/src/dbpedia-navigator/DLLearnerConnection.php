@@ -227,8 +227,7 @@ class DLLearnerConnection
 	
 	function getSubjectsFromConcept($concept)
 	{
-		$query="SELECT DISTINCT ?subject\n".
-			   "WHERE { ?subject a <".$concept.">}\n";
+		$query=$this->client->SparqlRetrieval($concept);
 		$result=json_decode($this->getSparqlResultThreaded($query),true);
 		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result.");
 		$ret=array();

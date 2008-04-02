@@ -392,7 +392,7 @@ function learnConcept()
 			$concept.="<table border=0>\n";
 			$i=1;
 			foreach ($concepts as $con){
-				$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".$con."');return false;\" onMouseOver=\"showdiv('div".$i."');showdiv('ConceptBox');\" onMouseOut=\"hidediv('div".$i."');hidediv('ConceptBox');\" />".$con."</a></td></tr>";
+				$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".urlencode($con)."');return false;\" onMouseOver=\"showdiv('div".$i."');showdiv('ConceptBox');\" onMouseOut=\"hidediv('div".$i."');hidediv('ConceptBox');\" />".$con."</a></td></tr>";
 				//put information about concepts in divs
 				$conceptinformation.="<div id=\"div".$i."\" style=\"display:none\">Concept Depth: ".$conceptDepth[$i-1]."<br/>Concept Arity: ".$conceptArity[$i-1]."<br/>Concept Length: ".$sc->getConceptLength($con)."</div>";
 				$i++;
@@ -421,6 +421,7 @@ function getSubjectsFromConcept($concept)
 	
 	setRunning($id,"true");
 	
+	$concept=urldecode($concept);
 	$content="";
 	try{
 		require_once("DLLearnerConnection.php");
