@@ -47,6 +47,11 @@ public class KRK {
 
 	// FLAGS
 	// 
+	static boolean writeOWL = true;
+	static boolean writeClosedOWL = true ;
+	static boolean useTransitivity = false;
+	
+
 	static boolean useInverse = false;
 	// dependent, love and marriage, horse and carriage
 	static boolean useTripleSubProps = useInverse && false;
@@ -97,7 +102,6 @@ public class KRK {
 	public static void main(String[] args) {
 		System.out.println("Start");
 		// turn off to not write the owl, needs about 30 seconds or more
-		boolean writeOWL = true;
 
 		// classToInd = new HashMap<String,SortedSet<String>>();
 		init();
@@ -125,7 +129,8 @@ public class KRK {
 			int x = 0;
 			while ((line = in.readLine()) != null) {
 				x++;
-				 if(x % 3000 == 0 ) System.out.println("Currently at line"+x);
+				if (x % 3000 == 0)
+					System.out.println("Currently at line" + x);
 				ar = tokenize(line);
 
 				gameind = getIndividual("game" + x);
@@ -194,8 +199,20 @@ public class KRK {
 			System.out.println("Finished Background");
 			// WRITE
 			writeExampleSets();
-			if (writeOWL)
+			
+
+			if (writeOWL) {
 				writeOWLFile("test.owl");
+			}
+			if(writeClosedOWL) {
+				String conceptStr = "ALL \"http://www.test.de/test#hasPiece\".(EXISTS \"http://www.test.de/test#fileDistanceLessThan6\".((NOT \"http://www.test.de/test#WKing\") AND ALL \"http://www.test.de/test#rankDistance1\".(\"http://www.test.de/test#WKing\" AND ALL \"http://www.test.de/test#fileDistanceLessThan2\".\"http://www.test.de/test#BKing\" AND ALL \"http://www.test.de/test#hasLowerFileThan\".\"http://www.test.de/test#WKing\")) AND ALL \"http://www.test.de/test#fileDistance1\".\"http://www.test.de/test#WRook\")";
+				//conceptStr = "ALL http://www.test.de/test#hasPiece.(EXISTS http://www.test.de/test#fileDistanceLessThan6.((NOT http://www.test.de/test#WKing) AND ALL http://www.test.de/test#rankDistance1.(http://www.test.de/test#WKing AND ALL http://www.test.de/test#fileDistanceLessThan2.http://www.test.de/test#WKing AND ALL http://www.test.de/test#hasLowerFileThan.http://www.test.de/test#WKing)) AND ALL http://www.test.de/test#fileDistance1.http://www.test.de/test#WRook)";
+				//conceptStr = "ALL hasPiece.(EXISTS fileDistanceLessThan6.((NOT WKing) AND ALL rankDistance1.(WKing AND ALL fileDistanceLessThan2.WKing AND ALL hasLowerFileThan.WKing)) AND ALL fileDistance1.WRook)";
+				OntologyCloser oc = new OntologyCloser(kb);
+				oc.applyNumberRestrictions();
+				oc.verifyConcept(conceptStr);
+				writeOWLFile("test_Closed.owl");
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -329,9 +346,10 @@ public class KRK {
 
 	static void finishBackgroundForRoles() {
 
-		kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(rankLessThan));
-		kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(fileLessThan));
-
+		if (useTransitivity) {
+			kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(rankLessThan));
+			kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(fileLessThan));
+		}
 		if (useInverse)
 		// INVERSE
 		{
@@ -456,15 +474,15 @@ public class KRK {
 	}
 
 	protected static void writeExampleSets() {
-		StringBuffer collect1 = new StringBuffer(); 
+		StringBuffer collect1 = new StringBuffer();
 		StringBuffer collect2 = new StringBuffer();
 		System.out.println("start writing sets");
-		
+
 		for (String keys : classToInd.keySet()) {
 			System.out.println(keys);
 			SortedSet<String> tmpset = classToInd.get(keys);
 			for (String individuals : tmpset) {
-				collect1.append( "+\"" + individuals + "\"\n");
+				collect1.append("+\"" + individuals + "\"\n");
 				collect2.append("-\"" + individuals + "\"\n");
 			}
 
@@ -473,7 +491,7 @@ public class KRK {
 			collect1 = new StringBuffer();
 			collect2 = new StringBuffer();
 		}
-		//System.out.println("Sets written");
+		// System.out.println("Sets written");
 		collect1 = new StringBuffer();
 		collect2 = new StringBuffer();
 		for (String key : classToInd.keySet()) {
@@ -481,16 +499,16 @@ public class KRK {
 			SortedSet<String> tmpset = classToInd.get(key);
 
 			if (key.equals("ZERO")) {
-				collect1.append( "/**" + key + "**/\n");
+				collect1.append("/**" + key + "**/\n");
 				for (String individuals : tmpset) {
-					collect1.append( "+\"" + individuals + "\"\n");
+					collect1.append("+\"" + individuals + "\"\n");
 				}
 
 				continue;
 			} else {
-				collect2.append( "/**" + key + "**/\n");
+				collect2.append("/**" + key + "**/\n");
 				for (String individuals : tmpset) {
-					collect2.append( "-\"" + individuals + "\"\n");
+					collect2.append("-\"" + individuals + "\"\n");
 				}
 			}
 
