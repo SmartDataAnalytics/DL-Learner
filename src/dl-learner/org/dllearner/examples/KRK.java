@@ -30,6 +30,7 @@ import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.OntologyCloser;
 
 /*
  * Structure
@@ -223,14 +224,37 @@ public class KRK {
 				writeOWLFile("test.owl");
 			}
 			if(writeClosedOWL) {
+				OntologyCloser oc = new OntologyCloser(kb);
+				oc.applyNumberRestrictions();
+			
+				
 				String conceptStr = "ALL \"http://www.test.de/test#hasPiece\".(EXISTS \"http://www.test.de/test#fileDistanceLessThan6\".((NOT \"http://www.test.de/test#WKing\") AND ALL \"http://www.test.de/test#rankDistance1\".(\"http://www.test.de/test#WKing\" AND ALL \"http://www.test.de/test#fileDistanceLessThan2\".\"http://www.test.de/test#BKing\" AND ALL \"http://www.test.de/test#hasLowerFileThan\".\"http://www.test.de/test#WKing\")) AND ALL \"http://www.test.de/test#fileDistance1\".\"http://www.test.de/test#WRook\")";
 				//conceptStr = "ALL http://www.test.de/test#hasPiece.(EXISTS http://www.test.de/test#fileDistanceLessThan6.((NOT http://www.test.de/test#WKing) AND ALL http://www.test.de/test#rankDistance1.(http://www.test.de/test#WKing AND ALL http://www.test.de/test#fileDistanceLessThan2.http://www.test.de/test#WKing AND ALL http://www.test.de/test#hasLowerFileThan.http://www.test.de/test#WKing)) AND ALL http://www.test.de/test#fileDistance1.http://www.test.de/test#WRook)";
 				//conceptStr = "ALL hasPiece.(EXISTS fileDistanceLessThan6.((NOT WKing) AND ALL rankDistance1.(WKing AND ALL fileDistanceLessThan2.WKing AND ALL hasLowerFileThan.WKing)) AND ALL fileDistance1.WRook)";
-				conceptStr = "ALL \"http://www.test.de/test#hasPiece\".\"http://www.test.de/test#WKing\"";
-				OntologyCloser oc = new OntologyCloser(kb);
-				oc.applyNumberRestrictions();
+				//conceptStr = "ALL \"http://www.test.de/test#hasPiece\".\"http://www.test.de/test#WKing\"";
+				//conceptStr = "EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND ALL \"http://www.test.de/test#fileDistanceLessThan1\".\"http://www.test.de/test#WKing\")";
+			
+				
+				conceptStr = "\"http://www.test.de/test#WRook\"";
+
 				oc.verifyConcept(conceptStr);
-				writeOWLFile("test_Closed.owl");
+				conceptStr = "ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
+					"\"http://www.test.de/test#WKing\" ";
+				
+				oc.verifyConcept(conceptStr);
+				conceptStr = "(\"http://www.test.de/test#WRook\" "+ 
+				" AND " +
+				" ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
+					"\"http://www.test.de/test#WKing\") ";
+				
+				oc.verifyConcept(conceptStr);
+				conceptStr = "EXISTS \"http://www.test.de/test#hasLowerRankThan\"."+
+				"(\"http://www.test.de/test#WRook\""+ 
+				"AND ALL \"http://www.test.de/test#fileDistanceLessThan1\".\"http://www.test.de/test#WKing\") ";
+
+				
+				oc.verifyConcept(conceptStr);
+				//writeOWLFile("test_Closed.owl");
 			}
 
 		} catch (Exception e) {

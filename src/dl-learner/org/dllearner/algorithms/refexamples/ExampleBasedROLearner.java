@@ -386,8 +386,11 @@ public class ExampleBasedROLearner {
 			logger.info("\nsolutions:");
 			for(Description c : solutions) {
 				logger.info("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
-				//TODO remove this line
-				logger.info("  MANCHESTER: " + c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()) );
+				//TODO remove this line maybe
+				// watch for String.replace Quick hack
+				logger.info("  MANCHESTER: " + 
+						c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()).
+						replace("\"", ""));
 			}
 		}
 		logger.debug("size of candidate set: " + candidates.size());

@@ -40,8 +40,10 @@ public class Nothing extends Description {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO: check whether this is correct
-		return "owl:Nothing";
+		// in Protege 3.3 owl:Nothing
+		// in Protege 4.0 only Nothing
+		//return "owl:Nothing";
+		return "Nothing";
 	}	    
     
 	public int getLength() {
