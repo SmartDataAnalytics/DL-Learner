@@ -44,7 +44,11 @@ public class Thing extends Description {
 
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return "owl:Thing";
+		// in Protege 3.3 owl:Thing
+		// in Protege 4.0 only Thing
+		//return "owl:Thing";
+		return "Thing";
+		
 	}	    
     
 	public int getLength() {

@@ -1,5 +1,6 @@
-package org.dllearner.examples;
+package org.dllearner.utilities;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -86,13 +87,15 @@ public class OntologyCloser {
 		conceptStr = sb.toString();
 		try {
 			d = KBParser.parseConcept(conceptStr);
+			System.out.println(d.toManchesterSyntaxString("", new HashMap<String,String>()));
+			System.out.println(d.toString());
 			System.out.println("Starting retrieval");
 			SortedSet<Individual> ind = this.rs.retrieval(d);
 			System.out.println("retrieved: " + ind.size() + " instances");
 
-			for (Individual individual : ind) {
-				System.out.println(individual + "");
-			}
+			//for (Individual individual : ind) {
+				//System.out.println(individual + "");
+			//}
 
 		} catch (Exception e) {
 			e.printStackTrace();
