@@ -47,6 +47,7 @@ public class KRK {
 
 	// FLAGS
 	// 
+	// turn off to not write the owl, needs about 30 seconds or more
 	static boolean writeOWL = true;
 	static boolean writeClosedOWL = true ;
 	static boolean useTransitivity = false;
@@ -55,10 +56,15 @@ public class KRK {
 	static boolean useInverse = false;
 	// dependent, love and marriage, horse and carriage
 	static boolean useTripleSubProps = useInverse && false;
+	
+	
+	static String workingDir = "examples/krkworking";
+	static String fileIn = workingDir+"/krkopt.data";
+	
 
 	static URI ontologyURI = URI.create("http://www.test.de/test");
 	// static SortedSet<String> fileSet = new TreeSet<String>();
-	// static SortedSet<String> rankSet = new TreeSet<String>();
+	static SortedSet<String> allInstances = new TreeSet<String>();
 	static SortedSet<String> classSet = new TreeSet<String>();
 	static SortedSet<String> symmetricRoleSet = new TreeSet<String>();
 
@@ -71,7 +77,8 @@ public class KRK {
 	static NamedClass WKing = getAtomicConcept("WKing");
 	static NamedClass WRook = getAtomicConcept("WRook");
 	static NamedClass BKing = getAtomicConcept("BKing");
-	static NamedClass File = getAtomicConcept("File");
+	// had to rename, too much similarity to java.io.File
+	static NamedClass FileData = getAtomicConcept("File");
 	static NamedClass Rank = getAtomicConcept("Rank");
 	static NamedClass Piece = getAtomicConcept("Piece");
 
@@ -101,7 +108,19 @@ public class KRK {
 	 */
 	public static void main(String[] args) {
 		System.out.println("Start");
-		// turn off to not write the owl, needs about 30 seconds or more
+		workingDir = workingDir + File.separator;
+		if (!new File(workingDir).exists()) {
+			System.out.println("Created directory: " + workingDir + " : " + new File(workingDir).mkdir()
+							+ ".");
+		}
+		
+		// Datei öffnen
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new FileReader(fileIn));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
 		// classToInd = new HashMap<String,SortedSet<String>>();
 		init();
@@ -110,17 +129,10 @@ public class KRK {
 		Individual wkingind;
 		Individual wrookind;
 		Individual bkingind;
-		// String currentClass = "";
-
-		String fileIn = "examples/krk/krkopt.data";
-
-		// Datei öffnen
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new FileReader(fileIn));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		
+		
+		
+		
 
 		try {
 			String line = "";
@@ -137,6 +149,11 @@ public class KRK {
 				wkingind = getIndividual("wking_" + ar[0] + ar[1] + "_" + x);
 				wrookind = getIndividual("wrook_" + ar[2] + ar[3] + "_" + x);
 				bkingind = getIndividual("bking_" + ar[4] + ar[5] + "_" + x);
+				
+				allInstances.add(gameind+"");
+				allInstances.add(wkingind+"");
+				allInstances.add(wrookind+"");
+				allInstances.add(bkingind+"");
 
 				// if (x == 1)
 				// currentClass = ar[6];
@@ -199,6 +216,7 @@ public class KRK {
 			System.out.println("Finished Background");
 			// WRITE
 			writeExampleSets();
+			writeConciseOWLAllDifferent();
 			
 
 			if (writeOWL) {
@@ -208,6 +226,7 @@ public class KRK {
 				String conceptStr = "ALL \"http://www.test.de/test#hasPiece\".(EXISTS \"http://www.test.de/test#fileDistanceLessThan6\".((NOT \"http://www.test.de/test#WKing\") AND ALL \"http://www.test.de/test#rankDistance1\".(\"http://www.test.de/test#WKing\" AND ALL \"http://www.test.de/test#fileDistanceLessThan2\".\"http://www.test.de/test#BKing\" AND ALL \"http://www.test.de/test#hasLowerFileThan\".\"http://www.test.de/test#WKing\")) AND ALL \"http://www.test.de/test#fileDistance1\".\"http://www.test.de/test#WRook\")";
 				//conceptStr = "ALL http://www.test.de/test#hasPiece.(EXISTS http://www.test.de/test#fileDistanceLessThan6.((NOT http://www.test.de/test#WKing) AND ALL http://www.test.de/test#rankDistance1.(http://www.test.de/test#WKing AND ALL http://www.test.de/test#fileDistanceLessThan2.http://www.test.de/test#WKing AND ALL http://www.test.de/test#hasLowerFileThan.http://www.test.de/test#WKing)) AND ALL http://www.test.de/test#fileDistance1.http://www.test.de/test#WRook)";
 				//conceptStr = "ALL hasPiece.(EXISTS fileDistanceLessThan6.((NOT WKing) AND ALL rankDistance1.(WKing AND ALL fileDistanceLessThan2.WKing AND ALL hasLowerFileThan.WKing)) AND ALL fileDistance1.WRook)";
+				conceptStr = "ALL \"http://www.test.de/test#hasPiece\".\"http://www.test.de/test#WKing\"";
 				OntologyCloser oc = new OntologyCloser(kb);
 				oc.applyNumberRestrictions();
 				oc.verifyConcept(conceptStr);
@@ -486,7 +505,7 @@ public class KRK {
 				collect2.append("-\"" + individuals + "\"\n");
 			}
 
-			writeToFile("examples/krk/examples_for_" + keys + ".txt", collect1
+			writeToFile(workingDir+"/examples_for_" + keys + ".txt", collect1
 					+ "\n\n" + collect2 + "\n");
 			collect1 = new StringBuffer();
 			collect2 = new StringBuffer();
@@ -513,10 +532,30 @@ public class KRK {
 			}
 
 		}
-		writeToFile("examples/krk/examples_for_ZERO_and_Rest.txt", collect1
+		writeToFile(workingDir+"/examples_for_ZERO_and_Rest.txt", collect1
 				+ "\n\n" + collect2 + "\n");
 		System.out.println("Example sets written");
 	}
+	
+
+	protected static void writeConciseOWLAllDifferent() {
+		StringBuffer collect = new StringBuffer();
+		System.out.println("start writing OWLAllDifferent");
+		collect.append("<owl:AllDifferent>\n" +
+				"<owl:distinctMembers rdf:parseType=\"Collection\">\n");
+		
+		for (String inst : allInstances) {
+			collect.append("<owl:Thing rdf:about=\"" + inst + "\" />\n");	
+		}
+		collect.append("</owl:distinctMembers>"+
+ 			"</owl:AllDifferent>");
+		
+		writeToFile(workingDir+"/owlAllDifferent.txt", collect.toString());
+	   
+	}
+
+	
+	
 
 	protected static void writeOWLFile(String filename) {
 
@@ -531,7 +570,7 @@ public class KRK {
 		System.out.println(collect + "};");
 
 		System.out.println("Writing owl");
-		File owlfile = new File("examples/krk/" + filename);
+		File owlfile = new File(workingDir+"/" + filename);
 		// System.out.println(kb.toString("http://www.test.de/test", new
 		// HashMap<String, String>()));
 		OWLAPIReasoner.exportKBToOWL(owlfile, kb, ontologyURI);
