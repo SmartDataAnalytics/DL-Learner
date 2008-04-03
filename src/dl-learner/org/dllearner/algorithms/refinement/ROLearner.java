@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -160,6 +161,9 @@ public class ROLearner extends LearningAlgorithm {
 	private long improperConceptsRemovalTimeNs = 0;
 	long someTimeNs = 0;
 	int someCount = 0;
+	
+	// prefixes
+	private String baseURI;
 
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
@@ -167,12 +171,14 @@ public class ROLearner extends LearningAlgorithm {
 		this.learningProblem = learningProblem;
 		this.rs = rs;
 		posOnly=false;
+		baseURI = rs.getBaseURI();
 	}
 	
 	public ROLearner(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
 		this.posOnlyLearningProblem = learningProblem;
 		this.rs = rs;
 		posOnly=true;
+		baseURI = rs.getBaseURI();
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
@@ -325,10 +331,6 @@ public class ROLearner extends LearningAlgorithm {
 	
 	public static String getName() {
 		return "refinement operator based learning algorithm";
-	}
-	
-	public static String getUsage() {
-		return "algorithm = refinement;";
 	}
 	
 	private int coveredNegativesOrTooWeak(Description concept) {
@@ -508,14 +510,14 @@ public class ROLearner extends LearningAlgorithm {
 		// }
 		
 		if(solutionFound) {
-			System.out.println();
-			System.out.println("solutions:");
+			logger.info("\nsolutions:");
 			for(Description c : solutions) {
-				System.out.println("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
+				logger.info("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
+				logger.info("  MANCHESTER: " + c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()) );
 			}
 		}
-		System.out.println("horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion);
-		System.out.println("size of candidate set: " + candidates.size());
+		logger.info("  horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion);
+		logger.info("  size of candidate set: " + candidates.size());
 		printStatistics(true);
 		
 		if(stop)
