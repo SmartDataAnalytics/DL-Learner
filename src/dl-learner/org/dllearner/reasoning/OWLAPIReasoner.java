@@ -42,37 +42,20 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.owl.AssertionalAxiom;
-import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.EquivalentClassesAxiom;
-import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.InverseObjectPropertyAxiom;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.PropertyAxiom;
-import org.dllearner.core.owl.SubClassAxiom;
-import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SubsumptionHierarchy;
-import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
-import org.dllearner.core.owl.TerminologicalAxiom;
 import org.dllearner.core.owl.Thing;
-import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.core.owl.TypedConstant;
-import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.utilities.ConceptComparator;
@@ -80,8 +63,6 @@ import org.dllearner.utilities.RoleComparator;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -93,7 +74,6 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLNamedObject;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyFormat;
 import org.semanticweb.owl.model.OWLOntologyManager;
@@ -476,7 +456,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private TreeSet<Description> getMoreGeneralConcepts(Description concept) {
 		Set<Set<OWLClass>> classes = null;
 		try {
-			classes = reasoner.getSuperClasses(getOWLAPIDescription(concept));
+			classes = reasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLDescription(concept));
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 			throw new Error("OWL API classification error.");
@@ -487,7 +467,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private TreeSet<Description> getMoreSpecialConcepts(Description concept) {
 		Set<Set<OWLClass>> classes = null;
 		try {
-			classes = reasoner.getSubClasses(getOWLAPIDescription(concept));
+			classes = reasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLDescription(concept));
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 			throw new Error("OWL API classification error.");
@@ -541,7 +521,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	@Override
 	public boolean instanceCheck(Description concept, Individual individual) {
-		OWLDescription d = getOWLAPIDescription(concept);
+		OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
 		OWLIndividual i = factory.getOWLIndividual(URI.create(individual.getName()));
 		try {
 			return reasoner.hasType(i,d,false);
@@ -837,138 +817,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	private static OWLDataProperty getOWLAPIDescription(DatatypeProperty datatypeProperty) {
 		return staticFactory.getOWLDataProperty(URI.create(datatypeProperty.getName()));
-	}	
-	
-	@Deprecated
-	public static OWLDescription getOWLAPIDescription(Description concept) {
-		if (concept instanceof NamedClass) {
-			return staticFactory.getOWLClass(URI.create(((NamedClass)concept).getName()));
-		} else if (concept instanceof Nothing) {
-			return staticFactory.getOWLNothing();
-		} else if (concept instanceof Thing) {
-			return staticFactory.getOWLThing();
-		} else if (concept instanceof Negation) {
-			return staticFactory.getOWLObjectComplementOf(
-					getOWLAPIDescription(concept.getChild(0)));
-		} else if (concept instanceof ObjectAllRestriction) {
-			OWLObjectProperty role = staticFactory.getOWLObjectProperty(
-					URI.create(((ObjectAllRestriction) concept).getRole().getName()));
-			OWLDescription d = getOWLAPIDescription(concept.getChild(0));
-			return staticFactory.getOWLObjectAllRestriction(role, d);
-		} else if(concept instanceof ObjectSomeRestriction) {
-			OWLObjectProperty role = staticFactory.getOWLObjectProperty(
-					URI.create(((ObjectSomeRestriction) concept).getRole().getName()));
-			OWLDescription d = getOWLAPIDescription(concept.getChild(0));
-			return staticFactory.getOWLObjectSomeRestriction(role, d);
-		} else if(concept instanceof Intersection) {
-			Set<OWLDescription> descriptions = new HashSet<OWLDescription>();
-			for(Description child : concept.getChildren())
-				descriptions.add(getOWLAPIDescription(child));
-			return staticFactory.getOWLObjectIntersectionOf(descriptions);
-		} else if(concept instanceof Union) {
-			Set<OWLDescription> descriptions = new HashSet<OWLDescription>();
-			for(Description child : concept.getChildren())
-				descriptions.add(getOWLAPIDescription(child));
-			return staticFactory.getOWLObjectUnionOf(descriptions);			
-		}
-			
-		throw new IllegalArgumentException("Unsupported concept type.");
-	}	
-	
-	@Deprecated
-	public static void fillOWLAPIOntology(OWLOntologyManager manager, OWLOntology ontology, KB kb) {
-
-		// OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory factory = manager.getOWLDataFactory();
-		// OWLOntology ontology = manager.createOntology(ontologyURI);
-		try {	
-			for (AssertionalAxiom axiom : kb.getAbox()) {
-				if (axiom instanceof ClassAssertionAxiom) {
-					OWLDescription d = getOWLAPIDescription(((ClassAssertionAxiom) axiom)
-							.getConcept());
-					OWLIndividual i = factory.getOWLIndividual(URI.create(
-							((ClassAssertionAxiom) axiom).getIndividual().getName()));
-					OWLAxiom axiomOWLAPI = factory.getOWLClassAssertionAxiom(i, d);
-					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
-
-						manager.applyChange(addAxiom);
-
-				} else if (axiom instanceof ObjectPropertyAssertion) {
-					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((ObjectPropertyAssertion) axiom).getRole().getName()));
-					OWLIndividual i1 = factory.getOWLIndividual(
-							URI.create(((ObjectPropertyAssertion) axiom).getIndividual1().getName()));
-					OWLIndividual i2 = factory.getOWLIndividual(
-							URI.create(((ObjectPropertyAssertion) axiom).getIndividual2().getName()));
-					OWLAxiom axiomOWLAPI = factory.getOWLObjectPropertyAssertionAxiom(i1, role, i2);
-					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
-					manager.applyChange(addAxiom);
-				}
-			}
-
-			for (PropertyAxiom axiom : kb.getRbox()) {
-				if (axiom instanceof FunctionalObjectPropertyAxiom) {
-					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((FunctionalObjectPropertyAxiom) axiom).getRole().getName()));
-					OWLAxiom axiomOWLAPI = factory.getOWLFunctionalObjectPropertyAxiom(role);
-					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
-					manager.applyChange(addAxiom);
-				} else if (axiom instanceof SymmetricObjectPropertyAxiom) {
-					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((SymmetricObjectPropertyAxiom) axiom).getRole().getName()));
-					OWLAxiom axiomOWLAPI = factory.getOWLSymmetricObjectPropertyAxiom(role);
-					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
-					manager.applyChange(addAxiom);					
-				} else if (axiom instanceof TransitiveObjectPropertyAxiom) {
-					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((TransitiveObjectPropertyAxiom) axiom).getRole().getName()));
-					OWLAxiom axiomOWLAPI = factory.getOWLTransitiveObjectPropertyAxiom(role);
-					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
-					manager.applyChange(addAxiom);					
-				} else if (axiom instanceof InverseObjectPropertyAxiom) {
-					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((InverseObjectPropertyAxiom) axiom).getRole().getName()));
-					OWLObjectProperty inverseRole = factory.getOWLObjectProperty(
-							URI.create(((InverseObjectPropertyAxiom) axiom).getInverseRole().getName()));
-					OWLAxiom axiomOWLAPI = factory.getOWLInverseObjectPropertiesAxiom(role, inverseRole);
-					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
-					manager.applyChange(addAxiom);
-				} else if (axiom instanceof SubObjectPropertyAxiom) {
-					OWLObjectProperty role = factory.getOWLObjectProperty(
-							URI.create(((SubObjectPropertyAxiom) axiom).getRole().getName()));
-					OWLObjectProperty subRole = factory.getOWLObjectProperty(
-							URI.create(((SubObjectPropertyAxiom) axiom).getSubRole().getName()));
-					OWLAxiom axiomOWLAPI = factory.getOWLSubObjectPropertyAxiom(subRole, role);
-					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
-					manager.applyChange(addAxiom);
-				}
-			}
-
-			for (TerminologicalAxiom axiom : kb.getTbox()) {
-				if (axiom instanceof EquivalentClassesAxiom) {
-					OWLDescription d1 = getOWLAPIDescription(((EquivalentClassesAxiom) axiom).getConcept1());
-					OWLDescription d2 = getOWLAPIDescription(((EquivalentClassesAxiom) axiom).getConcept2());
-					Set<OWLDescription> ds = new HashSet<OWLDescription>();
-					ds.add(d1);
-					ds.add(d2);
-					OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
-					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
-					manager.applyChange(addAxiom);					
-				} else if (axiom instanceof SubClassAxiom) {
-					OWLDescription subConcept = getOWLAPIDescription(((SubClassAxiom) axiom)
-							.getSubConcept());
-					OWLDescription superConcept = getOWLAPIDescription(((SubClassAxiom) axiom)
-							.getSuperConcept());
-					OWLAxiom axiomOWLAPI = factory.getOWLSubClassAxiom(subConcept, superConcept);
-					AddAxiom addAxiom = new AddAxiom(ontology, axiomOWLAPI);
-					manager.applyChange(addAxiom);
-				}
-			}
-		} catch (OWLOntologyChangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}			
-	}	
+	}
 	
 	/**
 	 * Test 
@@ -976,8 +825,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		 // System.out.println(System.getProperty("java.library.path"));
-		
 		String uri = "http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl";
 		
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
