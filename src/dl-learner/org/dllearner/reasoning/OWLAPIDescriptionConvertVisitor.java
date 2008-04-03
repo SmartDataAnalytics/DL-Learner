@@ -184,8 +184,14 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectMinCardinalityRestriction)
 	 */
 	public void visit(ObjectMinCardinalityRestriction description) {
-		// TODO Auto-generated method stub
-		throw new Error("OWLAPIDescriptionConverter: not implemented");
+		// TODO Taken from ObjectSomeRestriction above, hope its correct
+		//throw new Error("OWLAPIDescriptionConverter: not implemented");
+		OWLObjectProperty role = factory.getOWLObjectProperty(
+				URI.create(description.getRole().getName()));
+		description.getChild(0).accept(this);
+		OWLDescription d = stack.pop();
+		int minmax = description.getCardinality();
+		stack.push(factory.getOWLObjectMinCardinalityRestriction(role, minmax, d));
 	}
 
 	/* (non-Javadoc)
@@ -207,8 +213,14 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectMaxCardinalityRestriction)
 	 */
 	public void visit(ObjectMaxCardinalityRestriction description) {
-		// TODO Auto-generated method stub
-		throw new Error("OWLAPIDescriptionConverter: not implemented");
+		// TODO Taken from ObjectSomeRestriction above, hope its correct
+		//throw new Error("OWLAPIDescriptionConverter: not implemented");
+		OWLObjectProperty role = factory.getOWLObjectProperty(
+				URI.create(description.getRole().getName()));
+		description.getChild(0).accept(this);
+		OWLDescription d = stack.pop();
+		int minmax = description.getCardinality();
+		stack.push(factory.getOWLObjectMaxCardinalityRestriction(role, minmax, d));
 	}
 
 	/* (non-Javadoc)
