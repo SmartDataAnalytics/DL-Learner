@@ -40,7 +40,7 @@ public class ObjectAllRestriction extends ObjectQuantorRestriction {
       
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-	    return restrictedPropertyExpression.toString(baseURI, prefixes) + " some " + children.get(0).toManchesterSyntaxString(baseURI, prefixes);
+	    return restrictedPropertyExpression.toString(baseURI, prefixes) + " only " + children.get(0).toManchesterSyntaxString(baseURI, prefixes);
 	}	   
     
 	/* (non-Javadoc)
