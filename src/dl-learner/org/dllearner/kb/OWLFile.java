@@ -100,6 +100,9 @@ public class OWLFile extends KnowledgeSource {
 	public URL getURL() {
 		return url;
 	}
+	public void setURL(URL url) {
+		this.url = url;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.KnowledgeSource#export(java.io.File, org.dllearner.core.OntologyFormat)
