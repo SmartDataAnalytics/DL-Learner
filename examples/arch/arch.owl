@@ -12,8 +12,8 @@
 ]>
 
 
-<rdf:RDF xmlns="http://example.com#"
-     xml:base="http://example.com"
+<rdf:RDF xmlns="http://localhost/foo#"
+     xml:base="http://localhost/foo"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:owl11="http://www.w3.org/2006/12/owl11#"
      xmlns:owl11xml="http://www.w3.org/2006/12/owl11-xml#"
