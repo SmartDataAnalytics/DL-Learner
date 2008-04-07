@@ -69,7 +69,7 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 	private JButton addButton = new JButton("add");
 	private JButton removeButton = new JButton("remove");
 	private JButton clearButton = new JButton("clear");
-	private JTextField stringField = new JTextField(25);
+	private JTextField stringField = new JTextField(30);
 
 	private Component component;
 	private Component oldComponent;
@@ -198,7 +198,7 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 					stringList.setLayoutOrientation(JList.VERTICAL);
 					stringList.setVisibleRowCount(-1);
 					JScrollPane stringListScroller = new JScrollPane(stringList);
-					stringListScroller.setPreferredSize(new Dimension(280, 100));
+					stringListScroller.setPreferredSize(new Dimension(380, 100));
 					buildConstraints(constraints, 0, 2, 1, 2, 100, 100);
 					gridbag.setConstraints(stringListScroller, constraints);
 					widgetPanel.add(stringListScroller, constraints);
