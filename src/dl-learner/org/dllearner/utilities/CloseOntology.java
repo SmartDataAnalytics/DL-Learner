@@ -9,61 +9,56 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
+/**
+ * Script for closing an ontology OWLAPI produces extensive filesizes, when
+ * exporting output file ist named like input file, but recieves a
+ * "_closedConcise" at the end.
+ * 
+ * Counts all roles of individuals and adds an Intersection (Concise) of
+ * ExactCardinalityRestriction to the ABox
+ * 
+ */
 public class CloseOntology {
 
 	/**
-	 * @param args
+	 * @param argument0
+	 *            simply the path to the owl ontology "examples/test.owl"
 	 */
 	public static void main(String[] args) {
-		String ontopath="examples/krkworking/test.owl";
-		ontopath = args[0];
+		// String ontopath="examples/krkworking/test.owl";
+		// inputURI
+		String ontopath = args[0];
 		File file = new File(ontopath);
-		
-		//System.out.println(file.getAbsolutePath());
-		System.out.println(file.toURI());
-		
-		
-		try{
 		URI inputURI = file.toURI();
-		URI outputURI;
-		OWLFile owlFile=new OWLFile();
-		owlFile.setURL(inputURI.toURL());
-		
-		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
-		ks.add(owlFile);
-		OWLAPIReasoner owlapireasoner = new OWLAPIReasoner(ks);
-		owlapireasoner.init();
-		OntologyCloserOWLAPI oc= new OntologyCloserOWLAPI(owlapireasoner);
-		oc.testForTransitiveProperties(true);
-		String ending = ontopath.substring(ontopath.lastIndexOf(".") + 1);
-		/*ontopath=ontopath.replace("."+ending, "_test."+ending);
-		file=new File(ontopath);
-		URI outputURI = file.toURI();
-		oc.writeOWLFile(outputURI);*/
-		System.out.println("Attempting to close");
-		oc.applyNumberRestrictionsConcise();
-		System.out.println("Finished, preparing output");
-		//String ending = ontopath.substring(ontopath.lastIndexOf(".") + 1);
-		ontopath=ontopath.replace("."+ending, "_closedConcise."+ending);
-		file=new File(ontopath);
-		outputURI = file.toURI();
-		oc.writeOWLFile(outputURI);
-		
-		//ontopath=ontopath.replace("_closed."+ending, "_ClosedConcise."+ending);
-		//file=new File(ontopath);
-		//outputURI = file.toURI();
-		//oc.writeOWLFile(outputURI);
-		
-		
-		//System.out.println(ontopath);
-		
-		/*manager.saveOntology(ontology, new OWLXMLOntologyFormat(),
-						physicalURI2);
 
-		manager.removeOntology(ontology.getURI());
-		*/
-		
-		}catch (Exception e) {e.printStackTrace();}
+		// outputURI
+		String ending = ontopath.substring(ontopath.lastIndexOf(".") + 1);
+		ontopath = ontopath.replace("." + ending, "_closedConcise." + ending);
+		file = new File(ontopath);
+		URI outputURI = file.toURI();
+
+		try {
+			// initializing reasoner
+			OWLFile owlFile = new OWLFile();
+			owlFile.setURL(inputURI.toURL());
+			Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
+			ks.add(owlFile);
+			OWLAPIReasoner owlapireasoner = new OWLAPIReasoner(ks);
+			owlapireasoner.init();
+
+			// close
+			OntologyCloserOWLAPI oc = new OntologyCloserOWLAPI(owlapireasoner);
+			oc.testForTransitiveProperties(true);
+			System.out.println("Attempting to close");
+			oc.applyNumberRestrictionsConcise();
+			System.out.println("Finished, preparing output");
+
+			// save
+			oc.writeOWLFile(outputURI);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
