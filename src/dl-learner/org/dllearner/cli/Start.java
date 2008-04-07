@@ -711,7 +711,7 @@ public class Start {
 						Set<Individual> result = null;
 						result = rs.retrieval(concept);
 
-						System.out.println("retrieval result: " + result);
+						System.out.println("retrieval result ("+result.size()+"): " + result);
 
 						Score score = lp.computeScore(concept);
 						System.out.println(score);

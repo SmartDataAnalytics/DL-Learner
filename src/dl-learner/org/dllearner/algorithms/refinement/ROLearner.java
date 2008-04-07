@@ -512,12 +512,13 @@ public class ROLearner extends LearningAlgorithm {
 		if(solutionFound) {
 			logger.info("\nsolutions:");
 			for(Description c : solutions) {
-				logger.info("  " + c + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
+				logger.info("  " + c.toString(baseURI,null) + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
 				//TODO remove this line maybe
 				// watch for String.replace Quick hack
 				logger.info("  MANCHESTER: " + 
 						c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()).
 						replace("\"", ""));
+				logger.info("  KBSyntax: " + c.toKBSyntaxString());
 			}
 		}
 		logger.info("  horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion);

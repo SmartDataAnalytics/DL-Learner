@@ -190,6 +190,11 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 		return toString(null, null);
 	}
 	
+	
+	public String toKBSyntaxString() {
+		return toKBSyntaxString(null, null);
+	}
+	
 	/**
 	 * Returns a manchester syntax string of this description. For a
 	 * reference, see 
