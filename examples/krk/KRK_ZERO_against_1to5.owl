@@ -214,7 +214,6 @@
     <!-- http://www.test.de/test#hasLowerFileThan -->
 
     <owl:ObjectProperty rdf:about="#hasLowerFileThan">
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
         <rdfs:range rdf:resource="#Piece"/>
         <rdfs:domain rdf:resource="#Piece"/>
     </owl:ObjectProperty>
@@ -224,7 +223,6 @@
     <!-- http://www.test.de/test#hasLowerRankThan -->
 
     <owl:ObjectProperty rdf:about="#hasLowerRankThan">
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
         <rdfs:range rdf:resource="#Piece"/>
         <rdfs:domain rdf:resource="#Piece"/>
     </owl:ObjectProperty>
@@ -2714,8 +2712,8 @@
     <BKing rdf:about="#bking_a1_57">
         <hasLowerRankThan rdf:resource="#wking_c2_57"/>
         <hasLowerRankThan rdf:resource="#wrook_e5_57"/>
-        <hasLowerFileThan rdf:resource="#wking_c2_57"/>
         <hasLowerFileThan rdf:resource="#wrook_e5_57"/>
+        <hasLowerFileThan rdf:resource="#wking_c2_57"/>
     </BKing>
     
 
@@ -6976,8 +6974,8 @@
     <!-- http://www.test.de/test#bking_b1_686 -->
 
     <BKing rdf:about="#bking_b1_686">
-        <hasLowerFileThan rdf:resource="#wking_d1_686"/>
         <hasLowerFileThan rdf:resource="#wrook_c3_686"/>
+        <hasLowerFileThan rdf:resource="#wking_d1_686"/>
         <hasLowerRankThan rdf:resource="#wrook_c3_686"/>
     </BKing>
     
@@ -7479,8 +7477,8 @@
     <BKing rdf:about="#bking_b1_935">
         <hasLowerRankThan rdf:resource="#wking_d3_935"/>
         <hasLowerRankThan rdf:resource="#wrook_c3_935"/>
-        <hasLowerFileThan rdf:resource="#wking_d3_935"/>
         <hasLowerFileThan rdf:resource="#wrook_c3_935"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_935"/>
     </BKing>
     
 
@@ -7685,8 +7683,8 @@
     <!-- http://www.test.de/test#bking_b2_405 -->
 
     <BKing rdf:about="#bking_b2_405">
-        <hasLowerFileThan rdf:resource="#wrook_e3_405"/>
         <hasLowerFileThan rdf:resource="#wking_d2_405"/>
+        <hasLowerFileThan rdf:resource="#wrook_e3_405"/>
         <hasLowerRankThan rdf:resource="#wrook_e3_405"/>
     </BKing>
     
@@ -8389,8 +8387,8 @@
 
     <BKing rdf:about="#bking_c1_1018">
         <hasLowerRankThan rdf:resource="#wking_d3_1018"/>
-        <hasLowerFileThan rdf:resource="#wking_d3_1018"/>
         <hasLowerRankThan rdf:resource="#wrook_f6_1018"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_1018"/>
         <hasLowerFileThan rdf:resource="#wrook_f6_1018"/>
     </BKing>
     
@@ -8421,8 +8419,8 @@
     <!-- http://www.test.de/test#bking_c1_1035 -->
 
     <BKing rdf:about="#bking_c1_1035">
-        <hasLowerFileThan rdf:resource="#wking_d3_1035"/>
         <hasLowerRankThan rdf:resource="#wking_d3_1035"/>
+        <hasLowerFileThan rdf:resource="#wking_d3_1035"/>
         <hasLowerFileThan rdf:resource="#wrook_g4_1035"/>
         <hasLowerRankThan rdf:resource="#wrook_g4_1035"/>
     </BKing>
@@ -8935,8 +8933,8 @@
 
     <BKing rdf:about="#bking_c1_287">
         <hasLowerRankThan rdf:resource="#wrook_g7_287"/>
-        <hasLowerRankThan rdf:resource="#wking_c3_287"/>
         <hasLowerFileThan rdf:resource="#wrook_g7_287"/>
+        <hasLowerRankThan rdf:resource="#wking_c3_287"/>
     </BKing>
     
 
@@ -12081,8 +12079,8 @@
 
     <Game rdf:about="#game1044">
         <rdf:type rdf:resource="#FIVE"/>
-        <hasPiece rdf:resource="#wrook_g6_1044"/>
         <hasPiece rdf:resource="#bking_c1_1044"/>
+        <hasPiece rdf:resource="#wrook_g6_1044"/>
         <hasPiece rdf:resource="#wking_d3_1044"/>
     </Game>
     
@@ -13402,8 +13400,8 @@
     <TWO rdf:about="#game161">
         <rdf:type rdf:resource="#Game"/>
         <hasPiece rdf:resource="#wrook_d2_161"/>
-        <hasPiece rdf:resource="#wking_c2_161"/>
         <hasPiece rdf:resource="#bking_a2_161"/>
+        <hasPiece rdf:resource="#wking_c2_161"/>
     </TWO>
     
 
@@ -14402,8 +14400,8 @@
 
     <TWO rdf:about="#game243">
         <rdf:type rdf:resource="#Game"/>
-        <hasPiece rdf:resource="#bking_a1_243"/>
         <hasPiece rdf:resource="#wking_c3_243"/>
+        <hasPiece rdf:resource="#bking_a1_243"/>
         <hasPiece rdf:resource="#wrook_e4_243"/>
     </TWO>
     
@@ -15822,8 +15820,8 @@
     <ONE rdf:about="#game36">
         <rdf:type rdf:resource="#Game"/>
         <hasPiece rdf:resource="#wrook_b5_36"/>
-        <hasPiece rdf:resource="#bking_a1_36"/>
         <hasPiece rdf:resource="#wking_c2_36"/>
+        <hasPiece rdf:resource="#bking_a1_36"/>
     </ONE>
     
 
@@ -16017,12 +16015,12 @@
 
     <!-- http://www.test.de/test#game376 -->
 
-    <THREE rdf:about="#game376">
-        <rdf:type rdf:resource="#Game"/>
+    <Game rdf:about="#game376">
+        <rdf:type rdf:resource="#THREE"/>
         <hasPiece rdf:resource="#wking_c3_376"/>
         <hasPiece rdf:resource="#wrook_f3_376"/>
         <hasPiece rdf:resource="#bking_a1_376"/>
-    </THREE>
+    </Game>
     
 
 
@@ -16207,8 +16205,8 @@
     <THREE rdf:about="#game391">
         <rdf:type rdf:resource="#Game"/>
         <hasPiece rdf:resource="#bking_b1_391"/>
-        <hasPiece rdf:resource="#wking_d1_391"/>
         <hasPiece rdf:resource="#wrook_h2_391"/>
+        <hasPiece rdf:resource="#wking_d1_391"/>
     </THREE>
     
 
@@ -16721,12 +16719,12 @@
 
     <!-- http://www.test.de/test#game433 -->
 
-    <Game rdf:about="#game433">
-        <rdf:type rdf:resource="#FOUR"/>
+    <FOUR rdf:about="#game433">
+        <rdf:type rdf:resource="#Game"/>
         <hasPiece rdf:resource="#bking_a2_433"/>
         <hasPiece rdf:resource="#wrook_b5_433"/>
         <hasPiece rdf:resource="#wking_c2_433"/>
-    </Game>
+    </FOUR>
     
 
 
@@ -17494,8 +17492,8 @@
     <FOUR rdf:about="#game497">
         <rdf:type rdf:resource="#Game"/>
         <hasPiece rdf:resource="#wrook_e1_497"/>
-        <hasPiece rdf:resource="#wking_d2_497"/>
         <hasPiece rdf:resource="#bking_b1_497"/>
+        <hasPiece rdf:resource="#wking_d2_497"/>
     </FOUR>
     
 
@@ -19683,8 +19681,8 @@
     <FIVE rdf:about="#game676">
         <rdf:type rdf:resource="#Game"/>
         <hasPiece rdf:resource="#bking_g1_676"/>
-        <hasPiece rdf:resource="#wrook_b2_676"/>
         <hasPiece rdf:resource="#wking_d1_676"/>
+        <hasPiece rdf:resource="#wrook_b2_676"/>
     </FIVE>
     
 
@@ -19735,12 +19733,12 @@
 
     <!-- http://www.test.de/test#game680 -->
 
-    <FIVE rdf:about="#game680">
-        <rdf:type rdf:resource="#Game"/>
+    <Game rdf:about="#game680">
+        <rdf:type rdf:resource="#FIVE"/>
         <hasPiece rdf:resource="#wrook_b5_680"/>
         <hasPiece rdf:resource="#bking_a1_680"/>
         <hasPiece rdf:resource="#wking_d1_680"/>
-    </FIVE>
+    </Game>
     
 
 
@@ -21343,8 +21341,8 @@
 
     <FIVE rdf:about="#game811">
         <rdf:type rdf:resource="#Game"/>
-        <hasPiece rdf:resource="#wking_d2_811"/>
         <hasPiece rdf:resource="#bking_a2_811"/>
+        <hasPiece rdf:resource="#wking_d2_811"/>
         <hasPiece rdf:resource="#wrook_d7_811"/>
     </FIVE>
     
@@ -22334,8 +22332,8 @@
     <Game rdf:about="#game893">
         <rdf:type rdf:resource="#FIVE"/>
         <hasPiece rdf:resource="#wrook_a3_893"/>
-        <hasPiece rdf:resource="#wking_d3_893"/>
         <hasPiece rdf:resource="#bking_c1_893"/>
+        <hasPiece rdf:resource="#wking_d3_893"/>
     </Game>
     
 
@@ -22851,8 +22849,8 @@
     <FIVE rdf:about="#game935">
         <rdf:type rdf:resource="#Game"/>
         <hasPiece rdf:resource="#bking_b1_935"/>
-        <hasPiece rdf:resource="#wking_d3_935"/>
         <hasPiece rdf:resource="#wrook_c3_935"/>
+        <hasPiece rdf:resource="#wking_d3_935"/>
     </FIVE>
     
 
@@ -24297,8 +24295,8 @@
     <WKing rdf:about="#wking_c1_4">
         <rankDistance0 rdf:resource="#bking_a1_4"/>
         <hasLowerRankThan rdf:resource="#wrook_a6_4"/>
-        <fileDistance2 rdf:resource="#wrook_a6_4"/>
         <fileDistance2 rdf:resource="#bking_a1_4"/>
+        <fileDistance2 rdf:resource="#wrook_a6_4"/>
         <rankDistance5 rdf:resource="#wrook_a6_4"/>
     </WKing>
     
@@ -24820,8 +24818,8 @@
         <rankDistance1 rdf:resource="#bking_a1_16"/>
         <rankDistance6 rdf:resource="#wrook_a8_16"/>
         <fileDistance2 rdf:resource="#bking_a1_16"/>
-        <fileDistance2 rdf:resource="#wrook_a8_16"/>
         <hasLowerRankThan rdf:resource="#wrook_a8_16"/>
+        <fileDistance2 rdf:resource="#wrook_a8_16"/>
     </WKing>
     
 
@@ -24957,8 +24955,8 @@
     <WKing rdf:about="#wking_c2_17">
         <fileDistance2 rdf:resource="#wrook_a8_17"/>
         <hasLowerRankThan rdf:resource="#wrook_a8_17"/>
-        <fileDistance2 rdf:resource="#bking_a2_17"/>
         <rankDistance6 rdf:resource="#wrook_a8_17"/>
+        <fileDistance2 rdf:resource="#bking_a2_17"/>
         <rankDistance0 rdf:resource="#bking_a2_17"/>
     </WKing>
     
@@ -25297,8 +25295,8 @@
     <WKing rdf:about="#wking_c2_196">
         <hasLowerFileThan rdf:resource="#wrook_g7_196"/>
         <rankDistance0 rdf:resource="#bking_a2_196"/>
-        <fileDistance2 rdf:resource="#bking_a2_196"/>
         <hasLowerRankThan rdf:resource="#wrook_g7_196"/>
+        <fileDistance2 rdf:resource="#bking_a2_196"/>
         <fileDistance4 rdf:resource="#wrook_g7_196"/>
         <rankDistance5 rdf:resource="#wrook_g7_196"/>
     </WKing>
@@ -25762,8 +25760,8 @@
 
     <WKing rdf:about="#wking_c2_58">
         <hasLowerFileThan rdf:resource="#wrook_e6_58"/>
-        <fileDistance2 rdf:resource="#bking_a1_58"/>
         <rankDistance1 rdf:resource="#bking_a1_58"/>
+        <fileDistance2 rdf:resource="#bking_a1_58"/>
         <fileDistance2 rdf:resource="#wrook_e6_58"/>
         <hasLowerRankThan rdf:resource="#wrook_e6_58"/>
         <rankDistance4 rdf:resource="#wrook_e6_58"/>
@@ -26200,8 +26198,8 @@
     <!-- http://www.test.de/test#wking_c3_20 -->
 
     <WKing rdf:about="#wking_c3_20">
-        <rankDistance2 rdf:resource="#wrook_f1_20"/>
         <fileDistance0 rdf:resource="#bking_c1_20"/>
+        <rankDistance2 rdf:resource="#wrook_f1_20"/>
         <hasLowerFileThan rdf:resource="#wrook_f1_20"/>
         <rankDistance2 rdf:resource="#bking_c1_20"/>
         <fileDistance3 rdf:resource="#wrook_f1_20"/>
@@ -26488,8 +26486,8 @@
 
     <WKing rdf:about="#wking_c3_229">
         <rankDistance2 rdf:resource="#bking_b1_229"/>
-        <hasLowerRankThan rdf:resource="#wrook_d4_229"/>
         <hasLowerFileThan rdf:resource="#wrook_d4_229"/>
+        <hasLowerRankThan rdf:resource="#wrook_d4_229"/>
         <rankDistance1 rdf:resource="#wrook_d4_229"/>
         <fileDistance1 rdf:resource="#bking_b1_229"/>
         <fileDistance1 rdf:resource="#wrook_d4_229"/>
@@ -26682,8 +26680,8 @@
         <fileDistance2 rdf:resource="#wrook_e4_244"/>
         <fileDistance1 rdf:resource="#bking_b1_244"/>
         <hasLowerFileThan rdf:resource="#wrook_e4_244"/>
-        <hasLowerRankThan rdf:resource="#wrook_e4_244"/>
         <rankDistance1 rdf:resource="#wrook_e4_244"/>
+        <hasLowerRankThan rdf:resource="#wrook_e4_244"/>
     </WKing>
     
 
@@ -26871,8 +26869,8 @@
     <WKing rdf:about="#wking_c3_259">
         <hasLowerRankThan rdf:resource="#wrook_f4_259"/>
         <hasLowerFileThan rdf:resource="#wrook_f4_259"/>
-        <fileDistance3 rdf:resource="#wrook_f4_259"/>
         <fileDistance2 rdf:resource="#bking_a1_259"/>
+        <fileDistance3 rdf:resource="#wrook_f4_259"/>
         <rankDistance1 rdf:resource="#wrook_f4_259"/>
         <rankDistance2 rdf:resource="#bking_a1_259"/>
     </WKing>
@@ -27207,8 +27205,8 @@
         <hasLowerFileThan rdf:resource="#wrook_g7_285"/>
         <hasLowerRankThan rdf:resource="#wrook_g7_285"/>
         <fileDistance2 rdf:resource="#bking_a1_285"/>
-        <rankDistance4 rdf:resource="#wrook_g7_285"/>
         <fileDistance4 rdf:resource="#wrook_g7_285"/>
+        <rankDistance4 rdf:resource="#wrook_g7_285"/>
     </WKing>
     
 
@@ -27407,8 +27405,8 @@
     <!-- http://www.test.de/test#wking_c3_301 -->
 
     <WKing rdf:about="#wking_c3_301">
-        <rankDistance2 rdf:resource="#bking_b1_301"/>
         <fileDistance5 rdf:resource="#wrook_h6_301"/>
+        <rankDistance2 rdf:resource="#bking_b1_301"/>
         <rankDistance3 rdf:resource="#wrook_h6_301"/>
         <hasLowerRankThan rdf:resource="#wrook_h6_301"/>
         <hasLowerFileThan rdf:resource="#wrook_h6_301"/>
@@ -28659,8 +28657,8 @@
 
     <WKing rdf:about="#wking_d1_460">
         <hasLowerFileThan rdf:resource="#wrook_f3_460"/>
-        <fileDistance2 rdf:resource="#wrook_f3_460"/>
         <hasLowerRankThan rdf:resource="#wrook_f3_460"/>
+        <fileDistance2 rdf:resource="#wrook_f3_460"/>
         <fileDistance2 rdf:resource="#bking_b2_460"/>
         <rankDistance1 rdf:resource="#bking_b2_460"/>
         <rankDistance2 rdf:resource="#wrook_f3_460"/>
@@ -28860,8 +28858,8 @@
         <hasLowerRankThan rdf:resource="#wrook_a3_674"/>
         <hasLowerFileThan rdf:resource="#bking_h1_674"/>
         <fileDistance3 rdf:resource="#wrook_a3_674"/>
-        <fileDistance4 rdf:resource="#bking_h1_674"/>
         <rankDistance0 rdf:resource="#bking_h1_674"/>
+        <fileDistance4 rdf:resource="#bking_h1_674"/>
         <rankDistance2 rdf:resource="#wrook_a3_674"/>
     </WKing>
     
@@ -29145,8 +29143,8 @@
 
     <WKing rdf:about="#wking_d1_696">
         <hasLowerRankThan rdf:resource="#bking_a3_696"/>
-        <fileDistance3 rdf:resource="#bking_a3_696"/>
         <rankDistance2 rdf:resource="#bking_a3_696"/>
+        <fileDistance3 rdf:resource="#bking_a3_696"/>
         <fileDistance0 rdf:resource="#wrook_d4_696"/>
         <hasLowerRankThan rdf:resource="#wrook_d4_696"/>
         <rankDistance3 rdf:resource="#wrook_d4_696"/>
@@ -29205,8 +29203,8 @@
     <!-- http://www.test.de/test#wking_d1_701 -->
 
     <WKing rdf:about="#wking_d1_701">
-        <hasLowerRankThan rdf:resource="#wrook_d6_701"/>
         <rankDistance0 rdf:resource="#bking_b1_701"/>
+        <hasLowerRankThan rdf:resource="#wrook_d6_701"/>
         <fileDistance2 rdf:resource="#bking_b1_701"/>
         <rankDistance5 rdf:resource="#wrook_d6_701"/>
         <fileDistance0 rdf:resource="#wrook_d6_701"/>
@@ -29334,8 +29332,8 @@
     <WKing rdf:about="#wking_d1_711">
         <hasLowerFileThan rdf:resource="#wrook_e4_711"/>
         <rankDistance3 rdf:resource="#wrook_e4_711"/>
-        <fileDistance1 rdf:resource="#wrook_e4_711"/>
         <fileDistance3 rdf:resource="#bking_a1_711"/>
+        <fileDistance1 rdf:resource="#wrook_e4_711"/>
         <rankDistance0 rdf:resource="#bking_a1_711"/>
         <hasLowerRankThan rdf:resource="#wrook_e4_711"/>
     </WKing>
@@ -29350,8 +29348,8 @@
         <hasLowerRankThan rdf:resource="#wrook_e4_712"/>
         <rankDistance3 rdf:resource="#wrook_e4_712"/>
         <fileDistance3 rdf:resource="#bking_a2_712"/>
-        <rankDistance1 rdf:resource="#bking_a2_712"/>
         <fileDistance1 rdf:resource="#wrook_e4_712"/>
+        <rankDistance1 rdf:resource="#bking_a2_712"/>
     </WKing>
     
 
@@ -29363,8 +29361,8 @@
         <fileDistance3 rdf:resource="#bking_a3_713"/>
         <hasLowerFileThan rdf:resource="#wrook_e4_713"/>
         <fileDistance1 rdf:resource="#wrook_e4_713"/>
-        <hasLowerRankThan rdf:resource="#wrook_e4_713"/>
         <rankDistance2 rdf:resource="#bking_a3_713"/>
+        <hasLowerRankThan rdf:resource="#wrook_e4_713"/>
         <hasLowerRankThan rdf:resource="#bking_a3_713"/>
     </WKing>
     
@@ -29783,8 +29781,8 @@
         <hasLowerRankThan rdf:resource="#bking_a3_745"/>
         <fileDistance3 rdf:resource="#wrook_g4_745"/>
         <rankDistance3 rdf:resource="#wrook_g4_745"/>
-        <hasLowerRankThan rdf:resource="#wrook_g4_745"/>
         <hasLowerFileThan rdf:resource="#wrook_g4_745"/>
+        <hasLowerRankThan rdf:resource="#wrook_g4_745"/>
         <rankDistance2 rdf:resource="#bking_a3_745"/>
         <fileDistance3 rdf:resource="#bking_a3_745"/>
     </WKing>
@@ -29877,8 +29875,8 @@
         <fileDistance2 rdf:resource="#bking_b1_752"/>
         <hasLowerRankThan rdf:resource="#wrook_g6_752"/>
         <rankDistance0 rdf:resource="#bking_b1_752"/>
-        <hasLowerFileThan rdf:resource="#wrook_g6_752"/>
         <rankDistance5 rdf:resource="#wrook_g6_752"/>
+        <hasLowerFileThan rdf:resource="#wrook_g6_752"/>
         <fileDistance3 rdf:resource="#wrook_g6_752"/>
     </WKing>
     
@@ -30483,8 +30481,8 @@
     <!-- http://www.test.de/test#wking_d2_483 -->
 
     <WKing rdf:about="#wking_d2_483">
-        <rankDistance1 rdf:resource="#wrook_d3_483"/>
         <fileDistance3 rdf:resource="#bking_a2_483"/>
+        <rankDistance1 rdf:resource="#wrook_d3_483"/>
         <hasLowerRankThan rdf:resource="#wrook_d3_483"/>
         <fileDistance0 rdf:resource="#wrook_d3_483"/>
         <rankDistance0 rdf:resource="#bking_a2_483"/>
@@ -30702,8 +30700,8 @@
 
     <WKing rdf:about="#wking_d2_501">
         <rankDistance0 rdf:resource="#wrook_e2_501"/>
-        <hasLowerFileThan rdf:resource="#wrook_e2_501"/>
         <fileDistance1 rdf:resource="#wrook_e2_501"/>
+        <hasLowerFileThan rdf:resource="#wrook_e2_501"/>
         <rankDistance1 rdf:resource="#bking_h1_501"/>
         <hasLowerFileThan rdf:resource="#bking_h1_501"/>
         <fileDistance4 rdf:resource="#bking_h1_501"/>
@@ -30922,8 +30920,8 @@
 
     <WKing rdf:about="#wking_d2_518">
         <fileDistance3 rdf:resource="#bking_a1_518"/>
-        <fileDistance2 rdf:resource="#wrook_f2_518"/>
         <rankDistance1 rdf:resource="#bking_a1_518"/>
+        <fileDistance2 rdf:resource="#wrook_f2_518"/>
         <hasLowerFileThan rdf:resource="#wrook_f2_518"/>
         <rankDistance0 rdf:resource="#wrook_f2_518"/>
     </WKing>
@@ -31473,8 +31471,8 @@
 
     <WKing rdf:about="#wking_d2_561">
         <fileDistance4 rdf:resource="#wrook_h4_561"/>
-        <hasLowerFileThan rdf:resource="#wrook_h4_561"/>
         <rankDistance1 rdf:resource="#bking_b1_561"/>
+        <hasLowerFileThan rdf:resource="#wrook_h4_561"/>
         <fileDistance2 rdf:resource="#bking_b1_561"/>
         <hasLowerRankThan rdf:resource="#wrook_h4_561"/>
         <rankDistance2 rdf:resource="#wrook_h4_561"/>
@@ -31679,8 +31677,8 @@
 
     <WKing rdf:about="#wking_d2_777">
         <rankDistance2 rdf:resource="#wrook_a4_777"/>
-        <hasLowerRankThan rdf:resource="#wrook_a4_777"/>
         <rankDistance0 rdf:resource="#bking_b2_777"/>
+        <hasLowerRankThan rdf:resource="#wrook_a4_777"/>
         <fileDistance3 rdf:resource="#wrook_a4_777"/>
         <fileDistance2 rdf:resource="#bking_b2_777"/>
     </WKing>
@@ -32702,8 +32700,8 @@
         <hasLowerRankThan rdf:resource="#wrook_g4_858"/>
         <fileDistance3 rdf:resource="#wrook_g4_858"/>
         <hasLowerFileThan rdf:resource="#wrook_g4_858"/>
-        <rankDistance1 rdf:resource="#bking_a3_858"/>
         <hasLowerRankThan rdf:resource="#bking_a3_858"/>
+        <rankDistance1 rdf:resource="#bking_a3_858"/>
         <rankDistance2 rdf:resource="#wrook_g4_858"/>
         <fileDistance3 rdf:resource="#bking_a3_858"/>
     </WKing>
@@ -32810,8 +32808,8 @@
         <fileDistance3 rdf:resource="#wrook_g6_866"/>
         <hasLowerFileThan rdf:resource="#wrook_g6_866"/>
         <hasLowerFileThan rdf:resource="#bking_h1_866"/>
-        <rankDistance4 rdf:resource="#wrook_g6_866"/>
         <fileDistance4 rdf:resource="#bking_h1_866"/>
+        <rankDistance4 rdf:resource="#wrook_g6_866"/>
         <rankDistance1 rdf:resource="#bking_h1_866"/>
     </WKing>
     
@@ -33873,8 +33871,8 @@
 
     <WKing rdf:about="#wking_d3_1053">
         <rankDistance5 rdf:resource="#wrook_g8_1053"/>
-        <hasLowerRankThan rdf:resource="#wrook_g8_1053"/>
         <fileDistance4 rdf:resource="#bking_h1_1053"/>
+        <hasLowerRankThan rdf:resource="#wrook_g8_1053"/>
         <hasLowerFileThan rdf:resource="#bking_h1_1053"/>
         <hasLowerFileThan rdf:resource="#wrook_g8_1053"/>
         <fileDistance3 rdf:resource="#wrook_g8_1053"/>
@@ -34018,8 +34016,8 @@
         <hasLowerRankThan rdf:resource="#wrook_h5_1064"/>
         <hasLowerFileThan rdf:resource="#wrook_h5_1064"/>
         <fileDistance3 rdf:resource="#bking_a1_1064"/>
-        <fileDistance4 rdf:resource="#wrook_h5_1064"/>
         <rankDistance2 rdf:resource="#wrook_h5_1064"/>
+        <fileDistance4 rdf:resource="#wrook_h5_1064"/>
         <rankDistance2 rdf:resource="#bking_a1_1064"/>
     </WKing>
     
@@ -34445,8 +34443,8 @@
 
     <WKing rdf:about="#wking_d3_329">
         <hasLowerRankThan rdf:resource="#wrook_d6_329"/>
-        <rankDistance2 rdf:resource="#bking_d1_329"/>
         <fileDistance0 rdf:resource="#wrook_d6_329"/>
+        <rankDistance2 rdf:resource="#bking_d1_329"/>
         <fileDistance0 rdf:resource="#bking_d1_329"/>
         <rankDistance3 rdf:resource="#wrook_d6_329"/>
     </WKing>
@@ -34562,8 +34560,8 @@
         <fileDistance0 rdf:resource="#bking_d1_338"/>
         <rankDistance2 rdf:resource="#wrook_f5_338"/>
         <fileDistance2 rdf:resource="#wrook_f5_338"/>
-        <hasLowerRankThan rdf:resource="#wrook_f5_338"/>
         <rankDistance2 rdf:resource="#bking_d1_338"/>
+        <hasLowerRankThan rdf:resource="#wrook_f5_338"/>
     </WKing>
     
 
@@ -34610,8 +34608,8 @@
     <!-- http://www.test.de/test#wking_d3_342 -->
 
     <WKing rdf:about="#wking_d3_342">
-        <hasLowerFileThan rdf:resource="#wrook_g4_342"/>
         <fileDistance3 rdf:resource="#wrook_g4_342"/>
+        <hasLowerFileThan rdf:resource="#wrook_g4_342"/>
         <rankDistance1 rdf:resource="#wrook_g4_342"/>
         <fileDistance0 rdf:resource="#bking_d1_342"/>
         <hasLowerRankThan rdf:resource="#wrook_g4_342"/>
@@ -34765,8 +34763,8 @@
     <WKing rdf:about="#wking_d3_411">
         <fileDistance2 rdf:resource="#wrook_b4_411"/>
         <rankDistance2 rdf:resource="#bking_b1_411"/>
-        <rankDistance1 rdf:resource="#wrook_b4_411"/>
         <fileDistance2 rdf:resource="#bking_b1_411"/>
+        <rankDistance1 rdf:resource="#wrook_b4_411"/>
         <hasLowerRankThan rdf:resource="#wrook_b4_411"/>
     </WKing>
     
@@ -34790,8 +34788,8 @@
         <fileDistance2 rdf:resource="#wrook_b5_413"/>
         <fileDistance2 rdf:resource="#bking_b1_413"/>
         <rankDistance2 rdf:resource="#wrook_b5_413"/>
-        <hasLowerRankThan rdf:resource="#wrook_b5_413"/>
         <rankDistance2 rdf:resource="#bking_b1_413"/>
+        <hasLowerRankThan rdf:resource="#wrook_b5_413"/>
     </WKing>
     
 
@@ -36986,8 +36984,8 @@
     <WKing rdf:about="#wking_d4_1077">
         <rankDistance3 rdf:resource="#bking_f1_1077"/>
         <rankDistance2 rdf:resource="#wrook_a2_1077"/>
-        <fileDistance3 rdf:resource="#wrook_a2_1077"/>
         <hasLowerFileThan rdf:resource="#bking_f1_1077"/>
+        <fileDistance3 rdf:resource="#wrook_a2_1077"/>
         <fileDistance2 rdf:resource="#bking_f1_1077"/>
     </WKing>
     
@@ -46411,8 +46409,8 @@
     <!-- http://www.test.de/test#wrook_g6_751 -->
 
     <WRook rdf:about="#wrook_g6_751">
-        <fileDistance6 rdf:resource="#bking_a1_751"/>
         <rankDistance5 rdf:resource="#bking_a1_751"/>
+        <fileDistance6 rdf:resource="#bking_a1_751"/>
     </WRook>
     
 
