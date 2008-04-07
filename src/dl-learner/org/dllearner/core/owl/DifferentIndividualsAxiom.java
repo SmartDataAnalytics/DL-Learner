@@ -48,6 +48,11 @@ public class DifferentIndividualsAxiom extends AssertionalAxiom {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		throw new Error("DifferentIndividualsAxiom: Not implemented");
+	}
 
 	public Set<Individual> getIndividuals() {
 		return individuals;

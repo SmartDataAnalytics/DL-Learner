@@ -60,6 +60,10 @@ public class Individual implements NamedKBElement, Comparable<Individual> {
     }	
 	
     public String toString(String baseURI, Map<String,String> prefixes) {
+    	return  Helper.getAbbreviatedString(name, baseURI, prefixes);
+    }
+    
+    public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
     	return "\"" + Helper.getAbbreviatedString(name, baseURI, prefixes) + "\"";
     }
     

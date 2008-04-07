@@ -28,6 +28,10 @@ public class SubClassAxiom extends TerminologicalAxiom {
 		return subConcept.toString(baseURI, prefixes) + " SUBCONCEPTOF " + superConcept.toString(baseURI, prefixes);
 	}
 	
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return subConcept.toKBSyntaxString(baseURI, prefixes) + " SUBCONCEPTOF " + superConcept.toKBSyntaxString(baseURI, prefixes);
+	}
+	
 	@Override
 	public void accept(AxiomVisitor visitor) {
 		visitor.visit(this);

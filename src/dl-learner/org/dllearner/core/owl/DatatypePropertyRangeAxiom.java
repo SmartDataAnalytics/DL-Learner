@@ -50,6 +50,11 @@ public class DatatypePropertyRangeAxiom extends PropertyRangeAxiom {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Axiom#accept(org.dllearner.core.owl.AxiomVisitor)

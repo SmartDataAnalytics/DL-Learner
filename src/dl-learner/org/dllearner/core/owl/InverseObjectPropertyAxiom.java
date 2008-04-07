@@ -26,6 +26,10 @@ public class InverseObjectPropertyAxiom extends PropertyAxiom {
 	
 	public String toString(String baseURI, Map<String,String> prefixes) {
 		return "Inverse(" + inverseRole + "," + role.toString(baseURI, prefixes) + ")";
+	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return "Inverse(" + inverseRole.toKBSyntaxString(baseURI, prefixes) + "," + role.toKBSyntaxString(baseURI, prefixes) + ")";
 	}	
 	
 	@Override

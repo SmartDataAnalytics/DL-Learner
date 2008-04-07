@@ -22,6 +22,10 @@ public class SymmetricObjectPropertyAxiom extends PropertyAxiom {
 		return "Symmetric(" + role.toString(baseURI, prefixes) + ")";
 	}
 	
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return "Symmetric(" + role.toKBSyntaxString(baseURI, prefixes) + ")";
+	}
+	
 	@Override
 	public void accept(AxiomVisitor visitor) {
 		visitor.visit(this);

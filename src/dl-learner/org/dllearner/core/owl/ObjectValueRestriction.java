@@ -71,6 +71,11 @@ public class ObjectValueRestriction extends ValueRestriction {
 		return null;
 	}	
 	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}	
+	
 	public Individual getIndividual() {
 		return (Individual) value;
 	}

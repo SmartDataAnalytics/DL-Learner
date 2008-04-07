@@ -37,6 +37,12 @@ public class ADC extends Description {
 	public String toString(String baseURI, Map<String,String> prefixes) {
 		return "ADC";
 	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return "ADC";
+	}
+	
+	
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString()

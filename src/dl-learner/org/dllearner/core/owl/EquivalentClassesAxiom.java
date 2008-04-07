@@ -27,6 +27,10 @@ public class EquivalentClassesAxiom extends TerminologicalAxiom {
 	public String toString(String baseURI, Map<String,String> prefixes) {
 		return concept1.toString(baseURI, prefixes) + " = " + concept2.toString(baseURI, prefixes);
 	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return concept1.toKBSyntaxString(baseURI, prefixes) + " = " + concept2.toKBSyntaxString(baseURI, prefixes);
+	}
 
 	@Override
 	public void accept(AxiomVisitor visitor) {

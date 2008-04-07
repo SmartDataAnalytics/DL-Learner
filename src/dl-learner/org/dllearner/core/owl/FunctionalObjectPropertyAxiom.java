@@ -18,8 +18,18 @@ public class FunctionalObjectPropertyAxiom extends PropertyAxiom {
 		return 1 + role.getLength();
 	}
 		
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
+	 */
 	public String toString(String baseURI, Map<String,String> prefixes) {
 		return "Functional(" + role.toString(baseURI, prefixes) + ")";
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toKBSyntaxString(java.lang.String, java.util.Map)
+	 */
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return "Functional(" + role.toKBSyntaxString(baseURI, prefixes) + ")";
 	}
 
 	@Override

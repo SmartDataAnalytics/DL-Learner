@@ -57,6 +57,10 @@ public class DoubleMinValue implements SimpleDoubleDataRange {
 		return " >= " + value;
 	}	
 	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return " >= " + value;
+	}	
+	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
 	}	

@@ -63,6 +63,13 @@ public class DatatypeSomeRestriction extends DatatypeQuantorRestriction {
 	public String toString(String baseURI, Map<String, String> prefixes) {
 		return restrictedPropertyExpression.toString(baseURI, prefixes) + dataRange.toString(baseURI, prefixes);
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toKBSyntaxString(java.lang.String, java.util.Map)
+	 */
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + dataRange.toKBSyntaxString(baseURI, prefixes);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)

@@ -55,6 +55,10 @@ public enum Datatype implements DataRange {
 		return uri.toString();
 	}
 	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return uri.toString();
+	}
+	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
 	}	

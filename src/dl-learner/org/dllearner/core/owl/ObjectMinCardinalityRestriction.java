@@ -17,6 +17,10 @@ public class ObjectMinCardinalityRestriction extends ObjectCardinalityRestrictio
 		return ">= " + number + " " + role.toString(baseURI, prefixes) + " " + getChild(0).toString(baseURI, prefixes);
 	}
 	
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return ">= " + number + " " + role.toKBSyntaxString(baseURI, prefixes) + " " + getChild(0).toKBSyntaxString(baseURI, prefixes);
+	}
+	
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
 		return role.toString(baseURI, prefixes) + " min " + number + " " + getChild(0).toManchesterSyntaxString(baseURI, prefixes);

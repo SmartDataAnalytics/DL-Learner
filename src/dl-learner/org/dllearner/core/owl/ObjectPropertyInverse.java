@@ -50,6 +50,10 @@ public class ObjectPropertyInverse extends ObjectPropertyExpression {
 		return Helper.getAbbreviatedString(name, baseURI, prefixes) + "-";
 	}
 	
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return Helper.getAbbreviatedString(name, baseURI, prefixes) + "-";
+	}
+	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
 	}	

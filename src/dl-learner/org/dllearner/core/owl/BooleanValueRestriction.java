@@ -19,6 +19,7 @@
  */
 package org.dllearner.core.owl;
 
+
 /**
  * Convenience class for boolean value restrictions.
  * 
@@ -58,4 +59,10 @@ public class BooleanValueRestriction extends DatatypeValueRestriction {
 	public int getLength() {
 		return 2;
 	}
+	
+	/*@Override
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		throw new Error("BooleanValueRestriction: not implemented");
+		
+	}*/
 }

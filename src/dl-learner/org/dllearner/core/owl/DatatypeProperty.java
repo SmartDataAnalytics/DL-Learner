@@ -52,6 +52,10 @@ public class DatatypeProperty implements Comparable<DatatypeProperty>, Property,
 	}
 	
 	public String toString(String baseURI, Map<String, String> prefixes) {
+		return  Helper.getAbbreviatedString(name, baseURI, prefixes);
+	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
 		return "\"" + Helper.getAbbreviatedString(name, baseURI, prefixes) + "\"";
 	}
 

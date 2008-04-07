@@ -61,6 +61,13 @@ public class UntypedConstant extends Constant {
 		else
 			return literal;
 	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		if(hasLang)
+			return literal + "@" + lang;
+		else
+			return literal;
+	}
 
 	/**
 	 * @return the lang

@@ -52,6 +52,12 @@ public class ObjectPropertyDomainAxiom extends PropertyDomainAxiom {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public void accept(AxiomVisitor visitor) {

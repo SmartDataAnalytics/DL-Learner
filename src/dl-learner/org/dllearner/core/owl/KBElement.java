@@ -14,5 +14,7 @@ public interface KBElement {
 	
     public String toString(String baseURI, Map<String,String> prefixes);
     
+    public String toKBSyntaxString(String baseURI, Map<String,String> prefixes);
+    
     public void accept(KBElementVisitor visitor);
 }

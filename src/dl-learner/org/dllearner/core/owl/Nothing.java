@@ -34,6 +34,10 @@ public class Nothing extends Description {
     public String toString(String baseURI, Map<String,String> prefixes) {
         return "BOTTOM";
     }
+    
+    public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+        return "BOTTOM";
+    }
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Description#toManchesterSyntaxString(java.lang.String, java.util.Map)
