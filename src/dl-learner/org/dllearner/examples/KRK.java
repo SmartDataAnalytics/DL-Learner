@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -50,8 +51,15 @@ public class KRK {
 	// 
 	// turn off to not write the owl, needs about 30 seconds or more
 	static boolean writeOWL = true;
-	static boolean writeClosedOWL = true ;
 	static boolean useTransitivity = false;
+	static boolean writeExampleSets = true;
+	static boolean writeConciseOWLAllDifferent = false;
+	
+	
+	static boolean closeKB=true;
+	static boolean closeConcise= true && closeKB;
+	static boolean writeClosedOWL = true && closeKB;
+	static boolean verifySomeConcepts = false && closeKB;
 	
 
 	static boolean useInverse = false;
@@ -216,52 +224,115 @@ public class KRK {
 			finishBackgroundForRoles();
 			System.out.println("Finished Background");
 			// WRITE
-			writeExampleSets();
-			writeConciseOWLAllDifferent();
+			if(writeExampleSets)writeExampleSets();
+			if(writeConciseOWLAllDifferent)writeConciseOWLAllDifferent();
+			if (writeOWL)writeOWLFile("test.owl");
 			
-
-			if (writeOWL) {
-				writeOWLFile("test.owl");
+			OntologyCloser oc = new OntologyCloser(kb);
+			String kbaddition= "_Closed";
+			if(closeKB) {
+				
+				if(closeConcise) {
+					oc.applyNumberRestrictionsNamed();
+					kbaddition = "_CloseConcise";
+				}
+				else oc.applyNumberRestrictions();
 			}
-			if(writeClosedOWL) {
-				OntologyCloser oc = new OntologyCloser(kb);
-				oc.applyNumberRestrictions();
 			
-				
-				String conceptStr = "ALL \"http://www.test.de/test#hasPiece\".(EXISTS \"http://www.test.de/test#fileDistanceLessThan6\".((NOT \"http://www.test.de/test#WKing\") AND ALL \"http://www.test.de/test#rankDistance1\".(\"http://www.test.de/test#WKing\" AND ALL \"http://www.test.de/test#fileDistanceLessThan2\".\"http://www.test.de/test#BKing\" AND ALL \"http://www.test.de/test#hasLowerFileThan\".\"http://www.test.de/test#WKing\")) AND ALL \"http://www.test.de/test#fileDistance1\".\"http://www.test.de/test#WRook\")";
-				//conceptStr = "ALL http://www.test.de/test#hasPiece.(EXISTS http://www.test.de/test#fileDistanceLessThan6.((NOT http://www.test.de/test#WKing) AND ALL http://www.test.de/test#rankDistance1.(http://www.test.de/test#WKing AND ALL http://www.test.de/test#fileDistanceLessThan2.http://www.test.de/test#WKing AND ALL http://www.test.de/test#hasLowerFileThan.http://www.test.de/test#WKing)) AND ALL http://www.test.de/test#fileDistance1.http://www.test.de/test#WRook)";
-				//conceptStr = "ALL hasPiece.(EXISTS fileDistanceLessThan6.((NOT WKing) AND ALL rankDistance1.(WKing AND ALL fileDistanceLessThan2.WKing AND ALL hasLowerFileThan.WKing)) AND ALL fileDistance1.WRook)";
-				//conceptStr = "ALL \"http://www.test.de/test#hasPiece\".\"http://www.test.de/test#WKing\"";
-				//conceptStr = "EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND ALL \"http://www.test.de/test#fileDistanceLessThan1\".\"http://www.test.de/test#WKing\")";
 			
-				
-				conceptStr = "\"http://www.test.de/test#WRook\"";
-
-				oc.verifyConcept(conceptStr);
-				conceptStr = "ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
-					"\"http://www.test.de/test#WKing\" ";
-				
-				oc.verifyConcept(conceptStr);
-				conceptStr = "(\"http://www.test.de/test#WRook\" "+ 
-				" AND " +
-				" ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
-					"\"http://www.test.de/test#WKing\") ";
-				
-				oc.verifyConcept(conceptStr);
-				conceptStr = "EXISTS \"http://www.test.de/test#hasLowerRankThan\"."+
-				"(\"http://www.test.de/test#WRook\""+ 
-				"AND ALL \"http://www.test.de/test#fileDistanceLessThan1\".\"http://www.test.de/test#WKing\") ";
-
-				
-				oc.verifyConcept(conceptStr);
-				//writeOWLFile("test_Closed.owl");
-			}
+			if (verifySomeConcepts)	verifySomeConcepts(oc);
+			if (writeClosedOWL) writeOWLFile("test"+kbaddition+".owl");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.out.println("Done");
 	}// end main
+	
+	protected static void verifySomeConcepts(OntologyCloser oc) {
+		
+		ArrayList<String> test=new ArrayList<String>();
+		
+		//String conceptStr = "ALL \"http://www.test.de/test#hasPiece\".(EXISTS \"http://www.test.de/test#fileDistanceLessThan6\".((NOT \"http://www.test.de/test#WKing\") AND ALL \"http://www.test.de/test#rankDistance1\".(\"http://www.test.de/test#WKing\" AND ALL \"http://www.test.de/test#fileDistanceLessThan2\".\"http://www.test.de/test#BKing\" AND ALL \"http://www.test.de/test#hasLowerFileThan\".\"http://www.test.de/test#WKing\")) AND ALL \"http://www.test.de/test#fileDistance1\".\"http://www.test.de/test#WRook\")";
+		//conceptStr = "ALL http://www.test.de/test#hasPiece.(EXISTS http://www.test.de/test#fileDistanceLessThan6.((NOT http://www.test.de/test#WKing) AND ALL http://www.test.de/test#rankDistance1.(http://www.test.de/test#WKing AND ALL http://www.test.de/test#fileDistanceLessThan2.http://www.test.de/test#WKing AND ALL http://www.test.de/test#hasLowerFileThan.http://www.test.de/test#WKing)) AND ALL http://www.test.de/test#fileDistance1.http://www.test.de/test#WRook)";
+		//conceptStr = "ALL hasPiece.(EXISTS fileDistanceLessThan6.((NOT WKing) AND ALL rankDistance1.(WKing AND ALL fileDistanceLessThan2.WKing AND ALL hasLowerFileThan.WKing)) AND ALL fileDistance1.WRook)";
+		//conceptStr = "ALL \"http://www.test.de/test#hasPiece\".\"http://www.test.de/test#WKing\"";
+		//conceptStr = "EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND ALL \"http://www.test.de/test#fileDistanceLessThan1\".\"http://www.test.de/test#WKing\")";
+	
+		
+		test.add("\"http://www.test.de/test#WRook\"");
+		/*test.add("ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
+				"\"http://www.test.de/test#WKing\"");
+		/*test.add("(\"http://www.test.de/test#WRook\" "+ 
+				" AND " +
+				" ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
+					"\"http://www.test.de/test#WKing\") ");*/
+		/*test.add("(\"http://www.test.de/test#Piece\" "+ 
+				" AND " +
+				" ALL \"http://www.test.de/test#fileDistanceLessThan8\"." +
+					"\"http://www.test.de/test#Piece\") ");
+		test.add("(\"http://www.test.de/test#Piece\" "+ 
+				" AND ( " +
+				" ALL \"http://www.test.de/test#fileDistanceLessThan8\"." +
+					"\"http://www.test.de/test#Piece\" " +
+				" AND " +
+				" EXISTS \"http://www.test.de/test#fileDistanceLessThan8\"." +
+					"\"http://www.test.de/test#Piece\"))") ;
+		test.add("(\"http://www.test.de/test#Piece\" "+ 
+				" AND ( " +
+				" ALL \"http://www.test.de/test#fileDistanceLessThan7\"." +
+					"\"http://www.test.de/test#Piece\" " +
+				" AND " +
+				" EXISTS \"http://www.test.de/test#fileDistanceLessThan7\"." +
+					"\"http://www.test.de/test#Piece\"))") ;
+		test.add("(\"http://www.test.de/test#Piece\" "+ 
+				" AND ( " +
+				" ALL \"http://www.test.de/test#fileDistanceLessThan5\"." +
+					"\"http://www.test.de/test#Piece\" " +
+				" AND " +
+				" EXISTS \"http://www.test.de/test#fileDistanceLessThan5\"." +
+					"\"http://www.test.de/test#Piece\"))") ;*/
+		test.add("(\"http://www.test.de/test#Piece\" "+ 
+				" AND ( " +
+				" ALL \"http://www.test.de/test#fileDistanceLessThan3\"." +
+					"\"http://www.test.de/test#Piece\" " +
+				" AND " +
+				" EXISTS \"http://www.test.de/test#fileDistanceLessThan3\"." +
+					"\"http://www.test.de/test#Piece\"))") ;
+		test.add("(\"http://www.test.de/test#BKing\" "+ 
+				" AND ( " +
+				" ALL \"http://www.test.de/test#fileDistanceLessThan3\"." +
+					"\"http://www.test.de/test#Piece\" " +
+				" AND " +
+				" EXISTS \"http://www.test.de/test#fileDistanceLessThan3\"." +
+					"\"http://www.test.de/test#Piece\"))") ;
+		test.add("(\"http://www.test.de/test#BKing\" "+ 
+				" AND ( " +
+				" ALL \"http://www.test.de/test#fileDistanceLessThan2\"." +
+					"\"http://www.test.de/test#Piece\" " +
+				" AND " +
+				" EXISTS \"http://www.test.de/test#fileDistanceLessThan2\"." +
+					"\"http://www.test.de/test#Piece\"))") ;
+		
+		/*test.add("(\"http://www.test.de/test#Piece\" "+ 
+				" AND " +
+				" ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
+					"\"http://www.test.de/test#WKing\") ");*/
+		
+		for (int i = 0; i < test.size(); i++) {
+			String conceptStr = test.get(i);
+			oc.verifyConcept(conceptStr);
+		}
+		
+		
+		/*conceptStr = "EXISTS \"http://www.test.de/test#hasLowerRankThan\"."+
+		"(\"http://www.test.de/test#WRook\""+ 
+		"AND ALL \"http://www.test.de/test#fileDistanceLessThan1\".\"http://www.test.de/test#WKing\") ";
+
+		
+		*/
+		System.out.println();
+	}
 
 	static void makeDistanceRoles(KRKPiece A, KRKPiece B) {
 		int Fdist = A.getFileDistance(B);
