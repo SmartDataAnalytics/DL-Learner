@@ -78,7 +78,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		tab1 = new ReasonerPanel(config, this);
 		tab2 = new LearningProblemPanel(config, this);
 		tab3 = new LearningAlgorithmPanel(config, this);
-		tab4 = new RunPanel(config);
+		tab4 = new RunPanel(config, this);
 		tabPane.addTab("Knowledge Source", tab0);
 		tabPane.addTab("Reasoner", tab1);
 		tabPane.addTab("Learning Problem", tab2);
@@ -100,10 +100,17 @@ public class StartGUI extends JFrame implements ActionListener {
 		tabPane.addChangeListener(new ChangeListener() {
 			// This method is called whenever the selected tab changes
 			public void stateChanged(ChangeEvent evt) {
-
-				updateTabColors();
+				init();
 			}
 		});
+	}
+
+	public void init() {
+		tab0.init();
+		tab1.init();
+		tab2.init();
+		tab3.init();
+		updateTabColors();
 	}
 
 	public static void main(String[] args) {

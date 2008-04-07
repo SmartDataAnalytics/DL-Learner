@@ -118,9 +118,10 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	/**
 	 * after this, next tab can be used
 	 */
-	private void init() {
+	public void init() {
 		setLearningProblem();
-		if (config.getReasoner() != null && config.getLearningProblem() != null) {
+		if (config.getReasoner() != null && config.getLearningProblem() != null
+				&& config.isSetExample()) {
 			try {
 				config.getLearningProblem().init();
 				config.setInitLearningProblem(true);

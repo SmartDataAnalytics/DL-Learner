@@ -46,6 +46,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	private StartGUI startGUI;
 	private JButton initButton;
 	private JButton setButton;
+	private JButton clearButton;
 	private String[] kbBoxItems = {};
 	private JComboBox cb = new JComboBox(kbBoxItems);
 	private JPanel choosePanel = new JPanel();
@@ -62,6 +63,8 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		sources = config.getComponentManager().getKnowledgeSources();
 
 		setButton = new JButton("Set");
+		setButton.addActionListener(this);
+		setButton = new JButton("Clear All");
 		setButton.addActionListener(this);
 		initButton = new JButton("Init KnowledgeSource");
 		initButton.addActionListener(this);
@@ -102,8 +105,13 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 			setSource();
 		}
 
-		if (e.getSource() == initButton)
+		if (e.getSource() == initButton) {
 			init();
+		}
+
+		if (e.getSource() == clearButton) {
+			config.reInit();
+		}
 	}
 
 	/**
