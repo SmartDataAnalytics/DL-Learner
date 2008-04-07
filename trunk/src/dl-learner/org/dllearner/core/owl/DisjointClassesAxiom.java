@@ -51,6 +51,13 @@ public class DisjointClassesAxiom extends TerminologicalAxiom {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		throw new Error("DisjointClassesAxiom: Not implemented");
+	}
+	
+	
 
 	@Override
 	public void accept(AxiomVisitor visitor) {

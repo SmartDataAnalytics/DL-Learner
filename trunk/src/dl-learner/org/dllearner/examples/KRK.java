@@ -233,14 +233,17 @@ public class KRK {
 			if(closeKB) {
 				
 				if(closeConcise) {
-					oc.applyNumberRestrictionsNamed();
+					oc.applyNumberRestrictionsConcise();
 					kbaddition = "_CloseConcise";
 				}
 				else oc.applyNumberRestrictions();
 			}
 			
-			
-			if (verifySomeConcepts)	verifySomeConcepts(oc);
+		
+			if (verifySomeConcepts)	{
+				oc.updateReasoner();
+				verifySomeConcepts(oc);
+			}
 			if (writeClosedOWL) writeOWLFile("test"+kbaddition+".owl");
 
 		} catch (Exception e) {
@@ -318,6 +321,9 @@ public class KRK {
 				" AND " +
 				" ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
 					"\"http://www.test.de/test#WKing\") ");*/
+		
+		
+		test.add("EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND ALL \"http://www.test.de/test#fileDistanceLessThan1\".\"http://www.test.de/test#WKing\")") ;
 		
 		for (int i = 0; i < test.size(); i++) {
 			String conceptStr = test.get(i);

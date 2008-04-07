@@ -41,6 +41,10 @@ public class Thing extends Description {
     public String toString(String baseURI, Map<String,String> prefixes) {
         return "TOP";
     }
+    
+    public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+        return "TOP";
+    }
 
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {

@@ -21,6 +21,11 @@ public class Negation extends Description {
     public String toString(String baseURI, Map<String,String> prefixes) {
         return "(NOT " +children.get(0).toString(baseURI, prefixes) + ")";
     }
+    
+    public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+        //TODO brackets removed, but they maybe have to be here
+    	return "NOT " +children.get(0).toKBSyntaxString(baseURI, prefixes) + "";
+    }
 
 	public int getLength() {
 		return 1 + children.get(0).getLength();

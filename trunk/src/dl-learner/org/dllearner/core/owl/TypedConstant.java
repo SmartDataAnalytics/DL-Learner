@@ -50,6 +50,11 @@ public class TypedConstant extends Constant implements Comparable<TypedConstant>
 		return literal;
 //		return literal + "^^" + datatype;
 	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return literal;
+//		return literal + "^^" + datatype;
+	}
 
 	/**
 	 * @return the datatype

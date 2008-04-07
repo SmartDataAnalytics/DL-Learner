@@ -46,6 +46,11 @@ public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public Description getRange() {

@@ -40,6 +40,13 @@ public class DoubleDatatypePropertyAssertion extends DatatypePropertyAssertion {
 	public String toString(String baseURI, Map<String, String> prefixes) {
 		return datatypeProperty.toString(baseURI, prefixes) + "(" + individual.toString(baseURI, prefixes) + "," + value +")";
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toKBSyntaxString(java.lang.String, java.util.Map)
+	 */
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		return datatypeProperty.toKBSyntaxString(baseURI, prefixes) + "(" + individual.toKBSyntaxString(baseURI, prefixes) + "," + value +")";
+	}
 
 	public double getValue() {
 		return value;

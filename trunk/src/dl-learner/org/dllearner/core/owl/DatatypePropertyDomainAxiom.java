@@ -52,6 +52,15 @@ public class DatatypePropertyDomainAxiom extends PropertyDomainAxiom {
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.KBElement#toKBSyntaxString(java.lang.String, java.util.Map)
+	 */
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Axiom#accept(org.dllearner.core.owl.AxiomVisitor)
 	 */
 	@Override

@@ -26,7 +26,11 @@ public class SubObjectPropertyAxiom extends PropertyAxiom {
 		
 	public String toString(String baseURI, Map<String,String> prefixes) {
 		return "Subrole(" + subRole.toString(baseURI, prefixes) + "," + role.toString(baseURI, prefixes) + ")";
-	}	
+	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return "Subrole(" + subRole.toKBSyntaxString(baseURI, prefixes) + "," + role.toKBSyntaxString(baseURI, prefixes) + ")";
+	}
 	
 	@Override
 	public void accept(AxiomVisitor visitor) {

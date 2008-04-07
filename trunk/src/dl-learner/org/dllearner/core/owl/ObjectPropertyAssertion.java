@@ -65,6 +65,10 @@ public class ObjectPropertyAssertion extends PropertyAssertion {
 		return role.toString(baseURI, prefixes) + "(" + individual1.toString(baseURI, prefixes) + "," + individual2.toString(baseURI, prefixes) +")";
 	}
 	
+	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+		return role.toKBSyntaxString(baseURI, prefixes) + "(" + individual1.toKBSyntaxString(baseURI, prefixes) + "," + individual2.toKBSyntaxString(baseURI, prefixes) +")";
+	}
+	
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
 	}	

@@ -62,6 +62,11 @@ public class DatatypeMinCardinalityRestriction extends DatatypeCardinalityRestri
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Description#accept(org.dllearner.core.owl.DescriptionVisitor)

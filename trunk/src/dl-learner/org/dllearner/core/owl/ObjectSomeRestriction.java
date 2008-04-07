@@ -36,6 +36,10 @@ public class ObjectSomeRestriction extends ObjectQuantorRestriction {
     public String toString(String baseURI, Map<String,String> prefixes) {
         return "EXISTS " + restrictedPropertyExpression.toString(baseURI, prefixes) + "." + children.get(0).toString(baseURI, prefixes);
     }
+    
+    public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
+        return "EXISTS " + restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + "." + children.get(0).toKBSyntaxString(baseURI, prefixes);
+    }
 
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {

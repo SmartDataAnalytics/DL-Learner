@@ -58,6 +58,13 @@ public class BooleanDataRange implements DataRange {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	public String toKBSyntaxString (String baseURI, Map<String, String> prefixes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
