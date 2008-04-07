@@ -52,6 +52,22 @@ public class OntologyCloser {
 		this.rs = new ReasoningService(owlapi);
 
 	}
+	
+	public void updateReasoner() {
+		SimpleClock sc = new SimpleClock();
+		sc.printAndSet();
+		this.kbFile = new KBFile(this.kb);
+		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
+		ks.add(this.kbFile);
+		
+		sc.printAndSet("updating reasoner");
+		OWLAPIReasoner owlapi = new OWLAPIReasoner(ks);
+		sc.printAndSet("init");
+		owlapi.init();
+		sc.printAndSet();
+		this.rs = new ReasoningService(owlapi);
+		
+	}
 
 	/**
 	 * counts the number of roles used by each individual and assigns
@@ -156,7 +172,7 @@ public class OntologyCloser {
 					// indToRestr.put(oneInd,)
 					//make Description
 					Description d = new NamedClass(oneRole+"Exact"+fillers.size()+"gen");
-					d.addChild(oecr);
+					//d.addChild(oecr);
 					kb.addTBoxAxiom(new EquivalentClassesAxiom(d,oecr));
 					//System.out.println(d.toManchesterSyntaxString("", new HashMap<String, String>()));
 					kb.addABoxAxiom(new ClassAssertionAxiom(d,oneInd));
