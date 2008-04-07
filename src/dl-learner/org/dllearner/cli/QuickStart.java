@@ -97,8 +97,17 @@ public class QuickStart {
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			int target = 0;
 			String selected = "";
+			boolean query=false;
 			while (true) {
 				String cmd = br.readLine();
+				if(cmd.equalsIgnoreCase("q")|| cmd.equalsIgnoreCase("query"))  {
+					query = (query)?false:true ;
+					System.out.println("Query mode switched. Now: "+query);
+					continue;
+				}else if(cmd.equalsIgnoreCase("exit") || cmd.equalsIgnoreCase("quit")) {
+					System.out.println("Bye...");
+					System.exit(0);
+				}
 				try {
 					if (cmd.length() == 0) {
 						number = false;
@@ -126,7 +135,11 @@ public class QuickStart {
 			}
 
 			// DLLearner.main(new String[] { Selected });
-			Start.main(new String[] { selected });
+			if(!query) {
+				Start.main(new String[] { selected });
+			}else {
+				Start.main(new String[] {"-q",selected});
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
