@@ -315,4 +315,39 @@ public class Config {
 				return System.nanoTime() - algorithmRunStartTime;
 		return null;
 	}
+
+	/**
+	 * It is necessary for init LearningProblem.
+	 * 
+	 * @return true, if necessary example was set otherwise false
+	 */
+	public Boolean isSetExample() {
+		if (lp.getClass().getSimpleName().equals("PosOnlyDefinitionLP")) {
+			if (cm.getConfigOptionValue(lp, "positiveExamples") != null)
+				return true;
+		} else if (cm.getConfigOptionValue(lp, "positiveExamples") != null
+				&& cm.getConfigOptionValue(lp, "negativeExamples") != null)
+			return true;
+		return false;
+	}
+
+	/**
+	 * reInit ComponentManager.
+	 */
+	public void reInit() {
+		cm = ComponentManager.getInstance();
+		source = null;
+		oldSource = null;
+		reasoner = null;
+		oldReasoner = null;
+		rs = null;
+		lp = null;
+		oldLearningProblem = null;
+		la = null;
+		oldLearningAlgorithm = null;
+		isInit = new boolean[4];
+		threadIsRunning = false;
+		algorithmRunStartTime = null;
+		algorithmRunStopTime = null;
+	}
 }

@@ -39,6 +39,7 @@ public class RunPanel extends JPanel implements ActionListener {
 	private JButton runButton, stopButton, treeButton;
 	private JTextArea infoArea;
 	private Config config;
+	private StartGUI startGUI;
 
 	private ThreadRun thread;
 
@@ -60,10 +61,11 @@ public class RunPanel extends JPanel implements ActionListener {
 	private JLabel[] time = new JLabel[5];
 	private JLabel[] percent = new JLabel[5];
 
-	RunPanel(Config config) {
+	RunPanel(Config config, StartGUI startGUI) {
 		super(new BorderLayout());
 
 		this.config = config;
+		this.startGUI = startGUI;
 
 		runButton = new JButton("Run");
 		runButton.addActionListener(this);
@@ -141,6 +143,7 @@ public class RunPanel extends JPanel implements ActionListener {
 		// start
 		if (e.getSource() == runButton && config.getLearningAlgorithm() != null
 				&& !config.getThreadIsRunning()) {
+			startGUI.init();
 			thread = new ThreadRun(config);
 			config.getReasoningService().resetStatistics();
 			thread.start();

@@ -74,6 +74,7 @@ public class ConfigLoad {
 	 * parse file
 	 */
 	public void startParser() {
+		config.reInit(); // new ComponentManager
 		if (this.file.exists()) {
 			ConfParser parser = ConfParser.parseFile(file);
 			// create a mapping between components and prefixes in the conf file
