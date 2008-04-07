@@ -39,10 +39,17 @@ public class Intersection extends Description {
 			return "EMPTY_AND";
 		
 		String ret = "(";
+		String bracketCollect = "";
 		for(int i=0; i<children.size()-1; i++) {
 			ret += children.get(i).toString(baseURI, prefixes) + " AND "; 
+			if( i != (children.size()-2) ) { 
+				ret += "(";
+				bracketCollect += ")";
+			}
 		}
+		
 		ret += children.get(children.size()-1).toString(baseURI, prefixes) + ")";
+		ret += bracketCollect;
 		return ret;
 	}
 	
