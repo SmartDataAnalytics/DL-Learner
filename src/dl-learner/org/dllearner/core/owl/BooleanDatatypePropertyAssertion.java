@@ -38,7 +38,7 @@ public class BooleanDatatypePropertyAssertion extends DatatypePropertyAssertion 
 		return datatypeProperty.toString(baseURI, prefixes) + "(" + individual.toString(baseURI, prefixes) + "," + value +")";
 	}
 	
-	@Override
+	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
 		return datatypeProperty.toKBSyntaxString(baseURI,prefixes) + "(" + individual.toKBSyntaxString( baseURI, prefixes) + "," + value +")";
 	}
