@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class ProtegePlugin  extends AbstractOWLClassViewComponent
 {
-
+private static final long serialVersionUID = 728362819273927L;
 private OWLFrameList2<OWLClass> list;
  
 	public void initialiseClassView() throws Exception {

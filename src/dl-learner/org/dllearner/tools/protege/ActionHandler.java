@@ -1,37 +1,29 @@
 package org.dllearner.tools.protege;
 
 import java.awt.event.*;
-
-public class ActionHandler implements ActionListener, ComponentListener{
-	private ActionHandler action;
-   
+public class ActionHandler implements ActionListener, ItemListener{
+	private DLLearnerModel model;
 	
-	public ActionHandler(ActionHandler a)
+	public ActionHandler(ActionHandler a,DLLearnerModel m)
 	{
-		action = a;
+		model = m;
 	}
 	public void actionPerformed(ActionEvent z){
-		System.out.println("hihihi: "+ z.getActionCommand());
+		if(z.getActionCommand().equals("RUN"))
+		{
+			model.configDLLearner();
+			model.DLLearnerStart();
+			//setChanged();
+	        //notifyObservers(model.getSolutions());
+			System.out.println(model.getSolutions());
+			//config.setDescriptionList(model.getSolutions());
+		}
     	}
 
-	public void componentHidden(ComponentEvent e)
-	{
-		System.out.println("1: "+e.getID());
-	}
 	
-	public void componentMoved(ComponentEvent e)
+	public void itemStateChanged(ItemEvent i)
 	{
-		System.out.println("2: "+ e.getComponent().getClass().getName());
-	}
-	
-	public void componentResized(ComponentEvent e)
-	{
-		//System.out.println("3: "+ e.getComponent().getClass().getName());
-	}
-	
-	public void componentShown(ComponentEvent e)
-	{
-		System.out.println("4: "+ e.getID());
+		
 	}
 	
 

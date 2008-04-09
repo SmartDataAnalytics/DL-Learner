@@ -14,14 +14,14 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.util.CollectionFactory;
 
 
-public class SuggestClassButton extends AbstractOWLFrameSection<OWLClass, OWLEquivalentClassesAxiom, OWLDescription> {
+public class SuggestEquivalentClassButton extends AbstractOWLFrameSection<OWLClass, OWLEquivalentClassesAxiom, OWLDescription> {
 	
-	private static final String LABEL = "Suggest a class";
-
-	
-	public SuggestClassButton(OWLEditorKit editorKit, OWLFrame<OWLClass> frame)
+	private static final String LABEL = "Suggest a equivalent Class";
+	private OWLFrame<OWLClass> frame;
+	public SuggestEquivalentClassButton(OWLEditorKit editorKit, OWLFrame<OWLClass> frame)
 	{
 		super(editorKit, LABEL, frame);
+		this.frame = frame;
 	}
 	
     protected void clear() {
@@ -40,7 +40,7 @@ public class SuggestClassButton extends AbstractOWLFrameSection<OWLClass, OWLEqu
     }
 
 
-    public void visit(SuggestClassButton axiom) {
+    public void visit(SuggestEquivalentClassButton axiom) {
 
 
     }
@@ -52,8 +52,7 @@ public class SuggestClassButton extends AbstractOWLFrameSection<OWLClass, OWLEqu
 
 
     public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
-   
-        return new DLLearnerOptionTab(getOWLEditorKit(), null);
+        return new SuggestEquivalentClassView(getOWLEditorKit(), null, frame);
 
     }
 

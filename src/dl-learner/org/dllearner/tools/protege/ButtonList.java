@@ -15,7 +15,7 @@ public class ButtonList extends AbstractOWLFrame<OWLClass>{
 	{
 		super(editorKit.getOWLModelManager().getOWLOntologyManager());
         addSection(new OWLEquivalentClassesAxiomFrameSection(editorKit, this));
-        addSection(new SuggestClassButton(editorKit, this));
+        addSection(new SuggestEquivalentClassButton(editorKit, this));
         addSection(new OWLSubClassAxiomFrameSection(editorKit, this));
         //addSection(new SuggestClassButton(editorKit, this));
         addSection(new InheritedAnonymousClassesFrameSection(editorKit, this));
