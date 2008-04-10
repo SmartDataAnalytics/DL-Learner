@@ -21,7 +21,7 @@ public class KnowledgeSourcePanel extends JPanel{
 	
 	public KnowledgeSourcePanel() {
 
-new LeftPanel(1);
+		new LeftPanel(1);
 		contentPanel = getContentPanel();
 		
 		setLayout(new java.awt.BorderLayout());
@@ -72,11 +72,13 @@ new LeftPanel(1);
 			filechooser.setCurrentDirectory(new File(fileURL.getText()));
 	
 		filechooser.addChoosableFileFilter(new FileFilter() {
-		    public boolean accept(File f) {
+		    @Override
+			public boolean accept(File f) {
 		      if (f.isDirectory()) return true;
 		      return f.getName().toLowerCase().endsWith(".owl");
 		    }
-		    public String getDescription () { return "OWLs"; }  
+		    @Override
+			public String getDescription () { return "OWLs"; }  
 		  });
 		int status = filechooser.showOpenDialog( null );
         
@@ -119,7 +121,10 @@ new LeftPanel(1);
 	public File getOWLFile() {
 		return new File(fileURL.getText());
 	}
-
+	
+	public void setFileURL(String fileURL){
+		this.fileURL.setText(fileURL);
+	}
 	
 
 }

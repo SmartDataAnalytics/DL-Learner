@@ -10,11 +10,13 @@ public class IntroductionPanelDescriptor extends WizardPanelDescriptor {
         super(IDENTIFIER, new IntroductionPanel());
     }
     
-    public Object getNextPanelDescriptor() {
+    @Override
+	public Object getNextPanelDescriptor() {
         return KnowledgeSourcePanelDescriptor.IDENTIFIER;
     }
     
-    public Object getBackPanelDescriptor() {
+    @Override
+	public Object getBackPanelDescriptor() {
         return null;
     }
     

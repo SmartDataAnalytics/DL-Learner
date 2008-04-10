@@ -161,17 +161,16 @@ public class WizardController implements ActionListener {
         }
         
     }
-    class ConceptRetriever extends SwingWorker<Set<NamedClass>, NamedClass>
-    {
-    	Object nextPanelID;
-    
-    public ConceptRetriever(Object nextPanelDescriptor) {
-    	 
-    	nextPanelID = nextPanelDescriptor;
-    }
-    	
-      
-      public Set<NamedClass> doInBackground() {
+    class ConceptRetriever extends SwingWorker<Set<NamedClass>, NamedClass> {
+		Object nextPanelID;
+
+		public ConceptRetriever(Object nextPanelDescriptor) {
+
+			nextPanelID = nextPanelDescriptor;
+		}
+
+		@Override
+		public Set<NamedClass> doInBackground() {
 
 			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
 					nextPanelID)).panel3.getStatusLabel().setText(
@@ -186,35 +185,37 @@ public class WizardController implements ActionListener {
 
 			return ind;
 		}
-      
-      public void done(){
-    	  Set<NamedClass> ind = null;
-    	  try {
-			ind = get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	  ConceptPanelDescriptor nextPanel = (ConceptPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelID);
-    	  DefaultListModel dm = new DefaultListModel();
-    	  
-    	  for (NamedClass cl : ind){
-        		dm.addElement(cl);
-    		    //nextPanel.panel3.getModel().addElement(cl);
-        		System.out.println(cl.getName());
-    	  }
-    	  nextPanel.panel3.getList().setModel(dm);
-    	  ((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
+
+		@Override
+		public void done() {
+			Set<NamedClass> ind = null;
+			try {
+				ind = get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ConceptPanelDescriptor nextPanel = (ConceptPanelDescriptor) wizard
+					.getModel().getPanelHashMap().get(nextPanelID);
+			DefaultListModel dm = new DefaultListModel();
+
+			for (NamedClass cl : ind) {
+				dm.addElement(cl);
+				//nextPanel.panel3.getModel().addElement(cl);
+				System.out.println(cl.getName());
+			}
+			nextPanel.panel3.getList().setModel(dm);
+			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
 					nextPanelID)).panel3.getStatusLabel().setText(
 					"Concepts loaded");
-    	  ((ConceptPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelID)).panel3.getLoadingLabel().setBusy(false);
-      }
-      
-      
-    }
+			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
+					nextPanelID)).panel3.getLoadingLabel().setBusy(false);
+		}
+
+	}
 
     
     
