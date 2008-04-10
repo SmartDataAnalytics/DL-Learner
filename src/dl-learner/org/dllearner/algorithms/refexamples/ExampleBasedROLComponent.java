@@ -101,6 +101,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean improveSubsumptionHierarchy = true;
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
+	private boolean useCardinalityRestrictions = true;
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;
 	private double noisePercentage = 0.0;
@@ -160,8 +161,10 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.ignoredRoles());
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
+		options.add(CommonConfigOptions.useCardinalityRestrictions());
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
+		
 		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples");
 		noisePercentage.setLowerLimit(0);
 		noisePercentage.setUpperLimit(100);
@@ -213,6 +216,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			useAllConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useExistsConstructor")) {
 			useExistsConstructor = (Boolean) entry.getValue();
+		} else if(name.equals("useCardinalityRestrictions")) {
+			useCardinalityRestrictions = (Boolean) entry.getValue();
 		} else if(name.equals("useNegation")) {
 			useNegation = (Boolean) entry.getValue();
 		} else if(name.equals("noisePercentage")) {
@@ -292,6 +297,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 					applyExistsFilter,
 					useAllConstructor,
 					useExistsConstructor,
+					useCardinalityRestrictions,
 					useNegation,
 					useBooleanDatatypes,
 					startClass

@@ -28,6 +28,21 @@ package org.dllearner.core.config;
  *
  */
 public final class CommonConfigOptions {
+	
+	//public static boolean applyAllFilterDefault = true;
+	//public static boolean applyExistsFilterDefault = true;	
+	//public static boolean useTooWeakListDefault = true;
+	//public static boolean useOverlyGeneralListDefault = true;
+	//public static boolean useShortConceptConstructionDefault = true;
+	//public static boolean improveSubsumptionHierarchyDefault = true;
+	public static boolean useAllConstructorDefault = true;
+	public static boolean useExistsConstructorDefault = true;
+	public static boolean useCardinalityRestrictionsDefault = true;
+	public static boolean useNegationDefault = true;
+	public static boolean useBooleanDatatypesDefault = true;
+	//public static double noisePercentageDefault = 0.0;
+	
+	
 
 	public static StringConfigOption getVerbosityOption() {
 		StringConfigOption verbosityOption = new StringConfigOption("verbosity", "control verbosity of output for this component", "warning");
@@ -72,18 +87,22 @@ public final class CommonConfigOptions {
 	}	
 	
 	public static BooleanConfigOption useAllConstructor() {
-		return new BooleanConfigOption("useAllConstructor", "specifies whether to universal concept constructor is used in the learning algorothm");
+		return new BooleanConfigOption("useAllConstructor", "specifies whether the universal concept constructor is used in the learning algorithm",useAllConstructorDefault);
 	}
 	
 	public static BooleanConfigOption useExistsConstructor() {
-		return new BooleanConfigOption("useExistsConstructor", "specifies whether to existential concept constructor is used in the learning algorothm");
+		return new BooleanConfigOption("useExistsConstructor", "specifies whether the existential concept constructor is used in the learning algorithm",useExistsConstructorDefault);
+	}
+	
+	public static BooleanConfigOption useCardinalityRestrictions() {
+		return new BooleanConfigOption("useCardinalityRestrictions", "specifies whether CardinalityRestrictions is used in the learning algorithm",useCardinalityRestrictionsDefault);
 	}
 	
 	public static BooleanConfigOption useNegation() {
-		return new BooleanConfigOption("useNegation", "specifies whether negation is used in the learning algorothm");
+		return new BooleanConfigOption("useNegation", "specifies whether negation is used in the learning algorothm",useNegationDefault);
 	}
 	
 	public static BooleanConfigOption useBooleanDatatypes() {
-		return new BooleanConfigOption("useBooleanDatatypes", "specifies whether boolean datatypes are used in the learning algorothm");
+		return new BooleanConfigOption("useBooleanDatatypes", "specifies whether boolean datatypes are used in the learning algorothm",useBooleanDatatypesDefault);
 	}	
 }
