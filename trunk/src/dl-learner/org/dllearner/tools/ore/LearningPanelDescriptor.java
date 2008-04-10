@@ -5,11 +5,12 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
@@ -17,7 +18,7 @@ import org.dllearner.core.owl.Description;
 
 
 
-public class LearningPanelDescriptor extends WizardPanelDescriptor implements ActionListener{
+public class LearningPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener{
     
     public static final String IDENTIFIER = "LEARNING_PANEL";
     
@@ -30,6 +31,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
         panel4 = new LearningPanel();
         panel4.addStartButtonListener(this);
         panel4.addStopButtonListener(this);
+        panel4.addSelectionListener(this);
         
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(panel4);
@@ -65,7 +67,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				@SuppressWarnings("unchecked")
 				@Override
 				public void run() {
-					publish(getWizardModel().getOre().getLearningResults(5));
+					publish(getWizardModel().getOre().getLearningResults(10));
 				}
 
 			}, 0, 1000);
@@ -177,5 +179,12 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		}
 		
 		
+		
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		if (!e.getValueIsAdjusting()) 
+			 System.out.println(panel4.getResultList().getSelectedValue());
 		
 	}}

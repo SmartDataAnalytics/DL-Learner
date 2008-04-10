@@ -13,6 +13,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.jdesktop.swingx.JXBusyLabel;
@@ -141,7 +142,9 @@ public class LearningPanel extends JPanel{
 		return resultList;
 	}
 	
-	
+	public void addSelectionListener(ListSelectionListener l){
+		resultList.addListSelectionListener(l);
+	}
 	
 	
 	
