@@ -4,7 +4,9 @@
 	<!-- directory settings -->
 	<property name="lib_dir" value="lib" />
 	<property name="source_dir" value="src/dl-learner" />
+	<property name="protege_dir" value="/Programme/Protege_4.0_alpha/plugins" />
 	<property name="class_dir" value="classes" />
+	
 	<property name="php_client_dir" value="src/php-client" />
 	<tstamp>
 			<format property="today" pattern="yyyy-MM-dd" locale="en" />		
@@ -213,5 +215,36 @@ public class Info {
         	<link href="http://java.sun.com/javase/6/docs/api/"/>
     	</javadoc>
     </target>	
+	
+	<!-- build protege plugin and copy it to the plugin folder -->
+	<target name="protege">
+	<property name="source" value="src/dl-learner/org/dllearner/tools/protege" />
+	<property name="temp" value="${source}/temp" />
+		
+    	<mkdir dir="${temp}" />
+    	<mkdir dir="${temp}/META-INF" />
+		<mkdir dir="${temp}/lib" />
+		<copy toDir="${temp}/META-INF" >
+		    		<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />	
+		</copy>
+		<copy toDir="${temp}/lib" >
+				    		<fileset dir="${lib_dir}" />	
+				</copy>
+			<copy toDir="${temp}" >
+					    	<fileset dir="${class_dir}"  />	
+			</copy>
+		<copy toDir="${temp}" >
+			<fileset dir="${source}/META-INF" includes="**/*.xml," excludes="build.xml" />
+			</copy>
+    	<javac srcdir="${source}"
+         destdir="${temp}"
+         classpath="jarfile"
+         debug="on" />
+    	<jar destfile="${protege_dir}/dl-learner.jar" manifest="${temp}/META-INF/MANIFEST.MF">
+    			<fileset dir="${temp}" />
+    		</jar>
+    	<delete dir="${temp}" />
+		
+	</target>
 	
 </project>
