@@ -56,7 +56,7 @@ public class KRK {
 	static boolean writeConciseOWLAllDifferent = false;
 	
 	
-	static boolean closeKB=true;
+	static boolean closeKB=false;
 	static boolean closeConcise= true && closeKB;
 	static boolean writeClosedOWL = true && closeKB;
 	static boolean verifySomeConcepts = false && closeKB;

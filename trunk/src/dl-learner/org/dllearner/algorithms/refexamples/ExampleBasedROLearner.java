@@ -739,8 +739,11 @@ public class ExampleBasedROLearner {
 //			String bestNodeString = "currently best node: " + bestNode + " accuracy: " + df.format(accuracy) + "%";
 			logger.debug("start node: " + startNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
 			String bestNodeString = "currently best node: " + bestNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
+			String bestNodeStringKBSyntax = "currently best node KBSyntax: " + bestNode.getConcept().toKBSyntaxString();
+			
 			// searchTree += bestNodeString + "\n";
 			logger.debug(bestNodeString);
+			logger.debug(bestNodeStringKBSyntax);
 			String expandedNodeString = "next expanded node: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
 			// searchTree += expandedNodeString + "\n";
 			logger.debug(expandedNodeString);		
