@@ -1,6 +1,8 @@
 package org.dllearner.tools.ore;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -19,8 +21,6 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.OWLAPIReasoner;
-
-import java.util.List;
 
 public class ORE {
 	
@@ -63,7 +63,6 @@ public class ORE {
 		
 		ReasonerComponent reasoner = cm.reasoner(
 				OWLAPIReasoner.class, ks);
-		
 		try {
 			reasoner.init();
 		} catch (ComponentInitException e) {
@@ -117,9 +116,6 @@ public class ORE {
 		}
 		
 	}
-//	public void setConcept(String conceptStr){
-//		concept = new NamedClass(conceptStr);
-//	}
 	
 	public void setConcept(NamedClass concept){
 		this.concept = concept;
@@ -143,7 +139,37 @@ public class ORE {
 	public List<Description> getLearningResults(int anzahl){
 		return la.getBestSolutions(anzahl);
 	}
+	
+	public BigDecimal getCorrectness(Description d){
+		int numberPosExamples = 0;
+		int numberNegExamples = 0;
+		double result_tmp = 0.0f;
+		
+		for(Individual ind : posExamples){
+			rs.instanceCheck(d, ind);
+			if(rs.instanceCheck(d, ind))
+				numberPosExamples++;
+		}
+		for(Individual ind : negExamples){
+			rs.instanceCheck(d, ind);
+			if(!rs.instanceCheck(d, ind))
+				numberNegExamples++;
+		}
+		
+		result_tmp = ((float)(numberPosExamples) + (float)(numberNegExamples))/((float)(posExamples.size())+(float)(negExamples.size())) * 100;
+		BigDecimal result = new BigDecimal( result_tmp );
+		result = result.setScale( 2, BigDecimal.ROUND_HALF_UP );
+		return result;	
+		
+		
+	}
 
+	public void addAxiomToOWL(Description desc){
+//		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
+		
+		
+		
+	}
 		
 	public static void main(String[] args){
 		

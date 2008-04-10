@@ -29,28 +29,32 @@ public class ConceptPanel extends JPanel{
 	private JXBusyLabel loadingLabel;	
 	private JLabel statusLabel;
 	
+	@SuppressWarnings("unchecked")
 	public ConceptPanel() {
 		
 		super();
 		
 		model = new DefaultListModel();
-		loadingLabel = new JXBusyLabel(new Dimension(24,24));
+		loadingLabel = new JXBusyLabel(new Dimension(15,15));
 		statusLabel = new JLabel();
 		
-		BusyPainter<?> painter = new BusyPainter(
-		new RoundRectangle2D.Float(0, 0,10.0f,3.2f,10.0f,10.0f),
-		new Ellipse2D.Float(3.5f,3.5f,17.0f,17.0f));
-		painter.setTrailLength(4);
-		painter.setPoints(8);
+	
+		BusyPainter painter = new BusyPainter(
+		new RoundRectangle2D.Float(0, 0,6.0f,2.6f,10.0f,10.0f),
+		new Ellipse2D.Float(2.0f,2.0f,11.0f,11.0f));
+		painter.setTrailLength(2);
+		painter.setPoints(7);
 		painter.setFrame(-1);
-		loadingLabel.setPreferredSize(new Dimension(24,24));
-		loadingLabel.setIcon(new EmptyIcon(24,24));
+		loadingLabel.setPreferredSize(new Dimension(15,15));
+		loadingLabel.setIcon(new EmptyIcon(15,15));
 		loadingLabel.setBusyPainter(painter);
 
-		
+
+				
 		JPanel labelPanel = new JPanel();
-		labelPanel.add(statusLabel);
 		labelPanel.add(loadingLabel);
+		labelPanel.add(statusLabel);
+		
 		
 		contentPanel = getContentPanel();
 		setLayout(new java.awt.BorderLayout());
@@ -65,7 +69,8 @@ public class ConceptPanel extends JPanel{
 		
 			
 		conceptList = new JList(model);
-		scroll.setPreferredSize(new Dimension(200,200));
+		conceptList.setCellRenderer(new ColorListCellRenderer());
+		scroll.setPreferredSize(new Dimension(400,400));
 		scroll.setViewportView(conceptList);
 		contentPanel1.add(scroll);
 		

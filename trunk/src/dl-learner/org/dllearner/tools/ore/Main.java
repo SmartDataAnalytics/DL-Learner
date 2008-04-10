@@ -26,7 +26,7 @@ public class Main {
 		}
         Wizard wizard = new Wizard();
         wizard.getDialog().setTitle("DL-Learner ORE-Tool");
-        wizard.getDialog().setSize(700, 400);
+        wizard.getDialog().setSize(800, 500);
         
         WizardPanelDescriptor descriptor1 = new IntroductionPanelDescriptor();
         wizard.registerWizardPanel(IntroductionPanelDescriptor.IDENTIFIER, descriptor1);
@@ -40,9 +40,17 @@ public class Main {
         WizardPanelDescriptor descriptor4 = new LearningPanelDescriptor();
         wizard.registerWizardPanel(LearningPanelDescriptor.IDENTIFIER, descriptor4);
         
-        wizard.setCurrentPanel(IntroductionPanelDescriptor.IDENTIFIER);
-        
+        if ( !(args.length == 1)){
+        	 wizard.setCurrentPanel(IntroductionPanelDescriptor.IDENTIFIER);
+        }else{
+        	((KnowledgeSourcePanelDescriptor)descriptor2).getPanel().setFileURL(args[0]); 
+        	wizard.setCurrentPanel(KnowledgeSourcePanelDescriptor.IDENTIFIER);
+        	 
+        }
+			
+       
         int ret = wizard.showModalDialog();
+       
         
         System.out.println("Dialog return code is (0=Finish,1=Cancel,2=Error): " + ret);
        

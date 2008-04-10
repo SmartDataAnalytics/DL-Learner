@@ -24,15 +24,18 @@ public class ConceptPanelDescriptor extends WizardPanelDescriptor implements Lis
      
     }
     
-    public Object getNextPanelDescriptor() {
+    @Override
+	public Object getNextPanelDescriptor() {
         return LearningPanelDescriptor.IDENTIFIER;
     }
     
-    public Object getBackPanelDescriptor() {
+    @Override
+	public Object getBackPanelDescriptor() {
         return KnowledgeSourcePanelDescriptor.IDENTIFIER;
     }
     
-    public void aboutToDisplayPanel() {
+    @Override
+	public void aboutToDisplayPanel() {
         setNextButtonAccordingToConceptSelected();
     }    
 

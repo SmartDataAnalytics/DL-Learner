@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingUtilities;
@@ -32,14 +33,17 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
         
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(panel4);
+        
      
     }
     
-    public Object getNextPanelDescriptor() {
+    @Override
+	public Object getNextPanelDescriptor() {
         return LearningPanelDescriptor.IDENTIFIER;
     }
     
-    public Object getBackPanelDescriptor() {
+    @Override
+	public Object getBackPanelDescriptor() {
         return ConceptPanelDescriptor.IDENTIFIER;
     }
     
@@ -51,11 +55,15 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 
 		@Override
 		public List<Description> doInBackground() {
-
+			panel4.getResultList().setCellRenderer(new ColumnListCellRenderer(getWizardModel().getOre()));
+			panel4.getLoadingLabel().setBusy(true);
+			panel4.getStatusLabel().setText("Learning");
 			la = getWizardModel().getOre().start();
 			timer = new Timer();
 			timer.schedule(new TimerTask() {
 
+				@SuppressWarnings("unchecked")
+				@Override
 				public void run() {
 					publish(getWizardModel().getOre().getLearningResults(5));
 				}
@@ -68,7 +76,10 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			return result;
 		}
 
+		@Override
 		public void done() {
+			
+		
 			timer.cancel();
 			List<Description> result = null;
 			try {
@@ -78,10 +89,12 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}
+			
 			panel4.getStartButton().setEnabled(true);
 			panel4.getStopButton().setEnabled(false);
 			updateList(result);
-
+			panel4.getLoadingLabel().setBusy(false);
+			panel4.getStatusLabel().setText("Algorithm terminated successfully.");
 		}
 
 		@Override
@@ -100,6 +113,8 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				public void run() {
 					panel4.getModel().clear();
 					for (Description d : result) {
+						System.err.println(d+"=="+getWizardModel().getOre().getCorrectness(d));
+						
 						panel4.getModel().addElement(d);
 					}
 
@@ -108,6 +123,37 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			SwingUtilities.invokeLater(doUpdateList);
 
 		}
+		
+//		void updateList(final List<Description> result) {
+//			Runnable doUpdateList = new Runnable() {
+//
+//				public void run() {
+//					
+//				
+//					int i = panel4.getModel().getRowCount();
+//					if(!(i == 0))
+//						for(int j = panel4.getModel().getRowCount(); j >= 0 ; j--){
+//							System.out.println(panel4.getModel().getRowCount());
+//							panel4.getModel().removeRow(j);
+//						}
+//					
+//											
+//						
+//					
+//					for (Description d : result) {
+//						Object[] rowData = new Object[2];
+//						rowData[0] = d;
+//						rowData[1] = getWizardModel().getOre().getCorrectness(d);
+//						System.err.println(d+"=="+rowData[1]);
+//						
+//						panel4.getModel().addRow(rowData );
+//					}
+//
+//				}
+//			};
+//			SwingUtilities.invokeLater(doUpdateList);
+//
+//		}
 
 		public LearningAlgorithm getLa() {
 			return la;
@@ -126,7 +172,8 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		else{
 			panel4.getStopButton().setEnabled(false);
             worker.getLa().stop();
-        	panel4.getStartButton().setEnabled(true);
+            panel4.getStartButton().setEnabled(true);
+            panel4.getStatusLabel().setText("Algorithm aborted");
 		}
 		
 		

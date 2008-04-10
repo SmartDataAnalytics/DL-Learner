@@ -15,7 +15,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     public static final String IDENTIFIER = "KNOWLEDGESOURCE_CHOOSE_PANEL";
     
-    KnowledgeSourcePanel panel2;
+    private KnowledgeSourcePanel panel2;
     
     public KnowledgeSourcePanelDescriptor() {
         
@@ -28,16 +28,19 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
         
     }
     
-    public Object getNextPanelDescriptor() {
+    @Override
+	public Object getNextPanelDescriptor() {
         return ConceptPanelDescriptor.IDENTIFIER;
     }
     
-    public Object getBackPanelDescriptor() {
+    @Override
+	public Object getBackPanelDescriptor() {
         return IntroductionPanelDescriptor.IDENTIFIER;
     }
     
     
-    public void aboutToDisplayPanel() {
+    @Override
+	public void aboutToDisplayPanel() {
         setNextButtonAccordingToExistingOWLFile();
     }    
 
@@ -108,6 +111,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     
   }
+public KnowledgeSourcePanel getPanel() {
+	return panel2;
+}
 	
 	
     
