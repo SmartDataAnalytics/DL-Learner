@@ -204,16 +204,17 @@ public class KB implements KBElement {
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-		String str = "TBox["+tbox.size()+"]:\n";
+		StringBuffer strbuff = new StringBuffer();
+		strbuff.append("TBox["+tbox.size()+"]:\n");
 		for(Axiom a : tbox)
-			str += "  " + a.toString(baseURI, prefixes)+"\n";
-		str += "RBox["+rbox.size()+"]:\n";
+			strbuff.append("  " + a.toString(baseURI, prefixes)+"\n");
+		strbuff.append("\nRBox["+rbox.size()+"]:\n");
 		for(Axiom a : rbox)
-			str += "  " + a.toString(baseURI, prefixes)+"\n";
-		str += "ABox["+abox.size()+"]:\n";
+			strbuff.append("  " + a.toString(baseURI, prefixes)+"\n");
+		strbuff.append("\nABox["+abox.size()+"]:\n");
 		for(Axiom a : abox)
-			str += "  " + a.toString(baseURI, prefixes)+"\n";
-		return str;
+			strbuff.append("  " + a.toString(baseURI, prefixes)+"\n");
+		return strbuff.toString();
 	}
 	
 	public Set<Individual> findRelatedIndividuals(Individual individual) {
