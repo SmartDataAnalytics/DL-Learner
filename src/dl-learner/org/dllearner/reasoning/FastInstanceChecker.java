@@ -20,6 +20,8 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +37,9 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -86,6 +90,8 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 	private boolean defaultNegation = true;
 	
+	private String reasonerType = "pellet";
+	
 	private Set<NamedClass> atomicConcepts;
 	private Set<ObjectProperty> atomicRoles;
 	private SortedSet<DatatypeProperty> datatypeProperties;
@@ -119,6 +125,17 @@ public class FastInstanceChecker extends ReasonerComponent {
 		this.sources = sources;
 	}
 
+	
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet to dematerialize", "pellet");
+		type.setAllowedValues(new String[] {"fact", "pellet"});
+		// closure option? see:
+		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
+		options.add(type);
+		return options;
+	}	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -126,7 +143,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-
+		String name = entry.getOptionName();
+		if(name.equals("reasonerType"))
+			reasonerType = (String) entry.getValue();
 	}
 
 	public static String getName() {
@@ -142,6 +161,8 @@ public class FastInstanceChecker extends ReasonerComponent {
 	@Override
 	public void init() throws ComponentInitException {
 		rc = new OWLAPIReasoner(sources);
+		//TODO make it nice
+		rc.setReasonerType(reasonerType);
 		rc.init();
 
 		try {
@@ -597,5 +618,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public void releaseKB() {
 		rc.releaseKB();
 	}	
+	
+	public void setReasonerType(String type){
+		reasonerType=type;
+	}
 	
 }
