@@ -892,5 +892,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	public List<OWLOntology> getOWLAPIOntologies() {
 		return owlAPIOntologies;
 	}
+	
+	public void setReasonerType(String type){
+		reasonerType=type;
+	}
 
 }
