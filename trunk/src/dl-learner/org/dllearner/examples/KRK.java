@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import java.util.TreeSet;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.DisjointClassesAxiom;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.InverseObjectPropertyAxiom;
 import org.dllearner.core.owl.KB;
@@ -51,7 +51,9 @@ public class KRK {
 	// 
 	// turn off to not write the owl, needs about 30 seconds or more
 	static boolean writeOWL = true;
+	static boolean writeKB = false;
 	static boolean useTransitivity = false;
+	static boolean useHigherThan = false;
 	static boolean writeExampleSets = true;
 	static boolean writeConciseOWLAllDifferent = false;
 	
@@ -103,6 +105,9 @@ public class KRK {
 
 	static ObjectProperty rankLessThan = getRole("hasLowerRankThan");
 	static ObjectProperty fileLessThan = getRole("hasLowerFileThan");
+	
+	static ObjectProperty rankHigherThan = getRole("hasHigherRankThan");
+	static ObjectProperty fileHigherThan = getRole("hasHigherFileThan");
 
 	// static ObjectProperty lessThan = getRole("strictLessThan");
 
@@ -142,10 +147,13 @@ public class KRK {
 		
 		
 		
+		
+		
 
 		try {
 			String line = "";
 			String[] ar = new String[6];
+			String currentclass="";
 
 			int x = 0;
 			while ((line = in.readLine()) != null) {
@@ -154,10 +162,14 @@ public class KRK {
 					System.out.println("Currently at line" + x);
 				ar = tokenize(line);
 
+				currentclass = ar[6];
+				
 				gameind = getIndividual("game" + x);
 				wkingind = getIndividual("wking_" + ar[0] + ar[1] + "_" + x);
 				wrookind = getIndividual("wrook_" + ar[2] + ar[3] + "_" + x);
 				bkingind = getIndividual("bking_" + ar[4] + ar[5] + "_" + x);
+				
+				
 				
 				allInstances.add(gameind+"");
 				allInstances.add(wkingind+"");
@@ -180,6 +192,34 @@ public class KRK {
 				kb.addABoxAxiom(new ClassAssertionAxiom(WRook, wrookind));
 				kb.addABoxAxiom(new ClassAssertionAxiom(BKing, bkingind));
 
+				
+				/**Files and Ranks***/
+				// FILES are letters
+				// RANKS are numbers
+				
+				//WKing
+				NamedClass tmp=getAtomicConcept(ar[0].toUpperCase());
+				kb.addABoxAxiom(new ClassAssertionAxiom(tmp, wkingind));
+				
+				tmp=getAtomicConcept("F"+ar[1]);
+				kb.addABoxAxiom(new ClassAssertionAxiom(tmp , wkingind));
+				
+				//WRook
+				tmp=getAtomicConcept(ar[2].toUpperCase());
+				kb.addABoxAxiom(new ClassAssertionAxiom(tmp, wrookind));
+				
+				tmp=getAtomicConcept("F"+ar[3]);
+				kb.addABoxAxiom(new ClassAssertionAxiom(tmp	, wrookind));
+				
+				//BKing
+				tmp=getAtomicConcept(ar[4].toUpperCase());
+				kb.addABoxAxiom(new ClassAssertionAxiom(tmp, bkingind));
+				
+				tmp=getAtomicConcept("F"+ar[5]);
+				kb.addABoxAxiom(new ClassAssertionAxiom(tmp, bkingind));
+				
+			
+				
 				// PROPERTIES
 				kb.addABoxAxiom(new ObjectPropertyAssertion(hasPiece, gameind,
 						wkingind));
@@ -227,11 +267,12 @@ public class KRK {
 			if(writeExampleSets)writeExampleSets();
 			if(writeConciseOWLAllDifferent)writeConciseOWLAllDifferent();
 			if (writeOWL)writeOWLFile("test.owl");
-			
-			OntologyCloser oc = new OntologyCloser(kb);
+			if(writeKB)writeKBFile("test.kb");
+				
+			OntologyCloser oc = null;
 			String kbaddition= "_Closed";
 			if(closeKB) {
-				
+				oc= new OntologyCloser(kb);
 				if(closeConcise) {
 					oc.applyNumberRestrictionsConcise();
 					kbaddition = "_CloseConcise";
@@ -241,6 +282,7 @@ public class KRK {
 			
 		
 			if (verifySomeConcepts)	{
+				
 				oc.updateReasoner();
 				verifySomeConcepts(oc);
 			}
@@ -252,78 +294,24 @@ public class KRK {
 		System.out.println("Done");
 	}// end main
 	
+	
+	
+	static void makeOntology(){
+		
+		
+		
+	}
+	
+	
 	protected static void verifySomeConcepts(OntologyCloser oc) {
 		
 		ArrayList<String> test=new ArrayList<String>();
 		
-		//String conceptStr = "ALL \"http://www.test.de/test#hasPiece\".(EXISTS \"http://www.test.de/test#fileDistanceLessThan6\".((NOT \"http://www.test.de/test#WKing\") AND ALL \"http://www.test.de/test#rankDistance1\".(\"http://www.test.de/test#WKing\" AND ALL \"http://www.test.de/test#fileDistanceLessThan2\".\"http://www.test.de/test#BKing\" AND ALL \"http://www.test.de/test#hasLowerFileThan\".\"http://www.test.de/test#WKing\")) AND ALL \"http://www.test.de/test#fileDistance1\".\"http://www.test.de/test#WRook\")";
-		//conceptStr = "ALL http://www.test.de/test#hasPiece.(EXISTS http://www.test.de/test#fileDistanceLessThan6.((NOT http://www.test.de/test#WKing) AND ALL http://www.test.de/test#rankDistance1.(http://www.test.de/test#WKing AND ALL http://www.test.de/test#fileDistanceLessThan2.http://www.test.de/test#WKing AND ALL http://www.test.de/test#hasLowerFileThan.http://www.test.de/test#WKing)) AND ALL http://www.test.de/test#fileDistance1.http://www.test.de/test#WRook)";
-		//conceptStr = "ALL hasPiece.(EXISTS fileDistanceLessThan6.((NOT WKing) AND ALL rankDistance1.(WKing AND ALL fileDistanceLessThan2.WKing AND ALL hasLowerFileThan.WKing)) AND ALL fileDistance1.WRook)";
-		//conceptStr = "ALL \"http://www.test.de/test#hasPiece\".\"http://www.test.de/test#WKing\"";
-		//conceptStr = "EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND ALL \"http://www.test.de/test#fileDistanceLessThan1\".\"http://www.test.de/test#WKing\")";
+		
+		test.add("(EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#rankDistanceLessThan2\".(\"http://www.test.de/test#BKing\" AND EXISTS \"http://www.test.de/test#fileDistanceLessThan1\".(\"http://www.test.de/test#A\" OR \"http://www.test.de/test#WKing\")) AND EXISTS \"http://www.test.de/test#hasPiece\".(\"http://www.test.de/test#WKing\" AND ((\"http://www.test.de/test#C\" AND EXISTS \"http://www.test.de/test#hasLowerRankThan\".\"http://www.test.de/test#A\") OR (\"http://www.test.de/test#F3\" AND EXISTS \"http://www.test.de/test#rankDistance2\".\"http://www.test.de/test#WRook\"))))");
+		
+		
 	
-		
-		test.add("\"http://www.test.de/test#WRook\"");
-		/*test.add("ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
-				"\"http://www.test.de/test#WKing\"");
-		/*test.add("(\"http://www.test.de/test#WRook\" "+ 
-				" AND " +
-				" ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
-					"\"http://www.test.de/test#WKing\") ");*/
-		/*test.add("(\"http://www.test.de/test#Piece\" "+ 
-				" AND " +
-				" ALL \"http://www.test.de/test#fileDistanceLessThan8\"." +
-					"\"http://www.test.de/test#Piece\") ");
-		test.add("(\"http://www.test.de/test#Piece\" "+ 
-				" AND ( " +
-				" ALL \"http://www.test.de/test#fileDistanceLessThan8\"." +
-					"\"http://www.test.de/test#Piece\" " +
-				" AND " +
-				" EXISTS \"http://www.test.de/test#fileDistanceLessThan8\"." +
-					"\"http://www.test.de/test#Piece\"))") ;
-		test.add("(\"http://www.test.de/test#Piece\" "+ 
-				" AND ( " +
-				" ALL \"http://www.test.de/test#fileDistanceLessThan7\"." +
-					"\"http://www.test.de/test#Piece\" " +
-				" AND " +
-				" EXISTS \"http://www.test.de/test#fileDistanceLessThan7\"." +
-					"\"http://www.test.de/test#Piece\"))") ;
-		test.add("(\"http://www.test.de/test#Piece\" "+ 
-				" AND ( " +
-				" ALL \"http://www.test.de/test#fileDistanceLessThan5\"." +
-					"\"http://www.test.de/test#Piece\" " +
-				" AND " +
-				" EXISTS \"http://www.test.de/test#fileDistanceLessThan5\"." +
-					"\"http://www.test.de/test#Piece\"))") ;*/
-		test.add("(\"http://www.test.de/test#Piece\" "+ 
-				" AND ( " +
-				" ALL \"http://www.test.de/test#fileDistanceLessThan3\"." +
-					"\"http://www.test.de/test#Piece\" " +
-				" AND " +
-				" EXISTS \"http://www.test.de/test#fileDistanceLessThan3\"." +
-					"\"http://www.test.de/test#Piece\"))") ;
-		test.add("(\"http://www.test.de/test#BKing\" "+ 
-				" AND ( " +
-				" ALL \"http://www.test.de/test#fileDistanceLessThan3\"." +
-					"\"http://www.test.de/test#Piece\" " +
-				" AND " +
-				" EXISTS \"http://www.test.de/test#fileDistanceLessThan3\"." +
-					"\"http://www.test.de/test#Piece\"))") ;
-		test.add("(\"http://www.test.de/test#BKing\" "+ 
-				" AND ( " +
-				" ALL \"http://www.test.de/test#fileDistanceLessThan2\"." +
-					"\"http://www.test.de/test#Piece\" " +
-				" AND " +
-				" EXISTS \"http://www.test.de/test#fileDistanceLessThan2\"." +
-					"\"http://www.test.de/test#Piece\"))") ;
-		
-		/*test.add("(\"http://www.test.de/test#Piece\" "+ 
-				" AND " +
-				" ALL \"http://www.test.de/test#fileDistanceLessThan1\"." +
-					"\"http://www.test.de/test#WKing\") ");*/
-		
-		
-		test.add("EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND ALL \"http://www.test.de/test#fileDistanceLessThan1\".\"http://www.test.de/test#WKing\")") ;
 		
 		for (int i = 0; i < test.size(); i++) {
 			String conceptStr = test.get(i);
@@ -352,21 +340,37 @@ public class KRK {
 		kb.addABoxAxiom(new ObjectPropertyAssertion(getRole(fdistance + Fdist),
 				A.id, B.id));
 		symmetricRoleSet.add(fdistance + Fdist);
+		
+		
 
-		if (A.meHasLowerFileThan(B))
+		if (A.meHasLowerFileThan(B)){
 			kb.addABoxAxiom(new ObjectPropertyAssertion(fileLessThan, A.id,
 					B.id));
+			if(useHigherThan)kb.addABoxAxiom(new ObjectPropertyAssertion(fileHigherThan, B.id,
+					A.id));
+			
+		}
 		// 18:00
-		else if (B.meHasLowerFileThan(A))
+		else if (B.meHasLowerFileThan(A)){
 			kb.addABoxAxiom(new ObjectPropertyAssertion(fileLessThan, B.id,
 					A.id));
+			if(useHigherThan)kb.addABoxAxiom(new ObjectPropertyAssertion(fileHigherThan, A.id,
+					B.id));
+		}
 
-		if (A.meHasLowerRankThan(B))
+		if (A.meHasLowerRankThan(B)){
 			kb.addABoxAxiom(new ObjectPropertyAssertion(rankLessThan, A.id,
 					B.id));
-		else if (B.meHasLowerRankThan(A))
+			if(useHigherThan)kb.addABoxAxiom(new ObjectPropertyAssertion(rankHigherThan, B.id,
+					A.id));
+		}
+		else if (B.meHasLowerRankThan(A)){
 			kb.addABoxAxiom(new ObjectPropertyAssertion(rankLessThan, B.id,
 					A.id));
+			if(useHigherThan)kb.addABoxAxiom(new ObjectPropertyAssertion(rankHigherThan, A.id,
+					B.id));
+			
+		}
 	}
 
 	public static void init() {
@@ -384,7 +388,7 @@ public class KRK {
 		// DisJointClasses1.add(Rank);
 		// DisJointClasses1.add(File);
 		DisJointClasses1.add(Game);
-		kb.addTBoxAxiom(new DisjointClassesAxiom(DisJointClasses1));
+		//kb.addTBoxAxiom(new DisjointClassesAxiom(DisJointClasses1));
 
 		SortedSet<Description> DisJointClasses2 = new TreeSet<Description>();
 		DisJointClasses2 = new TreeSet<Description>();
@@ -395,7 +399,7 @@ public class KRK {
 		// DisJointClasses2.add(File);
 		// DisJointClasses2.add(Game);
 
-		kb.addTBoxAxiom(new DisjointClassesAxiom(DisJointClasses2));
+		//kb.addTBoxAxiom(new DisjointClassesAxiom(DisJointClasses2));
 	}
 
 	public static void initClassHierarchy() {
@@ -404,6 +408,19 @@ public class KRK {
 		kb.addTBoxAxiom(new SubClassAxiom(WKing, Piece));
 		kb.addTBoxAxiom(new SubClassAxiom(WRook, Piece));
 		kb.addTBoxAxiom(new SubClassAxiom(BKing, Piece));
+		
+		String[] letters=new String[]{"A","B","C","D","E","F","G","H"};
+		String[] numbers=new String[8];
+		for (int i = 0; i < numbers.length; i++) {
+			numbers[i]="F"+i;
+		}
+		//System.out.println(numbers);
+		
+		for (int i = 0; i < numbers.length; i++) {
+			kb.addTBoxAxiom(new SubClassAxiom(getAtomicConcept(letters[i]),Piece));
+			kb.addTBoxAxiom(new SubClassAxiom(getAtomicConcept(letters[i]),Piece));
+		}
+		
 	}
 
 	static void initClassesForRankAndFile() {
@@ -458,10 +475,15 @@ public class KRK {
 
 		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(rankLessThan, Piece));
 		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(rankLessThan, Piece));
-
 		kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(fileLessThan, Piece));
 		kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(fileLessThan, Piece));
-
+		
+		if(useHigherThan) {
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(rankHigherThan, Piece));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(rankHigherThan, Piece));
+			kb.addRBoxAxiom(new ObjectPropertyDomainAxiom(fileHigherThan, Piece));
+			kb.addRBoxAxiom(new ObjectPropertyRangeAxiom(fileHigherThan, Piece));
+		}
 	}
 
 	static void finishBackgroundForRoles() {
@@ -469,6 +491,11 @@ public class KRK {
 		if (useTransitivity) {
 			kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(rankLessThan));
 			kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(fileLessThan));
+			if(useHigherThan) { 
+				kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(rankHigherThan));
+				kb.addRBoxAxiom(new TransitiveObjectPropertyAxiom(fileHigherThan));
+			}
+			
 		}
 		if (useInverse)
 		// INVERSE
@@ -675,6 +702,19 @@ public class KRK {
 		// System.out.println(kb.toString("http://www.test.de/test", new
 		// HashMap<String, String>()));
 		OWLAPIReasoner.exportKBToOWL(owlfile, kb, ontologyURI);
+
+	}
+	
+	protected static void writeKBFile(String filename) {
+
+		System.out.println("Writing kb");
+		try{
+		FileWriter fw = new FileWriter(workingDir+"/" + filename,false); 
+		fw.write(kb.toKBSyntaxString(ontologyURI.toString(), null));
+		fw.flush();
+		}catch (Exception e) {e.printStackTrace();}
+		System.out.println("done writing kb");
+	
 
 	}
 

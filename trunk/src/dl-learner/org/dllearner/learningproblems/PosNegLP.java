@@ -145,6 +145,14 @@ public abstract class PosNegLP extends LearningProblem {
 		return positiveExamples;
 	}
 	
+	public void setNegativeExamples(SortedSet<Individual> set) {
+		this.negativeExamples=set;
+	}
+
+	public void setPositiveExamples(SortedSet<Individual> set) {
+		this.positiveExamples=set;
+	}
+	
 	public abstract int coveredNegativeExamplesOrTooWeak(Description concept);
 
 	public double getPercentPerLengthUnit() {

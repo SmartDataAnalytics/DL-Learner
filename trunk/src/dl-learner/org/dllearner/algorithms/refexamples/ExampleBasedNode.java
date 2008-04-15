@@ -174,6 +174,30 @@ public class ExampleBasedNode {
 		return ret;
 	}
 	
+	//TODO integrate this method with the one above
+	public String getStats(int nrOfPositiveExamples, int nrOfNegativeExamples) {
+		String ret = " [";
+		
+		if(isTooWeak)
+			ret += "q:tw";
+		else {
+			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
+			ret += "acc:" + df.format(accuracy) + "% ";			
+			
+			// comment this out to display the heuristic score with default parameters
+			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples);
+			ret += "h:" +df.format(heuristicScore) + " ";
+			
+			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
+			ret += "q:" + wrongPositives + "p-" + coveredNegatives.size() + "n";
+		}
+		
+		ret += " ("+qualityEvaluationMethod+"), he:" + horizontalExpansion;
+		ret += " c:" + children.size() + "]";
+		
+		return ret;
+	}
+	
 	public double getAccuracy(int nrOfPositiveExamples, int nrOfNegativeExamples) {
 		return (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
 	}

@@ -743,6 +743,7 @@ public class ExampleBasedROLearner {
 			
 			// searchTree += bestNodeString + "\n";
 			logger.debug(bestNodeString);
+			logger.debug(startNode.getStats(nrOfPositiveExamples, nrOfNegativeExamples));
 			logger.debug(bestNodeStringKBSyntax);
 			String expandedNodeString = "next expanded node: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
 			// searchTree += expandedNodeString + "\n";
