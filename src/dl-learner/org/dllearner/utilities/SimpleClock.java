@@ -11,6 +11,10 @@ public class SimpleClock {
 		time=System.currentTimeMillis();
 	}
 	
+	
+	
+	
+	
 	/**
 	 *  prints time needed
 	 *  and resets the clock 
@@ -31,6 +35,18 @@ public class SimpleClock {
 		long now=System.currentTimeMillis();
 		System.out.println(s+" needed "+(now-time)+" ms");
 		time=now;
+	}
+	
+	
+	/**
+	 * prints time needed
+	 *  
+	 * @param s String for printing
+	 */
+	public void print(String s) {
+		long now=System.currentTimeMillis();
+		System.out.println(s+" needed "+(now-time)+" ms");
+		
 	}
 	
 	public void setTime() {

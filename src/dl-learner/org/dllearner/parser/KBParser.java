@@ -18,6 +18,12 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
                         return internalNamespace + name;
         }
 
+        //TODO beware of this function it is evil
+        public static Description parseConcept(String string, String namespace) throws ParseException {
+        	internalNamespace = namespace;
+        	return parseConcept(string);
+        }
+        
         public static Description parseConcept(String string) throws ParseException {
                 // when just parsing the string as concept, we have no guarantee
                 // that the parser uses all symbols, e.g. a AND b returns just a
