@@ -54,7 +54,7 @@ public class KRK {
 	static boolean writeKB = false;
 	static boolean useTransitivity = false;
 	static boolean useHigherThan = false;
-	static boolean writeExampleSets = true;
+	static boolean writeExampleSets = false;
 	static boolean writeConciseOWLAllDifferent = false;
 	
 	
@@ -69,11 +69,13 @@ public class KRK {
 	static boolean useTripleSubProps = useInverse && false;
 	
 	
-	static String workingDir = "examples/krkworking";
-	static String fileIn = workingDir+"/krkopt.data";
+	static String workingDir = "examples/krk";
+	static String fileIn = workingDir+"/krkopt_no_draw.data";
+	//static String fileIn = workingDir+"/krkopt.data";
+	static String owlfilename = "complete_nodraw.owl";
 	
 
-	static URI ontologyURI = URI.create("http://www.test.de/test");
+	static URI ontologyURI = URI.create("http://dl-learner.org/krk");
 	// static SortedSet<String> fileSet = new TreeSet<String>();
 	static SortedSet<String> allInstances = new TreeSet<String>();
 	static SortedSet<String> classSet = new TreeSet<String>();
@@ -198,27 +200,18 @@ public class KRK {
 				// RANKS are numbers
 				
 				//WKing
-				NamedClass tmp=getAtomicConcept(ar[0].toUpperCase());
-				kb.addABoxAxiom(new ClassAssertionAxiom(tmp, wkingind));
-				
-				tmp=getAtomicConcept("F"+ar[1]);
-				kb.addABoxAxiom(new ClassAssertionAxiom(tmp , wkingind));
+				kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("File"+ar[0].toUpperCase()), wkingind));
+				kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("Rank"+ar[1]) , wkingind));
 				
 				//WRook
-				tmp=getAtomicConcept(ar[2].toUpperCase());
-				kb.addABoxAxiom(new ClassAssertionAxiom(tmp, wrookind));
-				
-				tmp=getAtomicConcept("F"+ar[3]);
-				kb.addABoxAxiom(new ClassAssertionAxiom(tmp	, wrookind));
+				kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("File"+ar[2].toUpperCase()), wrookind));
+				kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("Rank"+ar[3])	, wrookind));
 				
 				//BKing
-				tmp=getAtomicConcept(ar[4].toUpperCase());
-				kb.addABoxAxiom(new ClassAssertionAxiom(tmp, bkingind));
+				kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("File"+ar[4].toUpperCase()), bkingind));
+				kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("Rank"+ar[5]), bkingind));
 				
-				tmp=getAtomicConcept("F"+ar[5]);
-				kb.addABoxAxiom(new ClassAssertionAxiom(tmp, bkingind));
 				
-			
 				
 				// PROPERTIES
 				kb.addABoxAxiom(new ObjectPropertyAssertion(hasPiece, gameind,
@@ -266,7 +259,7 @@ public class KRK {
 			// WRITE
 			if(writeExampleSets)writeExampleSets();
 			if(writeConciseOWLAllDifferent)writeConciseOWLAllDifferent();
-			if (writeOWL)writeOWLFile("test.owl");
+			if (writeOWL)writeOWLFile(owlfilename);
 			if(writeKB)writeKBFile("test.kb");
 				
 			OntologyCloser oc = null;
@@ -306,25 +299,13 @@ public class KRK {
 	protected static void verifySomeConcepts(OntologyCloser oc) {
 		
 		ArrayList<String> test=new ArrayList<String>();
-		
-		
-		test.add("(EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#rankDistanceLessThan2\".(\"http://www.test.de/test#BKing\" AND EXISTS \"http://www.test.de/test#fileDistanceLessThan1\".(\"http://www.test.de/test#A\" OR \"http://www.test.de/test#WKing\")) AND EXISTS \"http://www.test.de/test#hasPiece\".(\"http://www.test.de/test#WKing\" AND ((\"http://www.test.de/test#C\" AND EXISTS \"http://www.test.de/test#hasLowerRankThan\".\"http://www.test.de/test#A\") OR (\"http://www.test.de/test#F3\" AND EXISTS \"http://www.test.de/test#rankDistance2\".\"http://www.test.de/test#WRook\"))))");
-		
-		
-	
-		
+			
 		for (int i = 0; i < test.size(); i++) {
 			String conceptStr = test.get(i);
 			oc.verifyConcept(conceptStr);
 		}
 		
 		
-		/*conceptStr = "EXISTS \"http://www.test.de/test#hasLowerRankThan\"."+
-		"(\"http://www.test.de/test#WRook\""+ 
-		"AND ALL \"http://www.test.de/test#fileDistanceLessThan1\".\"http://www.test.de/test#WKing\") ";
-
-		
-		*/
 		System.out.println();
 	}
 
@@ -409,10 +390,10 @@ public class KRK {
 		kb.addTBoxAxiom(new SubClassAxiom(WRook, Piece));
 		kb.addTBoxAxiom(new SubClassAxiom(BKing, Piece));
 		
-		String[] letters=new String[]{"A","B","C","D","E","F","G","H"};
+		String[] letters=new String[]{"FileA","FileB","FileC","FileD","FileE","FileF","FileG","FileH"};
 		String[] numbers=new String[8];
 		for (int i = 0; i < numbers.length; i++) {
-			numbers[i]="F"+i;
+			numbers[i]="Rank"+i;
 		}
 		//System.out.println(numbers);
 		

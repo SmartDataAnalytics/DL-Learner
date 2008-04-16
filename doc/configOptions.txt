@@ -223,6 +223,12 @@ component: fast instance checker (org.dllearner.reasoning.FastInstanceChecker)
 
 CLI usage: reasoner = fastInstanceChecker;
 
+option name: reasonerType
+description: FaCT++ or Pellet to dematerialize
+values: class org.dllearner.core.config.StringConfigOption
+default value: pellet
+CLI usage: fastInstanceChecker.reasonerType = pellet;
+
 
 component: fast retrieval reasoner (org.dllearner.reasoning.FastRetrievalReasoner)
 ==================================================================================
@@ -568,28 +574,34 @@ default value: null
 CLI usage: refexamples.ignoredRoles = null;
 
 option name: useAllConstructor
-description: specifies whether to universal concept constructor is used in the learning algorothm
+description: specifies whether the universal concept constructor is used in the learning algorithm
 values: class org.dllearner.core.config.BooleanConfigOption
-default value: null
-CLI usage: refexamples.useAllConstructor = null;
+default value: true
+CLI usage: refexamples.useAllConstructor = true;
 
 option name: useExistsConstructor
-description: specifies whether to existential concept constructor is used in the learning algorothm
+description: specifies whether the existential concept constructor is used in the learning algorithm
 values: class org.dllearner.core.config.BooleanConfigOption
-default value: null
-CLI usage: refexamples.useExistsConstructor = null;
+default value: true
+CLI usage: refexamples.useExistsConstructor = true;
+
+option name: useCardinalityRestrictions
+description: specifies whether CardinalityRestrictions is used in the learning algorithm
+values: class org.dllearner.core.config.BooleanConfigOption
+default value: true
+CLI usage: refexamples.useCardinalityRestrictions = true;
 
 option name: useNegation
 description: specifies whether negation is used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
-default value: null
-CLI usage: refexamples.useNegation = null;
+default value: true
+CLI usage: refexamples.useNegation = true;
 
 option name: useBooleanDatatypes
 description: specifies whether boolean datatypes are used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
-default value: null
-CLI usage: refexamples.useBooleanDatatypes = null;
+default value: true
+CLI usage: refexamples.useBooleanDatatypes = true;
 
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
@@ -706,27 +718,27 @@ default value: null
 CLI usage: refinement.ignoredRoles = null;
 
 option name: useAllConstructor
-description: specifies whether to universal concept constructor is used in the learning algorothm
+description: specifies whether the universal concept constructor is used in the learning algorithm
 values: class org.dllearner.core.config.BooleanConfigOption
-default value: null
-CLI usage: refinement.useAllConstructor = null;
+default value: true
+CLI usage: refinement.useAllConstructor = true;
 
 option name: useExistsConstructor
-description: specifies whether to existential concept constructor is used in the learning algorothm
+description: specifies whether the existential concept constructor is used in the learning algorithm
 values: class org.dllearner.core.config.BooleanConfigOption
-default value: null
-CLI usage: refinement.useExistsConstructor = null;
+default value: true
+CLI usage: refinement.useExistsConstructor = true;
 
 option name: useNegation
 description: specifies whether negation is used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
-default value: null
-CLI usage: refinement.useNegation = null;
+default value: true
+CLI usage: refinement.useNegation = true;
 
 option name: useBooleanDatatypes
 description: specifies whether boolean datatypes are used in the learning algorothm
 values: class org.dllearner.core.config.BooleanConfigOption
-default value: null
-CLI usage: refinement.useBooleanDatatypes = null;
+default value: true
+CLI usage: refinement.useBooleanDatatypes = true;
 
 
