@@ -72,6 +72,7 @@ public class KRKModular {
 	
 	static String workingDir = "examples/krk/";
 	static String allData = workingDir+"krkopt_no_draw.data";
+	//static String allData = workingDir+"krkopt_original_dataset.data";
 	
 	static URI ontologyURI = KRKOntologyTBox.ontologyURI;
 	
@@ -84,7 +85,7 @@ public class KRKModular {
 	static HashMap<Individual, String> indToClass = new HashMap<Individual, String>();
 	
 	static Set<ReasonerComponent> allReasoners =  new HashSet<ReasonerComponent>();
-	static int negativeExamplesAdded = 300;
+	static int negativeExamplesAdded = 200;
 	
 	// static LinkedList<String> words;
 	public KB kb;
@@ -301,7 +302,7 @@ public class KRKModular {
 			String line = "";
 			int x = 0;
 			while ((line = in.readLine()) != null) {
-				if (x % 10000 == 0)
+				if (x % 1000 == 0)
 					{sc.print("Currently at line " + x+" : ");}
 				km.addOneLineToKBinit(x, line);
 				if(x%1000==0 && x!=0){
@@ -309,12 +310,13 @@ public class KRKModular {
 					allReasoners.add(km.reasoner);
 					km = new KRKModular();
 				}
-				if(x==26000)break;
+				//if(x==200)break;
 				x++;
 			}// endWhile
 			
 			km.initReasonerFact();
 			allReasoners.add(km.reasoner);
+			km.writeOWLFile();
 			km = null;
 			
 			
@@ -466,16 +468,16 @@ public class KRKModular {
 			// RANKS are numbers
 			
 			//WKing
-			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept(ar[0].toUpperCase()), wkingind));
-			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("F"+ar[1]) , wkingind));
+			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("File"+ar[0].toUpperCase()), wkingind));
+			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("Rank"+ar[1]) , wkingind));
 			
 			//WRook
-			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept(ar[2].toUpperCase()), wrookind));
-			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("F"+ar[3])	, wrookind));
+			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("File"+ar[2].toUpperCase()), wrookind));
+			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("Rank"+ar[3])	, wrookind));
 			
 			//BKing
-			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept(ar[4].toUpperCase()), bkingind));
-			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("F"+ar[5]), bkingind));
+			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("File"+ar[4].toUpperCase()), bkingind));
+			kb.addABoxAxiom(new ClassAssertionAxiom(getAtomicConcept("Rank"+ar[5]), bkingind));
 			
 		
 			
