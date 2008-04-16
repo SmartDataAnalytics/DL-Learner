@@ -2,6 +2,7 @@ package org.dllearner.tools.ore;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -13,14 +14,24 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.AddAxiom;
+import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChangeException;
+import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLOntologyStorageException;
+import org.semanticweb.owl.model.UnknownOWLOntologyException;
 
 public class ORE {
 	
@@ -29,6 +40,7 @@ public class ORE {
 	private KnowledgeSource ks; 
 	private PosNegDefinitionLP lp;
 	private ComponentManager cm;
+	OWLAPIReasoner reasoner;
 	SortedSet<Individual> posExamples;
 	SortedSet<Individual> negExamples;
 	NamedClass concept;
@@ -61,14 +73,9 @@ public class ORE {
 	
 	public void detectReasoner(){
 		
-		ReasonerComponent reasoner = cm.reasoner(
-				OWLAPIReasoner.class, ks);
-		try {
-			reasoner.init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
+		reasoner.init();
+
 		rs = cm.reasoningService(reasoner);
 	}
 	
@@ -165,10 +172,39 @@ public class ORE {
 	}
 
 	public void addAxiomToOWL(Description desc){
-//		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
+		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
+		OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
+		
+		OWLOntology ontology = reasoner.getOWLAPIOntologies().get(0);
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		
+		Set<OWLDescription> ds = new HashSet<OWLDescription>();
+		ds.add(newConceptOWLAPI);
+		ds.add(oldConceptOWLAPI);
+		
+		OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
 		
 		
-		
+
+		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
+		try {
+			manager.applyChange(axiom);
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			manager.saveOntology(ontology);
+		} catch (UnknownOWLOntologyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OWLOntologyStorageException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 		
 	public static void main(String[] args){
