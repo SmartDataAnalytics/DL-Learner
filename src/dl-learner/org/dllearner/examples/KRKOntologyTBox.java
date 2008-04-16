@@ -101,10 +101,10 @@ public class KRKOntologyTBox {
 		kb.addTBoxAxiom(new SubClassAxiom(WRook, Piece));
 		kb.addTBoxAxiom(new SubClassAxiom(BKing, Piece));
 		
-		String[] letters=new String[]{"A","B","C","D","E","F","G","H"};
+		String[] letters=new String[]{"FileA","FileB","FileC","FileD","FileE","FileF","FileG","FileH"};
 		String[] numbers=new String[8];
 		for (int i = 0; i < numbers.length; i++) {
-			numbers[i]="F"+(i+1);
+			numbers[i]="Rank"+(i+1);
 		}
 		//System.out.println(numbers);
 		
