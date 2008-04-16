@@ -182,7 +182,6 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		
 	}
 
-	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if (!e.getValueIsAdjusting()) 
 			 System.out.println(panel4.getResultList().getSelectedValue());
