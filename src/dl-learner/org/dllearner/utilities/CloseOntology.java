@@ -25,9 +25,10 @@ public class CloseOntology {
 	 *            simply the path to the owl ontology "examples/test.owl"
 	 */
 	public static void main(String[] args) {
-		// String ontopath="examples/krkworking/test.owl";
+		String ontopath=""; 
+		//ontopath="examples/carcinogenesis/carcinogenesis.owl";
 		// inputURI
-		String ontopath = args[0];
+		//ontopath = args[0];
 		File file = new File(ontopath);
 		URI inputURI = file.toURI();
 

@@ -16,6 +16,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.io.OWLXMLOntologyFormat;
+import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -210,7 +211,7 @@ public class OntologyCloserOWLAPI {
 
 	public void writeOWLFile(URI filename) {
 		try {
-			manager.saveOntology(this.onto, new OWLXMLOntologyFormat(),
+			manager.saveOntology(this.onto, new RDFXMLOntologyFormat(),
 					filename);
 		} catch (Exception e) {
 			e.printStackTrace();
