@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
@@ -70,7 +71,7 @@ public class KRKModular {
 	//static boolean useTripleSubProps = useInverse && false;
 	
 	
-	static String workingDir = "examples/krk/";
+	static String workingDir = "examples/krkrecognizer/";
 	static String allData = workingDir+"krkopt_no_draw.data";
 	//static String allData = workingDir+"krkopt_original_dataset.data";
 	
@@ -102,15 +103,111 @@ public class KRKModular {
 					" : " + new File(workingDir).mkdir()+ ".");
 		}
 	}
+	
+	public static void main(String[] args) {
+		main1(args);
+		//main2(args);
+		
+	}
+	
+	
+	public static void main1(String[] args) {
+		init();
+		initAllInstancesWithoutReasoners();
+		System.out.println("initializing finished");
+		//String currentClass = "ZERO"; 
+		LinkedList<String> ll=new LinkedList<String>();
+		
+		ll.add("DRAW");
+		ll.add("ZERO");
+		ll.add("ONE");
+		ll.add("TWO");
+		ll.add("THREE");
+		ll.add("FOUR");
+		ll.add("FIVE");
+		ll.add("SIX");
+		ll.add("SEVEN");
+		ll.add("EIGHT");
+		ll.add("NINE");
+		ll.add("TEN");
+		ll.add("ELEVEN");
+		ll.add("TWELVE");
+		ll.add("THIRTEEN");
+		ll.add("FOURTEEN");
+		ll.add("FIFTEEN");
+		ll.add("SIXTEEN");
+		
+		String skript="";
+		
+		for (int i = 0; i < ll.size(); i++) {
+			System.out.println("progress "+i+" of "+ll.size());
+			String currentClass=ll.get(i);
+			SortedSet<Individual> allPos = classToInd.get(currentClass);
+			if(classToInd.get(currentClass)==null)continue;
+			if(currentClass.equals("SIXTEEN"))continue;
+			classToInd.remove(currentClass);
+			SortedSet<Individual> neg =   new TreeSet<Individual>();
+			for (SortedSet<Individual> set : classToInd.values()) {
+				neg.addAll(set);
+			}
+			SortedSet<Integer> lines = getLines(allPos, neg);
+			KB kb = getKB(lines);
+			KRKModular km=new KRKModular(kb);
+			//starting reasone
+			//km.initReasonerFact();
+			String filename="";
+			if(i==0)  filename="KRK_recognizerDRAW";
+			else filename="KRK_recognizer"+(i-1);
+			km.writeOWLFile(filename+".owl");
+			
+			StringBuffer buf= new StringBuffer();
+			buf.append("\nimport(\""+filename+".owl"+"\");\n\n");
+			
+			buf.append("refexamples.ignoredConcepts={\n");
+			buf.append("\""+ontologyURI+"#"+currentClass+"\"");
+			for (String str : classToInd.keySet()) {
+				buf.append(",\n");
+				buf.append("\""+ontologyURI+"#"+str+"\"");
+			}
+			
+			buf.append("};\n\n");
+			buf.append("algorithm = refexamples;\n"+
+					"reasoner=fastInstanceChecker;\n"+
+					"refexamples.useAllConstructor = false;\n"+
+					"refexamples.useExistsConstructor = true;\n"+
+					"refexamples.useCardinalityRestrictions = false;\n"+
+					"refexamples.useNegation = false;\n\n\n");
+			
+			for (Individual ind : allPos) {
+				buf.append("+\""+ind+"\"\n");
+			}
+			buf.append("\n\n\n");
+			for (Individual ind : neg) {
+				buf.append("-\""+ind+"\"\n");
+			}
+			
+			writeToFile(workingDir+filename+".conf", buf.toString());
+			skript+= "./dllearner "+workingDir+filename+".conf >> "+workingDir+filename+"result.txt\n";
+		}
+		System.out.println(skript);
+		writeToFile(workingDir+"skript.sh", skript);
+		
+	
+		
+	}
+	
+	
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		init();
 		initAllInstancesAndReasoners();
 		System.out.println("initializing finished");
 		String currentClass = "ZERO"; 
 		SortedSet<Individual> allPos = classToInd.get(currentClass);
+		
+		
 		//if(allPos.size()<400)negativeExamplesAdded = allPos.size();
 		//else negativeExamplesAdded = 400;
 		SortedSet<Individual> tmp =   new TreeSet<Individual>();
@@ -121,19 +218,18 @@ public class KRKModular {
 		SortedSet<Individual> neg = getNegativeExamples(currentClass, tmp, negativeExamplesAdded);
 		SortedSet<Integer> lines = getLines(allPos, neg);
 		KB kb = getKB(lines);
+		Description d=null;
+		try{
+		d = KBParser.parseConcept("EXISTS \"http://dl-learner.org/krk#hasPiece\".(EXISTS \"http://dl-learner.org/krk#hasLowerRankThan\".(EXISTS \"http://dl-learner.org/krk#fileDistanceLessThan1\".(\"http://dl-learner.org/krk#BKing\" AND EXISTS \"http://dl-learner.org/krk#rankDistanceLessThan2\".(\"http://dl-learner.org/krk#WKing\" OR EXISTS \"http://dl-learner.org/krk#rankDistanceLessThan1\".EXISTS \"http://dl-learner.org/krk#rankDistanceLessThan3\".\"http://dl-learner.org/krk#WKing\")) AND (\"http://dl-learner.org/krk#FileA\" OR \"http://dl-learner.org/krk#WKing\")) AND (\"http://dl-learner.org/krk#FileC\" OR (\"http://dl-learner.org/krk#BKing\" AND \"http://dl-learner.org/krk#FileD\")))");
+		}catch (Exception e) {e.printStackTrace();}
+		
 		
 		
 		while (true){
 			
-			/*for (String  set : classToInd.keySet()) {
-				for (Individual individual : classToInd.get(set)) {
-				   if(indToClass.get(individual)==null)System.out.println(indToClass.get(individual)); 
-			}}*/
-			
-			
-			
-			Description d= learn(kb, allPos, neg);
-			SortedSet<Individual> result = retrieveAll(d);
+			 
+			 SortedSet<Individual>  result = retrieveAll(d);
+			 System.out.println(result);
 			System.out.println("still left: " + (result.size()-allPos.size()));
 			if(verify(currentClass, result)) {
 				System.out.println("Correct solution: "+ d.toKBSyntaxString(ontologyURI+"#", null));
@@ -141,35 +237,10 @@ public class KRKModular {
 			neg.addAll(getNegativeExamples(currentClass, result, negativeExamplesAdded));
 			lines = getLines(allPos, neg);
 			kb = getKB(lines);
-			
+			d= learn(kb, allPos, neg);
 			
 		}
-		//System.out.println(allPos);
-		//System.out.println(neg);
-		
-		//cm.
-		
-		
-		/*Map<Class<? extends Component>, String> componentPrefixMapping = Start.createComponentPrefixMapping();
-		ComponentManager cm = ComponentManager.getInstance();
-		
-		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
-		KnowledgeSource ks = cm.knowledgeSource(KBFile.class);
-		sources.add(ks);
-		cm.applyConfigEntry(ks, "url", null);
-		ks.init();
-		*/
-		
 	
-		
-		
-		
-		
-		//verifyConcept("EXISTS hasPiece.EXISTS fileDistance0.TOP");
-		//verifyConcept("(EXISTS \"http://dl-learner.org/krk#hasPiece\".EXISTS \"http://dl-learner.org/krk#rankDistanceLessThan2\".(\"http://dl-learner.org/krk#BKing\" AND EXISTS \"http://dl-learner.org/krk#fileDistanceLessThan1\".(\"http://dl-learner.org/krk#A\" OR \"http://dl-learner.org/krk#F3\")) AND EXISTS \"http://dl-learner.org/krk#hasPiece\".(\"http://dl-learner.org/krk#WKing\" AND ((\"http://dl-learner.org/krk#C\" AND EXISTS \"http://dl-learner.org/krk#hasLowerRankThan\".\"http://dl-learner.org/krk#A\") OR (\"http://dl-learner.org/krk#F3\" AND EXISTS \"http://dl-learner.org/krk#rankDistance2\".\"http://dl-learner.org/krk#WRook\"))))");
-		//verifyConcept("EXISTS hasPiece.TOP");
-		
-		//.writeOWLFile("test.owl");
 		
 	}
 	
@@ -282,6 +353,9 @@ public class KRKModular {
 	public  KRKModular() {
 		this.kb = makeOntologyTBox();
 	}
+	public  KRKModular(KB kb) {
+		this.kb = kb;
+	}
 	
 	public  KRKModular(String concept) {
 		this.kb = makeOntologyTBox(concept);
@@ -338,6 +412,39 @@ public class KRKModular {
 			
 			//SortedSet<Individual> ret = km.checkAllOWLAPI(concept, s);
 			//sc.print("totalfic ("+ret.size()+") for 1000: ");
+		
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static void initAllInstancesWithoutReasoners(){
+		// Datei öffnen
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new FileReader(allData));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		SimpleClock sc= new SimpleClock();
+		KRKModular km =null;
+		km = new KRKModular();
+		try {
+			String line = "";
+			int x = 0;
+			while ((line = in.readLine()) != null) {
+				if (x % 1000 == 0)
+					{sc.print("Currently at line " + x+" : ");}
+				km.addOneLineToKBinit(x, line);
+				
+				//if(x==200)break;
+				x++;
+			}// endWhile
+			km = null;
+			sc.printAndSet("initialization finished");
+		
 		
 	
 		} catch (Exception e) {
@@ -774,4 +881,5 @@ public SortedSet<Individual> checkAllOWLAPI(String concept,SortedSet<Individual>
 	return null;
 }*/
 
+	
 }
