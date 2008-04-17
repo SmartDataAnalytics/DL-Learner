@@ -70,8 +70,8 @@ public class KRK {
 	
 	
 	static String workingDir = "examples/krk";
-	static String fileIn = workingDir+"/krkopt_no_draw.data";
-	//static String fileIn = workingDir+"/krkopt.data";
+	//static String fileIn = workingDir+"/krkopt_no_draw.data";
+	static String fileIn = workingDir+"/krkopt.data";
 	static String owlfilename = "complete_nodraw.owl";
 	
 
