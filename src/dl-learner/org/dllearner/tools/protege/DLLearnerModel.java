@@ -14,7 +14,7 @@ import org.dllearner.core.*;
 import org.dllearner.reasoning.*;
 import org.dllearner.learningproblems.*;
 
-public class DLLearnerModel extends Observable{
+public class DLLearnerModel extends Observable implements Runnable{
 	private String[] componenten={"org.dllearner.kb.OWLFile","org.dllearner.reasoning.OWLAPIReasoner",
 			"org.dllearner.reasoning.DIGReasoner","org.dllearner.reasoning.FastRetrievalReasoner","org.dllearner.learningproblems.PosNegInclusionLP"
 			,"org.dllearner.learningproblems.PosNegDefinitionLP","org.dllearner.algorithms.RandomGuesser","org.dllearner.algorithms.BruteForceLearner","org.dllearner.algorithms.refinement.ROLearner","org.dllearner.algorithms.refexamples.ExampleBasedROLComponent","org.dllearner.algorithms.gp.GP"};	
@@ -26,7 +26,8 @@ public class DLLearnerModel extends Observable{
 	private ReasoningService rs;
 	private static final int anzahl = 10;
 	private String[] description = new String[anzahl];
-	
+	private LearningProblem lp;
+	private LearningAlgorithm la = null;
 	public DLLearnerModel()
 
 	{
@@ -43,7 +44,13 @@ public class DLLearnerModel extends Observable{
 		negativ=neg;
 		uri=s;
 	}
-	public void configDLLearner()
+
+	
+	public void startPosNegDefinitionReasoning()
+	{
+		
+	}
+	public void run()
 	{
 		ComponentManager.setComponentClasses(componenten);
 		// get singleton instance of component manager
@@ -67,16 +74,9 @@ public class DLLearnerModel extends Observable{
 			
 		}
 		rs = cm.reasoningService(reasoner);
-	}
-	
-	public void startPosNegDefinitionReasoning()
-	{
-		
-	}
-	public void DLLearnerStart()
-	{
+		lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
 		// create a learning problem and set positive and negative examples
-		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
+
 		Set<String> positiveExamples = new TreeSet<String>();
 		for(int i=0;i<positiv.size();i++)
 		{
@@ -103,9 +103,8 @@ public class DLLearnerModel extends Observable{
 		}
 		
 		// create the learning algorithm
-		LearningAlgorithm la = null;
 		try {
-			la = cm.learningAlgorithm(ROLearner.class, lp, rs);
+			this.la = cm.learningAlgorithm(ROLearner.class, lp, rs);
 		} catch (LearningProblemUnsupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -121,6 +120,7 @@ public class DLLearnerModel extends Observable{
 		
 		// start the algorithm and print the best concept found
 		la.start();
+		System.out.println(la.getSolutionScore());
 		description[0]=la.getBestSolution().toString();
 		setChanged();
 		notifyObservers(description);
@@ -179,6 +179,11 @@ public class DLLearnerModel extends Observable{
 	public String[] getSollutions()
 	{
 		return description;
+	}
+	
+	public LearningAlgorithm getLearningAlgorithm()
+	{
+		return la;
 	}
 	
 

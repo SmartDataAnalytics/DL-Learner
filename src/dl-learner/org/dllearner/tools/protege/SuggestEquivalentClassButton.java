@@ -18,6 +18,7 @@ public class SuggestEquivalentClassButton extends AbstractOWLFrameSection<OWLCla
 	
 	private static final String LABEL = "Suggest a equivalent Class";
 	private OWLFrame<OWLClass> frame;
+	private SuggestEquivalentClassView view;
 	public SuggestEquivalentClassButton(OWLEditorKit editorKit, OWLFrame<OWLClass> frame)
 	{
 		super(editorKit, LABEL, frame);
@@ -52,7 +53,9 @@ public class SuggestEquivalentClassButton extends AbstractOWLFrameSection<OWLCla
 
 
     public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
-        return new SuggestEquivalentClassView(getOWLEditorKit(), null, frame);
+    	view = new SuggestEquivalentClassView(getOWLEditorKit(), null, frame);
+    	view.setView(view);
+        return view;
 
     }
 
