@@ -224,12 +224,20 @@ public class Info {
     	<mkdir dir="${temp}" />
     	<mkdir dir="${temp}/META-INF" />
 		<mkdir dir="${temp}/lib" />
+		<mkdir dir="${temp}/lib/pellet" />
+		<mkdir dir="${temp}/lib/jena" />
 		<copy toDir="${temp}/META-INF" >
 		    		<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />	
 		</copy>
 		<copy toDir="${temp}/lib" >
-				    		<fileset dir="${lib_dir}" />	
+				    		<fileset dir="${lib_dir}" includes="junit-4.4.jar" />
 				</copy>
+		<copy toDir="${temp}/lib/pellet" >
+							    	<fileset dir="${lib_dir}/pellet" includes="pellet.jar,aterm-java-1.6.jar,relaxngDatatype.jar,xsdlib.jar" />	
+					</copy>
+		<copy toDir="${temp}/lib/jena" >
+							    	<fileset dir="${lib_dir}/jena" includes="commons-logging-1.1.jar" />	
+					</copy>
 			<copy toDir="${temp}" >
 					    	<fileset dir="${class_dir}"  />	
 			</copy>
