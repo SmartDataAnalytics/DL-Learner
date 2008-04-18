@@ -6,7 +6,7 @@ Bundle-Category: protege
 Bundle-Description: blablabla
 Bundle-Vendor: blablabla
 Bundle-DocURL: blablabla
-Bundle-ClassPath: .,lib/xbean.jar,lib/dig1.1-xmlbeans.jar,lib/junit-4.4.jar,log4j.jar,lib/components.ini,lib/pellet/pellet.jar,lib/pellet/aterm-java-1.6.jar,lib/pellet/relaxngDatatype.jar,lib/pellet/xsdlib.jar,lib/jena/commons-logging-1.1.jar
+Bundle-ClassPath: .,lib/junit-4.4.jar,log4j.jar,lib/pellet/pellet.jar,lib/pellet/aterm-java-1.6.jar,lib/pellet/relaxngDatatype.jar,lib/pellet/xsdlib.jar,lib/jena/commons-logging-1.1.jar
 Import-Package: org.osgi.framework,org.apache.log4j
 Export-Package: lib
 Bundle-Version: 1.0.0

@@ -6,17 +6,14 @@ import java.awt.GridLayout;
 import java.util.*;
 
 import org.semanticweb.owl.model.OWLClass;
-import org.dllearner.core.owl.Description;
 import org.protege.editor.owl.ui.frame.OWLFrame;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import java.awt.*;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JList;
-import javax.swing.JSplitPane;
-
 
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.frame.AbstractOWLFrameSectionRowObjectEditor;
@@ -30,56 +27,58 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	  private Vector<JCheckBox> positive = new Vector<JCheckBox>();
 	  private Vector<JCheckBox> negative = new Vector<JCheckBox>();
 	  private JComponent learner;
-	  private JSplitPane split;
 	  private JButton accept;
 	  private JButton run;
 	  private OWLEditorKit editor;
 	  private JPanel option;
-	  private JPanel listPanel;
-	  private JScrollPane test;
 	  private JList suggest;
-	  private JPanel vorschlag;
-	  private Object[] blub;
+	  private Object[] instances;
 	  private JLabel neg;
+	  private final static Color Color_RED = Color.red;
+	  private JButton cancel;
+	  private JLabel errorMessage;
 	  private ActionHandler action;
 	  private DLLearnerModel model;
-	  private OWLFrame<OWLClass> aktuell;
-	  private JPanel panel;
-
+	  private String[] descriptions = new String[10];
+	  //private OWLFrame<OWLClass> aktuell;
+	  private SuggestEquivalentClassView view;
+	  
 	  public void update(Observable m,Object c)
 	  {
 		  if( model != m) return;
 		   draw(); 
 	  }
-	  	//TODO: Layout selber festlegen denn die standartlayouts sind scheisse
+	  
 	  	//TODO: MVC Achitektur erstellen
 	  	//TODO: herrausfinden wie das mit dem scrollen geht
 	    public SuggestEquivalentClassView(OWLEditorKit editorKit, OWLDescription description, OWLFrame<OWLClass> h) {
 	     
 	    	editor = editorKit;
-	    	aktuell = h;
-	        split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,false);
+	    	//aktuell = h;
 		    model = new DLLearnerModel();
-		    model.addObserver( this);
-	    	vorschlag = new JPanel();
-	    	panel = new JPanel(new GridLayout(0,1));
-	    	panel.setPreferredSize(new Dimension(290,490));
-	    	suggest = new JList();
-	    	//positiv.setPreferredSize(new Dimension(190,200));
-	    	//negativ.setPreferredSize(new Dimension(190,200));
+	    	errorMessage = new JLabel();
+	    	errorMessage.setForeground(Color_RED);
+	    	suggest = new JList(descriptions);
 	    	learner = new JPanel();
-	    	listPanel = new JPanel();
-	    	learner.setPreferredSize(new Dimension(600, 500));
-	    	split.setResizeWeight(0.5);
+	    	learner.setLayout(null);
+	    	learner.setPreferredSize(new Dimension(600, 480));
 	    	pos = new JLabel("Positive Examples");
 	    	neg = new JLabel("Negative Examples");
 	    	run = new JButton("RUN");
+	    	cancel = new JButton("Cancel");
 	    	accept = new JButton("ADD");
-	    	//accept.setSize(190, 20);
 	    	accept.setPreferredSize(new Dimension(290,50));
-	    	action = new ActionHandler(this.action, model);
+	    	option = new JPanel(new GridLayout(0,2));
+	    	cancel.setEnabled(false);
+	    	option.setPreferredSize(new Dimension(290,0));
+	    	model.addObserver(this);
+	    	
 	  }
-	    
+	    public void setView(SuggestEquivalentClassView v)
+	    {
+	    	view = v;
+	    	action = new ActionHandler(this.action, model,view);
+	    }
 	    public OWLDescription getEditedObject()
 	    {
 	    	String expression = "JUHU";
@@ -94,38 +93,38 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	  
 	    public void makeView()
 	    {
-	    	test= new JScrollPane();
-	    	option = new JPanel(new GridLayout(0,1));
-	    	option.setPreferredSize(new Dimension(290,0));
+	    	suggest = new JList(descriptions);
 	    	option.add(pos);
-	    	blub=editor.getOWLModelManager().getActiveOntology().getReferencedIndividuals().toArray();
-	    	for(int j = 0; j<blub.length;j++)
+	    	option.add(neg);
+	    	instances=editor.getOWLModelManager().getActiveOntology().getReferencedIndividuals().toArray();
+	    	for(int j = 0; j<instances.length;j++)
 	    	{
-	    		positive.add(new JCheckBox(editor.getOWLModelManager().getActiveOntology().getURI().toString()+"#"+blub[j].toString()));
+	    		positive.add(new JCheckBox(editor.getOWLModelManager().getActiveOntology().getURI().toString()+"#"+instances[j].toString()));
 	    		
+	    	}
+	    	for(int j = 0; j<instances.length;j++)
+	    	{
+	    		negative.add(new JCheckBox(editor.getOWLModelManager().getActiveOntology().getURI().toString()+"#"+instances[j].toString()));
 	    	}
 	    	for(int j=0; j<positive.size();j++)
 	    	{
 	    		option.add(positive.get(j));
+	    		option.add(negative.get(j));
 	    	}
-	    	option.add(neg);
-	    	for(int j = 0; j<blub.length;j++)
-	    	{
-	    		negative.add(new JCheckBox(editor.getOWLModelManager().getActiveOntology().getURI().toString()+"#"+blub[j].toString()));
-	    	}
-	    	for(int i=0;i<negative.size();i++)
-	    	{
-	    	option.add(negative.get(i));
-	    	}
-	    	//individuals.add(negative);
-	    	option.add(run);
-	    	panel.add(suggest);
-	    	panel.add(accept);
-	    	test.add(option);
-	    	split.setLeftComponent(option);
-	        split.setRightComponent(panel);
-	    	learner.add(split);
-	    	System.out.println(aktuell.getRootObject());
+	    	//test.add(option);
+	        option.setBounds(0, 0, 490, 250);
+	        run.setBounds(0,260,200,30);
+	        cancel.setBounds(210,260,200,30);
+	        suggest.setBounds(0,300,490,110);
+	        accept.setBounds(0,420,200,30);
+	        errorMessage.setBounds(210,420,300,30);
+	        System.out.println("blub2");
+	    	learner.add(option);
+	    	learner.add(run);
+	    	learner.add(cancel);
+	    	learner.add(suggest);
+	    	learner.add(accept);
+	    	learner.add(errorMessage);
 	    	addListener();
 	    	model.setDLLearnerModel(positive,negative,getUri());
 	    }
@@ -140,18 +139,18 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	    */
 	   public void clear()
 	   {
-		   if(split!=null)
-		   {
-		   split.removeAll();
-		   panel.removeAll();
+
 		   if(option!=null)
 		   {
 		   option.removeAll();
 		   }
 		   suggest.removeAll();
-		   vorschlag.removeAll();
 		   positive.removeAllElements();
 		   negative.removeAllElements();
+		   errorMessage.setText("");
+		   for(int i=0; i<descriptions.length;i++)
+		   {
+		   descriptions[i]="";
 		   }
 	   }
 	   /**
@@ -161,7 +160,7 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	   {
 		   run.addActionListener(this.action);
 		   accept.addActionListener(this.action);
-		   
+		   cancel.addActionListener(this.action);
 		   for(int i=0;i<positive.size();i++)
 		   {
 			   positive.get(i).addItemListener(action);
@@ -171,8 +170,28 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 		   {
 			   negative.get(i).addItemListener(action);
 		   } 
-	   }	   
-	 
+	   }
+	   public void destroyListener()
+	   {
+		   run.removeActionListener(this.action);
+		   accept.removeActionListener(this.action);
+		   System.out.println("hihihihi");
+		   cancel.removeActionListener(this.action);
+		   for(int i=0;i<positive.size();i++)
+		   {
+			   positive.get(i).removeItemListener(action);
+		   }
+		   
+		   for(int i=0;i<negative.size();i++)
+		   {
+			   negative.get(i).removeItemListener(action);
+		   } 
+	   }
+	 public void setSuggestedClass()
+	 {	
+		 //TODO: Description umwandeln und in ontologie einfuegen
+		 //editor.getOWLModelManager().getActiveOntology().getClassAxioms().add(e);
+	 }
 	   public void dispose(){
 	   }
 		public String getUri()
@@ -186,21 +205,7 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	    	return uri;
 	    }
 		
-		public void setSuggestionList(java.util.List<Description> list)
-		{
-			System.out.println(list.isEmpty());
-			if(list.isEmpty())
-			{
-				listPanel.add(new JLabel("No Suggestions"));
-			}
-			else
-			{
-				for(int i = 0; i<list.size();i++)
-				{
-					listPanel.add(new JLabel(list.get(i).toString()));
-				}
-			}
-		}
+
 
 	   
 	   public Set<OWLDescription> getEditedObjects()
@@ -210,10 +215,12 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	   private void resetPanel()
 	   {
 		   option.removeAll();
+		   System.out.println("blub1");
 		   positive.removeAllElements();
 		   negative.removeAllElements();
-		   panel.removeAll();
+		   learner.removeAll();
 	   }
+	   
 	   public void release()
 	   {
 	     model.deleteObserver( this);
@@ -222,12 +229,35 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	   
 	   protected void draw() {
 			if (model != null) {
-				String desc[] = ((DLLearnerModel)model).getSolutions();
-
-					suggest = new JList(desc);
-					System.out.println("Hallo Welt");
+				run.setEnabled(true);
+				cancel.setEnabled(false);
+				System.out.println("blub");
+				descriptions = ((DLLearnerModel)model).getSolutions();
 					resetPanel();
 					makeView();
 			}
 		}
+	   
+	   public void disableRunButtons()
+	   {
+		   run.setEnabled(false);
+		   cancel.setEnabled(true);
+		   resetPanel();
+		   makeView();
+	   }
+	   
+	   public void renderErrorMessage(String s)
+	   {
+		   errorMessage.setText(s);
+	   }
+	   
+	   public JButton getStartButton()
+	   {
+		   return run;
+	   }
+	   
+	   public JButton getStopButton()
+	   {
+		   return cancel;
+	   }
 	}
