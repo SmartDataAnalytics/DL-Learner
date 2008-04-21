@@ -202,7 +202,7 @@ public class Cache implements Serializable {
 
 	/**
 	 * Takes a SPARQL query (which has not been evaluated yet) as argument and
-	 * returns a result set. The result set is taken from this cache if the
+	 * returns a JSON result set. The result set is taken from this cache if the
 	 * query is stored here. Otherwise the query is send and its result added to
 	 * the cache and returned. Convenience method.
 	 * 
