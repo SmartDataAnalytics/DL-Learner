@@ -2,6 +2,9 @@ package org.dllearner.tools.ore;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,11 +30,13 @@ import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLOntologyStorageException;
 import org.semanticweb.owl.model.UnknownOWLOntologyException;
+import org.semanticweb.owl.util.OWLEntityRemover;
 
 public class ORE {
 	
@@ -205,6 +210,43 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void deleteIndividual(Individual ind){
+		
+		
+			
+		
+		OWLOntology ontology = reasoner.getOWLAPIOntologies().get(0);
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		OWLIndividual individualOWLAPI = null;
+		
+		try {
+			individualOWLAPI = factory.getOWLIndividual( new URI(ind.getName()));
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		OWLEntityRemover remover = new OWLEntityRemover(manager, Collections.singleton(ontology));
+		
+		
+		individualOWLAPI.accept(remover);
+		
+		try {
+			manager.applyChanges(remover.getChanges());
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		remover.reset();
+		
+		
+	
+		
 	}
 		
 	public static void main(String[] args){
