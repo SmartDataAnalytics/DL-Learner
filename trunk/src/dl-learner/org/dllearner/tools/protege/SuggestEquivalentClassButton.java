@@ -25,17 +25,18 @@ public class SuggestEquivalentClassButton extends AbstractOWLFrameSection<OWLCla
 		this.frame = frame;
 	}
 	
+	@Override
     protected void clear() {
     	
     }
 
 
-
+	@Override
     protected void refill(OWLOntology ontology) {
 
     }
 
-
+	@Override
     protected void refillInferred() {
 
     }
@@ -46,12 +47,12 @@ public class SuggestEquivalentClassButton extends AbstractOWLFrameSection<OWLCla
 
     }
 
-
+    @Override
     protected OWLEquivalentClassesAxiom createAxiom(OWLDescription object) {
         return getOWLDataFactory().getOWLEquivalentClassesAxiom(CollectionFactory.createSet(getRootObject(), object));
     }
 
-
+    @Override
     public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
     	view = new SuggestEquivalentClassView(getOWLEditorKit(), null, frame);
     	view.setView(view);

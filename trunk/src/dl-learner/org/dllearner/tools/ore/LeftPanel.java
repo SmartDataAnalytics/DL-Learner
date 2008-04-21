@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 
 public class LeftPanel extends JPanel{
 
+	private static final long serialVersionUID = -1205252523136710091L;
 	private JLabel[] jLabel;
 	
 	public LeftPanel(int i){

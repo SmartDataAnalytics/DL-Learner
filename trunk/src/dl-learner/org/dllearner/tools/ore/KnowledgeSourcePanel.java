@@ -12,7 +12,7 @@ import javax.swing.filechooser.FileFilter;
 
 public class KnowledgeSourcePanel extends JPanel{
 
-	
+	private static final long serialVersionUID = -3997200565180270088L;
 	private javax.swing.JTextField fileURL;
 	private javax.swing.JButton browseButton;
 	

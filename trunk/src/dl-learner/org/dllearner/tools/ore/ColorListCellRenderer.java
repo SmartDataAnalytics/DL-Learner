@@ -9,6 +9,8 @@ import javax.swing.ListCellRenderer;
 
 public class ColorListCellRenderer extends JLabel implements ListCellRenderer {
 
+	private static final long serialVersionUID = -7592805113197759247L;
+
 	public ColorListCellRenderer() {
 		setOpaque(true);
 	}

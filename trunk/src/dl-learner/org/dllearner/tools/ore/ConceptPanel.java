@@ -19,7 +19,7 @@ import org.jdesktop.swingx.painter.BusyPainter;
 
 public class ConceptPanel extends JPanel{
 
-
+	private static final long serialVersionUID = 3026319637264844550L;
 
 	private javax.swing.JList conceptList;
 	

@@ -15,6 +15,7 @@ import javax.swing.UIManager;
 
 public class IntroductionPanel extends JPanel {
  
+	private static final long serialVersionUID = 7184544803724152044L;
 	private JTextArea instructionsField;
     private JScrollPane jScrollPane1;
         

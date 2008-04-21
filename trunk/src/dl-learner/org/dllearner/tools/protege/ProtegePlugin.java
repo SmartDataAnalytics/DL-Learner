@@ -11,7 +11,8 @@ public class ProtegePlugin  extends AbstractOWLClassViewComponent
 {
 private static final long serialVersionUID = 728362819273927L;
 private OWLFrameList2<OWLClass> list;
- 
+
+	@Override
 	public void initialiseClassView() throws Exception {
 		list = new OWLFrameList2<OWLClass>(getOWLEditorKit(), new ButtonList(getOWLEditorKit()));
 		setLayout(new BorderLayout());
@@ -21,13 +22,13 @@ private OWLFrameList2<OWLClass> list;
 		
 	}
 	
-	
+	@Override
 	protected OWLClass updateView(OWLClass selectedClass) {
         list.setRootObject(selectedClass);
         return selectedClass;
     }
 
-
+	@Override
     public void disposeView() {
         list.dispose();
     }
