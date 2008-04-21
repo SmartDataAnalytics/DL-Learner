@@ -1,7 +1,10 @@
 package org.dllearner.kb.sparql;
 
 
+import java.util.HashMap;
+import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
@@ -34,6 +37,8 @@ import org.dllearner.parser.ParseException;
  */
 public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 
+	public boolean debug_flag=false;
+	
 	private Stack<String> stack = new Stack<String>();
 	
 	private String query="";
@@ -75,10 +80,31 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 */
 	public static void main(String[] args) {
 		try {
-			String d = "EXISTS \"http://dbpedia.org/property/disambiguates\".TOP";
-			String query = SparqlQueryDescriptionConvertVisitor.getSparqlQuery(d);
-			System.out.println(d);
-			System.out.println(query);
+			SortedSet<String> s = new TreeSet<String>();
+			HashMap<String,String> result = new HashMap<String,String>();
+			String conj="(\"http://dbpedia.org/class/yago/Person100007846\" AND \"http://dbpedia.org/class/yago/Head110162991\")";
+			
+			
+			s.add("EXISTS \"http://dbpedia.org/property/disambiguates\".TOP");
+			s.add("EXISTS \"http://dbpedia.org/property/successor\".\"http://dbpedia.org/class/yago/Person100007846\"");
+			s.add("EXISTS \"http://dbpedia.org/property/successor\"."+conj);
+			s.add("ALL \"http://dbpedia.org/property/disambiguates\".TOP");
+			s.add("ALL \"http://dbpedia.org/property/successor\".\"http://dbpedia.org/class/yago/Person100007846\"");
+			s.add("\"http://dbpedia.org/class/yago/Person100007846\"");
+			s.add(conj);
+			s.add("(\"http://dbpedia.org/class/yago/Person100007846\" OR \"http://dbpedia.org/class/yago/Head110162991\")");
+			s.add("NOT \"http://dbpedia.org/class/yago/Person100007846\"");
+			
+			for (String kbsyntax : s) {
+				result.put(kbsyntax,SparqlQueryDescriptionConvertVisitor.getSparqlQuery(kbsyntax));
+			}
+			System.out.println("************************");
+			for (String string : result.keySet()) {
+				System.out.println("KBSyntayString: "+string);
+				System.out.println("Query:\n"+result.get(string));
+				System.out.println("************************");
+			}
+			System.out.println("Finished");
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,42 +115,42 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Negation)
 	 */
 	public void visit(Negation description) {
-		System.out.println("Negation");
+		print("Negation");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectAllRestriction)
 	 */
 	public void visit(ObjectAllRestriction description) {
-		System.out.println("ObjectAllRestriction");		
+		print("ObjectAllRestriction");		
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectSomeRestriction)
 	 */
 	public void visit(ObjectSomeRestriction description) {
-		System.out.println("ObjectSomeRestriction");
+		print("ObjectSomeRestriction");
 		query+="?"+stack.peek()+" <"+description.getRole()+"> ?object"+currentObject+".";
 		stack.push("object"+currentObject);
 		currentObject++;
 		description.getChild(0).accept(this);
 		stack.pop();
-		System.out.println(description.getRole());
-		System.out.println(description.getChild(0));
+		print(description.getRole().toString());
+		print(description.getChild(0).toString());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Nothing)
 	 */
 	public void visit(Nothing description) {
-		System.out.println("Nothing");
+		print("Nothing");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Thing)
 	 */
 	public void visit(Thing description) {
-		System.out.println("Thing");
+		print("Thing");
 		
 	}
 
@@ -132,7 +158,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Intersection)
 	 */
 	public void visit(Intersection description) {
-		System.out.println("Intersection");
+		print("Intersection");
 		description.getChild(0).accept(this);
 		query+=".";
 		description.getChild(1).accept(this);
@@ -143,7 +169,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Union)
 	 */
 	public void visit(Union description) {
-		System.out.println("Union");
+		print("Union");
 		query+="{";
 		description.getChild(0).accept(this);
 		query+="} UNION {";
@@ -155,42 +181,42 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectMinCardinalityRestriction)
 	 */
 	public void visit(ObjectMinCardinalityRestriction description) {
-		System.out.println("ObjectMinCardinalityRestriction");
+		print("ObjectMinCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectExactCardinalityRestriction)
 	 */
 	public void visit(ObjectExactCardinalityRestriction description) {
-		System.out.println("ObjectExactCardinalityRestriction");
+		print("ObjectExactCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectMaxCardinalityRestriction)
 	 */
 	public void visit(ObjectMaxCardinalityRestriction description) {
-		System.out.println("ObjectMaxCardinalityRestriction");
+		print("ObjectMaxCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectValueRestriction)
 	 */
 	public void visit(ObjectValueRestriction description) {
-		System.out.println("ObjectValueRestriction");
+		print("ObjectValueRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeValueRestriction)
 	 */
 	public void visit(DatatypeValueRestriction description) {
-		System.out.println("DatatypeValueRestriction");
+		print("DatatypeValueRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.NamedClass)
 	 */
 	public void visit(NamedClass description) {
-		System.out.println("NamedClass");
+		print("NamedClass");
 		query+="?"+stack.peek()+" a <"+description.getName()+">";
 	}
 
@@ -198,34 +224,44 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.algorithms.gp.ADC)
 	 */
 	public void visit(ADC description) {
-		System.out.println("ADC");
+		print("ADC");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeMinCardinalityRestriction)
 	 */
 	public void visit(DatatypeMinCardinalityRestriction description) {
-		System.out.println("DatatypeMinCardinalityRestriction");
+		print("DatatypeMinCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeExactCardinalityRestriction)
 	 */
 	public void visit(DatatypeExactCardinalityRestriction description) {
-		System.out.println("DatatypeExactCardinalityRestriction");
+		print("DatatypeExactCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeMaxCardinalityRestriction)
 	 */
 	public void visit(DatatypeMaxCardinalityRestriction description) {
-		System.out.println("DatatypeMaxCardinalityRestriction");
+		print("DatatypeMaxCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeSomeRestriction)
 	 */
 	public void visit(DatatypeSomeRestriction description) {
-		System.out.println("DatatypeSomeRestriction");
+		print("DatatypeSomeRestriction");
 	}
+	
+	/**
+	 * TODO should be replaced by logger.debug or sth like that
+	 * @param str
+	 */
+	public void print(String str){ 
+		if(debug_flag)System.out.println(str);
+	}
+	
+	
 }
