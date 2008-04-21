@@ -37,7 +37,7 @@ import org.dllearner.parser.ParseException;
  */
 public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 
-	public boolean debug_flag=false;
+	public static boolean debug_flag=false;
 	
 	private Stack<String> stack = new Stack<String>();
 	
