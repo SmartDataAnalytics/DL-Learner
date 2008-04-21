@@ -58,12 +58,28 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		return query;
 	}
 	
+	public String getSparqlQuery(int limit)
+	{	if(limit==0)limit=99999;
+		query="SELECT ?subject\nWHERE {"+query;
+		query+="}\n";
+		query+="LIMIT "+limit;
+		return query;
+	}
+	
 	public static String getSparqlQuery(String description) throws ParseException
 	{
 		Description d = KBParser.parseConcept(description);
 		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor();
 		d.accept(visitor);
 		return visitor.getSparqlQuery();
+	}
+	
+	public static String getSparqlQuery(String description, int limit) throws ParseException
+	{	if(limit==0)limit=99999;
+		Description d = KBParser.parseConcept(description);
+		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor();
+		d.accept(visitor);
+		return visitor.getSparqlQuery(limit);
 	}
 	
 	public static String getSparqlQuery(Description description)
