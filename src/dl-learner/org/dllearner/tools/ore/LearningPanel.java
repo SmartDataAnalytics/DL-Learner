@@ -24,6 +24,7 @@ import org.jdesktop.swingx.painter.BusyPainter;
 
 public class LearningPanel extends JPanel{
 
+	private static final long serialVersionUID = -7411197973240429632L;
 
 	private JPanel contentPanel;
 	

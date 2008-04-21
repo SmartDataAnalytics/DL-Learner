@@ -15,7 +15,6 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.io.OWLXMLOntologyFormat;
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;

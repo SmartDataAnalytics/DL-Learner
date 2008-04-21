@@ -592,7 +592,7 @@ public class DLLearnerWS {
 	
 	@WebMethod
 	public void SparqlRetrievalThreaded(int id, int componentID, String conceptString) throws ClientNotKnownException, ParseException {
-		ClientState state = getState(id);
+//		ClientState state = getState(id);
 		// call parser to parse concept
 		String sparqlQuery = SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString);
 		sparqlQueryThreaded(id, componentID,sparqlQuery);

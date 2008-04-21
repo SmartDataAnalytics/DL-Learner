@@ -130,7 +130,7 @@ public class KRK {
 							+ ".");
 		}
 		
-		// Datei öffnen
+		// Datei ï¿½ffnen
 		BufferedReader in = null;
 		try {
 			in = new BufferedReader(new FileReader(fileIn));
@@ -155,7 +155,7 @@ public class KRK {
 		try {
 			String line = "";
 			String[] ar = new String[6];
-			String currentclass="";
+//			String currentclass="";
 
 			int x = 0;
 			while ((line = in.readLine()) != null) {
@@ -164,7 +164,7 @@ public class KRK {
 					System.out.println("Currently at line" + x);
 				ar = tokenize(line);
 
-				currentclass = ar[6];
+//				currentclass = ar[6];
 				
 				gameind = getIndividual("game" + x);
 				wkingind = getIndividual("wking_" + ar[0] + ar[1] + "_" + x);

@@ -207,7 +207,7 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 		
 
 
-	   
+		@Override
 	   public Set<OWLDescription> getEditedObjects()
 	   {
 		   return super.getEditedObjects();

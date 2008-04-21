@@ -13,6 +13,7 @@ import org.dllearner.core.owl.Description;
 
 public class ColumnListCellRenderer extends JPanel implements ListCellRenderer {
 
+	private static final long serialVersionUID = 3024913291199515567L;
 	private ORE ore;
 	
 	
