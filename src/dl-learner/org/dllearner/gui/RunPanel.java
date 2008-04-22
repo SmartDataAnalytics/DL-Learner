@@ -143,7 +143,6 @@ public class RunPanel extends JPanel implements ActionListener {
 		// start
 		if (e.getSource() == runButton && config.getLearningAlgorithm() != null
 				&& !config.getThreadIsRunning()) {
-			startGUI.init();
 			thread = new ThreadRun(config);
 			config.getReasoningService().resetStatistics();
 			thread.start();
