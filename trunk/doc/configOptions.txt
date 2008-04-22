@@ -603,6 +603,24 @@ values: class org.dllearner.core.config.BooleanConfigOption
 default value: true
 CLI usage: refexamples.useBooleanDatatypes = true;
 
+option name: maxExecutionTimeInSeconds
+description: algorithm will stop after specified seconds
+values: class org.dllearner.core.config.IntegerConfigOption
+default value: 0
+CLI usage: refexamples.maxExecutionTimeInSeconds = 0;
+
+option name: minExecutionTimeInSeconds
+description: algorithm will run at least specified seconds
+values: class org.dllearner.core.config.IntegerConfigOption
+default value: 0
+CLI usage: refexamples.minExecutionTimeInSeconds = 0;
+
+option name: guaranteeXgoodDescriptions
+description: algorithm will run until X good (100%) concept descritpions are found
+values: class org.dllearner.core.config.IntegerConfigOption
+default value: 1
+CLI usage: refexamples.guaranteeXgoodDescriptions = 1;
+
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
 values: class org.dllearner.core.config.DoubleConfigOption min 0.0 max 100.0
