@@ -6,7 +6,9 @@ import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMinCardinalityRestriction;
@@ -37,7 +39,8 @@ import org.dllearner.parser.ParseException;
  */
 public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 
-	public static boolean debug_flag=false;
+	private static Logger logger = Logger.getLogger(ComponentManager.class);
+
 	
 	private Stack<String> stack = new Stack<String>();
 	
@@ -131,42 +134,42 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Negation)
 	 */
 	public void visit(Negation description) {
-		print("Negation");
+		logger.trace("Negation");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectAllRestriction)
 	 */
 	public void visit(ObjectAllRestriction description) {
-		print("ObjectAllRestriction");		
+		logger.trace("ObjectAllRestriction");		
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectSomeRestriction)
 	 */
 	public void visit(ObjectSomeRestriction description) {
-		print("ObjectSomeRestriction");
+		logger.trace("ObjectSomeRestriction");
 		query+="?"+stack.peek()+" <"+description.getRole()+"> ?object"+currentObject+".";
 		stack.push("object"+currentObject);
 		currentObject++;
 		description.getChild(0).accept(this);
 		stack.pop();
-		print(description.getRole().toString());
-		print(description.getChild(0).toString());
+		logger.trace(description.getRole().toString());
+		logger.trace(description.getChild(0).toString());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Nothing)
 	 */
 	public void visit(Nothing description) {
-		print("Nothing");
+		logger.trace("Nothing");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Thing)
 	 */
 	public void visit(Thing description) {
-		print("Thing");
+		logger.trace("Thing");
 		
 	}
 
@@ -174,7 +177,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Intersection)
 	 */
 	public void visit(Intersection description) {
-		print("Intersection");
+		logger.trace("Intersection");
 		description.getChild(0).accept(this);
 		query+=".";
 		description.getChild(1).accept(this);
@@ -185,7 +188,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Union)
 	 */
 	public void visit(Union description) {
-		print("Union");
+		logger.trace("Union");
 		query+="{";
 		description.getChild(0).accept(this);
 		query+="} UNION {";
@@ -197,42 +200,42 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectMinCardinalityRestriction)
 	 */
 	public void visit(ObjectMinCardinalityRestriction description) {
-		print("ObjectMinCardinalityRestriction");
+		logger.trace("ObjectMinCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectExactCardinalityRestriction)
 	 */
 	public void visit(ObjectExactCardinalityRestriction description) {
-		print("ObjectExactCardinalityRestriction");
+		logger.trace("ObjectExactCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectMaxCardinalityRestriction)
 	 */
 	public void visit(ObjectMaxCardinalityRestriction description) {
-		print("ObjectMaxCardinalityRestriction");
+		logger.trace("ObjectMaxCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectValueRestriction)
 	 */
 	public void visit(ObjectValueRestriction description) {
-		print("ObjectValueRestriction");
+		logger.trace("ObjectValueRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeValueRestriction)
 	 */
 	public void visit(DatatypeValueRestriction description) {
-		print("DatatypeValueRestriction");
+		logger.trace("DatatypeValueRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.NamedClass)
 	 */
 	public void visit(NamedClass description) {
-		print("NamedClass");
+		logger.trace("NamedClass");
 		query+="?"+stack.peek()+" a <"+description.getName()+">";
 	}
 
@@ -240,44 +243,37 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.algorithms.gp.ADC)
 	 */
 	public void visit(ADC description) {
-		print("ADC");
+		logger.trace("ADC");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeMinCardinalityRestriction)
 	 */
 	public void visit(DatatypeMinCardinalityRestriction description) {
-		print("DatatypeMinCardinalityRestriction");
+		logger.trace("DatatypeMinCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeExactCardinalityRestriction)
 	 */
 	public void visit(DatatypeExactCardinalityRestriction description) {
-		print("DatatypeExactCardinalityRestriction");
+		logger.trace("DatatypeExactCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeMaxCardinalityRestriction)
 	 */
 	public void visit(DatatypeMaxCardinalityRestriction description) {
-		print("DatatypeMaxCardinalityRestriction");
+		logger.trace("DatatypeMaxCardinalityRestriction");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.DatatypeSomeRestriction)
 	 */
 	public void visit(DatatypeSomeRestriction description) {
-		print("DatatypeSomeRestriction");
+		logger.trace("DatatypeSomeRestriction");
 	}
 	
-	/**
-	 * TODO should be replaced by logger.debug or sth like that
-	 * @param str
-	 */
-	public void print(String str){ 
-		if(debug_flag)System.out.println(str);
-	}
 	
 	
 }

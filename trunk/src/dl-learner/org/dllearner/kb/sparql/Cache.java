@@ -73,6 +73,13 @@ public class Cache implements Serializable {
 	private long freshnessSeconds = 15 * 24 * 60 * 60;
 
 	/**
+	 *  same ad Cache(String) default is "cache"
+	 */
+	public Cache() {
+		this("cache");
+	} 
+	
+	/**
 	 * Constructor for the cache itself.
 	 * 
 	 * @param cacheDir
