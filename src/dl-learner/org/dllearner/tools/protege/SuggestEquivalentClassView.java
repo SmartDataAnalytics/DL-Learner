@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.*;
 
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.protege.editor.owl.ui.frame.OWLFrame;
 import javax.swing.JButton;
@@ -13,6 +14,8 @@ import java.awt.*;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import org.dllearner.core.owl.Description;
 import javax.swing.JList;
 
 import org.protege.editor.owl.OWLEditorKit;
@@ -34,13 +37,15 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	  private JList suggest;
 	  private Object[] instances;
 	  private JLabel neg;
+	  private JScrollPane scrollPane;
+	  private JScrollPane suggestScroll;
 	  private final static Color Color_RED = Color.red;
 	  private JButton cancel;
 	  private JLabel errorMessage;
 	  private ActionHandler action;
 	  private DLLearnerModel model;
-	  private String[] descriptions = new String[10];
-	  //private OWLFrame<OWLClass> aktuell;
+	  private Description[] descriptions = new Description[10];
+	  private OWLFrame<OWLClass> aktuell;
 	  private SuggestEquivalentClassView view;
 	  
 	  public void update(Observable m,Object c)
@@ -54,11 +59,15 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	    public SuggestEquivalentClassView(OWLEditorKit editorKit, OWLDescription description, OWLFrame<OWLClass> h) {
 	     
 	    	editor = editorKit;
-	    	//aktuell = h;
+	    	scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); 
+	    	suggestScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	    	aktuell = h;
 		    model = new DLLearnerModel();
 	    	errorMessage = new JLabel();
+	    	System.out.println("test: "+aktuell.getRootObject());
 	    	errorMessage.setForeground(Color_RED);
-	    	suggest = new JList(descriptions);
+	    	suggest = new JList();
+	    	suggest.setEnabled(true);
 	    	learner = new JPanel();
 	    	learner.setLayout(null);
 	    	learner.setPreferredSize(new Dimension(600, 480));
@@ -70,7 +79,6 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	    	accept.setPreferredSize(new Dimension(290,50));
 	    	option = new JPanel(new GridLayout(0,2));
 	    	cancel.setEnabled(false);
-	    	option.setPreferredSize(new Dimension(290,0));
 	    	model.addObserver(this);
 	    	
 	  }
@@ -91,9 +99,10 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	    	
 	    }
 	  
-	    public void makeView()
+	    public JComponent makeView()
 	    {
-	    	suggest = new JList(descriptions);
+	    	suggest = new JList();
+	    	
 	    	option.add(pos);
 	    	option.add(neg);
 	    	instances=editor.getOWLModelManager().getActiveOntology().getReferencedIndividuals().toArray();
@@ -111,26 +120,48 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	    		option.add(positive.get(j));
 	    		option.add(negative.get(j));
 	    	}
-	    	//test.add(option);
-	        option.setBounds(0, 0, 490, 250);
-	        run.setBounds(0,260,200,30);
+	    	for(int j = 0; j<positive.size();j++)
+	    	{
+	    		Object[] test=editor.getOWLModelManager().getActiveOntology().getClassAssertionAxioms(aktuell.getRootObject()).toArray();
+	    		for(int i = 0;i<test.length;i++)
+	    		{
+	    			String k = test[i].toString();
+	    			String l = instances[j].toString();
+	    			if(k.contains(l)&&positive.get(j).getText().contains(l))
+	    			{
+	    				JCheckBox n=positive.get(j);
+	    				n.setSelected(true);
+	    				positive.set(j, n);
+	    			}
+	    		}
+	    		
+	    		
+	    		
+	    	}
+	    	scrollPane.setViewportView(option);
+	    	scrollPane.setBounds(0, 0, 490, 250);
+	    	run.setBounds(0,260,200,30);
 	        cancel.setBounds(210,260,200,30);
-	        suggest.setBounds(0,300,490,110);
+	        suggestScroll.setBounds(0,300,490,110);
+	        suggestScroll.setViewportView(suggest);
+	        suggestScroll.setVisible(true);
+	        //suggest.setBounds(0,300,490,110);
 	        accept.setBounds(0,420,200,30);
 	        errorMessage.setBounds(210,420,300,30);
 	        System.out.println("blub2");
-	    	learner.add(option);
+	        learner.add(scrollPane);
 	    	learner.add(run);
 	    	learner.add(cancel);
 	    	learner.add(suggest);
 	    	learner.add(accept);
 	    	learner.add(errorMessage);
 	    	addListener();
-	    	model.setDLLearnerModel(positive,negative,getUri());
+	    	return learner;
 	    }
 
 	    public JComponent getEditorComponent()
 	    {
+	    	System.out.println("das ist ein test");
 	    	makeView();
 	    	return learner;
 	    }
@@ -145,13 +176,11 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 		   option.removeAll();
 		   }
 		   suggest.removeAll();
+		   model.resetSuggestionList();
+		   learner.removeAll();
 		   positive.removeAllElements();
 		   negative.removeAllElements();
 		   errorMessage.setText("");
-		   for(int i=0; i<descriptions.length;i++)
-		   {
-		   descriptions[i]="";
-		   }
 	   }
 	   /**
 	    * Methode die alle Buttons und CheckBoxes an dem ActionListener anmeldet
@@ -161,6 +190,7 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 		   run.addActionListener(this.action);
 		   accept.addActionListener(this.action);
 		   cancel.addActionListener(this.action);
+		   
 		   for(int i=0;i<positive.size();i++)
 		   {
 			   positive.get(i).addItemListener(action);
@@ -171,22 +201,7 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 			   negative.get(i).addItemListener(action);
 		   } 
 	   }
-	   public void destroyListener()
-	   {
-		   run.removeActionListener(this.action);
-		   accept.removeActionListener(this.action);
-		   System.out.println("hihihihi");
-		   cancel.removeActionListener(this.action);
-		   for(int i=0;i<positive.size();i++)
-		   {
-			   positive.get(i).removeItemListener(action);
-		   }
-		   
-		   for(int i=0;i<negative.size();i++)
-		   {
-			   negative.get(i).removeItemListener(action);
-		   } 
-	   }
+
 	 public void setSuggestedClass()
 	 {	
 		 //TODO: Description umwandeln und in ontologie einfuegen
@@ -212,14 +227,7 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	   {
 		   return super.getEditedObjects();
 	   }
-	   private void resetPanel()
-	   {
-		   option.removeAll();
-		   System.out.println("blub1");
-		   positive.removeAllElements();
-		   negative.removeAllElements();
-		   learner.removeAll();
-	   }
+	  
 	   
 	   public void release()
 	   {
@@ -232,25 +240,50 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 				run.setEnabled(true);
 				cancel.setEnabled(false);
 				System.out.println("blub");
+				System.out.println(((DLLearnerModel)model).getSolutions().length);
 				descriptions = ((DLLearnerModel)model).getSolutions();
-					resetPanel();
-					makeView();
+				suggest=new JList(descriptions);
+				//learner.remove(3);
+				suggest.setBounds(0,300,490,110);
+				learner.add(suggest);
+				unsetJCheckBoxen();
+				suggest.addMouseListener(action);
+				
+				returnLearner();
+				
 			}
 		}
 	   
-	   public void disableRunButtons()
+	   public JComponent returnLearner()
 	   {
-		   run.setEnabled(false);
-		   cancel.setEnabled(true);
-		   resetPanel();
-		   makeView();
+		   return learner;
 	   }
 	   
 	   public void renderErrorMessage(String s)
 	   {
 		   errorMessage.setText(s);
 	   }
-	   
+	   private void unsetJCheckBoxen()
+	   {
+		   for(int j=0;j<positive.size();j++)
+		   {
+			   if(positive.get(j).isSelected())
+			   {
+				   JCheckBox i = positive.get(j);
+				   i.setSelected(false);
+				   positive.set(j, i); 
+			   }
+		   }
+		   for(int j=0;j<negative.size();j++)
+		   {
+			   if(negative.get(j).isSelected())
+			   {
+				   JCheckBox i = negative.get(j);
+				   i.setSelected(false);
+				   negative.set(j, i);
+			   }
+		   }
+	   }
 	   public JButton getStartButton()
 	   {
 		   return run;
@@ -260,4 +293,24 @@ public class SuggestEquivalentClassView extends AbstractOWLFrameSectionRowObject
 	   {
 		   return cancel;
 	   }
+	   
+	   public Vector<JCheckBox> getPositiveVector()
+	   {
+		   return positive;
+	   }
+	   
+	   public Vector<JCheckBox> getNegativeVector()
+	   {
+		   
+		   return negative;
+	   }
+	   
+	   public JList getSuggestionList()
+	   {
+		   return suggest;
+	   }
+	   
+	   
+	   
+	   
 	}

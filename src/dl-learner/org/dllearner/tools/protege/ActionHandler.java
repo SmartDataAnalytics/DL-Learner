@@ -4,7 +4,8 @@ package org.dllearner.tools.protege;
 
 import java.awt.event.*;
 import java.util.Observable;
-public class ActionHandler extends Observable implements ActionListener, ItemListener {
+
+public class ActionHandler extends Observable implements ActionListener, ItemListener, MouseListener {
 	private DLLearnerModel model;
 	private SuggestEquivalentClassView view;
 	private Thread dlLearner;
@@ -17,8 +18,8 @@ public class ActionHandler extends Observable implements ActionListener, ItemLis
 		
 		if(z.getActionCommand().equals("RUN"))
 		{
+			model.setDLLearnerModel(view.getPositiveVector(), view.getNegativeVector(),view.getUri());
 			dlLearner = new Thread(model);
-			System.out.println("test");
 			view.getStartButton().setEnabled(false);
 			view.getStopButton().setEnabled(true);
 			dlLearner.start();
@@ -26,21 +27,27 @@ public class ActionHandler extends Observable implements ActionListener, ItemLis
 		
 		if(z.getActionCommand().equals("Cancel"))
 		{
-			System.out.println(dlLearner.isInterrupted());
 			model.getLearningAlgorithm().stop();
-			view.destroyListener();
 			view.getStartButton().setEnabled(true);
 			view.getStopButton().setEnabled(false);
-			System.out.println(dlLearner.isInterrupted());
 			String error = "Learning aborted";
 			dlLearner.interrupt();
-			System.out.println(dlLearner.isInterrupted());
 			view.renderErrorMessage(error);
 		}
 		
 		if(z.getActionCommand().equals("ADD"))
 		{
-			String message ="Ausgezeichnet *Mr.Burns*";
+			String suggest=view.getSuggestionList().getSelectedValue().toString();
+			for(int i = 0;i<model.getSolutions().length;i++)
+			{
+				if(model.getSolutions()[i].toString().equals(suggest))
+				{
+					model.changeDLLearnerDescriptionsToOWLDescriptions(model.getSolutions()[i]);
+					System.out.println(model.getSolutions()[i].toString());
+				}
+			}
+			
+			String message ="Concept added";
 			view.renderErrorMessage(message);
 		}
     }
@@ -51,15 +58,34 @@ public class ActionHandler extends Observable implements ActionListener, ItemLis
 		
 	}
 	
-	public void textValueChanged(TextEvent t)
+	public void mouseReleased(MouseEvent m)
 	{
-		
 		
 	}
 	
-	public void destroyThread()
+	public void mouseEntered(MouseEvent m)
 	{
-		view.getStartButton().setEnabled(true);
-		view.getStopButton().setEnabled(false);
+		
 	}
+	
+	public void mouseClicked(MouseEvent m)
+	{
+		System.out.println("mouseClicked: ");
+	}
+	
+	public void mouseExited(MouseEvent m)
+	{
+		
+	}
+	
+	public void mousePressed(MouseEvent m)
+	{
+		
+	}
+	public void textValueChanged(TextEvent t)
+	{
+
+	}
+	
+
 }

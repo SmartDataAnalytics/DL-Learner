@@ -3,16 +3,31 @@ package org.dllearner.tools.protege;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.OWLFile;
 
+import java.util.HashSet;
 import java.util.Observable;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.io.*;
+import org.dllearner.core.owl.Description;
 import javax.swing.JCheckBox;
 import org.dllearner.algorithms.refinement.*;
+//import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.*;
 import org.dllearner.reasoning.*;
 import org.dllearner.learningproblems.*;
+import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.AddAxiom;
+import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLOntology;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.semanticweb.owl.model.OWLOntologyChangeException;
+import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLOntologyStorageException;
+import org.semanticweb.owl.model.UnknownOWLOntologyException;
 
 public class DLLearnerModel extends Observable implements Runnable{
 	private String[] componenten={"org.dllearner.kb.OWLFile","org.dllearner.reasoning.OWLAPIReasoner",
@@ -22,12 +37,15 @@ public class DLLearnerModel extends Observable implements Runnable{
 	private Vector<JCheckBox> positiv;
 	private Vector<JCheckBox> negativ;
 	private ComponentManager cm;
-	private ReasonerComponent reasoner;
+	//private ReasonerComponent reasoner;
 	private ReasoningService rs;
 	private static final int anzahl = 10;
-	private String[] description = new String[anzahl];
+	private Description[] description = new Description[anzahl];
 	private LearningProblem lp;
 	private LearningAlgorithm la = null;
+	OWLAPIReasoner reasoner;
+	
+
 	public DLLearnerModel()
 
 	{
@@ -52,6 +70,7 @@ public class DLLearnerModel extends Observable implements Runnable{
 	}
 	public void run()
 	{
+		resetSuggestionList();
 		ComponentManager.setComponentClasses(componenten);
 		// get singleton instance of component manager
 		cm = ComponentManager.getInstance();
@@ -120,13 +139,17 @@ public class DLLearnerModel extends Observable implements Runnable{
 		
 		// start the algorithm and print the best concept found
 		la.start();
-		System.out.println(la.getSolutionScore());
-		description[0]=la.getBestSolution().toString();
+		description = new Description[la.getBestSolutions(anzahl).size()];
+		for(int j = 0;j<la.getBestSolutions(anzahl).size();j++)
+		{
+			description[j]=la.getBestSolutions(anzahl).get(j);
+		}
 		setChanged();
 		notifyObservers(description);
+
 	}
 	
-	public String[] getSolutions()
+	public Description[] getSolutions()
 	{
 		return description;
 	}
@@ -171,20 +194,67 @@ public class DLLearnerModel extends Observable implements Runnable{
 		return uri;
 	}
 	
-	public void setDescriptionList(String[] list)
+	public void setDescriptionList(Description[] list)
 	{
 		description=list;
 	}
 	
-	public String[] getSollutions()
-	{
-		return description;
-	}
 	
 	public LearningAlgorithm getLearningAlgorithm()
 	{
 		return la;
 	}
 	
+	
+	public void resetSuggestionList()
+	{
+		/*for(int i=0;i<description.length;i++)
+		{
+			description[i]="";
+		}*/
+	}
+	
+	public void changeDLLearnerDescriptionsToOWLDescriptions(Description desc)
+	{
+		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
+		System.out.println(newConceptOWLAPI);
+		//OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
+	}
+	
+	public void addAxiomToOWL(Description desc,Description concept){
+		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
+		OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
+		
+		OWLOntology ontology = reasoner.getOWLAPIOntologies().get(0);
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		
+		Set<OWLDescription> ds = new HashSet<OWLDescription>();
+		ds.add(newConceptOWLAPI);
+		ds.add(oldConceptOWLAPI);
+		
+		OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
+		
+		
+
+		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
+		try {
+			manager.applyChange(axiom);
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			manager.saveOntology(ontology);
+		} catch (UnknownOWLOntologyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OWLOntologyStorageException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }
