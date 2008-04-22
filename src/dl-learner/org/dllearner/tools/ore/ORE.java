@@ -180,6 +180,7 @@ public class ORE {
 		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
 		OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
 		
+		
 		OWLOntology ontology = reasoner.getOWLAPIOntologies().get(0);
 		
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -191,7 +192,6 @@ public class ORE {
 		ds.add(oldConceptOWLAPI);
 		
 		OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
-		
 		
 
 		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
@@ -213,9 +213,6 @@ public class ORE {
 	}
 	
 	public void deleteIndividual(Individual ind){
-		
-		
-			
 		
 		OWLOntology ontology = reasoner.getOWLAPIOntologies().get(0);
 		
@@ -244,10 +241,52 @@ public class ORE {
 		}
 		remover.reset();
 		
-		
+		try {
+			manager.saveOntology(ontology);
+		} catch (UnknownOWLOntologyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (OWLOntologyStorageException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
+	public void moveIndividual(Individual ind, Description oldDescription, Description newDescription){
+		
+		
+		OWLOntology ontology = reasoner.getOWLAPIOntologies().get(0);
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		OWLIndividual individualOWLAPI = null;
+		
+		
+		try {
+			individualOWLAPI = factory.getOWLIndividual( new URI(ind.getName()));
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//Loeschen
+		OWLEntityRemover remover = new OWLEntityRemover(manager, Collections.singleton(ontology));
+		individualOWLAPI.accept(remover);
+		
+		try {
+			manager.applyChanges(remover.getChanges());
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		remover.reset();
+		
+		//Hinzufuegen
+		
 		
 	}
+	
+	
 		
 	public static void main(String[] args){
 		
@@ -260,7 +299,6 @@ public class ORE {
 		test.detectReasoner();
 		ReasoningService rs = test.getReasoningService();
 		System.err.println("Concepts :" + rs.getAtomicConcepts());
-		
 		
 		
 		test.setConcept(new NamedClass("http://example.com/father#father"));
