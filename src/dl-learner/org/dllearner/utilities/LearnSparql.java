@@ -70,7 +70,7 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"useCardinalityRestrictions",false);
 		cm.applyConfigEntry(la,"useNegation",false);
 		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
-		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",1800);
+		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",900);
 		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
 		
 		//cm.applyConfigEntry(la,"quiet",false);

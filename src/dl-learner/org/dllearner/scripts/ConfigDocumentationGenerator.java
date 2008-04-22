@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core.config;
+package org.dllearner.scripts;
 
 import java.io.File;
 
@@ -40,6 +40,7 @@ public class ConfigDocumentationGenerator {
 		File file = new File("doc/configOptions.txt");
 		ComponentManager cm = ComponentManager.getInstance();
 		cm.writeConfigDocumentation(file);
+		System.out.println("Done");
 	}
 
 }
