@@ -1,4 +1,4 @@
-package org.dllearner.utilities;
+package org.dllearner.scripts;
 import java.io.File;
 import java.net.URI;
 

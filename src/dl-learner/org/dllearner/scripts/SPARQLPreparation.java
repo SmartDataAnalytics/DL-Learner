@@ -1,4 +1,4 @@
-package org.dllearner.test;
+package org.dllearner.scripts;
 
 import java.util.Random;
 import java.util.SortedSet;
