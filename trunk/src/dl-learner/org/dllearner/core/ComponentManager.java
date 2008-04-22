@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.cli.Start;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
@@ -61,6 +62,9 @@ import org.dllearner.utilities.Files;
  */
 public class ComponentManager {
 
+	private static Logger logger = Logger
+		.getLogger(ComponentManager.class);
+	
 	private ComponentPool pool = new ComponentPool();
 	
 	// these variables are valid for the complete lifetime of a DL-Learner session
@@ -213,10 +217,10 @@ public class ComponentManager {
 	 */
 	@SuppressWarnings( { "unchecked" })
 	public <T> void applyConfigEntry(Component component, String optionName, T value) {
-		System.out.println(component);
-		System.out.println(optionName);
-		System.out.println(value);
-		System.out.println(value.getClass());
+		logger.trace(component);
+		logger.trace(optionName);
+		logger.trace(value);
+		logger.trace(value.getClass());
 		// first we look whether the component is registered
 		if (components.contains(component.getClass())) {
 
