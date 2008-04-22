@@ -28,8 +28,8 @@ public class SPARQLMassLearning {
 		//vars
 		boolean useRelated = true;
 		boolean useSuperClasses = true;
-		int poslimit = 50;
-		int neglimit = 100;
+		int poslimit = 300;
+		int neglimit = 600;
 		
 		
 		try {
