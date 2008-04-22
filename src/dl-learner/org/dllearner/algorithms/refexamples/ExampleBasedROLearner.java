@@ -101,6 +101,11 @@ public class ExampleBasedROLearner {
 	private boolean useOverlyGeneralList = true;
 	private boolean useShortConceptConstruction = true;
 	
+	//extended Options
+	private long maxExecutionTimeInSeconds;
+	private long minExecutionTimeInSeconds;
+	private int guaranteeXgoodDescriptions;
+	
 	// if set to false we do not test properness; this may seem wrong
 	// but the disadvantage of properness testing are additional reasoner
 	// queries and a search bias towards ALL r.something because 
@@ -188,6 +193,7 @@ public class ExampleBasedROLearner {
 	private long redundancyCheckTimeNs = 0;
 	private long evaluateSetCreationTimeNs = 0;
 	private long improperConceptsRemovalTimeNs = 0;
+
 	
 	// prefixes
 	private String baseURI;
@@ -206,7 +212,10 @@ public class ExampleBasedROLearner {
 			File searchTreeFile, 
 			boolean useTooWeakList, 
 			boolean useOverlyGeneralList, 
-			boolean useShortConceptConstruction
+			boolean useShortConceptConstruction,
+			int maxExecutionTimeInSeconds,
+			int minExecutionTimeInSeconds,
+			int guaranteeXgoodDescriptions
 	) {	
 		if(learningProblem instanceof PosNegLP) {
 			PosNegLP lp = (PosNegLP) learningProblem;
@@ -239,7 +248,10 @@ public class ExampleBasedROLearner {
 		this.useTooWeakList = useTooWeakList;
 		this.useOverlyGeneralList = useOverlyGeneralList;
 		this.useShortConceptConstruction = useShortConceptConstruction;
-		baseURI = rs.getBaseURI();
+		this.baseURI = rs.getBaseURI();
+		this.maxExecutionTimeInSeconds=maxExecutionTimeInSeconds;
+		this.minExecutionTimeInSeconds=minExecutionTimeInSeconds;
+		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
 		
 //		logger.setLevel(Level.DEBUG);
 	}
@@ -317,7 +329,7 @@ public class ExampleBasedROLearner {
 		long reductionInterval = 500l * 1000000000l;
 		long currentTime;
 		
-		while(!solutionFound && !stop) {		
+		while(!solutionFound && !stop ) {		
 			
 			// print statistics at most once a second
 			currentTime = System.nanoTime();
@@ -352,7 +364,8 @@ public class ExampleBasedROLearner {
 			candidates.add(bestNode);
 			// newCandidates has been filled during node expansion
 			candidates.addAll(newCandidates);
-			candidatesStable.addAll(newCandidates);			
+			candidatesStable.addAll(newCandidates);		
+			
 //			System.out.println("done");			
 			
 			if(writeSearchTree) {
@@ -380,8 +393,10 @@ public class ExampleBasedROLearner {
 	
 			
 		}
-		
-		if(solutionFound) {
+		if(maxExecutionTimeReached()) { stop=true;}
+		boolean minSolutionrequirement = (solutions.size()>guaranteeXgoodDescriptions);
+			
+		if(solutionFound && minExecutionTimeReached() && minSolutionrequirement) {
 			logger.info("best node " + candidatesStable.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
 			logger.info("\nsolutions:");
 			for(Description c : solutions) {
@@ -732,6 +747,7 @@ public class ExampleBasedROLearner {
 		long algorithmRuntime = System.nanoTime() - algorithmStartTime;
 		
 		if(!finalStats) {
+			
 			ExampleBasedNode bestNode = candidatesStable.last();
 //			double accuracy = 100 * ((bestNode.getCoveredPositives().size()
 //			+ nrOfNegativeExamples - bestNode.getCoveredNegatives().size())/(double)nrOfExamples);
@@ -989,6 +1005,19 @@ public class ExampleBasedROLearner {
 		return best;
 	}
 	
+	
+	public void printBestSolutions(int nrOfSolutions){
+		
+		int i=0;
+		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
+			System.out.println(n.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+			if(i==nrOfSolutions)
+				return ;
+			i++;
+		}
+		
+	}
+	
 	public Score getSolutionScore() {
 		if(posOnly)
 			return posOnlyLearningProblem.computeScore(getBestSolution());
@@ -998,6 +1027,32 @@ public class ExampleBasedROLearner {
 	
 	public ExampleBasedNode getStartNode() {
 		return startNode;
+	}
+	
+	private boolean maxExecutionTimeReached(){
+		if(maxExecutionTimeInSeconds==0)return false;
+		long needed = System.nanoTime()- this.algorithmStartTime;
+		//millisec /100
+		//seconds /1000
+		long maxNanoSeconds = maxExecutionTimeInSeconds *100*1000 ;
+		if(maxNanoSeconds<needed)return true;
+		else return false;
+		
+	}
+	
+	/**
+	 * true if minExecutionTime reached
+	 * @return true
+	 */
+	private boolean minExecutionTimeReached(){
+		//if(minExecutionTimeInSeconds==0)return true;
+		long needed = System.nanoTime()- this.algorithmStartTime;
+		//millisec /100
+		//seconds /1000
+		long minNanoSeconds = minExecutionTimeInSeconds *100*1000 ;
+		if(minNanoSeconds<needed)return true;
+		else return false;
+		
 	}
 	
 }

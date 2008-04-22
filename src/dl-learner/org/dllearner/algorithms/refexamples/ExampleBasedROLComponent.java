@@ -38,8 +38,8 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -99,13 +99,18 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean useOverlyGeneralList = true;
 	private boolean useShortConceptConstruction = true;
 	private boolean improveSubsumptionHierarchy = true;
-	private boolean useAllConstructor = true;
-	private boolean useExistsConstructor = true;
-	private boolean useCardinalityRestrictions = true;
-	private boolean useNegation = true;
-	private boolean useBooleanDatatypes = true;
+	private boolean useAllConstructor = CommonConfigOptions.useAllConstructorDefault;
+	private boolean useExistsConstructor = CommonConfigOptions.useExistsConstructorDefault;
+	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
+	private boolean useNegation = CommonConfigOptions.useNegationDefault;
+	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
 	private double noisePercentage = 0.0;
 	private NamedClass startClass = null;
+	//extended Options
+	//in seconds
+	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
+	private int minExecutionTimeInSeconds = CommonConfigOptions.minExecutionTimeInSecondsDefault;
+	private int guaranteeXgoodDescriptions = CommonConfigOptions.guaranteeXgoodDescriptionsDefault;
 	
 	// Variablen zur Einstellung der Protokollierung
 	// boolean quiet = false;
@@ -164,7 +169,9 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useCardinalityRestrictions());
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
-		
+		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
+		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
+		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
 		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples");
 		noisePercentage.setLowerLimit(0);
 		noisePercentage.setUpperLimit(100);
@@ -226,6 +233,12 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			useBooleanDatatypes = (Boolean) entry.getValue();
 		} else if(name.equals("startClass")) {
 			startClass = new NamedClass((String)entry.getValue());
+		}else if(name.equals("maxExecutionTimeInSeconds")) {
+			maxExecutionTimeInSeconds = (Integer) entry.getValue();
+		}else if(name.equals("minExecutionTimeInSeconds")) {
+			minExecutionTimeInSeconds = (Integer) entry.getValue();
+		}else if(name.equals("guaranteeXgoodDescriptions")) {
+			guaranteeXgoodDescriptions =  (Integer) entry.getValue();
 		}
 	}
 
@@ -319,7 +332,10 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 				searchTreeFile,
 				useTooWeakList,
 				useOverlyGeneralList,
-				useShortConceptConstruction
+				useShortConceptConstruction,
+				maxExecutionTimeInSeconds,
+				minExecutionTimeInSeconds,
+				guaranteeXgoodDescriptions
 		);		
 		// note: used concepts and roles do not need to be passed
 		// as argument, because it is sufficient to prepare the
@@ -362,5 +378,14 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	public ExampleBasedNode getStartNode() {
 		return algorithm.getStartNode();
 	}
+	
+	
+	public void printBestSolutions(int nrOfSolutions){
+		
+		algorithm.printBestSolutions(nrOfSolutions);
+	}
+		
+	
+	
 	
 }

@@ -405,6 +405,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// TODO Does this work?
 		return kb;
 	}
+	
+	public URL getNTripleURL(){
+		return dumpFile;
+	}
 
 	/*public static void main(String[] args) throws MalformedURLException {
 		String query = "SELECT ?pred ?obj\n"
