@@ -40,6 +40,9 @@ public final class CommonConfigOptions {
 	public static boolean useCardinalityRestrictionsDefault = true;
 	public static boolean useNegationDefault = true;
 	public static boolean useBooleanDatatypesDefault = true;
+	public static int maxExecutionTimeInSecondsDefault = 0;
+	public static int minExecutionTimeInSecondsDefault = 0;
+	public static int guaranteeXgoodDescriptionsDefault = 1;
 	//public static double noisePercentageDefault = 0.0;
 	
 	
@@ -104,5 +107,17 @@ public final class CommonConfigOptions {
 	
 	public static BooleanConfigOption useBooleanDatatypes() {
 		return new BooleanConfigOption("useBooleanDatatypes", "specifies whether boolean datatypes are used in the learning algorothm",useBooleanDatatypesDefault);
+	}	
+	
+	public static IntegerConfigOption maxExecutionTimeInSeconds() {
+		return new IntegerConfigOption("maxExecutionTimeInSeconds", "algorithm will stop after specified seconds",maxExecutionTimeInSecondsDefault);
+	}	
+	
+	public static IntegerConfigOption minExecutionTimeInSeconds() {
+		return new IntegerConfigOption("minExecutionTimeInSeconds", "algorithm will run at least specified seconds",minExecutionTimeInSecondsDefault);
+	}	
+	
+	public static IntegerConfigOption guaranteeXgoodDescriptions() {
+		return new IntegerConfigOption("guaranteeXgoodDescriptions", "algorithm will run until X good (100%) concept descritpions are found",guaranteeXgoodDescriptionsDefault);
 	}	
 }

@@ -95,6 +95,8 @@ public class SparqlQueryType {
 		pred.add("http://dbpedia.org/property/wikipage");
 		pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 		pred.add("http://dbpedia.org/property/relatedInstance");
+		pred.add("http://dbpedia.org/property/owner");
+		pred.add("http://dbpedia.org/property/standard");
 		
 		Set<String> obj = new HashSet<String>();
 		//obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
@@ -108,7 +110,7 @@ public class SparqlQueryType {
 		obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
 		obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
 		obj.add("http://www.w3.org/2004/02/skos/core");
-
+		
 		return new SparqlQueryType("forbid", obj, pred, false);
 	}
 	public static SparqlQueryType YagoSpecialHierarchy(){

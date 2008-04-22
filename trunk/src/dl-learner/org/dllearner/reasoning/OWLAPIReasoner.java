@@ -58,6 +58,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.RoleComparator;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -180,9 +181,15 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
 		
 		for(KnowledgeSource source : sources) {
-			// OWL files are read directly
-			if(source instanceof OWLFile) {
-				URL url = ((OWLFile)source).getURL();
+			
+			if(source instanceof OWLFile || source instanceof SparqlKnowledgeSource ) {
+				URL url=null;
+				if(source instanceof OWLFile){
+					 url = ((OWLFile)source).getURL();
+					}
+				else if(source instanceof SparqlKnowledgeSource) {
+					url=((SparqlKnowledgeSource)source).getNTripleURL();
+				}
 
 				try {
 					OWLOntology ontology = manager.loadOntologyFromPhysicalURI(url.toURI());

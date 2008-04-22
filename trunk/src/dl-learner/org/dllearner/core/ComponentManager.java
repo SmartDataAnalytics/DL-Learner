@@ -213,6 +213,10 @@ public class ComponentManager {
 	 */
 	@SuppressWarnings( { "unchecked" })
 	public <T> void applyConfigEntry(Component component, String optionName, T value) {
+		System.out.println(component);
+		System.out.println(optionName);
+		System.out.println(value);
+		System.out.println(value.getClass());
 		// first we look whether the component is registered
 		if (components.contains(component.getClass())) {
 

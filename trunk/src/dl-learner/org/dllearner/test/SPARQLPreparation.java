@@ -8,7 +8,9 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
+import org.dllearner.utilities.ConfWriter;
 import org.dllearner.utilities.JenaResultSetConvenience;
+import org.dllearner.utilities.LearnSparql;
 import org.dllearner.utilities.SimpleClock;
 
 import com.hp.hpl.jena.query.ResultSet;
@@ -24,12 +26,14 @@ public class SPARQLPreparation {
 	public static void main(String[] args) {
 		init();
 		try {
+			
 			SimpleClock sc=new SimpleClock();
 			SortedSet<String> concepts = new TreeSet<String>();
 			//concepts.add("\"http://dbpedia.org/class/yago/Person100007846\"");
 			concepts.add("\"http://dbpedia.org/class/yago/FieldMarshal110086821\"");
 			SortedSet<String> posExamples = new TreeSet<String>();
 			SortedSet<String> negExamples = new TreeSet<String>();
+			String url = "http://dbpedia.openlinksw.com:8890/sparql";
 			//HashMap<String, ResultSet> result = new HashMap<String, ResultSet>();
 			//HashMap<String, String> result2 = new HashMap<String, String>();
 			
@@ -50,11 +54,16 @@ public class SPARQLPreparation {
 			}*/
 			System.out.println(negExamples.size());
 			negExamples.removeAll(posExamples);
-			
-			negExamples=shrink(negExamples,posExamples.size()*2);
+			posExamples=shrink(posExamples,5);
+			negExamples=shrink(negExamples,posExamples.size());
 			//System.out.println(posExamples.first()));
 			System.out.println(posExamples.size());
 			System.out.println(negExamples.size());
+			
+			//
+			new ConfWriter().writeSPARQL("aaa.conf", posExamples, negExamples, url, new TreeSet<String>());
+			new LearnSparql().learn(posExamples, negExamples, "http://dbpedia.openlinksw.com:8890/sparql", new TreeSet<String>());
+			
 			sc.printAndSet("Finished");
 		} catch (Exception e) {
 			e.printStackTrace();

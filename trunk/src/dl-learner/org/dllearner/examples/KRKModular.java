@@ -32,7 +32,6 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.kb.KBFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
-import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -258,9 +257,12 @@ public class KRKModular {
 		r.init();
 		ReasoningService rs = new ReasoningService(r); 
 		
+		//cm.learningProblem(lpClass, reasoner)
 		LearningProblem lp = new PosNegDefinitionLP(rs);
-		((PosNegLP)lp).setPositiveExamples(pos);
-		((PosNegLP)lp).setNegativeExamples(neg);
+		//cm.getConfigOptionValue(lp, "");
+		cm.applyConfigEntry(lp, "positiveExamples",pos);
+		cm.applyConfigEntry(lp, "negativeExamples",neg);
+		
 		lp.init();
 		
 		la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);

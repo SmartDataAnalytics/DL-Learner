@@ -162,8 +162,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public void init() throws ComponentInitException {
 		rc = new OWLAPIReasoner(sources);
 		//TODO make it nice
+		
+		
 		rc.setReasonerType(reasonerType);
 		rc.init();
+		
 
 		try {
 			atomicConcepts = rc.getAtomicConcepts();
