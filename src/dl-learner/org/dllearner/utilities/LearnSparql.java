@@ -24,6 +24,7 @@ public class LearnSparql {
 	public void learn(SortedSet<String> posExamples,SortedSet<String> negExamples,
 			String uri, SortedSet<String> ignoredConcepts){
 		
+	
 		ComponentManager cm = ComponentManager.getInstance();
 		LearningAlgorithm la = null;
 		ReasoningService rs = null;
@@ -68,8 +69,8 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"useExistsConstructor",true);
 		cm.applyConfigEntry(la,"useCardinalityRestrictions",false);
 		cm.applyConfigEntry(la,"useNegation",false);
-		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",10);
-		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",10);
+		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
+		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",20);
 		
 		//cm.applyConfigEntry(la,"quiet",false);
 		if(ignoredConcepts.size()>0)

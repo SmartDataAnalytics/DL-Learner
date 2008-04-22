@@ -103,8 +103,11 @@ public class ExampleBasedROLearner {
 	
 	//extended Options
 	private long maxExecutionTimeInSeconds;
+	private boolean maxExecutionTimeShown=false;
 	private long minExecutionTimeInSeconds;
+	private boolean minExecutionTimeShown=false;
 	private int guaranteeXgoodDescriptions;
+	private boolean guaranteeXgoodShown=false;
 	
 	// if set to false we do not test properness; this may seem wrong
 	// but the disadvantage of properness testing are additional reasoner
@@ -185,6 +188,7 @@ public class ExampleBasedROLearner {
 	private int conceptTestsReasoner = 0;
 	
 	// time variables
+	private long runtime;
 	private long algorithmStartTime;
 	private long propernessCalcTimeNs = 0;
 	private long propernessCalcReasoningTimeNs = 0;	
@@ -257,7 +261,7 @@ public class ExampleBasedROLearner {
 	}
 	
 	public void start() {
-		
+		runtime=System.currentTimeMillis();
 		// TODO: write a JUnit test for this problem (long-lasting or infinite loops because
 		// redundant children of a node are called recursively after when the node is extended
 		// twice)
@@ -387,26 +391,37 @@ public class ExampleBasedROLearner {
 					Files.appendFile(searchTreeFile, treeString);
 			}
 			
+			
+			if(maxExecutionTimeReached()) { stop=true;}
+			solutionFound = (guaranteeXgoodDescriptions() );
+			solutionFound = (minExecutionTimeReached()&& solutionFound);
+			//logger.info(minExecutionTimeReached()+"aaaaaaa "+solutions.size()+"::"+guaranteeXgoodDescriptions);
+			//logger.info(solutionFound+"aaaaaaa "+stop);
+			
+			
 			// Anzahl Schleifendurchläufe
 			loop++;
 			
 	
 			
-		}
-		if(maxExecutionTimeReached()) { stop=true;}
-		boolean minSolutionrequirement = (solutions.size()>guaranteeXgoodDescriptions);
+		}//end while
+		
 			
-		if(solutionFound && minExecutionTimeReached() && minSolutionrequirement) {
+		
+		if(solutionFound ) {
 			logger.info("best node " + candidatesStable.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
-			logger.info("\nsolutions:");
+			logger.info("\nsolutions ( top 5 ):");
+			int show=1;
 			for(Description c : solutions) {
-				logger.info("  " + c.toString(baseURI,null) + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
+				logger.info(show+": " + c.toString(baseURI,null) + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
 				//TODO remove this line maybe
 				// watch for String.replace Quick hack
-				logger.info("  MANCHESTER: " + 
+				logger.info("   MANCHESTER: " + 
 						c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()).
 						replace("\"", ""));
-				logger.info("  KBSyntax: " + c.toKBSyntaxString());
+				logger.info("   KBSyntax: " + c.toKBSyntaxString());
+				if(show>=5){break;}
+				show++;
 			}
 		}
 		logger.debug("size of candidate set: " + candidates.size());
@@ -1029,13 +1044,31 @@ public class ExampleBasedROLearner {
 		return startNode;
 	}
 	
+	private boolean guaranteeXgoodDescriptions(){
+		if(guaranteeXgoodShown)return true;
+		if(solutions.size()>guaranteeXgoodDescriptions){
+			logger.info("Minimum number of good descriptions reached, stopping now...");
+			guaranteeXgoodShown=true;
+			return true;}
+		else return false;
+		
+	}
+	
+	
 	private boolean maxExecutionTimeReached(){
 		if(maxExecutionTimeInSeconds==0)return false;
-		long needed = System.nanoTime()- this.algorithmStartTime;
+		if(maxExecutionTimeShown)return true;
+		long needed = System.currentTimeMillis()- this.runtime;
 		//millisec /100
 		//seconds /1000
-		long maxNanoSeconds = maxExecutionTimeInSeconds *100*1000 ;
-		if(maxNanoSeconds<needed)return true;
+		long maxMilliSeconds = maxExecutionTimeInSeconds *1000 ;
+		//System.out.println("max"+maxMilliSeconds);
+		//System.out.println(needed);
+		
+		if(maxMilliSeconds<needed){
+			logger.info("Maximum time reached, stopping now...");
+			maxExecutionTimeShown=true;
+			return true;}
 		else return false;
 		
 	}
@@ -1045,12 +1078,19 @@ public class ExampleBasedROLearner {
 	 * @return true
 	 */
 	private boolean minExecutionTimeReached(){
+		if(minExecutionTimeShown)return true;
 		//if(minExecutionTimeInSeconds==0)return true;
-		long needed = System.nanoTime()- this.algorithmStartTime;
+		long needed = System.currentTimeMillis()- this.runtime;
 		//millisec /100
 		//seconds /1000
-		long minNanoSeconds = minExecutionTimeInSeconds *100*1000 ;
-		if(minNanoSeconds<needed)return true;
+		long minMilliSeconds = minExecutionTimeInSeconds *1000 ;
+		//System.out.println("min"+minMilliSeconds);
+		//System.out.println(needed);
+		
+		if(minMilliSeconds<needed){
+			logger.info("Minimum time reached, stopping when next solution is found");
+			minExecutionTimeShown=true;
+			return true;}
 		else return false;
 		
 	}
