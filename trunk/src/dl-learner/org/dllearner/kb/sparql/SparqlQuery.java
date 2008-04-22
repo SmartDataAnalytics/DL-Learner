@@ -67,10 +67,10 @@ public class SparqlQuery {
 	public ResultSet send() {
 		isRunning = true;
 		ResultSet rs=null;
-		logger.info(queryString);
+		logger.trace(queryString);
 
 		String service = endpoint.getURL().toString();
-		logger.info(endpoint.getURL().toString());
+		logger.trace(endpoint.getURL().toString());
 		// Jena access to SPARQL endpoint
 		queryExecution = new QueryEngineHTTP(service, queryString);
 		for (String dgu : endpoint.getDefaultGraphURIs()) {
@@ -81,14 +81,14 @@ public class SparqlQuery {
 		}
 		logger.info("query SPARQL server");
 		try{
-			//TODO after overnext Jena release
+			//TODO remove after overnext Jena release
 			HttpQuery.urlLimit = 3*1024 ;
 			rs = queryExecution.execSelect();
 			json=SparqlQuery.getAsJSON(rs);
-			logger.info(rs.getResultVars().toString());
+			logger.trace(rs.getResultVars().toString());
 		} catch (Exception e){
 			sendException=new SparqlQueryException(e.getMessage());
-			logger.info("Exception when querying Sparql Endpoint");
+			logger.error("Exception when querying Sparql Endpoint");
 		}
 		isRunning = false;
 		return rs;

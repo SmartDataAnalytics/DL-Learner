@@ -4,6 +4,12 @@ import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.sound.midi.SysexMessage;
+
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
@@ -19,13 +25,15 @@ public class SPARQLPreparation {
 
 	static Cache c;
 	static SparqlEndpoint se;
-
+	private static Logger logger = Logger.getRootLogger();
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		init();
 		try {
+			
+			
 			
 			SimpleClock sc=new SimpleClock();
 			SortedSet<String> concepts = new TreeSet<String>();
@@ -52,13 +60,13 @@ public class SPARQLPreparation {
 					negExamples.remove(string2);
 				};
 			}*/
-			System.out.println(negExamples.size());
+			//System.out.println(negExamples.size());
 			negExamples.removeAll(posExamples);
 			posExamples=shrink(posExamples,5);
 			negExamples=shrink(negExamples,posExamples.size());
 			//System.out.println(posExamples.first()));
-			System.out.println(posExamples.size());
-			System.out.println(negExamples.size());
+			//System.out.println(posExamples.size());
+			//System.out.println(negExamples.size());
 			
 			//
 			new ConfWriter().writeSPARQL("aaa.conf", posExamples, negExamples, url, new TreeSet<String>());
@@ -137,6 +145,14 @@ public class SPARQLPreparation {
 		SparqlQueryDescriptionConvertVisitor.debug_flag = false;
 		c = new Cache("cache");
 		se = SparqlEndpoint.dbpediaEndpoint();
+		// create logger (a simple logger which outputs
+		// its messages to the console)
+		SimpleLayout layout = new SimpleLayout();
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.setLevel(Level.DEBUG);
+		
 
 	}
 	

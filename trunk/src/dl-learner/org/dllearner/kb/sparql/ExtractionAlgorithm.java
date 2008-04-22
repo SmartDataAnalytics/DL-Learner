@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.dllearner.kb.sparql.configuration.Configuration;
 import org.dllearner.kb.sparql.datastructure.ClassNode;
 import org.dllearner.kb.sparql.datastructure.InstanceNode;
@@ -40,7 +41,8 @@ public class ExtractionAlgorithm {
 	private int recursionDepth = 1;
 	// private boolean getAllSuperClasses = true;
 	// private boolean closeAfterRecursion = true;
-	private boolean print_flag = false;
+	private static Logger logger = Logger
+		.getLogger(ExtractionAlgorithm.class);
 
 	public ExtractionAlgorithm(Configuration Configuration) {
 		this.configuration = Configuration;
@@ -79,7 +81,7 @@ public class ExtractionAlgorithm {
 		System.out.println(n);
 		Vector<Node> v = new Vector<Node>();
 		v.add(n);
-		p("StartVector: " + v);
+		logger.info("StartVector: " + v);
 		// n.expand(tsp, this.Manipulator);
 		// Vector<Node> second=
 		for (int x = 1; x <= recursionDepth; x++) {
@@ -87,7 +89,7 @@ public class ExtractionAlgorithm {
 			Vector<Node> tmp = new Vector<Node>();
 			while (v.size() > 0) {
 				Node tmpNode = v.remove(0);
-				p("Expanding " + tmpNode);
+				logger.info("Expanding " + tmpNode);
 				// System.out.println(this.Manipulator);
 				// these are the new not expanded nodes
 				// the others are saved in connection with the original node
@@ -97,14 +99,14 @@ public class ExtractionAlgorithm {
 				tmp.addAll(tmpVec);
 			}
 			v = tmp;
-			System.out.println("Recursion counter: " + x + " with " + v.size()
+			logger.info("Recursion counter: " + x + " with " + v.size()
 					+ " Nodes remaining, needed: "
 					+ (System.currentTimeMillis() - time) + "ms");
 			time = System.currentTimeMillis();
 		}
 
 		HashSet<String> hadAlready = new HashSet<String>();
-		p("Get all superclasses");
+		logger.info("Get all superclasses");
 		//p(configuration.toString());
 		// gets All Class Nodes and expands them further
 		if (this.configuration.isGetAllSuperClasses()) {
@@ -126,10 +128,10 @@ public class ExtractionAlgorithm {
 					configuration);
 			if (this.configuration.isCloseAfterRecursion()) {
 				while (instances.size() > 0) {
-					p("Getting classes for remaining instances: "
+					logger.info("Getting classes for remaining instances: "
 							+ instances.size());
 					Node next = instances.remove(0);
-					p("Getting classes for: " + next);
+					logger.info("Getting classes for: " + next);
 					classes.addAll(next.expand(tsqc, manipulator));
 					if (classes.size() >= manipulator.breakSuperClassRetrievalAfter) {
 						break;
@@ -139,14 +141,14 @@ public class ExtractionAlgorithm {
 			Vector<Node> tmp = new Vector<Node>();
 			int i = 0;
 			while (classes.size() > 0) {
-				p("Remaining classes: " + classes.size());
+				logger.info("Remaining classes: " + classes.size());
 				// Iterator<Node> it=classes.iterator();
 				// Node next =(Node) it.next();
 				// classes.remove(next);
 				Node next = classes.remove(0);
 
 				if (!hadAlready.contains(next.getURI().toString())) {
-					p("Expanding: " + next);
+					logger.info("Expanding: " + next);
 					// System.out.println(hadAlready.size());
 					hadAlready.add(next.getURI().toString());
 					tmp = next.expand(typedSparqlQuery, manipulator);
@@ -172,9 +174,6 @@ public class ExtractionAlgorithm {
 
 	}
 
-	void p(String s) {
-		if (print_flag)
-			System.out.println(s);
-	}
+	
 
 }
