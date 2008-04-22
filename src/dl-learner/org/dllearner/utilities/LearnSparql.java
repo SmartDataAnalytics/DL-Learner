@@ -12,7 +12,6 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
@@ -20,6 +19,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 
 public class LearnSparql {
 
+	
 	
 	public void learn(SortedSet<String> posExamples,SortedSet<String> negExamples,
 			String uri, SortedSet<String> ignoredConcepts){
@@ -58,8 +58,8 @@ public class LearnSparql {
 		
 		lp = new PosNegDefinitionLP(rs);
 		//cm.applyConfigEntry(lp, "positiveExamples",toInd(posExamples));
-		((PosNegLP) lp).setPositiveExamples(toInd(posExamples));
-		((PosNegLP) lp).setNegativeExamples(toInd(negExamples));
+		((PosNegLP) lp).setPositiveExamples(SetManipulation.stringToInd(posExamples));
+		((PosNegLP) lp).setNegativeExamples(SetManipulation.stringToInd(negExamples));
 		//cm.applyConfigEntry(lp, "negativeExamples",toInd(negExamples));
 		lp.init();
 		
@@ -69,8 +69,9 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"useExistsConstructor",true);
 		cm.applyConfigEntry(la,"useCardinalityRestrictions",false);
 		cm.applyConfigEntry(la,"useNegation",false);
-		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
-		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",20);
+		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",100);
+		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",100);
+		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",1);
 		
 		//cm.applyConfigEntry(la,"quiet",false);
 		if(ignoredConcepts.size()>0)
@@ -81,18 +82,12 @@ public class LearnSparql {
 		la.start();
 		
 		//System.out.println("best"+la(20));
-		((ExampleBasedROLComponent)la).printBestSolutions(20);
+		((ExampleBasedROLComponent)la).printBestSolutions(200);
 		
 		}catch (Exception e) {e.printStackTrace();}
 		//System.out.println( la.getBestSolution());;
 	}
 	
-	protected  SortedSet<Individual> toInd(SortedSet<String> set ){
-		SortedSet<Individual> ret = new TreeSet<Individual>();
-		for (String ind : set) {
-			ret.add(new Individual(ind));
-		}
-		return ret;
-	}
+	
 	
 }
