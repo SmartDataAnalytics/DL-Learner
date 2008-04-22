@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.utilities;
+package org.dllearner.scripts;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -42,6 +42,9 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.utilities.Datastructures;
+import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.Stat;
 
 /**
  * Performs cross validation for the given problem. Supports
