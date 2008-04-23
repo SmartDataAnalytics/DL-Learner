@@ -69,10 +69,15 @@ public class ROLearner extends LearningAlgorithm {
 	private boolean useShortConceptConstruction = true;
 	private double horizontalExpansionFactor = 0.6;
 	private boolean improveSubsumptionHierarchy = true;
-	private boolean useAllConstructor = true;
-	private boolean useExistsConstructor = true;
-	private boolean useNegation = true;	
+	private boolean useAllConstructor = CommonConfigOptions.useAllConstructorDefault;
+	private boolean useExistsConstructor = CommonConfigOptions.useExistsConstructorDefault;
+	//this was added so you can switch algorithm without removing everything not applicable
+	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
+	private boolean useNegation = CommonConfigOptions.useNegationDefault;
+	//TODO different standard options to CommonConfigOptions 
 	private boolean useBooleanDatatypes = false;
+	
+	
 	
 	//extended Options
 	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
@@ -228,7 +233,8 @@ public class ROLearner extends LearningAlgorithm {
 		options.add(CommonConfigOptions.ignoredRoles());
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
-		options.add(CommonConfigOptions.useNegation());		
+		options.add(CommonConfigOptions.useNegation());	
+		options.add(CommonConfigOptions.useCardinalityRestrictions());	
 		options.add(CommonConfigOptions.useBooleanDatatypes());
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
@@ -282,6 +288,8 @@ public class ROLearner extends LearningAlgorithm {
 			useAllConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useExistsConstructor")) {
 			useExistsConstructor = (Boolean) entry.getValue();
+		}else if(name.equals("useCardinalityRestrictions")) {
+				useCardinalityRestrictions = (Boolean) entry.getValue();
 		} else if(name.equals("useNegation")) {
 			useNegation = (Boolean) entry.getValue();
 		} else if(name.equals("useBooleanDatatypes")) {
@@ -304,6 +312,7 @@ public class ROLearner extends LearningAlgorithm {
 	@Override
 	public void init() {
 		logger.setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
+		
 		if(searchTreeFile == null)
 			searchTreeFile = new File(defaultSearchTreeFile);
 
@@ -404,6 +413,11 @@ public class ROLearner extends LearningAlgorithm {
 		minimumHorizontalExpansion = 0;		
 		
 		algorithmStartTime = System.nanoTime();
+		
+		//second set of lines below, sometimes doesn't go into while, see above
+		if(maxExecutionTimeReached()) { stop=true;}
+		solutionFound = (guaranteeXgoodDescriptions() );
+		solutionFound = (minExecutionTimeReached()&& solutionFound);
 		
 		// TODO: effizienter Traversal der Subsumption-Hierarchie
 		// TODO: Äquivalenzen nutzen
@@ -506,7 +520,7 @@ public class ROLearner extends LearningAlgorithm {
 					Files.createFile(searchTreeFile, treeString);
 				else
 					Files.appendFile(searchTreeFile, treeString);
-			}
+			}//write search tree
 			
 			// Anzahl Schleifendurchläufe
 			loop++;
@@ -514,11 +528,13 @@ public class ROLearner extends LearningAlgorithm {
 			if(!quiet)
 				logger.debug("--- loop " + loop + " finished ---");	
 			
-		}
+			
+			solutionFound = (guaranteeXgoodDescriptions() );
+			solutionFound = (minExecutionTimeReached()&& solutionFound);
+			if(maxExecutionTimeReached()) {solutionFound=true; stop=true;}
+		}//end while
 		
-		if(maxExecutionTimeReached()) { stop=true;}
-		solutionFound = (guaranteeXgoodDescriptions() );
-		solutionFound = (minExecutionTimeReached()&& solutionFound);
+		
 		
 		
 		// Suchbaum in Datei schreiben
@@ -542,18 +558,23 @@ public class ROLearner extends LearningAlgorithm {
 		
 		if(solutionFound) {
 			logger.info("\nsolutions:");
+			int show=1;
 			for(Description c : solutions) {
-				logger.info("  " + c.toString(baseURI,null) + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
+				logger.info(show+": " +c.toString(baseURI,null) + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
 				//TODO remove this line maybe
 				// watch for String.replace Quick hack
-				logger.info("  MANCHESTER: " + 
+				logger.info("   MANCHESTER: " + 
 						c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()).
 						replace("\"", ""));
-				logger.info("  KBSyntax: " + c.toKBSyntaxString());
+				logger.info("   KBSyntax: " + c.toKBSyntaxString());
+				if(show>=5){break;}
+				show++;
 			}
 		}
 		logger.info("  horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion);
 		logger.info("  size of candidate set: " + candidates.size());
+		//logger.trace("test");
+		//logger.trace(solutions.size());
 		printBestSolutions(0);
 		printStatistics(true);
 		
@@ -1018,13 +1039,13 @@ public class ROLearner extends LearningAlgorithm {
 	}
 	
 	public void printBestSolutions(int nrOfSolutions){
-		if(!logLevel.equalsIgnoreCase("TRACE"))return;
+		if(!logLevel.equalsIgnoreCase("TRACE")){return;}
 		if(nrOfSolutions==0)nrOfSolutions=solutions.size();
 		int i=0;
-		for(;i==nrOfSolutions; i++) {
+		for(;i<nrOfSolutions; i++) {
 			Description d = solutions.get(i);
 			logger.trace("  " + d.toString(baseURI,null) + " (length " + d.getLength() + " " +
-					""+getSolutionScore(d) );
+					"" );
 		}
 			
 	}

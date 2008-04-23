@@ -35,6 +35,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -117,8 +118,13 @@ public class Start {
 		// its messages to the console)
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		logger.removeAllAppenders();
+		FileAppender fileAppender =null; ;
+		try{
+			fileAppender = new FileAppender(layout,"the_log.txt",false);
+		}catch (Exception e) {e.printStackTrace();}
+			logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
+		logger.addAppender(fileAppender);
 		logger.setLevel(Level.DEBUG);
 
 		Start start = null;
