@@ -43,6 +43,7 @@ public final class CommonConfigOptions {
 	public static int maxExecutionTimeInSecondsDefault = 0;
 	public static int minExecutionTimeInSecondsDefault = 0;
 	public static int guaranteeXgoodDescriptionsDefault = 1;
+	public static String logLevelDefault = "DEBUG";
 	//public static double noisePercentageDefault = 0.0;
 	
 	
@@ -119,5 +120,9 @@ public final class CommonConfigOptions {
 	
 	public static IntegerConfigOption guaranteeXgoodDescriptions() {
 		return new IntegerConfigOption("guaranteeXgoodDescriptions", "algorithm will run until X good (100%) concept descritpions are found",guaranteeXgoodDescriptionsDefault);
-	}	
+	}
+	
+	public static StringConfigOption getLogLevel() {
+		return new StringConfigOption("logLevel", "determines the logLevel for this component, can be {TRACE, DEBUG, INFO}",logLevelDefault);
+	}
 }

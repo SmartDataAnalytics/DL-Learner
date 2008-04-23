@@ -72,6 +72,7 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
 		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",900);
 		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
+		cm.applyConfigEntry(la,"logLevel","TRACE");
 		
 		//cm.applyConfigEntry(la,"quiet",false);
 		if(ignoredConcepts.size()>0)
@@ -82,7 +83,7 @@ public class LearnSparql {
 		la.start();
 		
 		//System.out.println("best"+la(20));
-		((ExampleBasedROLComponent)la).printBestSolutions(10000);
+		//((ExampleBasedROLComponent)la).printBestSolutions(10000);
 		
 		}catch (Exception e) {e.printStackTrace();}
 		//System.out.println( la.getBestSolution());;

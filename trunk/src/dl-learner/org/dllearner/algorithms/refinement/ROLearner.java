@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
@@ -25,12 +26,12 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Union;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.refinementoperators.RhoDown;
@@ -43,6 +44,8 @@ public class ROLearner extends LearningAlgorithm {
 	
 	private static Logger logger = Logger
 	.getLogger(LearningAlgorithm.class);	
+	
+	private String logLevel = CommonConfigOptions.logLevelDefault;
 	
 	public enum Heuristic {	LEXICOGRAPHIC, FLEXIBLE	}
 	
@@ -70,6 +73,15 @@ public class ROLearner extends LearningAlgorithm {
 	private boolean useExistsConstructor = true;
 	private boolean useNegation = true;	
 	private boolean useBooleanDatatypes = false;
+	
+	//extended Options
+	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
+	private boolean maxExecutionTimeShown=false;
+	private int minExecutionTimeInSeconds = CommonConfigOptions.minExecutionTimeInSecondsDefault;
+	private boolean minExecutionTimeShown=false;
+	private int guaranteeXgoodDescriptions = CommonConfigOptions.guaranteeXgoodDescriptionsDefault;
+	private boolean guaranteeXgoodShown=false;
+	
 	
 	private boolean quiet = false;
 	
@@ -151,6 +163,7 @@ public class ROLearner extends LearningAlgorithm {
 	private int conceptTestsReasoner = 0;
 	
 	// Zeitvariablen
+	private long runtime;
 	private long algorithmStartTime;
 	private long propernessCalcTimeNs = 0;
 	private long propernessCalcReasoningTimeNs = 0;	
@@ -217,6 +230,10 @@ public class ROLearner extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useExistsConstructor());
 		options.add(CommonConfigOptions.useNegation());		
 		options.add(CommonConfigOptions.useBooleanDatatypes());
+		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
+		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
+		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
+		options.add(CommonConfigOptions.getLogLevel());
 		return options;
 	}
 	
@@ -269,6 +286,14 @@ public class ROLearner extends LearningAlgorithm {
 			useNegation = (Boolean) entry.getValue();
 		} else if(name.equals("useBooleanDatatypes")) {
 			useBooleanDatatypes = (Boolean) entry.getValue();
+		}else if(name.equals("maxExecutionTimeInSeconds")) {
+			maxExecutionTimeInSeconds = (Integer) entry.getValue();
+		}else if(name.equals("minExecutionTimeInSeconds")) {
+			minExecutionTimeInSeconds = (Integer) entry.getValue();
+		}else if(name.equals("guaranteeXgoodDescriptions")) {
+			guaranteeXgoodDescriptions =  (Integer) entry.getValue();
+		} else if(name.equals("logLevel")) {
+			logLevel = ((String)entry.getValue()).toUpperCase();
 		}
 			
 	}
@@ -278,6 +303,7 @@ public class ROLearner extends LearningAlgorithm {
 	 */
 	@Override
 	public void init() {
+		logger.setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
 		if(searchTreeFile == null)
 			searchTreeFile = new File(defaultSearchTreeFile);
 
@@ -351,7 +377,7 @@ public class ROLearner extends LearningAlgorithm {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void start() {
-
+		runtime=System.currentTimeMillis();
 		// Suche wird mit Top-Konzept gestartet
 		Thing top = new Thing();
 		Node topNode = new Node(top);
@@ -489,6 +515,11 @@ public class ROLearner extends LearningAlgorithm {
 				logger.debug("--- loop " + loop + " finished ---");	
 			
 		}
+		
+		if(maxExecutionTimeReached()) { stop=true;}
+		solutionFound = (guaranteeXgoodDescriptions() );
+		solutionFound = (minExecutionTimeReached()&& solutionFound);
+		
 		
 		// Suchbaum in Datei schreiben
 //		if(writeSearchTree)
@@ -1016,6 +1047,47 @@ public class ROLearner extends LearningAlgorithm {
 	 */
 	public Node getStartNode() {
 		return startNode;
+	}
+	
+
+	private boolean guaranteeXgoodDescriptions(){
+		if(guaranteeXgoodShown)return true;
+		if(solutions.size()>guaranteeXgoodDescriptions){
+			logger.info("Minimum number of good descriptions reached, stopping now...");
+			guaranteeXgoodShown=true;
+			return true;}
+		else return false;
+		
+	}
+	
+	
+	private boolean maxExecutionTimeReached(){
+		if(maxExecutionTimeInSeconds==0)return false;
+		if(maxExecutionTimeShown)return true;
+		long needed = System.currentTimeMillis()- this.runtime;
+		long maxMilliSeconds = maxExecutionTimeInSeconds *1000 ;
+		if(maxMilliSeconds<needed){
+			logger.info("Maximum time reached, stopping now...");
+			maxExecutionTimeShown=true;
+			return true;}
+		else return false;
+		
+	}
+	
+	/**
+	 * true if minExecutionTime reached
+	 * @return true
+	 */
+	private boolean minExecutionTimeReached(){
+		if(minExecutionTimeShown)return true;
+		long needed = System.currentTimeMillis()- this.runtime;
+		long minMilliSeconds = minExecutionTimeInSeconds *1000 ;
+		if(minMilliSeconds<needed){
+			logger.info("Minimum time reached, stopping when next solution is found");
+			minExecutionTimeShown=true;
+			return true;}
+		else return false;
+		
 	}
 
 }
