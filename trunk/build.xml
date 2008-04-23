@@ -24,7 +24,11 @@
 	</path>
 	
 	<!-- build target -->
-	<target name="build" depends="createScripts,javadoc">
+	<target name="full_release" depends="javadoc,build" description="full release, javadoc, scripts">
+	</target>
+	
+	<!-- build target -->
+	<target name="build" depends="createScripts" description="fast build including scripts, no javadoc">
 		
 		<!-- write current build date into Info.java -->
 		<echo file="${source_dir}/org/dllearner/Info.java" append="false">
@@ -179,8 +183,8 @@ public class Info {
 			<map from="${removeprefix}" to="."/>
 		</pathconvert>
 
-		<echo file="bin/quickstart.bat" message="java -cp ${pathStringWin} org.dllearner.cli.QuickStart"/>
-		<echo file="bin/dllearner.bat" message="java -cp ${pathStringWin} org.dllearner.cli.Start %*"/>
+		<echo file="bin/quickstart.bat" message="java -Xmx1024m -cp ${pathStringWin} org.dllearner.cli.QuickStart"/>
+		<echo file="bin/dllearner.bat" message="java -Xmx1024m -cp ${pathStringWin} org.dllearner.cli.Start %*"/>
 		<echo file="bin/ws.bat" message="java -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
 		<echo file="bin/quickstart" message="java -cp ${pathStringUnix} org.dllearner.cli.QuickStart"/>
 		<echo file="bin/dllearner" message="java -cp ${pathStringUnix} org.dllearner.cli.Start $@"/>
