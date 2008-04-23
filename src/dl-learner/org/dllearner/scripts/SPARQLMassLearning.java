@@ -11,7 +11,6 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.AutomaticExampleFinderSPARQL;
 import org.dllearner.utilities.ConfWriter;
-import org.dllearner.utilities.LearnSparql;
 import org.dllearner.utilities.SimpleClock;
 
 public class SPARQLMassLearning {
@@ -34,6 +33,11 @@ public class SPARQLMassLearning {
 		
 		try {
 			
+			//System.out.println(logger.setLevel(TRACE));
+			System.out.println(Level.DEBUG.getClass());
+			System.out.println(Level.toLevel("INFO"));
+			System.out.println(Level.INFO);
+			System.exit(0);
 			SimpleClock sc=new SimpleClock();
 			SortedSet<String> concepts = new TreeSet<String>();
 			//concepts.add("\"http://dbpedia.org/class/yago/Person100007846\"");
@@ -57,7 +61,7 @@ public class SPARQLMassLearning {
 			
 			//
 			new ConfWriter().writeSPARQL("aaa.conf", posExamples, negExamples, url, new TreeSet<String>());
-			new LearnSparql().learn(posExamples, negExamples, "http://dbpedia.openlinksw.com:8890/sparql", new TreeSet<String>());
+			//new LearnSparql().learn(posExamples, negExamples, "http://dbpedia.openlinksw.com:8890/sparql", new TreeSet<String>());
 			
 			sc.printAndSet("Finished");
 		} catch (Exception e) {

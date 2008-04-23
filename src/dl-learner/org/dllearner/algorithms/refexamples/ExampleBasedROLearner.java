@@ -75,7 +75,8 @@ import org.dllearner.utilities.Helper;
 public class ExampleBasedROLearner {
 
 	private static Logger logger = Logger
-	.getLogger(ExampleBasedROLearner.class);	
+		.getLogger(ExampleBasedROLearner.class);
+	
 	
 	// basic setup: learning problem and reasoning service
 	private ReasoningService rs;
@@ -221,6 +222,7 @@ public class ExampleBasedROLearner {
 			int minExecutionTimeInSeconds,
 			int guaranteeXgoodDescriptions
 	) {	
+		
 		if(learningProblem instanceof PosNegLP) {
 			PosNegLP lp = (PosNegLP) learningProblem;
 			this.learningProblem = lp;
@@ -256,6 +258,7 @@ public class ExampleBasedROLearner {
 		this.maxExecutionTimeInSeconds=maxExecutionTimeInSeconds;
 		this.minExecutionTimeInSeconds=minExecutionTimeInSeconds;
 		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
+		
 		
 //		logger.setLevel(Level.DEBUG);
 	}
@@ -424,7 +427,9 @@ public class ExampleBasedROLearner {
 				show++;
 			}
 		}
+		
 		logger.debug("size of candidate set: " + candidates.size());
+		printBestSolutions(0);
 		printStatistics(true);
 		
 		if(stop)
@@ -774,9 +779,9 @@ public class ExampleBasedROLearner {
 			
 			// searchTree += bestNodeString + "\n";
 			logger.debug(bestNodeString);
-			logger.debug(startNode.getStats(nrOfPositiveExamples, nrOfNegativeExamples));
+			logger.trace(startNode.getStats(nrOfPositiveExamples, nrOfNegativeExamples));
 			logger.debug(bestNodeStringKBSyntax);
-			if(bestNode.getCoveredNegatives().size()<=3)logger.debug("covered negs: "+bestNode.getCoveredNegatives());
+			if(bestNode.getCoveredNegatives().size()<=5)logger.trace("covered negs: "+bestNode.getCoveredNegatives());
 			String expandedNodeString = "next expanded node: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
 			// searchTree += expandedNodeString + "\n";
 			logger.debug(expandedNodeString);		
@@ -1023,10 +1028,10 @@ public class ExampleBasedROLearner {
 	
 	
 	public void printBestSolutions(int nrOfSolutions){
-		
+		if(nrOfSolutions==0)nrOfSolutions=candidatesStable.size();
 		int i=0;
 		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
-			System.out.println(n.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+			logger.trace(n.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
 			if(i==nrOfSolutions)
 				return ;
 			i++;
@@ -1060,12 +1065,7 @@ public class ExampleBasedROLearner {
 		if(maxExecutionTimeInSeconds==0)return false;
 		if(maxExecutionTimeShown)return true;
 		long needed = System.currentTimeMillis()- this.runtime;
-		//millisec /100
-		//seconds /1000
 		long maxMilliSeconds = maxExecutionTimeInSeconds *1000 ;
-		//System.out.println("max"+maxMilliSeconds);
-		//System.out.println(needed);
-		
 		if(maxMilliSeconds<needed){
 			logger.info("Maximum time reached, stopping now...");
 			maxExecutionTimeShown=true;
@@ -1080,14 +1080,8 @@ public class ExampleBasedROLearner {
 	 */
 	private boolean minExecutionTimeReached(){
 		if(minExecutionTimeShown)return true;
-		//if(minExecutionTimeInSeconds==0)return true;
 		long needed = System.currentTimeMillis()- this.runtime;
-		//millisec /100
-		//seconds /1000
 		long minMilliSeconds = minExecutionTimeInSeconds *1000 ;
-		//System.out.println("min"+minMilliSeconds);
-		//System.out.println(needed);
-		
 		if(minMilliSeconds<needed){
 			logger.info("Minimum time reached, stopping when next solution is found");
 			minExecutionTimeShown=true;

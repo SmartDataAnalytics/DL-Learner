@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -75,6 +77,9 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	
 	// actual algorithm
 	private ExampleBasedROLearner algorithm;
+	private static Logger logger = Logger
+		.getLogger(ExampleBasedROLearner.class);
+	private String logLevel = CommonConfigOptions.logLevelDefault;
 	
 	// learning problem to solve and background knowledge
 	private ReasoningService rs;
@@ -172,6 +177,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
+		options.add(CommonConfigOptions.getLogLevel());
 		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples");
 		noisePercentage.setLowerLimit(0);
 		noisePercentage.setUpperLimit(100);
@@ -239,6 +245,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			minExecutionTimeInSeconds = (Integer) entry.getValue();
 		}else if(name.equals("guaranteeXgoodDescriptions")) {
 			guaranteeXgoodDescriptions =  (Integer) entry.getValue();
+		} else if(name.equals("logLevel")) {
+			logLevel = ((String)entry.getValue()).toUpperCase();
 		}
 	}
 
@@ -247,7 +255,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	 */
 	@Override
 	public void init() {
-
+		
+		logger.setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
 		if(searchTreeFile == null)
 			searchTreeFile = new File(defaultSearchTreeFile);
 
@@ -308,7 +317,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 					rs,
 					applyAllFilter,
 					applyExistsFilter,
-					useAllConstructor,
+					useAllConstructor, 
 					useExistsConstructor,
 					useCardinalityRestrictions,
 					useNegation,
@@ -380,10 +389,10 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	}
 	
 	
-	public void printBestSolutions(int nrOfSolutions){
+	/*public void printBestSolutions(int nrOfSolutions){
 		
 		algorithm.printBestSolutions(nrOfSolutions);
-	}
+	}*/
 		
 	
 	
