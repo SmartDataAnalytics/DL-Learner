@@ -78,7 +78,7 @@ public abstract class Node implements Comparable<Node> {
 
 	@Override
 	public String toString() {
-		return "Node: " + uri + ":" + this.getClass();
+		return "Node: " + uri + ":" + this.getClass().getSimpleName();
 
 	}
 

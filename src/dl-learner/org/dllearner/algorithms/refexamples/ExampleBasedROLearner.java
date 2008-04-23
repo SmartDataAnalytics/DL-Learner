@@ -255,8 +255,8 @@ public class ExampleBasedROLearner {
 		this.useOverlyGeneralList = useOverlyGeneralList;
 		this.useShortConceptConstruction = useShortConceptConstruction;
 		this.baseURI = rs.getBaseURI();
-		this.maxExecutionTimeInSeconds=maxExecutionTimeInSeconds;
-		this.minExecutionTimeInSeconds=minExecutionTimeInSeconds;
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
+		this.minExecutionTimeInSeconds = minExecutionTimeInSeconds;
 		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
 		
 		
@@ -1036,6 +1036,10 @@ public class ExampleBasedROLearner {
 			if(i==nrOfSolutions)
 				return ;
 			i++;
+		}
+		for (int j = 0; j < solutions.size(); j++) {
+			Description d = solutions.get(j);
+			logger.trace(d.toString());
 		}
 		
 	}
