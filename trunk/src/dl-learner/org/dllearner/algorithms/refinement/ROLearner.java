@@ -554,6 +554,7 @@ public class ROLearner extends LearningAlgorithm {
 		}
 		logger.info("  horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion);
 		logger.info("  size of candidate set: " + candidates.size());
+		printBestSolutions(0);
 		printStatistics(true);
 		
 		if(stop)
@@ -1015,6 +1016,18 @@ public class ROLearner extends LearningAlgorithm {
 	public Description getBestSolution() {
 		return candidatesStable.last().getConcept();
 	}
+	
+	public void printBestSolutions(int nrOfSolutions){
+		if(!logLevel.equalsIgnoreCase("TRACE"))return;
+		if(nrOfSolutions==0)nrOfSolutions=solutions.size();
+		int i=0;
+		for(;i==nrOfSolutions; i++) {
+			Description d = solutions.get(i);
+			logger.trace("  " + d.toString(baseURI,null) + " (length " + d.getLength() + " " +
+					""+getSolutionScore(d) );
+		}
+			
+	}
 
 	@Override
 	public synchronized List<Description> getBestSolutions(int nrOfSolutions) {
@@ -1035,6 +1048,14 @@ public class ROLearner extends LearningAlgorithm {
 			return posOnlyLearningProblem.computeScore(getBestSolution());
 		else
 			return learningProblem.computeScore(getBestSolution());
+	}
+	
+	
+	public Score getSolutionScore(Description d) {
+		if(posOnly)
+			return posOnlyLearningProblem.computeScore(d);
+		else
+			return learningProblem.computeScore(d);
 	}
 
 	@Override
