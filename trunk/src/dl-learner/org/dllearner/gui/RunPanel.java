@@ -39,7 +39,7 @@ public class RunPanel extends JPanel implements ActionListener {
 	private JButton runButton, stopButton, treeButton;
 	private JTextArea infoArea;
 	private Config config;
-	private StartGUI startGUI;
+	//private StartGUI startGUI;
 
 	private ThreadRun thread;
 
@@ -65,7 +65,7 @@ public class RunPanel extends JPanel implements ActionListener {
 		super(new BorderLayout());
 
 		this.config = config;
-		this.startGUI = startGUI;
+		//this.startGUI = startGUI;
 
 		runButton = new JButton("Run");
 		runButton.addActionListener(this);
