@@ -394,10 +394,8 @@ public class ExampleBasedROLearner {
 					Files.appendFile(searchTreeFile, treeString);
 			}
 			
+			handleStoppingConditions();
 			
-			if(maxExecutionTimeReached()) { stop=true;}
-			solutionFound = (guaranteeXgoodDescriptions() );
-			solutionFound = (minExecutionTimeReached()&& solutionFound);
 			//logger.info(minExecutionTimeReached()+"aaaaaaa "+solutions.size()+"::"+guaranteeXgoodDescriptions);
 			//logger.info(solutionFound+"aaaaaaa "+stop);
 			
@@ -1055,10 +1053,19 @@ public class ExampleBasedROLearner {
 		return startNode;
 	}
 	
+	private void handleStoppingConditions(){
+		solutionFound = (guaranteeXgoodDescriptions() );
+		solutionFound = (minExecutionTimeReached()&& solutionFound);
+		if(maxExecutionTimeReached()) { 
+			stop();
+			if(solutions.size()>0)solutionFound = true;
+		}
+	}
+	
 	private boolean guaranteeXgoodDescriptions(){
 		if(guaranteeXgoodShown)return true;
 		if(solutions.size()>guaranteeXgoodDescriptions){
-			logger.info("Minimum number of good descriptions reached, stopping now...");
+			logger.info("Minimum number ("+guaranteeXgoodDescriptions+") of good descriptions reached, stopping now...");
 			guaranteeXgoodShown=true;
 			return true;}
 		else return false;
@@ -1072,7 +1079,7 @@ public class ExampleBasedROLearner {
 		long needed = System.currentTimeMillis()- this.runtime;
 		long maxMilliSeconds = maxExecutionTimeInSeconds *1000 ;
 		if(maxMilliSeconds<needed){
-			logger.info("Maximum time reached, stopping now...");
+			logger.info("Maximum time ("+maxExecutionTimeInSeconds+" seconds) reached, stopping now...");
 			maxExecutionTimeShown=true;
 			return true;}
 		else return false;
@@ -1088,7 +1095,7 @@ public class ExampleBasedROLearner {
 		long needed = System.currentTimeMillis()- this.runtime;
 		long minMilliSeconds = minExecutionTimeInSeconds *1000 ;
 		if(minMilliSeconds<needed){
-			logger.info("Minimum time reached, stopping when next solution is found");
+			logger.info("Minimum time ("+minExecutionTimeInSeconds+" seconds) reached, stopping when next solution is found");
 			minExecutionTimeShown=true;
 			return true;}
 		else return false;

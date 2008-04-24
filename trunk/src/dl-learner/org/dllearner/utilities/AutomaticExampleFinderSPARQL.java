@@ -54,9 +54,13 @@ public class AutomaticExampleFinderSPARQL {
 	}
 	
 	private void makePositiveExamplesFromConcept(String concept){
+		if(concept.contains("http://dbpedia.org/resource/Category:")) {
+		this.posExamples = new JenaResultSetConvenience(querySKOSConcept(concept,0))
+			.getStringListForVariable("subject");
+		}else {
 		this.posExamples = new JenaResultSetConvenience(queryConcept(concept,0))
 			.getStringListForVariable("subject");
-		
+		}
 	}
 	
 	
@@ -143,6 +147,29 @@ public class AutomaticExampleFinderSPARQL {
 			String query = SparqlQueryDescriptionConvertVisitor
 					.getSparqlQuery(concept,limit);
 			
+			SparqlQuery sq = new SparqlQuery(query, se);
+			String JSON = c.executeSparqlQuery(sq);
+			//System.out.println(JSON);
+			rs = SparqlQuery.JSONtoResultSet(JSON);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return rs;
+	}
+	
+	public  ResultSet querySKOSConcept(String SKOSconcept,int limit) {
+		if(limit==0)limit=99999;
+		//
+		ResultSet rs = null;
+		try {
+			
+			String query = "SELECT * WHERE { \n " + 
+			"?subject " +
+			"<http://www.w3.org/2004/02/skos/core#subject> " + 
+			"<" + SKOSconcept  + "> \n" +
+			"} LIMIT "+limit;
 			SparqlQuery sq = new SparqlQuery(query, se);
 			String JSON = c.executeSparqlQuery(sq);
 			//System.out.println(JSON);

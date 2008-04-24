@@ -72,6 +72,7 @@ public class ROLearner extends LearningAlgorithm {
 	private boolean useAllConstructor = CommonConfigOptions.useAllConstructorDefault;
 	private boolean useExistsConstructor = CommonConfigOptions.useExistsConstructorDefault;
 	//this was added so you can switch algorithm without removing everything not applicable
+	@SuppressWarnings("unused")
 	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
 	private boolean useNegation = CommonConfigOptions.useNegationDefault;
 	//TODO different standard options to CommonConfigOptions 
@@ -81,11 +82,11 @@ public class ROLearner extends LearningAlgorithm {
 	
 	//extended Options
 	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
-	private boolean maxExecutionTimeShown=false;
+	private boolean maxExecutionTimeShown = false;
 	private int minExecutionTimeInSeconds = CommonConfigOptions.minExecutionTimeInSecondsDefault;
-	private boolean minExecutionTimeShown=false;
+	private boolean minExecutionTimeShown = false;
 	private int guaranteeXgoodDescriptions = CommonConfigOptions.guaranteeXgoodDescriptionsDefault;
-	private boolean guaranteeXgoodShown=false;
+	private boolean guaranteeXgoodShown = false;
 	
 	
 	private boolean quiet = false;
@@ -415,9 +416,7 @@ public class ROLearner extends LearningAlgorithm {
 		algorithmStartTime = System.nanoTime();
 		
 		//second set of lines below, sometimes doesn't go into while, see above
-		if(maxExecutionTimeReached()) { stop=true;}
-		solutionFound = (guaranteeXgoodDescriptions() );
-		solutionFound = (minExecutionTimeReached()&& solutionFound);
+		handleStoppingConditions();
 		
 		// TODO: effizienter Traversal der Subsumption-Hierarchie
 		// TODO: Äquivalenzen nutzen
@@ -528,10 +527,8 @@ public class ROLearner extends LearningAlgorithm {
 			if(!quiet)
 				logger.debug("--- loop " + loop + " finished ---");	
 			
+			handleStoppingConditions();
 			
-			solutionFound = (guaranteeXgoodDescriptions() );
-			solutionFound = (minExecutionTimeReached()&& solutionFound);
-			if(maxExecutionTimeReached()) {solutionFound=true; stop=true;}
 		}//end while
 		
 		
@@ -1091,11 +1088,19 @@ public class ROLearner extends LearningAlgorithm {
 		return startNode;
 	}
 	
+	private void handleStoppingConditions(){
+		solutionFound = (guaranteeXgoodDescriptions() );
+		solutionFound = (minExecutionTimeReached()&& solutionFound);
+		if(maxExecutionTimeReached()) { stop();
+			if(solutions.size()>0)solutionFound = true;
+		}
+	}
 
+	
 	private boolean guaranteeXgoodDescriptions(){
 		if(guaranteeXgoodShown)return true;
 		if(solutions.size()>guaranteeXgoodDescriptions){
-			logger.info("Minimum number of good descriptions reached, stopping now...");
+			logger.info("Minimum number ("+guaranteeXgoodDescriptions+") of good descriptions reached, stopping now...");
 			guaranteeXgoodShown=true;
 			return true;}
 		else return false;
@@ -1109,13 +1114,15 @@ public class ROLearner extends LearningAlgorithm {
 		long needed = System.currentTimeMillis()- this.runtime;
 		long maxMilliSeconds = maxExecutionTimeInSeconds *1000 ;
 		if(maxMilliSeconds<needed){
-			logger.info("Maximum time reached, stopping now...");
+			logger.info("Maximum time ("+maxExecutionTimeInSeconds+" seconds) reached, stopping now...");
 			maxExecutionTimeShown=true;
 			return true;}
 		else return false;
 		
 	}
 	
+	
+
 	/**
 	 * true if minExecutionTime reached
 	 * @return true
@@ -1125,7 +1132,7 @@ public class ROLearner extends LearningAlgorithm {
 		long needed = System.currentTimeMillis()- this.runtime;
 		long minMilliSeconds = minExecutionTimeInSeconds *1000 ;
 		if(minMilliSeconds<needed){
-			logger.info("Minimum time reached, stopping when next solution is found");
+			logger.info("Minimum time ("+minExecutionTimeInSeconds+" seconds) reached, stopping when next solution is found");
 			minExecutionTimeShown=true;
 			return true;}
 		else return false;

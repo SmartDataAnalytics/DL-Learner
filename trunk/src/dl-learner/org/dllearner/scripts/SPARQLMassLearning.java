@@ -1,5 +1,6 @@
 package org.dllearner.scripts;
 
+import java.net.URLEncoder;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -27,21 +28,22 @@ public class SPARQLMassLearning {
 		//vars
 		boolean useRelated = true;
 		boolean useSuperClasses = true;
-		int poslimit = 300;
-		int neglimit = 600;
+		int poslimit = 10;
+		int neglimit = 10;
 		
 		
 		try {
 			
 			//System.out.println(logger.setLevel(TRACE));
-			System.out.println(Level.DEBUG.getClass());
+			/*System.out.println(Level.DEBUG.getClass());
 			System.out.println(Level.toLevel("INFO"));
 			System.out.println(Level.INFO);
-			System.exit(0);
+			System.exit(0);*/
 			SimpleClock sc=new SimpleClock();
 			SortedSet<String> concepts = new TreeSet<String>();
 			//concepts.add("\"http://dbpedia.org/class/yago/Person100007846\"");
-			concepts.add("\"http://dbpedia.org/class/yago/FieldMarshal110086821\"");
+			//concepts.add("\"http://dbpedia.org/class/yago/FieldMarshal110086821\"");
+			concepts.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
 			SortedSet<String> posExamples = new TreeSet<String>();
 			SortedSet<String> negExamples = new TreeSet<String>();
 			String url = "http://dbpedia.openlinksw.com:8890/sparql";
@@ -57,10 +59,15 @@ public class SPARQLMassLearning {
 			System.out.println(posExamples);
 			System.out.println(negExamples);
 			//System.exit(0);
-			
-			
+			String concept = concepts.first().replace("http://dbpedia.org/resource/Category:", "");
+			concept = concept.replace("http://dbpedia.org/class/yago/", "");
+			String confname = URLEncoder.encode(concept, "UTF-8")+".conf";
 			//
-			new ConfWriter().writeSPARQL("aaa.conf", posExamples, negExamples, url, new TreeSet<String>());
+			ConfWriter cf=new ConfWriter();
+			cf.addToStats("relearned concept: "+concepts.first());
+			
+			//"relearned concept: ";
+			cf.writeSPARQL(confname, posExamples, negExamples, url, new TreeSet<String>());
 			//new LearnSparql().learn(posExamples, negExamples, "http://dbpedia.openlinksw.com:8890/sparql", new TreeSet<String>());
 			
 			sc.printAndSet("Finished");

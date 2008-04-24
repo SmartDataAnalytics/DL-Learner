@@ -79,12 +79,14 @@ public class SparqlQuery {
 		for (String ngu : endpoint.getNamedGraphURIs()) {
 			queryExecution.addNamedGraph(ngu);
 		}
-		logger.info("query SPARQL server");
+		
 		try{
 			//TODO remove after overnext Jena release
 			HttpQuery.urlLimit = 3*1024 ;
 			rs = queryExecution.execSelect();
+			logger.debug("query SPARQL server, retrieved: "+rs.getResultVars());
 			json=SparqlQuery.getAsJSON(rs);
+			
 			logger.trace(rs.getResultVars().toString());
 		} catch (Exception e){
 			sendException=new SparqlQueryException(e.getMessage());
