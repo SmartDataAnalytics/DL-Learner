@@ -189,7 +189,7 @@ public class AutomaticExampleFinderSPARQL {
 			
 			SparqlQuery sq = new SparqlQuery(query, se);
 			String JSON = c.executeSparqlQuery(sq);
-			//System.out.println(JSON);
+			//System.out.println("JSON:\n"+JSON);
 			rs = SparqlQuery.JSONtoResultSet(JSON);
 
 		} catch (Exception e) {

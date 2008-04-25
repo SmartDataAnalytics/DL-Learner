@@ -31,15 +31,15 @@ public class SPARQLMassLearning {
 		boolean useRelated = false;
 		boolean useSuperClasses = false;
 		boolean useParallelClasses = true;
-		int poslimit = 15;
-		int neglimit = 200;
+		int poslimit = 10;
+		int neglimit = 20;
 		
 		
 		
 		try {
 			//logger.setLevel(Level.TRACE);
-			Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.TRACE);
-			System.out.println(Logger.getLogger(SparqlQuery.class).getLevel());
+			Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.INFO);
+			//System.out.println(Logger.getLogger(SparqlQuery.class).getLevel());
 		
 			/*System.out.println(Level.DEBUG.getClass());
 			System.out.println(Level.toLevel("INFO"));
@@ -49,11 +49,12 @@ public class SPARQLMassLearning {
 			//concepts.add("(EXISTS \"monarch\".TOP AND EXISTS \"predecessor\".(\"Knight\" OR \"Secretary\"))");
 					
 			SortedSet<String> concepts = new TreeSet<String>();
-			//concepts.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
+			concepts.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
 			//concepts.add("\"http://dbpedia.org/class/yago/Person100007846\"");
-			concepts.add("\"http://dbpedia.org/class/yago/FieldMarshal110086821\"");
+			//concepts.add("\"http://dbpedia.org/class/yago/FieldMarshal110086821\"");
 			//concepts.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
 			//concepts.add("http://dbpedia.org/resource/Category:Grammy_Award_winners");
+			//concepts.add("EXISTS \"http://dbpedia.org/property/grammyawards\".TOP");
 			
 			SortedSet<String> posExamples = new TreeSet<String>();
 			SortedSet<String> negExamples = new TreeSet<String>();
@@ -78,6 +79,7 @@ public class SPARQLMassLearning {
 			//System.exit(0);
 			String tmp = concepts.first().replace("http://dbpedia.org/resource/Category:", "").replace("\"","");
 			tmp = tmp.replace("http://dbpedia.org/class/yago/", "");
+			tmp = tmp.replace("http://dbpedia.org/property/", "");
 			String confname = URLEncoder.encode(tmp, "UTF-8")+".conf";
 			//
 			ConfWriter cf=new ConfWriter();
