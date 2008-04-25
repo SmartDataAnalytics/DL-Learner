@@ -94,7 +94,13 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		Description d = KBParser.parseConcept(description);
 		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor();
 		d.accept(visitor);
-		return visitor.getSparqlQuery();
+		
+		//TODO ERROR see replace HACK
+		String ret = visitor.getSparqlQuery();
+		while (ret.contains("..")) {
+			 ret = ret.replace("..", ".");
+		}
+		return ret;
 	}
 	
 	public static String getSparqlQuery(String description, int limit) throws ParseException
@@ -102,7 +108,12 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		Description d = KBParser.parseConcept(description);
 		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor();
 		d.accept(visitor);
-		return visitor.getSparqlQuery(limit);
+		//TODO ERROR see replace HACK
+		String ret = visitor.getSparqlQuery(limit);
+		while (ret.contains("..")) {
+			 ret = ret.replace("..", ".");
+		}
+		return ret;
 	}
 	
 	/**
@@ -213,6 +224,8 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Intersection)
 	 */
 	public void visit(Intersection description) {
+		//TODO ERROR see replace HACK
+		
 		logger.trace("Intersection");
 		description.getChild(0).accept(this);
 		query+=".";
