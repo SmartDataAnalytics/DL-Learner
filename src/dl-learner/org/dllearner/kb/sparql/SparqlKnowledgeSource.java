@@ -60,14 +60,17 @@ import org.dllearner.utilities.StringTuple;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
+	//DEFAULTS
+	static int recursionDepthDefault = 1;
+	
 	// ConfigOptions
 	public URL url;
 	// String host;
 	private Set<String> instances = new HashSet<String>();;
 	private URL dumpFile;
-	private int recursionDepth = 1;
-	private int predefinedFilter = 0;
-	private int predefinedEndpoint = 0;
+	private int recursionDepth = recursionDepthDefault;
+	private String predefinedFilter = null;
+	private String predefinedEndpoint = null;
 	private Set<String> predList = new HashSet<String>();
 	private Set<String> objList = new HashSet<String>();
 	// private Set<String> classList;
@@ -123,11 +126,11 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				.add(new StringSetConfigOption("instances",
 						"relevant instances e.g. positive and negative examples in a learning problem"));
 		options.add(new IntegerConfigOption("recursionDepth",
-				"recursion depth of KB fragment selection", 2));
-		options.add(new IntegerConfigOption("predefinedFilter",
-				"the mode of the SPARQL Filter"));
-		options.add(new IntegerConfigOption("predefinedEndpoint",
-				"the mode of the SPARQL Filter"));
+				"recursion depth of KB fragment selection", recursionDepthDefault));
+		options.add(new StringConfigOption("predefinedFilter",
+				"the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST"));
+		options.add(new StringConfigOption("predefinedEndpoint",
+				"the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK"));
 
 		options.add(new StringSetConfigOption("predList",
 				"list of all ignored roles"));
@@ -207,9 +210,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			// } else if (option.equals("classList")) {
 			// classList = (Set<String>) entry.getValue();
 		} else if (option.equals("predefinedEndpoint")) {
-			predefinedEndpoint = (Integer) entry.getValue();
+			predefinedEndpoint = ((String) entry.getValue()).toUpperCase();
 		} else if (option.equals("predefinedFilter")) {
-			predefinedFilter = (Integer) entry.getValue();
+			predefinedFilter = ((String) entry.getValue()).toUpperCase();
 		} else if (option.equals("format")) {
 			format = (String) entry.getValue();
 		} else if (option.equals("dumpToFile")) {
@@ -285,8 +288,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				breakSuperClassRetrievalAfter, replacePredicate, replaceObject);
 
 		// get Options for endpoints
-		if (predefinedEndpoint >= 1) {
-			endpoint = SparqlEndpoint.getEndpointByNumber(predefinedEndpoint);
+		if (predefinedEndpoint != null) {
+			//endpoint = SparqlEndpoint.getEndpointByNumber(predefinedEndpoint);
+			endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
 		} else {
 			// TODO this is not optimal, because not all options are used
 			// like default-graph uri
@@ -295,9 +299,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		
 		// get Options for Filters
 
-		if (predefinedFilter >= 1) {
+		if (predefinedFilter != null) {
 			sparqlQueryType = SparqlQueryType
-					.getFilterByNumber(predefinedFilter);
+					.getFilterByName(predefinedFilter);
 
 		} else {
 			sparqlQueryType = new SparqlQueryType("forbid", objList, predList,

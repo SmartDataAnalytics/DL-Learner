@@ -50,11 +50,15 @@ public class ConfWriter {
 
 		String standardSettings = 
 			"sparql.recursionDepth = 1;\n" +
-			"sparql.predefinedFilter = 1;\n" + 
-			"sparql.predefinedEndpoint = 1;\n" +
-			"refexamples.minExecutionTimeInSeconds = 10;\n" +
-			"refexamples.maxExecutionTimeInSeconds = 10;\n" +
-			"refexamples.logLevel=\"TRACE\";\n" ;
+			"sparql.predefinedFilter = \"YAGO\";\n" + 
+			"sparql.predefinedEndpoint = \"DBPEDIA\";\n" +
+			"refexamples.minExecutionTimeInSeconds = 30;\n" +
+			"refexamples.maxExecutionTimeInSeconds = 30;\n" +
+			"refexamples.logLevel=\"TRACE\";\n" +
+			"refexamples.noisePercentage = 0.10;\n" +
+			"refexamples.writeSearchTree = true;\n" +
+			"refexamples.searchTreeFile = \"searchTree.txt\";\n"+
+			"refexamples.replaceSearchTree = true;\n\n" ;
 
 
 		// "sparql.format = \"KB\";\n\n";

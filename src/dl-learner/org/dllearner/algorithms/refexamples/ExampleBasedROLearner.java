@@ -777,7 +777,7 @@ public class ExampleBasedROLearner {
 			
 			// searchTree += bestNodeString + "\n";
 			logger.debug(bestNodeString);
-			logger.trace(startNode.getStats(nrOfPositiveExamples, nrOfNegativeExamples));
+			logger.trace(bestNode.getStats(nrOfPositiveExamples, nrOfNegativeExamples));
 			logger.debug(bestNodeStringKBSyntax);
 			if(bestNode.getCoveredNegatives().size()<=5)logger.trace("covered negs: "+bestNode.getCoveredNegatives());
 			String expandedNodeString = "next expanded node: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
@@ -1035,10 +1035,10 @@ public class ExampleBasedROLearner {
 				return ;
 			i++;
 		}
-		for (int j = 0; j < solutions.size(); j++) {
+		/*for (int j = 0; j < solutions.size(); j++) {
 			Description d = solutions.get(j);
 			logger.trace(d.toString());
-		}
+		}*/
 		
 	}
 	

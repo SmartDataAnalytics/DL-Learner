@@ -61,7 +61,7 @@ public class SparqlEndpoint {
 		return namedGraphURIs;
 	}
 	
-	public static SparqlEndpoint getEndpointByNumber(int i) {
+	/*public static SparqlEndpoint getEndpointByNumber(int i) {
 
 		switch (i) {
 		case 0:break;
@@ -79,6 +79,25 @@ public class SparqlEndpoint {
 		case 6: 
 			return worldFactBook();
 		}
+		return null;
+	}*/
+	
+	public static SparqlEndpoint getEndpointByName(String name) {
+
+	
+		
+		if (name.equals("DBPEDIA"))
+			return dbpediaEndpoint();
+		if (name.equals("LOCALJOSECKI"))
+			return localJoseki();
+		if (name.equals("GOVTRACK"))
+			return govTrack();
+		if (name.equals("REVYU"))
+			return revyu();
+		if (name.equals("MYOPENLINK"))
+			return myopenlink();
+		if (name.equals("FACTBOOK"))
+			return worldFactBook();
 		return null;
 	}
 	

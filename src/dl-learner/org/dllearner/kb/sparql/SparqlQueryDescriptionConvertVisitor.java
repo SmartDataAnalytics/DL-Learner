@@ -38,6 +38,10 @@ import org.dllearner.parser.ParseException;
  *
  */
 public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
+	
+	//private SparqlEndpoint se = null;
+	//private boolean RDFSReasoning = false;
+	
 
 	private static Logger logger = Logger.getLogger(ComponentManager.class);
 
@@ -52,6 +56,13 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	{
 		stack.push("subject");
 	}
+	
+	/*public SparqlQueryDescriptionConvertVisitor(SparqlEndpoint se, boolean RDFSReasoning)
+	{
+		stack.push("subject");
+		this.se = se;
+		this.RDFSReasoning = RDFSReasoning;
+	}*/
 	
 	public String getSparqlQuery()
 	{
@@ -69,6 +80,15 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		return query;
 	}
 	
+	public static String getSparqlSubclassQuery(String description)
+	{	String ret = "SELECT ?subject \n";
+		ret+= "WHERE {\n";
+		ret+=" ?subject <http://www.w3.org/2000/01/rdf-schema#subClassOf>  <"+description+"> \n";
+		ret+="}\n";
+		
+		return ret;
+	}
+	
 	public static String getSparqlQuery(String description) throws ParseException
 	{
 		Description d = KBParser.parseConcept(description);
@@ -84,6 +104,22 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		d.accept(visitor);
 		return visitor.getSparqlQuery(limit);
 	}
+	
+	/**
+	 * includes subclasses, costly function, because subclasses habe to be recieved first.
+	 * @param description
+	 * @param limit
+	 * @param se
+	 * @return
+	 * @throws ParseException
+	 */
+	/*public static String getSparqlQueryIncludingSubclasses(String description, int limit, SparqlEndpoint se) throws ParseException
+	{	if(limit==0)limit=99999;
+		Description d = KBParser.parseConcept(description);
+		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor(se, true);
+		d.accept(visitor);
+		return visitor.getSparqlQuery(limit);
+	}*/
 	
 	public static String getSparqlQuery(Description description)
 	{
@@ -235,9 +271,12 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.NamedClass)
 	 */
 	public void visit(NamedClass description) {
+		
 		logger.trace("NamedClass");
 		query+="?"+stack.peek()+" a <"+description.getName()+">";
 	}
+	
+	
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.algorithms.gp.ADC)

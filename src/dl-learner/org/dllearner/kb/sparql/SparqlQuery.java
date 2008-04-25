@@ -43,6 +43,7 @@ public class SparqlQuery {
 
 	private static Logger logger = Logger.getLogger(SparqlKnowledgeSource.class);
 
+	public String extraDebugInfo = "";
 	private boolean isRunning = false;
 	private String queryString;
 	private QueryEngineHTTP queryExecution;
@@ -65,6 +66,7 @@ public class SparqlQuery {
 	 * Sends a SPARQL query using the Jena library.
 	 */
 	public ResultSet send() {
+		
 		isRunning = true;
 		ResultSet rs=null;
 		logger.trace(queryString);
@@ -84,7 +86,8 @@ public class SparqlQuery {
 			//TODO remove after overnext Jena release
 			HttpQuery.urlLimit = 3*1024 ;
 			rs = queryExecution.execSelect();
-			logger.debug("query SPARQL server, retrieved: "+rs.getResultVars());
+			
+			logger.debug("query SPARQL server ["+extraDebugInfo+"], retrieved: "+rs.getResultVars());
 			json=SparqlQuery.getAsJSON(rs);
 			
 			logger.trace(rs.getResultVars().toString());

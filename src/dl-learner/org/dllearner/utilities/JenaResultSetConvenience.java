@@ -20,6 +20,7 @@ public class JenaResultSetConvenience {
 	public SortedSet<String> getStringListForVariable(String var){
 		SortedSet<String> result = new TreeSet<String>();
 		
+		//String s=ResultSetFormatter.asXMLString(this.rs);
 		List<ResultBinding> l =  ResultSetFormatter.toList(this.rs);
 		
 		for (ResultBinding resultBinding : l) {

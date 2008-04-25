@@ -9,6 +9,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.AutomaticExampleFinderSPARQL;
 import org.dllearner.utilities.ConfWriter;
@@ -26,32 +28,47 @@ public class SPARQLMassLearning {
 		init();
 		
 		//vars
-		boolean useRelated = true;
-		boolean useSuperClasses = true;
-		int poslimit = 10;
-		int neglimit = 10;
+		boolean useRelated = false;
+		boolean useSuperClasses = false;
+		boolean useParallelClasses = true;
+		int poslimit = 15;
+		int neglimit = 200;
+		
 		
 		
 		try {
-			
-			//System.out.println(logger.setLevel(TRACE));
+			//logger.setLevel(Level.TRACE);
+			Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.TRACE);
+			System.out.println(Logger.getLogger(SparqlQuery.class).getLevel());
+		
 			/*System.out.println(Level.DEBUG.getClass());
 			System.out.println(Level.toLevel("INFO"));
-			System.out.println(Level.INFO);
-			System.exit(0);*/
+			System.out.println(Level.INFO);*/
+			//System.exit(0);
 			SimpleClock sc=new SimpleClock();
+			//concepts.add("(EXISTS \"monarch\".TOP AND EXISTS \"predecessor\".(\"Knight\" OR \"Secretary\"))");
+					
 			SortedSet<String> concepts = new TreeSet<String>();
+			//concepts.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
 			//concepts.add("\"http://dbpedia.org/class/yago/Person100007846\"");
-			//concepts.add("\"http://dbpedia.org/class/yago/FieldMarshal110086821\"");
-			concepts.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
+			concepts.add("\"http://dbpedia.org/class/yago/FieldMarshal110086821\"");
+			//concepts.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
+			//concepts.add("http://dbpedia.org/resource/Category:Grammy_Award_winners");
+			
 			SortedSet<String> posExamples = new TreeSet<String>();
 			SortedSet<String> negExamples = new TreeSet<String>();
 			String url = "http://dbpedia.openlinksw.com:8890/sparql";
 			//HashMap<String, ResultSet> result = new HashMap<String, ResultSet>();
 			//HashMap<String, String> result2 = new HashMap<String, String>();
-			
+			//System.out.println(concepts.first());
+			//logger.setLevel(Level.TRACE);
 			AutomaticExampleFinderSPARQL ae= new AutomaticExampleFinderSPARQL( se);
-			ae.init(concepts.first(), useRelated, useSuperClasses, poslimit, neglimit);
+			//System.out.println(new JenaResultSetConvenience(ae.queryConcept(concepts.first(), 0)).getStringListForVariable("?subject")   );;
+			//System.out.println(new JenaResultSetConvenience(ae.queryConcept(concepts.first(), 0)).getStringListForVariable("?subject").size()   );;
+			//ae.getSubClasses(concepts.first());
+			//System.exit(0);
+			
+			ae.init(concepts.first(), useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
 		
 			posExamples = ae.getPosExamples();
 			negExamples = ae.getNegExamples();
@@ -59,13 +76,14 @@ public class SPARQLMassLearning {
 			System.out.println(posExamples);
 			System.out.println(negExamples);
 			//System.exit(0);
-			String concept = concepts.first().replace("http://dbpedia.org/resource/Category:", "");
-			concept = concept.replace("http://dbpedia.org/class/yago/", "");
-			String confname = URLEncoder.encode(concept, "UTF-8")+".conf";
+			String tmp = concepts.first().replace("http://dbpedia.org/resource/Category:", "").replace("\"","");
+			tmp = tmp.replace("http://dbpedia.org/class/yago/", "");
+			String confname = URLEncoder.encode(tmp, "UTF-8")+".conf";
 			//
 			ConfWriter cf=new ConfWriter();
 			cf.addToStats("relearned concept: "+concepts.first());
 			
+			//System.exit(0);
 			//"relearned concept: ";
 			cf.writeSPARQL(confname, posExamples, negExamples, url, new TreeSet<String>());
 			//new LearnSparql().learn(posExamples, negExamples, "http://dbpedia.openlinksw.com:8890/sparql", new TreeSet<String>());
