@@ -54,6 +54,7 @@ public class ConfWriter {
 			"sparql.predefinedEndpoint = \"DBPEDIA\";\n" +
 			"refexamples.minExecutionTimeInSeconds = 30;\n" +
 			"refexamples.maxExecutionTimeInSeconds = 30;\n" +
+			"//refexamples.guaranteeXgoodDescriptions = 10;\n" +
 			"refexamples.logLevel=\"TRACE\";\n" +
 			"refexamples.noisePercentage = 0.10;\n" +
 			"refexamples.writeSearchTree = true;\n" +

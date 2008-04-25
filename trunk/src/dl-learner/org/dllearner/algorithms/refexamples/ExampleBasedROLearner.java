@@ -413,17 +413,17 @@ public class ExampleBasedROLearner {
 			logger.info("best node " + candidatesStable.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
 			logger.info("\nsolutions ( top 5 ):");
 			int show=1;
+			String manchester="MANCHESTER:\n";
+			String KBSyntax="KBSyntax:\n";
 			for(Description c : solutions) {
 				logger.info(show+": " + c.toString(baseURI,null) + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
-				//TODO remove this line maybe
 				// watch for String.replace Quick hack
-				logger.info("   MANCHESTER: " + 
-						c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()).
-						replace("\"", ""));
-				logger.info("   KBSyntax: " + c.toKBSyntaxString());
-				if(show>=5){break;}
-				show++;
+				manchester+=show+": "+c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()).replace("\"", "")+"\n";
+				KBSyntax+=show+": " + c.toKBSyntaxString()+"\n";
+				if(show>=5){break;}	show++;
 			}
+			logger.debug(manchester);
+			logger.debug(KBSyntax);
 		}
 		
 		logger.debug("size of candidate set: " + candidates.size());
