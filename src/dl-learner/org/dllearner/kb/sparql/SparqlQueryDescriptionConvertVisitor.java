@@ -160,6 +160,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 			s.add(conj);
 			s.add("(\"http://dbpedia.org/class/yago/Person100007846\" OR \"http://dbpedia.org/class/yago/Head110162991\")");
 			s.add("NOT \"http://dbpedia.org/class/yago/Person100007846\"");
+			s.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
 			
 			for (String kbsyntax : s) {
 				result.put(kbsyntax,SparqlQueryDescriptionConvertVisitor.getSparqlQuery(kbsyntax));
