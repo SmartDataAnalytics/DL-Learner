@@ -65,22 +65,20 @@ public class SparqlQueryType {
 		//System.out.println("added filter: "+filter);
 	}
 	
-	public static SparqlQueryType getFilterByNumber(int i) {
-
-		switch (i) {
-		case 0:break;
-		//should not be filled
-		case 1:
+	public static SparqlQueryType getFilterByName(String name) {
+		 
+		
+		if (name.equals("YAGO"))
 			return YagoFilter();
-		case 2: 
+		if (name.equals("SKOS"))
 			return SKOS();
-		case 3: 
+		if (name.equals("YAGOSKOS"))
 			return YAGOSKOS();
-		case 4: 
+		if (name.equals("YAGOSPECIALHIERARCHY"))
 			return YagoSpecialHierarchy();
-		case 5: 
+		if (name.equals("TEST"))
 			return test();
-		}
+		
 		return null;
 	}
 	

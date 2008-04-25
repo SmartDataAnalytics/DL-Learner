@@ -220,6 +220,7 @@ public class Cache implements Serializable {
 	public String executeSparqlQuery(SparqlQuery query) {
 		String result = getCacheEntry(query.getQueryString());
 		if (result != null) {
+			logger.trace("got from cache");
 			return result;
 		} else {
 			query.send();

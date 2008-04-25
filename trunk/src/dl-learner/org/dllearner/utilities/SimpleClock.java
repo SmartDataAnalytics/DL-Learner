@@ -37,6 +37,14 @@ public class SimpleClock {
 		time=now;
 	}
 	
+	public String getAndSet(String s) {
+		long now=System.currentTimeMillis();
+		String ret = s+" needed "+(now-time)+" ms";
+		time=now;
+		return ret;
+		
+	}
+	
 	
 	/**
 	 * prints time needed

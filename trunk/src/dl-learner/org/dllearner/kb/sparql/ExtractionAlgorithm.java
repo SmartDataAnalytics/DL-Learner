@@ -106,10 +106,11 @@ public class ExtractionAlgorithm {
 		}
 
 		HashSet<String> hadAlready = new HashSet<String>();
-		logger.info("Get all superclasses");
+		
 		//p(configuration.toString());
 		// gets All Class Nodes and expands them further
 		if (this.configuration.isGetAllSuperClasses()) {
+			logger.info("Get all superclasses");
 			// Set<Node> classes = new TreeSet<Node>();
 			Vector<Node> classes = new Vector<Node>();
 

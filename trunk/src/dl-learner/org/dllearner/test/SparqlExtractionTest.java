@@ -49,7 +49,7 @@ public class SparqlExtractionTest {
 
 			URI u2 = new URI("http://dbpedia.org/resource/Angela_Merkel");
 			m.useConfiguration(
-					SparqlQueryType.getFilterByNumber(1),SparqlEndpoint.getEndpointByNumber(1),
+					SparqlQueryType.getFilterByName("DBPEDIA"),SparqlEndpoint.getEndpointByName("YAGO"),
 					new Manipulator("",200,new LinkedList<StringTuple>(),new LinkedList<StringTuple>()),
 					1,true,true);
 			//, ,
