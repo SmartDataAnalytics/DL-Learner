@@ -19,6 +19,8 @@
  */
 package org.dllearner.core.owl;
 
+import java.util.Map;
+
 
 /**
  * Convenience class for boolean value restrictions.
@@ -60,9 +62,10 @@ public class BooleanValueRestriction extends DatatypeValueRestriction {
 		return 2;
 	}
 	
-	/*@Override
+	@Override
 	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
-		throw new Error("BooleanValueRestriction: not implemented");
+		String ret= "("+restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + " IS " + ((String)value.toKBSyntaxString(baseURI, prefixes)).toUpperCase()+")";
+		return ret;
 		
-	}*/
+	}
 }

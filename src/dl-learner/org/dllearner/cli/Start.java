@@ -633,23 +633,24 @@ public class Start {
 	// performs a query - used for debugging learning examples
 	private static void processQueryMode(LearningProblem lp, ReasoningService rs) {
 
-		System.out.println("Entering query mode. Enter a concept for performing "
+		logger.info("Entering query mode. Enter a concept for performing "
 				+ "retrieval or q to quit. Use brackets for complex expresssions,"
 				+ "e.g. (a AND b).");
 		String queryStr = "";
 		do {
 
-			System.out.print("enter query: ");
+			logger.info("enter query: ");
 			// read input string
 			BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
 			try {
 				queryStr = input.readLine();
+				logger.debug(queryStr);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
-			if (!queryStr.equals("q")) {
+			if (!(queryStr.equalsIgnoreCase("q") ||queryStr.equalsIgnoreCase("quit"))) {
 
 				// parse concept
 				Description concept = null;
@@ -694,12 +695,11 @@ public class Start {
 
 					boolean nonExistingConstructs = false;
 					if (occurringConcepts.size() != 0 || occurringRoles.size() != 0) {
-						System.out
-								.println("You used non-existing atomic concepts or roles. Please correct your query.");
+						logger.debug("You used non-existing atomic concepts or roles. Please correct your query.");
 						if (occurringConcepts.size() > 0)
-							System.out.println("non-existing concepts: " + occurringConcepts);
+							logger.debug("non-existing concepts: " + occurringConcepts);
 						if (occurringRoles.size() > 0)
-							System.out.println("non-existing roles: " + occurringRoles);
+							logger.debug("non-existing roles: " + occurringRoles);
 						nonExistingConstructs = true;
 					}
 
@@ -707,26 +707,25 @@ public class Start {
 
 						if (!queryStr.startsWith("(")
 								&& (queryStr.contains("AND") || queryStr.contains("OR"))) {
-							System.out
-									.println("Make sure you did not forget to use outer brackets.");
+							logger.info("Make sure you did not forget to use outer brackets.");
 						}
 
-						System.out.println("The query is: " + concept + ".");
+						logger.info("The query is: " + concept.toKBSyntaxString() + ".");
 
 						// pose retrieval query
 						Set<Individual> result = null;
 						result = rs.retrieval(concept);
 
-						System.out.println("retrieval result ("+result.size()+"): " + result);
+						logger.info("retrieval result ("+result.size()+"): " + result);
 
 						Score score = lp.computeScore(concept);
-						System.out.println(score);
+						logger.info(score);
 
 					}
 				}
-			}
+			}//end if
 
-		} while (!queryStr.equals("q"));
+		} while (!(queryStr.equalsIgnoreCase("q")||queryStr.equalsIgnoreCase("quit")));
 
 	}
 
