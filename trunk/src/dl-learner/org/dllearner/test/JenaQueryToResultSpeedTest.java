@@ -51,7 +51,7 @@ public class JenaQueryToResultSpeedTest {
 
 	
 	public static void testJenaAsXML(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
+		SparqlEndpoint sse = SparqlEndpoint.EndpointDBpedia();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
 		ResultSet rs = sqJena.send();
@@ -73,7 +73,7 @@ public class JenaQueryToResultSpeedTest {
 	}
 	
 	public static void testJenaAsList(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
+		SparqlEndpoint sse = SparqlEndpoint.EndpointDBpedia();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
 		//sqJena.getAsList();
@@ -97,7 +97,7 @@ public class JenaQueryToResultSpeedTest {
 	}
 	
 	public static void testJenaAsJSON(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
+		SparqlEndpoint sse = SparqlEndpoint.EndpointDBpedia();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
 		ResultSet rs = sqJena.send();
@@ -120,7 +120,7 @@ public class JenaQueryToResultSpeedTest {
 	}
 	
 	public static void testJenaAsJSONandBack(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
+		SparqlEndpoint sse = SparqlEndpoint.EndpointDBpedia();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
 		ResultSet rs = sqJena.send();
@@ -146,7 +146,7 @@ public class JenaQueryToResultSpeedTest {
 	
 
 	public static void compareResults(String queryString) {
-		SparqlEndpoint sse = SparqlEndpoint.dbpediaEndpoint();
+		SparqlEndpoint sse = SparqlEndpoint.EndpointDBpedia();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// SparqlQueryConventional sqConv=new SparqlQueryConventional(sse);
 

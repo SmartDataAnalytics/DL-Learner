@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.AutomaticExampleFinderSPARQL;
 import org.dllearner.utilities.ConfWriter;
@@ -132,7 +131,7 @@ public class SPARQLMassLearning {
 
 	public static void init() {
 		
-		se = SparqlEndpoint.dbpediaEndpoint();
+		se = SparqlEndpoint.EndpointDBpedia();
 		// create logger (a simple logger which outputs
 		// its messages to the console)
 		SimpleLayout layout = new SimpleLayout();
