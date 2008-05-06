@@ -1,6 +1,7 @@
 package org.dllearner.test;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.apache.log4j.ConsoleAppender;
@@ -30,19 +31,15 @@ public class SparqlEndpointTest {
 		
 		
 		
-		Set<SparqlEndpoint> set = new HashSet<SparqlEndpoint>();
-		set.add(SparqlEndpoint.dbpediaEndpoint());
-		set.add(SparqlEndpoint.govTrack());
-		set.add(SparqlEndpoint.localJoseki());
-		set.add(SparqlEndpoint.myopenlink());
-		set.add(SparqlEndpoint.worldFactBook());
-		set.add(SparqlEndpoint.revyu());
+		LinkedList<SparqlEndpoint> ll  = SparqlEndpoint.listEndpoints();
+		
 		
 		
 		int i=1;
-		for (SparqlEndpoint sparqlEndpoint : set) {
-			testEndPoint(sparqlEndpoint);
-			logger.info("finished "+i+" of "+set.size());
+		for (int j = 0; j < ll.size(); j++) {
+			
+			testEndPoint(ll.get(j));
+			logger.info("finished "+i+" of "+ll.size());
 			i++;
 		}
 		logger.info("**************");
