@@ -70,7 +70,7 @@ public class SPARQLMassLearning {
 		SimpleClock sc=new SimpleClock();
 		
 		standardSettings=standardSettingsRefexamples+standardDBpedia;
-		standardSettings=standardSettingsRefinement+standardDBpedia;
+		//standardSettings=standardSettingsRefinement+standardDBpedia;
 		
 		//DBpedia();
 		//algorithm="refinement";
@@ -85,6 +85,56 @@ public class SPARQLMassLearning {
 		
 			sc.printAndSet("Finished");
 
+	}
+	
+	
+	
+	
+	static void roles(){
+		
+		se = SparqlEndpoint.EndpointDBpedia();
+		//se = SparqlEndpoint.EndpointUSCensus();
+		SortedSet<String> roles = new TreeSet<String>();
+		roles.add("http://dbpedia.org/property/birthPlace");
+		//roles.add("http://www.rdfabout.com/rdf/schema/census/landArea");
+		standardSettings+=algorithm+".ignoredRoles = {\""+roles.first()+"\"};\n";
+		
+		SortedSet<String> posExamples = new TreeSet<String>();
+		SortedSet<String> negExamples = new TreeSet<String>();
+		String url = "http://dbpedia.openlinksw.com:8890/sparql";
+		//HashMap<String, ResultSet> result = new HashMap<String, ResultSet>();
+		//HashMap<String, String> result2 = new HashMap<String, String>();
+		//System.out.println(concepts.first());
+		//logger.setLevel(Level.TRACE);
+		AutomaticExampleFinderRolesSPARQL ae= new AutomaticExampleFinderRolesSPARQL( se);
+		
+		ae.initDomainRange(roles.first(), poslimit, neglimit);
+	
+		posExamples = ae.getPosExamples();
+		negExamples = ae.getNegExamples();
+		
+		System.out.println(posExamples);
+		System.out.println(negExamples);
+		//System.exit(0);
+		String tmp = roles.first().replace("http://dbpedia.org/property/", "").replace("\"","");
+		String confname1 = "";
+		String confname2 = "";
+		try{
+			confname1 = URLEncoder.encode(tmp, "UTF-8")+"_domain.conf";
+			confname2 = URLEncoder.encode(tmp, "UTF-8")+"_range.conf";
+		}catch (Exception e) {e.printStackTrace();}
+		//
+		ConfWriter cf=new ConfWriter();
+		cf.addToStats("relearned role: "+roles.first());
+		
+		//System.exit(0);
+		//"relearned concept: ";
+		cf.writeSPARQL(confname1,  negExamples,posExamples, url, new TreeSet<String>(),standardSettings,algorithm);
+		
+		cf.writeSPARQL(confname2, posExamples, negExamples, url, new TreeSet<String>(),standardSettings,algorithm);
+		//new LearnSparql().learn(posExamples, negExamples, "http://dbpedia.openlinksw.com:8890/sparql", new TreeSet<String>());
+	
+		
 	}
 	
 	static void DBpedia(){
@@ -139,50 +189,6 @@ public class SPARQLMassLearning {
 		
 	}
 	
-	
-	
-	static void roles(){
-		
-		se = SparqlEndpoint.EndpointDBpedia();
-		//se = SparqlEndpoint.EndpointUSCensus();
-		SortedSet<String> roles = new TreeSet<String>();
-		roles.add("http://dbpedia.org/property/birthPlace");
-		//roles.add("http://www.rdfabout.com/rdf/schema/census/landArea");
-		standardSettings+=algorithm+".ignoredRoles = {\""+roles.first()+"\"};\n";
-		
-		SortedSet<String> posExamples = new TreeSet<String>();
-		SortedSet<String> negExamples = new TreeSet<String>();
-		String url = "http://dbpedia.openlinksw.com:8890/sparql";
-		//HashMap<String, ResultSet> result = new HashMap<String, ResultSet>();
-		//HashMap<String, String> result2 = new HashMap<String, String>();
-		//System.out.println(concepts.first());
-		//logger.setLevel(Level.TRACE);
-		AutomaticExampleFinderRolesSPARQL ae= new AutomaticExampleFinderRolesSPARQL( se);
-		
-		ae.initDomainRange(roles.first(), poslimit, neglimit);
-	
-		posExamples = ae.getPosExamples();
-		negExamples = ae.getNegExamples();
-		
-		System.out.println(posExamples);
-		System.out.println(negExamples);
-		//System.exit(0);
-		String tmp = roles.first().replace("http://dbpedia.org/property/", "").replace("\"","");
-		String confname = "";
-		try{
-			confname = URLEncoder.encode(tmp, "UTF-8")+".conf";
-		}catch (Exception e) {e.printStackTrace();}
-		//
-		ConfWriter cf=new ConfWriter();
-		cf.addToStats("relearned role: "+roles.first());
-		
-		//System.exit(0);
-		//"relearned concept: ";
-		cf.writeSPARQL(confname, posExamples, negExamples, url, new TreeSet<String>(),standardSettings,algorithm);
-		//new LearnSparql().learn(posExamples, negExamples, "http://dbpedia.openlinksw.com:8890/sparql", new TreeSet<String>());
-	
-		
-	}
 
 	/***************************************************************************
 	 * *********************OLDCODE String
