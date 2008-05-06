@@ -43,23 +43,12 @@ public class ConfWriter {
 	}
 
 	public void writeSPARQL(String filename, SortedSet<String> pos, SortedSet<String> neg,
-			String uri, SortedSet<String> ignoredConcepts) {
+			String uri, SortedSet<String> ignoredConcepts, String standardSettings, String prefixAlgortihm) {
 
-		String prefixAlgortihm = "refexamples";
+	
 		String prefixSparql = "sparql";
 
-		String standardSettings = 
-			"sparql.recursionDepth = 1;\n" +
-			"sparql.predefinedFilter = \"YAGO\";\n" + 
-			"sparql.predefinedEndpoint = \"DBPEDIA\";\n" +
-			"refexamples.minExecutionTimeInSeconds = 30;\n" +
-			"refexamples.maxExecutionTimeInSeconds = 30;\n" +
-			"//refexamples.guaranteeXgoodDescriptions = 10;\n" +
-			"refexamples.logLevel=\"TRACE\";\n" +
-			"refexamples.noisePercentage = 0.10;\n" +
-			"refexamples.writeSearchTree = true;\n" +
-			"refexamples.searchTreeFile = \"searchTree.txt\";\n"+
-			"refexamples.replaceSearchTree = true;\n\n" ;
+		
 
 
 		// "sparql.format = \"KB\";\n\n";

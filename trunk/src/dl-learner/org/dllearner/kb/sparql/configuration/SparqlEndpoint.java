@@ -291,7 +291,9 @@ public class SparqlEndpoint {
 		 } catch (Exception e) {
 			 e.printStackTrace();
 		 }
-		 return new SparqlEndpoint(u);
+		 LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+			defaultGraphURIs.add("http://www.rdfabout.com/rdf/schema/census/");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	 }
 	 
 	 

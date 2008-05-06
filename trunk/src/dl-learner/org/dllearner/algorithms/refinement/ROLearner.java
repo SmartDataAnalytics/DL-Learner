@@ -567,9 +567,11 @@ public class ROLearner extends LearningAlgorithm {
 				if(show>=5){break;}
 				show++;
 			}
+			
 		}
 		logger.info("  horizontal expansion: " + minimumHorizontalExpansion + " to " + maximumHorizontalExpansion);
 		logger.info("  size of candidate set: " + candidates.size());
+		
 		//logger.trace("test");
 		//logger.trace(solutions.size());
 		printBestSolutions(0);
