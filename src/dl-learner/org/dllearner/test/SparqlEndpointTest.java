@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -24,7 +25,12 @@ public class SparqlEndpointTest {
 	public static void main(String[] args) {
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		FileAppender fileAppender =null; ;
+		try{
+			fileAppender = new FileAppender(layout,"endpoints.txt",false);
+		}catch (Exception e) {e.printStackTrace();}
 		logger.removeAllAppenders();
+		logger.addAppender(fileAppender);
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.DEBUG);
 		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.INFO);
