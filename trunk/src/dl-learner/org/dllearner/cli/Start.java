@@ -787,11 +787,11 @@ public class Start {
 	 */
 	public static Class<? extends LearningProblem> getLearningProblemClass(ConfFileOption problemOption) {
 		Class<? extends LearningProblem> lpClass = null;
-		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinition"))
+		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinitionLP"))
 			lpClass = PosNegDefinitionLP.class;
-		else if (problemOption.getStringValue().equals("posNegInclusion"))
+		else if (problemOption.getStringValue().equals("posNegInclusionLP"))
 			lpClass = PosNegInclusionLP.class;
-		else if (problemOption.getStringValue().equals("posOnlyDefinition"))
+		else if (problemOption.getStringValue().equals("posOnlyDefinitionLP"))
 			lpClass = PosOnlyDefinitionLP.class;
 		else
 			handleError("Unknown value " + problemOption.getValue() + " for option \"problem\".");

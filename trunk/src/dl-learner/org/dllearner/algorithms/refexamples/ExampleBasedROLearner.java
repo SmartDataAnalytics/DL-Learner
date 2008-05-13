@@ -80,13 +80,17 @@ public class ExampleBasedROLearner {
 	
 	// basic setup: learning problem and reasoning service
 	private ReasoningService rs;
+	// often the learning problems needn't be accessed directly; instead
+	// use the example sets below and the posonly variable
 	private PosNegLP learningProblem;
 	private PosOnlyDefinitionLP posOnlyLearningProblem;
 	private Description startDescription;
 	private boolean posOnly = false;
 	private int nrOfExamples;
 	private int nrOfPositiveExamples;
+	private Set<Individual> positiveExamples;
 	private int nrOfNegativeExamples;
+	private Set<Individual> negativeExamples;
 	
 	// noise regulates how many positives can be misclassified and when the algorithm terminates
 	private double noise = 0.0;
@@ -199,7 +203,6 @@ public class ExampleBasedROLearner {
 	private long evaluateSetCreationTimeNs = 0;
 	private long improperConceptsRemovalTimeNs = 0;
 
-	
 	// prefixes
 	private String baseURI;
 	
@@ -227,8 +230,10 @@ public class ExampleBasedROLearner {
 			PosNegLP lp = (PosNegLP) learningProblem;
 			this.learningProblem = lp;
 			posOnly = false;
-			nrOfPositiveExamples = lp.getPositiveExamples().size();
-			nrOfNegativeExamples = lp.getNegativeExamples().size();
+			positiveExamples = lp.getPositiveExamples();
+			negativeExamples = lp.getNegativeExamples();
+			nrOfPositiveExamples = positiveExamples.size();
+			nrOfNegativeExamples = negativeExamples.size();
 			
 //			System.out.println(nrOfPositiveExamples);
 //			System.out.println(nrOfNegativeExamples);
@@ -238,8 +243,11 @@ public class ExampleBasedROLearner {
 			PosOnlyDefinitionLP lp = (PosOnlyDefinitionLP) learningProblem;
 			this.posOnlyLearningProblem = lp;
 			posOnly = true;
+			positiveExamples = lp.getPositiveExamples();
+			negativeExamples = new TreeSet<Individual>();
 			nrOfPositiveExamples = lp.getPositiveExamples().size();
-			nrOfNegativeExamples = lp.getPseudoNegatives().size();
+//			nrOfNegativeExamples = lp.getPseudoNegatives().size();
+			nrOfNegativeExamples = 0;
 		}
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 		this.rs = rs;
@@ -312,11 +320,11 @@ public class ExampleBasedROLearner {
 		// start search with start class
 		if(startDescription == null) {
 			startNode = new ExampleBasedNode(Thing.instance);
-			startNode.setCoveredExamples(learningProblem.getPositiveExamples(), learningProblem.getNegativeExamples());
+			startNode.setCoveredExamples(positiveExamples, negativeExamples);
 		} else {
 			startNode = new ExampleBasedNode(startDescription);
-			Set<Individual> coveredNegatives = rs.instanceCheck(startDescription, learningProblem.getNegativeExamples());
-			Set<Individual> coveredPositives =  rs.instanceCheck(startDescription, learningProblem.getPositiveExamples());
+			Set<Individual> coveredNegatives = rs.instanceCheck(startDescription, negativeExamples);
+			Set<Individual> coveredPositives =  rs.instanceCheck(startDescription, positiveExamples);
 			startNode.setCoveredExamples(coveredPositives, coveredNegatives);
 		}
 		
@@ -635,10 +643,11 @@ public class ExampleBasedROLearner {
 				if(useOverlyGeneralList && refinement instanceof Union) {
 					if(containsOverlyGeneralElement((Union)refinement)) {
 						conceptTestsOverlyGeneralList++;
-						quality = getNumberOfNegatives();
+//						quality = getNumberOfNegatives();
+						quality = nrOfNegativeExamples;
 						qualityKnown = true;
 						newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.OVERLY_GENERAL_LIST);
-						newNode.setCoveredExamples(learningProblem.getPositiveExamples(), learningProblem.getNegativeExamples());
+						newNode.setCoveredExamples(positiveExamples, negativeExamples);
 					}	
 					
 				}
@@ -717,7 +726,7 @@ public class ExampleBasedROLearner {
 	
 					// we need to make sure that all positives are covered
 					// before adding something to the overly general list
-					if((newNode.getCoveredPositives().size() == nrOfPositiveExamples) && quality == getNumberOfNegatives()) 
+					if((newNode.getCoveredPositives().size() == nrOfPositiveExamples) && quality == nrOfNegativeExamples) 
 						overlyGeneralList.add(refinement);
 						
 				}
@@ -833,20 +842,20 @@ public class ExampleBasedROLearner {
 				+ conceptTestsTooWeakList + "/" + conceptTestsOverlyGeneralList + "/" + redundantConcepts);	
 	}
 	
-	@SuppressWarnings({"unused"})
-	private int coveredNegativesOrTooWeak(Description concept) {
-		if(posOnly)
-			return posOnlyLearningProblem.coveredPseudoNegativeExamplesOrTooWeak(concept);
-		else
-			return learningProblem.coveredNegativeExamplesOrTooWeak(concept);
-	}
+//	@SuppressWarnings({"unused"})
+//	private int coveredNegativesOrTooWeak(Description concept) {
+//		if(posOnly)
+//			return posOnlyLearningProblem.coveredPseudoNegativeExamplesOrTooWeak(concept);
+//		else
+//			return learningProblem.coveredNegativeExamplesOrTooWeak(concept);
+//	}
 	
-	private int getNumberOfNegatives() {
-		if(posOnly)
-			return posOnlyLearningProblem.getPseudoNegatives().size();
-		else
-			return learningProblem.getNegativeExamples().size();
-	}	
+//	private int getNumberOfNegatives() {
+//		if(posOnly)
+//			return posOnlyLearningProblem.getPseudoNegatives().size();
+//		else
+//			return learningProblem.getNegativeExamples().size();
+//	}	
 	
 	private boolean containsTooWeakElement(Intersection mc) {
 		for(Description child : mc.getChildren()) {
@@ -1047,7 +1056,7 @@ public class ExampleBasedROLearner {
 			return posOnlyLearningProblem.computeScore(getBestSolution());
 		else
 			return learningProblem.computeScore(getBestSolution());
-	}	
+	}
 	
 	public ExampleBasedNode getStartNode() {
 		return startNode;

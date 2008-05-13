@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.*;
 
-import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.protege.editor.owl.ui.frame.OWLFrame;
 import javax.swing.JButton;
