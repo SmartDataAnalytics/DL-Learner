@@ -24,10 +24,12 @@ public class SetManipulation {
 		//System.out.println("treshold"+allRetrieved.size());
 		//System.out.println("treshold"+treshold);
 		
-		for (String oneInd : set) {
-			if(r.nextDouble()<treshold) {
-				ret.add(oneInd);
-				
+		while(ret.size()< limit){
+			for (String oneInd : set) {
+				if(r.nextDouble()<treshold) {
+					ret.add(oneInd);
+				    if(ret.size()>= limit)break;
+				}
 			}
 		}
 		return ret;

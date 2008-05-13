@@ -34,7 +34,10 @@ public class AutomaticExampleFinderSPARQL {
 		dbpediaMakePositiveExamplesFromConcept( concept);
 		SortedSet<String> keepForClean = new TreeSet<String>();
 		keepForClean.addAll(this.posExamples);
+		
 		this.posExamples = SetManipulation.fuzzyShrink(this.posExamples, poslimit);
+		
+		
 		logger.trace("shrinking: pos Example size: "+posExamples.size());
 		
 		if(useRelated) {

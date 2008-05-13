@@ -120,6 +120,10 @@ public class SparqlEndpoint {
 		ll.add(EndpointSWConference());
 		ll.add(EndpointUSCensus());
 		ll.add(EndpointWorldFactBook());
+		ll.add(EndpointRiese());
+		ll.add(EndpointTalisBlogs());
+		ll.add(EndpointSWSchool());
+		ll.add(EndpointSparqlette());
 		return ll;
 	}
 	
@@ -282,6 +286,16 @@ public class SparqlEndpoint {
 		 }
 		 return new SparqlEndpoint(u);
 	 }
+	 
+	 public static SparqlEndpoint EndpointRiese() {
+		 URL u = null;
+		 try { 
+			 u = new URL("http://riese.joanneum.at:3020/");
+		 } catch (Exception e) {
+			 e.printStackTrace();
+		 }
+		 return new SparqlEndpoint(u);
+	 }
 	
 	 
 	 public static SparqlEndpoint EndpointUSCensus() {
@@ -312,7 +326,39 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u);
 	}
 	 
-	
+	 
+	 public static SparqlEndpoint EndpointTalisBlogs() {
+			URL u = null;
+			try { 
+				u = new URL("http://api.talis.com/stores/talisians/services/sparql");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return new SparqlEndpoint(u);
+		}
+	 
+	 public static SparqlEndpoint EndpointSparqlette() {
+			URL u = null;
+			try { 
+				u = new URL("http://www.wasab.dk/morten/2005/04/sparqlette/");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return new SparqlEndpoint(u);
+		}
+	 
+	 
+	 
+	 public static SparqlEndpoint EndpointSWSchool() {
+			URL u = null;
+			try { 
+				u = new URL("http://sparql.semantic-web.at/snorql/");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return new SparqlEndpoint(u);
+		}
+	 
 	
 	
 	
