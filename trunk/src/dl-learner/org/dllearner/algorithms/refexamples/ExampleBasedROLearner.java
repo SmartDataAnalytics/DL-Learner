@@ -1069,8 +1069,11 @@ public class ExampleBasedROLearner {
 	
 	
 	public void printBestSolutions(int nrOfSolutions){
-		if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
-		if(nrOfSolutions==0)nrOfSolutions=candidatesStable.size();
+		if(!logger.isTraceEnabled())
+			return;
+//		if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
+		if(nrOfSolutions==0)
+			nrOfSolutions=candidatesStable.size();
 		int i=0;
 		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
 			logger.trace(n.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));

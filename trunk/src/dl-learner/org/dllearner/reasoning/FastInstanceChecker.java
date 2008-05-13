@@ -337,6 +337,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 			int nrOfFillers = 0;			
 			
 			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			// special case: there are always at least zero fillers
+			if(number == 0)
+				return true;
 			// return false if there are none or not enough role fillers
 			if (roleFillers == null || roleFillers.size() < number)
 				return false;
@@ -372,19 +375,21 @@ public class FastInstanceChecker extends ReasonerComponent {
 			}
 			
 			int number = ((ObjectCardinalityRestriction) description).getNumber();
-			int nrOfFillers = 0;			
+			int nrOfFillers = 0;		
 			
 			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
-			// return false if there are none or not enough role fillers
-			if (roleFillers == null || roleFillers.size() > number)
+			// return true if there are none or not enough role fillers
+			if (roleFillers == null || roleFillers.size() < number)
 				return true;
+			
+//			System.out.println(description + " " + individual);	
 			
 			int index = 0;
 			for (Individual roleFiller : roleFillers) {
 				index++;
 				if (instanceCheck(child, roleFiller)) {
 					nrOfFillers++;
-					if(nrOfFillers == number)
+					if(nrOfFillers > number)
 						return false;
 				// earyl abort:	e.g. <= 5 hasStructure.Methyl;
 				// if there are 6 fillers and 2 are not Methyl, the result is true						
