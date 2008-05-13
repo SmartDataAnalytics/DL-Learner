@@ -34,7 +34,7 @@ public class SparqlEndpointTest {
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.DEBUG);
 		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.INFO);
-		
+		//SELECT DISTINCT ?c WHERE {[] a ?c }LIMIT 100
 		
 		
 		LinkedList<SparqlEndpoint> ll  = SparqlEndpoint.listEndpoints();

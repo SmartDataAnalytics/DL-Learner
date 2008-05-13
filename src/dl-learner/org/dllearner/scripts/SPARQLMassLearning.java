@@ -10,11 +10,16 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.AutomaticExampleFinderRolesSPARQL;
 import org.dllearner.utilities.AutomaticExampleFinderSPARQL;
 import org.dllearner.utilities.ConfWriter;
+import org.dllearner.utilities.JenaResultSetConvenience;
+import org.dllearner.utilities.SetManipulation;
 import org.dllearner.utilities.SimpleClock;
+
+import com.hp.hpl.jena.query.ResultSet;
 
 public class SPARQLMassLearning {
 
@@ -72,9 +77,9 @@ public class SPARQLMassLearning {
 		standardSettings=standardSettingsRefexamples+standardDBpedia;
 		//standardSettings=standardSettingsRefinement+standardDBpedia;
 		
-		//DBpedia();
+		DBpedia();
 		//algorithm="refinement";
-		roles();
+		//roles();
 		
 		/*System.out.println(Level.DEBUG.getClass());
 			System.out.println(Level.toLevel("INFO"));
@@ -142,7 +147,13 @@ public class SPARQLMassLearning {
 		//concepts.add("(EXISTS \"monarch\".TOP AND EXISTS \"predecessor\".(\"Knight\" OR \"Secretary\"))");
 		
 		SortedSet<String> concepts = new TreeSet<String>();
-		concepts.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
+		SortedSet<String> tmpSet=selectDBpediaConcepts(20);
+		System.out.println(concepts.size());
+		for (String string : tmpSet) {
+			concepts.add("\""+string+"\"");
+		}
+		
+		//concepts.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
 		//concepts.add("\"http://dbpedia.org/class/yago/Person100007846\"");
 		//concepts.add("\"http://dbpedia.org/class/yago/FieldMarshal110086821\"");
 		//concepts.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
@@ -232,8 +243,19 @@ public class SPARQLMassLearning {
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.DEBUG);
+		c = new Cache();
 		
 
+	}
+	
+	public static SortedSet<String> selectDBpediaConcepts(int number){
+		String query = "SELECT DISTINCT ?concept WHERE { \n" + 
+		"[] a ?concept }\n";
+
+		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
+		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
+		JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
+		return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);
 	}
 	
 	
