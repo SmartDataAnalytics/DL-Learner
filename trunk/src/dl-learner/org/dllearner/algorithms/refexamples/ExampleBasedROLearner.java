@@ -96,6 +96,12 @@ public class ExampleBasedROLearner {
 	private double noise = 0.0;
 	private int allowedMisclassifications = 0;
 	
+	// positive only learning options:
+	// if no negatives are given, then one possible strategy is to find a very special concept still entailing all positive examples;
+	// this is realised by changing the termination criterion: a concept is a solution if it has been expanded x times (x is 
+	// configurable) but no more special concept is found (all are either equivalent or too weak) 
+	private int maxPosOnlyExpansion = 3;
+	
 	// search tree options
 	private boolean writeSearchTree;
 	private File searchTreeFile;
@@ -118,7 +124,7 @@ public class ExampleBasedROLearner {
 	// but the disadvantage of properness testing are additional reasoner
 	// queries and a search bias towards ALL r.something because 
 	// ALL r.TOP is improper and automatically expanded further
-	private boolean testProperness = false;
+	private boolean testProperness = true;
 	
 	// tree traversal means to run through the most promising concepts
 	// and connect them in an intersection to find a solution
@@ -402,6 +408,23 @@ public class ExampleBasedROLearner {
 					Files.appendFile(searchTreeFile, treeString);
 			}
 			
+			// special situation for positive only learning: the expanded node can become a solution (see explanations
+			// for maxPosOnlyExpansion above)
+			if(posOnly && (bestNode.getHorizontalExpansion() - bestNode.getConcept().getLength() >= maxPosOnlyExpansion)) {
+				// check whether there are any child concept, which are not too weak (we only need to check whether the best concept
+				// is too weak)
+				ExampleBasedNode bestChild = null;
+				if(bestNode.getChildren().size() > 0)
+					bestChild = bestNode.getChildren().last();
+				if(bestNode.getChildren().size() == 0 || bestChild.isTooWeak()) {
+					solutions.add(bestNode.getConcept());
+					System.out.println("solution: " + bestNode.getConcept());
+					System.out.println("TODO: needs to be integrated with other stopping criteria");
+					System.exit(0);
+				}
+			}
+			
+			// handle termination criteria
 			handleStoppingConditions();
 			
 			//logger.info(minExecutionTimeReached()+"aaaaaaa "+solutions.size()+"::"+guaranteeXgoodDescriptions);
@@ -716,7 +739,7 @@ public class ExampleBasedROLearner {
 					tooWeakList.add(refinement);
 				} else {
 					// Lösung gefunden
-					if(quality >= 0 && quality<=allowedMisclassifications) {
+					if(quality >= 0 && quality<=allowedMisclassifications && !posOnly) {
 						solutionFound = true;
 						solutions.add(refinement);
 					}			

@@ -22,6 +22,7 @@ package org.dllearner.algorithms.refexamples;
 
 import java.text.DecimalFormat;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.owl.Description;
@@ -64,9 +65,9 @@ public class ExampleBasedNode {
 	
 	// link to parent in search tree
 	private ExampleBasedNode parent = null;
-	private Set<ExampleBasedNode> children = new TreeSet<ExampleBasedNode>(nodeComparator);
+	private SortedSet<ExampleBasedNode> children = new TreeSet<ExampleBasedNode>(nodeComparator);
 	// apart from the child nodes, we also keep child concepts
-	private Set<Description> childConcepts = new TreeSet<Description>(conceptComparator);
+	private SortedSet<Description> childConcepts = new TreeSet<Description>(conceptComparator);
 	
 	public ExampleBasedNode(Description concept) {
 		this.concept = concept;
@@ -210,11 +211,11 @@ public class ExampleBasedNode {
 		return coveredNegatives;
 	}
 	
-	public Set<ExampleBasedNode> getChildren() {
+	public SortedSet<ExampleBasedNode> getChildren() {
 		return children;
 	}
 
-	public Set<Description> getChildConcepts() {
+	public SortedSet<Description> getChildConcepts() {
 		return childConcepts;
 	}
 
