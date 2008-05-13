@@ -455,6 +455,17 @@ public class ExampleBasedROLearner {
 			}
 			logger.debug(manchester);
 			logger.debug(KBSyntax);
+			
+			boolean showOrderedSolutions = true;
+			
+			if(showOrderedSolutions) {
+				System.out.println("ordered by generality (most special solutions first):");
+				SubsumptionComparator sc = new SubsumptionComparator(rs);
+				TreeSet<Description> solutionsOrderedBySubsumption = new TreeSet<Description>(sc);
+				solutionsOrderedBySubsumption.addAll(solutions);
+				for(Description d : solutionsOrderedBySubsumption)
+					System.out.println(d);
+			}
 		}
 		
 		logger.debug("size of candidate set: " + candidates.size());
