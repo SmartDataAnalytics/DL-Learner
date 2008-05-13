@@ -276,7 +276,7 @@ public class SparqlEndpoint {
 	 public static SparqlEndpoint EndpointMusicbrainz() {
 		 URL u = null;
 		 try { 
-			 u = new URL(" http://dbtune.org/musicbrainz/sparql");
+			 u = new URL("http://dbtune.org/musicbrainz/sparql");
 		 } catch (Exception e) {
 			 e.printStackTrace();
 		 }
@@ -287,7 +287,7 @@ public class SparqlEndpoint {
 	 public static SparqlEndpoint EndpointUSCensus() {
 		 URL u = null;
 		 try { 
-			 u = new URL(" http://www.rdfabout.com/sparql");
+			 u = new URL("http://www.rdfabout.com/sparql");
 		 } catch (Exception e) {
 			 e.printStackTrace();
 		 }

@@ -456,16 +456,7 @@ public class ExampleBasedROLearner {
 			logger.debug(manchester);
 			logger.debug(KBSyntax);
 			
-			boolean showOrderedSolutions = true;
 			
-			if(showOrderedSolutions) {
-				System.out.println("ordered by generality (most special solutions first):");
-				SubsumptionComparator sc = new SubsumptionComparator(rs);
-				TreeSet<Description> solutionsOrderedBySubsumption = new TreeSet<Description>(sc);
-				solutionsOrderedBySubsumption.addAll(solutions);
-				for(Description d : solutionsOrderedBySubsumption)
-					System.out.println(d);
-			}
 		}
 		
 		logger.debug("size of candidate set: " + candidates.size());
@@ -1076,10 +1067,21 @@ public class ExampleBasedROLearner {
 			nrOfSolutions=candidatesStable.size();
 		int i=0;
 		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
-			logger.trace(n.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+			logger.trace("best: "+n.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
 			if(i==nrOfSolutions)
 				return ;
 			i++;
+		}
+		
+		boolean showOrderedSolutions = true;
+		
+		if(showOrderedSolutions) {
+			logger.trace("ordered by generality (most special solutions first):");
+			SubsumptionComparator sc = new SubsumptionComparator(rs);
+			TreeSet<Description> solutionsOrderedBySubsumption = new TreeSet<Description>(sc);
+			solutionsOrderedBySubsumption.addAll(solutions);
+			for(Description d : solutionsOrderedBySubsumption)
+				logger.trace("special: "+d);
 		}
 		/*for (int j = 0; j < solutions.size(); j++) {
 			Description d = solutions.get(j);
