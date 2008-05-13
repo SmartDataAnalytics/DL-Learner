@@ -45,6 +45,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -274,10 +275,12 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			}
 			algHeuristic = new FlexibleHeuristic(((PosNegLP)learningProblem).getNegativeExamples().size(), ((PosNegLP)learningProblem).getPercentPerLengthUnit());
 		} else {
-			if(learningProblem instanceof PosOnlyDefinitionLP) {
-				throw new RuntimeException("does not work with positive examples only yet");
-			}	
-			algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size());
+			if(learningProblem instanceof PosOnlyLP) {
+//				throw new RuntimeException("does not work with positive examples only yet");
+				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0);
+			} else {
+				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size());
+			}
 		}
 		
 		// compute used concepts/roles from allowed/ignored

@@ -4,7 +4,6 @@ import org.protege.editor.owl.ui.frame.AbstractOWLFrame;
 import org.protege.editor.owl.ui.frame.InheritedAnonymousClassesFrameSection;
 import org.protege.editor.owl.ui.frame.OWLClassAssertionAxiomIndividualSection;
 import org.protege.editor.owl.ui.frame.OWLDisjointClassesAxiomFrameSection;
-import org.protege.editor.owl.ui.frame.OWLEquivalentClassesAxiomFrameSection;
 import org.protege.editor.owl.ui.frame.OWLSubClassAxiomFrameSection;
 import org.semanticweb.owl.model.OWLClass;
 import org.protege.editor.owl.OWLEditorKit;
