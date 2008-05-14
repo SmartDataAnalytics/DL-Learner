@@ -21,8 +21,8 @@ public class LearnSparql {
 
 	
 	
-	public void learn(SortedSet<String> posExamples,SortedSet<String> negExamples,
-			String uri, SortedSet<String> ignoredConcepts){
+	public void learnDBpedia(SortedSet<String> posExamples,SortedSet<String> negExamples,
+			String uri, SortedSet<String> ignoredConcepts, int recursiondepth){
 		
 	
 		ComponentManager cm = ComponentManager.getInstance();
@@ -40,9 +40,9 @@ public class LearnSparql {
 		instances.addAll(negExamples);
 		cm.applyConfigEntry(ks, "instances",instances);
 		cm.applyConfigEntry(ks, "url",uri);
-		cm.applyConfigEntry(ks, "recursionDepth",1);
-		cm.applyConfigEntry(ks, "predefinedFilter",1);
-		cm.applyConfigEntry(ks, "predefinedEndpoint",1);
+		cm.applyConfigEntry(ks, "recursionDepth",recursiondepth);
+		cm.applyConfigEntry(ks, "predefinedFilter","YAGOSKOS");
+		cm.applyConfigEntry(ks, "predefinedEndpoint","DBPEDIA");
 		//cm.applyConfigEntry(ks, "format","KB");
 		
 		ks.init();
@@ -70,11 +70,12 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"useCardinalityRestrictions",false);
 		cm.applyConfigEntry(la,"useNegation",false);
 		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
-		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",900);
-		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
+		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",10);
+		//cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
 		cm.applyConfigEntry(la,"logLevel","TRACE");
 		
 		//cm.applyConfigEntry(la,"quiet",false);
+		//System.out.println(ignoredConcepts.first());;
 		if(ignoredConcepts.size()>0)
 			cm.applyConfigEntry(la,"ignoredConcepts",ignoredConcepts);
 		la.init();	

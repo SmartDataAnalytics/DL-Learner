@@ -1067,9 +1067,10 @@ public class ExampleBasedROLearner {
 			nrOfSolutions=candidatesStable.size();
 		int i=0;
 		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
+			if (n.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)<1)break;
 			logger.trace("best: "+n.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
 			if(i==nrOfSolutions)
-				return ;
+				break ;
 			i++;
 		}
 		
