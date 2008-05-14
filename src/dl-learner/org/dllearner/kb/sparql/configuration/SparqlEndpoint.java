@@ -84,7 +84,7 @@ public class SparqlEndpoint {
 	
 	public static SparqlEndpoint getEndpointByName(String name) {
 
-	
+		name = name.toUpperCase();
 		
 		if (name.equals("DBPEDIA"))
 			return EndpointDBpedia();
@@ -92,6 +92,10 @@ public class SparqlEndpoint {
 			return EndpointlocalJoseki();
 		if (name.equals("GOVTRACK"))
 			return EndpointGovTrack();
+		if (name.equals("SPARQLETTE"))
+			return EndpointSparqlette();
+		if (name.equals("SWCONFERENCE"))
+			return EndpointSWConference();
 		if (name.equals("REVYU"))
 			return EndpointRevyu();
 		if (name.equals("MYOPENLINK"))
