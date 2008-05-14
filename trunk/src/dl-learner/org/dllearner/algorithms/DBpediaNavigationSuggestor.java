@@ -19,14 +19,23 @@
  */
 package org.dllearner.algorithms;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.SortedSet;
+
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.owl.Description;
-import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 
 /**
@@ -40,23 +49,51 @@ import org.dllearner.learningproblems.PosOnlyDefinitionLP;
  *
  */
 public class DBpediaNavigationSuggestor extends LearningAlgorithm {
-
-	public DBpediaNavigationSuggestor(PosNegLP learningProblem, ReasoningService rs) {
-
+	
+	private ReasoningService rs;
+	private String filename;
+	
+	public DBpediaNavigationSuggestor(LearningProblem learningProblem, ReasoningService rs) {
+		this.rs=rs;
+	}
+	
+	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
+		problems.add(LearningProblem.class);
+		return problems;
 	}
 	
 	public DBpediaNavigationSuggestor(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
-
-	}	
+		System.out.println("test1");
+	}
 	
+	public DBpediaNavigationSuggestor(PosNegDefinitionLP learningProblem, ReasoningService rs) {
+		System.out.println("test2");
+	}
+	
+	public static Collection<ConfigOption<?>> createConfigOptions() {
+		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+		options.add(new StringConfigOption("dumpFileName", "name of the file for the dump"));
+		return options;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
+	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		// TODO Auto-generated method stub
+		String name = entry.getOptionName();
+		if (name.equals("dumpFileName"))
+			filename = (String) entry.getValue();
 	}
 
 	@Override
 	public void init() throws ComponentInitException {
 		// TODO Auto-generated method stub
+		SortedSet<Individual> list=rs.getIndividuals();
+		Iterator<Individual> iter=list.iterator();
+		while (iter.hasNext())
+			System.out.println(iter.next().toString());
 	}
 	
 	@Override
