@@ -44,9 +44,9 @@ class DLLearnerConnection
 	{
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",1);
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
-		$this->client->applyConfigEntryInt($this->id, $this->ksID, "predefinedFilter", 1);
-		$this->client->applyConfigEntryInt($this->id, $this->ksID, "predefinedEndpoint", 1);
-				
+		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedFilter", "YAGO");
+		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedEndpoint", "DBPEDIA");
+		
 		$this->client->setReasoner($this->id, "dig");
 		if(empty($negExamples))
 			$this->client->setLearningProblem($this->id, "posOnlyDefinition");

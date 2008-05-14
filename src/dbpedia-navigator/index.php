@@ -149,8 +149,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			<a href="http://www.w3.org/2001/sw/DataAccess/"><img src="<?php print $path;?>images/sw-sparql-green.png" alt="SPARQL logo"/></a>
 		</div>
 		
-		<input type="button" value="Learn" class="button" onclick="xajax_learnConcept();return false;" />	
-		
 	</div><!-- END leftSidebar -->
 
 	<div id="content">
@@ -212,25 +210,16 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 <b>ToDo:</b>
 <ul style="float:left">
 	<li>Get learning component fast.</li>
-	<li>Learning as a Thread.</li>
 	<li>Get local DBpedia SPARQL endpoint working (next DBpedia release expected at the endof January and then every
 	two months, so it would be nice to have a script based partly automated or at least documented solution for
 	creating a DBpedia mirror).</li>
 	<li>Improve stability: Fix sometimes occurring PHP errors and warnings (check PHP error log).</li>
-	<li>Automatically learn concepts whenever an example has been added (and there is at least one
-	positive example present).</li>
 	<li>For each result, display a "+" which shows more information about the concept in an overlay box, e.g. its 
 	Description Logic or OWL syntax, its classification accuracy on the examples, and which
 	examples it classifies (in-)correctly.</li>
-	<li>Move the "Learned Concepts" box above the main box in the center.</li>
-	<li>Remove the "Subjects from Concept" box and instead change the learned concepts to links (clicking
-	on a link shows instances of the concept).</li>
 	<li>Create a small number of test cases (e.g. 3), which can be used to verify that DBpedia Navigator is 
 	working in typical scenarios (in particular cases where concepts with length greater one are learned).</li>
-	<li>Display "server call" in progress (or "n server calls in progress") in the top right corner 
-	of the screen whenever AJAX queries are executed.</li>
 	<li>Allow to disable caching functionality (in Settings.php).</li>
-	<li>Fix the rebuild.php script such that PHP replaces the cached WSDL file by the new one.</li>
 	<li>Make DBpedia Navigator RESTful, e.g. URLs $base/showArticle/$URL for displaying an article;
 	$base/search/$phrase for searching; $base/listInstances/$complexClass for listing the instances of
 	a learned. Maybe session variables (in particuar the selected positive and negative examples) can 
@@ -241,8 +230,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	features.</li> 
 	<li>Improve search functionality [we will probably get feedback from Georgi in February].</li>
 	<li>[maybe] Display a tag cloud similar to <a href="http://dbpedia.org/search/">DBpedia search</a>.</li>
-	<li>Get a nice DBpedia Navigator logo (preferrably in SVG format) [currently in contact with Matt, but not
-	sure he has time to help].</li>
 	<li>[maybe] Instead of only allowing a search as entry point to the application, also display
 	a navigatable class tree.</li>
 	<li>[if possible] When expensive SPARQL queries or learning problems have been posed, there should be
