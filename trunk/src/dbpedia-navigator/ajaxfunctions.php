@@ -220,7 +220,8 @@ function getarticle($subject,$fromCache)
 	$objResponse->assign("ArticleTitle","innerHTML",$artTitle);
 	$objResponse->assign("lastarticles","innerHTML",$lastArticles);
 	$objResponse->assign('Positives','innerHTML',$posInterests);
-	$objResponse->assign('Negatives','innerHTML',$negInterests);	
+	$objResponse->assign('Negatives','innerHTML',$negInterests);
+	$objResponse->call('xajax_learnConcept');
 	return $objResponse;
 }
 
@@ -394,7 +395,7 @@ function learnConcept()
 			foreach ($concepts as $con){
 				$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".urlencode($con)."');return false;\" onMouseOver=\"showdiv('div".$i."');showdiv('ConceptBox');\" onMouseOut=\"hidediv('div".$i."');hidediv('ConceptBox');\" />".$con."</a></td></tr>";
 				//put information about concepts in divs
-				$conceptinformation.="<div id=\"div".$i."\" style=\"display:none\">Concept Depth: ".$conceptDepth[$i-1]."<br/>Concept Arity: ".$conceptArity[$i-1]."<br/>Concept Length: ".$sc->getConceptLength($con)."</div>";
+				//$conceptinformation.="<div id=\"div".$i."\" style=\"display:none\">Concept Depth: ".$conceptDepth[$i-1]."<br/>Concept Arity: ".$conceptArity[$i-1]."<br/>Concept Length: ".$sc->getConceptLength($con)."</div>";
 				$i++;
 			}
 			$concept.="</table>";
@@ -486,7 +487,7 @@ function getResultsTable($results)
 		for ($j=0;($j<30)&&(($i*30+$j)<count($results));$j++)
 		{
 			$result=$results[$i*30+$j];
-			$ret.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"\" onclick=\"xajax_getarticle('".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."',-1);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."</a><br/>";
+			$ret.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"\" onclick=\"xajax_getarticle('".str_replace("_"," ",substr (strrchr ($result, "/"), 1))."',-1);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."</a><br/>";
 		}
 		$ret.="</div>";
 		$i++;
