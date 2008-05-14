@@ -76,7 +76,7 @@ public class SubsumptionHierarchy {
 			SortedSet<Description> moreGeneral = subsumptionHierarchyUp.get(c);
 			//RBC
 			if(moreGeneral != null && moreGeneral.size()>0) {
-				System.out.println(moreGeneral);
+				//System.out.println(moreGeneral);
 				Description chosenParent = moreGeneral.first();
 				hierarchyDownNew.get(chosenParent).add(c);
 			}

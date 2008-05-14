@@ -88,6 +88,8 @@ public class SparqlEndpoint {
 		
 		if (name.equals("DBPEDIA"))
 			return EndpointDBpedia();
+		if (name.equals("LOCALDBPEDIA"))
+			return EndpointLOCALDBpedia();
 		if (name.equals("LOCALJOSECKI"))
 			return EndpointlocalJoseki();
 		if (name.equals("GOVTRACK"))
@@ -104,6 +106,8 @@ public class SparqlEndpoint {
 			return EndpointWorldFactBook();
 		if (name.equals("DBLP"))
 			return EndpointDBLP();
+		if (name.equals("MUSICBRAINZ"))
+			return EndpointMusicbrainz();
 		return null;
 	}
 	
@@ -135,6 +139,18 @@ public class SparqlEndpoint {
 		URL u = null;
 		try { 
 			u = new URL("http://dbpedia.openlinksw.com:8890/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		defaultGraphURIs.add("http://dbpedia.org");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+	}
+	
+	public static SparqlEndpoint EndpointLOCALDBpedia() {
+		URL u = null;
+		try { 
+			u = new URL("http://139.18.2.37:8890/sparql");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
