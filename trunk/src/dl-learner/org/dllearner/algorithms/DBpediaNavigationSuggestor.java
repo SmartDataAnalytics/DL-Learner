@@ -24,18 +24,25 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.SortedSet;
 
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLearner;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
+import org.dllearner.core.config.BooleanConfigOption;
+import org.dllearner.core.config.CommonConfigOptions;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.DoubleConfigOption;
+import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 
 /**
@@ -51,10 +58,18 @@ import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	
 	private ReasoningService rs;
-	private String filename;
+	private ExampleBasedROLComponent learner;
+	private static String defaultSearchTreeFile = "log/searchTree.txt";
 	
 	public DBpediaNavigationSuggestor(LearningProblem learningProblem, ReasoningService rs) {
 		this.rs=rs;
+		if(learningProblem instanceof PosNegLP) {
+			PosNegLP lp = (PosNegLP) learningProblem;
+			this.learner=new ExampleBasedROLComponent(lp, rs);
+		} else if(learningProblem instanceof PosOnlyDefinitionLP) {
+			PosOnlyDefinitionLP lp = (PosOnlyDefinitionLP) learningProblem;
+			this.learner=new ExampleBasedROLComponent(lp, rs);
+		}
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
@@ -73,7 +88,41 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("dumpFileName", "name of the file for the dump"));
+		options.add(new BooleanConfigOption("writeSearchTree", "specifies whether to write a search tree", false));
+		options.add(new StringConfigOption("searchTreeFile","file to use for the search tree", defaultSearchTreeFile));
+		options.add(new BooleanConfigOption("replaceSearchTree","specifies whether to replace the search tree in the log file after each run or append the new search tree", false));
+		StringConfigOption heuristicOption = new StringConfigOption("heuristic", "specifiy the heuristic to use", "lexicographic");
+		heuristicOption.setAllowedValues(new String[] {"lexicographic", "flexible"});
+		options.add(heuristicOption);
+		options.add(new BooleanConfigOption("applyAllFilter", "usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)", true));
+		options.add(new BooleanConfigOption("applyExistsFilter", "usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)", true));
+		options.add(new BooleanConfigOption("useTooWeakList", "try to filter out too weak concepts without sending them to the reasoner", true));
+		options.add(new BooleanConfigOption("useOverlyGeneralList", "try to find overly general concept without sending them to the reasoner", true));
+		options.add(new BooleanConfigOption("useShortConceptConstruction", "shorten concept to see whether they already exist", true));
+		DoubleConfigOption horizExp = new DoubleConfigOption("horizontalExpansionFactor", "horizontal expansion factor (see publication for description)", 0.6);
+		horizExp.setLowerLimit(0.0);
+		horizExp.setUpperLimit(1.0);
+		options.add(horizExp);
+		options.add(new BooleanConfigOption("improveSubsumptionHierarchy", "simplify subsumption hierarchy to reduce search space (see publication for description)", true));
+		// allowed/ignored concepts/roles could also be a reasoner option (?)
+		options.add(CommonConfigOptions.allowedConcepts());
+		options.add(CommonConfigOptions.ignoredConcepts());
+		options.add(CommonConfigOptions.allowedRoles());
+		options.add(CommonConfigOptions.ignoredRoles());
+		options.add(CommonConfigOptions.useAllConstructor());
+		options.add(CommonConfigOptions.useExistsConstructor());
+		options.add(CommonConfigOptions.useCardinalityRestrictions());
+		options.add(CommonConfigOptions.useNegation());
+		options.add(CommonConfigOptions.useBooleanDatatypes());
+		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
+		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
+		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
+		options.add(CommonConfigOptions.getLogLevel());
+		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples");
+		noisePercentage.setLowerLimit(0);
+		noisePercentage.setUpperLimit(100);
+		options.add(noisePercentage);
+		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
 		return options;
 	}
 	
@@ -82,41 +131,32 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if (name.equals("dumpFileName"))
-			filename = (String) entry.getValue();
+		learner.applyConfigEntry(entry);
 	}
 
 	@Override
 	public void init() throws ComponentInitException {
-		// TODO Auto-generated method stub
-		SortedSet<Individual> list=rs.getIndividuals();
-		Iterator<Individual> iter=list.iterator();
-		while (iter.hasNext())
-			System.out.println(iter.next().toString());
+		learner.init();
 	}
 	
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
+		learner.start();
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-		
+		learner.stop();
 	}	
 	
 	@Override
 	public Description getBestSolution() {
-		// TODO Auto-generated method stub
-		return null;
+		return learner.getBestSolution();
 	}
 
 	@Override
 	public Score getSolutionScore() {
-		// TODO Auto-generated method stub
-		return null;
+		return learner.getSolutionScore();
 	}	
  
 }
