@@ -36,6 +36,7 @@ import javax.jws.soap.SOAPBinding;
 
 import org.dllearner.Info;
 import org.dllearner.algorithms.BruteForceLearner;
+import org.dllearner.algorithms.DBpediaNavigationSuggestor;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
@@ -105,6 +106,7 @@ public class DLLearnerWS {
 		learningAlgorithmMapping.put("gp", GP.class);
 		learningAlgorithmMapping.put("refinement", ROLearner.class);
 		learningAlgorithmMapping.put("refexamples", ExampleBasedROLComponent.class);
+		learningAlgorithmMapping.put("dbpediaNavigationSuggestor", DBpediaNavigationSuggestor.class);
 		components = Helper.union(knowledgeSourceMapping.keySet(),reasonerMapping.keySet());
 		components = Helper.union(components, learningProblemMapping.keySet());
 		components = Helper.union(components, learningAlgorithmMapping.keySet());
@@ -591,11 +593,9 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public void SparqlRetrievalThreaded(int id, int componentID, String conceptString) throws ClientNotKnownException, ParseException {
-//		ClientState state = getState(id);
+	public String SparqlRetrieval(String conceptString) throws ParseException {
 		// call parser to parse concept
-		String sparqlQuery = SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString);
-		sparqlQueryThreaded(id, componentID,sparqlQuery);
+		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString);
 	}
 	
 	@WebMethod
