@@ -6,6 +6,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -145,7 +146,7 @@ public class SPARQLMassLearning {
 	}
 	
 	static void DBpedia(){
-		se = SparqlEndpoint.EndpointDBpedia();
+		se = SparqlEndpoint.EndpointLOCALDBpedia();
 		//concepts.add("(EXISTS \"monarch\".TOP AND EXISTS \"predecessor\".(\"Knight\" OR \"Secretary\"))");
 		
 		SortedSet<String> concepts = new TreeSet<String>();
@@ -154,6 +155,8 @@ public class SPARQLMassLearning {
 		for (String string : tmpSet) {
 			concepts.add("\""+string+"\"");
 		}
+		concepts.remove(concepts.first());
+		concepts.remove(concepts.first());
 		concepts.remove(concepts.first());
 		concepts.remove(concepts.first());
 		//concepts.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
@@ -166,21 +169,22 @@ public class SPARQLMassLearning {
 		SortedSet<String> posExamples = new TreeSet<String>();
 		SortedSet<String> negExamples = new TreeSet<String>();
 		String url = "http://dbpedia.openlinksw.com:8890/sparql";
+		url = "http://139.18.2.37:8890/sparql";
 		//HashMap<String, ResultSet> result = new HashMap<String, ResultSet>();
 		//HashMap<String, String> result2 = new HashMap<String, String>();
 		//System.out.println(concepts.first());
 		//logger.setLevel(Level.TRACE);
 		int i=0;
 		for (String oneConcept : concepts) {
-			if(i>=2)break;
+			if(i>=3)break;
 			i++;
 			AutomaticExampleFinderSPARQL ae= new AutomaticExampleFinderSPARQL( se);
-			useRelated = false;
-			useSuperClasses=true;
-			useParallelClasses=false;
+			useRelated = true;
+			useSuperClasses = true;
+			useParallelClasses = true;
 			poslimit=2;
 			neglimit=2;
-			ae.initDBpedia(concepts.first(), useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
+			ae.initDBpedia(oneConcept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
 			posExamples = ae.getPosExamples();
 			negExamples = ae.getNegExamples();
 			
@@ -202,7 +206,7 @@ public class SPARQLMassLearning {
 			TreeSet<String> igno = new TreeSet<String>();
 			System.out.println(oneConcept);
 			//igno.add(oneConcept.replaceAll("\"", ""));
-			ls.learnDBpedia(posExamples, negExamples, "http://dbpedia.openlinksw.com:8890/sparql",igno,1);
+			ls.learnDBpedia(posExamples, negExamples, url,igno,1);
 			System.out.println("AAAAAAAA");
 			//System.exit(0);
 			//"relearned concept: ";
@@ -247,13 +251,18 @@ public class SPARQLMassLearning {
 
 	public static void init() {
 		
-		
+		SimpleLayout layout = new SimpleLayout();
 		// create logger (a simple logger which outputs
 		// its messages to the console)
-		SimpleLayout layout = new SimpleLayout();
+		FileAppender fileAppender =null; ;
+		try{
+			fileAppender = new FileAppender(layout,"the_log.txt",false);
+		}catch (Exception e) {e.printStackTrace();}
+
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
+		logger.addAppender(fileAppender);
 		logger.setLevel(Level.DEBUG);
 		c = new Cache();
 		

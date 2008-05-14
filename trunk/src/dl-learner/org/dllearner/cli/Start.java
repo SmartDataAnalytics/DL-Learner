@@ -125,7 +125,8 @@ public class Start {
 			logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
-		logger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.TRACE);
+		//Logger.getLogger(KnowledgeSource.class).setLevel(Level.TRACE);
 
 		Start start = null;
 		start = new Start(file);
