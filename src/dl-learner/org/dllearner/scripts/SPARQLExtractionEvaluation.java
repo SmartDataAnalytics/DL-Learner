@@ -49,7 +49,7 @@ public class SPARQLExtractionEvaluation {
 		System.out.println("Start");
 		//logger.setLevel(Level.TRACE);
 		logger.setLevel(Level.WARN);
-		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
+		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.TRACE);
 		//System.out.println(Logger.getLogger(SparqlQuery.class).getLevel());
 		SimpleClock sc=new SimpleClock();
 		LocalDBpediaEvaluation();
@@ -238,8 +238,8 @@ public class SPARQLExtractionEvaluation {
 		int ex=poslimit+neglimit;
 		System.out.println("" +
 				"XXX num ex  : "+ex+ "  \n" +
-				"concept     :"+con+"/"+consize+ " \n" +
-				"recursion   : "+recdepth+" " +
+				"concept     : "+con+"/"+consize+ " \n" +
+				"recursion   : "+recdepth+" \n" +
 				"conceptname : "+conceptname+ "\n" +
 				"needed total: "+needed);
 	}

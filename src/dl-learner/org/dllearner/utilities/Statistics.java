@@ -136,7 +136,7 @@ public class Statistics {
 		for (int i = 0; i < order.size(); i++) {
 			String label=order.get(i);
 			try {
-				System.out.println(str+""+label+" "+ (hm.get(label).intValue()/number));
+				System.out.println(str+""+label+"\t"+ (hm.get(label).intValue()/number));
 			} catch (Exception e) {	}
 		}
 	}
@@ -145,7 +145,7 @@ public class Statistics {
 		for (int i = 0; i < order.size(); i++) {
 			String label=order.get(i);
 			try {
-				System.out.println(str+""+label+" "+hm.get(label));
+				System.out.println(str+""+label+"\t"+hm.get(label));
 			} catch (Exception e) {	}
 		}
 	}
@@ -154,7 +154,7 @@ public class Statistics {
 		for (int i = 0; i < order.size(); i++) {
 			String label=order.get(i);
 			try {
-				System.out.println(str+label+" "+ (hm.get(label).intValue()/number));
+				System.out.println(str+label+"\t"+ (hm.get(label).intValue()/number));
 			} catch (Exception e) {	}
 		}
 	}
@@ -163,7 +163,7 @@ public class Statistics {
 		for (int i = 0; i < order.size(); i++) {
 			String label=order.get(i);
 			try {
-				System.out.println(str+label+"|"+hm.get(label));
+				System.out.println(str+label+"\t"+hm.get(label));
 			} catch (Exception e) {	}
 		}
 	}
