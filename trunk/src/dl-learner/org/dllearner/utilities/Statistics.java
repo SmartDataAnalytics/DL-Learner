@@ -178,6 +178,17 @@ public class Statistics {
 		return currentLabel;
 	}
 	
+	public static void reset(){
+		currentLabel="";
+		order = new LinkedList<String>();
+		 numberOfTriples = new HashMap<String, Integer>();
+		timeCollecting = new HashMap<String, Long>();
+		timeLearning = new HashMap<String, Long>();
+		
+		 numberOfSparqlQueries = new HashMap<String, Integer>();
+		 numberOfCachedSparqlQueries = new HashMap<String, Integer>();
+		
+	}
 	
 	//stats
 	
