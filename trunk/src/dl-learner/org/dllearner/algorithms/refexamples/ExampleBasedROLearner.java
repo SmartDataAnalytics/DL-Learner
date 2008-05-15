@@ -359,7 +359,7 @@ public class ExampleBasedROLearner {
 				lastPrintTime = currentTime;
 				logger.debug("--- loop " + loop + " started ---");				
 			}
-			
+			logger.debug("--- loop " + loop + " started ---");
 			// traverse the current search tree to find a solution
 			if(useTreeTraversal && (currentTime - lastTreeTraversalTime > traversalInterval)) {
 				traverseTree();
