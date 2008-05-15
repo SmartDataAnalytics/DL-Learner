@@ -37,6 +37,7 @@ public class Statistics {
 		else {
 			timeCollecting.put(currentLabel, new Long(current.longValue()+value));
 		}
+		
 	}
 	
 	public static void addTimeLearning(long value) {
@@ -83,6 +84,7 @@ public class Statistics {
 		System.out.println("*****************Queries");
 		printInt(numberOfCachedSparqlQueries,"cached queries\t");
 		printInt(numberOfSparqlQueries,"total queries\t");
+		
 		
 		
 		//printIntAVG(numberOfTriples,number,"triples avg\t");
@@ -187,6 +189,7 @@ public class Statistics {
 		
 		 numberOfSparqlQueries = new HashMap<String, Integer>();
 		 numberOfCachedSparqlQueries = new HashMap<String, Integer>();
+		 System.out.println("xxxRESET");
 		
 	}
 	

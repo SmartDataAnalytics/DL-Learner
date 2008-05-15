@@ -1061,8 +1061,10 @@ public class ExampleBasedROLearner {
 	
 	
 	public void printBestSolutions(int nrOfSolutions, boolean showOrderedSolutions){
+		System.out.println("alogger is "+logger.isTraceEnabled()+"||");
 		if(!logger.isTraceEnabled())
 			return;
+		System.out.println("blogger is "+logger.isTraceEnabled()+"||");
 //		if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
 		if(nrOfSolutions==0)
 			nrOfSolutions=candidatesStable.size();

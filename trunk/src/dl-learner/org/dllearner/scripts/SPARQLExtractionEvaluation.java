@@ -112,6 +112,7 @@ public class SPARQLExtractionEvaluation {
 		
 			for(recursiondepth=0;recursiondepth<4;recursiondepth++) {
 				
+				Statistics.setCurrentLabel(recursiondepth+"");
 				printProgress(concount, concepts.size(),recursiondepth, oneConcept,total.getTime());
 				/*if(i==0){;}
 				else if(closeAfterRecursion) {
@@ -125,7 +126,7 @@ public class SPARQLExtractionEvaluation {
 				
 				Statistics.print(number);
 				
-				System.out.println("currently at label "+Statistics.getCurrentLabel()+"||i: "+recursiondepth);
+				//System.out.println("currently at label "+Statistics.getCurrentLabel()+"||i: "+recursiondepth);
 				
 				LearnSparql ls = new LearnSparql();
 				TreeSet<String> igno = new TreeSet<String>();

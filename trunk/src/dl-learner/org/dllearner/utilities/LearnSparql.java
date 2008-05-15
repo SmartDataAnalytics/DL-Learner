@@ -83,7 +83,7 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",20);
 		
 		//cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
-		cm.applyConfigEntry(la,"logLevel","TRACE");
+		cm.applyConfigEntry(la,"logLevel","DEBUG");
 		
 		//cm.applyConfigEntry(la,"quiet",false);
 		//System.out.println(ignoredConcepts.first());;
@@ -95,6 +95,7 @@ public class LearnSparql {
 		sc.setTime();
 		la.start();
 		Statistics.addTimeLearning(sc.getTime());
+		
 		if(sc.getTime()/1000 >= 20)System.out.println("XXXMAX time reached");
 		
 		//System.out.println("best"+la(20));
