@@ -98,7 +98,7 @@ public class SPARQLExtractionEvaluation {
 			int concount=1;
 		for (String oneConcept : concepts) {
 			
-			printProgress(concount, concepts.size(),0, oneConcept,total.getTime());
+			printProgress(concount++, concepts.size(),0, oneConcept,total.getTime());
 			int recursiondepth=0;
 			boolean closeAfterRecursion=true;
 			
