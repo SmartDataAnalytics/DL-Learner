@@ -18,11 +18,13 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 
 public class LearnSparql {
-
+	
+	
+	public SimpleClock sc= new SimpleClock();
 	
 	
 	public void learnDBpedia(SortedSet<String> posExamples,SortedSet<String> negExamples,
-			String uri, SortedSet<String> ignoredConcepts, int recursiondepth){
+			String uri, SortedSet<String> ignoredConcepts, int recursiondepth, boolean closeAfterRecursion){
 		
 	
 		ComponentManager cm = ComponentManager.getInstance();
@@ -41,12 +43,16 @@ public class LearnSparql {
 		cm.applyConfigEntry(ks, "instances",instances);
 		cm.applyConfigEntry(ks, "url",uri);
 		cm.applyConfigEntry(ks, "recursionDepth",recursiondepth);
+		cm.applyConfigEntry(ks, "closeAfterRecursion",closeAfterRecursion);
 		cm.applyConfigEntry(ks, "predefinedFilter","YAGOSKOS");
 		cm.applyConfigEntry(ks, "predefinedEndpoint","DBPEDIA");
 		//cm.applyConfigEntry(ks, "format","KB");
 		
+		sc.setTime();
 		ks.init();
+		Statistics.addTimeCollecting(sc.getTime());
 		sources.add(ks);
+		if (true)return;
 		//System.out.println(ks.getNTripleURL());
 		//
 		
@@ -82,6 +88,7 @@ public class LearnSparql {
 		
 		System.out.println("start learning");
 		la.start();
+		
 		
 		//System.out.println("best"+la(20));
 		//((ExampleBasedROLComponent)la).printBestSolutions(10000);

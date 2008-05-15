@@ -28,6 +28,7 @@ import org.dllearner.kb.sparql.configuration.Configuration;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
 import org.dllearner.kb.sparql.datastructure.Node;
+import org.dllearner.utilities.Statistics;
 
 /**
  * An object of this class encapsulates everything.
@@ -40,7 +41,8 @@ public class Manager {
 	private Configuration configuration;
 	private TypedSparqlQuery typedSparqlQuery;
 	private ExtractionAlgorithm extractionAlgorithm;
-
+	
+	
 	public void useConfiguration(SparqlQueryType SparqlQueryType,
 			SparqlEndpoint SparqlEndpoint, Manipulator manipulator,
 			int recursiondepth, boolean getAllSuperClasses,
@@ -98,6 +100,7 @@ public class Manager {
 		 * ret.remove(tmp); System.out.println(ret.size()); } /*for (String str :
 		 * ret) { nt += str + "\n"; }
 		 */
+		Statistics.addTriples(ret.size());
 		return nt.toString();
 	}
 

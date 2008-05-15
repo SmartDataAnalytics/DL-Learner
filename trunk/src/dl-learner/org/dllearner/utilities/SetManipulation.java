@@ -17,12 +17,14 @@ public class SetManipulation {
 	 * @return
 	 */
 	public static SortedSet<String> fuzzyShrink(SortedSet<String> set, int limit) {
+		if (set.size()<=limit)return set;
 		SortedSet<String> ret = new TreeSet<String>();
 		Random r = new Random();
 		double treshold = ((double)limit)/set.size();
 		//System.out.println("treshold"+howmany);
 		//System.out.println("treshold"+allRetrieved.size());
 		//System.out.println("treshold"+treshold);
+		
 		
 		while(ret.size()< limit){
 			for (String oneInd : set) {
