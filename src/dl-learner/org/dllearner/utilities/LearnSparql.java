@@ -24,7 +24,8 @@ public class LearnSparql {
 	
 	
 	public void learnDBpedia(SortedSet<String> posExamples,SortedSet<String> negExamples,
-			String uri, SortedSet<String> ignoredConcepts, int recursiondepth, boolean closeAfterRecursion){
+			String uri, SortedSet<String> ignoredConcepts, int recursiondepth, 
+			boolean closeAfterRecursion, boolean randomizeCache){
 		
 	
 		ComponentManager cm = ComponentManager.getInstance();
@@ -44,8 +45,11 @@ public class LearnSparql {
 		cm.applyConfigEntry(ks, "url",uri);
 		cm.applyConfigEntry(ks, "recursionDepth",recursiondepth);
 		cm.applyConfigEntry(ks, "closeAfterRecursion",closeAfterRecursion);
-		cm.applyConfigEntry(ks, "predefinedFilter","YAGOSKOS");
+		cm.applyConfigEntry(ks, "predefinedFilter","YAGO");
 		cm.applyConfigEntry(ks, "predefinedEndpoint","DBPEDIA");
+		if(randomizeCache)
+			cm.applyConfigEntry(ks, "cacheDir","cache/"+System.currentTimeMillis()+"");
+		else {}
 		//cm.applyConfigEntry(ks, "format","KB");
 		
 		sc.setTime();

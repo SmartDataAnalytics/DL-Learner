@@ -51,7 +51,7 @@ public class SparqlExtractionTest {
 			m.useConfiguration(
 					SparqlQueryType.getFilterByName("DBPEDIA"),SparqlEndpoint.getEndpointByName("YAGO"),
 					new Manipulator("",200,new LinkedList<StringTuple>(),new LinkedList<StringTuple>()),
-					1,true,true);
+					1,true,true,"cache");
 			//, ,
 					//manipulator, recursiondepth, getAllSuperClasses, closeAfterRecursion)
 			

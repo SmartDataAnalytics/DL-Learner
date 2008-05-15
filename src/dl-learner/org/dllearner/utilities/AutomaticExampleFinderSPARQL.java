@@ -25,7 +25,7 @@ public class AutomaticExampleFinderSPARQL {
 	
 	
 	public AutomaticExampleFinderSPARQL(SparqlEndpoint se){
-		this.c=new Cache();
+		this.c=new Cache("cachetemp");
 		this.se=se;
 		posExamples = new TreeSet<String>();
 		negExamples = new TreeSet<String>();

@@ -1,6 +1,5 @@
 package org.dllearner.scripts;
 
-import java.net.URLEncoder;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -13,9 +12,7 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.utilities.AutomaticExampleFinderRolesSPARQL;
 import org.dllearner.utilities.AutomaticExampleFinderSPARQL;
-import org.dllearner.utilities.ConfWriter;
 import org.dllearner.utilities.JenaResultSetConvenience;
 import org.dllearner.utilities.LearnSparql;
 import org.dllearner.utilities.SetManipulation;
@@ -37,14 +34,16 @@ public class SPARQLExtractionEvaluation {
 	static boolean useRelated = true;
 	static boolean useSuperClasses = true;
 	static boolean useParallelClasses = true;
-	static int poslimit = 10;
-	static int neglimit = 10;
+	static int poslimit = 5;
+	static int neglimit = 5;
+	static boolean randomizeCache = false;
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		init();
+		System.out.println("Start");
 		//logger.setLevel(Level.TRACE);
 		logger.setLevel(Level.WARN);
 		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
@@ -58,49 +57,71 @@ public class SPARQLExtractionEvaluation {
 	
 	
 	static void LocalDBpediaEvaluation(){
-		se = SparqlEndpoint.EndpointLOCALDBpedia();
-		int number=1;
-		SortedSet<String> concepts = new TreeSet<String>();
-		SortedSet<String> tmpSet=selectDBpediaConcepts(number);
+		boolean local=true;
+		String  url="";
+		if(local){
+			se = SparqlEndpoint.EndpointLOCALDBpedia();
+			
+			 url = "http://139.18.2.37:8890/sparql";
+			
+		}else{
+			se = SparqlEndpoint.EndpointDBpedia();
+			 url= "http://dbpedia.openlinksw.com:8890/sparql";
+		}
 		
+		
+		SortedSet<String> concepts = new TreeSet<String>();
+		SortedSet<String> tmpSet = new TreeSet<String>();
+		//selectDBpediaConcepts(number);
+		tmpSet=initConcepts();
+		int number=tmpSet.size();
+		//concepts.add("\"http://dbpedia.org/class/yago/Flamethrower103356559\"");
 		for (String string : tmpSet) {
+			//System.out.println("\""+string+"\",");
 			concepts.add("\""+string+"\"");
 		}
+		
+		
 		
 		SortedSet<String> posExamples = new TreeSet<String>();
 		SortedSet<String> negExamples = new TreeSet<String>();
 		
-		String  url = "http://139.18.2.37:8890/sparql";
-		int recursiondepth=0;
-		boolean closeAfterRecursion=false;
 		
-		for(int i=0;i<8;i++) {
-			if(i==0){;}
-			else if(closeAfterRecursion) {
-				closeAfterRecursion=false;
-				recursiondepth++;
-			}
-			else {
-				closeAfterRecursion=true;
-			}
-			Statistics.setCurrentLabel(recursiondepth+""+((closeAfterRecursion)?"+":""));
+		
+		for (String oneConcept : concepts) {
+			int recursiondepth=0;
+			boolean closeAfterRecursion=false;
 			
+			System.out.println(oneConcept);
+			AutomaticExampleFinderSPARQL ae= new AutomaticExampleFinderSPARQL( se);	
 			
-			for (String oneConcept : concepts) {
-				AutomaticExampleFinderSPARQL ae= new AutomaticExampleFinderSPARQL( se);	
+			ae.initDBpedia(oneConcept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
+			
+			posExamples = ae.getPosExamples();
+			negExamples = ae.getNegExamples();
+		
+			for(int i=0;i<3;i++) {
+				if(i==0){;}
+				else if(closeAfterRecursion) {
+					closeAfterRecursion=false;
+					recursiondepth++;
+				}
+				else {
+					closeAfterRecursion=true;
+				}
+				Statistics.setCurrentLabel(recursiondepth+""+((closeAfterRecursion)?"+":""));
 				
-				ae.initDBpedia(oneConcept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
-				posExamples = ae.getPosExamples();
-				negExamples = ae.getNegExamples();
-			
+				Statistics.print(number);
+				
+				System.out.println("currently at label "+Statistics.getCurrentLabel()+"||i: "+i);
 				
 				LearnSparql ls = new LearnSparql();
 				TreeSet<String> igno = new TreeSet<String>();
 				System.out.println(oneConcept);
-			
-				ls.learnDBpedia(posExamples, negExamples, url,igno,recursiondepth, closeAfterRecursion);
 				
-		
+				ls.learnDBpedia(posExamples, negExamples, url,igno,recursiondepth, closeAfterRecursion,randomizeCache);
+					
+			
 			}
 		}
 		Statistics.print(number);
@@ -115,7 +136,7 @@ public class SPARQLExtractionEvaluation {
 		// its messages to the console)
 		FileAppender fileAppender =null; ;
 		try{
-			fileAppender = new FileAppender(layout,"the_log.txt",false);
+			fileAppender = new FileAppender(layout,"log/sparqleval.txt",false);
 		}catch (Exception e) {e.printStackTrace();}
 
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
@@ -123,7 +144,7 @@ public class SPARQLExtractionEvaluation {
 		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
 		
-		c = new Cache();
+		c = new Cache("cachetemp");
 		
 
 	}
@@ -131,12 +152,38 @@ public class SPARQLExtractionEvaluation {
 	public static SortedSet<String> selectDBpediaConcepts(int number){
 		String query = "SELECT DISTINCT ?concept WHERE { \n" + 
 		"[] a ?concept .FILTER (regex(str(?concept),'yago'))" +
-		" \n} LIMIT "+1000+" \n"; //
+		" \n} LIMIT "+4000+" \n "; //
 
 		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
 		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
 		JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
 		return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);
+	}
+	
+	public static  SortedSet<String> initConcepts(){
+		SortedSet<String> concepts = new TreeSet<String>();
+		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");
+		concepts.add("http://dbpedia.org/class/yago/AlphaBlocker102698769");
+		//concepts.add("http://dbpedia.org/class/yago/Articulation107131854");
+		/*concepts.add("http://dbpedia.org/class/yago/Caliphate108550766");
+		concepts.add("http://dbpedia.org/class/yago/Ceremony107450842");
+		concepts.add("http://dbpedia.org/class/yago/CookingOil107673145");
+		concepts.add("http://dbpedia.org/class/yago/Corticosteroid114751417");
+		concepts.add("http://dbpedia.org/class/yago/Curlew102033561");
+		concepts.add("http://dbpedia.org/class/yago/DataStructure105728493");
+		concepts.add("http://dbpedia.org/class/yago/Disappearance100053609");
+		concepts.add("http://dbpedia.org/class/yago/Flintstone114871268");
+		concepts.add("http://dbpedia.org/class/yago/Form105930736");
+		concepts.add("http://dbpedia.org/class/yago/Hypochondriac110195487");
+		concepts.add("http://dbpedia.org/class/yago/Industrialist110204177");
+		concepts.add("http://dbpedia.org/class/yago/Lifeboat103662601");
+		concepts.add("http://dbpedia.org/class/yago/Particulate114839439");
+		concepts.add("http://dbpedia.org/class/yago/Reservation108587174");
+		concepts.add("http://dbpedia.org/class/yago/Schoolteacher110560352");
+		concepts.add("http://dbpedia.org/class/yago/Singer110599806");
+		concepts.add("http://dbpedia.org/class/yago/SupremeCourt108336188");
+		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");*/
+		return concepts;
 	}
 	
 	
