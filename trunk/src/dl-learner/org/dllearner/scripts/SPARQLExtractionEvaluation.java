@@ -75,7 +75,7 @@ public class SPARQLExtractionEvaluation {
 		
 		SortedSet<String> concepts = new TreeSet<String>();
 		SortedSet<String> tmpSet = new TreeSet<String>();
-		//selectDBpediaConcepts(number);
+		//System.out.println(selectDBpediaConcepts(10));
 		tmpSet=initConcepts();
 		int number=tmpSet.size();
 		//concepts.add("\"http://dbpedia.org/class/yago/Flamethrower103356559\"");
@@ -181,7 +181,7 @@ public class SPARQLExtractionEvaluation {
 	public static SortedSet<String> selectDBpediaConcepts(int number){
 		String query = "SELECT DISTINCT ?concept WHERE { \n" + 
 		"[] a ?concept .FILTER (regex(str(?concept),'yago'))" +
-		" \n} LIMIT "+4000+" \n "; //
+		" \n} LIMIT "+1000+" \n "; //
 
 		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
 		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
@@ -194,7 +194,7 @@ public class SPARQLExtractionEvaluation {
 		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");
 		concepts.add("http://dbpedia.org/class/yago/AlphaBlocker102698769");
 		concepts.add("http://dbpedia.org/class/yago/Articulation107131854");
-		concepts.add("http://dbpedia.org/class/yago/Caliphate108550766");
+		concepts.add("http://dbpedia.org/class/yago/Patriot110407310");
 		concepts.add("http://dbpedia.org/class/yago/Ceremony107450842");
 		concepts.add("http://dbpedia.org/class/yago/CookingOil107673145");
 		concepts.add("http://dbpedia.org/class/yago/Corticosteroid114751417");
