@@ -27,6 +27,56 @@
 	<target name="full_release" depends="javadoc,build" description="full release, javadoc, scripts">
 	</target>
 	
+	
+	<!-- build target -->
+		<target name="local" depends="createScripts" description="fast build including scripts, 
+			no javadoc, no tar, just executables in local, can be used on a server">
+		
+			
+			<!-- compile project into temporary directory -->
+			<mkdir dir="classes_tmp"/>		
+	        <javac destdir="classes_tmp" target="1.5">
+	            <src path="${source_dir}"/>
+	            <classpath refid="classpath"/>
+	        </javac>
+			
+			<mkdir dir="${release_tmp_dir}"/>
+			<mkdir dir="${release_tmp_dir}/lib/"/>
+	        <jar jarfile="${release_tmp_dir}/lib/dllearner.jar">
+	            <fileset dir="classes_tmp"/>
+	        </jar> 
+			<delete dir="classes_tmp"/>
+			
+			<!-- copy all other libraries -->
+			<copy toDir="${release_tmp_dir}/lib">
+				<fileset dir="${lib_dir}" />
+			</copy>	
+			
+			<!-- copy binary files and examples -->
+			<copy toDir="${release_tmp_dir}/examples">
+				<fileset dir="examples"/>
+			</copy>
+			<copy toDir="${release_tmp_dir}">
+				<fileset dir="bin"/>
+			</copy>
+			
+			<!-- create file containing the build info -->
+			<echo file="${release_tmp_dir}/build.txt" append="false">DL-Learner Build ${today}</echo>
+			
+			<!-- create empty log directory for release -->
+			<mkdir dir="${release_tmp_dir}/log" />
+			<mkdir dir="${release_tmp_dir}/cache" />
+			
+			<mkdir dir="local" />
+			<move toDir="local">
+				<fileset dir="${release_tmp_dir}"/>
+			</move>
+			<delete dir="${release_tmp_dir}" />
+			<delete dir="release" />
+			
+		</target>
+	
+	
 	<!-- build target -->
 	<target name="build" depends="createScripts" description="fast build including scripts, no javadoc">
 		
@@ -42,7 +92,7 @@ public class Info {
 		
 		<!-- compile project into temporary directory -->
 		<mkdir dir="classes_tmp"/>		
-        <javac destdir="classes_tmp">
+        <javac destdir="classes_tmp" target="1.5">
             <src path="${source_dir}"/>
             <classpath refid="classpath"/>
         </javac>	
