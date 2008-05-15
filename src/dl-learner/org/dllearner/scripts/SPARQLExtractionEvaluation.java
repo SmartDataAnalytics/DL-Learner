@@ -125,7 +125,9 @@ public class SPARQLExtractionEvaluation {
 				
 				LearnSparql ls = new LearnSparql();
 				TreeSet<String> igno = new TreeSet<String>();
-				System.out.println(oneConcept);
+				igno.add(oneConcept.replaceAll("\"", ""));
+				//igno.add("\""+oneConcept+"\"");
+				//System.out.println(oneConcept);
 				
 				ls.learnDBpedia(posExamples, negExamples, url,igno,recursiondepth, closeAfterRecursion,randomizeCache);
 					

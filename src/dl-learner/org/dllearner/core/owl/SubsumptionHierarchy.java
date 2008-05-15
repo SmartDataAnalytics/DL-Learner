@@ -74,7 +74,7 @@ public class SubsumptionHierarchy {
 		for(Description c : allowedConceptsInSubsumptionHierarchy) {
 			// schauen, ob es mehrere allgemeinere Nachbarn gibt
 			SortedSet<Description> moreGeneral = subsumptionHierarchyUp.get(c);
-			//RBC
+			//RBC  //HACK
 			if(moreGeneral != null && moreGeneral.size()>0) {
 				//System.out.println(moreGeneral);
 				Description chosenParent = moreGeneral.first();
@@ -85,7 +85,8 @@ public class SubsumptionHierarchy {
 		// for(Concept c : allowedConceptsInSubsumptionHierarchy) {
 		for(Description c : allowedConceptsInSubsumptionHierarchy) {
 			SortedSet<Description> moreSpecial = subsumptionHierarchyDown.get(c);
-			if(moreSpecial != null) {
+			//RBC //HACK
+			if(moreSpecial != null && moreSpecial.size()>0) {
 				Description chosenParent = moreSpecial.first();
 				hierarchyUpNew.get(chosenParent).add(c);
 			}

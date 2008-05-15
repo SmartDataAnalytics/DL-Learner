@@ -77,8 +77,8 @@ public class Statistics {
 		
 		printLong(timeCollecting, "collecting\t");
 		printLongAVG(timeCollecting,number,"collecting avg\t");
-		printLong(timeLearning, "collecting\t");
-		printLongAVG(timeLearning,number,"collecting avg\t");
+		printLong(timeLearning, "learning\t");
+		printLongAVG(timeLearning,number,"learning avg\t");
 		
 		System.out.println("*****************Queries");
 		printInt(numberOfCachedSparqlQueries,"cached queries\t");
