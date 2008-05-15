@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
+import org.dllearner.utilities.SimpleClock;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -85,8 +86,9 @@ public class SparqlQuery {
 		try{
 			//TODO remove after overnext Jena release
 			HttpQuery.urlLimit = 3*1024 ;
+			//SimpleClock sc=new SimpleClock();
 			rs = queryExecution.execSelect();
-			
+			//sc.printAndSet("rs to list");
 			logger.debug("query SPARQL server ["+extraDebugInfo+"], retrieved: "+rs.getResultVars());
 			json=SparqlQuery.getAsJSON(rs);
 			

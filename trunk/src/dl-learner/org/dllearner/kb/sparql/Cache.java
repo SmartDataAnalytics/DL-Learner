@@ -31,6 +31,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.SimpleClock;
+import org.dllearner.utilities.Statistics;
 
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. The queries
@@ -75,9 +77,9 @@ public class Cache implements Serializable {
 	/**
 	 *  same ad Cache(String) default is "cache"
 	 */
-	public Cache() {
+	/*public Cache() {
 		this("cache");
-	} 
+	} */
 	
 	/**
 	 * Constructor for the cache itself.
@@ -86,6 +88,7 @@ public class Cache implements Serializable {
 	 *            Where the base path to the cache is .
 	 */
 	public Cache(String cacheDir) {
+		
 		this.cacheDir = cacheDir + File.separator;
 		if (!new File(cacheDir).exists()) {
 			logger
@@ -218,12 +221,18 @@ public class Cache implements Serializable {
 	 * @return Jena result set.
 	 */
 	public String executeSparqlQuery(SparqlQuery query) {
+		
+		Statistics.increaseQuery();
 		String result = getCacheEntry(query.getQueryString());
 		if (result != null) {
 			logger.trace("got from cache");
+			
+			Statistics.increaseCachedQuery();
 			return result;
 		} else {
+			//SimpleClock sc = new SimpleClock();
 			query.send();
+			//sc.printAndSet("query");
 			String json = query.getResult();
 			if (json!=null){
 				addToCache(query.getQueryString(), json);

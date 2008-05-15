@@ -39,17 +39,19 @@ public class Configuration {
 	private boolean closeAfterRecursion = true;
 	public int numberOfUncachedSparqlQueries = 0;
 	public int numberOfCachedSparqlQueries = 0;
+	public String cacheDir="cache";
 
 	public Configuration(SparqlEndpoint specificSparqlEndpoint,
 			SparqlQueryType sparqlQueryType, Manipulator manipulator,
 			int recursiondepth, boolean getAllSuperClasses,
-			boolean closeAfterRecursion) {
+			boolean closeAfterRecursion, String cacheDir) {
 		this.endpoint = specificSparqlEndpoint;
 		this.sparqlQueryType = sparqlQueryType;
 		this.manipulator = manipulator;
 		this.recursiondepth = recursiondepth;
 		this.getAllSuperClasses = getAllSuperClasses;
 		this.closeAfterRecursion = closeAfterRecursion;
+		this.cacheDir=cacheDir;
 
 	}
 
@@ -57,7 +59,7 @@ public class Configuration {
 		// TODO must clone here
 		return new Configuration(this.endpoint, sqt, this.manipulator,
 				this.recursiondepth, this.getAllSuperClasses,
-				this.closeAfterRecursion);
+				this.closeAfterRecursion, this.cacheDir);
 
 	}
 

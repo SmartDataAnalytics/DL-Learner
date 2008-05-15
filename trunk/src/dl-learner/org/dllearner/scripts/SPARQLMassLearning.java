@@ -213,7 +213,7 @@ public class SPARQLMassLearning {
 			System.out.println(oneConcept);
 			//igno.add(oneConcept.replaceAll("\"", ""));
 			
-			ls.learnDBpedia(posExamples, negExamples, url,igno,recursiondepth, closeAfterRecursion);
+			ls.learnDBpedia(posExamples, negExamples, url,igno,recursiondepth, closeAfterRecursion,false);
 			
 			//System.out.println("AAAAAAAA");
 			//System.exit(0);
@@ -273,7 +273,7 @@ public class SPARQLMassLearning {
 		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
 		logger.setLevel(Level.DEBUG);
-		c = new Cache();
+		c = new Cache("cachetemp");
 		
 
 	}

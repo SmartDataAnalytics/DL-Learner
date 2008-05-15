@@ -61,8 +61,6 @@ import org.dllearner.utilities.StringTuple;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
-	//statistic
-	public int numberOfTriples=0;
 	
 	//DEFAULTS
 	static int recursionDepthDefault = 1;
@@ -85,6 +83,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private boolean closeAfterRecursion = true;
 	private int breakSuperClassRetrievalAfter = 200;
 	private String blankNodeIdentifier = "bnode";
+	private String cacheDir = "cache";
 	// private boolean learnDomain = false;
 	// private boolean learnRange = false;
 	// private int numberOfInstancesUsedForRoleLearning = 40;
@@ -124,6 +123,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
+		options.add(new StringConfigOption("cacheDir", "dir of cache"));
+		
 		// options.add(new StringConfigOption("host", "host of SPARQL
 		// Endpoint"));
 		options
@@ -205,6 +206,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			// host = (String) entry.getValue();
 		} else if (option.equals("instances")) {
 			instances = (Set<String>) entry.getValue();
+		}else if (option.equals("cacheDir")) {
+			cacheDir = (String) entry.getValue();
 		} else if (option.equals("recursionDepth")) {
 			recursionDepth = (Integer) entry.getValue();
 		} else if (option.equals("predList")) {
@@ -315,18 +318,21 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		}
 		// give everything to the manager
 		m.useConfiguration(sparqlQueryType, endpoint, manipulator,
-				recursionDepth, getAllSuperClasses, closeAfterRecursion);
+				recursionDepth, getAllSuperClasses, closeAfterRecursion, cacheDir);
+		
 		
 		try {
 			String ont = "";
 			// the actual extraction is started here
+			SimpleClock sc2=new SimpleClock();
+			sc2.setTime();
 			ont = m.extract(instances);
-			
-			logger.info("Number of cached SPARQL queries: "
+			sc2.printAndSet("extraction needed");
+			/*logger.info("Number of cached SPARQL queries: "
 					+ m.getConfiguration().numberOfCachedSparqlQueries);
 			logger.info("Number of uncached SPARQL queries: "
 					+ m.getConfiguration().numberOfUncachedSparqlQueries);
-
+*/
 			logger.info("Finished collecting Fragment");
 
 			if (dumpToFile) {
@@ -404,7 +410,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	}
 	
 	public SparqlQueryThreaded sparqlQueryThreaded(String query){
-		return new SparqlQueryThreaded(new Cache("cache"),this.sparqlQuery(query));
+		//RBC
+		return new SparqlQueryThreaded(new Cache("cachet2"),this.sparqlQuery(query));
 	}
 
 	/* (non-Javadoc)
