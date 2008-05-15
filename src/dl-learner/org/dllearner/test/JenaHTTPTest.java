@@ -17,26 +17,46 @@ public class JenaHTTPTest {
 					"WHERE { <http://dbpedia.org/resource/Leipzig> <http://www.w3.org/2000/01/rdf-schema#label> ?object}\n";
 		
 		double time=0;
-		for (int i=0; i<101; i++)
+		/*for (int i=0; i<101; i++)
 		{
 			if (i!=0) time+=JenaHTTPTest.httpQuery(query);
 		}
 		time=time/100;
 		System.out.println("Durchschnittliche Zeit f�r eine Anfrage per Http-Methode: "+time);
-		
+		*/
 		time=0;
 		for (int i=0; i<101; i++)
 		{
 			if (i!=0) time+=JenaHTTPTest.jenaQuery(query);
 		}
 		time=time/100;
-		System.out.println("Durchschnittliche Zeit f�r eine Anfrage per Jena-Methode: "+time);
+		System.out.println("Durchschnittliche Zeit f�r eine Anfrage DBpedia: "+time);
+		
+		time=0;
+		for (int i=0; i<101; i++)
+		{
+			if (i!=0) time+=JenaHTTPTest.jenaLocalQuery(query);
+		}
+		time=time/100;
+		System.out.println("Durchschnittliche Zeit f�r eine Anfrage per DBpedia LOCAL: "+time);
 	}
 	
 	private static double jenaQuery(String query)
 	{
 		double start=System.currentTimeMillis();
-		QueryEngineHTTP queryExecution=new QueryEngineHTTP("http://localhost:8890/sparql",query);
+		QueryEngineHTTP queryExecution=new QueryEngineHTTP("http://dbpedia.openlinksw.com:8890/sparql",query);
+		queryExecution.addDefaultGraph("http://dbpedia.org");
+		// Jena access to DBpedia SPARQL endpoint
+		// ResultSet rs = 
+		queryExecution.execSelect();
+		double end=System.currentTimeMillis();
+		return ((end-start)/1000);
+	}
+	
+	private static double jenaLocalQuery(String query)
+	{
+		double start=System.currentTimeMillis();
+		QueryEngineHTTP queryExecution=new QueryEngineHTTP("http://139.18.2.37:8890/sparql",query);
 		queryExecution.addDefaultGraph("http://dbpedia.org");
 		// Jena access to DBpedia SPARQL endpoint
 		// ResultSet rs = 

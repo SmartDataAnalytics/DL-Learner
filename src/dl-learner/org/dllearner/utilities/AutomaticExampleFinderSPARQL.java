@@ -21,6 +21,7 @@ public class AutomaticExampleFinderSPARQL {
 	private SparqlEndpoint se;
 	private SortedSet<String> posExamples;
 	private SortedSet<String> negExamples;
+	private int limit=2000;
 	
 	
 	public AutomaticExampleFinderSPARQL(SparqlEndpoint se){
@@ -98,10 +99,10 @@ public class AutomaticExampleFinderSPARQL {
 	private void dbpediaMakePositiveExamplesFromConcept(String concept){
 		logger.debug("making Positive Examples from Concept: "+concept);
 		if(concept.contains("http://dbpedia.org/resource/Category:")) {
-			this.posExamples = new JenaResultSetConvenience(dbpediaQuerySKOSConcept(concept,0))
+			this.posExamples = new JenaResultSetConvenience(dbpediaQuerySKOSConcept(concept,limit))
 				.getStringListForVariable("subject");
 		}else {
-			this.posExamples = new JenaResultSetConvenience(queryConcept(concept,0))
+			this.posExamples = new JenaResultSetConvenience(queryConcept(concept,limit))
 				.getStringListForVariable("subject");
 		}
 		logger.debug("   pos Example size: "+posExamples.size());
@@ -195,8 +196,8 @@ public class AutomaticExampleFinderSPARQL {
 		logger.debug("making neg Examples from "+superClasses.size()+" superclasses");
 		JenaResultSetConvenience rsc;
 		for (String oneSuperClass : superClasses) {
-			
-			rsc = new JenaResultSetConvenience(queryConcept("\""+oneSuperClass+"\"", 0));
+			logger.debug(oneSuperClass);
+			rsc = new JenaResultSetConvenience(queryConcept("\""+oneSuperClass+"\"", limit));
 			this.negExamples.addAll(rsc.getStringListForVariable("subject"));
 		}
 		logger.debug("   neg Example size: "+negExamples.size());
@@ -223,8 +224,8 @@ public class AutomaticExampleFinderSPARQL {
 		}
 		logger.debug("getting negExamples from "+classes.size()+" parallel classes");
 		for (String oneClass : classes) {
-			
-			rsc = new JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",0));
+			logger.debug(oneClass);
+			rsc = new JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
 			this.negExamples.addAll(rsc.getStringListForVariable("subject"));
 		}
 		logger.debug("neg Example size: "+negExamples.size());
@@ -241,15 +242,17 @@ public class AutomaticExampleFinderSPARQL {
 		String query = "";
 		for (; depth != 0 ; depth--) {
 			for (String oneSuperClass : superClasses) {
-				//logger.debug("one"+oneSuperClass);
+				
 				//tmp = oneSuperClass.replace("\"", "");
 				query = "SELECT * WHERE { \n" + "<" + oneSuperClass  + "> " 
 					+ "<http://www.w3.org/2000/01/rdf-schema#subClassOf>  ?superclass. \n"
 					+ "}";
+				
 				String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
 				ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
 				rsc = new JenaResultSetConvenience(rs);
 				tmpset.addAll(rsc.getStringListForVariable("superclass"));
+				
 			}
 			ret.addAll(tmpset);
 			//logger.debug(ret);

@@ -49,6 +49,7 @@ import org.dllearner.kb.sparql.configuration.SparqlQueryType;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
+import org.dllearner.utilities.SimpleClock;
 import org.dllearner.utilities.StringTuple;
 
 /**
@@ -60,6 +61,9 @@ import org.dllearner.utilities.StringTuple;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
+	//statistic
+	public int numberOfTriples=0;
+	
 	//DEFAULTS
 	static int recursionDepthDefault = 1;
 	
@@ -268,6 +272,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	@Override
 	public void init() {
 		logger.info("SparqlModul: Collecting Ontology");
+		SimpleClock sc=new SimpleClock();
 		/*
 		 * TODO remove when Jena works SparqlOntologyCollector oc= // new
 		 * SparqlOntologyCollector(Datastructures.setToArray(instances), //
@@ -316,6 +321,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			String ont = "";
 			// the actual extraction is started here
 			ont = m.extract(instances);
+			
 			logger.info("Number of cached SPARQL queries: "
 					+ m.getConfiguration().numberOfCachedSparqlQueries);
 			logger.info("Number of uncached SPARQL queries: "
@@ -352,7 +358,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		logger.info("SparqlModul: ****Finished");
+		logger.info("SparqlModul: ****Finished " + sc.getAndSet("") );
 	}
 
 	/*

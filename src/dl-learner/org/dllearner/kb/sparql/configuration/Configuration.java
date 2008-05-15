@@ -34,7 +34,7 @@ public class Configuration {
 	private Manipulator manipulator;
 	// the following needs to be moved to
 	// class extraction algorithm or manipulator
-	private int recursiondepth = 2;
+	private int recursiondepth;
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;
 	public int numberOfUncachedSparqlQueries = 0;

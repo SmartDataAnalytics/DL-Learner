@@ -20,9 +20,9 @@ public class SimpleClock {
 	 *  and resets the clock 
 	 */
 	public void printAndSet() {
-		long now=System.currentTimeMillis();
-		System.out.println("needed "+(now-time)+" ms");
-		time=now;
+		
+		System.out.println("needed "+getTime()+" ms");
+		setTime();
 	}
 	
 	
@@ -32,15 +32,15 @@ public class SimpleClock {
 	 * @param s String for printing
 	 */
 	public void printAndSet(String s) {
-		long now=System.currentTimeMillis();
-		System.out.println(s+" needed "+(now-time)+" ms");
-		time=now;
+		
+		System.out.println(s+" needed "+getTime()+" ms");
+		setTime();
 	}
 	
 	public String getAndSet(String s) {
-		long now=System.currentTimeMillis();
-		String ret = s+" needed "+(now-time)+" ms";
-		time=now;
+		
+		String ret = s+" needed "+getTime()+" ms";
+		setTime();
 		return ret;
 		
 	}
@@ -52,13 +52,17 @@ public class SimpleClock {
 	 * @param s String for printing
 	 */
 	public void print(String s) {
-		long now=System.currentTimeMillis();
-		System.out.println(s+" needed "+(now-time)+" ms");
+		
+		System.out.println(s+" needed "+getTime()+" ms");
 		
 	}
 	
 	public void setTime() {
 		time=System.currentTimeMillis();
+	}
+	public long getTime() {
+		long now=System.currentTimeMillis();
+		return now-time;
 	}
 	
 }

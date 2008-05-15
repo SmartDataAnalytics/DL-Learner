@@ -1,7 +1,6 @@
 package org.dllearner.scripts;
 
 import java.net.URLEncoder;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -21,6 +20,7 @@ import org.dllearner.utilities.JenaResultSetConvenience;
 import org.dllearner.utilities.LearnSparql;
 import org.dllearner.utilities.SetManipulation;
 import org.dllearner.utilities.SimpleClock;
+import org.dllearner.utilities.Statistics;
 
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -159,6 +159,10 @@ public class SPARQLMassLearning {
 		concepts.remove(concepts.first());
 		concepts.remove(concepts.first());
 		concepts.remove(concepts.first());
+		concepts.remove(concepts.first());
+		concepts.remove(concepts.first());
+		concepts.remove(concepts.first());
+		//concepts.remove(concepts.first());
 		//concepts.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
 		//concepts.add("\"http://dbpedia.org/class/yago/Person100007846\"");
 		//concepts.add("\"http://dbpedia.org/class/yago/FieldMarshal110086821\"");
@@ -174,46 +178,51 @@ public class SPARQLMassLearning {
 		//HashMap<String, String> result2 = new HashMap<String, String>();
 		//System.out.println(concepts.first());
 		//logger.setLevel(Level.TRACE);
+		String concept=concepts.first();
 		int i=0;
+		Statistics.setCurrentLabel("0");
+		int recursiondepth=0;
+		boolean closeAfterRecursion=false;
+		int numberOfTriples = 0;
 		for (String oneConcept : concepts) {
-			if(i>=3)break;
-			i++;
-			AutomaticExampleFinderSPARQL ae= new AutomaticExampleFinderSPARQL( se);
+			AutomaticExampleFinderSPARQL ae= new AutomaticExampleFinderSPARQL( se);	
 			useRelated = true;
 			useSuperClasses = true;
-			useParallelClasses = true;
-			poslimit=2;
-			neglimit=2;
-			ae.initDBpedia(oneConcept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
+			useParallelClasses = false;
+			
+			poslimit=10;
+			neglimit=10;
+			ae.initDBpedia(concept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
 			posExamples = ae.getPosExamples();
 			negExamples = ae.getNegExamples();
+		
 			
-		//	System.out.println(posExamples);
-		//	System.out.println(negExamples);
-			
-			String tmp = concepts.first().replace("http://dbpedia.org/resource/Category:", "").replace("\"","");
+			/*String tmp = concepts.first().replace("http://dbpedia.org/resource/Category:", "").replace("\"","");
 			tmp = tmp.replace("http://dbpedia.org/class/yago/", "");
 			tmp = tmp.replace("http://dbpedia.org/property/", "");
 			String confname = "";
 			try{
 				confname = URLEncoder.encode(tmp, "UTF-8")+".conf";
-			}catch (Exception e) {e.printStackTrace();}
+			}catch (Exception e) {e.printStackTrace();}*/
 			//
 			//ConfWriter cf=new ConfWriter();
 			//cf.addToStats("relearned concept: "+concepts.first());
-			System.out.println(confname);
+			//System.out.println(confname);
 			LearnSparql ls = new LearnSparql();
 			TreeSet<String> igno = new TreeSet<String>();
 			System.out.println(oneConcept);
 			//igno.add(oneConcept.replaceAll("\"", ""));
-			ls.learnDBpedia(posExamples, negExamples, url,igno,1);
-			System.out.println("AAAAAAAA");
+			
+			ls.learnDBpedia(posExamples, negExamples, url,igno,recursiondepth, closeAfterRecursion);
+			
+			//System.out.println("AAAAAAAA");
 			//System.exit(0);
 			//"relearned concept: ";
 			//cf.writeSPARQL(confname, posExamples, negExamples, url, new TreeSet<String>(),standardSettings,algorithm);
 			//
 	
 		}
+		//Statistics.print();
 	}
 	
 
@@ -272,7 +281,7 @@ public class SPARQLMassLearning {
 	public static SortedSet<String> selectDBpediaConcepts(int number){
 		String query = "SELECT DISTINCT ?concept WHERE { \n" + 
 		"[] a ?concept .FILTER (regex(str(?concept),'yago'))" +
-		" \n} LIMIT "+number+" \n";
+		" \n}  \n"; //LIMIT "+number+"
 
 		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
 		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
