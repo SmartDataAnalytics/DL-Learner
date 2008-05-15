@@ -12,7 +12,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.AutomaticExampleFinderSPARQL;
@@ -49,7 +48,7 @@ public class SPARQLExtractionEvaluation {
 		System.out.println("Start");
 		//logger.setLevel(Level.TRACE);
 		logger.setLevel(Level.WARN);
-		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.TRACE);
+		//Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.TRACE);
 		//System.out.println(Logger.getLogger(SparqlQuery.class).getLevel());
 		SimpleClock sc=new SimpleClock();
 		LocalDBpediaEvaluation();
@@ -236,7 +235,7 @@ public class SPARQLExtractionEvaluation {
 	
 	public static void printProgress(int con, int consize,int recdepth, String conceptname, long needed){
 		int ex=poslimit+neglimit;
-		System.out.println("" +
+		System.out.println("**********************STAT\n" +
 				"XXX num ex  : "+ex+ "  \n" +
 				"concept     : "+con+"/"+consize+ " \n" +
 				"recursion   : "+recdepth+" \n" +

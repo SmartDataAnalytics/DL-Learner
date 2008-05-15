@@ -46,7 +46,7 @@ public class LearnSparql {
 		cm.applyConfigEntry(ks, "recursionDepth",recursiondepth);
 		cm.applyConfigEntry(ks, "closeAfterRecursion",closeAfterRecursion);
 		cm.applyConfigEntry(ks, "predefinedFilter","YAGO");
-		cm.applyConfigEntry(ks, "predefinedEndpoint","DBPEDIA");
+		cm.applyConfigEntry(ks, "predefinedEndpoint","LOCALDBPEDIA");
 		if(randomizeCache)
 			cm.applyConfigEntry(ks, "cacheDir","cache/"+System.currentTimeMillis()+"");
 		else {}
