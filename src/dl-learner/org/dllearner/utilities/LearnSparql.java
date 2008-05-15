@@ -95,6 +95,7 @@ public class LearnSparql {
 		sc.setTime();
 		la.start();
 		Statistics.addTimeLearning(sc.getTime());
+		if(sc.getTime()/1000 >= 20)System.out.println("XXXMAX time reached");
 		
 		//System.out.println("best"+la(20));
 		//((ExampleBasedROLComponent)la).printBestSolutions(10000);

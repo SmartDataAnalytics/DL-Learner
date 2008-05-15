@@ -93,8 +93,11 @@ public class SPARQLExtractionEvaluation {
 			
 			poslimit+=5;
 			neglimit+=5;
-		
+			System.out.println("XXX examplesize "+(poslimit+neglimit));
+			int concount=0;
 		for (String oneConcept : concepts) {
+			System.out.println("XXX "+concount+" of "+concepts.size()+""+oneConcept);concount++;
+			
 			int recursiondepth=0;
 			boolean closeAfterRecursion=true;
 			
@@ -106,7 +109,8 @@ public class SPARQLExtractionEvaluation {
 			posExamples = ae.getPosExamples();
 			negExamples = ae.getNegExamples();
 		
-			for(recursiondepth=0;recursiondepth<5;recursiondepth++) {
+			for(recursiondepth=0;recursiondepth<4;recursiondepth++) {
+				System.out.println("XXX recursiondepth "+recursiondepth+" con "+oneConcept);
 				
 				/*if(i==0){;}
 				else if(closeAfterRecursion) {
@@ -138,16 +142,17 @@ public class SPARQLExtractionEvaluation {
 		}
 		Statistics.print(number);
 		String pre="log/gnu_";
-		String comment1="# "+poslimit+neglimit+"examples\n";
-		String f1=pre+"1avgtrip_"+poslimit+neglimit+"example"+concepts.size()+"classes";
+		int examples=poslimit+neglimit;
+		String comment1="# "+examples+"examples\n";
+		String f1=pre+"1avgtrip_"+examples+"example"+concepts.size()+"classes";
 		writeToFile(f1, comment1+Statistics.getAVGTriplesForRecursionDepth(number));
-		String comment2="# "+poslimit+neglimit+"examples\n";
-		String f2=pre+"2avgTimeExtraction_"+poslimit+neglimit+"example"+concepts.size()+"classes";
+		String comment2="# "+examples+"examples\n";
+		String f2=pre+"2avgTimeExtraction_"+examples+"example"+concepts.size()+"classes";
 		writeToFile(f2, comment2+Statistics.getAVGTimeCollecting(number));
-		String comment3="# "+poslimit+neglimit+"examples\n";
-		String f3=pre+"2avgTimeLearning_"+poslimit+neglimit+"example"+concepts.size()+"classes";
+		String comment3="# "+examples+"examples\n";
+		String f3=pre+"2avgTimeLearning_"+examples+"example"+concepts.size()+"classes";
 		writeToFile(f3, comment3+Statistics.getAVGTimeLearning(number));
-		
+		Statistics.reset();
 		
 		}//outer
 	}
