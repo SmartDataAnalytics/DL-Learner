@@ -106,7 +106,8 @@ public class SPARQLExtractionEvaluation {
 			posExamples = ae.getPosExamples();
 			negExamples = ae.getNegExamples();
 		
-			for(int i=0;i<3;i++) {
+			for(recursiondepth=0;recursiondepth<5;recursiondepth++) {
+				
 				/*if(i==0){;}
 				else if(closeAfterRecursion) {
 					closeAfterRecursion=false;
@@ -117,11 +118,12 @@ public class SPARQLExtractionEvaluation {
 				}*/
 				//Statistics.setCurrentLabel(recursiondepth+""+((closeAfterRecursion)?"+":""));
 				
-				Statistics.setCurrentLabel(recursiondepth+""+((closeAfterRecursion)?"":""));
+				//Statistics.setCurrentLabel(recursiondepth+""+((closeAfterRecursion)?"":""));
+				Statistics.setCurrentLabel(recursiondepth+"");
 				
 				Statistics.print(number);
 				
-				System.out.println("currently at label "+Statistics.getCurrentLabel()+"||i: "+i);
+				System.out.println("currently at label "+Statistics.getCurrentLabel()+"||i: "+recursiondepth);
 				
 				LearnSparql ls = new LearnSparql();
 				TreeSet<String> igno = new TreeSet<String>();
