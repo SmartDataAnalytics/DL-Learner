@@ -440,4 +440,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			System.out.println();
 		}
 	}*/
+	
+	
 }

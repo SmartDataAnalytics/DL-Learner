@@ -61,6 +61,7 @@ public class SPARQLExtractionEvaluation {
 	
 	static void LocalDBpediaEvaluation(){
 		boolean local=true;
+		SimpleClock total =new SimpleClock();
 		String  url="";
 		if(local){
 			se = SparqlEndpoint.EndpointLOCALDBpedia();
@@ -93,11 +94,12 @@ public class SPARQLExtractionEvaluation {
 			
 			poslimit+=5;
 			neglimit+=5;
-			System.out.println("XXX examplesize "+(poslimit+neglimit));
-			int concount=0;
-		for (String oneConcept : concepts) {
-			System.out.println("XXX "+concount+" of "+concepts.size()+""+oneConcept);concount++;
+			printProgress(0, concepts.size(),0, "beginning",total.getTime());
 			
+			int concount=1;
+		for (String oneConcept : concepts) {
+			
+			printProgress(concount, concepts.size(),0, oneConcept,total.getTime());
 			int recursiondepth=0;
 			boolean closeAfterRecursion=true;
 			
@@ -110,8 +112,8 @@ public class SPARQLExtractionEvaluation {
 			negExamples = ae.getNegExamples();
 		
 			for(recursiondepth=0;recursiondepth<4;recursiondepth++) {
-				System.out.println("XXX recursiondepth "+recursiondepth+" con "+oneConcept);
 				
+				printProgress(concount, concepts.size(),recursiondepth, oneConcept,total.getTime());
 				/*if(i==0){;}
 				else if(closeAfterRecursion) {
 					closeAfterRecursion=false;
@@ -230,6 +232,16 @@ public class SPARQLExtractionEvaluation {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void printProgress(int con, int consize,int recdepth, String conceptname, long needed){
+		int ex=poslimit+neglimit;
+		System.out.println("" +
+				"XXX num ex  : "+ex+ "  \n" +
+				"concept     :"+con+"/"+consize+ " \n" +
+				"recursion   : "+recdepth+" " +
+				"conceptname : "+conceptname+ "\n" +
+				"needed total: "+needed);
 	}
 	
 
