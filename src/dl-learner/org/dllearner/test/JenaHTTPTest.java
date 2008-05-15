@@ -10,12 +10,39 @@ import java.net.URLEncoder;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 public class JenaHTTPTest {
+	
+	static String query1="SELECT DISTINCT ?object\n"+
+	"FROM <http://dbpedia.org>\n"+
+	"WHERE { <http://dbpedia.org/resource/Leipzig> <http://www.w3.org/2000/01/rdf-schema#label> ?object}\n";
+
+		
+	static String query2 = "SELECT * WHERE { \n"+
+		"<http://dbpedia.org/resource/County_Route_G7_%28California%29> ?predicate ?object. \n"+
+		"	FILTER( \n"+
+		"	(!isLiteral(?object))\n"+
+		"	&&( !regex(str(?predicate), 'http://dbpedia.org/property/relatedInstance') )\n"+
+		"	&&( !regex(str(?predicate), 'http://dbpedia.org/property/website') )\n"+
+		"	&&( !regex(str(?predicate), 'http://dbpedia.org/property/owner') )\n"+
+		"	&&( !regex(str(?predicate), 'http://dbpedia.org/property/wikiPageUsesTemplate') )\n"+
+		"	&&( !regex(str(?predicate), 'http://www.w3.org/2002/07/owl#sameAs') )\n"+
+		"	&&( !regex(str(?predicate), 'http://xmlns.com/foaf/0.1/') )\n"+
+		"	&&( !regex(str(?predicate), 'http://dbpedia.org/property/standard') )\n"+
+		"   &&( !regex(str(?predicate), 'http://dbpedia.org/property/wikipage') )\n"+
+		"	&&( !regex(str(?predicate), 'http://dbpedia.org/property/reference') )\n"+
+		"	&&( !regex(str(?predicate), 'http://www.w3.org/2004/02/skos/core') )\n"+
+		"	&&( !regex(str(?object), 'http://xmlns.com/foaf/0.1/') )\n"+
+		"	&&( !regex(str(?object), 'http://upload.wikimedia.org/wikipedia') )\n"+
+		"	&&( !regex(str(?object), 'http://www4.wiwiss.fu-berlin.de/flickrwrappr') )\n"+
+		"	&&( !regex(str(?object), 'http://dbpedia.org/resource/Template') )\n"+
+		"	&&( !regex(str(?object), 'http://upload.wikimedia.org/wikipedia/commons') )\n"+
+		"	&&( !regex(str(?object), 'http://www.w3.org/2006/03/wn/wn20/instances/synset') )\n"+
+		"	&&( !regex(str(?object), 'http://dbpedia.org/resource/Category:') )\n"+
+		"	&&( !regex(str(?object), 'http://www.w3.org/2004/02/skos/core') )\n"+
+		"	&&( !regex(str(?object), 'http://www.geonames.org') )).}\n";
+	
 	public static void main(String[] args) throws Exception{
 		
-		String query="SELECT DISTINCT ?object\n"+
-					"FROM <http://dbpedia.org>\n"+
-					"WHERE { <http://dbpedia.org/resource/Leipzig> <http://www.w3.org/2000/01/rdf-schema#label> ?object}\n";
-		
+		String query=query2;
 		double time=0;
 		/*for (int i=0; i<101; i++)
 		{
@@ -27,6 +54,7 @@ public class JenaHTTPTest {
 		time=0;
 		for (int i=0; i<101; i++)
 		{
+			if (i%20 ==0)System.out.println(i);
 			if (i!=0) time+=JenaHTTPTest.jenaQuery(query);
 		}
 		time=time/100;
@@ -35,10 +63,20 @@ public class JenaHTTPTest {
 		time=0;
 		for (int i=0; i<101; i++)
 		{
+			if (i%20 ==0)System.out.println(i);
 			if (i!=0) time+=JenaHTTPTest.jenaLocalQuery(query);
 		}
 		time=time/100;
 		System.out.println("Durchschnittliche Zeit f�r eine Anfrage per DBpedia LOCAL: "+time);
+		
+		time=0;
+		for (int i=0; i<101; i++)
+		{
+			if (i%20 ==0)System.out.println(i);
+			if (i!=0) time+=JenaHTTPTest.jenaQuery(query);
+		}
+		time=time/100;
+		System.out.println("Durchschnittliche Zeit f�r eine Anfrage DBpedia: "+time);
 	}
 	
 	private static double jenaQuery(String query)

@@ -282,6 +282,7 @@ public class SPARQLMassLearning {
 		String query = "SELECT DISTINCT ?concept WHERE { \n" + 
 		"[] a ?concept .FILTER (regex(str(?concept),'yago'))" +
 		" \n}  \n"; //LIMIT "+number+"
+		
 
 		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
 		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);

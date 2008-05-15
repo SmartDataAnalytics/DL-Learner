@@ -1,5 +1,8 @@
 package org.dllearner.scripts;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -31,12 +34,12 @@ public class SPARQLExtractionEvaluation {
 	//static String algorithm="refexamples";
 	
 	//vars
-	static boolean useRelated = true;
+	static boolean useRelated = false;
 	static boolean useSuperClasses = true;
 	static boolean useParallelClasses = true;
-	static int poslimit = 5;
-	static int neglimit = 5;
-	static boolean randomizeCache = false;
+	static int poslimit = 0;
+	static int neglimit = 0;
+	static boolean randomizeCache = true;
 	
 	/**
 	 * @param args
@@ -86,11 +89,14 @@ public class SPARQLExtractionEvaluation {
 		SortedSet<String> posExamples = new TreeSet<String>();
 		SortedSet<String> negExamples = new TreeSet<String>();
 		
-		
+		for (int a = 0; a < 3; a++) {
+			
+			poslimit+=5;
+			neglimit+=5;
 		
 		for (String oneConcept : concepts) {
 			int recursiondepth=0;
-			boolean closeAfterRecursion=false;
+			boolean closeAfterRecursion=true;
 			
 			System.out.println(oneConcept);
 			AutomaticExampleFinderSPARQL ae= new AutomaticExampleFinderSPARQL( se);	
@@ -101,15 +107,17 @@ public class SPARQLExtractionEvaluation {
 			negExamples = ae.getNegExamples();
 		
 			for(int i=0;i<3;i++) {
-				if(i==0){;}
+				/*if(i==0){;}
 				else if(closeAfterRecursion) {
 					closeAfterRecursion=false;
 					recursiondepth++;
 				}
 				else {
 					closeAfterRecursion=true;
-				}
-				Statistics.setCurrentLabel(recursiondepth+""+((closeAfterRecursion)?"+":""));
+				}*/
+				//Statistics.setCurrentLabel(recursiondepth+""+((closeAfterRecursion)?"+":""));
+				
+				Statistics.setCurrentLabel(recursiondepth+""+((closeAfterRecursion)?"":""));
 				
 				Statistics.print(number);
 				
@@ -125,6 +133,19 @@ public class SPARQLExtractionEvaluation {
 			}
 		}
 		Statistics.print(number);
+		String pre="log/gnu_";
+		String comment1="# "+poslimit+neglimit+"examples\n";
+		String f1=pre+"1avgtrip_"+poslimit+neglimit+"example"+concepts.size()+"classes";
+		writeToFile(f1, comment1+Statistics.getAVGTriplesForRecursionDepth(number));
+		String comment2="# "+poslimit+neglimit+"examples\n";
+		String f2=pre+"2avgTimeExtraction_"+poslimit+neglimit+"example"+concepts.size()+"classes";
+		writeToFile(f2, comment2+Statistics.getAVGTimeCollecting(number));
+		String comment3="# "+poslimit+neglimit+"examples\n";
+		String f3=pre+"2avgTimeLearning_"+poslimit+neglimit+"example"+concepts.size()+"classes";
+		writeToFile(f3, comment3+Statistics.getAVGTimeLearning(number));
+		
+		
+		}//outer
 	}
 	
 
@@ -164,8 +185,8 @@ public class SPARQLExtractionEvaluation {
 		SortedSet<String> concepts = new TreeSet<String>();
 		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");
 		concepts.add("http://dbpedia.org/class/yago/AlphaBlocker102698769");
-		//concepts.add("http://dbpedia.org/class/yago/Articulation107131854");
-		/*concepts.add("http://dbpedia.org/class/yago/Caliphate108550766");
+		concepts.add("http://dbpedia.org/class/yago/Articulation107131854");
+		concepts.add("http://dbpedia.org/class/yago/Caliphate108550766");
 		concepts.add("http://dbpedia.org/class/yago/Ceremony107450842");
 		concepts.add("http://dbpedia.org/class/yago/CookingOil107673145");
 		concepts.add("http://dbpedia.org/class/yago/Corticosteroid114751417");
@@ -182,10 +203,25 @@ public class SPARQLExtractionEvaluation {
 		concepts.add("http://dbpedia.org/class/yago/Schoolteacher110560352");
 		concepts.add("http://dbpedia.org/class/yago/Singer110599806");
 		concepts.add("http://dbpedia.org/class/yago/SupremeCourt108336188");
-		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");*/
+		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");
 		return concepts;
 	}
 	
+	protected static void writeToFile(String filename, String content) {
+		// create the file we want to use
+		File file = new File( filename);
+
+		try {
+			file.createNewFile();
+			FileOutputStream fos = new FileOutputStream(filename, false);
+			// ObjectOutputStream o = new ObjectOutputStream(fos);
+			fos.write(content.getBytes());
+			fos.flush();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 
 }
