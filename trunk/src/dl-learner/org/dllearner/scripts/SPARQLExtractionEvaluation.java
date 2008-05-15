@@ -38,7 +38,7 @@ public class SPARQLExtractionEvaluation {
 	static boolean useParallelClasses = true;
 	static int poslimit = 0;
 	static int neglimit = 0;
-	static boolean randomizeCache = true;
+	static boolean randomizeCache = false;
 	
 	/**
 	 * @param args
@@ -95,10 +95,10 @@ public class SPARQLExtractionEvaluation {
 			neglimit+=5;
 			printProgress(0, concepts.size(),0, "beginning",total.getTime());
 			
-			int concount=1;
+			int concount=0;
 		for (String oneConcept : concepts) {
-			
-			printProgress(concount++, concepts.size(),0, oneConcept,total.getTime());
+			concount++;
+			printProgress(concount, concepts.size(),0, oneConcept,total.getTime());
 			int recursiondepth=0;
 			boolean closeAfterRecursion=true;
 			
@@ -121,10 +121,7 @@ public class SPARQLExtractionEvaluation {
 				else {
 					closeAfterRecursion=true;
 				}*/
-				//Statistics.setCurrentLabel(recursiondepth+""+((closeAfterRecursion)?"+":""));
 				
-				//Statistics.setCurrentLabel(recursiondepth+""+((closeAfterRecursion)?"":""));
-				Statistics.setCurrentLabel(recursiondepth+"");
 				
 				Statistics.print(number);
 				

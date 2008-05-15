@@ -460,7 +460,8 @@ public class ExampleBasedROLearner {
 		}
 		
 		logger.debug("size of candidate set: " + candidates.size());
-		printBestSolutions(0);
+		boolean showOrderedSolutions = false;
+		printBestSolutions(20,showOrderedSolutions);
 		printStatistics(true);
 		
 		if(stop)
@@ -1059,7 +1060,7 @@ public class ExampleBasedROLearner {
 	}
 	
 	
-	public void printBestSolutions(int nrOfSolutions){
+	public void printBestSolutions(int nrOfSolutions, boolean showOrderedSolutions){
 		if(!logger.isTraceEnabled())
 			return;
 //		if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
@@ -1074,7 +1075,7 @@ public class ExampleBasedROLearner {
 			i++;
 		}
 		
-		boolean showOrderedSolutions = true;
+		
 		
 		if(showOrderedSolutions) {
 			logger.trace("ordered by generality (most special solutions first):");
