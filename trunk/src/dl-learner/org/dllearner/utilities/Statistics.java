@@ -11,6 +11,8 @@ public class Statistics {
 	private static LinkedList<String> order = new LinkedList<String>();
 	private static HashMap<String, Integer> numberOfTriples = new HashMap<String, Integer>();
 	private static HashMap<String, Long> timeCollecting = new HashMap<String, Long>();
+	private static HashMap<String, Long> timeLearning = new HashMap<String, Long>();
+	
 	private static HashMap<String, Integer> numberOfSparqlQueries = new HashMap<String, Integer>();
 	private static HashMap<String, Integer> numberOfCachedSparqlQueries = new HashMap<String, Integer>();
 	
@@ -37,6 +39,15 @@ public class Statistics {
 		}
 	}
 	
+	public static void addTimeLearning(long value) {
+		Long current = timeLearning.get(currentLabel);
+		if(current==null)
+			timeLearning.put(currentLabel, new Long(value));
+		else {
+			timeLearning.put(currentLabel, new Long(current.longValue()+value));
+		}
+	}
+	
 	public static void increaseCachedQuery() {
 		Integer current = numberOfCachedSparqlQueries.get(currentLabel);
 		if(current==null)
@@ -58,20 +69,23 @@ public class Statistics {
 	
 	public static void print(int number){
 		
-		printInt(numberOfTriples,"triples");
-		printIntAVG(numberOfTriples,number,"triples avg");
+		System.out.println("*****************TRIPLES");
+		printInt(numberOfTriples,"triples\t");
+		printIntAVG(numberOfTriples,number,"triples avg\t");
 	
 		System.out.println("*****************TIME");
 		
-		printLong(timeCollecting);
-		printLongAVG(timeCollecting,number);
+		printLong(timeCollecting, "collecting\t");
+		printLongAVG(timeCollecting,number,"collecting avg\t");
+		printLong(timeLearning, "collecting\t");
+		printLongAVG(timeLearning,number,"collecting avg\t");
 		
 		System.out.println("*****************Queries");
-		printInt(numberOfCachedSparqlQueries,"cached queries");
-		printInt(numberOfSparqlQueries,"total queries");
+		printInt(numberOfCachedSparqlQueries,"cached queries\t");
+		printInt(numberOfSparqlQueries,"total queries\t");
 		
 		
-		
+		//printIntAVG(numberOfTriples,number,"triples avg\t");
 		
 		
 		
@@ -81,11 +95,48 @@ public class Statistics {
 		
 	}
 	
+	
+	public static String getAVGTriplesForRecursionDepth(int number){
+			
+			String ret="#Label, i.e. rec depth \t avg number of triples\n";
+			for (int i = 0; i < order.size(); i++) {
+				String label=order.get(i);
+				try {
+					ret+=label+"\t"+ (numberOfTriples.get(label).intValue()/number)+"\n";
+				} catch (Exception e) {	}
+			}
+			return ret;	
+	}
+	
+	public static String getAVGTimeLearning(int number){
+		
+		String ret="#Label, i.e. rec depth \t avg time for learning including reasoning\n";
+		for (int i = 0; i < order.size(); i++) {
+			String label=order.get(i);
+			try {
+				ret+=label+"\t"+ (timeLearning.get(label).longValue()/number)+"\n";
+			} catch (Exception e) {	}
+		}
+		return ret;	
+}
+	
+	public static String getAVGTimeCollecting(int number){
+		
+		String ret="#Label, i.e. rec depth \t avg time for extraction\n";
+		for (int i = 0; i < order.size(); i++) {
+			String label=order.get(i);
+			try {
+				ret+=label+"\t"+ (timeCollecting.get(label).longValue()/number)+"\n";
+			} catch (Exception e) {	}
+		}
+		return ret;	
+	}
+	
 	public static void printIntAVG(HashMap<String, Integer>  hm, int number, String str){
 		for (int i = 0; i < order.size(); i++) {
 			String label=order.get(i);
 			try {
-				System.out.println(str+" "+label+"|"+ (hm.get(label).intValue()/number));
+				System.out.println(str+""+label+" "+ (hm.get(label).intValue()/number));
 			} catch (Exception e) {	}
 		}
 	}
@@ -94,25 +145,25 @@ public class Statistics {
 		for (int i = 0; i < order.size(); i++) {
 			String label=order.get(i);
 			try {
-				System.out.println(str+" "+label+"|"+hm.get(label));
+				System.out.println(str+""+label+" "+hm.get(label));
 			} catch (Exception e) {	}
 		}
 	}
 	
-	public static void printLongAVG(HashMap<String, Long>  hm, int number){
+	public static void printLongAVG(HashMap<String, Long>  hm, int number, String str){
 		for (int i = 0; i < order.size(); i++) {
 			String label=order.get(i);
 			try {
-				System.out.println("timeCollect avg "+label+"|"+ (hm.get(label).intValue()/number));
+				System.out.println(str+label+" "+ (hm.get(label).intValue()/number));
 			} catch (Exception e) {	}
 		}
 	}
 	
-	public static void printLong(HashMap<String, Long>  hm){
+	public static void printLong(HashMap<String, Long>  hm,String str){
 		for (int i = 0; i < order.size(); i++) {
 			String label=order.get(i);
 			try {
-				System.out.println("timeCollect "+label+"|"+hm.get(label));
+				System.out.println(str+label+"|"+hm.get(label));
 			} catch (Exception e) {	}
 		}
 	}

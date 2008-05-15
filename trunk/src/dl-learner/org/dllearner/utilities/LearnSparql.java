@@ -56,7 +56,7 @@ public class LearnSparql {
 		ks.init();
 		Statistics.addTimeCollecting(sc.getTime());
 		sources.add(ks);
-		if (true)return;
+		//if (true)return;
 		//System.out.println(ks.getNTripleURL());
 		//
 		
@@ -80,7 +80,8 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"useCardinalityRestrictions",false);
 		cm.applyConfigEntry(la,"useNegation",false);
 		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
-		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",10);
+		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",20);
+		
 		//cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
 		cm.applyConfigEntry(la,"logLevel","TRACE");
 		
@@ -91,8 +92,9 @@ public class LearnSparql {
 		la.init();	
 		
 		System.out.println("start learning");
+		sc.setTime();
 		la.start();
-		
+		Statistics.addTimeLearning(sc.getTime());
 		
 		//System.out.println("best"+la(20));
 		//((ExampleBasedROLComponent)la).printBestSolutions(10000);
