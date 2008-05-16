@@ -40,7 +40,7 @@ public class SPARQLExtractionEvaluation {
 	static boolean useParallelClasses = true;
 	static int poslimit = 0;
 	static int neglimit = 0;
-	static boolean randomizeCache = true;
+	static boolean randomizeCache = false;
 	
 	/**
 	 * @param args
@@ -194,27 +194,27 @@ public class SPARQLExtractionEvaluation {
 	
 	public static  SortedSet<String> initConcepts(){
 		SortedSet<String> concepts = new TreeSet<String>();
-		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");
-		concepts.add("http://dbpedia.org/class/yago/AlphaBlocker102698769");
-		/*concepts.add("http://dbpedia.org/class/yago/Articulation107131854");
-		concepts.add("http://dbpedia.org/class/yago/Patriot110407310");
-		concepts.add("http://dbpedia.org/class/yago/Ceremony107450842");*/
-		//concepts.add("http://dbpedia.org/class/yago/CookingOil107673145");
-		/*concepts.add("http://dbpedia.org/class/yago/Corticosteroid114751417");
-		concepts.add("http://dbpedia.org/class/yago/Curlew102033561");
-		concepts.add("http://dbpedia.org/class/yago/DataStructure105728493");
-		concepts.add("http://dbpedia.org/class/yago/Disappearance100053609");
-		concepts.add("http://dbpedia.org/class/yago/Flintstone114871268");
-		concepts.add("http://dbpedia.org/class/yago/Form105930736");
-		concepts.add("http://dbpedia.org/class/yago/Hypochondriac110195487");
-		concepts.add("http://dbpedia.org/class/yago/Industrialist110204177");
-		concepts.add("http://dbpedia.org/class/yago/Lifeboat103662601");
-		concepts.add("http://dbpedia.org/class/yago/Particulate114839439");
-		concepts.add("http://dbpedia.org/class/yago/Reservation108587174");
-		concepts.add("http://dbpedia.org/class/yago/Schoolteacher110560352");
-		concepts.add("http://dbpedia.org/class/yago/Singer110599806");
-		concepts.add("http://dbpedia.org/class/yago/SupremeCourt108336188");
-		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");*/
+//		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");
+//		concepts.add("http://dbpedia.org/class/yago/AlphaBlocker102698769");
+//		concepts.add("http://dbpedia.org/class/yago/Articulation107131854");
+//		concepts.add("http://dbpedia.org/class/yago/Patriot110407310");
+//		concepts.add("http://dbpedia.org/class/yago/Ceremony107450842");
+		concepts.add("http://dbpedia.org/class/yago/CookingOil107673145");
+		concepts.add("http://dbpedia.org/class/yago/Corticosteroid114751417");
+//		concepts.add("http://dbpedia.org/class/yago/Curlew102033561");
+//		concepts.add("http://dbpedia.org/class/yago/DataStructure105728493");
+//		concepts.add("http://dbpedia.org/class/yago/Disappearance100053609");
+//		concepts.add("http://dbpedia.org/class/yago/Flintstone114871268");
+//		concepts.add("http://dbpedia.org/class/yago/Form105930736");
+//		concepts.add("http://dbpedia.org/class/yago/Hypochondriac110195487");
+//		concepts.add("http://dbpedia.org/class/yago/Industrialist110204177");
+//		concepts.add("http://dbpedia.org/class/yago/Lifeboat103662601");
+//		concepts.add("http://dbpedia.org/class/yago/Particulate114839439");
+//		concepts.add("http://dbpedia.org/class/yago/Reservation108587174");
+//		concepts.add("http://dbpedia.org/class/yago/Schoolteacher110560352");
+//		concepts.add("http://dbpedia.org/class/yago/Singer110599806");
+//		concepts.add("http://dbpedia.org/class/yago/SupremeCourt108336188");
+//		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");*/
 		return concepts;
 	}
 	
