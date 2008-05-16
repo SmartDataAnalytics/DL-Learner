@@ -76,45 +76,20 @@ public class SubsumptionHierarchy {
 		for(Description c : allowedConceptsInSubsumptionHierarchy) {
 			// schauen, ob es mehrere allgemeinere Nachbarn gibt
 			SortedSet<Description> moreGeneral = subsumptionHierarchyUp.get(c);
-			//RBC  //HACK
-			//if(moreGeneral != null && moreGeneral.size()>0) {
-			if(moreGeneral != null ) {
-				//System.out.println(moreGeneral);
-				if(moreGeneral.size()==0) { 
-					subsumptionHierarchyUp.remove(c);
-					moreGeneral=null;
-					//hierarchyDownNew.get(new Thing()).add(c);
-					//moreGeneral.add(new Thing());
-					//subsumptionHierarchyUp.put(c, null);
-					
-				}else {
-					Description chosenParent = moreGeneral.first();
-					hierarchyDownNew.get(chosenParent).add(c);
-				}
+			if(moreGeneral != null && moreGeneral.size() != 0) {
+				Description chosenParent = moreGeneral.first();
+				hierarchyDownNew.get(chosenParent).add(c);
 			}
 		}	
 		
 		// for(Concept c : allowedConceptsInSubsumptionHierarchy) {
 		for(Description c : allowedConceptsInSubsumptionHierarchy) {
 			SortedSet<Description> moreSpecial = subsumptionHierarchyDown.get(c);
-			//RBC //HACK
-
-			//if(moreSpecial != null && moreSpecial.size()>0) {
-			if(moreSpecial != null ) {
-				if(moreSpecial.size()==0){
-						subsumptionHierarchyDown.remove(c);
-						moreSpecial=null;
-						//hierarchyUpNew.get(new Nothing()).add(c);
-					//moreSpecial.add(new Nothing());
-					//subsumptionHierarchyDown.put(c, null);
-				}
-				else {
-					Description chosenParent = moreSpecial.first();
-					hierarchyUpNew.get(chosenParent).add(c);
-				}
-				
+			if(moreSpecial != null && moreSpecial.size() != 0) {
+				Description chosenParent = moreSpecial.first();
+				hierarchyUpNew.get(chosenParent).add(c);
 			}
-		}		
+		}			
 
 		subsumptionHierarchyDown = hierarchyDownNew;
 		subsumptionHierarchyUp = hierarchyUpNew;

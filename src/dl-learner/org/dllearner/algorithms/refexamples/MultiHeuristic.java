@@ -77,11 +77,11 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	// heuristic parameters
 	private double expansionPenaltyFactor;
 	private double gainBonusFactor;
-	private double nodeChildPenalty = 0.0001;
+	private double nodeChildPenalty = 0.0001; // (use higher values than 0.0001 for simple learning problems);
 	private double startNodeBonus = 0.1; //was 2.0
 	// penalise errors on positive examples harder than on negative examples
 	// (positive weight = 1)
-	private double negativeWeight = 0.8;
+	private double negativeWeight = 1.0; // was 0.8;
 	
 	// examples
 	private int nrOfNegativeExamples;

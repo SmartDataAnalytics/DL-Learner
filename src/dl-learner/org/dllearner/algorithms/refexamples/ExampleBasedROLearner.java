@@ -124,7 +124,7 @@ public class ExampleBasedROLearner {
 	// but the disadvantage of properness testing are additional reasoner
 	// queries and a search bias towards ALL r.something because 
 	// ALL r.TOP is improper and automatically expanded further
-	private boolean testProperness = true;
+	private boolean testProperness = false;
 	
 	// tree traversal means to run through the most promising concepts
 	// and connect them in an intersection to find a solution
