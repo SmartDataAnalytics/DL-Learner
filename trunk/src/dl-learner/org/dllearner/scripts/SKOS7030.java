@@ -142,10 +142,12 @@ public class SKOS7030 {
 			
 			SortedSet<String> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache);
 			System.out.println(conceptresults);
+			System.out.println(conceptresults.size());
 			for (String string : conceptresults) {
+				System.out.println(string);
 				SortedSet<String> instances = ae.queryConceptAsStringSet(string, 0);
-				if(instances.size()>0)System.out.println("size "+instances.size());
-				if(instances.size()<=15 && instances.size()>0) System.out.println(instances);
+				if(instances.size()>=0)System.out.println("size "+instances.size());
+				if(instances.size()>=0 && instances.size()>0) System.out.println(instances);
 			}
 			
 			
