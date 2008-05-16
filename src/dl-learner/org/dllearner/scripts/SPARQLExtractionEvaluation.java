@@ -207,11 +207,11 @@ public class SPARQLExtractionEvaluation {
 		concepts.add("http://dbpedia.org/class/yago/DataStructure105728493");
 		concepts.add("http://dbpedia.org/class/yago/Disappearance100053609");
 		concepts.add("http://dbpedia.org/class/yago/Flintstone114871268");
-		concepts.add("http://dbpedia.org/class/yago/Form105930736");
-		concepts.add("http://dbpedia.org/class/yago/Hypochondriac110195487");
-		concepts.add("http://dbpedia.org/class/yago/Industrialist110204177");
-		concepts.add("http://dbpedia.org/class/yago/Lifeboat103662601");
-		concepts.add("http://dbpedia.org/class/yago/Particulate114839439");
+//		concepts.add("http://dbpedia.org/class/yago/Form105930736");
+//		concepts.add("http://dbpedia.org/class/yago/Hypochondriac110195487");
+//		concepts.add("http://dbpedia.org/class/yago/Industrialist110204177");
+//		concepts.add("http://dbpedia.org/class/yago/Lifeboat103662601");
+//		concepts.add("http://dbpedia.org/class/yago/Particulate114839439");
 //		concepts.add("http://dbpedia.org/class/yago/Patriot110407310");
 //		concepts.add("http://dbpedia.org/class/yago/Reservation108587174");
 //		concepts.add("http://dbpedia.org/class/yago/Schoolteacher110560352");
