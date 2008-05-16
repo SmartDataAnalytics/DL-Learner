@@ -95,7 +95,10 @@ public class SparqlQuery {
 			logger.trace(rs.getResultVars().toString());
 		} catch (Exception e){
 			sendException=new SparqlQueryException(e.getMessage());
-			logger.error("Exception when querying Sparql Endpoint");
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			logger.error("Exception when querying Sparql Endpoint in " + this.getClass());
+			logger.error(queryString);
 		}
 		isRunning = false;
 		return rs;
@@ -172,6 +175,7 @@ public class SparqlQuery {
 	public static ResultSet JSONtoResultSet(String json) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(json
 				.getBytes(Charset.forName("UTF-8")));
+		System.out.println("JSON " + json);
 		return ResultSetFactory.fromJSON(bais);
 	}
 

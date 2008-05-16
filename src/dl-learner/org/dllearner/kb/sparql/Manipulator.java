@@ -83,10 +83,20 @@ public class Manipulator {
 			StringTuple t = (StringTuple) it.next();
 			
 			//HACK
-			if(t.a.equals("http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag")) {
-				//hackGetLabel(t.b);
-				
-			}
+//			if(t.a.equals("http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag")) {
+//				//hackGetLabel(t.b);
+//				
+//			}
+			
+			// GovTrack hack
+			// => we convert a string literal to a URI
+			// => TODO: introduce an option for converting literals for certain
+			// properties into URIs
+//			String sp = "http://purl.org/dc/elements/1.1/subject";
+//			if(t.a.equals(sp)) {
+//				System.out.println(t);
+//				System.exit(0);
+//			}
 			
 			replacePredicate(t);
 			replaceObject(t);
