@@ -24,8 +24,8 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.utilities.SimpleClock;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -42,7 +42,7 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  */
 public class SparqlQuery {
 
-	private static Logger logger = Logger.getLogger(SparqlKnowledgeSource.class);
+	private static Logger logger = Logger.getLogger(KnowledgeSource.class);
 
 	public String extraDebugInfo = "";
 	private boolean isRunning = false;

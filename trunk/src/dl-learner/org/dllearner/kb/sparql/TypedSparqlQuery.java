@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.configuration.Configuration;
 import org.dllearner.utilities.SimpleClock;
 import org.dllearner.utilities.StringTuple;
@@ -39,6 +41,10 @@ import com.hp.hpl.jena.sparql.core.ResultBinding;
  * 
  */
 public class TypedSparqlQuery implements TypedSparqlQueryInterface {
+	
+	private static Logger logger = Logger.getLogger(KnowledgeSource.class);
+
+	
 	boolean print_flag = false;
 	protected Configuration configuration;
 	private SparqlQueryMaker sparqlQueryMaker;

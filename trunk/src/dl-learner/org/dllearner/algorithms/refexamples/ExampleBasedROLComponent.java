@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -383,6 +384,12 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	public synchronized List<Description> getBestSolutions(int nrOfSolutions) {
 		return algorithm.getBestSolutions(nrOfSolutions);
 	}	
+	
+	//HACK
+	@Override
+	public SortedSet<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
+		return this.algorithm.getBestSolutionsAsKBSyntax(nrOfSolutions);
+	}
 
 	@Override
 	public void stop() {

@@ -48,7 +48,6 @@ import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.SimpleClock;
 
 /**
  * Implements the example based refinement operator learning
@@ -1061,12 +1060,33 @@ public class ExampleBasedROLearner {
 		List<Description> best = new LinkedList<Description>();
 		int i=0;
 		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
+			
 			best.add(n.getConcept());
 			if(i==nrOfSolutions)
 				return best;
 			i++;
 		}
 		return best;
+	}
+	
+	//HACK
+	public SortedSet<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
+		SortedSet<String> result = new TreeSet<String>();
+		for (Description d : solutions) {
+			result.add(d.toKBSyntaxString());
+			//if(result.size()==nrOfSolutions)break;
+		}
+		/*if(result.size()<nrOfSolutions){
+			
+			for(ExampleBasedNode n : candidatesStable.descendingSet()) {
+				
+				result.add(n.getConcept().toKBSyntaxString());
+				if(result.size()>=nrOfSolutions)
+					return result;
+				
+			}
+		}*/
+		return result;
 	}
 	
 	
