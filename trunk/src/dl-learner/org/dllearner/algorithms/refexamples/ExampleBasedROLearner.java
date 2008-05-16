@@ -363,7 +363,7 @@ public class ExampleBasedROLearner {
 				logger.debug("--- loop " + loop + " started ---");				
 			}
 			//RBC
-			logger.debug("--- loop " + loop + " started ---");
+			//logger.debug("--- loop " + loop + " started ---");
 			//sc.printAndSet("before Traverse");
 			// traverse the current search tree to find a solution
 			if(useTreeTraversal && (currentTime - lastTreeTraversalTime > traversalInterval)) {
@@ -1071,11 +1071,9 @@ public class ExampleBasedROLearner {
 	
 	
 	public void printBestSolutions(int nrOfSolutions, boolean showOrderedSolutions){
-		System.out.println("alogger is "+logger.isTraceEnabled()+"||");
 		if(!logger.isTraceEnabled())
 			return;
-		System.out.println("blogger is "+logger.isTraceEnabled()+"||");
-//		if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
+		//if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
 		if(nrOfSolutions==0)
 			nrOfSolutions=candidatesStable.size();
 		int i=0;
