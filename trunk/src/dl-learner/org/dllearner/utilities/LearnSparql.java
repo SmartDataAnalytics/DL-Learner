@@ -81,6 +81,11 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"useNegation",false);
 		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
 		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",30);
+		cm.applyConfigEntry(la,"writeSearchTree",false);
+		cm.applyConfigEntry(la,"searchTreeFile","log/search.txt");
+		cm.applyConfigEntry(la,"replaceSearchTree",true);
+		cm.applyConfigEntry(la,"noisePercentage",0.15);
+		
 		
 		//cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
 		cm.applyConfigEntry(la,"logLevel","TRACE");
@@ -96,7 +101,7 @@ public class LearnSparql {
 		la.start();
 		Statistics.addTimeLearning(sc.getTime());
 		
-		if(sc.getTime()/1000 >= 20)System.out.println("XXXMAX time reached");
+		//if(sc.getTime()/1000 >= 20)System.out.println("XXXMAX time reached");
 		
 		//System.out.println("best"+la(20));
 		//((ExampleBasedROLComponent)la).printBestSolutions(10000);
