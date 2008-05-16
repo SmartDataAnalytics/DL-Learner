@@ -88,7 +88,7 @@ public class LearnSparql {
 		
 		
 		//cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
-		cm.applyConfigEntry(la,"logLevel","TRACE");
+		cm.applyConfigEntry(la,"logLevel","DEBUG");
 		
 		//cm.applyConfigEntry(la,"quiet",false);
 		//System.out.println(ignoredConcepts.first());;

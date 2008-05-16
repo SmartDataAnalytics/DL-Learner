@@ -41,8 +41,7 @@ public class SubsumptionHierarchy {
 	
 	public SubsumptionHierarchy(Set<NamedClass> atomicConcepts, TreeMap<Description,TreeSet<Description>> subsumptionHierarchyUp , TreeMap<Description,TreeSet<Description>> subsumptionHierarchyDown) {
 		this.subsumptionHierarchyUp = subsumptionHierarchyUp;
-		System.out.println(subsumptionHierarchyDown);
-		System.out.println(subsumptionHierarchyUp);
+		
 		this.subsumptionHierarchyDown = subsumptionHierarchyDown;
 		allowedConceptsInSubsumptionHierarchy = new TreeSet<Description>(conceptComparator);
 		allowedConceptsInSubsumptionHierarchy.addAll(atomicConcepts);
