@@ -71,6 +71,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.TypedSparqlQuery;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -126,7 +127,9 @@ public class Start {
 		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
 		logger.setLevel(Level.TRACE);
-		//Logger.getLogger(KnowledgeSource.class).setLevel(Level.TRACE);
+		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
+		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
+		Logger.getLogger(TypedSparqlQuery.class).setLevel(Level.WARN);
 
 		Start start = null;
 		start = new Start(file);

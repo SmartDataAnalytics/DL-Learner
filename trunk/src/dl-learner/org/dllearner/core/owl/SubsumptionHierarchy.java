@@ -77,6 +77,10 @@ public class SubsumptionHierarchy {
 			// schauen, ob es mehrere allgemeinere Nachbarn gibt
 			SortedSet<Description> moreGeneral = subsumptionHierarchyUp.get(c);
 			//RBC  //HACK
+			if(moreGeneral.size()==0){
+					subsumptionHierarchyUp.remove(c);
+					moreGeneral=null;
+				}
 			//if(moreGeneral != null && moreGeneral.size()>0) {
 			if(moreGeneral != null ) {
 				//System.out.println(moreGeneral);
@@ -96,6 +100,10 @@ public class SubsumptionHierarchy {
 		for(Description c : allowedConceptsInSubsumptionHierarchy) {
 			SortedSet<Description> moreSpecial = subsumptionHierarchyDown.get(c);
 			//RBC //HACK
+			if(moreSpecial.size()==0){
+				subsumptionHierarchyDown.remove(c);
+					moreSpecial=null;
+				}
 			//if(moreSpecial != null && moreSpecial.size()>0) {
 			if(moreSpecial != null ) {
 				if(moreSpecial.size()==0){
