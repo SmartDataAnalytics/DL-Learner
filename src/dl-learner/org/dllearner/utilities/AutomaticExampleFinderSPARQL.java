@@ -22,7 +22,7 @@ public class AutomaticExampleFinderSPARQL {
 	private SortedSet<String> posExamples;
 	private SortedSet<String> negExamples;
 	public  SortedSet<String> totalSKOSset;
-	private int limit=2000;
+	private int limit=1000;
 	
 	
 	public AutomaticExampleFinderSPARQL(SparqlEndpoint se){
@@ -318,7 +318,7 @@ public class AutomaticExampleFinderSPARQL {
 			" a " + 
 			"?subject " +
 			"\n" +
-			"}";
+			"} LIMIT "+limit;
 			SparqlQuery sq = new SparqlQuery(query, se);
 			//System.out.println(query);
 			String JSON = c.executeSparqlQuery(sq);
