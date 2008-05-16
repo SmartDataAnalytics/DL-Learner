@@ -41,6 +41,7 @@ public class Statistics {
 	}
 	
 	public static void addTimeLearning(long value) {
+		
 		Long current = timeLearning.get(currentLabel);
 		if(current==null)
 			timeLearning.put(currentLabel, new Long(value));
