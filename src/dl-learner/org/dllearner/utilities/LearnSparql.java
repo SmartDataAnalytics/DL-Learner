@@ -110,6 +110,95 @@ public class LearnSparql {
 		//System.out.println( la.getBestSolution());;
 	}
 	
+	public SortedSet<String> learnDBpediaSKOS(SortedSet<String> posExamples,SortedSet<String> negExamples,
+			String uri, SortedSet<String> ignoredConcepts, int recursiondepth, 
+			boolean closeAfterRecursion, boolean randomizeCache){
+		
+	
+		ComponentManager cm = ComponentManager.getInstance();
+		LearningAlgorithm la = null;
+		ReasoningService rs = null;
+		LearningProblem lp = null; 
+		SparqlKnowledgeSource ks =null;
+		try {
+		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
+		
+		ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
+		
+		SortedSet<String> instances = new TreeSet<String>();
+		instances.addAll(posExamples);
+		instances.addAll(negExamples);
+		cm.applyConfigEntry(ks, "instances",instances);
+		cm.applyConfigEntry(ks, "url",uri);
+		cm.applyConfigEntry(ks, "recursionDepth",recursiondepth);
+		cm.applyConfigEntry(ks, "closeAfterRecursion",closeAfterRecursion);
+		cm.applyConfigEntry(ks, "predefinedFilter","YAGO");
+		cm.applyConfigEntry(ks, "predefinedEndpoint","LOCALDBPEDIA");
+		if(randomizeCache)
+			cm.applyConfigEntry(ks, "cacheDir","cache/"+System.currentTimeMillis()+"");
+		else {cm.applyConfigEntry(ks, "cacheDir","cacheSKOS");}
+		//cm.applyConfigEntry(ks, "format","KB");
+		
+		sc.setTime();
+		ks.init();
+		Statistics.addTimeCollecting(sc.getTime());
+		sources.add(ks);
+		//if (true)return;
+		//System.out.println(ks.getNTripleURL());
+		//
+		
+		ReasonerComponent r = new FastInstanceChecker(sources);
+		//cm.applyConfigEntry(r,"useAllConstructor",false);
+		//cm.applyConfigEntry(r,"useExistsConstructor",true);
+		r.init();
+		rs = new ReasoningService(r); 
+		
+		lp = new PosNegDefinitionLP(rs);
+		//cm.applyConfigEntry(lp, "positiveExamples",toInd(posExamples));
+		((PosNegLP) lp).setPositiveExamples(SetManipulation.stringToInd(posExamples));
+		((PosNegLP) lp).setNegativeExamples(SetManipulation.stringToInd(negExamples));
+		//cm.applyConfigEntry(lp, "negativeExamples",toInd(negExamples));
+		lp.init();
+		
+		la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
+
+		cm.applyConfigEntry(la,"useAllConstructor",false);
+		cm.applyConfigEntry(la,"useExistsConstructor",true);
+		cm.applyConfigEntry(la,"useCardinalityRestrictions",false);
+		cm.applyConfigEntry(la,"useNegation",false);
+		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
+		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",50);
+		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",15);
+		cm.applyConfigEntry(la,"writeSearchTree",true);
+		cm.applyConfigEntry(la,"searchTreeFile","log/SKOS.txt");
+		cm.applyConfigEntry(la,"replaceSearchTree",true);
+		//cm.applyConfigEntry(la,"noisePercentage",0.15);
+		
+		
+		//cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
+		cm.applyConfigEntry(la,"logLevel","TRACE");
+		
+		//cm.applyConfigEntry(la,"quiet",false);
+		//System.out.println(ignoredConcepts.first());;
+		if(ignoredConcepts.size()>0)
+			cm.applyConfigEntry(la,"ignoredConcepts",ignoredConcepts);
+		la.init();	
+		
+		System.out.println("start learning");
+		sc.setTime();
+		la.start();
+		Statistics.addTimeLearning(sc.getTime());
+		return la.getBestSolutionsAsKBSyntax(15);
+		//if(sc.getTime()/1000 >= 20)System.out.println("XXXMAX time reached");
+		
+		//System.out.println("best"+la(20));
+		//((ExampleBasedROLComponent)la).printBestSolutions(10000);
+		
+		}catch (Exception e) {e.printStackTrace();}
+		return null;
+		//System.out.println( la.getBestSolution());;
+	}
+	
 	
 	
 }

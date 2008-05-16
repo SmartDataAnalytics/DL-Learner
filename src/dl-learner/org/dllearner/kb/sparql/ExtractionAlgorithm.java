@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.configuration.Configuration;
 import org.dllearner.kb.sparql.datastructure.ClassNode;
 import org.dllearner.kb.sparql.datastructure.InstanceNode;
@@ -42,7 +43,7 @@ public class ExtractionAlgorithm {
 	// private boolean getAllSuperClasses = true;
 	// private boolean closeAfterRecursion = true;
 	private static Logger logger = Logger
-		.getLogger(ExtractionAlgorithm.class);
+		.getLogger(KnowledgeSource.class);
 
 	public ExtractionAlgorithm(Configuration Configuration) {
 		this.configuration = Configuration;

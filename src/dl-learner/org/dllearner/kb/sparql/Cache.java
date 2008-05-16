@@ -31,6 +31,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.utilities.SimpleClock;
 import org.dllearner.utilities.Statistics;
 
@@ -59,7 +60,8 @@ import org.dllearner.utilities.Statistics;
  */
 public class Cache implements Serializable {
 
-	private static Logger logger = Logger.getLogger(Cache.class);
+	private static Logger logger = Logger.getLogger(KnowledgeSource.class);
+
 
 	private static final long serialVersionUID = 843308736471742205L;
 

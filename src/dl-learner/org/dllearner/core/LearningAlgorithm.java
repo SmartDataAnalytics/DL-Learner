@@ -22,6 +22,7 @@ package org.dllearner.core;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
 
 import org.dllearner.core.owl.Description;
 
@@ -61,6 +62,11 @@ public abstract class LearningAlgorithm extends Component {
 		List<Description> single = new LinkedList<Description>();
 		single.add(getBestSolution());
 		return single;
+	}
+	
+	//HACK
+	public SortedSet<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
+		return null;
 	}
 	
 	/**

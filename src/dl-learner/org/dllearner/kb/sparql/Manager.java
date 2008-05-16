@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.configuration.Configuration;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.configuration.SparqlQueryType;
@@ -41,6 +43,9 @@ public class Manager {
 	private Configuration configuration;
 	private TypedSparqlQuery typedSparqlQuery;
 	private ExtractionAlgorithm extractionAlgorithm;
+	
+	private static Logger logger = Logger
+		.getLogger(KnowledgeSource.class);
 	
 	
 	public void useConfiguration(SparqlQueryType SparqlQueryType,
@@ -76,8 +81,10 @@ public class Manager {
 		// System.out.println(ExtractionAlgorithm.getFirstNode(uri));
 		System.out.println("Start extracting");
 		SortedSet<String> ret = new TreeSet<String>();
-
+		int progress=0;
 		for (String one : instances) {
+			progress++;
+			logger.info("Progress: "+progress+" of "+instances.size()+" finished");
 			try {
 				Node n = extractionAlgorithm.expandNode(new URI(one),
 						typedSparqlQuery);
