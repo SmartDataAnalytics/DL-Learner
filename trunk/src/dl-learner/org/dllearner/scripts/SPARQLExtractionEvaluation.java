@@ -91,10 +91,10 @@ public class SPARQLExtractionEvaluation {
 		SortedSet<String> posExamples = new TreeSet<String>();
 		SortedSet<String> negExamples = new TreeSet<String>();
 		
-		for (int a = 0; a < 3; a++) {
+		for (int a = 0; a < 1; a++) {
 			
-			poslimit+=5;
-			neglimit+=5;
+			poslimit+=30;
+			neglimit+=30;
 			printProgress(0, concepts.size(),0, "beginning",total.getTime());
 			
 			int concount=0;
