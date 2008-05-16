@@ -95,8 +95,9 @@ public class SKOS7030 {
 
 	static void DBpediaSKOS(){
 		se = SparqlEndpoint.EndpointLOCALDBpedia();
+		se = SparqlEndpoint.EndpointDBpedia();
 		String url = "http://dbpedia.openlinksw.com:8890/sparql";
-		url = "http://139.18.2.37:8890/sparql";
+		//url = "http://139.18.2.37:8890/sparql";
 		
 		SortedSet<String> concepts = new TreeSet<String>();
 		
