@@ -81,9 +81,9 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	}
 	
 	public static String getSparqlSubclassQuery(String description)
-	{	String ret = "SELECT ?subject \n";
+	{	String ret = "SELECT * \n";
 		ret+= "WHERE {\n";
-		ret+=" ?subject <http://www.w3.org/2000/01/rdf-schema#subClassOf>  <"+description+"> \n";
+		ret+=" ?subject ?predicate  <"+description+"> \n";
 		ret+="}\n";
 		
 		return ret;
