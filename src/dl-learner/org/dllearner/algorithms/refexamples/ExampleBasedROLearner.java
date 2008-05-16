@@ -48,6 +48,7 @@ import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.ConceptTransformation;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.SimpleClock;
 
 /**
  * Implements the example based refinement operator learning
@@ -279,6 +280,8 @@ public class ExampleBasedROLearner {
 	
 	public void start() {
 		runtime=System.currentTimeMillis();
+		//RBC many comments can be removed
+		//SimpleClock sc =new SimpleClock();
 		// TODO: write a JUnit test for this problem (long-lasting or infinite loops because
 		// redundant children of a node are called recursively after when the node is extended
 		// twice)
@@ -359,12 +362,15 @@ public class ExampleBasedROLearner {
 				lastPrintTime = currentTime;
 				logger.debug("--- loop " + loop + " started ---");				
 			}
+			//RBC
 			logger.debug("--- loop " + loop + " started ---");
+			//sc.printAndSet("before Traverse");
 			// traverse the current search tree to find a solution
 			if(useTreeTraversal && (currentTime - lastTreeTraversalTime > traversalInterval)) {
 				traverseTree();
 				lastTreeTraversalTime = System.nanoTime();
 			}
+			//sc.printAndSet("Traverse");
 			
 			// reduce candidates to focus on promising concepts
 			if(useCandidateReduction && (currentTime - lastReductionTime > reductionInterval)) {
@@ -373,6 +379,7 @@ public class ExampleBasedROLearner {
 //				Logger.getRootLogger().setLevel(Level.TRACE);
 			}			
 			
+			//sc.printAndSet("candidates");
 //			System.out.println("next expanded: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));			
 			// chose best node according to heuristics
 			bestNode = candidates.last();
@@ -387,6 +394,7 @@ public class ExampleBasedROLearner {
 			candidates.addAll(newCandidates);
 			candidatesStable.addAll(newCandidates);		
 			
+			//sc.printAndSet("after candidates");
 //			System.out.println("done");			
 			
 			if(writeSearchTree) {
@@ -407,7 +415,7 @@ public class ExampleBasedROLearner {
 				else
 					Files.appendFile(searchTreeFile, treeString);
 			}
-			
+			//sc.printAndSet("before posonly");
 			// special situation for positive only learning: the expanded node can become a solution (see explanations
 			// for maxPosOnlyExpansion above)
 			if(posOnly && (bestNode.getHorizontalExpansion() - bestNode.getConcept().getLength() >= maxPosOnlyExpansion)) {
@@ -424,8 +432,10 @@ public class ExampleBasedROLearner {
 				}
 			}
 			
+			//sc.printAndSet("before stopping");
 			// handle termination criteria
 			handleStoppingConditions();
+			//sc.printAndSet("after stopping");
 			
 			//logger.info(minExecutionTimeReached()+"aaaaaaa "+solutions.size()+"::"+guaranteeXgoodDescriptions);
 			//logger.info(solutionFound+"aaaaaaa "+stop);

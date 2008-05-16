@@ -41,6 +41,8 @@ public class SubsumptionHierarchy {
 	
 	public SubsumptionHierarchy(Set<NamedClass> atomicConcepts, TreeMap<Description,TreeSet<Description>> subsumptionHierarchyUp , TreeMap<Description,TreeSet<Description>> subsumptionHierarchyDown) {
 		this.subsumptionHierarchyUp = subsumptionHierarchyUp;
+		//System.out.println(subsumptionHierarchyDown);
+		//System.out.println(subsumptionHierarchyUp);
 		this.subsumptionHierarchyDown = subsumptionHierarchyDown;
 		allowedConceptsInSubsumptionHierarchy = new TreeSet<Description>(conceptComparator);
 		allowedConceptsInSubsumptionHierarchy.addAll(atomicConcepts);
@@ -80,6 +82,7 @@ public class SubsumptionHierarchy {
 				//System.out.println(moreGeneral);
 				if(moreGeneral.size()==0) { 
 					hierarchyDownNew.get(new Thing()).add(c);
+					moreGeneral.add(new Thing());
 				}else {
 					Description chosenParent = moreGeneral.first();
 					hierarchyDownNew.get(chosenParent).add(c);
@@ -95,6 +98,7 @@ public class SubsumptionHierarchy {
 			if(moreSpecial != null ) {
 				if(moreSpecial.size()==0){
 					hierarchyUpNew.get(new Nothing()).add(c);
+					moreSpecial.add(new Nothing());
 				}
 				else {
 					Description chosenParent = moreSpecial.first();
