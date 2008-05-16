@@ -24,10 +24,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.kb.sparql.datastructure.ClassNode;
 import org.dllearner.kb.sparql.datastructure.InstanceNode;
 import org.dllearner.kb.sparql.datastructure.Node;
+import org.dllearner.utilities.JenaResultSetConvenience;
 import org.dllearner.utilities.StringTuple;
+
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 
 /**
  * Used to manipulate retrieved tupels, identify blanknodes, etc.
@@ -76,9 +81,17 @@ public class Manipulator {
 		Iterator<StringTuple> it = tuples.iterator();
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
+			
+			//HACK
+			if(t.a.equals("http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag")) {
+				//hackGetLabel(t.b);
+				
+			}
+			
 			replacePredicate(t);
 			replaceObject(t);
 
+			
 			// remove <rdf:type, owl:class>
 			// this is done to avoid transformation to owl:subclassof
 			if (t.a.equals(type) && t.b.equals(classns)
@@ -117,6 +130,26 @@ public class Manipulator {
 				t.a = rep.b;
 			}
 		}
+	}
+	
+	//HACK
+	private String hackGetLabel(String resname){
+		String query="" +
+				"SELECT ?o \n" +
+				"WHERE { \n" +
+				"<"+resname+"> "+ " <http://www.holygoat.co.uk/owl/redwood/0.1/tags/tagName> ?o " +
+						"}";
+		
+		System.out.println(query);
+		//http://dbtune.org/musicbrainz/sparql?query=
+			//SELECT ?o WHERE { <http://dbtune.org/musicbrainz/resource/tag/1391>  <http://www.holygoat.co.uk/owl/redwood/0.1/tags/tagName> ?o }
+		SparqlQuery s=new SparqlQuery(query,SparqlEndpoint.EndpointMusicbrainz());
+		ResultSet rs=s.send();
+		while (rs.hasNext()){
+			rs.nextBinding();
+		}
+		//System.out.println("AAA"+s.getAsXMLString(s.send()) );
+		return "";
 	}
 
 }
