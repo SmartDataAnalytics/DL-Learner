@@ -93,8 +93,8 @@ public class SPARQLExtractionEvaluation {
 		
 		for (int a = 0; a < 1; a++) {
 			
-			poslimit+=30;
-			neglimit+=30;
+			poslimit+=15;
+			neglimit+=15;
 			printProgress(0, concepts.size(),0, "beginning",total.getTime());
 			
 			int concount=0;
