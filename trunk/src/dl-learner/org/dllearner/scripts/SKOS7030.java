@@ -122,6 +122,14 @@ public class SKOS7030 {
 			ae.initDBpediaSKOS(concept, 0.1, useRelated, useParallelClasses);
 			posExamples = ae.getPosExamples();
 			negExamples = ae.getNegExamples();
+			
+			for (String string2 : negExamples) {
+				logger.debug("-"+string2);
+			}
+			
+			for (String string2 : posExamples) {
+				logger.debug("+"+string2);
+			}
 			SortedSet<String> totalSKOSset= ae.totalSKOSset;
 			SortedSet<String> rest= ae.rest;
 		

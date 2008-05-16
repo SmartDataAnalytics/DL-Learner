@@ -84,7 +84,7 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"writeSearchTree",false);
 		cm.applyConfigEntry(la,"searchTreeFile","log/search.txt");
 		cm.applyConfigEntry(la,"replaceSearchTree",true);
-		cm.applyConfigEntry(la,"noisePercentage",0.15);
+		//cm.applyConfigEntry(la,"noisePercentage",0.5);
 		
 		
 		//cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
@@ -152,6 +152,7 @@ public class LearnSparql {
 		//cm.applyConfigEntry(r,"useExistsConstructor",true);
 		r.init();
 		rs = new ReasoningService(r); 
+		//System.out.println("satisfy: "+rs.isSatisfiable());
 		
 		lp = new PosNegDefinitionLP(rs);
 		//cm.applyConfigEntry(lp, "positiveExamples",toInd(posExamples));
