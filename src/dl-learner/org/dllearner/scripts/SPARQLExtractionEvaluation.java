@@ -194,12 +194,12 @@ public class SPARQLExtractionEvaluation {
 	
 	public static  SortedSet<String> initConcepts(){
 		SortedSet<String> concepts = new TreeSet<String>();
-		/*concepts.add("http://dbpedia.org/class/yago/AirLane108492546");
+		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");
 		concepts.add("http://dbpedia.org/class/yago/AlphaBlocker102698769");
-		concepts.add("http://dbpedia.org/class/yago/Articulation107131854");
+		/*concepts.add("http://dbpedia.org/class/yago/Articulation107131854");
 		concepts.add("http://dbpedia.org/class/yago/Patriot110407310");
 		concepts.add("http://dbpedia.org/class/yago/Ceremony107450842");*/
-		concepts.add("http://dbpedia.org/class/yago/CookingOil107673145");
+		//concepts.add("http://dbpedia.org/class/yago/CookingOil107673145");
 		/*concepts.add("http://dbpedia.org/class/yago/Corticosteroid114751417");
 		concepts.add("http://dbpedia.org/class/yago/Curlew102033561");
 		concepts.add("http://dbpedia.org/class/yago/DataStructure105728493");
