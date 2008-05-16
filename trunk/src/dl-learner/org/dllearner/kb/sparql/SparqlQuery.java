@@ -175,7 +175,7 @@ public class SparqlQuery {
 	public static ResultSet JSONtoResultSet(String json) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(json
 				.getBytes(Charset.forName("UTF-8")));
-		System.out.println("JSON " + json);
+		//System.out.println("JSON " + json);
 		return ResultSetFactory.fromJSON(bais);
 	}
 

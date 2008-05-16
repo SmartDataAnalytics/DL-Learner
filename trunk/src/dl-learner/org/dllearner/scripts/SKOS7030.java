@@ -1,5 +1,6 @@
 package org.dllearner.scripts;
 
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -11,6 +12,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.AutomaticExampleFinderSKOSSPARQL;
 import org.dllearner.utilities.JenaResultSetConvenience;
@@ -19,6 +21,8 @@ import org.dllearner.utilities.SetManipulation;
 import org.dllearner.utilities.SimpleClock;
 
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 public class SKOS7030 {
 
@@ -76,7 +80,12 @@ public class SKOS7030 {
 		standardSettings=standardSettingsRefexamples+standardDBpedia;
 		//standardSettings=standardSettingsRefinement+standardDBpedia;
 		
-		DBpediaSKOS();
+		se = SparqlEndpoint.EndpointLOCALDBpedia();
+		String t="\"http://dbpedia.org/class/yago/Fiction106367107\"";
+		 t="\"http://www.w3.org/2004/02/skos/core#subject\"";
+		getSubClasses(t);
+		
+		//DBpediaSKOS();
 		//algorithm="refinement";
 		//roles();
 		
@@ -95,9 +104,9 @@ public class SKOS7030 {
 
 	static void DBpediaSKOS(){
 		se = SparqlEndpoint.EndpointLOCALDBpedia();
-		se = SparqlEndpoint.EndpointDBpedia();
+		//se = SparqlEndpoint.EndpointDBpedia();
 		String url = "http://dbpedia.openlinksw.com:8890/sparql";
-		//url = "http://139.18.2.37:8890/sparql";
+		url = "http://139.18.2.37:8890/sparql";
 		
 		SortedSet<String> concepts = new TreeSet<String>();
 		
@@ -225,6 +234,79 @@ public class SKOS7030 {
 		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
 		JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
 		return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);
+	}
+	
+	
+	/**
+	 * NOT WORKING
+	 * @param description
+	 */
+	public static SortedSet<String> getSubClasses(String description) {
+		ResultSet rs = null;
+		//System.out.println(description);
+		SortedSet<String> alreadyQueried = new TreeSet<String>();
+		try {
+			String query = getSparqlSubclassQuery(description.replaceAll("\"", ""));
+			String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
+			rs =SparqlQuery.JSONtoResultSet(JSON);
+			SortedSet<String> remainingClasses = new TreeSet<String>();
+			
+			remainingClasses.addAll(getSubclassesFromResultSet(rs));
+			
+			alreadyQueried = new TreeSet<String>();
+			alreadyQueried.add(description.replaceAll("\"", ""));
+		
+			
+			//SortedSet<String> remainingClasses = new JenaResultSetConvenience(rs).getStringListForVariable("subject");
+			
+			while (remainingClasses.size()!=0){
+				SortedSet<String> tmpSet = new TreeSet<String>();
+				String tmp = remainingClasses.first();
+				remainingClasses.remove(tmp);
+				query = SparqlQueryDescriptionConvertVisitor
+					.getSparqlSubclassQuery(tmp);
+				alreadyQueried.add(tmp);
+				JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
+				rs =SparqlQuery.JSONtoResultSet(JSON);
+				tmpSet=getSubclassesFromResultSet(rs);
+				for (String string : tmpSet) {
+					if(!alreadyQueried.contains(string))
+						remainingClasses.add(string);
+				}
+			}
+			//System.out.println(JSON);
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//System.out.println(alreadyQueried);
+		return alreadyQueried;
+	}
+	
+	public static SortedSet<String> getSubclassesFromResultSet(ResultSet rs)
+	{
+		SortedSet<String> result = new TreeSet<String>();
+		List<ResultBinding> l =  ResultSetFormatter.toList(rs);
+		String p="",s="";
+		for (ResultBinding resultBinding : l) {
+				
+			s=((resultBinding.get("subject").toString()));
+			p=((resultBinding.get("predicate").toString()));
+			if(p.equalsIgnoreCase("http://www.w3.org/2000/01/rdf-schema#subClassOf")){
+				result.add(s);
+			}
+		}
+		return result;
+	}
+	
+	public static String getSparqlSubclassQuery(String description)
+	{	String ret = "SELECT * \n";
+		ret+= "WHERE {\n";
+		ret+=" ?subject ?predicate  <"+description+"> \n";
+		ret+="}\n";
+		
+		return ret;
 	}
 	
 	
