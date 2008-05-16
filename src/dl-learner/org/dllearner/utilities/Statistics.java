@@ -12,6 +12,8 @@ public class Statistics {
 	private static HashMap<String, Integer> numberOfTriples = new HashMap<String, Integer>();
 	private static HashMap<String, Long> timeCollecting = new HashMap<String, Long>();
 	private static HashMap<String, Long> timeLearning = new HashMap<String, Long>();
+	private static HashMap<String, Long> timeTotal = new HashMap<String, Long>();
+	
 	
 	private static HashMap<String, Integer> numberOfSparqlQueries = new HashMap<String, Integer>();
 	private static HashMap<String, Integer> numberOfCachedSparqlQueries = new HashMap<String, Integer>();
@@ -31,6 +33,7 @@ public class Statistics {
 	}
 	
 	public static void addTimeCollecting(long value) {
+		addTimeTotal(value);
 		Long current = timeCollecting.get(currentLabel);
 		if(current==null)
 			timeCollecting.put(currentLabel, new Long(value));
@@ -38,9 +41,21 @@ public class Statistics {
 			timeCollecting.put(currentLabel, new Long(current.longValue()+value));
 		}
 		
+		
+	}
+	
+	public static void addTimeTotal(long value) {
+		Long current = timeTotal.get(currentLabel);
+		if(current==null)
+			timeTotal.put(currentLabel, new Long(value));
+		else {
+			timeTotal.put(currentLabel, new Long(current.longValue()+value));
+		}
+		
 	}
 	
 	public static void addTimeLearning(long value) {
+		addTimeTotal(value);
 		
 		Long current = timeLearning.get(currentLabel);
 		if(current==null)
@@ -135,6 +150,18 @@ public class Statistics {
 		return ret;	
 	}
 	
+	public static String getAVGtotalTime(int number){
+		
+		String ret="#Label, i.e. rec depth \t avg total time \n";
+		for (int i = 0; i < order.size(); i++) {
+			String label=order.get(i);
+			try {
+				ret+=label+"\t"+ (timeTotal.get(label).longValue()/number)+"\n";
+			} catch (Exception e) {	}
+		}
+		return ret;	
+	}
+	
 	public static void printIntAVG(HashMap<String, Integer>  hm, int number, String str){
 		for (int i = 0; i < order.size(); i++) {
 			String label=order.get(i);
@@ -187,6 +214,7 @@ public class Statistics {
 		 numberOfTriples = new HashMap<String, Integer>();
 		timeCollecting = new HashMap<String, Long>();
 		timeLearning = new HashMap<String, Long>();
+		timeTotal = new HashMap<String, Long>();
 		
 		 numberOfSparqlQueries = new HashMap<String, Integer>();
 		 numberOfCachedSparqlQueries = new HashMap<String, Integer>();

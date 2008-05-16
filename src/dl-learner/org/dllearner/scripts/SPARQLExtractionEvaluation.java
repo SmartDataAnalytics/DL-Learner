@@ -11,9 +11,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.AutomaticExampleFinderSPARQL;
@@ -40,7 +38,7 @@ public class SPARQLExtractionEvaluation {
 	static boolean useParallelClasses = true;
 	static int poslimit = 0;
 	static int neglimit = 0;
-	static boolean randomizeCache = false;
+	static boolean randomizeCache = true;
 	
 	/**
 	 * @param args
@@ -81,6 +79,7 @@ public class SPARQLExtractionEvaluation {
 		//System.out.println(selectDBpediaConcepts(10));
 		tmpSet=initConcepts();
 		int number=tmpSet.size();
+		//System.out.println(number);
 		//concepts.add("\"http://dbpedia.org/class/yago/Flamethrower103356559\"");
 		for (String string : tmpSet) {
 			//System.out.println("\""+string+"\",");
@@ -154,6 +153,9 @@ public class SPARQLExtractionEvaluation {
 		String comment3="# "+examples+"examples\n";
 		String f3=pre+"2avgTimeLearning_"+examples+"example"+concepts.size()+"classes";
 		writeToFile(f3, comment3+Statistics.getAVGTimeLearning(number));
+		String comment4="# "+examples+"examples\n";
+		String f4=pre+"2avgTotalTime_"+examples+"example"+concepts.size()+"classes";
+		writeToFile(f4, comment4+Statistics.getAVGtotalTime(number));
 		Statistics.reset();
 		
 		}//outer
@@ -194,27 +196,27 @@ public class SPARQLExtractionEvaluation {
 	
 	public static  SortedSet<String> initConcepts(){
 		SortedSet<String> concepts = new TreeSet<String>();
-//		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");
-//		concepts.add("http://dbpedia.org/class/yago/AlphaBlocker102698769");
-//		concepts.add("http://dbpedia.org/class/yago/Articulation107131854");
-//		concepts.add("http://dbpedia.org/class/yago/Patriot110407310");
-//		concepts.add("http://dbpedia.org/class/yago/Ceremony107450842");
+		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");
+		concepts.add("http://dbpedia.org/class/yago/AlphaBlocker102698769");
+		concepts.add("http://dbpedia.org/class/yago/Articulation107131854");
+		concepts.add("http://dbpedia.org/class/yago/Patriot110407310");
+		concepts.add("http://dbpedia.org/class/yago/Ceremony107450842");
 		concepts.add("http://dbpedia.org/class/yago/CookingOil107673145");
 		concepts.add("http://dbpedia.org/class/yago/Corticosteroid114751417");
-//		concepts.add("http://dbpedia.org/class/yago/Curlew102033561");
-//		concepts.add("http://dbpedia.org/class/yago/DataStructure105728493");
-//		concepts.add("http://dbpedia.org/class/yago/Disappearance100053609");
-//		concepts.add("http://dbpedia.org/class/yago/Flintstone114871268");
-//		concepts.add("http://dbpedia.org/class/yago/Form105930736");
-//		concepts.add("http://dbpedia.org/class/yago/Hypochondriac110195487");
-//		concepts.add("http://dbpedia.org/class/yago/Industrialist110204177");
-//		concepts.add("http://dbpedia.org/class/yago/Lifeboat103662601");
-//		concepts.add("http://dbpedia.org/class/yago/Particulate114839439");
-//		concepts.add("http://dbpedia.org/class/yago/Reservation108587174");
-//		concepts.add("http://dbpedia.org/class/yago/Schoolteacher110560352");
-//		concepts.add("http://dbpedia.org/class/yago/Singer110599806");
-//		concepts.add("http://dbpedia.org/class/yago/SupremeCourt108336188");
-//		concepts.add("http://dbpedia.org/class/yago/AirLane108492546");*/
+		concepts.add("http://dbpedia.org/class/yago/Curlew102033561");
+		concepts.add("http://dbpedia.org/class/yago/DataStructure105728493");
+		concepts.add("http://dbpedia.org/class/yago/Disappearance100053609");
+		concepts.add("http://dbpedia.org/class/yago/Flintstone114871268");
+		concepts.add("http://dbpedia.org/class/yago/Form105930736");
+		concepts.add("http://dbpedia.org/class/yago/Hypochondriac110195487");
+		concepts.add("http://dbpedia.org/class/yago/Industrialist110204177");
+		concepts.add("http://dbpedia.org/class/yago/Lifeboat103662601");
+		concepts.add("http://dbpedia.org/class/yago/Particulate114839439");
+		concepts.add("http://dbpedia.org/class/yago/Reservation108587174");
+		concepts.add("http://dbpedia.org/class/yago/Schoolteacher110560352");
+		concepts.add("http://dbpedia.org/class/yago/Singer110599806");
+		concepts.add("http://dbpedia.org/class/yago/SupremeCourt108336188");
+		
 		return concepts;
 	}
 	

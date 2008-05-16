@@ -362,7 +362,8 @@ public class ExampleBasedROLearner {
 				logger.debug("--- loop " + loop + " started ---");				
 			}
 			//RBC
-			//logger.debug("--- loop " + loop + " started ---");
+			logger.debug("--- loop " + loop + " started ---");
+			printStatistics(false);
 			//sc.printAndSet("before Traverse");
 			// traverse the current search tree to find a solution
 			if(useTreeTraversal && (currentTime - lastTreeTraversalTime > traversalInterval)) {
