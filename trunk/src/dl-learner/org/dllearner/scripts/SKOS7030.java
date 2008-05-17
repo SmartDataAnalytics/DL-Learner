@@ -77,7 +77,7 @@ public class SKOS7030 {
 	static int resultsize=50;
 	static double noise=5;
 	static int limit=200;
-	static double percentage=0.3;
+	static double percentage=0.7;
 	
 	/**
 	 * @param args
