@@ -1072,9 +1072,12 @@ public class ExampleBasedROLearner {
 	
 	//HACK
 	public SortedSet<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
+		if(nrOfSolutions==0)nrOfSolutions=99999;
 		SortedSet<String> result = new TreeSet<String>();
 		for (Description d : solutions) {
+			
 			result.add(d.toKBSyntaxString());
+			if(result.size()==nrOfSolutions)return result;
 			//if(result.size()==nrOfSolutions)break;
 		}
 		/*if(result.size()<nrOfSolutions){

@@ -112,7 +112,7 @@ public class LearnSparql {
 	
 	public SortedSet<String> learnDBpediaSKOS(SortedSet<String> posExamples,SortedSet<String> negExamples,
 			String uri, SortedSet<String> ignoredConcepts, int recursiondepth, 
-			boolean closeAfterRecursion, boolean randomizeCache){
+			boolean closeAfterRecursion, boolean randomizeCache, int resultsize, double noise){
 		
 	
 		ComponentManager cm = ComponentManager.getInstance();
@@ -168,12 +168,12 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"useCardinalityRestrictions",false);
 		cm.applyConfigEntry(la,"useNegation",false);
 		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
-		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",50);
-		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",15);
+		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",150);
+		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",40);
 		cm.applyConfigEntry(la,"writeSearchTree",true);
 		cm.applyConfigEntry(la,"searchTreeFile","log/SKOS.txt");
 		cm.applyConfigEntry(la,"replaceSearchTree",true);
-		//cm.applyConfigEntry(la,"noisePercentage",0.15);
+		cm.applyConfigEntry(la,"noisePercentage",noise);
 		
 		
 		//cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
@@ -189,7 +189,7 @@ public class LearnSparql {
 		sc.setTime();
 		la.start();
 		Statistics.addTimeLearning(sc.getTime());
-		return la.getBestSolutionsAsKBSyntax(0);
+		return la.getBestSolutionsAsKBSyntax(resultsize);
 		//if(sc.getTime()/1000 >= 20)System.out.println("XXXMAX time reached");
 		
 		//System.out.println("best"+la(20));

@@ -1,5 +1,7 @@
 package org.dllearner.utilities;
 
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -8,6 +10,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
+import org.dllearner.kb.sparql.SparqlQueryThreaded;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.ResultSet;
@@ -27,7 +30,7 @@ public class AutomaticExampleFinderSKOSSPARQL {
 	
 	
 	public AutomaticExampleFinderSKOSSPARQL(SparqlEndpoint se){
-		this.c=new Cache("cachetemp");
+		this.c=new Cache("cacheExamplesValidation");
 		this.se=se;
 		posExamples = new TreeSet<String>();
 		negExamples = new TreeSet<String>();
@@ -40,7 +43,7 @@ public class AutomaticExampleFinderSKOSSPARQL {
 		totalSKOSset.addAll(this.posExamples);
 		rest.addAll(totalSKOSset);
 		int poslimit=(int)Math.round(percent*totalSKOSset.size());
-		int neglimit=2*poslimit;
+		int neglimit=(int)Math.round(1.4*poslimit);
 		/*while (this.posExamples.size()>poslimit) {
 			this.posExamples.remove(posExamples.last());
 		}*/
@@ -302,6 +305,7 @@ public class AutomaticExampleFinderSKOSSPARQL {
 					.getSparqlQuery(concept,limit);
 			
 			SparqlQuery sq = new SparqlQuery(query, se);
+			//System.out.println(query);
 			String JSON = c.executeSparqlQuery(sq);
 			//System.out.println("JSON:\n"+JSON);
 			rs = SparqlQuery.JSONtoResultSet(JSON);
@@ -345,7 +349,7 @@ public class AutomaticExampleFinderSKOSSPARQL {
 			" a " + 
 			"?subject " +
 			"\n" +
-			"}";
+			"} LIMIT 200";
 			SparqlQuery sq = new SparqlQuery(query, se);
 			//System.out.println(query);
 			String JSON = c.executeSparqlQuery(sq);
