@@ -248,11 +248,13 @@ public class SKOS7030 {
 			
 			logger.debug(res.first().toStringFull());
 			res.remove(res.first());
-			
+			int i=0;
 			while (res.size()>0){
 				logger.debug(res.first());
 				res.remove(res.first());
 				//if(res.size()<=percent)break;
+				if(i>6)break;
+				i++;
 				
 			}
 			
