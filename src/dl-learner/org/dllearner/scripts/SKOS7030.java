@@ -246,6 +246,8 @@ public class SKOS7030 {
 			
 			//double percent=0.80*(double)res.size();;
 			
+			logger.debug(res.first().toStringFull());
+			res.remove(res.first());
 			
 			while (res.size()>0){
 				logger.debug(res.first());

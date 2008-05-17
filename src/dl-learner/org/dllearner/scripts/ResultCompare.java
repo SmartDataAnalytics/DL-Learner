@@ -49,7 +49,7 @@ public class ResultCompare implements Comparable {
 
 	
 	
-	public String toString(){
+	public String toStringFull(){
 		String ret="";
 		ret+="concept\t"+concept+"\n";
 		ret+="instances\t"+instances+"\n";
@@ -59,6 +59,21 @@ public class ResultCompare implements Comparable {
 		ret+="coveredInRest("+coveredInRest.size()+")\t"+coveredInRest+"\n";
 		ret+="possibleNewCandidates("+possibleNewCandidates.size()+")\t"+possibleNewCandidates+"\n";
 		ret+="notCoveredInTotal("+notCoveredInTotal.size()+")\t"+notCoveredInTotal+"\n";
+		
+		return ret;
+		
+	}
+	
+	public String toString(){
+		String ret="";
+		ret+="concept\t"+concept+"\n";
+		//ret+="instances\t"+instances+"\n";
+		ret+="accuracy\t"+accuracy+"\n";
+		ret+="nrOfInstances\t"+nrOfInstances+"\n";
+		ret+="accuracy2\t"+accuracy2+"\n";
+		//ret+="coveredInRest("+coveredInRest.size()+")\t"+coveredInRest+"\n";
+		//ret+="possibleNewCandidates("+possibleNewCandidates.size()+")\t"+possibleNewCandidates+"\n";
+		//ret+="notCoveredInTotal("+notCoveredInTotal.size()+")\t"+notCoveredInTotal+"\n";
 		
 		return ret;
 		
