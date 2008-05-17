@@ -75,7 +75,7 @@ public class SKOS7030 {
 	static boolean randomizeCache=false;
 	
 	static int resultsize=50;
-	static double noise=5;
+	static double noise=15;
 	static int limit=200;
 	static double percentage=0.7;
 	
