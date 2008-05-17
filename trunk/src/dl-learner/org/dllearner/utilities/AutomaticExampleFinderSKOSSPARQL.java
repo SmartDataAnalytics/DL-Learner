@@ -43,7 +43,7 @@ public class AutomaticExampleFinderSKOSSPARQL {
 		totalSKOSset.addAll(this.posExamples);
 		rest.addAll(totalSKOSset);
 		int poslimit=(int)Math.round(percent*totalSKOSset.size());
-		int neglimit=(int)Math.round(1.4*poslimit);
+		int neglimit=(int)Math.round(2*poslimit);
 		/*while (this.posExamples.size()>poslimit) {
 			this.posExamples.remove(posExamples.last());
 		}*/
