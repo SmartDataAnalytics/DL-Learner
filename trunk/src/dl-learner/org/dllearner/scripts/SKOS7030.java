@@ -1,5 +1,6 @@
 package org.dllearner.scripts;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -10,9 +11,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Union;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.AutomaticExampleFinderSKOSSPARQL;
 import org.dllearner.utilities.JenaResultSetConvenience;
@@ -67,25 +70,57 @@ public class SKOS7030 {
 	static int poslimit = 10;
 	static int neglimit = 20;
 	
+	static int recursiondepth=1;
+	static boolean closeAfterRecursion=true;
+	static boolean randomizeCache=false;
+	
+	static int resultsize=50;
+	static double noise=10;
+	static int limit=200;
+	static double percentage=0.7;
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		init();
 		//logger.setLevel(Level.TRACE);
-		Logger.getLogger(KnowledgeSource.class).setLevel(Level.INFO);
+		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
 		//System.out.println(Logger.getLogger(SparqlQuery.class).getLevel());
 		SimpleClock sc=new SimpleClock();
 		
-		standardSettings=standardSettingsRefexamples+standardDBpedia;
-		//standardSettings=standardSettingsRefinement+standardDBpedia;
 		
 		se = SparqlEndpoint.EndpointLOCALDBpedia();
-		String t="\"http://dbpedia.org/class/yago/Fiction106367107\"";
-		 t="\"http://www.w3.org/2004/02/skos/core#subject\"";
-		getSubClasses(t);
+//		String t="\"http://dbpedia.org/class/yago/Fiction106367107\"";
+//		t="(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))";
+//		//System.out.println(t);
+//		//t="\"http://www.w3.org/2004/02/skos/core#subject\"";
+//		//conceptRewrite(t);
+//		//getSubClasses(t);
+//		
+//		AutomaticExampleFinderSKOSSPARQL ae= new AutomaticExampleFinderSKOSSPARQL( se);	
+//			try{
+//			System.out.println("oneconcept: "+t);
+//			SortedSet<String> instances = ae.queryConceptAsStringSet(conceptRewrite(t), 200);
+//			if(instances.size()>=0)System.out.println("size of instances "+instances.size());
+//			if(instances.size()>=0 && instances.size()<100) System.out.println("instances"+instances);
+//			}catch (Exception e) {
+//				e.printStackTrace();
+//			}
+		SortedSet<String> concepts = new TreeSet<String>();
 		
-		//DBpediaSKOS();
+		concepts.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
+		concepts.add("http://dbpedia.org/resource/Category:German_women_in_politics");
+		concepts.add("http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners");
+		
+		DBpediaSKOS(concepts.first());
+		DBpediaSKOS(concepts.first());
+		concepts.remove(concepts.first());
+		DBpediaSKOS(concepts.first());
+		DBpediaSKOS(concepts.first());
+		concepts.remove(concepts.first());
+		DBpediaSKOS(concepts.first());
+		DBpediaSKOS(concepts.first());
 		//algorithm="refinement";
 		//roles();
 		
@@ -102,15 +137,12 @@ public class SKOS7030 {
 	
 	
 
-	static void DBpediaSKOS(){
+	static void DBpediaSKOS(String concept){
 		se = SparqlEndpoint.EndpointLOCALDBpedia();
 		//se = SparqlEndpoint.EndpointDBpedia();
 		String url = "http://dbpedia.openlinksw.com:8890/sparql";
 		url = "http://139.18.2.37:8890/sparql";
 		
-		SortedSet<String> concepts = new TreeSet<String>();
-		
-		concepts.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
 		//concepts.add("http://dbpedia.org/resource/Category:Grammy_Award_winners");
 		//concepts.add("EXISTS \"http://dbpedia.org/property/grammyawards\".TOP");
 		
@@ -121,15 +153,11 @@ public class SKOS7030 {
 		//HashMap<String, String> result2 = new HashMap<String, String>();
 		//System.out.println(concepts.first());
 		//logger.setLevel(Level.TRACE);
-		String concept=concepts.first();
+		
 		
 			AutomaticExampleFinderSKOSSPARQL ae= new AutomaticExampleFinderSKOSSPARQL( se);	
-			useRelated = false;
-			useParallelClasses = true;
-			int recursiondepth=1;
-			boolean closeAfterRecursion=true;
-			boolean randomizeCache=false;
-			ae.initDBpediaSKOS(concept, 0.1, useRelated, useParallelClasses);
+			
+			ae.initDBpediaSKOS(concept,percentage , useRelated, useParallelClasses);
 			posExamples = ae.getPosExamples();
 			negExamples = ae.getNegExamples();
 			
@@ -142,22 +170,90 @@ public class SKOS7030 {
 			}
 			SortedSet<String> totalSKOSset= ae.totalSKOSset;
 			SortedSet<String> rest= ae.rest;
-		
+			logger.debug(totalSKOSset);
+			logger.debug(rest);
 			
 			
 			LearnSparql ls = new LearnSparql();
 	
 			//igno.add(oneConcept.replaceAll("\"", ""));
 			
-			SortedSet<String> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache);
-			System.out.println(conceptresults);
-			System.out.println(conceptresults.size());
-			for (String string : conceptresults) {
-				System.out.println(string);
-				SortedSet<String> instances = ae.queryConceptAsStringSet(string, 0);
-				if(instances.size()>=0)System.out.println("size "+instances.size());
-				if(instances.size()>=0 && instances.size()>0) System.out.println(instances);
+			SortedSet<String> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache,resultsize,noise);
+			//System.out.println("concepts"+conceptresults);
+			logger.debug("found nr of concepts:"+conceptresults.size());
+			SortedSet<ResultCompare> res=new TreeSet<ResultCompare>();
+			for (String oneConcept : conceptresults) {
+				try{
+				System.out.println("oneconcept: "+oneConcept);
+				SortedSet<String> instances = ae.queryConceptAsStringSet(conceptRewrite(oneConcept), 200);
+				SortedSet<String> coveredInRest = new TreeSet<String>();
+				SortedSet<String> possibleNewCandidates = new TreeSet<String>();
+				SortedSet<String> notCoveredInTotal = new TreeSet<String>();
+				
+				int i=0;
+				int a=0;
+				for (String oneinst : instances) {
+					boolean inRest=false;
+					boolean inTotal=false;
+					for (String onerest : rest) {
+						if(onerest.equalsIgnoreCase(oneinst))
+							{ i++; inRest=true; break;}
+						
+					}
+					if (inRest){coveredInRest.add(oneinst);};
+					
+					for (String onetotal : totalSKOSset) {
+						if(onetotal.equalsIgnoreCase(oneinst))
+						{ a++; inTotal=true; break;}
+					}
+					if(!inRest && !inTotal){
+						possibleNewCandidates.add(oneinst);
+					}
+				}
+				
+				for (String onetotal : totalSKOSset) {
+					boolean mm=false;
+					for (String oneinst : instances) {
+						if(onetotal.equalsIgnoreCase(oneinst)){
+							mm=true;break;
+						}
+							
+					}
+					if(!mm)notCoveredInTotal.add(onetotal);
+					
+				}
+				
+				
+				
+				double accuracy= (double)i/rest.size();
+				double accuracy2= (double)a/totalSKOSset.size();
+				
+				res.add(new ResultCompare(oneConcept,instances,accuracy,accuracy2,instances.size(),
+						coveredInRest,possibleNewCandidates,notCoveredInTotal));
+				
+				//if(instances.size()>=0)System.out.println("size of instances "+instances.size());
+				//if(instances.size()>=0 && instances.size()<100) System.out.println("instances"+instances);
+				}catch (Exception e) {}
 			}
+			
+//			System.out.println(res.last());
+//			res.remove(res.last());
+//			System.out.println(res.last());
+//			res.remove(res.last());
+//			System.out.println(res.last());
+//			res.remove(res.last());
+//			
+			
+			//double percent=0.80*(double)res.size();;
+			
+			
+			while (res.size()>0){
+				logger.debug(res.first());
+				res.remove(res.first());
+				//if(res.size()<=percent)break;
+				
+			}
+			
 			
 			
 			
@@ -171,34 +267,6 @@ public class SKOS7030 {
 		//Statistics.print();
 	}
 	
-
-	/***************************************************************************
-	 * *********************OLDCODE String
-	 * conj="(\"http://dbpedia.org/class/yago/Person100007846\" AND
-	 * \"http://dbpedia.org/class/yago/Head110162991\")";
-	 * 
-	 * 
-	 * concepts.add("EXISTS \"http://dbpedia.org/property/disambiguates\".TOP");
-	 * concepts.add("EXISTS
-	 * \"http://dbpedia.org/property/successor\".\"http://dbpedia.org/class/yago/Person100007846\"");
-	 * concepts.add("EXISTS \"http://dbpedia.org/property/successor\"."+conj);
-	 * //concepts.add("ALL \"http://dbpedia.org/property/disambiguates\".TOP");
-	 * //concepts.add("ALL
-	 * \"http://dbpedia.org/property/successor\".\"http://dbpedia.org/class/yago/Person100007846\"");
-	 * concepts.add("\"http://dbpedia.org/class/yago/Person100007846\"");
-	 * concepts.add(conj);
-	 * concepts.add("(\"http://dbpedia.org/class/yago/Person100007846\" OR
-	 * \"http://dbpedia.org/class/yago/Head110162991\")");
-	 * 
-	 * //concepts.add("NOT \"http://dbpedia.org/class/yago/Person100007846\"");
-	 * 
-	 * for (String kbsyntax : concepts) {
-	 * result.put(kbsyntax,queryConcept(kbsyntax)); }
-	 * System.out.println("************************"); for (String string :
-	 * result.keySet()) { System.out.println("KBSyntayString: "+string);
-	 * System.out.println("Query:\n"+result.get(string).hasNext());
-	 * System.out.println("************************"); }
-	 **************************************************************************/
 
 	
 
@@ -238,10 +306,11 @@ public class SKOS7030 {
 	
 	
 	/**
-	 * NOT WORKING
+	 * 
 	 * @param description
 	 */
-	public static SortedSet<String> getSubClasses(String description) {
+	public static SortedSet<String> getSubClasses(String description, int limit) {
+		if(limit==0)limit=10;
 		ResultSet rs = null;
 		//System.out.println(description);
 		SortedSet<String> alreadyQueried = new TreeSet<String>();
@@ -249,38 +318,43 @@ public class SKOS7030 {
 			String query = getSparqlSubclassQuery(description.replaceAll("\"", ""));
 			String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
 			rs =SparqlQuery.JSONtoResultSet(JSON);
-			SortedSet<String> remainingClasses = new TreeSet<String>();
+			LinkedList<String> remainingClasses = new LinkedList<String>();
 			
-			remainingClasses.addAll(getSubclassesFromResultSet(rs));
+			//make back 
+			//remainingClasses.addAll(getSubclassesFromResultSet(rs));
 			
 			alreadyQueried = new TreeSet<String>();
 			alreadyQueried.add(description.replaceAll("\"", ""));
-		
+			alreadyQueried.addAll(getSubclassesFromResultSet(rs));
+		    //remainingClasses.addAll(alreadyQueried);
+			return alreadyQueried;
 			
 			//SortedSet<String> remainingClasses = new JenaResultSetConvenience(rs).getStringListForVariable("subject");
 			
-			while (remainingClasses.size()!=0){
-				SortedSet<String> tmpSet = new TreeSet<String>();
-				String tmp = remainingClasses.first();
-				remainingClasses.remove(tmp);
-				query = SparqlQueryDescriptionConvertVisitor
-					.getSparqlSubclassQuery(tmp);
-				alreadyQueried.add(tmp);
-				JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
-				rs =SparqlQuery.JSONtoResultSet(JSON);
-				tmpSet=getSubclassesFromResultSet(rs);
-				for (String string : tmpSet) {
-					if(!alreadyQueried.contains(string))
-						remainingClasses.add(string);
-				}
-			}
+//			while (remainingClasses.size()!=0){
+//				SortedSet<String> tmpSet = new TreeSet<String>();
+//				String tmp = remainingClasses.removeFirst();
+//				//remainingClasses.remove(tmp);
+//				query = SparqlQueryDescriptionConvertVisitor
+//					.getSparqlSubclassQuery(tmp);
+//				alreadyQueried.add(tmp);
+//				if(alreadyQueried.size()==limit)break;
+//				JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
+//				rs =SparqlQuery.JSONtoResultSet(JSON);
+//				tmpSet=getSubclassesFromResultSet(rs);
+//				for (String string : tmpSet) {
+//					if(!alreadyQueried.contains(string))
+//						remainingClasses.add(string);
+//				}
+//			}
 			//System.out.println(JSON);
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			
 		}
-		//System.out.println(alreadyQueried);
+		System.out.println("subclasses "+alreadyQueried);
+		System.out.println("nr of subclasses :"+alreadyQueried.size());
 		return alreadyQueried;
 	}
 	
@@ -306,6 +380,44 @@ public class SKOS7030 {
 		ret+=" ?subject ?predicate  <"+description+"> \n";
 		ret+="}\n";
 		
+		return ret;
+	}
+	
+	public static String conceptRewrite(String description)
+	{	String quote = "\"";
+		String ret="";
+		String currentconcept="";
+		int lastPos=0;
+		SortedSet<String> subclasses=new TreeSet<String>();
+		
+		while ((lastPos=description.lastIndexOf(quote))!=-1){
+			ret=description.substring(lastPos+1,description.length())+ret;
+			description=description.substring(0,lastPos);
+			//System.out.println(description);
+			lastPos=description.lastIndexOf(quote);
+			currentconcept=description.substring(lastPos+1,description.length());
+			description=description.substring(0,lastPos);
+			//replace
+			//currentconcept="\"blabla\"";
+			//System.out.println(currentconcept);
+			
+			
+				subclasses = getSubClasses( currentconcept, 0);
+			
+			if (subclasses.size()==1)currentconcept="\""+currentconcept+"\"";
+			else {
+				LinkedList<Description> nc = new LinkedList<Description>();
+				for (String one : subclasses) {
+					nc.add(new NamedClass(one));
+				}
+				currentconcept=new Union(nc).toKBSyntaxString();
+			}
+			
+			ret=currentconcept+ret;
+			//ret+=description;
+		}
+		ret=description+ret;
+			//System.out.println(ret);
 		return ret;
 	}
 	

@@ -95,10 +95,10 @@ public class SparqlQuery {
 			logger.trace(rs.getResultVars().toString());
 		} catch (Exception e){
 			sendException=new SparqlQueryException(e.getMessage());
-			logger.error(e.getMessage());
-			e.printStackTrace();
-			logger.error("Exception when querying Sparql Endpoint in " + this.getClass());
-			logger.error(queryString);
+			logger.debug(e.getMessage());
+			//e.printStackTrace();
+			logger.debug("Exception when querying Sparql Endpoint in " + this.getClass());
+			logger.debug(queryString);
 		}
 		isRunning = false;
 		return rs;
