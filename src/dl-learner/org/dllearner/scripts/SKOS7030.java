@@ -253,7 +253,7 @@ public class SKOS7030 {
 				logger.debug(res.first());
 				res.remove(res.first());
 				//if(res.size()<=percent)break;
-				if(i>6)break;
+				if(i>50)break;
 				i++;
 				
 			}

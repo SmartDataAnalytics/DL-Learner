@@ -1077,10 +1077,10 @@ public class ExampleBasedROLearner {
 		for (Description d : solutions) {
 			
 			result.add(d.toKBSyntaxString());
-			if(result.size()==nrOfSolutions)return result;
+			if(result.size()==nrOfSolutions)break;
 			//if(result.size()==nrOfSolutions)break;
 		}
-		/*if(result.size()<nrOfSolutions){
+		if(result.size()==0){
 			
 			for(ExampleBasedNode n : candidatesStable.descendingSet()) {
 				
@@ -1089,7 +1089,7 @@ public class ExampleBasedROLearner {
 					return result;
 				
 			}
-		}*/
+		}
 		return result;
 	}
 	
