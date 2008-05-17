@@ -75,9 +75,9 @@ public class SKOS7030 {
 	static boolean randomizeCache=false;
 	
 	static int resultsize=50;
-	static double noise=10;
+	static double noise=5;
 	static int limit=200;
-	static double percentage=0.7;
+	static double percentage=0.3;
 	
 	/**
 	 * @param args
@@ -109,18 +109,30 @@ public class SKOS7030 {
 //			}
 		SortedSet<String> concepts = new TreeSet<String>();
 		
-		concepts.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
-		concepts.add("http://dbpedia.org/resource/Category:German_women_in_politics");
-		concepts.add("http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners");
+		String prim="http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
 		
-		DBpediaSKOS(concepts.first());
-		DBpediaSKOS(concepts.first());
-		concepts.remove(concepts.first());
-		DBpediaSKOS(concepts.first());
-		DBpediaSKOS(concepts.first());
-		concepts.remove(concepts.first());
-		DBpediaSKOS(concepts.first());
-		DBpediaSKOS(concepts.first());
+		String award=("http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners");
+		
+		double acc1=0.0;
+		for (int i = 0; i < 5; i++) {
+			acc1+=DBpediaSKOS(prim);
+		}
+		System.out.println("accprim"+(acc1/5));
+		
+		double acc2=0.0;
+		for (int i = 0; i < 5; i++) {
+			acc2+=DBpediaSKOS(prim);
+		}
+		System.out.println("accprim"+(acc2/5));
+		
+//		DBpediaSKOS(concepts.first());
+//		DBpediaSKOS(concepts.first());
+//		concepts.remove(concepts.first());
+//		DBpediaSKOS(concepts.first());
+//		DBpediaSKOS(concepts.first());
+//		concepts.remove(concepts.first());
+//		DBpediaSKOS(concepts.first());
+//		DBpediaSKOS(concepts.first());
 		//algorithm="refinement";
 		//roles();
 		
@@ -137,7 +149,7 @@ public class SKOS7030 {
 	
 	
 
-	static void DBpediaSKOS(String concept){
+	static double DBpediaSKOS(String concept){
 		se = SparqlEndpoint.EndpointLOCALDBpedia();
 		//se = SparqlEndpoint.EndpointDBpedia();
 		String url = "http://dbpedia.openlinksw.com:8890/sparql";
@@ -245,7 +257,9 @@ public class SKOS7030 {
 //			
 			
 			//double percent=0.80*(double)res.size();;
-			
+			double acc=res.first().accuracy;
+			logger.debug(res.first().toStringFull());
+			res.remove(res.first());
 			logger.debug(res.first().toStringFull());
 			res.remove(res.first());
 			int i=0;
@@ -258,7 +272,7 @@ public class SKOS7030 {
 				
 			}
 			
-			
+			return acc;
 			
 			
 			//System.out.println("AAAAAAAA");
