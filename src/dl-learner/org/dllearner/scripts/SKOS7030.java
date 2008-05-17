@@ -121,7 +121,7 @@ public class SKOS7030 {
 		
 		double acc2=0.0;
 		for (int i = 0; i < 5; i++) {
-			acc2+=DBpediaSKOS(prim);
+			acc2+=DBpediaSKOS(award);
 		}
 		System.out.println("accprim"+(acc2/5));
 		
@@ -191,7 +191,9 @@ public class SKOS7030 {
 			//igno.add(oneConcept.replaceAll("\"", ""));
 			
 			SortedSet<String> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache,resultsize,noise);
-			//System.out.println("concepts"+conceptresults);
+			
+			System.out.println("concepts"+conceptresults);
+			//System.exit(0);
 			logger.debug("found nr of concepts:"+conceptresults.size());
 			SortedSet<ResultCompare> res=new TreeSet<ResultCompare>();
 			for (String oneConcept : conceptresults) {
