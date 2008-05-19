@@ -290,10 +290,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			Helper.checkConcepts(rs, allowedConcepts);
 			usedConcepts = allowedConcepts;
 		} else if(ignoredConcepts != null) {
-			//System.out.println(ignoredConcepts);
 			usedConcepts = Helper.computeConceptsUsingIgnoreList(rs, ignoredConcepts);
-			//RBC
-			//System.out.println(usedConcepts);
 		} else {
 			usedConcepts = Helper.computeConcepts(rs);
 		}
