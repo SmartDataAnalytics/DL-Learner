@@ -384,11 +384,12 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		return algorithm.getBestSolutions(nrOfSolutions);
 	}	
 	
-	//HACK
 	@Override
-	public List<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
-		return this.algorithm.getBestSolutionsAsKBSyntax(nrOfSolutions);
+	public synchronized  List<Description> getGoodSolutions() {
+		return algorithm.getGoodSolutions();
 	}
+	
+	
 
 	@Override
 	public void stop() {
