@@ -2,7 +2,7 @@ package org.dllearner.scripts;
 
 import java.util.SortedSet;
 
-public class ResultCompare implements Comparable {
+public class ResultCompare implements Comparable<ResultCompare> {
 	String concept;
 	SortedSet<String> instances;
 	double accuracy;
@@ -30,8 +30,8 @@ public class ResultCompare implements Comparable {
 
 
 
-	public int compareTo(Object in) {
-		ResultCompare obj =(ResultCompare) in;
+	public int compareTo(ResultCompare in) {
+		ResultCompare obj = in;
 		if(obj.accuracy > this.accuracy) return 1;
 		else if(obj.accuracy == this.accuracy){
 			
@@ -64,6 +64,7 @@ public class ResultCompare implements Comparable {
 		
 	}
 	
+	@Override
 	public String toString(){
 		String ret="";
 		ret+="concept\t"+concept+"\n";
