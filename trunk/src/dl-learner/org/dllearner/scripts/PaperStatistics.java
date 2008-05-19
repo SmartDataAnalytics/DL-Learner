@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.utilities.statistics;
+package org.dllearner.scripts;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -43,6 +43,7 @@ import org.dllearner.parser.ConfParser;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.statistics.Stat;
 
 /**
  * Utility script for creating statistics for publications.
