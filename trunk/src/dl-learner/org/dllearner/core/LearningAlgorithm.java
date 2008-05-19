@@ -22,7 +22,6 @@ package org.dllearner.core;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
 
 import org.dllearner.core.owl.Description;
 
