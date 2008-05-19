@@ -472,6 +472,7 @@ public class ExampleBasedROLearner {
 		logger.debug("size of candidate set: " + candidates.size());
 		boolean showOrderedSolutions = false;
 		printBestSolutions(20,showOrderedSolutions);
+		
 		printStatistics(true);
 		
 		if(stop)
@@ -1057,6 +1058,7 @@ public class ExampleBasedROLearner {
 		return candidatesStable.last().getConcept();
 	}
 
+	
 	public synchronized List<Description> getBestSolutions(int nrOfSolutions) {
 		List<Description> best = new LinkedList<Description>();
 		int i=0;
@@ -1070,7 +1072,28 @@ public class ExampleBasedROLearner {
 		return best;
 	}
 	
-	//HACK
+	
+	/**
+	 * returns the solutions, that have at least a certain quality
+	 * either accuracy = 100% full solutions
+	 * or accuracy > 100% - noise;
+	 * @return
+	 */
+	public synchronized List<Description> getGoodSolutions() {
+		List<Description> best = new LinkedList<Description>();
+		
+		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
+			if(n.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)<(1-noise))
+				return best;
+			best.add(n.getConcept());
+			
+		}
+		return best;
+	}
+	
+	
+	
+	/*//HACK
 	public List<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
 		if(nrOfSolutions==0)nrOfSolutions=99999;
 		List<String> result = new LinkedList<String>();
@@ -1091,7 +1114,7 @@ public class ExampleBasedROLearner {
 			}
 		}
 		return result;
-	}
+	}*/
 	
 	
 	public void printBestSolutions(int nrOfSolutions, boolean showOrderedSolutions){
@@ -1107,6 +1130,17 @@ public class ExampleBasedROLearner {
 			if(i==nrOfSolutions)
 				break ;
 			i++;
+		}
+		
+		if(nrOfSolutions==0)
+			nrOfSolutions=solutions.size();
+		int a=0;
+		for(;a<nrOfSolutions && a < solutions.size();a++) {
+			
+			logger.trace("nnn: "+solutions.get(a));
+			if(a==nrOfSolutions)
+				break ;
+			
 		}
 		
 		

@@ -57,16 +57,32 @@ public abstract class LearningAlgorithm extends Component {
 	 */
 	public abstract Description getBestSolution();
 	
+	
+	
+	/**
+	 * returns the best nrOfSolutions solutions
+	 * regardless of quality, just depends on input int
+	 * @param nrOfSolutions
+	 * @return List<Description>
+	 */
 	public synchronized List<Description> getBestSolutions(int nrOfSolutions) {
 		List<Description> single = new LinkedList<Description>();
 		single.add(getBestSolution());
 		return single;
 	}
 	
-	//HACK
-	public List<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
-		return null;
+	/**
+	 * returns the solutions, that have at least a certain quality
+	 * either accuracy = 100%, i.e.  full solutions
+	 * or accuracy > 100% - noise;
+	 * @return
+	 */
+	public synchronized  List<Description> getGoodSolutions() {
+		List<Description> single = new LinkedList<Description>();
+		single.add(getBestSolution());
+		return single;
 	}
+	
 	
 	/**
 	 * Returns all learning problems supported by this component.

@@ -191,16 +191,16 @@ public class SKOS7030 {
 	
 			//igno.add(oneConcept.replaceAll("\"", ""));
 			
-			List<String> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache,resultsize,noise);
+			List<Description> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache,resultsize,noise);
 			
 			System.out.println("concepts"+conceptresults);
 			//System.exit(0);
 			logger.debug("found nr of concepts:"+conceptresults.size());
 			SortedSet<ResultCompare> res=new TreeSet<ResultCompare>();
-			for (String oneConcept : conceptresults) {
+			for (Description oneConcept : conceptresults) {
 				try{
 				System.out.println("oneconcept: "+oneConcept);
-				SortedSet<String> instances = ae.queryConceptAsStringSet(conceptRewrite(oneConcept), 200);
+				SortedSet<String> instances = ae.queryConceptAsStringSet(conceptRewrite(oneConcept.toKBSyntaxString()), 200);
 				SortedSet<String> coveredInRest = new TreeSet<String>();
 				SortedSet<String> possibleNewCandidates = new TreeSet<String>();
 				SortedSet<String> notCoveredInTotal = new TreeSet<String>();
@@ -243,7 +243,7 @@ public class SKOS7030 {
 				double accuracy= (double)i/rest.size();
 				double accuracy2= (double)a/totalSKOSset.size();
 				
-				logger.debug((new ResultCompare(oneConcept,instances,accuracy,accuracy2,instances.size(),
+				logger.debug((new ResultCompare(oneConcept.toKBSyntaxString(),instances,accuracy,accuracy2,instances.size(),
 						coveredInRest,possibleNewCandidates,notCoveredInTotal)).toStringFull());
 				
 				//if(instances.size()>=0)System.out.println("size of instances "+instances.size());

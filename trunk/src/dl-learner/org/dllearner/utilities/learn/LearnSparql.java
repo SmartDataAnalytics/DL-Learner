@@ -1,6 +1,7 @@
 package org.dllearner.utilities.learn;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -13,6 +14,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.owl.Description;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
@@ -114,7 +116,7 @@ public class LearnSparql {
 		//System.out.println( la.getBestSolution());;
 	}
 	
-	public List<String> learnDBpediaSKOS(SortedSet<String> posExamples,SortedSet<String> negExamples,
+	public List<Description> learnDBpediaSKOS(SortedSet<String> posExamples,SortedSet<String> negExamples,
 			String uri, SortedSet<String> ignoredConcepts, int recursiondepth, 
 			boolean closeAfterRecursion, boolean randomizeCache, int resultsize, double noise){
 		
@@ -193,7 +195,9 @@ public class LearnSparql {
 		sc.setTime();
 		la.start();
 		Statistics.addTimeLearning(sc.getTime());
-		return la.getBestSolutionsAsKBSyntax(resultsize);
+		return la.getBestSolutions(resultsize);
+		
+		
 		//if(sc.getTime()/1000 >= 20)System.out.println("XXXMAX time reached");
 		
 		//System.out.println("best"+la(20));
