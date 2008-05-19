@@ -17,9 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql.configuration;
+package org.dllearner.kb.extraction;
 
-import org.dllearner.kb.sparql.Manipulator;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQueryType;
 
 /**
  * Stores all configuration settings. this class collects all configuration

@@ -17,14 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql.datastructure;
+package org.dllearner.kb.extraction;
 
 import java.net.URI;
 import java.util.Set;
 import java.util.Vector;
 
-import org.dllearner.kb.sparql.Manipulator;
-import org.dllearner.kb.sparql.TypedSparqlQueryInterface;
 
 /**
  * Abstract class. defines functions to expand the nodes

@@ -25,7 +25,6 @@ import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;

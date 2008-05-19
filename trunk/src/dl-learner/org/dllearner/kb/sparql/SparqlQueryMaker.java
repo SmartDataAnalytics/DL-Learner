@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.sparql;
 
-import org.dllearner.kb.sparql.configuration.SparqlQueryType;
 
 /**
  * Can assemble sparql queries. can make queries for subject, predicate, object
