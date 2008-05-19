@@ -8,7 +8,7 @@ import java.util.Set;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.utilities.OntologyCloserOWLAPI;
+import org.dllearner.utilities.owl.OntologyCloserOWLAPI;
 
 /**
  * Script for closing an ontology OWLAPI produces extensive filesizes, when

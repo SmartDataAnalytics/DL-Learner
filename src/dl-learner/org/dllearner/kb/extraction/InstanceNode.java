@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
-import org.dllearner.utilities.StringTuple;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
  * A node in the graph that is an instance.

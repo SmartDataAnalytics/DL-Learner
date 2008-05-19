@@ -18,7 +18,7 @@
  *
  */
 
-package org.dllearner.utilities;
+package org.dllearner.utilities.statistics;
 
 /**
  * Utility class for calculating the mean and standard deviation of a given set

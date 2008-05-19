@@ -1,4 +1,4 @@
-package org.dllearner.utilities;
+package org.dllearner.utilities.owl;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.statistics.SimpleClock;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;

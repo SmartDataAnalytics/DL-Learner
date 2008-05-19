@@ -13,7 +13,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.JenaResultSetConvenience;
-import org.dllearner.utilities.SimpleClock;
+import org.dllearner.utilities.statistics.SimpleClock;
 
 import com.hp.hpl.jena.query.ResultSet;
 

@@ -1,4 +1,4 @@
-package org.dllearner.utilities;
+package org.dllearner.utilities.statistics;
 
 /**
  * class for counting time and output it

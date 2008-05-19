@@ -1,4 +1,4 @@
-package org.dllearner.utilities;
+package org.dllearner.utilities.learn;
 
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +17,9 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.utilities.datastructures.SetManipulation;
+import org.dllearner.utilities.statistics.SimpleClock;
+import org.dllearner.utilities.statistics.Statistics;
 
 public class LearnSparql {
 	

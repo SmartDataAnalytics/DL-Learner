@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
-import org.dllearner.utilities.StringTuple;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
  * Property node, has connection to a and b part

@@ -28,7 +28,7 @@ import org.dllearner.kb.extraction.Manager;
 import org.dllearner.kb.extraction.Manipulator;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQueryType;
-import org.dllearner.utilities.StringTuple;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
  * Test class, uses the whole thing

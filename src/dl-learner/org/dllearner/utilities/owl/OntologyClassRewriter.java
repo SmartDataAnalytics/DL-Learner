@@ -18,7 +18,7 @@
  *
  */
 
-package org.dllearner.utilities;
+package org.dllearner.utilities.owl;
 
 import java.net.MalformedURLException;
 import java.net.URI;

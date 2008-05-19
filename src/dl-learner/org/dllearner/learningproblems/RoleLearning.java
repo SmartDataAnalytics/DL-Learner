@@ -27,7 +27,7 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.utilities.StringTuple;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
  * Here are just some code snippets, which can be used The basic algorithm is

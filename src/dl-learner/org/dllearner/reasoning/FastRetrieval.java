@@ -15,7 +15,7 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.SortedSetTuple;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 public class FastRetrieval {
 

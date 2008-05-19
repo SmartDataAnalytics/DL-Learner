@@ -32,8 +32,8 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.utilities.SimpleClock;
-import org.dllearner.utilities.Statistics;
+import org.dllearner.utilities.statistics.SimpleClock;
+import org.dllearner.utilities.statistics.Statistics;
 
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. The queries

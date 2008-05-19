@@ -35,7 +35,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.SortedSetTuple;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 /**
  * @author Jens Lehmann

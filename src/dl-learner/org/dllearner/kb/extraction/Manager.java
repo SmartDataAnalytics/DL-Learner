@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQueryType;
-import org.dllearner.utilities.Statistics;
+import org.dllearner.utilities.statistics.Statistics;
 
 /**
  * An object of this class encapsulates everything.

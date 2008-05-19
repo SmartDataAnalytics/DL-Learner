@@ -1,4 +1,4 @@
-package org.dllearner.utilities;
+package org.dllearner.utilities.datastructures;
 
 import java.util.SortedSet;
 import java.util.TreeSet;

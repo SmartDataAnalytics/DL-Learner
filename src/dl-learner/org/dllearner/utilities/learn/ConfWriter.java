@@ -1,4 +1,4 @@
-package org.dllearner.utilities;
+package org.dllearner.utilities.learn;
 
 import java.io.File;
 import java.io.FileOutputStream;

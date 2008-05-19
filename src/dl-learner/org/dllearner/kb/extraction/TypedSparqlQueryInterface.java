@@ -22,7 +22,7 @@ package org.dllearner.kb.extraction;
 import java.net.URI;
 import java.util.Set;
 
-import org.dllearner.utilities.StringTuple;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
  * 

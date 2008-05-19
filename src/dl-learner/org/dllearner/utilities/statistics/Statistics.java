@@ -1,4 +1,4 @@
-package org.dllearner.utilities;
+package org.dllearner.utilities.statistics;
 
 
 import java.util.HashMap;

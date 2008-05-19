@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.StringTuple;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
