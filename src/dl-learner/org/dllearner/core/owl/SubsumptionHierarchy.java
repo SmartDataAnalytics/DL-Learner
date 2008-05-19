@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptComparator;
 
 /**
  * Represents a subsumption hierarchy (ignoring equivalent concepts).

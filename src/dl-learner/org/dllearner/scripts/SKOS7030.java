@@ -17,7 +17,7 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.JenaResultSetConvenience;
+import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticExampleFinderSKOSSPARQL;
 import org.dllearner.utilities.learn.LearnSparql;

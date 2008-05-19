@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.utilities.RoleComparator;
+import org.dllearner.utilities.owl.RoleComparator;
 
 /**
  * Represents a hierarchy of roles.

@@ -13,7 +13,7 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.JenaResultSetConvenience;
+import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticExampleFinderRolesSPARQL;
 import org.dllearner.utilities.examples.AutomaticExampleFinderSPARQL;

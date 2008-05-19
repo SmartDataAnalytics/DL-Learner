@@ -24,7 +24,7 @@ import java.util.List;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
-import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptComparator;
 
 /**
  * This heuristic combines the following criteria to assign a

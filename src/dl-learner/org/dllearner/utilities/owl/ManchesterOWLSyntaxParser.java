@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.utilities;
+package org.dllearner.utilities.owl;
 
 import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.semanticweb.owl.apibinding.OWLManager;

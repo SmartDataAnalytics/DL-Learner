@@ -22,7 +22,7 @@ package org.dllearner.algorithms.refexamples;
 
 import java.util.Comparator;
 
-import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptComparator;
 
 /**
  * This comparator is stable, because it only takes covered examples, concept

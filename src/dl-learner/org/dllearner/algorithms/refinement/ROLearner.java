@@ -35,10 +35,10 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.refinementoperators.RhoDown;
-import org.dllearner.utilities.ConceptComparator;
-import org.dllearner.utilities.ConceptTransformation;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptTransformation;
 
 public class ROLearner extends LearningAlgorithm {
 	
