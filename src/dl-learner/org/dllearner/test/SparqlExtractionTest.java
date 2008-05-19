@@ -24,10 +24,10 @@ import java.io.FileWriter;
 import java.net.URI;
 import java.util.LinkedList;
 
-import org.dllearner.kb.sparql.Manager;
-import org.dllearner.kb.sparql.Manipulator;
-import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.kb.sparql.configuration.SparqlQueryType;
+import org.dllearner.kb.extraction.Manager;
+import org.dllearner.kb.extraction.Manipulator;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQueryType;
 import org.dllearner.utilities.StringTuple;
 
 /**

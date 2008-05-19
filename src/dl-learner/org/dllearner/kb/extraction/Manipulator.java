@@ -17,17 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql;
+package org.dllearner.kb.extraction;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.kb.sparql.datastructure.ClassNode;
-import org.dllearner.kb.sparql.datastructure.InstanceNode;
-import org.dllearner.kb.sparql.datastructure.Node;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.JenaResultSetConvenience;
 import org.dllearner.utilities.StringTuple;
 

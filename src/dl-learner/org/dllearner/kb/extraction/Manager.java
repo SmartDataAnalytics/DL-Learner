@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.sparql;
+package org.dllearner.kb.extraction;
 
 import java.net.URI;
 import java.util.Set;
@@ -26,10 +26,8 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.kb.sparql.configuration.Configuration;
-import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
-import org.dllearner.kb.sparql.configuration.SparqlQueryType;
-import org.dllearner.kb.sparql.datastructure.Node;
+import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.sparql.SparqlQueryType;
 import org.dllearner.utilities.Statistics;
 
 /**

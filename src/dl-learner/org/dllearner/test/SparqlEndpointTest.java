@@ -9,9 +9,9 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.kb.sparql.configuration.SparqlEndpoint;
 import org.dllearner.utilities.JenaResultSetConvenience;
 import org.dllearner.utilities.SimpleClock;
 
