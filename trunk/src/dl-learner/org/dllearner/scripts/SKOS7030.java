@@ -74,10 +74,10 @@ public class SKOS7030 {
 	static boolean closeAfterRecursion=true;
 	static boolean randomizeCache=false;
 	
-	static int resultsize=50;
+	static int resultsize=20;
 	static double noise=15;
 	static int limit=200;
-	static double percentage=0.7;
+	static double percentage=0.3;
 	
 	/**
 	 * @param args
@@ -113,17 +113,18 @@ public class SKOS7030 {
 		
 		String award=("http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners");
 		
-		double acc1=0.0;
-		for (int i = 0; i < 5; i++) {
-			acc1+=DBpediaSKOS(prim);
-		}
-		System.out.println("accprim"+(acc1/5));
-		
-		double acc2=0.0;
-		for (int i = 0; i < 5; i++) {
-			acc2+=DBpediaSKOS(award);
-		}
-		System.out.println("accprim"+(acc2/5));
+		System.out.println(DBpediaSKOS(prim));
+//		double acc1=0.0;
+//		for (int i = 0; i < 5; i++) {
+//			acc1+=DBpediaSKOS(prim);
+//		}
+//		System.out.println("accprim"+(acc1/5));
+//		
+//		double acc2=0.0;
+//		for (int i = 0; i < 5; i++) {
+//			acc2+=DBpediaSKOS(award);
+//		}
+//		System.out.println("accprim"+(acc2/5));
 		
 //		DBpediaSKOS(concepts.first());
 //		DBpediaSKOS(concepts.first());
@@ -190,7 +191,7 @@ public class SKOS7030 {
 	
 			//igno.add(oneConcept.replaceAll("\"", ""));
 			
-			SortedSet<String> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache,resultsize,noise);
+			List<String> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache,resultsize,noise);
 			
 			System.out.println("concepts"+conceptresults);
 			//System.exit(0);
@@ -242,12 +243,12 @@ public class SKOS7030 {
 				double accuracy= (double)i/rest.size();
 				double accuracy2= (double)a/totalSKOSset.size();
 				
-				res.add(new ResultCompare(oneConcept,instances,accuracy,accuracy2,instances.size(),
-						coveredInRest,possibleNewCandidates,notCoveredInTotal));
+				logger.debug((new ResultCompare(oneConcept,instances,accuracy,accuracy2,instances.size(),
+						coveredInRest,possibleNewCandidates,notCoveredInTotal)).toStringFull());
 				
 				//if(instances.size()>=0)System.out.println("size of instances "+instances.size());
 				//if(instances.size()>=0 && instances.size()<100) System.out.println("instances"+instances);
-				}catch (Exception e) {}
+				}catch (Exception e) {e.printStackTrace();}
 			}
 			
 //			System.out.println(res.last());
@@ -259,22 +260,22 @@ public class SKOS7030 {
 //			
 			
 			//double percent=0.80*(double)res.size();;
-			double acc=res.first().accuracy;
-			logger.debug(res.first().toStringFull());
-			res.remove(res.first());
-			logger.debug(res.first().toStringFull());
-			res.remove(res.first());
-			int i=0;
-			while (res.size()>0){
-				logger.debug(res.first());
-				res.remove(res.first());
-				//if(res.size()<=percent)break;
-				if(i>50)break;
-				i++;
-				
-			}
-			
-			return acc;
+//			double acc=res.first().accuracy;
+//			logger.debug(res.first().toStringFull());
+//			res.remove(res.first());
+//			logger.debug(res.first().toStringFull());
+//			res.remove(res.first());
+//			int i=0;
+//			while (res.size()>0){
+//				logger.debug(res.first());
+//				res.remove(res.first());
+//				//if(res.size()<=percent)break;
+//				if(i>50)break;
+//				i++;
+//				
+//			}
+//			
+			return 0.0;
 			
 			
 			//System.out.println("AAAAAAAA");

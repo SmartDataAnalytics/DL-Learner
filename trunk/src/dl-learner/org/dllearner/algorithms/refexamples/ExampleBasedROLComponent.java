@@ -387,7 +387,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	
 	//HACK
 	@Override
-	public SortedSet<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
+	public List<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
 		return this.algorithm.getBestSolutionsAsKBSyntax(nrOfSolutions);
 	}
 

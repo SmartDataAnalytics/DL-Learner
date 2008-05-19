@@ -1,6 +1,7 @@
 package org.dllearner.utilities;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -110,7 +111,7 @@ public class LearnSparql {
 		//System.out.println( la.getBestSolution());;
 	}
 	
-	public SortedSet<String> learnDBpediaSKOS(SortedSet<String> posExamples,SortedSet<String> negExamples,
+	public List<String> learnDBpediaSKOS(SortedSet<String> posExamples,SortedSet<String> negExamples,
 			String uri, SortedSet<String> ignoredConcepts, int recursiondepth, 
 			boolean closeAfterRecursion, boolean randomizeCache, int resultsize, double noise){
 		
@@ -168,7 +169,7 @@ public class LearnSparql {
 		cm.applyConfigEntry(la,"useCardinalityRestrictions",false);
 		cm.applyConfigEntry(la,"useNegation",false);
 		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
-		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",150);
+		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",30);
 		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",40);
 		cm.applyConfigEntry(la,"writeSearchTree",true);
 		cm.applyConfigEntry(la,"searchTreeFile","log/SKOS.txt");

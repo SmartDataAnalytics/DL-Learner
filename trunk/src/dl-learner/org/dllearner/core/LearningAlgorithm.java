@@ -65,7 +65,7 @@ public abstract class LearningAlgorithm extends Component {
 	}
 	
 	//HACK
-	public SortedSet<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
+	public List<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
 		return null;
 	}
 	
