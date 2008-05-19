@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
-import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptComparator;
 
 public class SubsumptionComparator implements Comparator<Description> {
 

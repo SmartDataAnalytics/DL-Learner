@@ -28,7 +28,7 @@ import java.util.TreeSet;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Union;
-import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptComparator;
 
 /**
  * Math operations related to refinement operators.

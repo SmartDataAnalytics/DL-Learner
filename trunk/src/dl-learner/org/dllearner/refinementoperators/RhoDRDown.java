@@ -58,9 +58,9 @@ import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
-import org.dllearner.utilities.ConceptComparator;
-import org.dllearner.utilities.ConceptTransformation;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptTransformation;
 
 /**
  * A downward refinement operator, which makes use of domains

@@ -83,11 +83,11 @@ import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.RoleComparator;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.RoleComparator;
 
 /**
  * Startup file for Command Line Interface.

@@ -20,7 +20,7 @@
 
 package org.dllearner.algorithms.refexamples;
 
-import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptComparator;
 
 public class LexicographicHeuristic implements ExampleBasedHeuristic {
 

@@ -27,7 +27,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptComparator;
 
 /**
  * 

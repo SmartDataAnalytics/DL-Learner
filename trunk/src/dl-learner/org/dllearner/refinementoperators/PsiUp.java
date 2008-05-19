@@ -21,7 +21,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.utilities.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptComparator;
 
 public class PsiUp implements RefinementOperator {
 

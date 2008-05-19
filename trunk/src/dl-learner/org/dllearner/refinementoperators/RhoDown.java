@@ -46,8 +46,8 @@ import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.ValueRestriction;
-import org.dllearner.utilities.ConceptComparator;
-import org.dllearner.utilities.ConceptTransformation;
+import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptTransformation;
 
 /**
  * Implementation of the downward refinement operator in the DL-Learner refinement 

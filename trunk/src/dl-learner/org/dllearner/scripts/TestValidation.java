@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.utilities.statistics;
+package org.dllearner.scripts;
 
 import java.io.File;
 import java.util.Set;

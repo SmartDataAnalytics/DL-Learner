@@ -1,4 +1,4 @@
-package org.dllearner.utilities;
+package org.dllearner.utilities.owl;
 
 import java.util.Collections;
 import java.util.Comparator;
