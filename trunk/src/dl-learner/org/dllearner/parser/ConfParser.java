@@ -21,6 +21,7 @@ import org.dllearner.Info;
 
 import org.dllearner.cli.*;
 import org.dllearner.utilities.*;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 public @SuppressWarnings("all") class ConfParser implements ConfParserConstants {
 

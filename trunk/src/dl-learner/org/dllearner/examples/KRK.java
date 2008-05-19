@@ -31,7 +31,7 @@ import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.utilities.OntologyCloser;
+import org.dllearner.utilities.owl.OntologyCloser;
 
 /*
  * Structure

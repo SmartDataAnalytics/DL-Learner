@@ -42,9 +42,9 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.Stat;
+import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.statistics.Stat;
 
 /**
  * Performs cross validation for the given problem. Supports

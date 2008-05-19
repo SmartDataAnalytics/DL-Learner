@@ -21,7 +21,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.SortedSetTuple;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 public class FastRetrievalReasoner extends ReasonerComponent {
 

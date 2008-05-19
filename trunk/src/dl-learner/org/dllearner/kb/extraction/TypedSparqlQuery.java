@@ -29,8 +29,8 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
-import org.dllearner.utilities.SimpleClock;
-import org.dllearner.utilities.StringTuple;
+import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.utilities.statistics.SimpleClock;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;

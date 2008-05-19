@@ -1,4 +1,4 @@
-package org.dllearner.utilities;
+package org.dllearner.utilities.owl;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +24,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.KBFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.statistics.SimpleClock;
 import org.semanticweb.owl.model.OWLOntology;
 
 public class OntologyCloser {

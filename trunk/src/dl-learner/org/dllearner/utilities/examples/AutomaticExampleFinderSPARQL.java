@@ -1,7 +1,5 @@
-package org.dllearner.utilities;
+package org.dllearner.utilities.examples;
 
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -11,68 +9,60 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
-import org.dllearner.kb.sparql.SparqlQueryThreaded;
+import org.dllearner.utilities.JenaResultSetConvenience;
+import org.dllearner.utilities.datastructures.SetManipulation;
 
 import com.hp.hpl.jena.query.ResultSet;
 
-public class AutomaticExampleFinderSKOSSPARQL {
+public class AutomaticExampleFinderSPARQL {
 
 	private static Logger logger = Logger
 			.getLogger(ComponentManager.class);
 	
 	private Cache c;
 	private SparqlEndpoint se;
-	private SortedSet<String> posExamples= new TreeSet<String>();;
-	private SortedSet<String> negExamples= new TreeSet<String>();;
-	public  SortedSet<String> totalSKOSset= new TreeSet<String>();;
-	public  SortedSet<String> rest= new TreeSet<String>();;
-	private int limit=2000;
+	private SortedSet<String> posExamples;
+	private SortedSet<String> negExamples;
+	public  SortedSet<String> totalSKOSset;
+	private int limit=1000;
 	
 	
-	public AutomaticExampleFinderSKOSSPARQL(SparqlEndpoint se){
-		this.c=new Cache("cacheExamplesValidation");
+	public AutomaticExampleFinderSPARQL(SparqlEndpoint se){
+		this.c=new Cache("cachetemp");
 		this.se=se;
 		posExamples = new TreeSet<String>();
 		negExamples = new TreeSet<String>();
 	}
 	
-	public void initDBpediaSKOS(String concept, double percent, boolean useRelated,boolean useParallelClasses) { 
+	public void initDBpedia(String concept, boolean useRelated, boolean useSuperclasses,boolean useParallelClasses, int poslimit, int neglimit) { 
 		dbpediaMakePositiveExamplesFromConcept( concept);
 		SortedSet<String> keepForClean = new TreeSet<String>();
 		keepForClean.addAll(this.posExamples);
-		totalSKOSset.addAll(this.posExamples);
-		rest.addAll(totalSKOSset);
-		int poslimit=(int)Math.round(percent*totalSKOSset.size());
-		int neglimit=(int)Math.round(poslimit);
-		/*while (this.posExamples.size()>poslimit) {
-			this.posExamples.remove(posExamples.last());
-		}*/
+		
 		this.posExamples = SetManipulation.fuzzyShrink(this.posExamples, poslimit);
 		
-		rest.removeAll(this.posExamples);
 		
-		logger.debug("pos Example size: "+posExamples.size());
-		logger.debug("totalSKOSset: "+totalSKOSset.size());
-		logger.debug("rest: "+rest.size());
+		logger.trace("shrinking: pos Example size: "+posExamples.size());
 		
 		if(useRelated) {
 			dbpediaMakeNegativeExamplesFromRelatedInstances(this.posExamples);
 		}
-		
+		if(useSuperclasses) {
+			 makeNegativeExamplesFromSuperClasses(concept);
+		}
 		if(useParallelClasses) {
-			int limit = this.posExamples.size();
-			 makeNegativeExamplesFromClassesOfInstances(limit);
+			 makeNegativeExamplesFromClassesOfInstances();
 		}
 		//clean
 		negExamples.removeAll(keepForClean);
-		logger.debug("neg Example size after cleaning: "+negExamples.size());
+		logger.trace("neg Example size after cleaning: "+negExamples.size());
 		this.negExamples = SetManipulation.fuzzyShrink(negExamples, neglimit);
 		logger.debug("pos Example size after shrinking: "+posExamples.size());
 		logger.debug("neg Example size after shrinking: "+negExamples.size());
 		logger.debug("Finished examples for concept: "+concept);
 	}
 	
-/*	public void init(String concept, String namespace, boolean useRelated, boolean useSuperclasses,boolean useParallelClasses, int poslimit, int neglimit) { 
+	public void init(String concept, String namespace, boolean useRelated, boolean useSuperclasses,boolean useParallelClasses, int poslimit, int neglimit) { 
 		makePositiveExamplesFromConcept( concept);
 		SortedSet<String> keepForClean = new TreeSet<String>();
 		keepForClean.addAll(this.posExamples);
@@ -90,12 +80,12 @@ public class AutomaticExampleFinderSKOSSPARQL {
 		}
 		//clean
 		negExamples.removeAll(keepForClean);
-		logger.debug("neg Example size after cleaning: "+negExamples.size());
+		logger.trace("neg Example size after cleaning: "+negExamples.size());
 		this.negExamples = SetManipulation.fuzzyShrink(negExamples, neglimit);
 		logger.debug("pos Example size after shrinking: "+posExamples.size());
 		logger.debug("neg Example size after shrinking: "+negExamples.size());
 		logger.debug("Finished examples for concept: "+concept);
-	}*/
+	}
 	
 	
 	
@@ -118,7 +108,7 @@ public class AutomaticExampleFinderSKOSSPARQL {
 			this.posExamples = new JenaResultSetConvenience(queryConcept(concept,limit))
 				.getStringListForVariable("subject");
 		}
-		logger.debug("pos Example size: "+posExamples.size());
+		logger.debug("   pos Example size: "+posExamples.size());
 	}
 	
 	private void makePositiveExamplesFromConcept(String concept){
@@ -218,7 +208,7 @@ public class AutomaticExampleFinderSKOSSPARQL {
 	
 	
 	
-	private void makeNegativeExamplesFromClassesOfInstances(int limit) {
+	private void makeNegativeExamplesFromClassesOfInstances() {
 		logger.debug("making neg Examples from parallel classes");
 		SortedSet<String> classes = new TreeSet<String>();
 		//superClasses.add(concept.replace("\"", ""));
@@ -298,25 +288,6 @@ public class AutomaticExampleFinderSKOSSPARQL {
 		return rs;
 	}
 	
-	public  SortedSet<String> queryConceptAsStringSet(String concept,int limit) {
-		ResultSet rs = null;
-		try {
-			String query = SparqlQueryDescriptionConvertVisitor
-					.getSparqlQuery(concept,limit);
-			
-			SparqlQuery sq = new SparqlQuery(query, se);
-			//System.out.println(query);
-			String JSON = c.executeSparqlQuery(sq);
-			//System.out.println("JSON:\n"+JSON);
-			rs = SparqlQuery.JSONtoResultSet(JSON);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new JenaResultSetConvenience(rs).getStringListForVariable("subject");
-		
-	}
-	
 	public  ResultSet dbpediaQuerySKOSConcept(String SKOSconcept,int limit) {
 		if(limit==0)limit=99999;
 		//
@@ -349,7 +320,7 @@ public class AutomaticExampleFinderSKOSSPARQL {
 			" a " + 
 			"?subject " +
 			"\n" +
-			"} LIMIT 200";
+			"} LIMIT "+limit;
 			SparqlQuery sq = new SparqlQuery(query, se);
 			//System.out.println(query);
 			String JSON = c.executeSparqlQuery(sq);

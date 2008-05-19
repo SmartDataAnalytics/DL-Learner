@@ -37,7 +37,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.reasoning.ReasonerType;
-import org.dllearner.utilities.SortedSetTuple;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 /**
  * The reasoning service is the interface to the used reasoner. Basically,

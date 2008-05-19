@@ -35,7 +35,7 @@ import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.utilities.SimpleClock;
+import org.dllearner.utilities.statistics.SimpleClock;
 
 /*
  * Structure

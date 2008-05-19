@@ -13,14 +13,14 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.AutomaticExampleFinderRolesSPARQL;
-import org.dllearner.utilities.AutomaticExampleFinderSPARQL;
-import org.dllearner.utilities.ConfWriter;
 import org.dllearner.utilities.JenaResultSetConvenience;
-import org.dllearner.utilities.LearnSparql;
-import org.dllearner.utilities.SetManipulation;
-import org.dllearner.utilities.SimpleClock;
-import org.dllearner.utilities.Statistics;
+import org.dllearner.utilities.datastructures.SetManipulation;
+import org.dllearner.utilities.examples.AutomaticExampleFinderRolesSPARQL;
+import org.dllearner.utilities.examples.AutomaticExampleFinderSPARQL;
+import org.dllearner.utilities.learn.ConfWriter;
+import org.dllearner.utilities.learn.LearnSparql;
+import org.dllearner.utilities.statistics.SimpleClock;
+import org.dllearner.utilities.statistics.Statistics;
 
 import com.hp.hpl.jena.query.ResultSet;
 

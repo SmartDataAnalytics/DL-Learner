@@ -24,6 +24,7 @@ import org.dllearner.core.owl.ObjectCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 /**
  * Die Hilfsmethoden benutzen alle SortedSet, da die Operationen damit schneller

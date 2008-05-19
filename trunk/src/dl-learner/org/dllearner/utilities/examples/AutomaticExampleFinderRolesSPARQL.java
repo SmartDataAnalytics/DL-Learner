@@ -1,4 +1,4 @@
-package org.dllearner.utilities;
+package org.dllearner.utilities.examples;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -8,6 +8,8 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.utilities.JenaResultSetConvenience;
+import org.dllearner.utilities.datastructures.SetManipulation;
 
 import com.hp.hpl.jena.query.ResultSet;
 

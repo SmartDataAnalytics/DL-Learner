@@ -21,7 +21,7 @@ package org.dllearner.core.config;
 
 import java.util.List;
 
-import org.dllearner.utilities.StringTuple;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
  * A list if string tuples, for instance for specifying several parameters or

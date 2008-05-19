@@ -35,7 +35,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.reasoning.ReasonerType;
-import org.dllearner.utilities.SortedSetTuple;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 /**
  * Reasoner Interface. Lists all available reasoning methods.

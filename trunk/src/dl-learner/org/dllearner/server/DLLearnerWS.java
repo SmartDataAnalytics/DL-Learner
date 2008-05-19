@@ -67,8 +67,8 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.utilities.Datastructures;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.datastructures.Datastructures;
 
 import com.hp.hpl.jena.query.ResultSet;
 

@@ -49,8 +49,8 @@ import org.dllearner.kb.extraction.Manipulator;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
-import org.dllearner.utilities.SimpleClock;
-import org.dllearner.utilities.StringTuple;
+import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.utilities.statistics.SimpleClock;
 
 /**
  * Represents the SPARQL Endpoint Component.

@@ -29,7 +29,7 @@ import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.ConceptComparator;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.SortedSetTuple;
+import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 /**
  * Caches results of previous concept evaluation to speed up

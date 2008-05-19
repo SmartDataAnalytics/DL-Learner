@@ -45,7 +45,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.utilities.StringTuple;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
  * Panel for option StringTupleList, defined in
