@@ -5,7 +5,7 @@ import java.util.SortedSet;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
-public class AutomaticExampleFinderSPARQLtest {
+public class AutomaticNegativeExampleFinderSPARQL {
 
 	
 	private Cache c;
