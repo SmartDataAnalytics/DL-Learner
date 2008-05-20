@@ -3,36 +3,40 @@ package org.dllearner.tools.protege;
 
 
 import java.awt.event.*;
-import java.util.Observable;
-
-public class ActionHandler extends Observable implements ActionListener, ItemListener, MouseListener {
+//TODO: Concepte und errormessages aus model holen 
+public class ActionHandler implements ActionListener, ItemListener, MouseListener{
 	private DLLearnerModel model;
-	private SuggestEquivalentClassView view;
+
+	private String id;
 	private Thread dlLearner;
-	public ActionHandler(ActionHandler a,DLLearnerModel m, SuggestEquivalentClassView s)
+	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
+	public ActionHandler(ActionHandler a,DLLearnerModel m,OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view ,String i)
 	{
-		view = s;
-		model = m;
+		this.view = view; 
+		this.id=i;
+		this.model = m;
+		
+		
 	}
 	public void actionPerformed(ActionEvent z){
 		
-		if(z.getActionCommand().equals("RUN"))
+		if(z.getActionCommand().equals("Suggest "+id))
 		{
-			model.setDLLearnerModel(view.getPositiveVector(), view.getNegativeVector(),view.getUri());
-			dlLearner = new Thread(model);
-			view.getStartButton().setEnabled(false);
-			view.getStopButton().setEnabled(true);
+			this.dlLearner = new Thread(model);
+			view.getRunButton().setEnabled(false);
+			view.getCancelButton().setEnabled(true);
 			dlLearner.start();
 		}
 		
 		if(z.getActionCommand().equals("Cancel"))
 		{
-			model.getLearningAlgorithm().stop();
-			view.getStartButton().setEnabled(true);
-			view.getStopButton().setEnabled(false);
+			view.getRunButton().setEnabled(true);
+			view.getCancelButton().setEnabled(false);
 			String error = "Learning aborted";
-			dlLearner.interrupt();
 			view.renderErrorMessage(error);
+			model.getLearningAlgorithm().stop();
+			dlLearner.interrupt();
+
 		}
 		
 		if(z.getActionCommand().equals("ADD"))
@@ -43,7 +47,6 @@ public class ActionHandler extends Observable implements ActionListener, ItemLis
 				if(model.getSolutions()[i].toString().equals(suggest))
 				{
 					model.changeDLLearnerDescriptionsToOWLDescriptions(model.getSolutions()[i]);
-					System.out.println(model.getSolutions()[i].toString());
 				}
 			}
 			
@@ -52,10 +55,14 @@ public class ActionHandler extends Observable implements ActionListener, ItemLis
 		}
     }
 
+	public String getID()
+	{
+		return id;
+	}
 	
 	public void itemStateChanged(ItemEvent i)
 	{
-		
+		//System.out.println(i.getItem());
 	}
 	
 	public void mouseReleased(MouseEvent m)
@@ -70,7 +77,7 @@ public class ActionHandler extends Observable implements ActionListener, ItemLis
 	
 	public void mouseClicked(MouseEvent m)
 	{
-		System.out.println("mouseClicked: ");
+	           
 	}
 	
 	public void mouseExited(MouseEvent m)
@@ -87,5 +94,10 @@ public class ActionHandler extends Observable implements ActionListener, ItemLis
 
 	}
 	
+	public void destroyDLLearnerThread()
+	{
+		dlLearner =null;
+	}
+
 
 }
