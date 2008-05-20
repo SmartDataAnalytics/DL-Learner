@@ -17,6 +17,7 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertRDFS;
 import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticExampleFinderSKOSSPARQL;
@@ -200,7 +201,8 @@ public class SKOS7030 {
 			for (Description oneConcept : conceptresults) {
 				try{
 				System.out.println("oneconcept: "+oneConcept);
-				SortedSet<String> instances = ae.queryConceptAsStringSet(conceptRewrite(oneConcept.toKBSyntaxString()), 200);
+				String rewritten = SparqlQueryDescriptionConvertRDFS.conceptRewrite(oneConcept.toKBSyntaxString(), se, c, true);
+				SortedSet<String> instances = ae.queryConceptAsStringSet(rewritten, 200);
 				SortedSet<String> coveredInRest = new TreeSet<String>();
 				SortedSet<String> possibleNewCandidates = new TreeSet<String>();
 				SortedSet<String> notCoveredInTotal = new TreeSet<String>();
@@ -326,122 +328,5 @@ public class SKOS7030 {
 	}
 	
 	
-	/**
-	 * 
-	 * @param description
-	 */
-	public static SortedSet<String> getSubClasses(String description, int limit) {
-		if(limit==0)limit=10;
-		ResultSet rs = null;
-		//System.out.println(description);
-		SortedSet<String> alreadyQueried = new TreeSet<String>();
-		try {
-			String query = getSparqlSubclassQuery(description.replaceAll("\"", ""));
-			String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
-			rs =SparqlQuery.JSONtoResultSet(JSON);
-			LinkedList<String> remainingClasses = new LinkedList<String>();
-			
-			//make back 
-			//remainingClasses.addAll(getSubclassesFromResultSet(rs));
-			
-			alreadyQueried = new TreeSet<String>();
-			alreadyQueried.add(description.replaceAll("\"", ""));
-			alreadyQueried.addAll(getSubclassesFromResultSet(rs));
-		    //remainingClasses.addAll(alreadyQueried);
-			return alreadyQueried;
-			
-			//SortedSet<String> remainingClasses = new JenaResultSetConvenience(rs).getStringListForVariable("subject");
-			
-//			while (remainingClasses.size()!=0){
-//				SortedSet<String> tmpSet = new TreeSet<String>();
-//				String tmp = remainingClasses.removeFirst();
-//				//remainingClasses.remove(tmp);
-//				query = SparqlQueryDescriptionConvertVisitor
-//					.getSparqlSubclassQuery(tmp);
-//				alreadyQueried.add(tmp);
-//				if(alreadyQueried.size()==limit)break;
-//				JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
-//				rs =SparqlQuery.JSONtoResultSet(JSON);
-//				tmpSet=getSubclassesFromResultSet(rs);
-//				for (String string : tmpSet) {
-//					if(!alreadyQueried.contains(string))
-//						remainingClasses.add(string);
-//				}
-//			}
-			//System.out.println(JSON);
-			
-
-		} catch (Exception e) {
-			
-		}
-		System.out.println("subclasses "+alreadyQueried);
-		System.out.println("nr of subclasses :"+alreadyQueried.size());
-		return alreadyQueried;
-	}
 	
-	public static SortedSet<String> getSubclassesFromResultSet(ResultSet rs)
-	{
-		SortedSet<String> result = new TreeSet<String>();
-		List<ResultBinding> l =  ResultSetFormatter.toList(rs);
-		String p="",s="";
-		for (ResultBinding resultBinding : l) {
-				
-			s=((resultBinding.get("subject").toString()));
-			p=((resultBinding.get("predicate").toString()));
-			if(p.equalsIgnoreCase("http://www.w3.org/2000/01/rdf-schema#subClassOf")){
-				result.add(s);
-			}
-		}
-		return result;
-	}
-	
-	public static String getSparqlSubclassQuery(String description)
-	{	String ret = "SELECT * \n";
-		ret+= "WHERE {\n";
-		ret+=" ?subject ?predicate  <"+description+"> \n";
-		ret+="}\n";
-		
-		return ret;
-	}
-	
-	public static String conceptRewrite(String description)
-	{	String quote = "\"";
-		String ret="";
-		String currentconcept="";
-		int lastPos=0;
-		SortedSet<String> subclasses=new TreeSet<String>();
-		
-		while ((lastPos=description.lastIndexOf(quote))!=-1){
-			ret=description.substring(lastPos+1,description.length())+ret;
-			description=description.substring(0,lastPos);
-			//System.out.println(description);
-			lastPos=description.lastIndexOf(quote);
-			currentconcept=description.substring(lastPos+1,description.length());
-			description=description.substring(0,lastPos);
-			//replace
-			//currentconcept="\"blabla\"";
-			//System.out.println(currentconcept);
-			
-			
-				subclasses = getSubClasses( currentconcept, 0);
-			
-			if (subclasses.size()==1)currentconcept="\""+currentconcept+"\"";
-			else {
-				LinkedList<Description> nc = new LinkedList<Description>();
-				for (String one : subclasses) {
-					nc.add(new NamedClass(one));
-				}
-				currentconcept=new Union(nc).toKBSyntaxString();
-			}
-			
-			ret=currentconcept+ret;
-			//ret+=description;
-		}
-		ret=description+ret;
-			//System.out.println(ret);
-		return ret;
-	}
-	
-	
-
 }

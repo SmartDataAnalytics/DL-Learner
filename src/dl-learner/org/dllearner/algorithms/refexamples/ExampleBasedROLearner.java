@@ -1082,32 +1082,10 @@ public class ExampleBasedROLearner {
 	
 	
 	
-	/*//HACK
-	public List<String> getBestSolutionsAsKBSyntax(int nrOfSolutions){
-		if(nrOfSolutions==0)nrOfSolutions=99999;
-		List<String> result = new LinkedList<String>();
-		for (Description d : solutions) {
-			
-			result.add(d.toKBSyntaxString());
-			if(result.size()==nrOfSolutions)break;
-			//if(result.size()==nrOfSolutions)break;
-		}
-		if(result.size()==0){
-			
-			for(ExampleBasedNode n : candidatesStable.descendingSet()) {
-				
-				result.add(n.getConcept().toKBSyntaxString());
-				if(result.size()>=nrOfSolutions)
-					return result;
-				
-			}
-		}
-		return result;
-	}*/
 	
 	
 	public void printBestSolutions(int nrOfSolutions, boolean showOrderedSolutions){
-		//QUALITY
+		//QUALITY: could be optimized
 		if(!logger.isTraceEnabled())
 			return;
 		//if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
