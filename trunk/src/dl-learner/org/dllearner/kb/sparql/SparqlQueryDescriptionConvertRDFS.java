@@ -19,8 +19,6 @@ public class SparqlQueryDescriptionConvertRDFS {
 
 	static Logger logger = Logger.getLogger(SparqlQueryDescriptionConvertRDFS.class);
 
-	
-
 	/**
 	 * 
 	 * replaces each String representing a concept in descriptionKBSyntax with a
@@ -83,7 +81,8 @@ public class SparqlQueryDescriptionConvertRDFS {
 	}
 
 	/**
-	 * gets a SortedSet of all subclasses
+	 * gets a SortedSet of all subclasses QUALITY: maybe it is better to have a
+	 * parameter int depth, to choose a depth of subclass interference
 	 * 
 	 * @see conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache
 	 *      c, boolean simple )

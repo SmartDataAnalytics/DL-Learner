@@ -16,7 +16,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
 import org.dllearner.utilities.datastructures.SetManipulation;
-import org.dllearner.utilities.examples.AutomaticExampleFinderSPARQL;
+import org.dllearner.utilities.examples.AutomaticExampleFinderSPARQLold;
 import org.dllearner.utilities.learn.LearnSparql;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.dllearner.utilities.statistics.Statistics;
@@ -105,7 +105,7 @@ public class SPARQLExtractionEvaluation {
 			boolean closeAfterRecursion=true;
 			
 			System.out.println(oneConcept);
-			AutomaticExampleFinderSPARQL ae= new AutomaticExampleFinderSPARQL( se);	
+			AutomaticExampleFinderSPARQLold ae= new AutomaticExampleFinderSPARQLold( se);	
 			
 			ae.initDBpedia(oneConcept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
 			

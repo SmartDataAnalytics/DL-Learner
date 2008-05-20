@@ -34,34 +34,7 @@ public class SKOS7030 {
 	static SparqlEndpoint se;
 	private static Logger logger = Logger.getRootLogger();
 	
-	static String standardSettings="";
-	static String algorithm="refexamples";
-	static String standardSettingsRefexamples = 
-		"refexamples.minExecutionTimeInSeconds = 30;\n" +
-		"refexamples.maxExecutionTimeInSeconds = 30;\n" +
-		"//refexamples.guaranteeXgoodDescriptions = 10;\n" +
-		"refexamples.logLevel=\"TRACE\";\n" +
-		"refexamples.noisePercentage = 0.10;\n" +
-		"refexamples.writeSearchTree = false;\n" +
-		"refexamples.searchTreeFile = \"searchTree.txt\";\n" +
-		"refexamples.replaceSearchTree = true;\n\n" ;
 	
-	static String standardSettingsRefinement = 
-		"refinement.minExecutionTimeInSeconds = 30;\n" +
-		"refinement.maxExecutionTimeInSeconds = 30;\n" +
-		"//refinement.guaranteeXgoodDescriptions = 10;\n" +
-		"refinement.logLevel=\"TRACE\";\n" +
-		"refinement.writeSearchTree = false;\n" +
-		"refinement.searchTreeFile = \"searchTree.txt\";\n" +
-		"refinement.replaceSearchTree = true;\n\n" ;
-	
-	
-	
-	static String standardDBpedia="" +
-			"sparql.recursionDepth = 1;\n" +
-			"sparql.predefinedFilter = \"YAGO\";\n" + 
-			"sparql.predefinedEndpoint = \"DBPEDIA\";\n";
-			//"sparql.logLevel = \"INFO\";\n";
 	
 	
 	//vars
