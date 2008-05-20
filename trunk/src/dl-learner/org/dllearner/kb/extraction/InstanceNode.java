@@ -58,7 +58,7 @@ public class InstanceNode extends Node {
 		Iterator<StringTuple> it = s.iterator();
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
-			//RBC
+			//QUALITY: needs proper handling of ressource, could be done one step lower in the onion
 			if(!t.b.startsWith("http:"))continue;
 			
 			// basically : if p is rdf:type then o is a class

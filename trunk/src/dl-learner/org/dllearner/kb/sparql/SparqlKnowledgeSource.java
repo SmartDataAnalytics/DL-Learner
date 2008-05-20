@@ -410,8 +410,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	}
 	
 	public SparqlQueryThreaded sparqlQueryThreaded(String query){
-		//RBC
-		return new SparqlQueryThreaded(new Cache("cachet2"),this.sparqlQuery(query));
+		return new SparqlQueryThreaded(new Cache("cache"),this.sparqlQuery(query));
 	}
 
 	/* (non-Javadoc)

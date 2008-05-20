@@ -343,40 +343,7 @@ public class AutomaticExampleFinderSPARQL {
 	}
 	
 	
-	/**
-	 * NOT WORKING
-	 * @param description
-	 */
-	public void getSubClasses(String description) {
-		ResultSet rs = null;
-		try {
-			String query = SparqlQueryDescriptionConvertVisitor
-					.getSparqlSubclassQuery(description.replace("\"", ""));
-			
-			rs = new SparqlQuery(query, se).send();
-			System.out.println(query);
-			//System.out.println(SparqlQuery.getAsXMLString(rs));
-			System.out.println(rs.getResultVars());
-			SortedSet<String> remainingClasses = new JenaResultSetConvenience(rs).getStringListForVariable("subject");
-			SortedSet<String> alreadyQueried = new TreeSet<String>();
-			alreadyQueried.add(description);
-			while (remainingClasses.size()!=0){
-				String tmp = remainingClasses.first();
-				remainingClasses.remove(tmp);
-				query = SparqlQueryDescriptionConvertVisitor
-					.getSparqlSubclassQuery(tmp);
-				alreadyQueried.add(tmp);
-				rs = new SparqlQuery(query, se).send();
-				remainingClasses.addAll(new JenaResultSetConvenience(rs).getStringListForVariable("subject"));
-			}
-			//System.out.println(JSON);
-			System.out.println(alreadyQueried);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
+	
 	
 	
 	

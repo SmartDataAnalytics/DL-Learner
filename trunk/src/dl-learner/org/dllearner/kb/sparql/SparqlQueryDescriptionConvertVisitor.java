@@ -41,6 +41,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	
 	//private SparqlEndpoint se = null;
 	//private boolean RDFSReasoning = false;
+	private static int defaultLimit = 5;
 	
 
 	private static Logger logger = Logger.getLogger(ComponentManager.class);
@@ -64,80 +65,93 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		this.RDFSReasoning = RDFSReasoning;
 	}*/
 	
-	public String getSparqlQuery()
-	{
-		query="SELECT ?subject\nWHERE {"+query;
-		query+="}\n";
-		query+="LIMIT 5";
+	/*private String getSparqlQuery()
+	{		
+		return getSparqlQuery(defaultLimit);
+	}*/
+	
+	private String getSparqlQuery(int limit)
+	{	// for old function see below
+		// it was using the object attribute in a strange way
+		// QUALITY: what if this function is called several times?? should be private maybe?
+		String tmpQuery=
+			"SELECT ?subject \nWHERE {"+query+
+			" }\n ";
+		if(limit>0) tmpQuery+="LIMIT "+limit;
+		
+		query = tmpQuery;
 		return query;
 	}
 	
-	public String getSparqlQuery(int limit)
+	/* OLD FUNCTION keep for audit
+	 * public String getSparqlQuery(int limit)
 	{	if(limit==0)limit=99999;
 		query="SELECT ?subject\nWHERE {"+query;
 		query+="}\n";
 		query+="LIMIT "+limit;
 		return query;
-	}
-	
-	public static String getSparqlSubclassQuery(String description)
-	{	String ret = "SELECT * \n";
-		ret+= "WHERE {\n";
-		ret+=" ?subject ?predicate  <"+description+"> \n";
-		ret+="}\n";
-		
-		return ret;
-	}
-	
-	public static String getSparqlQuery(String description) throws ParseException
-	{
-		Description d = KBParser.parseConcept(description);
-		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor();
-		d.accept(visitor);
-		
-		//TODO ERROR see replace HACK
-		String ret = visitor.getSparqlQuery();
-		while (ret.contains("..")) {
-			 ret = ret.replace("..", ".");
-		}
-		return ret;
-	}
-	
-	public static String getSparqlQuery(String description, int limit) throws ParseException
-	{	if(limit==0)limit=99999;
-		Description d = KBParser.parseConcept(description);
-		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor();
-		d.accept(visitor);
-		//TODO ERROR see replace HACK
-		String ret = visitor.getSparqlQuery(limit);
-		while (ret.contains("..")) {
-			 ret = ret.replace("..", ".");
-		}
-		return ret;
-	}
-	
-	/**
-	 * includes subclasses, costly function, because subclasses habe to be recieved first.
-	 * @param description
-	 * @param limit
-	 * @param se
-	 * @return
-	 * @throws ParseException
-	 */
-	/*public static String getSparqlQueryIncludingSubclasses(String description, int limit, SparqlEndpoint se) throws ParseException
-	{	if(limit==0)limit=99999;
-		Description d = KBParser.parseConcept(description);
-		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor(se, true);
-		d.accept(visitor);
-		return visitor.getSparqlQuery(limit);
 	}*/
+	
+	
+	
+	
+	
+	public static String getSparqlQuery(String descriptionKBSyntax) throws ParseException
+	{
+		return getSparqlQuery(descriptionKBSyntax, defaultLimit);
+	}
+	
+	public static String getSparqlQuery(String descriptionKBSyntax, int limit) throws ParseException
+	{	
+		Description d = KBParser.parseConcept(descriptionKBSyntax);
+		return getSparqlQuery(d, limit);
+	}
 	
 	public static String getSparqlQuery(Description description)
 	{
+		return getSparqlQuery(description, defaultLimit);
+	}
+	
+	public static String getSparqlQuery(Description description, int limit)
+	{
 		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor();
 		description.accept(visitor);
-		return visitor.getSparqlQuery();
+		String ret = visitor.getSparqlQuery(limit);
+		//HACK see replace might be a good solution, needs testing 
+		while (ret.contains("..")) {
+			 ret = ret.replace("..", ".");
+		}
+		return ret;
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * COMMENT: write some more
+	 * includes subclasses, costly function, because subclasses have to be received first.
+	 * @see conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache c,
+			boolean simple)
+	 * @param descriptionKBSyntax @see getSparqlQuery(Description description, int limit)
+	 * @param limit @see getSparqlQuery(Description description, int limit)
+	 * @param se
+	 * @param c
+	 * @param simple
+	 * @return
+	 * @throws ParseException
+	 */
+	public static String getSparqlQueryIncludingSubclasses(String descriptionKBSyntax, int limit, SparqlEndpoint se,Cache c, boolean simple) throws ParseException
+	{	
+		String rewritten = SparqlQueryDescriptionConvertRDFS.conceptRewrite(descriptionKBSyntax, se, c, simple);
+		
+		return getSparqlQuery(rewritten, limit);
+		
+	}
+	
+	
+	
 	
 	/**
 	 * Used for testing the Sparql Query converter.
@@ -225,8 +239,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Intersection)
 	 */
 	public void visit(Intersection description) {
-		//TODO ERROR see replace HACK
-		
+		// HACK see replace hacks in other functions
 		logger.trace("Intersection");
 		description.getChild(0).accept(this);
 		query+=".";
@@ -238,6 +251,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.Union)
 	 */
 	public void visit(Union description) {
+		// HACK see replace hacks in other functions
 		logger.trace("Union");
 		query+="{";
 		description.getChild(0).accept(this);
