@@ -14,7 +14,7 @@ import org.dllearner.utilities.datastructures.SetManipulation;
 
 import com.hp.hpl.jena.query.ResultSet;
 
-public class AutomaticExampleFinderSPARQL {
+public class AutomaticExampleFinderSPARQLold {
 
 	private static Logger logger = Logger
 			.getLogger(ComponentManager.class);
@@ -27,7 +27,7 @@ public class AutomaticExampleFinderSPARQL {
 	private int limit=1000;
 	
 	
-	public AutomaticExampleFinderSPARQL(SparqlEndpoint se){
+	public AutomaticExampleFinderSPARQLold(SparqlEndpoint se){
 		this.c=new Cache("cachetemp");
 		this.se=se;
 		posExamples = new TreeSet<String>();

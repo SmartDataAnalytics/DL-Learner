@@ -16,7 +16,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticExampleFinderRolesSPARQL;
-import org.dllearner.utilities.examples.AutomaticExampleFinderSPARQL;
+import org.dllearner.utilities.examples.AutomaticExampleFinderSPARQLold;
 import org.dllearner.utilities.learn.ConfWriter;
 import org.dllearner.utilities.learn.LearnSparql;
 import org.dllearner.utilities.statistics.SimpleClock;
@@ -185,7 +185,7 @@ public class SPARQLMassLearning {
 		boolean closeAfterRecursion=false;
 		int numberOfTriples = 0;
 		for (String oneConcept : concepts) {
-			AutomaticExampleFinderSPARQL ae= new AutomaticExampleFinderSPARQL( se);	
+			AutomaticExampleFinderSPARQLold ae= new AutomaticExampleFinderSPARQLold( se);	
 			useRelated = true;
 			useSuperClasses = true;
 			useParallelClasses = false;
