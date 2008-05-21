@@ -3,11 +3,13 @@ package org.dllearner.tools.ore;
 
 import java.awt.event.ActionListener;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.SwingWorker;
 
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 
 /**
@@ -70,6 +72,12 @@ public class WizardController implements ActionListener {
         	new ConceptRetriever(nextPanelDescriptor).execute();
         }
         
+        if( nextPanelDescriptor.equals("REPAIR_PANEL")){
+        	((RepairPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getModel().clear();
+        	wizard.getModel().getOre().getModi().addAxiomToOWL(wizard.getModel().getOre().getConceptToAdd(), wizard.getModel().getOre().getConcept());
+        	new FailInstancesRetriever(nextPanelDescriptor).execute();
+        }
+        
         if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {
             wizard.close(Wizard.FINISH_RETURN_CODE);
         } else {        
@@ -111,8 +119,12 @@ public class WizardController implements ActionListener {
         	wizard.setLeftPanel(2);
         }
     	if(PanelDescriptor.equals("LEARNING_PANEL")){
+        	wizard.setLeftPanel(3);
+        }
+    	if(PanelDescriptor.equals("REPAIR_PANEL")){
         	wizard.setLeftPanel(4);
         }
+    	
     	
         
     }
@@ -204,15 +216,73 @@ public class WizardController implements ActionListener {
 
 			for (NamedClass cl : ind) {
 				dm.addElement(cl);
+				
 				//nextPanel.panel3.getModel().addElement(cl);
 				System.out.println(cl.getName());
 			}
+			wizard.getModel().getOre().setAllAtomicConcepts(ind);
 			nextPanel.panel3.getList().setModel(dm);
 			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
 					nextPanelID)).panel3.getStatusLabel().setText(
 					"Concepts loaded");
 			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
 					nextPanelID)).panel3.getLoadingLabel().setBusy(false);
+		}
+
+	}
+    class FailInstancesRetriever extends SwingWorker<SortedSet<Individual>, Individual> {
+		Object nextPanelID;
+
+		public FailInstancesRetriever(Object nextPanelDescriptor) {
+
+			nextPanelID = nextPanelDescriptor;
+		}
+
+		@Override
+		public SortedSet<Individual> doInBackground() {
+			
+			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
+					nextPanelID)).panel4.getStatusLabel().setText(
+					"Loading instances");
+			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
+					nextPanelID)).panel4.getLoadingLabel().setBusy(true);
+
+		
+
+			SortedSet<Individual> ind = wizard.getModel().getOre()
+					.getReasoningService().getIndividuals();
+
+			return ind;
+		}
+
+		@Override
+		public void done() {
+			SortedSet<Individual> ind = null;
+			try {
+				ind = get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			RepairPanelDescriptor nextPanel = (RepairPanelDescriptor) wizard
+					.getModel().getPanelHashMap().get(nextPanelID);
+			DefaultListModel dm = ((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
+					nextPanelID)).panel4.getModel();
+
+			for (Individual cl : ind) {
+				dm.addElement(cl);
+				//nextPanel.panel3.getModel().addElement(cl);
+				System.out.println(cl.getName());
+			}
+			nextPanel.panel4.getResultList().setModel(dm);
+			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
+					nextPanelID)).panel4.getStatusLabel().setText(
+					"Instances loaded");
+			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
+					nextPanelID)).panel4.getLoadingLabel().setBusy(false);
 		}
 
 	}

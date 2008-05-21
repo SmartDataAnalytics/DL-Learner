@@ -41,7 +41,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
     
     @Override
 	public Object getNextPanelDescriptor() {
-        return LearningPanelDescriptor.IDENTIFIER;
+        return RepairPanelDescriptor.IDENTIFIER;
     }
     
     @Override
@@ -173,7 +173,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		}
 		else{
 			panel4.getStopButton().setEnabled(false);
-            worker.getLa().stop();
+			getWizardModel().getOre().getLa().stop();
             panel4.getStartButton().setEnabled(true);
             panel4.getStatusLabel().setText("Algorithm aborted");
 		}
@@ -183,7 +183,25 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	}
 
 	public void valueChanged(ListSelectionEvent e) {
+		setNextButtonAccordingToConceptSelected();
 		if (!e.getValueIsAdjusting()) 
-			 System.out.println(panel4.getResultList().getSelectedValue());
+			getWizardModel().getOre().setConceptToAdd((Description)(panel4.getResultList().getSelectedValue())); 
+			System.out.println(panel4.getResultList().getSelectedValue());
 		
-	}}
+	}
+
+	@Override
+	public void aboutToDisplayPanel() {
+        setNextButtonAccordingToConceptSelected();
+    }    
+	
+	private void setNextButtonAccordingToConceptSelected() {
+        
+    	if (panel4.getResultList().getSelectedValue()!= null){
+    		getWizard().setNextFinishButtonEnabled(true);
+    	}else{
+    		getWizard().setNextFinishButtonEnabled(false);
+    	}
+   
+    }
+}

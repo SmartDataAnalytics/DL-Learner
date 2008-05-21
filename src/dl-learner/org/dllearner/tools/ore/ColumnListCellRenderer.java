@@ -46,7 +46,7 @@ public class ColumnListCellRenderer extends JPanel implements ListCellRenderer {
 		} else if(isSelected){
 		 
              background = Color.BLUE;
-             foreground = Color.WHITE;
+             foreground = Color.BLACK;
         }else{
         	background = Color.WHITE;
             foreground = Color.BLACK;

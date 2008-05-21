@@ -2,6 +2,7 @@ package org.dllearner.tools.ore;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
@@ -12,17 +13,13 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
 
 import org.jdesktop.swingx.JXBusyLabel;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.icon.EmptyIcon;
 import org.jdesktop.swingx.painter.BusyPainter;
 
-public class LearningPanel extends JPanel{
+public class RepairPanel extends JPanel{
 
 	private static final long serialVersionUID = -7411197973240429632L;
 
@@ -31,32 +28,35 @@ public class LearningPanel extends JPanel{
 	private javax.swing.JList resultList;
 	private DefaultListModel model;
 	
-	private JXTable resultTable;
-	private DefaultTableModel model1;
+	
 	
 	private JLabel statusLabel;
 	private JXBusyLabel loadingLabel;
 	
-	private JButton startButton;
-	private JButton stopButton;
+	private JButton deleteButton;
+	private JButton moveButton;
+	private JButton addButton;
+	private JButton saveButton;
+	
 	
 	@SuppressWarnings("unchecked")
-	public LearningPanel() {
+	public RepairPanel() {
 		
 		super();
 		model = new DefaultListModel();
 		
-		model1 = new DefaultTableModel();
-		model1.addColumn("Description");
-		model1.addColumn("Correctness");
-		
-		
+				
 		JPanel buttonPanel = new JPanel();
-		startButton = new JButton("Start");
-		stopButton = new JButton("Stop");
-		stopButton.setEnabled(false);
-		buttonPanel.add(startButton);
-		buttonPanel.add(stopButton);
+		deleteButton = new JButton("delete");
+		moveButton = new JButton("move");
+		addButton = new JButton("add property");
+		saveButton = new JButton("save");
+	
+		buttonPanel.add(deleteButton);
+		buttonPanel.add(moveButton);
+		buttonPanel.add(addButton);
+		buttonPanel.add(saveButton);
+		buttonPanel.setLayout(new GridLayout(5,1,0,10));
 		
 		
 		JPanel labelPanel = new JPanel();
@@ -88,14 +88,11 @@ public class LearningPanel extends JPanel{
 		JPanel contentPanel1 = new JPanel();
 		JScrollPane scroll = new JScrollPane();
 		
-		resultTable = new JXTable(model1 );
 		
-		resultTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		resultTable.setHighlighters(HighlighterFactory.createSimpleStriping());
 		
 		
 		resultList = new JList(model);
-//		resultList.setCellRenderer(new ColumnListCellRenderer());
+
 		scroll.setPreferredSize(new Dimension(400, 400));
 		
 		scroll.setViewportView(resultList);
@@ -107,12 +104,20 @@ public class LearningPanel extends JPanel{
 		return contentPanel1;
 	}
 	
-	public void addStartButtonListener(ActionListener a){
-		startButton.addActionListener(a);
+	public void addDeleteButtonListener(ActionListener a){
+		deleteButton.addActionListener(a);
 	}
 	
-	public void addStopButtonListener(ActionListener a){
-		stopButton.addActionListener(a);
+	public void addMoveButtonListener(ActionListener a){
+		moveButton.addActionListener(a);
+	}
+	
+	public void addAddButtonListener(ActionListener a){
+		addButton.addActionListener(a);
+	}
+	
+	public void addSaveButtonListener(ActionListener a){
+		saveButton.addActionListener(a);
 	}
 	
 	public JLabel getStatusLabel() {
@@ -123,22 +128,22 @@ public class LearningPanel extends JPanel{
 		return loadingLabel;
 	}
 
-	public JButton getStartButton() {
-		return startButton;
+	public JButton getDeleteButton() {
+		return deleteButton;
 	}
 
-	public JButton getStopButton() {
-		return stopButton;
+	public JButton getMoveButton() {
+		return moveButton;
+	}
+	
+	public JButton getAddButton() {
+		return addButton;
 	}
 
 	public DefaultListModel getModel() {
 		return model;
 	}
 	
-//	public DefaultTableModel getModel() {
-//		return model1;
-//	}
-
 	public javax.swing.JList getResultList() {
 		return resultList;
 	}
