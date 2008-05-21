@@ -82,6 +82,18 @@ public class Cache implements Serializable {
 		this("cache");
 	} */
 	
+	public static Cache getPersistentCache(){
+		Cache c = new Cache("cachePersistant"); 
+		c.setFreshnessInDays(365);
+		return c;
+	}
+	
+	public static Cache getDefaultCache(){
+		Cache c = new Cache("cache"); 
+		
+		return c;
+	}
+	
 	/**
 	 * Constructor for the cache itself.
 	 * 
@@ -241,6 +253,10 @@ public class Cache implements Serializable {
 			else json="";
 			return json;
 		}
+	}
+	
+	public void setFreshnessInDays(int days){
+		freshnessSeconds = days * 24 * 60 * 60;
 	}
 
 }

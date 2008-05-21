@@ -14,8 +14,6 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
-import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticExampleFinderSPARQLold;
 import org.dllearner.utilities.learn.LearnSparql;
 import org.dllearner.utilities.statistics.SimpleClock;
@@ -107,7 +105,7 @@ public class SPARQLExtractionEvaluation {
 			System.out.println(oneConcept);
 			AutomaticExampleFinderSPARQLold ae= new AutomaticExampleFinderSPARQLold( se);	
 			
-			ae.initDBpedia(oneConcept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
+			//ae.initDBpedia(oneConcept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
 			
 			posExamples = ae.getPosExamples();
 			negExamples = ae.getNegExamples();
@@ -183,6 +181,7 @@ public class SPARQLExtractionEvaluation {
 
 	}
 	
+	//FIXME
 	public static SortedSet<String> selectDBpediaConcepts(int number){
 		String query = "SELECT DISTINCT ?concept WHERE { \n" + 
 		"[] a ?concept .FILTER (regex(str(?concept),'yago'))" +
@@ -190,8 +189,9 @@ public class SPARQLExtractionEvaluation {
 
 		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
 		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
-		JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
-		return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);
+		//JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
+		//return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);
+		return null;
 	}
 	
 	public static  SortedSet<String> initConcepts(){
