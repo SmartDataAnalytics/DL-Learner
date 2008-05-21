@@ -2,10 +2,6 @@ package org.dllearner.tools.ore;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -23,20 +19,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
-import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLOntologyStorageException;
-import org.semanticweb.owl.model.UnknownOWLOntologyException;
-import org.semanticweb.owl.util.OWLEntityRemover;
 
 public class ORE {
 	
@@ -49,6 +32,10 @@ public class ORE {
 	SortedSet<Individual> posExamples;
 	SortedSet<Individual> negExamples;
 	NamedClass concept;
+	Description conceptToAdd;
+	OntologyModifierOWLAPI modi;
+	Set<NamedClass> allAtomicConcepts;
+	
 	
 	public ORE() {
 
@@ -82,6 +69,7 @@ public class ORE {
 		reasoner.init();
 
 		rs = cm.reasoningService(reasoner);
+		modi = new OntologyModifierOWLAPI(reasoner);
 	}
 	
 	public ReasoningService getReasoningService(){
@@ -95,6 +83,7 @@ public class ORE {
 	public void setPosNegExamples(){
 		posExamples = rs.retrieval(concept);
 		negExamples = rs.getIndividuals();
+		
 		for (Individual rem_pos : posExamples)
 			negExamples.remove(rem_pos);
 	}
@@ -176,118 +165,35 @@ public class ORE {
 		
 	}
 
-	public void addAxiomToOWL(Description desc){
-		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
-		OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
-		
-		
-		OWLOntology ontology = reasoner.getOWLAPIOntologies().get(0);
-		
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		
-		OWLDataFactory factory = manager.getOWLDataFactory();
-		
-		Set<OWLDescription> ds = new HashSet<OWLDescription>();
-		ds.add(newConceptOWLAPI);
-		ds.add(oldConceptOWLAPI);
-		
-		OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
-		
 
-		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
-		try {
-			manager.applyChange(axiom);
-		} catch (OWLOntologyChangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			manager.saveOntology(ontology);
-		} catch (UnknownOWLOntologyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OWLOntologyStorageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
+		
+	
+
+	public Description getConceptToAdd() {
+		return conceptToAdd;
+	}
+
+	public void setConceptToAdd(Description conceptToAdd) {
+		this.conceptToAdd = conceptToAdd;
+	}
+
+	public LearningAlgorithm getLa() {
+		return la;
+	}
+
+	public OntologyModifierOWLAPI getModi() {
+		return modi;
+	}
+
+	public NamedClass getConcept() {
+		return concept;
+	}
+
+	public void setAllAtomicConcepts(Set<NamedClass> allAtomicConcepts) {
+		this.allAtomicConcepts = allAtomicConcepts;
 	}
 	
-	public void deleteIndividual(Individual ind){
-		
-		OWLOntology ontology = reasoner.getOWLAPIOntologies().get(0);
-		
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLIndividual individualOWLAPI = null;
-		
-		try {
-			individualOWLAPI = factory.getOWLIndividual( new URI(ind.getName()));
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		OWLEntityRemover remover = new OWLEntityRemover(manager, Collections.singleton(ontology));
-		
-		
-		individualOWLAPI.accept(remover);
-		
-		try {
-			manager.applyChanges(remover.getChanges());
-		} catch (OWLOntologyChangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		remover.reset();
-		
-		try {
-			manager.saveOntology(ontology);
-		} catch (UnknownOWLOntologyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OWLOntologyStorageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void moveIndividual(Individual ind, Description oldDescription, Description newDescription){
-		
-		
-		OWLOntology ontology = reasoner.getOWLAPIOntologies().get(0);
-		
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLDataFactory factory = manager.getOWLDataFactory();
-		OWLIndividual individualOWLAPI = null;
-		
-		
-		try {
-			individualOWLAPI = factory.getOWLIndividual( new URI(ind.getName()));
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		//Loeschen
-		OWLEntityRemover remover = new OWLEntityRemover(manager, Collections.singleton(ontology));
-		individualOWLAPI.accept(remover);
-		
-		try {
-			manager.applyChanges(remover.getChanges());
-		} catch (OWLOntologyChangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		remover.reset();
-		
-		//Hinzufuegen
-		
-		
-	}
-	
-	
-		
 	public static void main(String[] args){
 		
 		ORE test = new ORE();

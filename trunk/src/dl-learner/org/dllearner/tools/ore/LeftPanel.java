@@ -23,8 +23,8 @@ public class LeftPanel extends JPanel{
     	jLabel[0] = new JLabel("1. Introduction");
 		jLabel[1] = new JLabel("2. Knowledge Source");
 		jLabel[2] = new JLabel("3. Concept");
-		jLabel[3] = new JLabel("4. Examples");
-		jLabel[4] = new JLabel("5. Learning");
+		jLabel[3] = new JLabel("4. Learning");
+		jLabel[4] = new JLabel("5. Repair");
 		
 		jLabel[i].setFont(jLabel[i].getFont().deriveFont(Font.BOLD));
 		
@@ -46,8 +46,8 @@ public class LeftPanel extends JPanel{
     	jLabel[0] = new JLabel("1. Introduction");
 		jLabel[1] = new JLabel("2. Knowledge Source");
 		jLabel[2] = new JLabel("3. Concept");
-		jLabel[3] = new JLabel("4. Examples");
-		jLabel[4] = new JLabel("5. Learning");
+		jLabel[3] = new JLabel("4. Learning");
+		jLabel[4] = new JLabel("5. Repair");
 		
 		jLabel[i].setFont(jLabel[i].getFont().deriveFont(Font.BOLD));
 		

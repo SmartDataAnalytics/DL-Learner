@@ -29,7 +29,7 @@ public class ColorListCellRenderer extends JLabel implements ListCellRenderer {
 		} else if(isSelected){
 		 
              background = Color.BLUE;
-             foreground = Color.WHITE;
+             foreground = Color.BLACK;
         }else{
         	background = Color.WHITE;
             foreground = Color.BLACK;

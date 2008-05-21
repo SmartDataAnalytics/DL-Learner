@@ -40,11 +40,15 @@ public class Main {
         WizardPanelDescriptor descriptor4 = new LearningPanelDescriptor();
         wizard.registerWizardPanel(LearningPanelDescriptor.IDENTIFIER, descriptor4);
         
+        WizardPanelDescriptor descriptor5 = new RepairPanelDescriptor();
+        wizard.registerWizardPanel(RepairPanelDescriptor.IDENTIFIER, descriptor5);
+        
         if ( !(args.length == 1)){
         	 wizard.setCurrentPanel(IntroductionPanelDescriptor.IDENTIFIER);
         }else{
         	((KnowledgeSourcePanelDescriptor)descriptor2).getPanel().setFileURL(args[0]); 
         	wizard.setCurrentPanel(KnowledgeSourcePanelDescriptor.IDENTIFIER);
+        	wizard.setLeftPanel(1);
         	 
         }
 			
