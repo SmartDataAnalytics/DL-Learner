@@ -8,6 +8,7 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 	private DLLearnerModel model;
 
 	private String id;
+	private boolean toggled;
 	private Thread dlLearner;
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 	public ActionHandler(ActionHandler a,DLLearnerModel m,OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view ,String i)
@@ -15,6 +16,7 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 		this.view = view; 
 		this.id=i;
 		this.model = m;
+		toggled = false;
 		
 		
 	}
@@ -22,12 +24,19 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 		
 		if(z.getActionCommand().equals("Suggest "+id))
 		{
+			if(view.getOptionPanel().getComponentCount()<=2)
+			{
+				view.renderErrorMessage("No Examples available");
+			}
+			else{
+			view.renderErrorMessage("Learning started");
 			this.dlLearner = new Thread(model);
 			view.getRunButton().setEnabled(false);
 			view.getCancelButton().setEnabled(true);
 			dlLearner.start();
-			String error = "Learning succesful";
-			view.renderErrorMessage(error);
+			//String error = "Learning succesful";
+			//view.renderErrorMessage(error);
+			}
 		}
 		
 		if(z.getActionCommand().equals("Cancel"))
@@ -68,6 +77,22 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			{
 				String hilfe="A Instance tht doesn't follow from the classdescription.";
 				view.renderHelpMessage(hilfe);
+			}
+			
+			
+		}
+		if(z.getActionCommand().equals(""))
+		{
+			if(!toggled==true)
+			{
+				toggled=true;
+				view.setExamplePanelVisible(toggled);
+				System.out.println(z.getSource());
+			}
+			else
+			{
+				toggled=false;
+				view.setExamplePanelVisible(toggled);
 			}
 		}
     }
@@ -115,6 +140,10 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 	{
 		dlLearner =null;
 	}
-
+	
+	public void resetToggled()
+	{
+		toggled = false;
+	}
 
 }

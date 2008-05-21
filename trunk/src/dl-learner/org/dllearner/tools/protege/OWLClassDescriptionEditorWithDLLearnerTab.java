@@ -105,7 +105,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
         }
         editingComponent = new JPanel(new BorderLayout());
         editingComponent.add(tabbedPane);
-        editingComponent.setPreferredSize(new Dimension(600, 490));
+        editingComponent.setPreferredSize(new Dimension(600, 520));
         tabbedPane.add(CLASS_EXPRESSION_EDITOR_LABEL, new JScrollPane(editor));
        
 
@@ -274,7 +274,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  private JButton helpForPosExamples;
 	  private JButton helpForNegExamples;
 	  private JLabel errorMessage;
-	  private ImageIcon toggleGif;
 	  private JToggleButton advanced; 
 	  //private JScrollPane suggestScroll;
 	  private ActionHandler action;
@@ -290,7 +289,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 		  	editor = editorKit;
 		  	model = new DLLearnerModel(editorKit,aktuell, label,this);
 		    model.loadOntology(getUri());
-		    toggleGif = new ImageIcon("pfeil1.gif");
 		    posLabelPanel = new JPanel();
 		    negLabelPanel = new JPanel();
 		  	panel = new DLLearnerViewPanel(editor);
@@ -300,24 +298,25 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	adv = new JLabel("Advanced");
 	    	helpForNegExamples = new JButton("?");
 	    	helpForNegExamples.setSize(10, 10);
-	    	advanced = new JToggleButton(toggleGif);
+	    	advanced = new JToggleButton();
 	    	run = new JButton("Suggest "+label);
 	    	cancel = new JButton("Cancel");
 	    	accept = new JButton("ADD");
-		  	scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); 
+	    	option = new JPanel(new GridLayout(0,2));
+			scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	    	errorMessage = new JLabel();
 	    	learner = new JPanel();
 	    	advanced.setSize(20,20);
 	    	learner.setLayout(null);
 	    	suggest = new JList();
-	    	learner.setPreferredSize(new Dimension(600, 480));
+	    	learner.setPreferredSize(new Dimension(600, 520));
 	    	pos = new JLabel("Positive Examples");
 	    	neg = new JLabel("Negative Examples");
 	    	accept.setPreferredSize(new Dimension(290,50));
-	    	option = new JPanel(new GridLayout(0,2));
 	    	posLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
 	    	negLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
 	    	posLabelPanel.add(pos);
+	    	advanced.setName("Advanced");
 	    	helpForPosExamples.setName("PosHelpButton");
 	    	posLabelPanel.add(helpForPosExamples);
 	    	negLabelPanel.add(neg);
@@ -327,31 +326,29 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	addRunButtonListener(this.action);
 	    	addCancelButtonListener(this.action);
 	    	addHelpButtonListener(this.action);
+	    	addAdvancedButtonListener(this.action);
 		    
     }
 	  
 	  public void makeView()
 	  {
-		  
 		  	model.clearVector();
 		  	model.initReasoner();
-		    model.setPosVector();
-		    model.setNegVector();
+		  	model.setPosVector();
+		  	model.setNegVector();
+		  	setJCheckBoxen();
 		    suggest = new JList();
 	      	cancel.setEnabled(false);
 	    	accept.setEnabled(false);
-	    	setJCheckBoxen();
-	    	if(option.getComponentCount()<=2)
-	    	{
-	    		run.setEnabled(false);
-	    	}
-	    	scrollPane.setViewportView(option);
-	    	scrollPane.setBounds(10, 200, 490, 250);
+	    	action.resetToggled();
+	    	advanced.setSelected(false);
 	    	suggest.setBounds(10,40,490,110);
 	    	suggest.setVisible(true);
 	    	adv.setBounds(40,200,200,20);
 	    	run.setBounds(10,0,200,30);
 	    	advanced.setBounds(10,200,20,20);
+	    	scrollPane.setViewportView(option);
+			scrollPane.setBounds(10, 230, 490, 250);
 	        cancel.setBounds(260,0,200,30);
 	        accept.setBounds(510,40,80,110);
 	        errorMessage.setBounds(10,160,590,20);
@@ -362,7 +359,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	learner.add(suggest);
 	    	learner.add(accept);
 	    	learner.add(errorMessage);
-	    	//learner.add(scrollPane);
+	    	learner.add(scrollPane);
+	    	scrollPane.setVisible(false);
 	    	add(learner);
 	    	addListener();
 	  }
@@ -372,10 +370,19 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 		  return learner;
 	  }
 	  
+	  public void setExamplePanelVisible(boolean visible)
+	  {
+		  scrollPane.setVisible(visible);
+	  }
+	  
+	  public JPanel getOptionPanel()
+	  {
+		  return option;
+	  }
+	  
 	  public void renderHelpMessage(String helfen)
 	  {
 		  help = new JLabel();
-		  
 		  hilfe = new JDialog();
 		  hilfe.setName("Hilfe");
 		  hilfe.setSize(500,50);
@@ -508,6 +515,11 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 		{
 			helpForPosExamples.addActionListener(a);
 			helpForNegExamples.addActionListener(a);
+		}
+		
+		public void addAdvancedButtonListener(ActionListener a)
+		{
+			advanced.addActionListener(a);
 		}
 		
     }
