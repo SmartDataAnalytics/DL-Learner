@@ -13,9 +13,6 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
-import org.dllearner.utilities.datastructures.SetManipulation;
-import org.dllearner.utilities.examples.AutomaticExampleFinderRolesSPARQL;
 import org.dllearner.utilities.examples.AutomaticExampleFinderSPARQLold;
 import org.dllearner.utilities.learn.ConfWriter;
 import org.dllearner.utilities.learn.LearnSparql;
@@ -114,12 +111,12 @@ public class SPARQLMassLearning {
 		//HashMap<String, String> result2 = new HashMap<String, String>();
 		//System.out.println(concepts.first());
 		//logger.setLevel(Level.TRACE);
-		AutomaticExampleFinderRolesSPARQL ae= new AutomaticExampleFinderRolesSPARQL( se);
+		//AutomaticExampleFinderRolesSPARQL ae= new AutomaticExampleFinderRolesSPARQL( se);
 		
-		ae.initDomainRange(roles.first(), poslimit, neglimit);
+		//ae.initDomainRange(roles.first(), poslimit, neglimit);
 	
-		posExamples = ae.getPosExamples();
-		negExamples = ae.getNegExamples();
+		//posExamples = ae.getPosExamples();
+		//negExamples = ae.getNegExamples();
 		
 		System.out.println(posExamples);
 		System.out.println(negExamples);
@@ -192,7 +189,7 @@ public class SPARQLMassLearning {
 			
 			poslimit=10;
 			neglimit=10;
-			ae.initDBpedia(concept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
+			//ae.initDBpedia(concept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
 			posExamples = ae.getPosExamples();
 			negExamples = ae.getNegExamples();
 		
@@ -286,8 +283,9 @@ public class SPARQLMassLearning {
 
 		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
 		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
-		JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
-		return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);
+		//JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
+		//return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);
+		return null;
 	}
 	
 	

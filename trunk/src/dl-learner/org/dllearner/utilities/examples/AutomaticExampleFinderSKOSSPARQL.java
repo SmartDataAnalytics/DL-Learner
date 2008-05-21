@@ -7,12 +7,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
-import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
 import org.dllearner.utilities.datastructures.SetManipulation;
-
-import com.hp.hpl.jena.query.ResultSet;
 
 public class AutomaticExampleFinderSKOSSPARQL {
 
@@ -35,8 +30,9 @@ public class AutomaticExampleFinderSKOSSPARQL {
 		negExamples = new TreeSet<String>();
 	}
 	
+	@Deprecated
 	public void initDBpediaSKOS(String concept, double percent, boolean useRelated,boolean useParallelClasses) { 
-		dbpediaMakePositiveExamplesFromConcept( concept);
+		//dbpediaMakePositiveExamplesFromConcept( concept);
 		SortedSet<String> keepForClean = new TreeSet<String>();
 		keepForClean.addAll(this.posExamples);
 		totalSKOSset.addAll(this.posExamples);
@@ -55,12 +51,12 @@ public class AutomaticExampleFinderSKOSSPARQL {
 		logger.debug("rest: "+rest.size());
 		
 		if(useRelated) {
-			dbpediaMakeNegativeExamplesFromRelatedInstances(this.posExamples);
+			//dbpediaMakeNegativeExamplesFromRelatedInstances(this.posExamples);
 		}
 		
 		if(useParallelClasses) {
 			int limit = this.posExamples.size();
-			 makeNegativeExamplesFromClassesOfInstances(limit);
+			 //makeNegativeExamplesFromClassesOfInstances(limit);
 		}
 		//clean
 		negExamples.removeAll(keepForClean);
@@ -98,16 +94,8 @@ public class AutomaticExampleFinderSKOSSPARQL {
 	
 	
 	
-	public SortedSet<String> dbpediaGetPosOnly(String concept, int limit){
-		dbpediaMakePositiveExamplesFromConcept( concept);
-		return SetManipulation.fuzzyShrink(this.posExamples, limit);
-	}
 	
-	public SortedSet<String> getPosOnly(String concept, int limit){
-		makePositiveExamplesFromConcept( concept);
-		return SetManipulation.fuzzyShrink(this.posExamples, limit);
-	}
-	
+	/*
 	private void dbpediaMakePositiveExamplesFromConcept(String concept){
 		logger.debug("making Positive Examples from Concept: "+concept);
 		if(concept.contains("http://dbpedia.org/resource/Category:")) {
@@ -118,14 +106,15 @@ public class AutomaticExampleFinderSKOSSPARQL {
 				.getStringListForVariable("subject");
 		}
 		logger.debug("pos Example size: "+posExamples.size());
-	}
+	}*/
 	
+	/*
 	private void makePositiveExamplesFromConcept(String concept){
 		logger.debug("making Positive Examples from Concept: "+concept);	
 		this.posExamples = new JenaResultSetConvenience(queryConcept(concept,0))
 				.getStringListForVariable("subject");
 		logger.debug("   pos Example size: "+posExamples.size());
-	}
+	}*/
 	
 	
 	
@@ -145,21 +134,6 @@ public class AutomaticExampleFinderSKOSSPARQL {
 	
 	
 	
-	private void dbpediaMakeNegativeExamplesFromRelatedInstances(SortedSet<String> subject) {
-		logger.debug("making examples from related instances");
-		for (String string : subject) {
-			dbpediaMakeNegativeExamplesFromRelatedInstances(string);
-		}
-		logger.debug("  negExample size: "+negExamples.size());
-	}
-	
-	private void makeNegativeExamplesFromRelatedInstances(SortedSet<String> subject, String namespace) {
-		logger.debug("making examples from related instances");
-		for (String string : subject) {
-			makeNegativeExamplesFromRelatedInstances(string,namespace);
-		}
-		logger.debug("  negExample size: "+negExamples.size());
-	}
 	
 	
 	/**
@@ -167,38 +141,11 @@ public class AutomaticExampleFinderSKOSSPARQL {
 	 * @param subject
 	 * @return
 	 */
-	private void dbpediaMakeNegativeExamplesFromRelatedInstances(String subject) {
-		// SortedSet<String> result = new TreeSet<String>();
 
-		String query = "SELECT * WHERE { \n" + "<" + subject + "> " + "?p ?o. \n"
-				+ "FILTER (REGEX(str(?o), 'http://dbpedia.org/resource/')).\n"
-				+ "FILTER (!REGEX(str(?p), 'http://www.w3.org/2004/02/skos'))\n"
-				+ "}";
-		
-		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
-		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
-		JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
-		this.negExamples.addAll(rsc.getStringListForVariable("o"));
-		
-		
-	}
 	
-	private void makeNegativeExamplesFromRelatedInstances(String subject, String namespace) {
-		// SortedSet<String> result = new TreeSet<String>();
 
-		String query = "SELECT * WHERE { \n" + "<" + subject + "> " + "?p ?o. \n"
-				+ "FILTER (REGEX(str(?o), '"+namespace+"')).\n"
-				+ "}";
-		
-		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
-		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
-		JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
-		this.negExamples.addAll(rsc.getStringListForVariable("o"));
-		
-		
-	}
 	
-	
+	/*
 	private void makeNegativeExamplesFromSuperClasses(String concept) {
 		
 		SortedSet<String> superClasses = new TreeSet<String>();
@@ -213,109 +160,14 @@ public class AutomaticExampleFinderSKOSSPARQL {
 			this.negExamples.addAll(rsc.getStringListForVariable("subject"));
 		}
 		logger.debug("   neg Example size: "+negExamples.size());
-	}
+	}*/
 	
 	
 	
-	private void makeNegativeExamplesFromClassesOfInstances(int limit) {
-		logger.debug("making neg Examples from parallel classes");
-		SortedSet<String> classes = new TreeSet<String>();
-		//superClasses.add(concept.replace("\"", ""));
-		//logger.debug("before"+superClasses);
-		//superClasses = dbpediaGetSuperClasses( superClasses, 4);
-		//logger.debug("getting negExamples from "+superClasses.size()+" superclasses");
-		JenaResultSetConvenience rsc;
-		ResultSet rs=null;
-		for (String instance : posExamples) {
-			//System.out.println(instance);
-			rs = getClassesForInstance(instance);
-			//System.out.println(ResultSetFormatter.asXMLString(rs));
-			rsc = new JenaResultSetConvenience(rs);
-			classes.addAll(rsc.getStringListForVariable("subject"));
-			//System.out.println(classes);
-		}
-		logger.debug("getting negExamples from "+classes.size()+" parallel classes");
-		for (String oneClass : classes) {
-			logger.debug(oneClass);
-			rsc = new JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
-			this.negExamples.addAll(rsc.getStringListForVariable("subject"));
-		}
-		logger.debug("neg Example size: "+negExamples.size());
-		
-	}
+	
 
-	private SortedSet<String> getSuperClasses(SortedSet<String> superClasses, int depth) {
-		SortedSet<String> ret = new TreeSet<String>();
-		SortedSet<String> tmpset = new TreeSet<String>();
-		ret.addAll(superClasses);
-		//logger.debug(superClasses);
-		JenaResultSetConvenience rsc;
-		
-		String query = "";
-		for (; depth != 0 ; depth--) {
-			for (String oneSuperClass : superClasses) {
-				
-				//tmp = oneSuperClass.replace("\"", "");
-				query = "SELECT * WHERE { \n" + "<" + oneSuperClass  + "> " 
-					+ "<http://www.w3.org/2000/01/rdf-schema#subClassOf>  ?superclass. \n"
-					+ "}";
-				
-				String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
-				ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
-				rsc = new JenaResultSetConvenience(rs);
-				tmpset.addAll(rsc.getStringListForVariable("superclass"));
-				
-			}
-			ret.addAll(tmpset);
-			//logger.debug(ret);
-			superClasses.clear();
-			superClasses.addAll(tmpset);
-			tmpset.clear();
-		}
-		//logger.debug(concept);
-		//logger.debug(query);
-		return 	ret;
-	}
 	
-	
-	
-	public  ResultSet queryConcept(String concept,int limit) {
-		ResultSet rs = null;
-		try {
-			String query = SparqlQueryDescriptionConvertVisitor
-					.getSparqlQuery(concept,limit);
-			
-			SparqlQuery sq = new SparqlQuery(query, se);
-			String JSON = c.executeSparqlQuery(sq);
-			//System.out.println("JSON:\n"+JSON);
-			rs = SparqlQuery.JSONtoResultSet(JSON);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return rs;
-	}
-	
-	public  SortedSet<String> queryConceptAsStringSet(String concept,int limit) {
-		ResultSet rs = null;
-		try {
-			String query = SparqlQueryDescriptionConvertVisitor
-					.getSparqlQuery(concept,limit);
-			
-			SparqlQuery sq = new SparqlQuery(query, se);
-			//System.out.println(query);
-			String JSON = c.executeSparqlQuery(sq);
-			//System.out.println("JSON:\n"+JSON);
-			rs = SparqlQuery.JSONtoResultSet(JSON);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new JenaResultSetConvenience(rs).getStringListForVariable("subject");
-		
-	}
-	
+	/*
 	public  ResultSet dbpediaQuerySKOSConcept(String SKOSconcept,int limit) {
 		if(limit==0)limit=99999;
 		//
@@ -337,30 +189,9 @@ public class AutomaticExampleFinderSKOSSPARQL {
 		}
 
 		return rs;
-	}
+	}*/
 	
-	public  ResultSet getClassesForInstance(String instance) {
-		ResultSet rs = null;
-		try {
-			
-			String query = "SELECT ?subject WHERE { \n " + 
-			"<" + instance  + ">"+
-			" a " + 
-			"?subject " +
-			"\n" +
-			"} LIMIT 200";
-			SparqlQuery sq = new SparqlQuery(query, se);
-			//System.out.println(query);
-			String JSON = c.executeSparqlQuery(sq);
-			//System.out.println(JSON);
-			rs = SparqlQuery.JSONtoResultSet(JSON);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return rs;
-	}
+	
 
 	public SortedSet<String> getPosExamples() {
 		return posExamples;

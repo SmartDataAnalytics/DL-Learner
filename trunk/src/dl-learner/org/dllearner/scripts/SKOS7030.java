@@ -1,7 +1,8 @@
 package org.dllearner.scripts;
 
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -10,131 +11,128 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Union;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertRDFS;
-import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.datastructures.SetManipulation;
-import org.dllearner.utilities.examples.AutomaticExampleFinderSKOSSPARQL;
-import org.dllearner.utilities.learn.LearnSparql;
-import org.dllearner.utilities.statistics.SimpleClock;
-
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.sparql.core.ResultBinding;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
+import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
+import org.dllearner.utilities.examples.SPARQLTasks;
 
 public class SKOS7030 {
 
-	static Cache c;
-	static SparqlEndpoint se;
+	private static SPARQLTasks sparqlTasks;
+	
 	private static Logger logger = Logger.getRootLogger();
+    static boolean local = true;
+    static String url = "";
 	
-	
-	
-	
-	//vars
-	static boolean useRelated = false;
-	static boolean useSuperClasses = false;
-	static boolean useParallelClasses = true;
-	static int poslimit = 10;
-	static int neglimit = 20;
-	
+	//LEARNING
 	static int recursiondepth=1;
 	static boolean closeAfterRecursion=true;
 	static boolean randomizeCache=false;
-	
-	static int resultsize=20;
 	static double noise=15;
-	static int limit=200;
-	static double percentage=0.3;
+	static int maxExecutionTimeInSeconds = 30;
+	static int guaranteeXgoodDescriptions = 40;
+	
+	//static int limit=200;
+	
+	
+	
+	
+	
+	//examples
+	static int sparqlResultSize=2000;
+	static double percentOfSKOSSet=0.7;
+	static double negfactor=0.3;
+	SortedSet<String> posExamples = new TreeSet<String>();
+	SortedSet<String> fullPositiveSet = new TreeSet<String>();
+	SortedSet<String> fullminusposRest = new TreeSet<String>();
+	SortedSet<String> negExamples = new TreeSet<String>();
+	
+	
+	
+	
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		init();
-		//logger.setLevel(Level.TRACE);
-		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
-		//System.out.println(Logger.getLogger(SparqlQuery.class).getLevel());
-		SimpleClock sc=new SimpleClock();
+		System.out.println("Start");
+		initLogger();
+		//parameters
 		
 		
-		se = SparqlEndpoint.EndpointLOCALDBpedia();
-//		String t="\"http://dbpedia.org/class/yago/Fiction106367107\"";
-//		t="(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))";
-//		//System.out.println(t);
-//		//t="\"http://www.w3.org/2004/02/skos/core#subject\"";
-//		//conceptRewrite(t);
-//		//getSubClasses(t);
-//		
-//		AutomaticExampleFinderSKOSSPARQL ae= new AutomaticExampleFinderSKOSSPARQL( se);	
-//			try{
-//			System.out.println("oneconcept: "+t);
-//			SortedSet<String> instances = ae.queryConceptAsStringSet(conceptRewrite(t), 200);
-//			if(instances.size()>=0)System.out.println("size of instances "+instances.size());
-//			if(instances.size()>=0 && instances.size()<100) System.out.println("instances"+instances);
-//			}catch (Exception e) {
-//				e.printStackTrace();
-//			}
-		SortedSet<String> concepts = new TreeSet<String>();
+		if(local){
+			url = "http://139.18.2.37:8890/sparql";
+			sparqlTasks = new SPARQLTasks(Cache.getPersistentCache(),SparqlEndpoint.EndpointLOCALDBpedia());
+		}else{
+			url = "http://dbpedia.openlinksw.com:8890/sparql";
+			sparqlTasks = new SPARQLTasks(Cache.getPersistentCache(),SparqlEndpoint.EndpointDBpedia());
+		}
 		
 		String prim="http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
 		
 		String award=("http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners");
 		
-		System.out.println(DBpediaSKOS(prim));
-//		double acc1=0.0;
-//		for (int i = 0; i < 5; i++) {
-//			acc1+=DBpediaSKOS(prim);
-//		}
-//		System.out.println("accprim"+(acc1/5));
-//		
-//		double acc2=0.0;
-//		for (int i = 0; i < 5; i++) {
-//			acc2+=DBpediaSKOS(award);
-//		}
-//		System.out.println("accprim"+(acc2/5));
+		SKOS7030 s= new SKOS7030();
 		
-//		DBpediaSKOS(concepts.first());
-//		DBpediaSKOS(concepts.first());
-//		concepts.remove(concepts.first());
-//		DBpediaSKOS(concepts.first());
-//		DBpediaSKOS(concepts.first());
-//		concepts.remove(concepts.first());
-//		DBpediaSKOS(concepts.first());
-//		DBpediaSKOS(concepts.first());
-		//algorithm="refinement";
-		//roles();
+		s.makeExamples(prim, percentOfSKOSSet, negfactor, sparqlResultSize);
+		//QUALITY s.posExamples
+		List<Description> conceptresults = s.learn(s.posExamples, s.negExamples);
+		logger.debug("found nr of concepts: "+conceptresults.size());
 		
-		/*System.out.println(Level.DEBUG.getClass());
-			System.out.println(Level.toLevel("INFO"));
-			System.out.println(Level.INFO);*/
-			//System.exit(0);
+		for (Description oneConcept : conceptresults) {
+			s.evaluate(oneConcept, 1000);
 			
-	
+		}
 		
-			sc.printAndSet("Finished");
-
+		
+		System.out.println("Finished");
+		
+	}	
+	
+	void evaluate(Description oneConcept, int sparqlResultLimit){
+		logger.debug("oneconcept: "+oneConcept);
+		SortedSet<String> instances = sparqlTasks.retrieveInstancesForConcept(oneConcept.toKBSyntaxString(), sparqlResultLimit);
+		
+		System.out.println(fullminusposRest.size());
+		System.out.println(instances.size());
+		
+		SortedSet<String> coveredInRest = new TreeSet<String>(fullminusposRest);
+		coveredInRest.retainAll(instances);
+		
+		System.out.println(fullminusposRest.size());
+		System.out.println(instances.size());
+		System.out.println(coveredInRest.size());
+		
+		
+		
+		//SortedSet<String> possibleNewCandidates = new TreeSet<String>();
+		//SortedSet<String> notCoveredInTotal = new TreeSet<String>();
+		
+		
 	}
 	
 	
-
-	static double DBpediaSKOS(String concept){
-		se = SparqlEndpoint.EndpointLOCALDBpedia();
-		//se = SparqlEndpoint.EndpointDBpedia();
-		String url = "http://dbpedia.openlinksw.com:8890/sparql";
-		url = "http://139.18.2.37:8890/sparql";
+	static void DBpediaSKOS(String SKOSConcept){
+		
 		
 		//concepts.add("http://dbpedia.org/resource/Category:Grammy_Award_winners");
 		//concepts.add("EXISTS \"http://dbpedia.org/property/grammyawards\".TOP");
 		
-		SortedSet<String> posExamples = new TreeSet<String>();
-		SortedSet<String> negExamples = new TreeSet<String>();
+		
 		
 		//HashMap<String, ResultSet> result = new HashMap<String, ResultSet>();
 		//HashMap<String, String> result2 = new HashMap<String, String>();
@@ -142,89 +140,68 @@ public class SKOS7030 {
 		//logger.setLevel(Level.TRACE);
 		
 		
-			AutomaticExampleFinderSKOSSPARQL ae= new AutomaticExampleFinderSKOSSPARQL( se);	
-			
-			ae.initDBpediaSKOS(concept,percentage , useRelated, useParallelClasses);
-			posExamples = ae.getPosExamples();
-			negExamples = ae.getNegExamples();
-			
-			for (String string2 : negExamples) {
-				logger.debug("-"+string2);
-			}
-			
-			for (String string2 : posExamples) {
-				logger.debug("+"+string2);
-			}
-			SortedSet<String> totalSKOSset= ae.totalSKOSset;
-			SortedSet<String> rest= ae.rest;
-			logger.debug(totalSKOSset);
-			logger.debug(rest);
+		
 			
 			
-			LearnSparql ls = new LearnSparql();
-	
-			//igno.add(oneConcept.replaceAll("\"", ""));
-			
-			List<Description> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache,resultsize,noise);
-			
-			System.out.println("concepts"+conceptresults);
-			//System.exit(0);
-			logger.debug("found nr of concepts:"+conceptresults.size());
-			SortedSet<ResultCompare> res=new TreeSet<ResultCompare>();
-			for (Description oneConcept : conceptresults) {
-				try{
-				System.out.println("oneconcept: "+oneConcept);
-				String rewritten = SparqlQueryDescriptionConvertRDFS.conceptRewrite(oneConcept.toKBSyntaxString(), se, c, true);
-				SortedSet<String> instances = ae.queryConceptAsStringSet(rewritten, 200);
-				SortedSet<String> coveredInRest = new TreeSet<String>();
-				SortedSet<String> possibleNewCandidates = new TreeSet<String>();
-				SortedSet<String> notCoveredInTotal = new TreeSet<String>();
-				
-				int i=0;
-				int a=0;
-				for (String oneinst : instances) {
-					boolean inRest=false;
-					boolean inTotal=false;
-					for (String onerest : rest) {
-						if(onerest.equalsIgnoreCase(oneinst))
-							{ i++; inRest=true; break;}
-						
-					}
-					if (inRest){coveredInRest.add(oneinst);};
-					
-					for (String onetotal : totalSKOSset) {
-						if(onetotal.equalsIgnoreCase(oneinst))
-						{ a++; inTotal=true; break;}
-					}
-					if(!inRest && !inTotal){
-						possibleNewCandidates.add(oneinst);
-					}
-				}
-				
-				for (String onetotal : totalSKOSset) {
-					boolean mm=false;
-					for (String oneinst : instances) {
-						if(onetotal.equalsIgnoreCase(oneinst)){
-							mm=true;break;
-						}
-							
-					}
-					if(!mm)notCoveredInTotal.add(onetotal);
-					
-				}
-				
-				
-				
-				double accuracy= (double)i/rest.size();
-				double accuracy2= (double)a/totalSKOSset.size();
-				
-				logger.debug((new ResultCompare(oneConcept.toKBSyntaxString(),instances,accuracy,accuracy2,instances.size(),
-						coveredInRest,possibleNewCandidates,notCoveredInTotal)).toStringFull());
-				
-				//if(instances.size()>=0)System.out.println("size of instances "+instances.size());
-				//if(instances.size()>=0 && instances.size()<100) System.out.println("instances"+instances);
-				}catch (Exception e) {e.printStackTrace();}
-			}
+//			LearnSparql ls = new LearnSparql();
+//	
+//			//igno.add(oneConcept.replaceAll("\"", ""));
+//			
+//			List<Description> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache,resultsize,noise);
+//			
+//			System.out.println("concepts"+conceptresults);
+//			//System.exit(0);
+//			
+//			SortedSet<ResultCompare> res=new TreeSet<ResultCompare>();
+//			for (Description oneConcept : conceptresults) {
+//				try{
+//				
+//				
+//				int i=0;
+//				int a=0;
+//				for (String oneinst : instances) {
+//					boolean inRest=false;
+//					boolean inTotal=false;
+//					for (String onerest : rest) {
+//						if(onerest.equalsIgnoreCase(oneinst))
+//							{ i++; inRest=true; break;}
+//						
+//					}
+//					if (inRest){coveredInRest.add(oneinst);};
+//					
+//					for (String onetotal : totalSKOSset) {
+//						if(onetotal.equalsIgnoreCase(oneinst))
+//						{ a++; inTotal=true; break;}
+//					}
+//					if(!inRest && !inTotal){
+//						possibleNewCandidates.add(oneinst);
+//					}
+//				}
+//				
+//				for (String onetotal : totalSKOSset) {
+//					boolean mm=false;
+//					for (String oneinst : instances) {
+//						if(onetotal.equalsIgnoreCase(oneinst)){
+//							mm=true;break;
+//						}
+//							
+//					}
+//					if(!mm)notCoveredInTotal.add(onetotal);
+//					
+//				}
+//				
+//				
+//				
+//				double accuracy= (double)i/rest.size();
+//				double accuracy2= (double)a/totalSKOSset.size();
+//				
+//				logger.debug((new ResultCompare(oneConcept.toKBSyntaxString(),instances,accuracy,accuracy2,instances.size(),
+//						coveredInRest,possibleNewCandidates,notCoveredInTotal)).toStringFull());
+//				
+//				//if(instances.size()>=0)System.out.println("size of instances "+instances.size());
+//				//if(instances.size()>=0 && instances.size()<100) System.out.println("instances"+instances);
+//				}catch (Exception e) {e.printStackTrace();}
+//			}
 			
 //			System.out.println(res.last());
 //			res.remove(res.last());
@@ -250,7 +227,7 @@ public class SKOS7030 {
 //				
 //			}
 //			
-			return 0.0;
+//			return 0.0;
 			
 			
 			//System.out.println("AAAAAAAA");
@@ -268,7 +245,7 @@ public class SKOS7030 {
 
 	
 
-	public static void init() {
+	public static void initLogger() {
 		
 		SimpleLayout layout = new SimpleLayout();
 		// create logger (a simple logger which outputs
@@ -283,12 +260,11 @@ public class SKOS7030 {
 		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
 		logger.setLevel(Level.DEBUG);
-		c = new Cache("cachetemp");
-		
-
+		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
+	
 	}
 	
-	public static SortedSet<String> selectDBpediaConcepts(int number){
+	/*public static SortedSet<String> selectDBpediaConcepts(int number){
 		String query = "SELECT DISTINCT ?concept WHERE { \n" + 
 		"[] a ?concept .FILTER (regex(str(?concept),'yago'))" +
 		" \n}  \n"; //LIMIT "+number+"
@@ -298,7 +274,180 @@ public class SKOS7030 {
 		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
 		JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
 		return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);
+	}*/
+	
+	public void makeExamples(String SKOSConcept, double percentOfSKOSSet , double negfactor, int sparqlResultSize){
+		
+		//POSITIVES
+		AutomaticPositiveExampleFinderSPARQL apos = new AutomaticPositiveExampleFinderSPARQL(sparqlTasks);
+		apos.makePositiveExamplesFromSKOSConcept(SKOSConcept);
+		fullPositiveSet =  apos.getPosExamples();
+		
+		int poslimit=(int)Math.round(percentOfSKOSSet*fullPositiveSet.size());
+		int neglimit=(int)Math.round(poslimit*negfactor);
+		
+		this.posExamples =  SetManipulation.fuzzyShrink(fullPositiveSet,poslimit);
+		
+		
+		
+		//NEGATIVES
+		
+		AutomaticNegativeExampleFinderSPARQL aneg = new AutomaticNegativeExampleFinderSPARQL(fullPositiveSet,sparqlTasks);
+		
+		aneg.makeNegativeExamplesFromParallelClasses(posExamples, sparqlResultSize);
+		SortedSet<String> negativeSet =  aneg.getNegativeExamples(neglimit);
+		
+		logger.debug("POSITIVE EXAMPLES");
+		for (String pos : posExamples) {
+			logger.debug("+"+pos);
+		}
+	
+		logger.debug("NEGATIVE EXAMPLES");
+		for (String negs : negativeSet) {
+			logger.debug("-"+negs);
+		}
+	
+		
+		
+		fullminusposRest = fullPositiveSet;
+		fullminusposRest.removeAll(posExamples);
+		
+		
+		logger.debug(fullPositiveSet);
+		logger.debug(fullminusposRest);
 	}
+	
+	public List<Description> learn(SortedSet<String> posExamples, SortedSet<String> negExamples){
+		
+		SortedSet<String> instances = new TreeSet<String>();
+		instances.addAll(posExamples);
+		instances.addAll(negExamples);
+		
+		
+	
+		ComponentManager cm = ComponentManager.getInstance();
+		LearningAlgorithm la = null;
+		ReasoningService rs = null;
+		LearningProblem lp = null; 
+		SparqlKnowledgeSource ks =null;
+		try {
+		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
+		ks = cm.knowledgeSource(SparqlKnowledgeSource.class);
+		ReasonerComponent r = new FastInstanceChecker(sources);
+		rs = new ReasoningService(r); 
+		//System.out.println("satisfy: "+rs.isSatisfiable());
+		lp = new PosNegDefinitionLP(rs);	
+		((PosNegLP) lp).setPositiveExamples(SetManipulation.stringToInd(posExamples));
+		((PosNegLP) lp).setNegativeExamples(SetManipulation.stringToInd(negExamples));
+		
+		la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
+
+		logger.debug("start learning");
+		
+		
+		//KNOWLEDGESOURCE
+		cm.applyConfigEntry(ks, "instances",instances);
+		cm.applyConfigEntry(ks, "url",url);
+		cm.applyConfigEntry(ks, "recursionDepth",recursiondepth);
+		cm.applyConfigEntry(ks, "closeAfterRecursion",closeAfterRecursion);
+		cm.applyConfigEntry(ks, "predefinedFilter","YAGO");
+		if(local)
+			cm.applyConfigEntry(ks, "predefinedEndpoint","LOCALDBPEDIA");
+		else {
+			cm.applyConfigEntry(ks, "predefinedEndpoint","DBPEDIA");
+		}
+		if(randomizeCache)
+			cm.applyConfigEntry(ks, "cacheDir","cache/"+System.currentTimeMillis()+"");
+		else {cm.applyConfigEntry(ks, "cacheDir",Cache.getDefaultCache());}
+		
+		//LEARNINGALGORITHM
+		cm.applyConfigEntry(la,"useAllConstructor",false);
+		cm.applyConfigEntry(la,"useExistsConstructor",true);
+		cm.applyConfigEntry(la,"useCardinalityRestrictions",false);
+		cm.applyConfigEntry(la,"useNegation",false);
+		cm.applyConfigEntry(la,"minExecutionTimeInSeconds",0);
+		cm.applyConfigEntry(la,"maxExecutionTimeInSeconds",maxExecutionTimeInSeconds);
+		cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",guaranteeXgoodDescriptions);
+		cm.applyConfigEntry(la,"writeSearchTree",false);
+		cm.applyConfigEntry(la,"searchTreeFile","log/SKOS.txt");
+		cm.applyConfigEntry(la,"replaceSearchTree",true);
+		cm.applyConfigEntry(la,"noisePercentage",noise);
+		//cm.applyConfigEntry(la,"guaranteeXgoodDescriptions",999999);
+		cm.applyConfigEntry(la,"logLevel","TRACE");
+		/*if(ignoredConcepts.size()>0)
+			cm.applyConfigEntry(la,"ignoredConcepts",ignoredConcepts);
+		*/
+		
+		ks.init();
+		sources.add(ks);
+		r.init();
+		lp.init();
+		la.init();	
+		
+		
+		la.start();
+		//Statistics.addTimeCollecting(sc.getTime());
+		//Statistics.addTimeLearning(sc.getTime());
+		
+		
+		return la.getGoodSolutions();
+		
+		}catch (Exception e) {e.printStackTrace();}
+		return null;
+		
+	}
+
+	
+//	String t="\"http://dbpedia.org/class/yago/Fiction106367107\"";
+//	t="(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))";
+//	//System.out.println(t);
+//	//t="\"http://www.w3.org/2004/02/skos/core#subject\"";
+//	//conceptRewrite(t);
+//	//getSubClasses(t);
+//	
+//	AutomaticExampleFinderSKOSSPARQL ae= new AutomaticExampleFinderSKOSSPARQL( se);	
+//		try{
+//		System.out.println("oneconcept: "+t);
+//		SortedSet<String> instances = ae.queryConceptAsStringSet(conceptRewrite(t), 200);
+//		if(instances.size()>=0)System.out.println("size of instances "+instances.size());
+//		if(instances.size()>=0 && instances.size()<100) System.out.println("instances"+instances);
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		}
+	//SortedSet<String> concepts = new TreeSet<String>();
+	
+	
+	
+	//System.out.println(DBpediaSKOS(prim));
+//	double acc1=0.0;
+//	for (int i = 0; i < 5; i++) {
+//		acc1+=DBpediaSKOS(prim);
+//	}
+//	System.out.println("accprim"+(acc1/5));
+//	
+//	double acc2=0.0;
+//	for (int i = 0; i < 5; i++) {
+//		acc2+=DBpediaSKOS(award);
+//	}
+//	System.out.println("accprim"+(acc2/5));
+	
+//	DBpediaSKOS(concepts.first());
+//	DBpediaSKOS(concepts.first());
+//	concepts.remove(concepts.first());
+//	DBpediaSKOS(concepts.first());
+//	DBpediaSKOS(concepts.first());
+//	concepts.remove(concepts.first());
+//	DBpediaSKOS(concepts.first());
+//	DBpediaSKOS(concepts.first());
+	//algorithm="refinement";
+	//roles();
+	
+	/*System.out.println(Level.DEBUG.getClass());
+		System.out.println(Level.toLevel("INFO"));
+		System.out.println(Level.INFO);*/
+		//System.exit(0);
+		
+
 	
 	
 	

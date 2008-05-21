@@ -112,6 +112,9 @@ public class SparqlQuery {
 		return queryString;
 	}
 	
+	/**
+	 * @return String JSON
+	 */
 	public String getResult() {
 		return json;
 	}

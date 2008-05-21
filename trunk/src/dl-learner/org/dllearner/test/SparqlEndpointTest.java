@@ -11,11 +11,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
+import org.dllearner.utilities.examples.SPARQLTasks;
 import org.dllearner.utilities.statistics.SimpleClock;
-
-import com.hp.hpl.jena.query.ResultSet;
 
 public class SparqlEndpointTest {
 	private static Logger logger = Logger.getRootLogger();
@@ -65,21 +62,14 @@ public class SparqlEndpointTest {
 		SimpleClock sc =  new SimpleClock(); 
 		try{
 		
-		String query ="" +
+		String SPARQLquery ="" +
 			"SELECT DISTINCT ?c " +
 			"WHERE {[] a ?c }" +
 			"LIMIT 100";
 		
-		query ="SELECT DISTINCT ?c WHERE {[] a ?c }LIMIT 100";
-		
-		SparqlQuery s = new SparqlQuery(query,se);
+		SPARQLquery ="SELECT DISTINCT ?c WHERE {[] a ?c }LIMIT 100";
+		int i = new SPARQLTasks(se).queryAsSet(SPARQLquery, "c").size();
 	
-		s.send();
-		String result = s.getResult();
-		ResultSet rs = SparqlQuery.JSONtoResultSet(result);
-		
-		JenaResultSetConvenience jsr = new JenaResultSetConvenience(rs);
-		int i = jsr.getStringListForVariable("c").size();
 		
 		working.add(sc.getAndSet("endpoint working: "+se.getURL()+" ("+((i==100)?"more than 100 concepts":"about "+i+" concepts")+" )"));
 		}catch (Exception e) {notworking.add(sc.getAndSet("endpoint NOT working: "+se.getURL()));}

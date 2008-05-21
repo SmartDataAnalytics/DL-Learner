@@ -1,18 +1,12 @@
 package org.dllearner.utilities.examples;
 
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.datastructures.JenaResultSetConvenience;
-import org.dllearner.utilities.datastructures.SetManipulation;
-
-import com.hp.hpl.jena.query.ResultSet;
-
+// keep this class it still needs to be worked in
 public class AutomaticExampleFinderRolesSPARQL {
 
 	private static Logger logger = Logger
@@ -24,7 +18,7 @@ public class AutomaticExampleFinderRolesSPARQL {
 	private SortedSet<String> negExamples;
 	private int roleLimit=1000;
 	
-	
+	/*
 	public AutomaticExampleFinderRolesSPARQL(SparqlEndpoint se){
 		this.c=new Cache("cachetemp");
 		this.se=se;
@@ -119,7 +113,7 @@ public class AutomaticExampleFinderRolesSPARQL {
 	
 	
 	
-	
+	*/
 	
 	
 }
