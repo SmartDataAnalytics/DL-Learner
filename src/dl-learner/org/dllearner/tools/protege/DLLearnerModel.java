@@ -143,7 +143,6 @@ public class DLLearnerModel extends Observable implements Runnable{
 	
 	public void setLearningProblem()
 	{
-		System.out.println("das ist die id: "+id);
 		if(id.equals("Equivalent classes"))
 		{
 			lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
@@ -253,16 +252,11 @@ public class DLLearnerModel extends Observable implements Runnable{
 	
 	public void setPositiveConcept()
 	{
-		//Set<OWLClassAssertionAxiom> test=editor.getOWLModelManager().getActiveOntology().getClassAssertionAxioms(aktuell.getRootObject());
-		//OWLClassAssertionAxiom axio = test.iterator().next();
 		Set<NamedClass> concepts = rs.getAtomicConcepts();
-		System.out.println(concepts);
 		SortedSet<Individual> individuals = null;
 		while(concepts.iterator().hasNext()&&individuals==null)
 		{
 			NamedClass concept = concepts.iterator().next();
-			//System.out.println(concept);
-			//System.out.println("test:"+concept.toString().endsWith("#"+aktuell.getRootObject().toString()));
 			if(concept.toString().endsWith("#"+aktuell.getRootObject().toString()))
 			{
 			individuals = rs.retrieval(concept);
@@ -285,12 +279,10 @@ public class DLLearnerModel extends Observable implements Runnable{
     			String indi1=individual.get(i).getName();
 				if(indi1.toString().equals(indi.toString()))
 				{
-					System.out.println("Check");
 					isChecked = true;
 				}
 				else
 				{
-					System.out.println("Da bin ich");
 					isChecked = false;
 				}
     		}

@@ -26,6 +26,8 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			view.getRunButton().setEnabled(false);
 			view.getCancelButton().setEnabled(true);
 			dlLearner.start();
+			String error = "Learning succesful";
+			view.renderErrorMessage(error);
 		}
 		
 		if(z.getActionCommand().equals("Cancel"))
@@ -52,6 +54,21 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			
 			String message ="Concept added";
 			view.renderErrorMessage(message);
+		}
+		
+		if(z.getActionCommand().equals("?"))
+		{
+			if(z.getSource().toString().contains("PosHelpButton"))
+			{
+				String hilfe="A Instance that follows from the classdescription. Per Default all that belongs to the class.";
+				view.renderHelpMessage(hilfe);
+			}
+			
+			if(z.getSource().toString().contains("NegHelpButton"))
+			{
+				String hilfe="A Instance tht doesn't follow from the classdescription.";
+				view.renderHelpMessage(hilfe);
+			}
 		}
     }
 
