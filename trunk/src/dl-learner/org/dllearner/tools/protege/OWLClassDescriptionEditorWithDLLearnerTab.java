@@ -192,6 +192,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
             return restrictionCreatorPanel.createRestrictions();
         }
         else if(tabbedPane.getSelectedComponent() == dllearner){
+        	System.out.println("die loesungen:"+dllearner.getSollutions());
         	return dllearner.getSollutions(); 
         }
         return super.getEditedObjects();
@@ -275,7 +276,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  private JButton helpForNegExamples;
 	  private JLabel errorMessage;
 	  private JToggleButton advanced; 
-	  //private JScrollPane suggestScroll;
+	  private JScrollPane suggestScroll;
 	  private ActionHandler action;
 	  private DLLearnerModel model;
 	  private Description[] descriptions = new Description[10];
@@ -304,6 +305,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	accept = new JButton("ADD");
 	    	option = new JPanel(new GridLayout(0,2));
 			scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			suggestScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	    	errorMessage = new JLabel();
 	    	learner = new JPanel();
 	    	advanced.setSize(20,20);
@@ -349,6 +351,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	advanced.setBounds(10,200,20,20);
 	    	scrollPane.setViewportView(option);
 			scrollPane.setBounds(10, 230, 490, 250);
+			suggestScroll.setViewportView(suggest);
+			suggestScroll.setBounds(10,40,490,110);
 	        cancel.setBounds(260,0,200,30);
 	        accept.setBounds(510,40,80,110);
 	        errorMessage.setBounds(10,160,590,20);
@@ -356,7 +360,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	learner.add(adv);
 	    	learner.add(advanced);
 	    	learner.add(cancel);
-	    	learner.add(suggest);
+	    	learner.add(suggestScroll);
 	    	learner.add(accept);
 	    	learner.add(errorMessage);
 	    	learner.add(scrollPane);
@@ -407,6 +411,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  
 	  public OWLDescription getSollution()
 	  {
+		  System.out.println(model.getSollution());
 		  return model.getSollution();
 	  }
 	  
@@ -426,6 +431,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   {
 		 option.removeAll();
 		 run.setEnabled(true);
+		 model.unsetNewConcepts();
 		 action.destroyDLLearnerThread();
 		 suggest.removeAll();
 		 errorMessage.setText("");
@@ -462,14 +468,18 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 				run.setEnabled(true);
 				cancel.setEnabled(false);
 				accept.setEnabled(true);
-				learner.remove(suggest);
+				learner.remove(suggestScroll);
+				suggestScroll.remove(suggest);
 				descriptions = desc;
 				suggest=new JList(descriptions);
-		    	suggest.setBounds(10,40,490,110);
+				suggest.setBounds(10,40,490,110);
 				suggest.setVisible(true);
-				learner.add(suggest);
+				suggestScroll.setViewportView(suggest);
+				suggestScroll.setBounds(10,40,490,110);
+				learner.add(suggestScroll);
+				//suggest.repaint();
 				suggest.addMouseListener(action);
-				suggest.repaint();
+				suggestScroll.repaint();
 				model.unsetJCheckBoxen();
 				option.removeAll();
 				setJCheckBoxen();

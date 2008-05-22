@@ -87,6 +87,7 @@ public class DLLearnerModel extends Observable implements Runnable{
 		setKnowledgeSource();
 		setReasoner();
 		SortedSet<Individual> pos=rs.getIndividuals();
+		System.out.println(pos);
 		while(pos.iterator().hasNext())
 		{
 			indis.add(pos.iterator().next());
@@ -249,26 +250,45 @@ public class DLLearnerModel extends Observable implements Runnable{
 	{
 		
 	}
-	
+	public void unsetNewConcepts()
+	{
+		while(OWLDescription.iterator().hasNext())
+		{
+			OWLDescription.remove(OWLDescription.iterator().next());
+		}
+	}
 	public void setPositiveConcept()
 	{
 		Set<NamedClass> concepts = rs.getAtomicConcepts();
+		System.out.println("!"+rs.getAtomicConcepts());
+		System.out.println("2"+aktuell.getRootObject());
+		
 		SortedSet<Individual> individuals = null;
 		while(concepts.iterator().hasNext()&&individuals==null)
 		{
+			System.out.println(concepts.size());
+			System.out.println(individuals==null);
 			NamedClass concept = concepts.iterator().next();
+			System.out.println("§"+rs.retrieval(concept));
 			if(concept.toString().endsWith("#"+aktuell.getRootObject().toString()))
 			{
-			individuals = rs.retrieval(concept);
+				if(rs.retrieval(concept)!=null){
+					System.out.println(":-) "+rs.retrieval(concept));
+					individuals = rs.retrieval(concept);
+				}
 			}
 			concepts.remove(concept);
+			System.out.println(individuals);
 		}
-		while(individuals.iterator().hasNext())
+		System.out.println(individuals==null);
+		if(individuals!=null)
 		{
-			individual.add(individuals.iterator().next());
-			individuals.remove(individuals.iterator().next());
+			while(individuals.iterator().hasNext())
+			{
+				individual.add(individuals.iterator().next());
+				individuals.remove(individuals.iterator().next());
+			}
 		}
-		
 	}
 	
 	public boolean setPositivExamplesChecked(String indi)
@@ -277,8 +297,11 @@ public class DLLearnerModel extends Observable implements Runnable{
     		for(int i = 0; i<individual.size()&& isChecked==false;i++)
     		{
     			String indi1=individual.get(i).getName();
-				if(indi1.toString().equals(indi.toString()))
+    			System.out.println("1: "+indi);
+    			System.out.println("2 :"+indi1);
+    			if(indi1.toString().equals(indi.toString()))
 				{
+					System.out.println(indi);
 					isChecked = true;
 				}
 				else
@@ -393,9 +416,11 @@ public class DLLearnerModel extends Observable implements Runnable{
 			{
 				newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
 				ds.add(newConceptOWLAPI);
+				OWLDescription.add(newConceptOWLAPI);
 			}
 			this.desc = newConceptOWLAPI;
-			OWLDescription.add(newConceptOWLAPI);
+			
+			System.out.println("hallo:"+OWLDescription);
 		}
 	}
 	
