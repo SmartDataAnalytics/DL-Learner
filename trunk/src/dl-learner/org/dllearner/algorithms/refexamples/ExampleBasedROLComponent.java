@@ -38,6 +38,7 @@ import org.dllearner.core.config.CommonConfigOptions;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
+import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.owl.Description;
@@ -112,6 +113,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
 	private double noisePercentage = 0.0;
 	private NamedClass startClass = null;
+	private boolean usePropernessChecks = false;
+	private int maxPosOnlyExpansion = 4;
 	//extended Options
 	//in seconds
 	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
@@ -179,6 +182,9 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
 		options.add(CommonConfigOptions.getLogLevel());
+		options.add(new BooleanConfigOption("usePropernessChecks", "specifies whether to check for equivalence (i.e. discard equivalent refinements)"));
+		options.add(new IntegerConfigOption("maxPosOnlyExpansion", "specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is" +
+				" considered as solution candidate"));
 		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples");
 		noisePercentage.setLowerLimit(0);
 		noisePercentage.setUpperLimit(100);
@@ -238,6 +244,10 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			noisePercentage = (Double) entry.getValue();
 		} else if(name.equals("useBooleanDatatypes")) {
 			useBooleanDatatypes = (Boolean) entry.getValue();
+		} else if(name.equals("usePropernessChecks")) {
+			usePropernessChecks = (Boolean) entry.getValue();
+		} else if(name.equals("maxPosOnlyExpansion")) {
+			maxPosOnlyExpansion = (Integer) entry.getValue();
 		} else if(name.equals("startClass")) {
 			startClass = new NamedClass((String)entry.getValue());
 		}else if(name.equals("maxExecutionTimeInSeconds")) {
@@ -344,6 +354,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 				useTooWeakList,
 				useOverlyGeneralList,
 				useShortConceptConstruction,
+				usePropernessChecks,
+				maxPosOnlyExpansion,
 				maxExecutionTimeInSeconds,
 				minExecutionTimeInSeconds,
 				guaranteeXgoodDescriptions

@@ -101,7 +101,7 @@ public class ExampleBasedROLearner {
 	// if no negatives are given, then one possible strategy is to find a very special concept still entailing all positive examples;
 	// this is realised by changing the termination criterion: a concept is a solution if it has been expanded x times (x is 
 	// configurable) but no more special concept is found (all are either equivalent or too weak) 
-	private int maxPosOnlyExpansion = 3;
+	private int maxPosOnlyExpansion;
 	
 	// search tree options
 	private boolean writeSearchTree;
@@ -125,7 +125,7 @@ public class ExampleBasedROLearner {
 	// but the disadvantage of properness testing are additional reasoner
 	// queries and a search bias towards ALL r.something because 
 	// ALL r.TOP is improper and automatically expanded further
-	private boolean testProperness = false;
+	private boolean usePropernessChecks = false;
 	
 	// tree traversal means to run through the most promising concepts
 	// and connect them in an intersection to find a solution
@@ -228,6 +228,8 @@ public class ExampleBasedROLearner {
 			boolean useTooWeakList, 
 			boolean useOverlyGeneralList, 
 			boolean useShortConceptConstruction,
+			boolean usePropernessChecks,
+			int maxPosOnlyExpansion,
 			int maxExecutionTimeInSeconds,
 			int minExecutionTimeInSeconds,
 			int guaranteeXgoodDescriptions
@@ -269,7 +271,9 @@ public class ExampleBasedROLearner {
 		this.useTooWeakList = useTooWeakList;
 		this.useOverlyGeneralList = useOverlyGeneralList;
 		this.useShortConceptConstruction = useShortConceptConstruction;
+		this.usePropernessChecks = usePropernessChecks;
 		this.baseURI = rs.getBaseURI();
+		this.maxPosOnlyExpansion = maxPosOnlyExpansion;
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 		this.minExecutionTimeInSeconds = minExecutionTimeInSeconds;
 		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
@@ -423,6 +427,8 @@ public class ExampleBasedROLearner {
 				if(bestNode.getChildren().size() == 0 || bestChild.isTooWeak()) {
 					solutions.add(bestNode.getConcept());
 					System.out.println("solution: " + bestNode.getConcept());
+					System.out.println("maxPosOnlyExpansion: " + maxPosOnlyExpansion);
+					System.out.println("best child of this node: " + bestChild);
 					System.out.println("TODO: needs to be integrated with other stopping criteria");
 					System.exit(0);
 				}
@@ -616,7 +622,7 @@ public class ExampleBasedROLearner {
 		Set<Description> improperConcepts = null;
 		if(toEvaluateConcepts.size()>0) {
 			// Test aller Konzepte auf properness (mit DIG in nur einer Anfrage)
-			if(testProperness) {
+			if(usePropernessChecks) {
 				long propCalcReasoningStart = System.nanoTime();
 				improperConcepts = rs.subsumes(toEvaluateConcepts, concept);
 				propernessTestsReasoner+=toEvaluateConcepts.size();
@@ -1129,6 +1135,15 @@ public class ExampleBasedROLearner {
 	
 	public ExampleBasedNode getStartNode() {
 		return startNode;
+	}
+	
+	// returns whether the refinement is "meaningful", i.e. the refinement actually represents a different concept
+	// than its parent; this is needed to determine when a positive only learning algorithm should stop (when a node
+	// has been expaned x times without yielding any meaningful refinements, it is considered a possible solution)
+	private boolean isPosOnlyRefinementMeaningful(ExampleBasedNode node, ExampleBasedNode refinement) {
+		Description d1 = node.getConcept();
+		Description d2 = refinement.getConcept();
+		return true;
 	}
 	
 	private void handleStoppingConditions(){
