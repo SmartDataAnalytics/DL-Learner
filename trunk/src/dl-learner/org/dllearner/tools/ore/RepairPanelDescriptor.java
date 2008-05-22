@@ -53,7 +53,6 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 		
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("save")){
 			getWizardModel().getOre().getModi().saveOntology();

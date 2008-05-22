@@ -48,7 +48,6 @@ public class MoveDialog extends JDialog{
 		okButton = new JButton("Ok");
 		okButton.addActionListener(new ActionListener(){
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(e.getActionCommand().equals("Ok")){
 					
@@ -62,7 +61,6 @@ public class MoveDialog extends JDialog{
 		cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(new ActionListener(){
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(e.getActionCommand().equals("Cancel")){
 					
