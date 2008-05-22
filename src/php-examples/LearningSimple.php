@@ -30,13 +30,14 @@ include('Utilities.php');
 // load WSDL files (has to be done due to a Java web service bug)
 ini_set("soap.wsdl_cache_enabled","0");
 $wsdluri="http://localhost:8181/services?wsdl";
-Utilities::loadWSDLfiles($wsdluri);
+// Utilities::loadWSDLfiles($wsdluri);
 
 // specifiy ontology
 $ontology = 'file:'.realpath("../../examples/family/father.owl");
 
 // create DL-Learner client
 $client = new SoapClient("main.wsdl");
+// $client = new SoapClient($wsdluri);
 
 // load owl file in DIG reasoner (you need a running DIG reasoner)
 $id = $client->generateID();
