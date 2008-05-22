@@ -45,9 +45,8 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			view.getCancelButton().setEnabled(false);
 			String error = "Learning aborted";
 			view.renderErrorMessage(error);
-			model.getLearningAlgorithm().stop();
 			dlLearner.interrupt();
-
+			model.getLearningAlgorithm().stop();
 		}
 		
 		if(z.getActionCommand().equals("ADD"))
@@ -57,6 +56,7 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			{
 				if(model.getSolutions()[i].toString().equals(suggest))
 				{
+					System.out.println(model.getSolutions()[i]);
 					model.changeDLLearnerDescriptionsToOWLDescriptions(model.getSolutions()[i]);
 				}
 			}
@@ -87,7 +87,6 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			{
 				toggled=true;
 				view.setExamplePanelVisible(toggled);
-				System.out.println(z.getSource());
 			}
 			else
 			{
