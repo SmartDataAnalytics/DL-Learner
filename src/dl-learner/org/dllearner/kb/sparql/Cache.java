@@ -32,7 +32,7 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.utilities.statistics.Statistics;
+import org.dllearner.utilities.JamonMonitorLogger;
 
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. The queries
@@ -92,6 +92,10 @@ public class Cache implements Serializable {
 		Cache c = new Cache("cache"); 
 		
 		return c;
+	}
+	
+	public static String getDefaultCacheDir(){
+		return "cache";
 	}
 	
 	/**
@@ -234,14 +238,21 @@ public class Cache implements Serializable {
 	 * @return Jena result set.
 	 */
 	public String executeSparqlQuery(SparqlQuery query) {
+		JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").start();
+		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
 		
-		Statistics.increaseQuery();
+		
+		//Statistics.increaseQuery();
+		
+		JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").start();
 		String result = getCacheEntry(query.getQueryString());
+		JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").stop();
+		
 		if (result != null) {
 			logger.trace("got from cache");
-			
-			Statistics.increaseCachedQuery();
-			return result;
+			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
+			//Statistics.increaseCachedQuery();
+			//return result;
 		} else {
 			//SimpleClock sc = new SimpleClock();
 			query.send();
@@ -251,8 +262,11 @@ public class Cache implements Serializable {
 				addToCache(query.getQueryString(), json);
 			}
 			else json="";
-			return json;
+			logger.warn("empty result: "+query.getQueryString());
+			//return json;
 		}
+		JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").stop();
+		return result;
 	}
 	
 	public void setFreshnessInDays(int days){

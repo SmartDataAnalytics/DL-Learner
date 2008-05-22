@@ -90,7 +90,7 @@ public class SPARQLTasks {
 				"?subject " +
 				"<"+role+"> " + 
 				"<" + object  + "> \n" +
-				"} LIMIT "+resultLimit;
+				"} "+limit(resultLimit);
 		 
 		 return queryAsSet(SPARQLquery, "subject");			
 	}

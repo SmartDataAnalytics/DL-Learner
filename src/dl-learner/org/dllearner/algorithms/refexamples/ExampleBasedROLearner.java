@@ -46,6 +46,7 @@ import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 
@@ -279,6 +280,7 @@ public class ExampleBasedROLearner {
 	
 	public void start() {
 		runtime=System.currentTimeMillis();
+		JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime").start();
 		// TODO: write a JUnit test for this problem (long-lasting or infinite loops because
 		// redundant children of a node are called recursively after when the node is extended
 		// twice)
@@ -432,9 +434,6 @@ public class ExampleBasedROLearner {
 			
 			// Anzahl Schleifendurchläufe
 			loop++;
-			
-	
-			
 		}//end while
 		
 			
@@ -467,8 +466,12 @@ public class ExampleBasedROLearner {
 		if(stop)
 			logger.info("Algorithm stopped.");
 		else
-			logger.info("Algorithm terminated succesfully.");		
+			logger.info("Algorithm terminated succesfully.");	
+		
+		JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime").stop();
 	}
+	
+	
 	
 	// we apply the operator recursively until all proper refinements up
 	// to the maxmimum length are reached

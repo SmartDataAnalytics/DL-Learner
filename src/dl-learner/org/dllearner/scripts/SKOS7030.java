@@ -25,6 +25,7 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
@@ -70,6 +71,7 @@ public class SKOS7030 {
 	 */
 	public static void main(String[] args) {
 		System.out.println("Start");
+		
 		initLogger();
 		//parameters
 		
@@ -94,12 +96,13 @@ public class SKOS7030 {
 		logger.debug("found nr of concepts: "+conceptresults.size());
 		
 		for (Description oneConcept : conceptresults) {
-			s.evaluate(oneConcept, 1000);
+			//s.evaluate(oneConcept, 1000);
 			
 		}
 		
 		
 		System.out.println("Finished");
+		JamonMonitorLogger.printAll();
 		
 	}	
 	
@@ -283,6 +286,8 @@ public class SKOS7030 {
 		apos.makePositiveExamplesFromSKOSConcept(SKOSConcept);
 		fullPositiveSet =  apos.getPosExamples();
 		
+		//System.exit(0);
+		
 		int poslimit=(int)Math.round(percentOfSKOSSet*fullPositiveSet.size());
 		int neglimit=(int)Math.round(poslimit*negfactor);
 		
@@ -358,7 +363,7 @@ public class SKOS7030 {
 		}
 		if(randomizeCache)
 			cm.applyConfigEntry(ks, "cacheDir","cache/"+System.currentTimeMillis()+"");
-		else {cm.applyConfigEntry(ks, "cacheDir",Cache.getDefaultCache());}
+		else {cm.applyConfigEntry(ks, "cacheDir",Cache.getDefaultCacheDir());}
 		
 		//LEARNINGALGORITHM
 		cm.applyConfigEntry(la,"useAllConstructor",false);

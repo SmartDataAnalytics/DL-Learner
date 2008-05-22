@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.utilities.JamonMonitorLogger;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -85,9 +86,11 @@ public class SparqlQuery {
 		try{
 			//TODO remove after overnext Jena release
 			HttpQuery.urlLimit = 3*1024 ;
-			//SimpleClock sc=new SimpleClock();
+			
+			JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").start();
 			rs = queryExecution.execSelect();
-			//sc.printAndSet("rs to list");
+			JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
+			
 			logger.debug("query SPARQL server ["+extraDebugInfo+"], retrieved: "+rs.getResultVars());
 			json=SparqlQuery.getAsJSON(rs);
 			
