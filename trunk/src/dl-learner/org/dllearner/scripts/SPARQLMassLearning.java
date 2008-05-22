@@ -13,7 +13,6 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.examples.AutomaticExampleFinderSPARQLold;
 import org.dllearner.utilities.learn.ConfWriter;
 import org.dllearner.utilities.learn.LearnSparql;
 import org.dllearner.utilities.statistics.SimpleClock;
@@ -23,6 +22,7 @@ import com.hp.hpl.jena.query.ResultSet;
 
 public class SPARQLMassLearning {
 
+	
 	static Cache c;
 	static SparqlEndpoint se;
 	private static Logger logger = Logger.getRootLogger();
@@ -182,7 +182,7 @@ public class SPARQLMassLearning {
 		boolean closeAfterRecursion=false;
 		int numberOfTriples = 0;
 		for (String oneConcept : concepts) {
-			AutomaticExampleFinderSPARQLold ae= new AutomaticExampleFinderSPARQLold( se);	
+			//AutomaticExampleFinderSPARQLold ae= new AutomaticExampleFinderSPARQLold( se);	
 			useRelated = true;
 			useSuperClasses = true;
 			useParallelClasses = false;
@@ -190,8 +190,8 @@ public class SPARQLMassLearning {
 			poslimit=10;
 			neglimit=10;
 			//ae.initDBpedia(concept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
-			posExamples = ae.getPosExamples();
-			negExamples = ae.getNegExamples();
+			//posExamples = ae.getPosExamples();
+			//negExamples = ae.getNegExamples();
 		
 			
 			/*String tmp = concepts.first().replace("http://dbpedia.org/resource/Category:", "").replace("\"","");
@@ -223,33 +223,7 @@ public class SPARQLMassLearning {
 	}
 	
 
-	/***************************************************************************
-	 * *********************OLDCODE String
-	 * conj="(\"http://dbpedia.org/class/yago/Person100007846\" AND
-	 * \"http://dbpedia.org/class/yago/Head110162991\")";
-	 * 
-	 * 
-	 * concepts.add("EXISTS \"http://dbpedia.org/property/disambiguates\".TOP");
-	 * concepts.add("EXISTS
-	 * \"http://dbpedia.org/property/successor\".\"http://dbpedia.org/class/yago/Person100007846\"");
-	 * concepts.add("EXISTS \"http://dbpedia.org/property/successor\"."+conj);
-	 * //concepts.add("ALL \"http://dbpedia.org/property/disambiguates\".TOP");
-	 * //concepts.add("ALL
-	 * \"http://dbpedia.org/property/successor\".\"http://dbpedia.org/class/yago/Person100007846\"");
-	 * concepts.add("\"http://dbpedia.org/class/yago/Person100007846\"");
-	 * concepts.add(conj);
-	 * concepts.add("(\"http://dbpedia.org/class/yago/Person100007846\" OR
-	 * \"http://dbpedia.org/class/yago/Head110162991\")");
-	 * 
-	 * //concepts.add("NOT \"http://dbpedia.org/class/yago/Person100007846\"");
-	 * 
-	 * for (String kbsyntax : concepts) {
-	 * result.put(kbsyntax,queryConcept(kbsyntax)); }
-	 * System.out.println("************************"); for (String string :
-	 * result.keySet()) { System.out.println("KBSyntayString: "+string);
-	 * System.out.println("Query:\n"+result.get(string).hasNext());
-	 * System.out.println("************************"); }
-	 **************************************************************************/
+	
 
 	
 

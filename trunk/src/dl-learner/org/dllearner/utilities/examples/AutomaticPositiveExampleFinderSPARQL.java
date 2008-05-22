@@ -45,7 +45,7 @@ public class AutomaticPositiveExampleFinderSPARQL {
 	public void makePositiveExamplesFromSKOSConcept(String SKOSConcept){
 		logger.debug("making Positive Examples from SKOSConcept: "+SKOSConcept);	
 		this.posExamples = sparqltasks.retrieveInstancesForSKOSConcept(SKOSConcept, 0);
-		logger.debug("   pos Example size: "+posExamples.size());
+		logger.debug("pos Example size: "+posExamples.size());
 	}
 
 	public SortedSet<String> getPosExamples() {

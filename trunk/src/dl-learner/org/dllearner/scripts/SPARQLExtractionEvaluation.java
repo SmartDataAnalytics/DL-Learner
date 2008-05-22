@@ -14,7 +14,6 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.examples.AutomaticExampleFinderSPARQLold;
 import org.dllearner.utilities.learn.LearnSparql;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.dllearner.utilities.statistics.Statistics;
@@ -103,12 +102,12 @@ public class SPARQLExtractionEvaluation {
 			boolean closeAfterRecursion=true;
 			
 			System.out.println(oneConcept);
-			AutomaticExampleFinderSPARQLold ae= new AutomaticExampleFinderSPARQLold( se);	
+			//AutomaticExampleFinderSPARQLold ae= new AutomaticExampleFinderSPARQLold( se);	
 			
 			//ae.initDBpedia(oneConcept, useRelated, useSuperClasses,useParallelClasses, poslimit, neglimit);
 			
-			posExamples = ae.getPosExamples();
-			negExamples = ae.getNegExamples();
+			//posExamples = ae.getPosExamples();
+			//negExamples = ae.getNegExamples();
 		
 			for(recursiondepth=0;recursiondepth<4;recursiondepth++) {
 				
