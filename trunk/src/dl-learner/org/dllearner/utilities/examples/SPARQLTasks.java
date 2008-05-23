@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -15,6 +16,9 @@ import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 public class SPARQLTasks {
 	
+	//CHECK
+	private static Logger logger = Logger
+	.getLogger(SPARQLTasks.class);
 	private Cache c;
 	private SparqlEndpoint se;
 	
@@ -78,6 +82,7 @@ public class SPARQLTasks {
 	
 
 	/**
+	 * QUALITY: buggy because role doesn't work sometimes
 	 * get subject with fixed role and object
 	 * @param role
 	 * @param object
@@ -95,7 +100,7 @@ public class SPARQLTasks {
 		 return queryAsSet(SPARQLquery, "subject");			
 	}
 	
-	public  SortedSet<String> retrieveObjectsForSubjectAndRole(String subject, String role,int resultLimit) {
+	public  SortedSet<String> retrieveObjectsForSubjectAndRole(String subject, String role, int resultLimit) {
 		 String SPARQLquery = 
 				"SELECT DISTINCT * WHERE { \n " + 
 				"<" +subject+ "> "+
@@ -113,8 +118,8 @@ public class SPARQLTasks {
 	 * @return
 	 */
 	public  SortedSet<String> retrieveInstancesForSKOSConcept(String SKOSconcept,int resultLimit) {
-		return retrieveDISTINCTSubjectsForRoleAndObject("http://www.w3.org/2004/02/skos/core#subject", 
-				SKOSconcept, resultLimit);
+		return queryPatternAsSet("?subject", "?predicate", "<"+SKOSconcept+">", "subject", resultLimit);
+		//return retrieveDISTINCTSubjectsForRoleAndObject("http://www.w3.org/2004/02/skos/core#subject", 
 	}
 	
 	
@@ -157,6 +162,27 @@ public class SPARQLTasks {
 	}
 	
 
+	
+	/**
+	 * query a pattern with a standard SPARQL query
+	 * usage (?subject, ?predicate, <http:something> , subject )
+	 * @param subject
+	 * @param predicate
+	 * @param object
+	 * @param var
+	 * @return
+	 */
+	public SortedSet<String> queryPatternAsSet(String subject, String predicate, String object, String var, int resultLimit){
+		String SPARQLquery = "SELECT ?subject WHERE { \n " + 
+		" " + subject +
+		" " + predicate +
+		" " + object +
+		" \n" +
+		"} "+limit(resultLimit);
+		return queryAsSet( SPARQLquery,  var);
+	 }
+	
+	
 	 /**
 	  * little higher level, executes query ,returns all resources for a variable
 	 * @param SPARQLquery
@@ -166,12 +192,13 @@ public class SPARQLTasks {
 	public SortedSet<String> queryAsSet(String SPARQLquery, String var){
 		 ResultSet rs = null;
 			try {
-			rs = SparqlQuery.JSONtoResultSet(query(SPARQLquery));
+			String JSON = query(SPARQLquery);
+			rs = SparqlQuery.JSONtoResultSet(JSON);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return getStringListForVariable(rs,"subject");
+		return getStringListForVariable(rs,var);
 	 }
 	
 	
@@ -183,8 +210,10 @@ public class SPARQLTasks {
 	public String query(String SPARQLquery){
 		if(c==null){
 			SparqlQuery sq = new SparqlQuery(SPARQLquery,se);
+			sq.extraDebugInfo+=se.getURL();
 			sq.send();
-			return sq.getResult();
+			String JSON = sq.getResult(); 
+			return JSON;
 		}else{
 			return c.executeSparqlQuery(new SparqlQuery(SPARQLquery,se));
 		}
@@ -204,9 +233,7 @@ public class SPARQLTasks {
 		List<ResultBinding> l =  ResultSetFormatter.toList(rs);
 		
 		for (ResultBinding resultBinding : l) {
-				
 			result.add(resultBinding.get(var).toString());
-		
 		}
 		
 		return result;

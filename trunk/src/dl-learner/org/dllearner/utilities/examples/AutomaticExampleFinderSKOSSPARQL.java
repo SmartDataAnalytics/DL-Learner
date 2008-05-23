@@ -30,6 +30,7 @@ public class AutomaticExampleFinderSKOSSPARQL {
 		negExamples = new TreeSet<String>();
 	}
 	
+	
 	@Deprecated
 	public void initDBpediaSKOS(String concept, double percent, boolean useRelated,boolean useParallelClasses) { 
 		//dbpediaMakePositiveExamplesFromConcept( concept);
@@ -55,7 +56,7 @@ public class AutomaticExampleFinderSKOSSPARQL {
 		}
 		
 		if(useParallelClasses) {
-			int limit = this.posExamples.size();
+			//int limit = this.posExamples.size();
 			 //makeNegativeExamplesFromClassesOfInstances(limit);
 		}
 		//clean

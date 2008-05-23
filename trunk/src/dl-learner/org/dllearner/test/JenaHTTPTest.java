@@ -103,6 +103,8 @@ public class JenaHTTPTest {
 		return ((end-start)/1000);
 	}
 	
+	@Deprecated
+	@SuppressWarnings("all")
 	private static double httpQuery(String query) throws Exception
 	{
 		char value[]={13,10};

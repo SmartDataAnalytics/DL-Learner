@@ -3,6 +3,7 @@ package org.dllearner.test;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
@@ -11,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.examples.SPARQLTasks;
 import org.dllearner.utilities.statistics.SimpleClock;
 
@@ -29,8 +31,8 @@ public class SparqlEndpointTest {
 		logger.removeAllAppenders();
 		logger.addAppender(fileAppender);
 		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.DEBUG);
-		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.INFO);
+		logger.setLevel(Level.TRACE);
+		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
 		//SELECT DISTINCT ?c WHERE {[] a ?c }LIMIT 100
 		
 		
@@ -42,6 +44,7 @@ public class SparqlEndpointTest {
 		for (int j = 0; j < ll.size(); j++) {
 			
 			testEndPoint(ll.get(j));
+			if(i==3)break;
 			logger.info("finished "+i+" of "+ll.size());
 			i++;
 		}
@@ -54,7 +57,7 @@ public class SparqlEndpointTest {
 
 		}
 		//set.add(SparqlEndpoint.);
-		
+		JamonMonitorLogger.printAllSortedByLabel();
 	}
 	
 	
@@ -68,7 +71,8 @@ public class SparqlEndpointTest {
 			"LIMIT 100";
 		
 		SPARQLquery ="SELECT DISTINCT ?c WHERE {[] a ?c }LIMIT 100";
-		int i = new SPARQLTasks(se).queryAsSet(SPARQLquery, "c").size();
+		SortedSet<String> tmp = new SPARQLTasks(se).queryAsSet(SPARQLquery, "c");
+		int i =tmp.size();
 	
 		
 		working.add(sc.getAndSet("endpoint working: "+se.getURL()+" ("+((i==100)?"more than 100 concepts":"about "+i+" concepts")+" )"));

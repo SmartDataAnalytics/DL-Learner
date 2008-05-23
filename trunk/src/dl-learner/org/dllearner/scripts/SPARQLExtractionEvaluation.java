@@ -188,6 +188,7 @@ public class SPARQLExtractionEvaluation {
 
 		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
 		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
+		if(rs==null);
 		//JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
 		//return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);
 		return null;

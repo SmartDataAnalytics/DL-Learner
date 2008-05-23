@@ -364,7 +364,7 @@ public class KRKModular {
 	}
 	
 	public static void initAllInstancesAndReasoners(){
-		// Datei öffnen
+		// Datei oeffnen
 		BufferedReader in = null;
 		try {
 			in = new BufferedReader(new FileReader(allData));
@@ -423,7 +423,7 @@ public class KRKModular {
 	}
 	
 	public static void initAllInstancesWithoutReasoners(){
-		// Datei öffnen
+		// Datei oeffnen
 		BufferedReader in = null;
 		try {
 			in = new BufferedReader(new FileReader(allData));
