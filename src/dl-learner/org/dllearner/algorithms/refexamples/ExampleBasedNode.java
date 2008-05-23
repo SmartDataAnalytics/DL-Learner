@@ -69,6 +69,9 @@ public class ExampleBasedNode {
 	// apart from the child nodes, we also keep child concepts
 	private SortedSet<Description> childConcepts = new TreeSet<Description>(conceptComparator);
 	
+	// a flag whether this could be a solution for a posonly learning problem
+	private boolean isPosOnlyCandidate = true;
+	
 	public ExampleBasedNode(Description concept) {
 		this.concept = concept;
 		horizontalExpansion = 0;
@@ -245,6 +248,14 @@ public class ExampleBasedNode {
 	 */
 	public ExampleBasedNode getParent() {
 		return parent;
+	}
+
+	public boolean isPosOnlyCandidate() {
+		return isPosOnlyCandidate;
+	}
+
+	public void setPosOnlyCandidate(boolean isPosOnlyCandidate) {
+		this.isPosOnlyCandidate = isPosOnlyCandidate;
 	}
 
 }
