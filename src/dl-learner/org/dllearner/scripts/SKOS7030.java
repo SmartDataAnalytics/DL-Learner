@@ -55,8 +55,8 @@ public class SKOS7030 {
 	
 	//examples
 	static int sparqlResultSize=2000;
-	static double percentOfSKOSSet=0.7;
-	static double negfactor=0.3;
+	static double percentOfSKOSSet=0.2;
+	static double negfactor=1.0;
 	SortedSet<String> posExamples = new TreeSet<String>();
 	SortedSet<String> fullPositiveSet = new TreeSet<String>();
 	SortedSet<String> fullminusposRest = new TreeSet<String>();
@@ -78,6 +78,7 @@ public class SKOS7030 {
 		
 		if(local){
 			url = "http://139.18.2.37:8890/sparql";
+			//RBC
 			sparqlTasks = new SPARQLTasks(Cache.getPersistentCache(),SparqlEndpoint.EndpointLOCALDBpedia());
 		}else{
 			url = "http://dbpedia.openlinksw.com:8890/sparql";
@@ -96,13 +97,14 @@ public class SKOS7030 {
 		logger.debug("found nr of concepts: "+conceptresults.size());
 		
 		for (Description oneConcept : conceptresults) {
+			
 			//s.evaluate(oneConcept, 1000);
 			
 		}
 		
 		
 		System.out.println("Finished");
-		JamonMonitorLogger.printAll();
+		JamonMonitorLogger.printAllSortedByLabel();
 		
 	}	
 	

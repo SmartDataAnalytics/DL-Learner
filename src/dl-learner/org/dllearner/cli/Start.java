@@ -84,6 +84,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -134,6 +135,7 @@ public class Start {
 		Start start = null;
 		start = new Start(file);
 		start.start(inQueryMode);
+		JamonMonitorLogger.printAllSortedByLabel();
 	}
 
 	/**

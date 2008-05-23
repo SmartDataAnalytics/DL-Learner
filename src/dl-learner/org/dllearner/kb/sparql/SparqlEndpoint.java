@@ -132,6 +132,7 @@ public class SparqlEndpoint {
 		ll.add(EndpointTalisBlogs());
 		ll.add(EndpointSWSchool());
 		ll.add(EndpointSparqlette());
+		ll.add(EndpointLOCALDBpedia());
 		return ll;
 	}
 	

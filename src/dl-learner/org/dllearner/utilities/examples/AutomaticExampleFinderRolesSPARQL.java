@@ -1,22 +1,16 @@
 package org.dllearner.utilities.examples;
 
-import java.util.SortedSet;
-
-import org.apache.log4j.Logger;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 // keep this class it still needs to be worked in
 public class AutomaticExampleFinderRolesSPARQL {
 
-	private static Logger logger = Logger
-			.getLogger(ComponentManager.class);
-	
-	private Cache c;
-	private SparqlEndpoint se;
-	private SortedSet<String> posExamples;
-	private SortedSet<String> negExamples;
-	private int roleLimit=1000;
+//	private static Logger logger = Logger
+//			.getLogger(ComponentManager.class);
+//	
+//	private Cache c;
+//	private SparqlEndpoint se;
+//	private SortedSet<String> posExamples;
+//	private SortedSet<String> negExamples;
+//	private int roleLimit=1000;
 	
 	/*
 	public AutomaticExampleFinderRolesSPARQL(SparqlEndpoint se){

@@ -175,12 +175,13 @@ public class SPARQLMassLearning {
 		//HashMap<String, String> result2 = new HashMap<String, String>();
 		//System.out.println(concepts.first());
 		//logger.setLevel(Level.TRACE);
-		String concept=concepts.first();
-		int i=0;
+		
+		//String concept=concepts.first();
+		//int i=0;
 		Statistics.setCurrentLabel("0");
 		int recursiondepth=0;
 		boolean closeAfterRecursion=false;
-		int numberOfTriples = 0;
+		//int numberOfTriples = 0;
 		for (String oneConcept : concepts) {
 			//AutomaticExampleFinderSPARQLold ae= new AutomaticExampleFinderSPARQLold( se);	
 			useRelated = true;
@@ -257,6 +258,7 @@ public class SPARQLMassLearning {
 
 		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
 		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
+		if(rs==null);
 		//JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
 		//return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);
 		return null;

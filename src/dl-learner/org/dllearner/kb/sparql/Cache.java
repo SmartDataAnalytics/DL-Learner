@@ -260,9 +260,13 @@ public class Cache implements Serializable {
 			String json = query.getResult();
 			if (json!=null){
 				addToCache(query.getQueryString(), json);
+				result=json;
 			}
-			else json="";
-			logger.warn("empty result: "+query.getQueryString());
+			else {
+				json="";
+				logger.warn(Cache.class.getSimpleName()+"empty result: "+query.getQueryString());
+			}
+			
 			//return json;
 		}
 		JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").stop();

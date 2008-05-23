@@ -19,41 +19,47 @@ import com.jamonapi.MonitorFactory;
  */
 public class JamonMonitorLogger {
 
-	
-	public static List<Monitor> getMonitorsSortedByLabel(){
-		MonitorFactory mf=(MonitorFactory)MonitorFactory.getFactory();
-		SortedSet<String> retMon = new TreeSet<String>();
 		
-		@SuppressWarnings("unchecked")
-		Iterator<Monitor> it = mf.iterator();
-		
-		while (it.hasNext()) {
-			Monitor monitor = (Monitor) it.next();
-			retMon.add(monitor.getLabel());
-		}
-		
+	public static List<Monitor> getMonitors(){
+		//MonitorFactory mf=(MonitorFactory)MonitorFactory.getFactory();
 		LinkedList<Monitor> l=new LinkedList<Monitor>();
 		
-		for (String label : retMon) {
-			l.add(MonitorFactory.getTimeMonitor(label));
+		@SuppressWarnings("unchecked")
+		Iterator<Monitor> it = MonitorFactory.getFactory().iterator();
+			//mf.iterator();
+		while (it.hasNext()) {
+			Monitor monitor = (Monitor) it.next();
+			
+			l.add(monitor);
 		}
+		
+	
+		
+		/*for (String label : retMon) {
+			l.add(MonitorFactory.getTimeMonitor(label));
+		}*/
 		
 		return l;
 	}
 	
 	
 	
-	public static void printAll() {
-		List<Monitor> l= getMonitorsSortedByLabel();
+	public static void printAllSortedByLabel() {
+		List<Monitor> l= getMonitors();
+		SortedSet<String> sset = new TreeSet<String>();
+		
 		for (int i = 0; i < l.size(); i++) {
 			Monitor monitor = l.get(i);
-			System.out.println(monitor);
+			sset.add(monitor.toString());
+		}
+		for (String onemon : sset) {
+			System.out.println(onemon);
 		}
 	}
 	
 	
 	
-	
+	@SuppressWarnings("all")
 	public static String getMonitorPrefix(Class clazz){
 		String retval="";
 		if (clazz == SparqlQuery.class) {
@@ -84,6 +90,9 @@ public class JamonMonitorLogger {
 		return retval+clazz.getSimpleName()+":";
 	}
 	
+	
+	
+	@SuppressWarnings("all")
 	public static  Monitor getTimeMonitor(Class clazz, String label) {
 		
 		String labeltmp = getMonitorPrefix(clazz)+label;
@@ -91,8 +100,13 @@ public class JamonMonitorLogger {
 		
 	}
 	
+	@SuppressWarnings("all")
 	public static void increaseCount (Class clazz, String label) {
-		 MonitorFactory.getMonitor(getMonitorPrefix(clazz)+label, "#").add(1.0);
+		// MonitorFactory.getMonitor(getMonitorPrefix(clazz)+label, "#").add(1.0);
+		 Monitor m =  MonitorFactory.getMonitor(getMonitorPrefix(clazz)+label, "count");
+		// System.out.println(m);
+		 m.setHits(m.getHits()+1);
+		//System.out.println(m);
 	}
 	
 	
