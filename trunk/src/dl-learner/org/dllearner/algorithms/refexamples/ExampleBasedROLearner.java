@@ -418,22 +418,25 @@ public class ExampleBasedROLearner {
 			
 			// special situation for positive only learning: the expanded node can become a solution (see explanations
 			// for maxPosOnlyExpansion above)
-			if(posOnly && (bestNode.getHorizontalExpansion() - bestNode.getConcept().getLength() >= maxPosOnlyExpansion)) {
-				// check whether there are any child concept, which are not too weak (we only need to check whether the best concept
-				// is too weak)
-				ExampleBasedNode bestChild = null;
-				if(bestNode.getChildren().size() > 0)
-					bestChild = bestNode.getChildren().last();
-				if(bestNode.getChildren().size() == 0 || bestChild.isTooWeak()) {
+			if(posOnly && bestNode.isPosOnlyCandidate() && (bestNode.getHorizontalExpansion() - bestNode.getConcept().getLength() >= maxPosOnlyExpansion)) {
+				
+				boolean solution = checkSubtreePosOnly(bestNode);
+				
+				if(solution) {
 					solutions.add(bestNode.getConcept());
+					ExampleBasedNode bestChild = bestNode.getChildren().last();
 					System.out.println("solution: " + bestNode.getConcept());
 					System.out.println("maxPosOnlyExpansion: " + maxPosOnlyExpansion);
 					System.out.println("best child of this node: " + bestChild);
+					System.out.println(bestNode.getChildConcepts());
 					System.out.println("TODO: needs to be integrated with other stopping criteria");
-					System.exit(0);
+					System.exit(0);					
+				} else {
+					// tag as non-candidate so we do not need to search again
+					bestNode.setPosOnlyCandidate(false);
 				}
-			}
-			
+	
+			}		
 		
 			// handle termination criteria
 			handleStoppingConditions();
@@ -1137,12 +1140,34 @@ public class ExampleBasedROLearner {
 		return startNode;
 	}
 	
+	// returns true if there is any meaningful node in the subtree
+	private boolean checkSubtreePosOnly(ExampleBasedNode node) {
+		for(ExampleBasedNode refinement : node.getChildren()) {
+			
+			if(!node.isTooWeak()) {
+				// refinement meaningful
+				if(isPosOnlyRefinementMeaningful(node, refinement))
+					return true;
+				
+				// subtree with refinement as root contains a meaningful node
+				if(checkSubtreePosOnly(refinement))
+					return true;
+			}
+			
+		}
+		return false;
+	}
+	
 	// returns whether the refinement is "meaningful", i.e. the refinement actually represents a different concept
 	// than its parent; this is needed to determine when a positive only learning algorithm should stop (when a node
 	// has been expaned x times without yielding any meaningful refinements, it is considered a possible solution)
 	private boolean isPosOnlyRefinementMeaningful(ExampleBasedNode node, ExampleBasedNode refinement) {
 		Description d1 = node.getConcept();
 		Description d2 = refinement.getConcept();
+		// check whether d2 can be shortened, e.g. male AND male => male
+		Description shortConcept = ConceptTransformation.getShortConcept(d2, conceptComparator);
+		if(conceptComparator.compare(d1, shortConcept)!=0)
+			return false;
 		return true;
 	}
 	
