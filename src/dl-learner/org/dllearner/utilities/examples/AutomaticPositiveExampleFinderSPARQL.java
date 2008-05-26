@@ -5,6 +5,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.kb.sparql.SPARQLTasks;
 
 public class AutomaticPositiveExampleFinderSPARQL {
 	
