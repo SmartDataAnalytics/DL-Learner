@@ -24,11 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.datastructures.StringTuple;
-
-import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * Used to manipulate retrieved tupels, identify blanknodes, etc.
@@ -138,8 +134,8 @@ public class Manipulator {
 		}
 	}
 	
-	//HACK
-	private String hackGetLabel(String resname){
+	
+	/*private String hackGetLabel(String resname){
 		String query="" +
 				"SELECT ?o \n" +
 				"WHERE { \n" +
@@ -156,6 +152,6 @@ public class Manipulator {
 		}
 		//System.out.println("AAA"+s.getAsXMLString(s.send()) );
 		return "";
-	}
+	}*/
 
 }
