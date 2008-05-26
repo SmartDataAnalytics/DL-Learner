@@ -1,8 +1,10 @@
-package org.dllearner.scripts;
+package org.dllearner.utilities.datastructures;
 
 import java.util.SortedSet;
 
-public class ResultCompare implements Comparable<ResultCompare> {
+import org.dllearner.core.owl.Description;
+
+public class ResultConceptSorter implements Comparable<ResultConceptSorter> {
 	String concept;
 	SortedSet<String> instances;
 	double accuracy;
@@ -13,7 +15,7 @@ public class ResultCompare implements Comparable<ResultCompare> {
 	SortedSet<String> notCoveredInTotal;
 	
 	
-	public ResultCompare(String concept, SortedSet<String> instances, double accuracy,
+	public ResultConceptSorter(String concept, SortedSet<String> instances, double accuracy,
 			double accuracy2, int nrOfInstances, SortedSet<String> coveredInRest,
 			SortedSet<String> possibleNewCandidates, SortedSet<String> notCoveredInTotal) {
 		super();
@@ -30,8 +32,8 @@ public class ResultCompare implements Comparable<ResultCompare> {
 
 
 
-	public int compareTo(ResultCompare in) {
-		ResultCompare obj = in;
+	public int compareTo(ResultConceptSorter in) {
+		ResultConceptSorter obj = in;
 		if(obj.accuracy > this.accuracy) return 1;
 		else if(obj.accuracy == this.accuracy){
 			
@@ -79,5 +81,9 @@ public class ResultCompare implements Comparable<ResultCompare> {
 		return ret;
 		
 	}
+	
+	
+
+	
 	
 }

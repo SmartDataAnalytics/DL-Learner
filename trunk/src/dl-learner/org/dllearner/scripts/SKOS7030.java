@@ -47,11 +47,6 @@ public class SKOS7030 {
 	static int maxExecutionTimeInSeconds = 30;
 	static int guaranteeXgoodDescriptions = 40;
 	
-	//static int limit=200;
-	
-	
-	
-	
 	
 	//examples
 	static int sparqlResultSize=2000;
@@ -59,7 +54,7 @@ public class SKOS7030 {
 	static double negfactor=1.0;
 	SortedSet<String> posExamples = new TreeSet<String>();
 	SortedSet<String> fullPositiveSet = new TreeSet<String>();
-	SortedSet<String> fullminusposRest = new TreeSet<String>();
+	SortedSet<String> fullPosSetWithoutPosExamples = new TreeSet<String>();
 	SortedSet<String> negExamples = new TreeSet<String>();
 	
 	
@@ -78,12 +73,13 @@ public class SKOS7030 {
 		
 		if(local){
 			url = "http://139.18.2.37:8890/sparql";
-			//RBC
 			sparqlTasks = new SPARQLTasks(Cache.getPersistentCache(),SparqlEndpoint.EndpointLOCALDBpedia());
 		}else{
 			url = "http://dbpedia.openlinksw.com:8890/sparql";
 			sparqlTasks = new SPARQLTasks(Cache.getPersistentCache(),SparqlEndpoint.EndpointDBpedia());
 		}
+		
+		System.out.println(sparqlTasks.getDomain("http://dbpedia.org/property/predecessor", 1000));
 		
 		String prim="http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
 		
@@ -92,164 +88,93 @@ public class SKOS7030 {
 		SKOS7030 s= new SKOS7030();
 		
 		s.makeExamples(prim, percentOfSKOSSet, negfactor, sparqlResultSize);
-		//QUALITY s.posExamples
-		List<Description> conceptresults = s.learn(s.posExamples, s.negExamples);
-		logger.debug("found nr of concepts: "+conceptresults.size());
 		
-		for (Description oneConcept : conceptresults) {
-			
-			//s.evaluate(oneConcept, 1000);
+		List<Description> conceptresults = s.learn();
+		logger.debug("found nr of concepts: "+conceptresults.size());
+		System.out.println(conceptresults);
+		
+		int x=0;
+	
+		SortedSet<ResultMostCoveredInRest> res = new TreeSet<ResultMostCoveredInRest>();
+		for (Description concept : conceptresults) {
+			if(x++==100)break;
+			res.add(s.evaluate(concept, 1000));
 			
 		}
 		
+		x=0;
+		for (ResultMostCoveredInRest resultMostCoveredInRest : res) {
+			if(x++==10)break;
+			System.out.println(resultMostCoveredInRest.concept);
+			System.out.println(resultMostCoveredInRest.accuracy);
+			System.out.println(resultMostCoveredInRest.retrievedInstancesSize);
+			
+			
+		}
+		
+		s.print(res.first().concept, 1000);
 		
 		System.out.println("Finished");
 		JamonMonitorLogger.printAllSortedByLabel();
 		
 	}	
 	
-	void evaluate(Description oneConcept, int sparqlResultLimit){
-		logger.debug("oneconcept: "+oneConcept);
-		SortedSet<String> instances = sparqlTasks.retrieveInstancesForConcept(oneConcept.toKBSyntaxString(), sparqlResultLimit);
+	 void  print(Description concept, int sparqlResultLimit){
+		logger.debug("evaluating concept: "+concept);
+//		SortedSet<String> instances = sparqlTasks.retrieveInstancesForConcept(oneConcept.toKBSyntaxString(), sparqlResultLimit);
+		SortedSet<String> instances = 
+			sparqlTasks.retrieveInstancesForConceptIncludingSubclasses(
+					concept.toKBSyntaxString(),sparqlResultLimit);
 		
-		System.out.println(fullminusposRest.size());
-		System.out.println(instances.size());
+		SortedSet<String> coveredInRest = new TreeSet<String>(fullPosSetWithoutPosExamples);
+		coveredInRest.retainAll(instances);
+	
 		
-		SortedSet<String> coveredInRest = new TreeSet<String>(fullminusposRest);
+		SortedSet<String> coveredTotal = new TreeSet<String>(fullPositiveSet);
+		coveredTotal.retainAll(instances);
+		
+		
+		SortedSet<String> notCoveredInRest = new TreeSet<String>(fullPosSetWithoutPosExamples);
+		notCoveredInRest.retainAll(coveredInRest);
+		System.out.println(notCoveredInRest);
+		
+		SortedSet<String> notCoveredTotal = new TreeSet<String>(fullPositiveSet);
+		notCoveredTotal.retainAll(coveredTotal);
+		System.out.println(notCoveredTotal);
+		
+	}
+	
+	ResultMostCoveredInRest evaluate(Description concept, int sparqlResultLimit){
+		logger.debug("evaluating concept: "+concept);
+//		SortedSet<String> instances = sparqlTasks.retrieveInstancesForConcept(oneConcept.toKBSyntaxString(), sparqlResultLimit);
+		SortedSet<String> instances = 
+			sparqlTasks.retrieveInstancesForConceptIncludingSubclasses(
+					concept.toKBSyntaxString(),sparqlResultLimit);
+		
+		SortedSet<String> coveredInRest = new TreeSet<String>(fullPosSetWithoutPosExamples);
 		coveredInRest.retainAll(instances);
 		
-		System.out.println(fullminusposRest.size());
-		System.out.println(instances.size());
-		System.out.println(coveredInRest.size());
+		SortedSet<String> coveredTotal = new TreeSet<String>(fullPositiveSet);
+		coveredTotal.retainAll(instances);
+		
+		
+		SortedSet<String> notCoveredInRest = new TreeSet<String>(fullPosSetWithoutPosExamples);
+		notCoveredInRest.retainAll(coveredInRest);
+		
+		SortedSet<String> notCoveredTotal = new TreeSet<String>(fullPositiveSet);
+		notCoveredTotal.retainAll(coveredTotal);
+		double acc = (double) (coveredInRest.size() / fullPosSetWithoutPosExamples.size());
+		System.out.println("Accuracy: "+acc);
+		return new ResultMostCoveredInRest(concept,acc,instances.size());
 		
 		
 		
-		//SortedSet<String> possibleNewCandidates = new TreeSet<String>();
-		//SortedSet<String> notCoveredInTotal = new TreeSet<String>();
 		
 		
 	}
 	
 	
-	static void DBpediaSKOS(String SKOSConcept){
-		
-		
-		//concepts.add("http://dbpedia.org/resource/Category:Grammy_Award_winners");
-		//concepts.add("EXISTS \"http://dbpedia.org/property/grammyawards\".TOP");
-		
-		
-		
-		//HashMap<String, ResultSet> result = new HashMap<String, ResultSet>();
-		//HashMap<String, String> result2 = new HashMap<String, String>();
-		//System.out.println(concepts.first());
-		//logger.setLevel(Level.TRACE);
-		
-		
-		
-			
-			
-//			LearnSparql ls = new LearnSparql();
-//	
-//			//igno.add(oneConcept.replaceAll("\"", ""));
-//			
-//			List<Description> conceptresults= ls.learnDBpediaSKOS(posExamples, negExamples, url,new TreeSet<String>(),recursiondepth, closeAfterRecursion,randomizeCache,resultsize,noise);
-//			
-//			System.out.println("concepts"+conceptresults);
-//			//System.exit(0);
-//			
-//			SortedSet<ResultCompare> res=new TreeSet<ResultCompare>();
-//			for (Description oneConcept : conceptresults) {
-//				try{
-//				
-//				
-//				int i=0;
-//				int a=0;
-//				for (String oneinst : instances) {
-//					boolean inRest=false;
-//					boolean inTotal=false;
-//					for (String onerest : rest) {
-//						if(onerest.equalsIgnoreCase(oneinst))
-//							{ i++; inRest=true; break;}
-//						
-//					}
-//					if (inRest){coveredInRest.add(oneinst);};
-//					
-//					for (String onetotal : totalSKOSset) {
-//						if(onetotal.equalsIgnoreCase(oneinst))
-//						{ a++; inTotal=true; break;}
-//					}
-//					if(!inRest && !inTotal){
-//						possibleNewCandidates.add(oneinst);
-//					}
-//				}
-//				
-//				for (String onetotal : totalSKOSset) {
-//					boolean mm=false;
-//					for (String oneinst : instances) {
-//						if(onetotal.equalsIgnoreCase(oneinst)){
-//							mm=true;break;
-//						}
-//							
-//					}
-//					if(!mm)notCoveredInTotal.add(onetotal);
-//					
-//				}
-//				
-//				
-//				
-//				double accuracy= (double)i/rest.size();
-//				double accuracy2= (double)a/totalSKOSset.size();
-//				
-//				logger.debug((new ResultCompare(oneConcept.toKBSyntaxString(),instances,accuracy,accuracy2,instances.size(),
-//						coveredInRest,possibleNewCandidates,notCoveredInTotal)).toStringFull());
-//				
-//				//if(instances.size()>=0)System.out.println("size of instances "+instances.size());
-//				//if(instances.size()>=0 && instances.size()<100) System.out.println("instances"+instances);
-//				}catch (Exception e) {e.printStackTrace();}
-//			}
-			
-//			System.out.println(res.last());
-//			res.remove(res.last());
-//			System.out.println(res.last());
-//			res.remove(res.last());
-//			System.out.println(res.last());
-//			res.remove(res.last());
-//			
-			
-			//double percent=0.80*(double)res.size();;
-//			double acc=res.first().accuracy;
-//			logger.debug(res.first().toStringFull());
-//			res.remove(res.first());
-//			logger.debug(res.first().toStringFull());
-//			res.remove(res.first());
-//			int i=0;
-//			while (res.size()>0){
-//				logger.debug(res.first());
-//				res.remove(res.first());
-//				//if(res.size()<=percent)break;
-//				if(i>50)break;
-//				i++;
-//				
-//			}
-//			
-//			return 0.0;
-			
-			
-			//System.out.println("AAAAAAAA");
-			//System.exit(0);
-			//"relearned concept: ";
-			//cf.writeSPARQL(confname, posExamples, negExamples, url, new TreeSet<String>(),standardSettings,algorithm);
-			//
 	
-		
-		//Statistics.print();
-	}
-	
-
-	
-
-	
-
 	public static void initLogger() {
 		
 		SimpleLayout layout = new SimpleLayout();
@@ -302,7 +227,7 @@ public class SKOS7030 {
 		AutomaticNegativeExampleFinderSPARQL aneg = new AutomaticNegativeExampleFinderSPARQL(fullPositiveSet,sparqlTasks);
 		
 		aneg.makeNegativeExamplesFromParallelClasses(posExamples, sparqlResultSize);
-		SortedSet<String> negativeSet =  aneg.getNegativeExamples(neglimit);
+		this.negExamples =  aneg.getNegativeExamples(neglimit);
 		
 		logger.debug("POSITIVE EXAMPLES");
 		for (String pos : posExamples) {
@@ -310,25 +235,33 @@ public class SKOS7030 {
 		}
 	
 		logger.debug("NEGATIVE EXAMPLES");
-		for (String negs : negativeSet) {
+		for (String negs : this.negExamples) {
 			logger.debug("-"+negs);
 		}
 	
 		
 		
-		fullminusposRest = fullPositiveSet;
-		fullminusposRest.removeAll(posExamples);
+		fullPosSetWithoutPosExamples = fullPositiveSet;
+		fullPosSetWithoutPosExamples.removeAll(posExamples);
 		
 		
 		logger.debug(fullPositiveSet);
-		logger.debug(fullminusposRest);
+		logger.debug(fullPosSetWithoutPosExamples);
 	}
 	
-	public List<Description> learn(SortedSet<String> posExamples, SortedSet<String> negExamples){
+	public List<Description> learn(){
 		
 		SortedSet<String> instances = new TreeSet<String>();
-		instances.addAll(posExamples);
-		instances.addAll(negExamples);
+		instances.addAll(this.posExamples);
+		instances.addAll(this.negExamples);
+		
+		
+		logger.info("Start Learning with");
+		logger.info("positive examples: \t"+posExamples.size());
+		logger.info("negative examples: \t"+negExamples.size());
+		logger.info("instances \t"+instances.size());
+		
+		
 		
 		
 	
@@ -344,8 +277,8 @@ public class SKOS7030 {
 		rs = new ReasoningService(r); 
 		//System.out.println("satisfy: "+rs.isSatisfiable());
 		lp = new PosNegDefinitionLP(rs);	
-		((PosNegLP) lp).setPositiveExamples(SetManipulation.stringToInd(posExamples));
-		((PosNegLP) lp).setNegativeExamples(SetManipulation.stringToInd(negExamples));
+		((PosNegLP) lp).setPositiveExamples(SetManipulation.stringToInd(this.posExamples));
+		((PosNegLP) lp).setNegativeExamples(SetManipulation.stringToInd(this.negExamples));
 		
 		la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
 
@@ -454,8 +387,57 @@ public class SKOS7030 {
 		System.out.println(Level.INFO);*/
 		//System.exit(0);
 		
-
+	private class ResultCompare implements Comparable<ResultCompare>{
+		Description concept ;
+		double accuracy = 0.0;
+		int retrievedInstancesSize=0;
+		
+		public int compareTo(ResultCompare o2) {
+			return 0;
+		}
+		public boolean equals(ResultCompare o2){
+			return this.concept.equals(o2.concept);
+		}
+		
+		
+		public ResultCompare(Description conceptKBSyntax, double accuracy, int retrievedInstancesSize) {
+			super();
+			this.concept = conceptKBSyntax;
+			this.accuracy = accuracy;
+			this.retrievedInstancesSize = retrievedInstancesSize;
+		}
+		
+		
+	}
 	
+	private class ResultMostCoveredInRest extends ResultCompare{
+		
+		public ResultMostCoveredInRest(Description concept, double accuracy,
+				int retrievedInstancesSize) {
+			super(concept, accuracy, retrievedInstancesSize);
+			
+		}
+
+		public int compareTo(ResultMostCoveredInRest o2) {
+			if(this.equals(o2))return 0;
+			
+			if(this.accuracy > o2.accuracy){
+				return 1;
+			}
+			else if(this.accuracy == o2.accuracy) {
+				if(this.retrievedInstancesSize < o2.retrievedInstancesSize )
+					return 1;
+				else if(this.retrievedInstancesSize > o2.retrievedInstancesSize){
+					return -1;
+				}
+				else return this.concept.toKBSyntaxString().compareTo(o2.concept.toKBSyntaxString());
+			}else {
+				return -1;
+			}
+			
+		}
+		
+	}
 	
 	
 }

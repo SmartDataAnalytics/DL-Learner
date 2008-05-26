@@ -70,14 +70,13 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		return getSparqlQuery(defaultLimit);
 	}*/
 	
-	private String getSparqlQuery(int limit)
+	private String getSparqlQuery(int resultLimit)
 	{	// for old function see below
 		// it was using the object attribute in a strange way
 		// QUALITY: what if this function is called several times?? should be private maybe?
 		String tmpQuery=
 			"SELECT ?subject \nWHERE {"+query+
-			" }\n ";
-		if(limit>0) tmpQuery+="LIMIT "+limit;
+			" }\n "+ limit(resultLimit);
 		
 		query = tmpQuery;
 		return query;
@@ -112,11 +111,11 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		return getSparqlQuery(description, defaultLimit);
 	}
 	
-	public static String getSparqlQuery(Description description, int limit)
+	public static String getSparqlQuery(Description description, int resultLimit)
 	{
 		SparqlQueryDescriptionConvertVisitor visitor=new SparqlQueryDescriptionConvertVisitor();
 		description.accept(visitor);
-		String ret = visitor.getSparqlQuery(limit);
+		String ret = visitor.getSparqlQuery(resultLimit);
 		//HACK see replace might be a good solution, needs testing 
 		while (ret.contains("..")) {
 			 ret = ret.replace("..", ".");
@@ -142,11 +141,11 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @return
 	 * @throws ParseException
 	 */
-	public static String getSparqlQueryIncludingSubclasses(String descriptionKBSyntax, int limit, SparqlEndpoint se,Cache c, boolean simple) throws ParseException
+	public static String getSparqlQueryIncludingSubclasses(String descriptionKBSyntax, int resultLimit, SPARQLTasks st, boolean simple) throws ParseException
 	{	
-		String rewritten = SparqlQueryDescriptionConvertRDFS.conceptRewrite(descriptionKBSyntax, se, c, simple);
+		String rewritten = SparqlQueryDescriptionConvertRDFS.conceptRewrite(descriptionKBSyntax, st, simple);
 		
-		return getSparqlQuery(rewritten, limit);
+		return getSparqlQuery(rewritten, resultLimit);
 		
 	}
 	
@@ -341,6 +340,10 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		logger.trace("DatatypeSomeRestriction");
 	}
 	
+	private String limit(int resultLimit){
+		if(resultLimit>0)return " LIMIT "+resultLimit;
+		return "";
+	}
 	
 	
 }

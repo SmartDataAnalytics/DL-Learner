@@ -1,5 +1,6 @@
 package org.dllearner.kb.sparql;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -12,10 +13,10 @@ import com.hp.hpl.jena.sparql.core.ResultBinding;
 
 public class SPARQLTasks {
 	
-	//CHECK
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
+	//LOGGER: SPARQLTasks
 	private static Logger logger = Logger
-	.getLogger(SPARQLTasks.class);
+		.getLogger(SPARQLTasks.class);
 	private Cache c;
 	private SparqlEndpoint se;
 	
@@ -76,7 +77,93 @@ public class SPARQLTasks {
 	}
 	
 	
-	
+	/**
+	 * gets a SortedSet of all subclasses QUALITY: maybe it is better to have a
+	 * parameter int depth, to choose a depth of subclass interference
+	 * 
+	 * @see conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache
+	 *      c, boolean simple )
+	 * @param description
+	 * @param se
+	 * @param c
+	 * @param simple
+	 * @return
+	 */
+	public SortedSet<String> getSubClasses(String description, boolean simple) {
+
+		// ResultSet rs = null;
+		// System.out.println(description);
+		SortedSet<String> alreadyQueried = new TreeSet<String>();
+		try {
+
+			// initialisation get direct Subclasses
+			LinkedList<String> remainingClasses = new LinkedList<String>();
+
+			// collect remaining classes
+			remainingClasses.addAll(getDirectSubClasses(description.replaceAll("\"", "")));
+
+			// remainingClasses.addAll(alreadyQueried);
+
+			// alreadyQueried = new TreeSet<String>();
+			alreadyQueried.add(description.replaceAll("\"", ""));
+
+			if (simple) {
+				alreadyQueried.addAll(remainingClasses);
+				return alreadyQueried;
+			} else {
+
+				logger.warn("Retrieval auf all subclasses via SPARQL is cost intensive and might take a while");
+				while (remainingClasses.size() != 0) {
+					SortedSet<String> tmpSet = new TreeSet<String>();
+					String tmp = remainingClasses.removeFirst();
+					alreadyQueried.add(tmp);
+
+					tmpSet = getDirectSubClasses(tmp);
+					for (String string : tmpSet) {
+						if (!(alreadyQueried.contains(string))) {
+							remainingClasses.add(string);
+						}// if
+					}// for
+				}// while
+			}// else
+
+		} catch (Exception e) {
+
+		}
+
+		return alreadyQueried;
+	}
+
+	/**
+	 * QUALITY: workaround for a sparql glitch {?a owl:subclassOf ?b} returns an
+	 * empty set on some entpoints. returns all direct subclasses of String
+	 * concept
+	 * 
+	 * @param concept
+	 * @return SortedSet of direct subclasses as String
+	 */
+	private SortedSet<String> getDirectSubClasses(String concept) {
+		String SPARQLquery = "SELECT * \n";
+		SPARQLquery += "WHERE {\n";
+		SPARQLquery += " ?subject ?predicate  <" + concept + "> \n";
+		SPARQLquery += "}\n";
+
+		ResultSet rs = queryAsResultSet(SPARQLquery);
+		
+		SortedSet<String> subClasses = new TreeSet<String>();
+		@SuppressWarnings("unchecked")
+		List<ResultBinding> l = ResultSetFormatter.toList(rs);
+		String p = "", s = "";
+		for (ResultBinding resultBinding : l) {
+
+			s = ((resultBinding.get("subject").toString()));
+			p = ((resultBinding.get("predicate").toString()));
+			if (p.equalsIgnoreCase("http://www.w3.org/2000/01/rdf-schema#subClassOf")) {
+				subClasses.add(s);
+			}
+		}
+		return subClasses;
+	}
 
 	/**
 	 * QUALITY: buggy because role doesn't work sometimes
@@ -133,6 +220,23 @@ public class SPARQLTasks {
 			try{
 			SPARQLquery = SparqlQueryDescriptionConvertVisitor
 					.getSparqlQuery(conceptKBSyntax,sparqlResultLimit);
+			}catch (Exception e) {e.printStackTrace();}
+			return queryAsSet(SPARQLquery, "subject");
+	}
+	
+	/**
+	 * get all instances for a concept including RDFS Reasoning
+	 * @param conceptKBSyntax
+	 * @param sparqlResultLimit
+	 * @return
+	 */
+	public  SortedSet<String> retrieveInstancesForConceptIncludingSubclasses (String conceptKBSyntax,int sparqlResultLimit) {
+			
+			String SPARQLquery = ""; 
+			try{
+			SPARQLquery = SparqlQueryDescriptionConvertVisitor
+					.getSparqlQueryIncludingSubclasses(conceptKBSyntax,sparqlResultLimit,this,true);
+		
 			}catch (Exception e) {e.printStackTrace();}
 			return queryAsSet(SPARQLquery, "subject");
 	}
@@ -232,7 +336,17 @@ public class SPARQLTasks {
 	
 	
 	/**
-	 * lowlevel, executes query returns JSON 
+	 * low level, executes query returns ResultSet
+	 * @param SPARQLquery
+	 * @return jena ResultSet
+	 */
+	public ResultSet queryAsResultSet(String SPARQLquery){
+		return SparqlQuery.JSONtoResultSet(query(SPARQLquery));
+		
+	}
+	
+	/**
+	 * low level, executes query returns JSON 
 	 * @param SPARQLquery
 	 * @return
 	 */
