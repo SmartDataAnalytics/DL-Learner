@@ -10,10 +10,10 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.JamonMonitorLogger;
-import org.dllearner.utilities.examples.SPARQLTasks;
 import org.dllearner.utilities.statistics.SimpleClock;
 
 public class SparqlEndpointTest {
