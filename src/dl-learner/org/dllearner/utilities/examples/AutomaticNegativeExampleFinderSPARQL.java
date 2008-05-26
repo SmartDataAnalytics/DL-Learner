@@ -10,7 +10,7 @@ import org.dllearner.utilities.datastructures.SetManipulation;
 
 public class AutomaticNegativeExampleFinderSPARQL {
 
-	// CHECK
+	// LOGGER: ComponentManager
 	private static Logger logger = Logger.getLogger(ComponentManager.class);
 
 	private SPARQLTasks sparqltasks;
@@ -26,7 +26,13 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	static int poslimit = 10;
 	static int neglimit = 20;
 
-	// CHECK separate posexamples and fullposset
+	
+	/**
+	 * takes as input a full positive set to make sure no negatives are added as positives
+	 *  
+	 * @param fullPositiveSet
+	 * @param SPARQLTasks st
+	 */
 	public AutomaticNegativeExampleFinderSPARQL(
 			SortedSet<String> fullPositiveSet,
 			SPARQLTasks st) {
@@ -38,6 +44,11 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	
 	
 
+	/**
+	 * aggregates all collected neg examples
+	 * @param neglimit
+	 * @return
+	 */
 	public SortedSet<String> getNegativeExamples(int neglimit ) {
 
 		SortedSet<String> negatives = new TreeSet<String>();
@@ -50,12 +61,18 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		return negatives;
 	}
 
-	// CHECK namespace
+	
+	/**
+	 * makes neg ex from related instances, that take part in a role R(pos,neg)
+	 * filters all objects, that don't use the given namespace 
+	 * @param instances
+	 * @param objectNamespace
+	 */
 	public void makeNegativeExamplesFromRelatedInstances(SortedSet<String> instances,
-			String namespace) {
+			String objectNamespace) {
 		logger.debug("making examples from related instances");
 		for (String oneInstance : instances) {
-			makeNegativeExamplesFromRelatedInstances(oneInstance, namespace);
+			makeNegativeExamplesFromRelatedInstances(oneInstance, objectNamespace);
 		}
 		logger.debug("|-negExample size from related: " + fromRelated.size());
 	}
@@ -83,11 +100,16 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 	}*/
 
+	/**
+	 * makes neg ex from classes, the pos ex belong to 
+	 * @param positiveSet
+	 * @param resultLimit
+	 */
 	public void makeNegativeExamplesFromParallelClasses(SortedSet<String> positiveSet, int resultLimit){
 		makeNegativeExamplesFromClassesOfInstances(positiveSet, resultLimit);
 	}
 	
-	public void makeNegativeExamplesFromClassesOfInstances(SortedSet<String> positiveSet,
+	private void makeNegativeExamplesFromClassesOfInstances(SortedSet<String> positiveSet,
 			int resultLimit) {
 		logger.debug("making neg Examples from parallel classes");
 		SortedSet<String> classes = new TreeSet<String>();
@@ -115,6 +137,11 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 	}
 
+	/**
+	 * if pos ex derive from one class, then neg ex are taken from a superclass
+	 * @param concept
+	 * @param resultLimit
+	 */
 	public void makeNegativeExamplesFromSuperClasses(String concept, int resultLimit) {
 
 		concept = concept.replaceAll("\"", "");

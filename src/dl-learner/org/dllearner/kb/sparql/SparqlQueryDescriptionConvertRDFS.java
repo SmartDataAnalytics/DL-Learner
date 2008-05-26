@@ -1,7 +1,25 @@
+/**
+ * Copyright (C) 2007, Sebastian Hellmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.kb.sparql;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -10,14 +28,17 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Union;
 
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.sparql.core.ResultBinding;
 
-//COMMENT: header
+/**
+ * @author Sebastian Hellmann
+ * Enables RDFS reasoning for the DL2SPARQL class
+ * by concept rewriting
+ * //QUALITY use SPARQLtasks
+ */
 public class SparqlQueryDescriptionConvertRDFS {
 
-	static Logger logger = Logger.getLogger(SparqlQueryDescriptionConvertRDFS.class);
+	//LOGGER: SparqlQueryDescriptionConvertVisitor
+	static Logger logger = Logger.getLogger(SparqlQueryDescriptionConvertVisitor.class);
 
 	/**
 	 * 
@@ -35,7 +56,7 @@ public class SparqlQueryDescriptionConvertRDFS {
 	 *            RECOMMENDED for large hierarchies)
 	 * @return the altered String
 	 */
-	public static String conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache c,
+	public static String conceptRewrite(String descriptionKBSyntax, SPARQLTasks st,
 			boolean simple) {
 		String quote = "\"";
 		String returnValue = "";
@@ -58,7 +79,7 @@ public class SparqlQueryDescriptionConvertRDFS {
 			// System.out.println(currentconcept);
 
 			// subclasses are retrieved
-			subclasses = getSubClasses(currentconcept, se, c, simple);
+			subclasses = st.getSubClasses(currentconcept, simple);
 
 			// if only one then keep
 			if (subclasses.size() == 1)
@@ -80,100 +101,6 @@ public class SparqlQueryDescriptionConvertRDFS {
 		return returnValue;
 	}
 
-	/**
-	 * gets a SortedSet of all subclasses QUALITY: maybe it is better to have a
-	 * parameter int depth, to choose a depth of subclass interference
-	 * 
-	 * @see conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache
-	 *      c, boolean simple )
-	 * @param description
-	 * @param se
-	 * @param c
-	 * @param simple
-	 * @return
-	 */
-	private static SortedSet<String> getSubClasses(String description, SparqlEndpoint se, Cache c,
-			boolean simple) {
-
-		// ResultSet rs = null;
-		// System.out.println(description);
-		SortedSet<String> alreadyQueried = new TreeSet<String>();
-		try {
-
-			// initialisation get direct Subclasses
-			LinkedList<String> remainingClasses = new LinkedList<String>();
-
-			// collect remaining classes
-			remainingClasses.addAll(getDirectSubClasses(description.replaceAll("\"", ""), se, c));
-
-			// remainingClasses.addAll(alreadyQueried);
-
-			// alreadyQueried = new TreeSet<String>();
-			alreadyQueried.add(description.replaceAll("\"", ""));
-
-			if (simple) {
-				alreadyQueried.addAll(remainingClasses);
-				return alreadyQueried;
-			} else {
-
-				logger
-						.warn("Retrieval auf all subclasses via SPARQL is cost intensive and might take a while");
-				while (remainingClasses.size() != 0) {
-					SortedSet<String> tmpSet = new TreeSet<String>();
-					String tmp = remainingClasses.removeFirst();
-					alreadyQueried.add(tmp);
-
-					tmpSet = getDirectSubClasses(tmp, se, c);
-					for (String string : tmpSet) {
-						if (!(alreadyQueried.contains(string))) {
-							remainingClasses.add(string);
-						}// if
-					}// for
-				}// while
-			}// else
-
-		} catch (Exception e) {
-
-		}
-
-		return alreadyQueried;
-	}
-
-	/**
-	 * QUALITY: workaround for a sparql glitch {?a owl:subclassOf ?b} returns an
-	 * empty set on some entpoints. returns all direct subclasses of String
-	 * concept
-	 * 
-	 * @param concept
-	 * @return SortedSet of direct subclasses as String
-	 */
-	private static SortedSet<String> getDirectSubClasses(String concept, SparqlEndpoint se, Cache c) {
-		String query = "SELECT * \n";
-		query += "WHERE {\n";
-		query += " ?subject ?predicate  <" + concept + "> \n";
-		query += "}\n";
-
-		ResultSet rs = null;
-		if (c == null) {
-			rs = new SparqlQuery(query, se).send();
-		} else {
-			String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
-			rs = SparqlQuery.JSONtoResultSet(JSON);
-		}
-
-		SortedSet<String> subClasses = new TreeSet<String>();
-		@SuppressWarnings("unchecked")
-		List<ResultBinding> l = ResultSetFormatter.toList(rs);
-		String p = "", s = "";
-		for (ResultBinding resultBinding : l) {
-
-			s = ((resultBinding.get("subject").toString()));
-			p = ((resultBinding.get("predicate").toString()));
-			if (p.equalsIgnoreCase("http://www.w3.org/2000/01/rdf-schema#subClassOf")) {
-				subClasses.add(s);
-			}
-		}
-		return subClasses;
-	}
+	
 
 }

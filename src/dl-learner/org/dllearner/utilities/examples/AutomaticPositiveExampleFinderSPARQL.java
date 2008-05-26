@@ -9,7 +9,7 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 
 public class AutomaticPositiveExampleFinderSPARQL {
 	
-	//CHECK
+	// LOGGER: ComponentManager
 	private static Logger logger = Logger
 	.getLogger(ComponentManager.class);
 
