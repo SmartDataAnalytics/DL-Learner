@@ -5,8 +5,6 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 
 public class AutomaticPositiveExampleFinderSPARQL {
 	
@@ -47,7 +45,22 @@ public class AutomaticPositiveExampleFinderSPARQL {
 		this.posExamples = sparqltasks.retrieveInstancesForSKOSConcept(SKOSConcept, 0);
 		logger.debug("pos Example size: "+posExamples.size());
 	}
-
+	
+	@SuppressWarnings("unused")
+	public void makePositiveExamplesFromDomain(String role, int resultLimit){
+		logger.debug("making Positive Examples from Domain of : "+role);
+		this.posExamples.addAll(sparqltasks.getDomain(role, resultLimit));
+		logger.debug("pos Example size: "+posExamples.size());
+	}
+	
+	@SuppressWarnings("unused")
+	public void makePositiveExamplesFromRange(String role, int resultLimit){
+		logger.debug("making Positive Examples from Range of : "+role);
+		this.posExamples.addAll(sparqltasks.getRange(role, resultLimit));
+		logger.debug("pos Example size: "+posExamples.size());
+	}
+	
+	
 	public SortedSet<String> getPosExamples() {
 		return posExamples;
 	}

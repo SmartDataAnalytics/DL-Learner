@@ -17,6 +17,7 @@ import com.hp.hpl.jena.sparql.core.ResultBinding;
 public class SPARQLTasks {
 	
 	//CHECK
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 	.getLogger(SPARQLTasks.class);
 	private Cache c;
@@ -163,6 +164,38 @@ public class SPARQLTasks {
 	
 
 	
+	public SortedSet<String> getDomain(String role,int resultLimit){
+		
+		String SPARQLquery = "" +
+		"SELECT DISTINCT ?domain " +
+		"WHERE { \n" + 
+		"?domain <" + role + "> " + " ?o. \n" +
+		"?domain a []\n." +
+		"FILTER (!isLiteral(?domain))." +
+		"}\n" + limit(resultLimit);
+	
+		return queryAsSet(SPARQLquery, "domain");
+		
+	
+	}
+	
+	
+	public SortedSet<String> getRange(String role,int resultLimit){
+		
+		String SPARQLquery = "" +
+		"SELECT DISTINCT ?range " +
+		"WHERE { \n" + 
+		"?s <" + role + "> " + " ?range. \n" +
+		"?range a [].\n" +
+		"FILTER (!isLiteral(?range))." +
+		"}\n" + limit(resultLimit);
+
+		return queryAsSet(SPARQLquery, "range");
+	
+	}
+	
+	
+	
 	/**
 	 * query a pattern with a standard SPARQL query
 	 * usage (?subject, ?predicate, <http:something> , subject )
@@ -225,11 +258,12 @@ public class SPARQLTasks {
 		return "";
 	}
 	
-	@SuppressWarnings("unchecked")
+	
 	public static SortedSet<String> getStringListForVariable(ResultSet rs, String var){
 		SortedSet<String> result = new TreeSet<String>();
 		
 		//String s=ResultSetFormatter.asXMLString(this.rs);
+		@SuppressWarnings("unchecked")
 		List<ResultBinding> l =  ResultSetFormatter.toList(rs);
 		
 		for (ResultBinding resultBinding : l) {
