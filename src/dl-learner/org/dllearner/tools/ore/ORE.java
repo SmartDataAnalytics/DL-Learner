@@ -2,12 +2,13 @@ package org.dllearner.tools.ore;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -99,7 +100,7 @@ public class ORE {
 	
 	public void setLearningAlgorithm(){
 		try {
-			la = cm.learningAlgorithm(ROLearner.class, lp, rs);
+			la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
 		} catch (LearningProblemUnsupportedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -147,12 +148,10 @@ public class ORE {
 		double result_tmp = 0.0f;
 		
 		for(Individual ind : posExamples){
-			rs.instanceCheck(d, ind);
 			if(rs.instanceCheck(d, ind))
 				numberPosExamples++;
 		}
 		for(Individual ind : negExamples){
-			rs.instanceCheck(d, ind);
 			if(!rs.instanceCheck(d, ind))
 				numberNegExamples++;
 		}
@@ -163,6 +162,31 @@ public class ORE {
 		return result;	
 		
 		
+	}
+	
+	public HashSet<Individual> getNegFailureExamples(){
+		HashSet<Individual> negFailureExamples = new HashSet<Individual>() ;
+		
+		for(Individual ind : negExamples){
+			if(rs.instanceCheck(conceptToAdd, ind))
+				negFailureExamples.add(ind);
+				
+		}
+		
+		return negFailureExamples;
+	}
+	
+	public SortedSet<Individual> getPosFailureExamples(){
+		
+		SortedSet<Individual> posFailureExamples = null ;
+		
+		for(Individual ind : posExamples){
+			if(!rs.instanceCheck(conceptToAdd, ind))
+				posFailureExamples.add(ind);
+				
+		}
+		
+		return posFailureExamples;
 	}
 
 
@@ -196,24 +220,24 @@ public class ORE {
 	
 	public static void main(String[] args){
 		
-		ORE test = new ORE();
-		//File owlFile = new File("examples/family/father.owl");
-		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/father.owl");
-		
-		test.setKnowledgeSource(owlFile);
-	
-		test.detectReasoner();
-		ReasoningService rs = test.getReasoningService();
-		System.err.println("Concepts :" + rs.getAtomicConcepts());
-		
-		
-		test.setConcept(new NamedClass("http://example.com/father#father"));
-		test.setPosNegExamples();
-		System.out.println(test.posExamples);
-		System.out.println(test.negExamples);
-		test.setLearningProblem();
-		test.setLearningAlgorithm();
-		test.start();
+//		ORE test = new ORE();
+//		
+//		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/father.owl");
+//		
+//		test.setKnowledgeSource(owlFile);
+//	
+//		test.detectReasoner();
+//		ReasoningService rs = test.getReasoningService();
+//		System.err.println("Concepts :" + rs.getAtomicConcepts());
+//		
+//		
+//		test.setConcept(new NamedClass("http://example.com/father#father"));
+//		test.setPosNegExamples();
+//		System.out.println(test.posExamples);
+//		System.out.println(test.negExamples);
+//		test.setLearningProblem();
+//		test.setLearningAlgorithm();
+//		test.start();
 	}
 	
 	

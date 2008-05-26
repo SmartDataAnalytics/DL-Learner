@@ -2,6 +2,7 @@ package org.dllearner.tools.ore;
 
 
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
@@ -73,7 +74,7 @@ public class WizardController implements ActionListener {
         }
         
         if( nextPanelDescriptor.equals("REPAIR_PANEL")){
-        	((RepairPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getModel().clear();
+        	((RepairPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getNegFailureModel().clear();
         	wizard.getModel().getOre().getModi().addAxiomToOWL(wizard.getModel().getOre().getConceptToAdd(), wizard.getModel().getOre().getConcept());
         	new FailInstancesRetriever(nextPanelDescriptor).execute();
         }
@@ -230,7 +231,7 @@ public class WizardController implements ActionListener {
 		}
 
 	}
-    class FailInstancesRetriever extends SwingWorker<SortedSet<Individual>, Individual> {
+    class FailInstancesRetriever extends SwingWorker<HashSet<Individual>, Individual> {
 		Object nextPanelID;
 
 		public FailInstancesRetriever(Object nextPanelDescriptor) {
@@ -239,25 +240,25 @@ public class WizardController implements ActionListener {
 		}
 
 		@Override
-		public SortedSet<Individual> doInBackground() {
+		public HashSet<Individual> doInBackground() {
 			
 			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
 					nextPanelID)).panel4.getStatusLabel().setText(
-					"Loading instances");
+					"Loading conflicting instances");
 			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
 					nextPanelID)).panel4.getLoadingLabel().setBusy(true);
 
 		
 
-			SortedSet<Individual> ind = wizard.getModel().getOre()
-					.getReasoningService().getIndividuals();
+			HashSet<Individual> ind = wizard.getModel().getOre()
+					.getNegFailureExamples();
 
 			return ind;
 		}
 
 		@Override
 		public void done() {
-			SortedSet<Individual> ind = null;
+			HashSet<Individual> ind = null;
 			try {
 				ind = get();
 			} catch (InterruptedException e) {
@@ -269,20 +270,16 @@ public class WizardController implements ActionListener {
 			}
 			RepairPanelDescriptor nextPanel = (RepairPanelDescriptor) wizard
 					.getModel().getPanelHashMap().get(nextPanelID);
-			DefaultListModel dm = ((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
-					nextPanelID)).panel4.getModel();
+			DefaultListModel dm = nextPanel.panel4.getNegFailureModel();
 
 			for (Individual cl : ind) {
 				dm.addElement(cl);
-				//nextPanel.panel3.getModel().addElement(cl);
 				System.out.println(cl.getName());
 			}
-			nextPanel.panel4.getResultList().setModel(dm);
-			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
-					nextPanelID)).panel4.getStatusLabel().setText(
+			
+			nextPanel.panel4.getStatusLabel().setText(
 					"Instances loaded");
-			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
-					nextPanelID)).panel4.getLoadingLabel().setBusy(false);
+			nextPanel.panel4.getLoadingLabel().setBusy(false);
 		}
 
 	}

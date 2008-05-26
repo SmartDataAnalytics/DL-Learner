@@ -131,7 +131,7 @@ public class OntologyModifierOWLAPI {
 		//Hinzufuegen
 		
 		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(newConcept);
-		
+	
 		OWLAxiom axiomOWLAPI = factory.getOWLClassAssertionAxiom(individualOWLAPI, newConceptOWLAPI);
 		
 		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);

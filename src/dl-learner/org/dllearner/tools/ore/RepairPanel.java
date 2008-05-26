@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 
@@ -25,17 +26,16 @@ public class RepairPanel extends JPanel{
 
 	private JPanel contentPanel;
 	
-	private javax.swing.JList resultList;
-	private DefaultListModel model;
+	private JList posFailureList;
+	private	JList negFailureList;
+	private DefaultListModel posFailureModel;
+	private DefaultListModel negFailureModel;
 	
 	
 	
 	private JLabel statusLabel;
 	private JXBusyLabel loadingLabel;
 	
-	private JButton deleteButton;
-	private JButton moveButton;
-	private JButton addButton;
 	private JButton saveButton;
 	
 	
@@ -43,18 +43,14 @@ public class RepairPanel extends JPanel{
 	public RepairPanel() {
 		
 		super();
-		model = new DefaultListModel();
-		
+		posFailureModel = new DefaultListModel();
+		negFailureModel = new DefaultListModel();
 				
 		JPanel buttonPanel = new JPanel();
-		deleteButton = new JButton("delete");
-		moveButton = new JButton("move");
-		addButton = new JButton("add property");
+	
 		saveButton = new JButton("save");
 	
-		buttonPanel.add(deleteButton);
-		buttonPanel.add(moveButton);
-		buttonPanel.add(addButton);
+	
 		buttonPanel.add(saveButton);
 		buttonPanel.setLayout(new GridLayout(5,1,0,10));
 		
@@ -86,36 +82,27 @@ public class RepairPanel extends JPanel{
 	private JPanel getContentPanel() {
 		
 		JPanel contentPanel1 = new JPanel();
-		JScrollPane scroll = new JScrollPane();
+		
+		JScrollPane posScroll = new JScrollPane();
+		posFailureList = new JList(posFailureModel);
+		posScroll.setPreferredSize(new Dimension(400, 400));
+		posScroll.setViewportView(posFailureList);
+		
+		JScrollPane negScroll = new JScrollPane();
+		negFailureList = new JList(negFailureModel);
+		negScroll.setPreferredSize(new Dimension(400, 400));
+		negScroll.setViewportView(negFailureList);
 		
 		
-		
-		
-		resultList = new JList(model);
-
-		scroll.setPreferredSize(new Dimension(400, 400));
-		
-		scroll.setViewportView(resultList);
-				
-		contentPanel1.add(scroll);
+		contentPanel1.add(posScroll);
+		contentPanel1.add(negScroll);
 		
 		
 
 		return contentPanel1;
 	}
 	
-	public void addDeleteButtonListener(ActionListener a){
-		deleteButton.addActionListener(a);
-	}
-	
-	public void addMoveButtonListener(ActionListener a){
-		moveButton.addActionListener(a);
-	}
-	
-	public void addAddButtonListener(ActionListener a){
-		addButton.addActionListener(a);
-	}
-	
+		
 	public void addSaveButtonListener(ActionListener a){
 		saveButton.addActionListener(a);
 	}
@@ -128,28 +115,30 @@ public class RepairPanel extends JPanel{
 		return loadingLabel;
 	}
 
-	public JButton getDeleteButton() {
-		return deleteButton;
-	}
-
-	public JButton getMoveButton() {
-		return moveButton;
+	public DefaultListModel getPosFailureModel() {
+		return posFailureModel;
 	}
 	
-	public JButton getAddButton() {
-		return addButton;
-	}
-
-	public DefaultListModel getModel() {
-		return model;
+	public DefaultListModel getNegFailureModel() {
+		return negFailureModel;
 	}
 	
-	public javax.swing.JList getResultList() {
-		return resultList;
+	public javax.swing.JList getPosFailureList() {
+		return posFailureList;
+	}
+	
+	public javax.swing.JList getNegFailureList() {
+		return negFailureList;
 	}
 	
 	public void addSelectionListener(ListSelectionListener l){
-		resultList.addListSelectionListener(l);
+		posFailureList.addListSelectionListener(l);
+		negFailureList.addListSelectionListener(l);
+	}
+	
+	public void addMouseListener(MouseListener m){
+		posFailureList.addMouseListener(m);
+		negFailureList.addMouseListener(m);
 	}
 	
 	

@@ -2,6 +2,8 @@ package org.dllearner.tools.ore;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -11,7 +13,7 @@ import org.dllearner.core.owl.Individual;
 
 
 
-public class RepairPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener{
+public class RepairPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener, MouseListener{
     
     public static final String IDENTIFIER = "REPAIR_PANEL";
     
@@ -21,11 +23,10 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
     public RepairPanelDescriptor() {
         
         panel4 = new RepairPanel();
-        panel4.addDeleteButtonListener(this);
-        panel4.addMoveButtonListener(this);
-        panel4.addAddButtonListener(this);
+       
         panel4.addSaveButtonListener(this);
         panel4.addSelectionListener(this);
+        panel4.addMouseListener(this);
         
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(panel4);
@@ -48,8 +49,9 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
    
 
 	public void valueChanged(ListSelectionEvent e) {
-		if (!e.getValueIsAdjusting()) 
-			 System.out.println(panel4.getResultList().getSelectedValue());
+		
+//		if (!e.getValueIsAdjusting()) 
+//			 System.err.println(panel4.getNegFailureList().getSelectedValue());
 		
 	}
 
@@ -58,38 +60,40 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 			getWizardModel().getOre().getModi().saveOntology();
 			            
 		}
-		if(event.getActionCommand().equals("delete")){
-			
-			int idx = panel4.getResultList().getSelectedIndex();
-			if (-1 == idx) {
-				//No item selected
-				return;
-			}
-			System.out.println("Index: " +idx);
-			
 		
-			
-			getWizardModel().getOre().getModi().deleteIndividual((Individual)panel4.getResultList().getSelectedValue());
-			panel4.getModel().removeElementAt(idx);
-			
 		
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+		if(e.getClickCount() == 2 && e.getSource() == panel4.getNegFailureList() ){
+			System.out.println(panel4.getNegFailureList().getSelectedValue());
 		}
-		if(event.getActionCommand().equals("move")){
-			
-			int idx = panel4.getResultList().getSelectedIndex();
-			if (-1 == idx) {
-				//No item selected
-				return;
-			}
-			System.out.println(getWizardModel().getOre().allAtomicConcepts);
-			
-			MoveDialog dialog = new MoveDialog(getWizardModel().getOre().allAtomicConcepts, getWizard().getDialog());
-			dialog.init();
-			System.err.println("Verschiebe " +(Individual)panel4.getResultList().getSelectedValue()+
-					" von " + "......." + " nach " +dialog.getSelectedValue());
 		
-			
-		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
 		
 	}}
 
