@@ -5,12 +5,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.datastructures.SetManipulation;
-
-import com.hp.hpl.jena.query.ResultSet;
 
 public class AutomaticNegativeExampleFinderSPARQL {
 
@@ -21,25 +16,20 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 	private SortedSet<String> fullPositiveSet;
 	
-	//static boolean useRelated = false;
-	private SortedSet<String> fromRelated;
-	//static boolean useSuperClasses = false;
-	private SortedSet<String> fromSuperclasses;
-	//static boolean useParallelClasses = true;
-	private SortedSet<String> fromParallelClasses;
+	private SortedSet<String> fromRelated  = new TreeSet<String>();
+	private SortedSet<String> fromSuperclasses = new TreeSet<String>();;
+	private SortedSet<String> fromParallelClasses = new TreeSet<String>();;
+	private SortedSet<String> fromDomain = new TreeSet<String>();;
+	private SortedSet<String> fromRange = new TreeSet<String>();;
 	
 	static int poslimit = 10;
 	static int neglimit = 20;
 
-	// CHECK all vars needed
+	// CHECK separate posexamples and fullposset
 	public AutomaticNegativeExampleFinderSPARQL(
 			SortedSet<String> fullPositiveSet,
 			SPARQLTasks st) {
 		super();
-		this.fromParallelClasses = new TreeSet<String>();
-		this.fromRelated = new TreeSet<String>();
-		this.fromSuperclasses = new TreeSet<String>();
-		
 		this.fullPositiveSet = fullPositiveSet;
 		this.sparqltasks = st;
 
@@ -80,8 +70,8 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 	}
 
-	// QUALITY: weird function, best removed
-	public void dbpediaMakeNegativeExamplesFromRelatedInstances(String subject) {
+	// QUALITY: keep a while may still be needed
+	/*public void dbpediaMakeNegativeExamplesFromRelatedInstances(String subject) {
 		// SortedSet<String> result = new TreeSet<String>();
 
 		String SPARQLquery = "SELECT * WHERE { \n" + "<" + subject + "> " + "?p ?o. \n"
@@ -90,7 +80,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 		this.fromRelated.addAll(sparqltasks.queryAsSet(SPARQLquery, "o"));
 
-	}
+	}*/
 
 	public void makeNegativeExamplesFromParallelClasses(SortedSet<String> positiveSet, int resultLimit){
 		makeNegativeExamplesFromClassesOfInstances(positiveSet, resultLimit);
@@ -141,5 +131,22 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		this.fromSuperclasses.removeAll(this.fullPositiveSet);
 		logger.debug("|-neg Example from superclass: " + fromSuperclasses.size());
 	}
+	
+	@SuppressWarnings("unused")
+	private void makeNegativeExamplesFromDomain(String role, int resultLimit){
+		logger.debug("making Negative Examples from Domain of : "+role);
+		this.fromDomain.addAll(sparqltasks.getDomain(role, resultLimit));
+		this.fromDomain.removeAll(this.fullPositiveSet);
+		logger.debug("|-neg Example size from Domain: "+this.fromDomain.size());
+	}
+	
+	@SuppressWarnings("unused")
+	private void makeNegativeExamplesFromRange(String role, int resultLimit){
+		logger.debug("making Negative Examples from Range of : "+role);
+		this.fromRange.addAll(sparqltasks.getRange(role, resultLimit));
+		this.fromRange.removeAll(this.fullPositiveSet);
+		logger.debug("|-neg Example size from Range: "+this.fromRange.size());
+	}
+	
 
 }
