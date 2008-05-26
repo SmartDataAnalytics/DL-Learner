@@ -12,13 +12,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.JSlider;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
 
 import org.jdesktop.swingx.JXBusyLabel;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.icon.EmptyIcon;
 import org.jdesktop.swingx.painter.BusyPainter;
 
@@ -30,9 +27,6 @@ public class LearningPanel extends JPanel{
 	
 	private javax.swing.JList resultList;
 	private DefaultListModel model;
-	
-	private JXTable resultTable;
-	private DefaultTableModel model1;
 	
 	private JLabel statusLabel;
 	private JXBusyLabel loadingLabel;
@@ -46,11 +40,7 @@ public class LearningPanel extends JPanel{
 		super();
 		model = new DefaultListModel();
 		
-		model1 = new DefaultTableModel();
-		model1.addColumn("Description");
-		model1.addColumn("Correctness");
-		
-		
+	
 		JPanel buttonPanel = new JPanel();
 		startButton = new JButton("Start");
 		stopButton = new JButton("Stop");
@@ -88,19 +78,21 @@ public class LearningPanel extends JPanel{
 		JPanel contentPanel1 = new JPanel();
 		JScrollPane scroll = new JScrollPane();
 		
-		resultTable = new JXTable(model1 );
-		
-		resultTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		resultTable.setHighlighters(HighlighterFactory.createSimpleStriping());
-		
 		
 		resultList = new JList(model);
 //		resultList.setCellRenderer(new ColumnListCellRenderer());
 		scroll.setPreferredSize(new Dimension(400, 400));
-		
 		scroll.setViewportView(resultList);
 				
+		JSlider noise = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
+		noise.setMajorTickSpacing(50);
+		noise.setMinorTickSpacing(25);
+		noise.setPaintTicks(true);
+		noise.setPaintLabels(true);
+		
 		contentPanel1.add(scroll);
+		contentPanel1.add(noise);
+		
 		
 		
 
@@ -135,10 +127,6 @@ public class LearningPanel extends JPanel{
 		return model;
 	}
 	
-//	public DefaultTableModel getModel() {
-//		return model1;
-//	}
-
 	public javax.swing.JList getResultList() {
 		return resultList;
 	}

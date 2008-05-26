@@ -26,7 +26,7 @@ public class Main {
 		}
         Wizard wizard = new Wizard();
         wizard.getDialog().setTitle("DL-Learner ORE-Tool");
-        wizard.getDialog().setSize(800, 500);
+        wizard.getDialog().setSize(1300, 600);
         
         WizardPanelDescriptor descriptor1 = new IntroductionPanelDescriptor();
         wizard.registerWizardPanel(IntroductionPanelDescriptor.IDENTIFIER, descriptor1);
