@@ -66,6 +66,7 @@ import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGReasoner;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
@@ -98,6 +99,7 @@ public class DLLearnerWS {
 		knowledgeSourceMapping.put("sparql", SparqlKnowledgeSource.class);
 		reasonerMapping.put("dig", DIGReasoner.class);
 		reasonerMapping.put("owlapi", OWLAPIReasoner.class);
+		reasonerMapping.put("fastInstanceChecker", FastInstanceChecker.class);
 		learningProblemMapping.put("posNegDefinition", PosNegDefinitionLP.class);
 		learningProblemMapping.put("posNegInclusion", PosNegInclusionLP.class);
 		learningProblemMapping.put("posOnlyDefinition", PosOnlyDefinitionLP.class);
