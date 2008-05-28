@@ -47,7 +47,7 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedFilter", "YAGO");
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedEndpoint", "DBPEDIA");
 		
-		$this->client->setReasoner($this->id, "dig");
+		$this->client->setReasoner($this->id, "fastInstanceChecker");
 		if(empty($negExamples))
 			$this->client->setLearningProblem($this->id, "posOnlyDefinition");
 		else
@@ -55,7 +55,7 @@ class DLLearnerConnection
 		$this->client->setPositiveExamples($this->id, $posExamples);
 		if(!empty($negExamples))
 			$this->client->setNegativeExamples($this->id, $negExamples);
-		$this->client->setLearningAlgorithm($this->id, "refinement");
+		$this->client->setLearningAlgorithm($this->id, "dbpediaNavigationSuggestor");
 		
 		$start = microtime(true);
 		

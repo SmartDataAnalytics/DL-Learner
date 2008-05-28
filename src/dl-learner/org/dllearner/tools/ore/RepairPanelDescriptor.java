@@ -64,7 +64,6 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 		
 	}
 	
-	@Override
 	public void mouseClicked(MouseEvent e) {
 		
 		if(e.getClickCount() == 2 && e.getSource() == panel4.getNegFailureList() ){
@@ -73,25 +72,21 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 		
 	}
 
-	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
