@@ -311,6 +311,19 @@ public class DLLearnerWS {
 		return state.getLearningAlgorithm().getBestSolution().toString();
 	}
 	
+	@WebMethod
+	public String learn(int id, String format) throws ClientNotKnownException {
+		ClientState state = getState(id);
+		state.getLearningAlgorithm().start();
+		Description solution = state.getLearningAlgorithm().getBestSolution();
+		if(format == "manchester")
+			return solution.toManchesterSyntaxString(null, null);
+		else if(format == "kb")
+			return solution.toKBSyntaxString();
+		else
+			return solution.toString();
+	}
+	
 	/**
 	 * Starts the learning algorithm and returns immediately. The learning
 	 * algorithm is executed in its own thread and can be queried and 
