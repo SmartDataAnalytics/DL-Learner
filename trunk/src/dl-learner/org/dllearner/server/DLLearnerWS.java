@@ -20,6 +20,7 @@
 package org.dllearner.server;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -315,9 +316,11 @@ public class DLLearnerWS {
 	public String learn(int id, String format) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
+	//	ResultSet resultSet=SparqlQuery.JSONtoResultSet(state.getQuery(id).getResult());
 		Description solution = state.getLearningAlgorithm().getBestSolution();
 		if(format == "manchester")
-			return solution.toManchesterSyntaxString(null, null);
+			return solution.toManchesterSyntaxString(state.getReasoningService().getBaseURI(), new HashMap<String,String>()).
+			replace("\"", "");
 		else if(format == "kb")
 			return solution.toKBSyntaxString();
 		else
