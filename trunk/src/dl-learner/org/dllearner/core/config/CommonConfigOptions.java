@@ -29,6 +29,8 @@ package org.dllearner.core.config;
  */
 public final class CommonConfigOptions {
 	
+	// some default values
+	
 	//public static boolean applyAllFilterDefault = true;
 	//public static boolean applyExistsFilterDefault = true;	
 	//public static boolean useTooWeakListDefault = true;
@@ -40,14 +42,13 @@ public final class CommonConfigOptions {
 	public static boolean useCardinalityRestrictionsDefault = true;
 	public static boolean useNegationDefault = true;
 	public static boolean useBooleanDatatypesDefault = true;
+	public static boolean useDoubleDatatypesDefault = true;
 	public static int maxExecutionTimeInSecondsDefault = 0;
 	public static int minExecutionTimeInSecondsDefault = 0;
 	public static int guaranteeXgoodDescriptionsDefault = 1;
 	public static String logLevelDefault = "DEBUG";
 	//public static double noisePercentageDefault = 0.0;
 	
-	
-
 	public static StringConfigOption getVerbosityOption() {
 		StringConfigOption verbosityOption = new StringConfigOption("verbosity", "control verbosity of output for this component", "warning");
 		String[] allowedValues = new String[] {"quiet", "error", "warning", "notice", "info", "debug"};
@@ -108,6 +109,10 @@ public final class CommonConfigOptions {
 	
 	public static BooleanConfigOption useBooleanDatatypes() {
 		return new BooleanConfigOption("useBooleanDatatypes", "specifies whether boolean datatypes are used in the learning algorothm",useBooleanDatatypesDefault);
+	}	
+	
+	public static BooleanConfigOption useDoubleDatatypes() {
+		return new BooleanConfigOption("useBooleanDatatypes", "specifies whether boolean datatypes are used in the learning algorothm",useDoubleDatatypesDefault);
 	}	
 	
 	public static IntegerConfigOption maxExecutionTimeInSeconds() {

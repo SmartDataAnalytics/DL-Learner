@@ -45,6 +45,8 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  */
 public abstract class ReasonerComponent extends Component implements Reasoner {
 
+	public abstract boolean hasDatatypeSupport();
+	
 	public boolean subsumes(Description superConcept, Description subConcept)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();

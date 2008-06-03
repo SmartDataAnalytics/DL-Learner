@@ -25,21 +25,16 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblem;
-import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.Score;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
-import org.dllearner.parser.ConfParser;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -69,6 +64,7 @@ public class PaperStatistics {
 		
 		// experimental setup:
 		
+		// 5 fold cross validation
 		// algorithms: refinement, GP, hybrid GP (YinYang)
 		// settings GP:
 		// - average over 10 runs
@@ -95,18 +91,18 @@ public class PaperStatistics {
 		// - uncle (FORTE)
 		// - more?
 		
-		String exampleBaseDir = "examples/";
+		String exampleBaseDir = "examples/cross-benchmark/";
 		String gnuplotBaseDir = "log/gnuplot/";
 		String statBaseDir = "log/stat/";
 		
-		File[] confFiles = new File[7];
-		confFiles[0] = new File(exampleBaseDir + "trains", "trains_owl.conf");
-		confFiles[1] = new File(exampleBaseDir + "arch", "arch_owl.conf");
-		confFiles[2] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_owl.conf");
-		confFiles[3] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_complex_owl.conf");
-        confFiles[4] = new File(exampleBaseDir + "poker", "pair_owl.conf");
-        confFiles[5] = new File(exampleBaseDir + "poker", "straight_owl.conf");
-        confFiles[6] = new File(exampleBaseDir + "forte", "forte_uncle_owl.conf");
+		File[] confFiles = new File[1];
+//		confFiles[0] = new File(exampleBaseDir + "trains", "trains_owl");
+		confFiles[0] = new File(exampleBaseDir + "arch", "arch");
+//		confFiles[2] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_owl");
+//		confFiles[3] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_complex_owl");
+//        confFiles[4] = new File(exampleBaseDir + "poker", "pair_owl");
+//        confFiles[5] = new File(exampleBaseDir + "poker", "straight_owl");
+//        confFiles[6] = new File(exampleBaseDir + "forte", "forte_uncle_owl");
 		
 		String[] examples = new String[7];
 		examples[0] = "trains";
@@ -118,192 +114,31 @@ public class PaperStatistics {
 		examples[6] = "uncle (FORTE data set)";
 		int startExampleNr = 0;		
 		
-		String[] algorithms = new String[3];
-		algorithms[0] = "refinement";
-		algorithms[1] = "gp";
-		algorithms[2] = "hybrid";
-		
-		int[] algorithmRuns = {1,10,10};
+		// for any example, we create conf files for each configuration to be tested
+		String[] algorithmPostfix = new String[4];
+		algorithmPostfix[0] = "_refexamples";
+		algorithmPostfix[1] = "_refexamples_fast";
+		algorithmPostfix[2] = "_gp";
+		algorithmPostfix[3] = "_hybrid";
 		int startAlgorithmNr = 0;
 
-		// Config.GP.maxConceptLength = 30;
-		// Config.writeDIGProtocol = true;
-		// Config.digProtocolFile = new File(statBaseDir, "dig.log");
-		
-		// do not plot anything
-		// File[][][] gnuplotFiles = new File[examples.length][algorithms.length][3];
-		// for(int i=0; i<examples.length; i++) {
-		//	for(int j=0; j<algorithms.length; j++) {
-		//		gnuplotFiles[i][j][0] = new File(gnuplotBaseDir, examples[i] + "_classification_" + algorithms[j] + ".data");
-		//		gnuplotFiles[i][j][1] = new File(gnuplotBaseDir, examples[i] + "_length_" + algorithms[j] + ".data");
-		//		gnuplotFiles[i][j][2] = new File(gnuplotBaseDir, examples[i] + "_runtime_" + algorithms[j] + ".data");
-		//	}
-		//}
-		
 		File statFile = new File(statBaseDir, "statistics.txt");
-		File statDetailsFile = new File(statBaseDir, "statistics_details.txt");
 		String statString = "**automatically generated statistics**\n\n";
-		String statDetailsString = statString;
-		
-		ComponentManager cm = ComponentManager.getInstance();
-		
-		// just set default options
-//		ConfigurationManager confMgr = new ConfigurationManager();
-//		confMgr.applyOptions();
 		
 		for(int exampleNr=startExampleNr; exampleNr < examples.length; exampleNr++) {
 			
-			// parse current conf file
-			ConfParser learner = ConfParser.parseFile(confFiles[exampleNr]);
-			
-			String baseDir = confFiles[exampleNr].getParent();
-			
-			// read which files were imported (internal KB is ignored) and initialise reasoner
-			Map<URL, OntologyFormat> imports = getImports(learner.getFunctionCalls(), confFiles[exampleNr]);
-			//Map<URL, Class<? extends KnowledgeSource>> imports = Start.getImportedFiles(learner, baseDir);
-			
-			// detect specified positive and negative examples
-			SortedSet<String> positiveExamples = learner.getPositiveExamples();
-			SortedSet<String> negativeExamples = learner.getNegativeExamples();
-			int nrOfExamples = positiveExamples.size() + negativeExamples.size();
-			
-			statString += "example: " + examples[exampleNr] + "\n\n";
-			
-			for(int algorithmNr=startAlgorithmNr; algorithmNr < algorithms.length; algorithmNr++) {
+			for(int algorithmNr=startAlgorithmNr; algorithmNr < algorithmPostfix.length; algorithmNr++) {
 				// reset algorithm number (next example starts with first algorithm)
 				startAlgorithmNr = 0;		
 				
+				File confFile = new File(confFiles[exampleNr] + algorithmPostfix[algorithmNr] + ".conf"); 
+				
+				CrossValidation cv = new CrossValidation(confFile, 5, false);
 				Stat classification = new Stat();
 				Stat length = new Stat();
 				Stat runtime = new Stat();
 				
-				for(int runNr=0; runNr < algorithmRuns[algorithmNr]; runNr++) {
-					
-					// create reasoner (this has to be done in this inner loop to 
-					// ensure that none of the algorithm benefits from e.g. caching
-					// of previous reasoning requests
-					// Reasoner reasoner = Main.createReasoner(new KB(), imports);
-					// TODO: needs fixing
-					KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
-					ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, ks);
-					ReasoningService rs = new ReasoningService(reasoner);					
-					
-					// System.out.println(positiveExamples);
-					// System.out.println(negativeExamples);
-					// System.exit(0);
-					
-					// create learning problem
-					// LearningProblem learningProblem = new LearningProblem(rs, positiveExamples, negativeExamples);
-					LearningProblem learningProblem = cm.learningProblem(PosNegDefinitionLP.class, rs);
-					
-					// prepare reasoner for using subsumption and role hierarchy
-					// TODO: currently, it is a small unfairness that each algorithm
-					// uses the same reasoning object (e.g. the second algorithm may
-					// have a small advantage if the reasoner cached reasoning requests
-					// of the first algorithm)
-//					Helper.autoDetectConceptsAndRoles(rs);
-//					try {
-//						reasoner.prepareSubsumptionHierarchy();
-//						reasoner.prepareRoleHierarchy();
-//						// improving the subsumption hierarchy makes only sense
-//						// for the refinement based algorithm
-//						if(algorithmNr==0)
-//							reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
-//					} catch (ReasoningMethodUnsupportedException e) {
-//						e.printStackTrace();
-//					}
-
-					LearningAlgorithm learningAlgorithm = null;
-					if(algorithmNr==0) {
-						// Config.algorithm = Algorithm.REFINEMENT;
-						// Config.Refinement.heuristic = Config.Refinement.Heuristic.FLEXIBLE;
-//						Config.Refinement.horizontalExpansionFactor = 0.6;
-//						Config.Refinement.quiet = true;
-						// Config.percentPerLengthUnit = 0.05;
-						// learningAlgorithm = new ROLearner(learningProblem);
-						// learningAlgorithm = cm.learningAlgorithm(ROLearner.class, learningProblem);
-					} else if(algorithmNr==1) {
-						// Config.algorithm = Algorithm.GP;
-//						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
-////						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
-//						Config.GP.generations = 50;	
-//						Config.GP.useFixedNumberOfGenerations = true;
-//						Config.GP.numberOfIndividuals = 201;
-						// if(exampleNr == 3 || exampleNr == 4)
-						// 	Config.GP.numberOfIndividuals = 51;
-//						Config.GP.refinementProbability = 0;
-//						Config.GP.mutationProbability = 0.02;
-//						Config.GP.crossoverProbability = 0.8;
-//						Config.GP.hillClimbingProbability = 0;
-						// Config.percentPerLengthUnit = 0.005;
-						// give GP a chance to find the long solution of the
-						// uncle problem
-						// if(exampleNr==3 || exampleNr==5 || exampleNr == 6)
-						//	Config.percentPerLengthUnit = 0.002;
-						// learningAlgorithm = new GP(learningProblem);
-						try {
-							learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
-						} catch (LearningProblemUnsupportedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					} else if(algorithmNr==2) {
-						// Config.algorithm = Algorithm.HYBRID_GP;
-//						Config.GP.algorithmType = GP.AlgorithmType.GENERATIONAL;						
-//						Config.GP.selectionType = GP.SelectionType.RANK_SELECTION;
-//						Config.GP.generations = 50;
-//						Config.GP.useFixedNumberOfGenerations = true;
-//						Config.GP.numberOfIndividuals = 201;
-						//if(exampleNr == 3 || exampleNr == 4)
-						//	Config.GP.numberOfIndividuals = 51;						
-//						Config.GP.refinementProbability = 0.65;
-//						Config.GP.mutationProbability = 0.02;
-//						Config.GP.crossoverProbability = 0.2;
-//						Config.GP.hillClimbingProbability = 0;
-						// Config.percentPerLengthUnit = 0.005;
-						// if(exampleNr == 3 || exampleNr==5 || exampleNr==6)
-//							Config.percentPerLengthUnit = 0.002;						
-						// learningAlgorithm = new GP(learningProblem);
-						try {
-							learningAlgorithm = cm.learningAlgorithm(GP.class, learningProblem, rs);
-						} catch (LearningProblemUnsupportedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					
-					// rs.resetStatistics();
-					
-					long algorithmStartTime = System.nanoTime();
-					learningAlgorithm.start();
-					long algorithmTime = System.nanoTime() - algorithmStartTime;
-					// long algorithmTimeSeconds = algorithmTime / 1000000000;	
-					
-					int conceptLength = learningAlgorithm.getBestSolution().getLength();
-					Score bestScore = learningAlgorithm.getSolutionScore();
-					int misClassifications = bestScore.getCoveredNegatives().size()
-							+ bestScore.getNotCoveredPositives().size();
-					double classificationRatePercent = 100 * ((nrOfExamples - misClassifications) / (double) nrOfExamples);
-					
-					classification.addNumber(classificationRatePercent);
-					length.addNumber(conceptLength);
-					runtime.addNumber(algorithmTime);
-					
-					// free knowledge base to avoid memory leaks
-					((DIGReasoner) reasoner).releaseKB();	
-					
-					statDetailsString += "example: " + examples[exampleNr] + "\n";
-					statDetailsString += "algorithm: " + algorithms[algorithmNr] + "\n";
-					statDetailsString += "learned concept: " + learningAlgorithm.getBestSolution() + "\n";
-					statDetailsString += "classification: " + classificationRatePercent + "%\n";
-					statDetailsString += "concept length: " +  conceptLength + "\n";
-					statDetailsString += "runtime: " + Helper.prettyPrintNanoSeconds(algorithmTime) + "\n\n";
-				
-					Files.createFile(statDetailsFile, statDetailsString);
-					
-				} // end run loop		
-				
-				statString += "algorithm: " + algorithms[algorithmNr] + " (runs: " + algorithmRuns[algorithmNr] + ")\n";
+				statString += "conf file: " + confFile + "\n";
 				statString += "classification: " + classification.getMean() + "% (standard deviation: " + classification.getStandardDeviation() + "%)\n";
 				statString += "concept length: " + length.getMean() + " (standard deviation: " + length.getStandardDeviation() + ")\n";
 				statString += "runtime: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getMean())) + " (standard deviation: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getStandardDeviation())) + ")\n\n";
@@ -316,6 +151,7 @@ public class PaperStatistics {
 		
 	}
 	
+	@SuppressWarnings({"unused"})
 	private static Map<URL, OntologyFormat> getImports(Map<String,List<List<String>>> functionCalls, File confFile) {
 		Map<URL, OntologyFormat> importedFiles = new HashMap<URL, OntologyFormat>();
 		
@@ -357,9 +193,6 @@ public class PaperStatistics {
 		
 		return importedFiles;
 	}
-	
-	// erzeugt Statistiken für MLDM-Paper zur Verarbeitung mit GnuPlot
-	// Vorsicht: Laufzeit von mehreren Stunden
 	
 	/**
 	 * Has been used to create the statistics for the MLDM 2007 paper.

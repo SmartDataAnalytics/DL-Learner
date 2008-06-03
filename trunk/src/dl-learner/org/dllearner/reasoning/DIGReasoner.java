@@ -795,4 +795,9 @@ public class DIGReasoner extends ReasonerComponent {
 		return null;
 	}
 
+	@Override
+	public boolean hasDatatypeSupport() {
+		return false;
+	}
+
 }

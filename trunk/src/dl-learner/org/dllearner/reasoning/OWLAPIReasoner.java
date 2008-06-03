@@ -904,4 +904,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		reasonerType=type;
 	}
 
+	@Override
+	public boolean hasDatatypeSupport() {
+		return true;
+	}
+
 }
