@@ -193,4 +193,9 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	public void releaseKB() {
 		rc.releaseKB();
 	}
+
+	@Override
+	public boolean hasDatatypeSupport() {
+		return true;
+	}
 }

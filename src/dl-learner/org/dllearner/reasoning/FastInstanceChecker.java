@@ -630,5 +630,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public void setReasonerType(String type){
 		reasonerType=type;
 	}
+
+
+	@Override
+	public boolean hasDatatypeSupport() {
+		return true;
+	}
 	
 }

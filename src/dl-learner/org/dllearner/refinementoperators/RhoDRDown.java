@@ -167,11 +167,11 @@ public class RhoDRDown implements RefinementOperator {
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 	
 	public RhoDRDown(ReasoningService reasoningService) {
-		this(reasoningService, true, true, true, true, true, true, true, null);
+		this(reasoningService, true, true, true, true, true, true, true, true, null);
 	}
 	
 	public RhoDRDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
-			boolean useExistsConstructor,boolean  useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, NamedClass startClass) {
+			boolean useExistsConstructor,boolean  useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
 		this.rs = reasoningService;
 		this.applyAllFilter = applyAllFilter;
 		this.applyExistsFilter = applyExistsFilter;
@@ -180,6 +180,7 @@ public class RhoDRDown implements RefinementOperator {
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
 		this.useNegation = useNegation;
 		this.useBooleanDatatypes = useBooleanDatatypes;
+		this.useDoubleDatatypes = useDoubleDatatypes;
 		
 		subHierarchy = rs.getSubsumptionHierarchy();
 		

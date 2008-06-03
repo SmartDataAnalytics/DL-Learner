@@ -57,6 +57,11 @@ public class CrossValidation {
 
 	private static Logger logger = Logger.getRootLogger();	
 	
+	// statistical values
+	private Stat runtime = new Stat();
+	private Stat accuracy = new Stat();
+	private Stat length = new Stat();	
+	
 	public static void main(String[] args) {
 		File file = new File(args[0]);
 		
@@ -90,7 +95,11 @@ public class CrossValidation {
 	}
 	
 	public CrossValidation(File file, int folds, boolean leaveOneOut) {
+		this(file, folds, leaveOneOut, null);
+	}
 			
+	public CrossValidation(File file, int folds, boolean leaveOneOut, LearningAlgorithm la) {		
+		
 		DecimalFormat df = new DecimalFormat();	
 		ComponentManager cm = ComponentManager.getInstance();
 		
@@ -178,11 +187,6 @@ public class CrossValidation {
 			System.exit(0);
 		}
 		
-		// statistical values
-		Stat runtime = new Stat();
-		Stat accuracy = new Stat();
-		Stat length = new Stat();
-		
 		// run the algorithm
 		for(int currFold=0; currFold<folds; currFold++) {
 			// we always perform a full initialisation to make sure that
@@ -204,7 +208,8 @@ public class CrossValidation {
 			
 			// es fehlt init zwischendurch
 			
-			LearningAlgorithm la = start.getLearningAlgorithm();
+			if(la == null)
+				la = start.getLearningAlgorithm();
 			// init again, because examples have changed
 			try {
 				la.init();
@@ -313,6 +318,18 @@ public class CrossValidation {
 		str += "min " + df.format(stat.getMin()) + unit + "; ";
 		str += "max " + df.format(stat.getMax()) + unit + ")";		
 		return str;
+	}
+
+	public Stat getAccuracy() {
+		return accuracy;
+	}
+
+	public Stat getLength() {
+		return length;
+	}
+
+	public Stat getRuntime() {
+		return runtime;
 	}
 
 }

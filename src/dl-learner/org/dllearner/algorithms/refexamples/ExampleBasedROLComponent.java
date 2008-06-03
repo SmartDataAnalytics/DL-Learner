@@ -30,6 +30,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.BooleanConfigOption;
@@ -111,6 +112,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
 	private boolean useNegation = CommonConfigOptions.useNegationDefault;
 	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
+	private boolean useDoubleDatatypes = CommonConfigOptions.useDoubleDatatypesDefault;
 	private double noisePercentage = 0.0;
 	private NamedClass startClass = null;
 	private boolean usePropernessChecks = false;
@@ -178,6 +180,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useCardinalityRestrictions());
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
+		options.add(CommonConfigOptions.useDoubleDatatypes());
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
@@ -244,6 +247,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			noisePercentage = (Double) entry.getValue();
 		} else if(name.equals("useBooleanDatatypes")) {
 			useBooleanDatatypes = (Boolean) entry.getValue();
+		} else if(name.equals("useDoubleDatatypes")) {
+			useDoubleDatatypes = (Boolean) entry.getValue();
 		} else if(name.equals("usePropernessChecks")) {
 			usePropernessChecks = (Boolean) entry.getValue();
 		} else if(name.equals("maxPosOnlyExpansion")) {
@@ -321,7 +326,9 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		if(improveSubsumptionHierarchy)
 			rs.getSubsumptionHierarchy().improveSubsumptionHierarchy();
 		rs.prepareRoleHierarchy(usedRoles);
-		rs.prepareDatatypePropertyHierarchy();
+		// prepare datatype hierarchy only if necessary
+		if(rs.hasDatatypeSupport())
+			rs.prepareDatatypePropertyHierarchy();
 		
 		// create a refinement operator and pass all configuration
 		// variables to it
@@ -334,6 +341,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 					useCardinalityRestrictions,
 					useNegation,
 					useBooleanDatatypes,
+					useDoubleDatatypes,
 					startClass
 			);		
 			

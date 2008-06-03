@@ -80,7 +80,7 @@ public class ReasoningService {
 
 	// private SortedSet<Concept> retrievalsSet = new TreeSet<Concept>(new ConceptComparator());
 	
-	private Reasoner reasoner;
+	private ReasonerComponent reasoner;
 	
 	/**
 	 * Constructs a reasoning service object. Note that you must not 
@@ -459,6 +459,10 @@ public class ReasoningService {
 		return result;		
 	}
 
+	public boolean hasDatatypeSupport() {
+		return reasoner.hasDatatypeSupport();
+	}
+	
 	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(DatatypeProperty datatypeProperty) {
 		try {
 			return reasoner.getDoubleDatatypeMembers(datatypeProperty);
