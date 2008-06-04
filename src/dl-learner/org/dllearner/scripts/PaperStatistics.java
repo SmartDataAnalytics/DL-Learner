@@ -29,7 +29,6 @@ import java.util.Map;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;

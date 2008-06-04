@@ -21,6 +21,7 @@ package org.dllearner.kb.sparql;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
@@ -44,13 +45,12 @@ public class SparqlQuery {
 
 	private static Logger logger = Logger.getLogger(KnowledgeSource.class);
 
-	public String extraDebugInfo = "";
 	private boolean isRunning = false;
 	private String queryString;
 	private QueryEngineHTTP queryExecution;
 	private SparqlEndpoint endpoint;
 	private String json = null;
-	private SparqlQueryException sendException=null;
+//	private SparqlQueryException sendException=null;
 
 	/**
 	 * Standard constructor.
@@ -83,25 +83,24 @@ public class SparqlQuery {
 			queryExecution.addNamedGraph(ngu);
 		}
 		
-		try{
-			//TODO remove after overnext Jena release
-			HttpQuery.urlLimit = 3*1024 ;
+		//TODO remove after overnext Jena release
+		HttpQuery.urlLimit = 3*1024 ;
 			
-			JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").start();
-			rs = queryExecution.execSelect();
-			JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
+		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").start();
+		rs = queryExecution.execSelect();
+		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
 			
-			logger.debug("query SPARQL server ["+extraDebugInfo+"], retrieved: "+rs.getResultVars());
-			json=SparqlQuery.getAsJSON(rs);
+		logger.debug("query SPARQL server, retrieved: "+rs.getResultVars());
+		json=SparqlQuery.getAsJSON(rs);
 			
-			logger.trace(rs.getResultVars().toString());
-		} catch (Exception e){
-			sendException=new SparqlQueryException(e.getMessage());
-			logger.debug(e.getMessage());
-			//e.printStackTrace();
-			logger.debug("Exception when querying Sparql Endpoint in " + this.getClass());
-			logger.debug(queryString);
-		}
+		logger.trace(rs.getResultVars().toString());
+//		} catch (Exception e){
+//			sendException=new SparqlQueryException(e.getMessage());
+//			logger.debug(e.getMessage());
+//			//e.printStackTrace();
+//			logger.debug("Exception when querying Sparql Endpoint in " + this.getClass());
+//			logger.debug(queryString);
+//		}
 		isRunning = false;
 		return rs;
 	}
@@ -130,9 +129,9 @@ public class SparqlQuery {
 		return queryExecution;
 	}
 	
-	public SparqlQueryException getException(){
-		return sendException;
-	}
+//	public SparqlQueryException getException(){
+//		return sendException;
+//	}
 
 	public boolean hasCompleted() {
 		return (json != null);
@@ -163,10 +162,11 @@ public class SparqlQuery {
 		// possible Jena bug: Jena modifies the result set during
 		// JSON transformation, so we need to get it back
 		resultSet = JSONtoResultSet(baos.toString());
-		try{
+		try {
 			return baos.toString("UTF-8");
-		}catch (Exception e){
-			return baos.toString();
+		} catch (UnsupportedEncodingException e) {
+			// should never happen as UTF-8 is supported
+			throw new Error(e);
 		}
 	}
 
