@@ -104,35 +104,7 @@ public class ConceptPanel extends JPanel{
 		return loadingLabel;
 	}
     
-//    class BlinkLabel extends JLabel implements Runnable{
-//    	private boolean blinking = false;
-//    	    	
-//    	public void start(){
-//    		blinking = true;
-//    		new Thread(this).start();
-//    	}
-//    	public void stop(){
-//    		blinking = false;
-//    		setForeground(Color.black);
-//    		
-//    	}
-//    	public void run(){
-//    		while(blinking){
-//    			setText("Loading Concept");
-//    			
-//    			//setForeground(Color.red);
-//    			try {
-//					Thread.sleep(300);
-//				} catch (InterruptedException e) {
-//					return;
-//				}
-//				setText("");
-//				
-//    		}
-//    		if(!blinking)
-//    			setText("Done! Select Concept and press 'Next'");
-//    	}
-//    }
+
  
 
 

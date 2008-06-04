@@ -14,6 +14,7 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
@@ -21,6 +22,7 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLOntologyStorageException;
+import org.semanticweb.owl.model.RemoveAxiom;
 import org.semanticweb.owl.model.UnknownOWLOntologyException;
 import org.semanticweb.owl.util.OWLEntityRemover;
 
@@ -50,7 +52,7 @@ public class OntologyModifierOWLAPI {
 		
 		OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
 		
-
+		
 		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
 		try {
 			manager.applyChange(axiom);
@@ -103,6 +105,35 @@ public class OntologyModifierOWLAPI {
 		
 	}
 	
+	public void removeClassAssertion(Individual ind, Description desc){
+		
+		OWLIndividual individualOWLAPI = null;
+		OWLDescription owlDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
+		
+		try {
+			individualOWLAPI = factory.getOWLIndividual( new URI(ind.getName()));
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(individualOWLAPI, owlDesc);
+		
+		
+		RemoveAxiom rm = new RemoveAxiom(ontology, owlCl);
+		
+		
+		
+		try {
+			manager.applyChange(rm);
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public void moveIndividual(Individual ind, Description oldConcept, Description newConcept){
 		
 	
@@ -117,16 +148,8 @@ public class OntologyModifierOWLAPI {
 		}
 		
 		//Loeschen
-		OWLEntityRemover remover = new OWLEntityRemover(manager, Collections.singleton(ontology));
-		individualOWLAPI.accept(remover);
+		removeClassAssertion(ind, oldConcept);
 		
-		try {
-			manager.applyChanges(remover.getChanges());
-		} catch (OWLOntologyChangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		remover.reset();
 		
 		//Hinzufuegen
 		

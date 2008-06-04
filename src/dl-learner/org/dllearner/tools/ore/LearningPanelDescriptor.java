@@ -54,26 +54,35 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
     class ResultSwingWorker extends
 			SwingWorker<List<Description>, List<Description>> {
 		LearningAlgorithm la;
+	
 
 		@Override
 		public List<Description> doInBackground() {
 			panel4.getResultList().setCellRenderer(new ColumnListCellRenderer(getWizardModel().getOre()));
 			panel4.getLoadingLabel().setBusy(true);
 			panel4.getStatusLabel().setText("Learning");
-			la = getWizardModel().getOre().start();
+			
+			getWizardModel().getOre().setNoise(panel4.getNoise());
+			
+					la = getWizardModel().getOre().start();
+					
+		
+			
+			
 			timer = new Timer();
 			timer.schedule(new TimerTask() {
 
 				@SuppressWarnings("unchecked")
 				@Override
 				public void run() {
+				
 					publish(getWizardModel().getOre().getLearningResults(10));
+					
 				}
 
 			}, 0, 1000);
 
-			List<Description> result = getWizardModel().getOre()
-					.getLearningResults(5);
+			List<Description> result = getWizardModel().getOre().getLearningResults(10);
 
 			return result;
 		}
@@ -103,8 +112,6 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		protected void process(List<List<Description>> resultLists) {
 			panel4.getModel().clear();
 			for (List<Description> list : resultLists) {
-				for( Description d : list)
-					System.out.println(d);
 				updateList(list);
 			}
 		}
@@ -115,8 +122,6 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				public void run() {
 					panel4.getModel().clear();
 					for (Description d : result) {
-						System.err.println(d+"=="+getWizardModel().getOre().getCorrectness(d));
-						
 						panel4.getModel().addElement(d);
 					}
 
@@ -176,6 +181,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			getWizardModel().getOre().getLa().stop();
             panel4.getStartButton().setEnabled(true);
             panel4.getStatusLabel().setText("Algorithm aborted");
+            panel4.getLoadingLabel().setBusy(false);
 		}
 		
 		
@@ -186,7 +192,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		setNextButtonAccordingToConceptSelected();
 		if (!e.getValueIsAdjusting()) 
 			getWizardModel().getOre().setConceptToAdd((Description)(panel4.getResultList().getSelectedValue())); 
-			System.out.println(panel4.getResultList().getSelectedValue());
+			
 		
 	}
 

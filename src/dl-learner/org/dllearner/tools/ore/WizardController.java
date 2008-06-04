@@ -3,8 +3,8 @@ package org.dllearner.tools.ore;
 
 import java.awt.event.ActionListener;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
@@ -75,8 +75,15 @@ public class WizardController implements ActionListener {
         
         if( nextPanelDescriptor.equals("REPAIR_PANEL")){
         	((RepairPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getNegFailureModel().clear();
-        	wizard.getModel().getOre().getModi().addAxiomToOWL(wizard.getModel().getOre().getConceptToAdd(), wizard.getModel().getOre().getConcept());
+        	((RepairPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getPosFailureModel().clear();
+//        	wizard.getModel().getOre().getModi().addAxiomToOWL(wizard.getModel().getOre().getConceptToAdd(), wizard.getModel().getOre().getConcept());
         	new FailInstancesRetriever(nextPanelDescriptor).execute();
+        	
+//        	for(Description desc : wizard.getModel().getOre().getConceptToAdd().getChildren())
+//    			System.out.println(desc);
+    
+        	
+        	
         }
         
         if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {
@@ -93,7 +100,8 @@ public class WizardController implements ActionListener {
         
         
     }
-
+    
+    
     private void backButtonPressed() {
  
         WizardModel model = wizard.getModel();
@@ -219,7 +227,7 @@ public class WizardController implements ActionListener {
 				dm.addElement(cl);
 				
 				//nextPanel.panel3.getModel().addElement(cl);
-				System.out.println(cl.getName());
+				
 			}
 			wizard.getModel().getOre().setAllAtomicConcepts(ind);
 			nextPanel.panel3.getList().setModel(dm);
@@ -231,7 +239,7 @@ public class WizardController implements ActionListener {
 		}
 
 	}
-    class FailInstancesRetriever extends SwingWorker<HashSet<Individual>, Individual> {
+    class FailInstancesRetriever extends SwingWorker<List<HashSet<Individual>>, HashSet<Individual>> {
 		Object nextPanelID;
 
 		public FailInstancesRetriever(Object nextPanelDescriptor) {
@@ -240,7 +248,7 @@ public class WizardController implements ActionListener {
 		}
 
 		@Override
-		public HashSet<Individual> doInBackground() {
+		public List<HashSet<Individual>> doInBackground() {
 			
 			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
 					nextPanelID)).panel4.getStatusLabel().setText(
@@ -250,17 +258,17 @@ public class WizardController implements ActionListener {
 
 		
 
-			HashSet<Individual> ind = wizard.getModel().getOre()
-					.getNegFailureExamples();
+			List<HashSet<Individual>> indList = wizard.getModel().getOre()
+					.getFailureExamples();
 
-			return ind;
+			return indList;
 		}
 
 		@Override
 		public void done() {
-			HashSet<Individual> ind = null;
+			List<HashSet<Individual>> indList = null;
 			try {
-				ind = get();
+				indList = get();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -270,11 +278,16 @@ public class WizardController implements ActionListener {
 			}
 			RepairPanelDescriptor nextPanel = (RepairPanelDescriptor) wizard
 					.getModel().getPanelHashMap().get(nextPanelID);
-			DefaultListModel dm = nextPanel.panel4.getNegFailureModel();
-
-			for (Individual cl : ind) {
-				dm.addElement(cl);
-				System.out.println(cl.getName());
+			DefaultListModel posDm = nextPanel.panel4.getPosFailureModel();
+			DefaultListModel negDm = nextPanel.panel4.getNegFailureModel();
+			
+			for (Individual posInd : indList.get(0)) {
+				posDm.addElement(posInd);
+				System.out.println(posInd.getName());
+			}
+			for (Individual negInd : indList.get(1)) {
+				negDm.addElement(negInd);
+				System.out.println(negInd.getName());
 			}
 			
 			nextPanel.panel4.getStatusLabel().setText(

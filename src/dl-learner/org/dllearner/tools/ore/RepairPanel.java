@@ -131,12 +131,13 @@ public class RepairPanel extends JPanel{
 		return negFailureList;
 	}
 	
-	public void addSelectionListener(ListSelectionListener l){
+	public void addSelectionListeners(ListSelectionListener l){
 		posFailureList.addListSelectionListener(l);
 		negFailureList.addListSelectionListener(l);
 	}
 	
-	public void addMouseListener(MouseListener m){
+
+	public void addMouseListeners(MouseListener m){
 		posFailureList.addMouseListener(m);
 		negFailureList.addMouseListener(m);
 	}
