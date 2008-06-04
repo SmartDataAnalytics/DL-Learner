@@ -302,25 +302,17 @@ public class DLLearnerWS {
 	 * method will block until learning is completed.
 	 * 
 	 * @param id Session ID.
+	 * @param format The format of the result string: "manchester", "kb", "dl".
 	 * @return The best solution found.
 	 * @throws ClientNotKnownException
-	 */
-	@WebMethod
-	public String learn(int id) throws ClientNotKnownException {
-		ClientState state = getState(id);
-		state.getLearningAlgorithm().start();
-		return state.getLearningAlgorithm().getBestSolution().toString();
-	}
-	
+	 */	
 	@WebMethod
 	public String learn(int id, String format) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
-	//	ResultSet resultSet=SparqlQuery.JSONtoResultSet(state.getQuery(id).getResult());
 		Description solution = state.getLearningAlgorithm().getBestSolution();
 		if(format == "manchester")
-			return solution.toManchesterSyntaxString(state.getReasoningService().getBaseURI(), new HashMap<String,String>()).
-			replace("\"", "");
+			return solution.toManchesterSyntaxString(state.getReasoningService().getBaseURI(), new HashMap<String,String>());
 		else if(format == "kb")
 			return solution.toKBSyntaxString();
 		else
@@ -528,8 +520,6 @@ public class DLLearnerWS {
 	public String getAsJSON(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException
 	{
 		ClientState state = getState(sessionID);
-		SparqlQueryException exception=null;
-		if ((exception=state.getQuery(queryID).getSparqlQuery().getException())!=null) throw exception;
 		return state.getQuery(queryID).getResult();
 	}
 	

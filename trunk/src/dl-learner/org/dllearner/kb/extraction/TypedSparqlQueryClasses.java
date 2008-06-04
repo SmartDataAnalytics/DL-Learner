@@ -64,7 +64,7 @@ public class TypedSparqlQueryClasses extends TypedSparqlQuery implements
 				+ "}";
 
 		SparqlQuery query = new SparqlQuery(sparqlQueryString, configuration.getSparqlEndpoint());
-		query.extraDebugInfo=uri.toString();
+//		query.extraDebugInfo=uri.toString();
 		ResultSet rs = SparqlQuery.JSONtoResultSet(cache.executeSparqlQuery(query));		
 		
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
