@@ -83,12 +83,15 @@ import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.RoleComparator;
+
+import com.jamonapi.MonitorFactory;
 
 /**
  * Startup file for Command Line Interface.
@@ -117,25 +120,27 @@ public class Start {
 			inQueryMode = true;
 
 		// create logger (a simple logger which outputs
-		// its messages to the console)
+		// its messages to the console and a log file)
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		FileAppender fileAppender =null; ;
-		try{
-			fileAppender = new FileAppender(layout,"the_log.txt",false);
-		}catch (Exception e) {e.printStackTrace();}
-			logger.removeAllAppenders();
+		FileAppender fileAppender = null;
+		try {
+			fileAppender = new FileAppender(layout, "log/log.txt", false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
-		logger.setLevel(Level.TRACE);
-		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
-		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
-		Logger.getLogger(TypedSparqlQuery.class).setLevel(Level.WARN);
+		logger.setLevel(Level.DEBUG);
+//		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
+//		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
+//		Logger.getLogger(TypedSparqlQuery.class).setLevel(Level.WARN);
 
-		Start start = null;
-		start = new Start(file);
+		Start start = new Start(file);
 		start.start(inQueryMode);
-		JamonMonitorLogger.printAllSortedByLabel();
+		// write JaMON report in HTML file
+		Files.createFile(new File("log/jamon.html"), MonitorFactory.getReport());
 	}
 
 	/**
@@ -239,22 +244,19 @@ public class Start {
 		componentPrefixMapping.put(FastInstanceChecker.class, "fastInstanceChecker");
 		componentPrefixMapping.put(OWLAPIReasoner.class, "owlAPIReasoner");
 		componentPrefixMapping.put(FastRetrievalReasoner.class, "fastRetrieval");
-		
-		
+
 		// learning problems - configured via + and - flags for examples
 		componentPrefixMapping.put(PosNegDefinitionLP.class, "posNegDefinitionLP");
 		componentPrefixMapping.put(PosNegInclusionLP.class, "posNegInclusionLP");
 		componentPrefixMapping.put(PosOnlyDefinitionLP.class, "posOnlyDefinitionLP");
-		
-		
+
 		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
 		componentPrefixMapping.put(ExampleBasedROLComponent.class, "refexamples");
 		componentPrefixMapping.put(GP.class, "gp");
 		componentPrefixMapping.put(BruteForceLearner.class, "bruteForce");
 		componentPrefixMapping.put(RandomGuesser.class, "random");
-		
-		
+
 		return componentPrefixMapping;
 	}
 
@@ -656,7 +658,7 @@ public class Start {
 				e.printStackTrace();
 			}
 
-			if (!(queryStr.equalsIgnoreCase("q") ||queryStr.equalsIgnoreCase("quit"))) {
+			if (!(queryStr.equalsIgnoreCase("q") || queryStr.equalsIgnoreCase("quit"))) {
 
 				// parse concept
 				Description concept = null;
@@ -701,7 +703,8 @@ public class Start {
 
 					boolean nonExistingConstructs = false;
 					if (occurringConcepts.size() != 0 || occurringRoles.size() != 0) {
-						logger.debug("You used non-existing atomic concepts or roles. Please correct your query.");
+						logger
+								.debug("You used non-existing atomic concepts or roles. Please correct your query.");
 						if (occurringConcepts.size() > 0)
 							logger.debug("non-existing concepts: " + occurringConcepts);
 						if (occurringRoles.size() > 0)
@@ -722,16 +725,16 @@ public class Start {
 						Set<Individual> result = null;
 						result = rs.retrieval(concept);
 
-						logger.info("retrieval result ("+result.size()+"): " + result);
+						logger.info("retrieval result (" + result.size() + "): " + result);
 
 						Score score = lp.computeScore(concept);
 						logger.info(score);
 
 					}
 				}
-			}//end if
+			}// end if
 
-		} while (!(queryStr.equalsIgnoreCase("q")||queryStr.equalsIgnoreCase("quit")));
+		} while (!(queryStr.equalsIgnoreCase("q") || queryStr.equalsIgnoreCase("quit")));
 
 	}
 
@@ -776,7 +779,7 @@ public class Start {
 		else if (reasonerOption.getStringValue().equals("fastRetrieval"))
 			reasonerClass = FastRetrievalReasoner.class;
 		else if (reasonerOption.getStringValue().equals("fastInstanceChecker"))
-			reasonerClass = FastInstanceChecker.class;		
+			reasonerClass = FastInstanceChecker.class;
 		else {
 			handleError("Unknown value " + reasonerOption.getStringValue()
 					+ " for option \"reasoner\".");
@@ -791,7 +794,8 @@ public class Start {
 	 *            from config file
 	 * @return lpClass learning problem class
 	 */
-	public static Class<? extends LearningProblem> getLearningProblemClass(ConfFileOption problemOption) {
+	public static Class<? extends LearningProblem> getLearningProblemClass(
+			ConfFileOption problemOption) {
 		Class<? extends LearningProblem> lpClass = null;
 		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinitionLP"))
 			lpClass = PosNegDefinitionLP.class;
@@ -812,7 +816,8 @@ public class Start {
 	 *            from config file
 	 * @return laClass learning algorithm class
 	 */
-	public static Class<? extends LearningAlgorithm> getLearningAlgorithm(ConfFileOption algorithmOption) {
+	public static Class<? extends LearningAlgorithm> getLearningAlgorithm(
+			ConfFileOption algorithmOption) {
 		Class<? extends LearningAlgorithm> laClass = null;
 		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
 			laClass = ROLearner.class;
