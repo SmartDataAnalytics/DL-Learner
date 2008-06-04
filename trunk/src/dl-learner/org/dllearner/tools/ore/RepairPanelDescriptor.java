@@ -25,8 +25,8 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
         panel4 = new RepairPanel();
        
         panel4.addSaveButtonListener(this);
-        panel4.addSelectionListener(this);
-        panel4.addMouseListener(this);
+        panel4.addSelectionListeners(this);
+        panel4.addMouseListeners(this);
         
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(panel4);
@@ -67,7 +67,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 	public void mouseClicked(MouseEvent e) {
 		
 		if(e.getClickCount() == 2 && e.getSource() == panel4.getNegFailureList() ){
-			System.out.println(panel4.getNegFailureList().getSelectedValue());
+			new NegExampleRepairDialog((Individual)panel4.getNegFailureList().getSelectedValue(), getWizard().getDialog(), getWizardModel().getOre() );
 		}
 		
 	}

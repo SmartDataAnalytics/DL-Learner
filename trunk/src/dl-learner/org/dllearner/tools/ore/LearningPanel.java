@@ -3,6 +3,8 @@ package org.dllearner.tools.ore;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 
@@ -12,7 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.swingx.JXBusyLabel;
@@ -33,6 +35,8 @@ public class LearningPanel extends JPanel{
 	
 	private JButton startButton;
 	private JButton stopButton;
+	
+	private JTextField noiseField;
 	
 	@SuppressWarnings("unchecked")
 	public LearningPanel() {
@@ -81,17 +85,29 @@ public class LearningPanel extends JPanel{
 		
 		resultList = new JList(model);
 //		resultList.setCellRenderer(new ColumnListCellRenderer());
-		scroll.setPreferredSize(new Dimension(400, 400));
+		scroll.setPreferredSize(new Dimension(900, 400));
 		scroll.setViewportView(resultList);
 				
-		JSlider noise = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
-		noise.setMajorTickSpacing(50);
-		noise.setMinorTickSpacing(25);
-		noise.setPaintTicks(true);
-		noise.setPaintLabels(true);
+		noiseField = new JTextField("noise");
+		noiseField.setText("0.0");
+		
+		
+		noiseField.addKeyListener(new KeyAdapter() {
+			  @Override
+			public void keyTyped(KeyEvent e) {
+			    char c = e.getKeyChar();
+			    if (!((Character.isDigit(c) ||
+			      (c == KeyEvent.VK_BACK_SPACE) ||
+			      (c == KeyEvent.VK_DELETE)))) {
+			        getToolkit().beep();
+			        e.consume();
+			    }
+			    
+			  }
+			});
 		
 		contentPanel1.add(scroll);
-		contentPanel1.add(noise);
+		contentPanel1.add(noiseField);
 		
 		
 		
@@ -135,6 +151,9 @@ public class LearningPanel extends JPanel{
 		resultList.addListSelectionListener(l);
 	}
 	
+	public double getNoise(){
+		return Double.parseDouble(noiseField.getText());
+	}
 	
 	
 }  

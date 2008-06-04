@@ -102,7 +102,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     	for (NamedClass cl : ind){
     		publish(cl);
     		 nextPanel.panel3.getModel().addElement(cl);
-    		System.out.println(cl.toString());
+    		
     	}
     	return ind;
     }

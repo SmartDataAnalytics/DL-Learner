@@ -2,6 +2,7 @@ package org.dllearner.tools.ore;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,10 +18,15 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+
+
 
 public class ORE {
 	
@@ -29,6 +35,7 @@ public class ORE {
 	private KnowledgeSource ks; 
 	private PosNegDefinitionLP lp;
 	private ComponentManager cm;
+	
 	OWLAPIReasoner reasoner;
 	SortedSet<Individual> posExamples;
 	SortedSet<Individual> negExamples;
@@ -36,12 +43,13 @@ public class ORE {
 	Description conceptToAdd;
 	OntologyModifierOWLAPI modi;
 	Set<NamedClass> allAtomicConcepts;
+	private double noise;
 	
 	
 	public ORE() {
 
 		cm = ComponentManager.getInstance();
-
+		
 	}
 	
 	// step 1: detect knowledge sources
@@ -98,6 +106,11 @@ public class ORE {
 		lp.init();
 	}
 	
+	public void setNoise(double noise){
+		
+		this.noise = noise;
+	}
+	
 	public void setLearningAlgorithm(){
 		try {
 			la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
@@ -110,6 +123,7 @@ public class ORE {
 		Set<String> t = new TreeSet<String>();
 		t.add(concept.getName());
 		cm.applyConfigEntry(la, "ignoredConcepts", t );
+		cm.applyConfigEntry(la, "noisePercentage", noise);
 		try {
 			la.init();
 		} catch (ComponentInitException e) {
@@ -125,17 +139,23 @@ public class ORE {
 
 	
 	public LearningAlgorithm start(){
+		
 		this.setPosNegExamples();
 		this.setLearningProblem();
 		this.setLearningAlgorithm();
-		la.start();
 		
+		la.start();
+	
 		return la;
 		
 	}
 	
 	public Description getLearningResult(){
 		return la.getBestSolution();
+	}
+	
+	public List<Description> getSolutions(){
+		return la.getGoodSolutions();
 	}
 	
 	public List<Description> getLearningResults(int anzahl){
@@ -165,10 +185,20 @@ public class ORE {
 	}
 	
 	public HashSet<Individual> getNegFailureExamples(){
+		FastInstanceChecker instanceReasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		try {
+			instanceReasoner.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		ReasoningService instanceRs = cm.reasoningService(instanceReasoner);
+		
 		HashSet<Individual> negFailureExamples = new HashSet<Individual>() ;
 		
 		for(Individual ind : negExamples){
-			if(rs.instanceCheck(conceptToAdd, ind))
+			if(instanceRs.instanceCheck(conceptToAdd, ind))
 				negFailureExamples.add(ind);
 				
 		}
@@ -176,12 +206,55 @@ public class ORE {
 		return negFailureExamples;
 	}
 	
-	public SortedSet<Individual> getPosFailureExamples(){
+	public List<HashSet<Individual>> getFailureExamples(){
+		List<HashSet<Individual>> list = new ArrayList<HashSet<Individual>>();
 		
-		SortedSet<Individual> posFailureExamples = null ;
+		FastInstanceChecker instanceReasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		try {
+			instanceReasoner.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		ReasoningService instanceRs = cm.reasoningService(instanceReasoner);
+		
+		HashSet<Individual> posFailureExamples = new HashSet<Individual>() ;
+		for(Individual ind : posExamples){
+			if(!instanceRs.instanceCheck(conceptToAdd, ind))
+				posFailureExamples.add(ind);
+		}
+		
+		HashSet<Individual> negFailureExamples = new HashSet<Individual>() ;
+		for(Individual ind : negExamples){
+			if(instanceRs.instanceCheck(conceptToAdd, ind))
+				negFailureExamples.add(ind);
+		}
+		
+		list.add(posFailureExamples);
+		list.add(negFailureExamples);
+		
+		
+		
+		return list;
+		
+	}
+	public HashSet<Individual> getPosFailureExamples(){
+		FastInstanceChecker instanceReasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		try {
+			instanceReasoner.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		ReasoningService instanceRs = cm.reasoningService(instanceReasoner);
+		
+		HashSet<Individual> posFailureExamples = new HashSet<Individual>() ;
+		
 		
 		for(Individual ind : posExamples){
-			if(!rs.instanceCheck(conceptToAdd, ind))
+			if(!instanceRs.instanceCheck(conceptToAdd, ind))
 				posFailureExamples.add(ind);
 				
 		}
@@ -218,26 +291,51 @@ public class ORE {
 		this.allAtomicConcepts = allAtomicConcepts;
 	}
 	
+	public void getAllChildren(Description desc){
+    	
+		if(desc.getNumberOfNodes() >= 2)
+    		for(Description d: desc.getChildren())
+    			getAllChildren(d);
+    	System.out.println(desc);
+    }
+	
+	public Set<Description> getCriticalDescriptions(Individual ind, Description desc){
+		
+		Set<Description> criticals = new HashSet<Description>();
+		List<Description> children = desc.getChildren();
+		
+		if(desc instanceof Intersection){
+			criticals.addAll(children);
+		}
+		if(desc instanceof Union){
+			for(Description d: children)
+				if(reasoner.instanceCheck(d, ind))
+					criticals.add(d);
+		}
+		
+		
+		return criticals;
+	}
+	
 	public static void main(String[] args){
 		
-//		ORE test = new ORE();
-//		
-//		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/father.owl");
-//		
-//		test.setKnowledgeSource(owlFile);
-//	
-//		test.detectReasoner();
-//		ReasoningService rs = test.getReasoningService();
-//		System.err.println("Concepts :" + rs.getAtomicConcepts());
-//		
-//		
-//		test.setConcept(new NamedClass("http://example.com/father#father"));
-//		test.setPosNegExamples();
-//		System.out.println(test.posExamples);
-//		System.out.println(test.negExamples);
-//		test.setLearningProblem();
-//		test.setLearningAlgorithm();
-//		test.start();
+		ORE test = new ORE();
+		
+		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/father.owl");
+		
+		test.setKnowledgeSource(owlFile);
+	
+		test.detectReasoner();
+		ReasoningService rs = test.getReasoningService();
+		System.err.println("Concepts :" + rs.getAtomicConcepts());
+		
+		
+		test.setConcept(new NamedClass("http://example.com/father#father"));
+		test.setPosNegExamples();
+		System.out.println(test.posExamples);
+		System.out.println(test.negExamples);
+		test.start();
+		test.la.start();//Bug?
 	}
 	
 	
