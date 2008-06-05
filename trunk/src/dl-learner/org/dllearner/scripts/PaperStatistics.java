@@ -22,6 +22,7 @@ package org.dllearner.scripts;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,8 @@ import org.dllearner.utilities.statistics.Stat;
  */
 public class PaperStatistics {
 
+	private static DecimalFormat df = new DecimalFormat();
+	
 	/**
 	 * Points to the current statistic generation function.
 	 * 
@@ -82,7 +85,7 @@ public class PaperStatistics {
 		
 		// learning examples:
 		// - trains
-		// - arches
+		// - arches => left out, insufficiently many examples
 		// - moral (simple)
 		// - moral (complex)
 		// - poker (pair)
@@ -95,22 +98,22 @@ public class PaperStatistics {
 		String statBaseDir = "log/stat/";
 		
 		File[] confFiles = new File[1];
-//		confFiles[0] = new File(exampleBaseDir + "trains", "trains_owl");
-		confFiles[0] = new File(exampleBaseDir + "arch", "arch");
-//		confFiles[2] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_owl");
-//		confFiles[3] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_complex_owl");
-//        confFiles[4] = new File(exampleBaseDir + "poker", "pair_owl");
-//        confFiles[5] = new File(exampleBaseDir + "poker", "straight_owl");
-//        confFiles[6] = new File(exampleBaseDir + "forte", "forte_uncle_owl");
+		confFiles[0] = new File(exampleBaseDir + "trains", "trains_owl");
+//		confFiles[0] = new File(exampleBaseDir + "arch", "arch");
+		confFiles[1] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_owl");
+		confFiles[2] = new File(exampleBaseDir + "moral_reasoner", "moral_43examples_complex_owl");
+        confFiles[3] = new File(exampleBaseDir + "poker", "pair_owl");
+        confFiles[4] = new File(exampleBaseDir + "poker", "straight_owl");
+        confFiles[5] = new File(exampleBaseDir + "forte", "forte_uncle_owl");
 		
 		String[] examples = new String[7];
 		examples[0] = "trains";
-		examples[1] = "arches";
-		examples[2] = "moral reasoner (43 examples, simple)";
-		examples[3] = "moral reasoner (43 examples, complex)";
-		examples[4] = "poker (49 examples, pair)";
-		examples[5] = "poker (55 examples, straight)";
-		examples[6] = "uncle (FORTE data set)";
+//		examples[0] = "arches";
+		examples[1] = "moral reasoner (43 examples, simple)";
+		examples[2] = "moral reasoner (43 examples, complex)";
+		examples[3] = "poker (49 examples, pair)";
+		examples[4] = "poker (55 examples, straight)";
+		examples[5] = "uncle (FORTE data set)";
 		int startExampleNr = 0;		
 		
 		// for any example, we create conf files for each configuration to be tested
@@ -121,6 +124,8 @@ public class PaperStatistics {
 		algorithmPostfix[3] = "_hybrid";
 		int startAlgorithmNr = 0;
 
+		int[] folds = new int[] {5,5,5,5,5,5};
+		
 		File statFile = new File(statBaseDir, "statistics.txt");
 		String statString = "**automatically generated statistics**\n\n";
 		
@@ -132,16 +137,22 @@ public class PaperStatistics {
 				
 				File confFile = new File(confFiles[exampleNr] + algorithmPostfix[algorithmNr] + ".conf"); 
 				
-				CrossValidation cv = new CrossValidation(confFile, 5, false);
-				Stat classification = new Stat();
-				Stat length = new Stat();
-				Stat runtime = new Stat();
+				System.out.println("running " + folds[exampleNr] + " fold cross validation on " + confFile);
+				
+				CrossValidation cv = new CrossValidation(confFile, folds[exampleNr], false);
+				Stat accuracy = cv.getAccuracy();
+				Stat length = cv.getLength();
+				Stat runtime = cv.getRuntime();
 				
 				statString += "conf file: " + confFile + "\n";
-				statString += "classification: " + classification.getMean() + "% (standard deviation: " + classification.getStandardDeviation() + "%)\n";
-				statString += "concept length: " + length.getMean() + " (standard deviation: " + length.getStandardDeviation() + ")\n";
-				statString += "runtime: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getMean())) + " (standard deviation: " + Helper.prettyPrintNanoSeconds(Math.round(runtime.getStandardDeviation())) + ")\n\n";
+//				statString += "classification: " + classification.getMean() + "% (standard deviation: " + classification.getStandardDeviation() + "%)\n";
+//				statString += "concept length: " + length.getMean() + " (standard deviation: " + length.getStandardDeviation() + ")\n";
+//				statString += "runtime: " + runtime.getMean() + " (standard deviation: " + runtime.getStandardDeviation() + ")\n\n";
 			
+				statString += "accuracy: " + CrossValidation.statOutput(df, accuracy, "%") + "\n";
+				statString += "length: " + CrossValidation.statOutput(df, length, "") + "\n";				
+				statString += "runtime: " + CrossValidation.statOutput(df, runtime, "s") + "\n\n";
+
 				Files.createFile(statFile, statString);
 				
 			} // end algorithm loop

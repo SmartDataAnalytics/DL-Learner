@@ -35,7 +35,6 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
@@ -100,7 +99,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	private SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
 	private SortedSet<Individual> individuals;
 
-	private ReasoningService rs;
+//	private ReasoningService rs;
 	private OWLAPIReasoner rc;
 	private Set<KnowledgeSource> sources;
 
@@ -177,7 +176,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			atomicRoles = rc.getAtomicRoles();
 			individuals = rc.getIndividuals();
 
-			rs = new ReasoningService(rc);
+//			rs = new ReasoningService(rc);
 
 			// TODO: some code taken from Helper.createFlatABox, but pasted here
 			// because additional things need to
@@ -187,9 +186,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 			logger.debug("dematerialising concepts");
 			
-			for (NamedClass atomicConcept : rs.getAtomicConcepts()) {				
+			for (NamedClass atomicConcept : rc.getAtomicConcepts()) {				
 				
-				SortedSet<Individual> pos = rs.retrieval(atomicConcept);
+				SortedSet<Individual> pos = rc.retrieval(atomicConcept);
 				classInstancesPos.put(atomicConcept, pos);
 				
 				if(defaultNegation) {
@@ -199,7 +198,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 					// on the carcinogenesis data set (and probably others), so we have to
 					// be careful here
 					Negation negatedAtomicConcept = new Negation(atomicConcept);
-					classInstancesNeg.put(atomicConcept, rs.retrieval(negatedAtomicConcept));
+					classInstancesNeg.put(atomicConcept, rc.retrieval(negatedAtomicConcept));
 				}
 
 
@@ -521,32 +520,32 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 * @see org.dllearner.core.Reasoner#prepareSubsumptionHierarchy(java.util.Set)
 	 */
 	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
-		rs.prepareSubsumptionHierarchy();
+		rc.prepareSubsumptionHierarchy(allowedConcepts);
 	}
 
 	@Override
 	public SubsumptionHierarchy getSubsumptionHierarchy() {
-		return rs.getSubsumptionHierarchy();
+		return rc.getSubsumptionHierarchy();
 	}
 
 	@Override
 	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
-		rs.prepareRoleHierarchy(allowedRoles);
+		rc.prepareRoleHierarchy(allowedRoles);
 	}
 
 	@Override
 	public ObjectPropertyHierarchy getRoleHierarchy() {
-		return rs.getRoleHierarchy();
+		return rc.getRoleHierarchy();
 	}
 
 	@Override
 	public void prepareDatatypePropertyHierarchy(Set<DatatypeProperty> allowedRoles) {
-		rs.prepareDatatypePropertyHierarchy(allowedRoles);
+		rc.prepareDatatypePropertyHierarchy(allowedRoles);
 	}
 
 	@Override
 	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
-		return rs.getDatatypePropertyHierarchy();
+		return rc.getDatatypePropertyHierarchy();
 	}
 	
 	@Override
@@ -554,7 +553,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		// Negation neg = new Negation(subConcept);
 		// Intersection c = new Intersection(neg,superConcept);
 		// return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
-		return rs.subsumes(superConcept, subConcept);
+		return rc.subsumes(superConcept, subConcept);
 	}
 
 	/**

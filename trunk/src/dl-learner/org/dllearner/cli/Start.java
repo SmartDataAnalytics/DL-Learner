@@ -104,6 +104,7 @@ public class Start {
 	private LearningAlgorithm la;
 	private LearningProblem lp;
 	private ReasoningService rs;
+	private ReasonerComponent rc;
 
 	/**
 	 * Entry point for CLI interface.
@@ -183,10 +184,10 @@ public class Start {
 
 		// step 2: detect used reasoner
 		ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
-		ReasonerComponent reasoner = cm.reasoner(getReasonerClass(reasonerOption), sources);
-		configureComponent(cm, reasoner, componentPrefixMapping, parser);
-		initComponent(cm, reasoner);
-		rs = cm.reasoningService(reasoner);
+		rc = cm.reasoner(getReasonerClass(reasonerOption), sources);
+		configureComponent(cm, rc, componentPrefixMapping, parser);
+		initComponent(cm, rc);
+		rs = cm.reasoningService(rc);
 
 		// step 3: detect learning problem
 		ConfFileOption problemOption = parser.getConfOptionsByName("problem");
@@ -754,6 +755,10 @@ public class Start {
 		return lp;
 	}
 
+	public ReasonerComponent getReasonerComponent() {
+		return rc;
+	}
+	
 	public ReasoningService getReasoningService() {
 		return rs;
 	}
@@ -829,4 +834,6 @@ public class Start {
 
 		return laClass;
 	}
+
+
 }

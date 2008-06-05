@@ -474,6 +474,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private TreeSet<Description> getMoreSpecialConcepts(Description concept) {
 		Set<Set<OWLClass>> classes = null;
 		try {
+//			System.out.println(OWLAPIDescriptionConvertVisitor.getOWLDescription(concept));
+//			System.out.println(getSubsumptionHierarchy());
+//			System.out.println(reasoner);
 			classes = reasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLDescription(concept));
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();

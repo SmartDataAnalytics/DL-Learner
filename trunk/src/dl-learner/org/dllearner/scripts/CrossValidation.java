@@ -115,7 +115,8 @@ public class CrossValidation {
 		}
 		
 		LearningProblem lp = start.getLearningProblem();
-		ReasoningService rs = start.getReasoningService();
+//		ReasoningService rs = start.getReasoningService();
+//		start.getReasoningService().releaseKB();
 
 		// the training and test sets used later on
 		List<Set<Individual>> trainingSetsPos = new LinkedList<Set<Individual>>();
@@ -194,7 +195,6 @@ public class CrossValidation {
 			try {
 				start = new Start(file);
 			} catch (ComponentInitException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			lp = start.getLearningProblem();
@@ -206,17 +206,17 @@ public class CrossValidation {
 //			System.out.println("neg: " + neg.size());
 //			System.exit(0);
 			
-			// es fehlt init zwischendurch
-			
-			if(la == null)
-				la = start.getLearningAlgorithm();
+			la = start.getLearningAlgorithm();
 			// init again, because examples have changed
 			try {
+//				start.getReasonerComponent().init();				
+				lp.init();
 				la.init();
 			} catch (ComponentInitException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 			long algorithmStartTime = System.nanoTime();
 			la.start();
 			long algorithmDuration = System.nanoTime() - algorithmStartTime;
@@ -224,6 +224,7 @@ public class CrossValidation {
 			
 			Description concept = la.getBestSolution();
 			
+			ReasoningService rs = start.getReasoningService();
 			Set<Individual> tmp = rs.instanceCheck(concept, testSetsPos.get(currFold));
 			Set<Individual> tmp2 = Helper.difference(testSetsPos.get(currFold), tmp);
 			Set<Individual> tmp3 = rs.instanceCheck(concept, testSetsNeg.get(currFold));
@@ -258,7 +259,7 @@ public class CrossValidation {
 			System.out.println("  runtime: " + df.format(algorithmDuration/(double)1000000000) + "s");
 			
 			// free all resources
-			start.getReasoningService().releaseKB();
+			rs.releaseKB();
 			cm.freeAllComponents();			
 		}
 		
@@ -312,7 +313,7 @@ public class CrossValidation {
 		return splits;
 	}
 	
-	private String statOutput(DecimalFormat df, Stat stat, String unit) {
+	public static String statOutput(DecimalFormat df, Stat stat, String unit) {
 		String str = "av. " + df.format(stat.getMean()) + unit;
 		str += " (deviation " + df.format(stat.getStandardDeviation()) + unit + "; ";
 		str += "min " + df.format(stat.getMin()) + unit + "; ";
