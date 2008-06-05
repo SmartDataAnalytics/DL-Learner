@@ -204,7 +204,6 @@ public class Start {
 		try {
 			la = cm.learningAlgorithm(getLearningAlgorithm(algorithmOption), lp, rs);
 		} catch (LearningProblemUnsupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		configureComponent(cm, la, componentPrefixMapping, parser);
@@ -759,8 +758,6 @@ public class Start {
 		return rs;
 	}
 
-	// edit by Tilo Hielscher
-
 	/**
 	 * Set Reasoner class. Define here all possible reasoners.
 	 * 
@@ -770,14 +767,14 @@ public class Start {
 	 */
 	public static Class<? extends ReasonerComponent> getReasonerClass(ConfFileOption reasonerOption) {
 		Class<? extends ReasonerComponent> reasonerClass = null;
-		if (reasonerOption == null || reasonerOption.getStringValue().equals("dig"))
-			reasonerClass = DIGReasoner.class;
+		if (reasonerOption == null || reasonerOption.getStringValue().equals("fastInstanceChecker"))
+			reasonerClass = FastInstanceChecker.class;
 		else if (reasonerOption.getStringValue().equals("owlAPI"))
 			reasonerClass = OWLAPIReasoner.class;
 		else if (reasonerOption.getStringValue().equals("fastRetrieval"))
 			reasonerClass = FastRetrievalReasoner.class;
-		else if (reasonerOption.getStringValue().equals("fastInstanceChecker"))
-			reasonerClass = FastInstanceChecker.class;
+		else if (reasonerOption.getStringValue().equals("dig"))
+			reasonerClass = DIGReasoner.class;
 		else {
 			handleError("Unknown value " + reasonerOption.getStringValue()
 					+ " for option \"reasoner\".");
@@ -817,10 +814,10 @@ public class Start {
 	public static Class<? extends LearningAlgorithm> getLearningAlgorithm(
 			ConfFileOption algorithmOption) {
 		Class<? extends LearningAlgorithm> laClass = null;
-		if (algorithmOption == null || algorithmOption.getStringValue().equals("refinement"))
-			laClass = ROLearner.class;
-		else if (algorithmOption.getStringValue().equals("refexamples"))
+		if (algorithmOption == null || algorithmOption.getStringValue().equals("refexamples"))
 			laClass = ExampleBasedROLComponent.class;
+		else if (algorithmOption.getStringValue().equals("refinement"))
+			laClass = ROLearner.class;
 		else if (algorithmOption.getStringValue().equals("gp"))
 			laClass = GP.class;
 		else if (algorithmOption.getStringValue().equals("bruteForce"))
