@@ -184,7 +184,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
     }
 
 
-    public Set<OWLDescription> getEditedObjects() {
+    @Override
+	public Set<OWLDescription> getEditedObjects() {
         if (tabbedPane.getSelectedComponent() == classSelectorPanel) {
             return classSelectorPanel.getSelectedClasses();
         }
@@ -563,7 +564,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
             splitPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             List<RestrictionCreator> types = new ArrayList<RestrictionCreator>();
             types.add(new RestrictionCreator("Some (existential)") {
-                public void createRestrictions(Set<OWLObjectProperty> properties, Set<OWLDescription> fillers,
+                @Override
+				public void createRestrictions(Set<OWLObjectProperty> properties, Set<OWLDescription> fillers,
                                                Set<OWLDescription> result) {
                     for (OWLObjectProperty prop : properties) {
                         for (OWLDescription filler : fillers) {
@@ -573,7 +575,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
                 }
             });
             types.add(new RestrictionCreator("Only (universal)") {
-                public void createRestrictions(Set<OWLObjectProperty> properties, Set<OWLDescription> fillers,
+                @Override
+				public void createRestrictions(Set<OWLObjectProperty> properties, Set<OWLDescription> fillers,
                                                Set<OWLDescription> result) {
                     for (OWLObjectProperty prop : properties) {
                         if (fillers.isEmpty()) {
@@ -591,17 +594,20 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
                 }
             });
             types.add(new CardinalityRestrictionCreator("Min (min cardinality)", cardinalitySpinner) {
-                public OWLDescription createRestriction(OWLObjectProperty prop, OWLDescription filler, int card) {
+                @Override
+				public OWLDescription createRestriction(OWLObjectProperty prop, OWLDescription filler, int card) {
                     return getDataFactory().getOWLObjectMinCardinalityRestriction(prop, card, filler);
                 }
             });
             types.add(new CardinalityRestrictionCreator("Exactly (exact cardinality)", cardinalitySpinner) {
-                public OWLDescription createRestriction(OWLObjectProperty prop, OWLDescription filler, int card) {
+                @Override
+				public OWLDescription createRestriction(OWLObjectProperty prop, OWLDescription filler, int card) {
                     return getDataFactory().getOWLObjectExactCardinalityRestriction(prop, card, filler);
                 }
             });
             types.add(new CardinalityRestrictionCreator("Max (max cardinality)", cardinalitySpinner) {
-                public OWLDescription createRestriction(OWLObjectProperty prop, OWLDescription filler, int card) {
+                @Override
+				public OWLDescription createRestriction(OWLObjectProperty prop, OWLDescription filler, int card) {
                     return getDataFactory().getOWLObjectMaxCardinalityRestriction(prop, card, filler);
                 }
             });
@@ -658,7 +664,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
         }
 
 
-        public String toString() {
+        @Override
+		public String toString() {
             return name;
         }
 
@@ -679,7 +686,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
         }
 
 
-        public void createRestrictions(Set<OWLObjectProperty> properties, Set<OWLDescription> fillers,
+        @Override
+		public void createRestrictions(Set<OWLObjectProperty> properties, Set<OWLDescription> fillers,
                                        Set<OWLDescription> result) {
             for (OWLObjectProperty prop : properties) {
                 for (OWLDescription desc : fillers) {
