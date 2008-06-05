@@ -18,6 +18,7 @@ public class DLLearnerViewPanel extends AbstractSelectorPanel {
 		super(editor);
 	}
 	
+	@Override
 	protected ViewComponentPlugin getViewComponentPlugin() {
 
         return new ViewComponentPluginAdapter() {

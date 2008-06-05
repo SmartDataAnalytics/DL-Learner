@@ -44,7 +44,8 @@ public class OWLEquivalentClassesAxiomFrameSection extends AbstractOWLFrameSecti
     }
 
 
-    protected void clear() {
+    @Override
+	protected void clear() {
     }
 
 
@@ -52,7 +53,8 @@ public class OWLEquivalentClassesAxiomFrameSection extends AbstractOWLFrameSecti
      * Refills the section with rows.  This method will be called
      * by the system and should be directly called.
      */
-    protected void refill(OWLOntology ontology) {
+    @Override
+	protected void refill(OWLOntology ontology) {
         for (OWLEquivalentClassesAxiom ax : ontology.getEquivalentClassesAxioms(getRootObject())) {
             addRow(new OWLEquivalentClassesAxiomFrameSectionRow(getOWLEditorKit(),
                                                                 this,
@@ -68,7 +70,8 @@ public class OWLEquivalentClassesAxiomFrameSection extends AbstractOWLFrameSecti
     }
 
 
-    protected void refillInferred() {
+    @Override
+	protected void refillInferred() {
         if (!inferredEquivalentClasses) {
             return;
         }
@@ -105,24 +108,28 @@ public class OWLEquivalentClassesAxiomFrameSection extends AbstractOWLFrameSecti
     }
 
 
-    public void visit(OWLEquivalentClassesAxiom axiom) {
+    @Override
+	public void visit(OWLEquivalentClassesAxiom axiom) {
         if (axiom.getDescriptions().contains(getRootObject())) {
             reset();
         }
     }
 
 
-    protected OWLEquivalentClassesAxiom createAxiom(OWLDescription object) {
+    @Override
+	protected OWLEquivalentClassesAxiom createAxiom(OWLDescription object) {
         return getOWLDataFactory().getOWLEquivalentClassesAxiom(CollectionFactory.createSet(getRootObject(), object));
     }
 
 
-    public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
+    @Override
+	public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
         return new OWLClassDescriptionEditorWithDLLearnerTab(getOWLEditorKit(), null,frame,LABEL);
     }
 
 
-    public boolean canAcceptDrop(List<OWLObject> objects) {
+    @Override
+	public boolean canAcceptDrop(List<OWLObject> objects) {
         for (OWLObject obj : objects) {
             if (!(obj instanceof OWLDescription)) {
                 return false;
@@ -132,7 +139,8 @@ public class OWLEquivalentClassesAxiomFrameSection extends AbstractOWLFrameSecti
     }
 
 
-    public boolean dropObjects(List<OWLObject> objects) {
+    @Override
+	public boolean dropObjects(List<OWLObject> objects) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
         for (OWLObject obj : objects) {
             if (obj instanceof OWLDescription) {

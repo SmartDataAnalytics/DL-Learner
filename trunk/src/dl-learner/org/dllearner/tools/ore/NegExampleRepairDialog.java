@@ -204,7 +204,6 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener{
 
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
 		if(e.getActionCommand().equals("delete instance")){

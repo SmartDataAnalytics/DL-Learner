@@ -40,7 +40,8 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLFrameSection<OWLCla
     }
 
 
-    protected void clear() {
+    @Override
+	protected void clear() {
         added.clear();
     }
 
@@ -49,7 +50,8 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLFrameSection<OWLCla
      * Refills the section with rows.  This method will be called
      * by the system and should be directly called.
      */
-    protected void refill(OWLOntology ontology) {
+    @Override
+	protected void refill(OWLOntology ontology) {
         for (OWLSubClassAxiom ax : ontology.getSubClassAxiomsForLHS(getRootObject())) {
             addRow(new OWLSubClassAxiomFrameSectionRow(getOWLEditorKit(), this, ontology, getRootObject(), ax));
             added.add(ax.getSuperClass());
@@ -57,7 +59,8 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLFrameSection<OWLCla
     }
 
 
-    protected void refillInferred() {
+    @Override
+	protected void refillInferred() {
         try {
             if (getOWLModelManager().getReasoner().isSatisfiable(getRootObject())) {
                 for (Set<OWLClass> descs : getOWLModelManager().getReasoner().getSuperClasses(getRootObject())) {
@@ -82,17 +85,20 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLFrameSection<OWLCla
     }
 
 
-    protected OWLSubClassAxiom createAxiom(OWLDescription object) {
+    @Override
+	protected OWLSubClassAxiom createAxiom(OWLDescription object) {
         return getOWLDataFactory().getOWLSubClassAxiom(getRootObject(), object);
     }
 
 
-    public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
+    @Override
+	public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
         return new OWLClassDescriptionEditorWithDLLearnerTab(getOWLEditorKit(), null, frame,LABEL);
     }
 
 
-    public boolean canAcceptDrop(List<OWLObject> objects) {
+    @Override
+	public boolean canAcceptDrop(List<OWLObject> objects) {
         for (OWLObject obj : objects) {
             if (!(obj instanceof OWLDescription)) {
                 return false;
@@ -105,7 +111,8 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLFrameSection<OWLCla
     private OWLObjectProperty prop;
 
 
-    public boolean dropObjects(List<OWLObject> objects) {
+    @Override
+	public boolean dropObjects(List<OWLObject> objects) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
         for (OWLObject obj : objects) {
             if (obj instanceof OWLDescription) {
@@ -132,7 +139,8 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLFrameSection<OWLCla
     }
 
 
-    public void visit(OWLSubClassAxiom axiom) {
+    @Override
+	public void visit(OWLSubClassAxiom axiom) {
         if (axiom.getSubClass().equals(getRootObject())) {
             reset();
         }
