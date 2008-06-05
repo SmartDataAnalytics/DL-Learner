@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.refinement.RefinementOperator;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DataRange;
