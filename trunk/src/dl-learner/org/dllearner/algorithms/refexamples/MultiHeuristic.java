@@ -51,7 +51,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * The value of a node is calculated as follows:
  * 
  * <p><code>value = accuracy + gain bonus factor * accuracy gain - expansion penalty
- * factor * horizontal expansion</code></p>
+ * factor * horizontal expansion - node children penalty factor * number of children of node</code></p>
  * 
  * <p><code>accuracy = (TP + TN)/(P + N)</code></p>
  * 
@@ -61,11 +61,6 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * P = number of positive examples<br />
  * N = number of negative examples<br />
  * </code></p>
- * 
- * TODO: Maybe the number of children of a node could be used instead of
- * horiz. exp, because if a node has a very high number of children, the
- * algorithm gets stuck easily, while it could still be very agile in other
- * parts of the search space.
  * 
  * @author Jens Lehmann
  *
