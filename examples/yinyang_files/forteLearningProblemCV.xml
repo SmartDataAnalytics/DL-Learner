@@ -14,7 +14,16 @@
 	normalize="true" 
 	consistencyCheck="true"
 	reasonerURL ="http://localhost:8081" >
-	<Experiments/>
+	<Experiments>
+		<kFoldCrossValidation folds="5"
+							  reasonerURL="http://localhost:8081"
+							  positiveExampleSource="fortePositivesYinYang.txt" 
+							  negativeExampleSource="forteNegativesYinYang.txt" 
+							  abstractionClass="it.uniba.di.dl.abstraction.KBoundMSCApproximatorRefinement"
+							  learn="true"
+							  normalize="true"
+							  consistencyCheck="true" />
+	</Experiments>		
 	<Namespaces>
 		<Namespace uri="http://localhost/foo#"></Namespace>
 	</Namespaces>
