@@ -58,6 +58,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.RoleComparator;
@@ -182,7 +183,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		
 		for(KnowledgeSource source : sources) {
 			
-			if(source instanceof OWLFile || source instanceof SparqlKnowledgeSource ) {
+			if(source instanceof OWLFile || source instanceof SparqlKnowledgeSource || source instanceof OWLAPIOntology) {
 				URL url=null;
 				if(source instanceof OWLFile){
 					 url = ((OWLFile)source).getURL();
@@ -192,6 +193,30 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				}
 
 				try {
+					if(source instanceof OWLAPIOntology)
+					{
+						System.out.println(source instanceof OWLAPIOntology);
+						System.out.println("JUHU es geht");
+						OWLOntology ontology = ((OWLAPIOntology)source).getOWLOntolgy();
+						owlAPIOntologies.add(ontology);
+						allImports.addAll(manager.getImportsClosure(ontology));
+						classes.addAll(ontology.getReferencedClasses());
+						owlObjectProperties.addAll(ontology.getReferencedObjectProperties());
+						owlDatatypeProperties.addAll(ontology.getReferencedDataProperties());				
+						owlIndividuals.addAll(ontology.getReferencedIndividuals());
+						
+						// TODO: this obviously works only for exactly one knowledge source
+						OWLOntologyFormat format = manager.getOntologyFormat(ontology);
+						if(format instanceof NamespaceOWLOntologyFormat) 
+						{
+							prefixes = ((NamespaceOWLOntologyFormat)format).getNamespacesByPrefixMap();
+							baseURI = prefixes.get("");
+							prefixes.remove("");
+						}
+					}
+					else
+					{
+						System.out.println(":'S");
 					OWLOntology ontology = manager.loadOntologyFromPhysicalURI(url.toURI());
 					owlAPIOntologies.add(ontology);
 					allImports.addAll(manager.getImportsClosure(ontology));
@@ -207,8 +232,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 						baseURI = prefixes.get("");
 						prefixes.remove("");						
 					}
+					}
 					
-				} catch (OWLOntologyCreationException e) {
+				}
+				 catch (OWLOntologyCreationException e) {
 					e.printStackTrace();
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
