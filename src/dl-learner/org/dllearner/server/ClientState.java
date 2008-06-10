@@ -34,6 +34,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryThreaded;
 
 /**
@@ -51,7 +52,7 @@ public class ClientState {
 	
 	private Set<KnowledgeSource> knowledgeSources = new HashSet<KnowledgeSource>();
 	
-	private Map<Integer, SparqlQueryThreaded> queryIDs = new HashMap<Integer, SparqlQueryThreaded>();
+	private Map<Integer, SparqlQuery> queryIDs = new HashMap<Integer, SparqlQuery>();
 	
 	private LearningProblem learningProblem;
 	
@@ -73,7 +74,7 @@ public class ClientState {
 		return id;		
 	}
 	
-	private int generateQueryID(SparqlQueryThreaded query) {
+	private int generateQueryID(SparqlQuery query) {
 		int id;
 		Random rand = new Random();
 		do {
@@ -83,11 +84,11 @@ public class ClientState {
 		return id;
 	}
 	
-	public int addQuery(SparqlQueryThreaded query){
+	public int addQuery(SparqlQuery query){
 		return this.generateQueryID(query);
 	}
 	
-	public SparqlQueryThreaded getQuery(int id){
+	public SparqlQuery getQuery(int id){
 		return queryIDs.get(id);
 	}
 	
