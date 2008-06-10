@@ -53,13 +53,13 @@ public class PropertyNode extends Node {
 	// Property Nodes are normally not expanded,
 	// this function is never called
 	@Override
-	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m) {
+	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulators m) {
 		return null;
 	}
 
 	// gets the types for properties recursively
 	@Override
-	public void expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
+	public void expandProperties(TypedSparqlQueryInterface tsq, Manipulators m) {
 		b.expandProperties(tsq, m);
 		Set<StringTuple> s = tsq.getTupelForResource(uri);
 

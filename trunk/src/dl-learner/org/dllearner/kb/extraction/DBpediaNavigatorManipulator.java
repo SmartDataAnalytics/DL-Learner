@@ -32,7 +32,7 @@ import org.dllearner.utilities.datastructures.StringTuple;
  * @author Sebastian Hellmann
  * 
  */
-public class Manipulator implements Manipulators{
+public class DBpediaNavigatorManipulator implements Manipulators{
 	public final String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 	public final String type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 	final String objectProperty = "http://www.w3.org/2002/07/owl#ObjectProperty";
@@ -46,7 +46,7 @@ public class Manipulator implements Manipulators{
 
 	// Set<String> classproperties;
 
-	public Manipulator(String blankNodeIdentifier,
+	public DBpediaNavigatorManipulator(String blankNodeIdentifier,
 			int breakSuperClassRetrievalAfter,
 			LinkedList<StringTuple> replacePredicate,
 			LinkedList<StringTuple> replaceObject) {
@@ -73,22 +73,6 @@ public class Manipulator implements Manipulators{
 		Iterator<StringTuple> it = tuples.iterator();
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
-			
-			//HACK
-//			if(t.a.equals("http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag")) {
-//				//hackGetLabel(t.b);
-//				
-//			}
-			
-			// GovTrack hack
-			// => we convert a string literal to a URI
-			// => TODO: introduce an option for converting literals for certain
-			// properties into URIs
-//			String sp = "http://purl.org/dc/elements/1.1/subject";
-//			if(t.a.equals(sp)) {
-//				System.out.println(t);
-//				System.exit(0);
-//			}
 			
 			replacePredicate(t);
 			replaceObject(t);
@@ -133,25 +117,4 @@ public class Manipulator implements Manipulators{
 			}
 		}
 	}
-	
-	
-	/*private String hackGetLabel(String resname){
-		String query="" +
-				"SELECT ?o \n" +
-				"WHERE { \n" +
-				"<"+resname+"> "+ " <http://www.holygoat.co.uk/owl/redwood/0.1/tags/tagName> ?o " +
-						"}";
-		
-		System.out.println(query);
-		//http://dbtune.org/musicbrainz/sparql?query=
-			//SELECT ?o WHERE { <http://dbtune.org/musicbrainz/resource/tag/1391>  <http://www.holygoat.co.uk/owl/redwood/0.1/tags/tagName> ?o }
-		SparqlQuery s=new SparqlQuery(query,SparqlEndpoint.EndpointMusicbrainz());
-		ResultSet rs=s.send();
-		while (rs.hasNext()){
-			rs.nextBinding();
-		}
-		//System.out.println("AAA"+s.getAsXMLString(s.send()) );
-		return "";
-	}*/
-
 }

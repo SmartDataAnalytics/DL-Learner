@@ -47,7 +47,7 @@ public class Manager {
 	
 	
 	public void useConfiguration(SparqlQueryType SparqlQueryType,
-			SparqlEndpoint SparqlEndpoint, Manipulator manipulator,
+			SparqlEndpoint SparqlEndpoint, Manipulators manipulator,
 			int recursiondepth, boolean getAllSuperClasses,
 			boolean closeAfterRecursion, String cacheDir) {
 

@@ -152,6 +152,5 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	@Override
 	public Score getSolutionScore() {
 		return learner.getSolutionScore();
-	}	
- 
+	}
 }

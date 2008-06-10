@@ -47,7 +47,7 @@ public class InstanceNode extends Node {
 
 	// expands all directly connected nodes
 	@Override
-	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulator m) {
+	public Vector<Node> expand(TypedSparqlQueryInterface tsq, Manipulators m) {
 
 		Set<StringTuple> s = tsq.getTupelForResource(uri);
 		// see Manipulator
@@ -86,7 +86,7 @@ public class InstanceNode extends Node {
 
 	// gets the types for properties recursively
 	@Override
-	public void expandProperties(TypedSparqlQueryInterface tsq, Manipulator m) {
+	public void expandProperties(TypedSparqlQueryInterface tsq, Manipulators m) {
 		for (PropertyNode one : properties) {
 			one.expandProperties(tsq, m);
 		}

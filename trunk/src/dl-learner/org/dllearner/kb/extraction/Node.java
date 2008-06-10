@@ -55,7 +55,7 @@ public abstract class Node implements Comparable<Node> {
 	 * @return Vector<Node> all Nodes that are new because of expansion
 	 */
 	public abstract Vector<Node> expand(
-			TypedSparqlQueryInterface typedSparqlQuery, Manipulator manipulator);
+			TypedSparqlQueryInterface typedSparqlQuery, Manipulators manipulator);
 
 	/**
 	 * gets type defs for properties like rdf:type SymmetricProperties
@@ -65,7 +65,7 @@ public abstract class Node implements Comparable<Node> {
 	 * @return Vector<Node>
 	 */
 	public abstract void expandProperties(
-			TypedSparqlQueryInterface typedSparqlQuery, Manipulator manipulator);
+			TypedSparqlQueryInterface typedSparqlQuery, Manipulators manipulator);
 
 	/**
 	 * output

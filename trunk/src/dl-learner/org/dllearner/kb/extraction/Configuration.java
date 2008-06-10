@@ -32,7 +32,7 @@ public class Configuration {
 
 	private SparqlEndpoint endpoint;
 	private SparqlQueryType sparqlQueryType;
-	private Manipulator manipulator;
+	private Manipulators manipulator;
 	// the following needs to be moved to
 	// class extraction algorithm or manipulator
 	private int recursiondepth;
@@ -43,7 +43,7 @@ public class Configuration {
 	public String cacheDir="cache";
 
 	public Configuration(SparqlEndpoint specificSparqlEndpoint,
-			SparqlQueryType sparqlQueryType, Manipulator manipulator,
+			SparqlQueryType sparqlQueryType, Manipulators manipulator,
 			int recursiondepth, boolean getAllSuperClasses,
 			boolean closeAfterRecursion, String cacheDir) {
 		this.endpoint = specificSparqlEndpoint;
@@ -64,7 +64,7 @@ public class Configuration {
 
 	}
 
-	public Manipulator getManipulator() {
+	public Manipulators getManipulator() {
 		return this.manipulator;
 	}
 

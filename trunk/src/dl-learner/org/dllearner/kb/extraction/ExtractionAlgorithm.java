@@ -34,7 +34,7 @@ import org.dllearner.core.KnowledgeSource;
 public class ExtractionAlgorithm {
 
 	private Configuration configuration;
-	private Manipulator manipulator;
+	private Manipulators manipulator;
 	private int recursionDepth = 1;
 	// private boolean getAllSuperClasses = true;
 	// private boolean closeAfterRecursion = true;
