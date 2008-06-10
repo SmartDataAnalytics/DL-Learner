@@ -35,14 +35,14 @@ class Settings{
 	public $dbpediauri='http://dbpedia.openlinksw.com:8890/sparql';
 	// public DBpedia mirror
 	// public $dbpediauri='http://dbpedia2.openlinksw.com:8890/isparql';
-	//in mikrosekunden
+	// in mikrosekunden
 	public $sparqlttl=60000000;
 	
 	public $language="en";
 	
 	public $googleMapsKey="ABQIAAAAWwHG9WuZ8hxFSPjRX2-D-hSOxlJeL3USfakgDtFzmQkGhQTW0xTFM1Yr38ho8qREnjt-6oLs37o4xg";
 	
-	public useCache=true;
+	public $useCache=true;
 }
 
 ?>
