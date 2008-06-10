@@ -61,6 +61,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.SparqlQueryException;
 import org.dllearner.kb.sparql.SparqlQueryThreaded;
+import org.dllearner.kb.sparql.Cache;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -536,11 +537,16 @@ public class DLLearnerWS {
 	{
 		final ClientState state = getState(sessionID);
 		Component component = state.getComponent(componentID);
-		final int id=state.addQuery(((SparqlKnowledgeSource)component).sparqlQueryThreaded(query));
+		final SparqlKnowledgeSource ks=(SparqlKnowledgeSource)component;
+		final int id=state.addQuery(ks.sparqlQuery(query));
 		Thread sparqlThread = new Thread() {
 			@Override
 			public void run() {
-				state.getQuery(id).send();
+				if (ks.getUseCache()){
+					Cache cache=new Cache(ks.getCacheDir());
+					cache.executeSparqlQuery(state.getQuery(id));
+				}
+				else state.getQuery(id).send();
 			}
 		};
 		sparqlThread.start();
@@ -552,8 +558,13 @@ public class DLLearnerWS {
 	{
 		ClientState state = getState(sessionID);
 		Component component = state.getComponent(componentID);
-		SparqlQueryThreaded sparql=((SparqlKnowledgeSource)component).sparqlQueryThreaded(query);
-		sparql.send();
+		SparqlKnowledgeSource ks=(SparqlKnowledgeSource)component;
+		SparqlQuery sparql=ks.sparqlQuery(query);
+		if (ks.getUseCache()){
+			Cache cache=new Cache(ks.getCacheDir());
+			cache.executeSparqlQuery(sparql);
+		}
+		else sparql.send();
 		return sparql.getResult();
 	}
 	

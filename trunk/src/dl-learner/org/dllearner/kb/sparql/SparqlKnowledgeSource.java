@@ -66,7 +66,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	//DEFAULTS
 	static int recursionDepthDefault = 1;
-	
+	private boolean useCache=true;
 	// ConfigOptions
 	public URL url;
 	// String host;
@@ -164,6 +164,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 		options.add(new BooleanConfigOption("learnDomain",
 				"learns the Domain for a Role"));
+		options.add(new BooleanConfigOption("useCache",
+				"If true a Cache is used"));
 		options.add(new BooleanConfigOption("learnRange",
 				"learns the Range for a Role"));
 		options.add(new StringConfigOption("role",
@@ -232,7 +234,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			dumpToFile = (Boolean) entry.getValue();
 		} else if (option.equals("useLits")) {
 			useLits = (Boolean) entry.getValue();
-		} else if (option.equals("getAllSuperClasses")) {
+		} else if (option.equals("useCache")) {
+			useCache = (Boolean) entry.getValue();
+		}else if (option.equals("getAllSuperClasses")) {
 			getAllSuperClasses = (Boolean) entry.getValue();
 			/*
 			 * TODO remaove } else if (option.equals("learnDomain")) {
@@ -415,9 +419,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return new SparqlQuery(query, endpoint);
 	}
 	
-	public SparqlQueryThreaded sparqlQueryThreaded(String query){
-		return new SparqlQueryThreaded(new Cache("cache"),this.sparqlQuery(query));
-	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.KnowledgeSource#toKB()
@@ -430,6 +431,14 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	public URL getNTripleURL(){
 		return dumpFile;
+	}
+	
+	public boolean getUseCache(){
+		return useCache;
+	}
+	
+	public String getCacheDir(){
+		return cacheDir;
 	}
 
 	/*public static void main(String[] args) throws MalformedURLException {
