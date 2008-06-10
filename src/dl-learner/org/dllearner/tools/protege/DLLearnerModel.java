@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.SortedSet;
 
-import java.io.*;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 
@@ -30,7 +28,6 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 
-import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.OWLAPIOntology;
 
 import org.dllearner.learningproblems.PosNegInclusionLP;
@@ -281,15 +278,15 @@ public class DLLearnerModel extends Observable implements Runnable{
 	 */
 	public void setKnowledgeSource()
 	{
-		this.source = cm.knowledgeSource(OWLFile.class);
-		String uri=getUri();
+		this.source = new OWLAPIOntology(editor.getOWLModelManager().getActiveOntology());
+		/*String uri=getUri();
 		cm.applyConfigEntry(source, "url", new File(uri).toURI().toString());
 		try{
 				source.init();
 			}
 				catch(ComponentInitException e){
 					e.printStackTrace();
-			}
+			}*/
 	}
 	
 	/**
