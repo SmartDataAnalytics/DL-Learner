@@ -42,11 +42,14 @@ class DLLearnerConnection
 	
 	function getConceptFromExamples($posExamples,$negExamples)
 	{
+		require_once("Settings.php");
+		$settings=new Settings();
+		
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",1);
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedFilter", "YAGO");
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedEndpoint", "DBPEDIA");
-		
+		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useCache", $settings->useCache);
 		$this->client->setReasoner($this->id, "fastInstanceChecker");
 		if(empty($negExamples))
 			$this->client->setLearningProblem($this->id, "posOnlyDefinition");
@@ -65,7 +68,7 @@ class DLLearnerConnection
 		
 		if($threaded == false) {
 	
-			$concept = $this->client->learn($this->id);
+			$concept = $this->client->learn($this->id,'kb');
 			
 		} else {
 		
