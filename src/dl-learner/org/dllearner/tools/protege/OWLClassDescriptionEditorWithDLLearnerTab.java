@@ -1,12 +1,13 @@
 package org.dllearner.tools.protege;
 
-import org.dllearner.core.owl.Description;
+
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLDescriptionChecker;
 import org.protege.editor.owl.ui.selector.OWLClassSelectorPanel;
 import org.protege.editor.owl.ui.selector.OWLObjectPropertySelectorPanel;
+
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
@@ -252,41 +253,133 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
     public void removeStatusChangedListener(InputVerificationStatusChangedListener listener) {
         listeners.remove(listener);
     }
-    
+    /**
+     * 
+     * @author Heero Yuy
+     *
+     */
     public class DLLearnerView extends JPanel{
-  	  private JLabel pos;
-  	  private final static long serialVersionUID = 624829578325729385L;
-  	  private DLLearnerViewPanel panel;
-	  private JComponent learner;
-	  private JButton accept;
-	  private JButton run;
-	  private OWLEditorKit editor;
-	  private JPanel option;
-	  private JList suggest;
-	  private JLabel neg;
-	  private JDialog hilfe;
-	  private JLabel help;
-	  private JLabel adv;
-	  private JScrollPane scrollPane;
-	  private final Color Color_RED = Color.red;
-	  private final Color COLOR_BLACK = Color.black;
-	  private JButton cancel;
-	  private JPanel posLabelPanel;
-	  private JPanel negLabelPanel;
-	  private JButton helpForPosExamples;
-	  private JButton helpForNegExamples;
-	  private JLabel errorMessage;
+  	  /**
+  	   * 
+  	   */
+      private JLabel pos;
+  	  /**
+  	   * 
+  	   */
+      private final static long serialVersionUID = 624829578325729385L;
+  	  /**
+  	   * 
+  	   */
+      private DLLearnerViewPanel panel;
+	  /**
+	   * 
+	   */
+      private JComponent learner;
+	  /**
+	   * 
+	   */
+      private JButton accept;
+	  /**
+	   * 
+	   */
+      private JButton run;
+	  /**
+	   * 
+	   */
+      private OWLEditorKit editor;
+	  /**
+	   * 
+	   */
+      private JPanel option;
+	  /**
+	   * 
+	   */
+      private JList suggest;
+	  /**
+	   * 
+	   */
+      private JLabel neg;
+	  /**
+	   * 
+	   */
+      private JDialog hilfe;
+	  /**
+	   * 
+	   */
+      private JTextArea help;
+	  /**
+	   * 
+	   */
+      private JLabel adv;
+	  /**
+	   * 
+	   */
+      private JScrollPane scrollPane;
+	  /**
+	   * 
+	   */
+      private final Color Color_RED = Color.red;
+	  /**
+	   * 
+	   */
+      private final Color COLOR_BLACK = Color.black;
+	  /**
+	   * 
+	   */
+      private JButton cancel;
+	  /**
+	   * 
+	   */
+      private JPanel posLabelPanel;
+	  /**
+	   * 
+	   */
+      private JPanel negLabelPanel;
+	  /**
+	   * 
+	   */
+      private JButton helpForPosExamples;
+	  /**
+	   * 
+	   */
+      private JButton helpForNegExamples;
+	  /**
+	   * 
+	   */
+      private JLabel errorMessage;
+	  /**
+	   * 
+	   */
 	  private JToggleButton advanced; 
+	  /**
+	   * 
+	   */
 	  private JScrollPane suggestScroll;
+	  /**
+	   * 
+	   */
 	  private ActionHandler action;
+	  /**
+	   * 
+	   */
 	  private DLLearnerModel model;
-	  private Description[] descriptions = new Description[10];
-	  
+	  /**
+	   * 
+	   */
+	  private DefaultListModel descriptions;
+	  /**
+	   * 
+	   * @return
+	   */
 	  public DLLearnerViewPanel getDLLearnerViewPanel()
 	  {
 		  return panel;
 	  }
-	  
+	  /**
+	   * The constructor for the DL-Learner tab in the class description editor 
+	   * @param aktuell
+	   * @param label
+	   */
 	  public DLLearnerView(OWLFrame<OWLClass> aktuell,String label){
 		  	editor = editorKit;
 		  	model = new DLLearnerModel(editorKit,aktuell, label,this);
@@ -332,24 +425,26 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	addAdvancedButtonListener(this.action);
 		    
     }
-	  
+	  /**
+	   * 
+	   */
 	  public void makeView()
 	  {
 		  	model.clearVector();
+		  	model.unsetListModel();
 		  	model.initReasoner();
 		  	model.setPosVector();
-		  	model.setNegVector();
 		  	setJCheckBoxen();
-		    suggest = new JList();
+		    suggest = new JList(model.getSuggestList());
 	      	cancel.setEnabled(false);
 	    	accept.setEnabled(false);
 	    	action.resetToggled();
 	    	advanced.setSelected(false);
 	    	suggest.setBounds(10,40,490,110);
-	    	suggest.setVisible(true);
 	    	adv.setBounds(40,200,200,20);
 	    	run.setBounds(10,0,200,30);
 	    	advanced.setBounds(10,200,20,20);
+	    	suggest.setVisible(true);
 	    	scrollPane.setViewportView(option);
 			scrollPane.setBounds(10, 230, 490, 250);
 			suggestScroll.setViewportView(suggest);
@@ -367,55 +462,92 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	learner.add(scrollPane);
 	    	scrollPane.setVisible(false);
 	    	add(learner);
+	    	suggest.addMouseListener(action);
 	    	addListener();
 	  }
-	  
+	  /**
+	   * 
+	   * @return
+	   */
 	  public JComponent getLearnerPanel()
 	  {
 		  return learner;
 	  }
-	  
+	  /**
+	   * 
+	   * @param visible
+	   */
 	  public void setExamplePanelVisible(boolean visible)
 	  {
 		  scrollPane.setVisible(visible);
 	  }
-	  
+	  /**
+	   * 
+	   * @return
+	   */
 	  public JPanel getOptionPanel()
 	  {
 		  return option;
 	  }
-	  
+	  /**
+	   * 
+	   * @return
+	   */
+	  public JButton getAddButton()
+	  {
+		   return accept;
+	  }
+	  /**
+	   * 
+	   * @param helfen
+	   */
 	  public void renderHelpMessage(String helfen)
 	  {
-		  help = new JLabel();
+		  JScrollPane scrollHelp = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		  
+		  help = new JTextArea();
 		  hilfe = new JDialog();
+		  help.setEditable(false);
 		  hilfe.setName("Hilfe");
-		  hilfe.setSize(500,50);
+		  hilfe.setSize(300,100);
 		  hilfe.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		  hilfe.setVisible(true);
 		  hilfe.setResizable(false);
 		  help.setForeground(COLOR_BLACK);
 		  help.setText("Help: "+helfen);
-		  hilfe.add(help);
+		  scrollHelp.setViewportView(help);
+		  scrollHelp.setBounds(0, 0, 300, 100);
+		  hilfe.add(scrollHelp);
 	  }
-	  
+	  /**
+	   * 
+	   * @return
+	   */
 	  public URI getUri()
 	    {
 			URI uri = editor.getOWLModelManager().getOntologyPhysicalURI(editor.getOWLModelManager().getActiveOntology());
 	    	return uri;
 	    }
-	  
+	  /**
+	   * 
+	   * @return
+	   */
 	  public Set<OWLDescription> getSollutions()
 	  {
 		  return model.getNewOWLDescription();
 	  }
-	  
+	  /**
+	   * 
+	   * @return
+	   */
 	  public OWLDescription getSollution()
 	  {
-		  System.out.println(model.getSollution());
-		  return model.getSollution();
+		  System.out.println(model.getSolution());
+		  return model.getSolution();
 	  }
-	  
+	  /**
+	   * 
+	   */
 	   private void setJCheckBoxen()
 	   {
 		   option.add(posLabelPanel);
@@ -427,107 +559,147 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	}
 	    	
 	   }
-	   
+	   /**
+	    * 
+	    */
 	   public void unsetEverything()
 	   {
 		 option.removeAll();
 		 run.setEnabled(true);
 		 model.unsetNewConcepts();
+		 //model.unsetListModel();
 		 action.destroyDLLearnerThread();
 		 suggest.removeAll();
 		 errorMessage.setText("");
 		 learner.removeAll();
 	   }
-	   
+	   /**
+	    * 
+	    * @param s
+	    */
 	   public void renderErrorMessage(String s)
 	   {
 		   errorMessage.setForeground(Color_RED);
 		   errorMessage.setText(s);
 	   }
-	   
+	   /**
+	    * 
+	    */
 	   private void addListener()
 	   {
 		   for(int i=0;i<model.getPosVector().size();i++)
 		   {
 			   model.getPositivJCheckBox(i).addItemListener(action);
-		   }
-		   
-		   for(int i=0;i<model.getNegVector().size();i++)
-		   {
 			   model.getNegativJCheckBox(i).addItemListener(action);
-		   } 
+		   }
+ 
 	   }
-	   
+	   /**
+	    * 
+	    * @param m
+	    * @param c
+	    */
 	   public void update(Observable m,Object c)
 		  {
 			  if( model != m) return;
 			   //draw(); 
 		  }
-	   
-	   protected void draw(Description[] desc) {
-			if (model != null) {
-				run.setEnabled(true);
-				cancel.setEnabled(false);
-				accept.setEnabled(true);
-				learner.remove(suggestScroll);
-				suggestScroll.remove(suggest);
-				descriptions = desc;
-				suggest=new JList(descriptions);
-				suggest.setBounds(10,40,490,110);
-				suggest.setVisible(true);
-				suggestScroll.setViewportView(suggest);
-				suggestScroll.setBounds(10,40,490,110);
-				learner.add(suggestScroll);
-				//suggest.repaint();
-				suggest.addMouseListener(action);
-				suggestScroll.repaint();
-				model.unsetJCheckBoxen();
-				option.removeAll();
-				setJCheckBoxen();
-				
-			}
+	   /**
+	    * 
+	    */
+	   protected void draw() 
+	   {
+			run.setEnabled(true);
+			cancel.setEnabled(false);
+			descriptions = model.getSuggestList();
+			suggest=new JList(model.getSuggestList());
+			suggest.setBounds(10,40,490,110);
+			suggest.setVisible(true);
+			suggestScroll.setViewportView(suggest);
+			suggestScroll.setBounds(10,40,490,110);
+			learner.add(suggestScroll);
+			suggest.repaint();
+			suggest.addMouseListener(action);
+			suggestScroll.repaint();
+			model.unsetJCheckBoxen();
+			option.removeAll();
+			setJCheckBoxen();
 		}
-	   
+	   /**
+	    * 
+	    * @return
+	    */
 	   public JList getSuggestionList()
 	   {
 		   return suggest;
 	   }
-	   
+	   /**
+	    * 
+	    * @return
+	    */
 	   public JButton getRunButton()
 	   {
 		   return run;
 	   }
-	   
+	   /**
+	    * 
+	    * @return
+	    */
 	   public JButton getCancelButton()
 	   {
 		   return cancel;
 	   }
-	   
+	   /**
+	    * 
+	    */
 	   public void dispose() {
      
        }
-	   
+	   /**
+	    * 
+	    * @param a
+	    */
+	   public void addSuggestListToChangeListener(ActionListener a)
+	   {
+		   
+	   }
+	   /**
+	    * 
+	    * @param a
+	    */
 	   public void addRunButtonListener(ActionListener a)
 	   {
 			run.addActionListener(a);
 		}
-		
+		/**
+		 * 
+		 * @param a
+		 */
 		public void addCancelButtonListener(ActionListener a)
 		{
 			cancel.addActionListener(a);
 		}
-		
+		/**
+		 * 
+		 * @param a
+		 */
 		public void addAcceptButtonListener(ActionListener a)
 		{
 			accept.addActionListener(a);
 		}
-		
+		/**
+		 * 
+		 * @param a
+		 */
 		public void addHelpButtonListener(ActionListener a)
 		{
 			helpForPosExamples.addActionListener(a);
 			helpForNegExamples.addActionListener(a);
 		}
-		
+		/**
+		 * 
+		 * @param a
+		 */
 		public void addAdvancedButtonListener(ActionListener a)
 		{
 			advanced.addActionListener(a);
