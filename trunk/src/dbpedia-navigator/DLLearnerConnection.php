@@ -124,8 +124,8 @@ class DLLearnerConnection
 		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result. The Label-Search is started."); 
 		$ret=array();
 		foreach ($result['results']['bindings'] as $results){
-				$value=$results['obj'];
-				if (!(isset($value['xml:lang'])&&($value['xml:lang']!=$this->lang))) $ret[$results['pred']['value']][]=$value;
+			$value=$results['obj'];
+			if (!(isset($value['xml:lang'])&&($value['xml:lang']!=$this->lang))) $ret[$results['pred']['value']][]=$value;
 		}
 		
 		return $ret;
