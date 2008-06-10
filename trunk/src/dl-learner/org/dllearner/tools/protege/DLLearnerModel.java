@@ -1,72 +1,194 @@
 package org.dllearner.tools.protege;
 
-import org.dllearner.core.ComponentManager;
-import org.dllearner.kb.OWLFile;
-
 import java.util.Observable;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
-import org.dllearner.core.owl.Description;
-import javax.swing.JCheckBox;
-import org.dllearner.core.*;
-import org.protege.editor.owl.OWLEditorKit;
-import org.protege.editor.owl.ui.frame.OWLFrame;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.*;
-import org.dllearner.learningproblems.*;
-import java.net.URI;
-import org.dllearner.core.owl.*;
-import org.dllearner.core.owl.NamedClass;
-import org.semanticweb.owl.model.OWLOntology;
-import org.dllearner.reasoning.OWLAPIReasoner;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
-import java.io.File;
-import org.semanticweb.owl.model.OWLDescription;
 import java.util.HashSet;
-import java.util.*;
+import java.util.Iterator;
+import java.util.SortedSet;
+
+import java.io.*;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
+
+import java.net.URI;
+
 import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.algorithms.SimpleSuggestionLearningAlgorithm;
+
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ComponentManager;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
+
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
+
+import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.OWLAPIOntology;
+
+import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 
+import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
+import org.dllearner.reasoning.OWLAPIReasoner;
 
+import org.protege.editor.owl.OWLEditorKit;
+import org.protege.editor.owl.ui.frame.OWLFrame;
+
+import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.AddAxiom;
+import org.semanticweb.owl.model.OWLOntologyFormat;
+import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLDataFactory;
+
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLDescription;
+
+
+
+
+
+
+/**
+ * This Class provides the necessary methods to learn Concepts from the DL-Learner.
+ * @author Heero Yuy
+ *
+ */
 public class DLLearnerModel extends Observable implements Runnable{
+	/**
+	 * The Sting is for components that are available in the DL-Learner
+	 */
 	private String[] componenten={"org.dllearner.kb.OWLFile","org.dllearner.reasoning.OWLAPIReasoner",
 			"org.dllearner.reasoning.DIGReasoner","org.dllearner.reasoning.FastRetrievalReasoner","org.dllearner.learningproblems.PosNegInclusionLP"
 			,"org.dllearner.learningproblems.PosNegDefinitionLP","org.dllearner.algorithms.RandomGuesser","org.dllearner.algorithms.BruteForceLearner","org.dllearner.algorithms.refinement.ROLearner","org.dllearner.algorithms.refexamples.ExampleBasedROLComponent","org.dllearner.algorithms.gp.GP"};	
+	/**
+	 * This Vector stores the check boxes for the view. 
+	 */
 	private Vector<JCheckBox> positiv;
+	/**
+	 * This Vector stores the negative Examples.
+	 */
 	private Vector<JCheckBox> negativ;
+	/**
+	 * 
+	 */
 	private ComponentManager cm;
+	/**
+	 * 
+	 */
 	private ReasoningService rs;
+	/**
+	 * 
+	 */
 	private KnowledgeSource source;
+	/**
+	 * 
+	 */
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
+	/**
+	 * This is the count of Concepts which you get after learning 
+	 */
 	private static final int anzahl = 6;
-	private Description[] description = new Description[anzahl];
+	/**
+	 * 
+	 */
+	private Description[] description;
+	/**
+	 * 
+	 */
 	private LearningProblem lp;
+	/**
+	 * This boolean is 
+	 */
+	private boolean alreadyLearned=false;
+	/**
+	 * 
+	 */
 	private OWLOntology ontology;
+	/**
+	 * This is the learning algorithm 
+	 */
 	private LearningAlgorithm la = null;
+	/**
+	 * 
+	 */
 	private OWLEditorKit editor;
+	/**
+	 * 
+	 */
 	private OWLFrame<OWLClass> aktuell;
+	/**
+	 * 
+	 */
 	private OWLAPIReasoner reasoner;
+	/**
+	 * 
+	 */
 	private Set<OWLDescription> OWLDescription;
+	/**
+	 * This set stores the positive examples.
+	 */
 	private Set<String> positiveExamples;
+	/**
+	 * This set stores the negative examples that doesn't belong to the concept.
+	 */
 	private Set<String> negativeExamples;
-	private Vector<Individual> indis;
+	/**
+	 * 
+	 */
 	private OWLDescription desc;
+	/**
+	 * 
+	 */
 	private String id;
+	/**
+	 * 
+	 */
 	private OWLDescription newConceptOWLAPI;
+	/**
+	 * 
+	 */
 	private OWLDescription oldConceptOWLAPI;
+	/**
+	 * 
+	 */
 	private Set<OWLDescription> ds;
-	private Vector<Individual> individual;
+	/**
+	 * 
+	 */
+	private DefaultListModel suggestModel;
+	/**
+	 * 
+	 */
+	private Set<Individual> individual;
+	/**
+	 * 
+	 */
+	private SimpleSuggestionLearningAlgorithm test;
+	/**
+	 * 
+	 */
+	private String error;
 	
 
+	/**
+	 * This is the constructor for DL-Learner model
+	 * @param editorKit
+	 * @param h
+	 * @param id String if it learns a subclass or a superclass.
+	 * @param view current view of the DL-Learner tab
+	 */
 	public DLLearnerModel(OWLEditorKit editorKit, OWLFrame<OWLClass> h,String id,OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view)
-
 	{
 		editor=editorKit;
 		aktuell=h;
@@ -75,53 +197,88 @@ public class DLLearnerModel extends Observable implements Runnable{
 		OWLDescription = new HashSet<OWLDescription>();
 		positiv = new Vector<JCheckBox>();
 		negativ = new Vector<JCheckBox>();
-		indis = new Vector<Individual>();
-		individual = new Vector<Individual>();
+		test = new SimpleSuggestionLearningAlgorithm();
 		ComponentManager.setComponentClasses(componenten);
 		cm = ComponentManager.getInstance();
 		ds = new HashSet<OWLDescription>();
+		suggestModel = new DefaultListModel();
 		
 	}
+	
+	/**
+	 * This method initializes the SimpleSuggestionLearningAlgorithm and adds the 
+	 * suggestions to the suggest panel model.
+	 */
 	public void initReasoner()
 	{
+		alreadyLearned = false;
 		setKnowledgeSource();
 		setReasoner();
 		SortedSet<Individual> pos=rs.getIndividuals();
-		System.out.println(pos);
-		while(pos.iterator().hasNext())
+		Set<Description> desc = test.getSimpleSuggestions(rs, pos);
+		int i = 0;
+		for(Iterator<Description> j = desc.iterator();j.hasNext();)
 		{
-			indis.add(pos.iterator().next());
-			pos.remove(pos.iterator().next());
+			suggestModel.add(i,j.next());
 		}
-		
-		//this.neg=rs.getIndividuals();
 	}
+	
+	/**
+	 * This method adds the solutions from the DL-Learner to the 
+	 * model for the 
+	 */
+	private void addToListModel()
+	{
+		for(int j = 0;j<la.getBestSolutions(anzahl).size();j++)
+		{
+			suggestModel.add(j,la.getBestSolutions(anzahl).get(j));
+		}
+	}
+	
+	/**
+	 * This method checks which positive and negative examples are checked 
+	 * and puts the checked examples into a treeset.
+	 */
 	public void setPositiveAndNegativeExamples()
 	{
 		positiveExamples = new TreeSet<String>();
+		negativeExamples = new TreeSet<String>();
 		for(int i=0;i<positiv.size();i++)
 		{
 			if(positiv.get(i).isSelected())
 			{
 				positiveExamples.add(positiv.get(i).getText());
 			}
-		}
-		negativeExamples = new TreeSet<String>();
-		for(int i=0;i<negativ.size();i++)
-		{
+			
 			if(negativ.get(i).isSelected())
 			{
 				negativeExamples.add(negativ.get(i).getText());
 			}
 		}
-		
 	}
 	
+	/**
+	 * This method returns the data for the suggest panel.
+	 * @return Model for the suggest panel.
+	 */
+	public DefaultListModel getSuggestList()
+	{
+		return suggestModel;
+	}
+	
+	/**
+	 * This method returns an array of descriptions learned by the DL-Learner.
+	 * @return Array of descriptions learned by the DL-Learner.
+	 */
 	public Description[] getDescriptions()
 	{
 		return description;
 	}
 	
+	/**
+	 * This method sets the knowledge source for the learning process.
+	 * Only OWLAPIOntology will be available.
+	 */
 	public void setKnowledgeSource()
 	{
 		this.source = cm.knowledgeSource(OWLFile.class);
@@ -135,6 +292,10 @@ public class DLLearnerModel extends Observable implements Runnable{
 			}
 	}
 	
+	/**
+	 * This method sets the reasoner and the reasoning service
+	 * Only OWLAPIReasoner is available.
+	 */
 	public void setReasoner()
 	{
 		this.reasoner =cm.reasoner(OWLAPIReasoner.class,source);
@@ -142,6 +303,11 @@ public class DLLearnerModel extends Observable implements Runnable{
 		rs = cm.reasoningService(reasoner);
 	}
 	
+	/**
+	 * This method sets the Learning problem for the learning process.
+	 * PosNegDefinitonLp for equivalent classes and
+	 * PosNegInclusionLP for superclasses.
+	 */
 	public void setLearningProblem()
 	{
 		if(id.equals("Equivalent classes"))
@@ -164,6 +330,9 @@ public class DLLearnerModel extends Observable implements Runnable{
 		}
 	}
 	
+	/**
+	 * This method sets the learning algorithm for the learning process.
+	 */
 	public void setLearningAlgorithm()
 	{
 		try {
@@ -180,41 +349,68 @@ public class DLLearnerModel extends Observable implements Runnable{
 			catch(ComponentInitException e){
 				e.printStackTrace();
 			}
+			alreadyLearned = true;
 	}
 
+	/**
+	 * This method starts the learning process.
+	 */
 	public void run()
 	{	
+		error = "Learning succesful";
 		setKnowledgeSource();
 		setReasoner();
-		setPositiveAndNegativeExamples();;
+		setPositiveAndNegativeExamples();
 		setLearningProblem();
 		setLearningAlgorithm();
 		// start the algorithm and print the best concept found
 		la.start();
 		description = new Description[la.getBestSolutions(anzahl).size()];
-		for(int j = 0;j<la.getBestSolutions(anzahl).size();j++)
-		{
-			description[j]=la.getBestSolutions(anzahl).get(j);
-		}
-		view.draw(description);
+		addToListModel();
+		view.renderErrorMessage(error);
+		view.draw();
 	}
 	
+	/**
+	 * This method returns the Concepts from the DL-Learner. 
+	 * @return Array of learned Concepts. 
+	 */
 	public Description[] getSolutions()
 	{
 		return description;
 	}
 	
+	/**
+	 * This method returns the check boxes for the positive examples.
+	 * @return Vector of check boxes for positive examples
+	 */
 	public Vector<JCheckBox> getPosVector()
 	{
 		return positiv;
 	}
 	
+	/**
+	 * This method returns the check boxes for the negative examples.
+	 * @return Vector of check boxes for negative examples
+	 */
 	public Vector<JCheckBox> getNegVector()
 	{
 		return negativ;
 	}
 	
+	/**
+	 * This method gets an error message and storess it.
+	 * @param error error message
+	 */
+	public void setErrorMessage(String error)
+	{
+		this.error = error;
+	}
 	
+	/**
+	 * This method gets an uri for an ontology and loads it.
+	 * @param uri Uri for the Ontology
+	 */
 	public void loadOntology(URI uri)
 	{
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -227,11 +423,16 @@ public class DLLearnerModel extends Observable implements Runnable{
 		}
 	}
 	
+	/**
+	 * This method sets the check boxes for the positive check boxes checked 
+	 * if the individuals matches the concept that is chosen in protege.
+	 */
 	public void setPosVector()
-	{	setPositiveConcept();
-		for(int i = 0 ; i<indis.size() ; i++)
+	{	
+		setPositiveConcept();
+		for(Iterator<Individual> j = rs.getIndividuals().iterator(); j.hasNext();)
 		{
-			String ind = indis.get(i).toString();
+			String ind = j.next().toString();
 			if(setPositivExamplesChecked(ind))
 			{
 				positiv.add(new JCheckBox(ind.toString(),true));
@@ -245,11 +446,9 @@ public class DLLearnerModel extends Observable implements Runnable{
 		}
 	}
 
-	
-	public void setNegVector()
-	{
-		
-	}
+	/**
+	 * This method resets the Concepts that are learned.
+	 */
 	public void unsetNewConcepts()
 	{
 		while(OWLDescription.iterator().hasNext())
@@ -257,69 +456,71 @@ public class DLLearnerModel extends Observable implements Runnable{
 			OWLDescription.remove(OWLDescription.iterator().next());
 		}
 	}
+	
+	/**
+	 * This method sets the individuals that belong to the concept which is chosen in protege.
+	 */
 	public void setPositiveConcept()
 	{
-		Set<NamedClass> concepts = rs.getAtomicConcepts();
-		System.out.println("!"+rs.getAtomicConcepts());
-		System.out.println("2"+aktuell.getRootObject());
-		
 		SortedSet<Individual> individuals = null;
-		while(concepts.iterator().hasNext()&&individuals==null)
+		for(Iterator<NamedClass> i = rs.getAtomicConcepts().iterator(); i.hasNext();)
 		{
-			System.out.println(concepts.size());
-			System.out.println(individuals==null);
-			NamedClass concept = concepts.iterator().next();
-			System.out.println("§"+rs.retrieval(concept));
-			if(concept.toString().endsWith("#"+aktuell.getRootObject().toString()))
+			if(individuals==null)
 			{
-				if(rs.retrieval(concept)!=null){
-					System.out.println(":-) "+rs.retrieval(concept));
-					individuals = rs.retrieval(concept);
+				NamedClass concept = i.next();
+				if(concept.toString().endsWith("#"+aktuell.getRootObject().toString()))
+				{
+					if(rs.retrieval(concept)!=null){
+						individual = rs.retrieval(concept);
+						break;
+					}
 				}
-			}
-			concepts.remove(concept);
-			System.out.println(individuals);
-		}
-		System.out.println(individuals==null);
-		if(individuals!=null)
-		{
-			while(individuals.iterator().hasNext())
-			{
-				individual.add(individuals.iterator().next());
-				individuals.remove(individuals.iterator().next());
 			}
 		}
 	}
 	
+	/**
+	 * This method gets an Individual and checks if this individual belongs to the concept
+	 * chosen in protege.
+	 * @param indi Individual to check if it belongs to the chosen concept 
+	 * @return is Individual belongs to the concept which is chosen in protege.
+	 */
 	public boolean setPositivExamplesChecked(String indi)
 	{
 			boolean isChecked = false;
-    		for(int i = 0; i<individual.size()&& isChecked==false;i++)
-    		{
-    			String indi1=individual.get(i).getName();
-    			System.out.println("1: "+indi);
-    			System.out.println("2 :"+indi1);
-    			if(indi1.toString().equals(indi.toString()))
-				{
-					System.out.println(indi);
-					isChecked = true;
-				}
-				else
-				{
-					isChecked = false;
-				}
-    		}
+			if(individual.toString().contains(indi))
+			{
+				isChecked = true;
+			}
+			/*for(Iterator<Individual> j = individual.iterator(); j.hasNext();)
+			{
+					String indi1 = j.next().getName();
+					System.out.println("Individuals: "+ indi1);
+					if(indi1.toString().equals(indi.toString()))
+					{
+						System.out.println(indi);
+						isChecked = true;
+						break;
+					}
+			}*/
     	return isChecked;
 	
 	}
 
+	/**
+	 * This method resets the vectors where the check boxes for positive and negative Examples
+	 * are stored. It is called when the DL-Learner View is closed. 
+	 */
 	public void clearVector()
 	{
 		positiv.removeAllElements();
 		negativ.removeAllElements();
-		indis.removeAllElements();
 	}
 	
+	/**
+	 * This method returns the physical uri of the ontology which is currently loaded in protege.
+	 * @return pysical uri of the loaded ontology 
+	 */
 	public String getUri()
     {
     	char[] test = editor.getOWLModelManager().getOntologyPhysicalURI(editor.getOWLModelManager().getActiveOntology()).toString().toCharArray();
@@ -331,27 +532,49 @@ public class DLLearnerModel extends Observable implements Runnable{
     	return uri;
     }
 	
+	/**
+	 * This method gets an array of concepts from the DL-Learner and stores it
+	 * in the description array.
+	 * @param list Array of concepts from DL-Learner
+	 */
 	public void setDescriptionList(Description[] list)
 	{
 		description=list;
 	}
 	
-	
+	/**
+	 * This method returns the current learning algorithm that is used to learn new concepts.
+	 * @return Learning algorithm that is used for learning concepts.
+	 */
 	public LearningAlgorithm getLearningAlgorithm()
 	{
 		return la;
 	}
 	
+	/**
+	 * This method gets an integer to return the positive examples check box on that position.
+	 * @param i integer for the position in the vector
+	 * @return Positive examples check box on position i.
+	 */
 	public JCheckBox getPositivJCheckBox(int i)
 	{
 		return positiv.get(i);
 	}
 	
+	/**
+	 * This method gets an integer to return the negative examples check box on that position.
+	 * @param i integer for the position in the vector
+	 * @return Negative examples check box on position i.
+	 */
 	public JCheckBox getNegativJCheckBox(int i)
 	{
 		return negativ.get(i);
 	}
 	
+	/**
+	 * This method resets the array of concepts from the DL_Learner.
+	 * It is called after the DL-Learner tab is closed.
+	 */
 	public void resetSuggestionList()
 	{
 		for(int i=0;i<description.length;i++)
@@ -360,6 +583,10 @@ public class DLLearnerModel extends Observable implements Runnable{
 		}
 	}
 	
+	/**
+	 * This method unchecks the checkboxes that are checked after the process
+	 * of learning.
+	 */
 	public void unsetJCheckBoxen()
 	{
 		for(int j=0;j<positiv.size();j++)
@@ -370,9 +597,6 @@ public class DLLearnerModel extends Observable implements Runnable{
 				   i.setSelected(false);
 				   positiv.set(j, i); 
 			   }
-		   }
-		   for(int j=0;j<negativ.size();j++)
-		   {
 			   if(negativ.get(j).isSelected())
 			   {
 				   JCheckBox i = negativ.get(j);
@@ -382,90 +606,118 @@ public class DLLearnerModel extends Observable implements Runnable{
 		   }
 	}
 
+	/**
+	 * This method resets the model for the suggest panel.
+	 * It is called befor the DL-Learner learns the second time or when the 
+	 * DL-Learner tab is closed.
+	 */
+	public void unsetListModel()
+	{
+		if(suggestModel!=null)
+		{
+			suggestModel.removeAllElements();
+		}
+	}
+
+	/**
+	 * This method gets a description from the DL-Learner and adds is to the model from the suggest panel. 
+	 * @param desc Description from the DL-Learner
+	 */
+	public void setSuggestModel(Description desc)
+	{
+		suggestModel.add(0, desc);
+	}
+	
+	/**
+	 * This method returns the current OWLOntology that is loaded in protege.
+	 * @return current ontology
+	 */
 	public OWLOntology getOWLOntology()
 	{
 		return ontology;
 	}
 	
+	/**
+	 * This method returns a set of concepts that are learned by the DL-Learner.
+	 * They are already converted into the OWLDescription format. 
+	 * @return Set of learned concepts in OWLDescription format
+	 */
 	public Set<OWLDescription> getNewOWLDescription()
 	{
 		return OWLDescription;
 	}
 	
+	/**
+	 * This method returns the old concept which is chosen in protege in OWLDescription format. 
+	 * @return Old Concept in OWLDescription format.
+	 */
 	public OWLDescription getOldConceptOWLAPI()
 	{
 		return oldConceptOWLAPI;
 	}
 	
-	public Set<OWLDescription> getNewOWLDescriptions()
-	{
-		return null;
-	}
-	
-	public OWLDescription getSollution()
+	/**
+	 * This method returns the currently learned description in OWLDescription format.
+	 * @return currently used description in OWLDescription format
+	 */
+	public OWLDescription getSolution()
 	{
 		return desc;
 	}
 	
+	/**
+	 * Thsi method gets a description learned by the DL-Learner an converts it
+	 * to the OWLDescription format.
+	 * @param desc Description learned by the DL-Learner
+	 */
 	public void setNewConceptOWLAPI(Description desc)
 	{
-		for(int i = 0;i<description.length;i++)
-		{
-			
-			if(desc.toString().equals(description[i].toString()))
-			{
-				newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
-				ds.add(newConceptOWLAPI);
-				OWLDescription.add(newConceptOWLAPI);
-			}
-			this.desc = newConceptOWLAPI;
-			
-			System.out.println("hallo:"+OWLDescription);
-		}
+		newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
+		ds.add(newConceptOWLAPI);
+		OWLDescription.add(newConceptOWLAPI);
+		this.desc = newConceptOWLAPI;
 	}
 	
+	/**
+	 * This method gets the old concept from checking the positive examples.
+	 */
 	public void setOldConceptOWLAPI()
 	{
 		SortedSet<Individual> indi=rs.getIndividuals();
-		while(positiveExamples.iterator().hasNext())
+		for(Iterator<Individual> i = indi.iterator(); i.hasNext();)
 		{
-			String indi1=positiveExamples.iterator().next();
-			
-			for(int i = 0; i<indi.size();i++)
+			Individual indi2 = i.next();
+			if(positiveExamples.toString().contains(indi2.toString()))
 			{
-				Individual indi2 = indi.iterator().next();
-				if(indi2.toString().equals(indi1.toString()))
+				Set<NamedClass> concept=reasoner.getConcepts(indi2);
+				for(Iterator<NamedClass> k = concept.iterator();k.hasNext();)
 				{
-					Set<NamedClass> concept=reasoner.getConcepts(indi2);
-					while(concept.iterator().hasNext())
-					{
-					OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept.iterator().next());
-					concept.remove(concept.iterator().next());
+					OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(k.next());
 					ds.add(oldConceptOWLAPI);
-					}
-					
 				}
-				indi.remove(indi2);
+					
 			}
-			indi=rs.getIndividuals();
-			positiveExamples.remove(indi1);
 		}
 	}
 	
+	/**
+	 * This method stores the new concept learned by the DL-Learner in the Ontology.
+	 * @param desc Description learne by the DL-Learner
+	 */
 	public void changeDLLearnerDescriptionsToOWLDescriptions(Description desc)
 	{
 		setNewConceptOWLAPI(desc);
 		setOldConceptOWLAPI();
-		//OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		
-		//OWLDataFactory factory = manager.getOWLDataFactory();
-		//System.out.println("Manager: "+manager);
-		//OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
-		//OWLOntologyFormat format = new OWLOntologyFormat();
-		//format = manager.getOntologyFormat(ontology);
-		//OWLOntology ontology = editor.getOWLModelManager().getActiveOntology();
-		//System.out.println("Format: "+format);
-		//AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		System.out.println("Manager: "+manager);
+		OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
+		OWLOntologyFormat format = new OWLOntologyFormat();
+		format = manager.getOntologyFormat(ontology);
+		OWLOntology ontology = editor.getOWLModelManager().getActiveOntology();
+		System.out.println("Format: "+format);
+		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
 		/*try {
 			manager.applyChange(axiom);
 		} catch (OWLOntologyChangeException e) {
@@ -474,20 +726,31 @@ public class DLLearnerModel extends Observable implements Runnable{
 		}	
 		
 		try {
-			manager.saveOntology(ontology,format,editor.getOWLModelManager().getActiveOntology().getURI());
+			manager.saveOntology(ontology,new RDFXMLOntologyFormat(),editor.getOWLModelManager().getActiveOntology().getURI());
 		} catch (UnknownOWLOntologyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OWLOntologyStorageException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}	*/
+		}*/
 		}
 	
+	/**
+	 * This method returns the currently used reasoning service.
+	 * @return current reasoning service
+	 */
 	public ReasoningService getReasoningService()
 	{
 		return rs;
 	}
-		
-		
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean getAlreadyLearned()
+	{
+		return alreadyLearned;
+	}	
 	}

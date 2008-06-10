@@ -2,15 +2,49 @@ package org.dllearner.tools.protege;
 
 
 
-import java.awt.event.*;
-//TODO: Concepte und errormessages aus model holen 
-public class ActionHandler implements ActionListener, ItemListener, MouseListener{
-	private DLLearnerModel model;
+//import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.TextEvent;
 
+import org.dllearner.core.owl.Description;
+/**
+ * 
+ * @author Heero Yuy
+ *
+ */
+public class ActionHandler implements ActionListener, ItemListener, MouseListener{
+	/**
+	 * 
+	 */
+	private DLLearnerModel model;
+	/**
+	 * 
+	 */
 	private String id;
+	/**
+	 * 
+	 */
 	private boolean toggled;
+	/**
+	 * 
+	 */
 	private Thread dlLearner;
+	/**
+	 * 
+	 */
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
+	/**
+	 * 
+	 * @param a
+	 * @param m
+	 * @param view
+	 * @param i
+	 */
 	public ActionHandler(ActionHandler a,DLLearnerModel m,OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view ,String i)
 	{
 		this.view = view; 
@@ -20,13 +54,20 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 		
 		
 	}
+	/**
+	 * 
+	 */
 	public void actionPerformed(ActionEvent z){
 		
 		if(z.getActionCommand().equals("Suggest "+id))
 		{
+			if(model.getAlreadyLearned()==true)
+			{
+				model.unsetListModel();
+			}
 			if(view.getOptionPanel().getComponentCount()<=2)
 			{
-				view.renderErrorMessage("No Examples available");
+				view.renderErrorMessage("Could not start learning. No Examples where available");
 			}
 			else{
 			view.renderErrorMessage("Learning started");
@@ -34,8 +75,6 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			view.getRunButton().setEnabled(false);
 			view.getCancelButton().setEnabled(true);
 			dlLearner.start();
-			//String error = "Learning succesful";
-			//view.renderErrorMessage(error);
 			}
 		}
 		
@@ -47,20 +86,12 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			view.renderErrorMessage(error);
 			dlLearner.interrupt();
 			model.getLearningAlgorithm().stop();
+			model.setErrorMessage(error);
 		}
 		
 		if(z.getActionCommand().equals("ADD"))
 		{
-			String suggest=view.getSuggestionList().getSelectedValue().toString();
-			for(int i = 0;i<model.getSolutions().length;i++)
-			{
-				if(model.getSolutions()[i].toString().equals(suggest))
-				{
-					System.out.println(model.getSolutions()[i]);
-					model.changeDLLearnerDescriptionsToOWLDescriptions(model.getSolutions()[i]);
-				}
-			}
-			
+			model.changeDLLearnerDescriptionsToOWLDescriptions((Description)view.getSuggestionList().getSelectedValue());
 			String message ="Concept added";
 			view.renderErrorMessage(message);
 		}
@@ -69,7 +100,7 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 		{
 			if(z.getSource().toString().contains("PosHelpButton"))
 			{
-				String hilfe="A Instance that follows from the classdescription. Per Default all that belongs to the class.";
+				String hilfe="A Instance that follows from the classdescription.\nPer Default all that belongs to the class.";
 				view.renderHelpMessage(hilfe);
 			}
 			
@@ -94,52 +125,79 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 				view.setExamplePanelVisible(toggled);
 			}
 		}
-    }
-
+	}
+    
+	/**	
+	 * 
+	 * @return
+	 */
 	public String getID()
 	{
 		return id;
 	}
-	
+	/**
+	 * 
+	 */
 	public void itemStateChanged(ItemEvent i)
 	{
 		//System.out.println(i.getItem());
 	}
-	
+	/**
+	 * 
+	 */
 	public void mouseReleased(MouseEvent m)
 	{
 		
 	}
-	
+	/**
+	 * 
+	 */
 	public void mouseEntered(MouseEvent m)
 	{
 		
 	}
-	
+	/**
+	 * 
+	 */
 	public void mouseClicked(MouseEvent m)
 	{
 	           
 	}
-	
+	/**
+	 * 
+	 */
 	public void mouseExited(MouseEvent m)
 	{
 		
 	}
-	
+	/**
+	 * 
+	 */
 	public void mousePressed(MouseEvent m)
 	{
-		
+		if(!view.getAddButton().isEnabled())
+		{
+			view.getAddButton().setEnabled(true);
+		}
 	}
+	/**
+	 * 
+	 * @param t
+	 */
 	public void textValueChanged(TextEvent t)
 	{
 
 	}
-	
+	/**
+	 * 
+	 */
 	public void destroyDLLearnerThread()
 	{
 		dlLearner =null;
 	}
-	
+	/**
+	 * 
+	 */
 	public void resetToggled()
 	{
 		toggled = false;
