@@ -46,6 +46,8 @@ import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.extraction.Manager;
 import org.dllearner.kb.extraction.Manipulator;
+import org.dllearner.kb.extraction.ManipulatorType;
+import org.dllearner.kb.extraction.Manipulators;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
@@ -73,6 +75,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private int recursionDepth = recursionDepthDefault;
 	private String predefinedFilter = null;
 	private String predefinedEndpoint = null;
+	private String predefinedManipulator = "STANDARD";
 	private Set<String> predList = new HashSet<String>();
 	private Set<String> objList = new HashSet<String>();
 	// private Set<String> classList;
@@ -136,7 +139,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				"the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST"));
 		options.add(new StringConfigOption("predefinedEndpoint",
 				"the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK"));
-
+		options.add(new StringConfigOption("predefinedManipulator",
+				"the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR"));
 		options.add(new StringSetConfigOption("predList",
 				"list of all ignored roles"));
 		options.add(new StringSetConfigOption("objList",
@@ -220,6 +224,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			predefinedEndpoint = ((String) entry.getValue()).toUpperCase();
 		} else if (option.equals("predefinedFilter")) {
 			predefinedFilter = ((String) entry.getValue()).toUpperCase();
+		} else if (option.equals("predefinedManipulator")) {
+			predefinedManipulator = ((String) entry.getValue()).toUpperCase();
 		} else if (option.equals("format")) {
 			format = (String) entry.getValue();
 		} else if (option.equals("dumpToFile")) {
@@ -292,7 +298,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		Manager m = new Manager();
 		SparqlQueryType sparqlQueryType = null;
 		// get Options for Manipulator
-		Manipulator manipulator = new Manipulator(blankNodeIdentifier,
+		Manipulators manipulator = ManipulatorType.getManipulatorByName(predefinedManipulator, blankNodeIdentifier,
 				breakSuperClassRetrievalAfter, replacePredicate, replaceObject);
 
 		// get Options for endpoints
