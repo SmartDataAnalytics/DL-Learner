@@ -41,6 +41,8 @@ class Settings{
 	public $language="en";
 	
 	public $googleMapsKey="ABQIAAAAWwHG9WuZ8hxFSPjRX2-D-hSOxlJeL3USfakgDtFzmQkGhQTW0xTFM1Yr38ho8qREnjt-6oLs37o4xg";
+	
+	public useCache=true;
 }
 
 ?>
