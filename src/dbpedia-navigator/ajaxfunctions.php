@@ -50,8 +50,7 @@ function getarticle($subject,$fromCache)
 	setRunning($id,"true");
 	
 	//get first Letter of label big
-	$subject=ucfirst($subject);
-	$uri="http://dbpedia.org/resource/".str_replace(' ','_',$subject);
+	$uri=subjectToURI($subject);
 	
 	//if article is in session, get it out of the session
 	if (isset($articles)){
@@ -81,7 +80,7 @@ function getarticle($subject,$fromCache)
 		try{
 			require_once("DLLearnerConnection.php");
 			$sc=new DLLearnerConnection($id,$ksID);
-			$triples=$sc->getTriples($subject);
+			$triples=$sc->getTriples($uri);
 			
 			//BUILD ARTICLE			
 			// goal: display the data in a nice (DBpedia specific way), maybe similar to
@@ -454,6 +453,20 @@ function stopServerCall()
 ///////////////////////
 // Helper Functions. //
 ///////////////////////
+
+function subjectToURI($subject)
+{
+	//delete whitespaces at beginning and end
+	$subject=trim($subject);
+	//get first letters big
+	$subject=ucwords($subject);
+	//replace spaces with _
+	$subject=str_replace(' ','_',$subject);
+	//add the uri
+	$subject="http://dbpedia.org/resource/".$subject;
+	
+	return $subject;
+}
 
 function getTagCloud($tags,$label)
 {

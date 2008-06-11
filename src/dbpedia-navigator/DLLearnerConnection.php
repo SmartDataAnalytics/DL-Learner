@@ -119,10 +119,10 @@ class DLLearnerConnection
 		return $this->client->getConceptLength($concept);
 	}
 			
-	function getTriples($label)
+	function getTriples($uri)
 	{
 		$query="SELECT ?pred ?obj ".
-			   "WHERE {{<http://dbpedia.org/resource/".str_replace(' ','_',$label)."> ?pred ?obj}UNION{<http://dbpedia.org/resource/".str_replace(' ','_',$label)."> <http://dbpedia.org/property/redirect> ?Conc.?Conc ?pred ?obj}}";
+			   "WHERE {{<".$uri."> ?pred ?obj}UNION{<".$uri."> <http://dbpedia.org/property/redirect> ?Conc.?Conc ?pred ?obj}}";
 		$result=json_decode($this->getSparqlResultThreaded($query),true);
 		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result. The Label-Search is started."); 
 		$ret=array();
