@@ -27,6 +27,7 @@
   */
 
 require_once '../dbpedia-navigator/xajax/xajax_core/xajax.inc.php';
+require_once 'DLLearnerConnection.php';
 
 $xajax = new xajax();
 
@@ -39,9 +40,33 @@ $xajax->processRequest();
 // search for songs matching the search string
 function doSearch($searchString)
 {
-	$newContent = 'searching for '.$searchString.' ... not implemented';
 	// ToDo: execute a SPARQL query (find labels matching search string) by contacting DL-Learner web service
+	$query = '
+	PREFIX geo: <http://www.geonames.org/ontology#>
+	PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+	SELECT DISTINCT ?an ?lat ?long ?name ?population
+	WHERE { 
+		?a a mo:MusicArtist; 
+		foaf:based_near ?place; 
+		foaf:name ?an;
+		foaf:made ?alb.
+		?alb tags:taggedWithTag <http://dbtune.org/jamendo/tag/punk>.
+		?place 
+			geo:name ?name; 
+		geo:population ?population; 
+		wgs:lat ?lat; 
+		wgs:long ?long 
+	}
+	ORDER BY ?population';
 
+	try {
+		$connection = new DLLearnerConnection();
+		$result = $connection->sparqlQuery($query);
+		$newContent = 'searching for '.$searchString.' ... not implemented '.$result;
+	} catch (Exception $e) {
+    	$newContent = '<b>Search aborted: '.$e->getMessage().'</b>';
+	}
+	
 	$objResponse = new xajaxResponse();
 	$objResponse->assign("searchElement","innerHTML", $newContent);
 	return $objResponse;
