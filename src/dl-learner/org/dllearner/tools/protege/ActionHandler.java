@@ -37,7 +37,6 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 	/**
 	 * 
 	 */
-	private SuggestClassPanel sugPanel;
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 	/**
 	 * 
@@ -46,10 +45,9 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 	 * @param view
 	 * @param i
 	 */
-	public ActionHandler(ActionHandler a,DLLearnerModel m,OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view ,String i,SuggestClassPanel sugPanel)
+	public ActionHandler(ActionHandler a,DLLearnerModel m,OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view ,String i)
 	{
 		this.view = view; 
-		this.sugPanel = sugPanel;
 		this.id=i;
 		this.model = m;
 		toggled = false;
@@ -67,16 +65,22 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			{
 				model.unsetListModel();
 			}
-			if(view.getOptionPanel().getComponentCount()<=2)
+			if(view.getPosAndNegSelectPanel().getPosAndNegSelectPanel().getComponentCount()<=0)
 			{
 				view.renderErrorMessage("Could not start learning. No Examples where available");
 			}
 			else{
-			view.renderErrorMessage("Learning started");
+			model.setKnowledgeSource();
+			model.setReasoner();
+			model.setPositiveAndNegativeExamples();
+			model.setLearningProblem();
+			model.setLearningAlgorithm();
 			this.dlLearner = new Thread(model);
+			dlLearner.start();
 			view.getRunButton().setEnabled(false);
 			view.getCancelButton().setEnabled(true);
-			dlLearner.start();
+			view.renderErrorMessage("Learning started");
+			view.getPosAndNegSelectPanel().unsetCheckBoxes();
 			}
 		}
 		
@@ -93,7 +97,7 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 		
 		if(z.getActionCommand().equals("ADD"))
 		{
-			model.changeDLLearnerDescriptionsToOWLDescriptions((Description)sugPanel.getSuggestList().getSelectedValue());
+			model.changeDLLearnerDescriptionsToOWLDescriptions((Description)view.getSuggestClassPanel().getSuggestList().getSelectedValue());
 			String message ="Concept added";
 			view.renderErrorMessage(message);
 		}
@@ -103,13 +107,13 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			if(z.getSource().toString().contains("PosHelpButton"))
 			{
 				String hilfe="A Instance that follows from the classdescription.\nPer Default all that belongs to the class.";
-				view.renderHelpMessage(hilfe);
+				view.getPosAndNegSelectPanel().renderHelpMessage(hilfe);
 			}
 			
 			if(z.getSource().toString().contains("NegHelpButton"))
 			{
 				String hilfe="A Instance tht doesn't follow from the classdescription.";
-				view.renderHelpMessage(hilfe);
+				view.getPosAndNegSelectPanel().renderHelpMessage(hilfe);
 			}
 			
 			
@@ -142,7 +146,44 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 	 */
 	public void itemStateChanged(ItemEvent i)
 	{
-		//System.out.println(i.getItem());
+		if(i.getItem().toString().contains("Positive"))
+		{
+			for(int j = 0;j < model.getPosVector().size(); j++)
+			{
+				if(i.getItem().toString().contains(model.getPosVector().get(j).getText().toString()))
+				{
+					if(!model.getPosVector().get(j).isSelected())
+					{
+						model.getPosVector().get(j).setSelected(true);
+						break;
+					}
+					if(model.getPosVector().get(j).isSelected())
+					{
+						model.getPosVector().get(j).setSelected(false);
+						break;
+					}
+				}
+			}
+		}
+		if(i.getItem().toString().contains("Negative"))
+		{
+			for(int j = 0;j < model.getNegVector().size(); j++)
+			{
+				if(i.getItem().toString().contains(model.getNegVector().get(j).getText().toString()))
+				{
+					if(!model.getNegVector().get(j).isSelected())
+					{
+						model.getNegVector().get(j).setSelected(true);
+						break;
+					}
+					if(model.getNegVector().get(j).isSelected())
+					{
+						model.getNegVector().get(j).setSelected(false);
+						break;
+					}
+				}
+			}
+		}
 	}
 	/**
 	 * 
@@ -186,10 +227,10 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 	 * 
 	 * @param t
 	 */
-	public void textValueChanged(TextEvent t)
+	/*public void textValueChanged(TextEvent t)
 	{
 
-	}
+	}*/
 	/**
 	 * 
 	 */
