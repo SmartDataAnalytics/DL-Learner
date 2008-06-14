@@ -37,6 +37,7 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 	/**
 	 * 
 	 */
+	private SuggestClassPanel sugPanel;
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 	/**
 	 * 
@@ -45,9 +46,10 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 	 * @param view
 	 * @param i
 	 */
-	public ActionHandler(ActionHandler a,DLLearnerModel m,OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view ,String i)
+	public ActionHandler(ActionHandler a,DLLearnerModel m,OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view ,String i,SuggestClassPanel sugPanel)
 	{
 		this.view = view; 
+		this.sugPanel = sugPanel;
 		this.id=i;
 		this.model = m;
 		toggled = false;
@@ -91,7 +93,7 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 		
 		if(z.getActionCommand().equals("ADD"))
 		{
-			model.changeDLLearnerDescriptionsToOWLDescriptions((Description)view.getSuggestionList().getSelectedValue());
+			model.changeDLLearnerDescriptionsToOWLDescriptions((Description)sugPanel.getSuggestList().getSelectedValue());
 			String message ="Concept added";
 			view.renderErrorMessage(message);
 		}
