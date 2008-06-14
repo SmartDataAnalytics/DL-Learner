@@ -262,7 +262,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
   	  /**
   	   * 
   	   */
-      private JLabel pos;
+     // private JLabel pos;
   	  /**
   	   * 
   	   */
@@ -290,20 +290,20 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  /**
 	   * 
 	   */
-      private JPanel option;
+      //private JPanel option;
 
 	  /**
 	   * 
 	   */
-      private JLabel neg;
+     // private JLabel neg;
 	  /**
 	   * 
 	   */
-      private JDialog hilfe;
+      //private JDialog hilfe;
 	  /**
 	   * 
 	   */
-      private JTextArea help;
+      //private JTextArea help;
 	  /**
 	   * 
 	   */
@@ -311,15 +311,14 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  /**
 	   * 
 	   */
-      private JScrollPane scrollPane;
+      //private JScrollPane scrollPane;
 	  /**
 	   * 
 	   */
       private final Color Color_RED = Color.red;
 	  /**
 	   * 
-	   */
-      private final Color COLOR_BLACK = Color.black;
+	   */;
 	  /**
 	   * 
 	   */
@@ -327,19 +326,19 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  /**
 	   * 
 	   */
-      private JPanel posLabelPanel;
+     // private JPanel posLabelPanel;
 	  /**
 	   * 
 	   */
-      private JPanel negLabelPanel;
+      //private JPanel negLabelPanel;
 	  /**
 	   * 
 	   */
-      private JButton helpForPosExamples;
+      //private JButton helpForPosExamples;
 	  /**
 	   * 
 	   */
-      private JButton helpForNegExamples;
+      //private JButton helpForNegExamples;
 	  /**
 	   * 
 	   */
@@ -359,12 +358,14 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  /**
 	   * 
 	   */
-	  private DefaultListModel descriptions;
+	  //private DefaultListModel descriptions;
 	  /**
 	   * 
 	   * @return
 	   */
 	  private SuggestClassPanel sugPanel;
+	  private PosAndNegSelectPanel posPanel;
+	  private ImageIcon icon;
 	  public DLLearnerViewPanel getDLLearnerViewPanel()
 	  {
 		  return panel;
@@ -376,59 +377,54 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   */
 	  public DLLearnerView(OWLFrame<OWLClass> aktuell,String label){
 		  	editor = editorKit;
+		  	icon = new ImageIcon("pfeil.gif");
+		  	icon.getImage();
 		  	model = new DLLearnerModel(editorKit,aktuell, label,this);
-		    model.loadOntology(getUri());
-		    posLabelPanel = new JPanel();
-		    negLabelPanel = new JPanel();
+		    //model.loadOntology(getUri());
 		  	panel = new DLLearnerViewPanel(editor);
 		  	sugPanel = new SuggestClassPanel();
-		  	action = new ActionHandler(this.action, model,this,label,sugPanel);
-	    	helpForPosExamples = new JButton("?");
-	    	helpForPosExamples.setSize(10, 10);
+		  	action = new ActionHandler(this.action, model,this,label);
 	    	adv = new JLabel("Advanced");
-	    	helpForNegExamples = new JButton("?");
-	    	helpForNegExamples.setSize(10, 10);
-	    	advanced = new JToggleButton();
+	    	advanced = new JToggleButton(icon);
 	    	run = new JButton("Suggest "+label);
 	    	cancel = new JButton("Cancel");
 	    	accept = new JButton("ADD");
 	    	sugPanel.addSuggestPanelMouseListener(action);
-	    	option = new JPanel(new GridLayout(0,2));
-			scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	    	errorMessage = new JLabel();
 	    	learner = new JPanel();
 	    	advanced.setSize(20,20);
 	    	learner.setLayout(null);
 	    	learner.setPreferredSize(new Dimension(600, 520));
-	    	pos = new JLabel("Positive Examples");
-	    	neg = new JLabel("Negative Examples");
 	    	accept.setPreferredSize(new Dimension(290,50));
-	    	posLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
-	    	negLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
-	    	posLabelPanel.add(pos);
 	    	advanced.setName("Advanced");
-	    	helpForPosExamples.setName("PosHelpButton");
-	    	posLabelPanel.add(helpForPosExamples);
-	    	negLabelPanel.add(neg);
-	    	helpForNegExamples.setName("NegHelpButton");
-	    	negLabelPanel.add(helpForNegExamples);
+	    	posPanel = new PosAndNegSelectPanel(model,action);
 	    	addAcceptButtonListener(this.action);
 	    	addRunButtonListener(this.action);
 	    	addCancelButtonListener(this.action);
-	    	addHelpButtonListener(this.action);
 	    	addAdvancedButtonListener(this.action);
+
 		    
     }
+	  
+	  public SuggestClassPanel getSuggestClassPanel()
+	  {
+		  return sugPanel;
+	  }
+	  
+	  public PosAndNegSelectPanel getPosAndNegSelectPanel()
+	  {
+		  return posPanel;
+	  }
 	  /**
 	   * 
 	   */
 	  public void makeView()
 	  {
-		  	model.clearVector();
+	    	model.clearVector();
 		  	model.unsetListModel();
 		  	model.initReasoner();
 		  	model.setPosVector();
-		  	setJCheckBoxen();
+		  	posPanel.setJCheckBoxen();
 	      	cancel.setEnabled(false);
 	    	accept.setEnabled(false);
 	    	action.resetToggled();
@@ -440,8 +436,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	run.setBounds(10,0,200,30);
 	    	advanced.setBounds(10,200,20,20);
 	    	sugPanel.setVisible(true);
-	    	scrollPane.setViewportView(option);
-			scrollPane.setBounds(10, 230, 490, 250);
+	    	posPanel.setVisible(false);
+			posPanel.setBounds(10, 230, 490, 250);
 	        cancel.setBounds(260,0,200,30);
 	        accept.setBounds(510,40,80,110);
 	        errorMessage.setBounds(10,160,590,20);
@@ -452,10 +448,14 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	learner.add(sugPanel);
 	    	learner.add(accept);
 	    	learner.add(errorMessage);
-	    	learner.add(scrollPane);
-	    	scrollPane.setVisible(false);
+	    	learner.add(posPanel);
+	    	posPanel.addHelpButtonListener(action);
 	    	add(learner);
-	    	addListener();
+	  }
+	  
+	  public void setArrowForToggleButton()
+	  {
+		  
 	  }
 	  /**
 	   * 
@@ -471,7 +471,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   */
 	  public void setExamplePanelVisible(boolean visible)
 	  {
-		  scrollPane.setVisible(visible);
+		  posPanel.setVisible(visible);
 	  }
 	  /**
 	   * 
@@ -479,7 +479,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   */
 	  public JPanel getOptionPanel()
 	  {
-		  return option;
+		  return null;
 	  }
 	  /**
 	   * 
@@ -489,37 +489,16 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  {
 		   return accept;
 	  }
-	  /**
-	   * 
-	   * @param helfen
-	   */
-	  public void renderHelpMessage(String helfen)
-	  {
-		  JScrollPane scrollHelp = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		  
-		  help = new JTextArea();
-		  hilfe = new JDialog();
-		  help.setEditable(false);
-		  hilfe.setName("Hilfe");
-		  hilfe.setSize(300,100);
-		  hilfe.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		  hilfe.setVisible(true);
-		  hilfe.setResizable(false);
-		  help.setForeground(COLOR_BLACK);
-		  help.setText("Help: "+helfen);
-		  scrollHelp.setViewportView(help);
-		  scrollHelp.setBounds(0, 0, 300, 100);
-		  hilfe.add(scrollHelp);
-	  }
+	
 	  /**
 	   * 
 	   * @return
 	   */
-	  public URI getUri()
+	  /*public URI getUri()
 	    {
 			URI uri = editor.getOWLModelManager().getOntologyPhysicalURI(editor.getOWLModelManager().getActiveOntology());
 	    	return uri;
-	    }
+	    }*/
 	  /**
 	   * 
 	   * @return
@@ -541,26 +520,18 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   * 
 	   */
 	   private void setJCheckBoxen()
-	   {
-		   option.add(posLabelPanel);
-		   option.add(negLabelPanel);
-		   for(int j=0; j<model.getPosVector().size();j++)
-	    	{
-	    		option.add(model.getPositivJCheckBox(j));
-	    		option.add(model.getNegativJCheckBox(j));
-	    	}
-	    	
+	   {    	
 	   }
 	   /**
 	    * 
 	    */
 	   public void unsetEverything()
 	   {
-		 option.removeAll();
 		 run.setEnabled(true);
 		 model.unsetNewConcepts();
 		 action.destroyDLLearnerThread();
 		 errorMessage.setText("");
+		 posPanel.unsetPosAndNegPanel();
 		 learner.removeAll();
 	   }
 	   /**
@@ -572,41 +543,14 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 		   errorMessage.setForeground(Color_RED);
 		   errorMessage.setText(s);
 	   }
+	
 	   /**
 	    * 
 	    */
-	   private void addListener()
+	   public void setDescriptionList(DefaultListModel model) 
 	   {
-		   for(int i=0;i<model.getPosVector().size();i++)
-		   {
-			   model.getPositivJCheckBox(i).addItemListener(action);
-			   model.getNegativJCheckBox(i).addItemListener(action);
-		   }
- 
+			//this.descriptions = model;
 	   }
-	   /**
-	    * 
-	    * @param m
-	    * @param c
-	    */
-	   public void update(Observable m,Object c)
-		  {
-			  if( model != m) return;
-			   //draw(); 
-		  }
-	   /**
-	    * 
-	    */
-	   protected void draw() 
-	   {
-			run.setEnabled(true);
-			cancel.setEnabled(false);
-			descriptions = model.getSuggestList();
-			sugPanel.setSuggestList(descriptions);
-			model.unsetJCheckBoxen();
-			option.removeAll();
-			setJCheckBoxen();
-		}
 	   
 	   /**
 	    * 
@@ -668,8 +612,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 		 */
 		public void addHelpButtonListener(ActionListener a)
 		{
-			helpForPosExamples.addActionListener(a);
-			helpForNegExamples.addActionListener(a);
+			//helpForPosExamples.addActionListener(a);
+			//helpForNegExamples.addActionListener(a);
 		}
 		/**
 		 * 

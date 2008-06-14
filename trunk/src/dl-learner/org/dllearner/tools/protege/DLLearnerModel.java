@@ -244,11 +244,13 @@ public class DLLearnerModel extends Observable implements Runnable{
 		{
 			if(positiv.get(i).isSelected())
 			{
+				System.out.println("blub");
 				positiveExamples.add(positiv.get(i).getText());
 			}
 			
 			if(negativ.get(i).isSelected())
 			{
+				System.out.println("bla");
 				negativeExamples.add(negativ.get(i).getText());
 			}
 		}
@@ -355,17 +357,15 @@ public class DLLearnerModel extends Observable implements Runnable{
 	public void run()
 	{	
 		error = "Learning succesful";
-		setKnowledgeSource();
-		setReasoner();
-		setPositiveAndNegativeExamples();
-		setLearningProblem();
-		setLearningAlgorithm();
 		// start the algorithm and print the best concept found
 		la.start();
 		description = new Description[la.getBestSolutions(anzahl).size()];
 		addToListModel();
 		view.renderErrorMessage(error);
-		view.draw();
+		view.getRunButton().setEnabled(true);
+		//view.getPosAndNegSelectPanel().unsetCheckBoxes();
+		view.getCancelButton().setEnabled(false);
+		view.getSuggestClassPanel().setSuggestList(suggestModel);
 	}
 	
 	/**
@@ -408,7 +408,7 @@ public class DLLearnerModel extends Observable implements Runnable{
 	 * This method gets an uri for an ontology and loads it.
 	 * @param uri Uri for the Ontology
 	 */
-	public void loadOntology(URI uri)
+	/*public void loadOntology(URI uri)
 	{
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		try{
@@ -418,7 +418,7 @@ public class DLLearnerModel extends Observable implements Runnable{
 		{
 			System.out.println("Can't create Ontology: "+ e);
 		}
-	}
+	}*/
 	
 	/**
 	 * This method sets the check boxes for the positive check boxes checked 
@@ -432,14 +432,20 @@ public class DLLearnerModel extends Observable implements Runnable{
 			String ind = j.next().toString();
 			if(setPositivExamplesChecked(ind))
 			{
-				positiv.add(new JCheckBox(ind.toString(),true));
+				JCheckBox box = new JCheckBox(ind.toString(),true);
+				box.setName("Positive");
+				positiv.add(box);
 				
 			}
 			else
 			{
-				positiv.add(new JCheckBox(ind.toString(),false));
+				JCheckBox box = new JCheckBox(ind.toString(),false);
+				box.setName("Positive");
+				positiv.add(box);
 			}
-			negativ.add(new JCheckBox(ind.toString()));
+			JCheckBox box = new JCheckBox(ind.toString(),false);
+			box.setName("Negative");
+			negativ.add(box);
 		}
 	}
 
@@ -518,7 +524,7 @@ public class DLLearnerModel extends Observable implements Runnable{
 	 * This method returns the physical uri of the ontology which is currently loaded in protege.
 	 * @return pysical uri of the loaded ontology 
 	 */
-	public String getUri()
+	/*public String getUri()
     {
     	char[] test = editor.getOWLModelManager().getOntologyPhysicalURI(editor.getOWLModelManager().getActiveOntology()).toString().toCharArray();
     	String uri=""; 
@@ -527,7 +533,7 @@ public class DLLearnerModel extends Observable implements Runnable{
     		uri=uri+test[i];
     	}
     	return uri;
-    }
+    }*/
 	
 	/**
 	 * This method gets an array of concepts from the DL-Learner and stores it

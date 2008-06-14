@@ -3,9 +3,7 @@ package org.dllearner.tools.protege;
 import java.awt.Dimension;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 
-import org.dllearner.core.owl.Description;
 
 public class SuggestClassPanel extends JPanel {
 	
@@ -26,7 +24,7 @@ public class SuggestClassPanel extends JPanel {
 		suggestPanel = new JPanel();
 		descriptions.setVisible(true);
 		suggestPanel.add(descriptions);
-		suggestScroll.setPreferredSize(new Dimension(490,110));
+		suggestScroll.setPreferredSize(new Dimension(490,108));
 		suggestScroll.setViewportView(descriptions);
 		add(suggestScroll);
 	}
@@ -34,12 +32,6 @@ public class SuggestClassPanel extends JPanel {
 	
 	public SuggestClassPanel updateSuggestClassList()
 	{
-		//JPanel suggestPanel1 = new JPanel();
-		
-		//suggestScroll.setViewportView(suggestPanel1);
-		//descriptions = new JList(desc);
-		//descriptions.setVisible(true);
-		//suggestScroll.add(descriptions);
 		add(suggestScroll);
 		return this;
 		
