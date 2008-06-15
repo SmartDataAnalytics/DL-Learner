@@ -1,15 +1,13 @@
 package org.dllearner.tools.protege;
 
-
-
-//import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.TextEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 import org.dllearner.core.owl.Description;
 /**
@@ -17,33 +15,34 @@ import org.dllearner.core.owl.Description;
  * @author Heero Yuy
  *
  */
-public class ActionHandler implements ActionListener, ItemListener, MouseListener{
+public class ActionHandler implements ActionListener, ItemListener, MouseListener, ListSelectionListener{
 	/**
-	 * 
+	 * This is the DLLearnerModel.
 	 */
 	private DLLearnerModel model;
 	/**
-	 * 
+	 * This is the id that checks if the equivalent class or subclass button is 
+	 * pressed in protege 
 	 */
 	private String id;
 	/**
-	 * 
+	 * this is a boolean that checked if the advanced button was pressed or not.
 	 */
 	private boolean toggled;
 	/**
-	 * 
+	 * This is the Tread of the DL-Learner
 	 */
 	private Thread dlLearner;
 	/**
-	 * 
+	 * This is the view of the DL-Learner tab.
 	 */
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 	/**
-	 * 
-	 * @param a
-	 * @param m
-	 * @param view
-	 * @param i
+	 * This is the constructor for the action handler
+	 * @param a ActionHandler
+	 * @param m DLLearnerModel
+	 * @param view DLlearner tab
+	 * @param i id if it is a subclass oran equivalent class
 	 */
 	public ActionHandler(ActionHandler a,DLLearnerModel m,OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view ,String i)
 	{
@@ -65,7 +64,7 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			{
 				model.unsetListModel();
 			}
-			if(view.getPosAndNegSelectPanel().getPosAndNegSelectPanel().getComponentCount()<=0)
+			if(view.getPosAndNegSelectPanel().getPosAndNegSelectPanel().getComponentCount()<=2)
 			{
 				view.renderErrorMessage("Could not start learning. No Examples where available");
 			}
@@ -184,6 +183,11 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 				}
 			}
 		}
+	}
+	
+	public void valueChanged(ListSelectionEvent e)
+	{
+		
 	}
 	/**
 	 * 

@@ -11,8 +11,6 @@ import java.util.SortedSet;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 
-import java.net.URI;
-
 import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.algorithms.SimpleSuggestionLearningAlgorithm;
 
@@ -39,18 +37,20 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.frame.OWLFrame;
 
+import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyStorageException;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLOntologyFormat;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
-
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLDescription;
-
+import org.semanticweb.owl.model.UnknownOWLOntologyException;
 
 
 
@@ -176,7 +176,10 @@ public class DLLearnerModel extends Observable implements Runnable{
 	 * 
 	 */
 	private String error;
-	
+	/**
+	 * 
+	 */
+	private OWLAxiom axiomOWLAPI;
 
 	/**
 	 * This is the constructor for DL-Learner model
@@ -244,13 +247,11 @@ public class DLLearnerModel extends Observable implements Runnable{
 		{
 			if(positiv.get(i).isSelected())
 			{
-				System.out.println("blub");
 				positiveExamples.add(positiv.get(i).getText());
 			}
 			
 			if(negativ.get(i).isSelected())
 			{
-				System.out.println("bla");
 				negativeExamples.add(negativ.get(i).getText());
 			}
 		}
@@ -281,14 +282,6 @@ public class DLLearnerModel extends Observable implements Runnable{
 	public void setKnowledgeSource()
 	{
 		this.source = new OWLAPIOntology(editor.getOWLModelManager().getActiveOntology());
-		/*String uri=getUri();
-		cm.applyConfigEntry(source, "url", new File(uri).toURI().toString());
-		try{
-				source.init();
-			}
-				catch(ComponentInitException e){
-					e.printStackTrace();
-			}*/
 	}
 	
 	/**
@@ -405,22 +398,6 @@ public class DLLearnerModel extends Observable implements Runnable{
 	}
 	
 	/**
-	 * This method gets an uri for an ontology and loads it.
-	 * @param uri Uri for the Ontology
-	 */
-	/*public void loadOntology(URI uri)
-	{
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		try{
-		ontology = manager.loadOntology(uri);
-		}
-		catch(OWLOntologyCreationException e)
-		{
-			System.out.println("Can't create Ontology: "+ e);
-		}
-	}*/
-	
-	/**
 	 * This method sets the check boxes for the positive check boxes checked 
 	 * if the individuals matches the concept that is chosen in protege.
 	 */
@@ -495,17 +472,6 @@ public class DLLearnerModel extends Observable implements Runnable{
 			{
 				isChecked = true;
 			}
-			/*for(Iterator<Individual> j = individual.iterator(); j.hasNext();)
-			{
-					String indi1 = j.next().getName();
-					System.out.println("Individuals: "+ indi1);
-					if(indi1.toString().equals(indi.toString()))
-					{
-						System.out.println(indi);
-						isChecked = true;
-						break;
-					}
-			}*/
     	return isChecked;
 	
 	}
@@ -519,21 +485,6 @@ public class DLLearnerModel extends Observable implements Runnable{
 		positiv.removeAllElements();
 		negativ.removeAllElements();
 	}
-	
-	/**
-	 * This method returns the physical uri of the ontology which is currently loaded in protege.
-	 * @return pysical uri of the loaded ontology 
-	 */
-	/*public String getUri()
-    {
-    	char[] test = editor.getOWLModelManager().getOntologyPhysicalURI(editor.getOWLModelManager().getActiveOntology()).toString().toCharArray();
-    	String uri=""; 
-    	for(int i =6; i<test.length;i++)
-    	{
-    		uri=uri+test[i];
-    	}
-    	return uri;
-    }*/
 	
 	/**
 	 * This method gets an array of concepts from the DL-Learner and stores it
@@ -714,29 +665,18 @@ public class DLLearnerModel extends Observable implements Runnable{
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		System.out.println("Manager: "+manager);
-		OWLAxiom axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
-		OWLOntologyFormat format = new OWLOntologyFormat();
-		format = manager.getOntologyFormat(ontology);
+
+		axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
+
 		OWLOntology ontology = editor.getOWLModelManager().getActiveOntology();
-		System.out.println("Format: "+format);
 		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
-		/*try {
+		try {
 			manager.applyChange(axiom);
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 		
-		try {
-			manager.saveOntology(ontology,new RDFXMLOntologyFormat(),editor.getOWLModelManager().getActiveOntology().getURI());
-		} catch (UnknownOWLOntologyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OWLOntologyStorageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 		}
 	
 	/**
@@ -749,11 +689,13 @@ public class DLLearnerModel extends Observable implements Runnable{
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * This method gets the status if the DL-Learner has already learned.
+	 *  It is only for reseting the suggest panel.
+	 * @return boolean if the learner has already learned
 	 */
 	public boolean getAlreadyLearned()
 	{
 		return alreadyLearned;
 	}	
-	}
+	
+}
