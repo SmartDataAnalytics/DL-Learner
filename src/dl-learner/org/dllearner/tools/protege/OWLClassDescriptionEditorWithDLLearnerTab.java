@@ -23,7 +23,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URI;
 import java.util.*;
 import java.util.List;
 
@@ -54,6 +53,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
     private JTabbedPane tabbedPane;
     
     private DLLearnerView dllearner;
+    private ActionHandler action;
     
     private OWLClassSelectorPanel classSelectorPanel;
 
@@ -92,8 +92,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
         editor = new ExpressionEditor<OWLDescription>(editorKit, checker);
         dllearner = new DLLearnerView(frame,label);
         editor.setExpressionObject(description);
+        action = new ActionHandler(this.action,null,dllearner,null);
         editor.getDocument().addDocumentListener(editorListener);
-
         tabbedPane = new JTabbedPane();
         tabbedPane.setFocusable(false);
         if(label.equals("Equivalent classes"))
@@ -122,7 +122,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
             tabbedPane.add(RESTRICTION_CREATOR_LABEL, restrictionCreatorPanel);
             restrictionCreatorPanel.classSelectorPanel.addSelectionListener(changeListener);
             restrictionCreatorPanel.objectPropertySelectorPanel.addSelectionListener(changeListener);
-            //dllearner.DLLearnerViewPanel.addChangeListener(changeListener);
             tabbedPane.addChangeListener(changeListener);
             
         }
@@ -151,10 +150,10 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
                     restrictionCreatorPanel.objectPropertySelectorPanel.getSelectedOWLObjectProperty() != null;
         }
         else if(selectedTabTitle.equals(SUGGEST_EQUIVALENT_CLASS_LABEL)){
-        	validated = dllearner.getSollution()!= null;
+        	validated = true;
         }
         else if(selectedTabTitle.equals(SUGGEST_SUBCLASS_LABEL)){
-        	validated = dllearner.getSollution()!= null;
+        	validated = true;
         }
         return validated;
     }
@@ -180,10 +179,10 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
     	System.out.println("Und jetzt bin ich hier :-)");
     	dllearner.unsetEverything();
     	dllearner.makeView();
+    	handleVerifyEditorContents();
         initialDescription = null;
         editor.setText("");
     }
-
 
     @Override
 	public Set<OWLDescription> getEditedObjects() {
@@ -195,6 +194,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
         }
         else if(tabbedPane.getSelectedComponent() == dllearner){
         	System.out.println("die loesungen:"+dllearner.getSollutions());
+        	
         	return dllearner.getSollutions(); 
         }
         return super.getEditedObjects();
@@ -262,10 +262,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
   	  /**
   	   * 
   	   */
-     // private JLabel pos;
-  	  /**
-  	   * 
-  	   */
       private final static long serialVersionUID = 624829578325729385L;
   	  /**
   	   * 
@@ -290,55 +286,15 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  /**
 	   * 
 	   */
-      //private JPanel option;
-
-	  /**
-	   * 
-	   */
-     // private JLabel neg;
-	  /**
-	   * 
-	   */
-      //private JDialog hilfe;
-	  /**
-	   * 
-	   */
-      //private JTextArea help;
-	  /**
-	   * 
-	   */
       private JLabel adv;
-	  /**
-	   * 
-	   */
-      //private JScrollPane scrollPane;
 	  /**
 	   * 
 	   */
       private final Color Color_RED = Color.red;
 	  /**
 	   * 
-	   */;
-	  /**
-	   * 
 	   */
       private JButton cancel;
-	  /**
-	   * 
-	   */
-     // private JPanel posLabelPanel;
-	  /**
-	   * 
-	   */
-      //private JPanel negLabelPanel;
-	  /**
-	   * 
-	   */
-      //private JButton helpForPosExamples;
-	  /**
-	   * 
-	   */
-      //private JButton helpForNegExamples;
 	  /**
 	   * 
 	   */
@@ -358,14 +314,14 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  /**
 	   * 
 	   */
-	  //private DefaultListModel descriptions;
+	  
+	  private SuggestClassPanel sugPanel;
+	  private PosAndNegSelectPanel posPanel;
+	  private ImageIcon icon;
 	  /**
 	   * 
 	   * @return
 	   */
-	  private SuggestClassPanel sugPanel;
-	  private PosAndNegSelectPanel posPanel;
-	  private ImageIcon icon;
 	  public DLLearnerViewPanel getDLLearnerViewPanel()
 	  {
 		  return panel;
@@ -377,15 +333,17 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   */
 	  public DLLearnerView(OWLFrame<OWLClass> aktuell,String label){
 		  	editor = editorKit;
-		  	icon = new ImageIcon("pfeil.gif");
-		  	icon.getImage();
+		  	classSelectorPanel = new OWLClassSelectorPanel(editorKit);
+		  	classSelectorPanel.firePropertyChange("test", false, true);
+		  	icon = new ImageIcon(OWLClassDescriptionEditorWithDLLearnerTab.class.getResource("/bilder/org/dllearner/tools/protege/pfeil.gif"));
 		  	model = new DLLearnerModel(editorKit,aktuell, label,this);
-		    //model.loadOntology(getUri());
 		  	panel = new DLLearnerViewPanel(editor);
 		  	sugPanel = new SuggestClassPanel();
 		  	action = new ActionHandler(this.action, model,this,label);
 	    	adv = new JLabel("Advanced");
 	    	advanced = new JToggleButton(icon);
+	    	advanced.setIcon(icon);
+	    	advanced.setVisible(true);
 	    	run = new JButton("Suggest "+label);
 	    	cancel = new JButton("Cancel");
 	    	accept = new JButton("ADD");
@@ -494,17 +452,9 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   * 
 	   * @return
 	   */
-	  /*public URI getUri()
-	    {
-			URI uri = editor.getOWLModelManager().getOntologyPhysicalURI(editor.getOWLModelManager().getActiveOntology());
-	    	return uri;
-	    }*/
-	  /**
-	   * 
-	   * @return
-	   */
 	  public Set<OWLDescription> getSollutions()
 	  {
+		  
 		  return model.getNewOWLDescription();
 	  }
 	  /**
@@ -516,12 +466,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 		  System.out.println(model.getSolution());
 		  return model.getSolution();
 	  }
-	  /**
-	   * 
-	   */
-	   private void setJCheckBoxen()
-	   {    	
-	   }
+
 	   /**
 	    * 
 	    */
@@ -542,14 +487,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   {
 		   errorMessage.setForeground(Color_RED);
 		   errorMessage.setText(s);
-	   }
-	
-	   /**
-	    * 
-	    */
-	   public void setDescriptionList(DefaultListModel model) 
-	   {
-			//this.descriptions = model;
 	   }
 	   
 	   /**
@@ -574,14 +511,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   public void dispose() {
      
        }
-	   /**
-	    * 
-	    * @param a
-	    */
-	   public void addSuggestListToChangeListener(ActionListener a)
-	   {
-		   
-	   }
+
 	   /**
 	    * 
 	    * @param a
@@ -605,15 +535,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 		public void addAcceptButtonListener(ActionListener a)
 		{
 			accept.addActionListener(a);
-		}
-		/**
-		 * 
-		 * @param a
-		 */
-		public void addHelpButtonListener(ActionListener a)
-		{
-			//helpForPosExamples.addActionListener(a);
-			//helpForNegExamples.addActionListener(a);
 		}
 		/**
 		 * 
