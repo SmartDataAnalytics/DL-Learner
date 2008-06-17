@@ -176,6 +176,7 @@ class DLLearnerConnection
 	function getSubjects($label,$checkedInstances)
 	{
 		$offset=1;
+		$steps=100;
 		$ret=array();
 		$labels=preg_split("[\040]",$label,-1,PREG_SPLIT_NO_EMPTY);
 		//TODO if instances are checked the offset no longer works
@@ -191,7 +192,7 @@ class DLLearnerConnection
 					$i=1;
 				}
 				$query.="'@en.?subject a ?cat.?cat <http://www.w3.org/2000/01/rdf-schema#label> ?label}\n".
-					   "LIMIT 100 OFFSET ".$offset."}}";
+					   "LIMIT ".$steps." OFFSET ".$offset."}}";
 			}else {
 				$query="SELECT DISTINCT ?subject ?cat ?label\n".
 					   "WHERE { ?subject <http://www.w3.org/2000/01/rdf-schema#label> ?object. ?object bif:contains '";
@@ -202,7 +203,7 @@ class DLLearnerConnection
 					$i=1;
 				}
 				$query.="'@en.?subject a ?cat.?cat <http://www.w3.org/2000/01/rdf-schema#label> ?label}".
-					   "LIMIT 100 OFFSET ".$offset;			
+					   "LIMIT ".$steps." OFFSET ".$offset;			
 			}
 			$result=json_decode($this->getSparqlResultThreaded($query),true);
 			$count=count($result['results']['bindings']);
@@ -217,8 +218,8 @@ class DLLearnerConnection
 				else $tagcloud[$results['cat']['value']]++;
 				
 			}
-			$offset+=100;
-		} while($count==100);
+			$offset+=$steps;
+		} while($count==$steps);
 		//have to do this, because distinct doesn't work, and i use the key to eliminate doubles
 		unset($tagcloud['http://www.w3.org/2004/02/skos/core#Concept']);
 		foreach ($ret as $r)
