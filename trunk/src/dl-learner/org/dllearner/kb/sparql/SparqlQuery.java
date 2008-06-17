@@ -49,7 +49,8 @@ public class SparqlQuery {
 	private String queryString;
 	private QueryEngineHTTP queryExecution;
 	private SparqlEndpoint endpoint;
-	private String json = null;
+	private ResultSet rs;
+	private String json;
 //	private SparqlQueryException sendException=null;
 
 	/**
@@ -69,9 +70,8 @@ public class SparqlQuery {
 	public ResultSet send() {
 		
 		isRunning = true;
-		ResultSet rs=null;
 		logger.trace(queryString);
-
+		
 		String service = endpoint.getURL().toString();
 		logger.trace(endpoint.getURL().toString());
 		// Jena access to SPARQL endpoint
@@ -91,8 +91,7 @@ public class SparqlQuery {
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
 			
 		logger.debug("query SPARQL server, retrieved: "+rs.getResultVars());
-		json=SparqlQuery.getAsJSON(rs);
-			
+				
 		logger.trace(rs.getResultVars().toString());
 //		} catch (Exception e){
 //			sendException=new SparqlQueryException(e.getMessage());
@@ -114,13 +113,6 @@ public class SparqlQuery {
 		return queryString;
 	}
 	
-	/**
-	 * @return String JSON
-	 */
-	public String getResult() {
-		return json;
-	}
-	
 	public boolean isRunning() {
 		return isRunning;
 	}
@@ -133,10 +125,6 @@ public class SparqlQuery {
 //		return sendException;
 //	}
 
-	public boolean hasCompleted() {
-		return (json != null);
-	}		
-	
 	/**
 	 * sends a query and returns XML
 	 * 
@@ -184,4 +172,19 @@ public class SparqlQuery {
 		return ResultSetFactory.fromJSON(bais);
 	}
 
+	public String getJson() {
+		return json;
+	}
+
+	public void setJson(String json) {
+		this.json = json;
+	}
+	
+	public void setRunning(boolean running){
+		this.isRunning=running;
+	}
+	
+	public ResultSet getResultSet(){
+		return rs;
+	}
 }

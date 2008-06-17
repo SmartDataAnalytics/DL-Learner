@@ -521,15 +521,22 @@ public class DLLearnerWS {
 	public String getAsJSON(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException
 	{
 		ClientState state = getState(sessionID);
-		return state.getQuery(queryID).getResult();
+		ResultSet resultSet=null;
+		String json=null;
+		if ((json=state.getQuery(queryID).getJson())!=null) return json;
+		else if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsJSON(resultSet); 
+		else return SparqlQuery.getAsJSON(state.getQuery(queryID).send());
 	}
 	
 	@WebMethod
 	public String getAsXMLString(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
-		ResultSet resultSet=SparqlQuery.JSONtoResultSet(state.getQuery(queryID).getResult());
-		return SparqlQuery.getAsXMLString(resultSet);
+		ResultSet resultSet=null;
+		String json=null;
+		if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsXMLString(resultSet);
+		else if ((json=state.getQuery(queryID).getJson())!=null) return SparqlQuery.getAsXMLString(SparqlQuery.JSONtoResultSet(json));
+		else return SparqlQuery.getAsXMLString(state.getQuery(queryID).send());
 	}
 	
 	@WebMethod
@@ -543,6 +550,7 @@ public class DLLearnerWS {
 			@Override
 			public void run() {
 				if (ks.getUseCache()){
+					state.getQuery(id).setRunning(true);
 					Cache cache=new Cache(ks.getCacheDir());
 					cache.executeSparqlQuery(state.getQuery(id));
 				}
@@ -562,10 +570,9 @@ public class DLLearnerWS {
 		SparqlQuery sparql=ks.sparqlQuery(query);
 		if (ks.getUseCache()){
 			Cache cache=new Cache(ks.getCacheDir());
-			cache.executeSparqlQuery(sparql);
+			return cache.executeSparqlQuery(sparql);
 		}
-		else sparql.send();
-		return sparql.getResult();
+		else return SparqlQuery.getAsJSON(sparql.send());
 	}
 	
 	@WebMethod
