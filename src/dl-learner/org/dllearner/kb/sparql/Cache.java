@@ -34,6 +34,8 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.utilities.JamonMonitorLogger;
 
+import com.hp.hpl.jena.query.ResultSet;
+
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. The queries
  * and their results are written to files. A cache has an associated cache
@@ -249,15 +251,17 @@ public class Cache implements Serializable {
 		JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").stop();
 		
 		if (result != null) {
+			query.setJson(result);
+			query.setRunning(false);
 			logger.trace("got from cache");
 			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
 			//Statistics.increaseCachedQuery();
 			//return result;
 		} else {
 			//SimpleClock sc = new SimpleClock();
-			query.send();
 			//sc.printAndSet("query");
-			String json = query.getResult();
+			ResultSet rs= query.send();
+			String json = SparqlQuery.getAsJSON(rs);
 			if (json!=null){
 				addToCache(query.getQueryString(), json);
 				result=json;
