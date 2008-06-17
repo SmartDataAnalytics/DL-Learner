@@ -37,8 +37,9 @@ public class ConceptPanelDescriptor extends WizardPanelDescriptor implements Lis
     @Override
 	public void aboutToDisplayPanel() {
         setNextButtonAccordingToConceptSelected();
-    }    
-
+    }
+    
+   
 
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected(); 
@@ -56,6 +57,10 @@ public class ConceptPanelDescriptor extends WizardPanelDescriptor implements Lis
     	}
    
     }
+	
+	
+
+	
     
    
 

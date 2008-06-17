@@ -67,7 +67,9 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 	public void mouseClicked(MouseEvent e) {
 		
 		if(e.getClickCount() == 2 && e.getSource() == panel4.getNegFailureList() ){
-			new NegExampleRepairDialog((Individual)panel4.getNegFailureList().getSelectedValue(), getWizard().getDialog(), getWizardModel().getOre() );
+			Individual ind = (Individual)panel4.getNegFailureList().getSelectedValue();
+			new NegExampleRepairDialog(ind, getWizard().getDialog(), getWizardModel().getOre());
+//			System.out.println(getWizardModel().getOre().getCriticalDescriptions(ind, getWizardModel().getOre().conceptToAdd ));
 		}
 		
 	}

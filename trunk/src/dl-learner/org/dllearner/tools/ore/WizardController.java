@@ -76,7 +76,7 @@ public class WizardController implements ActionListener {
         if( nextPanelDescriptor.equals("REPAIR_PANEL")){
         	((RepairPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getNegFailureModel().clear();
         	((RepairPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getPosFailureModel().clear();
-//        	wizard.getModel().getOre().getModi().addAxiomToOWL(wizard.getModel().getOre().getConceptToAdd(), wizard.getModel().getOre().getConcept());
+        	wizard.getModel().getOre().getModi().addAxiomToOWL(wizard.getModel().getOre().getConceptToAdd(), wizard.getModel().getOre().getConcept());
         	new FailInstancesRetriever(nextPanelDescriptor).execute();
         	
 //        	for(Description desc : wizard.getModel().getOre().getConceptToAdd().getChildren())
