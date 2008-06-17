@@ -1,13 +1,15 @@
 package org.dllearner.tools.ore;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -18,6 +20,10 @@ import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
+import org.semanticweb.owl.model.OWLInverseObjectPropertiesAxiom;
+import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owl.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owl.model.OWLObjectPropertyExpression;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyManager;
@@ -40,7 +46,8 @@ public class OntologyModifierOWLAPI {
 		this.factory = manager.getOWLDataFactory();
 		this.ontology = reasoner.getOWLAPIOntologies().get(0);
 	}
-		
+	
+	
 	public void addAxiomToOWL(Description newDesc, Description oldDesc){
 		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(newDesc);
 		OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldDesc);
@@ -61,6 +68,7 @@ public class OntologyModifierOWLAPI {
 			e.printStackTrace();
 		}
 		
+		
 	}
 	
 	public void saveOntology(){
@@ -77,18 +85,13 @@ public class OntologyModifierOWLAPI {
 		}
 	
 	}
-	
+	/**
+	 * Deletes the complete individual from the ontology
+	 * @param ind
+	 */
 	public void deleteIndividual(Individual ind){
 		
-		OWLIndividual individualOWLAPI = null;
-		
-		try {
-			individualOWLAPI = factory.getOWLIndividual( new URI(ind.getName()));
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
 		
 		OWLEntityRemover remover = new OWLEntityRemover(manager, Collections.singleton(ontology));
 		
@@ -104,26 +107,19 @@ public class OntologyModifierOWLAPI {
 		
 		
 	}
-	
+	/**
+	 * Removes a classAssertion 
+	 * @param ind
+	 * @param desc
+	 */
 	public void removeClassAssertion(Individual ind, Description desc){
 		
-		OWLIndividual individualOWLAPI = null;
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
 		OWLDescription owlDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
 		
-		try {
-			individualOWLAPI = factory.getOWLIndividual( new URI(ind.getName()));
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
 		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(individualOWLAPI, owlDesc);
-		
-		
+				
 		RemoveAxiom rm = new RemoveAxiom(ontology, owlCl);
-		
-		
 		
 		try {
 			manager.applyChange(rm);
@@ -133,29 +129,24 @@ public class OntologyModifierOWLAPI {
 		}
 		
 	}
-	
-	public void moveIndividual(Individual ind, Description oldConcept, Description newConcept){
+	/**
+	 * removes classAssertion between individual to a old class, and creates a new classAssertion
+	 * @param ind individual which has to be moved
+	 * @param oldClass class where individual is asserted before
+	 * @param newClass class where individual is moved to
+	 */
+	public void moveIndividual(Individual ind, Description oldClass, Description newClass){
 		
-	
-		OWLIndividual individualOWLAPI = null;
-		
-		
-		try {
-			individualOWLAPI = factory.getOWLIndividual( new URI(ind.getName()));
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
 		
 		//Loeschen
-		removeClassAssertion(ind, oldConcept);
-		
+		removeClassAssertion(ind, oldClass);
 		
 		//Hinzufuegen
 		
-		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(newConcept);
+		OWLDescription newClassOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(newClass);
 	
-		OWLAxiom axiomOWLAPI = factory.getOWLClassAssertionAxiom(individualOWLAPI, newConceptOWLAPI);
+		OWLAxiom axiomOWLAPI = factory.getOWLClassAssertionAxiom(individualOWLAPI, newClassOWLAPI);
 		
 		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
 		try {
@@ -166,6 +157,88 @@ public class OntologyModifierOWLAPI {
 		}
 		
 	}
+	
+	public void deleteObjectProperty(Individual ind, ObjectSomeRestriction objSome){
+		
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(objSome.getRole().getName()));
+		
+		Set<OWLObjectPropertyAssertionAxiom> properties = ontology.getObjectPropertyAssertionAxioms(individualOWLAPI);
+		Set<OWLInverseObjectPropertiesAxiom> invProperties = ontology.getInverseObjectPropertyAxioms(propertyOWLAPI);
+		
+		OWLObjectPropertyExpression invProperty = null;
+		
+		for(OWLInverseObjectPropertiesAxiom inv : invProperties)
+			if(propertyOWLAPI.equals(inv.getSecondProperty()))
+				invProperty  = inv.getFirstProperty();
+			else
+				invProperty = inv.getSecondProperty();
+		
+		
+		List<RemoveAxiom> removeList = new LinkedList<RemoveAxiom>();
+		
+		for(OWLObjectPropertyAssertionAxiom o :properties){
+			if( (o.getProperty().equals(propertyOWLAPI)) && (o.getSubject().equals(individualOWLAPI))) 
+				removeList.add(new RemoveAxiom(ontology, o));
+			if(invProperty != null)
+				for(OWLObjectPropertyAssertionAxiom ob :ontology.getObjectPropertyAssertionAxioms(o.getObject()))
+					if(ob.getProperty().equals(invProperty) && ob.getObject().equals(individualOWLAPI))
+						removeList.add(new RemoveAxiom(ontology, ob));
+			
+			
+		}
+		
+		try {
+			manager.applyChanges(removeList);
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	public void addObjectProperty(Individual subInd, ObjectSomeRestriction objSome, Individual objInd){
+		
+		OWLIndividual subIndividualOWLAPI = factory.getOWLIndividual( URI.create(subInd.getName()));
+		OWLIndividual objIndividualOWLAPI = factory.getOWLIndividual( URI.create(objInd.getName()));
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(objSome.getRole().getName()));
+		
+		OWLObjectPropertyAssertionAxiom objAssertion = factory.getOWLObjectPropertyAssertionAxiom(subIndividualOWLAPI, propertyOWLAPI, objIndividualOWLAPI);
+		
+		AddAxiom axiom = new AddAxiom(ontology, objAssertion);
+		try {
+			manager.applyChange(axiom);
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+//	public OWLOntology copyOntology(){
+//		try{
+//			OWLOntology ontologyCopy = manager.createOntology(ontology.getURI());
+//		
+//		 
+//		Set<OWLAxiom> axioms = ontology.getAxioms();
+//		List<AddAxiom> changes = new LinkedList<AddAxiom>();
+//		for(OWLAxiom a : axioms)
+//			changes.add(new AddAxiom(ontologyCopy, a));
+//			
+//		manager.applyChanges(changes);
+//		
+//		return ontologyCopy;
+//		
+//		}catch(OWLException e){
+//			e.printStackTrace();
+//			return null;
+//		}
+//		
+//		
+//	}
+	
+	
+	
 	
 	
 }

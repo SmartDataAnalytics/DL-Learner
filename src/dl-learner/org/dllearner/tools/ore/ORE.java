@@ -15,11 +15,14 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Negation;
+import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -36,14 +39,17 @@ public class ORE {
 	private PosNegDefinitionLP lp;
 	private ComponentManager cm;
 	
-	OWLAPIReasoner reasoner;
+	FastInstanceChecker reasoner;
+	OWLAPIReasoner reasoner2;
 	SortedSet<Individual> posExamples;
 	SortedSet<Individual> negExamples;
 	NamedClass concept;
 	Description conceptToAdd;
 	OntologyModifierOWLAPI modi;
 	Set<NamedClass> allAtomicConcepts;
-	private double noise;
+	private double noise = 0.0;
+	
+	Thread t;
 	
 	
 	public ORE() {
@@ -60,7 +66,7 @@ public class ORE {
 		ks = cm.knowledgeSource(owl);
 
 		cm.applyConfigEntry(ks, "url", f.toURI().toString());
-
+		
 		try {
 			ks.init();
 		} catch (ComponentInitException e) {
@@ -74,11 +80,20 @@ public class ORE {
 	
 	public void detectReasoner(){
 		
-		reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
-		reasoner.init();
-
+		reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		try {
+			reasoner.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+				
 		rs = cm.reasoningService(reasoner);
-		modi = new OntologyModifierOWLAPI(reasoner);
+		reasoner2 = cm.reasoner(OWLAPIReasoner.class, ks);
+		reasoner2.init();
+		
+		modi = new OntologyModifierOWLAPI(reasoner2);
 	}
 	
 	public ReasoningService getReasoningService(){
@@ -124,6 +139,7 @@ public class ORE {
 		t.add(concept.getName());
 		cm.applyConfigEntry(la, "ignoredConcepts", t );
 		cm.applyConfigEntry(la, "noisePercentage", noise);
+		cm.applyConfigEntry(la, "guaranteeXgoodDescriptions", 5);
 		try {
 			la.init();
 		} catch (ComponentInitException e) {
@@ -145,7 +161,7 @@ public class ORE {
 		this.setLearningAlgorithm();
 		
 		la.start();
-	
+			
 		return la;
 		
 	}
@@ -291,52 +307,160 @@ public class ORE {
 		this.allAtomicConcepts = allAtomicConcepts;
 	}
 	
-	public void getAllChildren(Description desc){
-    	
-		if(desc.getNumberOfNodes() >= 2)
-    		for(Description d: desc.getChildren())
-    			getAllChildren(d);
-    	System.out.println(desc);
-    }
-	
+	public Set<Description> getAllChildren(Description desc){
+		Set<Description> allChildren = new HashSet<Description>();
+		List<Description> children = desc.getChildren();
+		
+		if(children.size() >= 2)
+			for(Description d : children)
+				allChildren.addAll(getAllChildren(d));
+		else
+			allChildren.add(desc);
+				
+		return allChildren;
+	}
+		
 	public Set<Description> getCriticalDescriptions(Individual ind, Description desc){
 		
+	
 		Set<Description> criticals = new HashSet<Description>();
 		List<Description> children = desc.getChildren();
 		
-		if(desc instanceof Intersection){
-			criticals.addAll(children);
-		}
-		if(desc instanceof Union){
-			for(Description d: children)
-				if(reasoner.instanceCheck(d, ind))
-					criticals.add(d);
-		}
+//		if(desc instanceof Negation){ 
+//			if(!(desc.getChild(0) instanceof NamedClass) &&!(desc.getChild(0) instanceof ObjectQuantorRestriction)){
+//				negation = !negation;
+//				criticals.addAll(getCriticalDescriptions(ind, desc.getChild(0)));
+//			}
+//			else{
+//				if(negation)
+//					criticals.add(desc.getChild(0));
+//				else
+//					criticals.add(desc);
+//				
+//			}
+//			
+//		}
+//		else{
+//			
+//			if(children.size() >= 2){
+//			
+//				if(desc instanceof Intersection){
+//					for(Description d: children)
+//						criticals.addAll(getCriticalDescriptions(ind, d));
+//				
+//				}
+//				else if(desc instanceof Union){
+//					for(Description d: children)
+//						try {
+//							if(reasoner.instanceCheck(d, ind))
+//								criticals.addAll(getCriticalDescriptions(ind, d));
+//							} catch (ReasoningMethodUnsupportedException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
+//				}
+//			}
+//			else{ 
+//				
+//				if(negation)
+//					criticals.add(new Negation(desc));
+//				else
+//					criticals.add(desc);
+//					
+//			}
+//		
+//			
+//			
+//		}
+		
+			if(children.size() >= 2){
+			
+				if(desc instanceof Intersection){
+					for(Description d: children)
+						criticals.addAll(getCriticalDescriptions(ind, d));
+				
+				}
+				else if(desc instanceof Union){
+					for(Description d: children)
+						try {
+							if(reasoner.instanceCheck(d, ind))
+								criticals.addAll(getCriticalDescriptions(ind, d));
+						} catch (ReasoningMethodUnsupportedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+			}
+			else
+				criticals.add(desc);
 		
 		
 		return criticals;
 	}
 	
+	public Set<Individual> getIndividualsOfPropertyRange(ObjectQuantorRestriction objRestr){
+		
+		
+		System.out.println(objRestr.getChild(0));
+		
+		
+		Set<Individual> individuals = rs.retrieval(objRestr.getChild(0));
+		System.out.println(objRestr.getRole());
+		
+		System.out.println(individuals);
+		
+		return individuals;
+	}
+	
+	public Set<NamedClass> getpossibleMoveClasses(Individual ind){
+		Set<NamedClass> classes = rs.getAtomicConcepts();
+		for(NamedClass nc : classes)
+			if(rs.instanceCheck(nc, ind))
+				classes.remove(nc);
+		
+		return classes;
+	}
+	
+	
+	
 	public static void main(String[] args){
 		
-		ORE test = new ORE();
+		final ORE test = new ORE();
 		
-		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/father.owl");
+		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/test.owl");
 		
 		test.setKnowledgeSource(owlFile);
 	
 		test.detectReasoner();
 		ReasoningService rs = test.getReasoningService();
-		System.err.println("Concepts :" + rs.getAtomicConcepts());
+//		System.err.println("Concepts :" + rs.getAtomicConcepts());
 		
 		
-		test.setConcept(new NamedClass("http://example.com/father#father"));
-		test.setPosNegExamples();
-		System.out.println(test.posExamples);
-		System.out.println(test.negExamples);
-		test.start();
-		test.la.start();//Bug?
+//		test.setConcept(new NamedClass("http://example.com/father#father"));
+//		test.setPosNegExamples();
+//		System.out.println(test.posExamples);
+//		System.out.println(test.negExamples);
+//		test.start();
+		Individual ind = new Individual("http://www.test.owl#lorenz");
+		System.out.println(rs.getIndividuals());
+		Description d = new Intersection(new NamedClass("http://www.test.owl#A"), new Negation(new Union(new NamedClass("http://www.test.owl#B"),
+				new Negation(new Intersection(new NamedClass("http://www.test.owl#C"),new Negation(new NamedClass("http://www.test.owl#D")))))));
+		System.out.println(d);
+		System.out.println(test.getCriticalDescriptions(ind, d));
+		
+		
+		
+		
+		
+		
 	}
-	
-	
+		
+		
+		
+
 }
+	
+	
+	  
+	
+

@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingUtilities;
@@ -14,6 +13,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ObjectSomeRestriction;
 
 
 
@@ -25,6 +25,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
     LearningPanel panel4;
     ResultSwingWorker worker;
     Timer timer;
+    Boolean canceled = false;
     
     public LearningPanelDescriptor() {
         
@@ -56,32 +57,19 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		LearningAlgorithm la;
 	
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public List<Description> doInBackground() {
 			panel4.getResultList().setCellRenderer(new ColumnListCellRenderer(getWizardModel().getOre()));
 			panel4.getLoadingLabel().setBusy(true);
 			panel4.getStatusLabel().setText("Learning");
-			
 			getWizardModel().getOre().setNoise(panel4.getNoise());
 			
-					la = getWizardModel().getOre().start();
-					
-		
+			la = getWizardModel().getOre().start();//started endlosen Algorithmus
 			
 			
-			timer = new Timer();
-			timer.schedule(new TimerTask() {
-
-				@SuppressWarnings("unchecked")
-				@Override
-				public void run() {
-				
-					publish(getWizardModel().getOre().getLearningResults(10));
+			publish(la.getBestSolutions(10));
 					
-				}
-
-			}, 0, 1000);
-
 			List<Description> result = getWizardModel().getOre().getLearningResults(10);
 
 			return result;
@@ -91,7 +79,6 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		public void done() {
 			
 		
-			timer.cancel();
 			List<Description> result = null;
 			try {
 				result = get();
@@ -111,6 +98,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		@Override
 		protected void process(List<List<Description>> resultLists) {
 			panel4.getModel().clear();
+			
 			for (List<Description> list : resultLists) {
 				updateList(list);
 			}
@@ -123,6 +111,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 					panel4.getModel().clear();
 					for (Description d : result) {
 						panel4.getModel().addElement(d);
+						
 					}
 
 				}
@@ -177,6 +166,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
             worker.execute();
 		}
 		else{
+			canceled = true;
 			panel4.getStopButton().setEnabled(false);
 			getWizardModel().getOre().getLa().stop();
             panel4.getStartButton().setEnabled(true);
@@ -190,9 +180,24 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected();
-		if (!e.getValueIsAdjusting()) 
+		if (!e.getValueIsAdjusting()){
 			getWizardModel().getOre().setConceptToAdd((Description)(panel4.getResultList().getSelectedValue())); 
 			
+			for(Description d: getWizardModel().getOre().getAllChildren((Description)(panel4.getResultList().getSelectedValue()))){
+				System.out.println(d + " : " + d.getClass());
+				
+				if(d instanceof ObjectSomeRestriction){
+
+					
+					getWizardModel().getOre().getIndividualsOfPropertyRange((ObjectSomeRestriction)d);
+
+					
+					
+				}
+				
+			}
+		
+		}
 		
 	}
 
