@@ -938,5 +938,17 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	public boolean hasDatatypeSupport() {
 		return true;
 	}
+	
+	@Override
+	public Set<OWLClass> getInconsistentClasses(){
+		
+		try {
+			return reasoner.getInconsistentClasses();
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("Inconsistens classes check error in OWL API.");
+		}
+		
+	}
 
 }
