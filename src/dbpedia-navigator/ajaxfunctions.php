@@ -456,6 +456,9 @@ function stopServerCall()
 
 function subjectToURI($subject)
 {
+	//if the subject is already a URI return it
+	if (strpos($subject,"http://dbpedia.org/resource/")===0)
+		return $subject;
 	//delete whitespaces at beginning and end
 	$subject=trim($subject);
 	//get first letters big
@@ -483,7 +486,7 @@ function getTagCloud($tags,$label)
 		else if ($count>($min+$distribution)) $style="font-size:medium;";
 		else $style="font-size:small;";
 		
-		$ret.="<a style='".$style."' href='".$tag."'>".$label[$tag]."</a> ";
+		$ret.="<a style='".$style."' href='javascript:xajax_getSubjectsFromConcept('".$tag."');>".$label[$tag]."</a> ";
 	}
 	$ret.="</p>";
 	return $ret;
@@ -500,7 +503,7 @@ function getResultsTable($results)
 		for ($j=0;($j<30)&&(($i*30+$j)<count($results));$j++)
 		{
 			$result=$results[$i*30+$j];
-			$ret.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"\" onclick=\"xajax_getarticle('".str_replace("_"," ",substr (strrchr ($result, "/"), 1))."',-1);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."</a><br/>";
+			$ret.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"\" onclick=\"xajax_getarticle('".$result."',-1);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."</a><br/>";
 		}
 		$ret.="</div>";
 		$i++;
