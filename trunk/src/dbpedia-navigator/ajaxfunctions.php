@@ -220,7 +220,7 @@ function getarticle($subject,$fromCache)
 	$objResponse->assign("lastarticles","innerHTML",$lastArticles);
 	$objResponse->assign('Positives','innerHTML',$posInterests);
 	$objResponse->assign('Negatives','innerHTML',$negInterests);
-	$objResponse->call('xajax_learnConcept');
+	//$objResponse->call('xajax_learnConcept');
 	return $objResponse;
 }
 
@@ -486,7 +486,7 @@ function getTagCloud($tags,$label)
 		else if ($count>($min+$distribution)) $style="font-size:medium;";
 		else $style="font-size:small;";
 		
-		$ret.="<a style='".$style."' href='javascript:xajax_getSubjectsFromConcept('".$tag."');>".$label[$tag]."</a> ";
+		$ret.='<a style="'.$style.'" href="#" onclick="xajax_getSubjectsFromConcept(\''.$tag.'\');">'.$label[$tag].'</a>';
 	}
 	$ret.="</p>";
 	return $ret;
