@@ -265,6 +265,7 @@ public class Cache implements Serializable {
 			if (json!=null){
 				addToCache(query.getQueryString(), json);
 				result=json;
+				query.setJson(result);
 			}
 			else {
 				json="";
