@@ -41,8 +41,19 @@ $xajax->processRequest();
 function doSearch($searchString)
 {
 	// ToDo: execute a SPARQL query (find labels matching search string) by contacting DL-Learner web service
-	$query = '
-	PREFIX geo: <http://www.geonames.org/ontology#>
+	$query = 'PREFIX geo:<http://www.geonames.org/ontology#>
+	PREFIX wgs:<http://www.w3.org/2003/01/geo/wgs84_pos#>
+	SELECT ?a ?place ?lat ?long
+	WHERE {
+		?a a mo:MusicArtist;
+		foaf:based_near ?place.
+		?place geo:name ?name;
+		geo:population ?population;
+		wgs:lat ?lat; 
+		wgs:long ?long 
+	}
+	LIMIT 1';
+	/*PREFIX geo: <http://www.geonames.org/ontology#>
 	PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 	SELECT DISTINCT ?an ?lat ?long ?name ?population
 	WHERE { 
@@ -57,7 +68,7 @@ function doSearch($searchString)
 		wgs:lat ?lat; 
 		wgs:long ?long 
 	}
-	ORDER BY ?population';
+	ORDER BY ?population';*/
 
 	try {
 		$connection = new DLLearnerConnection();
