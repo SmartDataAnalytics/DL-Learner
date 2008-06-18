@@ -23,11 +23,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.utilities.JamonMonitorLogger;
 
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -69,7 +71,7 @@ public class SparqlQuery {
 	 */
 	public ResultSet send() {
 		
-		isRunning = true;
+		//isRunning = true;
 		logger.trace(queryString);
 		
 		String service = endpoint.getURL().toString();
@@ -85,11 +87,10 @@ public class SparqlQuery {
 		
 		//TODO remove after overnext Jena release
 		HttpQuery.urlLimit = 3*1024 ;
-			
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").start();
 		rs = queryExecution.execSelect();
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
-			
+				
 		logger.debug("query SPARQL server, retrieved: "+rs.getResultVars());
 				
 		logger.trace(rs.getResultVars().toString());
@@ -100,7 +101,7 @@ public class SparqlQuery {
 //			logger.debug("Exception when querying Sparql Endpoint in " + this.getClass());
 //			logger.debug(queryString);
 //		}
-		isRunning = false;
+		//isRunning = false;
 		return rs;
 	}
 
