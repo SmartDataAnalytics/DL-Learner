@@ -122,11 +122,13 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 			if(!toggled==true)
 			{
 				toggled=true;
+				view.setIconToggled(toggled);
 				view.setExamplePanelVisible(toggled);
 			}
 			else
 			{
 				toggled=false;
+				view.setIconToggled(toggled);
 				view.setExamplePanelVisible(toggled);
 			}
 		}

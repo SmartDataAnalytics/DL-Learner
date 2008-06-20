@@ -3,11 +3,7 @@ package org.dllearner.tools.protege;
 import java.awt.Dimension;
 
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
 
-import org.protege.editor.core.ui.view.ViewComponent;
-import org.protege.editor.owl.ui.clshierarchy.ToldOWLClassHierarchyViewComponent;
-import org.protege.editor.owl.ui.view.ChangeListenerMediator;
 /**
  * This class is the panel for the suggest list.
  * It shows the descriptions made by the DL-Learner.
