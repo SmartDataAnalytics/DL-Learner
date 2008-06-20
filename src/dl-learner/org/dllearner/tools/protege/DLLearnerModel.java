@@ -37,20 +37,15 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.frame.OWLFrame;
 
-import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyStorageException;
 import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLOntologyFormat;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.UnknownOWLOntologyException;
 
 
 

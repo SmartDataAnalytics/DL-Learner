@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
+import java.net.*;
 
 
 /**
@@ -318,6 +319,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  private SuggestClassPanel sugPanel;
 	  private PosAndNegSelectPanel posPanel;
 	  private ImageIcon icon;
+	  private ImageIcon toggledIcon;
 	  /**
 	   * 
 	   * @return
@@ -335,14 +337,16 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 		  	editor = editorKit;
 		  	classSelectorPanel = new OWLClassSelectorPanel(editorKit);
 		  	classSelectorPanel.firePropertyChange("test", false, true);
-		  	icon = new ImageIcon(OWLClassDescriptionEditorWithDLLearnerTab.class.getResource("/bilder/org/dllearner/tools/protege/pfeil.gif"));
+		  	URL iconUrl = this.getClass().getResource("pfeil.gif");
+		  	icon = new ImageIcon(iconUrl);
+		  	URL toggledIconUrl = this.getClass().getResource("pfeil2.gif");
+		  	toggledIcon = new ImageIcon(toggledIconUrl);
 		  	model = new DLLearnerModel(editorKit,aktuell, label,this);
 		  	panel = new DLLearnerViewPanel(editor);
 		  	sugPanel = new SuggestClassPanel();
 		  	action = new ActionHandler(this.action, model,this,label);
 	    	adv = new JLabel("Advanced");
 	    	advanced = new JToggleButton(icon);
-	    	advanced.setIcon(icon);
 	    	advanced.setVisible(true);
 	    	run = new JButton("Suggest "+label);
 	    	cancel = new JButton("Cancel");
@@ -378,6 +382,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   */
 	  public void makeView()
 	  {
+		  	advanced.setIcon(icon);
 	    	model.clearVector();
 		  	model.unsetListModel();
 		  	model.initReasoner();
@@ -410,7 +415,17 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	posPanel.addHelpButtonListener(action);
 	    	add(learner);
 	  }
-	  
+	  public void setIconToggled(boolean toggled)
+	  {
+		  if(toggled == true)
+		  {
+			  advanced.setIcon(toggledIcon);
+		  }
+		  if(toggled == false)
+		  {
+			  advanced.setIcon(icon);
+		  }
+	  }
 	  public void setArrowForToggleButton()
 	  {
 		  
