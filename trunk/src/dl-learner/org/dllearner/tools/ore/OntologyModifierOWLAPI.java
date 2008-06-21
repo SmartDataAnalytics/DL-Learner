@@ -7,9 +7,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Union;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -52,7 +56,6 @@ public class OntologyModifierOWLAPI {
 		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(newDesc);
 		OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldDesc);
 		
-			
 		Set<OWLDescription> ds = new HashSet<OWLDescription>();
 		ds.add(newConceptOWLAPI);
 		ds.add(oldConceptOWLAPI);
@@ -128,7 +131,32 @@ public class OntologyModifierOWLAPI {
 			e.printStackTrace();
 		}
 		
+		
 	}
+	
+	/**
+	 * adds a classAssertion 
+	 * @param ind
+	 * @param desc
+	 */
+	public void addClassAssertion(Individual ind, Description desc){
+		
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
+		OWLDescription owlDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
+		
+		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(individualOWLAPI, owlDesc);
+				
+		AddAxiom am = new AddAxiom(ontology, owlCl);
+		
+		try {
+			manager.applyChange(am);
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	/**
 	 * removes classAssertion between individual to a old class, and creates a new classAssertion
 	 * @param ind individual which has to be moved
@@ -155,6 +183,7 @@ public class OntologyModifierOWLAPI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		saveOntology();
 		
 	}
 	
@@ -214,6 +243,60 @@ public class OntologyModifierOWLAPI {
 			e.printStackTrace();
 		}
 	}
+	
+	public void refreshReasoner(){
+		Set<KnowledgeSource> s = new HashSet<KnowledgeSource>();
+		s.add(new OWLAPIOntology(ontology));
+		this.reasoner = new OWLAPIReasoner(s);
+		reasoner.init();
+	}
+	
+	public boolean checkInstanceNewOntology(Description desc, Individual ind){
+		Set<KnowledgeSource> s = new HashSet<KnowledgeSource>();
+		s.add(new OWLAPIOntology(ontology));
+		OWLAPIReasoner r = new OWLAPIReasoner(s);
+		r.init();
+		boolean check = r.instanceCheck(desc, ind);
+
+		
+		
+		return check;
+	}
+	
+	public Set<Description> getCriticalDescriptions(Individual ind, Description desc){
+		Set<KnowledgeSource> s = new HashSet<KnowledgeSource>();
+		s.add(new OWLAPIOntology(ontology));
+		OWLAPIReasoner r = new OWLAPIReasoner(s);
+		r.init();
+		
+		Set<Description> criticals = new HashSet<Description>();
+		List<Description> children = desc.getChildren();
+		
+		if(r.instanceCheck(desc, ind)){
+			System.out.println("wahr");
+			if(children.size() >= 2){
+				
+				if(desc instanceof Intersection){
+					for(Description d: children)
+						criticals.addAll(getCriticalDescriptions(ind, d));
+				
+				}
+				else if(desc instanceof Union){
+					for(Description d: children)
+						if(reasoner.instanceCheck(d, ind))
+							criticals.addAll(getCriticalDescriptions(ind, d));
+				}
+			}
+			else
+				criticals.add(desc);
+		}
+	
+	
+	return criticals;
+}
+
+
+	
 	
 //	public OWLOntology copyOntology(){
 //		try{

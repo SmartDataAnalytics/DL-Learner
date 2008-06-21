@@ -1,13 +1,20 @@
 package org.dllearner.tools.ore;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Vector;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
@@ -21,9 +28,9 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -326,52 +333,7 @@ public class ORE {
 		Set<Description> criticals = new HashSet<Description>();
 		List<Description> children = desc.getChildren();
 		
-//		if(desc instanceof Negation){ 
-//			if(!(desc.getChild(0) instanceof NamedClass) &&!(desc.getChild(0) instanceof ObjectQuantorRestriction)){
-//				negation = !negation;
-//				criticals.addAll(getCriticalDescriptions(ind, desc.getChild(0)));
-//			}
-//			else{
-//				if(negation)
-//					criticals.add(desc.getChild(0));
-//				else
-//					criticals.add(desc);
-//				
-//			}
-//			
-//		}
-//		else{
-//			
-//			if(children.size() >= 2){
-//			
-//				if(desc instanceof Intersection){
-//					for(Description d: children)
-//						criticals.addAll(getCriticalDescriptions(ind, d));
-//				
-//				}
-//				else if(desc instanceof Union){
-//					for(Description d: children)
-//						try {
-//							if(reasoner.instanceCheck(d, ind))
-//								criticals.addAll(getCriticalDescriptions(ind, d));
-//							} catch (ReasoningMethodUnsupportedException e) {
-//								// TODO Auto-generated catch block
-//								e.printStackTrace();
-//							}
-//				}
-//			}
-//			else{ 
-//				
-//				if(negation)
-//					criticals.add(new Negation(desc));
-//				else
-//					criticals.add(desc);
-//					
-//			}
-//		
-//			
-//			
-//		}
+
 		
 			if(children.size() >= 2){
 			
@@ -398,6 +360,62 @@ public class ORE {
 		return criticals;
 	}
 	
+	public Collection<JLabel> DescriptionToJLabel(Individual ind, Description desc){
+//		Set<JLabel> criticals = new HashSet<JLabel>();
+		Collection<JLabel> criticals = new Vector<JLabel>();
+		List<Description> children = desc.getChildren();
+		
+		try {
+			if(reasoner.instanceCheck(desc, ind)){
+				if(children.size() >= 2){
+					
+					if(desc instanceof Intersection){
+						criticals.add(new JLabel("("));
+						for(int i = 0; i<children.size()-1; i++){
+							criticals.addAll(DescriptionToJLabel(ind, desc.getChild(i)));
+							criticals.add(new JLabel("AND"));
+							System.out.println(true);
+						}
+						criticals.addAll(DescriptionToJLabel(ind, desc.getChild(children.size()-1)));
+						criticals.add(new JLabel(")"));
+					}
+					else if(desc instanceof Union){
+						criticals.add(new JLabel("("));
+						for(int i = 0; i<children.size()-1; i++){
+							if(reasoner.instanceCheck(desc.getChild(i), ind)){
+								criticals.addAll(DescriptionToJLabel(ind, desc.getChild(i)));
+							}
+							else{
+								criticals.add(new JLabel(desc.getChild(i).toString()));
+							}
+							criticals.add(new JLabel("OR"));
+						}
+						if(reasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
+							criticals.addAll(DescriptionToJLabel(ind, desc.getChild(children.size()-1)));
+						}
+						else{
+							criticals.add(new JLabel(desc.getChild(children.size()-1).toString()));
+						}
+						criticals.add(new JLabel(")"));
+						
+							
+					}
+				}
+				else{
+				
+					criticals.add(new DescriptionLabel(desc));
+				}
+			}
+			else
+				criticals.add(new JLabel(desc.toString()));
+		} catch (ReasoningMethodUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	return criticals;
+	}
+	
 	public Set<Individual> getIndividualsOfPropertyRange(ObjectQuantorRestriction objRestr){
 		
 		
@@ -421,6 +439,17 @@ public class ORE {
 		return classes;
 	}
 	
+	public void updateReasoner(){
+		reasoner = cm.reasoner(FastInstanceChecker.class, new OWLAPIOntology(modi.ontology));
+		try {
+			reasoner.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+		
 	
 	
 	public static void main(String[] args){
@@ -443,12 +472,20 @@ public class ORE {
 //		test.start();
 		Individual ind = new Individual("http://www.test.owl#lorenz");
 		System.out.println(rs.getIndividuals());
-		Description d = new Intersection(new NamedClass("http://www.test.owl#A"), new Negation(new Union(new NamedClass("http://www.test.owl#B"),
-				new Negation(new Intersection(new NamedClass("http://www.test.owl#C"),new Negation(new NamedClass("http://www.test.owl#D")))))));
+		Description d = new Intersection(new NamedClass("http://www.test.owl#A"), new Union(new NamedClass("http://www.test.owl#B"),
+				new NamedClass("http://www.test.owl#C")));
 		System.out.println(d);
 		System.out.println(test.getCriticalDescriptions(ind, d));
+		JFrame testFrame = new JFrame();
+		JPanel j = new JPanel();
+		testFrame.add(j);
+		testFrame.setSize(new Dimension(400, 400));
+		for(JLabel jLab : test.DescriptionToJLabel(ind, d))
+			j.add(jLab);
+		testFrame.setVisible(true);
 		
 		
+	
 		
 		
 		
