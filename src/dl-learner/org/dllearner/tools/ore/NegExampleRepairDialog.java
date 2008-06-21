@@ -1,13 +1,10 @@
 package org.dllearner.tools.ore;
 
 import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -15,11 +12,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -36,10 +32,12 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	
 	
-	private JPanel statsPanel;
-	private JPanel actionsPanel;
+	private StatsPanel statsPanel;
+	private DescriptionPanel descPanel;
+	private ChangesPanel changesPanel;
 	private JPanel ok_cancelPanel;
 	private JPanel action_stats_Panel;
+	
 	
 	
 	private JButton okButton;
@@ -67,143 +65,27 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener{
 		setSize(700, 700);
 		setLayout(new BorderLayout());
 		
-		action_stats_Panel = new JPanel();
-		action_stats_Panel.setLayout(new GridLayout(2,0));
-		
-		statsPanel = new JPanel();
-		statsPanel.setBorder(new TitledBorder("stats"));
-		
-	
-		
-		GridBagLayout gbl = new GridBagLayout();
-		statsPanel.setLayout(gbl);
-		
-		        
-        GridBagConstraints gbc = new GridBagConstraints();
-        JLabel descLb = new JLabel("Description:");
-        JLabel indLb = new JLabel("Individual:");
-        JLabel classLb = new JLabel("Classes:");
-       
-        
-        JLabel descLb1 = new JLabel(ore.conceptToAdd.toString());
-        JLabel indLb1 = new JLabel(ind.getName());
-        Set<NamedClass> t = null;
-		
-		JPanel classesPanel = new JPanel(new GridLayout(0, 1));
-		
-		t = reasoner.getConcepts(ind);
-		t.add(ore.getConcept());
-		for(NamedClass nc : t)
-			classesPanel.add(new JLabel(nc.getName()));
-        
-		
-
-        
-        gbc.gridx = 0; // first column
-        gbc.gridy = 0; // first row
-        gbc.gridwidth = 1; // occupies only one column
-        gbc.gridheight = 1; // occupies only one row
-        gbc.weightx = 20; // relative horizontal size - first column
-        gbc.weighty = 10; // relative vertical size - first row
-        gbc.fill = GridBagConstraints.NONE; // stay as small as possible
-        // suite for labels
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-        //inform the layout about the control to be added and its constraints:
-        gbl.setConstraints(descLb, gbc);
-        statsPanel.add(descLb); //add the JLabel to the JPanel object
-
-        gbc.gridx = 0; // first column
-        gbc.gridy = 1; // second row
-        gbc.gridwidth = 1; // occupies only one column
-        gbc.gridheight = 1; // occupies only one row
-        gbc.weightx = 0; // !!! horizontal size for the column is defined already!
-        gbc.weighty = 10; // relative vertical size - second row
-        gbc.fill = GridBagConstraints.NONE; // stay as small as possible, suites for labels
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-        //inform the layout about the control to be added and its constraints:
-        gbl.setConstraints(indLb, gbc);
-        statsPanel.add(indLb);
-        
-        gbc.gridx = 0; // first column
-        gbc.gridy = 2; // third row
-        gbc.gridwidth = 1; // occupies only one column
-        gbc.gridheight = 1; // occupies only one row
-        gbc.weightx = 0; // !!! horizontal size for the column is defined already!
-        gbc.weighty = 10; // relative vertical size - second row
-        gbc.fill = GridBagConstraints.NONE; // stay as small as possible, suites for labels
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-        //inform the layout about the control to be added and its constraints:
-        gbl.setConstraints(classLb, gbc);
-        statsPanel.add(classLb);
-        
-        gbc.gridx = 1;      // second column
-        gbc.gridy = 0;      // first row
-        gbc.gridwidth = 1;  // occupies only one column
-        gbc.gridheight = 1;  // occupies only one row 
-        gbc.weightx = 100;    // horizontal size - second column
-        gbc.weighty = 0;    // !!! vertical size for the row is defined already!
-        gbc.fill = GridBagConstraints.HORIZONTAL;    // fill horizontally entire cell      
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-
-        gbl.setConstraints(descLb1, gbc);
-        statsPanel.add(descLb1);
-        
-        gbc.gridx = 1;      // second column
-        gbc.gridy = 1;      // second row
-        gbc.gridwidth = 1;  // occupies only one column
-        gbc.gridheight = 1;  // occupies only one row 
-        gbc.weightx = 0;    // horizontal size for the column is defined already!
-        gbc.weighty = 0;    // vertical size for the row is defined already!
-        gbc.fill = GridBagConstraints.HORIZONTAL;    // fill horizontally entire cell          
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-
-        gbl.setConstraints(indLb1, gbc);
-        statsPanel.add(indLb1);    
-        
-        gbc.gridx = 1;      // second column
-        gbc.gridy = 2;      // third row
-        gbc.gridwidth = 1;  // occupies only one column
-        gbc.gridheight = 1;  // occupies only one row 
-        gbc.weightx = 0;    // horizontal size for the column is defined already!
-        gbc.weighty = 0;    // vertical size for the row is defined already!
-        gbc.fill = GridBagConstraints.HORIZONTAL;    // fill horizontally entire cell          
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-
-//        gbl.setConstraints(scrollPane, gbc);
-//        statsPanel.add(scrollPane);    
-        gbl.setConstraints(classesPanel, gbc);
-        statsPanel.add(classesPanel);    
-       
-        
-		actionsPanel = new JPanel(new GridLayout(0, 1));
+		descPanel = new DescriptionPanel(ore, ind, this);		
 		
 		
-		
-		actionsPanel.setBorder(new TitledBorder("actions"));
-		JButton delete = new JButton("delete instance");
-		delete.addActionListener(this);
-		actionsPanel.add(delete);
-		for(Description d :ore.getCriticalDescriptions(ind, ore.getConceptToAdd())){
-			
-			if(!(d instanceof Negation)){
-				if(d instanceof NamedClass){
-					actionsPanel.add(new DescriptionButton("remove class assertion to " + d.toString(), d ,this));
-					actionsPanel.add(new DescriptionButton("move class assertion " + d.toString() + " to ...", d, this));
-				}
-				else if(d instanceof ObjectSomeRestriction)
-					actionsPanel.add(new DescriptionButton("remove property assertion " + d.toString(), d, this));
-			}
-			else if(d instanceof Negation){
-				if(d.getChild(0) instanceof NamedClass)
-					actionsPanel.add(new DescriptionButton("add class assertion to " + d.getChild(0).toString(), d, this));
-				else if(d.getChild(0) instanceof ObjectSomeRestriction)
-					actionsPanel.add(new DescriptionButton("add property " + d.toString(), d, this));
-			}
-		}
+		statsPanel = new StatsPanel(ore, ind);
+		statsPanel.init();
 		JScrollPane scroll = new JScrollPane();
 	    scroll.setViewportView(statsPanel);
+		        
+				
+		changesPanel = new ChangesPanel();
+	    changesPanel.init();
+	    
+	    
+	    action_stats_Panel = new JPanel();
+		action_stats_Panel.setLayout(new GridLayout(4,0));
+	    
+		
+		
+		action_stats_Panel.add(descPanel);
 		action_stats_Panel.add(scroll);
-		action_stats_Panel.add(actionsPanel);
+		action_stats_Panel.add(changesPanel);
 		
 		
 		JSeparator separator = new JSeparator();
@@ -216,7 +98,7 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener{
 		cancelButton = new JButton("Cancel");
 		
 		
-        getContentPane().add(ok_cancelPanel, java.awt.BorderLayout.SOUTH);
+       
         getContentPane().add(action_stats_Panel, java.awt.BorderLayout.CENTER);
 		
 		
@@ -235,45 +117,94 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener{
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		
-		
-		if(e.getActionCommand().equals("delete instance")){
-			ore.modi.deleteIndividual(ind);
-		}
-		else{
-			 actualDesc = ((DescriptionButton)e.getSource()).getDescription();
-			if(e.getActionCommand().startsWith("remove class")){
+		System.out.println(e.getSource());
+		if(e.getSource() instanceof DescriptionMenuItem){
+			actualDesc = ((DescriptionMenuItem)e.getSource()).getDescription();
+			
+			if(e.getActionCommand().startsWith("remove class")){                       //remove class
+				System.err.println("vorher: " + ore.modi.checkInstanceNewOntology(ore.getConceptToAdd() ,ind));
+				System.err.println("vorher: " + ore.modi.getCriticalDescriptions(ind, ore.conceptToAdd));
 				ore.modi.removeClassAssertion(ind, actualDesc);
-			}
-			else if(e.getActionCommand().startsWith("move class")){
-			
-				SwingUtilities.invokeLater(new Runnable(){
-			
-					@Override
-					public void run() {
-						newDesc = (Description)new ChooseDialog(ore, ind).getSelectedElement();
-					}
 				
-				});
-				if(newDesc != null)
-					ore.modi.moveIndividual(ind, actualDesc, newDesc);
-				
+				descPanel.updatePanel();
+				changesPanel.add(new JLabel("removed class assertion to " + actualDesc));
+				changesPanel.add(new JButton("Undo"));
+				System.err.println("nachher: " + ore.modi.checkInstanceNewOntology(ore.conceptToAdd, ind));
+				System.err.println("nachher: " + ore.modi.getCriticalDescriptions(ind, ore.conceptToAdd));
 			}
-			else if(e.getActionCommand().equals("add property")){
-				SwingUtilities.invokeLater(new Runnable(){
-					
-					@Override
-					public void run() {
-						object = (Individual)new ChooseDialog(ore, actualDesc).getSelectedElement();
-					}
-				
-				});
-				if(newDesc != null)
-					
-				ore.modi.addObjectProperty(ind, (ObjectSomeRestriction)actualDesc, object);
-			}
-		}
+//			else if(e.getActionCommand().startsWith("add class")){                     //add class
+//					System.err.println(actualDesc);
+//					ore.modi.addClassAssertion(ind, actualDesc);
+//					actionsPanel.updatePanel();
+//					changes.add(new JLabel("added class assertion to " + actualDesc));
+//					
+//			}
+//			else if(e.getActionCommand().startsWith("move class")){                    //move class
+//			
+//				newDesc = (Description)new ChooseDialog(this, ore, ind).getSelectedElement();
+//				System.err.println(newDesc);
+//				if(newDesc != null){
+//					System.out.print(ind + " from " + actualDesc + " to " + newDesc);
+//					ore.modi.moveIndividual(ind, actualDesc, newDesc);
+//					}
+//				
+//			}
+//			else if(e.getActionCommand().equals("add property")){                      //add property
+//				object = (Individual)new ChooseDialog(this, ore, actualDesc).getSelectedElement();
+//				if(object != null)
+//					ore.modi.addObjectProperty(ind, (ObjectSomeRestriction)actualDesc, object);
+//			}
+//			else if(e.getActionCommand().equals("remove property")){                  //delete property
+//				ore.modi.deleteObjectProperty(ind, (ObjectSomeRestriction)actualDesc);
+//			}
+//		}
+		
+//		if(e.getActionCommand().equals("delete instance")){
+//			ore.modi.deleteIndividual(ind);
+//			
+//		}
+//		else{
+//			actualDesc = ((DescriptionButton)e.getSource()).getDescription();
+//			
+//			if(e.getActionCommand().startsWith("remove class")){                       //remove class
+//				System.out.println(ore.reasoner2.instanceCheck(ore.getConceptToAdd() ,ind));
+//				ore.modi.removeClassAssertion(ind, actualDesc);
+//				
+//				actionsPanel.updatePanel();
+//				changes.add(new JLabel("removed class assertion to " + actualDesc));
+//				changes.add(new JButton("Undo"));
+//				System.err.println(ore.modi.checkInstanceNewOntology(ore.conceptToAdd, ind));
+//				
+//			}
+//			else if(e.getActionCommand().startsWith("add class")){                     //add class
+//					System.err.println(actualDesc);
+//					ore.modi.addClassAssertion(ind, actualDesc);
+//					actionsPanel.updatePanel();
+//					changes.add(new JLabel("added class assertion to " + actualDesc));
+//					
+//			}
+//			else if(e.getActionCommand().startsWith("move class")){                    //move class
+//			
+//				newDesc = (Description)new ChooseDialog(this, ore, ind).getSelectedElement();
+//				System.err.println(newDesc);
+//				if(newDesc != null){
+//					System.out.print(ind + " from " + actualDesc + " to " + newDesc);
+//					ore.modi.moveIndividual(ind, actualDesc, newDesc);
+//					}
+//				
+//			}
+//			else if(e.getActionCommand().equals("add property")){                      //add property
+//				object = (Individual)new ChooseDialog(this, ore, actualDesc).getSelectedElement();
+//				if(object != null)
+//					ore.modi.addObjectProperty(ind, (ObjectSomeRestriction)actualDesc, object);
+//			}
+//			else if(e.getActionCommand().equals("remove property")){                  //delete property
+//				ore.modi.deleteObjectProperty(ind, (ObjectSomeRestriction)actualDesc);
+//			}
+//		}
 	}
+	}
+	
 	
 	
 	
