@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import org.dllearner.Info;
 import org.dllearner.cli.*;
-import org.dllearner.utilities.*;
+import org.dllearner.utilities.datastructures.*;
 
 public @SuppressWarnings("all") class ConfParserTokenManager implements ConfParserConstants
 {

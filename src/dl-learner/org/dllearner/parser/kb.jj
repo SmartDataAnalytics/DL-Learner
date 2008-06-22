@@ -59,6 +59,12 @@ public class KBParser {
 		return eqAxiom.getConcept2();
 	}
 
+	//TODO beware of this function it is evil (author: Sebastian Hellmann)
+    public static Description parseConcept(String string, String namespace) throws ParseException {
+             internalNamespace = namespace;
+              return parseConcept(string);
+    }
+
 	public static KB parseKBFile(String content) throws IOException, ParseException {
 		KBParser parser = new KBParser(new StringReader(content));
 		return parser.KB();
