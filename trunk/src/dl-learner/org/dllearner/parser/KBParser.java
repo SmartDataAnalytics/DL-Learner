@@ -18,12 +18,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
                         return internalNamespace + name;
         }
 
-        //TODO beware of this function it is evil
-        public static Description parseConcept(String string, String namespace) throws ParseException {
-        	internalNamespace = namespace;
-        	return parseConcept(string);
-        }
-        
         public static Description parseConcept(String string) throws ParseException {
                 // when just parsing the string as concept, we have no guarantee
                 // that the parser uses all symbols, e.g. a AND b returns just a
@@ -35,6 +29,12 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
                 EquivalentClassesAxiom eqAxiom = parser.TBoxEquiv();
                 return eqAxiom.getConcept2();
         }
+
+        //TODO beware of this function it is evil (author: Sebastian Hellmann)
+    public static Description parseConcept(String string, String namespace) throws ParseException {
+             internalNamespace = namespace;
+              return parseConcept(string);
+    }
 
         public static KB parseKBFile(String content) throws IOException, ParseException {
                 KBParser parser = new KBParser(new StringReader(content));
@@ -715,15 +715,6 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
     finally { jj_save(7, xla); }
   }
 
-  final private boolean jj_3R_14() {
-    if (jj_scan_token(19)) return true;
-    if (jj_3R_25()) return true;
-    if (jj_3R_4()) return true;
-    if (jj_scan_token(COMMAND_END)) return true;
-    if (jj_3R_2()) return true;
-    return false;
-  }
-
   final private boolean jj_3_7() {
     if (jj_scan_token(22)) return true;
     if (jj_3R_2()) return true;
@@ -985,6 +976,15 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
 
   final private boolean jj_3R_15() {
     if (jj_scan_token(20)) return true;
+    if (jj_3R_25()) return true;
+    if (jj_3R_4()) return true;
+    if (jj_scan_token(COMMAND_END)) return true;
+    if (jj_3R_2()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_14() {
+    if (jj_scan_token(19)) return true;
     if (jj_3R_25()) return true;
     if (jj_3R_4()) return true;
     if (jj_scan_token(COMMAND_END)) return true;
