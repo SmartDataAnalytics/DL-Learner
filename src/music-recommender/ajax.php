@@ -31,9 +31,11 @@ require_once 'DLLearnerConnection.php';
 
 $xajax = new xajax();
 
+// set to debug during development if needed
+$xajax->configureMany(array('debug'=>false));
+
 // register functions
 $xajax->registerFunction("doSearch");
-
 
 $xajax->processRequest();
 
@@ -41,7 +43,7 @@ $xajax->processRequest();
 function doSearch($searchString)
 {
 	// ToDo: execute a SPARQL query (find labels matching search string) by contacting DL-Learner web service
-	$query = 'PREFIX geo:<http://www.geonames.org/ontology#>
+	/*$query = 'PREFIX geo:<http://www.geonames.org/ontology#>
 	PREFIX wgs:<http://www.w3.org/2003/01/geo/wgs84_pos#>
 	SELECT ?a ?place ?lat ?long
 	WHERE {
@@ -52,7 +54,20 @@ function doSearch($searchString)
 		wgs:lat ?lat; 
 		wgs:long ?long 
 	}
-	LIMIT 1';
+	LIMIT 1';*/
+	// unfortunately full text search does not work yet - I am in contact with Yves Raimond to find a solution
+	// currently, we look for exact matches
+	$query = '
+	SELECT ?artist ?name ?image ?homepage 
+	WHERE {
+		?artist a mo:MusicArtist .
+		?artist foaf:name "'.$searchString.'" .
+		?artist foaf:name ?name .
+		?artist foaf:img ?image .
+		?artist foaf:homepage ?homepage .
+	}
+	LIMIT 10';
+
 	/*PREFIX geo: <http://www.geonames.org/ontology#>
 	PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 	SELECT DISTINCT ?an ?lat ?long ?name ?population
@@ -72,8 +87,29 @@ function doSearch($searchString)
 
 	try {
 		$connection = new DLLearnerConnection();
-		$result = $connection->sparqlQuery($query);
-		$newContent = 'searching for '.$searchString.' ... not implemented '.$result;
+		$json = $connection->sparqlQuery($query);
+		$result = json_decode($json);
+		$bindings = $result->results->bindings;
+
+		// preprocessing phase
+		// found artists (currently all results are artists)
+		/*
+		$artists = array();
+		$count = 0;
+		foreach($bindings as $binding) {
+			$artists[$count]['image'] = $binding->image;
+			$count++;
+		}*/
+
+		// var_dump($bindings);
+		// $newContent = 'searching for '.$searchString.' ... not implemented <pre>test</pre>';
+		$newContent = '<h3>Search Results</h3>';
+		foreach($bindings as $binding) {
+			$newContent .= '<img style="float:right" src="'.$binding->image->value.'" />';
+			$newContent .= '<b>'.$binding->name->value.'</b><br />';
+			$newContent .= '<a href="'.$binding->homepage->value.'">'.$binding->homepage->value.'</a><br />';
+			$newContent .= 'TODO: make author name clickable such that people can get tracks from this artist and listen to them';
+		}
 	} catch (Exception $e) {
     	$newContent = '<b>Search aborted: '.$e->getMessage().'</b>';
 	}
