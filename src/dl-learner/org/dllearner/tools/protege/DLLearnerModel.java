@@ -438,19 +438,27 @@ public class DLLearnerModel extends Observable implements Runnable{
 	public void setPositiveConcept()
 	{
 		SortedSet<Individual> individuals = null;
-		for(Iterator<NamedClass> i = rs.getAtomicConcepts().iterator(); i.hasNext();)
+		if(!aktuell.getRootObject().toString().equals("Thing"))
 		{
-			if(individuals==null)
+			for(Iterator<NamedClass> i = rs.getAtomicConcepts().iterator(); i.hasNext();)
 			{
-				NamedClass concept = i.next();
-				if(concept.toString().endsWith("#"+aktuell.getRootObject().toString()))
+				if(individuals==null)
 				{
-					if(rs.retrieval(concept)!=null){
-						individual = rs.retrieval(concept);
-						break;
+					NamedClass concept = i.next();
+					if(concept.toString().endsWith("#"+aktuell.getRootObject().toString()))
+					{
+						if(rs.retrieval(concept)!=null)
+							{
+							individual = rs.retrieval(concept);
+							break;
+							}
 					}
 				}
 			}
+		}
+		else
+		{
+			individual = rs.getIndividuals();
 		}
 	}
 	
@@ -463,9 +471,12 @@ public class DLLearnerModel extends Observable implements Runnable{
 	public boolean setPositivExamplesChecked(String indi)
 	{
 			boolean isChecked = false;
-			if(individual.toString().contains(indi))
+			if(individual != null)
 			{
-				isChecked = true;
+				if(individual.toString().contains(indi))
+				{
+					isChecked = true;
+				}
 			}
     	return isChecked;
 	

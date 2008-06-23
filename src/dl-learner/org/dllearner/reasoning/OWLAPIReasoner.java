@@ -195,8 +195,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				try {
 					if(source instanceof OWLAPIOntology)
 					{
-						System.out.println(source instanceof OWLAPIOntology);
-						System.out.println("JUHU es geht");
 						OWLOntology ontology = ((OWLAPIOntology)source).getOWLOntolgy();
 						owlAPIOntologies.add(ontology);
 						allImports.addAll(manager.getImportsClosure(ontology));
@@ -216,7 +214,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					}
 					else
 					{
-						System.out.println(":'S");
 					OWLOntology ontology = manager.loadOntologyFromPhysicalURI(url.toURI());
 					owlAPIOntologies.add(ontology);
 					allImports.addAll(manager.getImportsClosure(ontology));

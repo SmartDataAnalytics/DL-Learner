@@ -177,7 +177,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 
 
     public void clear() {
-    	System.out.println("Und jetzt bin ich hier :-)");
     	dllearner.unsetEverything();
     	dllearner.makeView();
     	handleVerifyEditorContents();
@@ -194,8 +193,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
             return restrictionCreatorPanel.createRestrictions();
         }
         else if(tabbedPane.getSelectedComponent() == dllearner){
-        	System.out.println("die loesungen:"+dllearner.getSollutions());
-        	
         	return dllearner.getSollutions(); 
         }
         return super.getEditedObjects();
@@ -478,7 +475,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   */
 	  public OWLDescription getSollution()
 	  {
-		  System.out.println(model.getSolution());
 		  return model.getSolution();
 	  }
 
