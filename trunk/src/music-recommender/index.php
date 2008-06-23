@@ -45,6 +45,8 @@ if(!file_exists('main.wsdl')) {
 
 require_once 'ajax.php';
 
+// doSearch('Allison Crowe');
+
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
 <!DOCTYPE html 
@@ -64,9 +66,11 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		<!-- search form -->
 		<input type="text" id="label" />
 		<button onclick="xajax_doSearch(document.getElementById('label').value);">search</button>
+		<p>Enter an artist and click the search button. (TODO: Enable search also for tracks and tags. Enable hitting enter instead of clicking button.)</p>
+		<p>Example artist: Allison Crowe</p>
 
 		<!-- search result display -->
-		<div id="searchElement"></div>
+		<div id="searchElement" style="max-width:500px;"></div>
 
 		<h2>Song List</h2>
 		<a href="http://mediaplayer.yahoo.com/example1.mp3">song 1</a> <br />
