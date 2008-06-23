@@ -72,7 +72,6 @@ private LearningProblem learningProblem;
 		test.iterator().next();
 		Description d1 = new ObjectSomeRestriction(test.iterator().next(), new Thing());
 		test.remove(rs.getAtomicRolesList().iterator().next());
-		System.out.println("TADA: "+d1);
 		simpleSuggestions.add(d1);
 		}
 		return simpleSuggestions;
