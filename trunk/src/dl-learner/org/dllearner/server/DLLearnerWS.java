@@ -311,9 +311,9 @@ public class DLLearnerWS {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
 		Description solution = state.getLearningAlgorithm().getBestSolution();
-		if(format == "manchester")
+		if(format.equals("manchester"))
 			return solution.toManchesterSyntaxString(state.getReasoningService().getBaseURI(), new HashMap<String,String>());
-		else if(format == "kb")
+		else if(format.equals("kb"))
 			return solution.toKBSyntaxString();
 		else
 			return solution.toString();
