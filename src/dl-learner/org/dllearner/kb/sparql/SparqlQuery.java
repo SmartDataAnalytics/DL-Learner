@@ -21,15 +21,13 @@ package org.dllearner.kb.sparql;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.KnowledgeSource;
 import org.dllearner.utilities.JamonMonitorLogger;
 
-import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -45,13 +43,14 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  */
 public class SparqlQuery {
 
-	private static Logger logger = Logger.getLogger(KnowledgeSource.class);
+	private static Logger logger = Logger.getLogger(SparqlQuery.class);
+	
 
 	private boolean isRunning = false;
 	private String queryString;
 	private QueryEngineHTTP queryExecution;
 	private SparqlEndpoint endpoint;
-	private ResultSet rs;
+	//private ResultSet rs;
 	private String json;
 //	private SparqlQueryException sendException=null;
 
@@ -66,16 +65,26 @@ public class SparqlQuery {
 		this.endpoint = endpoint;
 	}
 
+	
+	
+	
+	
 	/**
 	 * Sends a SPARQL query using the Jena library.
+	 * should return JSON String
+	 * needs refactoring
+	 * @return ResultSet
 	 */
+	@Deprecated
 	public ResultSet send() {
-		
+		ResultSet rs;
 		//isRunning = true;
-		logger.trace(queryString);
+		writeToSpecialLog("***********\nNew Query:");
+		writeToSpecialLog(queryString);
+		writeToSpecialLog(endpoint.getURL().toString());
 		
 		String service = endpoint.getURL().toString();
-		logger.trace(endpoint.getURL().toString());
+		
 		// Jena access to SPARQL endpoint
 		queryExecution = new QueryEngineHTTP(service, queryString);
 		for (String dgu : endpoint.getDefaultGraphURIs()) {
@@ -91,17 +100,20 @@ public class SparqlQuery {
 		rs = queryExecution.execSelect();
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
 				
+		
 		logger.debug("query SPARQL server, retrieved: "+rs.getResultVars());
-				
-		logger.trace(rs.getResultVars().toString());
-//		} catch (Exception e){
-//			sendException=new SparqlQueryException(e.getMessage());
-//			logger.debug(e.getMessage());
-//			//e.printStackTrace();
-//			logger.debug("Exception when querying Sparql Endpoint in " + this.getClass());
-//			logger.debug(queryString);
-//		}
-		//isRunning = false;
+		writeToSpecialLog("query SPARQL server, retrieved: "+rs.getResultVars());
+		writeToSpecialLog("Results from ResultSet");
+		
+		json = SparqlQuery.getAsJSON(rs);
+		writeToSpecialLog(json);
+		rs = SparqlQuery.JSONtoResultSet(json);
+		while (rs.hasNext()){
+		    writeToSpecialLog("Result: "+rs.nextBinding());
+		}
+		
+		isRunning = false;
+		rs = SparqlQuery.JSONtoResultSet(json);
 		return rs;
 	}
 
@@ -112,6 +124,10 @@ public class SparqlQuery {
 
 	public String getQueryString() {
 		return queryString;
+	}
+	
+	public SparqlEndpoint getEndpoint() {
+	    return endpoint;
 	}
 	
 	public boolean isRunning() {
@@ -185,7 +201,18 @@ public class SparqlQuery {
 		this.isRunning=running;
 	}
 	
-	public ResultSet getResultSet(){
-		return rs;
+	public static void writeToSpecialLog(String s){
+	    try{
+	    FileWriter fw = new FileWriter("log/sparql.txt",true);
+	    fw.write(s+"\n");
+	    fw.flush();
+	    fw.close();
+	    }catch (Exception e) {
+		e.printStackTrace();
+	    }
 	}
+	
+	/*public ResultSet getResultSet(){
+		return rs;
+	}*/
 }

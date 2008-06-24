@@ -31,10 +31,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.KnowledgeSource;
 import org.dllearner.utilities.JamonMonitorLogger;
-
-import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. The queries
@@ -61,7 +58,8 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 public class Cache implements Serializable {
 
-	private static Logger logger = Logger.getLogger(KnowledgeSource.class);
+	private static Logger logger = Logger.getLogger(Cache.class);
+	
 
 
 	private static final long serialVersionUID = 843308736471742205L;
@@ -237,39 +235,41 @@ public class Cache implements Serializable {
 	 * 
 	 * @param query
 	 *            The SPARQL query.
-	 * @return Jena result set.
+	 * @return Jena result set in JSON format
 	 */
 	public String executeSparqlQuery(SparqlQuery query) {
 		JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").start();
 		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
-		
-		
-		//Statistics.increaseQuery();
-		
+	
 		JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").start();
 		String result = getCacheEntry(query.getQueryString());
 		JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").stop();
 		
 		if (result != null) {
-			query.setJson(result);
-			query.setRunning(false);
-			logger.trace("got from cache");
+			//query.setJson(result);
+			
+		    	query.setRunning(false);
+			SparqlQuery.writeToSpecialLog("***********\nJSON retrieved from cache");
+			SparqlQuery.writeToSpecialLog(query.getQueryString());
+			SparqlQuery.writeToSpecialLog(query.getEndpoint().getURL().toString());
 			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
-			//Statistics.increaseCachedQuery();
-			//return result;
+			
 		} else {
-			//SimpleClock sc = new SimpleClock();
-			//sc.printAndSet("query");
-			ResultSet rs= query.send();
-			String json = SparqlQuery.getAsJSON(rs);
+			
+			//ResultSet rs= query.send();
+		    	query.send();
+			String json = query.getJson();
 			if (json!=null){
 				addToCache(query.getQueryString(), json);
+				SparqlQuery.writeToSpecialLog("result added to cache: "+json);
 				result=json;
 				query.setJson(result);
 			}
 			else {
 				json="";
+				result="";
 				logger.warn(Cache.class.getSimpleName()+"empty result: "+query.getQueryString());
+				SparqlQuery.writeToSpecialLog("empty result for : "+query.getQueryString());
 			}
 			
 			//return json;

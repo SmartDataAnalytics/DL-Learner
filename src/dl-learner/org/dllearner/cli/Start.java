@@ -64,9 +64,9 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
@@ -120,18 +120,24 @@ public class Start {
 
 		// create logger (a simple logger which outputs
 		// its messages to the console and a log file)
+		
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		FileAppender fileAppender = null;
+		FileAppender fileAppenderNormal = null;
+		File f = new File("log/sparql.txt");
 		try {
-			fileAppender = new FileAppender(layout, "log/log.txt", false);
+		    	fileAppenderNormal = new FileAppender(layout, "log/log.txt", false);
+		    	f.delete();
+		    	f.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.addAppender(fileAppender);
+		logger.addAppender(fileAppenderNormal);
 		logger.setLevel(Level.DEBUG);
+		
 //		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
 //		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
 //		Logger.getLogger(TypedSparqlQuery.class).setLevel(Level.WARN);

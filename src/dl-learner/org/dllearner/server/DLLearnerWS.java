@@ -51,16 +51,16 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.SparqlQueryException;
-import org.dllearner.kb.sparql.Cache;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
@@ -71,8 +71,6 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
-
-import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * DL-Learner web service interface.
@@ -520,10 +518,10 @@ public class DLLearnerWS {
 	public String getAsJSON(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException
 	{
 		ClientState state = getState(sessionID);
-		ResultSet resultSet=null;
+		//ResultSet resultSet=null;
 		String json=null;
 		if ((json=state.getQuery(queryID).getJson())!=null) return json;
-		else if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsJSON(resultSet); 
+		//else if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsJSON(resultSet); 
 		else return SparqlQuery.getAsJSON(state.getQuery(queryID).send());
 	}
 	
@@ -531,10 +529,10 @@ public class DLLearnerWS {
 	public String getAsXMLString(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
-		ResultSet resultSet=null;
+		//ResultSet resultSet=null;
 		String json=null;
-		if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsXMLString(resultSet);
-		else if ((json=state.getQuery(queryID).getJson())!=null) return SparqlQuery.getAsXMLString(SparqlQuery.JSONtoResultSet(json));
+		//if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsXMLString(resultSet);
+		if ((json=state.getQuery(queryID).getJson())!=null) return SparqlQuery.getAsXMLString(SparqlQuery.JSONtoResultSet(json));
 		else return SparqlQuery.getAsXMLString(state.getQuery(queryID).send());
 	}
 	
@@ -590,7 +588,6 @@ public class DLLearnerWS {
 	public void stopSparqlThread(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
-		
 		state.getQuery(queryID).stop();
 	}
 	
