@@ -20,6 +20,7 @@
 package org.dllearner.server;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
@@ -29,6 +30,7 @@ import java.util.concurrent.Executors;
 import javax.xml.ws.Endpoint;
 
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -46,14 +48,28 @@ import com.sun.net.httpserver.HttpServer;
 public class DLLearnerWSStart {
 
 	public static void main(String[] args) {
-
-		// create web service logger
-		SimpleLayout layout = new SimpleLayout();
+	    	
+	    	//create web service logger
+	    	SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		Logger logger = Logger.getRootLogger();
+		
+	    	FileAppender fileAppenderNormal = null;
+	    	File f = new File("log/sparql.txt");
+		try {
+		    	fileAppenderNormal = new FileAppender(layout, "log/log.txt", false);
+		    	f.delete();
+		    	f.createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
+		logger.addAppender(fileAppenderNormal);
 		logger.setLevel(Level.INFO);
+		
 
 		InetSocketAddress isa = new InetSocketAddress("localhost", 8181);
 		HttpServer server = null;
