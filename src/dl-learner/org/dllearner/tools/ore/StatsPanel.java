@@ -1,13 +1,17 @@
 package org.dllearner.tools.ore;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
+import javax.swing.border.BevelBorder;
 
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -28,107 +32,49 @@ public class StatsPanel extends JPanel{
 	
 	public void init(){
 		
-		setBorder(new TitledBorder("stats"));
-		
-	
+		setBackground(Color.WHITE);
+		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));		
 		
 		GridBagLayout gbl = new GridBagLayout();
+		gbl.rowWeights = new double[] {0.0, 0.1, 0.1};
+		gbl.rowHeights = new int[] {34, 7, 7};
+		gbl.columnWeights = new double[] {0.1};
+		gbl.columnWidths = new int[] {7};
 		setLayout(gbl);
 		
+		
+		
+	
 		        
-        GridBagConstraints gbc = new GridBagConstraints();
-        JLabel descLb = new JLabel("Description:");
-        JLabel indLb = new JLabel("Individual:");
-        JLabel classLb = new JLabel("Classes:");
        
         
-        JLabel descLb1 = new JLabel(ore.conceptToAdd.toString());
+        JPanel indPanel = new JPanel();
+        indPanel.setBackground(new Color(224, 223, 227));
+        indPanel.setLayout(new GridLayout(0, 1));
+        JLabel indLb = new JLabel("Individual:");
+        indLb.setFont(indLb.getFont().deriveFont(Font.BOLD));
         JLabel indLb1 = new JLabel(ind.getName());
+        indPanel.add(indLb);
+        indPanel.add(indLb1);
+        
+        JPanel classesPanel = new JPanel();
+        classesPanel.setBackground(new Color(224, 223, 227));
+        classesPanel.setLayout(new GridLayout(0, 1));
+        JLabel classLb = new JLabel("Classes:");
+        classLb.setFont(indLb.getFont().deriveFont(Font.BOLD));
+        classesPanel.add(classLb);
+        
         Set<NamedClass> t = null;
-		
-		JPanel classesPanel = new JPanel(new GridLayout(0, 1));
-		
+					
 		t = ore.reasoner2.getConcepts(ind);
-		t.add(ore.getConcept());
+		
 		for(NamedClass nc : t)
 			classesPanel.add(new JLabel(nc.getName()));
         
 		
 
-        
-        gbc.gridx = 0; // first column
-        gbc.gridy = 0; // first row
-        gbc.gridwidth = 1; // occupies only one column
-        gbc.gridheight = 1; // occupies only one row
-        gbc.weightx = 20; // relative horizontal size - first column
-        gbc.weighty = 10; // relative vertical size - first row
-        gbc.fill = GridBagConstraints.NONE; // stay as small as possible
-        // suite for labels
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-        //inform the layout about the control to be added and its constraints:
-        gbl.setConstraints(descLb, gbc);
-        add(descLb); //add the JLabel to the JPanel object
-
-        gbc.gridx = 0; // first column
-        gbc.gridy = 1; // second row
-        gbc.gridwidth = 1; // occupies only one column
-        gbc.gridheight = 1; // occupies only one row
-        gbc.weightx = 0; // !!! horizontal size for the column is defined already!
-        gbc.weighty = 10; // relative vertical size - second row
-        gbc.fill = GridBagConstraints.NONE; // stay as small as possible, suites for labels
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-        //inform the layout about the control to be added and its constraints:
-        gbl.setConstraints(indLb, gbc);
-        add(indLb);
-        
-        gbc.gridx = 0; // first column
-        gbc.gridy = 2; // third row
-        gbc.gridwidth = 1; // occupies only one column
-        gbc.gridheight = 1; // occupies only one row
-        gbc.weightx = 0; // !!! horizontal size for the column is defined already!
-        gbc.weighty = 10; // relative vertical size - second row
-        gbc.fill = GridBagConstraints.NONE; // stay as small as possible, suites for labels
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-        //inform the layout about the control to be added and its constraints:
-        gbl.setConstraints(classLb, gbc);
-        add(classLb);
-        
-        gbc.gridx = 1;      // second column
-        gbc.gridy = 0;      // first row
-        gbc.gridwidth = 1;  // occupies only one column
-        gbc.gridheight = 1;  // occupies only one row 
-        gbc.weightx = 100;    // horizontal size - second column
-        gbc.weighty = 0;    // !!! vertical size for the row is defined already!
-        gbc.fill = GridBagConstraints.HORIZONTAL;    // fill horizontally entire cell      
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-
-        gbl.setConstraints(descLb1, gbc);
-        add(descLb1);
-        
-        gbc.gridx = 1;      // second column
-        gbc.gridy = 1;      // second row
-        gbc.gridwidth = 1;  // occupies only one column
-        gbc.gridheight = 1;  // occupies only one row 
-        gbc.weightx = 0;    // horizontal size for the column is defined already!
-        gbc.weighty = 0;    // vertical size for the row is defined already!
-        gbc.fill = GridBagConstraints.HORIZONTAL;    // fill horizontally entire cell          
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-
-        gbl.setConstraints(indLb1, gbc);
-        add(indLb1);    
-        
-        gbc.gridx = 1;      // second column
-        gbc.gridy = 2;      // third row
-        gbc.gridwidth = 1;  // occupies only one column
-        gbc.gridheight = 1;  // occupies only one row 
-        gbc.weightx = 0;    // horizontal size for the column is defined already!
-        gbc.weighty = 0;    // vertical size for the row is defined already!
-        gbc.fill = GridBagConstraints.HORIZONTAL;    // fill horizontally entire cell          
-        gbc.anchor = GridBagConstraints.CENTER; // center aligning
-
-//        gbl.setConstraints(scrollPane, gbc);
-//        statsPanel.add(scrollPane);    
-        gbl.setConstraints(classesPanel, gbc);
-        add(classesPanel);    
+		add(indPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+       
+        add(classesPanel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));    
 	}
 }

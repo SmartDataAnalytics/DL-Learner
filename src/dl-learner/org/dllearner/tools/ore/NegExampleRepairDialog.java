@@ -1,18 +1,20 @@
 package org.dllearner.tools.ore;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
@@ -20,11 +22,11 @@ import javax.swing.border.EmptyBorder;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owl.model.RemoveAxiom;
 
-public class NegExampleRepairDialog extends JDialog implements ActionListener{
+public class NegExampleRepairDialog extends JDialog implements ActionListener, MouseListener{
 	
 	/**
 	 * 
@@ -76,16 +78,23 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener{
 				
 		changesPanel = new ChangesPanel();
 	    changesPanel.init();
-	    
+	    JButton deleteButton = new JButton("delete");
+	    deleteButton.addActionListener(this);
+	    changesPanel.add(deleteButton);
 	    
 	    action_stats_Panel = new JPanel();
-		action_stats_Panel.setLayout(new GridLayout(4,0));
-	    
+		
+		GridBagLayout gbl = new GridBagLayout();
+		gbl.rowWeights = new double[] {0.0, 0.1, 0.1};
+		gbl.rowHeights = new int[] {34, 7, 7};
+		gbl.columnWeights = new double[] {0.1};
+		gbl.columnWidths = new int[] {7};
+		action_stats_Panel.setLayout(gbl);
 		
 		
-		action_stats_Panel.add(descPanel);
-		action_stats_Panel.add(scroll);
-		action_stats_Panel.add(changesPanel);
+		action_stats_Panel.add(descPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+		action_stats_Panel.add(scroll, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
+		action_stats_Panel.add(changesPanel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
 		
 		
 		JSeparator separator = new JSeparator();
@@ -117,38 +126,44 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener{
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(e.getSource());
+		
 		if(e.getSource() instanceof DescriptionMenuItem){
 			actualDesc = ((DescriptionMenuItem)e.getSource()).getDescription();
-			
+				
 			if(e.getActionCommand().startsWith("remove class")){                       //remove class
-				System.err.println("vorher: " + ore.modi.checkInstanceNewOntology(ore.getConceptToAdd() ,ind));
-				System.err.println("vorher: " + ore.modi.getCriticalDescriptions(ind, ore.conceptToAdd));
-				ore.modi.removeClassAssertion(ind, actualDesc);
+				
+				List<OWLOntologyChange> changes  = ore.modi.removeClassAssertion(ind, actualDesc);
+				descPanel.updatePanel();
+				changesPanel.add(new ChangePanel("removed class assertion to " + actualDesc, changes, this));
+				
+				
+			}
+			else if(e.getActionCommand().startsWith("add class")){                     //add class
+				List<OWLOntologyChange> changes  = ore.modi.addClassAssertion(ind, actualDesc);
+				descPanel.updatePanel();
+				changesPanel.add(new ChangePanel("added class assertion to " + actualDesc, changes, this));
+					
+					
+			}
+			else{                    //move class
+			
+				newDesc = new NamedClass(e.getActionCommand());
+				List<OWLOntologyChange> changes  = ore.modi.moveIndividual(ind, actualDesc, newDesc);
 				
 				descPanel.updatePanel();
-				changesPanel.add(new JLabel("removed class assertion to " + actualDesc));
-				changesPanel.add(new JButton("Undo"));
-				System.err.println("nachher: " + ore.modi.checkInstanceNewOntology(ore.conceptToAdd, ind));
-				System.err.println("nachher: " + ore.modi.getCriticalDescriptions(ind, ore.conceptToAdd));
+				changesPanel.add(new ChangePanel("moved class assertion from " + actualDesc + " to " + newDesc, changes, this));
+				
 			}
-//			else if(e.getActionCommand().startsWith("add class")){                     //add class
-//					System.err.println(actualDesc);
-//					ore.modi.addClassAssertion(ind, actualDesc);
-//					actionsPanel.updatePanel();
-//					changes.add(new JLabel("added class assertion to " + actualDesc));
-//					
-//			}
-//			else if(e.getActionCommand().startsWith("move class")){                    //move class
-//			
-//				newDesc = (Description)new ChooseDialog(this, ore, ind).getSelectedElement();
-//				System.err.println(newDesc);
-//				if(newDesc != null){
-//					System.out.print(ind + " from " + actualDesc + " to " + newDesc);
-//					ore.modi.moveIndividual(ind, actualDesc, newDesc);
-//					}
-//				
-//			}
+			
+		}
+		else if(e.getActionCommand().equals("delete")){
+			List<OWLOntologyChange> changes  = ore.modi.deleteIndividual(ind);
+			for(OWLOntologyChange ol : changes)
+				System.out.println(((RemoveAxiom)ol).getAxiom());
+		}
+			
+
+	}
 //			else if(e.getActionCommand().equals("add property")){                      //add property
 //				object = (Individual)new ChooseDialog(this, ore, actualDesc).getSelectedElement();
 //				if(object != null)
@@ -158,6 +173,35 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener{
 //				ore.modi.deleteObjectProperty(ind, (ObjectSomeRestriction)actualDesc);
 //			}
 //		}
+
+	public void mouseClicked(MouseEvent e) {
+		if(e.getSource() instanceof UndoLabel){
+			List<OWLOntologyChange> changes = ((UndoLabel)e.getSource()).getChanges();
+			ore.modi.undoChanges(changes);
+			descPanel.updatePanel();
+			changesPanel.updatePanel(((UndoLabel)e.getSource()).getParent());
+		}
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 		
 //		if(e.getActionCommand().equals("delete instance")){
 //			ore.modi.deleteIndividual(ind);
@@ -202,8 +246,7 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener{
 //				ore.modi.deleteObjectProperty(ind, (ObjectSomeRestriction)actualDesc);
 //			}
 //		}
-	}
-	}
+	
 	
 	
 	

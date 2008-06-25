@@ -60,17 +60,19 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		@SuppressWarnings("unchecked")
 		@Override
 		public List<Description> doInBackground() {
+			
 			panel4.getResultList().setCellRenderer(new ColumnListCellRenderer(getWizardModel().getOre()));
 			panel4.getLoadingLabel().setBusy(true);
 			panel4.getStatusLabel().setText("Learning");
 			getWizardModel().getOre().setNoise(panel4.getNoise());
 			
+			
+			
 			la = getWizardModel().getOre().start();//started endlosen Algorithmus
-			
-			
 			publish(la.getBestSolutions(10));
+			
 					
-			List<Description> result = getWizardModel().getOre().getLearningResults(10);
+			List<Description> result = getWizardModel().getOre().getLearningResults(100);
 
 			return result;
 		}
@@ -97,6 +99,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 
 		@Override
 		protected void process(List<List<Description>> resultLists) {
+			
 			panel4.getModel().clear();
 			
 			for (List<Description> list : resultLists) {

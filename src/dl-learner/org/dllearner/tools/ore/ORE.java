@@ -1,6 +1,5 @@
 package org.dllearner.tools.ore;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,9 +11,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
@@ -28,6 +25,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLAPIOntology;
@@ -50,7 +48,7 @@ public class ORE {
 	OWLAPIReasoner reasoner2;
 	SortedSet<Individual> posExamples;
 	SortedSet<Individual> negExamples;
-	NamedClass concept;
+	NamedClass ignoredConcept;
 	Description conceptToAdd;
 	OntologyModifierOWLAPI modi;
 	Set<NamedClass> allAtomicConcepts;
@@ -87,16 +85,16 @@ public class ORE {
 	
 	public void detectReasoner(){
 		
-		reasoner = cm.reasoner(FastInstanceChecker.class, ks);
-		try {
-			reasoner.init();
-		} catch (ComponentInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-				
-		rs = cm.reasoningService(reasoner);
+//		reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+//		try {
+//			reasoner.init();
+//		} catch (ComponentInitException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//				
+//		rs = cm.reasoningService(reasoner);
 		reasoner2 = cm.reasoner(OWLAPIReasoner.class, ks);
 		reasoner2.init();
 		
@@ -112,7 +110,7 @@ public class ORE {
 	}
 	
 	public void setPosNegExamples(){
-		posExamples = rs.retrieval(concept);
+		posExamples = rs.retrieval(ignoredConcept);
 		negExamples = rs.getIndividuals();
 		
 		for (Individual rem_pos : posExamples)
@@ -143,7 +141,7 @@ public class ORE {
 		//la = new ROLearner(lp, rs);
 		
 		Set<String> t = new TreeSet<String>();
-		t.add(concept.getName());
+		t.add(ignoredConcept.getName());
 		cm.applyConfigEntry(la, "ignoredConcepts", t );
 		cm.applyConfigEntry(la, "noisePercentage", noise);
 		cm.applyConfigEntry(la, "guaranteeXgoodDescriptions", 5);
@@ -157,7 +155,7 @@ public class ORE {
 	}
 	
 	public void setConcept(NamedClass concept){
-		this.concept = concept;
+		this.ignoredConcept = concept;
 	}
 
 	
@@ -185,6 +183,11 @@ public class ORE {
 		return la.getBestSolutions(anzahl);
 	}
 	
+	/**
+	 * 
+	 * @param d
+	 * @return
+	 */
 	public BigDecimal getCorrectness(Description d){
 		int numberPosExamples = 0;
 		int numberNegExamples = 0;
@@ -306,8 +309,8 @@ public class ORE {
 		return modi;
 	}
 
-	public NamedClass getConcept() {
-		return concept;
+	public NamedClass getIgnoredConcept() {
+		return ignoredConcept;
 	}
 
 	public void setAllAtomicConcepts(Set<NamedClass> allAtomicConcepts) {
@@ -333,10 +336,11 @@ public class ORE {
 		Set<Description> criticals = new HashSet<Description>();
 		List<Description> children = desc.getChildren();
 		
-
-		
-			if(children.size() >= 2){
+				
+		if(reasoner2.instanceCheck(desc, ind)){
 			
+			if(children.size() >= 2){
+				
 				if(desc instanceof Intersection){
 					for(Description d: children)
 						criticals.addAll(getCriticalDescriptions(ind, d));
@@ -344,17 +348,13 @@ public class ORE {
 				}
 				else if(desc instanceof Union){
 					for(Description d: children)
-						try {
-							if(reasoner.instanceCheck(d, ind))
-								criticals.addAll(getCriticalDescriptions(ind, d));
-						} catch (ReasoningMethodUnsupportedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						if(reasoner2.instanceCheck(d, ind))
+							criticals.addAll(getCriticalDescriptions(ind, d));
 				}
 			}
 			else
 				criticals.add(desc);
+		}
 		
 		
 		return criticals;
@@ -431,12 +431,21 @@ public class ORE {
 	}
 	
 	public Set<NamedClass> getpossibleMoveClasses(Individual ind){
-		Set<NamedClass> classes = rs.getAtomicConcepts();
-		for(NamedClass nc : classes)
-			if(rs.instanceCheck(nc, ind))
-				classes.remove(nc);
+		Set<NamedClass> moveClasses = rs.getAtomicConcepts();
+		Set<NamedClass> indClasses = new HashSet<NamedClass>();
 		
-		return classes;
+		for(NamedClass moveNc : moveClasses)
+			if(rs.instanceCheck(moveNc, ind)){
+				indClasses.add(moveNc);
+		}
+		moveClasses.removeAll(indClasses);
+		
+		for(NamedClass moveNc : moveClasses)
+			for(NamedClass indNc : indClasses )
+				if(new Intersection(moveNc, indNc).equals(new Nothing()))
+					moveClasses.remove(moveNc);
+			
+		return moveClasses;
 	}
 	
 	public void updateReasoner(){
@@ -449,6 +458,16 @@ public class ORE {
 		}
 	}
 	
+	public boolean hasComplement(Description desc, Individual ind){
+		
+		for(NamedClass nc : reasoner2.getAtomicConcepts())
+			if(reasoner2.instanceCheck(nc, ind))
+				if(modi.isComplement(desc, nc))
+					return true;
+							
+		return false;
+	}
+	
 		
 	
 	
@@ -456,12 +475,12 @@ public class ORE {
 		
 		final ORE test = new ORE();
 		
-		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/test.owl");
+		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/inkohaerent.owl");
 		
 		test.setKnowledgeSource(owlFile);
 	
 		test.detectReasoner();
-		ReasoningService rs = test.getReasoningService();
+		System.out.println(test.reasoner2.getInconsistentClasses());
 //		System.err.println("Concepts :" + rs.getAtomicConcepts());
 		
 		
@@ -470,19 +489,21 @@ public class ORE {
 //		System.out.println(test.posExamples);
 //		System.out.println(test.negExamples);
 //		test.start();
-		Individual ind = new Individual("http://www.test.owl#lorenz");
-		System.out.println(rs.getIndividuals());
-		Description d = new Intersection(new NamedClass("http://www.test.owl#A"), new Union(new NamedClass("http://www.test.owl#B"),
-				new NamedClass("http://www.test.owl#C")));
-		System.out.println(d);
-		System.out.println(test.getCriticalDescriptions(ind, d));
-		JFrame testFrame = new JFrame();
-		JPanel j = new JPanel();
-		testFrame.add(j);
-		testFrame.setSize(new Dimension(400, 400));
-		for(JLabel jLab : test.DescriptionToJLabel(ind, d))
-			j.add(jLab);
-		testFrame.setVisible(true);
+//		Individual ind = new Individual("http://www.test.owl#lorenz");
+		
+//		test.modi.addClassAssertion(ind, new NamedClass("http://www.test.owl#B"));
+//		System.out.println(test.reasoner2.getInconsistentClasses());
+//		Description d = new Intersection(new NamedClass("http://www.test.owl#A"), new Union(new NamedClass("http://www.test.owl#B"),
+//				new NamedClass("http://www.test.owl#C")));
+//		System.out.println(d);
+//		System.out.println(test.getCriticalDescriptions(ind, d));
+//		JFrame testFrame = new JFrame();
+//		JPanel j = new JPanel();
+//		testFrame.add(j);
+//		testFrame.setSize(new Dimension(400, 400));
+//		for(JLabel jLab : test.DescriptionToJLabel(ind, d))
+//			j.add(jLab);
+//		testFrame.setVisible(true);
 		
 		
 	
