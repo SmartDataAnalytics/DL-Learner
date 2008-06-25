@@ -1,11 +1,14 @@
 package org.dllearner.tools.ore;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
 
 import org.dllearner.core.owl.Individual;
 
@@ -22,13 +25,19 @@ public class DescriptionPanel extends JPanel{
 	public DescriptionPanel(ORE ore, Individual ind, ActionListener aL){
 		
 		super();
+		setBackground(Color.WHITE);
+		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		this.ore = ore;
 		this.ind = ind;
 		this.aL = aL;
 		for(JLabel jL : ore.DescriptionToJLabel(ind, ore.conceptToAdd)){
 			add(jL);
-			if(jL instanceof DescriptionLabel)
+			if(jL instanceof DescriptionLabel){
+				
+				((DescriptionLabel)jL).setIndOre(ore, ind);
+				((DescriptionLabel)jL).init();
 				((DescriptionLabel)jL).addActionListeners(aL);
+			}
 		}
 	}
 	
@@ -40,8 +49,13 @@ public class DescriptionPanel extends JPanel{
 		ore.updateReasoner();
 		for(JLabel jL : ore.DescriptionToJLabel(ind, ore.conceptToAdd)){
 			add(jL);
-			if(jL instanceof DescriptionLabel)
+			if(jL instanceof DescriptionLabel){
+				((DescriptionLabel)jL).setIndOre(ore, ind);
+				((DescriptionLabel)jL).init();
 				((DescriptionLabel)jL).addActionListeners(aL);
+				
+				
+			}
 		}
 		SwingUtilities.updateComponentTreeUI(this);
 		

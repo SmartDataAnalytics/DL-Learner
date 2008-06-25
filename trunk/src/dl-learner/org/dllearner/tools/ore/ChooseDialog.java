@@ -99,7 +99,7 @@ public class ChooseDialog extends JDialog implements ActionListener{
 		return selectedElement;
 	}
 
-	@Override
+
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(okButton)){
 			selectedElement = list.getSelectedValue();
