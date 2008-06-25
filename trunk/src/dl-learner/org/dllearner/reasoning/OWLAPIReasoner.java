@@ -937,15 +937,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public Set<OWLClass> getInconsistentClasses(){
+	public Set<NamedClass> getInconsistentClasses(){
+		Set<NamedClass> concepts = new HashSet<NamedClass>();
 		
 		try {
-			return reasoner.getInconsistentClasses();
+			for(OWLClass concept : reasoner.getInconsistentClasses())
+				concepts.add(new NamedClass(concept.getURI().toString()));
+			
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
-			throw new Error("Inconsistens classes check error in OWL API.");
+			throw new Error("Inconsistent classes check error in OWL API.");
 		}
-		
+		return concepts;
 	}
 
 }
