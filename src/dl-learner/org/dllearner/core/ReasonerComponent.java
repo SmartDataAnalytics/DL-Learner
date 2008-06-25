@@ -256,7 +256,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	
 	public abstract void releaseKB();
 	
-	public Set<OWLClass> getInconsistentClasses() throws ReasoningMethodUnsupportedException{
+	public Set<NamedClass> getInconsistentClasses() throws ReasoningMethodUnsupportedException{
 		throw new ReasoningMethodUnsupportedException();
 	}
 }
