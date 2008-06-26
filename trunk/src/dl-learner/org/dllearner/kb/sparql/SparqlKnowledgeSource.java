@@ -45,7 +45,6 @@ import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.extraction.Manager;
-import org.dllearner.kb.extraction.Manipulator;
 import org.dllearner.kb.extraction.ManipulatorType;
 import org.dllearner.kb.extraction.Manipulators;
 import org.dllearner.parser.KBParser;

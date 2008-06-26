@@ -47,11 +47,12 @@ public class SparqlQuery {
 	
 
 	private boolean isRunning = false;
+	private boolean wasExecuted = false;
 	private String queryString;
 	private QueryEngineHTTP queryExecution;
 	private SparqlEndpoint endpoint;
 	//private ResultSet rs;
-	private String json;
+	private String json = null;
 //	private SparqlQueryException sendException=null;
 
 	/**
@@ -61,7 +62,8 @@ public class SparqlQuery {
 	 * @param endpoint
 	 */
 	public SparqlQuery(String queryString, SparqlEndpoint endpoint) {
-		this.queryString = queryString;
+	    //	QUALITY there seems to be a bug in ontowiki
+	    	this.queryString = queryString.replaceAll("\n", " ");
 		this.endpoint = endpoint;
 	}
 
@@ -71,17 +73,18 @@ public class SparqlQuery {
 	
 	/**
 	 * Sends a SPARQL query using the Jena library.
-	 * should return JSON String
-	 * needs refactoring
-	 * @return ResultSet
+	 * main format is JSON use method getasjson
+	 * 
+	 * @return nothing
 	 */
-	@Deprecated
-	public ResultSet send() {
+	
+	public void send() {
+	    	wasExecuted = true;
 		ResultSet rs;
 		//isRunning = true;
-		writeToSpecialLog("***********\nNew Query:");
-		writeToSpecialLog(queryString);
-		writeToSpecialLog(endpoint.getURL().toString());
+		writeToSparqlLog("***********\nNew Query:");
+		writeToSparqlLog(queryString);
+		writeToSparqlLog(endpoint.getURL().toString());
 		
 		String service = endpoint.getURL().toString();
 		
@@ -94,6 +97,7 @@ public class SparqlQuery {
 			queryExecution.addNamedGraph(ngu);
 		}
 		
+		
 		//TODO remove after overnext Jena release
 		HttpQuery.urlLimit = 3*1024 ;
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").start();
@@ -101,20 +105,17 @@ public class SparqlQuery {
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
 				
 		
-		logger.debug("query SPARQL server, retrieved: "+rs.getResultVars());
-		writeToSpecialLog("query SPARQL server, retrieved: "+rs.getResultVars());
-		writeToSpecialLog("Results from ResultSet");
+		logger.debug("query length: "+queryString.length()+" | ENDPOINT: "+endpoint.getURL().toString());
+		//writeToSparqlLog("query: "+queryString+ " | ENDPOINT: "+endpoint.getURL().toString());
+		
+		
 		
 		json = SparqlQuery.getAsJSON(rs);
-		writeToSpecialLog(json);
-		rs = SparqlQuery.JSONtoResultSet(json);
-		while (rs.hasNext()){
-		    writeToSpecialLog("Result: "+rs.nextBinding());
-		}
+		
+		writeToSparqlLog("JSON: "+json);
 		
 		isRunning = false;
-		rs = SparqlQuery.JSONtoResultSet(json);
-		return rs;
+		
 	}
 
 	public void stop() {
@@ -143,7 +144,7 @@ public class SparqlQuery {
 //	}
 
 	/**
-	 * sends a query and returns XML
+	 * Converts Jena result set to XML.
 	 * 
 	 * @return String xml
 	 */
@@ -188,12 +189,25 @@ public class SparqlQuery {
 		//System.out.println("JSON " + json);
 		return ResultSetFactory.fromJSON(bais);
 	}
+	
+	/**
+	 * Converts from JSON to xml format.
+	 * 
+	 * @param json
+	 *            A JSON representation if a SPARQL query result.
+	 * @return A Jena ResultSet.
+	 */
+	public static String JSONtoXML(String json) {
+		return getAsXMLString(JSONtoResultSet(json));
+	}
 
 	public String getJson() {
+	    	if(wasExecuted == false){this.send();}
 		return json;
 	}
 
 	public void setJson(String json) {
+	    	this.wasExecuted=true;
 		this.json = json;
 	}
 	
@@ -201,7 +215,7 @@ public class SparqlQuery {
 		this.isRunning=running;
 	}
 	
-	public static void writeToSpecialLog(String s){
+	public static void writeToSparqlLog(String s){
 	    try{
 	    FileWriter fw = new FileWriter("log/sparql.txt",true);
 	    fw.write(s+"\n");
@@ -212,7 +226,13 @@ public class SparqlQuery {
 	    }
 	}
 	
-	/*public ResultSet getResultSet(){
-		return rs;
-	}*/
+	public ResultSet getResultSet(){
+	    	if(getJson() == null) {return null;}
+		else return JSONtoResultSet(json) ;
+	}
+	
+	public String getXMLString(){
+	    	if(getJson() == null) {return null;}
+		else return JSONtoXML(json) ;
+	}
 }
