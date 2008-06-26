@@ -286,7 +286,12 @@ public class DLLearnerModel extends Observable implements Runnable{
 	public void setReasoner()
 	{
 		this.reasoner =cm.reasoner(OWLAPIReasoner.class,source);
-		reasoner.init();
+		try {
+			reasoner.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		rs = cm.reasoningService(reasoner);
 	}
 	

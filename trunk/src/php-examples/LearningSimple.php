@@ -62,7 +62,7 @@ $client->initAll($id);
 
 // learn concept
 echo 'start learning ... ';
-$concept = $client->learn($id);
+$concept = $client->learn($id, "manchester");
 echo 'OK <br />';
 echo 'solution: ' . $concept;
 

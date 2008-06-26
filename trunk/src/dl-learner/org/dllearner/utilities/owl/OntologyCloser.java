@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.ClassAssertionAxiom;
@@ -47,7 +48,12 @@ public class OntologyCloser {
 		Set<KnowledgeSource> ks = new HashSet<KnowledgeSource>();
 		ks.add(this.kbFile);
 		OWLAPIReasoner owlapi = new OWLAPIReasoner(ks);
-		owlapi.init();
+		try {
+			owlapi.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.indToRestr = new HashMap<Individual, Set<ObjectExactCardinalityRestriction>>();
 		this.classes = new HashSet<Description>();
 		this.rs = new ReasoningService(owlapi);
@@ -64,7 +70,12 @@ public class OntologyCloser {
 		sc.printAndSet("updating reasoner");
 		OWLAPIReasoner owlapi = new OWLAPIReasoner(ks);
 		sc.printAndSet("init");
-		owlapi.init();
+		try {
+			owlapi.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		sc.printAndSet();
 		this.rs = new ReasoningService(owlapi);
 		

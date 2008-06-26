@@ -36,6 +36,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigEntry;
@@ -162,7 +163,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}	
 	
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		
 		// it is a bit cumbersome to obtain all classes, because there
@@ -294,10 +295,19 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		
 		// compute class hierarchy and types of individuals
 		// (done here to speed up later reasoner calls)
+		boolean inconsistentOntology = false;
 		try {
 			reasoner.loadOntologies(allImports);
-			reasoner.classify();
-			reasoner.realise();
+			for(OWLOntology ont : owlAPIOntologies) {
+				if(!reasoner.isConsistent(ont)) {
+					inconsistentOntology = true;
+					throw new ComponentInitException("Inconsistent ontologies.");
+				}
+			}
+			if(!inconsistentOntology) {
+				reasoner.classify();
+				reasoner.realise();
+			}
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 		}
