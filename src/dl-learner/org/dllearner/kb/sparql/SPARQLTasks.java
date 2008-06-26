@@ -354,8 +354,8 @@ public class SPARQLTasks {
 		if(c==null){
 			SparqlQuery sq = new SparqlQuery(SPARQLquery,se);
 //			sq.extraDebugInfo+=se.getURL();
-			ResultSet rs=sq.send();
-			String JSON = SparqlQuery.getAsJSON(rs); 
+			sq.send();
+			String JSON = sq.getJson(); 
 			return JSON;
 		}else{
 			return c.executeSparqlQuery(new SparqlQuery(SPARQLquery,se));

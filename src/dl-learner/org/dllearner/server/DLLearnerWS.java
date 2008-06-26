@@ -519,21 +519,39 @@ public class DLLearnerWS {
 	{
 		ClientState state = getState(sessionID);
 		//ResultSet resultSet=null;
-		String json=null;
-		if ((json=state.getQuery(queryID).getJson())!=null) return json;
+		String json = null;
+		try {
+		    json = state.getQuery(queryID).getJson();
+		}catch (Exception e) {
+		    e.printStackTrace();
+		    throw new SparqlQueryException("SparqlQuery failed"+e.toString());
+		}
+		
+		if(json == null) { throw new SparqlQueryException("SparqlQuery failed JSON was null");}
+		return json;
+		//if ((json=state.getQuery(queryID).getJson())!=null) return json;
 		//else if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsJSON(resultSet); 
-		else return SparqlQuery.getAsJSON(state.getQuery(queryID).send());
+		//else return SparqlQuery.getAsJSON(state.getQuery(queryID).send());
 	}
 	
 	@WebMethod
-	public String getAsXMLString(int sessionID, int queryID) throws ClientNotKnownException
+	public String getAsXMLString(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException
 	{
 		ClientState state = getState(sessionID);
-		//ResultSet resultSet=null;
-		String json=null;
+		
+		String xml = null;
+		try{	
+		    xml = state.getQuery(queryID).getXMLString();
+        	}catch (Exception e) {
+        	    e.printStackTrace();
+        	    throw new SparqlQueryException("SparqlQuery failed"+e.toString());
+        	}
+		
+		if(xml == null) throw new SparqlQueryException("SparqlQuery failed xml was null");
+		return xml;
 		//if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsXMLString(resultSet);
-		if ((json=state.getQuery(queryID).getJson())!=null) return SparqlQuery.getAsXMLString(SparqlQuery.JSONtoResultSet(json));
-		else return SparqlQuery.getAsXMLString(state.getQuery(queryID).send());
+		//if ((json=state.getQuery(queryID).getJson())!=null) return SparqlQuery.getAsXMLString(SparqlQuery.JSONtoResultSet(json));
+		//else return SparqlQuery.getAsXMLString(state.getQuery(queryID).send());
 	}
 	
 	@WebMethod
@@ -574,7 +592,7 @@ public class DLLearnerWS {
 			Cache cache=new Cache(ks.getCacheDir());
 			return cache.executeSparqlQuery(sparql);
 		}
-		else return SparqlQuery.getAsJSON(sparql.send());
+		else return sparql.getJson();
 	}
 	
 	@WebMethod
