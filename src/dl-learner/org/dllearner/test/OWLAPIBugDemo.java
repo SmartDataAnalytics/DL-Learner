@@ -17,7 +17,9 @@ public class OWLAPIBugDemo {
 
             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
             URI ontologyURI = URI.create("http://www.examples.com/test");
-            File f = new File("test.owl");
+//            File f = new File("test.owl");
+            
+            File f = new File("src/dl-learner/org/dllearner/tools/ore/inconsistent.owl");
             URI physicalURI = f.toURI();
             SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
             manager.addURIMapper(mapper);

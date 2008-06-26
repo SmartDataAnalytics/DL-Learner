@@ -94,9 +94,14 @@ public class ORE {
 		}
 		
 				
-		rs = cm.reasoningService(reasoner);
+//		rs = cm.reasoningService(reasoner);
 		reasoner2 = cm.reasoner(OWLAPIReasoner.class, ks);
-		reasoner2.init();
+		try {
+			reasoner2.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		modi = new OntologyModifierOWLAPI(reasoner2);
 	}
@@ -475,12 +480,12 @@ public class ORE {
 		
 		final ORE test = new ORE();
 		
-		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/inkohaerent.owl");
+		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/inconsistent.owl");
 		
 		test.setKnowledgeSource(owlFile);
 	
 		test.detectReasoner();
-		System.out.println(test.reasoner2.getInconsistentClasses());
+//		System.out.println(test.reasoner2.getInconsistentClasses());
 //		System.err.println("Concepts :" + rs.getAtomicConcepts());
 		
 		
