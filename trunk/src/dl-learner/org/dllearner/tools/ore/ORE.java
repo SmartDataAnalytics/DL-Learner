@@ -85,16 +85,16 @@ public class ORE {
 	
 	public void detectReasoner(){
 		
-//		reasoner = cm.reasoner(FastInstanceChecker.class, ks);
-//		try {
-//			reasoner.init();
-//		} catch (ComponentInitException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//				
-//		rs = cm.reasoningService(reasoner);
+		reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		try {
+			reasoner.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+				
+		rs = cm.reasoningService(reasoner);
 		reasoner2 = cm.reasoner(OWLAPIReasoner.class, ks);
 		reasoner2.init();
 		
