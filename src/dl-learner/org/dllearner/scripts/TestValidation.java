@@ -57,7 +57,7 @@ public class TestValidation {
 		
 		Start start = new Start(new File(filenameTrain));
 		start.start(false);
-		Description solution = start.getLearningAlgorithm().getBestSolution();
+		Description solution = start.getLearningAlgorithm().getCurrentlyBestDescription();
 		
 		logger.setLevel(Level.WARN);
 		

@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.utilities.owl;
 
 import java.util.Collections;
@@ -21,8 +40,11 @@ import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Thing;
 
-// ev. kann man diese Klasse später in ein anderes Paket ziehen, da sie nicht direkt mit
-// refinement zu tun hat
+/**
+ * Concept transformation and concept checking methods.
+ * 
+ * @author Jens Lehmann
+ */
 public class ConceptTransformation {
 
 	public static long cleaningTimeNs = 0;
@@ -385,5 +407,40 @@ public class ConceptTransformation {
 		} else
 			return concept;
 	}	
+	
+	/**
+	 * Method to determine, whether a class description is minimal,
+	 * e.g. \forall r.\top (\equiv \top) or male \sqcup male are not
+	 * minimal.	This method performs heuristic sanity checks (it will
+	 * not try to find semantically equivalent shorter descriptions).
+	 * @param description Input description.
+	 * @return True if a superfluous construct has been found.
+	 */
+	public static boolean isDescriptionMinimal(Description description) {
+		ConceptComparator cc = new ConceptComparator();
+		int length = description.getLength();
+		int length2 = ConceptTransformation.getShortConcept(description, cc).getLength();
+		if(length2 < length)
+			return false;
+		if(ConceptTransformation.findEquivalences(description))
+			return false;
+		return true;
+	}	
+ 
+	private static boolean findEquivalences(Description description) {
+		// \exists r.\bot \equiv \bot
+		if(description instanceof ObjectSomeRestriction && description.getChild(0) instanceof Nothing)
+			return true;
+		// \forall r.\top \equiv \top
+		if(description instanceof ObjectAllRestriction && description.getChild(0) instanceof Thing)
+			return true;
+		// check children
+		for(Description child : description.getChildren()) {
+			if(findEquivalences(child))
+				return true;
+		}
+		// false if none of the checks was successful
+		return false;
+	}
 	
 }

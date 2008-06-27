@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.algorithms.gp.GPUtilities;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -117,8 +118,13 @@ public class RandomGuesser extends LearningAlgorithm {
 	}
 
 	@Override
-	public Description getBestSolution() {
+	public Description getCurrentlyBestDescription() {
 		return bestDefinition;
+	}	
+	
+	@Override
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		return new EvaluatedDescription(bestDefinition,bestScore);
 	}
 
 	@Override

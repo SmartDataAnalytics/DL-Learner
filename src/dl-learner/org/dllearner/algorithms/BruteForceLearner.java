@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -277,13 +278,36 @@ public class BruteForceLearner extends LearningAlgorithm {
 	}
 
 	@Override
-	public Description getBestSolution() {
+	public Description getCurrentlyBestDescription() {
 		return bestDefinition;
+	}    
+    
+	@Override
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		return new EvaluatedDescription(bestDefinition,bestScore);
 	}
 
 	@Override
 	public void stop() {
 		stop = true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#pause()
+	 */
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#resume()
+	 */
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

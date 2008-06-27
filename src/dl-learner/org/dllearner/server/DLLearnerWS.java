@@ -308,7 +308,7 @@ public class DLLearnerWS {
 	public String learn(int id, String format) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
-		Description solution = state.getLearningAlgorithm().getBestSolution();
+		Description solution = state.getLearningAlgorithm().getCurrentlyBestDescription();
 		if(format.equals("manchester"))
 			return solution.toManchesterSyntaxString(state.getReasoningService().getBaseURI(), new HashMap<String,String>());
 		else if(format.equals("kb"))
@@ -342,13 +342,13 @@ public class DLLearnerWS {
 	@WebMethod
 	public String getCurrentlyBestConcept(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		return state.getLearningAlgorithm().getBestSolution().toString();
+		return state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescription().toString();
 	}
 	
 	@WebMethod
 	public String[] getCurrentlyBestConcepts(int id, int nrOfConcepts) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		List<Description> bestConcepts = state.getLearningAlgorithm().getBestSolutions(nrOfConcepts);
+		List<Description> bestConcepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(nrOfConcepts);
 		List<String> conc=new LinkedList<String>();
 		Iterator<Description> iter=bestConcepts.iterator();
 		while (iter.hasNext())
@@ -612,7 +612,7 @@ public class DLLearnerWS {
 	@WebMethod
 	public int[] getConceptDepth(int id, int nrOfConcepts) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		List<Description> bestConcepts = state.getLearningAlgorithm().getBestSolutions(nrOfConcepts);
+		List<Description> bestConcepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(nrOfConcepts);
 		Iterator<Description> iter=bestConcepts.iterator();
 		int[] length=new int[bestConcepts.size()];
 		int i=0;
@@ -626,7 +626,7 @@ public class DLLearnerWS {
 	@WebMethod
 	public int[] getConceptArity(int id, int nrOfConcepts) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		List<Description> bestConcepts = state.getLearningAlgorithm().getBestSolutions(nrOfConcepts);
+		List<Description> bestConcepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(nrOfConcepts);
 		Iterator<Description> iter=bestConcepts.iterator();
 		int[] arity=new int[bestConcepts.size()];
 		int i=0;

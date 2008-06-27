@@ -233,6 +233,22 @@ public class ScoreThreeValued extends Score {
 	@Override
 	public Score getModifiedLengthScore(int newLength) {
 		return new ScoreThreeValued(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Score#getAccuracy()
+	 */
+	@Override
+	public double getAccuracy() {
+		return accuracy;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Score#getNotCoveredNegatives()
+	 */
+	@Override
+	public Set<Individual> getNotCoveredNegatives() {
+		return negAsNeg;
 	}	
     
 }

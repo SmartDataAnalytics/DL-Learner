@@ -89,7 +89,7 @@ public class SKOS7030 {
 		
 		s.makeExamples(prim, percentOfSKOSSet, negfactor, sparqlResultSize);
 		
-		List<Description> conceptresults = s.learn();
+		SortedSet<Description> conceptresults = s.learn();
 		logger.debug("found nr of concepts: "+conceptresults.size());
 		System.out.println(conceptresults);
 		
@@ -249,7 +249,7 @@ public class SKOS7030 {
 		logger.debug(fullPosSetWithoutPosExamples);
 	}
 	
-	public List<Description> learn(){
+	public SortedSet<Description> learn(){
 		
 		SortedSet<String> instances = new TreeSet<String>();
 		instances.addAll(this.posExamples);
@@ -330,7 +330,7 @@ public class SKOS7030 {
 		//Statistics.addTimeLearning(sc.getTime());
 		
 		
-		return la.getGoodSolutions();
+		return la.getCurrentlyBestDescriptions();
 		
 		}catch (Exception e) {e.printStackTrace();}
 		return null;

@@ -24,6 +24,7 @@ import java.util.LinkedList;
 
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -145,12 +146,35 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	}	
 	
 	@Override
-	public Description getBestSolution() {
-		return learner.getBestSolution();
+	public Description getCurrentlyBestDescription() {
+		return learner.getCurrentlyBestDescription();
+	}	
+	
+	@Override
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		return learner.getCurrentlyBestEvaluatedDescription();
 	}
 
 	@Override
 	public Score getSolutionScore() {
 		return learner.getSolutionScore();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#pause()
+	 */
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#resume()
+	 */
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -222,7 +222,7 @@ public class CrossValidation {
 			long algorithmDuration = System.nanoTime() - algorithmStartTime;
 			runtime.addNumber(algorithmDuration/(double)1000000000);
 			
-			Description concept = la.getBestSolution();
+			Description concept = la.getCurrentlyBestDescription();
 			
 			ReasoningService rs = start.getReasoningService();
 			Set<Individual> tmp = rs.instanceCheck(concept, testSetsPos.get(currFold));
