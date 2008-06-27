@@ -346,13 +346,18 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public String[] getCurrentlyBestConcepts(int id, int nrOfConcepts) throws ClientNotKnownException {
+	public String[] getCurrentlyBestConcepts(int id, int nrOfConcepts, String format) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		List<Description> bestConcepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(nrOfConcepts);
 		List<String> conc=new LinkedList<String>();
 		Iterator<Description> iter=bestConcepts.iterator();
 		while (iter.hasNext())
-			conc.add(iter.next().toString());
+			if (format.equals("manchester"))
+				conc.add(iter.next().toManchesterSyntaxString(state.getReasoningService().getBaseURI(), new HashMap<String,String>()));
+			else if(format.equals("kb"))
+				conc.add(iter.next().toKBSyntaxString());
+			else
+			    conc.add(iter.next().toString());
 		return conc.toArray(new String[conc.size()]);
 	}
 	
