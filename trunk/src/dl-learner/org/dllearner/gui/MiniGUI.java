@@ -198,7 +198,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 			// wait for a solution (note that not all learning problems have a
 			// solution (100% accuracy), so one usually has to run the algorithm in its own
 			// thread, such that it can be aborted after some time
-			Description solution = la.getBestSolution();
+			Description solution = la.getCurrentlyBestDescription();
 			solutionDisplay.setText(solution.toString());
 		}
 	}

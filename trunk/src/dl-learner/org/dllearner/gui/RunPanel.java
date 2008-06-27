@@ -172,9 +172,9 @@ public class RunPanel extends JPanel implements ActionListener {
 
 		infoArea.setText("");
 		// best solutions
-		if (config.getLearningAlgorithm().getBestSolutions(5) != null) {
+		if (config.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(5) != null) {
 			infoArea.append("Best solutions: \n\n"
-					+ listToString(config.getLearningAlgorithm().getBestSolutions(10)) + "\n");
+					+ listToString(config.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(10)) + "\n");
 		}
 		// solution score
 		// if (config.getLearningAlgorithm().getSolutionScore() != null)
@@ -257,7 +257,7 @@ public class RunPanel extends JPanel implements ActionListener {
 		if (millis > 0)
 			time += millis + "ms ";
 		if (false)
-			time += mikros + "µs ";
+			time += mikros + "ï¿½s ";
 		if (false)
 			time += nanos + "ns ";
 		return time;

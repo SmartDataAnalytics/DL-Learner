@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.dllearner.algorithms.hybridgp.Psi;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -948,9 +949,14 @@ public class GP extends LearningAlgorithm {
 	}
 
 	@Override
-	public Description getBestSolution() {
-		// return fittestIndividual.getTree();
+	public Description getCurrentlyBestDescription() {
 		return bestConcept;
+	}    
+    
+	@Override
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		// return fittestIndividual.getTree();
+		return new EvaluatedDescription(bestConcept,bestScore);
 	}
 
 	@Override

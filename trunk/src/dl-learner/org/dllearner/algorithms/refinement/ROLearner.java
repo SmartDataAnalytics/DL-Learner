@@ -14,6 +14,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -1033,8 +1034,13 @@ public class ROLearner extends LearningAlgorithm {
 	}	
 	
 	@Override
-	public Description getBestSolution() {
+	public Description getCurrentlyBestDescription() {
 		return candidatesStable.last().getConcept();
+	}	
+	
+	@Override
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		return new EvaluatedDescription(candidatesStable.last().getConcept(), getSolutionScore());
 	}
 	
 	public void printBestSolutions(int nrOfSolutions){
@@ -1050,7 +1056,7 @@ public class ROLearner extends LearningAlgorithm {
 	}
 
 	@Override
-	public synchronized List<Description> getBestSolutions(int nrOfSolutions) {
+	public synchronized List<Description> getCurrentlyBestDescriptions(int nrOfSolutions) {
 		List<Description> best = new LinkedList<Description>();
 		int i=0;
 		for(Node n : candidatesStable.descendingSet()) {
@@ -1065,9 +1071,9 @@ public class ROLearner extends LearningAlgorithm {
 	@Override
 	public Score getSolutionScore() {
 		if(posOnly)
-			return posOnlyLearningProblem.computeScore(getBestSolution());
+			return posOnlyLearningProblem.computeScore(getCurrentlyBestEvaluatedDescription().getDescription());
 		else
-			return learningProblem.computeScore(getBestSolution());
+			return learningProblem.computeScore(getCurrentlyBestEvaluatedDescription().getDescription());
 	}
 	
 	

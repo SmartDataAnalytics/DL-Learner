@@ -284,7 +284,7 @@ public class KRKModular {
 		//System.out.println("best"+la.getBestSolution());
 		
 		}catch (Exception e) {e.printStackTrace();}
-		return la.getBestSolution();
+		return la.getCurrentlyBestDescription();
 	}
 	
 	static KB getKB(SortedSet<Integer> lines){

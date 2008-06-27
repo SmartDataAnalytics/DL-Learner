@@ -33,6 +33,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.refinement.RefinementOperator;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
@@ -455,8 +456,7 @@ public class ExampleBasedROLearner {
 			String KBSyntax="KBSyntax:\n";
 			for(Description c : solutions) {
 				logger.info(show+": " + c.toString(baseURI,null) + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
-				// watch for String.replace Quick hack
-				manchester+=show+": "+c.toManchesterSyntaxString(baseURI, new HashMap<String,String>()).replace("\"", "")+"\n";
+				manchester+=show+": "+c.toManchesterSyntaxString(baseURI, new HashMap<String,String>())+"\n";
 				KBSyntax+=show+": " + c.toKBSyntaxString()+"\n";
 				if(show>=5){break;}	show++;
 			}
@@ -1059,42 +1059,33 @@ public class ExampleBasedROLearner {
 		return candidatesStable.last().getConcept();
 	}
 
-	
-	public synchronized List<Description> getBestSolutions(int nrOfSolutions) {
-		List<Description> best = new LinkedList<Description>();
+	public SortedSet<Description> getCurrentlyBestDescriptions() {
+		SortedSet<Description> best = new TreeSet<Description>();
 		int i=0;
+		int nrOfSolutions = 200;
 		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
-			
-			best.add(n.getConcept());
-			if(i==nrOfSolutions)
-				return best;
+		best.add(n.getConcept());
+		if(i==nrOfSolutions)
+			return best;
 			i++;
 		}
 		return best;
 	}
 	
-	
-	/**
-	 * returns the solutions, that have at least a certain quality
-	 * either accuracy = 100% full solutions
-	 * or accuracy > 100% - noise;
-	 * @return
-	 */
-	public synchronized List<Description> getGoodSolutions() {
-		List<Description> best = new LinkedList<Description>();
-		
-		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
-			if(n.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)<(1-noise))
-				return best;
-			best.add(n.getConcept());
-			
+	public SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+		int count = 0;
+		SortedSet<ExampleBasedNode> rev = candidatesStable.descendingSet();
+		SortedSet<EvaluatedDescription> cbd = new TreeSet<EvaluatedDescription>();
+		for(ExampleBasedNode eb : rev) {
+			cbd.add(new EvaluatedDescription(eb.getConcept(), getScore(eb.getConcept())));
+			// return a maximum of 200 elements (we need a maximum, because the
+			// candidate set can be very large)
+			if(count > 200)
+				return cbd;
+			count++;
 		}
-		return best;
+		return cbd; 
 	}
-	
-	
-	
-	
 	
 	public void printBestSolutions(int nrOfSolutions, boolean showOrderedSolutions){
 		//QUALITY: could be optimized
@@ -1134,6 +1125,13 @@ public class ExampleBasedROLearner {
 			return posOnlyLearningProblem.computeScore(getBestSolution());
 		else
 			return learningProblem.computeScore(getBestSolution());
+	}
+	
+	private Score getScore(Description d) {
+		if(posOnly)
+			return posOnlyLearningProblem.computeScore(d);
+		else
+			return learningProblem.computeScore(d);
 	}
 	
 	public ExampleBasedNode getStartNode() {

@@ -69,7 +69,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			
 			
 			la = getWizardModel().getOre().start();//started endlosen Algorithmus
-			publish(la.getBestSolutions(10));
+			publish(la.getCurrentlyBestDescriptions(10));
 			
 					
 			List<Description> result = getWizardModel().getOre().getLearningResults(100);

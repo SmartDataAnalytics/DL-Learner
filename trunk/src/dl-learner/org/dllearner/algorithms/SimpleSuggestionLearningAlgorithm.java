@@ -1,9 +1,8 @@
 package org.dllearner.algorithms;
 
-import java.util.Set;
-import java.util.List;
 import java.util.*;
 
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -25,9 +24,14 @@ private LearningProblem learningProblem;
 		//this.learningProblem = learningProblem;
 	}
 	
-	public Description getBestSolution()
+	public Description getCurrentlyBestDescription()
 	{
 		return bestSollution;
+	}	
+	
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription()
+	{
+		return new EvaluatedDescription(bestSollution, solutionScore);
 	}
 	
 	

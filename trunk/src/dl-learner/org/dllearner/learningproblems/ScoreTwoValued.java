@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.learningproblems;
 
 import java.util.Set;
@@ -6,10 +26,15 @@ import org.dllearner.core.Score;
 import org.dllearner.core.owl.Individual;
 
 /**
+ * Calculates accuracy and score (with respect to some length penalty) of
+ * a class description. 
  * 
- * TODO: accuracy-Berechnung (positive+negative Beispiele muessen dafuer bekannt sein)
+ * TODO: In fact, a score value influencing a learning algorithm
+ * should not be calculated here, but rather in a separate heuristic
+ * as there are many methods to calculate such a value. This class
+ * should only be used for computing example coverage, accuracy etc.
  * 
- * @author jl
+ * @author Jens Lehmann
  *
  */
 public class ScoreTwoValued extends Score {
@@ -19,11 +44,15 @@ public class ScoreTwoValued extends Score {
     private Set<Individual> negAsPos;
     private Set<Individual> negAsNeg;    
     private double score;
-    private double classificationScore;
+    private double accuracy;
     private int nrOfExamples;
     private int conceptLength;
     private double percentPerLengthUnit;
 	
+	public ScoreTwoValued(Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
+		this(0,0,posAsPos,posAsNeg,negAsPos,posAsPos);
+	}    
+    
 	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
     	this.conceptLength = conceptLength;
     	this.percentPerLengthUnit = percentPerLengthUnit;
@@ -36,14 +65,21 @@ public class ScoreTwoValued extends Score {
 	}
 	
 	private void computeScore() {
-		// - Anzahl falscher Klassifikationen
-		classificationScore = - posAsNeg.size() - negAsPos.size();
-		// Anteil falscher Klassifikationen (Zahl zwischen -1 und 0)
-		classificationScore = classificationScore / (double) nrOfExamples;
-		// Berücksichtigung des Längenfaktors
-		score = classificationScore - percentPerLengthUnit * conceptLength;
+		// compute accuracy
+		accuracy = posAsPos.size() + negAsNeg.size();
+		accuracy = accuracy / (double) nrOfExamples;
+		// compute score
+		score = accuracy - 1 - percentPerLengthUnit * conceptLength;
 	}
 	
+	@Override
+	public double getAccuracy() {
+		return accuracy;
+	}	
+	
+	/**
+	 * score = accuracy - 1 - length * length penalty
+	 */
 	@Override
 	public double getScore() {
 		return score;
@@ -53,7 +89,7 @@ public class ScoreTwoValued extends Score {
 	public String toString() {
 		String str = "";
 		str += "score: " + score + "\n";
-		str += "accuracy: " + (1 + classificationScore) + "\n";
+		str += "accuracy: " + accuracy + "\n";
 		str += "posAsPos (" + posAsPos.size() + "): " + posAsPos + "\n";
 		str += "positive examples classified as negative (" + posAsNeg.size() + "): " + posAsNeg + "\n";
 		str += "negative examples classified as positive (" + negAsPos.size() + "): " + negAsPos + "\n";
@@ -74,16 +110,15 @@ public class ScoreTwoValued extends Score {
 	public Set<Individual> getNotCoveredPositives() {
 		return posAsNeg;
 	}
-
-	/*
+	
 	@Override
-	public double getModifiedLengthScore(int newLength) {
-		return classificationScore - Config.percentPerLengthUnit * newLength;
-	}
-	*/
+	public Set<Individual> getNotCoveredNegatives() {
+		return negAsNeg;
+	}		
 	
 	@Override
 	public Score getModifiedLengthScore(int newLength) {
 		return new ScoreTwoValued(newLength, percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
-	}	
+	}
+
 }

@@ -25,9 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
@@ -391,21 +393,24 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	}
 	
 	@Override
-	public Description getBestSolution() {
+	public Description getCurrentlyBestDescription() {
 		return algorithm.getBestSolution();
 	}
 	
 	@Override
-	public synchronized List<Description> getBestSolutions(int nrOfSolutions) {
-		return algorithm.getBestSolutions(nrOfSolutions);
+	public synchronized SortedSet<Description> getCurrentlyBestDescriptions() {
+		return algorithm.getCurrentlyBestDescriptions();
 	}	
 	
 	@Override
-	public synchronized  List<Description> getGoodSolutions() {
-		return algorithm.getGoodSolutions();
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		return new EvaluatedDescription(algorithm.getBestSolution(),algorithm.getSolutionScore());
 	}
 	
-	
+	@Override
+	public synchronized SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+		return algorithm.getCurrentlyBestEvaluatedDescriptions();
+	}
 
 	@Override
 	public void stop() {
@@ -415,14 +420,15 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	public ExampleBasedNode getStartNode() {
 		return algorithm.getStartNode();
 	}
-	
-	
-	/*public void printBestSolutions(int nrOfSolutions){
-		
-		algorithm.printBestSolutions(nrOfSolutions);
-	}*/
-		
-	
-	
+
+	@Override
+	public void pause() {
+		// TODO: not implemented
+	}
+
+	@Override
+	public void resume() {
+		// TODO: not implemented
+	}
 	
 }

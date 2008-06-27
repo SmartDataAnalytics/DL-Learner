@@ -224,9 +224,9 @@ public class DLLearnerModel extends Observable implements Runnable{
 	 */
 	private void addToListModel()
 	{
-		for(int j = 0;j<la.getBestSolutions(anzahl).size();j++)
+		for(int j = 0;j<la.getCurrentlyBestEvaluatedDescriptions(anzahl).size();j++)
 		{
-			suggestModel.add(j,la.getBestSolutions(anzahl).get(j));
+			suggestModel.add(j,la.getCurrentlyBestEvaluatedDescriptions(anzahl).get(j));
 		}
 	}
 	
@@ -352,7 +352,7 @@ public class DLLearnerModel extends Observable implements Runnable{
 		error = "Learning succesful";
 		// start the algorithm and print the best concept found
 		la.start();
-		description = new Description[la.getBestSolutions(anzahl).size()];
+		description = new Description[la.getCurrentlyBestEvaluatedDescriptions(anzahl).size()];
 		addToListModel();
 		view.renderErrorMessage(error);
 		view.getRunButton().setEnabled(true);

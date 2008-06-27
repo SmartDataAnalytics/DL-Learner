@@ -177,15 +177,15 @@ public class ORE {
 	}
 	
 	public Description getLearningResult(){
-		return la.getBestSolution();
+		return la.getCurrentlyBestDescription();
 	}
 	
-	public List<Description> getSolutions(){
-		return la.getGoodSolutions();
-	}
+//	public List<Description> getSolutions(){
+//		return la.getCurrentlyBestDescriptions();
+//	}
 	
 	public List<Description> getLearningResults(int anzahl){
-		return la.getBestSolutions(anzahl);
+		return la.getCurrentlyBestDescriptions(anzahl);
 	}
 	
 	/**
