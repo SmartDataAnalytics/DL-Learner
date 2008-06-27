@@ -125,6 +125,7 @@
   <message name="getCurrentlyBestConcepts">
     <part name="arg0" type="xsd:int"></part>
     <part name="arg1" type="xsd:int"></part>
+    <part name="arg2" type="xsd:string"></part>
   </message>
   <message name="getCurrentlyBestConceptsResponse">
     <part xmlns:ns7="http://jaxb.dev.java.net/array" name="return" type="ns7:stringArray"></part>
@@ -429,7 +430,7 @@
       <output message="tns:getCurrentlyBestConceptResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
     </operation>
-    <operation name="getCurrentlyBestConcepts" parameterOrder="arg0 arg1">
+    <operation name="getCurrentlyBestConcepts" parameterOrder="arg0 arg1 arg2">
       <input message="tns:getCurrentlyBestConcepts"></input>
       <output message="tns:getCurrentlyBestConceptsResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
@@ -554,6 +555,7 @@
       <input message="tns:getAsXMLString"></input>
       <output message="tns:getAsXMLStringResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
+      <fault message="tns:SparqlQueryException" name="SparqlQueryException"></fault>
     </operation>
     <operation name="sparqlQueryThreaded" parameterOrder="arg0 arg1 arg2">
       <input message="tns:sparqlQueryThreaded"></input>
@@ -1143,6 +1145,9 @@
       </output>
       <fault name="ClientNotKnownException">
         <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
+      </fault>
+      <fault name="SparqlQueryException">
+        <soap:fault name="SparqlQueryException" use="literal"></soap:fault>
       </fault>
     </operation>
     <operation name="sparqlQueryThreaded">
