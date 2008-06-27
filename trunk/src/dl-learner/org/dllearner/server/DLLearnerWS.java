@@ -308,24 +308,13 @@ public class DLLearnerWS {
 	public String learn(int id, String format) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
-		List<Description> concepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(4);
-	    String solutions = "<br>";
-		int it=1;
-	    for(int i=0;i<concepts.size();i++){
-	    	Description d = concepts.get(i);
-	    
-	        String s = null;
-	    	if(format.equals("manchester"))
-	    	 s = d.toManchesterSyntaxString(state.getReasoningService().getBaseURI(), new HashMap<String,String>());
-	    	else if (format.equals("kb"))
-	    		s= d.toKBSyntaxString();
-	    	else
-	    		s= d.toString();
-	    	
-		    solutions+="<b>"+it+"</b>: "+s+"<br>";
-		    it++;
-	    }
-	    return solutions;
+		Description solution = state.getLearningAlgorithm().getCurrentlyBestDescription();
+		if(format.equals("manchester"))
+			return solution.toManchesterSyntaxString(state.getReasoningService().getBaseURI(), new HashMap<String,String>());
+		else if(format.equals("kb"))
+			return solution.toKBSyntaxString();
+		else
+			return solution.toString();
 	}
 	
 	/**
