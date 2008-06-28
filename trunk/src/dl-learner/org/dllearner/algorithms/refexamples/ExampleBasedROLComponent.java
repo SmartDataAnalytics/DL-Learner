@@ -398,7 +398,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	}
 	
 	@Override
-	public synchronized SortedSet<Description> getCurrentlyBestDescriptions() {
+	public synchronized List<Description> getCurrentlyBestDescriptions() {
 		return algorithm.getCurrentlyBestDescriptions();
 	}	
 	

@@ -88,8 +88,8 @@ public abstract class LearningAlgorithm extends Component {
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions()
 	 */
-	public SortedSet<Description> getCurrentlyBestDescriptions() {
-		TreeSet<Description> ds = new TreeSet<Description>();
+	public List<Description> getCurrentlyBestDescriptions() {
+		List<Description> ds = new LinkedList<Description>();
 		ds.add(getCurrentlyBestDescription());
 		return ds;
 	}
@@ -105,7 +105,7 @@ public abstract class LearningAlgorithm extends Component {
 	 * @see #getCurrentlyBestEvaluatedDescriptions(int,double,boolean)
 	 */
 	public synchronized List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions, boolean filterNonMinimalDescriptions) {
-		SortedSet<Description> currentlyBest = getCurrentlyBestDescriptions();
+		List<Description> currentlyBest = getCurrentlyBestDescriptions();
 		List<Description> returnList = new LinkedList<Description>();
 		int count = 0;
 		for(Description ed : currentlyBest) {
