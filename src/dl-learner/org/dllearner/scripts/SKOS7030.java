@@ -89,7 +89,7 @@ public class SKOS7030 {
 		
 		s.makeExamples(prim, percentOfSKOSSet, negfactor, sparqlResultSize);
 		
-		SortedSet<Description> conceptresults = s.learn();
+		List<Description> conceptresults = s.learn();
 		logger.debug("found nr of concepts: "+conceptresults.size());
 		System.out.println(conceptresults);
 		
@@ -249,7 +249,7 @@ public class SKOS7030 {
 		logger.debug(fullPosSetWithoutPosExamples);
 	}
 	
-	public SortedSet<Description> learn(){
+	public List<Description> learn(){
 		
 		SortedSet<String> instances = new TreeSet<String>();
 		instances.addAll(this.posExamples);

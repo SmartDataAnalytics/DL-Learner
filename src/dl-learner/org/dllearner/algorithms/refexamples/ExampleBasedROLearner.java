@@ -50,6 +50,7 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 
 /**
  * Implements the example based refinement operator learning
@@ -167,6 +168,8 @@ public class ExampleBasedROLearner {
 	
 	// comparator used to create ordered sets of concepts
 	private ConceptComparator conceptComparator = new ConceptComparator();
+	// comparator for evaluated descriptions
+	private EvaluatedDescriptionComparator edComparator = new EvaluatedDescriptionComparator();
 	
 	// utility variables
 	private DecimalFormat df = new DecimalFormat();		
@@ -1059,8 +1062,8 @@ public class ExampleBasedROLearner {
 		return candidatesStable.last().getConcept();
 	}
 
-	public SortedSet<Description> getCurrentlyBestDescriptions() {
-		SortedSet<Description> best = new TreeSet<Description>();
+	public List<Description> getCurrentlyBestDescriptions() {
+		List<Description> best = new LinkedList<Description>();
 		int i=0;
 		int nrOfSolutions = 200;
 		for(ExampleBasedNode n : candidatesStable.descendingSet()) {
@@ -1075,7 +1078,7 @@ public class ExampleBasedROLearner {
 	public SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
 		int count = 0;
 		SortedSet<ExampleBasedNode> rev = candidatesStable.descendingSet();
-		SortedSet<EvaluatedDescription> cbd = new TreeSet<EvaluatedDescription>();
+		SortedSet<EvaluatedDescription> cbd = new TreeSet<EvaluatedDescription>(edComparator);
 		for(ExampleBasedNode eb : rev) {
 			cbd.add(new EvaluatedDescription(eb.getConcept(), getScore(eb.getConcept())));
 			// return a maximum of 200 elements (we need a maximum, because the

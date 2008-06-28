@@ -2,8 +2,7 @@ package org.dllearner.utilities.datastructures;
 
 import java.util.SortedSet;
 
-import org.dllearner.core.owl.Description;
-
+// class is not used anywhere and is not documented - delete?
 public class ResultConceptSorter implements Comparable<ResultConceptSorter> {
 	String concept;
 	SortedSet<String> instances;
