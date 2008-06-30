@@ -25,6 +25,9 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.ScoreTwoValued;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * This represents a class description, which has been
@@ -137,5 +140,36 @@ public class EvaluatedDescription {
 	 */
 	public String getSparqlQuery(int limit) {
 		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(description, limit);
+	}
+	
+	/**
+	 * This convenience method can be used to store and exchange evaluated
+	 * descriptions by transforming them to a JSON string.
+	 * @return A JSON representation of an evaluated description.
+	 */
+	public String asJSON() {
+		JSONObject object = new JSONObject();
+		try {
+			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
+			object.put("accuracy", score.getAccuracy());
+			object.put("coveredPositives", getJSONArray(score.getCoveredPositives()));
+			object.put("coveredNegatives", getJSONArray(score.getCoveredNegatives()));
+			object.put("notCoveredPositives", getJSONArray(score.getNotCoveredPositives()));
+			object.put("notCoveredNegatives", getJSONArray(score.getNotCoveredNegatives()));			
+			return object.toString(3);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	// we need to use this method instead of the standard JSON array constructor,
+	// otherwise we'll get unexpected results (JSONArray does not take Individuals
+	// as arguments and does not use toString)
+	private static JSONArray getJSONArray(Set<Individual> individuals) {
+		JSONArray j = new JSONArray();
+		for(Individual i : individuals)
+			j.put(i.getName());
+		return j;
 	}
 }

@@ -62,8 +62,11 @@ $client->initAll($id);
 
 // learn concept
 echo 'start learning ... ';
-$concept = $client->learn($id, "manchester");
+// get only concept
+// $concept = $client->learn($id, "manchester");
+// get concept and additional information in JSON syntax
+$concept = $client->learnDescriptionsEvaluated($id, 5);
 echo 'OK <br />';
-echo 'solution: ' . $concept;
+echo 'solution: <pre>' . $concept . '</pre>';
 
 ?>
