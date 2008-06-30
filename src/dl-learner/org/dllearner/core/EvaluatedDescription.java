@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.ScoreTwoValued;
 
 /**
@@ -41,11 +42,24 @@ public class EvaluatedDescription {
 	private Description description;
 	private Score score;
 	
+	/**
+	 * Constructs an evaluated description using its score.
+	 * @param description The description, which was evaluated.
+	 * @param score The score of the description.
+	 */
 	public EvaluatedDescription(Description description, Score score) {
 		this.description = description;
 		this.score = score;
 	}
 	
+	/**
+	 * Constructs an evaluated description using example coverage.
+	 * @param description The description, which was evaluated.
+	 * @param posAsPos Positive examples classified as positive by (i.e. instance of) the description.
+	 * @param posAsNeg Positive examples classified as negative by (i.e. not instance of) the description.
+	 * @param negAsPos Negative examples classified as positive by (i.e. instance of) the description.
+	 * @param negAsNeg Negative examples classified as negative by (i.e. not instance of) the description.
+	 */
 	public EvaluatedDescription(Description description, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
 		this.description = description;
 		// usually core methods should not depend on methods outside of the core package (except utilities)
@@ -53,20 +67,29 @@ public class EvaluatedDescription {
 		score = new ScoreTwoValued(posAsPos, posAsNeg, negAsPos, negAsNeg);
 	}
 
+	/**
+	 * Gets the description, which was evaluated.
+	 * @return The underlying description.
+	 */
 	public Description getDescription() {
 		return description;
 	}
 	
+	/**
+	 * @see org.dllearner.core.owl.Description#getLength()
+	 */		
 	public int getDescriptionLength() {
 		return description.getLength();
 	}
 	
+	/**
+	 * @see org.dllearner.core.owl.Description#getDepth()
+	 */	
 	public int getDescriptionDepth() {
 		return description.getDepth();
 	}
 	
 	/**
-	 * @return
 	 * @see org.dllearner.core.Score#getAccuracy()
 	 */
 	public double getAccuracy() {
@@ -74,7 +97,6 @@ public class EvaluatedDescription {
 	}
 
 	/**
-	 * @return
 	 * @see org.dllearner.core.Score#getCoveredNegatives()
 	 */
 	public Set<Individual> getCoveredNegatives() {
@@ -82,7 +104,6 @@ public class EvaluatedDescription {
 	}
 
 	/**
-	 * @return
 	 * @see org.dllearner.core.Score#getCoveredPositives()
 	 */
 	public Set<Individual> getCoveredPositives() {
@@ -90,7 +111,6 @@ public class EvaluatedDescription {
 	}
 
 	/**
-	 * @return
 	 * @see org.dllearner.core.Score#getNotCoveredNegatives()
 	 */
 	public Set<Individual> getNotCoveredNegatives() {
@@ -98,11 +118,24 @@ public class EvaluatedDescription {
 	}
 
 	/**
-	 * @return
 	 * @see org.dllearner.core.Score#getNotCoveredPositives()
 	 */
 	public Set<Individual> getNotCoveredPositives() {
 		return score.getNotCoveredPositives();
 	}
 	
+	/**
+	 * Returns a SPARQL query to get instances of this description
+	 * from a SPARQL endpoint. Of course, results may be incomplete,
+	 * because no inference is done. The SPARQL query is a straightforward
+	 * translation without any attempts to perform e.g. subclass 
+	 * inferencing.
+	 * 
+	 * @param limit The maximum number of results. Corresponds to LIMIT
+	 * in SPARQL.
+	 * @return A SPARQL query of the underlying description.
+	 */
+	public String getSparqlQuery(int limit) {
+		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(description, limit);
+	}
 }

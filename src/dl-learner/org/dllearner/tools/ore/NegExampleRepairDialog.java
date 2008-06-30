@@ -22,7 +22,6 @@ import javax.swing.border.EmptyBorder;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.RemoveAxiom;
 
@@ -49,17 +48,17 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 	
 	private ORE ore;
 	private Individual ind;
-	private OWLAPIReasoner reasoner;
+//	private OWLAPIReasoner reasoner;
 	private Description actualDesc;
 	private Description newDesc;
-	private Individual object;
+//	private Individual object;
 	
 	
 	public NegExampleRepairDialog(Individual ind, JDialog dialog, ORE ore){
 		super(dialog, "Repair negative example", true);
 		this.ind = ind;
 		this.ore = ore;
-		this.reasoner = ore.reasoner2;
+//		this.reasoner = ore.reasoner2;
 		init();
 	}
 	

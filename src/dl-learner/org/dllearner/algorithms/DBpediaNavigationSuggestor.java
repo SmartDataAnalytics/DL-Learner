@@ -53,12 +53,12 @@ import org.dllearner.learningproblems.PosOnlyDefinitionLP;
  */
 public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	
-	private ReasoningService rs;
+//	private ReasoningService rs;
 	private ExampleBasedROLComponent learner;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 	
 	public DBpediaNavigationSuggestor(LearningProblem learningProblem, ReasoningService rs) {
-		this.rs=rs;
+//		this.rs=rs;
 		if(learningProblem instanceof PosNegLP) {
 			PosNegLP lp = (PosNegLP) learningProblem;
 			this.learner=new ExampleBasedROLComponent(lp, rs);
