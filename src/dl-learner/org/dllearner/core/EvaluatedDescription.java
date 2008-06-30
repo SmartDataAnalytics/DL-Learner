@@ -25,9 +25,12 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.ScoreTwoValued;
+import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.semanticweb.owl.model.OWLDescription;
 
 /**
  * This represents a class description, which has been
@@ -151,6 +154,8 @@ public class EvaluatedDescription {
 		JSONObject object = new JSONObject();
 		try {
 			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
+			OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(description);
+			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(d));
 			object.put("accuracy", score.getAccuracy());
 			object.put("coveredPositives", getJSONArray(score.getCoveredPositives()));
 			object.put("coveredNegatives", getJSONArray(score.getCoveredNegatives()));
