@@ -45,6 +45,7 @@ import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
@@ -315,6 +316,20 @@ public class DLLearnerWS {
 			return solution.toKBSyntaxString();
 		else
 			return solution.toString();
+	}
+	
+	@WebMethod
+	public String learnDescriptionsEvaluated(int id, int limit) throws ClientNotKnownException {
+		ClientState state = getState(id);
+		state.getLearningAlgorithm().start();
+		List<EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(limit);
+		String json = "{";
+		int count = 1;
+		for(EvaluatedDescription description : descriptions) {
+			json += "\"solution" + count + "\" : " + description.asJSON();
+			count++;
+		}
+		return json;
 	}
 	
 	/**
