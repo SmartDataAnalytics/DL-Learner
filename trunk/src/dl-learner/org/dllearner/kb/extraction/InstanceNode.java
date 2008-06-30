@@ -64,7 +64,7 @@ public class InstanceNode extends Node {
 			// basically : if p is rdf:type then o is a class
 			// else it is an instance
 			try {
-				if (t.a.equals(m.type)) {
+				if (t.a.equals(Manipulators.type)) {
 					ClassNode tmp = new ClassNode(new URI(t.b));
 					classes.add(tmp);
 					Nodes.add(tmp);

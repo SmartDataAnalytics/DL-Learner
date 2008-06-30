@@ -38,7 +38,7 @@ import org.dllearner.core.owl.*;
  */
 public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm implements Runnable {
 
-	private boolean stop = false;
+//	private boolean stop = false;
 	private Score solutionScore;
 	private Description bestSollution;
 	private Set<Description> simpleSuggestions;
@@ -59,7 +59,7 @@ public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm impleme
 
 	@Override
 	public void stop() {
-		stop = true;
+//		stop = true;
 	}
 
 	@Override

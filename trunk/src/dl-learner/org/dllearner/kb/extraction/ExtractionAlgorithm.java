@@ -131,7 +131,7 @@ public class ExtractionAlgorithm {
 					Node next = instances.remove(0);
 					logger.trace("Getting classes for: " + next);
 					classes.addAll(next.expand(tsqc, manipulator));
-					if (classes.size() >= manipulator.breakSuperClassRetrievalAfter) {
+					if (classes.size() >= Manipulators.breakSuperClassRetrievalAfter) {
 						break;
 					}
 				}
@@ -155,7 +155,7 @@ public class ExtractionAlgorithm {
 					// if(i % 50==0)System.out.println("got "+i+" extra classes,
 					// max: "+manipulator.breakSuperClassRetrievalAfter);
 					i++;
-					if (i >= manipulator.breakSuperClassRetrievalAfter) {
+					if (i >= Manipulators.breakSuperClassRetrievalAfter) {
 						break;
 					}
 				}

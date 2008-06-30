@@ -67,7 +67,7 @@ public class PropertyNode extends Node {
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
 			try {
-				if (t.a.equals(m.type)) {
+				if (t.a.equals(Manipulators.type)) {
 					specialTypes.add(t.b);
 				}
 			} catch (Exception e) {

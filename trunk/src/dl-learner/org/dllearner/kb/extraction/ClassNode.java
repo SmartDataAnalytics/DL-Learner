@@ -52,9 +52,9 @@ public class ClassNode extends Node {
 			StringTuple t = (StringTuple) it.next();
 			try {
 				// substitute rdf:type with owl:subclassof
-				if (t.a.equals(m.type) || t.a.equals(m.subclass)) {
+				if (t.a.equals(Manipulators.type) || t.a.equals(Manipulators.subclass)) {
 					ClassNode tmp = new ClassNode(new URI(t.b));
-					properties.add(new PropertyNode(new URI(m.subclass), this,
+					properties.add(new PropertyNode(new URI(Manipulators.subclass), this,
 							tmp));
 					Nodes.add(tmp);
 				} else {
@@ -67,9 +67,9 @@ public class ClassNode extends Node {
 
 					// if o is a blank node expand further
 					// TODO this needs a lot more work
-					if (t.b.startsWith(m.blankNodeIdentifier)) {
+					if (t.b.startsWith(Manipulators.blankNodeIdentifier)) {
 						tmp.expand(tsq, m);
-						System.out.println(m.blankNodeIdentifier);
+						System.out.println(Manipulators.blankNodeIdentifier);
 						System.out.println("XXXXX" + t.b);
 					}
 					// Nodes.add(tmp);

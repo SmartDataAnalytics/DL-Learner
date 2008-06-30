@@ -83,7 +83,7 @@ public class SKOS7030 {
 		
 		String prim="http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
 		
-		String award=("http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners");
+//		String award=("http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners");
 		
 		SKOS7030 s= new SKOS7030();
 		

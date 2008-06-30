@@ -38,7 +38,6 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
-import org.semanticweb.owl.model.OWLClass;
 
 /**
  * @author Jens Lehmann

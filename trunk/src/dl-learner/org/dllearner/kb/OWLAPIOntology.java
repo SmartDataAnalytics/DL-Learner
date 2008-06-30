@@ -20,6 +20,7 @@ public class OWLAPIOntology extends KnowledgeSource {
 		this.ontology = onto;
 	}
 	
+	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException 
 	{
 		
@@ -30,21 +31,25 @@ public class OWLAPIOntology extends KnowledgeSource {
 		return ontology;
 	}
 	
+	@Override
 	public KB toKB()
 	{
 		throw new Error("OWL -> KB conversion not implemented yet.");
 	}
 	
+	@Override
 	public void init()
 	{
 		
 	}
 	
+	@Override
 	public void export(File file, OntologyFormat format)
 	{
 		
 	}
 	
+	@Override
 	public String toDIG(URI kbURI)
 	{
 		return null;
