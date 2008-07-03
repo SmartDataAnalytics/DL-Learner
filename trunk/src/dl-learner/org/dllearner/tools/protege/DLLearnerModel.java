@@ -1,8 +1,8 @@
 package org.dllearner.tools.protege;
 
-import java.util.Observable;
 import java.util.Set;
 import java.util.TreeSet;
+//import java.util.List;
 import java.util.Vector;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +16,7 @@ import org.dllearner.algorithms.SimpleSuggestionLearningAlgorithm;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ComponentManager;
@@ -51,12 +52,12 @@ import org.semanticweb.owl.model.OWLDescription;
 
 
 
-/**
+/**2
  * This Class provides the necessary methods to learn Concepts from the DL-Learner.
  * @author Heero Yuy
  *
  */
-public class DLLearnerModel extends Observable implements Runnable{
+public class DLLearnerModel implements Runnable{
 	/**
 	 * The Sting is for components that are available in the DL-Learner
 	 */
@@ -175,7 +176,7 @@ public class DLLearnerModel extends Observable implements Runnable{
 	 * 
 	 */
 	private OWLAxiom axiomOWLAPI;
-
+	private EvaluatedDescription evalDescription;
 	/**
 	 * This is the constructor for DL-Learner model
 	 * @param editorKit
@@ -224,9 +225,10 @@ public class DLLearnerModel extends Observable implements Runnable{
 	 */
 	private void addToListModel()
 	{
+		evalDescription = la.getCurrentlyBestEvaluatedDescription();
 		for(int j = 0;j<la.getCurrentlyBestEvaluatedDescriptions(anzahl).size();j++)
 		{
-			suggestModel.add(j,la.getCurrentlyBestEvaluatedDescriptions(anzahl).get(j));
+			suggestModel.add(j,la.getCurrentlyBestEvaluatedDescriptions(anzahl).get(j).getDescription());
 		}
 	}
 	
@@ -356,7 +358,6 @@ public class DLLearnerModel extends Observable implements Runnable{
 		addToListModel();
 		view.renderErrorMessage(error);
 		view.getRunButton().setEnabled(true);
-		//view.getPosAndNegSelectPanel().unsetCheckBoxes();
 		view.getCancelButton().setEnabled(false);
 		view.getSuggestClassPanel().setSuggestList(suggestModel);
 	}
@@ -426,6 +427,10 @@ public class DLLearnerModel extends Observable implements Runnable{
 		}
 	}
 
+	public EvaluatedDescription getEvaluatedDescription()
+	{
+		return evalDescription;
+	}
 	/**
 	 * This method resets the Concepts that are learned.
 	 */

@@ -9,13 +9,15 @@ import java.awt.event.MouseEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
+import javax.swing.JDialog;
+
 import org.dllearner.core.owl.Description;
 /**
  * 
  * @author Heero Yuy
  *
  */
-public class ActionHandler implements ActionListener, ItemListener, MouseListener, ListSelectionListener{
+public class ActionHandler  implements ActionListener, ItemListener, MouseListener, ListSelectionListener{
 	/**
 	 * This is the DLLearnerModel.
 	 */
@@ -37,6 +39,7 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 	 * This is the view of the DL-Learner tab.
 	 */
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
+	private JDialog detailDialog;
 	/**
 	 * This is the constructor for the action handler
 	 * @param a ActionHandler
@@ -132,6 +135,10 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 				view.setExamplePanelVisible(toggled);
 			}
 		}
+		if(z.getActionCommand().equals("Why"))
+		{
+			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(model.getEvaluatedDescription());
+		}
 	}
     
 	/**	
@@ -226,6 +233,7 @@ public class ActionHandler implements ActionListener, ItemListener, MouseListene
 	{
 		if(!view.getAddButton().isEnabled())
 		{
+			view.getWhyButton().setEnabled(true);
 			view.getAddButton().setEnabled(true);
 		}
 	}

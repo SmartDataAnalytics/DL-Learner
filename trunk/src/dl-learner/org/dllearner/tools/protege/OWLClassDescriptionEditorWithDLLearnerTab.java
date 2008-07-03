@@ -261,10 +261,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
   	   * 
   	   */
       private final static long serialVersionUID = 624829578325729385L;
-  	  /**
-  	   * 
-  	   */
-      private DLLearnerViewPanel panel;
 	  /**
 	   * 
 	   */
@@ -280,7 +276,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  /**
 	   * 
 	   */
-      private OWLEditorKit editor;
+
 	  /**
 	   * 
 	   */
@@ -312,26 +308,31 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  /**
 	   * 
 	   */
-	  
 	  private SuggestClassPanel sugPanel;
+	  /**
+	   * 
+	   */
 	  private PosAndNegSelectPanel posPanel;
+	  /**
+	   * 
+	   */
 	  private ImageIcon icon;
+	  /**
+	   * 
+	   */
 	  private ImageIcon toggledIcon;
 	  /**
 	   * 
-	   * @return
 	   */
-	  public DLLearnerViewPanel getDLLearnerViewPanel()
-	  {
-		  return panel;
-	  }
+	  private JButton why;
+	  private MoreDetailForSuggestedConceptsPanel detail;
 	  /**
 	   * The constructor for the DL-Learner tab in the class description editor 
 	   * @param aktuell
 	   * @param label
 	   */
-	  public DLLearnerView(OWLFrame<OWLClass> aktuell,String label){
-		  	editor = editorKit;
+	  public DLLearnerView(OWLFrame<OWLClass> aktuell,String label)
+	  {
 		  	classSelectorPanel = new OWLClassSelectorPanel(editorKit);
 		  	classSelectorPanel.firePropertyChange("test", false, true);
 		  	URL iconUrl = this.getClass().getResource("pfeil.gif");
@@ -339,7 +340,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 		  	URL toggledIconUrl = this.getClass().getResource("pfeil2.gif");
 		  	toggledIcon = new ImageIcon(toggledIconUrl);
 		  	model = new DLLearnerModel(editorKit,aktuell, label,this);
-		  	panel = new DLLearnerViewPanel(editor);
 		  	sugPanel = new SuggestClassPanel();
 		  	action = new ActionHandler(this.action, model,this,label);
 	    	adv = new JLabel("Advanced");
@@ -348,6 +348,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	run = new JButton("Suggest "+label);
 	    	cancel = new JButton("Cancel");
 	    	accept = new JButton("ADD");
+	    	why = new JButton("Why");
 	    	sugPanel.addSuggestPanelMouseListener(action);
 	    	errorMessage = new JLabel();
 	    	learner = new JPanel();
@@ -361,6 +362,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	addRunButtonListener(this.action);
 	    	addCancelButtonListener(this.action);
 	    	addAdvancedButtonListener(this.action);
+	    	addWhyButtonListener(this.action);
 
 		    
     }
@@ -379,6 +381,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   */
 	  public void makeView()
 	  {
+		  	why.setEnabled(false);
 		  	advanced.setIcon(icon);
 	    	model.clearVector();
 		  	model.unsetListModel();
@@ -390,6 +393,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	action.resetToggled();
 	    	sugPanel.setSuggestList(model.getSuggestList());
 	    	sugPanel = sugPanel.updateSuggestClassList();
+	    	why.setBounds(10,160,200,30);
 	    	advanced.setSelected(false);
 	    	sugPanel.setBounds(10,40,490,110);
 	    	adv.setBounds(40,200,200,20);
@@ -400,9 +404,10 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 			posPanel.setBounds(10, 230, 490, 250);
 	        cancel.setBounds(260,0,200,30);
 	        accept.setBounds(510,40,80,110);
-	        errorMessage.setBounds(10,160,590,20);
+	        errorMessage.setBounds(220,160,300,20);
 	    	learner.add(run);
 	    	learner.add(adv);
+	    	learner.add(why);
 	    	learner.add(advanced);
 	    	learner.add(cancel);
 	    	learner.add(sugPanel);
@@ -410,6 +415,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	    	learner.add(errorMessage);
 	    	learner.add(posPanel);
 	    	posPanel.addHelpButtonListener(action);
+	    	detail = new MoreDetailForSuggestedConceptsPanel(model);
 	    	add(learner);
 	  }
 	  public void setIconToggled(boolean toggled)
@@ -423,10 +429,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 			  advanced.setIcon(icon);
 		  }
 	  }
-	  public void setArrowForToggleButton()
-	  {
-		  
-	  }
+	
 	  /**
 	   * 
 	   * @return
@@ -434,6 +437,11 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	  public JComponent getLearnerPanel()
 	  {
 		  return learner;
+	  }
+	  
+	  public JButton getWhyButton()
+	  {
+		  return why;
 	  }
 	  /**
 	   * 
@@ -500,6 +508,10 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 		   errorMessage.setText(s);
 	   }
 	   
+	   public MoreDetailForSuggestedConceptsPanel getMoreDetailForSuggestedConceptsPanel()
+	   {
+		   return detail;
+	   }
 	   /**
 	    * 
 	    * @return
@@ -522,7 +534,11 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends AbstractOWLFrameS
 	   public void dispose() {
      
        }
-
+	   
+	   public void addWhyButtonListener(ActionListener a)
+	   {
+		   why.addActionListener(a);
+	   }
 	   /**
 	    * 
 	    * @param a
