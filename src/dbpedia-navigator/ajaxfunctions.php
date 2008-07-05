@@ -220,7 +220,7 @@ function getarticle($subject,$fromCache)
 	$objResponse->assign("lastarticles","innerHTML",$lastArticles);
 	$objResponse->assign('Positives','innerHTML',$posInterests);
 	$objResponse->assign('Negatives','innerHTML',$negInterests);
-	//$objResponse->call('xajax_learnConcept');
+	$objResponse->call('xajax_learnConcept');
 	return $objResponse;
 }
 
@@ -392,7 +392,7 @@ function learnConcept()
 			$concept.="<table border=0>\n";
 			$i=1;
 			foreach ($concepts as $con){
-				$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".urlencode($con)."');return false;\" onMouseOver=\"showdiv('div".$i."');showdiv('ConceptBox');\" onMouseOut=\"hidediv('div".$i."');hidediv('ConceptBox');\" />".$con."</a></td></tr>";
+				$concept.="<tr><td><a href=\"\" onclick=\"xajax_getSubjectsFromConcept('".htmlentities($con)."');return false;\" onMouseOver=\"showdiv('div".$i."');showdiv('ConceptBox');\" onMouseOut=\"hidediv('div".$i."');hidediv('ConceptBox');\" />".$con."</a></td></tr>";
 				//put information about concepts in divs
 				//$conceptinformation.="<div id=\"div".$i."\" style=\"display:none\">Concept Depth: ".$conceptDepth[$i-1]."<br/>Concept Arity: ".$conceptArity[$i-1]."<br/>Concept Length: ".$sc->getConceptLength($con)."</div>";
 				$i++;
@@ -421,7 +421,7 @@ function getSubjectsFromConcept($concept)
 	
 	setRunning($id,"true");
 	
-	$concept=urldecode($concept);
+	$concept=html_entity_decode($concept);
 	$content="";
 	try{
 		require_once("DLLearnerConnection.php");
@@ -462,7 +462,7 @@ function subjectToURI($subject)
 	//delete whitespaces at beginning and end
 	$subject=trim($subject);
 	//get first letters big
-	$subject=ucwords($subject);
+	$subject=ucfirst($subject);
 	//replace spaces with _
 	$subject=str_replace(' ','_',$subject);
 	//add the uri
@@ -486,7 +486,8 @@ function getTagCloud($tags,$label)
 		else if ($count>($min+$distribution)) $style="font-size:medium;";
 		else $style="font-size:small;";
 		
-		$ret.='<a style="'.$style.'" href="#" onclick="xajax_getSubjectsFromConcept(\''.$tag.'\');">'.$label[$tag].'</a>';
+		$tag_with_entities=htmlentities("\"".$tag."\"");
+		$ret.='<a style="'.$style.'" href="#" onclick="xajax_getSubjectsFromConcept(\''.$tag_with_entities.'\');">'.$label[$tag].'</a>';
 	}
 	$ret.="</p>";
 	return $ret;
