@@ -51,10 +51,14 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedEndpoint", "DBPEDIA");
 		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useCache", $settings->useCache);
 		$this->client->setReasoner($this->id, "fastInstanceChecker");
-		if(empty($negExamples))
+		/*if(empty($negExamples))
 			$this->client->setLearningProblem($this->id, "posOnlyDefinition");
 		else
-			$this->client->setLearningProblem($this->id, "posNegDefinition"); 
+			$this->client->setLearningProblem($this->id, "posNegDefinition");*/
+		$this->client->setLearningProblem($this->id, "posNegDefinition");
+		if(empty($negExamples)){
+			$negExamples=$this->client->getNegativeExamples($this->id,$this->ksID,$posExamples,count($posExamples),"http://dbpedia.org/resource/");
+		}
 		$this->client->setPositiveExamples($this->id, $posExamples);
 		if(!empty($negExamples))
 			$this->client->setNegativeExamples($this->id, $negExamples);
@@ -82,7 +86,7 @@ class DLLearnerConnection
 				sleep($sleeptime);
 				
 				// see what we have learned so far
-				$concepts=$this->client->getCurrentlyBestConcepts($this->id,3);
+				$concepts=$this->client->getCurrentlyBestConcepts($this->id,3,"kb");
 				$running=$this->client->isAlgorithmRunning($this->id);
 				
 				$seconds = $i * $sleeptime;
@@ -122,7 +126,7 @@ class DLLearnerConnection
 	function getTriples($uri)
 	{
 		$query="SELECT ?pred ?obj ".
-			   "WHERE {{<".$uri."> ?pred ?obj}UNION{<".$uri."> <http://dbpedia.org/property/redirect> ?Conc.?Conc ?pred ?obj}}";
+			   "WHERE {{<".$uri."> ?pred ?obj.Filter(!regex(str(?pred),'http://dbpedia.org/property/reference'))}UNION{<".$uri."> <http://dbpedia.org/property/redirect> ?Conc.?Conc ?pred ?obj.Filter(!regex(str(?pred),'http://dbpedia.org/property/reference'))}}";
 		$result=json_decode($this->getSparqlResultThreaded($query),true);
 		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result. The Label-Search is started."); 
 		$ret=array();
