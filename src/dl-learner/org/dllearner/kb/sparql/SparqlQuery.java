@@ -100,6 +100,11 @@ public class SparqlQuery {
 		HttpQuery.urlLimit = 3 * 1024;
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime")
 				.start();
+		//TODO correct Bug: when there is a & in the result like in the
+		//URL: http://www.discusmedia.com/catalog.php?catID=5.2.2&profile=map
+		//the XML Parser throws an error, because he thinks &profile is an html entitie
+		//but it doesn't end with an ;
+		//the & must be masked to an &amp; but I am not sure at the moment how to do that
 		rs = queryExecution.execSelect();
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
 

@@ -418,6 +418,15 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return new SparqlQuery(query, endpoint);
 	}
 	
+	public SPARQLTasks getSparqlTask()
+	{
+		if (this.useCache)
+			return new SPARQLTasks(new Cache(this.cacheDir),new SparqlEndpoint(url, defaultGraphURIs,
+					namedGraphURIs));
+		else
+			return new SPARQLTasks(new SparqlEndpoint(url, defaultGraphURIs,
+					namedGraphURIs));
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.KnowledgeSource#toKB()

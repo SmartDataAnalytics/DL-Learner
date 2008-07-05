@@ -264,7 +264,7 @@ public class Cache implements Serializable {
 				addToCache(query.getQueryString(), json);
 				SparqlQuery.writeToSparqlLog("result added to cache: "+json);
 				result=json;
-				query.setJson(result);
+				//query.setJson(result);
 			}
 			else {
 				json="";
