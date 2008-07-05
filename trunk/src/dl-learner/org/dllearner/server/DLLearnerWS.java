@@ -58,6 +58,8 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.SPARQLTasks;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
@@ -72,6 +74,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 
 /**
  * DL-Learner web service interface.
@@ -661,6 +664,22 @@ public class DLLearnerWS {
 	public String SparqlRetrieval(String conceptString) throws ParseException {
 		// call parser to parse concept
 		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString);
+	}
+	
+	@WebMethod
+	public String[] getNegativeExamples(int sessionID, int componentID,String[] positives, int results, String namespace) throws ClientNotKnownException
+	{
+		SortedSet<String> set = new TreeSet<String>(Arrays.asList(positives));
+		ClientState state = getState(sessionID);
+		Component component = state.getComponent(componentID);
+		SparqlKnowledgeSource ks=(SparqlKnowledgeSource)component;
+		SPARQLTasks task=ks.getSparqlTask();
+		AutomaticNegativeExampleFinderSPARQL finder=new AutomaticNegativeExampleFinderSPARQL(set,task);
+		finder.makeNegativeExamplesFromRelatedInstances(set, namespace);
+		finder.makeNegativeExamplesFromParallelClasses(set, 2);
+		SortedSet<String> negExamples=finder.getNegativeExamples(results);
+		
+		return negExamples.toArray(new String[negExamples.size()]);
 	}
 	
 	@WebMethod
