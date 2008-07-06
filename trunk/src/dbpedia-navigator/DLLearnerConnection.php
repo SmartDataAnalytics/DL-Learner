@@ -46,19 +46,23 @@ class DLLearnerConnection
 		$settings=new Settings();
 		
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",1);
-		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
-		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedFilter", "YAGO");
+		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedFilter", "DBPEDIA-NAVIGATOR");
+		//$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useLits", true);
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedEndpoint", "DBPEDIA");
+		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedManipulator", "DBPEDIA-NAVIGATOR");
 		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useCache", $settings->useCache);
-		$this->client->setReasoner($this->id, "fastInstanceChecker");
-		/*if(empty($negExamples))
-			$this->client->setLearningProblem($this->id, "posOnlyDefinition");
-		else
-			$this->client->setLearningProblem($this->id, "posNegDefinition");*/
-		$this->client->setLearningProblem($this->id, "posNegDefinition");
 		if(empty($negExamples)){
 			$negExamples=$this->client->getNegativeExamples($this->id,$this->ksID,$posExamples,count($posExamples),"http://dbpedia.org/resource/");
+			$negExamples=$negExamples->item;
+			
+			var_dump($negExamples);
 		}
+		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
+		$this->client->setReasoner($this->id, "fastInstanceChecker");
+		if(empty($negExamples))
+			$this->client->setLearningProblem($this->id, "posOnlyDefinition");
+		else
+			$this->client->setLearningProblem($this->id, "posNegDefinition");
 		$this->client->setPositiveExamples($this->id, $posExamples);
 		if(!empty($negExamples))
 			$this->client->setNegativeExamples($this->id, $negExamples);
@@ -334,11 +338,11 @@ class DLLearnerConnection
 	
 	}
 }
-/*
+
 ini_set('default_socket_timeout',200);
 $sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
 $sc=new DLLearnerConnection($ids[0],$ids[1]);
-$triples=$sc->getSubjects("Leipzig");
-var_dump($triples);*/
+$triples=$sc->getConceptFromExamples(array('http://dbpedia.org/resource/Leipzig'),array());
+var_dump($triples);
 ?>
