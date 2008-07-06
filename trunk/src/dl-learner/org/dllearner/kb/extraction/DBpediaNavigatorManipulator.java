@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -69,14 +68,13 @@ public class DBpediaNavigatorManipulator implements Manipulators{
 	 * @return
 	 */
 	public Set<StringTuple> check(Set<StringTuple> tuples, Node node) {
-		Set<StringTuple> toRemove = new HashSet<StringTuple>();
+		//Set<StringTuple> toRemove = new HashSet<StringTuple>();
 		Iterator<StringTuple> it = tuples.iterator();
 		float lat=0;
 		float lng=0;
 		String clas="";
 		StringTuple typeTupel=null;
-		if (node.uri.toString().equals("http://dbpedia.org/class/custom/City_in_Saxony"))
-			tuples.add(new StringTuple("http://www.w3.org/2000/01/rdf-schema#subClassOf","http://dbpedia.org/class/yago/City108524735"));
+		tuples.addAll(DBpediaNavigatorCityLocator.getTuplesToAdd(node.uri.toString()));
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
 						
@@ -114,17 +112,16 @@ public class DBpediaNavigatorManipulator implements Manipulators{
 
 		}
 		if (clas.equals("http://dbpedia.org/class/yago/City108524735")){
-			if (lat>50&&lat<52&&lng>12&&lng<13){
-				tuples.add(new StringTuple("http://www.w3.org/1999/02/22-rdf-syntax-ns#type","http://dbpedia.org/class/custom/City_in_Saxony"));
-				tuples.remove(typeTupel);
-			}
+			String newType=DBpediaNavigatorCityLocator.getTypeToCoordinates(lat, lng);
+			tuples.add(new StringTuple("http://www.w3.org/1999/02/22-rdf-syntax-ns#type",newType));
+			tuples.remove(typeTupel);
 		}
 		//tuples.removeAll(toRemove);
 
 		return tuples;
 	}
 
-	private void replacePredicate(StringTuple t) {
+	/*private void replacePredicate(StringTuple t) {
 		for (StringTuple rep : replacePredicate) {
 			if (rep.a.equals(t.a)) {
 				t.a = rep.b;
@@ -138,5 +135,5 @@ public class DBpediaNavigatorManipulator implements Manipulators{
 				t.a = rep.b;
 			}
 		}
-	}
+	}*/
 }

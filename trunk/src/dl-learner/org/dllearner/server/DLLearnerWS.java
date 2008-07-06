@@ -59,7 +59,6 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
@@ -676,7 +675,7 @@ public class DLLearnerWS {
 		SPARQLTasks task=ks.getSparqlTask();
 		AutomaticNegativeExampleFinderSPARQL finder=new AutomaticNegativeExampleFinderSPARQL(set,task);
 		//finder.makeNegativeExamplesFromRelatedInstances(set, namespace);
-		finder.makeNegativeExamplesFromParallelClasses(set, 5);
+		finder.makeNegativeExamplesFromParallelClasses(set, 25);
 		SortedSet<String> negExamples=finder.getNegativeExamples(results);
 		
 		return negExamples.toArray(new String[negExamples.size()]);

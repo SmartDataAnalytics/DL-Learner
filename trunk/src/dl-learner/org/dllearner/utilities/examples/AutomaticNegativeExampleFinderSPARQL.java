@@ -1,14 +1,11 @@
 package org.dllearner.utilities.examples;
 
-import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SetManipulation;
 
 public class AutomaticNegativeExampleFinderSPARQL {
