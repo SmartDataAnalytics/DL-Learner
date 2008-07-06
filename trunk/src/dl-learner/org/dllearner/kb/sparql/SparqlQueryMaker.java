@@ -102,12 +102,12 @@ public class SparqlQueryMaker {
 		int i=1;
 		for (String p : sparqlQueryType.getPredicatefilterlist()) {
 			if (this.sparqlQueryType.getMode()=="forbid")
-				if (!this.sparqlQueryType.isLiterals()||i!=1)
+				if (i!=1)
 					Filter += lineend + filterPredicate(p);
 				else
 					Filter += lineend + filterPredicate(p).substring(2);
 			else if (this.sparqlQueryType.getMode()=="allow")
-				if (!this.sparqlQueryType.isLiterals()||i!=1)
+				if (i!=1)
 					Filter += lineend + allowPredicate(p);
 				else
 					Filter += lineend + allowPredicate(p).substring(2);
@@ -123,12 +123,12 @@ public class SparqlQueryMaker {
 		i=1;
 		for (String o : sparqlQueryType.getObjectfilterlist()) {
 			if (this.sparqlQueryType.getMode()=="forbid")
-				if (!this.sparqlQueryType.isLiterals()||i!=1)
+				if (i!=1)
 					Filter += lineend + filterObject(o);
 				else
 					Filter += lineend + filterObject(o).substring(2);
 			else if (this.sparqlQueryType.getMode()=="allow")
-				if (!this.sparqlQueryType.isLiterals()||i!=1)
+				if (i!=1)
 					Filter += lineend + allowObject(o);
 				else
 					Filter += lineend + allowObject(o).substring(2);
