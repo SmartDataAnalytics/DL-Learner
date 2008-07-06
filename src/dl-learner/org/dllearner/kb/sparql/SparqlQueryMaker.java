@@ -40,10 +40,13 @@ public class SparqlQueryMaker {
 	public String makeSubjectQueryUsingFilters(String subject) {
 
 		String Filter = internalFilterAssemblySubject();
-		String ret = "SELECT * WHERE { " + lineend + "<" + subject
+		String ret="";
+		if (Filter.length()>0) ret = "SELECT * WHERE { " + lineend + "<" + subject
 				+ "> ?predicate ?object. " + lineend + "FILTER( " + lineend
-				+ "(" + Filter + ").}";
-		// System.out.println(ret);
+				+ Filter + ").}";
+		else ret="SELECT * WHERE { " + lineend + "<" + subject
+		+ "> ?predicate ?object}";
+		// System.out.println("Query: "+ret);
 		// System.out.println(sparqlQueryType.getPredicatefilterlist().length);
 		return ret;
 	}
@@ -89,14 +92,51 @@ public class SparqlQueryMaker {
 	private String internalFilterAssemblySubject() {
 
 		String Filter = "";
-		if (!this.sparqlQueryType.isLiterals())
-			Filter += "!isLiteral(?object))";
+		if (!this.sparqlQueryType.isLiterals()){
+			Filter += "(!isLiteral(?object))";
+			if (sparqlQueryType.getPredicatefilterlist().size()>0)
+				Filter += "&&(";
+		}
+		else if (sparqlQueryType.getPredicatefilterlist().size()>0)
+			Filter += "(";
+		int i=1;
 		for (String p : sparqlQueryType.getPredicatefilterlist()) {
-			Filter += lineend + filterPredicate(p);
+			if (this.sparqlQueryType.getMode()=="forbid")
+				if (!this.sparqlQueryType.isLiterals()||i!=1)
+					Filter += lineend + filterPredicate(p);
+				else
+					Filter += lineend + filterPredicate(p).substring(2);
+			else if (this.sparqlQueryType.getMode()=="allow")
+				if (!this.sparqlQueryType.isLiterals()||i!=1)
+					Filter += lineend + allowPredicate(p);
+				else
+					Filter += lineend + allowPredicate(p).substring(2);
+			i++;
 		}
+		if (sparqlQueryType.getPredicatefilterlist().size()>0)
+			Filter += ")";
+		
+		if ((sparqlQueryType.getPredicatefilterlist().size()>0||!this.sparqlQueryType.isLiterals())&&sparqlQueryType.getObjectfilterlist().size()>0)
+			Filter += "&&(";
+		else if (sparqlQueryType.getObjectfilterlist().size()>0)
+			Filter += "(";
+		i=1;
 		for (String o : sparqlQueryType.getObjectfilterlist()) {
-			Filter += lineend + filterObject(o);
+			if (this.sparqlQueryType.getMode()=="forbid")
+				if (!this.sparqlQueryType.isLiterals()||i!=1)
+					Filter += lineend + filterObject(o);
+				else
+					Filter += lineend + filterObject(o).substring(2);
+			else if (this.sparqlQueryType.getMode()=="allow")
+				if (!this.sparqlQueryType.isLiterals()||i!=1)
+					Filter += lineend + allowObject(o);
+				else
+					Filter += lineend + allowObject(o).substring(2);
+			i++;
 		}
+		if (sparqlQueryType.getObjectfilterlist().size()>0)
+			Filter += ")";
+		
 		return Filter;
 	}
 
@@ -124,6 +164,14 @@ public class SparqlQueryMaker {
 
 	private static String filterObject(String ns) {
 		return "&&( !regex(str(?object), '" + ns + "') )";
+	}
+	
+	private static String allowPredicate(String ns) {
+		return "||( regex(str(?predicate), '" + ns + "') )";
+	}
+
+	private static String allowObject(String ns) {
+		return "||( regex(str(?object), '" + ns + "') )";
 	}
 
 	/*private void p(String str) {

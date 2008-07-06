@@ -675,8 +675,8 @@ public class DLLearnerWS {
 		SparqlKnowledgeSource ks=(SparqlKnowledgeSource)component;
 		SPARQLTasks task=ks.getSparqlTask();
 		AutomaticNegativeExampleFinderSPARQL finder=new AutomaticNegativeExampleFinderSPARQL(set,task);
-		finder.makeNegativeExamplesFromRelatedInstances(set, namespace);
-		finder.makeNegativeExamplesFromParallelClasses(set, 2);
+		//finder.makeNegativeExamplesFromRelatedInstances(set, namespace);
+		finder.makeNegativeExamplesFromParallelClasses(set, 5);
 		SortedSet<String> negExamples=finder.getNegativeExamples(results);
 		
 		return negExamples.toArray(new String[negExamples.size()]);

@@ -78,6 +78,8 @@ public class SparqlQueryType {
 			return YagoSpecialHierarchy();
 		if (name.equals("TEST"))
 			return test();
+		if (name.equals("DBPEDIA-NAVIGATOR"))
+			return DBpediaNavigatorFilter();
 		
 		return null;
 	}
@@ -111,6 +113,24 @@ public class SparqlQueryType {
 		
 		return new SparqlQueryType("forbid", obj, pred, false);
 	}
+	
+	public static SparqlQueryType DBpediaNavigatorFilter(){
+		Set<String> pred = new HashSet<String>();
+		pred.add("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+		pred.add("http://www.w3.org/2000/01/rdf-schema#subClassOf");
+		pred.add("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
+		pred.add("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+		//pred.add("http://dbpedia.org/property/wikipage");
+		//pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+		//pred.add("http://dbpedia.org/property/relatedInstance");
+		//pred.add("http://dbpedia.org/property/owner");
+		//pred.add("http://dbpedia.org/property/standard");
+			
+			Set<String> obj = new HashSet<String>();
+			
+			return new SparqlQueryType("allow", obj, pred, true);
+		}
+	
 	public static SparqlQueryType YagoSpecialHierarchy(){
 		Set<String> pred = new HashSet<String>();
 			pred.add("http://www.w3.org/2004/02/skos/core");
