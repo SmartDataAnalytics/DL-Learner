@@ -51,7 +51,7 @@ public class InstanceNode extends Node {
 
 		Set<StringTuple> s = tsq.getTupelForResource(uri);
 		// see Manipulator
-		m.check(s, this);
+		s=m.check(s, this);
 		// System.out.println("fffffff"+m);
 		Vector<Node> Nodes = new Vector<Node>();
 

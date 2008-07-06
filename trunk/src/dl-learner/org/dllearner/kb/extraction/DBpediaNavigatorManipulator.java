@@ -71,10 +71,26 @@ public class DBpediaNavigatorManipulator implements Manipulators{
 	public Set<StringTuple> check(Set<StringTuple> tuples, Node node) {
 		Set<StringTuple> toRemove = new HashSet<StringTuple>();
 		Iterator<StringTuple> it = tuples.iterator();
+		float lat=0;
+		float lng=0;
+		String clas="";
+		StringTuple typeTupel=null;
+		if (node.uri.toString().equals("http://dbpedia.org/class/custom/City_in_Saxony"))
+			tuples.add(new StringTuple("http://www.w3.org/2000/01/rdf-schema#subClassOf","http://dbpedia.org/class/yago/City108524735"));
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
+						
+			if (t.a.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")){
+				clas=t.b;
+				typeTupel=t;
+			}
 			
-			replacePredicate(t);
+			if (t.a.equals("http://www.w3.org/2003/01/geo/wgs84_pos#lat"))
+				lat=Float.parseFloat(t.b.substring(0,t.b.indexOf("^^")));
+			if (t.a.equals("http://www.w3.org/2003/01/geo/wgs84_pos#long"))
+				lng=Float.parseFloat(t.b.substring(0,t.b.indexOf("^^")));
+			
+			/*replacePredicate(t);
 			replaceObject(t);
 
 			
@@ -94,10 +110,16 @@ public class DBpediaNavigatorManipulator implements Manipulators{
 			if (t.a.equals(type) && t.b.equals(thing)
 					&& node instanceof InstanceNode) {
 				toRemove.add(t);
-			}
+			}*/
 
 		}
-		tuples.removeAll(toRemove);
+		if (clas.equals("http://dbpedia.org/class/yago/City108524735")){
+			if (lat>50&&lat<52&&lng>12&&lng<13){
+				tuples.add(new StringTuple("http://www.w3.org/1999/02/22-rdf-syntax-ns#type","http://dbpedia.org/class/custom/City_in_Saxony"));
+				tuples.remove(typeTupel);
+			}
+		}
+		//tuples.removeAll(toRemove);
 
 		return tuples;
 	}
