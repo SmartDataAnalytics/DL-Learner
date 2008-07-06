@@ -1,6 +1,7 @@
 package org.dllearner.tools.ore;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClassAssertionAxiom;
@@ -80,8 +82,12 @@ public class OntologyModifierOWLAPI {
 	 */
 	public void saveOntology(){
 		
+	
+		
+		URI physicalURI2 = URI.create("file:/tmp/MyOnt2.owl");
+		
 		try {
-			manager.saveOntology(ontology);
+			manager.saveOntology(ontology, new RDFXMLOntologyFormat(), physicalURI2);
 		} catch (UnknownOWLOntologyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,18 +95,6 @@ public class OntologyModifierOWLAPI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-//		URI physicalURI2 = URI.create("file:/tmp/MyOnt2.owl");
-//		
-//		try {
-//			manager.saveOntology(ontology, new RDFXMLOntologyFormat(), physicalURI2);
-//		} catch (UnknownOWLOntologyException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (OWLOntologyStorageException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	
 	}
 	/**
@@ -223,6 +217,7 @@ public class OntologyModifierOWLAPI {
 		
 		try {
 			manager.applyChanges(changes);
+			saveOntology();
 			return changes;
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
@@ -320,7 +315,7 @@ public class OntologyModifierOWLAPI {
 	 * undo changes of type {@link OWLOntologyChange}
 	 * @param changes
 	 */
-	public void undoChanges(List<OWLOntologyChange> changes){
+	public void undoChanges(Collection<OWLOntologyChange> changes){
 		
 		
 		for(OWLOntologyChange change : changes){
@@ -362,46 +357,18 @@ public class OntologyModifierOWLAPI {
 				return true;
 		}
 		
-//		OWLClass owlClass1 = factory.getOWLClass(URI.create(desc1.toString()));
-//		OWLClass owlClass2 = factory.getOWLClass(URI.create(desc2.toString()));
-//		for(OWLEquivalentClassesAxiom eq :ontology.getEquivalentClassesAxioms(owlClass1))
-//			for(OWLDescription d : eq.getDescriptions())
-//				System.out.println(d.isAnonymous());
-//		for(OWLEquivalentClassesAxiom eq :ontology.getEquivalentClassesAxioms(owlClass2)){
-//			for(OWLDescription d : eq.getDescriptions())
-//				System.out.println(d.getClass());
-//			for(OWLEntity e : eq.getReferencedEntities())
-//				System.out.println(e);
-//		}
 				
 		return false;
 		
 	}
 
-
-	
-	
-//	public OWLOntology copyOntology(){
-//		try{
-//			OWLOntology ontologyCopy = manager.createOntology(ontology.getURI());
-//		
-//		 
-//		Set<OWLAxiom> axioms = ontology.getAxioms();
-//		List<AddAxiom> changes = new LinkedList<AddAxiom>();
-//		for(OWLAxiom a : axioms)
-//			changes.add(new AddAxiom(ontologyCopy, a));
-//			
-//		manager.applyChanges(changes);
-//		
-//		return ontologyCopy;
-//		
-//		}catch(OWLException e){
-//			e.printStackTrace();
-//			return null;
-//		}
-//		
-//		
+//	public void reason(){
+//		reasoner.getInconsistencyReasons(ontology);
+//
 //	}
+	
+	
+
 	
 	
 	

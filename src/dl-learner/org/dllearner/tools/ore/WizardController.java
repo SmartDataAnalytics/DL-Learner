@@ -72,6 +72,7 @@ public class WizardController implements ActionListener {
         	((ConceptPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel3.getModel().clear();
         	new ConceptRetriever(nextPanelDescriptor).execute();
         }
+       
         
         if( nextPanelDescriptor.equals("REPAIR_PANEL")){
         	((RepairPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getNegFailureModel().clear();
@@ -85,6 +86,7 @@ public class WizardController implements ActionListener {
                	
         }
         if(nextPanelDescriptor.equals("LEARNING_PANEL")){
+        	wizard.getModel().getOre().init();
         	((LearningPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getStatusLabel().setText("");
         	((LearningPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getModel().clear();
         	

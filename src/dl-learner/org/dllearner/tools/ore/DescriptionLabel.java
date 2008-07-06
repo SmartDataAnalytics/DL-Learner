@@ -15,6 +15,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Thing;
 
 public class DescriptionLabel extends JLabel implements MouseListener{
 	/**
@@ -31,27 +32,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 		this.desc = d;
 		setForeground(Color.red);
 		addMouseListener(this);
-//		menu = new JPopupMenu();
-//		if(!(desc instanceof Negation)){
-//			if(desc instanceof NamedClass){
-//				menu.add(new DescriptionMenuItem("remove class assertion " + desc.toString(), desc) );
-//				DescriptionMenuItem dme = new DescriptionMenuItem("move class assertion " + desc.toString() + " to ...", desc);
-//				for(NamedClass nc : ore.getpossibleMoveClasses(ind))
-//					dme.add(new JMenuItem(nc.getName()));
-//				menu.add(dme);
-////				menu.add(new DescriptionMenuItem("move class assertion " + desc.toString() + " to ...", desc));
-//			}
-//			else if(desc instanceof ObjectSomeRestriction)
-//				menu.add(new DescriptionMenuItem("remove property assertion " + desc.toString(), desc));
-//		}
-//		else if(desc instanceof Negation){
-//			if(desc.getChild(0) instanceof NamedClass)
-//				menu.add(new DescriptionMenuItem("add class assertion to " + desc.getChild(0).toString(), desc.getChild(0)));
-//			else if(desc.getChild(0) instanceof ObjectSomeRestriction)
-//				menu.add(new DescriptionMenuItem("add property " + d.toString(), desc.getChild(0)));
-//		}
-		
-		
+	
 		
 	}
 	
@@ -62,12 +43,24 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 				menu.add(new DescriptionMenuItem("remove class assertion " + desc.toString(), desc) );
 				JMenu dme = new JMenu("move class assertion " + desc.toString() + " to ...");
 				for(NamedClass nc : ore.getpossibleMoveClasses(ind))
-					dme.add(new DescriptionMenuItem(nc.getName(), desc));
+					dme.add(new MoveMenuItem((NamedClass)desc, nc));
 				menu.add(dme);
 //				menu.add(new DescriptionMenuItem("move class assertion " + desc.toString() + " to ...", desc));
 			}
-			else if(desc instanceof ObjectSomeRestriction)
-				menu.add(new DescriptionMenuItem("remove property assertion " + desc.toString(), desc));
+			else if(desc instanceof ObjectSomeRestriction){
+				menu.add(new DescriptionMenuItem("remove property " + ((ObjectSomeRestriction)desc).getRole(), desc));
+				System.out.println(desc.getChild(0).getClass());
+				if (!(desc.getChild(0) instanceof Thing)) {
+					JMenu dme = new JMenu("add property assertion "
+							+ ((ObjectSomeRestriction) desc).getRole()
+							+ " with object ...");
+					for (Individual i : ore.getIndividualsNotOfPropertyRange(
+							(ObjectSomeRestriction) desc, ind))
+						dme.add(new DescriptionMenuItem(i.getName(), desc
+								.getChild(0)));
+					menu.add(dme);
+				}
+			}
 		}
 		else if(desc instanceof Negation){
 			if(desc.getChild(0) instanceof NamedClass){
@@ -78,8 +71,12 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 					item.setToolTipText("class assertion not possible because individual is still asserted to its complement");
 				}
 			}
-			else if(desc.getChild(0) instanceof ObjectSomeRestriction)
-				menu.add(new DescriptionMenuItem("add property " + desc.toString(), desc.getChild(0)));
+			else if(desc.getChild(0) instanceof ObjectSomeRestriction){
+				JMenu dme = new JMenu("add property " + desc.toString() + " with object ...");
+				for(Individual i : ore.getIndividualsOfPropertyRange((ObjectSomeRestriction)desc.getChild(0), ind))
+					dme.add(new DescriptionMenuItem(i.getName(), desc.getChild(0)));
+				menu.add(dme);
+			}
 		}
 	}
 	
