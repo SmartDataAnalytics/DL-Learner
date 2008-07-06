@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingUtilities;
@@ -13,7 +14,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectSomeRestriction;
 
 
 
@@ -52,11 +52,13 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
     
    
     
-    class ResultSwingWorker extends
-			SwingWorker<List<Description>, List<Description>> {
-		LearningAlgorithm la;
-	
-
+    class ResultSwingWorker extends SwingWorker<List<Description>, List<Description>> {
+		
+    	LearningAlgorithm la;
+    	Thread t;
+    	
+    	
+    	
 		@SuppressWarnings("unchecked")
 		@Override
 		public List<Description> doInBackground() {
@@ -65,14 +67,43 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			panel4.getLoadingLabel().setBusy(true);
 			panel4.getStatusLabel().setText("Learning");
 			getWizardModel().getOre().setNoise(panel4.getNoise());
+			la = getWizardModel().getOre().getLa();
+			timer = new Timer();
+			timer.schedule(new TimerTask(){
+
+				@Override
+				public void run() {
+					if(la != null){
+						
+						System.out.println(scheduledExecutionTime()-System.currentTimeMillis());
+						publish(la.getCurrentlyBestDescriptions(10, true));
+					}
+				}
+				
+			}, 1000, 1000);
 			
 			
-			
-			la = getWizardModel().getOre().start();//started endlosen Algorithmus
-			publish(la.getCurrentlyBestDescriptions(10));
-			
+			t = new Thread(new Runnable(){
+
+				@Override
+				public void run() {
 					
-			List<Description> result = getWizardModel().getOre().getLearningResults(100);
+					la.start();
+				}
+				
+			});
+			t.setPriority(Thread.MIN_PRIORITY);
+			t.start();
+			
+//			publish(la.getCurrentlyBestDescriptions(10, true));
+			
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
+			List<Description> result = getWizardModel().getOre().getLearningResults(10);
 
 			return result;
 		}
@@ -163,6 +194,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("Start")){
+			panel4.getModel().clear();
 			panel4.getStartButton().setEnabled(false);
             panel4.getStopButton().setEnabled(true);
             worker = new ResultSwingWorker();
@@ -172,9 +204,11 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			canceled = true;
 			panel4.getStopButton().setEnabled(false);
 			getWizardModel().getOre().getLa().stop();
-            panel4.getStartButton().setEnabled(true);
+            timer.cancel();
+			panel4.getStartButton().setEnabled(true);
             panel4.getStatusLabel().setText("Algorithm aborted");
             panel4.getLoadingLabel().setBusy(false);
+            
 		}
 		
 		
@@ -189,14 +223,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			for(Description d: getWizardModel().getOre().getAllChildren((Description)(panel4.getResultList().getSelectedValue()))){
 				System.out.println(d + " : " + d.getClass());
 				
-				if(d instanceof ObjectSomeRestriction){
-
-					
-					getWizardModel().getOre().getIndividualsOfPropertyRange((ObjectSomeRestriction)d);
-
-					
-					
-				}
+				
 				
 			}
 		

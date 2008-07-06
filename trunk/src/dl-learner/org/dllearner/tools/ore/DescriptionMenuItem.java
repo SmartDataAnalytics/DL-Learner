@@ -13,13 +13,17 @@ public class DescriptionMenuItem extends JMenuItem {
 
 	Description desc;
 	
+	
 	public DescriptionMenuItem(String text, Description d){
 		super(text);
 		this.desc = d;
 	}
 	
+		
 	public Description getDescription(){
 		return desc;
 	}
+	
+	
 	
 }

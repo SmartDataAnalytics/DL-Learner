@@ -17,15 +17,14 @@ public class ChangesPanel extends JPanel{
 	private static final long serialVersionUID = -7538532926820669891L;
 
 	public ChangesPanel(){
-		super(new GridLayout(0, 1));
+		super();
+		setLayout(new GridLayout(0, 1));
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		
 	}
 	
-	public void init(){
-//		setBorder(new TitledBorder("changes"));
-	}
+
 	
 	public void updatePanel(Container cont){
 		remove(cont);

@@ -35,7 +35,6 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
 
-
 public class ORE {
 	
 	private LearningAlgorithm la;
@@ -94,7 +93,7 @@ public class ORE {
 		}
 		
 				
-//		rs = cm.reasoningService(reasoner);
+		
 		reasoner2 = cm.reasoner(OWLAPIReasoner.class, ks);
 		try {
 			reasoner2.init();
@@ -102,8 +101,12 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		rs = cm.reasoningService(reasoner2);
 		modi = new OntologyModifierOWLAPI(reasoner2);
+		
+	
+		
+		
 	}
 	
 	public ReasoningService getReasoningService(){
@@ -143,13 +146,13 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//la = new ROLearner(lp, rs);
+	
 		
 		Set<String> t = new TreeSet<String>();
 		t.add(ignoredConcept.getName());
 		cm.applyConfigEntry(la, "ignoredConcepts", t );
-		cm.applyConfigEntry(la, "noisePercentage", noise);
-		cm.applyConfigEntry(la, "guaranteeXgoodDescriptions", 5);
+//		cm.applyConfigEntry(la, "noisePercentage", noise);
+		cm.applyConfigEntry(la, "guaranteeXgoodDescriptions", 10);
 		try {
 			la.init();
 		} catch (ComponentInitException e) {
@@ -164,28 +167,37 @@ public class ORE {
 	}
 
 	
-	public LearningAlgorithm start(){
+	public void init(){
 		
 		this.setPosNegExamples();
 		this.setLearningProblem();
 		this.setLearningAlgorithm();
 		
-		la.start();
-			
-		return la;
+	}
+	
+	public LearningAlgorithm start(){
+		Set<String> t = new TreeSet<String>();
 		
+		cm.applyConfigEntry(la, "ignoredConcepts", t );
+		cm.applyConfigEntry(la, "noisePercentage", noise);
+		try {
+			la.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(noise);
+		la.start();
+		return la;
 	}
 	
-	public Description getLearningResult(){
-		return la.getCurrentlyBestDescription();
-	}
-	
+		
 //	public List<Description> getSolutions(){
 //		return la.getCurrentlyBestDescriptions();
 //	}
 	
 	public List<Description> getLearningResults(int anzahl){
-		return la.getCurrentlyBestDescriptions(anzahl);
+		return la.getCurrentlyBestDescriptions(anzahl, true);
 	}
 	
 	/**
@@ -372,6 +384,7 @@ public class ORE {
 		
 		try {
 			if(reasoner.instanceCheck(desc, ind)){
+				
 				if(children.size() >= 2){
 					
 					if(desc instanceof Intersection){
@@ -379,7 +392,7 @@ public class ORE {
 						for(int i = 0; i<children.size()-1; i++){
 							criticals.addAll(DescriptionToJLabel(ind, desc.getChild(i)));
 							criticals.add(new JLabel("AND"));
-							System.out.println(true);
+							
 						}
 						criticals.addAll(DescriptionToJLabel(ind, desc.getChild(children.size()-1)));
 						criticals.add(new JLabel(")"));
@@ -407,7 +420,7 @@ public class ORE {
 					}
 				}
 				else{
-				
+					
 					criticals.add(new DescriptionLabel(desc));
 				}
 			}
@@ -421,18 +434,24 @@ public class ORE {
 	return criticals;
 	}
 	
-	public Set<Individual> getIndividualsOfPropertyRange(ObjectQuantorRestriction objRestr){
-		
-		
-		System.out.println(objRestr.getChild(0));
-		
+	public Set<Individual> getIndividualsOfPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
 		
 		Set<Individual> individuals = rs.retrieval(objRestr.getChild(0));
-		System.out.println(objRestr.getRole());
-		
-		System.out.println(individuals);
+		individuals.remove(ind);
 		
 		return individuals;
+	}
+	
+	public Set<Individual> getIndividualsNotOfPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
+		
+		Set<Individual> individuals = reasoner2.retrieval(objRestr.getChild(0));
+		Set<Individual> allIndividuals = reasoner2.getIndividuals();
+		System.out.println("alle:" + allIndividuals);
+		allIndividuals.removeAll(individuals);
+		allIndividuals.remove(ind);
+		
+		System.out.println("range:" + individuals);
+		return allIndividuals;
 	}
 	
 	public Set<NamedClass> getpossibleMoveClasses(Individual ind){
@@ -461,6 +480,13 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		reasoner2 = cm.reasoner(OWLAPIReasoner.class,new OWLAPIOntology(modi.ontology));
+		try {
+			reasoner2.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean hasComplement(Description desc, Individual ind){
@@ -480,13 +506,16 @@ public class ORE {
 		
 		final ORE test = new ORE();
 		
-		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/inconsistent.owl");
+		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/inkohaerent.owl");
 		
 		test.setKnowledgeSource(owlFile);
 	
 		test.detectReasoner();
-//		System.out.println(test.reasoner2.getInconsistentClasses());
-//		System.err.println("Concepts :" + rs.getAtomicConcepts());
+//		test.modi.reason();
+		
+//		Individual ind = new Individual("http://example.com/father#heinz");
+//		Description d = new Intersection(new NamedClass("http://example.com/father#male"), new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"), new NamedClass("http://example.com/father#male")));
+//		System.out.println(test.reasoner2.instanceCheck(d, ind));
 		
 		
 //		test.setConcept(new NamedClass("http://example.com/father#father"));

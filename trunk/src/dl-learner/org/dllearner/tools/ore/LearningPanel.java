@@ -3,18 +3,19 @@ package org.dllearner.tools.ore;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.JSlider;
 import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.swingx.JXBusyLabel;
@@ -36,15 +37,17 @@ public class LearningPanel extends JPanel{
 	private JButton startButton;
 	private JButton stopButton;
 	
-	private JTextField noiseField;
+	private JSlider noiseSlider;
 	
-	@SuppressWarnings("unchecked")
+
 	public LearningPanel() {
 		
 		super();
 		model = new DefaultListModel();
 		
-	
+		JPanel eastPanel = new JPanel();
+		eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
+		
 		JPanel buttonPanel = new JPanel();
 		startButton = new JButton("Start");
 		stopButton = new JButton("Stop");
@@ -52,12 +55,29 @@ public class LearningPanel extends JPanel{
 		buttonPanel.add(startButton);
 		buttonPanel.add(stopButton);
 		
+		JPanel noisePanel = new JPanel();
+		noisePanel.setLayout(new BoxLayout(noisePanel, BoxLayout.Y_AXIS));
+		noiseSlider = new JSlider(0, 100, 0);
+		noiseSlider.setPaintTicks(true);
+		noiseSlider.setMajorTickSpacing(10);
+		noiseSlider.setMinorTickSpacing(5);
+		Dictionary<Integer, JLabel> map = new Hashtable<Integer, JLabel>();
+		map.put( new Integer(0), new JLabel("0%") );
+		map.put( new Integer(50), new JLabel("50%") );
+		map.put( new Integer(100),new JLabel("100%") );
+		noiseSlider.setLabelTable( map );
+		noiseSlider.setPaintLabels(true);
+		noisePanel.add(new JLabel("noise"));
+		noisePanel.add(noiseSlider);
 		
-		JPanel labelPanel = new JPanel();
+		eastPanel.add(buttonPanel);
+		eastPanel.add(noisePanel);
+	
+		JPanel statusPanel = new JPanel();
 		statusLabel = new JLabel();
 		
 		loadingLabel = new JXBusyLabel(new Dimension(15,15));
-		BusyPainter painter = new BusyPainter(
+		BusyPainter<Object> painter = new BusyPainter<Object>(
 		new RoundRectangle2D.Float(0, 0,6.0f,2.6f,10.0f,10.0f),
 		new Ellipse2D.Float(2.0f,2.0f,11.0f,11.0f));
 		painter.setTrailLength(2);
@@ -66,15 +86,15 @@ public class LearningPanel extends JPanel{
 		loadingLabel.setPreferredSize(new Dimension(15,15));
 		loadingLabel.setIcon(new EmptyIcon(15,15));
 		loadingLabel.setBusyPainter(painter);
-		labelPanel.add(loadingLabel);
-		labelPanel.add(statusLabel);
+		statusPanel.add(loadingLabel);
+		statusPanel.add(statusLabel);
 		
 		contentPanel = getContentPanel();
 		setLayout(new java.awt.BorderLayout());
 		
-		add(buttonPanel, BorderLayout.EAST);
+		add(eastPanel, BorderLayout.EAST);
 		add(contentPanel,BorderLayout.CENTER);
-		add(labelPanel, BorderLayout.SOUTH);
+		add(statusPanel, BorderLayout.SOUTH);
 	}
 
 	private JPanel getContentPanel() {
@@ -87,31 +107,10 @@ public class LearningPanel extends JPanel{
 //		resultList.setCellRenderer(new ColumnListCellRenderer());
 		scroll.setPreferredSize(new Dimension(900, 400));
 		scroll.setViewportView(resultList);
-				
-		noiseField = new JTextField("noise");
-		noiseField.setText("0.0");
-		
-		
-		noiseField.addKeyListener(new KeyAdapter() {
-			  @Override
-			public void keyTyped(KeyEvent e) {
-			    char c = e.getKeyChar();
-			    if (!((Character.isDigit(c) ||
-			      (c == KeyEvent.VK_BACK_SPACE) ||
-			      (c == KeyEvent.VK_DELETE)))) {
-			        getToolkit().beep();
-			        e.consume();
-			    }
-			    
-			  }
-			});
-		
+			
 		contentPanel1.add(scroll);
-		contentPanel1.add(noiseField);
-		
-		
-		
-
+	
+	
 		return contentPanel1;
 	}
 	
@@ -152,7 +151,7 @@ public class LearningPanel extends JPanel{
 	}
 	
 	public double getNoise(){
-		return Double.parseDouble(noiseField.getText());
+		return noiseSlider.getValue();
 	}
 	
 	
