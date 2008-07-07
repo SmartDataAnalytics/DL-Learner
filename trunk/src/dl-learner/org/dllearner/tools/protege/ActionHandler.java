@@ -9,8 +9,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
-import javax.swing.JDialog;
-
 import org.dllearner.core.owl.Description;
 /**
  * 
@@ -39,7 +37,7 @@ public class ActionHandler  implements ActionListener, ItemListener, MouseListen
 	 * This is the view of the DL-Learner tab.
 	 */
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
-	private JDialog detailDialog;
+//	private JDialog detailDialog;
 	/**
 	 * This is the constructor for the action handler
 	 * @param a ActionHandler

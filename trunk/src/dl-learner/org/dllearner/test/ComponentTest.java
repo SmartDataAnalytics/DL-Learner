@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.DBpediaNavigationSuggestor;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -83,7 +83,7 @@ public class ComponentTest {
 		// create the learning algorithm
 		LearningAlgorithm la = null;
 		try {
-			la = cm.learningAlgorithm(DBpediaNavigationSuggestor.class, lp, rs);
+			la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
 		} catch (LearningProblemUnsupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,7 +95,7 @@ public class ComponentTest {
 			
 		// start the algorithm and print the best concept found
 		la.start();
-		System.out.println(la.getCurrentlyBestEvaluatedDescription());
+		System.out.println(la.getCurrentlyBestEvaluatedDescriptions());
 	}
 
 }
