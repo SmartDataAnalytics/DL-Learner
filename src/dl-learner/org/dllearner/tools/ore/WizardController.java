@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.dllearner.core.owl.Individual;
@@ -69,26 +70,25 @@ public class WizardController implements ActionListener {
         
         //TODO nochmal überdenken
         if(nextPanelDescriptor.equals("CONCEPT_CHOOSE_PANEL")){
-        	((ConceptPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel3.getModel().clear();
+        	((ConceptPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor)).panel3.getModel().clear();
         	new ConceptRetriever(nextPanelDescriptor).execute();
         }
        
         
         if( nextPanelDescriptor.equals("REPAIR_PANEL")){
-        	((RepairPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getNegFailureModel().clear();
-        	((RepairPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getPosFailureModel().clear();
-        	wizard.getModel().getOre().getModi().addAxiomToOWL(wizard.getModel().getOre().getConceptToAdd(), wizard.getModel().getOre().getIgnoredConcept());
+        	RepairPanelDescriptor repair = ((RepairPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor));
+        	repair.panel4.getNegFailureModel().clear();
+        	repair.panel4.getPosFailureModel().clear();
+//        	OWLOntologyChange change = model.getOre().getModi().addAxiomToOWL(model.getOre().getConceptToAdd(), model.getOre().getIgnoredConcept());
+//        	repair.getOntologyChanges().add(change);
         	new FailInstancesRetriever(nextPanelDescriptor).execute();
         	
-//        	for(Description desc : wizard.getModel().getOre().getConceptToAdd().getChildren())
-//    			System.out.println(desc);
-    
                	
         }
         if(nextPanelDescriptor.equals("LEARNING_PANEL")){
         	wizard.getModel().getOre().init();
-        	((LearningPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getStatusLabel().setText("");
-        	((LearningPanelDescriptor)wizard.getModel().getPanelHashMap().get(nextPanelDescriptor)).panel4.getModel().clear();
+        	((LearningPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor)).panel4.getStatusLabel().setText("");
+        	((LearningPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor)).panel4.getModel().clear();
         	
         }
         
@@ -119,8 +119,26 @@ public class WizardController implements ActionListener {
         //  panel, and display it.
         
         Object backPanelDescriptor = descriptor.getBackPanelDescriptor();        
-        wizard.setCurrentPanel(backPanelDescriptor);
-        refreshLeftPanel(backPanelDescriptor);
+        
+        
+        if(backPanelDescriptor.equals("LEARNING_PANEL")){
+        	if (JOptionPane.showConfirmDialog(wizard.getDialog(),
+			        "All changes will be lost!", "Warning!", 
+			        JOptionPane.YES_NO_OPTION)
+			     == JOptionPane.YES_OPTION){
+
+        		wizard.getModel().getOre().getModi().undoChanges(((RepairPanelDescriptor)descriptor).getOntologyChanges());
+        		((RepairPanelDescriptor)descriptor).getOntologyChanges().clear();
+				wizard.setCurrentPanel(backPanelDescriptor);
+		        refreshLeftPanel(backPanelDescriptor);
+			}
+        	
+        	
+        }else{
+        	wizard.setCurrentPanel(backPanelDescriptor);
+            refreshLeftPanel(backPanelDescriptor);
+        }
+        
         
     }
     
@@ -230,7 +248,7 @@ public class WizardController implements ActionListener {
 			ConceptPanelDescriptor nextPanel = (ConceptPanelDescriptor) wizard
 					.getModel().getPanelHashMap().get(nextPanelID);
 			DefaultListModel dm = new DefaultListModel();
-
+			
 			for (NamedClass cl : ind) {
 				dm.addElement(cl);
 				

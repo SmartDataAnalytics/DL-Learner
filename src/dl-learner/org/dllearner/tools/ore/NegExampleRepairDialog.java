@@ -51,10 +51,8 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 		
 	private ORE ore;
 	private Individual ind;
-//	private OWLAPIReasoner reasoner;
 	private Description actualDesc;
 	private Description newDesc;
-//	private Individual object;
 	private Set<OWLOntologyChange> allChanges;
 	
 	
@@ -62,7 +60,6 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 		super(dialog, "Repair negative example", true);
 		this.ind = ind;
 		this.ore = ore;
-//		this.reasoner = ore.reasoner2;
 		allChanges = new HashSet<OWLOntologyChange>();
 		init();
 	}
@@ -90,7 +87,7 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 		
 		GridBagLayout gbl = new GridBagLayout();
 		gbl.rowWeights = new double[] {0.0, 0.1, 0.1};
-		gbl.rowHeights = new int[] {34, 7, 7};
+		gbl.rowHeights = new int[] {64, 7, 7};
 		gbl.columnWeights = new double[] {0.1};
 		gbl.columnWidths = new int[] {7};
 		action_stats_Panel.setLayout(gbl);
@@ -156,22 +153,31 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 			else if(e.getActionCommand().startsWith("add property")){                      //add property
 				Individual ind = new Individual(e.getActionCommand());
 				List<OWLOntologyChange> changes  = ore.modi.addObjectProperty(ind, (ObjectSomeRestriction)actualDesc, ind);
-				System.out.println("ghhfhg");
 				allChanges.addAll(changes);
 				descPanel.updatePanel();
 				changesPanel.add(new ChangePanel("added property assertion " + ((ObjectSomeRestriction)actualDesc).getRole() + " to " + ind, changes, this));
 			
 			}
-//			else if(e.getActionCommand().startsWith("remove property")){                  //delete property
-//				ore.modi.deleteObjectProperty(ind, (ObjectSomeRestriction)actualDesc);
-//			}
+			else if(e.getActionCommand().startsWith("remove complete property")){                  //delete property
+				List<OWLOntologyChange> changes = ore.modi.deleteObjectProperty(ind, (ObjectSomeRestriction)actualDesc);
+				allChanges.addAll(changes);
+				descPanel.updatePanel();
+				changesPanel.add(new ChangePanel("removed property " + ((ObjectSomeRestriction)actualDesc).getRole(), changes, this));
+			}
+			else if(e.getActionCommand().startsWith("remove all property")){                  //remove property assertions
+				List<OWLOntologyChange> changes = ore.modi.deleteObjectPropertyAssertions(ind, (ObjectSomeRestriction)actualDesc);
+				allChanges.addAll(changes);
+				descPanel.updatePanel();
+				changesPanel.add(new ChangePanel("added property assertion " + ((ObjectSomeRestriction)actualDesc).getRole() + " to " + ind, changes, this));
+			}
+			
 		}else if(e.getSource() instanceof MoveMenuItem){
 			actualDesc = ((MoveMenuItem)e.getSource()).getSource();
 			newDesc = new NamedClass(e.getActionCommand());
 			List<OWLOntologyChange> changes  = ore.modi.moveIndividual(ind, actualDesc, newDesc);
 			allChanges.addAll(changes);
 			descPanel.updatePanel();
-			statsPanel.updatePanel("remove", actualDesc);
+			statsPanel.updatePanel("move", actualDesc);
 			changesPanel.add(new ChangePanel("moved class assertion from " + actualDesc + " to " + newDesc, changes, this));
 		}
 			
@@ -183,7 +189,8 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 				System.out.println(((RemoveAxiom)ol).getAxiom());
 		}
 		else if(e.getActionCommand().equals("Ok")){
-			
+			setVisible(false);
+			dispose();
 		}
 		else if(e.getActionCommand().equals("Cancel")){
 			if (JOptionPane.showConfirmDialog(this,
@@ -235,58 +242,6 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 		return allChanges;
 	}
 		
-//		if(e.getActionCommand().equals("delete instance")){
-//			ore.modi.deleteIndividual(ind);
-//			
-//		}
-//		else{
-//			actualDesc = ((DescriptionButton)e.getSource()).getDescription();
-//			
-//			if(e.getActionCommand().startsWith("remove class")){                       //remove class
-//				System.out.println(ore.reasoner2.instanceCheck(ore.getConceptToAdd() ,ind));
-//				ore.modi.removeClassAssertion(ind, actualDesc);
-//				
-//				actionsPanel.updatePanel();
-//				changes.add(new JLabel("removed class assertion to " + actualDesc));
-//				changes.add(new JButton("Undo"));
-//				System.err.println(ore.modi.checkInstanceNewOntology(ore.conceptToAdd, ind));
-//				
-//			}
-//			else if(e.getActionCommand().startsWith("add class")){                     //add class
-//					System.err.println(actualDesc);
-//					ore.modi.addClassAssertion(ind, actualDesc);
-//					actionsPanel.updatePanel();
-//					changes.add(new JLabel("added class assertion to " + actualDesc));
-//					
-//			}
-//			else if(e.getActionCommand().startsWith("move class")){                    //move class
-//			
-//				newDesc = (Description)new ChooseDialog(this, ore, ind).getSelectedElement();
-//				System.err.println(newDesc);
-//				if(newDesc != null){
-//					System.out.print(ind + " from " + actualDesc + " to " + newDesc);
-//					ore.modi.moveIndividual(ind, actualDesc, newDesc);
-//					}
-//				
-//			}
-//			else if(e.getActionCommand().equals("add property")){                      //add property
-//				object = (Individual)new ChooseDialog(this, ore, actualDesc).getSelectedElement();
-//				if(object != null)
-//					ore.modi.addObjectProperty(ind, (ObjectSomeRestriction)actualDesc, object);
-//			}
-//			else if(e.getActionCommand().equals("remove property")){                  //delete property
-//				ore.modi.deleteObjectProperty(ind, (ObjectSomeRestriction)actualDesc);
-//			}
-//		}
-	
-	
-	
-	
-	
-	
 
-
-	
-	
 	
 }

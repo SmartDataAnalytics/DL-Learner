@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -14,6 +15,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
+import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 
@@ -42,33 +44,52 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 			if(desc instanceof NamedClass){
 				menu.add(new DescriptionMenuItem("remove class assertion " + desc.toString(), desc) );
 				JMenu dme = new JMenu("move class assertion " + desc.toString() + " to ...");
-				for(NamedClass nc : ore.getpossibleMoveClasses(ind))
-					dme.add(new MoveMenuItem((NamedClass)desc, nc));
+				
+				for(NamedClass nc : ore.getpossibleMoveClasses(ind)){
+					MoveMenuItem move = new MoveMenuItem((NamedClass)desc, nc);
+					dme.add(move);
+					Set<NamedClass> complements = ore.getComplements(nc, ind);
+					System.out.println("Größe" + complements.size());
+					if(!(complements.size() <=1)){
+						move.setEnabled(false);
+						StringBuffer strBuf = new StringBuffer();
+						strBuf.append("<html>class assertion not possible because individual<br> " +
+									"is still asserted to its complements:<br><BLOCKQUOTE>");
+						
+						for(NamedClass n: complements)
+							strBuf.append("<br><b>" + n + "</b>");
+						strBuf.append("</BLOCKQUOTE></html>");
+
+					
+						move.setToolTipText(strBuf.toString());
+					}
+				}
 				menu.add(dme);
-//				menu.add(new DescriptionMenuItem("move class assertion " + desc.toString() + " to ...", desc));
 			}
 			else if(desc instanceof ObjectSomeRestriction){
-				menu.add(new DescriptionMenuItem("remove property " + ((ObjectSomeRestriction)desc).getRole(), desc));
-				System.out.println(desc.getChild(0).getClass());
+				menu.add(new DescriptionMenuItem("remove complete property " + ((ObjectSomeRestriction)desc).getRole(), desc));
+				if (!(desc.getChild(0) instanceof Thing)) 
+					menu.add(new DescriptionMenuItem("remove all property assertions to " + ((ObjectSomeRestriction)desc).getChild(0), desc));
+				
+			}
+			else if(desc instanceof ObjectAllRestriction){
 				if (!(desc.getChild(0) instanceof Thing)) {
-					JMenu dme = new JMenu("add property assertion "
-							+ ((ObjectSomeRestriction) desc).getRole()
+					JMenu dme = new JMenu("add property assertion " + ((ObjectAllRestriction) desc).getRole()
 							+ " with object ...");
-					for (Individual i : ore.getIndividualsNotOfPropertyRange(
-							(ObjectSomeRestriction) desc, ind))
-						dme.add(new DescriptionMenuItem(i.getName(), desc
-								.getChild(0)));
+					for (Individual i : ore.getIndividualsNotOfPropertyRange((ObjectAllRestriction) desc, ind))
+						dme.add(new DescriptionMenuItem(i.getName(), desc.getChild(0)));
 					menu.add(dme);
 				}
 			}
+	
 		}
 		else if(desc instanceof Negation){
 			if(desc.getChild(0) instanceof NamedClass){
 				DescriptionMenuItem item = new DescriptionMenuItem("add class assertion to " + desc.getChild(0).toString(), desc.getChild(0));
 				menu.add(item);
-				if(ore.hasComplement(desc, ind)){
+				if(!ore.getComplements(desc, ind).isEmpty()){
 					item.setEnabled(false);
-					item.setToolTipText("class assertion not possible because individual is still asserted to its complement");
+					item.setToolTipText("<html>class assertion not possible because individual<br> is still asserted to its complement</html>");
 				}
 			}
 			else if(desc.getChild(0) instanceof ObjectSomeRestriction){
