@@ -2,7 +2,7 @@ package org.dllearner.tools.protege;
 
 import java.util.Set;
 import java.util.TreeSet;
-//import java.util.List;
+import java.util.List;
 import java.util.Vector;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -176,7 +176,8 @@ public class DLLearnerModel implements Runnable{
 	 * 
 	 */
 	private OWLAxiom axiomOWLAPI;
-	private EvaluatedDescription evalDescription;
+	
+	private List<EvaluatedDescription> evalDescription;
 	/**
 	 * This is the constructor for DL-Learner model
 	 * @param editorKit
@@ -225,7 +226,8 @@ public class DLLearnerModel implements Runnable{
 	 */
 	private void addToListModel()
 	{
-		evalDescription = la.getCurrentlyBestEvaluatedDescription();
+		evalDescription = la.getCurrentlyBestEvaluatedDescriptions(anzahl);
+		System.out.println("Size: "+la.getCurrentlyBestDescriptions().size());
 		for(int j = 0;j<la.getCurrentlyBestEvaluatedDescriptions(anzahl).size();j++)
 		{
 			suggestModel.add(j,la.getCurrentlyBestEvaluatedDescriptions(anzahl).get(j).getDescription());
@@ -234,7 +236,7 @@ public class DLLearnerModel implements Runnable{
 	
 	/**
 	 * This method checks which positive and negative examples are checked 
-	 * and puts the checked examples into a treeset.
+	 * and puts the checked examples into a tree set.
 	 */
 	public void setPositiveAndNegativeExamples()
 	{
@@ -271,7 +273,10 @@ public class DLLearnerModel implements Runnable{
 	{
 		return description;
 	}
-	
+	public List<EvaluatedDescription> getEvaluatedDescriptionList()
+	{
+		return evalDescription;
+	}
 	/**
 	 * This method sets the knowledge source for the learning process.
 	 * Only OWLAPIOntology will be available.
@@ -300,7 +305,7 @@ public class DLLearnerModel implements Runnable{
 	/**
 	 * This method sets the Learning problem for the learning process.
 	 * PosNegDefinitonLp for equivalent classes and
-	 * PosNegInclusionLP for superclasses.
+	 * PosNegInclusionLP for super classes.
 	 */
 	public void setLearningProblem()
 	{
@@ -356,6 +361,7 @@ public class DLLearnerModel implements Runnable{
 		la.start();
 		description = new Description[la.getCurrentlyBestEvaluatedDescriptions(anzahl).size()];
 		addToListModel();
+		System.out.println(la.getCurrentlyBestEvaluatedDescriptions());
 		view.renderErrorMessage(error);
 		view.getRunButton().setEnabled(true);
 		view.getCancelButton().setEnabled(false);
@@ -427,10 +433,6 @@ public class DLLearnerModel implements Runnable{
 		}
 	}
 
-	public EvaluatedDescription getEvaluatedDescription()
-	{
-		return evalDescription;
-	}
 	/**
 	 * This method resets the Concepts that are learned.
 	 */
@@ -636,7 +638,7 @@ public class DLLearnerModel implements Runnable{
 	}
 	
 	/**
-	 * Thsi method gets a description learned by the DL-Learner an converts it
+	 * This method gets a description learned by the DL-Learner an converts it
 	 * to the OWLDescription format.
 	 * @param desc Description learned by the DL-Learner
 	 */
@@ -672,7 +674,7 @@ public class DLLearnerModel implements Runnable{
 	
 	/**
 	 * This method stores the new concept learned by the DL-Learner in the Ontology.
-	 * @param desc Description learne by the DL-Learner
+	 * @param desc Description learn by the DL-Learner
 	 */
 	public void changeDLLearnerDescriptionsToOWLDescriptions(Description desc)
 	{
@@ -686,6 +688,7 @@ public class DLLearnerModel implements Runnable{
 
 		OWLOntology ontology = editor.getOWLModelManager().getActiveOntology();
 		AddAxiom axiom = new AddAxiom(ontology, axiomOWLAPI);
+		System.out.println("axiom: "+axiomOWLAPI);
 		try {
 			manager.applyChange(axiom);
 		} catch (OWLOntologyChangeException e) {
