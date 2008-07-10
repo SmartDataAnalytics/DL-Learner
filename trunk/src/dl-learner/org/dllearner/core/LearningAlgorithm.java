@@ -107,16 +107,13 @@ public abstract class LearningAlgorithm extends Component {
 	public synchronized List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions, boolean filterNonMinimalDescriptions) {
 		List<Description> currentlyBest = getCurrentlyBestDescriptions();
 		List<Description> returnList = new LinkedList<Description>();
-		int count = 0;
 		for(Description ed : currentlyBest) {
-			// return if we have sufficiently many descriptions
-			if(count >= nrOfDescriptions)
+			if(returnList.size() >= nrOfDescriptions)
 				return returnList;
 			
 			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed))
 				returnList.add(ed);
 			
-			count++;
 		}
 		return returnList;
 	}	
@@ -160,7 +157,6 @@ public abstract class LearningAlgorithm extends Component {
 	public synchronized List<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) {
 		SortedSet<EvaluatedDescription> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
 		List<EvaluatedDescription> returnList = new LinkedList<EvaluatedDescription>();
-		int count = 0;
 		for(EvaluatedDescription ed : currentlyBest) {
 			// once we hit a description with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
@@ -169,13 +165,12 @@ public abstract class LearningAlgorithm extends Component {
 				return returnList;
 
 			// return if we have sufficiently many descriptions
-			if(count >= nrOfDescriptions)
+			if(returnList.size() >= nrOfDescriptions)
 				return returnList;
 			
 			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed.getDescription()))
 				returnList.add(ed);
 			
-			count++;
 		}
 		return returnList;
 	}
