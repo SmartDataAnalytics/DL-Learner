@@ -25,7 +25,6 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLAPIOntology;
@@ -50,7 +49,7 @@ public class ORE {
 	NamedClass ignoredConcept;
 	Description conceptToAdd;
 	OntologyModifierOWLAPI modi;
-	Set<NamedClass> allAtomicConcepts;
+	public Set<NamedClass> allAtomicConcepts;
 	private double noise = 0.0;
 	
 	Thread t;
@@ -147,11 +146,11 @@ public class ORE {
 			e1.printStackTrace();
 		}
 	
-		
 		Set<String> t = new TreeSet<String>();
+		
+		
 		t.add(ignoredConcept.getName());
 		cm.applyConfigEntry(la, "ignoredConcepts", t );
-//		cm.applyConfigEntry(la, "noisePercentage", noise);
 		cm.applyConfigEntry(la, "guaranteeXgoodDescriptions", 10);
 		try {
 			la.init();
@@ -173,6 +172,7 @@ public class ORE {
 		this.setLearningProblem();
 		this.setLearningAlgorithm();
 		
+		
 	}
 	
 	public LearningAlgorithm start(){
@@ -186,16 +186,15 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(noise);
+		
 		la.start();
 		return la;
 	}
 	
-		
-//	public List<Description> getSolutions(){
-//		return la.getCurrentlyBestDescriptions();
-//	}
 	
+	
+		
+
 	public List<Description> getLearningResults(int anzahl){
 		return la.getCurrentlyBestDescriptions(anzahl, true);
 	}
@@ -443,7 +442,7 @@ public class ORE {
 	}
 	
 	public Set<Individual> getIndividualsNotOfPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
-		
+		System.out.println(rs.getAtomicConcepts());
 		Set<Individual> individuals = reasoner2.retrieval(objRestr.getChild(0));
 		Set<Individual> allIndividuals = reasoner2.getIndividuals();
 		System.out.println("alle:" + allIndividuals);
@@ -455,19 +454,23 @@ public class ORE {
 	}
 	
 	public Set<NamedClass> getpossibleMoveClasses(Individual ind){
-		Set<NamedClass> moveClasses = rs.getAtomicConcepts();
-		Set<NamedClass> indClasses = new HashSet<NamedClass>();
+		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
+		for(NamedClass nc : rs.getAtomicConcepts())
+			if(!rs.instanceCheck(nc, ind))
+				moveClasses.add(nc);
+				
 		
-		for(NamedClass moveNc : moveClasses)
-			if(rs.instanceCheck(moveNc, ind)){
-				indClasses.add(moveNc);
-		}
-		moveClasses.removeAll(indClasses);
 		
-		for(NamedClass moveNc : moveClasses)
-			for(NamedClass indNc : indClasses )
-				if(new Intersection(moveNc, indNc).equals(new Nothing()))
-					moveClasses.remove(moveNc);
+//		for(NamedClass moveNc : moveClasses)
+//			if(rs.instanceCheck(moveNc, ind)){
+//				indClasses.add(moveNc);
+//		}
+//		moveClasses.removeAll(indClasses);
+//		System.out.println("hier?" + allAtomicConcepts);
+//		for(NamedClass moveNc : moveClasses)
+//			for(NamedClass indNc : indClasses )
+//				if(new Intersection(moveNc, indNc).equals(new Nothing()))
+//					moveClasses.remove(moveNc);
 			
 		return moveClasses;
 	}
@@ -481,22 +484,25 @@ public class ORE {
 			e.printStackTrace();
 		}
 		reasoner2 = cm.reasoner(OWLAPIReasoner.class,new OWLAPIOntology(modi.ontology));
+		
 		try {
 			reasoner2.init();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		rs = cm.reasoningService(reasoner2);
+		setLearningAlgorithm();
 	}
 	
-	public boolean hasComplement(Description desc, Individual ind){
+	public Set<NamedClass> getComplements(Description desc, Individual ind){
+		Set<NamedClass> complements = new HashSet<NamedClass>();
 		
-		for(NamedClass nc : reasoner2.getAtomicConcepts())
-			if(reasoner2.instanceCheck(nc, ind))
-				if(modi.isComplement(desc, nc))
-					return true;
-							
-		return false;
+		for(NamedClass nc : reasoner2.getConcepts(ind)){
+			if(modi.isComplement(desc, nc))
+				complements.add(nc);
+		}
+		return complements;
 	}
 	
 		

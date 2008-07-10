@@ -29,6 +29,7 @@ public class StatsPanel extends JPanel{
 	ORE ore;
 	Individual ind;
 	Set<NamedClass> classes;
+	Set<String> newClasses;
 	JPanel classesPanel;
 	
 	
@@ -69,6 +70,7 @@ public class StatsPanel extends JPanel{
         classesPanel.add(classLb);
         
         classes = ore.reasoner2.getConcepts(ind);
+        newClasses = new HashSet<String>();
 		
 		for(NamedClass nc : classes)
 			classesPanel.add(new JLabel(nc.getName()));
@@ -81,32 +83,42 @@ public class StatsPanel extends JPanel{
 	public void updatePanel(String action, Description d){
 
 		
-		Set<NamedClass> afterUpdate = new HashSet<NamedClass>();
 		
-		afterUpdate.addAll(ore.reasoner2.getConcepts(ind));
+		if(action.equals("undo")){
+//			Set<String> afterUpdate = new HashSet<String>();
+//			for(NamedClass nc : ore.reasoner2.getConcepts(ind))
+//				afterUpdate.add(nc.toString());
+//			Set<String> oldClasses = new HashSet<String>();
+//			for(NamedClass nc : newClasses)
+//				oldClasses.add(nc.toString());
+		}else{
+			Set<String> afterUpdate = new HashSet<String>();
+			for(NamedClass nc : ore.reasoner2.getConcepts(ind))
+				afterUpdate.add(nc.toString());
+			Set<String> oldClasses = new HashSet<String>();
+			for(NamedClass nc : classes)
+				oldClasses.add(nc.toString());
+			for(String nc : afterUpdate)
+				if(!oldClasses.contains(nc)){
+							
+					ImageIcon icon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/new.gif");
+					JLabel lab = new JLabel(nc);
+					lab.setIcon(icon);
+					lab.setHorizontalTextPosition(JLabel.LEFT);
+					classesPanel.add(lab);
+				}
+				
+			
+			for(NamedClass nc : classes)
+				
+				if(!afterUpdate.contains(nc.toString()))
+					for(Component co: classesPanel.getComponents())
+						if(co instanceof JLabel)
+							if(((JLabel)co).getText().equals(nc.toString()))
+								((JLabel)co).setText("<html><strike>" + nc + "</strike></html>");
+			newClasses.addAll(afterUpdate);
+		}
 		
-		for(NamedClass nc : afterUpdate)
-			if(!(classes.contains(nc))){
-				ImageIcon icon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/Neu_006.gif");
-				JLabel lab = new JLabel(nc.getName());
-				lab.setIcon(icon);
-				lab.setHorizontalTextPosition(JLabel.LEFT);
-				classesPanel.add(lab);
-			}
-		for(NamedClass nc : classes)
-			if(!(afterUpdate.contains(nc)))
-				for(Component co: classesPanel.getComponents())
-					if(co instanceof JLabel)
-						if(((JLabel)co).getText().equals(nc.toString()))
-							((JLabel)co).setText("<html><strike>" + nc + "</strike></html>");
-		
-		
-//		for(Component co: classesPanel.getComponents()){
-//			if(co instanceof JLabel)
-//				if(((JLabel)co).getText().equals(d.toString()))
-//					((JLabel)co).setText("<html><strike>" + d + "</strike></html>");
-//			
-//		}
 		SwingUtilities.updateComponentTreeUI(this);
 					
 	}

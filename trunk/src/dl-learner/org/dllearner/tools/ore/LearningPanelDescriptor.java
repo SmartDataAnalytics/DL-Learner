@@ -24,6 +24,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
     
     LearningPanel panel4;
     ResultSwingWorker worker;
+    LearningAlgorithm la;
     Timer timer;
     Boolean canceled = false;
     
@@ -54,7 +55,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
     
     class ResultSwingWorker extends SwingWorker<List<Description>, List<Description>> {
 		
-    	LearningAlgorithm la;
+    	
     	Thread t;
     	
     	
@@ -75,8 +76,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				public void run() {
 					if(la != null){
 						
-						System.out.println(scheduledExecutionTime()-System.currentTimeMillis());
-						publish(la.getCurrentlyBestDescriptions(10, true));
+						publish(la.getCurrentlyBestDescriptions(30, true));
 					}
 				}
 				
@@ -88,14 +88,13 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				@Override
 				public void run() {
 					
-					la.start();
+					getWizardModel().getOre().start();
 				}
 				
 			});
 			t.setPriority(Thread.MIN_PRIORITY);
 			t.start();
 			
-//			publish(la.getCurrentlyBestDescriptions(10, true));
 			
 			try {
 				t.join();
@@ -103,15 +102,15 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
-			List<Description> result = getWizardModel().getOre().getLearningResults(10);
-
+			List<Description> result = getWizardModel().getOre().getLearningResults(30);
+			
 			return result;
 		}
 
 		@Override
 		public void done() {
 			
-		
+			timer.cancel();
 			List<Description> result = null;
 			try {
 				result = get();
@@ -203,7 +202,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		else{
 			canceled = true;
 			panel4.getStopButton().setEnabled(false);
-			getWizardModel().getOre().getLa().stop();
+			la.stop();
             timer.cancel();
 			panel4.getStartButton().setEnabled(true);
             panel4.getStatusLabel().setText("Algorithm aborted");

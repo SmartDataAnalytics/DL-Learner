@@ -60,7 +60,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 	}
 
 	public void actionPerformed(ActionEvent event) {
-		System.out.println(ontologyChanges);
+		System.out.println(getOntologyChanges());
 		if(event.getActionCommand().equals("save")){
 			getWizardModel().getOre().getModi().saveOntology();
 			            
@@ -74,14 +74,13 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 		if(e.getClickCount() == 2 && e.getSource() == panel4.getNegFailureList() ){
 			Individual ind = (Individual)panel4.getNegFailureList().getSelectedValue();
 			ontologyChanges.addAll(new NegExampleRepairDialog(ind, getWizard().getDialog(), getWizardModel().getOre()).getAllChanges());
-//			System.out.println(getWizardModel().getOre().getCriticalDescriptions(ind, getWizardModel().getOre().conceptToAdd ));
+			getWizardModel().getOre().getModi().saveOntology();
 		}
 		
 	}
 
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+			
 	}
 
 	public void mouseExited(MouseEvent e) {
@@ -97,5 +96,13 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
-	}}
+	}
+
+	
+	public Set<OWLOntologyChange> getOntologyChanges() {
+		return ontologyChanges;
+	}
+	
+}
+
 

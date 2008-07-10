@@ -7,9 +7,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Negation;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -55,7 +58,9 @@ public class OntologyModifierOWLAPI {
 	 * @param oldDesc old description
 	 * @return
 	 */
-	public void addAxiomToOWL(Description newDesc, Description oldDesc){
+	public OWLOntologyChange addAxiomToOWL(Description newDesc, Description oldDesc){
+		
+		
 		OWLDescription newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(newDesc);
 		OWLDescription oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldDesc);
 		
@@ -73,7 +78,7 @@ public class OntologyModifierOWLAPI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		return axiom;
 		
 	}
 	
@@ -217,7 +222,7 @@ public class OntologyModifierOWLAPI {
 		
 		try {
 			manager.applyChanges(changes);
-			saveOntology();
+			
 			return changes;
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
@@ -281,6 +286,48 @@ public class OntologyModifierOWLAPI {
 	
 	/**
 	 * 
+	 * @param ind the individual which property has to be removed
+	 * @param objSome the property which has to be removed
+	 * @return changes that have been done
+	 */
+	public List<OWLOntologyChange> deleteObjectPropertyAssertions(Individual ind, ObjectSomeRestriction objSome){
+		
+		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
+		
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
+		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(objSome.getRole().getName()));
+		
+		Set<OWLObjectPropertyAssertionAxiom> properties = ontology.getObjectPropertyAssertionAxioms(individualOWLAPI);
+		
+		
+		List<RemoveAxiom> removeList = new LinkedList<RemoveAxiom>();
+		SortedSet<Individual> allObjects = reasoner.getRoleMembers((ObjectProperty) objSome.getRole()).get(ind);
+		
+		for(OWLObjectPropertyAssertionAxiom o :properties){
+			if( (o.getProperty().equals(propertyOWLAPI)) && (o.getSubject().equals(individualOWLAPI))) 
+				for(Individual i : allObjects)
+					if(o.getObject().equals(factory.getOWLIndividual( URI.create(i.getName()))))
+						removeList.add(new RemoveAxiom(ontology, o));
+			
+			
+			
+		}
+		changes.addAll(removeList);
+		
+		try {
+			manager.applyChanges(removeList);
+			return changes;
+		} catch (OWLOntologyChangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+		
+	}
+	
+	/**
+	 * 
 	 * @param subInd the individual which is subject in the objectProperty 
 	 * @param objSome the property which has to be added to subject
 	 * @param objInd the individual which is object in the objectProperty 
@@ -320,8 +367,7 @@ public class OntologyModifierOWLAPI {
 		
 		for(OWLOntologyChange change : changes){
 			if(change instanceof RemoveAxiom){
-				OWLAxiom axiom = ((RemoveAxiom)change).getAxiom();
-				AddAxiom add = new AddAxiom(ontology, axiom);
+				AddAxiom add = new AddAxiom(ontology, change.getAxiom());
 				try {
 					manager.applyChange(add);
 				} catch (OWLOntologyChangeException e) {
@@ -330,8 +376,7 @@ public class OntologyModifierOWLAPI {
 				}
 			}
 			else if(change instanceof AddAxiom){
-				OWLClassAssertionAxiom cl = (OWLClassAssertionAxiom)((AddAxiom)change).getAxiom();
-				RemoveAxiom rem = new RemoveAxiom(ontology, cl);
+				RemoveAxiom rem = new RemoveAxiom(ontology, change.getAxiom());
 				try {
 					manager.applyChange(rem);
 				} catch (OWLOntologyChangeException e) {
@@ -341,23 +386,40 @@ public class OntologyModifierOWLAPI {
 			}
 	
 		}
+	
+		
 	}
 	
 	public boolean isComplement(Description desc1, Description desc2){
-		
 
 		OWLDescription d1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc1);
 		OWLDescription d2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc2);
-		OWLDescription d3 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc1.getChild(0));
-		
-		for(OWLAxiom ax : ontology.getAxioms()){
-			if(ax.equals(factory.getOWLEquivalentClassesAxiom(d1, d2)))
-				return true;
-			if(ax.equals(factory.getOWLDisjointClassesAxiom(d3, d2)))
-				return true;
+		OWLDescription negChild = null;
+		OWLDescription negDesc = null;
+		if(desc1 instanceof Negation){
+			negChild = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc1.getChild(0));
 		}
-		
-				
+		else{
+			negDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(desc1));
+		}
+	
+		for(OWLAxiom ax : ontology.getAxioms()){
+			
+			if(desc1 instanceof Negation){
+				if(ax.equals(factory.getOWLEquivalentClassesAxiom(d1, d2)))
+					return true;
+				if(ax.equals(factory.getOWLDisjointClassesAxiom(negChild, d2)))
+					return true;
+			}
+			else{
+				if(ax.equals(factory.getOWLDisjointClassesAxiom(d1, d2)))
+					return true;
+				if(ax.equals(factory.getOWLEquivalentClassesAxiom(negDesc, d2)))
+					return true;
+			}
+			
+		}
+	
 		return false;
 		
 	}
