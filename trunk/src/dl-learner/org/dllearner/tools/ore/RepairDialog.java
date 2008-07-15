@@ -1,6 +1,7 @@
 package org.dllearner.tools.ore;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -22,20 +23,27 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
 
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.RemoveAxiom;
 
-public class NegExampleRepairDialog extends JDialog implements ActionListener, MouseListener{
+public class RepairDialog extends JDialog implements ActionListener, MouseListener{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	  
+    public static final int CANCEL_RETURN_CODE = 1;
+    public static final int OK_RETURN_CODE = 2;
+	public static final int VALID_RETURN_CODE = 3;
+    
+    private int returncode;
 	
 	private StatsPanel statsPanel;
 	private DescriptionPanel descPanel;
@@ -43,11 +51,12 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 	private JPanel ok_cancelPanel;
 	private JPanel action_stats_Panel;
 	
-	
+	private JScrollPane changesScroll;
 	
 	private JButton okButton;
 	private JButton cancelButton;
 	
+	private String mode;
 		
 	private ORE ore;
 	private Individual ind;
@@ -56,20 +65,24 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 	private Set<OWLOntologyChange> allChanges;
 	
 	
-	public NegExampleRepairDialog(Individual ind, JDialog dialog, ORE ore){
-		super(dialog, "Repair negative example", true);
+	public RepairDialog(Individual ind, JDialog dialog, ORE ore, String mode){
+		super(dialog, true);
 		this.ind = ind;
 		this.ore = ore;
+		this.mode = mode;
 		allChanges = new HashSet<OWLOntologyChange>();
-		init();
+		
 	}
 	
-	public void init(){
+	public int showDialog(){
+		if(mode.equals("neg"))
+			this.setTitle("Repair negative example");
+		else if(mode.equals("pos"))
+			this.setTitle("Repair positive example");
+		this.setSize(700, 700);
+		this.setLayout(new BorderLayout());
 		
-		setSize(700, 700);
-		setLayout(new BorderLayout());
-		
-		descPanel = new DescriptionPanel(ore, ind, this);		
+		descPanel = new DescriptionPanel(ore, ind, this, mode);		
 		JScrollPane descScroll = new JScrollPane();
 		descScroll.setViewportView(descPanel);
 		
@@ -80,7 +93,7 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 		        
 				
 		changesPanel = new ChangesPanel();
-		JScrollPane changesScroll = new JScrollPane();
+		changesScroll = new JScrollPane();
 		changesScroll.setViewportView(changesPanel);
 		
 	    action_stats_Panel = new JPanel();
@@ -122,8 +135,10 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 		getContentPane().add(ok_cancelPanel, BorderLayout.SOUTH);
 		
 		
-		setModal(true);
-		setVisible(true);
+		this.setModal(true);
+		this.setVisible(true);
+		
+		return returncode;
 
 	}
 
@@ -131,64 +146,108 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 		
 		if(e.getSource() instanceof DescriptionMenuItem){
 			actualDesc = ((DescriptionMenuItem)e.getSource()).getDescription();
-			System.out.println(e.getActionCommand());
-			if(e.getActionCommand().startsWith("remove class")){                       //remove class
+			int action = ((DescriptionMenuItem)e.getSource()).getActionID();
+			if(action == 4){
+				Individual obj = new Individual(e.getActionCommand());
+				List<OWLOntologyChange> changes  = ore.modi.addObjectProperty(ind, (ObjectQuantorRestriction)actualDesc, obj);
+				allChanges.addAll(changes);
+				try {
+					System.out.println(ore.reasoner.instanceCheck(actualDesc, ind));
+				} catch (ReasoningMethodUnsupportedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				descPanel.updatePanel();
+				try {
+					System.out.println(ore.reasoner.instanceCheck(actualDesc, ind));
+				} catch (ReasoningMethodUnsupportedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				statsPanel.updatePanel();
+				changesPanel.add(new ChangePanel("added property assertion " + ((ObjectQuantorRestriction)actualDesc).getRole() + " to " + ind, changes, this));
+				changesScroll.updateUI();
+			}
+			else if(action == 5){
+				ObjectQuantorRestriction property = (ObjectQuantorRestriction)actualDesc;
+				List<OWLOntologyChange> changes = null;
+				for(Individual i : ore.getIndividualsOfPropertyRange(property, ind)){
+					changes = ore.modi.removeObjectPropertyAssertion(ind, property, i);
+					allChanges.addAll(changes);
+				}
 				
+				descPanel.updatePanel();
+				statsPanel.updatePanel();
+				changesPanel.add(new ChangePanel("removed property assertions " + ((ObjectSomeRestriction)actualDesc).getRole() + " to range " + ((ObjectSomeRestriction)actualDesc).getChild(0), changes, this));
+				changesScroll.updateUI();
+			}
+			else if(action == 6){
+				List<OWLOntologyChange> changes = ore.modi.deleteObjectProperty(ind, (ObjectQuantorRestriction)actualDesc);
+				allChanges.addAll(changes);
+				descPanel.updatePanel();
+				statsPanel.updatePanel();
+				changesPanel.add(new ChangePanel("deleted property " + ((ObjectQuantorRestriction)actualDesc).getRole(), changes, this));
+				changesScroll.updateUI();
+			}
+			else if(action == 0){
+				newDesc = new NamedClass(e.getActionCommand());
+				List<OWLOntologyChange> changes  = ore.modi.moveIndividual(ind, actualDesc, newDesc);
+				allChanges.addAll(changes);
+				descPanel.updatePanel();
+				statsPanel.updatePanel();
+				changesPanel.add(new ChangePanel("moved class assertion from " + actualDesc + " to " + newDesc, changes, this));
+				changesScroll.updateUI();
+			}
+			else if(action == 3){
 				List<OWLOntologyChange> changes  = ore.modi.removeClassAssertion(ind, actualDesc);
 				allChanges.addAll(changes);
 				descPanel.updatePanel();
-				statsPanel.updatePanel("remove", actualDesc);
+				statsPanel.updatePanel();
 				changesPanel.add(new ChangePanel("removed class assertion to " + actualDesc, changes, this));
-				
-				
+				changesScroll.updateUI();
 			}
-			else if(e.getActionCommand().startsWith("add class")){                     //add class
+			else if(action == 2){
 				List<OWLOntologyChange> changes  = ore.modi.addClassAssertion(ind, actualDesc);
 				allChanges.addAll(changes);
 				descPanel.updatePanel();
+				statsPanel.updatePanel();
 				changesPanel.add(new ChangePanel("added class assertion to " + actualDesc, changes, this));
+				changesScroll.updateUI();
+			}
+			else if(action == 7){
+				ObjectQuantorRestriction property = (ObjectQuantorRestriction)actualDesc;
+				List<OWLOntologyChange> changes = null;
+				for(Individual i : ore.getIndividualsNotInPropertyRange(property, ind)){
+					changes = ore.modi.removeObjectPropertyAssertion(ind, property, i);
+					allChanges.addAll(changes);
+				}
 				
 				
+				descPanel.updatePanel();
+				statsPanel.updatePanel();
+				changesPanel.add(new ChangePanel("removed property assertion " + property.getRole() + " to " + ind, changes, this));
+				changesScroll.updateUI();
 			}
-			else if(e.getActionCommand().startsWith("add property")){                      //add property
-				Individual ind = new Individual(e.getActionCommand());
-				List<OWLOntologyChange> changes  = ore.modi.addObjectProperty(ind, (ObjectSomeRestriction)actualDesc, ind);
+			else if(action == 1){
+				Description oldDesc = new NamedClass(e.getActionCommand());
+				List<OWLOntologyChange> changes  = ore.modi.moveIndividual(ind, oldDesc, actualDesc);
 				allChanges.addAll(changes);
 				descPanel.updatePanel();
-				changesPanel.add(new ChangePanel("added property assertion " + ((ObjectSomeRestriction)actualDesc).getRole() + " to " + ind, changes, this));
-			
+				statsPanel.updatePanel();
+				changesPanel.add(new ChangePanel("moved class assertion from " + oldDesc + " to " + actualDesc, changes, this));
+				changesScroll.updateUI();
 			}
-			else if(e.getActionCommand().startsWith("remove complete property")){                  //delete property
-				List<OWLOntologyChange> changes = ore.modi.deleteObjectProperty(ind, (ObjectSomeRestriction)actualDesc);
-				allChanges.addAll(changes);
-				descPanel.updatePanel();
-				changesPanel.add(new ChangePanel("removed property " + ((ObjectSomeRestriction)actualDesc).getRole(), changes, this));
-			}
-			else if(e.getActionCommand().startsWith("remove all property")){                  //remove property assertions
-				List<OWLOntologyChange> changes = ore.modi.deleteObjectPropertyAssertions(ind, (ObjectSomeRestriction)actualDesc);
-				allChanges.addAll(changes);
-				descPanel.updatePanel();
-				changesPanel.add(new ChangePanel("added property assertion " + ((ObjectSomeRestriction)actualDesc).getRole() + " to " + ind, changes, this));
-			}
-			
-		}else if(e.getSource() instanceof MoveMenuItem){
-			actualDesc = ((MoveMenuItem)e.getSource()).getSource();
-			newDesc = new NamedClass(e.getActionCommand());
-			List<OWLOntologyChange> changes  = ore.modi.moveIndividual(ind, actualDesc, newDesc);
-			allChanges.addAll(changes);
-			descPanel.updatePanel();
-			statsPanel.updatePanel("move", actualDesc);
-			changesPanel.add(new ChangePanel("moved class assertion from " + actualDesc + " to " + newDesc, changes, this));
 		}
 			
+			
+
 		
-		else if(e.getActionCommand().equals("delete")){
-			List<OWLOntologyChange> changes  = ore.modi.deleteIndividual(ind);
-			allChanges.addAll(changes);
-			for(OWLOntologyChange ol : changes)
-				System.out.println(((RemoveAxiom)ol).getAxiom());
-		}
+		
 		else if(e.getActionCommand().equals("Ok")){
+			if(descPanel.isCorrect())
+				returncode = VALID_RETURN_CODE;
+			else
+				returncode = OK_RETURN_CODE;
 			setVisible(false);
 			dispose();
 		}
@@ -200,6 +259,7 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 
 				ore.modi.undoChanges(allChanges);
 				allChanges.clear();
+				returncode = CANCEL_RETURN_CODE;
 				setVisible(false);
 				dispose();
 			}
@@ -214,17 +274,26 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 			List<OWLOntologyChange> changes = ((UndoLabel)e.getSource()).getChanges();
 			ore.modi.undoChanges(changes);
 			descPanel.updatePanel();
+			statsPanel.updatePanel();
 			changesPanel.updatePanel(((UndoLabel)e.getSource()).getParent());
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			
 		}
 	}
 
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getSource() instanceof UndoLabel){
+			((UndoLabel)e.getSource()).setText("<html><u>Undo</u></html>");
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
+		}
 		
 	}
 
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getSource() instanceof UndoLabel){
+			((UndoLabel)e.getSource()).setText("Undo");
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
 		
 	}
 
@@ -241,6 +310,7 @@ public class NegExampleRepairDialog extends JDialog implements ActionListener, M
 	public Set<OWLOntologyChange> getAllChanges() {
 		return allChanges;
 	}
+
 		
 
 	

@@ -1,8 +1,9 @@
 package org.dllearner.tools.ore;
 
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Component;
+
+import javax.swing.JPanel;
 
 
 /**
@@ -23,13 +24,14 @@ public class WizardPanelDescriptor {
     private Wizard wizard;
     private Component targetPanel;
     private Object panelIdentifier;
-    
+      
     /**
      * Default constructor. The id and the Component panel must be set separately.
      */    
     public WizardPanelDescriptor() {
         panelIdentifier = DEFAULT_PANEL_IDENTIFIER;
         targetPanel = new JPanel();
+     
     }
     
     /**
@@ -79,6 +81,7 @@ public class WizardPanelDescriptor {
     
     final void setWizard(Wizard w) {
         wizard = w;
+                       
     }
     
     /**
@@ -165,4 +168,6 @@ public class WizardPanelDescriptor {
     static class FinishIdentifier {
         public static final String ID = "FINISH";
     }
+    
+    
 }

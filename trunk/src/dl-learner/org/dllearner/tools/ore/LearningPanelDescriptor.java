@@ -7,6 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.DefaultListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
@@ -48,12 +49,71 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
     
     @Override
 	public Object getBackPanelDescriptor() {
-        return ConceptPanelDescriptor.IDENTIFIER;
+        return ClassPanelOWLDescriptor.IDENTIFIER;
     }
     
    
     
-    class ResultSwingWorker extends SwingWorker<List<Description>, List<Description>> {
+    @Override
+	public void aboutToDisplayPanel() {
+	    setNextButtonAccordingToConceptSelected();
+	}
+
+
+
+	public void valueChanged(ListSelectionEvent e) {
+		setNextButtonAccordingToConceptSelected();
+		
+//		ObjectAllRestriction role = new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"),
+//						new NamedClass("http://example.com/father#female"));
+//		Description de = new Intersection(new NamedClass("http://example.com/father#male"), role);
+		
+		if (!e.getValueIsAdjusting()){
+			getWizardModel().getOre().setConceptToAdd((Description)(panel4.getResultList().getSelectedValue())); 
+			
+					
+		}
+		
+	}
+
+	public void actionPerformed(ActionEvent event) {
+		if(event.getActionCommand().equals("Start")){
+			panel4.getModel().clear();
+			panel4.getStartButton().setEnabled(false);
+	        panel4.getStopButton().setEnabled(true);
+	        worker = new ResultSwingWorker();
+	        worker.execute();
+		}
+		else{
+			canceled = true;
+			panel4.getStopButton().setEnabled(false);
+			la.stop();
+	        timer.cancel();
+			panel4.getStartButton().setEnabled(true);
+	        panel4.getStatusLabel().setText("Algorithm aborted");
+	        panel4.getLoadingLabel().setBusy(false);
+	        
+		}
+		
+		
+		
+	}
+
+
+
+	private void setNextButtonAccordingToConceptSelected() {
+	    
+		if (panel4.getResultList().getSelectedValue()!= null){
+			getWizard().setNextFinishButtonEnabled(true);
+		}else{
+			getWizard().setNextFinishButtonEnabled(false);
+		}
+	
+	}
+
+
+
+	class ResultSwingWorker extends SwingWorker<List<Description>, List<Description>> {
 		
     	
     	Thread t;
@@ -80,7 +140,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 					}
 				}
 				
-			}, 1000, 1000);
+			}, 1000, 2000);
 			
 			
 			t = new Thread(new Runnable(){
@@ -92,7 +152,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				}
 				
 			});
-			t.setPriority(Thread.MIN_PRIORITY);
+//			t.setPriority(Thread.MIN_PRIORITY);
 			t.start();
 			
 			
@@ -130,7 +190,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		@Override
 		protected void process(List<List<Description>> resultLists) {
 			
-			panel4.getModel().clear();
+//			panel4.getModel().clear();
 			
 			for (List<Description> list : resultLists) {
 				updateList(list);
@@ -138,14 +198,19 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		}
 		
 		void updateList(final List<Description> result) {
+			
 			Runnable doUpdateList = new Runnable() {
-
+				
+				
+				DefaultListModel dm = new DefaultListModel();
 				public void run() {
 					panel4.getModel().clear();
 					for (Description d : result) {
-						panel4.getModel().addElement(d);
+						dm.addElement(d);
+//						panel4.getModel().addElement(d);
 						
 					}
+					panel4.getResultList().setModel(dm);
 
 				}
 			};
@@ -153,95 +218,10 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 
 		}
 		
-//		void updateList(final List<Description> result) {
-//			Runnable doUpdateList = new Runnable() {
-//
-//				public void run() {
-//					
-//				
-//					int i = panel4.getModel().getRowCount();
-//					if(!(i == 0))
-//						for(int j = panel4.getModel().getRowCount(); j >= 0 ; j--){
-//							System.out.println(panel4.getModel().getRowCount());
-//							panel4.getModel().removeRow(j);
-//						}
-//					
-//											
-//						
-//					
-//					for (Description d : result) {
-//						Object[] rowData = new Object[2];
-//						rowData[0] = d;
-//						rowData[1] = getWizardModel().getOre().getCorrectness(d);
-//						System.err.println(d+"=="+rowData[1]);
-//						
-//						panel4.getModel().addRow(rowData );
-//					}
-//
-//				}
-//			};
-//			SwingUtilities.invokeLater(doUpdateList);
-//
-//		}
 
 		public LearningAlgorithm getLa() {
 			return la;
 		}
 
 	}
-
-	
-	public void actionPerformed(ActionEvent event) {
-		if(event.getActionCommand().equals("Start")){
-			panel4.getModel().clear();
-			panel4.getStartButton().setEnabled(false);
-            panel4.getStopButton().setEnabled(true);
-            worker = new ResultSwingWorker();
-            worker.execute();
-		}
-		else{
-			canceled = true;
-			panel4.getStopButton().setEnabled(false);
-			la.stop();
-            timer.cancel();
-			panel4.getStartButton().setEnabled(true);
-            panel4.getStatusLabel().setText("Algorithm aborted");
-            panel4.getLoadingLabel().setBusy(false);
-            
-		}
-		
-		
-		
-	}
-
-	public void valueChanged(ListSelectionEvent e) {
-		setNextButtonAccordingToConceptSelected();
-		if (!e.getValueIsAdjusting()){
-			getWizardModel().getOre().setConceptToAdd((Description)(panel4.getResultList().getSelectedValue())); 
-			
-			for(Description d: getWizardModel().getOre().getAllChildren((Description)(panel4.getResultList().getSelectedValue()))){
-				System.out.println(d + " : " + d.getClass());
-				
-				
-				
-			}
-		
-		}
-		
-	}
-
-	@Override
-	public void aboutToDisplayPanel() {
-        setNextButtonAccordingToConceptSelected();
-    }    
-	
-	private void setNextButtonAccordingToConceptSelected() {
-        
-    	if (panel4.getResultList().getSelectedValue()!= null){
-    		getWizard().setNextFinishButtonEnabled(true);
-    	}else{
-    		getWizard().setNextFinishButtonEnabled(false);
-    	}
-   
-    }
 }

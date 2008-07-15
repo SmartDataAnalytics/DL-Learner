@@ -18,7 +18,7 @@ public class UndoLabel extends JLabel {
 	private List<OWLOntologyChange> owlChanges;
 	
 	public UndoLabel(List<OWLOntologyChange> changes, MouseListener mL){
-		super("<html><u>Undo</u></html>");
+		super("Undo");
 		setForeground(Color.RED);
 		this.owlChanges = changes;
 		addMouseListener(mL);

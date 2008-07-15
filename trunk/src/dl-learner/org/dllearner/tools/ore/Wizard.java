@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dialog;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
@@ -12,12 +13,16 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -71,14 +76,18 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     private JDialog wizardDialog;
         
     private JPanel cardPanel;
-    private CardLayout cardLayout;            
+    private CardLayout cardLayout;
+    private LeftPanel leftPanel;
     private JButton backButton;
     private JButton nextButton;
     private JButton cancelButton;
+    private JTextArea informationsField;
     
     private int returnCode;
     
-    private LeftPanel leftPanel;
+    private int knowledgeSourceType;
+    
+   
 
     
     
@@ -391,7 +400,30 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         
         buttonPanel.add(buttonBox, java.awt.BorderLayout.EAST);
         
-        wizardDialog.getContentPane().add(buttonPanel, java.awt.BorderLayout.SOUTH);
+        JPanel informationPanel = new JPanel();
+        JScrollPane infoScrollPane = new JScrollPane();
+        informationsField = new JTextArea();
+        
+        
+        //setLayout(new GridBagLayout());
+        infoScrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        infoScrollPane.setViewportBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        informationsField.setBackground(UIManager.getDefaults().getColor("control"));
+        informationsField.setColumns(80);
+        informationsField.setEditable(false);
+        informationsField.setLineWrap(true);
+        informationsField.setRows(3);
+        informationsField.setFont(new Font("Serif",Font.PLAIN,14));
+        informationsField.setWrapStyleWord(true);
+        infoScrollPane.setViewportView(informationsField);
+        informationPanel.add(infoScrollPane);
+        
+        JPanel button_informationPanel = new JPanel();
+        button_informationPanel.setLayout(new BorderLayout());
+        button_informationPanel.add(buttonPanel, BorderLayout.SOUTH);
+        button_informationPanel.add(informationPanel, BorderLayout.NORTH);
+        
+        wizardDialog.getContentPane().add(button_informationPanel, java.awt.BorderLayout.SOUTH);
         wizardDialog.getContentPane().add(cardPanel, java.awt.BorderLayout.CENTER);
         
         leftPanel = new LeftPanel(0);
@@ -410,15 +442,29 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         returnCode = CANCEL_RETURN_CODE;
     }
 
-public LeftPanel getLeftPanel() {
-	return leftPanel;
-}
+	public LeftPanel getLeftPanel() {
+		return leftPanel;
+	}
+	
+	public void setLeftPanel(int i) {
+		((LeftPanel)(wizardDialog.getContentPane().getComponent(2))).set(i);
+		
+		
+	}
+	
+	public JTextArea getInformationField(){
+		return informationsField;
+	}
 
-public void setLeftPanel(int i) {
-	((LeftPanel)(wizardDialog.getContentPane().getComponent(2))).set(i);
-	
-	
-}
+	public void setKnowledgeSourceType(int knowledgeSourceType) {
+		this.knowledgeSourceType = knowledgeSourceType;
+	}
+
+	public int getKnowledgeSourceType() {
+		return knowledgeSourceType;
+	}
+
+
 
    
 

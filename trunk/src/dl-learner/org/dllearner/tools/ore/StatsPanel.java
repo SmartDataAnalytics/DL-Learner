@@ -1,13 +1,10 @@
 package org.dllearner.tools.ore;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -17,109 +14,214 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectPropertyAssertion;
+import org.jdesktop.swingx.JXTaskPane;
+import org.jdesktop.swingx.JXTaskPaneContainer;
 
 public class StatsPanel extends JPanel{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8418286820511803278L;
-	ORE ore;
-	Individual ind;
-	Set<NamedClass> classes;
-	Set<String> newClasses;
-	JPanel classesPanel;
 	
+	private ORE ore;
+	private Individual ind;
+	private Set<NamedClass> oldClasses;
+	private Set<ObjectPropertyAssertion> oldProperties;
+	private Map<String, Set<String>> oldPropMap;
+	
+		
+	private JXTaskPane indPane;
+	private JXTaskPane classPane;
+	private JXTaskPane propertyPane;
+	
+	JXTaskPaneContainer container;
+	
+	private ImageIcon newIcon;
+	
+	private String baseURI;
+	private Map<String, String> prefixes;
 	
 	public StatsPanel(ORE ore, Individual ind){
 		super();
 		this.ore = ore;
 		this.ind = ind;
+		
 	}
 	
 	public void init(){
+		prefixes = ore.getPrefixes();
+		baseURI = ore.getBaseURI();
 		
+		newIcon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/new.gif");
+		
+		setLayout(new GridLayout());
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));		
 		
-		GridBagLayout gbl = new GridBagLayout();
-		gbl.rowWeights = new double[] {0.0, 0.0, 0.1};
-		gbl.rowHeights = new int[] {34, 7, 7};
-		gbl.columnWeights = new double[] {0.1};
-		gbl.columnWidths = new int[] {7};
-		setLayout(gbl);
+		
+		container = new JXTaskPaneContainer();
 		
 		
-		        
-        JPanel indPanel = new JPanel();
-        indPanel.setBackground(new Color(224, 223, 227));
-        indPanel.setLayout(new GridLayout(0, 1));
-        JLabel indLb = new JLabel("Individual:");
-        indLb.setFont(indLb.getFont().deriveFont(Font.BOLD));
-        JLabel indLb1 = new JLabel(ind.getName());
-        indPanel.add(indLb);
-        indPanel.add(indLb1);
+				
+		indPane = new JXTaskPane();
+		indPane.setTitle("Individual");
+        indPane.add(new JLabel(ind.toManchesterSyntaxString(baseURI, prefixes)));
+           
+        classPane = new JXTaskPane();
+        classPane.setTitle("Classes");
+        oldClasses = ore.reasoner2.getConcepts(ind);
+       	for(NamedClass nc : oldClasses)
+			classPane.add(new JLabel(nc.toManchesterSyntaxString(baseURI, prefixes)));
         
-        classesPanel = new JPanel();
-        classesPanel.setBackground(new Color(224, 223, 227));
-        classesPanel.setLayout(new GridLayout(0, 1));
-        JLabel classLb = new JLabel("Classes:");
-        classLb.setFont(indLb.getFont().deriveFont(Font.BOLD));
-        classesPanel.add(classLb);
-        
-        classes = ore.reasoner2.getConcepts(ind);
-        newClasses = new HashSet<String>();
+       	propertyPane = new JXTaskPane();
+        propertyPane.setTitle("Properties");		
 		
-		for(NamedClass nc : classes)
-			classesPanel.add(new JLabel(nc.getName()));
+        oldProperties = ore.modi.getObjectProperties(ind);
+        oldPropMap = new HashMap<String, Set<String>>();
+        for(ObjectPropertyAssertion ob : oldProperties){
+        	String role = ob.getRole().toString(baseURI, prefixes);
+        	String ind = ob.getIndividual2().toManchesterSyntaxString(baseURI, prefixes);
+        	if(oldPropMap.containsKey(role)){
+        		Set<String> oldSet = oldPropMap.get(role);
+        		oldSet.add(ind);
+        		oldPropMap.put(role, oldSet);
+        	}
+        	else{
+        		Set<String> newSet = new HashSet<String>();
+        		newSet.add(ind);
+        		oldPropMap.put(role, newSet);
+        	}
+        		
+        }
+        for(String key : oldPropMap.keySet()){
+        	
+        	JXTaskPane actionPane = new JXTaskPane();
+            actionPane.setTitle(key);
+            actionPane.setSpecial(true);
+            Set<String> value = (Set<String>)oldPropMap.get(key);
+			for(String i : value)
+				actionPane.add(new JLabel(i));
+			propertyPane.add(actionPane);
+        }
+      
+        	
+        container.add(indPane);
+        container.add(classPane);
+        container.add(propertyPane);
         
+        add(container);
+               
 		
-		add(indPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-        add(classesPanel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));    
 	}
 	
-	public void updatePanel(String action, Description d){
 
+	public void updatePanel(){
 		
-		
-		if(action.equals("undo")){
-//			Set<String> afterUpdate = new HashSet<String>();
-//			for(NamedClass nc : ore.reasoner2.getConcepts(ind))
-//				afterUpdate.add(nc.toString());
-//			Set<String> oldClasses = new HashSet<String>();
-//			for(NamedClass nc : newClasses)
-//				oldClasses.add(nc.toString());
-		}else{
-			Set<String> afterUpdate = new HashSet<String>();
-			for(NamedClass nc : ore.reasoner2.getConcepts(ind))
-				afterUpdate.add(nc.toString());
-			Set<String> oldClasses = new HashSet<String>();
-			for(NamedClass nc : classes)
-				oldClasses.add(nc.toString());
-			for(String nc : afterUpdate)
-				if(!oldClasses.contains(nc)){
-							
-					ImageIcon icon = new ImageIcon("src/dl-learner/org/dllearner/tools/ore/new.gif");
-					JLabel lab = new JLabel(nc);
-					lab.setIcon(icon);
-					lab.setHorizontalTextPosition(JLabel.LEFT);
-					classesPanel.add(lab);
-				}
+		//update classesPanel
+		classPane.removeAll();
 				
+		Set<String> newClassesString = new HashSet<String>();
+		for (NamedClass nc : ore.reasoner2.getConcepts(ind))
+			newClassesString.add(nc.toManchesterSyntaxString(baseURI, prefixes));
+		Set<String> oldClassesString = new HashSet<String>();
+		for (NamedClass nc : oldClasses)
+			oldClassesString.add(nc.toManchesterSyntaxString(baseURI, prefixes));
+		
+		for (String nc : oldClassesString)
+			if (!newClassesString.contains(nc)){
+				classPane.add(new JLabel("<html><strike>" + nc + "</strike></html>"));
+			}
+			else{
+				classPane.add(new JLabel(nc));
+			}
 			
-			for(NamedClass nc : classes)
+		for (String nc : newClassesString)
+			if (!oldClassesString.contains(nc)) {
+
 				
-				if(!afterUpdate.contains(nc.toString()))
-					for(Component co: classesPanel.getComponents())
-						if(co instanceof JLabel)
-							if(((JLabel)co).getText().equals(nc.toString()))
-								((JLabel)co).setText("<html><strike>" + nc + "</strike></html>");
-			newClasses.addAll(afterUpdate);
-		}
+				JLabel lab = new JLabel(nc);
+				lab.setIcon(newIcon);
+				lab.setHorizontalTextPosition(JLabel.LEFT);
+				classPane.add(lab);
+			}
 		
-		SwingUtilities.updateComponentTreeUI(this);
-					
+		//update propertyPanel
+		propertyPane.removeAll();
+		
+		Map<String, Set<String>> newPropMap = new HashMap<String, Set<String>>();
+        for(ObjectPropertyAssertion ob : ore.modi.getObjectProperties(ind)){
+        	String role = ob.getRole().toString(baseURI, prefixes);
+        	String ind = ob.getIndividual2().toManchesterSyntaxString(baseURI, prefixes);
+        	if(newPropMap.containsKey(role)){
+        		Set<String> oldSet = newPropMap.get(role);
+        		oldSet.add(ind);
+        		newPropMap.put(role, oldSet);
+        	}
+        	else{
+        		Set<String> newSet = new HashSet<String>();
+        		newSet.add(ind);
+        		newPropMap.put(role, newSet);
+        	}
+        		
+        }
+		
+		for(String key : oldPropMap.keySet()){
+			if (!newPropMap.keySet().contains(key)){
+				JXTaskPane actionPane = new JXTaskPane();
+				actionPane.setTitle("<html><strike>" + key + "</strike></html>");
+				actionPane.setSpecial(true);
+				Set<String> value = (Set<String>)oldPropMap.get(key);
+				for(String i : value)
+					actionPane.add(new JLabel("<html><strike>" + i + "</strike></html>"));
+				actionPane.setExpanded(false);
+				propertyPane.add(actionPane);
+			}
+			else if(newPropMap.keySet().contains(key)){
+				JXTaskPane actionPane = new JXTaskPane();
+				actionPane.setTitle(key);
+				actionPane.setSpecial(true);
+				for(String value : oldPropMap.get(key)){
+					if(!newPropMap.get(key).contains(value)){
+						actionPane.add(new JLabel("<html><strike>" + value + "</strike></html>"));
+					}
+					else{
+						actionPane.add(new JLabel(value));
+					}
+				}
+				for(String value : newPropMap.get(key)){
+					if(!oldPropMap.get(key).contains(value)){
+						JLabel newLab = new JLabel(value);
+						newLab.setIcon(newIcon);
+						newLab.setHorizontalTextPosition(JLabel.LEFT);
+						actionPane.add(newLab);
+					}
+				}
+				propertyPane.add(actionPane);
+			}
+		}
+		for(String key : newPropMap.keySet()){
+			if(!oldPropMap.keySet().contains(key)){
+				JXTaskPane actionPane = new JXTaskPane();
+				actionPane.setTitle(key);
+				actionPane.setSpecial(true);
+//				actionPane.setIcon(newIcon);
+				for(String value : newPropMap.get(key)){
+					JLabel newLab = new JLabel(value);
+					newLab.setIcon(newIcon);
+					newLab.setHorizontalTextPosition(JLabel.LEFT);
+					actionPane.add(newLab);
+				}
+				propertyPane.add(actionPane);
+			}
+			
+		}
+			
+       
+	
+	SwingUtilities.updateComponentTreeUI(this);
+				
 	}
 }
