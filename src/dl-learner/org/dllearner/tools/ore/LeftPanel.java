@@ -22,7 +22,7 @@ public class LeftPanel extends JPanel{
     	panel2.setLayout(new GridLayout(5,1,0,10));
     	jLabel[0] = new JLabel("1. Introduction");
 		jLabel[1] = new JLabel("2. Knowledge Source");
-		jLabel[2] = new JLabel("3. Concept");
+		jLabel[2] = new JLabel("3. Class");
 		jLabel[3] = new JLabel("4. Learning");
 		jLabel[4] = new JLabel("5. Repair");
 		
@@ -45,7 +45,7 @@ public class LeftPanel extends JPanel{
     	panel2.setLayout(new GridLayout(5,1,0,10));
     	jLabel[0] = new JLabel("1. Introduction");
 		jLabel[1] = new JLabel("2. Knowledge Source");
-		jLabel[2] = new JLabel("3. Concept");
+		jLabel[2] = new JLabel("3. Class");
 		jLabel[3] = new JLabel("4. Learning");
 		jLabel[4] = new JLabel("5. Repair");
 		

@@ -34,14 +34,17 @@ public class Main {
         WizardPanelDescriptor descriptor2 = new KnowledgeSourcePanelDescriptor();
         wizard.registerWizardPanel(KnowledgeSourcePanelDescriptor.IDENTIFIER, descriptor2);
 
-        WizardPanelDescriptor descriptor3 = new ConceptPanelDescriptor();
-        wizard.registerWizardPanel(ConceptPanelDescriptor.IDENTIFIER, descriptor3);
+        WizardPanelDescriptor descriptor3 = new ClassPanelOWLDescriptor();
+        wizard.registerWizardPanel(ClassPanelOWLDescriptor.IDENTIFIER, descriptor3);
         
-        WizardPanelDescriptor descriptor4 = new LearningPanelDescriptor();
-        wizard.registerWizardPanel(LearningPanelDescriptor.IDENTIFIER, descriptor4);
+        WizardPanelDescriptor descriptor4 = new ClassPanelSparqlDescriptor();
+        wizard.registerWizardPanel(ClassPanelSparqlDescriptor.IDENTIFIER, descriptor4);
         
-        WizardPanelDescriptor descriptor5 = new RepairPanelDescriptor();
-        wizard.registerWizardPanel(RepairPanelDescriptor.IDENTIFIER, descriptor5);
+        WizardPanelDescriptor descriptor5 = new LearningPanelDescriptor();
+        wizard.registerWizardPanel(LearningPanelDescriptor.IDENTIFIER, descriptor5);
+        
+        WizardPanelDescriptor descriptor6 = new RepairPanelDescriptor();
+        wizard.registerWizardPanel(RepairPanelDescriptor.IDENTIFIER, descriptor6);
         
         if ( !(args.length == 1)){
         	 wizard.setCurrentPanel(IntroductionPanelDescriptor.IDENTIFIER);

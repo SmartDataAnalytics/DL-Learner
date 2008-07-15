@@ -8,20 +8,21 @@ import org.dllearner.core.owl.NamedClass;
 
 
 
-public class ConceptPanelDescriptor extends WizardPanelDescriptor implements ListSelectionListener{
+public class ClassPanelOWLDescriptor extends WizardPanelDescriptor implements ListSelectionListener{
     
-    public static final String IDENTIFIER = "CONCEPT_CHOOSE_PANEL";
+    public static final String IDENTIFIER = "CLASS_CHOOSE_OWL_PANEL";
+    public static final String INFORMATION = "In this panel all atomic classes in the ontology are shown in the list above. " +
+    										 "Select one of them which should be (re)learned from then press \"Next-Button\"";
     
-    ConceptPanel panel3;
+    ClassPanelOWL panel3;
     
-    public ConceptPanelDescriptor() {
-        
-        panel3 = new ConceptPanel();
+    public ClassPanelOWLDescriptor() {
+        panel3 = new ClassPanelOWL();
         panel3.addSelectionListener(this);
              
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(panel3);
-     
+      
     }
     
     @Override
@@ -36,11 +37,11 @@ public class ConceptPanelDescriptor extends WizardPanelDescriptor implements Lis
     
     @Override
 	public void aboutToDisplayPanel() {
+    	getWizard().getInformationField().setText(INFORMATION);
         setNextButtonAccordingToConceptSelected();
     }
     
-   
-
+  
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected(); 
 		if (!e.getValueIsAdjusting()) 

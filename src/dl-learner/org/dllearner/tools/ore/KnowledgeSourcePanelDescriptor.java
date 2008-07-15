@@ -14,23 +14,28 @@ import org.dllearner.core.owl.NamedClass;
 public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implements ActionListener, DocumentListener{
     
     public static final String IDENTIFIER = "KNOWLEDGESOURCE_CHOOSE_PANEL";
+    public static final String INFORMATION = "Select the KnowledgeSource(OWL-FILE) on which you want to work and " +
+    										"then press \"Next\"-button";
     
-    private KnowledgeSourcePanel panel2;
+    private KnowledgeSourcePanel knowledgePanel;
     
     public KnowledgeSourcePanelDescriptor() {
         
-        panel2 = new KnowledgeSourcePanel();
+        knowledgePanel = new KnowledgeSourcePanel();
     
-        panel2.addListeners(this, this);
+        knowledgePanel.addListeners(this, this);
         
         setPanelDescriptorIdentifier(IDENTIFIER);
-        setPanelComponent(panel2);
+        setPanelComponent(knowledgePanel);
         
     }
     
     @Override
 	public Object getNextPanelDescriptor() {
-        return ConceptPanelDescriptor.IDENTIFIER;
+    	if(getWizard().getKnowledgeSourceType() == 0)
+    		return ClassPanelOWLDescriptor.IDENTIFIER;
+    	else
+    		return ClassPanelSparqlDescriptor.IDENTIFIER;
     }
     
     @Override
@@ -41,13 +46,20 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     @Override
 	public void aboutToDisplayPanel() {
-        setNextButtonAccordingToExistingOWLFile();
+        getWizard().getInformationField().setText(INFORMATION);
+    	setNextButtonAccordingToExistingOWLFile();
     }    
 
     public void actionPerformed(ActionEvent e) {
     	String cmd = e.getActionCommand();
     	if(cmd.equals("browse")){
-			panel2.openFileChooser();
+			knowledgePanel.openFileChooser();
+		}else if(cmd.equals("OWL")){
+			knowledgePanel.setOWLMode();
+			getWizard().setKnowledgeSourceType(0);
+		}else if(cmd.equals("SPARQL")){
+			knowledgePanel.setSPARQLMode();
+			getWizard().setKnowledgeSourceType(1);
 		}
     	    	
         setNextButtonAccordingToExistingOWLFile();
@@ -58,8 +70,8 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     private void setNextButtonAccordingToExistingOWLFile() {
          
-    	if (panel2.isExistingOWLFile()){
-    		getWizardModel().getOre().setKnowledgeSource(panel2.getOWLFile());
+    	if (knowledgePanel.isExistingOWLFile()){
+    		getWizardModel().getOre().setKnowledgeSource(knowledgePanel.getOWLFile());
         	getWizard().setNextFinishButtonEnabled(true);
 //        	new ConceptRetriever().execute();
 //            System.err.println("test");    
@@ -89,6 +101,10 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 		setNextButtonAccordingToExistingOWLFile();
 		
 	}
+  public KnowledgeSourcePanel getPanel() {
+		return knowledgePanel;
+	}
+  
   class ConceptRetriever extends SwingWorker<Set<NamedClass>, NamedClass>
   {
     @Override 
@@ -96,7 +112,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     {		
   	  getWizardModel().getOre().detectReasoner();
   	  Set<NamedClass> ind = getWizardModel().getOre().getReasoningService().getAtomicConcepts();
-  	  ConceptPanelDescriptor nextPanel = (ConceptPanelDescriptor)getWizardModel().getPanelHashMap().get(getNextPanelDescriptor());
+  	  ClassPanelOWLDescriptor nextPanel = (ClassPanelOWLDescriptor)getWizardModel().getPanelHashMap().get(getNextPanelDescriptor());
   	  nextPanel.panel3.getModel().clear();
    
     	for (NamedClass cl : ind){
@@ -111,9 +127,6 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     
   }
-public KnowledgeSourcePanel getPanel() {
-	return panel2;
-}
 	
 	
     

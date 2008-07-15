@@ -69,8 +69,8 @@ public class WizardController implements ActionListener {
         Object nextPanelDescriptor = descriptor.getNextPanelDescriptor();
         
         //TODO nochmal überdenken
-        if(nextPanelDescriptor.equals("CONCEPT_CHOOSE_PANEL")){
-        	((ConceptPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor)).panel3.getModel().clear();
+        if(nextPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
+        	((ClassPanelOWLDescriptor)model.getPanelHashMap().get(nextPanelDescriptor)).panel3.getModel().clear();
         	new ConceptRetriever(nextPanelDescriptor).execute();
         }
        
@@ -142,21 +142,21 @@ public class WizardController implements ActionListener {
         
     }
     
-    void refreshLeftPanel(Object PanelDescriptor){
+    void refreshLeftPanel(Object panelDescriptor){
     	
-    	if(PanelDescriptor.equals("INTRODUCTION_PANEL")){
+    	if(panelDescriptor.equals("INTRODUCTION_PANEL")){
         	wizard.setLeftPanel(0);
         }
-    	if(PanelDescriptor.equals("KNOWLEDGESOURCE_CHOOSE_PANEL")){
+    	if(panelDescriptor.equals("KNOWLEDGESOURCE_CHOOSE_PANEL")){
         	wizard.setLeftPanel(1);
         }
-    	if(PanelDescriptor.equals("CONCEPT_CHOOSE_PANEL")){
+    	if(panelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL") || panelDescriptor.equals("CLASS_CHOOSE_SPARQL_PANEL")){
         	wizard.setLeftPanel(2);
         }
-    	if(PanelDescriptor.equals("LEARNING_PANEL")){
+    	if(panelDescriptor.equals("LEARNING_PANEL")){
         	wizard.setLeftPanel(3);
         }
-    	if(PanelDescriptor.equals("REPAIR_PANEL")){
+    	if(panelDescriptor.equals("REPAIR_PANEL")){
         	wizard.setLeftPanel(4);
         }
     	
@@ -210,20 +210,19 @@ public class WizardController implements ActionListener {
     }
     class ConceptRetriever extends SwingWorker<Set<NamedClass>, NamedClass> {
 		Object nextPanelID;
-
+		ClassPanelOWLDescriptor conceptPanel;
 		public ConceptRetriever(Object nextPanelDescriptor) {
 
 			nextPanelID = nextPanelDescriptor;
+			conceptPanel = (ClassPanelOWLDescriptor) wizard.getModel().getPanelHashMap().get(nextPanelID);
 		}
 
 		@Override
 		public Set<NamedClass> doInBackground() {
 
-			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
-					nextPanelID)).panel3.getStatusLabel().setText(
-					"Loading concepts");
-			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
-					nextPanelID)).panel3.getLoadingLabel().setBusy(true);
+			conceptPanel.panel3.getStatusLabel().setText("Loading concepts");
+			conceptPanel.panel3.getLoadingLabel().setBusy(true);
+			conceptPanel.panel3.getList().setCellRenderer(new ColorListCellRenderer(wizard.getModel().getOre()));
 
 			wizard.getModel().getOre().detectReasoner();
 
@@ -245,8 +244,7 @@ public class WizardController implements ActionListener {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			ConceptPanelDescriptor nextPanel = (ConceptPanelDescriptor) wizard
-					.getModel().getPanelHashMap().get(nextPanelID);
+			
 			DefaultListModel dm = new DefaultListModel();
 			
 			for (NamedClass cl : ind) {
@@ -256,32 +254,28 @@ public class WizardController implements ActionListener {
 				
 			}
 			wizard.getModel().getOre().setAllAtomicConcepts(ind);
-			nextPanel.panel3.getList().setModel(dm);
-			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
-					nextPanelID)).panel3.getStatusLabel().setText(
-					"Concepts loaded");
-			((ConceptPanelDescriptor) wizard.getModel().getPanelHashMap().get(
-					nextPanelID)).panel3.getLoadingLabel().setBusy(false);
+			conceptPanel.panel3.getList().setModel(dm);
+			conceptPanel.panel3.getStatusLabel().setText("Concepts loaded");
+			conceptPanel.panel3.getLoadingLabel().setBusy(false);
 		}
 
 	}
     class FailInstancesRetriever extends SwingWorker<List<HashSet<Individual>>, HashSet<Individual>> {
 		Object nextPanelID;
+		RepairPanelDescriptor repairPanel;
 
 		public FailInstancesRetriever(Object nextPanelDescriptor) {
 
 			nextPanelID = nextPanelDescriptor;
+			repairPanel = (RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(nextPanelID);
 		}
 
 		@Override
 		public List<HashSet<Individual>> doInBackground() {
 			
-			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
-					nextPanelID)).panel4.getStatusLabel().setText(
-					"Loading conflicting instances");
-			((RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(
-					nextPanelID)).panel4.getLoadingLabel().setBusy(true);
-
+			repairPanel.panel4.getStatusLabel().setText("Loading conflicting instances");
+			repairPanel.panel4.getLoadingLabel().setBusy(true);
+			repairPanel.panel4.setCellRenderers(wizard.getModel().getOre());
 		
 
 			List<HashSet<Individual>> indList = wizard.getModel().getOre()

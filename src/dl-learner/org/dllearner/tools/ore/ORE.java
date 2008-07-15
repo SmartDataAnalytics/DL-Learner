@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -25,6 +26,8 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectAllRestriction;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLAPIOntology;
@@ -44,11 +47,26 @@ public class ORE {
 	
 	FastInstanceChecker reasoner;
 	OWLAPIReasoner reasoner2;
-	SortedSet<Individual> posExamples;
-	SortedSet<Individual> negExamples;
+	private SortedSet<Individual> posExamples;
+	private SortedSet<Individual> negExamples;
 	NamedClass ignoredConcept;
 	Description conceptToAdd;
 	OntologyModifierOWLAPI modi;
+	private String baseURI;
+	public String getBaseURI() {
+		return baseURI;
+	}
+
+	public Map<String, String> getPrefixes() {
+		return prefixes;
+	}
+
+
+
+
+
+
+	private Map<String, String> prefixes;
 	public Set<NamedClass> allAtomicConcepts;
 	private double noise = 0.0;
 	
@@ -100,8 +118,10 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		rs = cm.reasoningService(reasoner2);
+		rs = cm.reasoningService(reasoner);
 		modi = new OntologyModifierOWLAPI(reasoner2);
+		baseURI = reasoner.getBaseURI();
+		prefixes = reasoner.getPrefixes();
 		
 	
 		
@@ -171,6 +191,13 @@ public class ORE {
 		this.setPosNegExamples();
 		this.setLearningProblem();
 		this.setLearningAlgorithm();
+		try {
+			reasoner2.init();
+			reasoner.init();
+		} catch (ComponentInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	}
@@ -244,6 +271,7 @@ public class ORE {
 				negFailureExamples.add(ind);
 				
 		}
+		
 		
 		return negFailureExamples;
 	}
@@ -376,7 +404,7 @@ public class ORE {
 		return criticals;
 	}
 	
-	public Collection<JLabel> DescriptionToJLabel(Individual ind, Description desc){
+	public Collection<JLabel> DescriptionToJLabelNeg(Individual ind, Description desc){
 //		Set<JLabel> criticals = new HashSet<JLabel>();
 		Collection<JLabel> criticals = new Vector<JLabel>();
 		List<Description> children = desc.getChildren();
@@ -389,29 +417,29 @@ public class ORE {
 					if(desc instanceof Intersection){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
-							criticals.addAll(DescriptionToJLabel(ind, desc.getChild(i)));
-							criticals.add(new JLabel("AND"));
+							criticals.addAll(DescriptionToJLabelNeg(ind, desc.getChild(i)));
+							criticals.add(new JLabel("and"));
 							
 						}
-						criticals.addAll(DescriptionToJLabel(ind, desc.getChild(children.size()-1)));
+						criticals.addAll(DescriptionToJLabelNeg(ind, desc.getChild(children.size()-1)));
 						criticals.add(new JLabel(")"));
 					}
 					else if(desc instanceof Union){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
 							if(reasoner.instanceCheck(desc.getChild(i), ind)){
-								criticals.addAll(DescriptionToJLabel(ind, desc.getChild(i)));
+								criticals.addAll(DescriptionToJLabelNeg(ind, desc.getChild(i)));
 							}
 							else{
-								criticals.add(new JLabel(desc.getChild(i).toString()));
+								criticals.add(new JLabel(desc.getChild(i).toManchesterSyntaxString(baseURI, prefixes)));
 							}
-							criticals.add(new JLabel("OR"));
+							criticals.add(new JLabel("or"));
 						}
 						if(reasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
-							criticals.addAll(DescriptionToJLabel(ind, desc.getChild(children.size()-1)));
+							criticals.addAll(DescriptionToJLabelNeg(ind, desc.getChild(children.size()-1)));
 						}
 						else{
-							criticals.add(new JLabel(desc.getChild(children.size()-1).toString()));
+							criticals.add(new JLabel(desc.getChild(children.size()-1).toManchesterSyntaxString(baseURI, prefixes)));
 						}
 						criticals.add(new JLabel(")"));
 						
@@ -420,11 +448,67 @@ public class ORE {
 				}
 				else{
 					
-					criticals.add(new DescriptionLabel(desc));
+					criticals.add(new DescriptionLabel(desc, "neg"));
 				}
 			}
 			else
-				criticals.add(new JLabel(desc.toString()));
+				criticals.add(new JLabel(desc.toManchesterSyntaxString(baseURI, prefixes)));
+		} catch (ReasoningMethodUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	return criticals;
+	}
+	
+	public Collection<JLabel> DescriptionToJLabelPos(Individual ind, Description desc){
+
+		Collection<JLabel> criticals = new Vector<JLabel>();
+		List<Description> children = desc.getChildren();
+		
+		try {
+			if(!reasoner.instanceCheck(desc, ind)){
+				
+				if(children.size() >= 2){
+					
+					if(desc instanceof Intersection){
+						criticals.add(new JLabel("("));
+						for(int i = 0; i<children.size()-1; i++){
+							criticals.addAll(DescriptionToJLabelPos(ind, desc.getChild(i)));
+							criticals.add(new JLabel("and"));
+						}
+						criticals.addAll(DescriptionToJLabelPos(ind, desc.getChild(children.size()-1)));
+						criticals.add(new JLabel(")"));
+					}
+					else if(desc instanceof Union){
+						criticals.add(new JLabel("("));
+						for(int i = 0; i<children.size()-1; i++){
+							if(!reasoner.instanceCheck(desc.getChild(i), ind)){
+								criticals.addAll(DescriptionToJLabelPos(ind, desc.getChild(i)));
+							}
+							else{
+								criticals.add(new JLabel(desc.getChild(i).toManchesterSyntaxString(baseURI, prefixes)));
+							}
+							criticals.add(new JLabel("or"));
+						}
+						if(!reasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
+							criticals.addAll(DescriptionToJLabelPos(ind, desc.getChild(children.size()-1)));
+						}
+						else{
+							criticals.add(new JLabel(desc.getChild(children.size()-1).toManchesterSyntaxString(baseURI, prefixes)));
+						}
+						criticals.add(new JLabel(")"));
+						
+							
+					}
+				}
+				else{
+					
+					criticals.add(new DescriptionLabel(desc, "pos"));
+				}
+			}
+			else
+				criticals.add(new JLabel(desc.toManchesterSyntaxString(baseURI, prefixes)));
 		} catch (ReasoningMethodUnsupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -435,42 +519,50 @@ public class ORE {
 	
 	public Set<Individual> getIndividualsOfPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
 		
-		Set<Individual> individuals = rs.retrieval(objRestr.getChild(0));
+		Set<Individual> individuals = reasoner2.retrieval(objRestr.getChild(0));
 		individuals.remove(ind);
 		
 		return individuals;
 	}
 	
-	public Set<Individual> getIndividualsNotOfPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
-		System.out.println(rs.getAtomicConcepts());
-		Set<Individual> individuals = reasoner2.retrieval(objRestr.getChild(0));
-		Set<Individual> allIndividuals = reasoner2.getIndividuals();
-		System.out.println("alle:" + allIndividuals);
-		allIndividuals.removeAll(individuals);
-		allIndividuals.remove(ind);
+	public Set<Individual> getIndividualsNotInPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
 		
-		System.out.println("range:" + individuals);
+
+		Set<Individual> allIndividuals = new HashSet<Individual>();
+		
+		for(Individual i : reasoner2.getIndividuals()){
+			
+			try {
+				if(!reasoner.instanceCheck(objRestr.getChild(0), i)){
+					allIndividuals.add(i);
+				}
+			} catch (ReasoningMethodUnsupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	
 		return allIndividuals;
 	}
 	
-	public Set<NamedClass> getpossibleMoveClasses(Individual ind){
+	public Set<NamedClass> getpossibleClassesMoveTo(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
 		for(NamedClass nc : rs.getAtomicConcepts())
 			if(!rs.instanceCheck(nc, ind))
 				moveClasses.add(nc);
-				
-		
-		
-//		for(NamedClass moveNc : moveClasses)
-//			if(rs.instanceCheck(moveNc, ind)){
-//				indClasses.add(moveNc);
-//		}
-//		moveClasses.removeAll(indClasses);
-//		System.out.println("hier?" + allAtomicConcepts);
-//		for(NamedClass moveNc : moveClasses)
-//			for(NamedClass indNc : indClasses )
-//				if(new Intersection(moveNc, indNc).equals(new Nothing()))
-//					moveClasses.remove(moveNc);
+
+			
+		return moveClasses;
+	}
+	
+	public Set<NamedClass> getpossibleClassesMoveFrom(Individual ind){
+		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
+		for(NamedClass nc : rs.getAtomicConcepts()){
+			if(rs.instanceCheck(nc, ind))
+				moveClasses.add(nc);
+		}
+		moveClasses.remove(ignoredConcept);
 			
 		return moveClasses;
 	}
@@ -492,18 +584,23 @@ public class ORE {
 			e.printStackTrace();
 		}
 		rs = cm.reasoningService(reasoner2);
-		setLearningAlgorithm();
+//		setLearningAlgorithm();
 	}
 	
 	public Set<NamedClass> getComplements(Description desc, Individual ind){
 		Set<NamedClass> complements = new HashSet<NamedClass>();
-		
-		for(NamedClass nc : reasoner2.getConcepts(ind)){
-			if(modi.isComplement(desc, nc))
-				complements.add(nc);
+		for(NamedClass nc : reasoner2.getAtomicConcepts()){
+			if(reasoner2.instanceCheck(nc, ind)){
+				if(modi.isComplement(desc, nc)){
+					complements.add(nc);
+				}
+			}
 		}
+
 		return complements;
 	}
+	
+	
 	
 		
 	
@@ -512,15 +609,41 @@ public class ORE {
 		
 		final ORE test = new ORE();
 		
-		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/inkohaerent.owl");
+		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/neg_has_all.owl");
 		
 		test.setKnowledgeSource(owlFile);
 	
 		test.detectReasoner();
+		
+		Individual subject = new Individual("http://example.com/father#anton");
+		
+		Description range = new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"),
+													new NamedClass("http://example.com/father#female"));
+		ObjectAllRestriction role = new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"),
+													range);
+		Description d = new Intersection(new NamedClass("http://example.com/father#male"), role);
+		try {
+			System.out.println(test.reasoner.instanceCheck(d, subject));
+		} catch (ReasoningMethodUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("vorher" + test.modi.ontology.getAxioms());
+		Individual object = new Individual("http://example.com/father#markus");
+		test.modi.addObjectProperty(subject, role, object);
+		test.updateReasoner();
+		try {
+			System.out.println(test.reasoner.instanceCheck(d, subject));
+		} catch (ReasoningMethodUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 //		test.modi.reason();
 		
 //		Individual ind = new Individual("http://example.com/father#heinz");
-//		Description d = new Intersection(new NamedClass("http://example.com/father#male"), new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"), new NamedClass("http://example.com/father#male")));
+//		Description d1 = new Intersection(new NamedClass("http://example.com/father#male"), new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"), new NamedClass("http://example.com/father#male")));
 //		System.out.println(test.reasoner2.instanceCheck(d, ind));
 		
 		

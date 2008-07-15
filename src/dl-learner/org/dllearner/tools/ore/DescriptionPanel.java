@@ -21,8 +21,10 @@ public class DescriptionPanel extends JPanel{
 	ORE ore;
 	Individual ind;
 	ActionListener aL;
+	String mode;
+	boolean correct = false;
 	
-	public DescriptionPanel(ORE ore, Individual ind, ActionListener aL){
+	public DescriptionPanel(ORE ore, Individual ind, ActionListener aL, String mode){
 		
 		super();
 		setBackground(Color.WHITE);
@@ -30,35 +32,72 @@ public class DescriptionPanel extends JPanel{
 		this.ore = ore;
 		this.ind = ind;
 		this.aL = aL;
-		for(JLabel jL : ore.DescriptionToJLabel(ind, ore.conceptToAdd)){
-			add(jL);
-			if(jL instanceof DescriptionLabel){
+		this.mode = mode;
+		if(mode.equals("neg")){
+			for(JLabel jL : ore.DescriptionToJLabelNeg(ind, ore.conceptToAdd)){
+				add(jL);
+				if(jL instanceof DescriptionLabel){
+					
+					((DescriptionLabel)jL).setIndOre(ore, ind);
+					((DescriptionLabel)jL).init();
+					((DescriptionLabel)jL).addActionListeners(aL);
+					
+				}
 				
-				((DescriptionLabel)jL).setIndOre(ore, ind);
-				((DescriptionLabel)jL).init();
-				((DescriptionLabel)jL).addActionListeners(aL);
+			}
+		}
+		else if(mode.equals("pos")){
+			for(JLabel jL : ore.DescriptionToJLabelPos(ind, ore.conceptToAdd)){
+				add(jL);
+				if(jL instanceof DescriptionLabel){
+					
+					((DescriptionLabel)jL).setIndOre(ore, ind);
+					((DescriptionLabel)jL).init();
+					((DescriptionLabel)jL).addActionListeners(aL);
+					
+				}
+				
 			}
 		}
 	}
 	
-	public void updatePanel(){//DescriptionButton descBut, Description desc){
+	public void updatePanel(){
 		for(Component c : getComponents())
 			if(c instanceof JLabel)
 				remove(c);
 		
 		ore.updateReasoner();
-		for(JLabel jL : ore.DescriptionToJLabel(ind, ore.conceptToAdd)){
-			add(jL);
-			if(jL instanceof DescriptionLabel){
-				((DescriptionLabel)jL).setIndOre(ore, ind);
-				((DescriptionLabel)jL).init();
-				((DescriptionLabel)jL).addActionListeners(aL);
-				
-				
+		correct = true;
+		if (mode.equals("neg")) {
+			for (JLabel jL : ore.DescriptionToJLabelNeg(ind, ore.conceptToAdd)) {
+				add(jL);
+				if (jL instanceof DescriptionLabel) {
+					((DescriptionLabel) jL).setIndOre(ore, ind);
+					((DescriptionLabel) jL).init();
+					((DescriptionLabel) jL).addActionListeners(aL);
+					correct = false;
+
+				}
+			}
+		}
+		else if(mode.equals("pos")){
+			for (JLabel jL : ore.DescriptionToJLabelPos(ind, ore.conceptToAdd)) {
+				add(jL);
+				if (jL instanceof DescriptionLabel) {
+					((DescriptionLabel) jL).setIndOre(ore, ind);
+					((DescriptionLabel) jL).init();
+					((DescriptionLabel) jL).addActionListeners(aL);
+					correct = false;
+
+				}
 			}
 		}
 		SwingUtilities.updateComponentTreeUI(this);
 		
 
+	}
+	
+	public boolean isCorrect(){
+		return correct;
 	}
 }
