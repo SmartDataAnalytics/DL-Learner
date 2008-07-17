@@ -54,8 +54,6 @@ class DLLearnerConnection
 		if(empty($negExamples)){
 			$negExamples=$this->client->getNegativeExamples($this->id,$this->ksID,$posExamples,count($posExamples),"http://dbpedia.org/resource/");
 			$negExamples=$negExamples->item;
-			
-			var_dump($negExamples);
 		}
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
 		$this->client->setReasoner($this->id, "fastInstanceChecker");
@@ -338,11 +336,11 @@ class DLLearnerConnection
 	
 	}
 }
-
+/*
 ini_set('default_socket_timeout',200);
 $sc=new DLLearnerConnection();
 $ids=$sc->getIDs();
 $sc=new DLLearnerConnection($ids[0],$ids[1]);
 $triples=$sc->getConceptFromExamples(array('http://dbpedia.org/resource/Leipzig'),array());
-var_dump($triples);
+var_dump($triples);*/
 ?>
