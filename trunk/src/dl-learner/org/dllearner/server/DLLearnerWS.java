@@ -379,6 +379,20 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
+	public String getCurrentlyBestEvaluatedDescriptions(int id, int limit) throws ClientNotKnownException{
+		ClientState state = getState(id);
+		List<EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(limit);
+		String json = "{";
+		int count = 1;
+		for(EvaluatedDescription description : descriptions) {
+			json += "\"solution" + count + "\" : " + description.asJSON();
+			count++;
+		}
+		System.out.println(json);
+		return json;
+	}
+	
+	@WebMethod
 	public boolean isAlgorithmRunning(int id) throws ClientNotKnownException {
 		return getState(id).isAlgorithmRunning();
 	}
