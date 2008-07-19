@@ -388,7 +388,6 @@ public class DLLearnerWS {
 			json += "\"solution" + count + "\" : " + description.asJSON();
 			count++;
 		}
-		System.out.println(json);
 		return json;
 	}
 	
