@@ -112,6 +112,20 @@
   <message name="learnResponse">
     <part name="return" type="xsd:string"></part>
   </message>
+  <message name="learnDescriptionsEvaluated">
+    <part name="arg0" type="xsd:int"></part>
+    <part name="arg1" type="xsd:int"></part>
+  </message>
+  <message name="learnDescriptionsEvaluatedResponse">
+    <part name="return" type="xsd:string"></part>
+  </message>
+  <message name="getCurrentlyBestEvaluatedDescriptions">
+    <part name="arg0" type="xsd:int"></part>
+    <part name="arg1" type="xsd:int"></part>
+  </message>
+  <message name="getCurrentlyBestEvaluatedDescriptionsResponse">
+    <part name="return" type="xsd:string"></part>
+  </message>
   <message name="learnThreaded">
     <part name="arg0" type="xsd:int"></part>
   </message>
@@ -329,6 +343,16 @@
   <message name="SparqlRetrievalResponse">
     <part name="return" type="xsd:string"></part>
   </message>
+  <message name="getNegativeExamples">
+    <part name="arg0" type="xsd:int"></part>
+    <part name="arg1" type="xsd:int"></part>
+    <part xmlns:ns19="http://jaxb.dev.java.net/array" name="arg2" type="ns19:stringArray"></part>
+    <part name="arg3" type="xsd:int"></part>
+    <part name="arg4" type="xsd:string"></part>
+  </message>
+  <message name="getNegativeExamplesResponse">
+    <part xmlns:ns20="http://jaxb.dev.java.net/array" name="return" type="ns20:stringArray"></part>
+  </message>
   <portType name="DLLearnerWebService">
     <operation name="init" parameterOrder="arg0 arg1">
       <input message="tns:init"></input>
@@ -418,6 +442,16 @@
     <operation name="learn" parameterOrder="arg0 arg1">
       <input message="tns:learn"></input>
       <output message="tns:learnResponse"></output>
+      <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
+    </operation>
+    <operation name="learnDescriptionsEvaluated" parameterOrder="arg0 arg1">
+      <input message="tns:learnDescriptionsEvaluated"></input>
+      <output message="tns:learnDescriptionsEvaluatedResponse"></output>
+      <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
+    </operation>
+    <operation name="getCurrentlyBestEvaluatedDescriptions" parameterOrder="arg0 arg1">
+      <input message="tns:getCurrentlyBestEvaluatedDescriptions"></input>
+      <output message="tns:getCurrentlyBestEvaluatedDescriptionsResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
     </operation>
     <operation name="learnThreaded" parameterOrder="arg0">
@@ -591,6 +625,11 @@
       <input message="tns:SparqlRetrieval"></input>
       <output message="tns:SparqlRetrievalResponse"></output>
       <fault message="tns:ParseException" name="ParseException"></fault>
+    </operation>
+    <operation name="getNegativeExamples" parameterOrder="arg0 arg1 arg2 arg3 arg4">
+      <input message="tns:getNegativeExamples"></input>
+      <output message="tns:getNegativeExamplesResponse"></output>
+      <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
     </operation>
   </portType>
   <binding name="DLLearnerWebServicePortBinding" type="tns:DLLearnerWebService">
@@ -800,6 +839,30 @@
       </fault>
     </operation>
     <operation name="learn">
+      <soap:operation soapAction=""></soap:operation>
+      <input>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </output>
+      <fault name="ClientNotKnownException">
+        <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
+      </fault>
+    </operation>
+    <operation name="learnDescriptionsEvaluated">
+      <soap:operation soapAction=""></soap:operation>
+      <input>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </output>
+      <fault name="ClientNotKnownException">
+        <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
+      </fault>
+    </operation>
+    <operation name="getCurrentlyBestEvaluatedDescriptions">
       <soap:operation soapAction=""></soap:operation>
       <input>
         <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
@@ -1232,6 +1295,18 @@
       </output>
       <fault name="ParseException">
         <soap:fault name="ParseException" use="literal"></soap:fault>
+      </fault>
+    </operation>
+    <operation name="getNegativeExamples">
+      <soap:operation soapAction=""></soap:operation>
+      <input>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </output>
+      <fault name="ClientNotKnownException">
+        <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
       </fault>
     </operation>
   </binding>
