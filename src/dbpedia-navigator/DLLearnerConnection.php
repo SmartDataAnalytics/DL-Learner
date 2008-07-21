@@ -88,7 +88,8 @@ class DLLearnerConnection
 				sleep($sleeptime);
 				
 				// see what we have learned so far
-				$concepts=$this->client->getCurrentlyBestConcepts($this->id,3,"kb");
+				//$concepts=$this->client->getCurrentlyBestConcepts($this->id,3,"kb");
+				$concepts=$this->client->getCurrentlyBestEvaluatedDescriptions($this->id,3);
 				$running=$this->client->isAlgorithmRunning($this->id);
 				
 				$seconds = $i * $sleeptime;
@@ -107,7 +108,8 @@ class DLLearnerConnection
 			
 			$this->client->stop($this->id);
 		}
-		return $concepts->item;
+		//return $concepts->item;
+		return $concepts;
 	}
 	
 	function getConceptDepth()
