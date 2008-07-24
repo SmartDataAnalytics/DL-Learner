@@ -18,11 +18,9 @@
 package org.dllearner.scripts;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashSet;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -32,49 +30,41 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.owl.Description;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
-import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.utilities.JamonMonitorLogger;
-import org.dllearner.utilities.datastructures.SetManipulation;
+import org.dllearner.utilities.Files;
 
-// TODO COMMENT !!! added a sample java call class for the dl-learner (as a
-// possible entry point for tool developers)
+import com.jamonapi.MonitorFactory;
+
+/**
+ * Sample script showing how to use DL-Learner. Provides an entry point for tool
+ * developers.
+ * 
+ * @author Sebastian Hellmann
+ * @author Jens Lehmann
+ * 
+ */
 public class Sample {
 
 	private static Logger logger = Logger.getRootLogger();
+	private static DecimalFormat df = new DecimalFormat();
 
-	String owlfile = "";
+	public static void main(String[] args) throws IOException, ComponentInitException,
+			LearningProblemUnsupportedException {
 
-	// examples
-	SortedSet<String> posExamples = new TreeSet<String>();
-
-	SortedSet<String> negExamples = new TreeSet<String>();
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		System.out.println("Start");
-
-		// create logger (a simple logger which outputs
-		// its messages to the console)
+		// create logger (configure this to your needs)
 		SimpleLayout layout = new SimpleLayout();
-		FileAppender fileAppender = null;
-		;
-		try {
-			fileAppender = new FileAppender(layout, "the_log.txt", false);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		FileAppender fileAppender = new FileAppender(layout, "log/sample_log.txt", false);
 
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
@@ -82,127 +72,86 @@ public class Sample {
 		logger.addAppender(fileAppender);
 		logger.setLevel(Level.DEBUG);
 
-		Sample s = new Sample();
+		// OWL file containing background knowledge
+		String owlFile = "examples/trains/trains.owl";
 
-		s.owlfile = "examples/trains/trains.owl";
+		// examples
+		SortedSet<String> posExamples = new TreeSet<String>();
+		posExamples.add("http://example.com/foo#east1");
+		posExamples.add("http://example.com/foo#east2");
+		posExamples.add("http://example.com/foo#east3");
+		posExamples.add("http://example.com/foo#east4");
+		posExamples.add("http://example.com/foo#east5");
 
-		s.posExamples = new TreeSet<String>();
-		s.negExamples = new TreeSet<String>();
+		SortedSet<String> negExamples = new TreeSet<String>();
+		negExamples.add("http://example.com/foo#west6");
+		negExamples.add("http://example.com/foo#west7");
+		negExamples.add("http://example.com/foo#west8");
+		negExamples.add("http://example.com/foo#west9");
+		negExamples.add("http://example.com/foo#west10");
 
-		/* Examples */
-		s.posExamples.add("http://example.com/foo#east1");
-		s.posExamples.add("http://example.com/foo#east2");
-		s.posExamples.add("http://example.com/foo#east3");
-		s.posExamples.add("http://example.com/foo#east4");
-		s.posExamples.add("http://example.com/foo#east5");
-
-		s.negExamples.add("http://example.com/foo#west6");
-		s.negExamples.add("http://example.com/foo#west7");
-		s.negExamples.add("http://example.com/foo#west8");
-		s.negExamples.add("http://example.com/foo#west9");
-		s.negExamples.add("http://example.com/foo#west10");
-
-		List<Description> conceptresults = s.learn();
+		List<EvaluatedDescription> results = learn(owlFile, posExamples, negExamples, 5);
 		int x = 0;
-		for (Description description : conceptresults) {
-			if (x >= 5)
-				break;
-			System.out
-					.println(description.toManchesterSyntaxString(null, null));
+		for (EvaluatedDescription ed : results) {
+			System.out.println("solution: " + x);
+			System.out.println("  description: \t"
+					+ ed.getDescription().toManchesterSyntaxString(null, null));
+			System.out.println("  accuracy: \t" + df.format(ed.getAccuracy() * 100) + "%");
+			System.out.println();
 			x++;
 		}
 
-		System.out.println("Finished");
-		JamonMonitorLogger.printAllSortedByLabel();
-
+		Files.createFile(new File("log/jamon_sample.html"), MonitorFactory.getReport());
 	}
 
-	public List<Description> learn() {
+	public static List<EvaluatedDescription> learn(String owlFile, SortedSet<String> posExamples,
+			SortedSet<String> negExamples, int maxNrOfResults) throws ComponentInitException,
+			LearningProblemUnsupportedException {
 
 		logger.info("Start Learning with");
 		logger.info("positive examples: \t" + posExamples.size());
 		logger.info("negative examples: \t" + negExamples.size());
 
-		// Components
+		// the component manager is the central object to create
+		// and configure components
 		ComponentManager cm = ComponentManager.getInstance();
-		LearningAlgorithm la = null;
-		ReasoningService rs = null;
-		LearningProblem lp = null;
-		KnowledgeSource ks = null;
 
-		try {
-			Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
-			ks = cm.knowledgeSource(OWLFile.class);
+		// knowledge source
+		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+		String fileURL = new File(owlFile).toURI().toString();
+		cm.applyConfigEntry(ks, "url", fileURL);
 
-			// there are probably better ways, but this works
-			File f = new File(this.owlfile);
-			URL url = null;
-			try {
-				url = new URL("file://" + f.getAbsolutePath());
+		// reasoner
+		ReasonerComponent r = cm.reasoner(FastInstanceChecker.class, ks);
+		ReasoningService rs = cm.reasoningService(r);
 
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
-			cm.applyConfigEntry(ks, "url", url.toString());
+		// learning problem
+		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
+		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
+		cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 
-			ReasonerComponent r = new FastInstanceChecker(sources);
-			rs = new ReasoningService(r);
-			// System.out.println("satisfy: "+rs.isSatisfiable());
+		// learning algorithm
+		LearningAlgorithm la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
+		cm.applyConfigEntry(la, "useAllConstructor", false);
+		cm.applyConfigEntry(la, "useExistsConstructor", true);
+		cm.applyConfigEntry(la, "useCardinalityRestrictions", false);
+		cm.applyConfigEntry(la, "useNegation", false);
+		cm.applyConfigEntry(la, "writeSearchTree", false);
+		cm.applyConfigEntry(la, "searchTreeFile", "log/searchTree.txt");
+		cm.applyConfigEntry(la, "replaceSearchTree", true);
+		cm.applyConfigEntry(la, "noisePercentage", 0.0);
 
-			lp = new PosNegDefinitionLP(rs);
-			lp = new PosNegDefinitionLP(rs);
+		// all components need to be initialised before they can be used
+		ks.init();
+		r.init();	
+		lp.init();
+		la.init();
 
-			// This method is a workaround, it should be like the two commented
-			// lines below
-			((PosNegLP) lp).setPositiveExamples(SetManipulation
-					.stringToInd(this.posExamples));
-			((PosNegLP) lp).setNegativeExamples(SetManipulation
-					.stringToInd(this.negExamples));
-			// cm.applyConfigEntry(lp,"positiveExamples",this.posExamples);
-			// cm.applyConfigEntry(lp,"negativeExamples",this.negExamples);
-
-			la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
-
-			logger.debug("start learning");
-
-			// KNOWLEDGESOURCE
-			//
-
-			// LEARNINGALGORITHM
-			cm.applyConfigEntry(la, "useAllConstructor", false);
-			cm.applyConfigEntry(la, "useExistsConstructor", true);
-			cm.applyConfigEntry(la, "useCardinalityRestrictions", false);
-			cm.applyConfigEntry(la, "useNegation", false);
-
-			cm.applyConfigEntry(la, "writeSearchTree", false);
-			cm.applyConfigEntry(la, "searchTreeFile", "log/searchtree.txt");
-			cm.applyConfigEntry(la, "replaceSearchTree", true);
-			// cm.applyConfigEntry(la,"noisePercentage",noise);
-
-			/*
-			 * if(ignoredConcepts.size()>0)
-			 * cm.applyConfigEntry(la,"ignoredConcepts",ignoredConcepts);
-			 */
-
-			// initialization
-			ks.init();
-			sources.add(ks);
-			r.init();
-			lp.init();
-			la.init();
-
-			la.start();
-			// Statistics.addTimeCollecting(sc.getTime());
-			// Statistics.addTimeLearning(sc.getTime());
-
-			return la.getCurrentlyBestDescriptions();
-			// return la.getCurrentlyBestEvaluatedDescriptions();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-
+		// start learning algorithm
+		logger.debug("start learning");
+		la.start();
+		
+		return la.getCurrentlyBestEvaluatedDescriptions(maxNrOfResults);
 	}
 
 }
