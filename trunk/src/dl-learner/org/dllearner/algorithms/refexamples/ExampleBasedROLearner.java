@@ -434,7 +434,9 @@ public class ExampleBasedROLearner {
 					System.out.println("best child of this node: " + bestChild);
 					System.out.println(bestNode.getChildConcepts());
 					System.out.println("TODO: needs to be integrated with other stopping criteria");
-					System.exit(0);					
+					System.out.println("You tried to use this algorithm for positive only learning, which is not recommended (yet).");
+//					System.out.println("Exiting.");
+//					System.exit(0);					
 				} else {
 					// tag as non-candidate so we do not need to search again
 					bestNode.setPosOnlyCandidate(false);

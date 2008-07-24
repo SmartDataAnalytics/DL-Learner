@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -178,6 +178,16 @@ public class ComponentManager {
 		return cm;
 	}
 
+	/**
+	 * Set the classes, which can be used as components. By default,
+	 * this is read from components.ini, but this method can be used
+	 * to set the components programmatically. This method must be
+	 * used before the first call to {@link #getInstance()}, otherwise
+	 * it has no effect.
+	 * 
+	 * @param componentClasses A list of class names, e.g. 
+	 * org.dllearner.refinement.ROLearner.
+	 */
 	public static void setComponentClasses(String[] componentClasses) {
 		ComponentManager.componentClasses = componentClasses;
 	}
@@ -211,9 +221,9 @@ public class ComponentManager {
 	 * value is correct, it is preferable to create a ConfigEntry object and
 	 * apply it to the component (no type checking necessary).
 	 * 
-	 * @param component
-	 * @param optionName
-	 * @param value
+	 * @param component A component.
+	 * @param optionName The name of the config option.
+	 * @param value The value of the config option.
 	 */
 	@SuppressWarnings( { "unchecked" })
 	public <T> void applyConfigEntry(Component component, String optionName, T value) {
