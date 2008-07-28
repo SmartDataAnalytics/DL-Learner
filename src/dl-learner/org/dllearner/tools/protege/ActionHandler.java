@@ -11,7 +11,6 @@ import javax.swing.event.ListSelectionEvent;
 
 import org.dllearner.core.owl.Description;
 
-import org.semanticweb.owl.model.OWLDescription;
 /**
  * 
  * @author Heero Yuy

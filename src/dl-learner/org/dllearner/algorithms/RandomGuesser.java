@@ -42,6 +42,7 @@ public class RandomGuesser extends LearningAlgorithm {
     private Score bestScore;
     private double bestFitness = Double.NEGATIVE_INFINITY;
     private LearningProblem learningProblem;
+    private ReasoningService rs;
 	private int numberOfTrees;
 	private int maxDepth;
     
@@ -49,6 +50,7 @@ public class RandomGuesser extends LearningAlgorithm {
 	
 	public RandomGuesser(LearningProblem learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
+		this.rs = rs;
 	}
 	
 	public static String getName() {
@@ -99,7 +101,7 @@ public class RandomGuesser extends LearningAlgorithm {
 		
 		for(int i=0; i<numberOfTrees; i++) {
 			// p = GPUtilities.createGrowRandomProgram(learningProblem, maxDepth);
-			p = GPUtilities.createGrowRandomProgram(learningProblem, maxDepth, false);
+			p = GPUtilities.createGrowRandomProgram(learningProblem, rs, maxDepth, false);
 			if(p.getFitness()>bestFitness) {
 				bestFitness = p.getFitness();
 				bestScore = p.getScore();
@@ -131,6 +133,15 @@ public class RandomGuesser extends LearningAlgorithm {
 	public void stop() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
+	 */
+	@Override
+	public boolean isRunning() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

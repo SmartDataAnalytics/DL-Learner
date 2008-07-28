@@ -127,14 +127,16 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     
     /**
      * Adds a description as child of this one. The parent link
-     * of the concept will point to this one.
+     * of the description will point to this one. For instance,
+     * if the description is an intersection, then this method adds
+     * an element to the intersection, e.g. A AND B becomes A AND B
+     * AND C. 
      * 
-     * @param child
-     * @return
+     * @param child The child description.
      */
-    public boolean addChild(Description child) {
+    public void addChild(Description child) {
         child.setParent(this);
-        return children.add(child);
+        children.add(child);
     }
 
     /**

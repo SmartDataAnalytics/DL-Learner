@@ -107,21 +107,24 @@ public class MathOperations {
 	 * number = 6: [[6], [4, 1], [3, 2], [2, 1, 1]]
 	 * number = 7: [[7], [5, 1], [4, 2], [3, 3], [3, 1, 1], [2, 2, 1], [1, 1, 1, 1]]
 	 * 
-	 * @param length
-	 * @return
+	 * @param number A natural number.
+	 * @return A two dimensional list constructed as described above.
 	 */
-	public static List<List<Integer>> getCombos(int length) {
+	public static List<List<Integer>> getCombos(int number) {
 		// on Notebook: length 70 in 17 seconds, length 50 in 800ms, length 30 in 15ms		
 		LinkedList<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
-		decompose(length, length, new LinkedList<Integer>(), combosTmp);
+		decompose(number, number, new LinkedList<Integer>(), combosTmp);
 		return combosTmp;
 	}
 	
 	/**
+	 * Methods for computing combinations with the additional restriction
+	 * that <code>maxValue</code> is the highest natural number, which can
+	 * occur.
 	 * @see #getCombos(int)
 	 * @param length Length of construct.
 	 * @param maxValue Maximum value which can occur in sum.
-	 * @return
+	 * @return A two dimensional list constructed in {@link #getCombos(int)}.
 	 */
 	public static List<List<Integer>> getCombos(int length, int maxValue) {		
 		LinkedList<List<Integer>> combosTmp = new LinkedList<List<Integer>>();

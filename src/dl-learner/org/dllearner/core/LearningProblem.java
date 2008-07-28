@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -23,18 +23,19 @@ import org.dllearner.core.owl.Description;
 
 /**
  * Base class for all learning problems.
+ * See also the wiki page for 
+ * <a href="http://dl-learner.org/Projects/DLLearner/Architecture">DL-Learner-Architecture</a>.
+ * Currently, we assume that all learning problems have the goal
+ * of learning class descriptions. However, this may be extended
+ * to other scenarios if desired. 
  * 
- * @todo The current learning problem implementations 
- * assume that we learn a concept, which does not exist
- * in the knowledge base so far. However, often we want
- * to learn a complex definition for a concept which
- * is already integrated in a subsumption hierarchy. This
- * means it would make sense to specifiy the list of these
- * superclasses as an additional argument of the learning
- * problem. The learning algorithms could then make use of
- * this to optimise their search for a solution. (More
- * generally, one could specify the name of the concept, which
- * should be improved.)
+ * TODO: The current learning problem implementations assume that 
+ * we learn a description for a class, which does not exist
+ * in the knowledge base so far (if it exists, it needs to be ignored
+ * explicitly). However, often we want to learn a complex definition 
+ * for a concept which is already integrated in a subsumption hierarchy
+ * or may already have an associated description. It may make sense
+ * to use this knowledge for (re-)learning descriptions.
  * 
  * @author Jens Lehmann
  *
@@ -43,16 +44,25 @@ public abstract class LearningProblem extends Component {
 	
 	protected ReasoningService reasoningService;
 	
+	/**
+	 * Constructs a learning problem using a reasoning service for
+	 * querying the background knowledge. It can be used for 
+	 * evaluating solution candidates.
+	 * @param reasoningService The reasoning service used as 
+	 * background knowledge.
+	 */
 	public LearningProblem(ReasoningService reasoningService) {
 		this.reasoningService = reasoningService;
 	}
 	
-	public abstract Score computeScore(Description concept);
-	
-	// TODO: remove? reasoning service should probably not be accessed via
-	// learning problem
-	public ReasoningService getReasoningService() {
-		return reasoningService;
-	}
+	/**
+	 * Computes the <code>Score</code> of a given class description
+	 * with respect to this learning problem.
+	 * This can (but does not need to) be used by learning algorithms
+	 * to measure how good the description fits the learning problem.
+	 * @param description A class description (as solution candidate for this learning problem).
+	 * @return A <code>Score</code> object.
+	 */
+	public abstract Score computeScore(Description description);
 	
 }

@@ -29,7 +29,7 @@ import org.dllearner.utilities.owl.RoleComparator;
 /**
  * Represents a hierarchy of datatype properties.
  * 
- * @todo. Currently, the role hierarchy pruning algorithm (analogous to the
+ * TODO: Currently, the role hierarchy pruning algorithm (analogous to the
  * subsumption hierarchy) is not implemented.  
  * 
  * @author Jens Lehmann

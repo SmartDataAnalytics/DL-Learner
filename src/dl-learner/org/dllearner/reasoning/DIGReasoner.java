@@ -256,7 +256,7 @@ public class DIGReasoner extends ReasonerComponent {
 	 * Constructs a role hierarchy using DIG queries. After calling this method,
 	 * one can query parents or children of roles.
 	 * 
-	 * @todo Does not yet take ignored roles into account.
+	 * TODO Does not yet take ignored roles into account.
 	 */
 	@Override
 	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {

@@ -44,9 +44,9 @@ public class PsiDown implements RefinementOperator {
 	
 	private TreeSet<Description> topSet;
 	
-	public PsiDown(PosNegLP learningProblem) {
+	public PsiDown(PosNegLP learningProblem, ReasoningService reasoningService) {
 		this.learningProblem = learningProblem;
-		reasoningService = learningProblem.getReasoningService();
+		this.reasoningService = reasoningService;
 		
 		// Top-Menge erstellen
 		createTopSet();
@@ -65,7 +65,7 @@ public class PsiDown implements RefinementOperator {
 		topSet.addAll(reasoningService.getMoreSpecialConcepts(new Thing()));
 		
 		// negierte speziellste Konzepte
-		Set<Description> tmp = learningProblem.getReasoningService().getMoreGeneralConcepts(new Nothing());
+		Set<Description> tmp = reasoningService.getMoreGeneralConcepts(new Nothing());
 		for(Description c : tmp) 
 			topSet.add(new Negation(c));
 	

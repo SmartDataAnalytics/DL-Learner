@@ -59,6 +59,7 @@ import org.dllearner.core.owl.Thing;
 public class BruteForceLearner extends LearningAlgorithm {
     
 	private LearningProblem learningProblem;
+	private ReasoningService rs;
 	
     private Description bestDefinition;
     private Score bestScore;
@@ -67,12 +68,14 @@ public class BruteForceLearner extends LearningAlgorithm {
     private String returnType;
     
     private boolean stop = false;
+    private boolean isRunning = false;
     
     // list of all generated concepts sorted by length
     private Map<Integer,List<Description>> generatedDefinitions = new HashMap<Integer,List<Description>>();
     
     public BruteForceLearner(LearningProblem learningProblem, ReasoningService rs) {
     	this.learningProblem = learningProblem;
+    	this.rs = rs;
     }
     
 	public static String getName() {
@@ -121,6 +124,7 @@ public class BruteForceLearner extends LearningAlgorithm {
     
 	@Override
     public void start() {
+		isRunning = true;
        	// FlatABox abox = FlatABox.getInstance();
     	
         System.out.print("Generating definitions up to length " + maxLength + " ... ");
@@ -148,7 +152,7 @@ public class BruteForceLearner extends LearningAlgorithm {
         //System.out.println("false negatives: " + Helper.intersection(bestDefNegSet,posExamples));
         //System.out.print("Score: " + bestScore + " Max: " + maxScore + " Difference: " + (maxScore-bestScore));
         //System.out.println(" Accuracy: " + df.format((double)bestScore/maxScore*100) + "%");
-      	
+      	isRunning = false;
     }
     
     private void testGeneratedDefinitions(int maxLength) {
@@ -203,7 +207,7 @@ public class BruteForceLearner extends LearningAlgorithm {
         if(length==1) {
             generatedDefinitions.get(1).add(new Thing());
             generatedDefinitions.get(1).add(new Nothing());
-            for(NamedClass atomicConcept : learningProblem.getReasoningService().getAtomicConcepts()) {
+            for(NamedClass atomicConcept : rs.getAtomicConcepts()) {
                 generatedDefinitions.get(1).add(atomicConcept);
             }
         }
@@ -261,7 +265,7 @@ public class BruteForceLearner extends LearningAlgorithm {
             
             // EXISTS and ALL 
             for(Description childNode : generatedDefinitions.get(length-2)) {
-            	for(ObjectProperty atomicRole : learningProblem.getReasoningService().getAtomicRoles()) {
+            	for(ObjectProperty atomicRole : rs.getAtomicRoles()) {
                     Description root1 = new ObjectSomeRestriction(atomicRole,childNode);
                     generatedDefinitions.get(length).add(root1);
                     
@@ -308,6 +312,14 @@ public class BruteForceLearner extends LearningAlgorithm {
 	public void resume() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
+	 */
+	@Override
+	public boolean isRunning() {
+		return isRunning;
 	}
 
 }

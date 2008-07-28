@@ -100,4 +100,13 @@ public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm impleme
 		}
 		return simpleSuggestions;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
+	 */
+	@Override
+	public boolean isRunning() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

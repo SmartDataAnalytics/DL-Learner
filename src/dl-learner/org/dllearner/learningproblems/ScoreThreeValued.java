@@ -32,7 +32,7 @@ import org.dllearner.utilities.Helper;
  * Computes the score (a negative value) by comparing the classification results
  * with ideal results.
  * 
- * @todo: The implementation is not very efficient, because some things are 
+ * TODO: The implementation is not very efficient, because some things are 
  * only computed to be able to present the score results. This means that
  * it would be better to compute only the necessary computations and do
  * the other ones only when they are needed to calculate statistical values.

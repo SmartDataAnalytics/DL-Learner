@@ -274,7 +274,7 @@ public class GP extends LearningAlgorithm {
 	@Override
     public void start() {   	
     	// falls refinement-Wahrscheinlichkeit größer 0, dann erzeuge psi
-    	psi = new Psi(learningProblem);
+    	psi = new Psi(learningProblem, rs);
     	
     	System.out.println();
     	System.out.println("Starting Genetic Programming Learner");
@@ -437,11 +437,11 @@ public class GP extends LearningAlgorithm {
                     i++;
                 // mutation
                 }  else if(rand >= crossoverBoundary && rand < mutationBoundary) {
-                	newIndividuals[i] = GPUtilities.mutation(learningProblem, individuals[selectedIndividuals[i]]);
+                	newIndividuals[i] = GPUtilities.mutation(learningProblem, rs, individuals[selectedIndividuals[i]]);
                 // hill climbing
                 } else if(rand >= mutationBoundary && rand < hillClimbingBoundary) {
                 	// System.out.println("hill climbing");
-                	newIndividuals[i] = GPUtilities.hillClimbing(learningProblem, individuals[selectedIndividuals[i]]);
+                	newIndividuals[i] = GPUtilities.hillClimbing(learningProblem, rs, individuals[selectedIndividuals[i]]);
                 // refinement operator
                 } else if(rand >= hillClimbingBoundary && rand < refinementBoundary) {
                 	newIndividuals[i] = psi.applyOperator(individuals[selectedIndividuals[i]]);
@@ -615,9 +615,9 @@ public class GP extends LearningAlgorithm {
         	// int depth = rand.nextInt(initMaxDepth-initMinDepth)+initMinDepth;
         	
         	if(grow)
-        		individuals[i] = GPUtilities.createGrowRandomProgram(learningProblem,depth, adc);
+        		individuals[i] = GPUtilities.createGrowRandomProgram(learningProblem, rs, depth, adc);
         	else
-        		individuals[i] = GPUtilities.createFullRandomProgram(learningProblem, depth, adc);		
+        		individuals[i] = GPUtilities.createFullRandomProgram(learningProblem, rs, depth, adc);		
     	}    	
     	
     	/*
@@ -963,6 +963,15 @@ public class GP extends LearningAlgorithm {
 	public void stop() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
+	 */
+	@Override
+	public boolean isRunning() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
     /**

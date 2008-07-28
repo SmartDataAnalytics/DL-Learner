@@ -71,7 +71,7 @@ public abstract class ConfigOption<T> {
 	 * 
 	 * @param object
 	 *            The object to check.
-	 * @return
+	 * @return True of the type is correct, false otherwise.
 	 */
 	public abstract boolean checkType(Object object);
 

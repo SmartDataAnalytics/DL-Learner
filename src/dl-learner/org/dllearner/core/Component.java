@@ -68,5 +68,6 @@ public abstract class Component {
 	 * @param option A configuration option of this component.
 	 * @return Current value of the configuration option.
 	 */
+// now implemented in ComponentManager
 //	public abstract <T> T getConfigValue(ConfigOption<T> option) throws UnknownConfigOptionException;
 }

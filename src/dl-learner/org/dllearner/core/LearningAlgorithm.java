@@ -72,6 +72,14 @@ public abstract class LearningAlgorithm extends Component {
 	public abstract void stop();
 	
 	/**
+	 * Returns whether the learning algorithm is running. Implementation
+	 * should use a boolean status variable in their implementations of
+	 * the start and resume methods.
+	 * @return True if the algorithm is running, false otherwise.
+	 */
+	public abstract boolean isRunning();
+	
+	/**
 	 * Every algorithm must be able to return the score of the
 	 * best solution found.
 	 * 
