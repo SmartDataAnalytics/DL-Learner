@@ -143,6 +143,7 @@ public class ExampleBasedROLearner {
 	
 	// setting to true gracefully stops the algorithm
 	private boolean stop = false;
+	private boolean isRunning = false;
 	
 	// node from which algorithm has started
 	private ExampleBasedNode startNode;	
@@ -287,6 +288,7 @@ public class ExampleBasedROLearner {
 	}
 	
 	public void start() {
+		isRunning = true;
 		runtime=System.currentTimeMillis();
 		JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime").start();
 		// TODO: write a JUnit test for this problem (long-lasting or infinite loops because
@@ -483,6 +485,7 @@ public class ExampleBasedROLearner {
 			logger.info("Algorithm terminated succesfully.");	
 		
 		JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime").stop();
+		isRunning = false;
 	}
 	
 	
@@ -1221,6 +1224,10 @@ public class ExampleBasedROLearner {
 			return true;}
 		else return false;
 		
+	}
+
+	public boolean isRunning() {
+		return isRunning;
 	}
 	
 }

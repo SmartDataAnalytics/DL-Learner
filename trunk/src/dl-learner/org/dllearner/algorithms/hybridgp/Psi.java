@@ -6,6 +6,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.dllearner.algorithms.gp.Program;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegLP;
@@ -48,12 +49,12 @@ public class Psi implements GeneticRefinementOperator {
 	private long someTimeStart = 0;
 	public long someTime = 0;
 	
-	public Psi(PosNegLP learningProblem) { //, PsiUp pu, PsiDown pd) {
+	public Psi(PosNegLP learningProblem, ReasoningService reasoningService) { //, PsiUp pu, PsiDown pd) {
 		// this.pu = pu;
 		// this.pd = pd;
 		this.learningProblem = learningProblem;
-		pu = new PsiUp(learningProblem);
-		pd = new PsiDown(learningProblem);
+		pu = new PsiUp(learningProblem, reasoningService);
+		pd = new PsiDown(learningProblem, reasoningService);
 		nrOfPositiveExamples = learningProblem.getPositiveExamples().size();
 		nrOfNegativeExamples = learningProblem.getNegativeExamples().size();
 		random = new Random();

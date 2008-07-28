@@ -32,9 +32,9 @@ public class PsiUp implements RefinementOperator {
 	
 	private TreeSet<Description> bottomSet;
 	
-	public PsiUp(PosNegLP learningProblem) {
+	public PsiUp(PosNegLP learningProblem, ReasoningService reasoningService) {
 		this.learningProblem = learningProblem;
-		reasoningService = learningProblem.getReasoningService();
+		this.reasoningService = reasoningService;
 		
 		// Top-Menge erstellen
 		createBottomSet();

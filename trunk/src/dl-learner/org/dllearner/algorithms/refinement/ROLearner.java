@@ -93,6 +93,7 @@ public class ROLearner extends LearningAlgorithm {
 	private boolean quiet = false;
 	
 	private boolean stop = false;
+	private boolean isRunning = false;
 	
 	private ReasoningService rs;
 	
@@ -388,6 +389,7 @@ public class ROLearner extends LearningAlgorithm {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void start() {
+		isRunning = true;
 		runtime=System.currentTimeMillis();
 		// Suche wird mit Top-Konzept gestartet
 		Thing top = new Thing();
@@ -582,6 +584,8 @@ public class ROLearner extends LearningAlgorithm {
 			System.out.println("Algorithm stopped.");
 		else
 			System.out.println("Algorithm terminated succesfully.");
+		
+		isRunning = false;
 	}
 	
 	// einfache Erweiterung des Knotens (ohne properness)
@@ -1145,6 +1149,14 @@ public class ROLearner extends LearningAlgorithm {
 			return true;}
 		else return false;
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
+	 */
+	@Override
+	public boolean isRunning() {
+		return isRunning;
 	}
 
 }

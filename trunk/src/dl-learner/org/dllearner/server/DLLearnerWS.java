@@ -348,9 +348,9 @@ public class DLLearnerWS {
 		Thread learningThread = new Thread() {
 			@Override
 			public void run() {
-				state.setAlgorithmRunning(true);
+//				state.setAlgorithmRunning(true);
 				state.getLearningAlgorithm().start();
-				state.setAlgorithmRunning(false);
+//				state.setAlgorithmRunning(false);
 			}
 		};
 		learningThread.start();
@@ -393,7 +393,7 @@ public class DLLearnerWS {
 	
 	@WebMethod
 	public boolean isAlgorithmRunning(int id) throws ClientNotKnownException {
-		return getState(id).isAlgorithmRunning();
+		return getState(id).getLearningAlgorithm().isRunning();
 	}
 	
 	/**

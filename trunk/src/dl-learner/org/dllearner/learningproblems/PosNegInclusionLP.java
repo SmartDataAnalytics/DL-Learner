@@ -101,7 +101,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	 * concept. Thus, this methods uses a different notion of coverage than
 	 * the one for the standard definition learning problem.
 	 * 
-	 * @see org.dllearner.learningproblems.DefinitionLP.MultiInstanceChecks
+	 * @see org.dllearner.learningproblems.PosNegLP.MultiInstanceChecks
 	 * @param concept
 	 *            The concept to test.
 	 * @return -1 if concept is too weak and the number of covered negative
@@ -173,7 +173,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	 * Calls the same method on the standard definition learning problem, but 
 	 * negates the concept before and permutes positive and negative examples.
 	 * 
-	 * @see org.dllearner.core.LearningProblemNew#computeScore(org.dllearner.core.owl.Description)
+	 * @see org.dllearner.core.LearningProblem#computeScore(org.dllearner.core.owl.Description)
 	 */
 	@Override
 	public Score computeScore(Description concept) {

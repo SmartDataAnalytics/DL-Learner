@@ -37,7 +37,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * which tries to infer the covered examples of a given concept
  * from previous results.
  * 
- * @todo Under construction.
+ * TODO Under construction.
  * @author Jens Lehmann
  *
  */

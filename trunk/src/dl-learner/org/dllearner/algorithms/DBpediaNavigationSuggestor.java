@@ -177,4 +177,13 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 		// TODO Auto-generated method stub
 		
 	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
+	 */
+	@Override
+	public boolean isRunning() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

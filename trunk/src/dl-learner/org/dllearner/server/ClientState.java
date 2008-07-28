@@ -94,6 +94,7 @@ public class ClientState {
 	/**
 	 * @return the isAlgorithmRunning
 	 */
+	@Deprecated
 	public boolean isAlgorithmRunning() {
 		return isAlgorithmRunning;
 	}
@@ -101,6 +102,7 @@ public class ClientState {
 	/**
 	 * @param isAlgorithmRunning the isAlgorithmRunning to set
 	 */
+	@Deprecated
 	public void setAlgorithmRunning(boolean isAlgorithmRunning) {
 		this.isAlgorithmRunning = isAlgorithmRunning;
 	}
@@ -199,8 +201,8 @@ public class ClientState {
 	}
 
 	/**
-	 * @param key
-	 * @return
+	 * @param is A component ID.
+	 * @return The component associated with this ID.
 	 * @see java.util.Map#get(java.lang.Object)
 	 */
 	public Component getComponent(int id) {
@@ -208,8 +210,10 @@ public class ClientState {
 	}
 
 	/**
-	 * @param e
-	 * @return
+	 * Adds a knowledge source to the client session. Use the 
+	 * returned value to refer to this knowledge source.
+	 * @param ks The knowledge source to add.
+	 * @return The component ID for the newly added knowledge source.
 	 */
 	public int addKnowledgeSource(KnowledgeSource ks) {
 		knowledgeSources.add(ks);

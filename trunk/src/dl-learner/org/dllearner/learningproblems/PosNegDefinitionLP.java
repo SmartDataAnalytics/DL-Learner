@@ -75,8 +75,8 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 	 * If it is not weak, it returns the number of covered negative example. It
 	 * can use retrieval or instance checks for classification.
 	 * 
-	 * @see org.dllearner.learningproblems.DefinitionLP.MultiInstanceChecks
-	 * @todo Performance could be slightly improved by counting the number of
+	 * @see org.dllearner.learningproblems.PosNegLP.MultiInstanceChecks
+	 * TODO: Performance could be slightly improved by counting the number of
 	 *       covers instead of using sets and counting their size.
 	 * @param concept
 	 *            The concept to test.
@@ -154,7 +154,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 	 * to implement TWO_CHECKS in this function, because we have to test all
 	 * examples to create a score object anyway).
 	 * 
-	 * @see org.dllearner.learningproblems.DefinitionLP.MultiInstanceChecks
+	 * @see org.dllearner.learningproblems.PosNegLP.MultiInstanceChecks
 	 * @param concept
 	 *            The concept to test.
 	 * @return Corresponding Score object.

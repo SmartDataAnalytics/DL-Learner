@@ -430,5 +430,13 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	public void resume() {
 		// TODO: not implemented
 	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
+	 */
+	@Override
+	public boolean isRunning() {
+		return algorithm.isRunning();
+	}
 	
 }
