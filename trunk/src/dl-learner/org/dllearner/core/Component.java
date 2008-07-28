@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -27,7 +27,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 /**
- * General component base class.
+ * Base class of all components. See also http://dl-learner.org/wiki/Architecture.
  * 
  * @author Jens Lehmann
  *
@@ -35,7 +35,9 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 public abstract class Component {
 	
 	/**
-	 * 
+	 * Returns the name of this component. By default, "unnamed 
+	 * component" is returned, but all implementations of components
+	 * are strongly encouraged to overwrite this method.
 	 * @return The name of this component.
 	 */
 	public static String getName() {
@@ -44,6 +46,8 @@ public abstract class Component {
 	
 	/**
 	 * Returns all configuration options supported by this component.
+	 * @return A list of supported configuration options for this
+	 * component.
 	 */
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		return new LinkedList<ConfigOption<?>>();
@@ -51,11 +55,16 @@ public abstract class Component {
 	
 	/**
 	 * Method to be called after the component has been configured.
+	 * Implementation of components can overwrite this method to
+	 * perform setup and initialisation tasks for this component.
 	 */
 	public abstract void init() throws ComponentInitException;
 	
 	/**
-	 * Applies a configuration option to this component.
+	 * Applies a configuration option to this component. Implementations
+	 * of components should use option and value of the config entry to
+	 * perform an action (usually setting an internal variable to 
+	 * an appropriate value).
 	 * 
 	 * @param entry A configuration entry.
 	 */

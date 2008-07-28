@@ -135,7 +135,6 @@ public class ComponentManager {
 				}
 
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -169,7 +168,7 @@ public class ComponentManager {
 	}
 
 	/**
-	 * 
+	 * Gets the singleton instance of <code>ComponentManager</code>.
 	 * @return The singleton <code>ComponentManager</code> instance.
 	 */
 	public static ComponentManager getInstance() {
@@ -301,6 +300,17 @@ public class ComponentManager {
 		return ks;
 	}
 
+	/**
+	 * Factory method for creating a reasoner component from a single
+	 * knowledge source. Example
+	 * call: reasoner(OWLAPIReasoner.class, ks) where ks is a 
+	 * knowledge source object.
+	 * @see #reasoner(Class, Set)
+	 * @param <T> The type of this method is a subclass of reasoner component.
+	 * @param reasoner A class object, where the class is subclass of ReasonerComponent.
+	 * @param source A knowledge source.
+	 * @return A reasoner component.
+	 */
 	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
 			KnowledgeSource source) {
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
@@ -308,6 +318,15 @@ public class ComponentManager {
 		return reasoner(reasoner, sources);
 	}
 
+	/**
+	 * Factory method for creating a reasoner component from a set of
+	 * knowledge sources.
+	 * @see #reasoner(Class, KnowledgeSource)
+	 * @param <T> The type of this method is a subclass of reasoner component.
+	 * @param reasoner A class object, where the class is subclass of ReasonerComponent.
+	 * @param sources A set of knowledge sources.
+	 * @return A reasoner component.
+	 */
 	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
 			Set<KnowledgeSource> sources) {
 		if (!reasonerComponents.contains(reasoner))
@@ -336,6 +355,13 @@ public class ComponentManager {
 		return new ReasoningService(reasoner);
 	}
 	
+	/**
+	 * Factory method for creating a learning problem component.
+	 * @param <T> The type of this method is a subclass of learning problem.
+	 * @param lpClass A class object, where the class is a subclass of learning problem.
+	 * @param reasoner A reasoning service object.
+	 * @return A learning problem component.
+	 */
 	public <T extends LearningProblem> T learningProblem(Class<T> lpClass, ReasoningService reasoner) {
 		if (!learningProblems.contains(lpClass))
 			System.err.println("Warning: learning problem " + lpClass
@@ -347,7 +373,17 @@ public class ComponentManager {
 		return lp;
 	}
 
-	// automagically calls the right constructor for the given learning problem
+	/**
+	 * Factory method for creating a learning algorithm, which 
+	 * automagically calls the right constructor for the given problem.
+	 * @param <T> The type of this method is a subclass of learning algorithm.
+	 * @param laClass A class object, where the class is subclass of learning algorithm.
+	 * @param lp A learning problem, which the algorithm should try to solve.
+	 * @param rs A reasoning service for querying the background knowledge of this learning problem.
+	 * @return A learning algorithm component.
+	 * @throws LearningProblemUnsupportedException Thrown when the learning problem and
+	 * the learning algorithm are not compatible.
+	 */
 	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasoningService rs) throws LearningProblemUnsupportedException {
 		if (!learningAlgorithms.contains(laClass))
 			System.err.println("Warning: learning algorithm " + laClass
@@ -360,7 +396,7 @@ public class ComponentManager {
 			if (problemClass.isAssignableFrom(lp.getClass()))
 				constructorArgument = problemClass;
 		}
-
+		
 		if (constructorArgument == null) {
 			throw new LearningProblemUnsupportedException(lp.getClass(), laClass, algorithmProblemsMapping.get(laClass));
 //			System.err.println("Warning: No suitable constructor registered for algorithm "
@@ -387,10 +423,28 @@ public class ComponentManager {
 		pool.unregisterComponent(component);
 	}
 	
+	/**
+	 * Frees all references to components created by <code>ComponentManager</code>.
+	 * @see #freeComponent(Component)
+	 */
 	public void freeAllComponents() {
 		pool.clearComponents();
 	}
 	
+	/**
+	 * Gets the value of a config option of the specified component.
+	 * This is done by first checking, which value the given option
+	 * was set to using {@link #applyConfigEntry(Component, ConfigEntry)}.
+	 * If the value has not been changed, the default value for this
+	 * option is returned. Note, that this method will not work properly
+	 * if the component options are changed internally surpassing the
+	 * component manager (which is discouraged). 
+	 * 
+	 * @param <T> The type of the config option, e.g. String, boolean, integer.
+	 * @param component The component, which has the specified option.
+	 * @param option The option for which we want to know its value.
+	 * @return The value of the specified option in the specified component.
+	 */
 	public <T> T getConfigOptionValue(Component component, ConfigOption<T> option) {
 		T object = pool.getLastValidConfigValue(component, option);
 		if(object==null)
@@ -399,12 +453,30 @@ public class ComponentManager {
 			return object;
 	}
 	
+	/**
+	 * Works as {@link #getConfigOptionValue(Component, ConfigOption)},
+	 * but using the name of the option instead of a <code>ConfigOption</code>
+	 * object.
+	 * @see #getConfigOptionValue(Component, ConfigOption)
+	 * @param component A component.
+	 * @param optionName A valid option name for this component.
+	 * @return The value of the specified option in the specified component.
+	 */
 	public Object getConfigOptionValue(Component component, String optionName) {
 		ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(
 				component.getClass()).get(optionName);
 		return getConfigOptionValue(component, option);
 	}
 	
+	/**
+	 * Writes documentation for all components available in this
+	 * <code>ComponentManager</code> instance. It goes through
+	 * all components (sorted by their type) and all the configuration
+	 * options of the components. Explanations, default values, allowed
+	 * values for the options are collected and the obtained string is
+	 * written in a file. 
+	 * @param file The documentation file.
+	 */
 	public void writeConfigDocumentation(File file) {
 		String doc = "";
 		doc += "This file contains an automatically generated files of all components and their config options.\n\n";
@@ -440,7 +512,7 @@ public class ComponentManager {
 	private String getComponentConfigString(Class<? extends Component> component) {
 		String componentDescription =  "component: " + invokeStaticMethod(component,"getName") + " (" + component.getName() + ")";
 		String str = componentDescription + "\n";
-		String CLI = getCLIMapping(component.getSuperclass().getSimpleName()+"");
+		String CLI = Start.getCLIMapping(component.getSuperclass().getSimpleName()+"");
 		String usage ="";
 		
 		Map<Class<? extends Component>, String> m=Start.createComponentPrefixMapping();
@@ -466,17 +538,9 @@ public class ComponentManager {
 		return str+"\n";
 	}
 	
-	public static String getCLIMapping(String componentSuperClass){
-		HashMap<String, String> m = new HashMap<String, String>();
-		m.put("KnowledgeSource", "import");
-		m.put("ReasonerComponent", "reasoner");
-		m.put("PosNegLP", "problem");
-		m.put("PosOnlyLP", "problem");
-		m.put("LearningAlgorithm", "algorithm");
-		return m.get(componentSuperClass);
-	}
-	
-	
+	// convenience method for invoking a static method;
+	// used as a central point for exception handling for Java reflection
+	// static method calls	
 	private Object invokeStaticMethod(Class<?> clazz, String methodName, Object... args) {
 		// unfortunately Java does not seem to offer a way to call
 		// a static method given a class object directly, so we have
@@ -485,53 +549,49 @@ public class ComponentManager {
 			Method method = clazz.getMethod(methodName);
 			return method.invoke(null, args);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return null;
 	}
 
+	// convenience method for invoking a constructor;
+	// used as a central point for exception handling for Java reflection
+	// constructor calls
 	private <T> T invokeConstructor(Class<T> clazz, Class<?>[] argumentClasses,
 			Object[] argumentObjects) {
 		try {
 			Constructor<T> constructor = clazz.getConstructor(argumentClasses);
 			return constructor.newInstance(argumentObjects);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return null;
 	}
 	
+	/**
+	 * Returns the available options of the specified component.
+	 * @param componentClass The class object of a component.
+	 * @return A list of available configuration options of the specified component.
+	 */
 	public static List<ConfigOption<?>> getConfigOptions(Class<? extends Component> componentClass) {
 		if (!components.contains(componentClass))
 			System.err.println("Warning: component " + componentClass
@@ -539,44 +599,71 @@ public class ComponentManager {
 		return componentOptions.get(componentClass);
 	}
 	
+	/**
+	 * Returns a <code>ConfigOption</code> object given a component and
+	 * the option name.
+	 * @param component A component class object.
+	 * @param name A valid configuration option name for the component.
+	 * @return A <code>ConfigOption</code> object for the specified component class and option name.
+	 */
 	public ConfigOption<?> getConfigOption(Class<? extends Component> component, String name) {
 		return componentOptionsByName.get(component).get(name);
 	}
 	
+	/**
+	 * Returns the name of a component.
+	 * @param component A component class object.
+	 * @return The name of the component.
+	 */
 	public String getComponentName(Class<? extends Component> component) {
 		return componentNames.get(component);
 	}
 
 	/**
-	 * @return the components
+	 * Returns a list of all available components in this instance
+	 * of <code>ComponentManager</code>.
+	 * @return the components A list of component classes available in this
+	 * instance of <code>ComponentManager</code>.
 	 */
 	public List<Class<? extends Component>> getComponents() {
 		return new LinkedList<Class<? extends Component>>(components);
 	}
 
 	/**
-	 * @return the knowledgeSources
+	 * Returns a list of all available knowledge sources in this instance
+	 * of <code>ComponentManager</code>.
+	 * @return the components A list of knowledge source component classes available in this
+	 * instance of <code>ComponentManager</code>.
 	 */
 	public List<Class<? extends KnowledgeSource>> getKnowledgeSources() {
 		return new LinkedList<Class<? extends KnowledgeSource>>(knowledgeSources);
 	}
 
 	/**
-	 * @return the reasonerComponents
-	 */
+	 * Returns a list of all available reasoners in this instance
+	 * of <code>ComponentManager</code>.
+	 * @return the components A list of reasoner component classes available in this
+	 * instance of <code>ComponentManager</code>.
+	 */	
 	public List<Class<? extends ReasonerComponent>> getReasonerComponents() {
 		return new LinkedList<Class<? extends ReasonerComponent>>(reasonerComponents);
 	}
 
 	/**
-	 * @return the learningProblems
-	 */
+	 * Returns a list of all available learning problems in this instance
+	 * of <code>ComponentManager</code>.
+	 * @return the components A list of learning problem classes available in this
+	 * instance of <code>ComponentManager</code>.
+	 */		
 	public List<Class<? extends LearningProblem>> getLearningProblems() {
 		return new LinkedList<Class<? extends LearningProblem>>(learningProblems);
 	}
 
 	/**
-	 * @return the learningAlgorithms
+	 * Returns a list of all available learning algorithms in this instance
+	 * of <code>ComponentManager</code>.
+	 * @return the components A list of learning algorithm classes available in this
+	 * instance of <code>ComponentManager</code>.
 	 */
 	public List<Class<? extends LearningAlgorithm>> getLearningAlgorithms() {
 		return new LinkedList<Class<? extends LearningAlgorithm>>(learningAlgorithms);

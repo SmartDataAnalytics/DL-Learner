@@ -769,6 +769,16 @@ public class Start {
 		return rs;
 	}
 
+	public static String getCLIMapping(String componentSuperClass){
+		HashMap<String, String> m = new HashMap<String, String>();
+		m.put("KnowledgeSource", "import");
+		m.put("ReasonerComponent", "reasoner");
+		m.put("PosNegLP", "problem");
+		m.put("PosOnlyLP", "problem");
+		m.put("LearningAlgorithm", "algorithm");
+		return m.get(componentSuperClass);
+	}
+
 	/**
 	 * Set Reasoner class. Define here all possible reasoners.
 	 * 
