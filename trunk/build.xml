@@ -299,8 +299,9 @@ public class Info {
 			</copy>
     	<javac srcdir="${source}"
          destdir="${temp}"
-         classpath="jarfile"
-         debug="on" />
+         debug="on">
+			<classpath refid="classpath"/>
+    	</javac>
     	<jar destfile="${protege_dir}/dl-learner.jar" manifest="${temp}/META-INF/MANIFEST.MF">
     			<fileset dir="${temp}" />
     		</jar>
