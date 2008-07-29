@@ -55,6 +55,8 @@ import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
 
 public class SKOS7030 {
+	
+	public int test = 0;
 
 	private static SPARQLTasks sparqlTasks;
 
@@ -104,12 +106,23 @@ public class SKOS7030 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		initLogger();
 		logger.info("Start");
 		// String resultString="";
 		// System.out.println(time());
 		// System.out.println(System.currentTimeMillis());
-
-		initLogger();
+		String[] a = new String[2];
+		int x1=0;
+		try {
+			while(true)
+			a[x1++]="";
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+		}
+		
+		System.exit(0);
+		
 		// parameters
 
 		if (local) {
@@ -236,7 +249,6 @@ public class SKOS7030 {
 		// create logger (a simple logger which outputs
 		// its messages to the console)
 		FileAppender fileAppender = null;
-		;
 		try {
 			fileAppender = new FileAppender(layout, "log/progress/skos"
 					+ time() + ".txt", false);
@@ -462,6 +474,7 @@ public class SKOS7030 {
 			return 0;
 		}
 
+		
 		public boolean equals(ResultCompare o2) {
 			return this.concept.equals(o2.concept);
 		}
@@ -511,10 +524,13 @@ public class SKOS7030 {
 
 	}
 
+	/**
+	 * 
+	 */
 	public static void recordConceptClasses() {
-		String result = "";
-		String result1 = "\n\n ***********Entity*****\n";
-		String result2 = "\n\n ***********OR*****\n";
+		StringBuffer result =new StringBuffer();
+		StringBuffer result1 =new StringBuffer("\n\n ***********Entity*****\n");
+		StringBuffer result2 =new StringBuffer("\n\n ***********OR*****\n");
 		int result1count = 1;
 		int result2count = 1;
 		List<EvaluatedDescription> conceptresults = la
@@ -524,24 +540,24 @@ public class SKOS7030 {
 		for (EvaluatedDescription description : conceptresults) {
 			if (x < 50) {
 				x++;
-				result += description + "\n";
+				result.append(description + "\n");
 			}
 
 			if (!description.toString().contains("Entity")) {
-				result1 += description + "\n";
+				result1.append(description + "\n");
 				result1count++;
 			}
 			if (!description.toString().contains("OR")) {
-				result2 += description + "\n";
+				result2.append(description + "\n");
 				result2count++;
 			}
 		}
-		result += "full size: " + conceptresults.size() + "";
-		result += result1 + " size: " + result1count + "\n";
-		result += result2 + " size: " + result2count + "\n";
+		result.append("full size: " + conceptresults.size());
+		result.append(result1.toString() + " size: " + result1count + "\n");
+		result.append(result2.toString() + " size: " + result2count + "\n");
 
 		Files.createFile(new File("results/descriptions/concepts" + time()
-				+ ".txt"), result);
+				+ ".txt"), result.toString());
 	}
 
 }

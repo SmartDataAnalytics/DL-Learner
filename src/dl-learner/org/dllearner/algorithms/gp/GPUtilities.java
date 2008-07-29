@@ -238,8 +238,8 @@ public class GPUtilities {
     		// unterzogen und dann ein neues Programm erstellt
     		if(Math.random()<0.5) {
     			pt = crossover(p1.getTree(), p2.getTree()); 
-    			result[0] = createProgram(learningProblem, pt[0],p1.getAdc());
-                result[1] = createProgram(learningProblem, pt[1],p2.getAdc());
+    			result[0] = createProgram(learningProblem, pt[0], p1.getAdc());
+                result[1] = createProgram(learningProblem, pt[1], p2.getAdc());
     		} else {
     			pt = crossover(p1.getAdc(), p2.getAdc());
     			result[0] = createProgram(learningProblem, p1.getTree(),pt[0]);

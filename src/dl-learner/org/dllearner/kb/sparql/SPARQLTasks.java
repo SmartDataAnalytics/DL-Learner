@@ -40,31 +40,38 @@ import com.hp.hpl.jena.sparql.core.ResultBinding;
  */
 public class SPARQLTasks {
 
-	private static final Logger logger = Logger.getLogger(SPARQLTasks.class);
+	private static Logger logger = Logger.getLogger(SPARQLTasks.class);
 
 	private final Cache cache;
 
 	private final SparqlEndpoint sparqlEndpoint;
 
-	public SPARQLTasks(final Cache cache, final SparqlEndpoint sparqlEndpoint) {
+	/**
+	 * @param c a cache object
+	 * @param se the Endpoint the sparql queries will be send to
+	 */
+	public SPARQLTasks(final Cache c, final SparqlEndpoint se) {
 		super();
-		this.cache = cache;
-		this.sparqlEndpoint = sparqlEndpoint;
+		this.cache = c;
+		this.sparqlEndpoint = se;
 	}
 
-	public SPARQLTasks(final SparqlEndpoint sparqlEndpoint) {
+	/**
+	 * @param se the Endpoint the sparql queries will be send to
+	 */
+	public SPARQLTasks(final SparqlEndpoint se) {
 		super();
 		this.cache = null;
-		this.sparqlEndpoint = sparqlEndpoint;
+		this.sparqlEndpoint = se;
 	}
 
 	/**
 	 * QUALITY: doesn't seem optimal, check! get all superclasses up to a
 	 * certain depth 1 means direct superclasses depth
 	 * 
-	 * @param superClasses
-	 * @param maxdepth
-	 * @return
+	 * @param oneClass the class for which the superclasses will be retrieved
+	 * @param maxdepth how far the RDF graph will be explored (1 means only direct SuperClasses)
+	 * @return a Sorted String Set of all ClassNames, including the starting class
 	 */
 	public SortedSet<String> getSuperClasses(final String oneClass,
 			final int maxdepth) {
@@ -73,7 +80,7 @@ public class SPARQLTasks {
 		superClasses.add(oneClass);
 		SortedSet<String> ret = new TreeSet<String>();
 		SortedSet<String> tmpset = new TreeSet<String>();
-		String SPARQLquery = "";
+		String sparqlQuery = "";
 		// ret.addAll(superClasses);
 		// logger.debug(superClasses);
 
@@ -81,14 +88,14 @@ public class SPARQLTasks {
 			for (String oneSuperClass : superClasses) {
 
 				// tmp = oneSuperClass.replace("\"", "");
-				SPARQLquery = "SELECT * WHERE { \n"
+				sparqlQuery = "SELECT * WHERE { \n"
 						+ "<"
 						+ oneSuperClass
 						+ "> "
 						+ "<http://www.w3.org/2000/01/rdf-schema#subClassOf>  ?superclass. \n"
 						+ "}";
 
-				tmpset.addAll(queryAsSet(SPARQLquery, "superclass"));
+				tmpset.addAll(queryAsSet(sparqlQuery, "superclass"));
 
 			}// end inner for
 			ret.addAll(tmpset);
@@ -103,7 +110,8 @@ public class SPARQLTasks {
 	}
 
 	/**
-	 * gets a SortedSet of all subclasses QUALITY: maybe it is better to have a
+	 * gets a SortedSet of all subclasses.
+	 * QUALITY: maybe it is better to have a
 	 * parameter int depth, to choose a depth of subclass interference
 	 * 
 	 * @see conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache
@@ -138,8 +146,7 @@ public class SPARQLTasks {
 
 			} else {
 
-				logger
-						.warn("Retrieval auf all subclasses via SPARQL is cost intensive and might take a while");
+				logger.warn("Retrieval auf all subclasses via SPARQL is cost intensive and might take a while");
 				SortedSet<String> tmpSet = new TreeSet<String>();
 				while (!remainingClasses.isEmpty()) {
 
@@ -173,14 +180,14 @@ public class SPARQLTasks {
 	 */
 	private SortedSet<String> getDirectSubClasses(final String concept) {
 
-		String SPARQLquery;
+		String sparqlQueryString;
 		SortedSet<String> subClasses = new TreeSet<String>();
 		ResultSet resultSet;
 
-		SPARQLquery = "SELECT * \n " + "WHERE { \n" + " ?subject ?predicate  <"
+		sparqlQueryString = "SELECT * \n " + "WHERE { \n" + " ?subject ?predicate  <"
 				+ concept + "> \n" + "}\n";
 
-		resultSet = queryAsResultSet(SPARQLquery);
+		resultSet = queryAsResultSet(sparqlQueryString);
 
 		@SuppressWarnings("unchecked")
 		List<ResultBinding> bindings = ResultSetFormatter.toList(resultSet);
@@ -200,6 +207,8 @@ public class SPARQLTasks {
 	}
 
 	/**
+	 * Retrieves all resource for a fixed role and object.
+	 * These instances are distinct.
 	 * QUALITY: buggy because role doesn't work sometimes get subject with fixed
 	 * role and object
 	 * 
@@ -210,39 +219,39 @@ public class SPARQLTasks {
 	 */
 	public SortedSet<String> retrieveDISTINCTSubjectsForRoleAndObject(
 			String role, String object, int resultLimit) {
-		String SPARQLquery = "SELECT DISTINCT * WHERE { \n " + "?subject "
+		String sparqlQueryString = "SELECT DISTINCT * WHERE { \n " + "?subject "
 				+ "<" + role + "> " + "<" + object + "> \n" + "} "
 				+ limit(resultLimit);
 
-		return queryAsSet(SPARQLquery, "subject");
+		return queryAsSet(sparqlQueryString, "subject");
 	}
 
 	public SortedSet<String> retrieveObjectsForSubjectAndRole(String subject,
 			String role, int resultLimit) {
-		String SPARQLquery = "SELECT DISTINCT * WHERE { \n " + "<" + subject
+		String sparqlQueryString = "SELECT DISTINCT * WHERE { \n " + "<" + subject
 				+ "> " + "<" + role + "> " + " ?object \n" + "} LIMIT "
 				+ resultLimit;
 
-		return queryAsSet(SPARQLquery, "object");
+		return queryAsSet(sparqlQueryString, "object");
 	}
 
 	/**
-	 * all instances for a SKOS concept
+	 * all instances for a SKOS concept.
 	 * 
-	 * @param SKOSconcept
+	 * @param skosConcept
 	 * @param resultLimit
 	 * @return
 	 */
 	public SortedSet<String> retrieveInstancesForSKOSConcept(
-			String SKOSconcept, int resultLimit) {
-		return queryPatternAsSet("?subject", "?predicate", "<" + SKOSconcept
+			String skosConcept, int resultLimit) {
+		return queryPatternAsSet("?subject", "?predicate", "<" + skosConcept
 				+ ">", "subject", resultLimit);
 		// return
 		// retrieveDISTINCTSubjectsForRoleAndObject("http://www.w3.org/2004/02/skos/core#subject",
 	}
 
 	/**
-	 * get all instances for a concept
+	 * get all instances for a concept.
 	 * 
 	 * @param conceptKBSyntax
 	 * @param sparqlResultLimit
@@ -251,18 +260,18 @@ public class SPARQLTasks {
 	public SortedSet<String> retrieveInstancesForConcept(
 			String conceptKBSyntax, int sparqlResultLimit) {
 
-		String SPARQLquery = "";
+		String sparqlQueryString = "";
 		try {
-			SPARQLquery = SparqlQueryDescriptionConvertVisitor.getSparqlQuery(
+			sparqlQueryString = SparqlQueryDescriptionConvertVisitor.getSparqlQuery(
 					conceptKBSyntax, sparqlResultLimit);
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 		}
-		return queryAsSet(SPARQLquery, "subject");
+		return queryAsSet(sparqlQueryString, "subject");
 	}
 
 	/**
-	 * get all instances for a concept including RDFS Reasoning
+	 * get all instances for a concept including RDFS Reasoning.
 	 * 
 	 * @param conceptKBSyntax
 	 * @param sparqlResultLimit
@@ -271,20 +280,20 @@ public class SPARQLTasks {
 	public SortedSet<String> retrieveInstancesForConceptIncludingSubclasses(
 			String conceptKBSyntax, int sparqlResultLimit) {
 
-		String SPARQLquery = "";
+		String sparqlQueryString = "";
 		try {
-			SPARQLquery = SparqlQueryDescriptionConvertVisitor
+			sparqlQueryString = SparqlQueryDescriptionConvertVisitor
 					.getSparqlQueryIncludingSubclasses(conceptKBSyntax,
 							sparqlResultLimit, this, true);
 
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 		}
-		return queryAsSet(SPARQLquery, "subject");
+		return queryAsSet(sparqlQueryString, "subject");
 	}
 
 	/**
-	 * get all direct Classes of an instance
+	 * get all direct Classes of an instance.
 	 * 
 	 * @param instance
 	 * @param resultLimit
@@ -293,35 +302,35 @@ public class SPARQLTasks {
 	public SortedSet<String> getClassesForInstance(String instance,
 			int resultLimit) {
 
-		String SPARQLquery = "SELECT ?subject WHERE { \n " + "<" + instance
+		String sparqlQueryString = "SELECT ?subject WHERE { \n " + "<" + instance
 				+ ">" + " a " + "?subject " + "\n" + "} " + limit(resultLimit);
 
-		return queryAsSet(SPARQLquery, "subject");
+		return queryAsSet(sparqlQueryString, "subject");
 	}
 
 	public SortedSet<String> getDomain(String role, int resultLimit) {
 
-		String SPARQLquery = "SELECT DISTINCT ?domain " + "WHERE { \n"
+		String sparqlQueryString = "SELECT DISTINCT ?domain " + "WHERE { \n"
 				+ "?domain <" + role + "> " + " ?o. \n" + "?domain a []\n."
 				+ "FILTER (!isLiteral(?domain))." + "}\n" + limit(resultLimit);
 
-		return queryAsSet(SPARQLquery, "domain");
+		return queryAsSet(sparqlQueryString, "domain");
 
 	}
 
 	public SortedSet<String> getRange(String role, int resultLimit) {
 
-		String SPARQLquery = "SELECT DISTINCT ?range " + "WHERE { \n" + "?s <"
+		String sparqlQueryString = "SELECT DISTINCT ?range " + "WHERE { \n" + "?s <"
 				+ role + "> " + " ?range. \n" + "?range a [].\n"
 				+ "FILTER (!isLiteral(?range))." + "}\n" + limit(resultLimit);
 
-		return queryAsSet(SPARQLquery, "range");
+		return queryAsSet(sparqlQueryString, "range");
 
 	}
 
 	/**
 	 * query a pattern with a standard SPARQL query usage (?subject, ?predicate,
-	 * <http:something> , subject )
+	 * <http://something> , subject ).
 	 * 
 	 * @param subject
 	 * @param predicate
@@ -331,24 +340,24 @@ public class SPARQLTasks {
 	 */
 	public SortedSet<String> queryPatternAsSet(String subject,
 			String predicate, String object, String var, int resultLimit) {
-		String SPARQLquery = "SELECT ?subject WHERE { \n " + " " + subject
+		String sparqlQueryString = "SELECT ?subject WHERE { \n " + " " + subject
 				+ " " + predicate + " " + object + " \n" + "} "
 				+ limit(resultLimit);
-		return queryAsSet(SPARQLquery, var);
+		return queryAsSet(sparqlQueryString, var);
 	}
 
 	/**
-	 * little higher level, executes query ,returns all resources for a variable
+	 * little higher level, executes query ,returns all resources for a variable.
 	 * 
-	 * @param SPARQLquery
+	 * @param sparqlQueryString
 	 * @param var
 	 * @return
 	 */
-	public SortedSet<String> queryAsSet(String SPARQLquery, String var) {
+	public SortedSet<String> queryAsSet(String sparqlQueryString, String var) {
 		ResultSet rs = null;
 		try {
-			String JSON = query(SPARQLquery);
-			rs = SparqlQuery.JSONtoResultSet(JSON);
+			String jsonString = query(sparqlQueryString);
+			rs = SparqlQuery.JSONtoResultSet(jsonString);
 
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
@@ -357,37 +366,37 @@ public class SPARQLTasks {
 	}
 
 	/**
-	 * low level, executes query returns ResultSet
+	 * low level, executes query returns ResultSet.
 	 * 
-	 * @param SPARQLquery
+	 * @param sparqlQueryString
 	 * @return jena ResultSet
 	 */
-	public ResultSet queryAsResultSet(String SPARQLquery) {
-		return SparqlQuery.JSONtoResultSet(query(SPARQLquery));
+	public ResultSet queryAsResultSet(String sparqlQueryString) {
+		return SparqlQuery.JSONtoResultSet(query(sparqlQueryString));
 
 	}
 
 	/**
-	 * low level, executes query returns JSON
+	 * low level, executes query returns JSON.
 	 * 
-	 * @param SPARQLquery
+	 * @param sparqlQueryString
 	 * @return
 	 */
-	public String query(String SPARQLquery) {
-		String JSON;
+	public String query(String sparqlQueryString) {
+		String jsonString;
 		if (cache == null) {
-			SparqlQuery sq = new SparqlQuery(SPARQLquery, sparqlEndpoint);
+			SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
 			sq.send();
-			JSON = sq.getJson();
+			jsonString = sq.getJson();
 		} else {
-			JSON = cache.executeSparqlQuery(new SparqlQuery(SPARQLquery,
+			jsonString = cache.executeSparqlQuery(new SparqlQuery(sparqlQueryString,
 					sparqlEndpoint));
 		}
-		return JSON;
+		return jsonString;
 	}
 
 	private String limit(int resultLimit) {
-		return (resultLimit > 0) ? " LIMIT " + resultLimit : "";
+		return (resultLimit > 0) ? (" LIMIT " + resultLimit) : "";
 	}
 
 	public static SortedSet<String> getStringListForVariable(ResultSet rs,
