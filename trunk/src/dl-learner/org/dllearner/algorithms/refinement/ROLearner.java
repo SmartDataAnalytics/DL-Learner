@@ -40,6 +40,7 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 
 public class ROLearner extends LearningAlgorithm {
 	
@@ -100,6 +101,8 @@ public class ROLearner extends LearningAlgorithm {
 	private Comparator<Node> nodeComparator;
 	private NodeComparatorStable nodeComparatorStable = new NodeComparatorStable();
 	private ConceptComparator conceptComparator = new ConceptComparator();
+	// comparator for evaluated descriptions
+	private EvaluatedDescriptionComparator edComparator = new EvaluatedDescriptionComparator();
 	DecimalFormat df = new DecimalFormat();	
 	
 	private PosNegLP learningProblem;
@@ -1046,6 +1049,21 @@ public class ROLearner extends LearningAlgorithm {
 	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
 		return new EvaluatedDescription(candidatesStable.last().getConcept(), getSolutionScore());
 	}
+	
+	public SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+		int count = 0;
+		SortedSet<Node> rev = candidatesStable.descendingSet();
+		SortedSet<EvaluatedDescription> cbd = new TreeSet<EvaluatedDescription>(edComparator);
+		for(Node eb : rev) {
+			cbd.add(new EvaluatedDescription(eb.getConcept(), getSolutionScore(eb.getConcept())));
+			// return a maximum of 200 elements (we need a maximum, because the
+			// candidate set can be very large)
+			if(count > 200)
+				return cbd;
+			count++;
+		}
+		return cbd; 
+	}	
 	
 	public void printBestSolutions(int nrOfSolutions){
 		if(!logLevel.equalsIgnoreCase("TRACE")){return;}
