@@ -11,7 +11,7 @@ public class SetManipulation {
 	
 	/**
 	 * shrinks a set to the limit
-	 * size will be roughly the same as limit, but can be more or less a bit
+	 * fuzzy here means the elements will be randomly picked 
 	 * @param set
 	 * @param limit
 	 * @return
@@ -34,6 +34,27 @@ public class SetManipulation {
 				}
 			}
 		}
+		return ret;
+	}
+	
+	/**
+	 * shrinks a set to the limit  
+	 * takes the first elements up to limit
+	 * @param set
+	 * @param limit
+	 * @return
+	 */
+	public static SortedSet<String> stableShrink(SortedSet<String> set, int limit) {
+		if (set.size()<=limit)return set;
+		SortedSet<String> ret = new TreeSet<String>();
+		
+		
+		for (String oneInd : set) {
+			ret.add(oneInd);
+			if(ret.size()>= limit)break;
+			
+		}
+		
 		return ret;
 	}
 	
