@@ -119,7 +119,7 @@ public class QuickStart {
 				} catch (Exception e) {
 					System.out.println("Not a number");
 				}
-				;
+				
 			}// end while
 			if (number) {
 				try {
