@@ -1,4 +1,4 @@
-package org.dllearner.algorithms.refinement;
+package org.dllearner.refinementoperators;
 
 import java.util.List;
 import java.util.Set;

@@ -1050,6 +1050,7 @@ public class ROLearner extends LearningAlgorithm {
 		return new EvaluatedDescription(candidatesStable.last().getConcept(), getSolutionScore());
 	}
 	
+	@Override
 	public SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
 		int count = 0;
 		SortedSet<Node> rev = candidatesStable.descendingSet();

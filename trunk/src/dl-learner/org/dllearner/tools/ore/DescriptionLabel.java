@@ -202,7 +202,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 //					MoveMenuItem move = new MoveMenuItem((NamedClass)desc, nc);
 //					dme.add(move);
 //					Set<NamedClass> complements = ore.getComplements(nc, ind);
-//					System.out.println("Größe" + complements.size());
+//					System.out.println("Grï¿½ï¿½e" + complements.size());
 //					if(!(complements.size() <=1)){
 //						move.setEnabled(false);
 //						StringBuffer strBuf = new StringBuffer();
