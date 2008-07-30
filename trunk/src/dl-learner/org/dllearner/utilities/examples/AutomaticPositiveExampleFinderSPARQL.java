@@ -28,7 +28,7 @@ public class AutomaticPositiveExampleFinderSPARQL {
 	//QUALITY resultsize is not accounted for
 	public void makePositiveExamplesFromConcept(String conceptKBSyntax){
 		logger.debug("making Positive Examples from Concept: "+conceptKBSyntax);	
-		this.posExamples = sparqltasks.retrieveInstancesForConcept(conceptKBSyntax, 0);
+		this.posExamples = sparqltasks.retrieveInstancesForClassDescription(conceptKBSyntax, 0);
 		logger.debug("   pos Example size: "+posExamples.size());
 	}
 	
@@ -50,14 +50,14 @@ public class AutomaticPositiveExampleFinderSPARQL {
 	@SuppressWarnings("unused")
 	public void makePositiveExamplesFromDomain(String role, int resultLimit){
 		logger.debug("making Positive Examples from Domain of : "+role);
-		this.posExamples.addAll(sparqltasks.getDomain(role, resultLimit));
+		this.posExamples.addAll(sparqltasks.getDomainInstances(role, resultLimit));
 		logger.debug("pos Example size: "+posExamples.size());
 	}
 	
 	@SuppressWarnings("unused")
 	public void makePositiveExamplesFromRange(String role, int resultLimit){
 		logger.debug("making Positive Examples from Range of : "+role);
-		this.posExamples.addAll(sparqltasks.getRange(role, resultLimit));
+		this.posExamples.addAll(sparqltasks.getRangeInstances(role, resultLimit));
 		logger.debug("pos Example size: "+posExamples.size());
 	}
 	

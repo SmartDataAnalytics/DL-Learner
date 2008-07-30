@@ -157,13 +157,13 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @param limit @see getSparqlQuery(Description description, int limit)
 	 * @param se
 	 * @param c
-	 * @param simple
+	 * @param maxDepth
 	 * @return
 	 * @throws ParseException
 	 */
-	public static String getSparqlQueryIncludingSubclasses(String descriptionKBSyntax, int resultLimit, SPARQLTasks st, boolean simple) throws ParseException
+	public static String getSparqlQueryIncludingSubclasses(String descriptionKBSyntax, int resultLimit, SPARQLTasks st, int maxDepth) throws ParseException
 	{	
-		String rewritten = SparqlQueryDescriptionConvertRDFS.conceptRewrite(descriptionKBSyntax, st, simple);
+		String rewritten = SparqlQueryDescriptionConvertRDFS.conceptRewrite(descriptionKBSyntax, st, maxDepth);
 		
 		return getSparqlQuery(rewritten, resultLimit);
 		

@@ -112,7 +112,7 @@ public class SKOS7030 {
 		// System.out.println(time());
 		// System.out.println(System.currentTimeMillis());
 		
-		
+	
 		// parameters
 
 		if (local) {
@@ -125,6 +125,15 @@ public class SKOS7030 {
 					SparqlEndpoint.getEndpointDBpedia());
 		}
 
+		
+		String st= "http://dbpedia.org/class/yago/Person100007846";
+		st = "http://dbpedia.org/class/yago/Leader109623038";
+		System.out.println(sparqlTasks.getSuperClasses(st, 2));
+		System.out.println(sparqlTasks.getSuperClasses(st, 1));
+		System.out.println(sparqlTasks.getSubClasses(st, 0));
+		
+		System.exit(0);
+		
 		//System.out.println(sparqlTasks.getDomain(
 		//		"http://dbpedia.org/property/predecessor", 1000));
 		
@@ -183,8 +192,8 @@ public class SKOS7030 {
 		// sparqlTasks.retrieveInstancesForConcept(oneConcept.toKBSyntaxString(),
 		// sparqlResultLimit);
 		SortedSet<String> instances = sparqlTasks
-				.retrieveInstancesForConceptIncludingSubclasses(concept
-						.toKBSyntaxString(), sparqlResultLimit);
+				.retrieveInstancesForClassDescriptionIncludingSubclasses(concept
+						.toKBSyntaxString(), sparqlResultLimit,1);
 
 		SortedSet<String> coveredInRest = new TreeSet<String>(
 				fullPosSetWithoutPosExamples);
@@ -210,8 +219,8 @@ public class SKOS7030 {
 		// sparqlTasks.retrieveInstancesForConcept(oneConcept.toKBSyntaxString(),
 		// sparqlResultLimit);
 		SortedSet<String> instances = sparqlTasks
-				.retrieveInstancesForConceptIncludingSubclasses(concept
-						.toKBSyntaxString(), sparqlResultLimit);
+				.retrieveInstancesForClassDescriptionIncludingSubclasses(concept
+						.toKBSyntaxString(), sparqlResultLimit, 1 );
 
 		SortedSet<String> coveredInRest = new TreeSet<String>(
 				fullPosSetWithoutPosExamples);

@@ -31,6 +31,7 @@ import org.dllearner.utilities.JamonMonitorLogger;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
@@ -111,7 +112,7 @@ public class SparqlQuery {
 		// writeToSparqlLog("query: "+queryString+ " | ENDPOINT:
 		// "+endpoint.getURL().toString());
 
-		json = SparqlQuery.convertResultSetToJSON(rs);
+		json = SparqlQuery.convertResultSetToJSON(ResultSetFactory.makeRewindable(rs));
 
 		writeToSparqlLog("JSON: " + json);
 
@@ -238,30 +239,39 @@ public class SparqlQuery {
 
 	/**
 	 * Converts Jena result set to XML.
-	 * @param resultSet  a Jena ResultSet
+	 * To make a ResultSet rewindable use:
+	 * ResultSetRewindable rsRewind = ResultSetFactory.makeRewindable(resultSet);
+	 * @param resultSet  The result set to transform, must be rewindable to prevent errors.
 	 * @return String xml
 	 */
-	public static String convertResultSetToXMLString(ResultSet resultSet) {
+	public static String convertResultSetToXMLString(ResultSetRewindable resultSet) {
 		// if (rs == null)
 		// this.send();
-		return ResultSetFormatter.asXMLString(resultSet);
+		String retVal = ResultSetFormatter.asXMLString(resultSet);
+		resultSet.reset();
+		return retVal;
 	}
 
 	/**
 	 * Converts Jena result set to JSON.
+	 * To make a ResultSet rewindable use:
+	 * ResultSetRewindable rsRewind = ResultSetFactory.makeRewindable(resultSet);
 	 * 
 	 * @param resultSet
-	 *            The result set to transform.
+	 *            The result set to transform, must be rewindable to prevent errors.
 	 * @return JSON representation of the result set.
 	 */
-	public static String convertResultSetToJSON(ResultSet resultSet) {
+	public static String convertResultSetToJSON(ResultSetRewindable resultSet) {
 		// if (rs == null)
 		// this.send();
+		//ResultSetRewindable rsRewind = ResultSetFactory.makeRewindable(resultSet);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ResultSetFormatter.outputAsJSON(baos, resultSet);
 		// possible Jena bug: Jena modifies the result set during
 		// JSON transformation, so we need to get it back
-		resultSet = convertJSONtoResultSet(baos.toString());
+		//rsRewind.
+		//resultSet = convertJSONtoResultSet(baos.toString());
+		resultSet.reset();
 		try {
 			return baos.toString("UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -277,11 +287,11 @@ public class SparqlQuery {
 	 *            A JSON representation if a SPARQL query result.
 	 * @return A Jena ResultSet.
 	 */
-	public static ResultSet convertJSONtoResultSet(String json) {
+	public static ResultSetRewindable convertJSONtoResultSet(String json) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(json
 				.getBytes(Charset.forName("UTF-8")));
 		// System.out.println("JSON " + json);
-		return ResultSetFactory.fromJSON(bais);
+		return ResultSetFactory.makeRewindable(ResultSetFactory.fromJSON(bais));
 	}
 
 	/**
