@@ -599,7 +599,7 @@ public class DLLearnerWS {
 		Thread sparqlThread = new Thread() {
 			@Override
 			public void run() {
-				if (ks.getUseCache()){
+				if (ks.isUseCache()){
 					state.getQuery(id).setRunning(true);
 					Cache cache=new Cache(ks.getCacheDir());
 					cache.executeSparqlQuery(state.getQuery(id));
@@ -623,7 +623,7 @@ public class DLLearnerWS {
 		Component component = state.getComponent(componentID);
 		SparqlKnowledgeSource ks=(SparqlKnowledgeSource)component;
 		SparqlQuery sparql=ks.sparqlQuery(query);
-		if (ks.getUseCache()){
+		if (ks.isUseCache()){
 			Cache cache=new Cache(ks.getCacheDir());
 			return cache.executeSparqlQuery(sparql);
 		}

@@ -50,7 +50,7 @@ public class JenaQueryToResultSpeedTest {
 
 	
 	public static void testJenaAsXML(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.EndpointDBpedia();
+		SparqlEndpoint sse = SparqlEndpoint.getEndpointDBpedia();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
 		sqJena.send();
@@ -72,7 +72,7 @@ public class JenaQueryToResultSpeedTest {
 	}
 	
 	public static void testJenaAsList(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.EndpointDBpedia();
+		SparqlEndpoint sse = SparqlEndpoint.getEndpointDBpedia();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
 		//sqJena.getAsList();
@@ -96,7 +96,7 @@ public class JenaQueryToResultSpeedTest {
 	}
 	
 	public static void testJenaAsJSON(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.EndpointDBpedia();
+		SparqlEndpoint sse = SparqlEndpoint.getEndpointDBpedia();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
 		sqJena.send();
@@ -119,7 +119,7 @@ public class JenaQueryToResultSpeedTest {
 	}
 	
 	public static void testJenaAsJSONandBack(int howOften, String queryString){
-		SparqlEndpoint sse = SparqlEndpoint.EndpointDBpedia();
+		SparqlEndpoint sse = SparqlEndpoint.getEndpointDBpedia();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// first query is not counted
 		sqJena.send();
@@ -131,7 +131,7 @@ public class JenaQueryToResultSpeedTest {
 		//	System.out.println(sqJena.getAsJSON());
 		    	sqJena.send();
 			String json = sqJena.getJson();
-			SparqlQuery.JSONtoResultSet(json);
+			SparqlQuery.convertJSONtoResultSet(json);
 			p("Jena as JSON and back needed: "
 					+ (System.currentTimeMillis() - tmp));
 			tmp = System.currentTimeMillis();
@@ -145,7 +145,7 @@ public class JenaQueryToResultSpeedTest {
 	
 
 	public static void compareResults(String queryString) {
-		SparqlEndpoint sse = SparqlEndpoint.EndpointDBpedia();
+		SparqlEndpoint sse = SparqlEndpoint.getEndpointDBpedia();
 		SparqlQuery sqJena = new SparqlQuery(queryString, sse);
 		// SparqlQueryConventional sqConv=new SparqlQueryConventional(sse);
 

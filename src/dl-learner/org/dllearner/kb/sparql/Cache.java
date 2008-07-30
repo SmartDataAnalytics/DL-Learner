@@ -82,18 +82,29 @@ public class Cache implements Serializable {
 		this("cache");
 	} */
 	
+	/**
+	 * A Persistant cache is stored in the folder cachePersistant.
+	 * It has longer freshness 365 days and is mainly usefull for developing
+	 * @return a Cache onject
+	 */
 	public static Cache getPersistentCache(){
 		Cache c = new Cache("cachePersistant"); 
 		c.setFreshnessInDays(365);
 		return c;
 	}
 	
+	/**
+	 * @return the default cache object
+	 */
 	public static Cache getDefaultCache(){
 		Cache c = new Cache("cache"); 
-		
 		return c;
 	}
 	
+	/**
+	 * the default cachedir normally is "cache".
+	 * @return Default Cache Dir
+	 */
 	public static String getDefaultCacheDir(){
 		return "cache";
 	}
@@ -146,17 +157,20 @@ public class Cache implements Serializable {
 	 * 
 	 * @param sparqlQuery
 	 *            SPARQL query to check.
-	 * @return Query result or null if no result has been found or it is
+	 * @return Query result as JSON or null if no result has been found or it is
 	 *         outdated.
 	 */
 	@SuppressWarnings({"unchecked"})
 	private String getCacheEntry(String sparqlQuery) {
+		
 		String filename = getFilename(sparqlQuery);
 		File file = new File(filename);
 		
 		// return null (indicating no result) if file does not exist
-		if(!file.exists())
+		if(!file.exists()) {
 			return null;
+		}
+			
 		
 		LinkedList<Object> entry = null;
 		try {
@@ -221,10 +235,7 @@ public class Cache implements Serializable {
 
 	// check whether the given timestamp is fresh
 	private boolean checkFreshness(long timestamp) {
-		if ((System.currentTimeMillis() - timestamp) <= (freshnessSeconds * 1000))
-			return true;
-		else
-			return false;
+		return ((System.currentTimeMillis() - timestamp) <= (freshnessSeconds * 1000));
 	}
 
 	/**
@@ -242,7 +253,7 @@ public class Cache implements Serializable {
 		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
 	
 		JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").start();
-		String result = getCacheEntry(query.getQueryString());
+		String result = getCacheEntry(query.getSparqlQueryString());
 		JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").stop();
 		
 		if (result != null) {
@@ -250,8 +261,8 @@ public class Cache implements Serializable {
 			
 		    	query.setRunning(false);
 			SparqlQuery.writeToSparqlLog("***********\nJSON retrieved from cache");
-			SparqlQuery.writeToSparqlLog(query.getQueryString());
-			SparqlQuery.writeToSparqlLog(query.getEndpoint().getURL().toString());
+			SparqlQuery.writeToSparqlLog(query.getSparqlQueryString());
+			SparqlQuery.writeToSparqlLog(query.getSparqlEndpoint().getURL().toString());
 			SparqlQuery.writeToSparqlLog("JSON: "+result);
 			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
 			
@@ -261,16 +272,15 @@ public class Cache implements Serializable {
 		    	query.send();
 			String json = query.getJson();
 			if (json!=null){
-				addToCache(query.getQueryString(), json);
+				addToCache(query.getSparqlQueryString(), json);
 				SparqlQuery.writeToSparqlLog("result added to cache: "+json);
 				result=json;
 				//query.setJson(result);
-			}
-			else {
+			} else {
 				json="";
 				result="";
-				logger.warn(Cache.class.getSimpleName()+"empty result: "+query.getQueryString());
-				SparqlQuery.writeToSparqlLog("empty result for : "+query.getQueryString());
+				logger.warn(Cache.class.getSimpleName()+"empty result: "+query.getSparqlQueryString());
+				SparqlQuery.writeToSparqlLog("empty result for : "+query.getSparqlQueryString());
 			}
 			
 			//return json;
@@ -279,6 +289,10 @@ public class Cache implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * Changes how long cached results will stay fresh (default 15 days).
+	 * @param days number of days
+	 */
 	public void setFreshnessInDays(int days){
 		freshnessSeconds = days * 24 * 60 * 60;
 	}

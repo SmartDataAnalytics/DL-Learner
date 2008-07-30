@@ -49,50 +49,48 @@ public class SparqlQuery {
 
 	private boolean wasExecuted = false;
 
-	private String queryString;
+	private String sparqlQueryString;
 
 	private QueryEngineHTTP queryExecution;
 
-	private SparqlEndpoint endpoint;
+	private SparqlEndpoint sparqlEndpoint;
 
 	private String json = null;
 
 	/**
 	 * Standard constructor.
 	 * 
-	 * @param queryString
-	 * @param endpoint
+	 * @param sparqlQueryString A SPARQL query string
+	 * @param sparqlEndpoint An Endpoint object
 	 */
-	public SparqlQuery(String queryString, SparqlEndpoint endpoint) {
+	public SparqlQuery(String sparqlQueryString, SparqlEndpoint sparqlEndpoint) {
 		// QUALITY there seems to be a bug in ontowiki
-		this.queryString = queryString.replaceAll("\n", " ");
-		this.endpoint = endpoint;
+		this.sparqlQueryString = sparqlQueryString.replaceAll("\n", " ");
+		this.sparqlEndpoint = sparqlEndpoint;
 	}
 
 	/**
 	 * Sends a SPARQL query using the Jena library. main format is JSON, use
 	 * method getasjson
 	 * 
-	 * @return nothing
 	 */
-
 	public void send() {
 		wasExecuted = true;
 		// isRunning = true;
 		ResultSet rs;
 
 		writeToSparqlLog("***********\nNew Query:");
-		writeToSparqlLog(queryString);
-		writeToSparqlLog(endpoint.getURL().toString());
+		writeToSparqlLog(sparqlQueryString);
+		writeToSparqlLog(sparqlEndpoint.getURL().toString());
 
-		String service = endpoint.getURL().toString();
+		String service = sparqlEndpoint.getURL().toString();
 
 		// Jena access to SPARQL endpoint
-		queryExecution = new QueryEngineHTTP(service, queryString);
-		for (String dgu : endpoint.getDefaultGraphURIs()) {
+		queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
+		for (String dgu : sparqlEndpoint.getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
 		}
-		for (String ngu : endpoint.getNamedGraphURIs()) {
+		for (String ngu : sparqlEndpoint.getNamedGraphURIs()) {
 			queryExecution.addNamedGraph(ngu);
 		}
 
@@ -108,12 +106,12 @@ public class SparqlQuery {
 		rs = queryExecution.execSelect();
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
 
-		logger.debug("query length: " + queryString.length() + " | ENDPOINT: "
-				+ endpoint.getURL().toString());
+		logger.debug("query length: " + sparqlQueryString.length() + " | ENDPOINT: "
+				+ sparqlEndpoint.getURL().toString());
 		// writeToSparqlLog("query: "+queryString+ " | ENDPOINT:
 		// "+endpoint.getURL().toString());
 
-		json = SparqlQuery.getAsJSON(rs);
+		json = SparqlQuery.convertResultSetToJSON(rs);
 
 		writeToSparqlLog("JSON: " + json);
 
@@ -121,90 +119,129 @@ public class SparqlQuery {
 
 	}
 
+	/**
+	 * Stops the execution of the query.
+	 */
 	public void stop() {
 		queryExecution.abort();
 		isRunning = false;
 	}
 
-	public String getQueryString() {
-		return queryString;
+	/**
+	 * Gets the String representation of the SPARQL query.
+	 * @return sparqlQueryString
+	 */
+	public String getSparqlQueryString() {
+		return sparqlQueryString;
 	}
 
-	public SparqlEndpoint getEndpoint() {
-		return endpoint;
+	/**
+	 * @return sparqlEndpoint object
+	 */
+	public SparqlEndpoint getSparqlEndpoint() {
+		return sparqlEndpoint;
 	}
 
+	/**
+	 * 
+	 * @return boolean
+	 */
 	public boolean isRunning() {
 		return isRunning;
 	}
 
+	/**
+	 * @return the Jena QueryEngineHTTP
+	 */
 	public QueryEngineHTTP getExecution() {
 		return queryExecution;
 	}
 
+	/**
+	 * insert a result, e.g. from the cache
+	 * @param json a jsonString
+	 */
 	public void setJson(String json) {
 		this.wasExecuted = true;
 		this.json = json;
 	}
 
+	/**
+	 * @param running s.e.
+	 */
 	public void setRunning(boolean running) {
 		this.isRunning = running;
 	}
 
 	/**
 	 * returns the Result of the query as JSON string executes the query if it
-	 * wasn't executed before
+	 * wasn't executed before.
 	 * 
-	 * @return
+	 * @return a JSON string
 	 */
 	public String getJson() {
-		if (wasExecuted == false) {
+		if (!wasExecuted) {
 			this.send();
 		}
 		return json;
 	}
 
 	/**
-	 * makes a ResultSet from the Json String, depends on getJSON
+	 * makes a ResultSet from the Json String, depends on getJSON.
 	 * 
-	 * @return
+	 * @return a Jena ResultSet
 	 */
 	public ResultSet getResultSet() {
-		if (getJson() == null) {
-			return null;
+		return (getJson() == null) ? null : convertJSONtoResultSet(json);
+		
+		/*if (getJson() == null) {
+		return null;
 		} else
-			return JSONtoResultSet(json);
+		return JSONtoResultSet(json);*/
 	}
 
 	/**
-	 * makes an XML String from the Json String, depends on getJSON
+	 * makes an XML String from the Json String, depends on getJSON.
 	 * 
-	 * @return
+	 * @return An XML String
 	 */
 	public String getXMLString() {
-		if (getJson() == null) {
+		return (getJson() == null) ? null : convertJSONtoXML(json);
+		
+		/*if (getJson() == null) {
 			return null;
 		} else
-			return JSONtoXML(json);
+			return JSONtoXML(json);*/
 	}
 
+	/**
+	 * Special log for debugging SPARQL query execution.
+	 * It lives here: "log/sparql.txt"
+	 * if the directory doesn't exist, there could be an error.
+	 * @param s the String to log
+	 */
 	public static void writeToSparqlLog(String s) {
 		try {
+			//
 			FileWriter fw = new FileWriter("log/sparql.txt", true);
 			fw.write(s + "\n");
 			fw.flush();
 			fw.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+			// make the e object more special FileNotFound??
+			//new File("log").mkdir();
+			//writeToSparqlLog(s);
 		}
 	}
 
+
 	/**
 	 * Converts Jena result set to XML.
-	 * 
+	 * @param resultSet  a Jena ResultSet
 	 * @return String xml
 	 */
-	public static String getAsXMLString(ResultSet resultSet) {
+	public static String convertResultSetToXMLString(ResultSet resultSet) {
 		// if (rs == null)
 		// this.send();
 		return ResultSetFormatter.asXMLString(resultSet);
@@ -217,14 +254,14 @@ public class SparqlQuery {
 	 *            The result set to transform.
 	 * @return JSON representation of the result set.
 	 */
-	public static String getAsJSON(ResultSet resultSet) {
+	public static String convertResultSetToJSON(ResultSet resultSet) {
 		// if (rs == null)
 		// this.send();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ResultSetFormatter.outputAsJSON(baos, resultSet);
 		// possible Jena bug: Jena modifies the result set during
 		// JSON transformation, so we need to get it back
-		resultSet = JSONtoResultSet(baos.toString());
+		resultSet = convertJSONtoResultSet(baos.toString());
 		try {
 			return baos.toString("UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -240,7 +277,7 @@ public class SparqlQuery {
 	 *            A JSON representation if a SPARQL query result.
 	 * @return A Jena ResultSet.
 	 */
-	public static ResultSet JSONtoResultSet(String json) {
+	public static ResultSet convertJSONtoResultSet(String json) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(json
 				.getBytes(Charset.forName("UTF-8")));
 		// System.out.println("JSON " + json);
@@ -254,7 +291,7 @@ public class SparqlQuery {
 	 *            A JSON representation if a SPARQL query result.
 	 * @return A Jena ResultSet.
 	 */
-	public static String JSONtoXML(String json) {
-		return getAsXMLString(JSONtoResultSet(json));
+	public static String convertJSONtoXML(String json) {
+		return convertResultSetToXMLString(convertJSONtoResultSet(json));
 	}
 }

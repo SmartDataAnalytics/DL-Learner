@@ -111,28 +111,18 @@ public class SKOS7030 {
 		// String resultString="";
 		// System.out.println(time());
 		// System.out.println(System.currentTimeMillis());
-		String[] a = new String[2];
-		int x1=0;
-		try {
-			while(true)
-			a[x1++]="";
-		} catch (Exception e) {
-			e.printStackTrace();
-			
-		}
 		
-		System.exit(0);
 		
 		// parameters
 
 		if (local) {
 			url = "http://139.18.2.37:8890/sparql";
 			sparqlTasks = new SPARQLTasks(Cache.getPersistentCache(),
-					SparqlEndpoint.EndpointLOCALDBpedia());
+					SparqlEndpoint.getEndpointLOCALDBpedia());
 		} else {
 			url = "http://dbpedia.openlinksw.com:8890/sparql";
 			sparqlTasks = new SPARQLTasks(Cache.getPersistentCache(),
-					SparqlEndpoint.EndpointDBpedia());
+					SparqlEndpoint.getEndpointDBpedia());
 		}
 
 		//System.out.println(sparqlTasks.getDomain(

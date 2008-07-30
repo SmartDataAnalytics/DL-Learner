@@ -61,12 +61,12 @@ public class SPARQLExtractionEvaluation {
 		SimpleClock total =new SimpleClock();
 		String  url="";
 		if(local){
-			se = SparqlEndpoint.EndpointLOCALDBpedia();
+			se = SparqlEndpoint.getEndpointLOCALDBpedia();
 			
 			 url = "http://139.18.2.37:8890/sparql";
 			
 		}else{
-			se = SparqlEndpoint.EndpointDBpedia();
+			se = SparqlEndpoint.getEndpointDBpedia();
 			 url= "http://dbpedia.openlinksw.com:8890/sparql";
 		}
 		
@@ -187,7 +187,7 @@ public class SPARQLExtractionEvaluation {
 		" \n} LIMIT "+1000+" \n "; //
 
 		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
-		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
+		ResultSet rs =SparqlQuery.convertJSONtoResultSet(JSON);
 		if(rs==null);
 		//JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
 		//return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);

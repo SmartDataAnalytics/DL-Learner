@@ -47,22 +47,22 @@ public class SPARQLTasks {
 	private final SparqlEndpoint sparqlEndpoint;
 
 	/**
-	 * @param c a cache object
-	 * @param se the Endpoint the sparql queries will be send to
+	 * @param cache a cache object
+	 * @param sparqlEndpoint the Endpoint the sparql queries will be send to
 	 */
-	public SPARQLTasks(final Cache c, final SparqlEndpoint se) {
+	public SPARQLTasks(final Cache cache, final SparqlEndpoint sparqlEndpoint) {
 		super();
-		this.cache = c;
-		this.sparqlEndpoint = se;
+		this.cache = cache;
+		this.sparqlEndpoint = sparqlEndpoint;
 	}
 
 	/**
-	 * @param se the Endpoint the sparql queries will be send to
+	 * @param sparqlEndpoint the Endpoint the sparql queries will be send to
 	 */
-	public SPARQLTasks(final SparqlEndpoint se) {
+	public SPARQLTasks(final SparqlEndpoint sparqlEndpoint) {
 		super();
 		this.cache = null;
-		this.sparqlEndpoint = se;
+		this.sparqlEndpoint = sparqlEndpoint;
 	}
 
 	/**
@@ -117,8 +117,6 @@ public class SPARQLTasks {
 	 * @see conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache
 	 *      c, boolean simple )
 	 * @param description
-	 * @param sparqlEndpoint
-	 * @param cache
 	 * @param simple
 	 * @return
 	 */
@@ -175,10 +173,10 @@ public class SPARQLTasks {
 	 * empty set on some endpoints. returns all direct subclasses of String
 	 * concept
 	 * 
-	 * @param concept
+	 * @param concept An URI string with no quotes
 	 * @return SortedSet of direct subclasses as String
 	 */
-	private SortedSet<String> getDirectSubClasses(final String concept) {
+	private SortedSet<String> getDirectSubClasses(String concept) {
 
 		String sparqlQueryString;
 		SortedSet<String> subClasses = new TreeSet<String>();
@@ -212,25 +210,31 @@ public class SPARQLTasks {
 	 * QUALITY: buggy because role doesn't work sometimes get subject with fixed
 	 * role and object
 	 * 
-	 * @param role
-	 * @param object
-	 * @param resultLimit
-	 * @return
+	 * @param role An URI string with no quotes
+	 * @param object An URI string with no quotes
+	 * @param sparqlResultLimit Limits the ResultSet size
+	 * @return SortedSet with the resulting subjects
 	 */
 	public SortedSet<String> retrieveDISTINCTSubjectsForRoleAndObject(
-			String role, String object, int resultLimit) {
+			String role, String object, int sparqlResultLimit) {
 		String sparqlQueryString = "SELECT DISTINCT * WHERE { \n " + "?subject "
 				+ "<" + role + "> " + "<" + object + "> \n" + "} "
-				+ limit(resultLimit);
+				+ limit(sparqlResultLimit);
 
 		return queryAsSet(sparqlQueryString, "subject");
 	}
 
+	/**
+	 * @param subject An URI string with no quotes
+	 * @param role An URI string with no quotes
+	 * @param sparqlResultLimit Limits the ResultSet size
+	 * @return
+	 */
 	public SortedSet<String> retrieveObjectsForSubjectAndRole(String subject,
-			String role, int resultLimit) {
+			String role, int sparqlResultLimit) {
 		String sparqlQueryString = "SELECT DISTINCT * WHERE { \n " + "<" + subject
 				+ "> " + "<" + role + "> " + " ?object \n" + "} LIMIT "
-				+ resultLimit;
+				+ sparqlResultLimit;
 
 		return queryAsSet(sparqlQueryString, "object");
 	}
@@ -238,14 +242,14 @@ public class SPARQLTasks {
 	/**
 	 * all instances for a SKOS concept.
 	 * 
-	 * @param skosConcept
-	 * @param resultLimit
+	 * @param skosConcept An URI string with no quotes
+	 * @param sparqlResultLimit Limits the ResultSet size
 	 * @return
 	 */
 	public SortedSet<String> retrieveInstancesForSKOSConcept(
-			String skosConcept, int resultLimit) {
+			String skosConcept, int sparqlResultLimit) {
 		return queryPatternAsSet("?subject", "?predicate", "<" + skosConcept
-				+ ">", "subject", resultLimit);
+				+ ">", "subject", sparqlResultLimit);
 		// return
 		// retrieveDISTINCTSubjectsForRoleAndObject("http://www.w3.org/2004/02/skos/core#subject",
 	}
@@ -253,8 +257,8 @@ public class SPARQLTasks {
 	/**
 	 * get all instances for a concept.
 	 * 
-	 * @param conceptKBSyntax
-	 * @param sparqlResultLimit
+	 * @param conceptKBSyntax A description string in KBSyntax
+	 * @param sparqlResultLimit Limits the ResultSet size
 	 * @return
 	 */
 	public SortedSet<String> retrieveInstancesForConcept(
@@ -273,8 +277,8 @@ public class SPARQLTasks {
 	/**
 	 * get all instances for a concept including RDFS Reasoning.
 	 * 
-	 * @param conceptKBSyntax
-	 * @param sparqlResultLimit
+	 * @param conceptKBSyntax A description string in KBSyntax
+	 * @param sparqlResultLimit Limits the ResultSet size
 	 * @return
 	 */
 	public SortedSet<String> retrieveInstancesForConceptIncludingSubclasses(
@@ -295,15 +299,15 @@ public class SPARQLTasks {
 	/**
 	 * get all direct Classes of an instance.
 	 * 
-	 * @param instance
-	 * @param resultLimit
+	 * @param instance An URI string with no quotes
+	 * @param sparqlResultLimit Limits the ResultSet size
 	 * @return
 	 */
 	public SortedSet<String> getClassesForInstance(String instance,
-			int resultLimit) {
+			int sparqlResultLimit) {
 
 		String sparqlQueryString = "SELECT ?subject WHERE { \n " + "<" + instance
-				+ ">" + " a " + "?subject " + "\n" + "} " + limit(resultLimit);
+				+ ">" + " a " + "?subject " + "\n" + "} " + limit(sparqlResultLimit);
 
 		return queryAsSet(sparqlQueryString, "subject");
 	}
@@ -329,13 +333,15 @@ public class SPARQLTasks {
 	}
 
 	/**
-	 * query a pattern with a standard SPARQL query usage (?subject, ?predicate,
+	 * //QUALITY rethink
+	 * query a pattern with a standard SPARQL query.
+	 * usage (?subject, <http://something>,
 	 * <http://something> , subject ).
 	 * 
-	 * @param subject
-	 * @param predicate
-	 * @param object
-	 * @param var
+	 * @param subject An URI string with no quotes
+	 * @param predicate An URI string with no quotes
+	 * @param object An URI string with no quotes
+	 * @param var The single 
 	 * @return
 	 */
 	public SortedSet<String> queryPatternAsSet(String subject,
@@ -349,15 +355,15 @@ public class SPARQLTasks {
 	/**
 	 * little higher level, executes query ,returns all resources for a variable.
 	 * 
-	 * @param sparqlQueryString
-	 * @param var
+	 * @param sparqlQueryString The query
+	 * @param var The single variable used in the query
 	 * @return
 	 */
 	public SortedSet<String> queryAsSet(String sparqlQueryString, String var) {
 		ResultSet rs = null;
 		try {
 			String jsonString = query(sparqlQueryString);
-			rs = SparqlQuery.JSONtoResultSet(jsonString);
+			rs = SparqlQuery.convertJSONtoResultSet(jsonString);
 
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
@@ -368,18 +374,18 @@ public class SPARQLTasks {
 	/**
 	 * low level, executes query returns ResultSet.
 	 * 
-	 * @param sparqlQueryString
+	 * @param sparqlQueryString The query
 	 * @return jena ResultSet
 	 */
 	public ResultSet queryAsResultSet(String sparqlQueryString) {
-		return SparqlQuery.JSONtoResultSet(query(sparqlQueryString));
+		return SparqlQuery.convertJSONtoResultSet(query(sparqlQueryString));
 
 	}
 
 	/**
 	 * low level, executes query returns JSON.
 	 * 
-	 * @param sparqlQueryString
+	 * @param sparqlQueryString The query
 	 * @return
 	 */
 	public String query(String sparqlQueryString) {
