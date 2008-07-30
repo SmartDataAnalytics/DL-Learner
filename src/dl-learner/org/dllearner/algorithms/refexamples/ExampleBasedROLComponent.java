@@ -412,6 +412,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		return algorithm.getCurrentlyBestEvaluatedDescriptions();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void stop() {
 		algorithm.stop();
@@ -421,11 +422,13 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		return algorithm.getStartNode();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void pause() {
 		// TODO: not implemented
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void resume() {
 		// TODO: not implemented
@@ -434,6 +437,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningAlgorithm#isRunning()
 	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean isRunning() {
 		return algorithm.isRunning();
