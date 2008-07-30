@@ -99,7 +99,7 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 //		query.extraDebugInfo=uri.toString();
 		String JSON = cache.executeSparqlQuery(query);
 		
-		ResultSet rs = SparqlQuery.JSONtoResultSet(JSON);
+		ResultSet rs = SparqlQuery.convertJSONtoResultSet(JSON);
 		
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
 		

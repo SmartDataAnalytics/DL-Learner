@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * One sparql endpoint configuration,
- * made to comply with Jena
+ * made to comply with Jena.
  * 
  * @author Sebastian Hellmann
  *
@@ -42,7 +42,7 @@ public class SparqlEndpoint {
 		this.namedGraphURIs=new LinkedList<String>();
 	}
 	
-	public SparqlEndpoint(URL u,List<String> defaultGraphURIs,List<String> namedGraphURIs) {
+	public SparqlEndpoint(URL u, List<String> defaultGraphURIs, List<String> namedGraphURIs) {
 		this.url = u;
 		this.defaultGraphURIs=defaultGraphURIs;
 		this.namedGraphURIs=namedGraphURIs;
@@ -86,57 +86,59 @@ public class SparqlEndpoint {
 
 		name = name.toUpperCase();
 		
-		if (name.equals("DBPEDIA"))
-			return EndpointDBpedia();
-		if (name.equals("LOCALDBPEDIA"))
-			return EndpointLOCALDBpedia();
-		if (name.equals("LOCALJOSECKI"))
-			return EndpointlocalJoseki();
-		if (name.equals("GOVTRACK"))
-			return EndpointGovTrack();
-		if (name.equals("SPARQLETTE"))
-			return EndpointSparqlette();
-		if (name.equals("SWCONFERENCE"))
-			return EndpointSWConference();
-		if (name.equals("REVYU"))
-			return EndpointRevyu();
-		if (name.equals("MYOPENLINK"))
-			return EndpointMyOpenlink();
-		if (name.equals("FACTBOOK"))
-			return EndpointWorldFactBook();
-		if (name.equals("DBLP"))
-			return EndpointDBLP();
-		if (name.equals("MUSICBRAINZ"))
-			return EndpointMusicbrainz();
-		return null;
+		if (name.equals("DBPEDIA")) {
+			return getEndpointDBpedia();
+		} else if (name.equals("LOCALDBPEDIA")) {
+			return getEndpointLOCALDBpedia();
+		} else if (name.equals("LOCALJOSECKI")) {
+			return getEndpointlocalJoseki();
+		} else if (name.equals("GOVTRACK")) {
+			return getEndpointGovTrack();
+		} else if (name.equals("SPARQLETTE")) {
+			return getEndpointSparqlette();
+		} else if (name.equals("SWCONFERENCE")) {
+			return getEndpointSWConference();
+		} else if (name.equals("REVYU")) {
+			return getEndpointRevyu();
+		} else if (name.equals("MYOPENLINK")) {
+			return getEndpointMyOpenlink();
+		} else if (name.equals("FACTBOOK")) {
+			return getEndpointWorldFactBook();
+		} else if (name.equals("DBLP")) {
+			return getEndpointDBLP();
+		} else if (name.equals("MUSICBRAINZ")) {
+			return getEndpointMusicbrainz();
+		} else {
+			return null;
+			}
 	}
 	
 	
-	public static LinkedList<SparqlEndpoint> listEndpoints() {
+	public static List<SparqlEndpoint> listEndpoints() {
 		LinkedList<SparqlEndpoint> ll =new LinkedList<SparqlEndpoint>();
-		ll.add(EndpointDBLP());
-		ll.add(EndpointDBpedia());
-		ll.add(EndpointDOAPspace());
-		ll.add(EndpointGovTrack());
-		ll.add(EndpointJamendo());
-		ll.add(EndpointJohnPeel());
-		ll.add(EndpointlocalJoseki());
-		ll.add(EndpointMagnaTune());
-		ll.add(EndpointMusicbrainz());
-		ll.add(EndpointMyOpenlink());
-		ll.add(EndpointRevyu());
-		ll.add(EndpointSWConference());
-		ll.add(EndpointUSCensus());
-		ll.add(EndpointWorldFactBook());
-		ll.add(EndpointRiese());
-		ll.add(EndpointTalisBlogs());
-		ll.add(EndpointSWSchool());
-		ll.add(EndpointSparqlette());
-		ll.add(EndpointLOCALDBpedia());
+		ll.add(getEndpointDBLP());
+		ll.add(getEndpointDBpedia());
+		ll.add(getEndpointDOAPspace());
+		ll.add(getEndpointGovTrack());
+		ll.add(getEndpointJamendo());
+		ll.add(getEndpointJohnPeel());
+		ll.add(getEndpointlocalJoseki());
+		ll.add(getEndpointMagnaTune());
+		ll.add(getEndpointMusicbrainz());
+		ll.add(getEndpointMyOpenlink());
+		ll.add(getEndpointRevyu());
+		ll.add(getEndpointSWConference());
+		ll.add(getEndpointUSCensus());
+		ll.add(getEndpointWorldFactBook());
+		ll.add(getEndpointRiese());
+		ll.add(getEndpointTalisBlogs());
+		ll.add(getEndpointSWSchool());
+		ll.add(getEndpointSparqlette());
+		ll.add(getEndpointLOCALDBpedia());
 		return ll;
 	}
 	
-	public static SparqlEndpoint EndpointDBpedia() {
+	public static SparqlEndpoint getEndpointDBpedia() {
 		URL u = null;
 		try { 
 			u = new URL("http://dbpedia.openlinksw.com:8890/sparql");
@@ -148,7 +150,7 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
 	
-	public static SparqlEndpoint EndpointLOCALDBpedia() {
+	public static SparqlEndpoint getEndpointLOCALDBpedia() {
 		URL u = null;
 		try { 
 			u = new URL("http://139.18.2.37:8890/sparql");
@@ -160,7 +162,7 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
 
-	public static SparqlEndpoint EndpointlocalJoseki() {
+	public static SparqlEndpoint getEndpointlocalJoseki() {
 		URL u = null;
 		try { 
 			u = new URL("http://localhost:2020/books");
@@ -170,7 +172,7 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, new LinkedList<String>(), new LinkedList<String>());
 	}
 	
-	public static SparqlEndpoint EndpointWorldFactBook() {
+	public static SparqlEndpoint getEndpointWorldFactBook() {
 		URL u = null;
 		try { 
 			u = new URL("http://www4.wiwiss.fu-berlin.de/factbook/sparql");
@@ -181,7 +183,7 @@ public class SparqlEndpoint {
 	}
 	
 
-	public static SparqlEndpoint EndpointGovTrack() {
+	public static SparqlEndpoint getEndpointGovTrack() {
 		URL u = null;
 		try { 
 			u = new URL("http://www.rdfabout.com/sparql");
@@ -191,7 +193,7 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, new LinkedList<String>(), new LinkedList<String>());
 	}
 	
-	public static SparqlEndpoint EndpointRevyu() {
+	public static SparqlEndpoint getEndpointRevyu() {
 		URL u = null;
 		try { 
 			u = new URL("http://revyu.com/sparql");
@@ -201,7 +203,7 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, new LinkedList<String>(), new LinkedList<String>());
 	}
 	
-	public static SparqlEndpoint EndpointMyOpenlink() {
+	public static SparqlEndpoint getEndpointMyOpenlink() {
 		URL u = null;
 		try { 
 			u = new URL("http://myopenlink.net:8890/sparql/");
@@ -214,7 +216,7 @@ public class SparqlEndpoint {
 
 		}
 	
-	public static SparqlEndpoint EndpointDOAPspace() {
+	public static SparqlEndpoint getEndpointDOAPspace() {
 		URL u = null;
 		try { 
 			u = new URL("http://doapspace.org/sparql");
@@ -226,7 +228,7 @@ public class SparqlEndpoint {
 
 		}
 	
-	public static SparqlEndpoint EndpointJohnPeel() {
+	public static SparqlEndpoint getEndpointJohnPeel() {
 		URL u = null;
 		try { 
 			u = new URL("http://dbtune.org:3030/sparql/");
@@ -240,7 +242,7 @@ public class SparqlEndpoint {
 	
 	
 	
-		public static SparqlEndpoint EndpointSWConference() {
+		public static SparqlEndpoint getEndpointSWConference() {
 		URL u = null;
 		try { 
 			u = new URL("http://data.semanticweb.org:8080/openrdf-sesame/repositories/SWC");
@@ -275,7 +277,7 @@ public class SparqlEndpoint {
 		return new SpecificSparqlEndpoint(u, "dbtune.org", m);
 	}*/
 	
-	 public static SparqlEndpoint EndpointJamendo() {
+	 public static SparqlEndpoint getEndpointJamendo() {
 			URL u = null;
 			try { 
 				u = new URL("http://dbtune.org:2105/sparql/");
@@ -287,7 +289,7 @@ public class SparqlEndpoint {
 	
 	 
 		 
-	 public static SparqlEndpoint EndpointMagnaTune() {
+	 public static SparqlEndpoint getEndpointMagnaTune() {
 		URL u = null;
 		try { 
 			u = new URL("http://dbtune.org:2020/sparql/");
@@ -298,7 +300,7 @@ public class SparqlEndpoint {
 	}
 	
 	 
-	 public static SparqlEndpoint EndpointMusicbrainz() {
+	 public static SparqlEndpoint getEndpointMusicbrainz() {
 		 URL u = null;
 		 try { 
 			 u = new URL("http://dbtune.org/musicbrainz/sparql");
@@ -308,7 +310,7 @@ public class SparqlEndpoint {
 		 return new SparqlEndpoint(u);
 	 }
 	 
-	 public static SparqlEndpoint EndpointRiese() {
+	 public static SparqlEndpoint getEndpointRiese() {
 		 URL u = null;
 		 try { 
 			 u = new URL("http://riese.joanneum.at:3020/");
@@ -319,7 +321,7 @@ public class SparqlEndpoint {
 	 }
 	
 	 
-	 public static SparqlEndpoint EndpointUSCensus() {
+	 public static SparqlEndpoint getEndpointUSCensus() {
 		 URL u = null;
 		 try { 
 			 u = new URL("http://www.rdfabout.com/sparql");
@@ -337,7 +339,7 @@ public class SparqlEndpoint {
 	/*
 	 * it only has 4 classes
 	 */
-	 public static SparqlEndpoint EndpointDBLP() {
+	 public static SparqlEndpoint getEndpointDBLP() {
 		URL u = null;
 		try { 
 			u = new URL("http://www4.wiwiss.fu-berlin.de/dblp/sparql");
@@ -348,7 +350,7 @@ public class SparqlEndpoint {
 	}
 	 
 	 
-	 public static SparqlEndpoint EndpointTalisBlogs() {
+	 public static SparqlEndpoint getEndpointTalisBlogs() {
 			URL u = null;
 			try { 
 				u = new URL("http://api.talis.com/stores/talisians/services/sparql");
@@ -358,7 +360,7 @@ public class SparqlEndpoint {
 			return new SparqlEndpoint(u);
 		}
 	 
-	 public static SparqlEndpoint EndpointSparqlette() {
+	 public static SparqlEndpoint getEndpointSparqlette() {
 			URL u = null;
 			try { 
 				u = new URL("http://www.wasab.dk/morten/2005/04/sparqlette/");
@@ -370,7 +372,7 @@ public class SparqlEndpoint {
 	 
 	 
 	 
-	 public static SparqlEndpoint EndpointSWSchool() {
+	 public static SparqlEndpoint getEndpointSWSchool() {
 			URL u = null;
 			try { 
 				u = new URL("http://sparql.semantic-web.at/snorql/");

@@ -97,7 +97,7 @@ public class SPARQLMassLearning {
 	
 	static void roles(){
 		
-		se = SparqlEndpoint.EndpointDBpedia();
+		se = SparqlEndpoint.getEndpointDBpedia();
 		//se = SparqlEndpoint.EndpointUSCensus();
 		SortedSet<String> roles = new TreeSet<String>();
 		roles.add("http://dbpedia.org/property/birthPlace");
@@ -143,7 +143,7 @@ public class SPARQLMassLearning {
 	}
 	
 	static void DBpedia(){
-		se = SparqlEndpoint.EndpointLOCALDBpedia();
+		se = SparqlEndpoint.getEndpointLOCALDBpedia();
 		//concepts.add("(EXISTS \"monarch\".TOP AND EXISTS \"predecessor\".(\"Knight\" OR \"Secretary\"))");
 		
 		SortedSet<String> concepts = new TreeSet<String>();
@@ -257,7 +257,7 @@ public class SPARQLMassLearning {
 		
 
 		String JSON = (c.executeSparqlQuery(new SparqlQuery(query, se)));
-		ResultSet rs =SparqlQuery.JSONtoResultSet(JSON);
+		ResultSet rs =SparqlQuery.convertJSONtoResultSet(JSON);
 		if(rs==null);
 		//JenaResultSetConvenience rsc = new JenaResultSetConvenience(rs);
 		//return SetManipulation.fuzzyShrink(rsc.getStringListForVariable("concept"),number);

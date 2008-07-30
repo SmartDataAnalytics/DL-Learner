@@ -118,7 +118,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			.getLogger(SparqlKnowledgeSource.class);
 
 	/**
-	 * sets the ConfigOptions for this KnowledgeSource
+	 * sets the ConfigOptions for this KnowledgeSource.
 	 * 
 	 * @return
 	 */
@@ -195,7 +195,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
 	@Override
-	@SuppressWarnings( { "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public <T> void applyConfigEntry(ConfigEntry<T> entry)
 			throws InvalidConfigOptionValueException {
 		String option = entry.getOptionName();
@@ -348,9 +348,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				String filename = System.currentTimeMillis() + ".nt";
 				String basedir = "cache" + File.separator;
 				try {
-					if (!new File(basedir).exists())
+					if (!new File(basedir).exists()) {
 						new File(basedir).mkdir();
-
+					}
+					
 					FileWriter fw = new FileWriter(
 							new File(basedir + filename), true);
 					fw.write(ont);
@@ -441,7 +442,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return dumpFile;
 	}
 	
-	public boolean getUseCache(){
+	public boolean isUseCache(){
 		return useCache;
 	}
 	

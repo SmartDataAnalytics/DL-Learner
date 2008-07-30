@@ -1,7 +1,7 @@
 package org.dllearner.test;
 
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -36,7 +36,7 @@ public class SparqlEndpointTest {
 		//SELECT DISTINCT ?c WHERE {[] a ?c }LIMIT 100
 		
 		
-		LinkedList<SparqlEndpoint> ll  = SparqlEndpoint.listEndpoints();
+		List<SparqlEndpoint> ll  = SparqlEndpoint.listEndpoints();
 		
 		
 		
