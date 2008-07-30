@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.refinement.RefinementOperator;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DatatypeProperty;
