@@ -38,7 +38,7 @@ import org.dllearner.core.owl.Union;
 public class SparqlQueryDescriptionConvertRDFS {
 
 	//LOGGER: SparqlQueryDescriptionConvertVisitor
-	static Logger logger = Logger.getLogger(SparqlQueryDescriptionConvertVisitor.class);
+	static Logger logger = Logger.getLogger(SparqlQueryDescriptionConvertRDFS.class);
 
 	/**
 	 * 
@@ -51,13 +51,13 @@ public class SparqlQueryDescriptionConvertRDFS {
 	 * @param c
 	 *            a cache object, makes only sense if you use this function
 	 *            often
-	 * @param simple
-	 *            if true then only direct subclasses will be used (TRUE HIGHLY
-	 *            RECOMMENDED for large hierarchies)
+	 * @param maxDepth
+	 *            determines the depth of retrieval, if 1 classes are replaced by direct subclasses only,
+	 *            1 is HIGHLY RECOMMENDED FOR LARGE HIERARCHIES)
 	 * @return the altered String
 	 */
 	public static String conceptRewrite(String descriptionKBSyntax, SPARQLTasks st,
-			boolean simple) {
+			int maxDepth) {
 		String quote = "\"";
 		String returnValue = "";
 		String currentconcept = "";
@@ -79,7 +79,7 @@ public class SparqlQueryDescriptionConvertRDFS {
 			// System.out.println(currentconcept);
 
 			// subclasses are retrieved
-			subclasses = st.getSubClasses(currentconcept, simple);
+			subclasses = st.getSubClasses(currentconcept, maxDepth);
 
 			// if only one then keep
 			if (subclasses.size() == 1)

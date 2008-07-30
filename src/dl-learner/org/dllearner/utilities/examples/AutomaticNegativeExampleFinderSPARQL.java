@@ -155,7 +155,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 			logger.debug(oneClass);
 			// rsc = new
 			// JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
-			this.fromParallelClasses.addAll(sparqltasks.retrieveInstancesForConcept("\"" + oneClass
+			this.fromParallelClasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\"" + oneClass
 					+ "\"", resultLimit));
 
 		}
@@ -180,7 +180,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 		for (String oneSuperClass : superClasses) {
 			logger.debug(oneSuperClass);
-			this.fromSuperclasses.addAll(sparqltasks.retrieveInstancesForConcept("\""
+			this.fromSuperclasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\""
 					+ oneSuperClass + "\"", resultLimit));
 
 		}
@@ -191,7 +191,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	@SuppressWarnings("unused")
 	private void makeNegativeExamplesFromDomain(String role, int resultLimit){
 		logger.debug("making Negative Examples from Domain of : "+role);
-		this.fromDomain.addAll(sparqltasks.getDomain(role, resultLimit));
+		this.fromDomain.addAll(sparqltasks.getDomainInstances(role, resultLimit));
 		this.fromDomain.removeAll(this.fullPositiveSet);
 		logger.debug("|-neg Example size from Domain: "+this.fromDomain.size());
 	}
@@ -199,7 +199,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	@SuppressWarnings("unused")
 	private void makeNegativeExamplesFromRange(String role, int resultLimit){
 		logger.debug("making Negative Examples from Range of : "+role);
-		this.fromRange.addAll(sparqltasks.getRange(role, resultLimit));
+		this.fromRange.addAll(sparqltasks.getRangeInstances(role, resultLimit));
 		this.fromRange.removeAll(this.fullPositiveSet);
 		logger.debug("|-neg Example size from Range: "+this.fromRange.size());
 	}
