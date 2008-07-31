@@ -1,4 +1,23 @@
-package org.dllearner.scripts;
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+package org.dllearner.utilities.learn;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,7 +33,6 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.utilities.learn.LearnSparql;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.dllearner.utilities.statistics.Statistics;
 
@@ -127,7 +145,7 @@ public class SPARQLExtractionEvaluation {
 				
 				//System.out.println("currently at label "+Statistics.getCurrentLabel()+"||i: "+recursiondepth);
 				
-				LearnSparql ls = new LearnSparql();
+				LearnSparqlold ls = new LearnSparqlold();
 				TreeSet<String> igno = new TreeSet<String>();
 				igno.add(oneConcept.replaceAll("\"", ""));
 				//igno.add("\""+oneConcept+"\"");
