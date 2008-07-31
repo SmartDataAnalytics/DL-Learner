@@ -263,7 +263,7 @@ public class Cache implements Serializable {
 			SparqlQuery.writeToSparqlLog("***********\nJSON retrieved from cache");
 			SparqlQuery.writeToSparqlLog(query.getSparqlQueryString());
 			SparqlQuery.writeToSparqlLog(query.getSparqlEndpoint().getURL().toString());
-			SparqlQuery.writeToSparqlLog("JSON: "+result);
+			//SparqlQuery.writeToSparqlLog("JSON: "+result);
 			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
 			
 		} else {
@@ -287,6 +287,24 @@ public class Cache implements Serializable {
 		}
 		JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").stop();
 		return result;
+	}
+	
+	/**
+	 * deletes all Files in the cacheDir, does not delete the cacheDir itself, 
+	 * and can thus still be used without creating a new Cache Object
+	 */
+	public void clearCache() {
+		try{
+			File f = new File(cacheDir);
+		    String[] files = f.list();
+		    for (int i = 0; i < files.length; i++) {
+				new File(cacheDir+"/"+files[i]).delete();
+			}    
+		}catch (Exception e) {
+			logger.warn("deleting cache failed");
+			e.printStackTrace();
+		}
+	    
 	}
 	
 	/**
