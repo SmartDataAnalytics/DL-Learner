@@ -84,8 +84,7 @@ public class WikipediaCategoryCleaner {
 		}
 
 		String target = "http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
-		// target =
-		// "http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners";
+		target =  "http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners";
 
 		WikipediaCategoryTasks s = new WikipediaCategoryTasks(sparqlTasks);
 		// TODO Optimize
