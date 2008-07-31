@@ -69,7 +69,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	/**
 	 * aggregates all collected neg examples
 	 * @param neglimit size of negative Example set
-	 * @param stable decides whether neg Examples are randomly picked, default false, faster for developing
+	 * @param stable decides whether neg Examples are randomly picked, default false, faster for developing, since the cache can be used
 	 * @return
 	 */
 	public SortedSet<String> getNegativeExamples(int neglimit, boolean stable ) {
