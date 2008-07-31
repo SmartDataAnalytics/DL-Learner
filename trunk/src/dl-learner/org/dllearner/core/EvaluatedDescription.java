@@ -101,6 +101,13 @@ public class EvaluatedDescription {
 	public double getAccuracy() {
 		return score.getAccuracy();
 	}
+	
+	/**
+	 * @see org.dllearner.core.Score
+	 */
+	public Score getScore() {
+		return score;
+	}
 
 	/**
 	 * @see org.dllearner.core.Score#getCoveredNegatives()
