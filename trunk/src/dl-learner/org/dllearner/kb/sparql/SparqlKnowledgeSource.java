@@ -329,9 +329,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		m.useConfiguration(sparqlQueryType, endpoint, manipulator,
 				recursionDepth, getAllSuperClasses, closeAfterRecursion, cacheDir);
 		
-		
+		String ont = "";
 		try {
-			String ont = "";
+			
 			// the actual extraction is started here
 			SimpleClock sc2=new SimpleClock();
 			sc2.setTime();
