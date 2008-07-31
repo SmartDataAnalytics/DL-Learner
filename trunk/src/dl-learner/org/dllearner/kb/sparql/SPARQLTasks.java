@@ -112,7 +112,7 @@ public class SPARQLTasks {
 		final SortedSet<String> tmpSet = new TreeSet<String>();
 
 		// collect super/subclasses for the depth
-		for (; depth != 0; depth--) {
+		for (; (depth != 0) && (!toBeRetrieved.isEmpty()); depth--) {
 			// collect super/subclasses for each class in toBeRetrieved
 			// accumulate in tmpSet
 			for (String oneClass : toBeRetrieved) {
@@ -142,26 +142,22 @@ public class SPARQLTasks {
 	}
 
 	/**
-	 * gets a SortedSet of all subclasses.
+	 * gets a SortedSet of all subclasses up to a certain depth
 	 * 
 	 * @see conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache
 	 *      c, boolean simple )
-	 * @param classURI
+	 * @param classURI An URI string with no quotes
 	 * @param maxDepth
 	 * @return TreeSet of subclasses including classURI
 	 */
 	public SortedSet<String> getSubClasses(final String classURI,
 			final int maxDepth) {
-		if (classURI.contains("\"")) {
-			// TODO exception
-		}
+//		 TODO check for quotes in uris
 		return getRecursiveSuperOrSubClasses(classURI, maxDepth, true);
 	}
 
 	/**
-	 * QUALITY: workaround for a sparql glitch {?a owl:subclassOf ?b} returns an
-	 * empty set on some endpoints. returns all direct subclasses of String
-	 * concept
+	 * returns all direct subclasses of String concept
 	 * 
 	 * @param concept
 	 *            An URI string with no quotes
@@ -192,13 +188,6 @@ public class SPARQLTasks {
 	 */
 	public SortedSet<String> retrieveDISTINCTSubjectsForRoleAndObject(
 			String role, String object, int sparqlResultLimit) {
-		/*
-		 * String sparqlQueryString = "SELECT DISTINCT * WHERE { \n " +
-		 * "?subject " + "<" + role + "> " + "<" + object + "> \n" + "} " +
-		 * limit(sparqlResultLimit);
-		 * 
-		 * return queryAsSet(sparqlQueryString, "subject");
-		 */
 		return queryPatternAsSet("?subject", "<" + role + ">", "<" + object
 				+ ">", "subject", sparqlResultLimit, true);
 	}
@@ -214,13 +203,6 @@ public class SPARQLTasks {
 	 */
 	public SortedSet<String> retrieveObjectsForSubjectAndRole(String subject,
 			String role, int sparqlResultLimit) {
-		/*
-		 * String sparqlQueryString = "SELECT DISTINCT * WHERE { \n " + "<" +
-		 * subject + "> " + "<" + role + "> " + " ?object \n" + "} LIMIT " +
-		 * sparqlResultLimit;
-		 * 
-		 * return queryAsSet(sparqlQueryString, "object");
-		 */
 		return queryPatternAsSet("<" + subject + ">", "<" + role + ">",
 				"?object", "object", sparqlResultLimit, true);
 	}
@@ -238,8 +220,6 @@ public class SPARQLTasks {
 			String skosConcept, int sparqlResultLimit) {
 		return queryPatternAsSet("?subject", "?predicate", "<" + skosConcept
 				+ ">", "subject", sparqlResultLimit, false);
-		// return
-		// retrieveDISTINCTSubjectsForRoleAndObject("http://www.w3.org/2004/02/skos/core#subject",
 	}
 
 	/**
@@ -483,6 +463,10 @@ public class SPARQLTasks {
 		rs.reset();
 		return result;
 
+	}
+
+	public SparqlEndpoint getSparqlEndpoint() {
+		return sparqlEndpoint;
 	}
 
 }
