@@ -20,7 +20,7 @@
 package org.dllearner.kb.extraction;
 
 import java.net.URI;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.Vector;
 
 
@@ -72,7 +72,7 @@ public abstract class Node implements Comparable<Node> {
 	 * 
 	 * @return a set of n-triple
 	 */
-	public abstract Set<String> toNTriple();
+	public abstract SortedSet<String> toNTriple();
 
 	@Override
 	public String toString() {
