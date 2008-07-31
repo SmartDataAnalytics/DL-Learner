@@ -34,7 +34,10 @@ import org.dllearner.core.owl.NamedClass;
  * of named classes and the edges are labelled with a property.
  * 
  * In the documentation below "this node" refers to the root node
- * of this EL description (sub-)tree.
+ * of this EL description (sub-)tree. One tree cannot be reused,
+ * i.e. used as subtree in several description trees, as some of
+ * the associated variables (level, simulation) depend on the overall
+ * tree. 
  * 
  * @author Jens Lehmann
  *
@@ -45,9 +48,15 @@ public class ELDescriptionTree {
 	
 	private List<Edge> edges;
 
+	private int level;
+	
 	// parent node in the tree;
 	// null indicates that this node is a root node
 	private ELDescriptionTree parent = null;
+	
+	// to simplify equivalence checks and minimisation, we
+	// attach a simulation relation to the description tree
+	private Simulation simulation;
 	
 	/**
 	 * Constructs an empty EL description tree with the empty set
@@ -55,6 +64,7 @@ public class ELDescriptionTree {
 	 */
 	public ELDescriptionTree() {
 		this(new TreeSet<NamedClass>(), new LinkedList<Edge>());
+		simulation = new Simulation();
 	}
 	
 	/**
@@ -100,11 +110,13 @@ public class ELDescriptionTree {
 	/**
 	 * Traverses the tree until the root node and counts how
 	 * many edges are traversed. If this node does not have a parent,
-	 * zero is returned.
+	 * zero is returned. This method is used for checking the integrity
+	 * of the tree in unit tests. Use {@link #getLevel()} to get the 
+	 * level of the tree. 
 	 * @return The level of this node (or more specifically the root
 	 * node of this subtree) within the overall EL description tree.
 	 */
-	public int getLevel() {
+	public int computeLevel() {
 		ELDescriptionTree root = this;
 		int level = 0;
 		while(root.parent != null) {
@@ -126,6 +138,13 @@ public class ELDescriptionTree {
 	 */
 	public List<Edge> getEdges() {
 		return edges;
+	}
+
+	/**
+	 * @return The level of the (root node of) this subtree in the overall tree. 
+	 */
+	public int getLevel() {
+		return level;
 	}
 	
 }
