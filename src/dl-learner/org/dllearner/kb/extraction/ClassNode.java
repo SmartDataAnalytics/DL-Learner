@@ -23,6 +23,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.dllearner.utilities.datastructures.StringTuple;
@@ -94,8 +96,8 @@ public class ClassNode extends Node {
 	 * @see org.dllearner.kb.sparql.datastructure.Node#toNTriple()
 	 */
 	@Override
-	public Set<String> toNTriple() {
-		Set<String> s = new HashSet<String>();
+	public SortedSet<String> toNTriple() {
+		SortedSet<String> s = new TreeSet<String>();
 		s.add("<" + this.uri + "><" + rdftype + "><" + classns + ">.");
 
 		for (PropertyNode one : properties) {

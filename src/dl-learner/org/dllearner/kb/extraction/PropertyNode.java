@@ -23,6 +23,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.dllearner.utilities.datastructures.StringTuple;
@@ -88,8 +90,8 @@ public class PropertyNode extends Node {
 	}
 
 	@Override
-	public Set<String> toNTriple() {
-		Set<String> s = new HashSet<String>();
+	public SortedSet<String> toNTriple() {
+		SortedSet<String> s = new TreeSet<String>();
 		s.add("<" + uri + "><"
 				+ "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" + "><"
 				+ "http://www.w3.org/2002/07/owl#ObjectProperty" + ">.");

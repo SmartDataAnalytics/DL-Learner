@@ -66,7 +66,7 @@ public class Manager {
 		System.out.println("Start extracting");
 
 		Node n = extractionAlgorithm.expandNode(uri, typedSparqlQuery);
-		Set<String> s = n.toNTriple();
+		SortedSet<String> s = n.toNTriple();
 		String nt = "";
 		for (String str : s) {
 			nt += str + "\n";
