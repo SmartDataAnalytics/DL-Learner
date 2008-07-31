@@ -34,7 +34,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * @author jl
  *
  */
-public class PsiDown implements RefinementOperator {
+public class PsiDown extends RefinementOperatorAdapter {
 
 	ConceptComparator conceptComparator = new ConceptComparator();
 	
@@ -75,6 +75,7 @@ public class PsiDown implements RefinementOperator {
 		}		
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public Set<Description> refine(Description concept) {
 		
@@ -236,6 +237,7 @@ public class PsiDown implements RefinementOperator {
 		
 	}
 
+	@Override
 	public Set<Description> refine(Description concept, int maxLength,
 			List<Description> knownRefinements) {
 		throw new RuntimeException();

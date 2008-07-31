@@ -24,7 +24,12 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.UnsupportedLanguageException;
 
 /**
  * Represents an EL description tree, which corresponds to a
@@ -86,6 +91,16 @@ public class ELDescriptionTree {
 	}
 	
 	/**
+	 * Constructs an EL description tree from an EL description. 
+	 * @param description A description 
+	 */
+	public ELDescriptionTree(Description description) {
+		// TODO not implemented
+		// throw an exception if the description is not in EL
+		throw new UnsupportedLanguageException(description.toString(), "EL");
+	}
+	
+	/**
 	 * Checks whether this node has a parent. If the parent link
 	 * is null, the node is considered to be a root node.
 	 * @return True of this is the root node and false otherwise.
@@ -124,6 +139,33 @@ public class ELDescriptionTree {
 			level++;
 		}
 		return level;		
+	}
+	
+	/**
+	 * This method transform the tree to an EL description. The
+	 * node labels are transformed to an {@link Intersection}
+	 * of {@link NamedClass}. Each edges is transformed to an 
+	 * {@link ObjectSomeRestriction}, where the property is the edge
+	 * label and the child description the subtree the edge points 
+	 * to. Edges are also added to the intersection. If the intersection
+	 * is empty, {@link Thing} is returned.
+	 * @return The description corresponding to this EL description tree.
+	 */
+	public Description transformToDescription() {
+		if(label.size()==0 && edges.size()==0) {
+			return new Thing();
+		} else {
+			Intersection is = new Intersection();
+			for(NamedClass nc : label) {
+				is.addChild(nc);
+			}
+			for(Edge edge : edges) {
+				Description child = edge.getTree().transformToDescription();
+				ObjectSomeRestriction osr = new ObjectSomeRestriction(edge.getLabel(),child);
+				is.addChild(osr);
+			}
+			return is;
+		}
 	}
 	
 	/**

@@ -22,7 +22,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.owl.ConceptComparator;
 
-public class PsiUp implements RefinementOperator {
+public class PsiUp extends RefinementOperatorAdapter {
 
 	ConceptComparator conceptComparator = new ConceptComparator();
 	
@@ -63,6 +63,7 @@ public class PsiUp implements RefinementOperator {
 		}
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public Set<Description> refine(Description concept) {
 		
@@ -212,6 +213,7 @@ public class PsiUp implements RefinementOperator {
 		return refinements;
 	}
 
+	@Override
 	public Set<Description> refine(Description concept, int maxLength,
 			List<Description> knownRefinements) {
 		throw new RuntimeException();
