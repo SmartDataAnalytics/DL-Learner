@@ -86,7 +86,7 @@ public class OntologyCloser {
 	 * ExactCardinalityRestriction
 	 */
 	public void applyNumberRestrictions() {
-		Set<ObjectProperty> allRoles = this.rs.getAtomicRoles();
+		Set<ObjectProperty> allRoles = this.rs.getObjectProperties();
 		// Set<Individual> allind = this.rs.getIndividuals();
 		testForTransitiveProperties(true);
 
@@ -116,7 +116,7 @@ public class OntologyCloser {
 	 * ExactCardinalityRestriction
 	 */
 	public void applyNumberRestrictionsConcise() {
-		Set<ObjectProperty> allRoles = this.rs.getAtomicRoles();
+		Set<ObjectProperty> allRoles = this.rs.getObjectProperties();
 		// Set<Individual> allind = this.rs.getIndividuals();
 		testForTransitiveProperties(true);
 
@@ -167,7 +167,7 @@ public class OntologyCloser {
 	 * ExactCardinalityRestriction
 	 */
 	public void applyNumberRestrictionsNamed() {
-		Set<ObjectProperty> allRoles = this.rs.getAtomicRoles();
+		Set<ObjectProperty> allRoles = this.rs.getObjectProperties();
 		// Set<Individual> allind = this.rs.getIndividuals();
 		testForTransitiveProperties(true);
 

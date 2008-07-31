@@ -20,10 +20,18 @@
 package org.dllearner.refinementoperators;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.dllearner.algorithms.el.ELDescriptionTree;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.Thing;
 
 /**
  * EL downward refinement operator constructed by Jens Lehmann
@@ -43,13 +51,50 @@ import org.dllearner.core.owl.Description;
  * @author Jens Lehmann
  *
  */
+@SuppressWarnings("unused")
 public class ELDown extends RefinementOperatorAdapter {
 
+//	private static Logger logger = Logger.getLogger(ELDown.class);	
+	
+	private ReasoningService rs;
+	
+	// hierarchies
+	private SubsumptionHierarchy subsumptionHierarchy;
+	private ObjectPropertyHierarchy opHierarchy;
+	
+	// domains and ranges
+	private Map<ObjectProperty,Description> opDomains = new TreeMap<ObjectProperty,Description>();
+	private Map<ObjectProperty,Description> opRanges = new TreeMap<ObjectProperty,Description>();
+	
+	// app_A set of applicable properties for a given class
+	private Map<Description, Set<ObjectProperty>> app = new TreeMap<Description, Set<ObjectProperty>>();
+
+	// most general applicable properties
+	private Map<Description,Set<ObjectProperty>> mgr = new TreeMap<Description,Set<ObjectProperty>>();
+
+	// utility class
+	private Utility utility;
+	
+	public ELDown(ReasoningService rs) {
+		utility = new Utility(rs);
+		subsumptionHierarchy = rs.getSubsumptionHierarchy();
+		opHierarchy = rs.getRoleHierarchy();
+		
+		// query reasoner for domains and ranges
+		// (because they are used often in the operator)
+		for(ObjectProperty op : rs.getObjectProperties()) {
+			opDomains.put(op, rs.getDomain(op));
+			opRanges.put(op, rs.getRange(op));
+		}		
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.refinementoperators.RefinementOperator#refine(org.dllearner.core.owl.Description)
 	 */
 	@Override
 	public Set<Description> refine(Description concept) {
+		// TODO according to the specification, we need to minimise 
+		// the tree (not yet implemented)
 		ELDescriptionTree tree = new ELDescriptionTree(concept);
 		Set<ELDescriptionTree> refinementTrees = refine(tree);
 		Set<Description> refinements = new HashSet<Description>();
@@ -68,7 +113,41 @@ public class ELDown extends RefinementOperatorAdapter {
 	 * @return Set of refined EL description trees.
 	 */
 	public Set<ELDescriptionTree> refine(ELDescriptionTree tree) {
-		return null;
+		return refine(tree, new Thing());
+	}
+	
+	private Set<ELDescriptionTree> refine(ELDescriptionTree tree, Description index) {
+		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>(); 
+		// option 1: label extension
+		
+		// option 2: label refinement
+		// loop through all classes in label
+		for(NamedClass nc : tree.getLabel()) {
+			// find all more special classes for the given label
+			for(Description moreSpecial : rs.getMoreSpecialConcepts(nc)) {
+				// create refinements by replacing class
+				ELDescriptionTree tmp = tree.clone();
+				// TODO replace class in label
+			}
+		}
+		
+		// option 3: new edge
+		
+		// option 4: edge refinement
+		
+		// option 5: child refinement
+		
+		return refinements;
 	}
 
+//	private void computeMg(Description index) {
+//		// compute the applicable properties if this has not been done yet
+//		if(app.get(index) == null)
+//			app.put(index, utility.computeApplicableObjectProperties(index));	
+//		
+//		mgr.put(index, new TreeSet<ObjectProperty>());
+//		
+//		
+//	}	
+	
 }

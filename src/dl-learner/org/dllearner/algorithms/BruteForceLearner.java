@@ -207,7 +207,7 @@ public class BruteForceLearner extends LearningAlgorithm {
         if(length==1) {
             generatedDefinitions.get(1).add(new Thing());
             generatedDefinitions.get(1).add(new Nothing());
-            for(NamedClass atomicConcept : rs.getAtomicConcepts()) {
+            for(NamedClass atomicConcept : rs.getNamedClasses()) {
                 generatedDefinitions.get(1).add(atomicConcept);
             }
         }
@@ -265,7 +265,7 @@ public class BruteForceLearner extends LearningAlgorithm {
             
             // EXISTS and ALL 
             for(Description childNode : generatedDefinitions.get(length-2)) {
-            	for(ObjectProperty atomicRole : rs.getAtomicRoles()) {
+            	for(ObjectProperty atomicRole : rs.getObjectProperties()) {
                     Description root1 = new ObjectSomeRestriction(atomicRole,childNode);
                     generatedDefinitions.get(length).add(root1);
                     

@@ -512,25 +512,25 @@ public class Start {
 					}
 				} else if (name.equals("showConcepts")) {
 					if (cliOption.getStringValue().equals("true")) {
-						int stringLength = rs.getAtomicConcepts().toString().length();
+						int stringLength = rs.getNamedClasses().toString().length();
 						if (stringLength > maxLineLength) {
-							System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: ");
-							for (NamedClass ac : rs.getAtomicConcepts())
+							System.out.println("concepts[" + rs.getNamedClasses().size() + "]: ");
+							for (NamedClass ac : rs.getNamedClasses())
 								System.out.println("  " + ac);
 						} else
-							System.out.println("concepts[" + rs.getAtomicConcepts().size() + "]: "
-									+ rs.getAtomicConcepts());
+							System.out.println("concepts[" + rs.getNamedClasses().size() + "]: "
+									+ rs.getNamedClasses());
 					}
 				} else if (name.equals("showRoles")) {
 					if (cliOption.getStringValue().equals("true")) {
-						int stringLength = rs.getAtomicRoles().toString().length();
+						int stringLength = rs.getObjectProperties().toString().length();
 						if (stringLength > maxLineLength) {
-							System.out.println("roles[" + rs.getAtomicRoles().size() + "]: ");
-							for (ObjectProperty r : rs.getAtomicRoles())
+							System.out.println("roles[" + rs.getObjectProperties().size() + "]: ");
+							for (ObjectProperty r : rs.getObjectProperties())
 								System.out.println("  " + r);
 						} else
-							System.out.println("roles[" + rs.getAtomicRoles().size() + "]: "
-									+ rs.getAtomicRoles());
+							System.out.println("roles[" + rs.getObjectProperties().size() + "]: "
+									+ rs.getObjectProperties());
 					}
 				} else if (name.equals("showSubsumptionHierarchy")) {
 					if (cliOption.getStringValue().equals("true")) {
@@ -700,9 +700,9 @@ public class Start {
 					// (note that removeAll currently gives a different
 					// result here, because the comparator of the argument
 					// is used)
-					for (NamedClass ac : rs.getAtomicConcepts())
+					for (NamedClass ac : rs.getNamedClasses())
 						occurringConcepts.remove(ac);
-					for (ObjectProperty ar : rs.getAtomicRoles())
+					for (ObjectProperty ar : rs.getObjectProperties())
 						occurringRoles.remove(ar);
 
 					boolean nonExistingConstructs = false;

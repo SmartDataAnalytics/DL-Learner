@@ -497,7 +497,7 @@ public class DLLearnerWS {
 	
 	@WebMethod
 	public String[] getAtomicConcepts(int id) throws ClientNotKnownException {
-		Set<NamedClass> atomicConcepts = getState(id).getReasoningService().getAtomicConcepts();
+		Set<NamedClass> atomicConcepts = getState(id).getReasoningService().getNamedClasses();
 		return Datastructures.sortedSet2StringListConcepts(atomicConcepts);
 	}
 	
@@ -525,7 +525,7 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getAtomicRoles(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		Set<ObjectProperty> roles = state.getReasoningService().getAtomicRoles();
+		Set<ObjectProperty> roles = state.getReasoningService().getObjectProperties();
 		return Datastructures.sortedSet2StringListRoles(roles);
 	}
 	

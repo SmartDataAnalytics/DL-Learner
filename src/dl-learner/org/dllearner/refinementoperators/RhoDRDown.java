@@ -70,6 +70,11 @@ import org.dllearner.utilities.owl.ConceptTransformation;
  * domain/range restrictions. Furthermore, it makes use of disjoint
  * classes in the knowledge base.
  * 
+ * TODO Some of the code has moved to {@link Utility} in a modified
+ * form to make it accessible for implementations of other refinement
+ * operators. These utility methods may be completed and carefully
+ * integrated back later. 
+ * 
  * @author Jens Lehmann
  *
  */
@@ -185,7 +190,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
-		for(ObjectProperty op : rs.getAtomicRoles()) {
+		for(ObjectProperty op : rs.getObjectProperties()) {
 			opDomains.put(op, rs.getDomain(op));
 			opRanges.put(op, rs.getRange(op));
 		}
@@ -201,7 +206,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		// determine the maximum number of fillers for each role
 		// (up to a specified cardinality maximum)
 		if(useCardinalityRestrictions) {
-		for(ObjectProperty op : rs.getAtomicRoles()) {
+		for(ObjectProperty op : rs.getObjectProperties()) {
 			int maxFillers = 0;
 			Map<Individual,SortedSet<Individual>> opMembers = rs.getRoleMembers(op);
 			for(SortedSet<Individual> inds : opMembers.values()) {
@@ -978,7 +983,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	// computes the set of applicable properties for a given class
 	private void computeApp(NamedClass domain) {
 		// object properties
-		Set<ObjectProperty> mostGeneral = rs.getAtomicRoles();
+		Set<ObjectProperty> mostGeneral = rs.getObjectProperties();
 		Set<ObjectProperty> applicableRoles = new TreeSet<ObjectProperty>();
 		for(ObjectProperty role : mostGeneral) {
 			// TODO: currently we just rely on named classes as roles,

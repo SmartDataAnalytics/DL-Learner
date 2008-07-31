@@ -492,7 +492,7 @@ public class GPUtilities {
     private static Description pickTerminalSymbol(LearningProblem learningProblem, ReasoningService rs, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
         int nr;
-        int nrOfConcepts = rs.getAtomicConcepts().size();
+        int nrOfConcepts = rs.getNamedClasses().size();
         
         // ein Blattknoten kann folgendes sein:
         // Top, Bottom, Konzept => alles am Besten gleichwahrscheinlich         
@@ -631,7 +631,7 @@ public class GPUtilities {
 
     private static Description createFullRandomTree(LearningProblem learningProblem, ReasoningService rs, int depth, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
-        int numberOfRoles = rs.getAtomicRoles().size(); //  abox.roles.size();
+        int numberOfRoles = rs.getObjectProperties().size(); //  abox.roles.size();
         
         if (depth > 1) {
             int nr = rand.nextInt(3+2*numberOfRoles);
@@ -725,8 +725,8 @@ public class GPUtilities {
         */
     	
         // FlatABox abox = FlatABox.getInstance();
-        int numberOfConcepts = rs.getAtomicConcepts().size();
-        int numberOfRoles = rs.getAtomicRoles().size();
+        int numberOfConcepts = rs.getNamedClasses().size();
+        int numberOfRoles = rs.getObjectProperties().size();
         // TODO: ev. größere Wahrscheinlichkeit für Konjunktion/Disjunktion (?),
         // mit größerer Konzept-, und Rollenanzahl kommen die sonst kaum noch vor
         int numberOfAlphabetSymbols = numberOfConcepts + 2*numberOfRoles + 5; //7;// 5;

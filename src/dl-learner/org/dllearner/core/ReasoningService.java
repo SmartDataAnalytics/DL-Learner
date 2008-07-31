@@ -368,7 +368,7 @@ public class ReasoningService {
 	}		
 	
 	public void prepareSubsumptionHierarchy() {
-		reasoner.prepareSubsumptionHierarchy(getAtomicConcepts());
+		reasoner.prepareSubsumptionHierarchy(getNamedClasses());
 	}
 	
 	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
@@ -386,7 +386,7 @@ public class ReasoningService {
 	}
 
 	public void prepareRoleHierarchy() {
-		prepareRoleHierarchy(getAtomicRoles());
+		prepareRoleHierarchy(getObjectProperties());
 	}
 	
 	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
@@ -499,11 +499,11 @@ public class ReasoningService {
 		}
 	}	
 	
-	public Set<NamedClass> getAtomicConcepts() {
+	public Set<NamedClass> getNamedClasses() {
 		return reasoner.getAtomicConcepts();
 	}
 
-	public Set<ObjectProperty> getAtomicRoles() {
+	public Set<ObjectProperty> getObjectProperties() {
 		return reasoner.getAtomicRoles();
 	}
 
@@ -589,13 +589,13 @@ public class ReasoningService {
 
 	public List<NamedClass> getAtomicConceptsList() {
 		if(atomicConceptsList == null)
-			atomicConceptsList = new LinkedList<NamedClass>(getAtomicConcepts());
+			atomicConceptsList = new LinkedList<NamedClass>(getNamedClasses());
 		return atomicConceptsList;
 	}
 
 	public List<ObjectProperty> getAtomicRolesList() {
 		if(atomicRolesList == null)
-			atomicRolesList = new LinkedList<ObjectProperty>(getAtomicRoles());
+			atomicRolesList = new LinkedList<ObjectProperty>(getObjectProperties());
 		return atomicRolesList;
 	}
 	

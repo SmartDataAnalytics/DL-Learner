@@ -452,7 +452,7 @@ public class DLLearnerModel implements Runnable{
 		SortedSet<Individual> individuals = null;
 		if(!aktuell.getRootObject().toString().equals("Thing"))
 		{
-			for(Iterator<NamedClass> i = rs.getAtomicConcepts().iterator(); i.hasNext();)
+			for(Iterator<NamedClass> i = rs.getNamedClasses().iterator(); i.hasNext();)
 			{
 				if(individuals==null)
 				{

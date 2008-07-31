@@ -69,7 +69,7 @@ public class PsiDown extends RefinementOperatorAdapter {
 			topSet.add(new Negation(c));
 	
 		// EXISTS r.TOP und ALL r.TOP für alle r
-		for(ObjectProperty r : reasoningService.getAtomicRoles()) {
+		for(ObjectProperty r : reasoningService.getObjectProperties()) {
 			topSet.add(new ObjectAllRestriction(r, new Thing()));
 			topSet.add(new ObjectSomeRestriction(r, new Thing()));
 		}		

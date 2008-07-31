@@ -548,7 +548,7 @@ public class ORE {
 	
 	public Set<NamedClass> getpossibleClassesMoveTo(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
-		for(NamedClass nc : rs.getAtomicConcepts())
+		for(NamedClass nc : rs.getNamedClasses())
 			if(!rs.instanceCheck(nc, ind))
 				moveClasses.add(nc);
 
@@ -558,7 +558,7 @@ public class ORE {
 	
 	public Set<NamedClass> getpossibleClassesMoveFrom(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
-		for(NamedClass nc : rs.getAtomicConcepts()){
+		for(NamedClass nc : rs.getNamedClasses()){
 			if(rs.instanceCheck(nc, ind))
 				moveClasses.add(nc);
 		}
