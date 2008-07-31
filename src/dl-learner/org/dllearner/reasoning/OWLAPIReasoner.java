@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -332,15 +333,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		for(OWLDataProperty owlProperty : owlDatatypeProperties) {
 			DatatypeProperty dtp = new DatatypeProperty(owlProperty.getURI().toString());
 			Set<OWLDataRange> ranges = owlProperty.getRanges(allImports);
-			OWLDataRange range = ranges.iterator().next();
-			if(range.isDataType()) {
-				URI uri = ((OWLDataType)range).getURI();
-				if(uri.equals(Datatype.BOOLEAN.getURI()))
-					booleanDatatypeProperties.add(dtp);
-				else if(uri.equals(Datatype.DOUBLE.getURI()))
-					doubleDatatypeProperties.add(dtp);
-				else if(uri.equals(Datatype.INT.getURI()))
-					intDatatypeProperties.add(dtp);				
+			Iterator<OWLDataRange> it = ranges.iterator();
+			if(it.hasNext()) {
+				OWLDataRange range = it.next();
+				if(range.isDataType()) {
+					URI uri = ((OWLDataType)range).getURI();
+					if(uri.equals(Datatype.BOOLEAN.getURI()))
+						booleanDatatypeProperties.add(dtp);
+					else if(uri.equals(Datatype.DOUBLE.getURI()))
+						doubleDatatypeProperties.add(dtp);
+					else if(uri.equals(Datatype.INT.getURI()))
+						intDatatypeProperties.add(dtp);				
+				}
 			}
 			datatypeProperties.add(dtp);
 		}
