@@ -25,6 +25,8 @@ import java.io.FileWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
+import javax.xml.ws.http.HTTPException;
+
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.JamonMonitorLogger;
 
@@ -40,10 +42,13 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  * query (which may be necessary if a timeout is reached).
  * 
  * @author Jens Lehmann
+ * @author Sebastian Hellmann
  * 
  */
 public class SparqlQuery {
 
+	private static boolean logDeletedOnStart = false;
+	
 	private static Logger logger = Logger.getLogger(SparqlQuery.class);
 
 	private boolean isRunning = false;
@@ -75,9 +80,10 @@ public class SparqlQuery {
 	 * method getasjson
 	 * 
 	 */
-	public void send() {
+	public void send(){
 		wasExecuted = true;
 		// isRunning = true;
+		
 		ResultSet rs;
 
 		writeToSparqlLog("***********\nNew Query:");
@@ -104,22 +110,40 @@ public class SparqlQuery {
 		//the XML Parser throws an error, because he thinks &profile is an html entitie
 		//but it doesn't end with an ;
 		//the & must be masked to an &amp; but I am not sure at the moment how to do that
-		rs = queryExecution.execSelect();
+		try{
+			
+			logger.debug("sending query: length: " + sparqlQueryString.length() + " | ENDPOINT: "
+					+ sparqlEndpoint.getURL().toString());
+			rs = queryExecution.execSelect();
+		
+		
+
+			json = SparqlQuery.convertResultSetToJSON(ResultSetFactory.makeRewindable(rs));
+			//writeToSparqlLog("JSON: " + json);
+		}catch (HTTPException e) {
+			logger.warn("Exception in SparqlQuery\n"+ e.toString());
+			logger.warn("query was "+ sparqlQueryString);
+			writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
+			writeToSparqlLog("ERROR: query was: "+sparqlQueryString);
+			throw e;
+		}catch (RuntimeException e) {
+			//if (!(e instanceof HTTPException)) {
+				logger.warn("RuntimeException in SparqlQuery"+ e.toString());
+				writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
+				writeToSparqlLog("ERROR: query was: "+sparqlQueryString);
+			//}
+			throw e;
+		}
+		
+		// there is a minor issue here: Jamon now also measures ResultsetConversion
+		// the code would need a second try catch block to handle it correctly
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
-
-		logger.debug("query length: " + sparqlQueryString.length() + " | ENDPOINT: "
-				+ sparqlEndpoint.getURL().toString());
-		// writeToSparqlLog("query: "+queryString+ " | ENDPOINT:
-		// "+endpoint.getURL().toString());
-
-		json = SparqlQuery.convertResultSetToJSON(ResultSetFactory.makeRewindable(rs));
-
-		writeToSparqlLog("JSON: " + json);
-
 		isRunning = false;
-
+		
 	}
 
+	
+	
 	/**
 	 * Stops the execution of the query.
 	 */
@@ -194,11 +218,6 @@ public class SparqlQuery {
 	 */
 	public ResultSet getResultSet() {
 		return (getJson() == null) ? null : convertJSONtoResultSet(json);
-		
-		/*if (getJson() == null) {
-		return null;
-		} else
-		return JSONtoResultSet(json);*/
 	}
 
 	/**
@@ -208,11 +227,6 @@ public class SparqlQuery {
 	 */
 	public String getXMLString() {
 		return (getJson() == null) ? null : convertJSONtoXML(json);
-		
-		/*if (getJson() == null) {
-			return null;
-		} else
-			return JSONtoXML(json);*/
 	}
 
 	/**
@@ -223,8 +237,9 @@ public class SparqlQuery {
 	 */
 	public static void writeToSparqlLog(String s) {
 		try {
-			//
-			FileWriter fw = new FileWriter("log/sparql.txt", true);
+			
+			FileWriter fw = new FileWriter("log/sparql.txt", logDeletedOnStart);
+			logDeletedOnStart = true;
 			fw.write(s + "\n");
 			fw.flush();
 			fw.close();
@@ -304,4 +319,6 @@ public class SparqlQuery {
 	public static String convertJSONtoXML(String json) {
 		return convertResultSetToXMLString(convertJSONtoResultSet(json));
 	}
+	
+	
 }
