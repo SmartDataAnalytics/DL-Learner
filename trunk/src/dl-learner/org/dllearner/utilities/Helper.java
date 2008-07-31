@@ -471,14 +471,14 @@ public class Helper {
 	public static Set<NamedClass> computeConcepts(ReasoningService rs) {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
-		Set<NamedClass> concepts = rs.getAtomicConcepts();
+		Set<NamedClass> concepts = rs.getNamedClasses();
 		Helper.removeUninterestingConcepts(concepts);
 		return concepts;
 	}
 	
 	// concepts case 2: ignore list
 	public static Set<NamedClass> computeConceptsUsingIgnoreList(ReasoningService rs, Set<NamedClass> ignoredConcepts) {
-		Set<NamedClass> concepts = rs.getAtomicConcepts();
+		Set<NamedClass> concepts = rs.getNamedClasses();
 		Helper.removeUninterestingConcepts(concepts);
 		for (NamedClass ac : ignoredConcepts) {
 			boolean success = concepts.remove(ac);
@@ -512,7 +512,7 @@ public class Helper {
 	 */
 	// 
 	public static ObjectProperty checkRoles(ReasoningService rs, Set<ObjectProperty> roles) {
-		Set<ObjectProperty> existingRoles = rs.getAtomicRoles();
+		Set<ObjectProperty> existingRoles = rs.getObjectProperties();
 		for (ObjectProperty ar : roles) {
 			if(!existingRoles.contains(ar)) 
 				return ar;
@@ -528,7 +528,7 @@ public class Helper {
 	 */
 	// 
 	public static NamedClass checkConcepts(ReasoningService rs, Set<NamedClass> concepts) {
-		Set<NamedClass> existingConcepts = rs.getAtomicConcepts();
+		Set<NamedClass> existingConcepts = rs.getNamedClasses();
 		for (NamedClass ar : concepts) {
 			if(!existingConcepts.contains(ar)) 
 				return ar;
@@ -542,7 +542,7 @@ public class Helper {
 		long dematStartTime = System.currentTimeMillis();
 
 		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
-		for (NamedClass atomicConcept : rs.getAtomicConcepts()) {
+		for (NamedClass atomicConcept : rs.getNamedClasses()) {
 			aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
 					.retrieval(atomicConcept)));
 			Negation negatedAtomicConcept = new Negation(atomicConcept);
@@ -551,7 +551,7 @@ public class Helper {
 			aBox.concepts.add(atomicConcept.getName());
 		}
 
-		for (ObjectProperty atomicRole : rs.getAtomicRoles()) {
+		for (ObjectProperty atomicRole : rs.getObjectProperties()) {
 			aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getRoleMembers(atomicRole)));
 			aBox.roles.add(atomicRole.getName());
 		}

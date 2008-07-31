@@ -68,7 +68,7 @@ public class WizardController implements ActionListener {
         
         Object nextPanelDescriptor = descriptor.getNextPanelDescriptor();
         
-        //TODO nochmal überdenken
+        //TODO nochmal ï¿½berdenken
         if(nextPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
         	((ClassPanelOWLDescriptor)model.getPanelHashMap().get(nextPanelDescriptor)).panel3.getModel().clear();
         	new ConceptRetriever(nextPanelDescriptor).execute();
@@ -227,7 +227,7 @@ public class WizardController implements ActionListener {
 			wizard.getModel().getOre().detectReasoner();
 
 			Set<NamedClass> ind = wizard.getModel().getOre()
-					.getReasoningService().getAtomicConcepts();
+					.getReasoningService().getNamedClasses();
 
 			return ind;
 		}

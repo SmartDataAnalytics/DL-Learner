@@ -111,7 +111,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     public Set<NamedClass> doInBackground()
     {		
   	  getWizardModel().getOre().detectReasoner();
-  	  Set<NamedClass> ind = getWizardModel().getOre().getReasoningService().getAtomicConcepts();
+  	  Set<NamedClass> ind = getWizardModel().getOre().getReasoningService().getNamedClasses();
   	  ClassPanelOWLDescriptor nextPanel = (ClassPanelOWLDescriptor)getWizardModel().getPanelHashMap().get(getNextPanelDescriptor());
   	  nextPanel.panel3.getModel().clear();
    

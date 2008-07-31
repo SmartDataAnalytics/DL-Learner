@@ -357,9 +357,9 @@ public class ROLearner extends LearningAlgorithm {
 			usedRoles = allowedRoles;
 		} else if(ignoredRoles != null) {
 			Helper.checkRoles(rs, ignoredRoles);
-			usedRoles = Helper.difference(rs.getAtomicRoles(), ignoredRoles);
+			usedRoles = Helper.difference(rs.getObjectProperties(), ignoredRoles);
 		} else {
-			usedRoles = rs.getAtomicRoles();
+			usedRoles = rs.getObjectProperties();
 		}
 		
 		// prepare subsumption and role hierarchies, because they are needed

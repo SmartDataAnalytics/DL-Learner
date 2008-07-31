@@ -57,7 +57,7 @@ public class PsiUp extends RefinementOperatorAdapter {
 			bottomSet.add(new Negation(c));
 	
 		// EXISTS r.BOTTOM und ALL r.BOTTOM für alle r
-		for(ObjectProperty r : reasoningService.getAtomicRoles()) {
+		for(ObjectProperty r : reasoningService.getObjectProperties()) {
 			bottomSet.add(new ObjectAllRestriction(r, new Nothing()));
 			bottomSet.add(new ObjectSomeRestriction(r, new Nothing()));
 		}

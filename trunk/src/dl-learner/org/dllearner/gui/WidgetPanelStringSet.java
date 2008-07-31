@@ -233,7 +233,7 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 							|| configOption.getName().equalsIgnoreCase("ignoredConcepts")) {
 						// fill lists
 						Set<NamedClass> atomicsSet = config.getReasoningService()
-								.getAtomicConcepts();
+								.getNamedClasses();
 						LinkedList<NamedClass> atomicConcepts = new LinkedList<NamedClass>(
 								atomicsSet);
 						for (NamedClass ind : atomicConcepts)
@@ -244,7 +244,7 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 							|| configOption.getName().equalsIgnoreCase("ignoredRoles")) {
 						// fill lists
 						Set<ObjectProperty> atomicsSet = config.getReasoningService()
-								.getAtomicRoles();
+								.getObjectProperties();
 						LinkedList<ObjectProperty> atomicRoles = new LinkedList<ObjectProperty>(
 								atomicsSet);
 						for (ObjectProperty ind : atomicRoles)

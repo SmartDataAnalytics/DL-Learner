@@ -53,7 +53,7 @@ public class OntologyCloserOWLAPI {
 	 */
 	public void applyNumberRestrictions() {
 		System.out.println("apply ExactCardinalityRestriction to Individuals");
-		Set<ObjectProperty> allRoles = this.rs.getAtomicRoles();
+		Set<ObjectProperty> allRoles = this.rs.getObjectProperties();
 		System.out.println("found: " + allRoles.size() + " roles");
 		testForTransitiveProperties(true);
 
@@ -95,7 +95,7 @@ public class OntologyCloserOWLAPI {
 	 */
 	public void applyNumberRestrictionsConcise() {
 
-		Set<ObjectProperty> allRoles = this.rs.getAtomicRoles();
+		Set<ObjectProperty> allRoles = this.rs.getObjectProperties();
 		testForTransitiveProperties(true);
 
 		// collect info for roles and individuals

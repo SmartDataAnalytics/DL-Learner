@@ -61,7 +61,7 @@ public class ELDescriptionTree {
 	
 	// to simplify equivalence checks and minimisation, we
 	// attach a simulation relation to the description tree
-	private Simulation simulation;
+//	private Simulation simulation;
 	
 	/**
 	 * Constructs an empty EL description tree with the empty set
@@ -69,7 +69,7 @@ public class ELDescriptionTree {
 	 */
 	public ELDescriptionTree() {
 		this(new TreeSet<NamedClass>(), new LinkedList<Edge>());
-		simulation = new Simulation();
+//		simulation = new Simulation();
 	}
 	
 	/**
@@ -187,6 +187,12 @@ public class ELDescriptionTree {
 	 */
 	public int getLevel() {
 		return level;
+	}
+	
+	@Override
+	public ELDescriptionTree clone() {
+		// TODO implement efficient tree cloning
+		return null;
 	}
 	
 }
