@@ -811,7 +811,11 @@ public class RhoDRDown implements RefinementOperator {
 		if(useCardinalityRestrictions) {
 			for(ObjectProperty r : rs.getMostGeneralRoles()) {
 				int maxFillers = maxNrOfFillers.get(r);
-				m4.add(new ObjectMaxCardinalityRestriction(maxFillers-1, r, new Thing()));
+				// zero fillers: <= -1 r.C does not make sense
+				// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
+				// but we still keep it, because ALL r.NOT C may be difficult to reach
+				if(maxFillers > 0)
+					m4.add(new ObjectMaxCardinalityRestriction(maxFillers-1, r, new Thing()));
 			}			
 		}
 		m.put(4,m4);
@@ -909,7 +913,11 @@ public class RhoDRDown implements RefinementOperator {
 		if(useCardinalityRestrictions) {
 			for(ObjectProperty r : mgr.get(nc)) {
 				int maxFillers = maxNrOfFillers.get(r);
-				m4.add(new ObjectMaxCardinalityRestriction(maxFillers-1, r, new Thing()));
+				// zero fillers: <= -1 r.C does not make sense
+				// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
+				// but we still keep it, because ALL r.NOT C may be difficult to reach
+				if(maxFillers > 0)				
+					m4.add(new ObjectMaxCardinalityRestriction(maxFillers-1, r, new Thing()));
 			}
 		}
 		mA.get(nc).put(4,m4);
