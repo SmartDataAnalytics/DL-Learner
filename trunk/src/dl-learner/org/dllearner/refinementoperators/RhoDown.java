@@ -59,7 +59,7 @@ import org.dllearner.utilities.owl.ConceptTransformation;
  * @author Jens Lehmann
  *
  */
-public class RhoDown implements RefinementOperator {
+public class RhoDown extends RefinementOperatorAdapter {
 
 //	private PosNegLP learningProblem;
 	private ReasoningService rs;
@@ -111,6 +111,7 @@ public class RhoDown implements RefinementOperator {
 //		rs = learningProblem.getReasoningService();
 	}
 
+	@Override
 	public Set<Description> refine(Description concept) {
 		throw new RuntimeException();
 		// TODO Auto-generated method stub
@@ -123,6 +124,7 @@ public class RhoDown implements RefinementOperator {
 	// => als zweites wäre bei nicht ausreichendem Performancegewinn die Implementierung
 	// von Minimallänge eine Möglichkeit (alle Refinements, auch improper, müssten
 	// dann im Algorithmus gespeichert werden)
+	@Override
 	@SuppressWarnings("unchecked")
 	public SortedSet<Description> refine(Description concept, int maxLength,
 			List<Description> knownRefinements) {

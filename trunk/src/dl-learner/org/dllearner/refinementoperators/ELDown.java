@@ -19,9 +19,10 @@
  */
 package org.dllearner.refinementoperators;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.owl.Description;
 
 /**
@@ -42,24 +43,31 @@ import org.dllearner.core.owl.Description;
  * @author Jens Lehmann
  *
  */
-public class ELDown implements RefinementOperator {
+public class ELDown extends RefinementOperatorAdapter {
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.refinementoperators.RefinementOperator#refine(org.dllearner.core.owl.Description)
 	 */
 	@Override
 	public Set<Description> refine(Description concept) {
-		// TODO Auto-generated method stub
-		return null;
+		ELDescriptionTree tree = new ELDescriptionTree(concept);
+		Set<ELDescriptionTree> refinementTrees = refine(tree);
+		Set<Description> refinements = new HashSet<Description>();
+		for(ELDescriptionTree refinementTree : refinementTrees) {
+			refinements.add(refinementTree.transformToDescription());
+		}
+		return refinements;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.refinementoperators.RefinementOperator#refine(org.dllearner.core.owl.Description, int, java.util.List)
+	
+	/**
+	 * Performs downward refinement for the given tree. The operator
+	 * works directly on EL description trees (which differ from the
+	 * the tree structures build by descriptions).
+	 * 
+	 * @param tree Input EL description tree.
+	 * @return Set of refined EL description trees.
 	 */
-	@Override
-	public Set<Description> refine(Description concept, int maxLength,
-			List<Description> knownRefinements) {
-		// TODO Auto-generated method stub
+	public Set<ELDescriptionTree> refine(ELDescriptionTree tree) {
 		return null;
 	}
 

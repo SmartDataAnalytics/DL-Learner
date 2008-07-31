@@ -73,7 +73,7 @@ import org.dllearner.utilities.owl.ConceptTransformation;
  * @author Jens Lehmann
  *
  */
-public class RhoDRDown implements RefinementOperator {
+public class RhoDRDown extends RefinementOperatorAdapter {
 
 	@SuppressWarnings({"unused"})
 	private static Logger logger = Logger
@@ -259,6 +259,7 @@ public class RhoDRDown implements RefinementOperator {
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.refinement.RefinementOperator#refine(org.dllearner.core.owl.Description)
 	 */
+	@Override
 	public Set<Description> refine(Description concept) {
 		throw new RuntimeException();
 	}
@@ -266,6 +267,7 @@ public class RhoDRDown implements RefinementOperator {
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.refinement.RefinementOperator#refine(org.dllearner.core.owl.Description, int, java.util.List)
 	 */
+	@Override
 	public Set<Description> refine(Description description, int maxLength,
 			List<Description> knownRefinements) {
 		return refine(description, maxLength, knownRefinements, startClass);
