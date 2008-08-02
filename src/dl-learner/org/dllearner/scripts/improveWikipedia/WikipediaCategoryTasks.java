@@ -19,90 +19,62 @@
  */
 package org.dllearner.scripts.improveWikipedia;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.scripts.WikipediaCategoryCleaner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
-import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
-import org.dllearner.utilities.learn.LearnSparql;
 
 public class WikipediaCategoryTasks {
 
 	private static Logger logger = Logger
 			.getLogger(WikipediaCategoryTasks.class);
 
-	private static final boolean STABLE = true; // used for developing, same
-
-	// negExamples not random
-
-	private static final int MAXIMUM_NUMBER_OF_CONCEPTS_KEPT = Integer.MAX_VALUE;
-
-	private static final double ACCTRESHOLD = 0.0;
-
 	private SPARQLTasks sparqlTasks;
 
+	// these cahnge all the time
 	private SortedSet<String> posExamples = new TreeSet<String>();
-
-	private SortedSet<String> fullPositiveSet = new TreeSet<String>();
-
-	// private SortedSet<String> fullPosSetWithoutPosExamples = new
-	// TreeSet<String>();
 
 	private SortedSet<String> negExamples = new TreeSet<String>();
 
-	private SortedSet<String> definitelyWrongIndividuals = new TreeSet<String>();
+	// these dont change, they are for collecting
+	private SortedSet<String> cleanedPositiveSet = new TreeSet<String>();
 
-	private List<EvaluatedDescription> conceptresults = new ArrayList<EvaluatedDescription>();
+	private SortedSet<String> fullPositiveSet = new TreeSet<String>();
+
+	private SortedSet<String> definitelyWrongIndividuals = new TreeSet<String>();
 
 	public WikipediaCategoryTasks(SPARQLTasks sparqlTasks) {
 		this.sparqlTasks = sparqlTasks;
 	}
 
 	/**
-	 * @param SKOSConcept
-	 * @param percentOfSKOSSet
-	 * @param negfactor
-	 * @param sparqlResultLimit
+	 * The strategy is yet really simple. //TODO take the best concept and the
+	 * notCoveredPositives are the ones definitely wrong these are removed from
+	 * the positives examples.
+	 * 
+	 * @param conceptresults
+	 * @param posExamples
+	 * @return
 	 */
-	public void calculateDefinitelyWrongIndividuals(String SKOSConcept,
-			double percentOfSKOSSet, double negfactor, int sparqlResultLimit) {
-
-		makeExamples(SKOSConcept, percentOfSKOSSet, negfactor,
-				sparqlResultLimit);
-
-		LearnSparql learner = new LearnSparql(
-				prepareConfigurationToFindWrongIndividuals());
-		LearningAlgorithm la = null;
-		try {
-			la = learner.learn(posExamples, negExamples);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		// TODO maybe not smart here
-		ConceptSelector cs = new ConceptSelector(la,
-				MAXIMUM_NUMBER_OF_CONCEPTS_KEPT, ACCTRESHOLD);
-		conceptresults = cs.getConceptsNotContainingString("Entity",
-				MAXIMUM_NUMBER_OF_CONCEPTS_KEPT);
-		if (conceptresults.size() == 0) {
-			logger.warn("NO GOOD CONCEPTS FOUND");
-		}
+	public SortedSet<String> calculateWrongIndividualsAndNewPosEx(
+			List<EvaluatedDescription> conceptresults,
+			SortedSet<String> posExamples) {
 
 		definitelyWrongIndividuals = Helper.getStringSet(conceptresults.get(0)
 				.getNotCoveredPositives());
 
 		// clean the examples
 		posExamples.removeAll(definitelyWrongIndividuals);
-		fullPositiveSet.removeAll(definitelyWrongIndividuals);
+		this.posExamples.clear();
+		this.posExamples.addAll(posExamples);
+		this.cleanedPositiveSet.addAll(posExamples);
 		// fullPosSetWithoutPosExamples.removeAll(definitelyWrongIndividuals);
 
 		logger.trace("posExamples" + posExamples.size());
@@ -110,25 +82,24 @@ public class WikipediaCategoryTasks {
 
 		negExamples.clear();
 
+		return definitelyWrongIndividuals;
+
 	}
 
-	public void reevaluateAndRelearn() {
+	/**
+	 * TODO could be more sophisticated
+	 * 
+	 * @param reEvaluatedDesc
+	 * @return
+	 */
+	public SortedSet<String> makeNewNegativeExamples(
+			List<EvaluatedDescription> reEvaluatedDesc,
+			SortedSet<String> posExamples, double negFactor) {
+		negExamples.clear();
 
-		ConceptSPARQLReEvaluator csparql = new ConceptSPARQLReEvaluator(
-				sparqlTasks, conceptresults);
-		List<EvaluatedDescription> reEvaluatedDesc;
-
-		// TODO Optimize here
-		reEvaluatedDesc = csparql.reevaluateConceptsByLowestRecall(
-				fullPositiveSet, 1);
-
-		// TODO add check if it is correct
-		WikipediaCategoryCleaner.printEvaluatedDescriptionCollection(10,
-				reEvaluatedDesc);
 		EvaluatedDescription newDesc = reEvaluatedDesc.get(0);
 		logger.info("Best concept: " + newDesc.getDescription());
 
-		negExamples.clear();
 		negExamples.addAll(Helper.getStringSet(newDesc.getCoveredPositives()));
 		negExamples.addAll(Helper
 				.getStringSet(newDesc.getNotCoveredPositives()));
@@ -137,33 +108,28 @@ public class WikipediaCategoryTasks {
 				.getStringSet(newDesc.getNotCoveredNegatives()));
 
 		negExamples.removeAll(posExamples);
-		// TODO could be more negatives
-		negExamples = SetManipulation.fuzzyShrink(negExamples, posExamples
-				.size());
 
-		LearnSparql learner = new LearnSparql(prepareConfigurationToRelearn());
-		LearningAlgorithm la = null;
-		try {
-			la = learner.learn(posExamples, negExamples);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		conceptresults = la.getCurrentlyBestEvaluatedDescriptions(500,
-				ACCTRESHOLD, true);
+		int neglimit = (int) Math.round(posExamples.size() * negFactor);
+		negExamples = SetManipulation.fuzzyShrink(negExamples, neglimit);
 
+		return negExamples;
 	}
 
 	/**
-	 * @param SKOSConcept
+	 * makes positive and negative Examples. positives are a simple retrieval of
+	 * the category. negatives are made from parallelclasses.
+	 * 
+	 * @param targetCategory
 	 * @param percentOfSKOSSet
 	 *            percentage used from the SKOSSet for training
-	 * @param negfactor
+	 * @param negFactor
 	 *            size of the negative Examples compared to the posExample size
 	 *            (1.0 means equal size)
 	 * @param sparqlResultLimit
 	 */
-	public void makeExamples(String SKOSConcept, double percentOfSKOSSet,
-			double negfactor, int sparqlResultLimit) {
+	public void makeInitialExamples(String targetCategory,
+			double percentOfSKOSSet, double negFactor, int sparqlResultLimit,
+			boolean develop) {
 		fullPositiveSet.clear();
 		// fullPosSetWithoutPosExamples.clear();
 		posExamples.clear();
@@ -172,12 +138,12 @@ public class WikipediaCategoryTasks {
 		// POSITIVES
 		AutomaticPositiveExampleFinderSPARQL apos = new AutomaticPositiveExampleFinderSPARQL(
 				sparqlTasks);
-		apos.makePositiveExamplesFromSKOSConcept(SKOSConcept);
-		fullPositiveSet = apos.getPosExamples();
+		apos.makePositiveExamplesFromSKOSConcept(targetCategory);
+		fullPositiveSet.addAll(apos.getPosExamples());
 
 		int poslimit = (int) Math.round(percentOfSKOSSet
 				* fullPositiveSet.size());
-		int neglimit = (int) Math.round(poslimit * negfactor);
+		int neglimit = (int) Math.round(poslimit * negFactor);
 
 		posExamples = SetManipulation.fuzzyShrink(fullPositiveSet, poslimit);
 
@@ -188,7 +154,7 @@ public class WikipediaCategoryTasks {
 
 		aneg.makeNegativeExamplesFromParallelClasses(posExamples,
 				sparqlResultLimit);
-		negExamples = aneg.getNegativeExamples(neglimit, STABLE);
+		negExamples = aneg.getNegativeExamples(neglimit, develop);
 
 		logger.debug("POSITIVE EXAMPLES");
 		for (String pos : posExamples) {
@@ -209,25 +175,6 @@ public class WikipediaCategoryTasks {
 
 	}
 
-	private LearnSPARQLConfiguration prepareConfigurationToFindWrongIndividuals() {
-		LearnSPARQLConfiguration lsc = new LearnSPARQLConfiguration();
-		lsc.sparqlEndpoint = sparqlTasks.getSparqlEndpoint();
-
-		lsc.noisePercentage = 15;
-		lsc.guaranteeXgoodDescriptions = 200;
-		lsc.maxExecutionTimeInSeconds = 50;
-		lsc.logLevel = "INFO";
-		// lsc.searchTreeFile = "log/WikipediaCleaner.txt";
-
-		return lsc;
-
-	}
-
-	private LearnSPARQLConfiguration prepareConfigurationToRelearn() {
-		return prepareConfigurationToFindWrongIndividuals();
-
-	}
-
 	public SortedSet<String> getPosExamples() {
 		return posExamples;
 	}
@@ -244,8 +191,8 @@ public class WikipediaCategoryTasks {
 		return definitelyWrongIndividuals;
 	}
 
-	public List<EvaluatedDescription> getConceptresults() {
-		return conceptresults;
+	public SortedSet<String> getCleanedPositiveSet() {
+		return cleanedPositiveSet;
 	}
 
 }

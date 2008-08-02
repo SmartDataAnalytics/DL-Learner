@@ -25,7 +25,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQueryType;
 import org.dllearner.utilities.statistics.Statistics;
@@ -43,7 +42,7 @@ public class Manager {
 	private ExtractionAlgorithm extractionAlgorithm;
 	
 	private static Logger logger = Logger
-		.getLogger(KnowledgeSource.class);
+		.getLogger(Manager.class);
 	
 	
 	public void useConfiguration(SparqlQueryType SparqlQueryType,
@@ -77,12 +76,14 @@ public class Manager {
 	public String extract(Set<String> instances) {
 		// this.TypedSparqlQuery.query(uri);
 		// System.out.println(ExtractionAlgorithm.getFirstNode(uri));
-		System.out.println("Start extracting");
+		logger.info("Start extracting");
 		SortedSet<String> ret = new TreeSet<String>();
 		int progress=0;
 		for (String one : instances) {
 			progress++;
-			logger.info("Progress: "+progress+" of "+instances.size()+" finished");
+			//if(progress % 10 == 0) {
+				logger.info("Progress: "+progress+" of "+instances.size()+" finished: "+one);
+			//}
 			try {
 				Node n = extractionAlgorithm.expandNode(new URI(one),
 						typedSparqlQuery);
@@ -91,15 +92,15 @@ public class Manager {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Finished extracting, start conversion");
+		logger.info("Finished extracting, start conversion");
 		StringBuffer nt = new StringBuffer();
 		Object[] arr = ret.toArray();
 		for (int i = 0; i < arr.length; i++) {
 			nt.append((String) arr[i] + "\n");
 			if (i % 1000 == 0)
-				System.out.println(i + " of  " + arr.length + " triples done");
+				logger.info(i + " of  " + arr.length + " triples done");
 		}
-		System.out.println(arr.length + " of  " + arr.length + " triples done");
+		logger.info(arr.length + " of  " + arr.length + " triples done");
 		/*
 		 * String tmp=""; while ( ret.size() > 0) { tmp=ret.first(); nt+=tmp;
 		 * ret.remove(tmp); System.out.println(ret.size()); } /*for (String str :

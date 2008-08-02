@@ -129,16 +129,17 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	}*/
 
 	/**
-	 * makes neg ex from classes, the pos ex belong to 
+	 * makes negEx from classes, the posEx belong to.
+	 * Gets all Classes from PosEx, gets Instances from these Classes, returns all
 	 * @param positiveSet
-	 * @param resultLimit
+	 * @param sparqlResultLimit
 	 */
-	public void makeNegativeExamplesFromParallelClasses(SortedSet<String> positiveSet, int resultLimit){
-		makeNegativeExamplesFromClassesOfInstances(positiveSet, resultLimit);
+	public void makeNegativeExamplesFromParallelClasses(SortedSet<String> positiveSet, int sparqlResultLimit){
+		makeNegativeExamplesFromClassesOfInstances(positiveSet, sparqlResultLimit);
 	}
 	
 	private void makeNegativeExamplesFromClassesOfInstances(SortedSet<String> positiveSet,
-			int resultLimit) {
+			int sparqlResultLimit) {
 		logger.debug("making neg Examples from parallel classes");
 		SortedSet<String> classes = new TreeSet<String>();
 		// superClasses.add(concept.replace("\"", ""));
@@ -148,7 +149,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		// superclasses");
 
 		for (String instance : positiveSet) {
-			classes.addAll(sparqltasks.getClassesForInstance(instance, resultLimit));
+			classes.addAll(sparqltasks.getClassesForInstance(instance, sparqlResultLimit));
 		}
 		logger.debug("getting negExamples from " + classes.size() + " parallel classes");
 		for (String oneClass : classes) {
@@ -156,7 +157,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 			// rsc = new
 			// JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
 			this.fromParallelClasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\"" + oneClass
-					+ "\"", resultLimit));
+					+ "\"", sparqlResultLimit));
 
 		}
 		
