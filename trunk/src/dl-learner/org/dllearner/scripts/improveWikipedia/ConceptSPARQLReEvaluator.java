@@ -32,11 +32,10 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 
 /**
- * @author Sebastian Hellmann 
+ * @author Sebastian Hellmann
  * 
- * 	The EvaluatedDescriptions from a fragment are
- *         validated against the SPARQLendpoint.
- *         There are different strategies, see the methods;
+ * The EvaluatedDescriptions from a fragment are validated against the
+ * SPARQLendpoint. There are different strategies, see the methods;
  */
 public class ConceptSPARQLReEvaluator {
 
@@ -51,33 +50,29 @@ public class ConceptSPARQLReEvaluator {
 
 	int depthOfRDFS = 1;
 
-	public ConceptSPARQLReEvaluator(SPARQLTasks sparqlTasks,
-			List<EvaluatedDescription> descToBeReevaluated) {
-		this.descToBeReevaluated = descToBeReevaluated;
+	/**
+	 * Constructor using default settings
+	 * 
+	 * @param sparqlTasks
+	 */
+	public ConceptSPARQLReEvaluator(SPARQLTasks sparqlTasks) {
 		this.sparqlTasks = sparqlTasks;
 	}
 
-	public ConceptSPARQLReEvaluator(SPARQLTasks sparqlTasks,
-			List<EvaluatedDescription> descToBeReevaluated, int depthOfRDFS,
+	/**
+	 * constructor to manually set parameters
+	 * 
+	 * @param sparqlTasks
+	 * @param depthOfRDFS
+	 * @param sparqlResultLimit
+	 */
+	public ConceptSPARQLReEvaluator(SPARQLTasks sparqlTasks, int depthOfRDFS,
 			int sparqlResultLimit) {
-		this(sparqlTasks, descToBeReevaluated);
+		this(sparqlTasks);
 		this.depthOfRDFS = depthOfRDFS;
 		this.sparqlResultLimit = sparqlResultLimit;
 	}
 
-
-	public List<EvaluatedDescription> reevaluateConceptsByDataCoverage(
-			SortedSet<String> positiveSet, int maxNrOfConcepts) {
-		List<EvaluatedDescription> tmp = reevaluateConceptsByLowestRecall(positiveSet);
-		List<EvaluatedDescription> returnSet = new ArrayList<EvaluatedDescription>();
-
-		while ((!tmp.isEmpty()) && (returnSet.size() <= maxNrOfConcepts)) {
-			returnSet.add(tmp.remove(0));
-		}
-
-		return returnSet;
-	}
-	
 	/**
 	 * Accuracy is calculated as correct positive classified over (correct
 	 * positive classified + incorrect negative classified) "How many are
@@ -88,6 +83,7 @@ public class ConceptSPARQLReEvaluator {
 	 * @return
 	 */
 	public List<EvaluatedDescription> reevaluateConceptsByDataCoverage(
+			List<EvaluatedDescription> descToBeReevaluated,
 			SortedSet<String> positiveSet) {
 
 		SortedSet<EvaluatedDescription> returnSet = new TreeSet<EvaluatedDescription>(
@@ -127,18 +123,6 @@ public class ConceptSPARQLReEvaluator {
 
 	}
 
-	public List<EvaluatedDescription> reevaluateConceptsByLowestRecall(
-			SortedSet<String> positiveSet, int maxNrOfConcepts) {
-		List<EvaluatedDescription> tmp = reevaluateConceptsByLowestRecall(positiveSet);
-		List<EvaluatedDescription> returnSet = new ArrayList<EvaluatedDescription>();
-
-		while ((!tmp.isEmpty()) && (returnSet.size() <= maxNrOfConcepts)) {
-			returnSet.add(tmp.remove(0));
-		}
-
-		return returnSet;
-	}
-
 	/**
 	 * Accuracy is calculated as correct positive classified over all retrieved
 	 * e.g. 50 correct out of 400 retrieved (50/400)
@@ -147,6 +131,7 @@ public class ConceptSPARQLReEvaluator {
 	 * @return
 	 */
 	public List<EvaluatedDescription> reevaluateConceptsByLowestRecall(
+			List<EvaluatedDescription> descToBeReevaluated,
 			SortedSet<String> positiveSet) {
 		logger.info("reevaluating by lowest recall "
 				+ descToBeReevaluated.size() + " concepts");
@@ -159,7 +144,6 @@ public class ConceptSPARQLReEvaluator {
 		SortedSet<String> PosAsNeg = new TreeSet<String>();
 
 		SortedSet<Individual> NegAsPos = new TreeSet<Individual>();
-
 		SortedSet<Individual> NegAsNeg = new TreeSet<Individual>();
 
 		// elements are immediately removed from the list to save memory
@@ -196,5 +180,31 @@ public class ConceptSPARQLReEvaluator {
 				.retrieveInstancesForClassDescriptionIncludingSubclasses(
 						kbsyntax, sparqlResultLimit, depthOfRDFS);
 	}
+
+	/*
+	 * public List<EvaluatedDescription> reevaluateConceptsByLowestRecall( List<EvaluatedDescription>
+	 * descToBeReevaluated, SortedSet<String> positiveSet, int maxNrOfConcepts) {
+	 * List<EvaluatedDescription> tmp =
+	 * reevaluateConceptsByLowestRecall(descToBeReevaluated, positiveSet); List<EvaluatedDescription>
+	 * returnSet = new ArrayList<EvaluatedDescription>();
+	 * 
+	 * while ((!tmp.isEmpty()) && (returnSet.size() <= maxNrOfConcepts)) {
+	 * returnSet.add(tmp.remove(0)); }
+	 * 
+	 * return returnSet; }
+	 */
+
+	/*
+	 * public List<EvaluatedDescription> reevaluateConceptsByDataCoverage( List<EvaluatedDescription>
+	 * descToBeReevaluated, SortedSet<String> positiveSet, int maxNrOfConcepts) {
+	 * List<EvaluatedDescription> tmp =
+	 * reevaluateConceptsByLowestRecall(descToBeReevaluated, positiveSet); List<EvaluatedDescription>
+	 * returnSet = new ArrayList<EvaluatedDescription>();
+	 * 
+	 * while ((!tmp.isEmpty()) && (returnSet.size() <= maxNrOfConcepts)) {
+	 * returnSet.add(tmp.remove(0)); }
+	 * 
+	 * return returnSet; }
+	 */
 
 }

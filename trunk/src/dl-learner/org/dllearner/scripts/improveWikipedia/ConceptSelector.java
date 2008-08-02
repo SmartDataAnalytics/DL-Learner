@@ -24,79 +24,69 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.utilities.Files;
+import org.dllearner.utilities.datastructures.SetManipulation;
 
 /**
- * This is a simple class, it might be worked into other classes later.
- * filters concepts and records some results
+ * This is a simple class, it might be worked into other classes later. filters
+ * concepts and records some results
  * 
  * @author Sebastian Hellmann
- *
+ * 
  */
 public class ConceptSelector {
 
 	private static final long WASH = 1216800000000L;
-	
-	List<EvaluatedDescription> concepts;
-	
-	public ConceptSelector(LearningAlgorithm la) {
+
+	// List<EvaluatedDescription> concepts;
+
+	public ConceptSelector() {
 		super();
-		this.concepts = la.getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, 0.0, true);
-		this.recordConceptClasses();
-		
+		// this.concepts = concepts;
+		// this.recordConceptClasses();
+
 	}
-	
-	
-	public ConceptSelector(LearningAlgorithm la, int maxNrOfConcepts) {
-		super();
-		this.concepts = la.getCurrentlyBestEvaluatedDescriptions(maxNrOfConcepts);
-		
+
+	public List<EvaluatedDescription> getAllConceptsWithoutOR(
+			List<EvaluatedDescription> concepts) {
+		return getConceptsNotContainingString(concepts, "OR");
 	}
-	
-	public ConceptSelector(LearningAlgorithm la, int maxNrOfConcepts, double acctreshold) {
-		super();
-		this.concepts = la.getCurrentlyBestEvaluatedDescriptions(maxNrOfConcepts, acctreshold, true);
-		this.recordConceptClasses();
+
+	@SuppressWarnings("unchecked")
+	public List<EvaluatedDescription> getConceptsNotContainingString(
+			List<EvaluatedDescription> concepts, String filterString,
+			int limitSize) {
+		// List<EvaluatedDescription> tmp =
+		// getConceptsNotContainingString(filterString);
+		// List<EvaluatedDescription> result = new
+		// ArrayList<EvaluatedDescription>();
+		return SetManipulation.getFirst(getConceptsNotContainingString(
+				concepts, filterString), limitSize);
+		/*
+		 * while ((!tmp.isEmpty()) && (result.size() <= limitSize)) {
+		 * result.add(tmp.remove(0)); } return result;
+		 */
 	}
-	
-	public List<EvaluatedDescription> getConceptsWithoutOR(){
-		return getConceptsNotContainingString("OR");
-	}
-	
-	public List<EvaluatedDescription> getConceptsNotContainingString(String filterString, int limitSize){ 
-		List<EvaluatedDescription> tmp = getConceptsNotContainingString(filterString);
-		List<EvaluatedDescription> result = new ArrayList<EvaluatedDescription>(); 
-		
-		while ((!tmp.isEmpty()) && (result.size() <= limitSize)) {
-			result.add(tmp.remove(0));
-		}
-		return result;
-	}
-		
-	
-	public List<EvaluatedDescription> getConceptsNotContainingString(String filterString){
-		
+
+	public List<EvaluatedDescription> getConceptsNotContainingString(
+			List<EvaluatedDescription> concepts, String filterString) {
+
 		List<EvaluatedDescription> result = new ArrayList<EvaluatedDescription>();
 		for (EvaluatedDescription description : concepts) {
 			if (!description.toString().contains(filterString)) {
-				result.add(description); 
+				result.add(description);
 			}
-			
+
 		}
 		return result;
 	}
-	
-	
-	
 
-	public void recordConceptClasses() {
-		StringBuffer result =new StringBuffer();
-		StringBuffer result1 =new StringBuffer("\n\n ***********Entity*****\n");
-		StringBuffer result2 =new StringBuffer("\n\n ***********OR*****\n");
+	public void recordConceptClasses(List<EvaluatedDescription> concepts) {
+		StringBuffer result = new StringBuffer();
+		StringBuffer result1 = new StringBuffer("\n\n ***********Entity*****\n");
+		StringBuffer result2 = new StringBuffer("\n\n ***********OR*****\n");
 		int result1count = 1;
 		int result2count = 1;
-		
 
 		int x = 0;
 		for (EvaluatedDescription description : concepts) {
@@ -121,7 +111,7 @@ public class ConceptSelector {
 		Files.createFile(new File("results/descriptions/concepts" + time()
 				+ ".txt"), result.toString());
 	}
-	
+
 	public static String time() {
 		return ("" + (System.currentTimeMillis() - WASH)).substring(0, 7);
 

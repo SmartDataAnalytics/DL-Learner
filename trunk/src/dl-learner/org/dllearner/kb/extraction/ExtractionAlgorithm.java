@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.KnowledgeSource;
 
 /**
  * This class is used to extract the information .
@@ -39,7 +38,7 @@ public class ExtractionAlgorithm {
 	// private boolean getAllSuperClasses = true;
 	// private boolean closeAfterRecursion = true;
 	private static Logger logger = Logger
-		.getLogger(KnowledgeSource.class);
+		.getLogger(ExtractionAlgorithm.class);
 
 	public ExtractionAlgorithm(Configuration Configuration) {
 		this.configuration = Configuration;
@@ -75,7 +74,7 @@ public class ExtractionAlgorithm {
 		//System.out.println(this.configuration);
 		long time = System.currentTimeMillis();
 		Node n = getFirstNode(uri);
-		System.out.println(n);
+		logger.info(n);
 		Vector<Node> v = new Vector<Node>();
 		v.add(n);
 		logger.info("StartVector: " + v);
