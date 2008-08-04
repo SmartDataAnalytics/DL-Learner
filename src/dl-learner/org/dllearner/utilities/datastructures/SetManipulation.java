@@ -18,8 +18,9 @@ public class SetManipulation {
 	 * @return
 	 */
 	public static SortedSet<String> fuzzyShrink(SortedSet<String> set, int limit) {
-		if (set.size() <= limit)
+		if (set.size() <= limit) {
 			return set;
+		}
 		SortedSet<String> ret = new TreeSet<String>();
 		Random r = new Random();
 		double treshold = ((double) limit) / set.size();
@@ -48,8 +49,9 @@ public class SetManipulation {
 	 */
 	public static SortedSet<String> stableShrink(SortedSet<String> set,
 			int limit) {
-		if (set.size() <= limit)
+		if (set.size() <= limit) {
 			return set;
+		}
 		SortedSet<String> ret = new TreeSet<String>();
 
 		for (String oneInd : set) {
@@ -63,8 +65,9 @@ public class SetManipulation {
 	}
 
 	/**
+	 * XXX
 	 * getFirst n Elements from list.
-	 * 
+	 * changes the list!!!
 	 * @param list
 	 * @param nrElements
 	 * @return returns the list shrunken to size. it is an ARRAYLIST now

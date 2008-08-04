@@ -94,13 +94,14 @@ public class SparqlQuery {
 
 		// Jena access to SPARQL endpoint
 		queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
+		//System.out.println(sparqlEndpoint.getDefaultGraphURIs());
+		
 		for (String dgu : sparqlEndpoint.getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
 		}
 		for (String ngu : sparqlEndpoint.getNamedGraphURIs()) {
 			queryExecution.addNamedGraph(ngu);
 		}
-
 		// TODO remove after overnext Jena release
 		HttpQuery.urlLimit = 3 * 1024;
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime")

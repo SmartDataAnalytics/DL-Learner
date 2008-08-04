@@ -50,6 +50,7 @@ import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
 import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
 import org.dllearner.utilities.learn.LearnSparql;
+import org.dllearner.utilities.statistics.SimpleClock;
 
 public class WikipediaCategoryCleaner {
 
@@ -67,6 +68,8 @@ public class WikipediaCategoryCleaner {
 	private static final boolean DEVELOP = true;
 
 	public static final int SPARQL_RESULTSET_LIMIT = 500;
+	
+	private static final int DEPTH_OF_RDFS = 0;
 
 	// the 70/30 strategy was abandoned
 	public static double PERCENT_OF_SKOSSET = 1.0;
@@ -84,13 +87,16 @@ public class WikipediaCategoryCleaner {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		SimpleClock sc = new SimpleClock();
 		initLogger();
 		setup();
 		logger.info("Start");
-
-		String test = "http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
-		test = "http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners";
 		SortedSet<String> wikipediaCategories = new TreeSet<String>();
+		
+		
+		String test = "http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
+		wikipediaCategories.add(test);
+		test = "http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners";
 		wikipediaCategories.add(test);
 
 		for (String target : wikipediaCategories) {
@@ -99,7 +105,7 @@ public class WikipediaCategoryCleaner {
 
 		}
 
-		System.out.println("Finished");
+		sc.printAndSet("Finished");
 		// JamonMonitorLogger.printAllSortedByLabel();
 
 	}
@@ -114,7 +120,7 @@ public class WikipediaCategoryCleaner {
 		ConceptSPARQLReEvaluator csparql;
 
 		wikiTasks = new WikipediaCategoryTasks(sparqlTasks);
-		csparql = new ConceptSPARQLReEvaluator(sparqlTasks);
+		csparql = new ConceptSPARQLReEvaluator(sparqlTasks, DEPTH_OF_RDFS, SPARQL_RESULTSET_LIMIT);
 
 		// PHASE 1 *************
 
@@ -153,9 +159,9 @@ public class WikipediaCategoryCleaner {
 		conceptresults = learn(getConfToRelearn(), currentPOSITIVEex,
 				currentNEGATIVEex);
 		//		 TODO select concepts
-		logger.info("reducing concept size before evaluating");
+		logger.info("reducing concept size before evaluating from "+conceptresults.size());
 		conceptresults = selectConcepts(conceptresults);
-		// reevaluate versus the Endpoint
+			// reevaluate versus the Endpoint
 		conceptresults = csparql.reevaluateConceptsByLowestRecall(
 				conceptresults, currentPOSITIVEex);
 
@@ -165,9 +171,13 @@ public class WikipediaCategoryCleaner {
 	}
 
 	private static void collectResults(WikipediaCategoryTasks wikiTasks) {
-		System.out.println(wikiTasks.getFullPositiveSet());
-		System.out.println(wikiTasks.getCleanedPositiveSet());
-		System.out.println(wikiTasks.getDefinitelyWrongIndividuals());
+		//logger.setLevel(Level.DEBUG);
+		printSet("fullpos", wikiTasks.getFullPositiveSet());
+		
+		printSet("cleanedpos", wikiTasks.getCleanedPositiveSet());
+		
+		printSet("wrongindividuals", wikiTasks.getDefinitelyWrongIndividuals());
+		
 	}
 
 	private static List<EvaluatedDescription> selectConcepts(
@@ -287,6 +297,7 @@ public class WikipediaCategoryCleaner {
 			// url = "http://dbpedia.openlinksw.com:8890/sparql";
 			sparqlTasks = new SPARQLTasks(cache, SparqlEndpoint
 					.getEndpointDBpedia());
+			
 		}
 	}
 
@@ -308,17 +319,19 @@ public class WikipediaCategoryCleaner {
 		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
 		logger.setLevel(Level.DEBUG);
-		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
-		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
 		Logger.getLogger(Manager.class).setLevel(Level.INFO);
-		Logger.getLogger(ExtractionAlgorithm.class).setLevel(Level.WARN);
+		Level lwarn = Level.WARN;
+		Logger.getLogger(KnowledgeSource.class).setLevel(lwarn);
+		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(lwarn);
+		
+		Logger.getLogger(ExtractionAlgorithm.class).setLevel(lwarn);
 		Logger.getLogger(AutomaticNegativeExampleFinderSPARQL.class).setLevel(
-				Level.WARN);
+				lwarn);
 		Logger.getLogger(AutomaticPositiveExampleFinderSPARQL.class).setLevel(
-				Level.WARN);
-		Logger.getLogger(ExampleBasedROLComponent.class).setLevel(Level.WARN);
-		Logger.getLogger(SparqlQuery.class).setLevel(Level.INFO);
-		Logger.getLogger(Cache.class).setLevel(Level.INFO);
+				lwarn);
+		Logger.getLogger(ExampleBasedROLComponent.class).setLevel(lwarn);
+		Logger.getLogger(SparqlQuery.class).setLevel(lwarn);
+		Logger.getLogger(Cache.class).setLevel(lwarn);
 
 	}
 

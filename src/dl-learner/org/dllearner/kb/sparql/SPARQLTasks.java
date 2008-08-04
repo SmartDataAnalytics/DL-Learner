@@ -112,7 +112,7 @@ public class SPARQLTasks {
 		final SortedSet<String> tmpSet = new TreeSet<String>();
 
 		// collect super/subclasses for the depth
-		for (; (depth != 0) && (!toBeRetrieved.isEmpty()); depth--) {
+		for (; (depth > 0) && (!toBeRetrieved.isEmpty()); depth--) {
 			// collect super/subclasses for each class in toBeRetrieved
 			// accumulate in tmpSet
 			for (String oneClass : toBeRetrieved) {

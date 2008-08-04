@@ -42,6 +42,7 @@ public class LearnSPARQLConfiguration {
 			
 			// KNOWLEDGESOURCE
 			cm.applyConfigEntry(ks, "url", sparqlEndpoint.getURL().toString());
+			cm.applyConfigEntry(ks, "predefinedEndpoint", "DBPEDIA");
 			cm.applyConfigEntry(ks, "recursionDepth", recursiondepth);
 			cm.applyConfigEntry(ks, "closeAfterRecursion", closeAfterRecursion);
 			cm.applyConfigEntry(ks, "predefinedFilter", predefinedFilter);
