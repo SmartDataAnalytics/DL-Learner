@@ -36,15 +36,15 @@ public class Simulation {
 	private List<TreeTuple> relation;
 	
 	// { w | (v,w) \in S } for all w
-	private Map<ELDescriptionTree,List<ELDescriptionTree>> in;
+	private Map<ELDescriptionNode,List<ELDescriptionNode>> in;
 	
 	// { v | (v,w) \in S } for all v
-	private Map<ELDescriptionTree,List<ELDescriptionTree>> out;
+	private Map<ELDescriptionNode,List<ELDescriptionNode>> out;
 	
 	public Simulation() {
 		relation = new LinkedList<TreeTuple>();
-		in = new HashMap<ELDescriptionTree,List<ELDescriptionTree>>();
-		out = new HashMap<ELDescriptionTree,List<ELDescriptionTree>>();
+		in = new HashMap<ELDescriptionNode,List<ELDescriptionNode>>();
+		out = new HashMap<ELDescriptionNode,List<ELDescriptionNode>>();
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class Simulation {
 		if(in.containsKey(tuple.getTree2())) {
 			in.get(tuple.getTree2()).add(tuple.getTree1());
 		} else {
-			List<ELDescriptionTree> list = new LinkedList<ELDescriptionTree>();
+			List<ELDescriptionNode> list = new LinkedList<ELDescriptionNode>();
 			list.add(tuple.getTree1());
 			in.put(tuple.getTree2(), list);
 		}
@@ -67,7 +67,7 @@ public class Simulation {
 		if(out.containsKey(tuple.getTree1())) {
 			out.get(tuple.getTree1()).add(tuple.getTree2());
 		} else {
-			List<ELDescriptionTree> list = new LinkedList<ELDescriptionTree>();
+			List<ELDescriptionNode> list = new LinkedList<ELDescriptionNode>();
 			list.add(tuple.getTree2());
 			out.put(tuple.getTree1(), list);
 		}		
@@ -99,11 +99,11 @@ public class Simulation {
 		return relation;
 	}
 	
-	public List<ELDescriptionTree> in(ELDescriptionTree tree) {
+	public List<ELDescriptionNode> in(ELDescriptionNode tree) {
 		return in.get(tree);
 	}	
 	
-	public List<ELDescriptionTree> out(ELDescriptionTree tree) {
+	public List<ELDescriptionNode> out(ELDescriptionNode tree) {
 		return out.get(tree);
 	}		
 }
