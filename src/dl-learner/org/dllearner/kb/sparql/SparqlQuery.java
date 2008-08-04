@@ -278,15 +278,8 @@ public class SparqlQuery {
 	 * @return JSON representation of the result set.
 	 */
 	public static String convertResultSetToJSON(ResultSetRewindable resultSet) {
-		// if (rs == null)
-		// this.send();
-		//ResultSetRewindable rsRewind = ResultSetFactory.makeRewindable(resultSet);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ResultSetFormatter.outputAsJSON(baos, resultSet);
-		// possible Jena bug: Jena modifies the result set during
-		// JSON transformation, so we need to get it back
-		//rsRewind.
-		//resultSet = convertJSONtoResultSet(baos.toString());
 		resultSet.reset();
 		try {
 			return baos.toString("UTF-8");

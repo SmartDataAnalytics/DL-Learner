@@ -57,9 +57,19 @@ public class SimpleClock {
 		
 	}
 	
+	/**
+	 * resets the clock
+	 */
 	public void setTime() {
 		time=System.currentTimeMillis();
 	}
+	/**
+	 * resets the clock
+	 */
+	public void reset() {
+		setTime();
+	}
+	
 	public long getTime() {
 		long now=System.currentTimeMillis();
 		return now-time;

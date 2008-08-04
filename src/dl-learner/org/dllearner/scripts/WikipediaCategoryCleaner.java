@@ -46,6 +46,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.scripts.improveWikipedia.ConceptSPARQLReEvaluator;
 import org.dllearner.scripts.improveWikipedia.ConceptSelector;
 import org.dllearner.scripts.improveWikipedia.WikipediaCategoryTasks;
+import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
 import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
@@ -172,11 +173,11 @@ public class WikipediaCategoryCleaner {
 
 	private static void collectResults(WikipediaCategoryTasks wikiTasks) {
 		//logger.setLevel(Level.DEBUG);
-		printSet("fullpos", wikiTasks.getFullPositiveSet());
+		SetManipulation.printSet("fullpos", wikiTasks.getFullPositiveSet(), logger);
 		
-		printSet("cleanedpos", wikiTasks.getCleanedPositiveSet());
+		SetManipulation.printSet("cleanedpos", wikiTasks.getCleanedPositiveSet(), logger);
 		
-		printSet("wrongindividuals", wikiTasks.getDefinitelyWrongIndividuals());
+		SetManipulation.printSet("wrongindividuals", wikiTasks.getDefinitelyWrongIndividuals(), logger);
 		
 	}
 
@@ -269,21 +270,15 @@ public class WikipediaCategoryCleaner {
 			SortedSet correctIndividuals, 
 			SortedSet wrongIndividuals,
 			int numberOfConcepts) {
-		printSet("full  Individual set: ", fullSet);
+		SetManipulation.printSet("full  Individual set: ", fullSet, logger);
 		
-		printSet("correct Individuals: ", correctIndividuals);
-		printSet("incorrect Individuals: ", wrongIndividuals);
+		SetManipulation.printSet("correct Individuals: ", correctIndividuals, logger);
+		SetManipulation.printSet("incorrect Individuals: ", wrongIndividuals, logger);
 		logger.info("reevaluated " + numberOfConcepts + " found Concepts");
 		logger.info("END OF PHASE 1 **********************");
 	}
-	private static void printSet(String s, SortedSet set) {
-		if(logger.getLevel().equals(Level.DEBUG)){
-			logger.info(s +" ["+ set.size()+"]: "+set);
-		}else{
-			logger.info(s +" ["+ set.size()+"]");
-		}
-		
-	}
+	
+	
 
 	private static void setup() {
 		// SETUP cache and sparqltasks

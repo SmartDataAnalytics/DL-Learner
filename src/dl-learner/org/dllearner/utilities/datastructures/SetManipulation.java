@@ -5,6 +5,8 @@ import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dllearner.core.owl.Individual;
 
 public class SetManipulation {
@@ -86,5 +88,19 @@ public class SetManipulation {
 			ret.add(new Individual(ind));
 		}
 		return ret;
+	}
+	
+	public static void printSet(String s, SortedSet set, Logger logger) {
+		if(logger.getLevel().equals(Level.DEBUG)){
+			logger.info(s +" ["+ set.size()+"]: "+set);
+		}else{
+			logger.info(s +" ["+ set.size()+"]");
+		}
+		
+	}
+	
+	public static void printSet(String s, SortedSet set) {
+		System.out.println(s +" ["+ set.size()+"]: "+set);
+		
 	}
 }
