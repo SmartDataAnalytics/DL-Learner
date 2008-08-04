@@ -47,17 +47,17 @@ import org.dllearner.core.owl.UnsupportedLanguageException;
  * @author Jens Lehmann
  *
  */
-public class ELDescriptionTree {
+public class ELDescriptionNode {
 
 	private SortedSet<NamedClass> label;
 	
-	private List<Edge> edges;
+	private List<ELDescriptionEdge> edges;
 
 	private int level;
 	
 	// parent node in the tree;
 	// null indicates that this node is a root node
-	private ELDescriptionTree parent = null;
+	private ELDescriptionNode parent = null;
 	
 	// to simplify equivalence checks and minimisation, we
 	// attach a simulation relation to the description tree
@@ -67,8 +67,8 @@ public class ELDescriptionTree {
 	 * Constructs an empty EL description tree with the empty set
 	 * as root label and an empty set of outgoing edges.
 	 */
-	public ELDescriptionTree() {
-		this(new TreeSet<NamedClass>(), new LinkedList<Edge>());
+	public ELDescriptionNode() {
+		this(new TreeSet<NamedClass>(), new LinkedList<ELDescriptionEdge>());
 //		simulation = new Simulation();
 	}
 	
@@ -76,8 +76,8 @@ public class ELDescriptionTree {
 	 * Constructs an EL description tree given its root label.
 	 * @param label Label of the root node.
 	 */
-	public ELDescriptionTree(SortedSet<NamedClass> label) {
-		this(label, new LinkedList<Edge>());
+	public ELDescriptionNode(SortedSet<NamedClass> label) {
+		this(label, new LinkedList<ELDescriptionEdge>());
 	}
 	
 	/**
@@ -85,7 +85,7 @@ public class ELDescriptionTree {
 	 * @param label Label of the root node.
 	 * @param edges Edges connected to the root node.
 	 */
-	public ELDescriptionTree(SortedSet<NamedClass> label, List<Edge> edges) {
+	public ELDescriptionNode(SortedSet<NamedClass> label, List<ELDescriptionEdge> edges) {
 		this.label = label;
 		this.edges = edges;
 	}
@@ -94,7 +94,7 @@ public class ELDescriptionTree {
 	 * Constructs an EL description tree from an EL description. 
 	 * @param description A description 
 	 */
-	public ELDescriptionTree(Description description) {
+	public ELDescriptionNode(Description description) {
 		// TODO not implemented
 		// throw an exception if the description is not in EL
 		throw new UnsupportedLanguageException(description.toString(), "EL");
@@ -114,8 +114,8 @@ public class ELDescriptionTree {
 	 * the root and returns it.
 	 * @return The root node of this EL description tree.
 	 */
-	public ELDescriptionTree getRoot() {
-		ELDescriptionTree root = this;
+	public ELDescriptionNode getRoot() {
+		ELDescriptionNode root = this;
 		while(root.parent != null) {
 			root = parent;
 		}
@@ -132,7 +132,7 @@ public class ELDescriptionTree {
 	 * node of this subtree) within the overall EL description tree.
 	 */
 	public int computeLevel() {
-		ELDescriptionTree root = this;
+		ELDescriptionNode root = this;
 		int level = 0;
 		while(root.parent != null) {
 			root = parent;
@@ -159,7 +159,7 @@ public class ELDescriptionTree {
 			for(NamedClass nc : label) {
 				is.addChild(nc);
 			}
-			for(Edge edge : edges) {
+			for(ELDescriptionEdge edge : edges) {
 				Description child = edge.getTree().transformToDescription();
 				ObjectSomeRestriction osr = new ObjectSomeRestriction(edge.getLabel(),child);
 				is.addChild(osr);
@@ -178,7 +178,7 @@ public class ELDescriptionTree {
 	/**
 	 * @return The outgoing edges of this subtree.
 	 */
-	public List<Edge> getEdges() {
+	public List<ELDescriptionEdge> getEdges() {
 		return edges;
 	}
 
@@ -190,7 +190,7 @@ public class ELDescriptionTree {
 	}
 	
 	@Override
-	public ELDescriptionTree clone() {
+	public ELDescriptionNode clone() {
 		// TODO implement efficient tree cloning
 		return null;
 	}

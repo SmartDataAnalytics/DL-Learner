@@ -29,18 +29,18 @@ import org.dllearner.core.owl.ObjectProperty;
  * @author Jens Lehmann
  *
  */
-public class Edge {
+public class ELDescriptionEdge {
 
 	private ObjectProperty label;
 	
-	private ELDescriptionTree tree;
+	private ELDescriptionNode tree;
 
 	/**
 	 * Constructs and edge given a label and an EL description tree.
 	 * @param label The label of this edge.
 	 * @param tree The tree the edge points to (edges are directed).
 	 */
-	public Edge(ObjectProperty label, ELDescriptionTree tree) {
+	public ELDescriptionEdge(ObjectProperty label, ELDescriptionNode tree) {
 		this.label = label;
 		this.tree = tree;
 	}
@@ -55,7 +55,7 @@ public class Edge {
 	/**
 	 * @return The EL description tree 
 	 */
-	public ELDescriptionTree getTree() {
+	public ELDescriptionNode getTree() {
 		return tree;
 	}
 	

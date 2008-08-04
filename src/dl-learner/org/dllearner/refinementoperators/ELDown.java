@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.dllearner.algorithms.el.ELDescriptionTree;
+import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
@@ -95,10 +95,10 @@ public class ELDown extends RefinementOperatorAdapter {
 	public Set<Description> refine(Description concept) {
 		// TODO according to the specification, we need to minimise 
 		// the tree (not yet implemented)
-		ELDescriptionTree tree = new ELDescriptionTree(concept);
-		Set<ELDescriptionTree> refinementTrees = refine(tree);
+		ELDescriptionNode tree = new ELDescriptionNode(concept);
+		Set<ELDescriptionNode> refinementTrees = refine(tree);
 		Set<Description> refinements = new HashSet<Description>();
-		for(ELDescriptionTree refinementTree : refinementTrees) {
+		for(ELDescriptionNode refinementTree : refinementTrees) {
 			refinements.add(refinementTree.transformToDescription());
 		}
 		return refinements;
@@ -112,12 +112,12 @@ public class ELDown extends RefinementOperatorAdapter {
 	 * @param tree Input EL description tree.
 	 * @return Set of refined EL description trees.
 	 */
-	public Set<ELDescriptionTree> refine(ELDescriptionTree tree) {
+	public Set<ELDescriptionNode> refine(ELDescriptionNode tree) {
 		return refine(tree, new Thing());
 	}
 	
-	private Set<ELDescriptionTree> refine(ELDescriptionTree tree, Description index) {
-		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>(); 
+	private Set<ELDescriptionNode> refine(ELDescriptionNode tree, Description index) {
+		Set<ELDescriptionNode> refinements = new HashSet<ELDescriptionNode>(); 
 		// option 1: label extension
 		
 		// option 2: label refinement
@@ -126,7 +126,7 @@ public class ELDown extends RefinementOperatorAdapter {
 			// find all more special classes for the given label
 			for(Description moreSpecial : rs.getMoreSpecialConcepts(nc)) {
 				// create refinements by replacing class
-				ELDescriptionTree tmp = tree.clone();
+				ELDescriptionNode tmp = tree.clone();
 				// TODO replace class in label
 			}
 		}

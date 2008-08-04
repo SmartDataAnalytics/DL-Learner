@@ -27,11 +27,11 @@ package org.dllearner.algorithms.el;
  */
 public class TreeTuple {
 
-	private ELDescriptionTree tree1;
+	private ELDescriptionNode tree1;
 	
-	private ELDescriptionTree tree2;
+	private ELDescriptionNode tree2;
 	
-	public TreeTuple(ELDescriptionTree tree1, ELDescriptionTree tree2) {
+	public TreeTuple(ELDescriptionNode tree1, ELDescriptionNode tree2) {
 		this.tree1 = tree1;
 		this.tree2 = tree2;
 	}
@@ -40,7 +40,7 @@ public class TreeTuple {
 	 * Gets first tree.
 	 * @return - first tree
 	 */
-	public ELDescriptionTree getTree1() {
+	public ELDescriptionNode getTree1() {
 		return tree1;
 	}
 
@@ -48,7 +48,7 @@ public class TreeTuple {
 	 * Gets second tree.
 	 * @return - second tree
 	 */
-	public ELDescriptionTree getTree2() {
+	public ELDescriptionNode getTree2() {
 		return tree2;
 	}
 	

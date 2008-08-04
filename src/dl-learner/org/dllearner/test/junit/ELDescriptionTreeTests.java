@@ -21,7 +21,7 @@ package org.dllearner.test.junit;
 
 import static org.junit.Assert.*;
 
-import org.dllearner.algorithms.el.ELDescriptionTree;
+import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.Simulation;
 import org.dllearner.algorithms.el.TreeTuple;
 import org.junit.Test;
@@ -38,8 +38,8 @@ public final class ELDescriptionTreeTests {
 	@Test
 	public void simulationTest() {
 		Simulation s = new Simulation();
-		ELDescriptionTree t1 = new ELDescriptionTree();
-		ELDescriptionTree t2 = new ELDescriptionTree();
+		ELDescriptionNode t1 = new ELDescriptionNode();
+		ELDescriptionNode t2 = new ELDescriptionNode();
 		TreeTuple tuple1 = new TreeTuple(t1,t2);
 		s.addTuple(tuple1);
 		assertTrue(s.in(t2).size() == 1);
