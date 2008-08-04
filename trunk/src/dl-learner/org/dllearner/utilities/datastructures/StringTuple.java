@@ -24,7 +24,7 @@ package org.dllearner.utilities.datastructures;
  * Also used as pre form, if you want to create triple, that have the same subject
  * @author Sebastian Hellmann
  */
-public class StringTuple {
+public class StringTuple implements Comparable<StringTuple>{
 
 	public String a;
 	public String b;
@@ -40,10 +40,14 @@ public class StringTuple {
 	}
 
 	public boolean equals(StringTuple t) {
-		if (a.equals(t.a) && b.equals(t.b))
-			return true;
-		else
-			return false;
+		return ((b.equals(t.b)) && (a.equals(t.a)));
+	}
+	
+	public int compareTo(StringTuple t){
+		int comp = a.compareTo(t.a);
+		if( comp == 0 ){
+			return b.compareTo(t.b);
+		}else return comp;
 	}
 
 }

@@ -24,6 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -381,6 +382,28 @@ public class SPARQLTasks {
 				+ object + " \n" + "} " + limit(sparqlResultLimit);
 		return queryAsSet(sparqlQueryString, variable);
 	}
+	
+	
+	public SortedSet<StringTuple> queryAsTuple(String subject, boolean filterLiterals) {
+		ResultSetRewindable rs = null;
+		String p = "predicate";
+		String o = "object";
+		String lits = (filterLiterals)? ".FILTER  (!isLiteral(?"+o+"))." : "";
+		String sparqlQueryString = "SELECT * WHERE { <"+subject+"> ?"+p+" ?"+o+" "+lits+" } ";
+		
+		try {
+			String jsonString = query(sparqlQueryString);
+			rs = SparqlQuery.convertJSONtoResultSet(jsonString);
+
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+		}
+		
+		//SimpleClock sc = new SimpleClock();
+		//rw = ResultSetFactory.makeRewindable(rs);
+		//sc.printAndSet("rewindable");
+		return getTuplesFromResultSet(rs, p, o);
+	}
 
 	/**
 	 * little higher level, executes query ,returns all resources for a
@@ -428,9 +451,13 @@ public class SPARQLTasks {
 	public String query(String sparqlQueryString) {
 		String jsonString;
 		if (cache == null) {
+			
 			SparqlQuery sq = new SparqlQuery(sparqlQueryString, sparqlEndpoint);
+			//SimpleClock sc = new SimpleClock();
 			sq.send();
+			//sc.printAndSet("querysend");
 			jsonString = sq.getJson();
+			
 		} else {
 			jsonString = cache.executeSparqlQuery(new SparqlQuery(
 					sparqlQueryString, sparqlEndpoint));
@@ -462,6 +489,22 @@ public class SPARQLTasks {
 		}
 		rs.reset();
 		return result;
+
+	}
+	
+	private static SortedSet<StringTuple> getTuplesFromResultSet( 
+			ResultSetRewindable rs, String predicate, String object) {
+		final SortedSet<StringTuple> returnSet = new TreeSet<StringTuple>();
+		//SimpleClock sc = new SimpleClock();
+		@SuppressWarnings("unchecked")
+		final List<ResultBinding> l = ResultSetFormatter.toList(rs);
+		for (ResultBinding resultBinding : l) {
+			returnSet.add(new StringTuple(resultBinding.get(predicate).toString(),resultBinding.get(object).toString()));
+		}
+		//sc.printAndSet("allTuples");
+		rs.reset();
+		//sc.printAndSet("reset");
+		return returnSet;
 
 	}
 
