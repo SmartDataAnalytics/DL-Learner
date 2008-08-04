@@ -111,8 +111,8 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		String SPARQLquery = "SELECT * WHERE { \n" + "<" + oneInstance + "> " + "?p ?object. \n"
 				+ "FILTER (REGEX(str(?object), '" + objectnamespace + "')).\n" + "}";
 
-		this.fromRelated.addAll(sparqltasks.queryAsSet(SPARQLquery, "object"));
-		this.fromRelated.removeAll(this.fullPositiveSet);
+		fromRelated.addAll(sparqltasks.queryAsSet(SPARQLquery, "object"));
+		fromRelated.removeAll(fullPositiveSet);
 
 	}
 
@@ -161,7 +161,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 		}
 		
-		this.fromParallelClasses.removeAll(this.fullPositiveSet);
+		fromParallelClasses.removeAll(fullPositiveSet);
 		logger.debug("|-neg Example size from parallelclass: " + fromParallelClasses.size());
 
 	}
@@ -181,27 +181,27 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 		for (String oneSuperClass : superClasses) {
 			logger.debug(oneSuperClass);
-			this.fromSuperclasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\""
+			fromSuperclasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\""
 					+ oneSuperClass + "\"", resultLimit));
 
 		}
-		this.fromSuperclasses.removeAll(this.fullPositiveSet);
+		this.fromSuperclasses.removeAll(fullPositiveSet);
 		logger.debug("|-neg Example from superclass: " + fromSuperclasses.size());
 	}
 	
 	@SuppressWarnings("unused")
 	private void makeNegativeExamplesFromDomain(String role, int resultLimit){
 		logger.debug("making Negative Examples from Domain of : "+role);
-		this.fromDomain.addAll(sparqltasks.getDomainInstances(role, resultLimit));
-		this.fromDomain.removeAll(this.fullPositiveSet);
+		fromDomain.addAll(sparqltasks.getDomainInstances(role, resultLimit));
+		fromDomain.removeAll(fullPositiveSet);
 		logger.debug("|-neg Example size from Domain: "+this.fromDomain.size());
 	}
 	
 	@SuppressWarnings("unused")
 	private void makeNegativeExamplesFromRange(String role, int resultLimit){
 		logger.debug("making Negative Examples from Range of : "+role);
-		this.fromRange.addAll(sparqltasks.getRangeInstances(role, resultLimit));
-		this.fromRange.removeAll(this.fullPositiveSet);
-		logger.debug("|-neg Example size from Range: "+this.fromRange.size());
+		fromRange.addAll(sparqltasks.getRangeInstances(role, resultLimit));
+		fromRange.removeAll(fullPositiveSet);
+		logger.debug("|-neg Example size from Range: "+fromRange.size());
 	}
 }

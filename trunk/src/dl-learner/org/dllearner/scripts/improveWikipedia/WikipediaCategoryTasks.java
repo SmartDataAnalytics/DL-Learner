@@ -67,8 +67,9 @@ public class WikipediaCategoryTasks {
 			List<EvaluatedDescription> conceptresults,
 			SortedSet<String> posExamples) {
 
-		definitelyWrongIndividuals = Helper.getStringSet(conceptresults.get(0)
-				.getNotCoveredPositives());
+		definitelyWrongIndividuals.clear();
+		definitelyWrongIndividuals.addAll(Helper.getStringSet(conceptresults.get(0)
+				.getNotCoveredPositives()));
 
 		// clean the examples
 		posExamples.removeAll(definitelyWrongIndividuals);
@@ -145,7 +146,7 @@ public class WikipediaCategoryTasks {
 				* fullPositiveSet.size());
 		int neglimit = (int) Math.round(poslimit * negFactor);
 
-		posExamples = SetManipulation.fuzzyShrink(fullPositiveSet, poslimit);
+		posExamples.addAll(SetManipulation.fuzzyShrink(fullPositiveSet, poslimit));
 
 		// NEGATIVES
 

@@ -99,7 +99,10 @@ public class ConceptSPARQLReEvaluator {
 		// NegAsNeg doesnt exist, because all
 		SortedSet<Individual> NegAsNeg = new TreeSet<Individual>();
 
-		for (EvaluatedDescription ed : descToBeReevaluated) {
+		// elements are immediately removed from the list to save memory
+		while (!descToBeReevaluated.isEmpty()) {
+			EvaluatedDescription ed = descToBeReevaluated.remove(0);
+			try {
 			instances = retrieveInstances(ed);
 
 			// PosAsPos
@@ -114,8 +117,13 @@ public class ConceptSPARQLReEvaluator {
 					.getIndividualSet(PosAsPos), Helper
 					.getIndividualSet(PosAsNeg), NegAsPos, NegAsNeg));
 
-			PosAsPos.clear();
-			PosAsNeg.clear();
+			}catch(Exception e){
+				logger.warn("ERROR occured, while evaluating, I'm ignoring it : "+e.toString());
+				logger.warn("Concept was: "+ed.getDescription().toKBSyntaxString());
+			}finally{
+				PosAsPos.clear();
+				PosAsNeg.clear();
+			}
 
 		}
 
@@ -145,11 +153,11 @@ public class ConceptSPARQLReEvaluator {
 
 		SortedSet<Individual> NegAsPos = new TreeSet<Individual>();
 		SortedSet<Individual> NegAsNeg = new TreeSet<Individual>();
-
+		
 		// elements are immediately removed from the list to save memory
 		while (!descToBeReevaluated.isEmpty()) {
 			EvaluatedDescription ed = descToBeReevaluated.remove(0);
-
+			try {
 			instances = retrieveInstances(ed);
 
 			// PosAsPos
@@ -163,10 +171,13 @@ public class ConceptSPARQLReEvaluator {
 			returnSet.add(new EvaluatedDescription(ed.getDescription(), Helper
 					.getIndividualSet(PosAsPos), Helper
 					.getIndividualSet(PosAsNeg), NegAsPos, NegAsNeg));
-
-			PosAsPos.clear();
-			PosAsNeg.clear();
-
+			}catch(Exception e){
+				logger.warn("ERROR occured, while evaluating, I'm ignoring it :"+e.toString());
+				logger.warn("Concept was: "+ed.getDescription().toKBSyntaxString());
+			}finally{
+				PosAsPos.clear();
+				PosAsNeg.clear();
+			}
 		}
 		logger.info("finished reevaluating by lowest recall :"
 				+ returnSet.size() + " concepts");
