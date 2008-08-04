@@ -21,9 +21,14 @@ package org.dllearner.test.junit;
 
 import static org.junit.Assert.*;
 
+import java.util.TreeSet;
+
 import org.dllearner.algorithms.el.ELDescriptionNode;
+import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.algorithms.el.Simulation;
 import org.dllearner.algorithms.el.TreeTuple;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
 import org.junit.Test;
 
 /**
@@ -38,12 +43,19 @@ public final class ELDescriptionTreeTests {
 	@Test
 	public void simulationTest() {
 		Simulation s = new Simulation();
-		ELDescriptionNode t1 = new ELDescriptionNode();
-		ELDescriptionNode t2 = new ELDescriptionNode();
+		ELDescriptionTree tree1 = new ELDescriptionTree();
+		ELDescriptionTree tree2 = new ELDescriptionTree();
+		ELDescriptionNode t1 = new ELDescriptionNode(tree1);
+		ELDescriptionNode t2 = new ELDescriptionNode(tree2);
 		TreeTuple tuple1 = new TreeTuple(t1,t2);
 		s.addTuple(tuple1);
 		assertTrue(s.in(t2).size() == 1);
-		assertTrue(s.out(t2).size() == 0);
+//		assertTrue(s.out(t2).size() == 0);
+		ObjectProperty p = new ObjectProperty("p");
+		TreeSet<NamedClass> l3 = new TreeSet<NamedClass>();
+		ELDescriptionNode t3 = new ELDescriptionNode(t1,p,l3);
+		assertTrue(t3.getLevel() == 2);
+		assertTrue(tree1.getMaxLevel() == 2);
 	}
 	
 }

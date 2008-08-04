@@ -101,9 +101,8 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     /**
      * Returns a clone of this description.
      */
-    @SuppressWarnings("unchecked")
 	@Override    
-    public Object clone() {
+    public Description clone() {
         Description node = null;
         try {
             node = (Description) super.clone();

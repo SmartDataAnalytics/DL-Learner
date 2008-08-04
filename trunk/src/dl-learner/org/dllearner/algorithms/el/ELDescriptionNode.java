@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.UnsupportedLanguageException;
@@ -49,6 +50,9 @@ import org.dllearner.core.owl.UnsupportedLanguageException;
  */
 public class ELDescriptionNode {
 
+	// the reference tree for storing values, must not be null
+	private ELDescriptionTree tree;
+	
 	private SortedSet<NamedClass> label;
 	
 	private List<ELDescriptionEdge> edges;
@@ -58,26 +62,39 @@ public class ELDescriptionNode {
 	// parent node in the tree;
 	// null indicates that this node is a root node
 	private ELDescriptionNode parent = null;
-	
-	// to simplify equivalence checks and minimisation, we
-	// attach a simulation relation to the description tree
-//	private Simulation simulation;
-	
+		
 	/**
-	 * Constructs an empty EL description tree with the empty set
-	 * as root label and an empty set of outgoing edges.
+	 * Constructs an EL description tree with empty root label.
 	 */
-	public ELDescriptionNode() {
-		this(new TreeSet<NamedClass>(), new LinkedList<ELDescriptionEdge>());
-//		simulation = new Simulation();
-	}
+	public ELDescriptionNode(ELDescriptionTree tree) {
+		this(tree, new TreeSet<NamedClass>());
+	}	
 	
 	/**
 	 * Constructs an EL description tree given its root label.
 	 * @param label Label of the root node.
 	 */
-	public ELDescriptionNode(SortedSet<NamedClass> label) {
-		this(label, new LinkedList<ELDescriptionEdge>());
+	public ELDescriptionNode(ELDescriptionTree tree, SortedSet<NamedClass> label) {
+		this.label = label;
+		this.edges = new LinkedList<ELDescriptionEdge>();	
+		this.tree = tree;
+		level = 1;
+		parent = null;
+	}
+	
+	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, SortedSet<NamedClass> label) {
+		this.label = label;
+		this.edges = new LinkedList<ELDescriptionEdge>();
+		parent = parentNode;
+		// the reference tree is the same as for the parent tree
+		tree = parentNode.tree;
+		// level increases by 1
+		level = parentNode.level + 1;
+		// we add an edge from the parent to this node
+		ELDescriptionEdge edge = new ELDescriptionEdge(parentProperty, this);
+		parent.edges.add(edge);
+		// we need to update the set of nodes on a particular level
+		tree.addNodeToLevel(this, level);
 	}
 	
 	/**
@@ -85,10 +102,12 @@ public class ELDescriptionNode {
 	 * @param label Label of the root node.
 	 * @param edges Edges connected to the root node.
 	 */
-	public ELDescriptionNode(SortedSet<NamedClass> label, List<ELDescriptionEdge> edges) {
-		this.label = label;
-		this.edges = edges;
-	}
+//  TODO: probably delete as this constructor is not straightforward to
+//  implement within the new structure
+//	public ELDescriptionNode(SortedSet<NamedClass> label, List<ELDescriptionEdge> edges) {
+//		this.label = label;
+//		this.edges = edges;
+//	}
 	
 	/**
 	 * Constructs an EL description tree from an EL description. 
@@ -167,8 +186,19 @@ public class ELDescriptionNode {
 			return is;
 		}
 	}
+
+	/**
+	 * Replaces an entry in the node label.
+	 * @param oldClass Class to remove from label.
+	 * @param newClass Class to add to label.
+	 */
+	public void replaceInLabel(NamedClass oldClass, NamedClass newClass) {
+		label.remove(oldClass);
+		label.add(newClass);
+	}
 	
 	/**
+	 * Gets the label of this node. Do not modify the returned object.
 	 * @return The label of root node of this subtree.
 	 */
 	public SortedSet<NamedClass> getLabel() {
@@ -176,7 +206,8 @@ public class ELDescriptionNode {
 	}
 
 	/**
-	 * @return The outgoing edges of this subtree.
+	 * @return The outgoing edges of this subtree. Do not modify the
+	 * returned object.
 	 */
 	public List<ELDescriptionEdge> getEdges() {
 		return edges;
@@ -191,8 +222,22 @@ public class ELDescriptionNode {
 	
 	@Override
 	public ELDescriptionNode clone() {
-		// TODO implement efficient tree cloning
-		return null;
+        ELDescriptionNode node = null;
+        try {
+            node = (ELDescriptionNode) super.clone();
+        } catch (CloneNotSupportedException e) {
+            // should never happen
+            throw new InternalError(e.toString());
+        }
+/*
+        // create a deep copy
+        node.children = new LinkedList<Description>();
+        for(Description child : children) {
+        	Description clonedChild = (Description) child.clone();
+        	node.addChild(clonedChild);
+        }
+*/
+        return node;
 	}
 	
 }

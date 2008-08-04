@@ -125,9 +125,12 @@ public class ELDown extends RefinementOperatorAdapter {
 		for(NamedClass nc : tree.getLabel()) {
 			// find all more special classes for the given label
 			for(Description moreSpecial : rs.getMoreSpecialConcepts(nc)) {
-				// create refinements by replacing class
-				ELDescriptionNode tmp = tree.clone();
-				// TODO replace class in label
+				if(moreSpecial instanceof NamedClass) {
+					// create refinements by replacing class
+					ELDescriptionNode tmp = tree.clone();
+					tmp.replaceInLabel(nc, (NamedClass) moreSpecial);
+					refinements.add(tmp);
+				}
 			}
 		}
 		
