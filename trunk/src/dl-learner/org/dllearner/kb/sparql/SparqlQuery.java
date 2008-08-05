@@ -85,13 +85,14 @@ public class SparqlQuery {
 		// isRunning = true;
 		
 		ResultSet rs;
-
+		String service = sparqlEndpoint.getURL().toString();
+		
 		writeToSparqlLog("***********\nNew Query:");
 		writeToSparqlLog(sparqlQueryString);
-		writeToSparqlLog(sparqlEndpoint.getURL().toString());
+		writeToSparqlLog(service);
 
-		String service = sparqlEndpoint.getURL().toString();
-
+	
+		logger.trace("making queryExecution Object");
 		// Jena access to SPARQL endpoint
 		queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
 		//System.out.println(sparqlEndpoint.getDefaultGraphURIs());
@@ -117,7 +118,7 @@ public class SparqlQuery {
 					+ sparqlEndpoint.getURL().toString());
 			rs = queryExecution.execSelect();
 		
-		
+			logger.trace("query executed, converting to json");
 
 			json = SparqlQuery.convertResultSetToJSON(ResultSetFactory.makeRewindable(rs));
 			//writeToSparqlLog("JSON: " + json);
@@ -132,6 +133,7 @@ public class SparqlQuery {
 				logger.warn("RuntimeException in SparqlQuery"+ e.toString());
 				writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
 				writeToSparqlLog("ERROR: query was: "+sparqlQueryString);
+				writeToSparqlLog("wget -S -O test.txt '"+service+"?query="+sparqlQueryString+"'");
 			//}
 			throw e;
 		}
