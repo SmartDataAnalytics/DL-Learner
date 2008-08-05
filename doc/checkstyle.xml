@@ -87,7 +87,7 @@ Checkstyle configuration that checks the sun coding conventions.
         </module>
         <module name="AbstractClassName"/>
     </module>
-    <module name="PackageHtml"/>
+    <module name="JavadocPackage"/>
     <module name="NewlineAtEndOfFile"/>
     <module name="Translation"/>
 </module>
