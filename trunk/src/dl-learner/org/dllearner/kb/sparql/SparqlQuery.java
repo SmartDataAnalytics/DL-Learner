@@ -122,12 +122,14 @@ public class SparqlQuery {
 
 			json = SparqlQuery.convertResultSetToJSON(ResultSetFactory.makeRewindable(rs));
 			//writeToSparqlLog("JSON: " + json);
-		}catch (HTTPException e) {
+		//}catch (ResultSetException e) {
+		} catch (HTTPException e) {
 			logger.warn("Exception in SparqlQuery\n"+ e.toString());
 			logger.warn("query was "+ sparqlQueryString);
 			writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
 			writeToSparqlLog("ERROR: query was: "+sparqlQueryString);
 			throw e;
+			
 		}catch (RuntimeException e) {
 			//if (!(e instanceof HTTPException)) {
 				logger.warn("RuntimeException in SparqlQuery"+ e.toString());
@@ -316,5 +318,71 @@ public class SparqlQuery {
 		return convertResultSetToXMLString(convertJSONtoResultSet(json));
 	}
 	
+	
+	/***
+	 public static String sendGetRequest(String urlStr)
+	{
+		String result = null;
+		
+
+		try
+		{
+			StringBuffer data = new StringBuffer();
+
+			//String urlStr = endpoint;
+		//	if (requestParameters != null && requestParameters.length () > 0)
+			//{
+				//urlStr += "?" + requestParameters;
+			//}
+			//urlStr = "http://www.klappstuhlclub.de";
+			URL url = new URL(urlStr);
+			System.out.println(urlStr);
+			URLConnection conn = url.openConnection ();
+
+			//	 Get the response
+			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			StringBuffer sb = new StringBuffer();
+			String line="";
+			System.out.println("aa"+line);
+			while ((line = rd.readLine()) != null)
+			{
+				System.out.println("aa"+line);
+				sb.append(line);
+			}
+			rd.close();
+			result = sb.toString();
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+	
+		return result;
+	}
+	
+	public String fallback(){
+		System.out.println("TEST");		
+		try{
+		String urlStr = (sparqlEndpoint.getURL().toString()+"?query="+sparqlQueryString);
+		//URLConnection con = url.openConnection();
+		System.out.println(sendGetRequest(urlStr));
+		System.out.println("f");
+		//System.out.println(con.getContentLength());
+		//con.connect();
+		System.out.println("sdf");
+		String a = "12345";
+		byte[] b = a.getBytes();
+		//con.getInputStream().read(b);
+		System.out.println(new String (b));
+		//Object o = con.getContent();
+		//System.out.println(o+o.getClass().getCanonicalName());
+		}catch (Exception ea) {
+			// TODO: handle exception
+		}
+		return "";
+	}
+	 
+	 
+	 
+	 */
 	
 }
