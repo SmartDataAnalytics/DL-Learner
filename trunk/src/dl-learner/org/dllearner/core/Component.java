@@ -57,6 +57,13 @@ public abstract class Component {
 	 * Method to be called after the component has been configured.
 	 * Implementation of components can overwrite this method to
 	 * perform setup and initialisation tasks for this component.
+	 * 
+	 * @throws ComponentInitException This exception is thrown if any
+	 * exceptions occur within the initialisation process of this
+	 * component. As component developer, you are encouraged to
+	 * rethrow occuring exception as ComponentInitException and 
+	 * giving an error message as well as the actualy exception by
+	 * using the constructor {@link ComponentInitException#ComponentInitException(String, Throwable)}. 
 	 */
 	public abstract void init() throws ComponentInitException;
 	
@@ -66,7 +73,16 @@ public abstract class Component {
 	 * perform an action (usually setting an internal variable to 
 	 * an appropriate value).
 	 * 
+	 * @param <T> Type of the config entry (Integer, String etc.).
 	 * @param entry A configuration entry.
+	 * @throws InvalidConfigOptionValueException This exception is thrown if the
+	 * value of the config entry is not valid. For instance, a config option
+	 * may only accept values, which are within intervals 0.1 to 0.3 or 0.5 to 0.8.
+	 * If the value is outside of those intervals, an exception is thrown. Note
+	 * that many of the common cases are already caught in the constructor of
+	 * ConfigEntry (for instance for a {@link DoubleConfigOption} you can specify
+	 * an interval for the value). This means that, as a component developer, you
+	 * often do not need to implement further validity checks.  
 	 */
 	public abstract <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException;
 	
