@@ -94,6 +94,35 @@ public class SubsumptionHierarchy {
 		subsumptionHierarchyUp = hierarchyUpNew;
 	}
 	
+	/**
+	 * Implements a subsumption check using the hierarchy (no further
+	 * reasoning checks are used).
+	 * @param subClass The (supposedly) more special class.
+	 * @param superClass The (supposedly) more general class.
+	 * @return True if <code>subClass</code> is a subclass of <code>superclass</code>.
+	 */
+	public boolean isSubclassOf(NamedClass subClass, NamedClass superClass) {
+		if(subClass.equals(superClass)) {
+			return true;
+		} else {
+			for(Description moreGeneralClass : subsumptionHierarchyUp.get(subClass)) {
+				// search the upper classes of the subclass
+				if(moreGeneralClass instanceof NamedClass) {
+					if(isSubclassOf((NamedClass)moreGeneralClass, superClass)) {
+						return true;
+					}
+				// we reached top, so we can return false (if top is a direct upper 
+				// class, then no other upper classes can exist)
+				} else {
+					return false;
+				}
+			}
+			// we cannot reach the class via any of the upper classes,
+			// so it is not a super class
+			return false;
+		}
+	}
+	
 	@Override	
 	public String toString() {
 		return toString(false);
