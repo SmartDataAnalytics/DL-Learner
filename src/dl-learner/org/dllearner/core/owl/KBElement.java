@@ -10,6 +10,16 @@ import java.util.Map;
  */
 public interface KBElement {
 	
+	/**
+	 * Gets the length of this knowledge base element. For instance,
+	 * A AND B should have length 3 (as three constructs are involved).
+	 * There are different ways to define the length of an axiom,
+	 * class description etc., but this method provides a straightforward
+	 * definition of it.
+	 * 
+	 * @return The syntactic length of the KB element, defined as the
+	 * number of syntactic constructs not including brackets.
+	 */
 	public int getLength();
 	
     public String toString(String baseURI, Map<String,String> prefixes);

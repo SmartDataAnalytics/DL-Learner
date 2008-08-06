@@ -60,7 +60,7 @@ import org.dllearner.utilities.Files;
  * @author Jens Lehmann
  * 
  */
-public class ComponentManager {
+public final class ComponentManager {
 
 	private static Logger logger = Logger
 		.getLogger(ComponentManager.class);
@@ -95,14 +95,15 @@ public class ComponentManager {
 
 	};
 
-	@SuppressWarnings( { "unchecked" })
+	@SuppressWarnings("unchecked")
 	private ComponentManager() {
 		// read in components file
 		List<String> componentsString;
-		if(componentClasses.length > 0)
+		if(componentClasses.length > 0) {
 			componentsString = Arrays.asList(componentClasses);
-		else
+		} else {
 			componentsString = readComponentsFile();
+		}
 
 		// component list
 		components = new TreeSet<Class<? extends Component>>(classComparator);
@@ -120,13 +121,13 @@ public class ComponentManager {
 						Component.class);
 				components.add(component);
 
-				if (KnowledgeSource.class.isAssignableFrom(component))
+				if (KnowledgeSource.class.isAssignableFrom(component)) {
 					knowledgeSources.add((Class<? extends KnowledgeSource>) component);
-				else if (ReasonerComponent.class.isAssignableFrom(component))
+				} else if (ReasonerComponent.class.isAssignableFrom(component)) {
 					reasonerComponents.add((Class<? extends ReasonerComponent>) component);
-				else if (LearningProblem.class.isAssignableFrom(component))
+				} else if (LearningProblem.class.isAssignableFrom(component)) {
 					learningProblems.add((Class<? extends LearningProblem>) component);
-				else if (LearningAlgorithm.class.isAssignableFrom(component)) {
+				} else if (LearningAlgorithm.class.isAssignableFrom(component)) {
 					Class<? extends LearningAlgorithm> learningAlgorithmClass = (Class<? extends LearningAlgorithm>) component;
 					learningAlgorithms.add(learningAlgorithmClass);
 					Collection<Class<? extends LearningProblem>> problems = (Collection<Class<? extends LearningProblem>>) invokeStaticMethod(
@@ -157,8 +158,9 @@ public class ComponentManager {
 
 			// make config options accessible by name
 			Map<String, ConfigOption<?>> byName = new HashMap<String, ConfigOption<?>>();
-			for (ConfigOption<?> option : options)
+			for (ConfigOption<?> option : options) {
 				byName.put(option.getName(), option);
+			}
 			componentOptionsByName.put(component, byName);
 			
 		}
@@ -172,8 +174,9 @@ public class ComponentManager {
 	 * @return The singleton <code>ComponentManager</code> instance.
 	 */
 	public static ComponentManager getInstance() {
-		if(cm == null)
+		if(cm == null) {
 			cm = new ComponentManager();
+		}
 		return cm;
 	}
 
@@ -203,8 +206,9 @@ public class ComponentManager {
 
 			while ((line = br.readLine()) != null) {
 				if (!(line.startsWith("#") || line.startsWith("//") || line.startsWith("%") || line
-						.length() <= 1))
+						.length() <= 1)) {
 					componentStrings.add(line);
+				}
 			}
 
 			in.close();
@@ -220,11 +224,12 @@ public class ComponentManager {
 	 * value is correct, it is preferable to create a ConfigEntry object and
 	 * apply it to the component (no type checking necessary).
 	 * 
+	 * @param <T> Type of the config option (Integer, String etc.).
 	 * @param component A component.
 	 * @param optionName The name of the config option.
 	 * @param value The value of the config option.
 	 */
-	@SuppressWarnings( { "unchecked" })
+	@SuppressWarnings("unchecked")
 	public <T> void applyConfigEntry(Component component, String optionName, T value) {
 		logger.trace(component);
 		logger.trace(optionName);
@@ -258,11 +263,13 @@ public class ComponentManager {
 					System.out.println("Warning: value " + value + " is not valid for option "
 							+ optionName + " in component " + component);
 				}
-			} else
-				System.out.println("Warning: undefined option " + optionName + " in component "
+			} else {
+				logger.warn("Warning: undefined option " + optionName + " in component "
 						+ component);
-		} else
-			System.out.println("Warning: unregistered component " + component);
+			}
+		} else {
+			logger.warn("Warning: unregistered component " + component);
+		}
 	}
 
 	/**
@@ -276,10 +283,10 @@ public class ComponentManager {
 	public <T> boolean applyConfigEntry(Component component, ConfigEntry<T> entry) {
 		try {
 			component.applyConfigEntry(entry);
-			pool.addConfigEntry(component,entry,true);
+			pool.addConfigEntry(component, entry, true);
 			return true;
 		} catch (InvalidConfigOptionValueException e) {
-			pool.addConfigEntry(component,entry,false);
+			pool.addConfigEntry(component, entry, false);
 			e.printStackTrace();
 			return false;
 		}
@@ -287,13 +294,16 @@ public class ComponentManager {
 	
 	/**
 	 * Factory method for creating a knowledge source.
+	 * 
+	 * @param <T> The type of this method is a subclass of knowledge source.
 	 * @param source A registered knowledge source component.
 	 * @return An instance of the given knowledge source class.
 	 */
 	public <T extends KnowledgeSource> T knowledgeSource(Class<T> source) {
-		if (!knowledgeSources.contains(source))
-			System.err.println("Warning: knowledge source " + source
+		if (!knowledgeSources.contains(source)) {
+			logger.warn("Warning: knowledge source " + source
 					+ " is not a registered knowledge source component.");
+		}
 
 		T ks = invokeConstructor(source, new Class[] {}, new Object[] {});
 		pool.registerComponent(ks);
@@ -329,9 +339,10 @@ public class ComponentManager {
 	 */
 	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
 			Set<KnowledgeSource> sources) {
-		if (!reasonerComponents.contains(reasoner))
+		if (!reasonerComponents.contains(reasoner)) {
 			System.err.println("Warning: reasoner component " + reasoner
 					+ " is not a registered reasoner component.");
+		}
 
 		T rc = invokeConstructor(reasoner, new Class[] { Set.class },
 				new Object[] { sources });
@@ -363,9 +374,10 @@ public class ComponentManager {
 	 * @return A learning problem component.
 	 */
 	public <T extends LearningProblem> T learningProblem(Class<T> lpClass, ReasoningService reasoner) {
-		if (!learningProblems.contains(lpClass))
+		if (!learningProblems.contains(lpClass)) {
 			System.err.println("Warning: learning problem " + lpClass
 					+ " is not a registered learning problem component.");
+		}
 
 		T lp = invokeConstructor(lpClass, new Class[] { ReasoningService.class },
 				new Object[] { reasoner });
@@ -385,16 +397,18 @@ public class ComponentManager {
 	 * the learning algorithm are not compatible.
 	 */
 	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasoningService rs) throws LearningProblemUnsupportedException {
-		if (!learningAlgorithms.contains(laClass))
+		if (!learningAlgorithms.contains(laClass)) {
 			System.err.println("Warning: learning algorithm " + laClass
 					+ " is not a registered learning algorithm component.");
+		}
 
 		// find the right constructor: use the one that is registered and
 		// has the class of the learning problem as a subclass
 		Class<? extends LearningProblem> constructorArgument = null;
 		for (Class<? extends LearningProblem> problemClass : algorithmProblemsMapping.get(laClass)) {
-			if (problemClass.isAssignableFrom(lp.getClass()))
+			if (problemClass.isAssignableFrom(lp.getClass())) {
 				constructorArgument = problemClass;
+			}
 		}
 		
 		if (constructorArgument == null) {
@@ -447,10 +461,11 @@ public class ComponentManager {
 	 */
 	public <T> T getConfigOptionValue(Component component, ConfigOption<T> option) {
 		T object = pool.getLastValidConfigValue(component, option);
-		if(object==null)
+		if(object==null) {
 			return option.getDefaultValue();
-		else
+		} else {
 			return object;
+		}
 	}
 	
 	/**
@@ -485,40 +500,44 @@ public class ComponentManager {
 		doc += "*********************\n";
 		doc += "* Knowledge Sources *\n";
 		doc += "*********************\n\n";
-		for(Class<? extends Component> component : knowledgeSources)
+		for(Class<? extends Component> component : knowledgeSources) {
 			doc += getComponentConfigString(component);
+		}
 		
 		doc += "*************\n";
 		doc += "* Reasoners *\n";
 		doc += "*************\n\n";
-		for(Class<? extends Component> component : reasonerComponents)
+		for(Class<? extends Component> component : reasonerComponents) {
 			doc += getComponentConfigString(component);
+		}
 		
 		doc += "*********************\n";
 		doc += "* Learning Problems *\n";
 		doc += "*********************\n\n";
-		for(Class<? extends Component> component : learningProblems)
+		for(Class<? extends Component> component : learningProblems) {
 			doc += getComponentConfigString(component);
+		}
 		
 		doc += "***********************\n";
 		doc += "* Learning Algorithms *\n";
 		doc += "***********************\n\n";
-		for(Class<? extends Component> component : learningAlgorithms)
+		for(Class<? extends Component> component : learningAlgorithms) {
 			doc += getComponentConfigString(component);
+		}
 		
 		Files.createFile(file, doc);
 	}
 	
 	private String getComponentConfigString(Class<? extends Component> component) {
-		String componentDescription =  "component: " + invokeStaticMethod(component,"getName") + " (" + component.getName() + ")";
+		String componentDescription =  "component: " + invokeStaticMethod(component, "getName") + " (" + component.getName() + ")";
 		String str = componentDescription + "\n";
-		String CLI = Start.getCLIMapping(component.getSuperclass().getSimpleName()+"");
+		String cli = Start.getCLIMapping(component.getSuperclass().getSimpleName()+"");
 		String usage ="";
 		
 		Map<Class<? extends Component>, String> m=Start.createComponentPrefixMapping();
 		for (Class<? extends Component> c : m.keySet()) {
-			if(c.getCanonicalName().equals(component.getCanonicalName()))
-			{	usage=m.get(c);
+			if(c.getCanonicalName().equals(component.getCanonicalName())) {	
+				usage=m.get(c);
 			}
 		}
 	
@@ -526,14 +545,12 @@ public class ComponentManager {
 			str += "=";
 		}
 		str += "\n\n";
-		str += "CLI usage: "+CLI+" = "+usage+";\n\n";
+		str += "CLI usage: "+cli+" = "+usage+";\n\n";
 		
 		
 		for(ConfigOption<?> option : componentOptions.get(component)) {
-			str += option.toString() + 
-			"CLI usage: "+usage+"."+
-			option.getName()+" = "+option.getDefaultValue()+
-			";\n\n";
+			str += option.toString() + 	"CLI usage: "+usage+"."
+			+ option.getName()+" = "+option.getDefaultValue()+";\n\n";
 		}		
 		return str+"\n";
 	}
@@ -593,9 +610,10 @@ public class ComponentManager {
 	 * @return A list of available configuration options of the specified component.
 	 */
 	public static List<ConfigOption<?>> getConfigOptions(Class<? extends Component> componentClass) {
-		if (!components.contains(componentClass))
+		if (!components.contains(componentClass)) {
 			System.err.println("Warning: component " + componentClass
 					+ " is not a registered component. [ComponentManager.getConfigOptions]");
+		}
 		return componentOptions.get(componentClass);
 	}
 	

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -24,57 +24,95 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 
 /**
- * Stores all live components and the configuration options, which were
- * applied to them.
+ * Stores all live components and the configuration options, which were applied
+ * to them. This allows to detect, which components are currently active, which
+ * values are assigned to specific options, and to collect statistics (e.g. in
+ * a web service scenario).
  * 
  * @author Jens Lehmann
- *
+ * 
  */
-public class ComponentPool {
+public final class ComponentPool {
 
-	// stores all components, which are live (components which are 
+	private static Logger logger = Logger
+	.getLogger(ComponentPool.class);	
+	
+	// stores all components, which are live (components which are
 	// no longer used have to be deregistered)
 	private List<Component> components = new LinkedList<Component>();
-	
-	// stores the last value which was set for a particular 
+
+	// stores the last value which was set for a particular
 	// config option
-	private Map<Component,Map<ConfigOption<?>,Object>> lastValidConfigValue = new HashMap<Component,Map<ConfigOption<?>,Object>>();
+	private Map<Component, Map<ConfigOption<?>, Object>> lastValidConfigValue = new HashMap<Component, Map<ConfigOption<?>, Object>>();
 	// complete history of all made config entries for a component
-	private Map<Component,List<ConfigEntry<?>>> configEntryHistory = new HashMap<Component,List<ConfigEntry<?>>>();
-	
+	private Map<Component, List<ConfigEntry<?>>> configEntryHistory = new HashMap<Component, List<ConfigEntry<?>>>();
+
+	/**
+	 * Registers a component instance in the pool. 
+	 * @param component The component to add to the pool.
+	 */
 	public void registerComponent(Component component) {
 		components.add(component);
-		Map<ConfigOption<?>,Object> emptyMap = new HashMap<ConfigOption<?>,Object>();
+		Map<ConfigOption<?>, Object> emptyMap = new HashMap<ConfigOption<?>, Object>();
 		lastValidConfigValue.put(component, emptyMap);
 		configEntryHistory.put(component, new LinkedList<ConfigEntry<?>>());
+		logger.debug("Component instance " + component + " added to component pool.");
 	}
 
+	/**
+	 * Unregisters a component instance. This method should be used if the
+	 * component will not be used anymore. It frees the memory for
+	 * storing the component and its configuration options.  
+	 * @param component The component to remove from the pool.
+	 */
 	public void unregisterComponent(Component component) {
 		configEntryHistory.remove(component);
 		lastValidConfigValue.remove(component);
 		components.remove(component);
+		logger.debug("Component instance " + component + " removed from component pool.");
 	}
 
-	@SuppressWarnings({"unchecked"})
-	public <T> T getLastValidConfigValue(Component component, ConfigOption<T> option) {
+	/**
+	 * Gets the last valid config value set for this component.
+	 * @param <T> The type of the value of the config option (String, Integer etc.).
+	 * @param component The component to query.
+	 * @param option The option for which one wants to get the value.
+	 * @return The last value set for this option or null if the value hasn't been 
+	 * set using the {@link ComponentManager}. In this case, the value is
+	 * usually at the default value (or has been set internally surpassing the
+	 * component architecture, which is not recommended).
+	 */
+	@SuppressWarnings("unchecked")
+	protected <T> T getLastValidConfigValue(Component component, ConfigOption<T> option) {
 		return (T) lastValidConfigValue.get(component).get(option);
 	}
-	
-	public void addConfigEntry(Component component, ConfigEntry<?> entry, boolean valid) {
+
+	/**
+	 * Add a config entry change for the specified component.
+	 * @param component The component, where the config entry has been set.
+	 * @param entry The set config entry.
+	 * @param valid A boolean value indicating whether the value was valid or not.
+	 */
+	protected void addConfigEntry(Component component, ConfigEntry<?> entry, boolean valid) {
 		configEntryHistory.get(component).add(entry);
-		if(valid)
+		if (valid) {
 			lastValidConfigValue.get(component).put(entry.getOption(), entry.getValue());
+		}
+		logger.trace("Config entry " + entry + " has been set for component " + component + " (validity: " + valid + ").");
 	}
-	
-	// unregisters all components
-	public void clearComponents() {
+
+	/**
+	 * Unregisters all components.
+	 */
+	protected void clearComponents() {
 		components = new LinkedList<Component>();
-		lastValidConfigValue = new HashMap<Component,Map<ConfigOption<?>,Object>>();
-		configEntryHistory = new HashMap<Component,List<ConfigEntry<?>>>();		
+		lastValidConfigValue = new HashMap<Component, Map<ConfigOption<?>, Object>>();
+		configEntryHistory = new HashMap<Component, List<ConfigEntry<?>>>();
 	}
-	
+
 }

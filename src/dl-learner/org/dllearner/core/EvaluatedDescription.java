@@ -83,6 +83,7 @@ public class EvaluatedDescription {
 	
 	/**
 	 * @see org.dllearner.core.owl.Description#getLength()
+	 * @return Length of the description.
 	 */		
 	public int getDescriptionLength() {
 		return description.getLength();
@@ -185,8 +186,9 @@ public class EvaluatedDescription {
 	// as arguments and does not use toString)
 	private static JSONArray getJSONArray(Set<Individual> individuals) {
 		JSONArray j = new JSONArray();
-		for(Individual i : individuals)
+		for(Individual i : individuals) {
 			j.put(i.getName());
+		}
 		return j;
 	}
 }
