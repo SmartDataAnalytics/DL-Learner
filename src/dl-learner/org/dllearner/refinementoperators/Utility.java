@@ -29,8 +29,12 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 
@@ -95,6 +99,27 @@ public final class Utility {
 	 */
 	public SortedSet<ObjectProperty> computeMgr(SortedSet<ObjectProperty> applicableObjectProperties) {
 		return Helper.intersection(rs.getMostGeneralRoles(), applicableObjectProperties);
+	}
+	
+	public Set<NamedClass> getClassCandidates(Description index, Set<NamedClass> existingClasses) {
+		return getClassCandidatesRecursive(index, existingClasses, Thing.instance);
+	}
+	
+	private Set<NamedClass> getClassCandidatesRecursive(Description index, Set<NamedClass> existingClasses, Description upperClass) {
+		Set<NamedClass> candidates = new TreeSet<NamedClass>();
+		SubsumptionHierarchy sh = rs.getSubsumptionHierarchy();
+		for(Description d : sh.getMoreSpecialConcepts(upperClass)) {
+			// check disjointness with index
+			if(isDisjoint(d,index)) {
+				// check whether the class is meaningful, i.e. adds something to the index
+				// to do this, we need to make sure that the class is not a superclass of the
+				// index (otherwise we get nothing new)
+				if(isDisjoint(new Negation(d),index)) {
+					// TODO further checks 
+				}
+			}
+		}
+		return candidates;
 	}
 	
 	private boolean isDisjoint(Description d1, Description d2) {
