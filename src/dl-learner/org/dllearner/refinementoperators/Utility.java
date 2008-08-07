@@ -47,6 +47,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public final class Utility {
 		
 	private ReasoningService rs;
+	SubsumptionHierarchy sh; 
 	
 	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();	
@@ -61,6 +62,7 @@ public final class Utility {
 
 	public Utility(ReasoningService rs) {
 		this.rs = rs;
+		sh = rs.getSubsumptionHierarchy();
 	}
 	
 	/**
@@ -107,20 +109,57 @@ public final class Utility {
 	
 	private Set<NamedClass> getClassCandidatesRecursive(Description index, Set<NamedClass> existingClasses, Description upperClass) {
 		Set<NamedClass> candidates = new TreeSet<NamedClass>();
-		SubsumptionHierarchy sh = rs.getSubsumptionHierarchy();
+		
+		// we descend the subsumption hierarchy to ensure that we get
+		// the most general concepts satisfying the criteria
+		// there are 4 checks a class has to satisfy to get into the set;
+		// for 2 of them we can stop further traversal in the subsumption
+		// hierarchy
 		for(Description d : sh.getMoreSpecialConcepts(upperClass)) {
-			// check disjointness with index
-			if(isDisjoint(d,index)) {
-				// check whether the class is meaningful, i.e. adds something to the index
-				// to do this, we need to make sure that the class is not a superclass of the
-				// index (otherwise we get nothing new)
-				if(isDisjoint(new Negation(d),index)) {
-					// TODO further checks 
+			// owl:Nothing is never a candidate (not in EL)
+			if(!(d instanceof Nothing)) {
+				NamedClass candidate = (NamedClass) d;
+				// we first do those checks where we know that we do not
+				// need to traverse the subsumption hierarchy if they are
+				// not satisfied
+				// check1: disjointness with index
+				// check3: no superclass exists already
+				if(!isDisjoint(candidate,index) || !checkSubClasses(existingClasses,candidate)) {
+					// check whether the class is meaningful, i.e. adds something to the index
+					// to do this, we need to make sure that the class is not a superclass of the
+					// index (otherwise we get nothing new)
+					if(!isDisjoint(new Negation(candidate),index) || !checkSuperClasses(existingClasses,candidate)) {
+						// candidate went successfully through all checks
+						candidates.add(candidate);
+					} else {
+						// descend subsumption hierarchy to find candidates
+						candidates.addAll(getClassCandidatesRecursive(index, existingClasses, candidate));
+					}
 				}
 			}
 		}
 		return candidates;
 	}
+	
+	// returns true of the candidate is not subclass of an existing class,
+	// false otherwise (check 3)
+	private boolean checkSubClasses(Set<NamedClass> existingClasses, NamedClass candidate) {
+		for(NamedClass nc : existingClasses) {
+			if(sh.isSubclassOf(candidate, nc))
+				return false;
+		}
+		return true;
+	}
+	
+	// returns true of the candidate is not superclass of an existing class,
+	// false otherwise (check 4)
+	private boolean checkSuperClasses(Set<NamedClass> existingClasses, NamedClass candidate) {
+		for(NamedClass nc : existingClasses) {
+			if(sh.isSubclassOf(nc, candidate))
+				return false;
+		}
+		return true;
+	}	
 	
 	private boolean isDisjoint(Description d1, Description d2) {
 		// check whether we have cached this query
