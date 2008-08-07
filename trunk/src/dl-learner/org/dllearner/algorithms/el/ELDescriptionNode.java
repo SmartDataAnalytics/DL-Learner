@@ -30,7 +30,6 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
-import org.dllearner.core.owl.UnsupportedLanguageException;
 
 /**
  * Represents an EL description tree, which corresponds to a
@@ -110,16 +109,6 @@ public class ELDescriptionNode {
 //	}
 	
 	/**
-	 * Constructs an EL description tree from an EL description. 
-	 * @param description A description 
-	 */
-	public ELDescriptionNode(Description description) {
-		// TODO not implemented
-		// throw an exception if the description is not in EL
-		throw new UnsupportedLanguageException(description.toString(), "EL");
-	}
-	
-	/**
 	 * Checks whether this node has a parent. If the parent link
 	 * is null, the node is considered to be a root node.
 	 * @return True of this is the root node and false otherwise.
@@ -188,6 +177,15 @@ public class ELDescriptionNode {
 	}
 
 	/**
+	 * Each node is assigned a number within the tree.
+	 * TODO add explanation how this is done
+	 * @return The position number of this node within the tree as described above.
+	 */
+	public int getCurrentPositionNumber() {
+		return 0;
+	}
+	
+	/**
 	 * Replaces an entry in the node label.
 	 * @param oldClass Class to remove from label.
 	 * @param newClass Class to add to label.
@@ -218,26 +216,6 @@ public class ELDescriptionNode {
 	 */
 	public int getLevel() {
 		return level;
-	}
-	
-	@Override
-	public ELDescriptionNode clone() {
-        ELDescriptionNode node = null;
-        try {
-            node = (ELDescriptionNode) super.clone();
-        } catch (CloneNotSupportedException e) {
-            // should never happen
-            throw new InternalError(e.toString());
-        }
-/*
-        // create a deep copy
-        node.children = new LinkedList<Description>();
-        for(Description child : children) {
-        	Description clonedChild = (Description) child.clone();
-        	node.addChild(clonedChild);
-        }
-*/
-        return node;
 	}
 	
 }

@@ -25,7 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.UnsupportedLanguageException;
 
 /**
  * Represents an EL description tree. Unlike {@link ELDescriptionNode},
@@ -50,6 +52,16 @@ public class ELDescriptionTree implements Cloneable {
 	public ELDescriptionTree() {
 		
 	}
+	
+	/**
+	 * Constructs an EL description tree from an EL description. 
+	 * @param description A description 
+	 */
+	public ELDescriptionTree(Description description) {
+		// TODO not implemented
+		// throw an exception if the description is not in EL
+		throw new UnsupportedLanguageException(description.toString(), "EL");
+	}	
 
 	/**
 	 * Gets the nodes on a specific level of the tree. 
@@ -63,6 +75,10 @@ public class ELDescriptionTree implements Cloneable {
 		return levelNodeMapping.get(level);
 	}
 
+	public Description transformToDescription() {
+		return rootNode.transformToDescription();
+	}
+	
 	/**
 	 * Internal method for updating the level node mapping.
 	 * It is called when a new node is added to the tree.
@@ -95,6 +111,39 @@ public class ELDescriptionTree implements Cloneable {
 	public ELDescriptionNode getRootNode() {
 		return rootNode;
 	}
+	
+    /**
+     * Selects a sub tree.
+     * @param positionNumber A position in the tree. Positions are iteratively given to nodes
+     * by leftmost depth-first search. This allows efficient selection of subtrees.
+     * (TODO: Implementation does not work if any node has more than two children
+     * like conjunction and disjunction.)
+     * @return The selected subtree.
+     */
+    public Description getNode(int positionNumber) {
+//        if (children.size() == 0)
+//            return this;
+//        else if (children.size() == 1) {
+//            if (positionNumber == 0)
+//                return this;
+//            else
+//                return children.get(0).getSubtree(positionNumber - 1);
+//        }
+//        // arity 2
+//        else {
+//            // we have found it
+//            if (positionNumber == 0)
+//                return this;
+//            // left subtree
+//            int leftTreeNodes = children.get(0).getNumberOfNodes();
+//            if (positionNumber <= leftTreeNodes)
+//                return children.get(0).getSubtree(positionNumber - 1);
+//            // right subtree
+//            else
+//                return children.get(1).getSubtree(positionNumber - leftTreeNodes - 1);
+//        }
+    	return null;
+    }		
 	
 	@Override
 	public ELDescriptionTree clone() {

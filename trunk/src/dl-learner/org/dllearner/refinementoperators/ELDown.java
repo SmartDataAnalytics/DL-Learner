@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.dllearner.algorithms.el.ELDescriptionNode;
+import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
@@ -95,10 +96,10 @@ public class ELDown extends RefinementOperatorAdapter {
 	public Set<Description> refine(Description concept) {
 		// TODO according to the specification, we need to minimise 
 		// the tree (not yet implemented)
-		ELDescriptionNode tree = new ELDescriptionNode(concept);
-		Set<ELDescriptionNode> refinementTrees = refine(tree);
+		ELDescriptionTree tree = new ELDescriptionTree(concept);
+		Set<ELDescriptionTree> refinementTrees = refine(tree);
 		Set<Description> refinements = new HashSet<Description>();
-		for(ELDescriptionNode refinementTree : refinementTrees) {
+		for(ELDescriptionTree refinementTree : refinementTrees) {
 			refinements.add(refinementTree.transformToDescription());
 		}
 		return refinements;
@@ -112,23 +113,28 @@ public class ELDown extends RefinementOperatorAdapter {
 	 * @param tree Input EL description tree.
 	 * @return Set of refined EL description trees.
 	 */
-	public Set<ELDescriptionNode> refine(ELDescriptionNode tree) {
-		return refine(tree, new Thing());
+	public Set<ELDescriptionTree> refine(ELDescriptionTree tree) {
+		return refine(tree, tree.getRootNode(), new Thing());
 	}
 	
-	private Set<ELDescriptionNode> refine(ELDescriptionNode tree, Description index) {
-		Set<ELDescriptionNode> refinements = new HashSet<ELDescriptionNode>(); 
+	private Set<ELDescriptionTree> refine(ELDescriptionTree tree, ELDescriptionNode node, Description index) {
+		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>(); 
 		// option 1: label extension
-		
+		Set<NamedClass> candidates = utility.getClassCandidates(index, node.getLabel());
+		for(NamedClass nc : candidates) {
+			
+		}
 		// option 2: label refinement
 		// loop through all classes in label
-		for(NamedClass nc : tree.getLabel()) {
+		for(NamedClass nc : node.getLabel()) {
 			// find all more special classes for the given label
 			for(Description moreSpecial : rs.getMoreSpecialConcepts(nc)) {
 				if(moreSpecial instanceof NamedClass) {
 					// create refinements by replacing class
-					ELDescriptionNode tmp = tree.clone();
-					tmp.replaceInLabel(nc, (NamedClass) moreSpecial);
+					ELDescriptionTree tmp = tree.clone();
+					// TODO we need to find a way to get this node in
+					// the cloned tree
+//					tmp.replaceInLabel(nc, (NamedClass) moreSpecial);
 					refinements.add(tmp);
 				}
 			}
