@@ -22,8 +22,11 @@ package org.dllearner.refinementoperators;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
+import org.dllearner.algorithms.el.ELDescriptionEdge;
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ReasoningService;
@@ -118,11 +121,21 @@ public class ELDown extends RefinementOperatorAdapter {
 	}
 	
 	private Set<ELDescriptionTree> refine(ELDescriptionTree tree, ELDescriptionNode node, Description index) {
-		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>(); 
+		// the set of all refinements, which we will return
+		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
+		// the position of the node within the tree (needed for getting
+		// the corresponding node in a cloned tree)
+		int[] position = node.getCurrentPosition();
+		
 		// option 1: label extension
 		Set<NamedClass> candidates = utility.getClassCandidates(index, node.getLabel());
 		for(NamedClass nc : candidates) {
-			
+			// clone operation
+			ELDescriptionTree clonedTree = tree.clone();
+			ELDescriptionNode clonedNode = clonedTree.getNode(position);
+			// extend label
+			clonedNode.extendLabel(nc);
+			refinements.add(clonedTree);
 		}
 		// option 2: label refinement
 		// loop through all classes in label
@@ -130,22 +143,50 @@ public class ELDown extends RefinementOperatorAdapter {
 			// find all more special classes for the given label
 			for(Description moreSpecial : rs.getMoreSpecialConcepts(nc)) {
 				if(moreSpecial instanceof NamedClass) {
-					// create refinements by replacing class
-					ELDescriptionTree tmp = tree.clone();
-					// TODO we need to find a way to get this node in
-					// the cloned tree
-//					tmp.replaceInLabel(nc, (NamedClass) moreSpecial);
-					refinements.add(tmp);
+					// clone operation
+					ELDescriptionTree clonedTree = tree.clone();
+					ELDescriptionNode clonedNode = clonedTree.getNode(position);
+					// create refinements by replacing class					
+					clonedNode.replaceInLabel(nc, (NamedClass) moreSpecial);
+					refinements.add(clonedTree);
 				}
 			}
 		}
 		
 		// option 3: new edge
+		// TODO incomplete, it is still open how to construct this refinement !!
+		SortedSet<ObjectProperty> appOPs = utility.computeApplicableObjectProperties(index);
+		Set<ObjectProperty> mgr = utility.computeMgr(appOPs);
+		for(ObjectProperty op : mgr) {
+			// clone operation
+			ELDescriptionTree clonedTree = tree.clone();
+			ELDescriptionNode clonedNode = clonedTree.getNode(position);
+			// add a new node and edge
+			ELDescriptionNode newNode = new ELDescriptionNode(clonedNode, op, new TreeSet<NamedClass>());
+			refinements.add(clonedTree);
+		}
 		
 		// option 4: edge refinement
+		for(int edgeNumber = 0; edgeNumber < node.getEdges().size(); edgeNumber++) {
+			ELDescriptionEdge edge = node.getEdges().get(edgeNumber);
+			ObjectProperty op = edge.getLabel();
+			// find all more special properties
+			for(ObjectProperty op2 : rs.getMoreSpecialRoles(op)) {
+				// clone operation
+				ELDescriptionTree clonedTree = tree.clone();
+				// find cloned edge and replace its label
+				ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
+				clonedEdge.setLabel(op2);
+			}
+		}
 		
 		// option 5: child refinement
-		
+		for(ELDescriptionEdge edge : node.getEdges()) {
+			// recursive call on child node and property range as index
+			Description range = rs.getRange(edge.getLabel());
+			refinements.addAll(refine(tree, edge.getTree(), range));
+		}
+				
 		return refinements;
 	}
 

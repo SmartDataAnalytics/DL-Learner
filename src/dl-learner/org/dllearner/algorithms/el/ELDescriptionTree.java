@@ -113,36 +113,20 @@ public class ELDescriptionTree implements Cloneable {
 	}
 	
     /**
-     * Selects a sub tree.
-     * @param positionNumber A position in the tree. Positions are iteratively given to nodes
-     * by leftmost depth-first search. This allows efficient selection of subtrees.
-     * (TODO: Implementation does not work if any node has more than two children
-     * like conjunction and disjunction.)
-     * @return The selected subtree.
+     * Gets the node at the given position. The list is processed 
+     * as follows: Starting with the root node, the first element i of
+     * list is read and the i-th child of root node is selected. This
+     * node is set as current node and the next element j of the list
+     * is read and the j-th child of the i-th child of the root node
+     * selected etc.
+     * @return The node at the specified position.
      */
-    public Description getNode(int positionNumber) {
-//        if (children.size() == 0)
-//            return this;
-//        else if (children.size() == 1) {
-//            if (positionNumber == 0)
-//                return this;
-//            else
-//                return children.get(0).getSubtree(positionNumber - 1);
-//        }
-//        // arity 2
-//        else {
-//            // we have found it
-//            if (positionNumber == 0)
-//                return this;
-//            // left subtree
-//            int leftTreeNodes = children.get(0).getNumberOfNodes();
-//            if (positionNumber <= leftTreeNodes)
-//                return children.get(0).getSubtree(positionNumber - 1);
-//            // right subtree
-//            else
-//                return children.get(1).getSubtree(positionNumber - leftTreeNodes - 1);
-//        }
-    	return null;
+    public ELDescriptionNode getNode(int[] position) {
+    	ELDescriptionNode currentNode = rootNode;
+    	for(int i=0; i<position.length; i++) {
+    		currentNode = currentNode.getEdges().get(position[i]).getTree();
+    	}
+    	return currentNode;
     }		
 	
 	@Override

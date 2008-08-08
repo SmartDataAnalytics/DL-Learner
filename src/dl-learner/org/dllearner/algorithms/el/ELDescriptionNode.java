@@ -177,12 +177,33 @@ public class ELDescriptionNode {
 	}
 
 	/**
-	 * Each node is assigned a number within the tree.
-	 * TODO add explanation how this is done
+	 * Gets a list describing the position of this node within the 
+	 * tree. If the list is e.g. [2,5,1], then the node can be reached
+	 * by picking the second child of the root node, then picking the
+	 * 5th child of this node and finally selecting the first child of
+	 * the previous node.
 	 * @return The position number of this node within the tree as described above.
 	 */
-	public int getCurrentPositionNumber() {
-		return 0;
+	public int[] getCurrentPosition() {
+		int[] position = new int[level];
+		ELDescriptionNode root = this;
+		while(root.parent != null) {
+			position[root.level-1] = getChildNumber();
+			root = parent;	
+		}
+		return position;
+	}
+	
+	// returns the child number of this node, i.e. whether it is 
+	// the first, second, third etc. child
+	private int getChildNumber() {
+		int count = 0;
+		for(ELDescriptionEdge edge : parent.edges) {
+			if(edge.getTree() == this) {
+				return count;
+			}
+		}
+		throw new RuntimeException("Inconsistent tree. Child tree not reachable from parent.");
 	}
 	
 	/**
@@ -196,7 +217,16 @@ public class ELDescriptionNode {
 	}
 	
 	/**
-	 * Gets the label of this node. Do not modify the returned object.
+	 * Adds an entry to the node label.
+	 * @param newClass Class to add to label.
+	 */
+	public void extendLabel(NamedClass newClass) {
+		label.add(newClass);
+	}
+	
+	/**
+	 * Gets the label of this node. Do not modify the returned object,
+	 * but use the provided methods instead!
 	 * @return The label of root node of this subtree.
 	 */
 	public SortedSet<NamedClass> getLabel() {
@@ -204,14 +234,16 @@ public class ELDescriptionNode {
 	}
 
 	/**
-	 * @return The outgoing edges of this subtree. Do not modify the
-	 * returned object.
+	 * Gets the edges of this node. Do not modify the
+	 * returned object, but use the provided methods instead!
+	 * @return The outgoing edges of this subtree. 
 	 */
 	public List<ELDescriptionEdge> getEdges() {
 		return edges;
 	}
 
 	/**
+	 * Gets the level (distance from root) of this node.
 	 * @return The level of the (root node of) this subtree in the overall tree. 
 	 */
 	public int getLevel() {
