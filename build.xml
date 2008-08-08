@@ -27,6 +27,21 @@
 	<target name="full_release" depends="javadoc,build" description="full release, javadoc, scripts">
 	</target>
 	
+	<!-- build target -->
+	<target name="rdbtoonto"  description="makes jar">
+				<!-- compile project into temporary directory -->
+				<mkdir dir="classes_tmp"/>		
+		        <javac destdir="classes_tmp" target="1.6">
+		            <src path="${source_dir}"/>
+		            <classpath refid="classpath"/>
+		        </javac>	
+							
+		        <jar jarfile="lib/rdbtoonto/test.jar">
+		            <fileset dir="classes_tmp"/>
+		        </jar> 
+				<delete dir="classes_tmp"/>
+	</target>
+	
 	
 	<!-- build target -->
 		<target name="local" depends="createScripts" description="fast build including scripts, 
