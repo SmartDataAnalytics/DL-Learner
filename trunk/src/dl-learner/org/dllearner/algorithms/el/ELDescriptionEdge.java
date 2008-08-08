@@ -46,6 +46,13 @@ public class ELDescriptionEdge {
 	}
 	
 	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(ObjectProperty label) {
+		this.label = label;
+	}
+
+	/**
 	 * @return The label of this edge.
 	 */
 	public ObjectProperty getLabel() {
