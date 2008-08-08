@@ -119,7 +119,7 @@ public class WikipediaCategoryCleaner {
 
 		WikipediaCategoryTasks wikiTasks;
 		ConceptSPARQLReEvaluator csparql;
-
+		System.out.println("test");
 		wikiTasks = new WikipediaCategoryTasks(sparqlTasks);
 		csparql = new ConceptSPARQLReEvaluator(sparqlTasks, DEPTH_OF_RDFS, SPARQL_RESULTSET_LIMIT);
 
