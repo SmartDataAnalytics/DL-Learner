@@ -103,6 +103,32 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
     		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
     		XhrObj.send(param);
     	}
+    	
+    	function search(param)
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_search.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    				var response = XhrObj.responseText.split('$$');
+    				document.getElementById('articlecontent').innerHTML=response[0];
+    				document.getElementById('ArticleTitle').innerHTML=response[1];
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send(param);
+    	}
   </script>
   </head>
   <body>
@@ -122,7 +148,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			<!-- Search:<br/> -->
 			<form onSubmit="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;">
 			<input type="text" name="label" id="label" /><br/>
-			<input type="button" value="Article" class="button" onclick="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;" />&nbsp;&nbsp;<input type="button" value="Search" class="button" onclick="var list=tree.getAllChecked();return false;" />
+			<input type="button" value="Article" class="button" onclick="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;" />&nbsp;&nbsp;<input type="button" value="Search" class="button" onclick="var list=tree.getAllChecked();search('label='+document.getElementById('label').value+'&list='+list);return false;" />
 			<!--  &nbsp;&nbsp;&nbsp; <input type="button" value="Fulltext" class="button" onclick=""/> -->
 			</form>
 		  </div> <!-- boxcontent -->
