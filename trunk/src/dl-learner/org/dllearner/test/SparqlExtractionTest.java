@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import org.dllearner.kb.extraction.Manager;
 import org.dllearner.kb.extraction.Manipulator;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQueryType;
+import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
@@ -48,8 +48,7 @@ public class SparqlExtractionTest {
 			// m.usePredefinedConfiguration(u);
 
 			URI u2 = new URI("http://dbpedia.org/resource/Angela_Merkel");
-			m.useConfiguration(
-					SparqlQueryType.getFilterByName("DBPEDIA"),SparqlEndpoint.getEndpointByName("YAGO"),
+			m.useConfiguration(SparqlQueryMaker.getSparqlQueryMakerByName("DBPEDIA"),SparqlEndpoint.getEndpointByName("YAGO"),
 					new Manipulator("",200,new LinkedList<StringTuple>(),new LinkedList<StringTuple>()),
 					1,true,true,"cache");
 			//, ,

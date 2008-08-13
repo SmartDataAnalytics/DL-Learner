@@ -19,8 +19,9 @@
  */
 package org.dllearner.kb.extraction;
 
+import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQueryType;
+import org.dllearner.kb.sparql.SparqlQueryMaker;
 
 /**
  * Stores all configuration settings. this class collects all configuration
@@ -30,8 +31,10 @@ import org.dllearner.kb.sparql.SparqlQueryType;
  */
 public class Configuration {
 
+	private SPARQLTasks sparqlTasks;
+	
 	private SparqlEndpoint endpoint;
-	private SparqlQueryType sparqlQueryType;
+	private SparqlQueryMaker sparqlQueryMaker;
 	private Manipulators manipulator;
 	// the following needs to be moved to
 	// class extraction algorithm or manipulator
@@ -43,11 +46,11 @@ public class Configuration {
 	public String cacheDir="cache";
 
 	public Configuration(SparqlEndpoint specificSparqlEndpoint,
-			SparqlQueryType sparqlQueryType, Manipulators manipulator,
+			SparqlQueryMaker sparqlQueryMaker, Manipulators manipulator,
 			int recursiondepth, boolean getAllSuperClasses,
 			boolean closeAfterRecursion, String cacheDir) {
 		this.endpoint = specificSparqlEndpoint;
-		this.sparqlQueryType = sparqlQueryType;
+		this.sparqlQueryMaker = sparqlQueryMaker;
 		this.manipulator = manipulator;
 		this.recursiondepth = recursiondepth;
 		this.getAllSuperClasses = getAllSuperClasses;
@@ -56,9 +59,9 @@ public class Configuration {
 
 	}
 
-	public Configuration changeQueryType(SparqlQueryType sqt) {
+	public Configuration changeQueryType(SparqlQueryMaker sqm) {
 		// TODO must clone here
-		return new Configuration(this.endpoint, sqt, this.manipulator,
+		return new Configuration(this.endpoint, sqm, this.manipulator,
 				this.recursiondepth, this.getAllSuperClasses,
 				this.closeAfterRecursion, this.cacheDir);
 
@@ -72,8 +75,8 @@ public class Configuration {
 		return endpoint;
 	}
 
-	public SparqlQueryType getSparqlQueryType() {
-		return sparqlQueryType;
+	public SparqlQueryMaker getSparqlQueryMaker() {
+		return sparqlQueryMaker;
 	}
 
 	public boolean isGetAllSuperClasses() {
@@ -87,13 +90,18 @@ public class Configuration {
 	public int getRecursiondepth() {
 		return recursiondepth;
 	}
+	
+	public SPARQLTasks getSparqlTasks() {
+		return sparqlTasks;
+	}
 
-	public void increaseNumberOfuncachedSparqlQueries() {
+	
+	/*public void increaseNumberOfuncachedSparqlQueries() {
 		numberOfUncachedSparqlQueries++;
 	}
 
 	public void increaseNumberOfCachedSparqlQueries() {
 		numberOfCachedSparqlQueries++;
-	}
+	}*/
 
 }

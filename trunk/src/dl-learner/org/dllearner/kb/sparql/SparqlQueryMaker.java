@@ -19,6 +19,11 @@
  */
 package org.dllearner.kb.sparql;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 
 /**
  * Can assemble sparql queries. can make queries for subject, predicate, object
@@ -29,135 +34,376 @@ package org.dllearner.kb.sparql;
  * 
  */
 public class SparqlQueryMaker {
-	String lineend = "\n";
-	boolean print_flag = false;
-	private SparqlQueryType sparqlQueryType;
-
-	public SparqlQueryMaker(SparqlQueryType SparqlQueryType) {
-		this.sparqlQueryType = SparqlQueryType;
+	
+	private static final String MODE_ALLOW = "allow";
+	private static final String MODE_FORBID = "forbid";
+	private static final String lineend = "\n";
+	
+	//allow false is forbid
+	private boolean allowMode = false;
+	private boolean assembled = false;
+	private String filter = "";
+	private SortedSet<String> objectFilterList;
+	private SortedSet<String> predicateFilterList;
+	private boolean literals = false;
+	
+	
+	public SparqlQueryMaker(SortedSet<String> objectFilterList, SortedSet<String> predicateFilterList,
+			boolean literals) {
+		super();
+		this.objectFilterList = objectFilterList;
+		this.predicateFilterList = predicateFilterList;
+		this.literals = literals;
 	}
+	
+	
+	public SparqlQueryMaker(boolean allowMode, SortedSet<String> objectFilterList, SortedSet<String> predicateFilterList,
+			boolean literals) {
+
+		this(objectFilterList,predicateFilterList,literals);
+		this.allowMode = allowMode;
+	}
+	
+	public SparqlQueryMaker(String mode, SortedSet<String> objectFilterList, SortedSet<String> predicateFilterList,
+			boolean literals) {
+		this(objectFilterList,predicateFilterList,literals);
+		if( mode.equalsIgnoreCase(MODE_ALLOW)) {
+			this.allowMode = true;
+		} else if(mode.equalsIgnoreCase(MODE_FORBID)) {
+			this.allowMode = false;
+		} else {
+			this.allowMode = false;
+		}
+	}
+	
 
 	public String makeSubjectQueryUsingFilters(String subject) {
 
-		String Filter = internalFilterAssemblySubject();
-		String ret="";
-		if (Filter.length()>0) ret = "SELECT * WHERE { " + lineend + "<" + subject
-				+ "> ?predicate ?object. " + lineend + "FILTER( " + lineend
-				+ Filter + ").}";
-		else ret="SELECT * WHERE { " + lineend + "<" + subject
-		+ "> ?predicate ?object}";
-		// System.out.println("Query: "+ret);
-		// System.out.println(sparqlQueryType.getPredicatefilterlist().length);
-		return ret;
-	}
-
-	/**
-	 * 
-	 * @param role
-	 * @return
-	 */
-	public String makeRoleQueryUsingFilters(String role) {
-
-		String Filter = internalFilterAssemblyRole();
-		String ret = "SELECT * WHERE { " + lineend + " ?subject <" + role
-				+ "> ?object. " + lineend + "FILTER( " + lineend + "(" + Filter
-				+ ").}";
-		// System.out.println(ret);
-
-		return ret;
-	}
-
-	public String makeRoleQueryUsingFilters(String role, boolean domain) {
-
-		String Filter = internalFilterAssemblyRole();
-		String ret = "";
-		if (domain) {
-			ret = "SELECT * WHERE { " + lineend + "?subject <" + role
-					+ "> ?object; a []. " + lineend + "FILTER( " + lineend
-					+ "(" + Filter + ").}";
-			// "ORDER BY ?subject";
-			// System.out.println(ret);
-		} else {
-			ret = "SELECT * WHERE { " + lineend + "?object a [] . "
-					+ "?subject <" + role + "> ?object . " + lineend
-					+ "FILTER( " + lineend + "(" + Filter + ").}";
-			// "ORDER BY ?object";
-
+		//String filter = internalFilterAssemblySubject();
+		if (!assembled) {
+			filter = internalFilterAssemblySubject("predicate", "object");
+			filter = (filter.length()>0) ? "FILTER( " + lineend	+ filter + "). " : " ";
+			assembled = true;
 		}
-		// System.out.println(ret);
+		
+		String returnString="SELECT * WHERE { " + lineend + "<" + subject
+		+ "> ?predicate ?object. " + lineend + filter +" } ";
+		
+		return returnString;
+	}
+	
+	private String internalFilterAssemblySubject(String predicateVariable, String objectVariable) {
+		predicateVariable = (predicateVariable.startsWith("?")) ? predicateVariable : "?"+predicateVariable ;
+		objectVariable = (objectVariable.startsWith("?")) ? objectVariable : "?"+objectVariable ;
+			
+		List<String> terms = new ArrayList<String>();
+		if(!isLiterals()) { terms.add("!isLiteral("+objectVariable+")"); }
+		String not = (isAllowMode())? "" : "!" ;
+		for (String pred : getPredicateFilterList()) {
+			terms.add( not + "regex(str("+predicateVariable+"), '" + pred + "')" );
+		}
+		for (String obj : getObjectFilterList()) {
+			terms.add( not + "regex(str("+objectVariable+"), '" + obj + "')" );
+		}
+		
+		return assembleTerms( terms);
+		
+	}
+	
+	private String assembleTerms(List<String> terms){
+		if(terms.isEmpty()) return "";
+		else if(terms.size() == 1 ) return brackets(terms.get(0));
+		else {		
+			StringBuffer sbuf = new StringBuffer(1400);
+			String operator = (isAllowMode()) ? "||" : "&&";
+			String first = terms.remove(0);
+			sbuf.append(brackets(first));
+			for (String term : terms) {
+				sbuf.append(lineend+operator);
+				sbuf.append(brackets(term));
+			}
+			return brackets(sbuf.toString());
+		}
+	
+	}
+	
+	private static String brackets(String s){
+		return "("+s+")";
+	}
+	
 
-		return ret;
+
+	
+	public boolean isLiterals() {
+		return literals;
 	}
 
+	public boolean isAllowMode() {
+		return allowMode;
+	}
+
+	public SortedSet<String> getObjectFilterList() {
+		return objectFilterList;
+	}
+
+	public SortedSet<String> getPredicateFilterList() {
+		return predicateFilterList;
+	}
+
+	public void addPredicateFilter(String newFilter) {
+		assembled = false;
+		predicateFilterList.add(newFilter);
+	}
+	
+	
+	
+public static SparqlQueryMaker getSparqlQueryMakerByName(String name) {
+	
+		if (name.equalsIgnoreCase("YAGO"))
+			return getYAGOFilter();
+		else if (name.equalsIgnoreCase("SKOS"))
+			return getSKOSFilter();
+		else if (name.equalsIgnoreCase("YAGOSKOS"))
+			return getYAGOSKOS();
+		else if (name.equalsIgnoreCase("YAGOSPECIALHIERARCHY"))
+			return getYagoSpecialHierarchyFilter();
+		else if (name.equalsIgnoreCase("TEST"))
+			return test();
+		else if (name.equalsIgnoreCase("DBPEDIA-NAVIGATOR"))
+			return getDBpediaNavigatorFilter();
+		else return null;
+	}
+	
+	
+	public static SparqlQueryMaker getYAGOFilter(){
+	SortedSet<String> pred = new TreeSet<String>();
+		pred.add("http://www.w3.org/2004/02/skos/core");
+		pred.add("http://www.w3.org/2002/07/owl#sameAs");
+		pred.add("http://xmlns.com/foaf/0.1/");
+		pred.add("http://dbpedia.org/property/reference");
+		pred.add("http://dbpedia.org/property/website");
+		pred.add("http://dbpedia.org/property/wikipage");
+		pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+		pred.add("http://dbpedia.org/property/relatedInstance");
+		pred.add("http://dbpedia.org/property/owner");
+		pred.add("http://dbpedia.org/property/standard");
+		
+		SortedSet<String> obj = new TreeSet<String>();
+		//obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
+		//obj.add("http://dbpedia.org/resource/Category:Articles_");
+		obj.add("http://dbpedia.org/resource/Category:");
+		obj.add("http://dbpedia.org/resource/Template");
+		obj.add("http://xmlns.com/foaf/0.1/");
+		obj.add("http://upload.wikimedia.org/wikipedia/commons");
+		obj.add("http://upload.wikimedia.org/wikipedia");
+		obj.add("http://www.geonames.org");
+		obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
+		obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
+		obj.add("http://www.w3.org/2004/02/skos/core");
+		
+		return new SparqlQueryMaker("forbid", obj, pred, false);
+	}
+	
+	public static SparqlQueryMaker getDBpediaNavigatorFilter(){
+		SortedSet<String> pred = new TreeSet<String>();
+		pred.add("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+		pred.add("http://www.w3.org/2000/01/rdf-schema#subClassOf");
+		pred.add("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
+		pred.add("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+		//pred.add("http://dbpedia.org/property/wikipage");
+		//pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+		//pred.add("http://dbpedia.org/property/relatedInstance");
+		//pred.add("http://dbpedia.org/property/owner");
+		//pred.add("http://dbpedia.org/property/standard");
+			return new SparqlQueryMaker("allow", new TreeSet<String>(), pred  , true);
+		}
+	
+	public static SparqlQueryMaker getYagoSpecialHierarchyFilter(){
+		SortedSet<String> pred = new TreeSet<String>();
+			pred.add("http://www.w3.org/2004/02/skos/core");
+			pred.add("http://www.w3.org/2002/07/owl#sameAs");
+			pred.add("http://xmlns.com/foaf/0.1/");
+			
+			pred.add("http://dbpedia.org/property/reference");
+			pred.add("http://dbpedia.org/property/website");
+			pred.add("http://dbpedia.org/property/wikipage");
+			pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+			pred.add("http://dbpedia.org/property/relatedInstance");
+			pred.add("http://dbpedia.org/property/monarch");
+				
+
+			SortedSet<String> obj = new TreeSet<String>();
+			obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
+			obj.add("http://dbpedia.org/resource/Category:Articles_");
+			obj.add("http://dbpedia.org/resource/Template");
+			obj.add("http://xmlns.com/foaf/0.1/");
+			obj.add("http://upload.wikimedia.org/wikipedia/commons");
+			obj.add("http://upload.wikimedia.org/wikipedia");
+			obj.add("http://www.geonames.org");
+			obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
+			obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
+			obj.add("http://www.w3.org/2004/02/skos/core");
+
+			return new SparqlQueryMaker("forbid", obj, pred, false);
+		}
+	
+	
+	public static SparqlQueryMaker getSKOSFilter(){
+			SortedSet<String> pred = new TreeSet<String>();
+			//pred.add("http://www.w3.org/2004/02/skos/core");
+			pred.add("http://www.w3.org/2002/07/owl#sameAs");
+			pred.add("http://xmlns.com/foaf/0.1/");
+			
+			pred.add("http://dbpedia.org/property/reference");
+			pred.add("http://dbpedia.org/property/website");
+			pred.add("http://dbpedia.org/property/wikipage");
+			pred.add("http://www.w3.org/2004/02/skos/core#narrower");
+			pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+
+			SortedSet<String> obj = new TreeSet<String>();
+			//obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
+			//obj.add("http://dbpedia.org/resource/Category:Articles_");
+			obj.add("http://xmlns.com/foaf/0.1/");
+			obj.add("http://upload.wikimedia.org/wikipedia/commons");
+			obj.add("http://upload.wikimedia.org/wikipedia");
+			
+			obj.add("http://www.geonames.org");
+			obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
+			obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
+			
+			
+			obj.add("http://dbpedia.org/class/yago");
+			obj.add("http://dbpedia.org/resource/Template");
+			
+			
+			return new SparqlQueryMaker("forbid", obj, pred, false);
+		}
+	public static SparqlQueryMaker getYAGOSKOS(){
+		SortedSet<String> pred = new TreeSet<String>();
+		//pred.add("http://www.w3.org/2004/02/skos/core");
+		pred.add("http://www.w3.org/2002/07/owl#sameAs");
+		pred.add("http://xmlns.com/foaf/0.1/");
+		
+		pred.add("http://dbpedia.org/property/reference");
+		pred.add("http://dbpedia.org/property/website");
+		pred.add("http://dbpedia.org/property/wikipage");
+		//pred.add("http://www.w3.org/2004/02/skos/core#narrower");
+		pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+
+		SortedSet<String> obj = new TreeSet<String>();
+		//obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
+		//obj.add("http://dbpedia.org/resource/Category:Articles_");
+		obj.add("http://xmlns.com/foaf/0.1/");
+		obj.add("http://upload.wikimedia.org/wikipedia/commons");
+		obj.add("http://upload.wikimedia.org/wikipedia");
+		
+		obj.add("http://www.geonames.org");
+		obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
+		obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
+		
+		
+		//obj.add("http://dbpedia.org/class/yago");
+		obj.add("http://dbpedia.org/resource/Template");
+		
+		
+		return new SparqlQueryMaker("forbid", obj, pred, false);
+	}
+	
+	public static SparqlQueryMaker test(){
+		SortedSet<String> pred = new TreeSet<String>();
+			pred.add("http://www.w3.org/2004/02/skos/core");
+			pred.add("http://www.w3.org/2002/07/owl#sameAs");
+			pred.add("http://xmlns.com/foaf/0.1/");
+			//pred.add("http://dbpedia.org/property/reference");
+			//pred.add("http://dbpedia.org/property/website");
+			//pred.add("http://dbpedia.org/property/wikipage");
+			pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
+			pred.add("http://dbpedia.org/property/relatedInstance");
+			
+			SortedSet<String> obj = new TreeSet<String>();
+			//obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
+			//obj.add("http://dbpedia.org/resource/Category:Articles_");
+			obj.add("http://dbpedia.org/resource/Category:");
+			obj.add("http://dbpedia.org/resource/Template");
+			obj.add("http://xmlns.com/foaf/0.1/");
+			obj.add("http://upload.wikimedia.org/wikipedia/commons");
+			obj.add("http://upload.wikimedia.org/wikipedia");
+			obj.add("http://www.geonames.org");
+			obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
+			obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
+			obj.add("http://www.w3.org/2004/02/skos/core");
+			return new SparqlQueryMaker("forbid", obj, pred, false);
+		}
+	
+	
+	public static void main(String[] args){
+		
+		String uri = "http://dbpedia.org/resource/Angela_Merkel"; 
+		System.out.println(getSparqlQueryMakerByName("YAGO").makeSubjectQueryUsingFilters(uri));
+		System.out.println(getSparqlQueryMakerByName("YAGO").makeSubjectQueryUsingFilters(uri).length());
+		System.out.println(getDBpediaNavigatorFilter().makeSubjectQueryUsingFilters(uri));
+		
+		
+	}
+	
+	/*
 	private String internalFilterAssemblySubject() {
 
-		String Filter = "";
-		if (!this.sparqlQueryType.isLiterals()){
-			Filter += "(!isLiteral(?object))";
-			if (sparqlQueryType.getPredicatefilterlist().size()>0)
-				Filter += "&&(";
-		}
-		else if (sparqlQueryType.getPredicatefilterlist().size()>0)
-			Filter += "(";
-		int i=1;
-		for (String p : sparqlQueryType.getPredicatefilterlist()) {
-			if (this.sparqlQueryType.getMode()=="forbid")
-				if (i!=1)
-					Filter += lineend + filterPredicate(p);
-				else
-					Filter += lineend + filterPredicate(p).substring(2);
-			else if (this.sparqlQueryType.getMode()=="allow")
-				if (i!=1)
-					Filter += lineend + allowPredicate(p);
-				else
-					Filter += lineend + allowPredicate(p).substring(2);
-			i++;
-		}
-		if (sparqlQueryType.getPredicatefilterlist().size()>0)
-			Filter += ")";
+		boolean emptyPredicateFilter = getPredicateFilterList().isEmpty();
+		boolean emptyObjectFilter = getObjectFilterList().isEmpty();
 		
-		if ((sparqlQueryType.getPredicatefilterlist().size()>0||!this.sparqlQueryType.isLiterals())&&sparqlQueryType.getObjectfilterlist().size()>0)
-			Filter += "&&(";
-		else if (sparqlQueryType.getObjectfilterlist().size()>0)
-			Filter += "(";
-		i=1;
-		for (String o : sparqlQueryType.getObjectfilterlist()) {
-			if (this.sparqlQueryType.getMode()=="forbid")
-				if (i!=1)
-					Filter += lineend + filterObject(o);
-				else
-					Filter += lineend + filterObject(o).substring(2);
-			else if (this.sparqlQueryType.getMode()=="allow")
-				if (i!=1)
-					Filter += lineend + allowObject(o);
-				else
-					Filter += lineend + allowObject(o).substring(2);
-			i++;
+		String filterString = "";
+		if (!isLiterals()) {
+			filterString += "(!isLiteral(?object))";
+			if (!getPredicateFilterList().isEmpty()) {
+				filterString += "&&(";
+			}
+			
+		} else if (!emptyPredicateFilter) {
+			filterString += "(";
 		}
-		if (sparqlQueryType.getObjectfilterlist().size()>0)
-			Filter += ")";
+		boolean firstRun = true; 
+		for (String p : getPredicateFilterList()) {
+			filterString += lineend;
+			filterString += (firstRun) ? handlePredicate(p).substring(2) : handlePredicate(p);
+			firstRun = false;
+		}
+		if (!emptyPredicateFilter) {
+			filterString += ")";
+		}
+		if ((!emptyPredicateFilter || !isLiterals()) && !emptyObjectFilter) {
+			filterString += "&&(";
+		}else if (!emptyObjectFilter) {
+			filterString += "(";
+		}
 		
-		return Filter;
-	}
-
-	private String internalFilterAssemblyRole() {
-
-		String Filter = "";
-		if (!this.sparqlQueryType.isLiterals())
-			Filter += "!isLiteral(?object))";
-		for (String s : sparqlQueryType.getObjectfilterlist()) {
-			Filter += lineend + filterSubject(s);
+		firstRun = true;
+		for (String o : getObjectFilterList()) {
+			filterString += lineend;
+			filterString += (firstRun) ? handleObject(o).substring(2) : handleObject(o) ;
+			firstRun = false;			
 		}
-		for (String o : sparqlQueryType.getObjectfilterlist()) {
-			Filter += lineend + filterObject(o);
+		if (!emptyObjectFilter){
+			filterString += ")";
 		}
-		return Filter;
-	}
+		
+		return filterString;
+	}*/
 
+	/*
 	private String filterSubject(String ns) {
 		return "&&( !regex(str(?subject), '" + ns + "') )";
 	}
 
+	
+	private String handlePredicate (String ns) {
+		return  (isAllowMode()) ? allowPredicate(ns) : filterPredicate(ns) ;
+	}
+	
+	private String handleObject (String ns) {
+		return  (isAllowMode()) ? allowObject(ns) : filterObject(ns) ;
+	}
+	
 	private static String filterPredicate(String ns) {
 		return "&&( !regex(str(?predicate), '" + ns + "') )";
 	}
@@ -173,57 +419,6 @@ public class SparqlQueryMaker {
 	private static String allowObject(String ns) {
 		return "||( regex(str(?object), '" + ns + "') )";
 	}
+*/
 
-	/*private void p(String str) {
-		if (print_flag) {
-			System.out.println(str);
-		}
-	}*/
-
-	/**
-	 * creates a query with the specified filters for all triples with subject
-	 * 
-	 * @param subject
-	 *            the searched subject
-	 * @param sf
-	 *            special object encapsulating all options
-	 * @return sparql query
-	 */
-	/*
-	 * public static String makeQueryFilter(String subject, oldSparqlFilter sf) {
-	 * 
-	 * String Filter = ""; if (!sf.useLiterals) Filter += "!isLiteral(?object)";
-	 * for (String p : sf.getPredFilter()) { Filter += "\n" +
-	 * filterPredicate(p); } for (String o : sf.getObjFilter()) { Filter += "\n" +
-	 * filterObject(o); }
-	 * 
-	 * String ret = "SELECT * WHERE { \n" + "<" + subject + "> ?predicate
-	 * ?object.\n"; if (!(Filter.length() == 0)) ret += "FILTER( \n" + "(" +
-	 * Filter + "))."; ret += "}"; // System.out.println(ret); return ret; }
-	 */
-
-	/*
-	 * moved to SparqlQuery TODO remove here creates a query for subjects with
-	 * the specified label @param label a phrase that is part of the label of a
-	 * subject @param limit this limits the amount of results @return
-	 * 
-	 * @Deprecated public static String makeLabelQuery(String label,int limit){
-	 *             //TODO maybe use http://xmlns:com/foaf/0.1/page return
-	 *             "SELECT DISTINCT ?subject\n"+ "WHERE { ?subject
-	 *             <http://www.w3.org/2000/01/rdf-schema#label> ?object.?object
-	 *             bif:contains '\""+label+"\"'@en}\n"+ "LIMIT "+limit; }
-	 * 
-	 * 
-	 * creates a query for all subjects that are of the type concept @param
-	 * concept the type that subjects are searched for @return
-	 * 
-	 * 
-	 * moved to SparqlQuery TODO remove here
-	 * @Deprecated public static String makeConceptQuery(String concept){ return
-	 *             "SELECT DISTINCT ?subject\n"+ "WHERE { ?subject a
-	 *             <"+concept+">}\n"; } moved to SparqlQuery TODO remove here
-	 * @Deprecated public static String makeArticleQuery(String subject){ return
-	 *             "SELECT ?predicate,?object\n"+ "WHERE { <"+subject+">
-	 *             ?predicate ?object}\n"; }
-	 */
-}
+	}
