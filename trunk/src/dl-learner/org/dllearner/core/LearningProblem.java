@@ -42,6 +42,10 @@ import org.dllearner.core.owl.Description;
  */
 public abstract class LearningProblem extends Component {
 	
+	/**
+	 * Implementations of learning problems can use this class
+	 * variable to perform reasoner operations.
+	 */
 	protected ReasoningService reasoningService;
 	
 	/**

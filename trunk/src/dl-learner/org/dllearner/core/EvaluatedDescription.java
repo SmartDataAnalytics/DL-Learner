@@ -91,6 +91,7 @@ public class EvaluatedDescription {
 	
 	/**
 	 * @see org.dllearner.core.owl.Description#getDepth()
+	 * @return Depth of the description.
 	 */	
 	public int getDescriptionDepth() {
 		return description.getDepth();
@@ -98,13 +99,17 @@ public class EvaluatedDescription {
 	
 	/**
 	 * @see org.dllearner.core.Score#getAccuracy()
+	 * @return Accuracy of the description.
 	 */
 	public double getAccuracy() {
 		return score.getAccuracy();
 	}
 	
 	/**
+	 * Gets the score of this description. This can be used to get
+	 * further statistical values.
 	 * @see org.dllearner.core.Score
+	 * @return The score object associated with this evaluated description.
 	 */
 	public Score getScore() {
 		return score;
@@ -112,6 +117,7 @@ public class EvaluatedDescription {
 
 	/**
 	 * @see org.dllearner.core.Score#getCoveredNegatives()
+	 * @return Negative examples covered by the description.
 	 */
 	public Set<Individual> getCoveredNegatives() {
 		return score.getCoveredNegatives();
@@ -119,6 +125,7 @@ public class EvaluatedDescription {
 
 	/**
 	 * @see org.dllearner.core.Score#getCoveredPositives()
+	 * @return Positive examples covered by the description.
 	 */
 	public Set<Individual> getCoveredPositives() {
 		return score.getCoveredPositives();
@@ -126,6 +133,7 @@ public class EvaluatedDescription {
 
 	/**
 	 * @see org.dllearner.core.Score#getNotCoveredNegatives()
+	 * @return Negative examples not covered by the description.
 	 */
 	public Set<Individual> getNotCoveredNegatives() {
 		return score.getNotCoveredNegatives();
@@ -133,6 +141,7 @@ public class EvaluatedDescription {
 
 	/**
 	 * @see org.dllearner.core.Score#getNotCoveredPositives()
+	 * @return Positive examples not covered by the description.
 	 */
 	public Set<Individual> getNotCoveredPositives() {
 		return score.getNotCoveredPositives();

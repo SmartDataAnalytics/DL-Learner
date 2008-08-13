@@ -45,6 +45,14 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 public abstract class LearningAlgorithm extends Component {
 
 	/**
+	 * This is the maximum number of results, which the learning
+	 * algorithms need to keep. (Often algorithms do not need 
+	 * to store any results except the best one, so this limit
+	 * is used to limit the performance cost for storing results.)
+	 */
+	public static final int MAX_NR_OF_RESULTS = 100;
+	
+	/**
 	 * Starts the algorithm. It runs until paused, stopped, or
 	 * a termination criterion has been reached.
 	 */
@@ -90,11 +98,13 @@ public abstract class LearningAlgorithm extends Component {
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()
+	 * @return The best class description found by the learning algorithm so far.
 	 */
 	public abstract Description getCurrentlyBestDescription();
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions()
+	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
 	public List<Description> getCurrentlyBestDescriptions() {
 		List<Description> ds = new LinkedList<Description>();
@@ -104,6 +114,8 @@ public abstract class LearningAlgorithm extends Component {
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions(int)
+	 * @param nrOfDescriptions Limit for the number or returned descriptions.
+	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
 	public synchronized List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions) {
 		return getCurrentlyBestDescriptions(nrOfDescriptions, false);
@@ -111,16 +123,22 @@ public abstract class LearningAlgorithm extends Component {
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions(int,double,boolean)
+	 * @param nrOfDescriptions Limit for the number or returned descriptions.
+	 * @param filterNonMinimalDescriptions Remove non-minimal descriptions (e.g. those which can be shortened 
+	 * to an equivalent concept) from the returned set.
+	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
 	public synchronized List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions, boolean filterNonMinimalDescriptions) {
 		List<Description> currentlyBest = getCurrentlyBestDescriptions();
 		List<Description> returnList = new LinkedList<Description>();
 		for(Description ed : currentlyBest) {
-			if(returnList.size() >= nrOfDescriptions)
+			if(returnList.size() >= nrOfDescriptions) {
 				return returnList;
+			}
 			
-			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed))
+			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed)) {
 				returnList.add(ed);
+			}
 			
 		}
 		return returnList;
@@ -169,15 +187,18 @@ public abstract class LearningAlgorithm extends Component {
 			// once we hit a description with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list
-			if(ed.getAccuracy() < accuracyThreshold)
+			if(ed.getAccuracy() < accuracyThreshold) {
 				return returnList;
+			}
 
 			// return if we have sufficiently many descriptions
-			if(returnList.size() >= nrOfDescriptions)
+			if(returnList.size() >= nrOfDescriptions) {
 				return returnList;
+			}
 			
-			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed.getDescription()))
+			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed.getDescription())) {
 				returnList.add(ed);
+			}
 			
 		}
 		return returnList;
@@ -203,7 +224,9 @@ public abstract class LearningAlgorithm extends Component {
 	}
 		
 	/**
-	 * Returns all learning problems supported by this component.
+	 * Returns all learning problems supported by this component. This can be used to indicate that, e.g.
+	 * an algorithm is only suitable for positive only learning. 
+	 * @return All classes implementing learning problems, which are supported by this learning algorithm.
 	 */
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		return new LinkedList<Class<? extends LearningProblem>>();
