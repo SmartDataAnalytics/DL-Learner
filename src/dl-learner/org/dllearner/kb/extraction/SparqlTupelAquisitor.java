@@ -20,12 +20,11 @@
 package org.dllearner.kb.extraction;
 
 import java.net.URI;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
@@ -41,13 +40,13 @@ import com.hp.hpl.jena.sparql.core.ResultBinding;
  * @author Sebastian Hellmann
  * 
  */
-public class TypedSparqlQuery implements TypedSparqlQueryInterface {
+public class SparqlTupelAquisitor extends TupelAquisitor {
 	
-	private static Logger logger = Logger.getLogger(KnowledgeSource.class);
+	private static Logger logger = Logger.getLogger(SparqlTupelAquisitor.class);
 
 	
-	boolean print_flag = false;
-	protected Configuration configuration;
+	//boolean print_flag = false;
+	private Configuration configuration;
 	private SparqlQueryMaker sparqlQueryMaker;
 	Cache cache;
 
@@ -56,10 +55,11 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 	// private SparqlQuery sparqlQuery;
 	// private CachedSparqlQuery cachedSparqlQuery;
 
-	public TypedSparqlQuery(Configuration Configuration) {
+	public SparqlTupelAquisitor(Configuration Configuration) {
 		this.configuration = Configuration;
-		this.sparqlQueryMaker =Configuration.getSparqlQueryMaker();
-		
+		/*this.sparqlQueryMaker = new SparqlQueryMaker(Configuration
+				.getSparqlQueryType());
+		*/
 		this.cache = new Cache(configuration.cacheDir); 
 		// this.sparqlQuery=new SparqlQuery(configuration.getSparqlEndpoint());
 		// this.cachedSparqlQuery=new
@@ -81,9 +81,10 @@ public class TypedSparqlQuery implements TypedSparqlQueryInterface {
 	 *            normally object
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings({"unchecked"})
-	public Set<StringTuple> getTupelForResource(URI uri) {
-		Set<StringTuple> s = new HashSet<StringTuple>();
+	public SortedSet<StringTuple> getTupelForResource(URI uri) {
+		SortedSet<StringTuple> s = new TreeSet<StringTuple>();
 		
 		String a = "predicate";
 		String b = "object";

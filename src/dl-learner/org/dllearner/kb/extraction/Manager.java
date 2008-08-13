@@ -26,7 +26,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQueryType;
+import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.utilities.statistics.Statistics;
 
 /**
@@ -45,12 +45,12 @@ public class Manager {
 		.getLogger(Manager.class);
 	
 	
-	public void useConfiguration(SparqlQueryType SparqlQueryType,
+	public void useConfiguration(SparqlQueryMaker sparqlQueryMaker,
 			SparqlEndpoint SparqlEndpoint, Manipulators manipulator,
 			int recursiondepth, boolean getAllSuperClasses,
 			boolean closeAfterRecursion, String cacheDir) {
 
-		this.configuration = new Configuration(SparqlEndpoint, SparqlQueryType,
+		this.configuration = new Configuration(SparqlEndpoint, sparqlQueryMaker,
 				manipulator, recursiondepth, getAllSuperClasses,
 				closeAfterRecursion, cacheDir);
 		//System.out.println(this.configuration);
@@ -111,7 +111,7 @@ public class Manager {
 	}
 
 	public void addPredicateFilter(String str) {
-		this.configuration.getSparqlQueryType().addPredicateFilter(str);
+		this.configuration.getSparqlQueryMaker().addPredicateFilter(str);
 
 	}
 

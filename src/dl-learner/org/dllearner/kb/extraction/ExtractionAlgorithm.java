@@ -61,7 +61,8 @@ public class ExtractionAlgorithm {
 	}
 
 	/**
-	 * most important function expands one example cave: the recursion is not a
+	 * most important function expands one example 
+	 * CAVE: the recursion is not a
 	 * recursion anymore, it was transformed to an iteration
 	 * 
 	 * @param uri

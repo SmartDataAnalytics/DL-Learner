@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
@@ -75,8 +77,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private String predefinedFilter = null;
 	private String predefinedEndpoint = null;
 	private String predefinedManipulator = "STANDARD";
-	private Set<String> predList = new HashSet<String>();
-	private Set<String> objList = new HashSet<String>();
+	private SortedSet<String> predList = new TreeSet<String>();
+	private SortedSet<String> objList = new TreeSet<String>();
 	// private Set<String> classList;
 	private String format = "N-TRIPLES";
 	private boolean dumpToFile = true;
@@ -216,9 +218,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		} else if (option.equals("recursionDepth")) {
 			recursionDepth = (Integer) entry.getValue();
 		} else if (option.equals("predList")) {
-			predList = (Set<String>) entry.getValue();
+			predList = (SortedSet<String>) entry.getValue();
 		} else if (option.equals("objList")) {
-			objList = (Set<String>) entry.getValue();
+			objList = (SortedSet<String>) entry.getValue();
 			// } else if (option.equals("classList")) {
 			// classList = (Set<String>) entry.getValue();
 		} else if (option.equals("predefinedEndpoint")) {
@@ -299,7 +301,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		 */
 
 		Manager m = new Manager();
-		SparqlQueryType sparqlQueryType = null;
+		SparqlQueryMaker sparqlQueryMaker = null;
 		// get Options for Manipulator
 		Manipulators manipulator = ManipulatorType.getManipulatorByName(predefinedManipulator, blankNodeIdentifier,
 				breakSuperClassRetrievalAfter, replacePredicate, replaceObject);
@@ -317,16 +319,15 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// get Options for Filters
 
 		if (predefinedFilter != null) {
-			sparqlQueryType = SparqlQueryType
-					.getFilterByName(predefinedFilter);
+			sparqlQueryMaker = SparqlQueryMaker.getSparqlQueryMakerByName(predefinedFilter);
 
 		} else {
-			sparqlQueryType = new SparqlQueryType("forbid", objList, predList,
+			sparqlQueryMaker = new SparqlQueryMaker("forbid", objList, predList,
 					useLits);
 
 		}
 		// give everything to the manager
-		m.useConfiguration(sparqlQueryType, endpoint, manipulator,
+		m.useConfiguration(sparqlQueryMaker, endpoint, manipulator,
 				recursionDepth, getAllSuperClasses, closeAfterRecursion, cacheDir);
 		
 		String ont = "";
