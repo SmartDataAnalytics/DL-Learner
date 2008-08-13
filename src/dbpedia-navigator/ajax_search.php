@@ -30,9 +30,13 @@
 	mysql_select_db("navigator_db");
 	$query="SELECT name, label FROM rank WHERE MATCH (label) AGAINST ('$label') ORDER BY number LIMIT 3";
 	$res=mysql_query($query);
+	$names=array();
+	$labels=array();
 	while ($result=mysql_fetch_array($res)){
-		$content.='<a href="" onclick="get_article(\'label='.$result['name'].'&cache=-1\');return false;">'.$result['label'].'</a><br/>';
+		$labels[]=$result['label'];
+		$names[]=$result['name'];
 	}
+	$content.=getResultsTable($names,$labels);
 	
 	print $content;
 	print '$$';

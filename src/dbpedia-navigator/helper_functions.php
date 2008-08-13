@@ -38,18 +38,19 @@ function getTagCloud($tags,$label)
 	return $ret;
 }
 
-function getResultsTable($results)
+function getResultsTable($names,$labels)
 {
-	$ret="<p>Your search brought ".count($results)." results.</p><br/>";
+	$ret="<p>Your search brought ".count($names)." results.</p><br/>";
 	$i=0;
 	$display="block";
-	while($i*30<count($results))
+	while($i*30<count($names))
 	{
 		$ret.="<div id='results".$i."' style='display:".$display."'>Seite ".($i+1)."<br/><br/>";
-		for ($j=0;($j<30)&&(($i*30+$j)<count($results));$j++)
+		for ($j=0;($j<30)&&(($i*30+$j)<count($names));$j++)
 		{
-			$result=$results[$i*30+$j];
-			$ret.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"\" onclick=\"xajax_getarticle('".$result."',-1);return false;\">".urldecode(str_replace("_"," ",substr (strrchr ($result, "/"), 1)))."</a><br/>";
+			$name=$names[$i*30+$j];
+			$label=$labels[$i*30+$j];
+			$ret.='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.$label.'</a><br/>';
 		}
 		$ret.="</div>";
 		$i++;
