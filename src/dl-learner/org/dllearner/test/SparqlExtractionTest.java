@@ -25,7 +25,7 @@ import java.net.URI;
 import java.util.LinkedList;
 
 import org.dllearner.kb.extraction.Manager;
-import org.dllearner.kb.manipulator.OldManipulator;
+import org.dllearner.kb.old.OldManipulator;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.utilities.datastructures.StringTuple;

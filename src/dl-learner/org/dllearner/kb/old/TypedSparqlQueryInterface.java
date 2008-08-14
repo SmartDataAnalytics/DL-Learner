@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.aquisitors;
+package org.dllearner.kb.old;
 
 import java.net.URI;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package org.dllearner.kb.extraction;
+package org.dllearner.kb.old;
 
 /**
  * this class collects old source code and will be removed after refactoring 

@@ -17,12 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.manipulator;
+package org.dllearner.kb.old;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.dllearner.kb.extraction.ClassNode;
+import org.dllearner.kb.extraction.InstanceNode;
 import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.datastructures.StringTuple;
 
@@ -32,7 +35,8 @@ import org.dllearner.utilities.datastructures.StringTuple;
  * @author Sebastian Hellmann
  * 
  */
-public class DBpediaNavigatorManipulator implements Manipulators{
+@Deprecated
+public class OldManipulator implements Manipulators{
 	public final String subclass = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 	public final String type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 	final String objectProperty = "http://www.w3.org/2002/07/owl#ObjectProperty";
@@ -46,7 +50,7 @@ public class DBpediaNavigatorManipulator implements Manipulators{
 
 	// Set<String> classproperties;
 
-	public DBpediaNavigatorManipulator(String blankNodeIdentifier,
+	public OldManipulator(String blankNodeIdentifier,
 			int breakSuperClassRetrievalAfter,
 			LinkedList<StringTuple> replacePredicate,
 			LinkedList<StringTuple> replaceObject) {
@@ -69,27 +73,28 @@ public class DBpediaNavigatorManipulator implements Manipulators{
 	 * @return
 	 */
 	public Set<StringTuple> check(Set<StringTuple> tuples, Node node) {
-		//Set<StringTuple> toRemove = new HashSet<StringTuple>();
+		Set<StringTuple> toRemove = new HashSet<StringTuple>();
 		Iterator<StringTuple> it = tuples.iterator();
-		float lat=0;
-		float lng=0;
-		String clas="";
-		StringTuple typeTupel=null;
-		tuples.addAll(DBpediaNavigatorCityLocator.getTuplesToAdd(node.getURI().toString()));
 		while (it.hasNext()) {
 			StringTuple t = (StringTuple) it.next();
-						
-			if (t.a.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")){
-				clas=t.b;
-				typeTupel=t;
-			}
 			
-			if (t.a.equals("http://www.w3.org/2003/01/geo/wgs84_pos#lat"))
-				lat=Float.parseFloat(t.b.substring(0,t.b.indexOf("^^")));
-			if (t.a.equals("http://www.w3.org/2003/01/geo/wgs84_pos#long"))
-				lng=Float.parseFloat(t.b.substring(0,t.b.indexOf("^^")));
+			//HACK
+//			if(t.a.equals("http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag")) {
+//				//hackGetLabel(t.b);
+//				
+//			}
 			
-			/*replacePredicate(t);
+			// GovTrack hack
+			// => we convert a string literal to a URI
+			// => TODO: introduce an option for converting literals for certain
+			// properties into URIs
+//			String sp = "http://purl.org/dc/elements/1.1/subject";
+//			if(t.a.equals(sp)) {
+//				System.out.println(t);
+//				System.exit(0);
+//			}
+			
+			replacePredicate(t);
 			replaceObject(t);
 
 			
@@ -109,20 +114,15 @@ public class DBpediaNavigatorManipulator implements Manipulators{
 			if (t.a.equals(type) && t.b.equals(thing)
 					&& node instanceof InstanceNode) {
 				toRemove.add(t);
-			}*/
+			}
 
 		}
-		if (clas.equals("http://dbpedia.org/class/yago/City108524735")){
-			String newType=DBpediaNavigatorCityLocator.getTypeToCoordinates(lat, lng);
-			tuples.add(new StringTuple("http://www.w3.org/1999/02/22-rdf-syntax-ns#type",newType));
-			tuples.remove(typeTupel);
-		}
-		//tuples.removeAll(toRemove);
+		tuples.removeAll(toRemove);
 
 		return tuples;
 	}
 
-	/*private void replacePredicate(StringTuple t) {
+	private void replacePredicate(StringTuple t) {
 		for (StringTuple rep : replacePredicate) {
 			if (rep.a.equals(t.a)) {
 				t.a = rep.b;
@@ -136,5 +136,26 @@ public class DBpediaNavigatorManipulator implements Manipulators{
 				t.a = rep.b;
 			}
 		}
+	}
+	
+	
+	/*private String hackGetLabel(String resname){
+		String query="" +
+				"SELECT ?o \n" +
+				"WHERE { \n" +
+				"<"+resname+"> "+ " <http://www.holygoat.co.uk/owl/redwood/0.1/tags/tagName> ?o " +
+						"}";
+		
+		System.out.println(query);
+		//http://dbtune.org/musicbrainz/sparql?query=
+			//SELECT ?o WHERE { <http://dbtune.org/musicbrainz/resource/tag/1391>  <http://www.holygoat.co.uk/owl/redwood/0.1/tags/tagName> ?o }
+		SparqlQuery s=new SparqlQuery(query,SparqlEndpoint.EndpointMusicbrainz());
+		ResultSet rs=s.send();
+		while (rs.hasNext()){
+			rs.nextBinding();
+		}
+		//System.out.println("AAA"+s.getAsXMLString(s.send()) );
+		return "";
 	}*/
+
 }
