@@ -1,4 +1,4 @@
-package org.dllearner.kb.extraction;
+package org.dllearner.kb.manipulator;
 
 import java.util.HashMap;
 import java.util.HashSet;
