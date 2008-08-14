@@ -286,42 +286,46 @@ public class Info {
 	
 	<!-- build protege plugin and copy it to the plugin folder -->
 	<target name="protege">
-	<property name="source" value="src/dl-learner/org/dllearner/tools/protege" />
-	<property name="temp" value="${source}/temp" />
-		
-    	<mkdir dir="${temp}" />
-    	<mkdir dir="${temp}/META-INF" />
-		<mkdir dir="${temp}/lib" />
-		<mkdir dir="${temp}/lib/pellet" />
-		<mkdir dir="${temp}/lib/jena" />
-		<copy toDir="${temp}/META-INF" >
-		    		<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />	
-		</copy>
-		<copy toDir="${temp}/lib" >
-				    		<fileset dir="${lib_dir}" includes="junit-4.4.jar" />
+		<property name="source" value="src/dl-learner/org/dllearner/tools/protege" />
+		<property name="temp" value="${source}/temp" />
+			
+	    	<mkdir dir="${temp}" />
+	    	<mkdir dir="${temp}/META-INF" />
+			<mkdir dir="${temp}/lib" />
+			<mkdir dir="${temp}/lib/pellet" />
+			<mkdir dir="${temp}/lib/jena" />
+			<mkdir dir="${temp}/lib/ore-tools" />
+			<copy toDir="${temp}/META-INF" >
+			    		<fileset dir="${source}/META-INF" includes="MANIFEST.MF," />	
+			</copy>
+			<copy toDir="${temp}/lib/ore-tool" >
+							    		<fileset dir="${lib_dir}/ore-tool" includes="swingx-0.9.2.jar" />
+							</copy>
+			<copy toDir="${temp}/lib" >
+					    		<fileset dir="${lib_dir}" includes="junit-4.4.jar,jamon-2.7.jar" />
+					</copy>
+			<copy toDir="${temp}/lib/pellet" >
+								    	<fileset dir="${lib_dir}/pellet" includes="pellet.jar,aterm-java-1.6.jar,relaxngDatatype.jar,xsdlib.jar" />	
+						</copy>
+			<copy toDir="${temp}/lib/jena" >
+								    	<fileset dir="${lib_dir}/jena" includes="commons-logging-1.1.1.jar,json.jar" />	
+						</copy>
+				<copy toDir="${temp}" >
+						    	<fileset dir="${class_dir}"  />	
 				</copy>
-		<copy toDir="${temp}/lib/pellet" >
-							    	<fileset dir="${lib_dir}/pellet" includes="pellet.jar,aterm-java-1.6.jar,relaxngDatatype.jar,xsdlib.jar" />	
-					</copy>
-		<copy toDir="${temp}/lib/jena" >
-							    	<fileset dir="${lib_dir}/jena" includes="commons-logging-1.1.jar" />	
-					</copy>
 			<copy toDir="${temp}" >
-					    	<fileset dir="${class_dir}"  />	
-			</copy>
-		<copy toDir="${temp}" >
-			<fileset dir="${source}/META-INF" includes="**/*.xml," excludes="build.xml" />
-			</copy>
-    	<javac srcdir="${source}"
-         destdir="${temp}"
-         debug="on">
-			<classpath refid="classpath"/>
-    	</javac>
-    	<jar destfile="${protege_dir}/dl-learner.jar" manifest="${temp}/META-INF/MANIFEST.MF">
-    			<fileset dir="${temp}" />
-    		</jar>
-    	<delete dir="${temp}" />
-		
-	</target>
+				<fileset dir="${source}/META-INF" includes="**/*.xml," excludes="build.xml" />
+				</copy>
+	    	<javac srcdir="${source}"
+	         destdir="${temp}"
+	         debug="on">
+				<classpath refid="classpath"/>
+	    	</javac>
+	    	<jar destfile="${protege_dir}/dl-learner.jar" manifest="${temp}/META-INF/MANIFEST.MF">
+	    			<fileset dir="${temp}" />
+	    		</jar>
+	    	<delete dir="${temp}" />
+			
+		</target>
 	
 </project>
