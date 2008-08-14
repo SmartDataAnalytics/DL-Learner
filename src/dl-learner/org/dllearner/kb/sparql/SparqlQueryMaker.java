@@ -96,6 +96,22 @@ public class SparqlQueryMaker {
 
 		return returnString;
 	}
+	
+	public String makeClassQueryUsingFilters(String subject) {
+
+		// String filter = internalFilterAssemblySubject();
+		String tmpFilter = internalFilterAssemblySubject("predicate", "object");
+			tmpFilter = (tmpFilter.length() > 0) ? "FILTER( " + lineend + tmpFilter
+					+ "). " : " ";
+		
+		String returnString = "SELECT * WHERE {" +lineend + 
+			"<" + subject + "> ?predicate ?object;" +
+			"a ?object . "+lineend+
+			tmpFilter + "}";
+
+
+		return returnString;
+	}
 
 	public String makeSubjectQueryLevel(String subject, int level) {
 		

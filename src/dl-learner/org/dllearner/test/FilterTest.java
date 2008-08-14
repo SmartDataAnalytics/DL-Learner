@@ -36,6 +36,7 @@ public class FilterTest {
 	/**
 	 * @param args
 	 */
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 	//	System.out.println(qextralong);
 	
@@ -78,6 +79,7 @@ public class FilterTest {
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	static void testShort(){
 		SortedSet<StringTuple> tupleset = new TreeSet<StringTuple>();
 		sc.reset();
@@ -116,6 +118,7 @@ public class FilterTest {
 		sc.printAndSet("qextrashort ");
 	}
 	
+	@SuppressWarnings("deprecation")
 	static void  testShortWithFilter(){
 		SortedSet<StringTuple> tupleset = new TreeSet<StringTuple>();
 		SortedSet<StringTuple> afterfilter= new TreeSet<StringTuple>();

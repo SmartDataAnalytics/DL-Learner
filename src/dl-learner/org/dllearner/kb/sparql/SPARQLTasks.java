@@ -24,6 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.datastructures.StringTuple;
 
 import com.hp.hpl.jena.query.ResultSet;
@@ -383,7 +384,7 @@ public class SPARQLTasks {
 		return queryAsSet(sparqlQueryString, variable);
 	}
 	
-	
+	@Deprecated
 	public SortedSet<StringTuple> queryAsTuple(String subject, boolean filterLiterals) {
 		ResultSetRewindable rs = null;
 		String p = "predicate";
@@ -405,6 +406,47 @@ public class SPARQLTasks {
 		return getTuplesFromResultSet(rs, p, o);
 	}
 
+	@Deprecated
+	public SortedSet<StringTuple> queryAsTuple(String sparqlQueryString, String var1, String var2) {
+		ResultSetRewindable rs = null;
+		try {
+			String jsonString = query(sparqlQueryString);
+			rs = SparqlQuery.convertJSONtoResultSet(jsonString);
+
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+		}
+		
+		//SimpleClock sc = new SimpleClock();
+		//rw = ResultSetFactory.makeRewindable(rs);
+		//sc.printAndSet("rewindable");
+		return getTuplesFromResultSet(rs, var1, var2);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public SortedSet<RDFNodeTuple> queryAsRDFNodeTuple(String sparqlQueryString, String var1, String var2) {
+		ResultSetRewindable rsw = null;
+		SortedSet<RDFNodeTuple> returnSet = new TreeSet<RDFNodeTuple>();
+		
+		try {
+			String jsonString = query(sparqlQueryString);
+			rsw = SparqlQuery.convertJSONtoResultSet(jsonString);
+
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+		}
+		
+		List<ResultBinding> l = ResultSetFormatter.toList(rsw);
+		for (ResultBinding resultBinding : l) {
+			returnSet.add(new RDFNodeTuple(resultBinding.get(var1),resultBinding.get(var2)));
+		}
+		
+		rsw.reset();
+		
+		return returnSet;
+	}
+
+	
 	/**
 	 * little higher level, executes query ,returns all resources for a
 	 * variable.

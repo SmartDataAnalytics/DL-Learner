@@ -23,6 +23,8 @@ import java.net.URI;
 import java.util.SortedSet;
 import java.util.Vector;
 
+import org.dllearner.kb.aquisitors.TypedSparqlQueryInterface;
+
 
 /**
  * Abstract class. defines functions to expand the nodes

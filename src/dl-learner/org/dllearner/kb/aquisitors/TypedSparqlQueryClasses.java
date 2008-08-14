@@ -17,13 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.extraction;
+package org.dllearner.kb.aquisitors;
 
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.utilities.datastructures.StringTuple;
 

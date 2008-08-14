@@ -31,10 +31,11 @@ import org.dllearner.kb.sparql.SparqlQueryMaker;
  */
 public class Configuration {
 
-	private SPARQLTasks sparqlTasks;
+	public SPARQLTasks sparqlTasks;
 	
 	private SparqlEndpoint endpoint;
 	private SparqlQueryMaker sparqlQueryMaker;
+	
 	private Manipulators manipulator;
 	// the following needs to be moved to
 	// class extraction algorithm or manipulator

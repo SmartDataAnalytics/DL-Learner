@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.extraction;
+package org.dllearner.kb.aquisitors;
 
 import java.net.URI;
-import java.util.SortedSet;
+import java.util.Set;
 
 import org.dllearner.utilities.datastructures.StringTuple;
 
@@ -33,9 +33,7 @@ import org.dllearner.utilities.datastructures.StringTuple;
  * @author Sebastian Hellmann
  * 
  */
-public abstract class TupelAquisitor {
+public interface TypedSparqlQueryInterface {
 
-	public abstract SortedSet<StringTuple> getTupelForResource(URI u);
+	public Set<StringTuple> getTupelForResource(URI u);
 }
-
-

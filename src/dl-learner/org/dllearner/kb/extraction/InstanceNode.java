@@ -27,6 +27,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.dllearner.kb.aquisitors.TypedSparqlQueryInterface;
 import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
