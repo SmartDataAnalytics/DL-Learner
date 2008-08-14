@@ -205,15 +205,15 @@ public class KB implements KBElement {
 	
 	public String toKBSyntaxString(String baseURI, Map<String,String> prefixes) {
 		StringBuffer strbuff = new StringBuffer();
-		strbuff.append("TBox["+tbox.size()+"]:\n");
+		strbuff.append("// TBox["+tbox.size()+"]:\n");
 		for(Axiom a : tbox)
-			strbuff.append("  " + a.toString(baseURI, prefixes)+"\n");
-		strbuff.append("\nRBox["+rbox.size()+"]:\n");
+			strbuff.append("  " + a.toKBSyntaxString(baseURI, prefixes)+"\n");
+		strbuff.append("\n// RBox["+rbox.size()+"]:\n");
 		for(Axiom a : rbox)
-			strbuff.append("  " + a.toString(baseURI, prefixes)+"\n");
-		strbuff.append("\nABox["+abox.size()+"]:\n");
+			strbuff.append("  " + a.toKBSyntaxString(baseURI, prefixes)+"\n");
+		strbuff.append("\n// ABox["+abox.size()+"]:\n");
 		for(Axiom a : abox)
-			strbuff.append("  " + a.toString(baseURI, prefixes)+"\n");
+			strbuff.append("  " + a.toKBSyntaxString(baseURI, prefixes)+"\n");
 		return strbuff.toString();
 	}
 	

@@ -48,8 +48,7 @@ public class ObjectPropertyRangeAxiom extends PropertyRangeAxiom {
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return "OPRANGE(" + property.toKBSyntaxString(baseURI, prefixes) + ") = " + range.toKBSyntaxString(baseURI, prefixes); 	
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
@@ -53,44 +54,52 @@ public class ELDownTests {
 	 * 
 	 * @throws ParseException Thrown if concept syntax does not correspond
 	 * to current KB syntax.
+	 * @throws ComponentInitException 
 	 */
 	@Test
-	public void refinementTest() throws ParseException {
+	public void refinementTest() throws ParseException, ComponentInitException {
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		// background knowledge
 		String kbString = "";
-		kbString += "OP_DOMAIN(hasChild) = human.";
-		kbString += "OP_RANGE(hasChild) = human.";
-		kbString += "OP_DOMAIN(hasPet) = human.";
-		kbString += "OP_RANGE(hasPet) = animal.";
-		kbString += "Subrole(hasChild, has).";
-		kbString += "Subrole(hasPet, has).";
-		kbString += "bird SUB animal.";
-		kbString += "cat SUB animal.";
-		kbString += "cat SUB animal.";
+		kbString += "OPDOMAIN(hasChild) = human.\n";
+		kbString += "OPRANGE(hasChild) = human.\n";
+		kbString += "OPDOMAIN(hasPet) = human.\n";
+		kbString += "OPRANGE(hasPet) = animal.\n";
+		kbString += "Subrole(hasChild, has).\n";
+		kbString += "Subrole(hasPet, has).\n";
+		kbString += "bird SUB animal.\n";
+		kbString += "cat SUB animal.\n";
+		kbString += "(human AND animal) = BOTTOM.\n";
 		KB kb = KBParser.parseKBFile(kbString);
 		
 		// input description
-		Description input = KBParser.parseConcept("human AND EXISTS has.animal");
+		Description input = KBParser.parseConcept("(human AND EXISTS has.animal)");
 		
 		// create reasoner
 		KBFile source = new KBFile(kb);
 		ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, source);
 		ReasoningService rs = cm.reasoningService(rc);
+		source.init();
+		rc.init();
+		// TODO there shouldn't be a need to call this explicitly!
+		// (otherwise we get a NullPointerException, because the hierarchy is not created)
+		rs.prepareSubsumptionHierarchy();
+		rs.prepareRoleHierarchy();
+		
 		ELDown operator = new ELDown(rs);
 		
 		// desired refinements as strings
 		Set<String> desiredString = new TreeSet<String>();
-		desiredString.add("human AND EXISTS hasPet.animal");
-		desiredString.add("human AND EXISTS has.bird");
-		desiredString.add("human AND EXISTS has.cat");
-		desiredString.add("(human AND EXISTS hasPet.TOP) AND EXISTS has.animal");
-		desiredString.add("(human AND EXISTS hasChild.TOP) AND EXISTS has.animal");
-		desiredString.add("(human AND EXISTS hasPet.TOP) AND EXISTS has.animal");
-		desiredString.add("(human AND EXISTS has.person) AND EXISTS has.animal");
-		desiredString.add("(human AND EXISTS has.EXISTS has.TOP) AND EXISTS has.animal");
-		desiredString.add("human AND EXISTS has.(animal AND EXISTS has.TOP)");
+		desiredString.add("(human AND EXISTS hasPet.animal)");
+		desiredString.add("(human AND EXISTS has.bird)");
+		desiredString.add("(human AND EXISTS has.cat)");
+		desiredString.add("((human AND EXISTS hasPet.TOP) AND EXISTS has.animal)");
+		desiredString.add("((human AND EXISTS hasChild.TOP) AND EXISTS has.animal)");
+		desiredString.add("((human AND EXISTS hasPet.TOP) AND EXISTS has.animal)");
+		desiredString.add("((human AND EXISTS has.person) AND EXISTS has.animal)");
+		desiredString.add("((human AND EXISTS has.EXISTS has.TOP) AND EXISTS has.animal)");
+		desiredString.add("(human AND EXISTS has.(animal AND EXISTS has.TOP))");
 		
 		ConceptComparator cc = new ConceptComparator();
 		SortedSet<Description> desired = new TreeSet<Description>(cc);

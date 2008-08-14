@@ -25,10 +25,15 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
+import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
 import org.dllearner.algorithms.el.Simulation;
 import org.dllearner.algorithms.el.TreeTuple;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.parser.KBParser;
+import org.dllearner.parser.ParseException;
+import org.dllearner.utilities.owl.ConceptTransformation;
 import org.junit.Test;
 
 /**
@@ -56,6 +61,16 @@ public final class ELDescriptionTreeTests {
 		ELDescriptionNode t3 = new ELDescriptionNode(t1,p,l3);
 		assertTrue(t3.getLevel() == 2);
 		assertTrue(tree1.getMaxLevel() == 2);
+	}
+	
+	@Test
+	public void cloneTest() throws ParseException {
+		Description d = KBParser.parseConcept("(male AND (human AND EXISTS hasChild.(female AND EXISTS hasChild.male)))");
+		ConceptTransformation.cleanConcept(d);
+		ELDescriptionTree tree = new ELDescriptionTree(d);
+		ELDescriptionTree treeCloned = tree.clone();
+		ELDescriptionTreeComparator comparator = new ELDescriptionTreeComparator();
+		assertTrue(comparator.compare(tree, treeCloned) == 0);
 	}
 	
 }
