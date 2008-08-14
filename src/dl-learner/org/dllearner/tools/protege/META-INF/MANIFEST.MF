@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Hallo Welt
+Bundle-Name: DL-Learner Plugin
 Bundle-SymbolicName: org.dllearner.tools.protege;singleton:=true
 Bundle-Category: protege
 Bundle-Description: blablabla
 Bundle-Vendor: blablabla
 Bundle-DocURL: blablabla
-Bundle-ClassPath: .,lib/junit-4.4.jar,lib/pellet/pellet.jar,lib/pellet/aterm-java-1.6.jar,lib/jena/json.jar,lib/pellet/relaxngDatatype.jar,lib/pellet/xsdlib.jar,lib/jena/commons-logging-1.1.jar
+Bundle-ClassPath: .,lib/junit-4.4.jar,lib/jamon-2.7.jar,lib/pellet/pellet.jar,lib/pellet/aterm-java-1.6.jar,lib/jena/json.jar,lib/pellet/relaxngDatatype.jar,lib/pellet/xsdlib.jar,lib/jena/commons-logging-1.1.1.jar,lib/ore-tool/swingx-0.9.2.jar
 Import-Package: org.osgi.framework,org.apache.log4j
 Export-Package: lib
 Bundle-Version: 1.0.0
