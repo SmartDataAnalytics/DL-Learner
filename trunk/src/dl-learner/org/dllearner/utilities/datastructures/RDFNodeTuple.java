@@ -51,5 +51,13 @@ public class RDFNodeTuple implements Comparable<RDFNodeTuple>{
 			return b.toString().compareTo(t.b.toString());
 		}else return comp;
 	}
+	
+	public boolean aPartContains(String partOf) {
+		return !(a.toString().contains(partOf));
+	}
+	
+	public boolean bPartContains(String partOf) {
+		return (b.toString().contains(partOf));
+	}
 
 }

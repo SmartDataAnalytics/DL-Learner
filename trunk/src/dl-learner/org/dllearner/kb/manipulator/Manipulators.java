@@ -1,7 +1,8 @@
-package org.dllearner.kb.extraction;
+package org.dllearner.kb.manipulator;
 
 import java.util.Set;
 
+import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.datastructures.StringTuple;
 
 public interface Manipulators {

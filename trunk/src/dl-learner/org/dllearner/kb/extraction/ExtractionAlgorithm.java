@@ -26,6 +26,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.TypedSparqlQuery;
 import org.dllearner.kb.aquisitors.TypedSparqlQueryClasses;
+import org.dllearner.kb.manipulator.Manipulators;
 
 /**
  * This class is used to extract the information .

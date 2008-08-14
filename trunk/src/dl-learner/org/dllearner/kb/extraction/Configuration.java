@@ -19,6 +19,7 @@
  */
 package org.dllearner.kb.extraction;
 
+import org.dllearner.kb.manipulator.Manipulators;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQueryMaker;

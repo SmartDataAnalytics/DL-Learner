@@ -24,6 +24,7 @@ import java.util.SortedSet;
 import java.util.Vector;
 
 import org.dllearner.kb.aquisitors.TypedSparqlQueryInterface;
+import org.dllearner.kb.manipulator.Manipulators;
 
 
 /**

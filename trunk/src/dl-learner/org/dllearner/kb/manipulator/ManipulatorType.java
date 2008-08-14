@@ -1,4 +1,4 @@
-package org.dllearner.kb.extraction;
+package org.dllearner.kb.manipulator;
 
 import java.util.LinkedList;
 
@@ -17,7 +17,7 @@ public class ManipulatorType {
 	{
 		if (predefinedManipulator.equals("DBPEDIA-NAVIGATOR")) return new DBpediaNavigatorManipulator(blankNodeIdentifier,
 				breakSuperClassRetrievalAfter, replacePredicate, replaceObject);
-		else return new Manipulator(blankNodeIdentifier,
+		else return new OldManipulator(blankNodeIdentifier,
 				breakSuperClassRetrievalAfter, replacePredicate, replaceObject);
 	}
 }

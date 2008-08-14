@@ -5,9 +5,6 @@ import java.util.TreeSet;
 
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.test.rules.RuleExecutor;
-import org.dllearner.test.rules.SimpleObjectFilterRule;
-import org.dllearner.test.rules.SimplePredicateFilterRule;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
@@ -122,7 +119,7 @@ public class FilterTest {
 	static void  testShortWithFilter(){
 		SortedSet<StringTuple> tupleset = new TreeSet<StringTuple>();
 		SortedSet<StringTuple> afterfilter= new TreeSet<StringTuple>();
-		RuleExecutor re = new  RuleExecutor();
+		/*RuleExecutor re = new  RuleExecutor();
 		
 	
 		re.addFilterRule(new SimplePredicateFilterRule( "http://dbpedia.org/property/relatedInstance" ));
@@ -145,13 +142,13 @@ public class FilterTest {
 		re.addFilterRule(new SimpleObjectFilterRule( "http://www.w3.org/2004/02/skos/core" ));
 		re.addFilterRule(new SimpleObjectFilterRule("http://www.geonames.org"));
 		
-		
+		*/
 		
 		sc.reset();
 		for (int i = 0; i < howmany; i++) {
 			
 			tupleset = st.queryAsTuple(subject, true);
-			afterfilter = re.filterTuples(subject,tupleset);
+			//afterfilter = re.filterTuples(subject,tupleset);
 		}
 		sc.printAndSet("SHORT with filter");
 		SetManipulation.printSet("before", tupleset);
