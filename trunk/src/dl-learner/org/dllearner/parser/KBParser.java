@@ -36,7 +36,7 @@ public @SuppressWarnings("all") class KBParser implements KBParserConstants {
               return parseConcept(string);
     }
 
-        public static KB parseKBFile(String content) throws IOException, ParseException {
+        public static KB parseKBFile(String content) throws ParseException {
                 KBParser parser = new KBParser(new StringReader(content));
                 return parser.KB();
         }

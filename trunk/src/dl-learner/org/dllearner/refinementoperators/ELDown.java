@@ -19,10 +19,14 @@
  */
 package org.dllearner.refinementoperators;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -117,10 +121,10 @@ public class ELDown extends RefinementOperatorAdapter {
 	 * @return Set of refined EL description trees.
 	 */
 	public Set<ELDescriptionTree> refine(ELDescriptionTree tree) {
-		return refine(tree, tree.getRootNode(), new Thing());
+		return refine(tree, tree.getRootNode(), new Thing(), true);
 	}
 	
-	private Set<ELDescriptionTree> refine(ELDescriptionTree tree, ELDescriptionNode node, Description index) {
+	private Set<ELDescriptionTree> refine(ELDescriptionTree tree, ELDescriptionNode node, Description index, boolean minimize) {
 		// the set of all refinements, which we will return
 		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
 		// the position of the node within the tree (needed for getting
@@ -157,39 +161,73 @@ public class ELDown extends RefinementOperatorAdapter {
 		// TODO incomplete, it is still open how to construct this refinement !!
 		SortedSet<ObjectProperty> appOPs = utility.computeApplicableObjectProperties(index);
 		Set<ObjectProperty> mgr = utility.computeMgr(appOPs);
+		// temporary set of all concepts, which still have to pass the equivalence check
+		Stack<ELDescriptionTree> stack = new Stack<ELDescriptionTree>();
 		for(ObjectProperty op : mgr) {
 			// clone operation
 			ELDescriptionTree clonedTree = tree.clone();
 			ELDescriptionNode clonedNode = clonedTree.getNode(position);
 			// add a new node and edge
 			ELDescriptionNode newNode = new ELDescriptionNode(clonedNode, op, new TreeSet<NamedClass>());
-			refinements.add(clonedTree);
+//			refinements.add(clonedTree);
+			stack.add(clonedTree);
+			
+			// recurse if concept is equivalent
+			// TODO: efficient equivalence check needs to be implemented !!
+			while(stack.size() != 0) {
+				// we pick an arbitrary tree and remove it from the stack
+				ELDescriptionTree testTree = stack.pop();
+				// test equivalence
+				boolean equivalent = false;
+				// TODO equivalence check
+				if(equivalent) {
+					// edge refinement
+					// we know that the edge we added is the last one for this node
+					int edgeNr = node.getEdges().size() - 1;
+					// all refinements of this edge are added to the stack
+					refineEdge(stack, tree, node, position, edgeNr);
+					// perform node refinements in non-minimize-mode
+					refinements.addAll(refineEdges(tree, newNode, position));
+				}
+			}			
 		}
-		
+
 		// option 4: edge refinement
-		for(int edgeNumber = 0; edgeNumber < node.getEdges().size(); edgeNumber++) {
-			ELDescriptionEdge edge = node.getEdges().get(edgeNumber);
-			ObjectProperty op = edge.getLabel();
-			// find all more special properties
-			for(ObjectProperty op2 : rs.getMoreSpecialRoles(op)) {
-				// clone operation
-				ELDescriptionTree clonedTree = tree.clone();
-				// find cloned edge and replace its label
-				ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
-				clonedEdge.setLabel(op2);
-			}
-		}
-		
+		refinements.addAll(refineEdges(tree, node, position));
+			
 		// option 5: child refinement
 		for(ELDescriptionEdge edge : node.getEdges()) {
 			// recursive call on child node and property range as index
 			Description range = rs.getRange(edge.getLabel());
-			refinements.addAll(refine(tree, edge.getTree(), range));
+			refinements.addAll(refine(tree, edge.getTree(), range, minimize));
 		}
 				
 		return refinements;
 	}
 
+	private Set<ELDescriptionTree> refineEdges(ELDescriptionTree tree, ELDescriptionNode node, int[] position) {
+		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
+		for(int edgeNumber = 0; edgeNumber < node.getEdges().size(); edgeNumber++) {
+			refineEdge(refinements, tree, node, position, edgeNumber);
+		}
+		return refinements;
+	}
+	
+	private void refineEdge(Collection<ELDescriptionTree> refinements, ELDescriptionTree tree, ELDescriptionNode node, int[] position, int edgeNumber) {
+		ELDescriptionEdge edge = node.getEdges().get(edgeNumber);
+		ObjectProperty op = edge.getLabel();
+		// find all more special properties
+		for(ObjectProperty op2 : rs.getMoreSpecialRoles(op)) {
+			// clone operation
+			ELDescriptionTree clonedTree = tree.clone();
+			// find cloned edge and replace its label
+			ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
+			clonedEdge.setLabel(op2);
+			refinements.add(clonedTree);
+		}
+	}
+	
+	
 //	private void computeMg(Description index) {
 //		// compute the applicable properties if this has not been done yet
 //		if(app.get(index) == null)

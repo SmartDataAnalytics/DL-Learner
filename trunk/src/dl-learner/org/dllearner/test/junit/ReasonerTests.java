@@ -19,7 +19,6 @@
  */
 package org.dllearner.test.junit;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -61,8 +60,6 @@ public class ReasonerTests {
 		KB kbObject = null;
 		try {
 			kbObject = KBParser.parseKBFile(kb);
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
