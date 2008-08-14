@@ -24,7 +24,10 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.dllearner.kb.old.ClassNode;
+import org.dllearner.kb.old.InstanceNode;
 import org.dllearner.kb.old.Manipulators;
+import org.dllearner.kb.old.Node;
 import org.dllearner.kb.old.TypedSparqlQuery;
 import org.dllearner.kb.old.TypedSparqlQueryClasses;
 

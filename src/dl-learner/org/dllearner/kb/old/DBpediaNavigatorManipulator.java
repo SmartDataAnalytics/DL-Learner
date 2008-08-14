@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
