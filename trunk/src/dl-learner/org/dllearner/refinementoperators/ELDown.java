@@ -84,6 +84,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	private Utility utility;
 	
 	public ELDown(ReasoningService rs) {
+		this.rs = rs;
 		utility = new Utility(rs);
 		subsumptionHierarchy = rs.getSubsumptionHierarchy();
 		opHierarchy = rs.getRoleHierarchy();
@@ -105,6 +106,7 @@ public class ELDown extends RefinementOperatorAdapter {
 		// the tree (not yet implemented)
 		ELDescriptionTree tree = new ELDescriptionTree(concept);
 		Set<ELDescriptionTree> refinementTrees = refine(tree);
+//		System.out.println("Refinements finished.");
 		Set<Description> refinements = new HashSet<Description>();
 		for(ELDescriptionTree refinementTree : refinementTrees) {
 			refinements.add(refinementTree.transformToDescription());
@@ -129,7 +131,7 @@ public class ELDown extends RefinementOperatorAdapter {
 		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
 		// the position of the node within the tree (needed for getting
 		// the corresponding node in a cloned tree)
-		int[] position = node.getCurrentPosition();
+		int[] position = node.getCurrentPosition();	
 		
 		// option 1: label extension
 		Set<NamedClass> candidates = utility.getClassCandidates(index, node.getLabel());
@@ -191,17 +193,18 @@ public class ELDown extends RefinementOperatorAdapter {
 				}
 			}			
 		}
-
+		
 		// option 4: edge refinement
 		refinements.addAll(refineEdges(tree, node, position));
-			
+		
 		// option 5: child refinement
 		for(ELDescriptionEdge edge : node.getEdges()) {
 			// recursive call on child node and property range as index
 			Description range = rs.getRange(edge.getLabel());
+//			System.out.println(tree + "\nrecurse to:\n"  + edge.getTree());
 			refinements.addAll(refine(tree, edge.getTree(), range, minimize));
 		}
-				
+		
 		return refinements;
 	}
 

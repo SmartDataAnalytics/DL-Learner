@@ -19,8 +19,10 @@
  */
 package org.dllearner.algorithms.el;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -47,12 +49,13 @@ import org.dllearner.core.owl.Thing;
  * @author Jens Lehmann
  *
  */
+@SuppressWarnings("unused")
 public class ELDescriptionNode {
 
 	// the reference tree for storing values, must not be null
 	private ELDescriptionTree tree;
 	
-	private SortedSet<NamedClass> label;
+	private NavigableSet<NamedClass> label;
 	
 	private List<ELDescriptionEdge> edges;
 
@@ -62,6 +65,14 @@ public class ELDescriptionNode {
 	// null indicates that this node is a root node
 	private ELDescriptionNode parent = null;
 		
+	// simulation information (list or set?)
+	private List<ELDescriptionNode> in = new ArrayList<ELDescriptionNode>();
+	private List<ELDescriptionNode> inSC1 = new ArrayList<ELDescriptionNode>();
+	private List<ELDescriptionNode> inSC2 = new ArrayList<ELDescriptionNode>();
+	private List<ELDescriptionNode> out = new ArrayList<ELDescriptionNode>();
+	private List<ELDescriptionNode> outSC1 = new ArrayList<ELDescriptionNode>();
+	private List<ELDescriptionNode> outSC2 = new ArrayList<ELDescriptionNode>();
+	
 	/**
 	 * Constructs an EL description tree with empty root label.
 	 */
@@ -73,15 +84,17 @@ public class ELDescriptionNode {
 	 * Constructs an EL description tree given its root label.
 	 * @param label Label of the root node.
 	 */
-	public ELDescriptionNode(ELDescriptionTree tree, SortedSet<NamedClass> label) {
+	public ELDescriptionNode(ELDescriptionTree tree, NavigableSet<NamedClass> label) {
 		this.label = label;
 		this.edges = new LinkedList<ELDescriptionEdge>();	
 		this.tree = tree;
 		level = 1;
 		parent = null;
+		// this is the root node of the overall tree
+		tree.rootNode = this;
 	}
 	
-	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, SortedSet<NamedClass> label) {
+	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, NavigableSet<NamedClass> label) {
 		this.label = label;
 		this.edges = new LinkedList<ELDescriptionEdge>();
 		parent = parentNode;
@@ -185,11 +198,11 @@ public class ELDescriptionNode {
 	 * @return The position number of this node within the tree as described above.
 	 */
 	public int[] getCurrentPosition() {
-		int[] position = new int[level];
+		int[] position = new int[level-1];
 		ELDescriptionNode root = this;
 		while(root.parent != null) {
-			position[root.level-1] = getChildNumber();
-			root = parent;	
+			position[root.level-2] = getChildNumber();
+			root = root.parent;	
 		}
 		return position;
 	}
@@ -229,7 +242,7 @@ public class ELDescriptionNode {
 	 * but use the provided methods instead!
 	 * @return The label of root node of this subtree.
 	 */
-	public SortedSet<NamedClass> getLabel() {
+	public NavigableSet<NamedClass> getLabel() {
 		return label;
 	}
 
@@ -243,11 +256,29 @@ public class ELDescriptionNode {
 	}
 
 	/**
-	 * Gets the level (distance from root) of this node.
+	 * Gets the level (distance from root) of this node. The root node
+	 * has level 1.
 	 * @return The level of the (root node of) this subtree in the overall tree. 
 	 */
 	public int getLevel() {
 		return level;
 	}
 	
+	@Override
+	public String toString() {
+		return toString(0);
+	}
+	
+	private String toString(int indent) {
+		String indentString = "";
+		for(int i=0; i<indent; i++)
+			indentString += "  ";
+		
+		String str = indentString + label.toString() + "\n";
+		for(ELDescriptionEdge edge : edges) {
+			str += indentString + "-- " + edge.getLabel() + " -->\n";
+			str += edge.getTree().toString(indent + 2);
+		}
+		return str;
+	}
 }

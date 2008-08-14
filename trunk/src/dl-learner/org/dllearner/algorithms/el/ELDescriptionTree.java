@@ -26,7 +26,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.UnsupportedLanguageException;
 
 /**
@@ -45,7 +49,7 @@ public class ELDescriptionTree implements Cloneable {
 	
 	private int maxLevel = 1;
 	
-	private ELDescriptionNode rootNode;	
+	protected ELDescriptionNode rootNode;	
 	
 	private Map<Integer,Set<ELDescriptionNode>> levelNodeMapping = new HashMap<Integer,Set<ELDescriptionNode>>();
 	
@@ -58,11 +62,38 @@ public class ELDescriptionTree implements Cloneable {
 	 * @param description A description 
 	 */
 	public ELDescriptionTree(Description description) {
-		// TODO not implemented
-		// throw an exception if the description is not in EL
-		throw new UnsupportedLanguageException(description.toString(), "EL");
+		// construct root node and recursively build the tree
+		rootNode = new ELDescriptionNode(this);
+		constructTree(description, rootNode);
 	}	
 
+	private void constructTree(Description description, ELDescriptionNode node) {
+		if(description instanceof NamedClass) {
+			node.extendLabel((NamedClass)description);
+		} else if(description instanceof ObjectSomeRestriction) {
+			ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction)description).getRole();
+			ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<NamedClass>());
+			constructTree(description.getChild(0), newNode);
+		} else if(description instanceof Thing) {
+			// nothing needs to be done as an empty set is owl:Thing
+		} else if(description instanceof Intersection) {
+			// loop through all elements of the intersection
+			for(Description child : description.getChildren()) {
+				if(child instanceof NamedClass) {
+					node.extendLabel((NamedClass)child);
+				} else if(child instanceof ObjectSomeRestriction) {
+					ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction)child).getRole();
+					ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<NamedClass>());
+					constructTree(child, newNode);					
+				} else {
+					throw new UnsupportedLanguageException(description + " specifically " + child , "EL");
+				}
+			}
+		} else {
+			throw new UnsupportedLanguageException(description.toString(), "EL");
+		}
+	}
+	
 	/**
 	 * Gets the nodes on a specific level of the tree. 
 	 * This information is cached here for performance
@@ -144,8 +175,14 @@ public class ELDescriptionTree implements Cloneable {
 		// loop through all edges and clone the subtrees
 		for(ELDescriptionEdge edge : node.getEdges()) {
 			ELDescriptionNode tmp = new ELDescriptionNode(nodeClone, edge.getLabel(), new TreeSet<NamedClass>(edge.getTree().getLabel()));
+			// TODO if we want to avoid recomputing simulation information, a special protected ELDescriptionNode
+			// constructor should be created
 			cloneRecursively(edge.getTree(), tmp);
 		}		
 	}
 	
+	@Override
+	public String toString() {
+		return rootNode.toString();
+	}
 }

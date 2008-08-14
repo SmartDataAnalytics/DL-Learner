@@ -55,8 +55,7 @@ public class ObjectPropertyDomainAxiom extends PropertyDomainAxiom {
 	
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return "OPDOMAIN(" + property.toKBSyntaxString(baseURI, prefixes) + ") = " + domain.toKBSyntaxString(baseURI, prefixes); 
 	}
 
 	@Override
