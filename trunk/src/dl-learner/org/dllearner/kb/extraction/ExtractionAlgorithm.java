@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.dllearner.kb.aquisitors.TypedSparqlQuery;
+import org.dllearner.kb.aquisitors.TypedSparqlQueryClasses;
 
 /**
  * This class is used to extract the information .

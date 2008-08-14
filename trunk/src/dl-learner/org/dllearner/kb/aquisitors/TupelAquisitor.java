@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Sebastian Hellmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.extraction;
+package org.dllearner.kb.aquisitors;
 
 import java.net.URI;
-import java.util.Set;
+import java.util.SortedSet;
 
-import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 /**
  * 
@@ -33,7 +33,9 @@ import org.dllearner.utilities.datastructures.StringTuple;
  * @author Sebastian Hellmann
  * 
  */
-public interface TypedSparqlQueryInterface {
+public abstract class TupelAquisitor {
 
-	public Set<StringTuple> getTupelForResource(URI u);
+	public abstract SortedSet<RDFNodeTuple> getTupelForResource(URI u);
 }
+
+
