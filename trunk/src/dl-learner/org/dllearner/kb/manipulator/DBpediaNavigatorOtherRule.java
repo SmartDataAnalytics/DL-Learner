@@ -21,8 +21,8 @@ package org.dllearner.kb.manipulator;
 
 import java.util.SortedSet;
 
-import org.dllearner.kb.old.DBpediaNavigatorCityLocator;
-import org.dllearner.kb.old.Node;
+
+import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
@@ -62,7 +62,7 @@ public class DBpediaNavigatorOtherRule extends Rule{
 				
 		}
 		if (clazz.toString().equals("http://dbpedia.org/class/yago/City108524735")){
-			String newType=DBpediaNavigatorCityLocator.getTypeToCoordinates(lat, lng);
+			String newType = getTypeToCoordinates(lat, lng);
 			tuples.add(new RDFNodeTuple(new ResourceImpl(OWLVocabulary.RDF_TYPE),new ResourceImpl(newType)));
 			//tuples.add(new StringTuple("http://www.w3.org/1999/02/22-rdf-syntax-ns#type",newType));
 			tuples.remove(typeTuple);

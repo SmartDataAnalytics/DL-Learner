@@ -3,7 +3,7 @@ package org.dllearner.kb.manipulator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.kb.old.Node;
+import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 public class SimplePredicateFilterRule extends Rule{
