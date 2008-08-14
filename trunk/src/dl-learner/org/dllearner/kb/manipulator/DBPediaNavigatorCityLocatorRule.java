@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.dllearner.kb.extraction.Node;
+import org.dllearner.kb.old.Node;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 

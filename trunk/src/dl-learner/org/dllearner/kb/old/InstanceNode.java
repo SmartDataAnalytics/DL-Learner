@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.kb.extraction;
+package org.dllearner.kb.old;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -27,8 +27,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import org.dllearner.kb.old.Manipulators;
-import org.dllearner.kb.old.TypedSparqlQueryInterface;
 import org.dllearner.utilities.datastructures.StringTuple;
 
 /**

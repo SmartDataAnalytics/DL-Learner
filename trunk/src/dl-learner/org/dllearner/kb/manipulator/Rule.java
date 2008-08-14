@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 
-import org.dllearner.kb.extraction.Node;
+import org.dllearner.kb.old.Node;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 public abstract class Rule {
