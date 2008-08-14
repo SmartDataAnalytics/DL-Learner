@@ -1,4 +1,4 @@
-package org.dllearner.kb.manipulator;
+package org.dllearner.kb.old;
 
 import java.util.LinkedList;
 

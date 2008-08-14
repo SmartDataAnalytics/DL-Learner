@@ -107,12 +107,14 @@ public class Manipulator {
 	
 	public static Manipulator getDBpediaNavigatorManipulator(){
 		Manipulator m =  new Manipulator();
+		m.rules.add(new DBPediaNavigatorCityLocatorRule(Months.JANUARY));
+		m.rules.add(new DBpediaNavigatorOtherRule(Months.DECEMBER));
 		return m;
 	}
 	
 	public static Manipulator getDefaultManipulator(){
 		Manipulator m =  new Manipulator();
-		m.addDefaultRules();
+		m.addDefaultRules(Months.DECEMBER);
 		return m;
 	}
 	
@@ -133,11 +135,11 @@ public class Manipulator {
 //			}
 			
 
-	private void addDefaultRules(){
+	private void addDefaultRules(Months month){
 		
-		rules.add(new TypeFilterRule(Months.DECEMBER, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS,ClassNode.class.getCanonicalName() )) ;
-		rules.add(new TypeFilterRule(Months.DECEMBER,OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING,InstanceNode.class.getCanonicalName() )) ;
-		rules.add(new TypeFilterRule(Months.DECEMBER,"", OWLVocabulary.OWL_CLASS, ClassNode.class.getCanonicalName()) ) ;
+		rules.add(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS,ClassNode.class.getCanonicalName() )) ;
+		rules.add(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING,InstanceNode.class.getCanonicalName() )) ;
+		rules.add(new TypeFilterRule(month, "", OWLVocabulary.OWL_CLASS, ClassNode.class.getCanonicalName()) ) ;
 	}
 	
 	

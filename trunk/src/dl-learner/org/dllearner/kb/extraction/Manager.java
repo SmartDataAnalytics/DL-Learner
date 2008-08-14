@@ -25,8 +25,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.kb.aquisitors.TypedSparqlQuery;
-import org.dllearner.kb.manipulator.Manipulators;
+import org.dllearner.kb.old.Manipulators;
+import org.dllearner.kb.old.TypedSparqlQuery;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.utilities.statistics.Statistics;
