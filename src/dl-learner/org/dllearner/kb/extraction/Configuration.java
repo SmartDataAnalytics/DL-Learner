@@ -26,7 +26,7 @@ import org.dllearner.kb.sparql.SparqlQueryMaker;
 /**
  * Stores all configuration settings. this class collects all configuration
  * information see the other classes, which are used as attributes here
- * 
+ *  
  * @author Sebastian Hellmann
  */
 public class Configuration {
