@@ -11,6 +11,7 @@ public class OWLVocabulary {
 	public static final String OWL_OBJECTPROPERTY = "http://www.w3.org/2002/07/owl#ObjectProperty";
 	public static final String OWL_CLASS = "http://www.w3.org/2002/07/owl#Class";
 	public static final String OWL_THING = "http://www.w3.org/2002/07/owl#Thing";
+	//OWL2 Namespace: http://www.w3.org/2006/12/owl2#
 	
 	
 //	public static final String RDF_TYPE = "";

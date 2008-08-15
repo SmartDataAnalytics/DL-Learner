@@ -34,8 +34,18 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
  * 
  */
 public abstract class TupelAquisitor {
+	
+	protected boolean classMode = false;
 
 	public abstract SortedSet<RDFNodeTuple> getTupelForResource(URI u);
+	
+	public void setClassMode(boolean classMode) {
+		this.classMode = classMode;
+	}
+
+	public boolean isClassMode() {
+		return classMode;
+	}
 }
 
 

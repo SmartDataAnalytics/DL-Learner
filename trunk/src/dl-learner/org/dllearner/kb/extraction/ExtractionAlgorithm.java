@@ -20,16 +20,13 @@
 package org.dllearner.kb.extraction;
 
 import java.net.URI;
-import java.util.HashSet;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.kb.old.ClassNode;
-import org.dllearner.kb.old.InstanceNode;
-import org.dllearner.kb.old.Manipulators;
-import org.dllearner.kb.old.Node;
-import org.dllearner.kb.old.TypedSparqlQuery;
-import org.dllearner.kb.old.TypedSparqlQueryClasses;
+import org.dllearner.kb.aquisitors.TupelAquisitor;
 
 /**
  * This class is used to extract the information .
@@ -39,8 +36,8 @@ import org.dllearner.kb.old.TypedSparqlQueryClasses;
 public class ExtractionAlgorithm {
 
 	private Configuration configuration;
-	private Manipulators manipulator;
-	private int recursionDepth = 1;
+	//private Manipulators manipulator;
+	//private int recursionDepth = 1;
 	// private boolean getAllSuperClasses = true;
 	// private boolean closeAfterRecursion = true;
 	private static Logger logger = Logger
@@ -48,8 +45,8 @@ public class ExtractionAlgorithm {
 
 	public ExtractionAlgorithm(Configuration Configuration) {
 		this.configuration = Configuration;
-		this.manipulator = Configuration.getManipulator();
-		this.recursionDepth = Configuration.getRecursiondepth();
+		//this.manipulator = Configuration.getManipulator();
+		//this.recursionDepth = Configuration.getRecursiondepth();
 		// this.getAllSuperClasses = Configuration.isGetAllSuperClasses();
 		// this.closeAfterRecursion=Configuration.isCloseAfterRecursion();
 	}
@@ -58,10 +55,10 @@ public class ExtractionAlgorithm {
 		return new InstanceNode(u);
 	}
 
-	public Vector<Node> expandAll(URI[] u, TypedSparqlQuery tsp) {
-		Vector<Node> v = new Vector<Node>();
-		for (URI one : u) {
-			v.add(expandNode(one, tsp));
+	public List<Node> expandAll(URI[] uris, TupelAquisitor tupelAquisitor) {
+		List<Node> v = new ArrayList<Node>();
+		for (URI oneURI : uris) {
+			v.add(expandNode(oneURI, tupelAquisitor));
 		}
 		return v;
 	}
@@ -75,50 +72,52 @@ public class ExtractionAlgorithm {
 	 * @param typedSparqlQuery
 	 * @return
 	 */
-	public Node expandNode(URI uri, TypedSparqlQuery typedSparqlQuery) {
+	public Node expandNode(URI uri, TupelAquisitor tupelAquisitor) {
 		//System.out.println(uri.toString());
 		//System.out.println(manipulator);
 		//System.out.println(this.configuration);
 		long time = System.currentTimeMillis();
+		
 		Node n = getFirstNode(uri);
 		logger.info(n);
-		Vector<Node> v = new Vector<Node>();
-		v.add(n);
-		logger.info("StartVector: " + v);
+		List<Node> initialNodes = new ArrayList<Node>();
+		initialNodes.add(n);
+		logger.info("StartVector: " + initialNodes);
 		// n.expand(tsp, this.Manipulator);
 		// Vector<Node> second=
-		for (int x = 1; x <= recursionDepth; x++) {
+		for (int x = 1; x <= configuration.getRecursiondepth(); x++) {
 
-			Vector<Node> tmp = new Vector<Node>();
-			while (v.size() > 0) {
-				Node tmpNode = v.remove(0);
+			List<Node> tmp = new ArrayList<Node>();
+			while (!initialNodes.isEmpty()) {
+				Node tmpNode = initialNodes.remove(0);
 				logger.info("Expanding " + tmpNode);
 				// System.out.println(this.Manipulator);
 				// these are the new not expanded nodes
 				// the others are saved in connection with the original node
-				Vector<Node> tmpVec = tmpNode.expand(typedSparqlQuery,
-						manipulator);
+				List<Node> tmpNodeList = tmpNode.expand(tupelAquisitor,
+						configuration.getManipulator());
 				//System.out.println(tmpVec);
-				tmp.addAll(tmpVec);
+				tmp.addAll(tmpNodeList);
 			}
-			v = tmp;
-			logger.info("Recursion counter: " + x + " with " + v.size()
+			//CAVE: possible error here
+			initialNodes = tmp;
+			logger.info("Recursion counter: " + x + " with " + initialNodes.size()
 					+ " Nodes remaining, needed: "
 					+ (System.currentTimeMillis() - time) + "ms");
 			time = System.currentTimeMillis();
 		}
 
-		HashSet<String> hadAlready = new HashSet<String>();
+		SortedSet<String> hadAlready = new TreeSet<String>();
 		
 		//p(configuration.toString());
 		// gets All Class Nodes and expands them further
-		if (this.configuration.isGetAllSuperClasses()) {
+		if (configuration.isGetAllSuperClasses()) {
 			logger.info("Get all superclasses");
 			// Set<Node> classes = new TreeSet<Node>();
-			Vector<Node> classes = new Vector<Node>();
+			List<Node> classes = new ArrayList<Node>();
+			List<Node> instances = new ArrayList<Node>();
 
-			Vector<Node> instances = new Vector<Node>();
-			for (Node one : v) {
+			for (Node one : initialNodes) {
 				if (one instanceof ClassNode) {
 					classes.add(one);
 				}
@@ -128,23 +127,28 @@ public class ExtractionAlgorithm {
 
 			}
 			// System.out.println(instances.size());
-			TypedSparqlQueryClasses tsqc = new TypedSparqlQueryClasses(
-					configuration);
-			if (this.configuration.isCloseAfterRecursion()) {
-				while (instances.size() > 0) {
+			//TODO LinkedData incompatibility
+			//TupelAquisitor tupelAquisitorClasses = configuration.sparqlTupelAquisitorClasses;
+			//XXX this should be solved in a better way
+			tupelAquisitor.setClassMode(true);
+			if (configuration.isCloseAfterRecursion()) {
+				while (!instances.isEmpty()) {
 					logger.trace("Getting classes for remaining instances: "
 							+ instances.size());
 					Node next = instances.remove(0);
 					logger.trace("Getting classes for: " + next);
-					classes.addAll(next.expand(tsqc, manipulator));
-					if (classes.size() >= Manipulators.breakSuperClassRetrievalAfter) {
+					classes.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
+					if (classes.size() >= configuration.getBreakSuperClassesAfter()) {
 						break;
 					}
 				}
 			}
-			Vector<Node> tmp = new Vector<Node>();
+			//XXX this should be solved in a better way
+			tupelAquisitor.setClassMode(false);
+			
+			List<Node> tmp = new ArrayList<Node>();
 			int i = 0;
-			while (classes.size() > 0) {
+			while (!classes.isEmpty()) {
 				logger.trace("Remaining classes: " + classes.size());
 				// Iterator<Node> it=classes.iterator();
 				// Node next =(Node) it.next();
@@ -155,13 +159,13 @@ public class ExtractionAlgorithm {
 					logger.trace("Getting SuperClass for: " + next);
 					// System.out.println(hadAlready.size());
 					hadAlready.add(next.getURI().toString());
-					tmp = next.expand(typedSparqlQuery, manipulator);
+					tmp = next.expand(tupelAquisitor, configuration.getManipulator());
 					classes.addAll(tmp);
-					tmp = new Vector<Node>();
+					tmp = new ArrayList<Node>();
 					// if(i % 50==0)System.out.println("got "+i+" extra classes,
 					// max: "+manipulator.breakSuperClassRetrievalAfter);
 					i++;
-					if (i >= Manipulators.breakSuperClassRetrievalAfter) {
+					if (i >= configuration.getBreakSuperClassesAfter()) {
 						break;
 					}
 				}

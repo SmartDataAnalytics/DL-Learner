@@ -23,7 +23,6 @@ import java.net.URI;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
@@ -39,15 +38,17 @@ public class SparqlTupelAquisitor extends TupelAquisitor {
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(SparqlTupelAquisitor.class);
 	
-	private Configuration configuration;
 	protected SparqlQueryMaker sparqlQueryMaker;
 	protected SPARQLTasks sparqlTasks;
+	
+	
 
-	public SparqlTupelAquisitor(Configuration Configuration) {
-		this.configuration = Configuration;
-		this.sparqlQueryMaker = configuration.getSparqlQueryMaker();
-		this.sparqlTasks = configuration.sparqlTasks;
+	public SparqlTupelAquisitor(SparqlQueryMaker sparqlQueryMaker, SPARQLTasks sparqlTasks) {
+		
+		this.sparqlQueryMaker = sparqlQueryMaker;
+		this.sparqlTasks = sparqlTasks;
 	}
+	
 
 	// standard query get a tupels (p,o) for subject s
 	@Override
@@ -56,13 +57,22 @@ public class SparqlTupelAquisitor extends TupelAquisitor {
 		
 		String pred = "predicate";
 		String obj = "object";
+		String sparqlQueryString = "";
 		// getQuery
-		String sparqlQueryString = sparqlQueryMaker
-				.makeSubjectQueryUsingFilters(uri.toString());
+		if (classMode) {
+			 sparqlQueryString = sparqlQueryMaker.makeClassQueryUsingFilters(uri.toString());
+		}else {
+			sparqlQueryString = sparqlQueryMaker.makeSubjectQueryUsingFilters(uri.toString());
+		}
+		
 		
 		return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, pred, obj);
 
 	}
+
+	
+	
+	
 	
 	
 	

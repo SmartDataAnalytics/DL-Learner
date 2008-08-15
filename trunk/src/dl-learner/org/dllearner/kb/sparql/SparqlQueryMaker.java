@@ -97,6 +97,7 @@ public class SparqlQueryMaker {
 		return returnString;
 	}
 	
+	//QUALITY optimize
 	public String makeClassQueryUsingFilters(String subject) {
 
 		// String filter = internalFilterAssemblySubject();

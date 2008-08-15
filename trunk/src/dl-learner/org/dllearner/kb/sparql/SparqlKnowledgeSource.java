@@ -46,9 +46,11 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.owl.KB;
+import org.dllearner.kb.aquisitors.SparqlTupelAquisitor;
+import org.dllearner.kb.aquisitors.TupelAquisitor;
+import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
-import org.dllearner.kb.old.ManipulatorType;
-import org.dllearner.kb.old.Manipulators;
+import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
@@ -86,7 +88,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;
 	private int breakSuperClassRetrievalAfter = 200;
-	private String blankNodeIdentifier = "bnode";
 	private String cacheDir = "cache";
 	// private boolean learnDomain = false;
 	// private boolean learnRange = false;
@@ -239,18 +240,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			useCache = (Boolean) entry.getValue();
 		}else if (option.equals("getAllSuperClasses")) {
 			getAllSuperClasses = (Boolean) entry.getValue();
-			/*
-			 * TODO remaove } else if (option.equals("learnDomain")) {
-			 * learnDomain = (Boolean) entry.getValue(); } else if
-			 * (option.equals("learnRange")) { learnRange = (Boolean)
-			 * entry.getValue(); } else if (option.equals("role")) { role =
-			 * (String) entry.getValue(); } else if
-			 * (option.equals("numberOfInstancesUsedForRoleLearning")) {
-			 * numberOfInstancesUsedForRoleLearning = (Integer)
-			 * entry.getValue();
-			 */
-		} else if (option.equals("blankNodeIdentifier")) {
-			blankNodeIdentifier = (String) entry.getValue();
 		} else if (option.equals("example")) {
 			// System.out.println(entry.getValue());
 		} else if (option.equals("replacePredicate")) {
@@ -261,8 +250,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			breakSuperClassRetrievalAfter = (Integer) entry.getValue();
 		} else if (option.equals("closeAfterRecursion")) {
 			closeAfterRecursion = (Boolean) entry.getValue();
-			// } else if (option.equals("verbosity")) {
-			// verbosity = (String) entry.getValue();
 		} else if (option.equals("defaultGraphURIs")) {
 			Set<String> temp = (Set<String>) entry.getValue();
 			Iterator iter = temp.iterator();
@@ -286,63 +273,33 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	@Override
 	public void init() {
 		logger.info("SparqlModul: Collecting Ontology");
-		SimpleClock sc=new SimpleClock();
-		/*
-		 * TODO remove when Jena works SparqlOntologyCollector oc= // new
-		 * SparqlOntologyCollector(Datastructures.setToArray(instances), //
-		 * numberOfRecursions, filterMode, //
-		 * Datastructures.setToArray(predList),Datastructures.setToArray(
-		 * objList),Datastructures.setToArray(classList),format,url,useLits);
-		 * //HashMap<String, String> parameters = new HashMap<String,
-		 * String>(); //parameters.put("default-graph-uri",
-		 * "http://dbpedia.org"); //parameters.put("format",
-		 * "application/sparql-results.xml");
-		 * 
-		 */
+		SimpleClock totalTime=new SimpleClock();
+		SimpleClock extractionTime=new SimpleClock();
 
 		Manager m = new Manager();
-		SparqlQueryMaker sparqlQueryMaker = null;
-		// get Options for Manipulator
-		Manipulators manipulator = ManipulatorType.getManipulatorByName(predefinedManipulator, blankNodeIdentifier,
-				breakSuperClassRetrievalAfter, replacePredicate, replaceObject);
-
-		// get Options for endpoints
-		if (predefinedEndpoint != null) {
-			//endpoint = SparqlEndpoint.getEndpointByNumber(predefinedEndpoint);
-			endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
-		} else {
-			// TODO this is not optimal, because not all options are used
-			// like default-graph uri
-			endpoint = new SparqlEndpoint(url);
-		}
 		
-		// get Options for Filters
-
-		if (predefinedFilter != null) {
-			sparqlQueryMaker = SparqlQueryMaker.getSparqlQueryMakerByName(predefinedFilter);
-
-		} else {
-			sparqlQueryMaker = new SparqlQueryMaker("forbid", objList, predList,
-					useLits);
-
-		}
+		// get Options for Manipulator
+		Manipulator manipulator = Manipulator.getManipulatorByName(predefinedManipulator);
+		//manipulator.addRule(newRule);
+		Configuration configuration = new Configuration(
+				getTupelAquisitor(), 
+				manipulator,
+				recursionDepth,
+				getAllSuperClasses,
+				closeAfterRecursion,
+				breakSuperClassRetrievalAfter);
+		
 		// give everything to the manager
-		m.useConfiguration(sparqlQueryMaker, endpoint, manipulator,
-				recursionDepth, getAllSuperClasses, closeAfterRecursion, cacheDir);
+		m.useConfiguration(configuration);
 		
 		String ont = "";
 		try {
 			
 			// the actual extraction is started here
-			SimpleClock sc2=new SimpleClock();
-			sc2.setTime();
+			
+			extractionTime.setTime();
 			ont = m.extract(instances);
-			sc2.printAndSet("extraction needed");
-			/*logger.info("Number of cached SPARQL queries: "
-					+ m.getConfiguration().numberOfCachedSparqlQueries);
-			logger.info("Number of uncached SPARQL queries: "
-					+ m.getConfiguration().numberOfUncachedSparqlQueries);
-*/
+			extractionTime.printAndSet("extraction needed");
 			logger.info("Finished collecting Fragment");
 
 			if (dumpToFile) {
@@ -375,7 +332,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		logger.info("SparqlModul: ****Finished " + sc.getAndSet("") );
+		logger.info("SparqlModul: ****Finished " + totalTime.getAndSet("") );
 	}
 
 	/*
@@ -414,20 +371,46 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return ontArray;
 	}
 
+	
 	public SparqlQuery sparqlQuery(String query) {
 		this.endpoint = new SparqlEndpoint(url, defaultGraphURIs,
 				namedGraphURIs);
 		return new SparqlQuery(query, endpoint);
 	}
 	
-	public SPARQLTasks getSparqlTask()
-	{
+	public SPARQLTasks getSPARQLTasks()	{
+		
+		// get Options for endpoints
+		if (predefinedEndpoint == null) {
+			endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
+		} else {
+			endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
+		}
+		
 		if (this.useCache)
-			return new SPARQLTasks(new Cache(this.cacheDir),new SparqlEndpoint(url, defaultGraphURIs,
-					namedGraphURIs));
+			return new SPARQLTasks(new Cache(this.cacheDir), endpoint);
 		else
-			return new SPARQLTasks(new SparqlEndpoint(url, defaultGraphURIs,
-					namedGraphURIs));
+			return new SPARQLTasks(endpoint);
+	}
+	
+	public SparqlQueryMaker getSparqlQueryMaker()
+	{
+		// get Options for Filters
+		if (predefinedFilter == null) {
+			return  new SparqlQueryMaker("forbid", objList, predList,
+					useLits);
+
+		} else {
+			
+			return SparqlQueryMaker.getSparqlQueryMakerByName (predefinedFilter);
+		}
+		
+	}
+	
+	
+	public TupelAquisitor getTupelAquisitor()
+	{
+		return new SparqlTupelAquisitor(getSparqlQueryMaker(), getSPARQLTasks());
 	}
 
 	/* (non-Javadoc)
@@ -464,6 +447,19 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			System.out.println();
 		}
 	}*/
+	
+	/*
+	 * SparqlOntologyCollector oc= // new
+	 * SparqlOntologyCollector(Datastructures.setToArray(instances), //
+	 * numberOfRecursions, filterMode, //
+	 * Datastructures.setToArray(predList),Datastructures.setToArray(
+	 * objList),Datastructures.setToArray(classList),format,url,useLits);
+	 * //HashMap<String, String> parameters = new HashMap<String,
+	 * String>(); //parameters.put("default-graph-uri",
+	 * "http://dbpedia.org"); //parameters.put("format",
+	 * "application/sparql-results.xml");
+	 * 
+	 */
 	
 	
 }

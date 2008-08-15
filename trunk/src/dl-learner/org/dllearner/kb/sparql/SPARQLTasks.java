@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.utilities.owl.OWLVocabulary;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -39,9 +40,6 @@ import com.hp.hpl.jena.sparql.core.ResultBinding;
  *         query time. Some methods allow basic reasoning
  */
 public class SPARQLTasks {
-
-	// TODO collect such things in a static class
-	private static final String SUBCLASS_OF = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 
 	private static Logger logger = Logger.getLogger(SPARQLTasks.class);
 
@@ -166,12 +164,12 @@ public class SPARQLTasks {
 	 * @return SortedSet of direct subclasses as String
 	 */
 	private SortedSet<String> getDirectSubClasses(String concept) {
-		return queryPatternAsSet("?subject", "<" + SUBCLASS_OF + ">", "<"
+		return queryPatternAsSet("?subject", "<" + OWLVocabulary.RDFS_SUBCLASS_OF + ">", "<"
 				+ concept + ">", "subject", 0, false);
 	}
 
 	private SortedSet<String> getDirectSuperClasses(String concept) {
-		return queryPatternAsSet("<" + concept + ">", "<" + SUBCLASS_OF + ">",
+		return queryPatternAsSet("<" + concept + ">", "<" + OWLVocabulary.RDFS_SUBCLASS_OF + ">",
 				"?object", "object", 0, false);
 	}
 
@@ -552,6 +550,10 @@ public class SPARQLTasks {
 
 	public SparqlEndpoint getSparqlEndpoint() {
 		return sparqlEndpoint;
+	}
+	
+	public static SPARQLTasks getPredefinedSPARQLTasksWithCache(String endpointName) {
+		return new SPARQLTasks( Cache.getDefaultCache(), SparqlEndpoint.getEndpointByName(endpointName) );
 	}
 
 }

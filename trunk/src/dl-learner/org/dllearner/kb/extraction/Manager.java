@@ -25,12 +25,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.kb.old.Manipulators;
-import org.dllearner.kb.old.Node;
-import org.dllearner.kb.old.TypedSparqlQuery;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQueryMaker;
-import org.dllearner.utilities.statistics.Statistics;
 
 /**
  * An object of this class encapsulates everything.
@@ -41,23 +35,17 @@ import org.dllearner.utilities.statistics.Statistics;
 public class Manager {
 
 	private Configuration configuration;
-	private TypedSparqlQuery typedSparqlQuery;
 	private ExtractionAlgorithm extractionAlgorithm;
 	
 	private static Logger logger = Logger
 		.getLogger(Manager.class);
 	
 	
-	public void useConfiguration(SparqlQueryMaker sparqlQueryMaker,
-			SparqlEndpoint SparqlEndpoint, Manipulators manipulator,
-			int recursiondepth, boolean getAllSuperClasses,
-			boolean closeAfterRecursion, String cacheDir) {
+	public void useConfiguration(Configuration configuration) {
 
-		this.configuration = new Configuration(SparqlEndpoint, sparqlQueryMaker,
-				manipulator, recursiondepth, getAllSuperClasses,
-				closeAfterRecursion, cacheDir);
+		this.configuration = configuration;
 		//System.out.println(this.configuration);
-		this.typedSparqlQuery = new TypedSparqlQuery(configuration);
+		
 		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
 
 	}
@@ -67,20 +55,21 @@ public class Manager {
 		// System.out.println(ExtractionAlgorithm.getFirstNode(uri));
 		System.out.println("Start extracting");
 
-		Node n = extractionAlgorithm.expandNode(uri, typedSparqlQuery);
+		Node n = extractionAlgorithm.expandNode(uri, configuration.getTupelAquisitor());
 		SortedSet<String> s = n.toNTriple();
-		String nt = "";
+		StringBuffer nt = new StringBuffer(33000);
 		for (String str : s) {
-			nt += str + "\n";
+			nt.append(str + "\n");
 		}
-		return nt;
+		System.out.println("sizeofStringBuffer"+nt.length());
+		return nt.toString();
 	}
 
 	public String extract(Set<String> instances) {
 		// this.TypedSparqlQuery.query(uri);
 		// System.out.println(ExtractionAlgorithm.getFirstNode(uri));
 		logger.info("Start extracting");
-		SortedSet<String> ret = new TreeSet<String>();
+		SortedSet<String> tripleCollector = new TreeSet<String>();
 		int progress=0;
 		for (String one : instances) {
 			progress++;
@@ -89,15 +78,15 @@ public class Manager {
 			//}
 			try {
 				Node n = extractionAlgorithm.expandNode(new URI(one),
-						typedSparqlQuery);
-				ret.addAll(n.toNTriple());
+						configuration.getTupelAquisitor());
+				tripleCollector.addAll(n.toNTriple());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		logger.info("Finished extracting, start conversion");
-		StringBuffer nt = new StringBuffer();
-		Object[] arr = ret.toArray();
+		StringBuffer nt = new StringBuffer(100000);
+		Object[] arr = tripleCollector.toArray();
 		for (int i = 0; i < arr.length; i++) {
 			nt.append((String) arr[i] + "\n");
 			if (i % 1000 == 0)
@@ -109,15 +98,15 @@ public class Manager {
 		 * ret.remove(tmp); System.out.println(ret.size()); } /*for (String str :
 		 * ret) { nt += str + "\n"; }
 		 */
-		Statistics.addTriples(ret.size());
+		logger.info("Ontology String size = " + nt.length());
 		return nt.toString();
 	}
 
-	public void addPredicateFilter(String str) {
+/*	public void addPredicateFilter(String str) {
 		this.configuration.getSparqlQueryMaker().addPredicateFilter(str);
 
 	}
-
+*/
 	public Configuration getConfiguration() {
 		return configuration;
 	}

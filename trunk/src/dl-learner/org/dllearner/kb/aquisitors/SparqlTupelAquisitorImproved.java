@@ -23,7 +23,6 @@ import java.net.URI;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
@@ -34,33 +33,22 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
  * @author Sebastian Hellmann
  * 
  */
-public class SparqlTupelAquisitorImproved extends TupelAquisitor {
+public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
 	
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(SparqlTupelAquisitorImproved.class);
 	
-	private Configuration configuration;
-	protected SparqlQueryMaker sparqlQueryMaker;
-	protected SPARQLTasks sparqlTasks;
 
-	public SparqlTupelAquisitorImproved(Configuration Configuration) {
-		this.configuration = Configuration;
-		this.sparqlQueryMaker = configuration.getSparqlQueryMaker();
-		this.sparqlTasks = configuration.sparqlTasks;
+	public SparqlTupelAquisitorImproved(SparqlQueryMaker sparqlQueryMaker, SPARQLTasks sparqlTasks) {
+		super(sparqlQueryMaker, sparqlTasks);
+		
 	}
 
 	// standard query get a tupels (p,o) for subject s
 	@Override
 	public SortedSet<RDFNodeTuple> getTupelForResource(URI uri) {
 		
-		
-		String pred = "predicate";
-		String obj = "object";
-		// getQuery
-		String sparqlQueryString = sparqlQueryMaker
-				.makeSubjectQueryUsingFilters(uri.toString());
-		
-		return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, pred, obj);
+		throw new RuntimeException("not implemented yet");
 
 	}
 	
