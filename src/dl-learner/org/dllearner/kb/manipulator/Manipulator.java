@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.SortedSet;
 
 import org.dllearner.kb.extraction.ClassNode;
+import org.dllearner.kb.extraction.InstanceNode;
 import org.dllearner.kb.extraction.Node;
 import org.dllearner.kb.manipulator.Rule.Months;
-import org.dllearner.kb.old.InstanceNode;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
@@ -38,24 +38,15 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  */
 public class Manipulator {
 	
-	List<Rule> rules = new ArrayList<Rule>();
-	//List<ReplacementRule> replacementRules = new ArrayList<ReplacementRule>();
-
-
-	//public int breakSuperClassRetrievalAfter = 200;
-	//public LinkedList<StringTuple> replacePredicate;
-	//public LinkedList<StringTuple> replaceObject;
-
-	// Set<String> classproperties;
-
+	private List<Rule> rules = new ArrayList<Rule>();
+	
 	private Manipulator() {
-		
-		//this.replaceObject = replaceObject;
-		//this.replacePredicate = replacePredicate;
-		//this.breakSuperClassRetrievalAfter = breakSuperClassRetrievalAfter;
-		// Set<String> classproperties = new HashSet<String>();
-		// classproperties.add(subclass);
+	}
 
+	public Manipulator(List<Rule> rules) {
+		for (Rule rule : rules) {
+			addRule(rule);
+		}
 	}
 
 	/**
@@ -64,51 +55,32 @@ public class Manipulator {
 	 */
 	public SortedSet<RDFNodeTuple> manipulate( Node node, SortedSet<RDFNodeTuple> tuples) {
 		
-		for (Months month : Rule.MONTHS) {
-			tuples = applyRulesOfTheMonth(month, node, tuples);
+		for (Rule rule : rules) {
+			tuples = rule.applyRule(node, tuples);
 		}
 		return tuples;
-		/*SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
-		
-		for (RDFNodeTuple currentTuple : tuples) {
-			currentTuple = manipulateTuple(node.getURI().toString(), currentTuple);
-			if(keepTuple(node, currentTuple)) {
-				keep.add(currentTuple);
-			}
-			
-		}
-		return keep;*/
 	}
 	
-	public SortedSet<RDFNodeTuple> applyRulesOfTheMonth(Months month, Node subject, SortedSet<RDFNodeTuple> tuples){
-		for (Rule rule : rules) {
-			if(rule.month.equals(month)) {
-				tuples = rule.applyRule(subject, tuples);
-			}
-		}
-		return tuples;
-	}
+	
 	
 	public static Manipulator getManipulatorByName(String predefinedManipulator)
 	{
 		if (predefinedManipulator.equalsIgnoreCase("DBPEDIA-NAVIGATOR")) {
 			return getDBpediaNavigatorManipulator();
-//			return new DBpediaNavigatorManipulator(blankNodeIdentifier,
-			//breakSuperClassRetrievalAfter, replacePredicate, replaceObject);
-	
+
 		} else if(predefinedManipulator.equalsIgnoreCase("DEFAULT")){
 			return getDefaultManipulator();
 		}
 		else {
-			//QUALITY maybe not the best, should be Default
-			return new Manipulator();
+			//QUALITY maybe not the best, 
+			return getDefaultManipulator();
 		}
 	}
 	
 	public static Manipulator getDBpediaNavigatorManipulator(){
 		Manipulator m =  new Manipulator();
-		m.rules.add(new DBPediaNavigatorCityLocatorRule(Months.JANUARY));
-		m.rules.add(new DBpediaNavigatorOtherRule(Months.DECEMBER));
+		m.addRule(new DBPediaNavigatorCityLocatorRule(Months.JANUARY));
+		m.addRule(new DBpediaNavigatorOtherRule(Months.DECEMBER));
 		return m;
 	}
 	
@@ -137,9 +109,24 @@ public class Manipulator {
 
 	private void addDefaultRules(Months month){
 		
-		rules.add(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS,ClassNode.class.getCanonicalName() )) ;
-		rules.add(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING,InstanceNode.class.getCanonicalName() )) ;
-		rules.add(new TypeFilterRule(month, "", OWLVocabulary.OWL_CLASS, ClassNode.class.getCanonicalName()) ) ;
+		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS,ClassNode.class.getCanonicalName() )) ;
+		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING,InstanceNode.class.getCanonicalName() )) ;
+		addRule(new TypeFilterRule(month, "", OWLVocabulary.OWL_CLASS, ClassNode.class.getCanonicalName()) ) ;
+	}
+	
+	public synchronized void addRule(Rule newRule){
+		rules.add(newRule);
+		List<Rule> l = new ArrayList<Rule>();
+		
+		for (Months month : Rule.MONTHS) {
+			for (Rule rule : rules) {
+				if(rule.month.equals(month)) {
+					l.add(rule);
+				}
+			}
+			
+		}
+		rules = l;
 	}
 	
 	

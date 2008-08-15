@@ -19,10 +19,8 @@
  */
 package org.dllearner.kb.extraction;
 
-import org.dllearner.kb.old.Manipulators;
-import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQueryMaker;
+import org.dllearner.kb.aquisitors.TupelAquisitor;
+import org.dllearner.kb.manipulator.Manipulator;
 
 /**
  * Stores all configuration settings. this class collects all configuration
@@ -32,78 +30,79 @@ import org.dllearner.kb.sparql.SparqlQueryMaker;
  */
 public class Configuration {
 
-	public SPARQLTasks sparqlTasks;
+	//public SPARQLTasks sparqlTasks;
 	
-	private SparqlEndpoint endpoint;
-	private SparqlQueryMaker sparqlQueryMaker;
+	//private SparqlEndpoint endpoint;
+	//private SparqlQueryMaker sparqlQueryMaker;
+	private Manipulator manipulator;
+	private TupelAquisitor tupelAquisitor;
 	
-	private Manipulators manipulator;
 	// the following needs to be moved to
 	// class extraction algorithm or manipulator
 	private int recursiondepth;
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;
-	public int numberOfUncachedSparqlQueries = 0;
-	public int numberOfCachedSparqlQueries = 0;
-	public String cacheDir="cache";
+	private int breakSuperClassesAfter = 200;
 
-	public Configuration(SparqlEndpoint specificSparqlEndpoint,
-			SparqlQueryMaker sparqlQueryMaker, Manipulators manipulator,
-			int recursiondepth, boolean getAllSuperClasses,
-			boolean closeAfterRecursion, String cacheDir) {
-		this.endpoint = specificSparqlEndpoint;
-		this.sparqlQueryMaker = sparqlQueryMaker;
+
+	public Configuration(
+			TupelAquisitor tupelAquisitor, 
+			Manipulator manipulator,
+			int recursiondepth, 
+			boolean getAllSuperClasses,
+			boolean closeAfterRecursion, 
+			int breakSuperClassesAfter) {
+		
+		this.tupelAquisitor = tupelAquisitor;
 		this.manipulator = manipulator;
 		this.recursiondepth = recursiondepth;
 		this.getAllSuperClasses = getAllSuperClasses;
 		this.closeAfterRecursion = closeAfterRecursion;
-		this.cacheDir=cacheDir;
+		this.breakSuperClassesAfter = breakSuperClassesAfter;
+		
 
 	}
 
+
+	public int getBreakSuperClassesAfter() {
+		return breakSuperClassesAfter;
+	}
+
+
+	public boolean isCloseAfterRecursion() {
+		return closeAfterRecursion;
+	}
+
+
+	public boolean isGetAllSuperClasses() {
+		return getAllSuperClasses;
+	}
+
+
+	public Manipulator getManipulator() {
+		return manipulator;
+	}
+
+
+	public int getRecursiondepth() {
+		return recursiondepth;
+	}
+
+
+	public TupelAquisitor getTupelAquisitor() {
+		return tupelAquisitor;
+	}
+
+	/*
 	public Configuration changeQueryType(SparqlQueryMaker sqm) {
 		// TODO must clone here
 		return new Configuration(this.endpoint, sqm, this.manipulator,
 				this.recursiondepth, this.getAllSuperClasses,
 				this.closeAfterRecursion, this.cacheDir);
 
-	}
-
-	public Manipulators getManipulator() {
-		return this.manipulator;
-	}
-
-	public SparqlEndpoint getSparqlEndpoint() {
-		return endpoint;
-	}
-
-	public SparqlQueryMaker getSparqlQueryMaker() {
-		return sparqlQueryMaker;
-	}
-
-	public boolean isGetAllSuperClasses() {
-		return getAllSuperClasses;
-	}
-
-	public boolean isCloseAfterRecursion() {
-		return closeAfterRecursion;
-	}
-
-	public int getRecursiondepth() {
-		return recursiondepth;
-	}
-	
-	public SPARQLTasks getSparqlTasks() {
-		return sparqlTasks;
-	}
-
-	
-	/*public void increaseNumberOfuncachedSparqlQueries() {
-		numberOfUncachedSparqlQueries++;
-	}
-
-	public void increaseNumberOfCachedSparqlQueries() {
-		numberOfCachedSparqlQueries++;
 	}*/
+
+	
+	
 
 }

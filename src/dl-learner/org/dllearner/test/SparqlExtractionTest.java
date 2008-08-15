@@ -22,13 +22,14 @@ package org.dllearner.test;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.URI;
-import java.util.LinkedList;
 
+import org.dllearner.kb.aquisitors.SparqlTupelAquisitor;
+import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
-import org.dllearner.kb.old.OldManipulator;
-import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.kb.manipulator.Manipulator;
+import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
-import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.scripts.NT2RDF;
 
 /**
  * Test class, uses the whole thing
@@ -40,25 +41,30 @@ public class SparqlExtractionTest {
 
 	public static void main(String[] args) {
 		System.out.println("Start");
+		
 		// String test2 = "http://www.extraction.org/config#dbpediatest";
 		// String test = "http://www.extraction.org/config#localjoseki";
 		try {
 			// URI u = new URI(test);
 			Manager m = new Manager();
-			// m.usePredefinedConfiguration(u);
+			Configuration conf = new Configuration (
+					new SparqlTupelAquisitor(SparqlQueryMaker.getYAGOFilter(), SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA")),
+					Manipulator.getDefaultManipulator(), 
+					1,
+					true,
+					true,
+					200
+					);
+			m.useConfiguration(conf);
 
 			URI u2 = new URI("http://dbpedia.org/resource/Angela_Merkel");
-			m.useConfiguration(SparqlQueryMaker.getSparqlQueryMakerByName("DBPEDIA"),SparqlEndpoint.getEndpointByName("YAGO"),
-					new OldManipulator("",200,new LinkedList<StringTuple>(),new LinkedList<StringTuple>()),
-					1,true,true,"cache");
-			//, ,
-					//manipulator, recursiondepth, getAllSuperClasses, closeAfterRecursion)
 			
 			String filename = System.currentTimeMillis() + ".nt";
 			FileWriter fw = new FileWriter(new File(filename), true);
 			fw.write(m.extract(u2));
 			fw.flush();
 			fw.close();
+			NT2RDF.convertNT2RDF(filename);
 
 		} catch (Exception e) {
 			e.printStackTrace();

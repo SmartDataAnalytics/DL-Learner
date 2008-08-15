@@ -60,7 +60,6 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.SparqlQueryException;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -622,12 +621,13 @@ public class DLLearnerWS {
 		ClientState state = getState(sessionID);
 		Component component = state.getComponent(componentID);
 		SparqlKnowledgeSource ks=(SparqlKnowledgeSource)component;
-		SparqlQuery sparql=ks.sparqlQuery(query);
+		return ks.getSPARQLTasks().query(query);
+		/*SparqlQuery sparql=ks.sparqlQuery(query);
 		if (ks.isUseCache()){
 			Cache cache=new Cache(ks.getCacheDir());
 			return cache.executeSparqlQuery(sparql);
 		}
-		else return sparql.getJson();
+		else return sparql.getJson();*/
 	}
 	
 	@WebMethod
@@ -685,7 +685,7 @@ public class DLLearnerWS {
 		ClientState state = getState(sessionID);
 		Component component = state.getComponent(componentID);
 		SparqlKnowledgeSource ks=(SparqlKnowledgeSource)component;
-		SPARQLTasks task=ks.getSparqlTask();
+		SPARQLTasks task=ks.getSPARQLTasks();
 		AutomaticNegativeExampleFinderSPARQL finder=new AutomaticNegativeExampleFinderSPARQL(set,task);
 		//finder.makeNegativeExamplesFromRelatedInstances(set, namespace);
 		finder.makeNegativeExamplesFromParallelClasses(set, 25);

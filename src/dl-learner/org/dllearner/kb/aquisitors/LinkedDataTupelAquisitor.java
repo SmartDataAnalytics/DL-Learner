@@ -24,8 +24,6 @@ import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.kb.extraction.Configuration;
-import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 /**
@@ -38,30 +36,21 @@ public class LinkedDataTupelAquisitor extends TupelAquisitor {
 	
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(LinkedDataTupelAquisitor.class);
-	
+	@SuppressWarnings("unused")
 	private Configuration configuration;
-	protected SparqlQueryMaker sparqlQueryMaker;
-	protected SPARQLTasks sparqlTasks;
+	
 
-	public LinkedDataTupelAquisitor(Configuration Configuration) {
-		this.configuration = Configuration;
-		this.sparqlQueryMaker = configuration.getSparqlQueryMaker();
-		this.sparqlTasks = configuration.sparqlTasks;
+	public LinkedDataTupelAquisitor(Configuration configuration) {
+		this.configuration = configuration;
 	}
 
 	// standard query get a tupels (p,o) for subject s
 	@Override
 	public SortedSet<RDFNodeTuple> getTupelForResource(URI uri) {
 		
+		throw new RuntimeException("Not Implemented yet");
 		
-		String pred = "predicate";
-		String obj = "object";
-		// getQuery
-		String sparqlQueryString = sparqlQueryMaker
-				.makeSubjectQueryUsingFilters(uri.toString());
 		
-		return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, pred, obj);
-
 	}
 	
 	
