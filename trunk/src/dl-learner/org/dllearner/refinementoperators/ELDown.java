@@ -143,6 +143,8 @@ public class ELDown extends RefinementOperatorAdapter {
 			clonedNode.extendLabel(nc);
 			refinements.add(clonedTree);
 		}
+		
+		
 		// option 2: label refinement
 		// loop through all classes in label
 		for(NamedClass nc : node.getLabel()) {
@@ -152,8 +154,16 @@ public class ELDown extends RefinementOperatorAdapter {
 					// clone operation
 					ELDescriptionTree clonedTree = tree.clone();
 					ELDescriptionNode clonedNode = clonedTree.getNode(position);
+					
+//					System.out.println("tree: " + tree);
+//					System.out.println("cloned tree: " + clonedTree);
+//					System.out.println("node: " + node);
+//					System.out.println("cloned unmodified: " + clonedNode);
+					
 					// create refinements by replacing class					
 					clonedNode.replaceInLabel(nc, (NamedClass) moreSpecial);
+					
+//					System.out.println("cloned modified: " + clonedNode);
 					refinements.add(clonedTree);
 				}
 			}
@@ -205,6 +215,7 @@ public class ELDown extends RefinementOperatorAdapter {
 			refinements.addAll(refine(tree, edge.getTree(), range, minimize));
 		}
 		
+		
 		return refinements;
 	}
 
@@ -221,6 +232,9 @@ public class ELDown extends RefinementOperatorAdapter {
 		ObjectProperty op = edge.getLabel();
 		// find all more special properties
 		for(ObjectProperty op2 : rs.getMoreSpecialRoles(op)) {
+			// TODO we need to check whether the range of this property is disjoint
+			// with the current child node;
+			// not implemented, because disjointness checks can only be done on descriptions
 			// clone operation
 			ELDescriptionTree clonedTree = tree.clone();
 			// find cloned edge and replace its label

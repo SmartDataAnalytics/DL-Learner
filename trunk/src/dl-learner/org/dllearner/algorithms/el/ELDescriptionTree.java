@@ -34,73 +34,77 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.UnsupportedLanguageException;
 
 /**
- * Represents an EL description tree. Unlike {@link ELDescriptionNode},
- * this is a tree-wide structure, i.e. it does not implement the tree
- * structure itself, but is used to store information about the tree.
+ * Represents an EL description tree. Unlike {@link ELDescriptionNode}, this is
+ * a tree-wide structure, i.e. it does not implement the tree structure itself,
+ * but is used to store information about the tree.
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public class ELDescriptionTree implements Cloneable {
 
 	// to simplify equivalence checks and minimisation, we
 	// attach a simulation relation to the description tree
-//	private Simulation simulation;	
-	
+	// private Simulation simulation;
+
 	private int maxLevel = 1;
-	
-	protected ELDescriptionNode rootNode;	
-	
-	private Map<Integer,Set<ELDescriptionNode>> levelNodeMapping = new HashMap<Integer,Set<ELDescriptionNode>>();
-	
+
+	protected ELDescriptionNode rootNode;
+
+	private Map<Integer, Set<ELDescriptionNode>> levelNodeMapping = new HashMap<Integer, Set<ELDescriptionNode>>();
+
 	public ELDescriptionTree() {
-		
+
 	}
-	
+
 	/**
-	 * Constructs an EL description tree from an EL description. 
-	 * @param description A description 
+	 * Constructs an EL description tree from an EL description.
+	 * 
+	 * @param description
+	 *            A description
 	 */
 	public ELDescriptionTree(Description description) {
 		// construct root node and recursively build the tree
 		rootNode = new ELDescriptionNode(this);
 		constructTree(description, rootNode);
-	}	
+	}
 
 	private void constructTree(Description description, ELDescriptionNode node) {
-		if(description instanceof NamedClass) {
-			node.extendLabel((NamedClass)description);
-		} else if(description instanceof ObjectSomeRestriction) {
-			ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction)description).getRole();
+		if (description instanceof NamedClass) {
+			node.extendLabel((NamedClass) description);
+		} else if (description instanceof ObjectSomeRestriction) {
+			ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction) description).getRole();
 			ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<NamedClass>());
 			constructTree(description.getChild(0), newNode);
-		} else if(description instanceof Thing) {
+		} else if (description instanceof Thing) {
 			// nothing needs to be done as an empty set is owl:Thing
-		} else if(description instanceof Intersection) {
+		} else if (description instanceof Intersection) {
 			// loop through all elements of the intersection
-			for(Description child : description.getChildren()) {
-				if(child instanceof NamedClass) {
-					node.extendLabel((NamedClass)child);
-				} else if(child instanceof ObjectSomeRestriction) {
-					ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction)child).getRole();
-					ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<NamedClass>());
-					constructTree(child, newNode);					
+			for (Description child : description.getChildren()) {
+				if (child instanceof NamedClass) {
+					node.extendLabel((NamedClass) child);
+				} else if (child instanceof ObjectSomeRestriction) {
+					ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction) child).getRole();
+					ELDescriptionNode newNode = new ELDescriptionNode(node, op,
+							new TreeSet<NamedClass>());
+					constructTree(child.getChild(0), newNode);
 				} else {
-					throw new UnsupportedLanguageException(description + " specifically " + child , "EL");
+					throw new UnsupportedLanguageException(description + " specifically " + child,
+							"EL");
 				}
 			}
 		} else {
 			throw new UnsupportedLanguageException(description.toString(), "EL");
 		}
 	}
-	
+
 	/**
-	 * Gets the nodes on a specific level of the tree. 
-	 * This information is cached here for performance
-	 * reasons.
-	 * @param level The level (distance from root node).
-	 * @return The set of all nodes on the specified level within
-	 * this tree.
+	 * Gets the nodes on a specific level of the tree. This information is
+	 * cached here for performance reasons.
+	 * 
+	 * @param level
+	 *            The level (distance from root node).
+	 * @return The set of all nodes on the specified level within this tree.
 	 */
 	public Set<ELDescriptionNode> getNodesOnLevel(int level) {
 		return levelNodeMapping.get(level);
@@ -109,16 +113,19 @@ public class ELDescriptionTree implements Cloneable {
 	public Description transformToDescription() {
 		return rootNode.transformToDescription();
 	}
-	
+
 	/**
-	 * Internal method for updating the level node mapping.
-	 * It is called when a new node is added to the tree.
-	 * @param node The new node.
-	 * @param level Level of the new node.
+	 * Internal method for updating the level node mapping. It is called when a
+	 * new node is added to the tree.
+	 * 
+	 * @param node
+	 *            The new node.
+	 * @param level
+	 *            Level of the new node.
 	 */
 	protected void addNodeToLevel(ELDescriptionNode node, int level) {
-		if(level <= maxLevel) {
-			 levelNodeMapping.get(level).add(node);
+		if (level <= maxLevel) {
+			levelNodeMapping.get(level).add(node);
 		} else if (level == maxLevel + 1) {
 			Set<ELDescriptionNode> set = new HashSet<ELDescriptionNode>();
 			set.add(node);
@@ -128,7 +135,7 @@ public class ELDescriptionTree implements Cloneable {
 			throw new RuntimeException("Inconsistent EL description tree structure.");
 		}
 	}
-	
+
 	/**
 	 * @return the maxLevel
 	 */
@@ -142,45 +149,45 @@ public class ELDescriptionTree implements Cloneable {
 	public ELDescriptionNode getRootNode() {
 		return rootNode;
 	}
-	
-    /**
-     * Gets the node at the given position. The list is processed 
-     * as follows: Starting with the root node, the first element i of
-     * list is read and the i-th child of root node is selected. This
-     * node is set as current node and the next element j of the list
-     * is read and the j-th child of the i-th child of the root node
-     * selected etc.
-     * @return The node at the specified position.
-     */
-    public ELDescriptionNode getNode(int[] position) {
-    	ELDescriptionNode currentNode = rootNode;
-    	for(int i=0; i<position.length; i++) {
-    		currentNode = currentNode.getEdges().get(position[i]).getTree();
-    	}
-    	return currentNode;
-    }		
-	
+
+	/**
+	 * Gets the node at the given position. The list is processed as follows:
+	 * Starting with the root node, the first element i of list is read and the
+	 * i-th child of root node is selected. This node is set as current node and
+	 * the next element j of the list is read and the j-th child of the i-th
+	 * child of the root node selected etc.
+	 * 
+	 * @return The node at the specified position.
+	 */
+	public ELDescriptionNode getNode(int[] position) {
+		ELDescriptionNode currentNode = rootNode;
+		for (int i = 0; i < position.length; i++) {
+			currentNode = currentNode.getEdges().get(position[i]).getTree();
+		}
+		return currentNode;
+	}
+
 	@Override
 	public ELDescriptionTree clone() {
 		// create a new reference tree
 		ELDescriptionTree treeClone = new ELDescriptionTree();
 		// create a root node attached to this reference tree
-		ELDescriptionNode rootNodeClone = new ELDescriptionNode(treeClone, new TreeSet<NamedClass>(rootNode.getLabel())); 
+		ELDescriptionNode rootNodeClone = new ELDescriptionNode(treeClone, new TreeSet<NamedClass>(
+				rootNode.getLabel()));
 		cloneRecursively(rootNode, rootNodeClone);
 		return treeClone;
 	}
-	
+
 	// we read from the original structure and write to the new structure
 	private void cloneRecursively(ELDescriptionNode node, ELDescriptionNode nodeClone) {
 		// loop through all edges and clone the subtrees
-		for(ELDescriptionEdge edge : node.getEdges()) {
-			ELDescriptionNode tmp = new ELDescriptionNode(nodeClone, edge.getLabel(), new TreeSet<NamedClass>(edge.getTree().getLabel()));
-			// TODO if we want to avoid recomputing simulation information, a special protected ELDescriptionNode
-			// constructor should be created
+		for (ELDescriptionEdge edge : node.getEdges()) {
+			ELDescriptionNode tmp = new ELDescriptionNode(nodeClone, edge.getLabel(),
+					new TreeSet<NamedClass>(edge.getTree().getLabel()));
 			cloneRecursively(edge.getTree(), tmp);
-		}		
+		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return rootNode.toString();

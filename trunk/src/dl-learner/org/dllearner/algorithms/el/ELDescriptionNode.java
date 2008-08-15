@@ -165,7 +165,7 @@ public class ELDescriptionNode {
 	/**
 	 * This method transform the tree to an EL description. The
 	 * node labels are transformed to an {@link Intersection}
-	 * of {@link NamedClass}. Each edges is transformed to an 
+	 * of {@link NamedClass}. Each edge is transformed to an 
 	 * {@link ObjectSomeRestriction}, where the property is the edge
 	 * label and the child description the subtree the edge points 
 	 * to. Edges are also added to the intersection. If the intersection
@@ -173,8 +173,21 @@ public class ELDescriptionNode {
 	 * @return The description corresponding to this EL description tree.
 	 */
 	public Description transformToDescription() {
-		if(label.size()==0 && edges.size()==0) {
+		int nrOfElements = label.size() + edges.size();
+		// leaf labeled with \emptyset stands for owl:Thing
+		if(nrOfElements == 0) {
 			return new Thing();
+		// we want to avoid intersections with only 1 element, so in this
+		// case we return either the NamedClass or ObjectSomeRestriction directly
+		} else if(nrOfElements == 1) {
+			if(label.size()==1) {
+				return label.first();
+			} else {
+				ELDescriptionEdge edge = edges.get(0);
+				Description child = edge.getTree().transformToDescription();
+				return new ObjectSomeRestriction(edge.getLabel(),child);
+			}
+		// return an intersection of labels and edges
 		} else {
 			Intersection is = new Intersection();
 			for(NamedClass nc : label) {
