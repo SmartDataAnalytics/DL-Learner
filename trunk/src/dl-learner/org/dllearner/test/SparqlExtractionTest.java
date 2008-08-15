@@ -23,6 +23,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.net.URI;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.dllearner.kb.aquisitors.SparqlTupelAquisitor;
 import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
@@ -38,9 +42,20 @@ import org.dllearner.scripts.NT2RDF;
  * 
  */
 public class SparqlExtractionTest {
+	
+	private static Logger logger = Logger.getRootLogger();
+	
 
 	public static void main(String[] args) {
 		System.out.println("Start");
+		
+//		 create logger (a simple logger which outputs
+		// its messages to the console)
+		SimpleLayout layout = new SimpleLayout();
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.setLevel(Level.TRACE);		
 		
 		// String test2 = "http://www.extraction.org/config#dbpediatest";
 		// String test = "http://www.extraction.org/config#localjoseki";
@@ -48,7 +63,7 @@ public class SparqlExtractionTest {
 			// URI u = new URI(test);
 			Manager m = new Manager();
 			Configuration conf = new Configuration (
-					new SparqlTupelAquisitor(SparqlQueryMaker.getYAGOFilter(), SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA")),
+					new SparqlTupelAquisitor(SparqlQueryMaker.getAllowYAGOFilter(), SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA")),
 					Manipulator.getDefaultManipulator(), 
 					1,
 					true,

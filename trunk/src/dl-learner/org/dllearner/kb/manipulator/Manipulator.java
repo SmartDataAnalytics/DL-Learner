@@ -130,17 +130,6 @@ public class Manipulator {
 	}
 	
 	
-	
-	/*
-	private RDFNodeTuple manipulateTuple(String subject, RDFNodeTuple tuple) {
-		
-		for (int i = 0; i < replacementRules.size(); i++) {
-			ReplacementRule replace = replacementRules.get(i);
-			tuple = replace.applyRule(subject, tuple);
-		}
-		return tuple;
-	}*/
-	
 	/*private String hackGetLabel(String resname){
 		String query="" +
 				"SELECT ?o \n" +
@@ -159,49 +148,5 @@ public class Manipulator {
 		//System.out.println("AAA"+s.getAsXMLString(s.send()) );
 		return "";
 	}*/
-	
-	/*private void replacePredicate(StringTuple t) {
-	for (StringTuple rep : replacePredicate) {
-		if (rep.a.equals(t.a)) {
-			t.a = rep.b;
-		}
-	}
-}
-
-private void replaceObject(StringTuple t) {
-	for (StringTuple rep : replaceObject) {
-		if (rep.a.equals(t.a)) {
-			t.a = rep.b;
-		}
-	}
-}*/
-	
-	
-
-	/*	
-		// remove <rdf:type, owl:class>
-		// this is done to avoid transformation to owl:subclassof
-		if (t.a.equals(type) && t.b.equals(classns)
-				&& node instanceof ClassNode) {
-			toRemove.add(t);
-		}
-
-		// all with type class
-		if (t.b.equals(classns) && node instanceof ClassNode) {
-			toRemove.add(t);
-		}
-
-		// remove all instances with owl:type thing
-		if (t.a.equals(type) && t.b.equals(thing)
-				&& node instanceof InstanceNode) {
-			toRemove.add(t);
-		}
-
-	}
-	tuples.removeAll(toRemove);
-
-	return tuples;
-}
-*/
 
 }

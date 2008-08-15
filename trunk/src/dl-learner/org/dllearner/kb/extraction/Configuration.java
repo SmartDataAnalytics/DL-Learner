@@ -30,15 +30,13 @@ import org.dllearner.kb.manipulator.Manipulator;
  */
 public class Configuration {
 
-	//public SPARQLTasks sparqlTasks;
 	
-	//private SparqlEndpoint endpoint;
-	//private SparqlQueryMaker sparqlQueryMaker;
 	private Manipulator manipulator;
 	private TupelAquisitor tupelAquisitor;
 	
 	// the following needs to be moved to
 	// class extraction algorithm or manipulator
+	private boolean optimizeForDLLearner = true;
 	private int recursiondepth;
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;
@@ -93,14 +91,11 @@ public class Configuration {
 		return tupelAquisitor;
 	}
 
-	/*
-	public Configuration changeQueryType(SparqlQueryMaker sqm) {
-		// TODO must clone here
-		return new Configuration(this.endpoint, sqm, this.manipulator,
-				this.recursiondepth, this.getAllSuperClasses,
-				this.closeAfterRecursion, this.cacheDir);
 
-	}*/
+	public boolean isOptimizeForDLLearner() {
+		return optimizeForDLLearner;
+	}
+
 
 	
 	

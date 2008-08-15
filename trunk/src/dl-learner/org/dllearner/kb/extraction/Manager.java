@@ -102,47 +102,9 @@ public class Manager {
 		return nt.toString();
 	}
 
-/*	public void addPredicateFilter(String str) {
-		this.configuration.getSparqlQueryMaker().addPredicateFilter(str);
 
-	}
-*/
 	public Configuration getConfiguration() {
 		return configuration;
 	}
-
-	/*
-	 * public void calculateSubjects(String label, int limit) {
-	 * System.out.println("SparqlModul: Collecting Subjects");
-	 * oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url); try {
-	 * subjects = oc.getSubjectsFromLabel(label, limit); } catch (IOException e) {
-	 * subjects = new String[1]; subjects[0] = "[Error]Sparql Endpoint could not
-	 * be reached."; } System.out.println("SparqlModul: ****Finished"); }
-	 * 
-	 * /** TODO SparqlOntologyCollector needs to be removed @param subject
-	 */
-	/*
-	 * public void calculateTriples(String subject) {
-	 * System.out.println("SparqlModul: Collecting Triples");
-	 * oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url); try {
-	 * triples = oc.collectTriples(subject); } catch (IOException e) { triples =
-	 * new String[1]; triples[0] = "[Error]Sparql Endpoint could not be
-	 * reached."; } System.out.println("SparqlModul: ****Finished"); }
-	 */
-	/**
-	 * TODO SparqlOntologyCollector needs to be removed
-	 * 
-	 * @param concept
-	 */
-
-	/*
-	 * public void calculateConceptSubjects(String concept) {
-	 * System.out.println("SparqlModul: Collecting Subjects");
-	 * oldSparqlOntologyCollector oc = new oldSparqlOntologyCollector(url); try {
-	 * conceptSubjects = oc.getSubjectsFromConcept(concept); } catch
-	 * (IOException e) { conceptSubjects = new String[1]; conceptSubjects[0] =
-	 * "[Error]Sparql Endpoint could not be reached."; }
-	 * System.out.println("SparqlModul: ****Finished"); }
-	 */
 
 }

@@ -89,6 +89,16 @@ public class ClassNode extends Node {
 	@Override
 	public void expandProperties(TupelAquisitor tupelAquisitor, Manipulator manipulator) {
 	}
+	
+	@Override
+	public List<Node> getAllNodesAsList(List<Node> l){
+		l.add(this);
+		for (PropertyNode props : properties) {
+			l.addAll(props.getB().getAllNodesAsList(l));
+		}
+		
+		return l;
+	}
 
 	/*
 	 * (non-Javadoc)
