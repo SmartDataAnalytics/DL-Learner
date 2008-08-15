@@ -1,4 +1,6 @@
 <?php
+	include('helper_functions.php');
+	
 	session_start();
 		
 	if (isset($_SESSION['positive'])) $positives=$_SESSION['positive'];
