@@ -3,6 +3,7 @@
 	
 	$label=$_POST['label'];
 	$list=$_POST['list'];
+	$number=$_POST['number'];
 	session_start();	
 	$id=$_SESSION['id'];
 	$ksID=$_SESSION['ksID'];
@@ -15,30 +16,38 @@
 	
 	//initialise content
 	$content="";
-	/*try{
-		require_once("DLLearnerConnection.php");
-		$sc=new DLLearnerConnection($id,$ksID);
-				
-		$subjects=$sc->getSubjects($label,$checkedInstances);
-		
-		$content.=getTagCloud($subjects['tagcloud'],$subjects['tagcloudlabel']);
-		$content.=getResultsTable($subjects['subjects']);
-	} catch (Exception $e){
-		$content=$e->getMessage();
-	}*/
+	
 	mysql_connect('localhost','navigator','dbpedia');
 	mysql_select_db("navigator_db");
-	$query="SELECT name, label FROM rank WHERE MATCH (label) AGAINST ('$label') ORDER BY number LIMIT 3";
+	$query="SELECT name, label, category FROM rank WHERE MATCH (label) AGAINST ('$label') ORDER BY number DESC LIMIT ".$number;
 	$res=mysql_query($query);
 	$names=array();
 	$labels=array();
+	$classes=array();
+	$tags=array();
+	$catlabels=array();
 	while ($result=mysql_fetch_array($res)){
 		$labels[]=$result['label'];
 		$names[]=$result['name'];
+		if (!isset($result['category'])){
+			$result['category']="NoCategory";
+			$result2['label']="No Category";
+		}
+		else
+		{
+			$query="SELECT label FROM categories WHERE category='".$result['category']."' LIMIT 1";
+			$res2=mysql_query($query);
+			$result2=mysql_fetch_array($res2);
+		}
+		$classes[]=$result['category'];
+		if (!isset($tags[$result['category']])) $tags[$result['category']]=1;
+		else $tags[$result['category']]++;
+		if (!isset($catlabels[$result['category']])) $catlabels[$result['category']]=$result2['label'];  
 	}
-	$content.=getResultsTable($names,$labels);
+	$content.=getTagCloud($tags,$catlabels);
+	$content.=getResultsTable($names,$labels,$classes,$number);
 	
 	print $content;
 	print '$$';
-	print "Searchresult for ".$label;
+	print "Searchresult for \"".$label."\"";
 ?>

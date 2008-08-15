@@ -75,6 +75,32 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	      	}
     	}
     	
+    	function search_it(param)
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_search.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    				var response = XhrObj.responseText.split('$$');
+    				document.getElementById('articlecontent').innerHTML=response[0];
+    				document.getElementById('ArticleTitle').innerHTML=response[1];
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send(param);
+    	}
+    	
     	function get_article(param)
     	{
     		if (document.all){
@@ -104,30 +130,32 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
     		XhrObj.send(param);
     	}
     	
-    	function search(param)
+    	function show_results(class, number)
     	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_search.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('articlecontent').innerHTML=response[0];
-    				document.getElementById('ArticleTitle').innerHTML=response[1];
+    		var links=document.getElementById('results').getElementsByTagName('p');
+    		var j=0;
+    		for (var i=0;i<links.length;i++){
+    			if (links[i].getElementsByTagName('a')[0].className==class||class=='all'){
+    				if ((j+1)>number&&j<(number+25)) links[i].style.display='block';
+    				else links[i].style.display='none';
+    				j++;
     			}
+    			else links[i].style.display='none';
+    		}
+    		if (j<number){
+    			show_results(class,0);
+    			return;
     		}
     		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send(param);
+    		var sitenumbers=document.getElementById('sitenumbers').getElementsByTagName('span');
+    		for (var i=0;i<sitenumbers.length;i++){
+    			if ((parseInt(sitenumbers[i].getElementsByTagName('a')[0].innerHTML)-1)*25==number) sitenumbers[i].getElementsByTagName('a')[0].style.textDecoration='none';
+    			else sitenumbers[i].getElementsByTagName('a')[0].style.textDecoration='underline';
+    			if ((parseInt(sitenumbers[i].getElementsByTagName('a')[0].innerHTML)-1)*25>=j)
+    				sitenumbers[i].style.display='none';
+    			else 
+    				sitenumbers[i].style.display='inline';
+    		}
     	}
   </script>
   </head>
@@ -148,7 +176,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			<!-- Search:<br/> -->
 			<form onSubmit="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;">
 			<input type="text" name="label" id="label" /><br/>
-			<input type="button" value="Article" class="button" onclick="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;" />&nbsp;&nbsp;<input type="button" value="Search" class="button" onclick="var list=tree.getAllChecked();search('label='+document.getElementById('label').value+'&list='+list);return false;" />
+			<input type="button" value="Article" class="button" onclick="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;" />&nbsp;&nbsp;<input type="button" value="Search" class="button" onclick="var list=tree.getAllChecked();search_it('label='+document.getElementById('label').value+'&list='+list+'&number=10');return false;" />
 			<!--  &nbsp;&nbsp;&nbsp; <input type="button" value="Fulltext" class="button" onclick=""/> -->
 			</form>
 		  </div> <!-- boxcontent -->
