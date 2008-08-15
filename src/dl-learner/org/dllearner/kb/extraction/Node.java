@@ -83,6 +83,8 @@ public abstract class Node implements Comparable<Node> {
 	public URI getURI() {
 		return uri;
 	}
+	
+	public abstract List<Node> getAllNodesAsList(List<Node> l);
 
 	public boolean equals(Node n) {
 		if (this.uri.equals(n.uri))

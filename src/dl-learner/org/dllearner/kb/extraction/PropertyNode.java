@@ -76,6 +76,12 @@ public class PropertyNode extends Node {
 		}
 
 	}
+	
+	@Override
+	public List<Node> getAllNodesAsList(List<Node> l){
+		throw new RuntimeException("PropertyNode.getAllNodesAsList() should never be called");
+	}
+	
 
 	public Node getA() {
 		return a;

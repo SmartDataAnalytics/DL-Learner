@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.TupelAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
@@ -37,6 +38,9 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  * 
  */
 public class InstanceNode extends Node {
+	
+	private static Logger logger = Logger
+		.getLogger(InstanceNode.class);
 
 	private SortedSet<ClassNode> classes = new TreeSet<ClassNode>();
 	//SortedSet<StringTuple> datatypes = new TreeSet<StringTuple>();
@@ -87,6 +91,20 @@ public class InstanceNode extends Node {
 		expanded = true;
 		return newNodes;
 		
+	}
+	
+	@Override
+	public List<Node> getAllNodesAsList(List<Node> l){
+		l.add(this);
+		logger.trace(this+"\nclasses: "+classes.size()+"\nrelInstances: "+properties.size());
+		for (ClassNode clazz : classes) {
+			l.addAll(clazz.getAllNodesAsList(l));
+		}
+		for (PropertyNode props : properties) {
+			l.addAll(props.getB().getAllNodesAsList(l));
+		}
+		
+		return l;
 	}
 
 	// gets the types for properties recursively

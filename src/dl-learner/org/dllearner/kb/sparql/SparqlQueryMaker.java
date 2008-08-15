@@ -216,15 +216,25 @@ public class SparqlQueryMaker {
 		assembled = false;
 		predicateFilterList.add(newFilter);
 	}
+	
+	public void addObjectFilter(String newFilter) {
+		assembled = false;
+		objectFilterList.add(newFilter);
+	}
+	
+	public void combineWith(SparqlQueryMaker sqm){
+		predicateFilterList.addAll(sqm.predicateFilterList);
+		objectFilterList.addAll(sqm.objectFilterList);
+	}
 
 	public static SparqlQueryMaker getSparqlQueryMakerByName(String name) {
 
 		if (name.equalsIgnoreCase("YAGO"))
-			return getYAGOFilter();
+			return getAllowYAGOFilter();
 		else if (name.equalsIgnoreCase("SKOS"))
-			return getSKOSFilter();
+			return getAllowSKOSFilter();
 		else if (name.equalsIgnoreCase("YAGOSKOS"))
-			return getYAGOSKOS();
+			return getAllowYAGOandSKOSFilter();
 		else if (name.equalsIgnoreCase("YAGOSPECIALHIERARCHY"))
 			return getYagoSpecialHierarchyFilter();
 		else if (name.equalsIgnoreCase("TEST"))
@@ -234,160 +244,111 @@ public class SparqlQueryMaker {
 		else
 			return null;
 	}
+	
+	private void addFiltersForDBpediaSKOS() {
+		addPredicateFilter("http://www.w3.org/2004/02/skos/core");
+		addObjectFilter("http://www.w3.org/2004/02/skos/core");
+		addObjectFilter("http://dbpedia.org/resource/Category:");
+		addObjectFilter("http://dbpedia.org/resource/Template");
+	}
+	private void addFiltersForYago() {
+		addObjectFilter("http://dbpedia.org/class/yago");
+		
+	}
+	private void addFiltersForOWLSameAs() {
+		addPredicateFilter("http://www.w3.org/2002/07/owl#sameAs");
+	}
+	private void addFiltersForFOAF() {
+		addPredicateFilter("http://xmlns.com/foaf/0.1/");
+		addObjectFilter("http://xmlns.com/foaf/0.1/");
+		
+	}
+	
+	private void addFiltersForWordNet() {
+		addObjectFilter("http://www.w3.org/2006/03/wn/wn20/instances/synset");
+		
+	}
+	private void addFiltersForGeonames() {
+		addObjectFilter("http://www.geonames.org");
+		
+	}
+	private void addFiltersForFlickrwrappr() {
+		addObjectFilter("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
+		
+	}
+	
+	private void addFiltersForDBpedia() {
+		addPredicateFilter("http://dbpedia.org/property/reference");
+		addPredicateFilter("http://dbpedia.org/property/website");
+		addPredicateFilter("http://dbpedia.org/property/wikipage");
+		addPredicateFilter("http://dbpedia.org/property/wikiPageUsesTemplate");
+		addPredicateFilter("http://dbpedia.org/property/relatedInstance");
+		addPredicateFilter("http://dbpedia.org/property/owner");
+		addPredicateFilter("http://dbpedia.org/property/standard");		
+		addObjectFilter("http://upload.wikimedia.org/wikipedia/commons");
+		addObjectFilter("http://upload.wikimedia.org/wikipedia");	
+	}
+	
+	public static SparqlQueryMaker getAllowSKOSFilter() {
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		sqm.combineWith(getAllowYAGOandSKOSFilter());
+		sqm.addFiltersForYago();
+				
+		sqm.addPredicateFilter("http://www.w3.org/2004/02/skos/core#narrower");
+		sqm.addObjectFilter("http://dbpedia.org/resource/Template");
+		
+		return sqm;
+	}
 
-	public static SparqlQueryMaker getYAGOFilter() {
-		SortedSet<String> pred = new TreeSet<String>();
-		pred.add("http://www.w3.org/2004/02/skos/core");
-		pred.add("http://www.w3.org/2002/07/owl#sameAs");
-		pred.add("http://xmlns.com/foaf/0.1/");
-		pred.add("http://dbpedia.org/property/reference");
-		pred.add("http://dbpedia.org/property/website");
-		pred.add("http://dbpedia.org/property/wikipage");
-		pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
-		pred.add("http://dbpedia.org/property/relatedInstance");
-		pred.add("http://dbpedia.org/property/owner");
-		pred.add("http://dbpedia.org/property/standard");
-
-		SortedSet<String> obj = new TreeSet<String>();
-		// obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
-		// obj.add("http://dbpedia.org/resource/Category:Articles_");
-		obj.add("http://dbpedia.org/resource/Category:");
-		obj.add("http://dbpedia.org/resource/Template");
-		obj.add("http://xmlns.com/foaf/0.1/");
-		obj.add("http://upload.wikimedia.org/wikipedia/commons");
-		obj.add("http://upload.wikimedia.org/wikipedia");
-		obj.add("http://www.geonames.org");
-		obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
-		obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
-		obj.add("http://www.w3.org/2004/02/skos/core");
-
-		return new SparqlQueryMaker("forbid", obj, pred, false);
+	public static SparqlQueryMaker getAllowYAGOFilter() {
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		sqm.combineWith(getAllowYAGOandSKOSFilter());
+		sqm.addFiltersForDBpediaSKOS();
+		return sqm;
 	}
 
 	public static SparqlQueryMaker getDBpediaNavigatorFilter() {
-		SortedSet<String> pred = new TreeSet<String>();
-		pred.add("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-		pred.add("http://www.w3.org/2000/01/rdf-schema#subClassOf");
-		pred.add("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
-		pred.add("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+		SparqlQueryMaker sqm = new SparqlQueryMaker("allow", new TreeSet<String>(), new TreeSet<String>(), false);
+		sqm.addPredicateFilter("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+		sqm.addPredicateFilter("http://www.w3.org/2000/01/rdf-schema#subClassOf");
+		sqm.addPredicateFilter("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
+		sqm.addPredicateFilter("http://www.w3.org/2003/01/geo/wgs84_pos#long");
 		// pred.add("http://dbpedia.org/property/wikipage");
 		// pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 		// pred.add("http://dbpedia.org/property/relatedInstance");
 		// pred.add("http://dbpedia.org/property/owner");
 		// pred.add("http://dbpedia.org/property/standard");
-		return new SparqlQueryMaker("allow", new TreeSet<String>(), pred, true);
+		return sqm;
 	}
 
 	public static SparqlQueryMaker getYagoSpecialHierarchyFilter() {
-		SortedSet<String> pred = new TreeSet<String>();
-		pred.add("http://www.w3.org/2004/02/skos/core");
-		pred.add("http://www.w3.org/2002/07/owl#sameAs");
-		pred.add("http://xmlns.com/foaf/0.1/");
-
-		pred.add("http://dbpedia.org/property/reference");
-		pred.add("http://dbpedia.org/property/website");
-		pred.add("http://dbpedia.org/property/wikipage");
-		pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
-		pred.add("http://dbpedia.org/property/relatedInstance");
-		pred.add("http://dbpedia.org/property/monarch");
-
-		SortedSet<String> obj = new TreeSet<String>();
-		obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
-		obj.add("http://dbpedia.org/resource/Category:Articles_");
-		obj.add("http://dbpedia.org/resource/Template");
-		obj.add("http://xmlns.com/foaf/0.1/");
-		obj.add("http://upload.wikimedia.org/wikipedia/commons");
-		obj.add("http://upload.wikimedia.org/wikipedia");
-		obj.add("http://www.geonames.org");
-		obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
-		obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
-		obj.add("http://www.w3.org/2004/02/skos/core");
-
-		return new SparqlQueryMaker("forbid", obj, pred, false);
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		sqm.combineWith(getAllowYAGOFilter());
+		sqm.addPredicateFilter("http://dbpedia.org/property/monarch");
+		return sqm;
 	}
 
-	public static SparqlQueryMaker getSKOSFilter() {
-		SortedSet<String> pred = new TreeSet<String>();
-		// pred.add("http://www.w3.org/2004/02/skos/core");
-		pred.add("http://www.w3.org/2002/07/owl#sameAs");
-		pred.add("http://xmlns.com/foaf/0.1/");
 
-		pred.add("http://dbpedia.org/property/reference");
-		pred.add("http://dbpedia.org/property/website");
-		pred.add("http://dbpedia.org/property/wikipage");
-		pred.add("http://www.w3.org/2004/02/skos/core#narrower");
-		pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 
-		SortedSet<String> obj = new TreeSet<String>();
-		// obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
-		// obj.add("http://dbpedia.org/resource/Category:Articles_");
-		obj.add("http://xmlns.com/foaf/0.1/");
-		obj.add("http://upload.wikimedia.org/wikipedia/commons");
-		obj.add("http://upload.wikimedia.org/wikipedia");
+	public static SparqlQueryMaker getAllowYAGOandSKOSFilter() {
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		sqm.addFiltersForFOAF();
+		sqm.addFiltersForDBpedia();
 
-		obj.add("http://www.geonames.org");
-		obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
-		obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
-
-		obj.add("http://dbpedia.org/class/yago");
-		obj.add("http://dbpedia.org/resource/Template");
-
-		return new SparqlQueryMaker("forbid", obj, pred, false);
-	}
-
-	public static SparqlQueryMaker getYAGOSKOS() {
-		SortedSet<String> pred = new TreeSet<String>();
-		// pred.add("http://www.w3.org/2004/02/skos/core");
-		pred.add("http://www.w3.org/2002/07/owl#sameAs");
-		pred.add("http://xmlns.com/foaf/0.1/");
-
-		pred.add("http://dbpedia.org/property/reference");
-		pred.add("http://dbpedia.org/property/website");
-		pred.add("http://dbpedia.org/property/wikipage");
-		// pred.add("http://www.w3.org/2004/02/skos/core#narrower");
-		pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
-
-		SortedSet<String> obj = new TreeSet<String>();
-		// obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
-		// obj.add("http://dbpedia.org/resource/Category:Articles_");
-		obj.add("http://xmlns.com/foaf/0.1/");
-		obj.add("http://upload.wikimedia.org/wikipedia/commons");
-		obj.add("http://upload.wikimedia.org/wikipedia");
-
-		obj.add("http://www.geonames.org");
-		obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
-		obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
-
-		// obj.add("http://dbpedia.org/class/yago");
-		obj.add("http://dbpedia.org/resource/Template");
-
-		return new SparqlQueryMaker("forbid", obj, pred, false);
+		sqm.addFiltersForGeonames();
+		sqm.addFiltersForWordNet();
+		sqm.addFiltersForFlickrwrappr();
+		sqm.addFiltersForOWLSameAs();
+		
+		sqm.addPredicateFilter("http://www.w3.org/2004/02/skos/core#narrower");
+		sqm.addObjectFilter("http://dbpedia.org/resource/Template");
+		return sqm;
 	}
 
 	public static SparqlQueryMaker test() {
-		SortedSet<String> pred = new TreeSet<String>();
-		pred.add("http://www.w3.org/2004/02/skos/core");
-		pred.add("http://www.w3.org/2002/07/owl#sameAs");
-		pred.add("http://xmlns.com/foaf/0.1/");
-		// pred.add("http://dbpedia.org/property/reference");
-		// pred.add("http://dbpedia.org/property/website");
-		// pred.add("http://dbpedia.org/property/wikipage");
-		pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
-		pred.add("http://dbpedia.org/property/relatedInstance");
-
-		SortedSet<String> obj = new TreeSet<String>();
-		// obj.add("http://dbpedia.org/resource/Category:Wikipedia_");
-		// obj.add("http://dbpedia.org/resource/Category:Articles_");
-		obj.add("http://dbpedia.org/resource/Category:");
-		obj.add("http://dbpedia.org/resource/Template");
-		obj.add("http://xmlns.com/foaf/0.1/");
-		obj.add("http://upload.wikimedia.org/wikipedia/commons");
-		obj.add("http://upload.wikimedia.org/wikipedia");
-		obj.add("http://www.geonames.org");
-		obj.add("http://www.w3.org/2006/03/wn/wn20/instances/synset");
-		obj.add("http://www4.wiwiss.fu-berlin.de/flickrwrappr");
-		obj.add("http://www.w3.org/2004/02/skos/core");
-		return new SparqlQueryMaker("forbid", obj, pred, false);
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		
+		return sqm;
 	}
 
 	public static void main(String[] args) {
@@ -402,53 +363,5 @@ public class SparqlQueryMaker {
 
 	}
 
-	/*
-	 * private String internalFilterAssemblySubject() {
-	 * 
-	 * boolean emptyPredicateFilter = getPredicateFilterList().isEmpty();
-	 * boolean emptyObjectFilter = getObjectFilterList().isEmpty();
-	 * 
-	 * String filterString = ""; if (!isLiterals()) { filterString +=
-	 * "(!isLiteral(?object))"; if (!getPredicateFilterList().isEmpty()) {
-	 * filterString += "&&("; }
-	 *  } else if (!emptyPredicateFilter) { filterString += "("; } boolean
-	 * firstRun = true; for (String p : getPredicateFilterList()) { filterString +=
-	 * lineend; filterString += (firstRun) ? handlePredicate(p).substring(2) :
-	 * handlePredicate(p); firstRun = false; } if (!emptyPredicateFilter) {
-	 * filterString += ")"; } if ((!emptyPredicateFilter || !isLiterals()) &&
-	 * !emptyObjectFilter) { filterString += "&&("; }else if
-	 * (!emptyObjectFilter) { filterString += "("; }
-	 * 
-	 * firstRun = true; for (String o : getObjectFilterList()) { filterString +=
-	 * lineend; filterString += (firstRun) ? handleObject(o).substring(2) :
-	 * handleObject(o) ; firstRun = false; } if (!emptyObjectFilter){
-	 * filterString += ")"; }
-	 * 
-	 * return filterString; }
-	 */
-
-	/*
-	 * private String filterSubject(String ns) { return "&&(
-	 * !regex(str(?subject), '" + ns + "') )"; }
-	 * 
-	 * 
-	 * private String handlePredicate (String ns) { return (isAllowMode()) ?
-	 * allowPredicate(ns) : filterPredicate(ns) ; }
-	 * 
-	 * private String handleObject (String ns) { return (isAllowMode()) ?
-	 * allowObject(ns) : filterObject(ns) ; }
-	 * 
-	 * private static String filterPredicate(String ns) { return "&&(
-	 * !regex(str(?predicate), '" + ns + "') )"; }
-	 * 
-	 * private static String filterObject(String ns) { return "&&(
-	 * !regex(str(?object), '" + ns + "') )"; }
-	 * 
-	 * private static String allowPredicate(String ns) { return "||(
-	 * regex(str(?predicate), '" + ns + "') )"; }
-	 * 
-	 * private static String allowObject(String ns) { return "||(
-	 * regex(str(?object), '" + ns + "') )"; }
-	 */
 
 }
