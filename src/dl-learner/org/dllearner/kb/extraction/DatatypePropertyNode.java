@@ -19,82 +19,83 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.TupelAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
-
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.RDFNode;
+import org.dllearner.utilities.owl.OWLVocabulary;
 
 /**
- * A node in the graph that is a Literal.
+ * Property node, has connection to a and b part
  * 
  * @author Sebastian Hellmann
  * 
  */
-public class LiteralNode extends Node {
-	
-	private Literal l;
-	
-	@SuppressWarnings("unused")
-	private static Logger logger = Logger
-		.getLogger(LiteralNode.class);
 
+public class DatatypePropertyNode extends Node {
 
-	public LiteralNode(String uri) {
+	// the a and b part of a property
+	private Node a;
+	private LiteralNode b;
+	
+
+	public DatatypePropertyNode(String uri, Node a, LiteralNode b) {
 		super(uri);
-		// this.type = "instance";
-
-	}
-	
-	public LiteralNode(RDFNode node) {
-		super(node.toString());
-		l = (Literal) node;
+		// this.type = "property";
+		this.a = a;
+		this.b = b;
 	}
 
-	// expands all directly connected nodes
+	// Property Nodes are normally not expanded,
+	// this function is never called
 	@Override
 	public List<Node> expand(TupelAquisitor tupelAquisitor, Manipulator manipulator) {
-		return new ArrayList<Node>();
+		return null;
 	}
-	
-	
 
 	// gets the types for properties recursively
 	@Override
 	public void expandProperties(TupelAquisitor tupelAquisitor, Manipulator manipulator) {
 	}
+	
+	
+
+	public Node getA() {
+		return a;
+	}
+
+	public Node getB() {
+		return b;
+	}
+	
+	public String getNTripleFormOfB() {
+		return b.getNTripleForm();
+	}
 
 	@Override
 	public SortedSet<String> toNTriple() {
-		return new TreeSet<String>();
+		SortedSet<String> s = new TreeSet<String>();
+		s.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><"
+				+ OWLVocabulary.OWL_DATATYPPROPERTY + ">.");
+
+		return s;
+	}
+
+	//TODO check
+	@Override
+	public boolean equals(Node n) {
+		if (this.uri.equals(n.uri)) {
+		  return true;  
+		}else {
+			return false;
+		}
 	}
 
 	@Override
 	public int compareTo(Node n) {
 		return super.compareTo(n);
-		//
-	}
-	
-	
-	public String getNTripleForm() {
-		String quote = "\\\"";
-		quote = "&quot;";
-		String retVal = l.getLexicalForm();
-		retVal = retVal.replaceAll("\n", "\\n");
-		retVal = retVal.replaceAll("\"", quote);
-		retVal = "\""+retVal+"\"";
-		if(l.getDatatypeURI()!=null) {
-			return retVal +"^^<"+l.getDatatypeURI()+">";
-		}else {
-			return retVal+((l.getLanguage().length()==0)?"":"@"+l.getLanguage());
-		}
-		
 	}
 
 }

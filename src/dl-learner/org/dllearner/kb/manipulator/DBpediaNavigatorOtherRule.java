@@ -21,11 +21,11 @@ package org.dllearner.kb.manipulator;
 
 import java.util.SortedSet;
 
-
 import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
 
@@ -53,14 +53,16 @@ public class DBpediaNavigatorOtherRule extends Rule{
 			
 			//TODO this doesn't work, because it is unclear what toString() method returns
 			
-			if (tuple.a.toString().equals("http://www.w3.org/2003/01/geo/wgs84_pos#lat")){
-				lat=Float.parseFloat(tuple.b.toString().substring(0,tuple.b.toString().indexOf("^^")));
+			if (tuple.a.toString().equals("http://www.w3.org/2003/01/geo/wgs84_pos#lat") && tuple.b.isLiteral()){
+				lat = ((Literal) tuple.b).getFloat();
+				//lat=Float.parseFloat(tuple.b.toString().substring(0,tuple.b.toString().indexOf("^^")));
 			}
-			if (tuple.a.toString().equals("http://www.w3.org/2003/01/geo/wgs84_pos#long")) {
-				lng=Float.parseFloat(tuple.b.toString().substring(0,tuple.b.toString().indexOf("^^")));
+			if (tuple.a.toString().equals("http://www.w3.org/2003/01/geo/wgs84_pos#long") && tuple.b.isLiteral()) {
+				lng = ((Literal) tuple.b).getFloat();
+				//lng=Float.parseFloat(tuple.b.toString().substring(0,tuple.b.toString().indexOf("^^")));
 			}
 				
-		}
+		}//end for
 		if (clazz.toString().equals("http://dbpedia.org/class/yago/City108524735")){
 			String newType = getTypeToCoordinates(lat, lng);
 			tuples.add(new RDFNodeTuple(new ResourceImpl(OWLVocabulary.RDF_TYPE),new ResourceImpl(newType)));
