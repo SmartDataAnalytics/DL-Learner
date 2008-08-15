@@ -131,15 +131,15 @@
 			//Add Positives to Session
 			if (!isset($_SESSION['positive'])){
 				if ($redirect!=""){
-					$array=array($redirect => $redirect);
+					$array=array($redirect => $artTitle);
 				}
-				else $array=array("http://dbpedia.org/resource/".str_replace(" ","_",$subject) => "http://dbpedia.org/resource/".str_replace(" ","_",$subject));
+				else $array=array($uri => $artTitle);
 				$_SESSION['positive']=$array;
 			}
 			else{
 				$array=$_SESSION['positive'];
-				if ($redirect!="") $array[$redirect] = $redirect;
-				else $array["http://dbpedia.org/resource/".str_replace(" ","_",$subject)]="http://dbpedia.org/resource/".str_replace(" ","_",$subject);
+				if ($redirect!="") $array[$redirect] = $artTitle;
+				else $array[$uri]=$artTitle;
 				$_SESSION['positive']=$array;
 			}
 									
@@ -166,25 +166,17 @@
 	}
 	
 	//add Positives and Negatives to Interests
-	$posInterests="";
-	if (isset($_SESSION['positive'])) foreach($_SESSION['positive'] as $pos){
-		$posInterests.=urldecode(substr (strrchr ($pos, "/"), 1))." <a href=\"\" onclick=\"xajax_toNegative('".$pos."');return false;\"><img src=\"".$_GET['path']."images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"xajax_removePosInterest('".$pos."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
-	}
-	$negInterests="";
-	if (isset($_SESSION['negative'])) foreach($_SESSION['negative'] as $neg){
-		$negInterests.=urldecode(substr (strrchr ($neg, "/"), 1))." <a href=\"\" onclick=\"xajax_toPositive('".$neg."');return false;\"><img src=\"".$_GET['path']."images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"xajax_removeNegInterest('".$neg."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
-	}
-	
-	
+	$interests=show_Interests($_SESSION);
+		
 	print $content;
 	print '$$';
 	print $artTitle;
 	print '$$';
 	print $lastArticles;
 	print '$$';
-	print $posInterests;
+	print $interests[0];
 	print '$$';
-	print $negInterests;
+	print $interests[1]; 
 	
 	//$objResponse->call('xajax_learnConcept');
 ?>

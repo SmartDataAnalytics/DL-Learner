@@ -157,6 +157,158 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
     				sitenumbers[i].style.display='inline';
     		}
     	}
+    	
+    	function toPositive(param)
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_to_positive.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    				var response = XhrObj.responseText.split('$$');
+    				document.getElementById('Positives').innerHTML=response[0];
+    				document.getElementById('Negatives').innerHTML=response[1];
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send(param);
+    	}
+    	
+    	function toNegative(param)
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_to_negative.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    				var response = XhrObj.responseText.split('$$');
+    				document.getElementById('Positives').innerHTML=response[0];
+    				document.getElementById('Negatives').innerHTML=response[1];
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send(param);
+    	}
+    	
+    	function clearPositives()
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_clear_positives.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    				document.getElementById('Positives').innerHTML = XhrObj.responseText;
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send();
+    	}
+    	
+    	function clearNegatives()
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_clear_negatives.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    				document.getElementById('Negatives').innerHTML = XhrObj.responseText;
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send();
+    	}
+    	
+    	function removePosInterest(param)
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_remove_pos_interest.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    				var response = XhrObj.responseText.split('$$');
+    				document.getElementById('Positives').innerHTML=response[0];
+    				document.getElementById('Negatives').innerHTML=response[1];
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send(param);
+    	}
+    	
+    	function removeNegInterest(param)
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_remove_neg_interest.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    				var response = XhrObj.responseText.split('$$');
+    				document.getElementById('Positives').innerHTML=response[0];
+    				document.getElementById('Negatives').innerHTML=response[1];
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send(param);
+    	}
   </script>
   </head>
   <body>
@@ -241,13 +393,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	<div id="rightSidebar">
 
 		<div class="box">
-		  <div class="boxtitlewithbutton" id="positivesboxtitle">search relevant &nbsp; <img src="<?php print $path;?>images/remove.png" onclick="xajax_clearPositives()" /> </div>
+		  <div class="boxtitlewithbutton" id="positivesboxtitle">search relevant &nbsp; <a href="#"><img src="<?php print $path;?>images/remove.png" onclick="clearPositives()" /></a> </div>
 		  <div class="boxcontent" id="Positives">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
 		<div class="box">
-		  <div class="boxtitlewithbutton" id="negativesboxtitle">not relevant &nbsp; <img src="<?php print $path;?>images/remove.png" onclick="xajax_clearNegatives()" /> </div>
+		  <div class="boxtitlewithbutton" id="negativesboxtitle">not relevant &nbsp; <a href="#"><img src="<?php print $path;?>images/remove.png" onclick="clearNegatives()" /></a> </div>
 		  <div class="boxcontent" id="Negatives">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
