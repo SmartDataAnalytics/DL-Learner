@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Sebastian Hellmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -47,16 +46,16 @@ public class ExtractionAlgorithm {
 		this.configuration = Configuration;
 	}
 
-	public Node getFirstNode(URI u) {
-		return new InstanceNode(u);
+	public Node getFirstNode(String uri) {
+		return new InstanceNode(uri);
 	}
 
-	public List<Node> expandAll(URI[] uris, TupelAquisitor tupelAquisitor) {
-		List<Node> v = new ArrayList<Node>();
-		for (URI oneURI : uris) {
-			v.add(expandNode(oneURI, tupelAquisitor));
+	public List<Node> expandAll(String[] uris, TupelAquisitor tupelAquisitor) {
+		List<Node> nodeList = new ArrayList<Node>();
+		for (String oneURI : uris) {
+			nodeList.add(expandNode(oneURI, tupelAquisitor));
 		}
-		return v;
+		return nodeList;
 	}
 
 	/**
@@ -68,7 +67,7 @@ public class ExtractionAlgorithm {
 	 * @param typedSparqlQuery
 	 * @return
 	 */
-	public Node expandNode(URI uri, TupelAquisitor tupelAquisitor) {
+	public Node expandNode(String uri, TupelAquisitor tupelAquisitor) {
 
 		SimpleClock sc = new SimpleClock();
 		

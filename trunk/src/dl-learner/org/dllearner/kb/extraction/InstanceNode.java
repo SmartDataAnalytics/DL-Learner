@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Sebastian Hellmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -46,9 +45,8 @@ public class InstanceNode extends Node {
 	//SortedSet<StringTuple> datatypes = new TreeSet<StringTuple>();
 	private SortedSet<PropertyNode> properties = new TreeSet<PropertyNode>();
 
-	public InstanceNode(URI u) {
-		super(u);
-		// this.type = "instance";
+	public InstanceNode(String uri) {
+		super(uri);
 
 	}
 
@@ -59,8 +57,7 @@ public class InstanceNode extends Node {
 		SortedSet<RDFNodeTuple> newTuples = tupelAquisitor.getTupelForResource(uri);
 		// see Manipulator
 		newTuples = manipulator.manipulate(this, newTuples);
-		//s=m.check(s, this);
-		// System.out.println("fffffff"+m);
+		
 		List<Node> newNodes = new ArrayList<Node>();
 
 		for (RDFNodeTuple tuple : newTuples) {
@@ -71,12 +68,12 @@ public class InstanceNode extends Node {
 			// else it is an instance
 			try {
 				if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)) {
-					ClassNode tmp = new ClassNode(new URI(tuple.b.toString()));
+					ClassNode tmp = new ClassNode(tuple.b.toString());
 					classes.add(tmp);
 					newNodes.add(tmp);
 				} else {
-					InstanceNode tmp = new InstanceNode(new URI(tuple.b.toString()));
-					properties.add(new PropertyNode(new URI(tuple.a.toString()), this, tmp));
+					InstanceNode tmp = new InstanceNode(tuple.b.toString());
+					properties.add(new PropertyNode(tuple.a.toString(), this, tmp));
 					newNodes.add(tmp);
 
 				}

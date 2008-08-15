@@ -238,7 +238,7 @@ public class SparqlQueryMaker {
 		else if (name.equalsIgnoreCase("YAGOSPECIALHIERARCHY"))
 			return getYagoSpecialHierarchyFilter();
 		else if (name.equalsIgnoreCase("TEST"))
-			return test();
+			return getTestFilter();
 		else if (name.equalsIgnoreCase("DBPEDIA-NAVIGATOR"))
 			return getDBpediaNavigatorFilter();
 		else
@@ -345,9 +345,9 @@ public class SparqlQueryMaker {
 		return sqm;
 	}
 
-	public static SparqlQueryMaker test() {
-		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
-		
+	public static SparqlQueryMaker getTestFilter() {
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), true);
+		sqm.combineWith(getAllowYAGOFilter());
 		return sqm;
 	}
 

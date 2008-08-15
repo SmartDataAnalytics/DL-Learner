@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Sebastian Hellmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -50,10 +49,9 @@ public class Manager {
 
 	}
 
-	public String extract(URI uri) {
-		// this.TypedSparqlQuery.query(uri);
-		// System.out.println(ExtractionAlgorithm.getFirstNode(uri));
-		System.out.println("Start extracting");
+	public String extract(String uri) {
+		
+		logger.info("Start extracting");
 
 		Node n = extractionAlgorithm.expandNode(uri, configuration.getTupelAquisitor());
 		SortedSet<String> s = n.toNTriple();
@@ -77,8 +75,7 @@ public class Manager {
 				logger.info("Progress: "+progress+" of "+instances.size()+" finished: "+one);
 			//}
 			try {
-				Node n = extractionAlgorithm.expandNode(new URI(one),
-						configuration.getTupelAquisitor());
+				Node n = extractionAlgorithm.expandNode(one, configuration.getTupelAquisitor());
 				tripleCollector.addAll(n.toNTriple());
 			} catch (Exception e) {
 				e.printStackTrace();

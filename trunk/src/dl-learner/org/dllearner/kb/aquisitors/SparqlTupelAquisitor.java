@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.aquisitors;
 
-import java.net.URI;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
@@ -52,17 +51,17 @@ public class SparqlTupelAquisitor extends TupelAquisitor {
 
 	// standard query get a tupels (p,o) for subject s
 	@Override
-	public SortedSet<RDFNodeTuple> getTupelForResource(URI uri) {
-		
+	public SortedSet<RDFNodeTuple> getTupelForResource(String uri) {
+		checkURIforValidity(uri);
 		
 		String pred = "predicate";
 		String obj = "object";
 		String sparqlQueryString = "";
 		// getQuery
 		if (classMode) {
-			 sparqlQueryString = sparqlQueryMaker.makeClassQueryUsingFilters(uri.toString());
+			 sparqlQueryString = sparqlQueryMaker.makeClassQueryUsingFilters(uri);
 		}else {
-			sparqlQueryString = sparqlQueryMaker.makeSubjectQueryUsingFilters(uri.toString());
+			sparqlQueryString = sparqlQueryMaker.makeSubjectQueryUsingFilters(uri);
 		}
 		
 		

@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.aquisitors;
 
-import java.net.URI;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
@@ -46,7 +45,7 @@ public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
 
 	// standard query get a tupels (p,o) for subject s
 	@Override
-	public SortedSet<RDFNodeTuple> getTupelForResource(URI uri) {
+	public SortedSet<RDFNodeTuple> getTupelForResource(String uri) {
 		
 		throw new RuntimeException("not implemented yet");
 

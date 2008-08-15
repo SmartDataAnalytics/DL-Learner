@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Sebastian Hellmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -38,8 +37,8 @@ import org.dllearner.utilities.owl.OWLVocabulary;
 public class ClassNode extends Node {
 	SortedSet<PropertyNode> properties = new TreeSet<PropertyNode>();
 
-	public ClassNode(URI u) {
-		super(u);
+	public ClassNode(String uri) {
+		super(uri);
 	}
 
 	// expands all directly connected nodes
@@ -56,15 +55,14 @@ public class ClassNode extends Node {
 				String property = tuple.a.toString();
 				 // substitute rdf:type with owl:subclassof
 				if (property.equals(OWLVocabulary.RDF_TYPE) || property.equals(OWLVocabulary.RDFS_SUBCLASS_OF)) {
-					ClassNode tmp = new ClassNode(new URI(tuple.b.toString()));
-					properties.add(new PropertyNode(new URI( OWLVocabulary.RDFS_SUBCLASS_OF), this,
-							tmp));
+					ClassNode tmp = new ClassNode(tuple.b.toString());
+					properties.add(new PropertyNode( OWLVocabulary.RDFS_SUBCLASS_OF, this, 	tmp));
 					newNodes.add(tmp);
 				} else {
 					// further expansion stops here
 					// Nodes.add(tmp); is missing on purpose
-					ClassNode tmp = new ClassNode(new URI(tuple.b.toString()));
-					properties.add(new PropertyNode(new URI(tuple.a.toString()), this, tmp));
+					ClassNode tmp = new ClassNode(tuple.b.toString());
+					properties.add(new PropertyNode(tuple.a.toString(), this, tmp));
 					// System.out.println(m.blankNodeIdentifier);
 					// System.out.println("XXXXX"+t.b);
 
