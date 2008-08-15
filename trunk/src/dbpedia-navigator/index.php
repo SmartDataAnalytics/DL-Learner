@@ -335,6 +335,55 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
     		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
     		XhrObj.send();
     	}
+    	
+    	function stopServerCall()
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_stop_server_call.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send();
+    	}
+    	
+    	function getSubjectsFromConcept(param)
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_get_subjects_from_concept.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    				var response = XhrObj.responseText.split('$$');
+    				document.getElementById('articlecontent').innerHTML=response[0];
+    				document.getElementById('ArticleTitle').innerHTML=response[1];
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send(param);
+    	}
   </script>
   </head>
   <body>
