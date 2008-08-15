@@ -309,6 +309,32 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
     		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
     		XhrObj.send(param);
     	}
+    	
+    	function learnConcept()
+    	{
+    		if (document.all){
+    			//IE
+    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		else{
+    			//Mozilla
+    			var XhrObj = new XMLHttpRequest();
+    		}
+    		
+    		XhrObj.open("POST",'ajax_learn_concepts.php');
+    		
+    		XhrObj.onreadystatechange = function()
+    		{
+    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    				var response = XhrObj.responseText.split('$$');
+    				document.getElementById('conceptlink').innerHTML=response[0];
+    				document.getElementById('ConceptInformation').innerHTML=response[1];
+    			}
+    		}
+    		
+    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    		XhrObj.send();
+    	}
   </script>
   </head>
   <body>
