@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Sebastian Hellmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -44,7 +43,7 @@ public class PropertyNode extends Node {
 	// specialtypes like owl:symmetricproperty
 	private SortedSet<String> specialTypes;
 
-	public PropertyNode(URI uri, Node a, Node b) {
+	public PropertyNode(String uri, Node a, Node b) {
 		super(uri);
 		// this.type = "property";
 		this.a = a;

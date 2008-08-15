@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Sebastian Hellmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -27,6 +27,7 @@ import org.dllearner.kb.extraction.ClassNode;
 import org.dllearner.kb.extraction.InstanceNode;
 import org.dllearner.kb.extraction.Node;
 import org.dllearner.kb.manipulator.Rule.Months;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
@@ -54,10 +55,11 @@ public class Manipulator {
 	 * triple
 	 */
 	public SortedSet<RDFNodeTuple> manipulate( Node node, SortedSet<RDFNodeTuple> tuples) {
-		
+		JamonMonitorLogger.getTimeMonitor(Manipulator.class, "Time for Rules").start();
 		for (Rule rule : rules) {
 			tuples = rule.applyRule(node, tuples);
 		}
+		JamonMonitorLogger.getTimeMonitor(Manipulator.class, "Time for Rules").stop();
 		return tuples;
 	}
 	

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Sebastian Hellmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,7 +19,6 @@
  */
 package org.dllearner.kb.extraction;
 
-import java.net.URI;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -38,11 +37,11 @@ public abstract class Node implements Comparable<Node> {
 
 	
 
-	protected URI uri;
+	protected String uri;
 	// protected String type;
 	protected boolean expanded = false;
 
-	public Node(URI uri) {
+	public Node(String uri) {
 		this.uri = uri;
 	}
 
@@ -80,7 +79,7 @@ public abstract class Node implements Comparable<Node> {
 
 	}
 
-	public URI getURI() {
+	public String getURI() {
 		return uri;
 	}
 	

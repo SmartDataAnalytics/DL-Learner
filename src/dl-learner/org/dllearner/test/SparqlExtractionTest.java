@@ -21,7 +21,6 @@ package org.dllearner.test;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.net.URI;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -34,6 +33,7 @@ import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.scripts.NT2RDF;
+import org.dllearner.utilities.JamonMonitorLogger;
 
 /**
  * Test class, uses the whole thing
@@ -63,7 +63,7 @@ public class SparqlExtractionTest {
 			// URI u = new URI(test);
 			Manager m = new Manager();
 			Configuration conf = new Configuration (
-					new SparqlTupelAquisitor(SparqlQueryMaker.getAllowYAGOFilter(), SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA")),
+					new SparqlTupelAquisitor(SparqlQueryMaker.getTestFilter(), SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA")),
 					Manipulator.getDefaultManipulator(), 
 					1,
 					true,
@@ -72,14 +72,16 @@ public class SparqlExtractionTest {
 					);
 			m.useConfiguration(conf);
 
-			URI u2 = new URI("http://dbpedia.org/resource/Angela_Merkel");
+			String u2 = "http://dbpedia.org/resource/Angela_Merkel";
 			
-			String filename = System.currentTimeMillis() + ".nt";
+			String filename = "cache/"+System.currentTimeMillis() + ".nt";
 			FileWriter fw = new FileWriter(new File(filename), true);
 			fw.write(m.extract(u2));
 			fw.flush();
 			fw.close();
 			NT2RDF.convertNT2RDF(filename);
+			
+			JamonMonitorLogger.printAllSortedByLabel();
 
 		} catch (Exception e) {
 			e.printStackTrace();

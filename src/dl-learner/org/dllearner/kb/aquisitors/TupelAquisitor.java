@@ -22,6 +22,7 @@ package org.dllearner.kb.aquisitors;
 import java.net.URI;
 import java.util.SortedSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 /**
@@ -35,9 +36,13 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
  */
 public abstract class TupelAquisitor {
 	
-	protected boolean classMode = false;
 
-	public abstract SortedSet<RDFNodeTuple> getTupelForResource(URI u);
+	private static Logger logger = Logger.getLogger(TupelAquisitor.class);
+	
+	protected boolean classMode = false;
+	private boolean uriDebugCheck = true;
+
+	public abstract SortedSet<RDFNodeTuple> getTupelForResource(String uri);
 	
 	public void setClassMode(boolean classMode) {
 		this.classMode = classMode;
@@ -45,6 +50,17 @@ public abstract class TupelAquisitor {
 
 	public boolean isClassMode() {
 		return classMode;
+	}
+	
+	protected boolean checkURIforValidity(String uri){
+		if(uriDebugCheck) return true;
+		try{
+			new URI(uri);
+		}catch (Exception e) {
+			logger.warn("Exception while validating uri: "+uri);
+			return false;
+		}
+		return true;
 	}
 }
 
