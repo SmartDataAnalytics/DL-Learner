@@ -176,4 +176,18 @@ function arrayToCommaSseparatedList($ar) {
 	}
 	return $string;
 }
+
+function show_Interests($sess)
+{
+	if (isset($sess['positive'])) foreach($sess['positive'] as $name=>$lab){
+		$ret[0]=$lab." <a href=\"\" onclick=\"toNegative('subject=".$name."&label=".$lab."');return false;\"><img src=\"".$_GET['path']."images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"removePosInterest('subject=".$name."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	else $ret[0]="";
+	if (isset($sess['negative'])) foreach($sess['negative'] as $name=>$lab){
+		$ret[1]=$lab." <a href=\"\" onclick=\"toPositive('subject=".$name."&label=".$lab."');return false;\"><img src=\"".$_GET['path']."images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"removeNegInterest('subject=".$name."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+	}
+	else $ret[1]="";
+	
+	return $ret;
+}
 ?>
