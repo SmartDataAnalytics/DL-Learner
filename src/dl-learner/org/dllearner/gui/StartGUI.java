@@ -64,6 +64,10 @@ public class StartGUI extends JFrame implements ActionListener {
 	private JMenuItem saveItem = new JMenuItem("Save As Config");
 
 	public StartGUI() {
+		this(null);
+	}
+	
+	public StartGUI(File file) {
 		this.setTitle("DL-Learner");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationByPlatform(true);
@@ -103,6 +107,11 @@ public class StartGUI extends JFrame implements ActionListener {
 				init();
 			}
 		});
+		
+		if(file != null) {
+			configLoad.openFile(file);
+			configLoad.startParser();
+		}
 	}
 
 	public void init() {
@@ -122,7 +131,11 @@ public class StartGUI extends JFrame implements ActionListener {
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.INFO);
 
-		new StartGUI();
+		File file = null;
+		if(args.length > 0)
+			file = new File(args[args.length - 1]);
+
+		new StartGUI(file);	
 	}
 
 	public void actionPerformed(ActionEvent e) {

@@ -116,10 +116,10 @@ public class ELDownTests {
 		
 		// number of refinements has to be correct and each produced
 		// refinement must be in the set of desired refinements
-//		assertTrue(refinements.size() == desired.size());
+		assertTrue(refinements.size() == desired.size());
 		for(Description refinement : refinements) {
 			System.out.println(refinement);
-//			assertTrue(desired.contains(refinement));
+			assertTrue(desired.contains(refinement));
 		}
 	}	
 	
