@@ -35,7 +35,7 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  * 
  */
 
-public class PropertyNode extends Node {
+public class ObjectPropertyNode extends Node {
 
 	// the a and b part of a property
 	private Node a;
@@ -43,7 +43,7 @@ public class PropertyNode extends Node {
 	// specialtypes like owl:symmetricproperty
 	private SortedSet<String> specialTypes;
 
-	public PropertyNode(String uri, Node a, Node b) {
+	public ObjectPropertyNode(String uri, Node a, Node b) {
 		super(uri);
 		// this.type = "property";
 		this.a = a;
@@ -76,10 +76,7 @@ public class PropertyNode extends Node {
 
 	}
 	
-	@Override
-	public List<Node> getAllNodesAsList(List<Node> l){
-		throw new RuntimeException("PropertyNode.getAllNodesAsList() should never be called");
-	}
+	
 	
 
 	public Node getA() {

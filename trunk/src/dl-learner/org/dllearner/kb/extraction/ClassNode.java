@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.TupelAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
@@ -35,7 +36,13 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  * @author Sebastian Hellmann
  */
 public class ClassNode extends Node {
-	SortedSet<PropertyNode> properties = new TreeSet<PropertyNode>();
+	
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger
+		.getLogger(ClassNode.class);
+	
+	SortedSet<ObjectPropertyNode> classProperties = new TreeSet<ObjectPropertyNode>();
+	SortedSet<DatatypePropertyNode> datatypeProperties = new TreeSet<DatatypePropertyNode>();
 
 	public ClassNode(String uri) {
 		super(uri);
@@ -50,37 +57,41 @@ public class ClassNode extends Node {
 		newTuples = manipulator.manipulate(this, newTuples);
 			
 		List<Node> newNodes = new ArrayList<Node>();
+		Node tmp;
 		for (RDFNodeTuple tuple : newTuples) {
-			try {
-				String property = tuple.a.toString();
-				 // substitute rdf:type with owl:subclassof
-				if (property.equals(OWLVocabulary.RDF_TYPE) || property.equals(OWLVocabulary.RDFS_SUBCLASS_OF)) {
-					ClassNode tmp = new ClassNode(tuple.b.toString());
-					properties.add(new PropertyNode( OWLVocabulary.RDFS_SUBCLASS_OF, this, 	tmp));
-					newNodes.add(tmp);
-				} else {
-					// further expansion stops here
-					// Nodes.add(tmp); is missing on purpose
-					ClassNode tmp = new ClassNode(tuple.b.toString());
-					properties.add(new PropertyNode(tuple.a.toString(), this, tmp));
-					// System.out.println(m.blankNodeIdentifier);
-					// System.out.println("XXXXX"+t.b);
-
-					// if o is a blank node expand further
-					// TODO this needs a lot more work
-					
-					// Nodes.add(tmp);
-				}
-				
-				
-				
-				
-			} catch (Exception e) {
-				System.out.println("ClassNode");
-				e.printStackTrace();
-			}
+			if((tmp = processTuple(tuple))!= null) {
+				newNodes.add(tmp);
+			}		
 		}
 		return newNodes;
+	}
+	
+	public Node processTuple( RDFNodeTuple tuple) {
+		try {
+			String property = tuple.a.toString();
+			if(tuple.b.isLiteral()) {
+				datatypeProperties.add(new DatatypePropertyNode(tuple.a.toString(), this, new LiteralNode(tuple.b) ));
+				return null;
+			}else if(tuple.b.isAnon()){
+				logger.warn("blanknodes not supported as of now"+ this +"in tuple" + tuple);
+				return null;
+			 // substitute rdf:type with owl:subclassof
+			}else if (property.equals(OWLVocabulary.RDF_TYPE) || property.equals(OWLVocabulary.RDFS_SUBCLASS_OF)) {
+				ClassNode tmp = new ClassNode(tuple.b.toString());
+				classProperties.add(new ObjectPropertyNode( OWLVocabulary.RDFS_SUBCLASS_OF, this, 	tmp));
+				return tmp;
+			} else {
+				// further expansion stops here
+				ClassNode tmp = new ClassNode(tuple.b.toString());
+				classProperties.add(new ObjectPropertyNode(tuple.a.toString(), this, tmp));
+				// return tmp; is missing on purpose
+			}
+		} catch (Exception e) {
+			logger.warn("Problem with: " + this + " in tuple " + tuple);
+			e.printStackTrace();
+			
+		} 
+		return null;
 	}
 
 	// gets the types for properties recursively
@@ -88,15 +99,7 @@ public class ClassNode extends Node {
 	public void expandProperties(TupelAquisitor tupelAquisitor, Manipulator manipulator) {
 	}
 	
-	@Override
-	public List<Node> getAllNodesAsList(List<Node> l){
-		l.add(this);
-		for (PropertyNode props : properties) {
-			l.addAll(props.getB().getAllNodesAsList(l));
-		}
-		
-		return l;
-	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -105,16 +108,20 @@ public class ClassNode extends Node {
 	 */
 	@Override
 	public SortedSet<String> toNTriple() {
-		SortedSet<String> s = new TreeSet<String>();
-		s.add("<" + this.uri + "><" + OWLVocabulary.RDF_TYPE + "><" + OWLVocabulary.OWL_CLASS + ">.");
+		SortedSet<String> returnSet = new TreeSet<String>();
+		returnSet.add("<" + this.uri + "><" + OWLVocabulary.RDF_TYPE + "><" + OWLVocabulary.OWL_CLASS + ">.");
 
-		for (PropertyNode one : properties) {
-			s.add("<" + this.uri + "><" + one.getURI() + "><"
+		for (ObjectPropertyNode one : classProperties) {
+			returnSet.add("<" + this.uri + "><" + one.getURI() + "><"
 					+ one.getB().getURI() + ">.");
-			s.addAll(one.getB().toNTriple());
+			returnSet.addAll(one.getB().toNTriple());
+		}
+		for (DatatypePropertyNode one : datatypeProperties) {
+			returnSet.add("<" + uri + "><" + one.getURI() + "> " + one.getNTripleFormOfB()
+					+ " .");
 		}
 
-		return s;
+		return returnSet;
 	}
 
 	@Override

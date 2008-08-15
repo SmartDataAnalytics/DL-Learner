@@ -23,6 +23,7 @@ public class TripleTypeTest {
 		SPARQLTasks st = new SPARQLTasks (Cache.getDefaultCache(), SparqlEndpoint.getEndpointDBpedia());
 		
 		ResultSetRewindable rsw = st.queryAsResultSet(sparqlQueryString);
+		@SuppressWarnings("unchecked")
 		List<ResultBinding> l = ResultSetFormatter.toList(rsw);
 		
 		for (ResultBinding binding : l) {

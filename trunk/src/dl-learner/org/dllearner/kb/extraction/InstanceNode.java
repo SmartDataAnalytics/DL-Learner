@@ -38,13 +38,16 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  */
 public class InstanceNode extends Node {
 	
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 		.getLogger(InstanceNode.class);
 
 	private SortedSet<ClassNode> classes = new TreeSet<ClassNode>();
 	//SortedSet<StringTuple> datatypes = new TreeSet<StringTuple>();
-	private SortedSet<PropertyNode> properties = new TreeSet<PropertyNode>();
+	private SortedSet<ObjectPropertyNode> objectProperties = new TreeSet<ObjectPropertyNode>();
+	private SortedSet<DatatypePropertyNode> datatypeProperties = new TreeSet<DatatypePropertyNode>();
 
+	
 	public InstanceNode(String uri) {
 		super(uri);
 
@@ -60,54 +63,48 @@ public class InstanceNode extends Node {
 		
 		List<Node> newNodes = new ArrayList<Node>();
 
+		Node tmp;
 		for (RDFNodeTuple tuple : newTuples) {
-			//QUALITY: needs proper handling of ressource, could be done one step lower in the onion
-			if(!tuple.b.toString().startsWith("http:"))continue;
 			
-//			 basically : if p is rdf:type then o is a class
-			// else it is an instance
-			try {
-				if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)) {
-					ClassNode tmp = new ClassNode(tuple.b.toString());
-					classes.add(tmp);
-					newNodes.add(tmp);
-				} else {
-					InstanceNode tmp = new InstanceNode(tuple.b.toString());
-					properties.add(new PropertyNode(tuple.a.toString(), this, tmp));
-					newNodes.add(tmp);
-
-				}
-			} catch (Exception e) {
-				System.out.println("Problem with: " + tuple);
-				e.printStackTrace();
-			}
-		
-			
-			
+			if((tmp = processTuple(tuple))!= null) {
+				newNodes.add(tmp);
+			}			
 		}//endfor
 		expanded = true;
 		return newNodes;
-		
 	}
 	
-	@Override
-	public List<Node> getAllNodesAsList(List<Node> l){
-		l.add(this);
-		logger.trace(this+"\nclasses: "+classes.size()+"\nrelInstances: "+properties.size());
-		for (ClassNode clazz : classes) {
-			l.addAll(clazz.getAllNodesAsList(l));
+	public Node processTuple( RDFNodeTuple tuple) {
+		try {
+			if(tuple.b.isLiteral()) {
+				datatypeProperties.add(new DatatypePropertyNode(tuple.a.toString(), this, new LiteralNode(tuple.b) ));
+				return null;
+			}else if(tuple.b.isAnon()){
+				logger.warn("blanknodes not supported as of now"+ this +"in tuple" + tuple);
+				return null;
+			
+			// basically : if p is rdf:type then o is a class
+			// else it is an instance
+			}else if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)) {
+				ClassNode tmp = new ClassNode(tuple.b.toString());
+				classes.add(tmp);
+				return tmp;
+			} else {
+				InstanceNode tmp = new InstanceNode(tuple.b.toString());
+				objectProperties.add(new ObjectPropertyNode(tuple.a.toString(), this, tmp));
+				return tmp;
+			}
+		} catch (Exception e) {
+			System.out.println("Problem with: " + tuple);
+			e.printStackTrace();
+			return null;
 		}
-		for (PropertyNode props : properties) {
-			l.addAll(props.getB().getAllNodesAsList(l));
-		}
-		
-		return l;
 	}
-
+	
 	// gets the types for properties recursively
 	@Override
 	public void expandProperties(TupelAquisitor tupelAquisitor, Manipulator manipulator) {
-		for (PropertyNode one : properties) {
+		for (ObjectPropertyNode one : objectProperties) {
 			one.expandProperties(tupelAquisitor, manipulator);
 		}
 
@@ -121,11 +118,16 @@ public class InstanceNode extends Node {
 			returnSet.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><" + one.getURI() + ">.");
 			returnSet.addAll(one.toNTriple());
 		}
-		for (PropertyNode one : properties) {
+		for (ObjectPropertyNode one : objectProperties) {
 			returnSet.add("<" + uri + "><" + one.getURI() + "><" + one.getB().getURI()
 					+ ">.");
 			returnSet.addAll(one.toNTriple());
 			returnSet.addAll(one.getB().toNTriple());
+		}
+		
+		for (DatatypePropertyNode one : datatypeProperties) {
+			returnSet.add("<" + uri + "><" + one.getURI() + "> " + one.getNTripleFormOfB()
+					+ " .");
 		}
 
 		return returnSet;

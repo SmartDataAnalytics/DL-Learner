@@ -53,6 +53,7 @@ static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 
 		
 		ResultSet rs = ResultSetFactory.fromXML(xml);
+		@SuppressWarnings("unchecked")
 		List<ResultBinding> l = ResultSetFormatter.toList(rs);
 		
 		for (ResultBinding binding : l) {
