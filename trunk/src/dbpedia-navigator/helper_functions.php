@@ -18,12 +18,20 @@ function subjectToURI($subject)
 
 function getTagCloud($tags,$label)
 {
+	if (isset($tags['NoCategory'])){
+		$nc=true;
+		unset($tags['NoCategory']);
+	}
+	else $nc=false;
+	
 	$max=max($tags);
 	$min=min($tags);
 	$diff=$max-$min;
 	$distribution=$diff/3;
 	
 	$ret="<p>";
+	$ret.='<a style="font-size:xx-large;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'all\';show_results(\'all\',document.getElementById(\'hidden_number\').value);">All</a>&nbsp;';
+	if ($nc) $ret.='<a style="font-size:xx-small;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'NoCategory\';show_results(\'NoCategory\',document.getElementById(\'hidden_number\').value);">No Category</a>&nbsp;';
 	foreach ($tags as $tag=>$count){
 		if ($count==$min) $style="font-size:xx-small;";
 		else if ($count==$max) $style="font-size:xx-large;";
@@ -31,40 +39,50 @@ function getTagCloud($tags,$label)
 		else if ($count>($min+$distribution)) $style="font-size:medium;";
 		else $style="font-size:small;";
 		
-		$tag_with_entities=htmlentities("\"".$tag."\"");
-		$ret.='<a style="'.$style.'" href="#" onclick="xajax_getSubjectsFromConcept(\''.$tag_with_entities.'\');">'.$label[$tag].'</a>';
+		//$tag_with_entities=htmlentities("\"".$tag."\"");
+		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',document.getElementById(\'hidden_number\').value);">'.$label[$tag].'</a>&nbsp;';
 	}
-	$ret.="</p>";
+	$ret.="</p><br/>";
 	return $ret;
 }
 
-function getResultsTable($names,$labels)
+function getResultsTable($names,$labels,$classes,$number)
 {
-	$ret="<p>Your search brought ".count($names)." results.</p><br/>";
+	$ret="<p>These are your Searchresults. Show best ";
+	for ($k=10;$k<125;){
+		$ret.="<a href=\"#\" onclick=\"var list=tree.getAllChecked();search_it('label='+document.getElementById('label').value+'&list='+list+'&number=".$k."');return false;\"";
+		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
+		else $ret.=" style=\"text-decoration:underline;\"";
+		$ret.=">".($k)."</a>";
+		if ($k!=100) $ret.=" | ";
+		if($k==10) $k=25;
+		else $k=$k+25;
+	}
+	$ret.="</p><br/>";
 	$i=0;
 	$display="block";
-	while($i*30<count($names))
+	$ret.="<div id=\"results\">";
+	while($i*25<count($names))
 	{
-		$ret.="<div id='results".$i."' style='display:".$display."'>Seite ".($i+1)."<br/><br/>";
-		for ($j=0;($j<30)&&(($i*30+$j)<count($names));$j++)
+		for ($j=0;($j<25)&&(($i*25+$j)<count($names));$j++)
 		{
-			$name=$names[$i*30+$j];
-			$label=$labels[$i*30+$j];
-			$ret.='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.$label.'</a><br/>';
+			$name=$names[$i*25+$j];
+			$label=$labels[$i*25+$j];
+			$class=$classes[$i*25+$j];
+			$ret.='<p style="display:'.$display.'">&nbsp;&nbsp;&nbsp;&nbsp;'.($i*25+$j+1).'.&nbsp;<a href="" class="'.$class.'" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.$label.'</a></p>';
 		}
-		$ret.="</div>";
 		$i++;
 		$display="none";
 	}
-	$ret.="<br/><p style='width:100%;text-align:center;'>";
+	$ret.='<input type="hidden" id="hidden_class" value="all"/><input type="hidden" id="hidden_number" value="0"/></div><br/><p style="width:100%;text-align:center;" id="sitenumbers">';
 	for ($k=0;$k<$i;$k++){
-		$ret.="<a href=\"\" onClick=\"showdiv('results".($k)."');";
-		for ($l=0;$l<$i;$l++)
-		{
-			if ($l!=$k) $ret.="hidediv('results".$l."');";
-		}
-		$ret.="return false;\">".($k+1)."</a>";
-		if ($k!=($i-1)) $ret.=" | ";
+		$ret.="<span>";
+		if ($k!=0) $ret.=" | ";
+		$ret.="<a href=\"#\" onclick=\"document.getElementById('hidden_number').value='".(25*$k)."';show_results(document.getElementById('hidden_class').value,".(25*$k).");\"";
+		if ($k==0) $ret.=" style=\"text-decoration:none;\"";
+		else $ret.=" style=\"text-decoration:underline;\"";
+		$ret.=">".($k+1)."</a>";
+		$ret.="</span>";
 	}
 	$ret.="</p>";
 	return $ret;
