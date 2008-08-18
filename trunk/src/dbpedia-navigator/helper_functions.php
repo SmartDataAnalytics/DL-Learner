@@ -125,7 +125,10 @@ function get_triple_table($triples) {
 		$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'">'.nicePredicate($predicate).'</a></td>';
 		$table .= '<td><ul>';
 		foreach($object as $element) {
-			if ($element['type']=="uri") $table .= '<li><a href="'.$element['value'].'" target="_blank">'.$element['value'].'</a></li>';
+			if ($element['type']=="uri"){
+				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4) $table .= '<li><a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.$element['value'].'</a></li>';
+				else $table .= '<li><a href="'.$element['value'].'" target="_blank">'.$element['value'].'</a></li>';
+			}
 			else $table .= '<li>'.$element['value'].'</li>';
 		}
 		$table .= '</ul></td>';
