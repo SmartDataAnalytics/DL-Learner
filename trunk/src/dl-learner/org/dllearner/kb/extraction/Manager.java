@@ -59,7 +59,7 @@ public class Manager {
 		for (String str : s) {
 			nt.append(str + "\n");
 		}
-		System.out.println("sizeofStringBuffer"+nt.length());
+		logger.info("sizeofStringBuffer"+nt.length());
 		return nt.toString();
 	}
 
