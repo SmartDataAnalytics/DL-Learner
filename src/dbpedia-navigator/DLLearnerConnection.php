@@ -129,10 +129,11 @@ class DLLearnerConnection
 			
 	function getTriples($uri)
 	{
+		//i am filtering the references out at the moment, because they are causing errors with URL with ...&profile=bla, the XMLParser thinks &profile is a HTML-Entitie and misses the ;
 		$query="SELECT ?pred ?obj ".
 			   "WHERE {{<".$uri."> ?pred ?obj.Filter(!regex(str(?pred),'http://dbpedia.org/property/reference'))}UNION{<".$uri."> <http://dbpedia.org/property/redirect> ?Conc.?Conc ?pred ?obj.Filter(!regex(str(?pred),'http://dbpedia.org/property/reference'))}}";
 		$result=json_decode($this->getSparqlResultThreaded($query),true);
-		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result. The Label-Search is started."); 
+		if (count($result['results']['bindings'])==0) throw new Exception("An article with that name does not exist. The Search is started ..."); 
 		$ret=array();
 		foreach ($result['results']['bindings'] as $results){
 			$value=$results['obj'];
@@ -181,6 +182,8 @@ class DLLearnerConnection
 		return $result;
 	}
 
+	//at the moment the subject search uses a database, so this function is not needed
+	/*
 	function getSubjects($label,$checkedInstances)
 	{
 		$offset=1;
@@ -235,7 +238,7 @@ class DLLearnerConnection
 		$return['tagcloud']=$tagcloud;
 		$return['tagcloudlabel']=$tagcloudLabel;
 		return $return;
-	}
+	}*/
 	
 	function getSubjectsFromConcept($concept)
 	{

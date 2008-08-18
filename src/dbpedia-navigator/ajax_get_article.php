@@ -5,6 +5,8 @@
 
 	$subject=$_POST['label'];
 	$fromCache=$_POST['cache'];
+	if (isset($_POST['path'])) $path=$_POST['path'];
+	else $path="";
 	
 	if (isset($_SESSION['articles'])) $articles=$_SESSION['articles'];
 	$id=$_SESSION['id'];
@@ -19,7 +21,7 @@
 	if (isset($articles)){
 		foreach ($articles as $key => $value)
 		{
-			if ($value['subject']==$subject){
+			if ($value['uri']==$uri){
 				$fromCache=$key;
 				break;
 			}
@@ -32,7 +34,6 @@
 	$artTitle="";
 			
 	//get the article
-	//if $fromCache is -2, no new SearchResults should be processed
 	//if $fromCache is -1, everything is normal
 	//if $fromCache is >=0, the article is taken out of the cache
 	if ($fromCache<0) {
@@ -48,7 +49,7 @@
 			
 			// display a picture if there is one
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
-				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="Picture of '.$subject.'" style="float:right; max-width:200px;" \>';
+				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="Picture of '.$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'].'" style="float:right; max-width:200px;" \>';
 			
 			//display where it was redirected from, if it was redirected
 			$redirect="";
@@ -62,36 +63,45 @@
 				
 			// give the link to the corresponding Wikipedia article
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
-				$content .= '<p><img src="'.$_GET['path'].'images/wikipedia_favicon.png" alt="Wikipedia" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0]['value'].'">view Wikipedia article</a>, '; 
-			$content .= '<a href="'.$uri.'">view DBpedia resource description</a></p>';
-	
+				$content .= '<p><img src="'.$path.'images/wikipedia_favicon.png" alt="Wikipedia" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.getPrintableURL($triples['http://xmlns.com/foaf/0.1/page'][0]['value']).'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view Wikipedia article</a>, '; 
+			$content .= '<img src="'.$path.'images/dbpedia-favicon.ico" alt="DBpedia" style="max-width:20px;"/> <a href="#" onclick="window.open(\''.$uri.'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view DBpedia resource description</a>';
+			//display photo collection, if there is one
+			if (isset($triples['http://dbpedia.org/property/hasPhotoCollection'])){
+				$content.=', <img src="'.$path.'images/flickr.png" alt="Flickr" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view photo collection</a></p>';
+			}
+			
+			$content.='<br/><hr><h4>Classes and Categories</h4><br/>';
+			
 			// display a list of classes
 			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']))
-				$content .= '<p>classes: '.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
-				
-			if(isset($triples['http://dbpedia.org/property/reference'])) {
+				$content .= '<p>Yago classes: '.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
+
+			//skos-subjects
+			if (isset($triples['http://www.w3.org/2004/02/skos/core#subject'])){
+				$content .= '<br/><p>Skos categories: <ul>';
+				foreach($triples['http://www.w3.org/2004/02/skos/core#subject'] as $skos)
+					$content .= '<li><a href="'.$skos['value'].'">'.$skos['value'].'</a></li>';
+				$content .= '</ul></p>';			
+			}
+			
+			//not used at the moment
+			/*if(isset($triples['http://dbpedia.org/property/reference'])) {
 				$content .= '<p>references: <ul>';
 				foreach($triples['http://dbpedia.org/property/reference'] as $reference)
 					$content .= '<li><a href="'.$reference['value'].'">'.$reference['value'].'</a></li>';
 				$content .= '</ul></p>';
-			}
+			}*/
 			
 			//display a Google Map if Geo-koordinates are available
 			if (isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'])&&isset($triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'])){
-				$content.="<br/><img src=\"".$_GET['path']."images/mobmaps_googlemapsicon.jpg\" alt=\"Google Maps\" style=\"max-width:25px;\" /> <a href=\"\" onClick=\"loadGoogleMap(".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'][0]['value'].",".$triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'][0]['value'].",'".$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value']."');return false;\">Toggle a map of the location</a><br/><br/><div id=\"map\" style=\"width: 500px; height: 300px;display:none;\"></div>";
+				$content.='<br/><hr><h4>Map of the location</h4><br/>';
+				$content.='<div id="map" style="width: 500px; height: 300px;margin-left:30px;"></div>';
+				$lat=$triples['http://www.w3.org/2003/01/geo/wgs84_pos#lat'][0]['value'];
+				$long=$triples['http://www.w3.org/2003/01/geo/wgs84_pos#long'][0]['value'];
 			}
-			
-			//display photo collection, if there is one
-			if (isset($triples['http://dbpedia.org/property/hasPhotoCollection'])){
-				$content.="<br/><img src=\"".$_GET['path']."images/flickr.jpg\" alt=\"Flickr\" style=\"max-width:25px;\" /> <a href=\"".$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value']."\">view a photo collection</a><br/>";
-			}
-			
-			//skos-subjects
-			if (isset($triples['http://www.w3.org/2004/02/skos/core#subject'])){
-				$content .= '<br/><p>skos subjects: <ul>';
-				foreach($triples['http://www.w3.org/2004/02/skos/core#subject'] as $skos)
-					$content .= '<li><a href="'.$skos['value'].'">'.$skos['value'].'</a></li>';
-				$content .= '</ul></p>';			
+			else{
+				$lat="";
+				$long="";
 			}
 			
 			//BUILD ARTICLE TITLE
@@ -110,15 +120,18 @@
 			unset($triples['http://dbpedia.org/property/hasPhotoCollection']);
 			unset($triples['http://www.w3.org/2004/02/skos/core#subject']);
 			unset($triples['http://www.w3.org/2000/01/rdf-schema#label']);
+			unset($triples['http://www.w3.org/2000/01/rdf-schema#comment']);
+			
+			$content.='<br/><hr><h4>Remaining Triples</h4><br/>';
 			
 			// display the remaining properties as list which can be used for further navigation
-			$content .= '<br/><br/><br/>'.get_triple_table($triples);
+			$content .= get_triple_table($triples);
 			
 			//Restart the Session
 			session_start();
 			
 			//store article in session, to navigate between last 5 articles quickly
-			$contentArray=array('content' => $content,'subject' => $artTitle);
+			$contentArray=array('content' => $content,'subject' => $artTitle,'uri' => $uri);
 			if (!isset($_SESSION['nextArticle'])){
 				$_SESSION['nextArticle']=0;
 				$_SESSION['articles']=array();
@@ -146,8 +159,7 @@
 		} catch (Exception $e)
 		{
 			$content=$e->getMessage();
-			$artTitle="No Result";
-			//$objResponse->call('xajax_getsubjects',$subject);
+			$artTitle="Article not found";
 		}
 	}
 	else {
@@ -161,7 +173,7 @@
 	if (isset($_SESSION['articles'])){
 		foreach ($_SESSION['articles'] as $key => $value)
 		{
-			$lastArticles.="<a href=\"\" onclick=\"xajax_getarticle('',".$key.");return false;\">".$value['subject']."</a><br/>";
+			$lastArticles.="<a href=\"\" onclick=\"get_article('label=&cache=".$key."');return false;\">".$value['subject']."</a><br/>";
 		}
 	}
 	
@@ -176,7 +188,11 @@
 	print '$$';
 	print $interests[0];
 	print '$$';
-	print $interests[1]; 
+	print $interests[1];
+	print '$$';
+	print $lat;
+	print '$$';
+	print $long;
 	
 	//$objResponse->call('xajax_learnConcept');
 ?>

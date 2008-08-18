@@ -17,18 +17,18 @@ else $path="";
 require_once('Settings.php');
 $settings=new Settings();
 
-/*
+
 //what happens onLoad
-$onLoad="onLoad=\"";
+$onLoad="onLoad=\"document.getElementById('label').focus();";
 if (isset($_GET['resource'])){ 
-	$onLoad.="xajax_getarticle('".$_GET['resource']."',-1);";
+	$onLoad.="get_article('label=".$_GET['resource']."&cache=-1');";
 	unset($_GET['resource']);
 }
 else if (isset($_SESSION['currentArticle'])){
-	$onLoad.="xajax_getarticle('',".$_SESSION['currentArticle'].");";
+	$onLoad.="get_article('label=&cache=".$_SESSION['currentArticle']."');";
 }
 $onLoad.="\"";
-*/
+
   
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
@@ -45,351 +45,31 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
       type="text/javascript"></script>
     <script  src="<?php print $path;?>treemenu/dhtmlxcommon.js"></script>
 	<script  src="<?php print $path;?>treemenu/dhtmlxtree.js"></script>
+	<script  src="<?php print $path;?>js/ajax.js"></script>
     <script type="text/javascript">
-        function showdiv(id){
-        	document.getElementById(id).style.display='block';
-        }
-        
-        function hidediv(id) {
-        	document.getElementById(id).style.display='none';
-        }
-        
+    	function setRunning(running)
+    	{
+    		if (running) document.getElementById('Loading').style.display='inline';
+    		else document.getElementById('Loading').style.display='none';
+    	}
+    
         function loadGoogleMap(Lat,Lng,Label) {
-        	if (document.getElementById("map").style.display=="none"){
-        		document.getElementById("map").style.display='block';
-				if (GBrowserIsCompatible()) {
-	      	  		// Create and Center a Map
-	          		var map = new GMap2(document.getElementById("map"));
-	          		map.setCenter(new GLatLng(Lat, Lng), 12);
-	          		map.addControl(new GLargeMapControl());
-	          		map.addControl(new GMapTypeControl());
-	          		var marker=new GMarker(new GLatLng(Lat, Lng));
-	          		GEvent.addListener(marker, "click", function() {
-	            		marker.openInfoWindowHtml(Label);
-	          		});
-	          		map.addOverlay(marker);
-	      		}
-        	}
-        	else {
-	        	document.getElementById("map").style.display='none';
+        	if (GBrowserIsCompatible()) {
+	      		// Create and Center a Map
+	        	var map = new GMap2(document.getElementById("map"));
+	        	map.setCenter(new GLatLng(Lat, Lng), 12);
+	        	map.addControl(new GLargeMapControl());
+	        	map.addControl(new GMapTypeControl());
+	        	var marker=new GMarker(new GLatLng(Lat, Lng));
+	        	map.addOverlay(marker);
 	      	}
-    	}
-    	
-    	function search_it(param)
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_search.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('articlecontent').innerHTML=response[0];
-    				document.getElementById('ArticleTitle').innerHTML=response[1];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send(param);
-    	}
-    	
-    	function get_article(param)
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_get_article.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('articlecontent').innerHTML=response[0];
-    				document.getElementById('ArticleTitle').innerHTML=response[1];
-    				document.getElementById('lastarticles').innerHTML=response[2];
-    				document.getElementById('Positives').innerHTML=response[3];
-    				document.getElementById('Negatives').innerHTML=response[4];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send(param);
-    	}
-    	
-    	function show_results(class, number)
-    	{
-    		var links=document.getElementById('results').getElementsByTagName('p');
-    		var j=0;
-    		for (var i=0;i<links.length;i++){
-    			if (links[i].getElementsByTagName('a')[0].className==class||class=='all'){
-    				if ((j+1)>number&&j<(number+25)) links[i].style.display='block';
-    				else links[i].style.display='none';
-    				j++;
-    			}
-    			else links[i].style.display='none';
-    		}
-    		if (j<number){
-    			show_results(class,0);
-    			return;
-    		}
-    		
-    		var sitenumbers=document.getElementById('sitenumbers').getElementsByTagName('span');
-    		for (var i=0;i<sitenumbers.length;i++){
-    			if ((parseInt(sitenumbers[i].getElementsByTagName('a')[0].innerHTML)-1)*25==number) sitenumbers[i].getElementsByTagName('a')[0].style.textDecoration='none';
-    			else sitenumbers[i].getElementsByTagName('a')[0].style.textDecoration='underline';
-    			if ((parseInt(sitenumbers[i].getElementsByTagName('a')[0].innerHTML)-1)*25>=j)
-    				sitenumbers[i].style.display='none';
-    			else 
-    				sitenumbers[i].style.display='inline';
-    		}
-    	}
-    	
-    	function toPositive(param)
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_to_positive.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('Positives').innerHTML=response[0];
-    				document.getElementById('Negatives').innerHTML=response[1];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send(param);
-    	}
-    	
-    	function toNegative(param)
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_to_negative.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('Positives').innerHTML=response[0];
-    				document.getElementById('Negatives').innerHTML=response[1];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send(param);
-    	}
-    	
-    	function clearPositives()
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_clear_positives.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				document.getElementById('Positives').innerHTML = XhrObj.responseText;
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send();
-    	}
-    	
-    	function clearNegatives()
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_clear_negatives.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				document.getElementById('Negatives').innerHTML = XhrObj.responseText;
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send();
-    	}
-    	
-    	function removePosInterest(param)
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_remove_pos_interest.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('Positives').innerHTML=response[0];
-    				document.getElementById('Negatives').innerHTML=response[1];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send(param);
-    	}
-    	
-    	function removeNegInterest(param)
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_remove_neg_interest.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('Positives').innerHTML=response[0];
-    				document.getElementById('Negatives').innerHTML=response[1];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send(param);
-    	}
-    	
-    	function learnConcept()
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_learn_concepts.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('conceptlink').innerHTML=response[0];
-    				document.getElementById('ConceptInformation').innerHTML=response[1];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send();
-    	}
-    	
-    	function stopServerCall()
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_stop_server_call.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send();
-    	}
-    	
-    	function getSubjectsFromConcept(param)
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_get_subjects_from_concept.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('articlecontent').innerHTML=response[0];
-    				document.getElementById('ArticleTitle').innerHTML=response[1];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send(param);
     	}
   </script>
   </head>
-  <body>
+  <body <?php print $onLoad;?>>
 
 <!--  <h1>DBpedia Navigator</h1> -->
-<div><table border="0" width="100%"><tr><td width="35%"><img src="<?php print $path;?>images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" /></td><td width="50%"><span id="conceptlink"></span></td><td width="15%"><span id="Loading" style="display:none">Server Call... <img src="<?php print $path;?>images/remove.png" onclick="xajax_stopServerCall();return false;" /></span></td></tr></table></div>
+<div><table border="0" width="100%"><tr><td width="35%"><img src="<?php print $path;?>images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" /></td><td width="50%"><span id="conceptlink"></span></td><td width="15%"><span id="Loading" style="display:none">Server Call... <a href=""><img src="<?php print $path;?>images/remove.png" onclick="stopServerCall();return false;" /></a></span></td></tr></table></div>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
@@ -398,26 +78,26 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	<div id="leftSidebar">
 
 		<div class="box">
-		  <div class="boxtitle">Search DBpedia</div>
+		  <div class="boxtitle" style="cursor:help;" title="Show an article or search for several articles in the DBpedia database.">Search DBpedia</div>
 		  <div class="boxcontent" id="search">
 			<!-- Search:<br/> -->
-			<form onSubmit="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;">
-			<input type="text" name="label" id="label" /><br/>
-			<input type="button" value="Article" class="button" onclick="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;" />&nbsp;&nbsp;<input type="button" value="Search" class="button" onclick="var list=tree.getAllChecked();search_it('label='+document.getElementById('label').value+'&list='+list+'&number=10');return false;" />
+			<form onsubmit="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;">
+			<input type="text" name="label" id="label"/><br/>
+			<input type="button" value="Article" class="button" onclick="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;" title="Search an article with that name."/>&nbsp;&nbsp;<input type="button" value="Search" class="button" onclick="var list=tree.getAllChecked();search_it('label='+document.getElementById('label').value+'&list='+list+'&number=10');return false;" title="Search a number of articles related to that name."/>
 			<!--  &nbsp;&nbsp;&nbsp; <input type="button" value="Fulltext" class="button" onclick=""/> -->
 			</form>
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
 		<div class="box" id="SearchResultBox" style="display:none">
-		  <div class="boxtitle">Search Results</div>
+		  <div class="boxtitle" style="cursor:help;" title="The best 10 Search Results are shown here.">Search Results</div>
 		  <div class="boxcontent">
 		  <div id="searchcontent" style="display:block"></div>
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 		
 		<div class="box" id="NavigationBox">
-		  <div class="boxtitle">Navigate</div>
+		  <div class="boxtitle" style="cursor:help;" title="Navigate through the Class hierarchy and show instances of that class.">Navigate</div>
 		  <div class="boxcontent">
 		  	<div id="treeboxbox_tree" style="height:218px;overflow:auto;">
 		  	</div>
@@ -430,8 +110,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 					tree.setOnClickHandler(doOnClick);
 					function doOnClick(nodeId){ 
 						var myUrl = tree.getUserData(nodeId,"myurl");
-						xajax_getSubjectsFromConcept(myUrl);
+						getSubjectsFromConcept('concept='+myUrl);
 					}
+					function myErrorHandler(type, desc, erData){ 
+						alert('An error occured while trying to navigate through Class Tree.\nPlease try again later.'); 
+					} 
+					dhtmlxError.catchError("ALL",myErrorHandler);
 					tree.setXMLAutoLoading("processTreeMenu.php");
 					tree.loadXML("processTreeMenu.php?id=0");
 		</script>
@@ -549,7 +233,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   	<div class="boxtitle">Detailed Concept Information</div>
   	<div class="boxcontent" id="ConceptInformation"></div>
   </div>
-
+  
   </body>
 </html>
 			
