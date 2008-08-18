@@ -88,6 +88,25 @@ function getResultsTable($names,$labels,$classes,$number)
 	return $ret;
 }
 
+function getBestSearches($names,$labels)
+{
+	$ret="<div id=\"best-results\">";
+	for ($j=0;($j<10)&&$j<count($names);$j++)
+	{
+		$name=$names[$j];
+		$label=$labels[$j];
+		$ret.='&nbsp;'.($j+1).'.&nbsp;<a href="" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.$label.'</a><br/>';
+	}
+	$ret.="</div>";
+	return $ret;
+}
+
+function getPrintableURL($url)
+{
+	$parts=explode('/',$url);
+	return $parts[0].'//'.$parts[2].'/w/index.php?title='.$parts[4].'&printable=yes';
+}
+
 function setRunning($id,$running)
 {
 	if(!is_dir("temp")) mkdir("temp");
@@ -106,7 +125,7 @@ function get_triple_table($triples) {
 		$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'">'.nicePredicate($predicate).'</a></td>';
 		$table .= '<td><ul>';
 		foreach($object as $element) {
-			if ($element['type']=="uri") $table .= '<li><a href="'.$element['value'].'">'.$element['value'].'</a></li>';
+			if ($element['type']=="uri") $table .= '<li><a href="'.$element['value'].'" target="_blank">'.$element['value'].'</a></li>';
 			else $table .= '<li>'.$element['value'].'</li>';
 		}
 		$table .= '</ul></td>';
@@ -146,9 +165,10 @@ function nicePredicate($predicate)
 }
 
 function formatClassArray($ar) {
-	$string = formatClass($ar[0]['value']);
+	if ($ar[0]['value']!="http://xmlns.com/foaf/0.1/Person") $string = formatClass($ar[0]['value']);
 	for($i=1; $i<count($ar); $i++) {
-		$string .= ', ' . formatClass($ar[$i]['value']);
+		if ($ar[0]['value']!="http://xmlns.com/foaf/0.1/Person"||$i>1) $string .= ', ' . formatClass($ar[$i]['value']);
+		else $string .= formatClass($ar[$i]['value']);
 	}
 	return $string;
 }
@@ -179,14 +199,15 @@ function arrayToCommaSseparatedList($ar) {
 
 function show_Interests($sess)
 {
+	$ret=array();
+	$ret[0]="";
+	$ret[1]="";
 	if (isset($sess['positive'])) foreach($sess['positive'] as $name=>$lab){
-		$ret[0]=$lab." <a href=\"\" onclick=\"toNegative('subject=".$name."&label=".$lab."');return false;\"><img src=\"".$_GET['path']."images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"removePosInterest('subject=".$name."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+		$ret[0].=$lab." <a href=\"\" onclick=\"toNegative('subject=".$name."&label=".$lab."');return false;\"><img src=\"".$_GET['path']."images/minus.jpg\" alt=\"Minus\"/></a> <a href=\"\" onclick=\"removePosInterest('subject=".$name."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
 	}
-	else $ret[0]="";
 	if (isset($sess['negative'])) foreach($sess['negative'] as $name=>$lab){
-		$ret[1]=$lab." <a href=\"\" onclick=\"toPositive('subject=".$name."&label=".$lab."');return false;\"><img src=\"".$_GET['path']."images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"removeNegInterest('subject=".$name."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
+		$ret[1].=$lab." <a href=\"\" onclick=\"toPositive('subject=".$name."&label=".$lab."');return false;\"><img src=\"".$_GET['path']."images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"removeNegInterest('subject=".$name."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
 	}
-	else $ret[1]="";
 	
 	return $ret;
 }
