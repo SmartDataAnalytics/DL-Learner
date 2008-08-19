@@ -42,7 +42,7 @@ $client = new SoapClient("main.wsdl");
 // load owl file in DIG reasoner (you need a running DIG reasoner)
 $id = $client->generateID();
 $ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);
-$rID = $client->setReasoner($id, "owlapi");
+$rID = $client->setReasoner($id, "fastInstanceChecker");
 
 // create a learning problem
 $posExamples = array('http://example.com/father#stefan',
@@ -56,7 +56,9 @@ $client->setPositiveExamples($id, $posExamples);
 $client->setNegativeExamples($id, $negExamples);
 
 // choose refinement operator approach
-$client->setLearningAlgorithm($id, "refinement");
+$la_id = $client->setLearningAlgorithm($id, "refexamples");
+// you can add the following to apply a config option to a component, e.g. ignore a concept
+$client->applyConfigEntryStringArray($id, $la_id, "ignoredConcepts", array('http://example.com/father#female'));
 
 $client->initAll($id);
 
