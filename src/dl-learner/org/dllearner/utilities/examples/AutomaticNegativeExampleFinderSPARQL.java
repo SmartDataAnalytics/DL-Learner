@@ -149,16 +149,23 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		// superclasses");
 
 		for (String instance : positiveSet) {
+			try{
 			classes.addAll(sparqltasks.getClassesForInstance(instance, sparqlResultLimit));
+			}catch (Exception e) {
+				logger.warn("ignoring SPARQLQuery failure, see log/sparql.txt");
+			}
 		}
 		logger.debug("getting negExamples from " + classes.size() + " parallel classes");
 		for (String oneClass : classes) {
 			logger.debug(oneClass);
 			// rsc = new
 			// JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
+			try{
 			this.fromParallelClasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\"" + oneClass
 					+ "\"", sparqlResultLimit));
-
+			}catch (Exception e) {
+				logger.warn("ignoring SPARQLQuery failure, see log/sparql.txt");
+			}
 		}
 		
 		fromParallelClasses.removeAll(fullPositiveSet);

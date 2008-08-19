@@ -66,8 +66,13 @@ public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
 		//SortedSet<RDFNodeTuple> tmp = new TreeSet<RDFNodeTuple>();
 		String sparqlQueryString = sparqlQueryMaker.makeSubjectQueryLevel(uri, recursionDepth);
 		//System.out.println(sparqlQueryString);
-		ResultSetRewindable rsw= sparqlTasks.queryAsResultSet(sparqlQueryString);
-		@SuppressWarnings("unchecked")
+		ResultSetRewindable rsw=null;
+		try{
+			rsw = sparqlTasks.queryAsResultSet(sparqlQueryString);
+		}catch (Exception e) {
+			return super.retrieveTupel(uri);
+		}
+			@SuppressWarnings("unchecked")
 		List<ResultBinding> l = ResultSetFormatter.toList(rsw);
 		rsw.reset();
 		

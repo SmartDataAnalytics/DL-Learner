@@ -23,6 +23,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.kb.extraction.Node;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 public class SimplePredicateFilterRule extends Rule{
@@ -42,6 +43,8 @@ public class SimplePredicateFilterRule extends Rule{
 		for (RDFNodeTuple tuple : tuples) {
 			if(!tuple.aPartContains(predicateFilter)){
 				keep.add(tuple);
+			}else{
+				JamonMonitorLogger.increaseCount(SimplePredicateFilterRule.class, "filteredTriples");
 			}
 		}
 		return  keep;

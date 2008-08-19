@@ -55,6 +55,7 @@ public class Manager {
 
 		Node n = extractionAlgorithm.expandNode(uri, configuration.getTupelAquisitor());
 		SortedSet<String> s = n.toNTriple();
+		logger.info("number of triples: "+s.size());
 		StringBuffer nt = new StringBuffer(33000);
 		for (String str : s) {
 			nt.append(str + "\n");

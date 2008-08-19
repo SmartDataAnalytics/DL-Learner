@@ -24,6 +24,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.kb.extraction.Node;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 public class TypeFilterRule extends Rule{
@@ -59,7 +60,7 @@ public class TypeFilterRule extends Rule{
 			if(!remove){
 				keep.add(tuple);
 			}else{
-				logger.warn("Removed: "+subject+"::"+tuple);
+					JamonMonitorLogger.increaseCount(TypeFilterRule.class, "filteredTriples");
 			}
 			
 		}
