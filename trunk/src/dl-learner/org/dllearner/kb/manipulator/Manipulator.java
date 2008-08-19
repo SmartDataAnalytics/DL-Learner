@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.kb.extraction.ClassNode;
 import org.dllearner.kb.extraction.InstanceNode;
 import org.dllearner.kb.extraction.Node;
@@ -39,6 +40,7 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  */
 public class Manipulator {
 	
+	private static Logger logger = Logger.getLogger(Manipulator.class);
 	private List<Rule> rules = new ArrayList<Rule>();
 	
 	private Manipulator() {
@@ -56,9 +58,11 @@ public class Manipulator {
 	 */
 	public SortedSet<RDFNodeTuple> manipulate( Node node, SortedSet<RDFNodeTuple> tuples) {
 		JamonMonitorLogger.getTimeMonitor(Manipulator.class, "Time for Rules").start();
+		logger.warn("before: "+tuples.size());
 		for (Rule rule : rules) {
 			tuples = rule.applyRule(node, tuples);
 		}
+		logger.warn("after: "+tuples.size());
 		JamonMonitorLogger.getTimeMonitor(Manipulator.class, "Time for Rules").stop();
 		return tuples;
 	}
@@ -111,9 +115,13 @@ public class Manipulator {
 
 	private void addDefaultRules(Months month){
 		
-		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS,ClassNode.class.getCanonicalName() )) ;
-		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING,InstanceNode.class.getCanonicalName() )) ;
-		addRule(new TypeFilterRule(month, "", OWLVocabulary.OWL_CLASS, ClassNode.class.getCanonicalName()) ) ;
+	//	addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS,ClassNode.class.getCanonicalName() )) ;
+	//	addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING,InstanceNode.class.getCanonicalName() )) ;
+	//	addRule(new TypeFilterRule(month, "", OWLVocabulary.OWL_CLASS, ClassNode.class.getCanonicalName()) ) ;
+		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS,ClassNode.class )) ;
+		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING,InstanceNode.class )) ;
+		addRule(new TypeFilterRule(month, "", OWLVocabulary.OWL_CLASS, ClassNode.class) ) ;
+	
 	}
 	
 	public synchronized void addRule(Rule newRule){

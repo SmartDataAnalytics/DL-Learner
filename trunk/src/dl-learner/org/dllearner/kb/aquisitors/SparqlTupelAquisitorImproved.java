@@ -54,23 +54,9 @@ public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
 		this.recursionDepth = recursionDepth;
 		
 	}
-
-	// standard query get a tupels (p,o) for subject s
-//	 standard query get a tupels (p,o) for subject s
+	
 	@Override
-	public SortedSet<RDFNodeTuple> getTupelForResource(String uri) {
-		checkURIforValidity(uri);
-		String sparqlQueryString = "";
-		String pred = "predicate";
-		String obj = "object";
-		
-		// getQuery
-		if (classMode) {
-			
-			
-			 sparqlQueryString = sparqlQueryMaker.makeClassQueryUsingFilters(uri);
-			 return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, pred, obj);
-		}
+	public SortedSet<RDFNodeTuple> retrieveTupel(String uri){
 		
 		SortedSet<RDFNodeTuple> cachedSet = resources.get(uri);
 		if(cachedSet!=null) {
@@ -78,36 +64,68 @@ public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
 			}
 		
 		//SortedSet<RDFNodeTuple> tmp = new TreeSet<RDFNodeTuple>();
-		sparqlQueryString = sparqlQueryMaker.makeSubjectQueryLevel(uri, recursionDepth);
+		String sparqlQueryString = sparqlQueryMaker.makeSubjectQueryLevel(uri, recursionDepth);
+		//System.out.println(sparqlQueryString);
 		ResultSetRewindable rsw= sparqlTasks.queryAsResultSet(sparqlQueryString);
 		@SuppressWarnings("unchecked")
 		List<ResultBinding> l = ResultSetFormatter.toList(rsw);
 		rsw.reset();
+		int count = 0;
+
+		for (ResultBinding binding : l) {
+			count++;
+		}
+		
 		
 		int resultsetcount = 0;
 		int i = 0;
 		for (ResultBinding binding : l) {
-			i=0;
-			RDFNode nextURI = binding.get(obj+i);
-			add(uri, new RDFNodeTuple(binding.get(pred+i), nextURI ));
-						
-			for (i=1; i < recursionDepth; i++) {
-				RDFNode tmpURI = binding.get(obj+i);
-				add(nextURI.toString(), new RDFNodeTuple(binding.get(pred+i),tmpURI));
-				logger.trace("For: "+nextURI.toString()+ " added :"+resources.get(nextURI.toString()));
-				nextURI = tmpURI;
-			}
+			i = 0;
+			RDFNode nextOBJ = binding.get(OBJECT+i);
+			RDFNode nextPRED = binding.get(PREDICATE+i);
+			RDFNodeTuple tmptuple =  new RDFNodeTuple(nextPRED, nextOBJ );
+			add(uri,tmptuple);
+			
+			boolean cont = !nextOBJ.isLiteral();
+			for (i=0; (i < recursionDepth) && cont; i++) {
+				RDFNode tmpPREDURI = binding.get(PREDICATE+i);
+				RDFNode tmpOBJURI = binding.get(OBJECT+i);
+				if(tmpOBJURI==null) {
+					cont=false;
+				}else if (tmpOBJURI.isLiteral()) {
+					tmptuple =  new RDFNodeTuple(tmpPREDURI, tmpOBJURI );
+					add(nextOBJ.toString(), tmptuple);
+					logger.trace(tmptuple);
+					logger.trace("For: "+nextOBJ.toString()+ " added :"+resources.get(nextOBJ.toString()));
+					cont=false;
+				}else {
+					tmptuple =  new RDFNodeTuple(tmpPREDURI, tmpOBJURI );
+					add(nextOBJ.toString(), tmptuple);
+					logger.trace(tmptuple);
+					logger.trace("For: "+nextOBJ.toString()+ " added :"+resources.get(nextOBJ.toString()));
+					nextOBJ = tmpOBJURI;
+					cont = true;
+				}
+			}//end for
 			
 			resultsetcount++;
 		}
 		
+		//System.out.println("original count "+count);
+		logger.warn("SparqlTupelAquisitor retrieved : "+resultsetcount);
 		if(resultsetcount>999) {
 			logger.warn("SparqlTupelAquisitor retrieved more than 1000 results, there might some be missing");
 		}
-		return resources.get(uri);
-		
-		//return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, pred, obj);
+		return ((cachedSet=resources.get(uri))==null)?new TreeSet<RDFNodeTuple>():cachedSet;
 	}
+	
+	@Override
+	public SortedSet<RDFNodeTuple> retrieveTuplesForClassesOnly(String uri){
+		//getQuery
+		String sparqlQueryString = sparqlQueryMaker.makeSubjectQueryUsingFilters(uri);
+		return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, PREDICATE, OBJECT);
+	}
+	
 	
 	private void add(String uri, RDFNodeTuple tuple){
 		SortedSet<RDFNodeTuple> set = resources.get(uri);

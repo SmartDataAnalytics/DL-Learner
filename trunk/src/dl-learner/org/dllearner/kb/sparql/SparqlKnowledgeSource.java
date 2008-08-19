@@ -47,6 +47,7 @@ import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.aquisitors.SparqlTupelAquisitor;
+import org.dllearner.kb.aquisitors.SparqlTupelAquisitorImproved;
 import org.dllearner.kb.aquisitors.TupelAquisitor;
 import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
@@ -410,7 +411,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	public TupelAquisitor getTupelAquisitor()
 	{
-		return new SparqlTupelAquisitor(getSparqlQueryMaker(), getSPARQLTasks());
+		//return new SparqlTupelAquisitor(getSparqlQueryMaker(), getSPARQLTasks());
+		return new SparqlTupelAquisitorImproved(getSparqlQueryMaker(), getSPARQLTasks(),recursionDepth);
 	}
 
 	/* (non-Javadoc)
