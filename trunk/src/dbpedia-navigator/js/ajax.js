@@ -295,28 +295,58 @@ function toNegative(param)
     		XhrObj.send();
     	}
     	
-    	function getSubjectsFromConcept(param)
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
+function getSubjectsFromConcept(param)
+{
+	if (document.all){
+		//IE
+  		var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    else{
+    	//Mozilla
+    	var XhrObj = new XMLHttpRequest();
+    }
     		
-    		XhrObj.open("POST",'ajax_get_subjects_from_concept.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('articlecontent').innerHTML=response[0];
-    				document.getElementById('ArticleTitle').innerHTML=response[1];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send(param);
+    XhrObj.open("POST",'ajax_get_subjects_from_concept.php');
+    
+    XhrObj.onreadystatechange = function()
+    {
+    	if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    		var response = XhrObj.responseText.split('$$');
+    		document.getElementById('articlecontent').innerHTML=response[0];
+    		document.getElementById('ArticleTitle').innerHTML=response[1];
     	}
+    }
+    		
+    XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    XhrObj.send(param);
+}
+
+function getSubjectsFromCategory(param)
+{
+	if (document.all){
+		//IE
+  		var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    else{
+    	//Mozilla
+    	var XhrObj = new XMLHttpRequest();
+    }
+    		
+    XhrObj.open("POST",'ajax_get_subjects_from_category.php');
+    
+    XhrObj.onreadystatechange = function()
+    {
+    	if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    		var response = XhrObj.responseText.split('$$');
+    		document.getElementById('articlecontent').innerHTML=response[0];
+    		document.getElementById('ArticleTitle').innerHTML=response[1];
+    		if (response[2].length>0){
+    			document.getElementById('searchcontent').innerHTML=response[2];
+    			document.getElementById('SearchResultBox').style.display='block';
+    		}
+    	}
+    }
+    		
+    XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    XhrObj.send(param);
+}

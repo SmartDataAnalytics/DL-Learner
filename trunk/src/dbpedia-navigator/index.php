@@ -110,7 +110,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 					tree.setOnClickHandler(doOnClick);
 					function doOnClick(nodeId){ 
 						var myUrl = tree.getUserData(nodeId,"myurl");
-						getSubjectsFromConcept('concept='+myUrl);
+						var myLabel = tree.getUserData(nodeId,"mylabel");
+						getSubjectsFromCategory('category='+myUrl+'&label='+myLabel+'&number=10');
 					}
 					function myErrorHandler(type, desc, erData){ 
 						alert('An error occured while trying to navigate through Class Tree.\nPlease try again later.'); 
@@ -152,19 +153,19 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	<div id="rightSidebar">
 
 		<div class="box">
-		  <div class="boxtitlewithbutton" id="positivesboxtitle">search relevant &nbsp; <a href="#"><img src="<?php print $path;?>images/remove.png" onclick="clearPositives()" /></a> </div>
+		  <div class="boxtitlewithbutton" id="positivesboxtitle" style="cursor:help;" title="The shown articles are considered when generating navigation tips.">search relevant &nbsp; <a href="#"><img src="<?php print $path;?>images/remove.png" onclick="clearPositives()" title="Delete all articles of interest."/></a> </div>
 		  <div class="boxcontent" id="Positives">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
 		<div class="box">
-		  <div class="boxtitlewithbutton" id="negativesboxtitle">not relevant &nbsp; <a href="#"><img src="<?php print $path;?>images/remove.png" onclick="clearNegatives()" /></a> </div>
+		  <div class="boxtitlewithbutton" id="negativesboxtitle" style="cursor:help;" title="The shown articles are avoided when generating navigation tips.">not relevant &nbsp; <a href="#"><img src="<?php print $path;?>images/remove.png" onclick="clearNegatives()" title="Delete all avoided articles."/></a> </div>
 		  <div class="boxcontent" id="Negatives">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
 		<div class="box" id="LastArticlesBox" style="display:none">
-		  <div class="boxtitle">Articles Last Viewed</div>
+		  <div class="boxtitle" style="cursor:help;" title="Up to 5 articles, that were last displayed, are shown here.">Articles Last Viewed</div>
 		  <div class="boxcontent" id="lastarticles">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
