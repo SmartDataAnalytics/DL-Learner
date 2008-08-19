@@ -48,8 +48,8 @@ public class TypeFilterRule extends Rule{
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
 		SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
 		for (RDFNodeTuple tuple : tuples) {
-			String a = tuple.a.toString();
-			String b = tuple.b.toString();
+			//String a = tuple.a.toString();
+			//String b = tuple.b.toString();
 			//System.out.println(a+b);
 			boolean remove = (tuple.aPartContains(predicateFilter) &&
 					tuple.bPartContains(objectFilter) && 

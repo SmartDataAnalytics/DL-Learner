@@ -78,12 +78,12 @@ public class ExtractionAlgorithm {
 		List<Node> tmp = new ArrayList<Node>();
 		
 		
-		logger.info(seedNode);
+		logger.info("Seed Node: "+seedNode);
 		newNodes.add(seedNode);
-		logger.info("Starting Nodes: " + newNodes);
+		
 
 		
-		for (int x = 0; x < configuration.getRecursiondepth(); x++) {
+		for (int x = 1; x <= configuration.getRecursiondepth(); x++) {
 			
 			sc.reset();
 			while (!newNodes.isEmpty()) {

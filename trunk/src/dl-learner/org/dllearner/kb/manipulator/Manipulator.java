@@ -58,11 +58,11 @@ public class Manipulator {
 	 */
 	public SortedSet<RDFNodeTuple> manipulate( Node node, SortedSet<RDFNodeTuple> tuples) {
 		JamonMonitorLogger.getTimeMonitor(Manipulator.class, "Time for Rules").start();
-		logger.warn("before: "+tuples.size());
+		//logger.warn("before: "+tuples.size());
 		for (Rule rule : rules) {
 			tuples = rule.applyRule(node, tuples);
 		}
-		logger.warn("after: "+tuples.size());
+		//logger.warn("after: "+tuples.size());
 		JamonMonitorLogger.getTimeMonitor(Manipulator.class, "Time for Rules").stop();
 		return tuples;
 	}
