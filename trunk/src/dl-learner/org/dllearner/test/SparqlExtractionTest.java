@@ -31,6 +31,7 @@ import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.sparql.SPARQLTasks;
+import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.scripts.NT2RDF;
 import org.dllearner.utilities.JamonMonitorLogger;
@@ -57,12 +58,13 @@ public class SparqlExtractionTest {
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
 		logger.setLevel(Level.INFO);		
+		Logger.getLogger(SparqlQuery.class).setLevel(Level.DEBUG);
 		
 		// String test2 = "http://www.extraction.org/config#dbpediatest";
 		// String test = "http://www.extraction.org/config#localjoseki";
 		try {
 			// URI u = new URI(test);
-			int recursionDepth=3;
+			int recursionDepth=2;
 			Manager m = new Manager();
 			Configuration conf = new Configuration (
 					new SparqlTupelAquisitorImproved(SparqlQueryMaker.getAllowYAGOFilter(),

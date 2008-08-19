@@ -222,10 +222,11 @@ public class WikipediaCategoryCleaner {
 		LearnSPARQLConfiguration lsc = new LearnSPARQLConfiguration();
 		lsc.sparqlEndpoint = sparqlTasks.getSparqlEndpoint();
 
+		lsc.recursiondepth = 1;
 		lsc.noisePercentage = 15;
 		lsc.guaranteeXgoodDescriptions = 200;
 		lsc.maxExecutionTimeInSeconds = 50;
-		lsc.logLevel = "INFO";
+		lsc.logLevel = "TRACE";
 		// lsc.searchTreeFile = "log/WikipediaCleaner.txt";
 
 		return lsc;

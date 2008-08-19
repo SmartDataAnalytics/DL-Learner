@@ -21,6 +21,7 @@ package org.dllearner.kb.aquisitors;
 
 import java.net.URI;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
@@ -47,14 +48,20 @@ public abstract class TupelAquisitor {
 
 	public final SortedSet<RDFNodeTuple> getTupelForResource(String uri){
 		checkURIforValidity(uri);
-		if (mode == NORMAL) {
-			return retrieveTupel(uri);
-		} else if(mode == CLASSES_FOR_INSTANCES){
-			return retrieveClassesForInstances(uri);
-		}else if(mode == CLASS_INFORMATION){
-			return retrieveTuplesForClassesOnly(uri);
-		}else{
-		      throw new RuntimeException("undefined mode in aquisitor");
+		try{
+			if (mode == NORMAL) {
+				return retrieveTupel(uri);
+			} else if(mode == CLASSES_FOR_INSTANCES){
+				return retrieveClassesForInstances(uri);
+			}else if(mode == CLASS_INFORMATION){
+				return retrieveTuplesForClassesOnly(uri);
+			}else{
+			      throw new RuntimeException("undefined mode in aquisitor");
+			}
+		}catch(Exception e){
+			logger.warn("caught exception in tupleaquisitor, ignoring it"+e.toString());
+			return new TreeSet<RDFNodeTuple>();
+			
 		}
 	}
 	public abstract SortedSet<RDFNodeTuple> retrieveTupel(String uri);
