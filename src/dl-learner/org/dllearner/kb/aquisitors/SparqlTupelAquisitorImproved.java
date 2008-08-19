@@ -70,11 +70,7 @@ public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
 		@SuppressWarnings("unchecked")
 		List<ResultBinding> l = ResultSetFormatter.toList(rsw);
 		rsw.reset();
-		int count = 0;
-
-		for (ResultBinding binding : l) {
-			count++;
-		}
+		
 		
 		
 		int resultsetcount = 0;
@@ -95,14 +91,14 @@ public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
 				}else if (tmpOBJURI.isLiteral()) {
 					tmptuple =  new RDFNodeTuple(tmpPREDURI, tmpOBJURI );
 					add(nextOBJ.toString(), tmptuple);
-					logger.trace(tmptuple);
-					logger.trace("For: "+nextOBJ.toString()+ " added :"+resources.get(nextOBJ.toString()));
+					//logger.trace(tmptuple);
+					//logger.trace("For: "+nextOBJ.toString()+ " added :"+resources.get(nextOBJ.toString()));
 					cont=false;
 				}else {
 					tmptuple =  new RDFNodeTuple(tmpPREDURI, tmpOBJURI );
 					add(nextOBJ.toString(), tmptuple);
-					logger.trace(tmptuple);
-					logger.trace("For: "+nextOBJ.toString()+ " added :"+resources.get(nextOBJ.toString()));
+					//logger.trace(tmptuple);
+					//logger.trace("For: "+nextOBJ.toString()+ " added :"+resources.get(nextOBJ.toString()));
 					nextOBJ = tmpOBJURI;
 					cont = true;
 				}
@@ -112,7 +108,7 @@ public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
 		}
 		
 		//System.out.println("original count "+count);
-		logger.warn("SparqlTupelAquisitor retrieved : "+resultsetcount);
+		//logger.warn("SparqlTupelAquisitor retrieved : "+resultsetcount);
 		if(resultsetcount>999) {
 			logger.warn("SparqlTupelAquisitor retrieved more than 1000 results, there might some be missing");
 		}
