@@ -45,11 +45,16 @@ public class LinkedDataTupelAquisitor extends TupelAquisitor {
 
 	// standard query get a tupels (p,o) for subject s
 	@Override
-	public SortedSet<RDFNodeTuple> getTupelForResource(String uri) {
-		
+	public SortedSet<RDFNodeTuple> retrieveTupel(String uri){
 		throw new RuntimeException("Not Implemented yet");
-		
-		
+	}
+	@Override
+	public SortedSet<RDFNodeTuple> retrieveClassesForInstances(String uri){
+		throw new RuntimeException("Not Implemented yet");
+	}
+	@Override
+	public SortedSet<RDFNodeTuple> retrieveTuplesForClassesOnly(String uri){
+		throw new RuntimeException("Not Implemented yet");
 	}
 	
 	

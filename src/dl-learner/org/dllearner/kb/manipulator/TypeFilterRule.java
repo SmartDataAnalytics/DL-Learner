@@ -22,21 +22,24 @@ package org.dllearner.kb.manipulator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 
 public class TypeFilterRule extends Rule{
 	
+	public static Logger logger = Logger.getLogger(TypeFilterRule.class);
+	
 	String predicateFilter;
 	String objectFilter;
-	String canonicalClassName;
+	String classCanonicalName;
 
 
-	public TypeFilterRule(Months month, String predicateFilter, String objectFilter, String canonicalClassName) {
+	public TypeFilterRule(Months month, String predicateFilter, String objectFilter, Class<? extends Node> clazz) {
 		super(month);
 		this.predicateFilter = predicateFilter;
 		this.objectFilter = objectFilter;
-		this.canonicalClassName = canonicalClassName;
+		this.classCanonicalName = clazz.getCanonicalName();
 	}
 	
 
@@ -45,12 +48,20 @@ public class TypeFilterRule extends Rule{
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
 		SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
 		for (RDFNodeTuple tuple : tuples) {
+			String a = tuple.a.toString();
+			String b = tuple.b.toString();
+			//System.out.println(a+b);
 			boolean remove = (tuple.aPartContains(predicateFilter) &&
-					tuple.bPartContains(objectFilter) &&
-					subject.getClass().getCanonicalName().equals(canonicalClassName));
+					tuple.bPartContains(objectFilter) && 
+					// QUALITY this might be dead wrong
+					(classCanonicalName.equalsIgnoreCase(subject.getClass().getCanonicalName())) 
+					);
 			if(!remove){
 				keep.add(tuple);
+			}else{
+				logger.warn("Removed: "+subject+"::"+tuple);
 			}
+			
 		}
 		return  keep;
 	}

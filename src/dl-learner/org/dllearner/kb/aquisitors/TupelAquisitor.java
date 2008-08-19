@@ -38,19 +38,40 @@ public abstract class TupelAquisitor {
 	
 
 	private static Logger logger = Logger.getLogger(TupelAquisitor.class);
+	protected final int NORMAL = 0;
+	protected final int CLASSES_FOR_INSTANCES = 1;
+	protected final int CLASS_INFORMATION = 2;
 	
-	protected boolean classMode = false;
+	protected int mode = 0;
 	private boolean uriDebugCheck = true;
 
-	public abstract SortedSet<RDFNodeTuple> getTupelForResource(String uri);
+	public final SortedSet<RDFNodeTuple> getTupelForResource(String uri){
+		checkURIforValidity(uri);
+		if (mode == NORMAL) {
+			return retrieveTupel(uri);
+		} else if(mode == CLASSES_FOR_INSTANCES){
+			return retrieveClassesForInstances(uri);
+		}else if(mode == CLASS_INFORMATION){
+			return retrieveTuplesForClassesOnly(uri);
+		}else{
+		      throw new RuntimeException("undefined mode in aquisitor");
+		}
+	}
+	public abstract SortedSet<RDFNodeTuple> retrieveTupel(String uri);
+	public abstract SortedSet<RDFNodeTuple> retrieveClassesForInstances(String uri);
+	public abstract SortedSet<RDFNodeTuple> retrieveTuplesForClassesOnly(String uri);
 	
-	public void setClassMode(boolean classMode) {
-		this.classMode = classMode;
-	}
+	/*private void setMode(int mode) {
+		this.mode = mode;
+	}*/
 
-	public boolean isClassMode() {
-		return classMode;
+	public int getMode() {
+		return mode;
 	}
+	
+	public void setNextTaskToNormal(){mode = NORMAL;}
+	public void setNextTaskToClassesForInstances(){mode = CLASSES_FOR_INSTANCES;}
+	public void setNextTaskToClassInformation(){mode = CLASS_INFORMATION;}
 	
 	protected boolean checkURIforValidity(String uri){
 		if(uriDebugCheck) return true;

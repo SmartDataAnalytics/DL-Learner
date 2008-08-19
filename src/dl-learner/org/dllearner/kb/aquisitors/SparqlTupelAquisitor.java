@@ -34,8 +34,11 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
  */
 public class SparqlTupelAquisitor extends TupelAquisitor {
 	
+	
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(SparqlTupelAquisitor.class);
+	protected static final String PREDICATE = "predicate";
+	protected static final String OBJECT = "object";
 	
 	protected SparqlQueryMaker sparqlQueryMaker;
 	protected SPARQLTasks sparqlTasks;
@@ -48,25 +51,23 @@ public class SparqlTupelAquisitor extends TupelAquisitor {
 		this.sparqlTasks = sparqlTasks;
 	}
 	
-
-	// standard query get a tupels (p,o) for subject s
 	@Override
-	public SortedSet<RDFNodeTuple> getTupelForResource(String uri) {
-		checkURIforValidity(uri);
-		
-		String pred = "predicate";
-		String obj = "object";
-		String sparqlQueryString = "";
+	public SortedSet<RDFNodeTuple> retrieveTupel(String uri){
 		// getQuery
-		if (classMode) {
-			 sparqlQueryString = sparqlQueryMaker.makeClassQueryUsingFilters(uri);
-		}else {
-			sparqlQueryString = sparqlQueryMaker.makeSubjectQueryUsingFilters(uri);
-		}
+		String sparqlQueryString = sparqlQueryMaker.makeSubjectQueryUsingFilters(uri);
+		return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, PREDICATE, OBJECT);
 		
+	}
+	@Override
+	public SortedSet<RDFNodeTuple> retrieveClassesForInstances(String uri){
+		// getQuery
+		String sparqlQueryString = sparqlQueryMaker.makeClassQueryUsingFilters(uri);
+		return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, PREDICATE, OBJECT);
 		
-		return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, pred, obj);
-
+	}
+	@Override
+	public SortedSet<RDFNodeTuple> retrieveTuplesForClassesOnly(String uri){
+		return retrieveTupel(uri);
 	}
 
 	

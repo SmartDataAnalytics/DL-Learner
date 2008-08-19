@@ -26,7 +26,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.kb.aquisitors.SparqlTupelAquisitor;
+import org.dllearner.kb.aquisitors.SparqlTupelAquisitorImproved;
 import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
 import org.dllearner.kb.manipulator.Manipulator;
@@ -34,6 +34,7 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.scripts.NT2RDF;
 import org.dllearner.utilities.JamonMonitorLogger;
+import org.dllearner.utilities.statistics.SimpleClock;
 
 /**
  * Test class, uses the whole thing
@@ -55,17 +56,19 @@ public class SparqlExtractionTest {
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.TRACE);		
+		logger.setLevel(Level.INFO);		
 		
 		// String test2 = "http://www.extraction.org/config#dbpediatest";
 		// String test = "http://www.extraction.org/config#localjoseki";
 		try {
 			// URI u = new URI(test);
+			int recursionDepth=3;
 			Manager m = new Manager();
 			Configuration conf = new Configuration (
-					new SparqlTupelAquisitor(SparqlQueryMaker.getTestFilter(), SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA")),
+					new SparqlTupelAquisitorImproved(SparqlQueryMaker.getAllowYAGOFilter(),
+							SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA"),recursionDepth),
 					Manipulator.getDefaultManipulator(), 
-					1,
+					recursionDepth,
 					true,
 					true,
 					200
@@ -79,6 +82,7 @@ public class SparqlExtractionTest {
 			fw.write(m.extract(u2));
 			fw.flush();
 			fw.close();
+			
 			NT2RDF.convertNT2RDF(filename);
 			
 			JamonMonitorLogger.printAllSortedByLabel();

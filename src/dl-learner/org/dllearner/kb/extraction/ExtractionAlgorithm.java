@@ -70,6 +70,7 @@ public class ExtractionAlgorithm {
 	public Node expandNode(String uri, TupelAquisitor tupelAquisitor) {
 
 		SimpleClock sc = new SimpleClock();
+		tupelAquisitor.setNextTaskToNormal();
 		
 		Node seedNode = getFirstNode(uri);
 		List<Node> newNodes = new ArrayList<Node>();
@@ -131,7 +132,7 @@ public class ExtractionAlgorithm {
 		
 		//TODO LinkedData incompatibility
 		
-		tupelAquisitor.setClassMode(true);
+		tupelAquisitor.setNextTaskToClassesForInstances();
 		if (configuration.isCloseAfterRecursion()) {
 			while (!instances.isEmpty()) {
 				logger.trace("Getting classes for remaining instances: "
@@ -144,12 +145,11 @@ public class ExtractionAlgorithm {
 				}//endif
 			}//endwhile
 		}//endif
-		tupelAquisitor.setClassMode(false);
 		
 		
-		
+		tupelAquisitor.setNextTaskToClassInformation();
 		int i = 0;
-		while (!classes.isEmpty()) {
+		while (!classes.isEmpty() && false) {
 			logger.trace("Remaining classes: " + classes.size());
 			Node next = classes.remove(0);
 			if (!alreadyQueriedSuperClasses.contains(next.getURI().toString())) {

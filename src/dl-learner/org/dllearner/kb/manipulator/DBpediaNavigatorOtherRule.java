@@ -51,7 +51,6 @@ public class DBpediaNavigatorOtherRule extends Rule{
 				typeTuple = tuple;
 			}
 			
-			//TODO this doesn't work, because it is unclear what toString() method returns
 			
 			if (tuple.a.toString().equals("http://www.w3.org/2003/01/geo/wgs84_pos#lat") && tuple.b.isLiteral()){
 				lat = ((Literal) tuple.b).getFloat();
