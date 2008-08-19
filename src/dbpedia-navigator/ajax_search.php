@@ -4,13 +4,7 @@
 	$label=$_POST['label'];
 	$list=$_POST['list'];
 	$number=$_POST['number'];
-	session_start();	
-	$id=$_SESSION['id'];
-	$ksID=$_SESSION['ksID'];
-	session_write_close();
-	
-	setRunning($id,"true");
-	
+		
 	//get parts of the list
 	$checkedInstances=preg_split("[,]",$list,-1,PREG_SPLIT_NO_EMPTY);
 	

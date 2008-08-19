@@ -47,9 +47,15 @@
 			// goal: display the data in a nice (DBpedia specific way), maybe similar to
 			// dbpedia.org/search
 			
+			//BUILD ARTICLE TITLE
+			if (strlen($triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'])>0)
+				$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
+			else
+				$artTitle=urldecode(str_replace("_"," ",substr (strrchr ($url, "/"), 1)));
+			
 			// display a picture if there is one
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
-				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="Picture of '.$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'].'" style="float:right; max-width:200px;" \>';
+				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="Picture of '.$artTitle.'" style="float:right; max-width:200px;" \>';
 			
 			//display where it was redirected from, if it was redirected
 			$redirect="";
@@ -104,8 +110,37 @@
 				$long="";
 			}
 			
-			//BUILD ARTICLE TITLE
-			$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
+			//display only one birthdate
+			$birthdates=array("http://dbpedia.org/property/dateOfBirth","http://dbpedia.org/property/birth");
+			$date=false;
+			foreach ($birthdates as $dates){
+				if ($date) unset($triples[$dates]); 
+				if (isset($triples[$dates])&&!$date) $date=true;
+			}
+			
+			//display foreign wiki pages
+			$languages=array('Deutsch'=>'http://dbpedia.org/property/wikipage-de'
+							,'Espa%C3%B1ol'=>'http://dbpedia.org/property/wikipage-es'
+							,'suomi'=>'http://dbpedia.org/property/wikipage-fi'
+							,'Fran%C3%A7ais'=>'http://dbpedia.org/property/wikipage-fr'
+							,'Italiano'=>'http://dbpedia.org/property/wikipage-it'
+							,'%E6%97%A5%E6%9C%AC%E8%AA%9E'=>'http://dbpedia.org/property/wikipage-ja'
+							,'Nederlands'=>'http://dbpedia.org/property/wikipage-nl'
+							,'%E2%80%AANorsk (bokm%C3%A5l)'=>'http://dbpedia.org/property/wikipage-no'
+							,'Polski'=>'http://dbpedia.org/property/wikipage-pl'
+							,'Portugu%C3%AAs'=>'http://dbpedia.org/property/wikipage-pt'
+							,'%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9'=>'http://dbpedia.org/property/wikipage-ru'
+							,'Svenska'=>'http://dbpedia.org/property/wikipage-sv'
+							,'%E4%B8%AD%E6%96%87'=>'http://dbpedia.org/property/wikipage-zh');
+			
+			$pages="";
+			foreach ($languages as $key=>$value){
+				if (isset($triples[$value])){
+					$pages.='<tr><td>'.urldecode($key).': </td><td><a href="'.$triples[$value][0]['value'].'" target="_blank">'.urldecode($triples[$value][0]['value']).'</a></td></tr>';
+					unset($triples[$value]);
+				}				
+			}
+			if (strlen($pages)>0) $content.='<br/><hr><h4>Wikipedia articles in different languages</h4><br/><table border="0">'.$pages.'</table>';
 			
 			// filter out uninteresting properties and properties which
 			// have already been displayed
@@ -121,11 +156,21 @@
 			unset($triples['http://www.w3.org/2004/02/skos/core#subject']);
 			unset($triples['http://www.w3.org/2000/01/rdf-schema#label']);
 			unset($triples['http://www.w3.org/2000/01/rdf-schema#comment']);
+			unset($triples['http://dbpedia.org/property/latSec']);
+			unset($triples['http://dbpedia.org/property/lonSec']);
+			unset($triples['http://dbpedia.org/property/lonDeg']);
+			unset($triples['http://dbpedia.org/property/latMin']);
+			unset($triples['http://dbpedia.org/property/lonMin']);
+			unset($triples['http://dbpedia.org/property/latDeg']);
+			unset($triples['http://dbpedia.org/property/lonMin']);
 			
-			$content.='<br/><hr><h4>Remaining Triples</h4><br/>';
 			
-			// display the remaining properties as list which can be used for further navigation
-			$content .= get_triple_table($triples);
+			if (count($triples)>0){
+				$content.='<br/><hr><h4>Remaining Triples</h4><br/>';
+				
+				// display the remaining properties as list which can be used for further navigation
+				$content .= get_triple_table($triples);
+			}
 			
 			//Restart the Session
 			session_start();

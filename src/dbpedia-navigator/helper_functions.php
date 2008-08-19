@@ -68,8 +68,64 @@ function getResultsTable($names,$labels,$classes,$number)
 		{
 			$name=$names[$i*25+$j];
 			$label=$labels[$i*25+$j];
+			if (strlen($label)==0) $label=urldecode(str_replace("_"," ",substr (strrchr ($name, "/"), 1)));
 			$class=$classes[$i*25+$j];
-			$ret.='<p style="display:'.$display.'">&nbsp;&nbsp;&nbsp;&nbsp;'.($i*25+$j+1).'.&nbsp;<a href="" class="'.$class.'" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.$label.'</a></p>';
+			$ret.='<p style="display:'.$display.'">&nbsp;&nbsp;&nbsp;&nbsp;'.($i*25+$j+1).'.&nbsp;<a href="" class="'.$class.'" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.utf8_to_html($label).'</a></p>';
+		}
+		$i++;
+		$display="none";
+	}
+	$ret.='<input type="hidden" id="hidden_class" value="all"/><input type="hidden" id="hidden_number" value="0"/></div><br/><p style="width:100%;text-align:center;" id="sitenumbers">';
+	for ($k=0;$k<$i;$k++){
+		$ret.="<span>";
+		if ($k!=0) $ret.=" | ";
+		$ret.="<a href=\"#\" onclick=\"document.getElementById('hidden_number').value='".(25*$k)."';show_results(document.getElementById('hidden_class').value,".(25*$k).");\"";
+		if ($k==0) $ret.=" style=\"text-decoration:none;\"";
+		else $ret.=" style=\"text-decoration:underline;\"";
+		$ret.=">".($k+1)."</a>";
+		$ret.="</span>";
+	}
+	$ret.="</p>";
+	return $ret;
+}
+
+function utf8_to_html($string)
+{
+	$string=str_replace("u00C4","&Auml;",$string);
+	$string=str_replace("u00D6","&Ouml;",$string);
+	$string=str_replace("u00DC","&Uuml;",$string);
+	$string=str_replace("u00E4","&auml;",$string);
+	$string=str_replace("u00F6","&ouml;",$string);
+	$string=str_replace("u00FC","&uuml;",$string);
+	$string=str_replace("u0161","&scaron;",$string);
+	
+	return $string;
+}
+
+function getCategoryResultsTable($names,$labels,$category,$catlabel,$number)
+{
+	$ret="<p>These are your Searchresults. Show best ";
+	for ($k=10;$k<125;){
+		$ret.="<a href=\"#\" onclick=\"getSubjectsFromCategory('category=".$category."&label=".$catlabel."&number=".$k."');return false;\"";
+		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
+		else $ret.=" style=\"text-decoration:underline;\"";
+		$ret.=">".($k)."</a>";
+		if ($k!=100) $ret.=" | ";
+		if($k==10) $k=25;
+		else $k=$k+25;
+	}
+	$ret.="</p><br/>";
+	$i=0;
+	$display="block";
+	$ret.="<div id=\"results\">";
+	while($i*25<count($names))
+	{
+		for ($j=0;($j<25)&&(($i*25+$j)<count($names));$j++)
+		{
+			$name=$names[$i*25+$j];
+			$label=$labels[$i*25+$j];
+			if (strlen($label)==0) $label=urldecode(str_replace("_"," ",substr (strrchr ($name, "/"), 1)));
+			$ret.='<p style="display:'.$display.'">&nbsp;&nbsp;&nbsp;&nbsp;'.($i*25+$j+1).'.&nbsp;<a class="all" href="" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.utf8_to_html($label).'</a></p>';
 		}
 		$i++;
 		$display="none";
@@ -95,7 +151,8 @@ function getBestSearches($names,$labels)
 	{
 		$name=$names[$j];
 		$label=$labels[$j];
-		$ret.='&nbsp;'.($j+1).'.&nbsp;<a href="" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.$label.'</a><br/>';
+		if (strlen($label)==0) $label=urldecode(str_replace("_"," ",substr (strrchr ($name, "/"), 1)));
+		$ret.='&nbsp;'.($j+1).'.&nbsp;<a href="" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.utf8_to_html($label).'</a><br/>';
 	}
 	$ret.="</div>";
 	return $ret;
@@ -117,17 +174,17 @@ function setRunning($id,$running)
 
 function get_triple_table($triples) {
 
-	$table = '<table border="0"><tr><td>predicate</td><td>object</td></tr>';
+	$table = '<table border="0"><tr><td><b>Predicate</b></td><td><b>Object</b></td></tr>';
 	$i=1;
 	foreach($triples as $predicate=>$object) {
 		if ($i>0) $backgroundcolor="eee";
 		else $backgroundcolor="ffffff";
-		$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'">'.nicePredicate($predicate).'</a></td>';
+		$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">'.nicePredicate($predicate).'</a></td>';
 		$table .= '<td><ul>';
 		foreach($object as $element) {
 			if ($element['type']=="uri"){
-				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4) $table .= '<li><a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.$element['value'].'</a></li>';
-				else $table .= '<li><a href="'.$element['value'].'" target="_blank">'.$element['value'].'</a></li>';
+				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4) $table .= '<li><a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($element['value']).'</a></li>';
+				else $table .= '<li><a href="'.$element['value'].'" target="_blank">'.urldecode($element['value']).'</a></li>';
 			}
 			else $table .= '<li>'.$element['value'].'</li>';
 		}
@@ -161,32 +218,41 @@ function nicePredicate($predicate)
 		case "http://www.w3.org/2003/01/geo/wgs84_pos":	$namespace="geo";
 													 	break;
 		case "http://www.w3.org/2004/02/skos/core":		$namespace="skos";
+													 	break;
+		case "http://www.georss.org/georss/point":		$namespace="georss";
 													 	break;	
 	}
 	
-	return $namespace.':'.$name;
+	//fläche has strange url
+	$name=str_replace('fl_percent_C3_percent_A4che','fl%C3%A4che',$name);
+	return $namespace.':'.urldecode($name);
 }
 
 function formatClassArray($ar) {
-	if ($ar[0]['value']!="http://xmlns.com/foaf/0.1/Person") $string = formatClass($ar[0]['value']);
-	for($i=1; $i<count($ar); $i++) {
-		if ($ar[0]['value']!="http://xmlns.com/foaf/0.1/Person"||$i>1) $string .= ', ' . formatClass($ar[$i]['value']);
-		else $string .= formatClass($ar[$i]['value']);
+	mysql_connect('localhost','navigator','dbpedia');
+	mysql_select_db("navigator_db");
+	$string="";
+	for($i=0; $i<count($ar); $i++) {
+		$query="SELECT label FROM categories WHERE category='".$ar[$i]['value']."' LIMIT 1";
+		$res=mysql_query($query);
+		$result=mysql_fetch_array($res);
+		if ($ar[$i]['value']!="http://xmlns.com/foaf/0.1/Person"&&strlen($string)>0) $string .= ', ' . formatClass($ar[$i]['value'],$result['label']);
+		else if ($ar[$i]['value']!="http://xmlns.com/foaf/0.1/Person"&&strlen($string)==0) $string .= formatClass($ar[$i]['value'],$result['label']);
 	}
 	return $string;
 }
 
 // format a class nicely, i.e. link to it and possibly display
 // it in a better way
-function formatClass($className) {
+function formatClass($className,$label) {
 	$yagoPrefix = 'http://dbpedia.org/class/yago/';
 	if(substr($className,0,30)==$yagoPrefix) {
-		return '<a href="'.$className.'">'.substr($className,30).'</a>';	
+		return '<a href="#" onclick="getSubjectsFromCategory(\'category='.$className.'&label='.$label.'&number=10\');">'.$label.'</a>';	
 	// DBpedia is Linked Data, so it makes always sense to link it
 	// ToDo: instead of linking to other pages, the resource should better
 	// be openened within DBpedia Navigator
 	} else if(substr($className,0,14)=='http://dbpedia') {
-		return '<a href="'.$className.'">'.$className.'</a>';
+		return '<a href="'.$className.'" target="_blank">'.$className.'</a>';
 	} else {
 		return $className;
 	}

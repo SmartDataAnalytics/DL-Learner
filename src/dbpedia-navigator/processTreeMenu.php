@@ -17,7 +17,7 @@ print("<tree id='".$url_var."'>");
 		foreach ($categories as $category){
 			if ($category['subclasses']=="0") $child=0;
 			else $child=1;
-			print("<item child=\"".$child."\" id=\"".$category['value']."\" text=\"".$category['label']."\"><userdata name=\"myurl\">".$category['value']."</userdata></item>");
+			print("<item child=\"".$child."\" id=\"".$category['value']."\" text=\"".$category['label']."\"><userdata name=\"myurl\">".$category['value']."</userdata><userdata name=\"mylabel\">".$category['label']."</userdata></item>");
 		}
 	}
 print("</tree>");
