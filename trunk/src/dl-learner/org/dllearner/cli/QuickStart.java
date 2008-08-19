@@ -39,7 +39,7 @@ import java.util.Iterator;
  */
 public class QuickStart {
 
-	static HashMap<String, ArrayList<String>> hm = null;
+//	static HashMap<String, ArrayList<String>> hm = null;
 	static String pm = ".";// pathmodifier
 
 	public static void main(String[] args) {
@@ -50,10 +50,10 @@ public class QuickStart {
 		ArrayList<String> finalSelection = new ArrayList<String>();
 		finalSelection.add("na");
 
-		hm = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> hm = new HashMap<String, ArrayList<String>>();
 		String path = pm + File.separator + "examples";
 		File f = new File(path);
-		getAllConfs(f, path);
+		getAllConfs(f, path, hm);
 
 		// System.out.println(hm.size());
 		Iterator<String> i = hm.keySet().iterator();
@@ -148,7 +148,7 @@ public class QuickStart {
 		// System.out.println(f.isDirectory()+f.getAbsolutePath());
 	}
 
-	public static void getAllConfs(File f, String path) {
+	public static void getAllConfs(File f, String path, HashMap<String, ArrayList<String>> confs) {
 		path = path + File.separator;
 		// System.out.println(path);
 		String[] act = f.list();
@@ -157,13 +157,13 @@ public class QuickStart {
 
 			if (new File(path + act[i]).isDirectory()) {
 
-				getAllConfs(new File(path + act[i]), path + act[i]);
+				getAllConfs(new File(path + act[i]), path + act[i], confs);
 				// al.add(new File(act[i]));
 			} else if (act[i].endsWith(".conf")) {
-				if (hm.get(path) == null) {
-					hm.put(path, new ArrayList<String>());
+				if (confs.get(path) == null) {
+					confs.put(path, new ArrayList<String>());
 				}
-				hm.get(path).add(act[i].substring(0, act[i].length() - 5));
+				confs.get(path).add(act[i].substring(0, act[i].length() - 5));
 				// System.out.println(act[i].substring(0,act[i].length()-5));
 				// System.out.println(hm.get(path).size());
 				// hm.put(new
