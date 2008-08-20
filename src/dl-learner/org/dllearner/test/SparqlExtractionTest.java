@@ -35,7 +35,6 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
 import org.dllearner.scripts.NT2RDF;
 import org.dllearner.utilities.JamonMonitorLogger;
-import org.dllearner.utilities.statistics.SimpleClock;
 
 /**
  * Test class, uses the whole thing

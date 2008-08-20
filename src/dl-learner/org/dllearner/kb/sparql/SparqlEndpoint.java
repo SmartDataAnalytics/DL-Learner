@@ -52,6 +52,13 @@ public class SparqlEndpoint {
 	public URL getURL() {
 		return this.url;
 	}
+	
+	public String getHTTPRequest() {
+		String ret = this.url.toString()+"/sparql?";
+		ret += (defaultGraphURIs.isEmpty())?"":"default-graph-uri="+defaultGraphURIs.remove(0)+"&";
+		ret += "query="; 
+		return ret;
+	}
 
 	public List<String> getDefaultGraphURIs() {
 		return defaultGraphURIs;

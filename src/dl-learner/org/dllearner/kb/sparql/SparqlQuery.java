@@ -88,8 +88,9 @@ public class SparqlQuery {
 		String service = sparqlEndpoint.getURL().toString();
 		
 		writeToSparqlLog("***********\nNew Query:");
+		SparqlQuery.writeToSparqlLog("wget -S -O - '\n"+sparqlEndpoint.getHTTPRequest());
 		writeToSparqlLog(sparqlQueryString);
-		writeToSparqlLog(service);
+		
 
 	
 		logger.trace("making queryExecution Object");
@@ -127,15 +128,12 @@ public class SparqlQuery {
 			logger.warn("Exception in SparqlQuery\n"+ e.toString());
 			logger.warn("query was "+ sparqlQueryString);
 			writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
-			writeToSparqlLog("ERROR: query was: "+sparqlQueryString);
 			throw e;
 			
 		}catch (RuntimeException e) {
 			//if (!(e instanceof HTTPException)) {
 				logger.warn("RuntimeException in SparqlQuery"+ e.toString());
 				writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
-				writeToSparqlLog("ERROR: query was: "+sparqlQueryString);
-				writeToSparqlLog("wget -S -O test.txt '"+service+"?query="+sparqlQueryString+"'");
 			//}
 			throw e;
 		}

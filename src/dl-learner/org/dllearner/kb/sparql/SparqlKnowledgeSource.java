@@ -51,6 +51,9 @@ import org.dllearner.kb.aquisitors.TupelAquisitor;
 import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
 import org.dllearner.kb.manipulator.Manipulator;
+import org.dllearner.kb.manipulator.ObjectReplacementRule;
+import org.dllearner.kb.manipulator.PredicateReplacementRule;
+import org.dllearner.kb.manipulator.Rule.Months;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
@@ -78,7 +81,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private int recursionDepth = recursionDepthDefault;
 	private String predefinedFilter = null;
 	private String predefinedEndpoint = null;
-	private String predefinedManipulator = "STANDARD";
+	private String predefinedManipulator = null;
 	private SortedSet<String> predList = new TreeSet<String>();
 	private SortedSet<String> objList = new TreeSet<String>();
 	// private Set<String> classList;
@@ -279,7 +282,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		Manager m = new Manager();
 		
 		// get Options for Manipulator
-		Manipulator manipulator = Manipulator.getManipulatorByName(predefinedManipulator);
+		Manipulator manipulator = getManipulator();
 		//manipulator.addRule(newRule);
 		Configuration configuration = new Configuration(
 				getTupelAquisitor(), 
@@ -403,6 +406,25 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		} else {
 			
 			return SparqlQueryMaker.getSparqlQueryMakerByName (predefinedFilter);
+		}
+		
+	}
+	
+	public Manipulator getManipulator()
+	{
+		// get Options for Filters
+		if (predefinedManipulator == null) {
+			return  Manipulator.getManipulatorByName(predefinedManipulator);
+
+		} else {
+			Manipulator m = Manipulator.getDefaultManipulator();
+			for (StringTuple st : replacePredicate) {
+				m.addRule(new PredicateReplacementRule(Months.MAY, st.a,st.b));
+			}
+			for (StringTuple st : replaceObject) {
+				m.addRule(new ObjectReplacementRule(Months.MAY, st.a,st.b));
+			}
+			return m;
 		}
 		
 	}
