@@ -40,6 +40,7 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  */
 public class Manipulator {
 	
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(Manipulator.class);
 	private List<Rule> rules = new ArrayList<Rule>();
 	
@@ -70,11 +71,13 @@ public class Manipulator {
 	
 	
 	public static Manipulator getManipulatorByName(String predefinedManipulator)
-	{
-		if (predefinedManipulator.equalsIgnoreCase("DBPEDIA-NAVIGATOR")) {
+	{   if (predefinedManipulator == null) {
+			return getDefaultManipulator();
+		}else if (predefinedManipulator.equalsIgnoreCase("DBPEDIA-NAVIGATOR")) {
 			return getDBpediaNavigatorManipulator();
 
-		} else if(predefinedManipulator.equalsIgnoreCase("DEFAULT")){
+		} else if(predefinedManipulator.equalsIgnoreCase("DEFAULT")
+				||predefinedManipulator.equalsIgnoreCase("STANDARD")){
 			return getDefaultManipulator();
 		}
 		else {
@@ -121,6 +124,7 @@ public class Manipulator {
 		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS,ClassNode.class )) ;
 		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING,InstanceNode.class )) ;
 		addRule(new TypeFilterRule(month, "", OWLVocabulary.OWL_CLASS, ClassNode.class) ) ;
+		addRule(new TypeFilterRule(month, "", OWLVocabulary.RDFS_CLASS, ClassNode.class) ) ;
 	
 	}
 	

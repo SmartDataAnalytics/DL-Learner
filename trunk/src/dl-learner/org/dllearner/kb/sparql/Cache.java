@@ -261,8 +261,9 @@ public class Cache implements Serializable {
 			
 		    	query.setRunning(false);
 			SparqlQuery.writeToSparqlLog("***********\nJSON retrieved from cache");
+			SparqlQuery.writeToSparqlLog("wget -S -O - '\n"+query.getSparqlEndpoint().getHTTPRequest());
 			SparqlQuery.writeToSparqlLog(query.getSparqlQueryString());
-			SparqlQuery.writeToSparqlLog(query.getSparqlEndpoint().getURL().toString());
+			
 			//SparqlQuery.writeToSparqlLog("JSON: "+result);
 			JamonMonitorLogger.increaseCount(Cache.class, "SuccessfulHits");
 			
@@ -280,7 +281,7 @@ public class Cache implements Serializable {
 				json="";
 				result="";
 				logger.warn(Cache.class.getSimpleName()+"empty result: "+query.getSparqlQueryString());
-				SparqlQuery.writeToSparqlLog("empty result for : "+query.getSparqlQueryString());
+				
 			}
 			
 			//return json;
