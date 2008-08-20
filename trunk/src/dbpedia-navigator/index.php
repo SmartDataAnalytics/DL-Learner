@@ -43,9 +43,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
     <link rel="stylesheet" type="text/css" href="<?php print $path;?>treemenu/dhtmlxtree.css">
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php print $settings->googleMapsKey;?>"
       type="text/javascript"></script>
-    <script  src="<?php print $path;?>treemenu/dhtmlxcommon.js"></script>
-	<script  src="<?php print $path;?>treemenu/dhtmlxtree.js"></script>
-	<script  src="<?php print $path;?>js/ajax.js"></script>
+    <script  src="<?php print $path;?>js/ajax.js"></script>
     <script type="text/javascript">
     	function setRunning(running)
     	{
@@ -64,6 +62,51 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	        	map.addOverlay(marker);
 	      	}
     	}
+    	
+    	function show_results(class, number)
+		{
+		    var links=document.getElementById('results').getElementsByTagName('p');
+		    var j=0;
+		    var names;
+		    var hasClass;
+		    for (var i=0;i<links.length;i++){
+		    	if (class=='all'){
+		    		if ((j+1)>number&&j<(number+25)) links[i].style.display='block';
+		    		else links[i].style.display='none';
+		    		j++;
+		    	}
+		    	else{
+		    		names=links[i].getElementsByTagName('a')[0].className.split(' ');
+		    		hasClass=false;
+		    		for (var k=0;k<names.length;k++){
+		    			if (names[k]==class){
+		    				hasClass=true;
+		    				break;
+		    			}
+		    		}
+		    		if (hasClass){
+		    			if ((j+1)>number&&j<(number+25)) links[i].style.display='block';
+		    			else links[i].style.display='none';
+		    			j++;
+		    		}
+		    		else links[i].style.display='none';
+		    	}
+		    }
+		    if (j<number){
+		    	show_results(class,0);
+		    	return;
+		    }
+		    		
+		    var sitenumbers=document.getElementById('sitenumbers').getElementsByTagName('span');
+		    for (var i=0;i<sitenumbers.length;i++){
+		    	if ((parseInt(sitenumbers[i].getElementsByTagName('a')[0].innerHTML)-1)*25==number) sitenumbers[i].getElementsByTagName('a')[0].style.textDecoration='none';
+		    	else sitenumbers[i].getElementsByTagName('a')[0].style.textDecoration='underline';
+		    	if ((parseInt(sitenumbers[i].getElementsByTagName('a')[0].innerHTML)-1)*25>=j)
+		    		sitenumbers[i].style.display='none';
+		    	else 
+		    		sitenumbers[i].style.display='inline';
+		    }
+		}
   </script>
   </head>
   <body <?php print $onLoad;?>>
@@ -83,7 +126,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 			<!-- Search:<br/> -->
 			<form onsubmit="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;">
 			<input type="text" name="label" id="label"/><br/>
-			<input type="button" value="Article" class="button" onclick="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;" title="Search an article with that name."/>&nbsp;&nbsp;<input type="button" value="Search" class="button" onclick="var list=tree.getAllChecked();search_it('label='+document.getElementById('label').value+'&list='+list+'&number=10');return false;" title="Search a number of articles related to that name."/>
+			<input type="button" value="Article" class="button" onclick="get_article('label='+document.getElementById('label').value+'&cache=-1');return false;" title="Search an article with that name."/>&nbsp;&nbsp;<input type="button" value="Search" class="button" onclick="search_it('label='+document.getElementById('label').value+'&number=10');return false;" title="Search a number of articles related to that name."/>
 			<!--  &nbsp;&nbsp;&nbsp; <input type="button" value="Fulltext" class="button" onclick=""/> -->
 			</form>
 		  </div> <!-- boxcontent -->
@@ -95,32 +138,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		  <div id="searchcontent" style="display:block"></div>
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
-		
-		<div class="box" id="NavigationBox">
-		  <div class="boxtitle" style="cursor:help;" title="Navigate through the Class hierarchy and show instances of that class.">Navigate</div>
-		  <div class="boxcontent">
-		  	<div id="treeboxbox_tree" style="height:218px;overflow:auto;">
-		  	</div>
-		  </div> <!-- boxcontent -->
-		</div> <!-- box -->
-		<script>
-					tree=new dhtmlXTreeObject("treeboxbox_tree","100%","100%",0);
-					tree.setImagePath("<?php print $path;?>images/csh_bluebooks/");
-					tree.enableCheckBoxes(1);
-					tree.setOnClickHandler(doOnClick);
-					function doOnClick(nodeId){ 
-						var myUrl = tree.getUserData(nodeId,"myurl");
-						var myLabel = tree.getUserData(nodeId,"mylabel");
-						getSubjectsFromCategory('category='+myUrl+'&label='+myLabel+'&number=10');
-					}
-					function myErrorHandler(type, desc, erData){ 
-						alert('An error occured while trying to navigate through Class Tree.\nPlease try again later.'); 
-					} 
-					dhtmlxError.catchError("ALL",myErrorHandler);
-					tree.setXMLAutoLoading("processTreeMenu.php");
-					tree.loadXML("processTreeMenu.php?id=0");
-		</script>
-		
 		
 		<div class="box" id="credits">
 			<p>DBpedia Navigator is powered by ... <br />
@@ -167,6 +184,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		<div class="box" id="LastArticlesBox" style="display:none">
 		  <div class="boxtitle" style="cursor:help;" title="Up to 5 articles, that were last displayed, are shown here.">Articles Last Viewed</div>
 		  <div class="boxcontent" id="lastarticles">
+		  </div> <!-- boxcontent -->
+		</div> <!-- box -->
+		
+		<div class="box" id="LastClassesBox" style="display:none">
+		  <div class="boxtitle" style="cursor:help;" title="Up to 5 classes, that were last displayed, are shown here.">Classes Last Viewed</div>
+		  <div class="boxcontent" id="lastclasses">
 		  </div> <!-- boxcontent -->
 		</div> <!-- box -->
 
