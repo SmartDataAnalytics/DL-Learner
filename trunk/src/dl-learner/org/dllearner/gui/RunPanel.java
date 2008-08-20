@@ -25,8 +25,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Map;
+
 import javax.swing.*;
+
+import org.dllearner.core.EvaluatedDescription;
 
 /**
  * @author Tilo Hielscher
@@ -35,6 +40,7 @@ import javax.swing.*;
 public class RunPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1643304576470046636L;
+	private DecimalFormat df = new DecimalFormat();
 
 	private JButton runButton, stopButton, treeButton;
 	private JTextArea infoArea;
@@ -172,9 +178,9 @@ public class RunPanel extends JPanel implements ActionListener {
 
 		infoArea.setText("");
 		// best solutions
-		if (config.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(5) != null) {
-			infoArea.append("Best solutions: \n\n"
-					+ listToString(config.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(10)) + "\n");
+		if (config.getLearningAlgorithm().getCurrentlyBestDescriptions() != null) {
+			infoArea.append("Best class descriptions in Manchester OWL Syntax: \n\n"
+					+ getSolutionString(config.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(10)) + "\n");
 		}
 		// solution score
 		// if (config.getLearningAlgorithm().getSolutionScore() != null)
@@ -292,6 +298,17 @@ public class RunPanel extends JPanel implements ActionListener {
 		gbc.weighty = wy;
 	}
 
+	public String getSolutionString(List<EvaluatedDescription> solutions) {
+		String baseURI = config.getReasoningService().getBaseURI();
+		Map<String,String> prefixes = config.getReasoningService().getPrefixes();
+		String string = "";
+		for (EvaluatedDescription d : solutions) {
+			string += "accuracy: " + (df.format(d.getAccuracy()*100)) + "%: \t"
+					+ d.getDescription().toManchesterSyntaxString(baseURI, prefixes) + "\n";
+		}
+		return string;
+	}
+	
 	/**
 	 * Make a string from list, every entry in new line.
 	 * 
