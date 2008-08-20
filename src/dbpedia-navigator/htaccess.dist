@@ -6,4 +6,10 @@ RewriteBase /dbpedia-navigator/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^([^/]+)/([^/]+)$ index.php?$1=$2&path=../
+RewriteRule ^[^/]+/images/([^/]+)$ images/$1
+RewriteRule ^[^/]+/css/([^/]+)$ css/$1
+RewriteRule ^[^/]+/js/([^/]+)$ js/$1
+RewriteRule ^[^/]+/pear/([^/]+)$ pear/$1
+RewriteRule ^[^/]+/temp/([^/]+)$ temp/$1
+RewriteRule ^[^/]+/([^/]+\.php)$ $1
 RewriteRule !\.(js|ico|gif|jpg|png|css|php)$ index.php
