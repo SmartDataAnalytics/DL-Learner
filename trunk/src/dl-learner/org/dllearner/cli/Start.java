@@ -40,7 +40,6 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.Priority;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.RandomGuesser;
@@ -608,23 +607,22 @@ public class Start {
 
 	private static void printConclusions(ReasoningService rs, long algorithmDuration) {
 		if (rs.getNrOfRetrievals() > 0) {
-			System.out.println("number of retrievals: " + rs.getNrOfRetrievals());
-			System.out
-					.println("retrieval reasoning time: "
+			logger.info("number of retrievals: " + rs.getNrOfRetrievals());
+			logger.info("retrieval reasoning time: "
 							+ Helper.prettyPrintNanoSeconds(rs.getRetrievalReasoningTimeNs())
 							+ " ( " + Helper.prettyPrintNanoSeconds(rs.getTimePerRetrievalNs())
 							+ " per retrieval)");
 		}
 		if (rs.getNrOfInstanceChecks() > 0) {
-			System.out.println("number of instance checks: " + rs.getNrOfInstanceChecks() + " ("
+			logger.info("number of instance checks: " + rs.getNrOfInstanceChecks() + " ("
 					+ rs.getNrOfMultiInstanceChecks() + " multiple)");
-			System.out.println("instance check reasoning time: "
+			logger.info("instance check reasoning time: "
 					+ Helper.prettyPrintNanoSeconds(rs.getInstanceCheckReasoningTimeNs()) + " ( "
 					+ Helper.prettyPrintNanoSeconds(rs.getTimePerInstanceCheckNs())
 					+ " per instance check)");
 		}
 		if (rs.getNrOfSubsumptionHierarchyQueries() > 0) {
-			System.out.println("subsumption hierarchy queries: "
+			logger.info("subsumption hierarchy queries: "
 					+ rs.getNrOfSubsumptionHierarchyQueries());
 			/*
 			 * System.out.println("subsumption hierarchy reasoning time: " +
@@ -636,9 +634,9 @@ public class Start {
 			 */
 		}
 		if (rs.getNrOfSubsumptionChecks() > 0) {
-			System.out.println("(complex) subsumption checks: " + rs.getNrOfSubsumptionChecks()
+			logger.info("(complex) subsumption checks: " + rs.getNrOfSubsumptionChecks()
 					+ " (" + rs.getNrOfMultiSubsumptionChecks() + " multiple)");
-			System.out.println("subsumption reasoning time: "
+			logger.info("subsumption reasoning time: "
 					+ Helper.prettyPrintNanoSeconds(rs.getSubsumptionReasoningTimeNs()) + " ( "
 					+ Helper.prettyPrintNanoSeconds(rs.getTimePerSubsumptionCheckNs())
 					+ " per subsumption check)");
@@ -646,10 +644,10 @@ public class Start {
 		DecimalFormat df = new DecimalFormat();
 		double reasoningPercentage = 100 * rs.getOverallReasoningTimeNs()
 				/ (double) algorithmDuration;
-		System.out.println("overall reasoning time: "
+		logger.info("overall reasoning time: "
 				+ Helper.prettyPrintNanoSeconds(rs.getOverallReasoningTimeNs()) + " ("
 				+ df.format(reasoningPercentage) + "% of overall runtime)");
-		System.out.println("overall algorithm runtime: "
+		logger.info("overall algorithm runtime: "
 				+ Helper.prettyPrintNanoSeconds(algorithmDuration));
 	}
 

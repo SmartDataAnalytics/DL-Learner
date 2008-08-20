@@ -317,7 +317,9 @@ public class ROLearner extends LearningAlgorithm {
 	 */
 	@Override
 	public void init() {
-		logger.setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
+		// set log level if the option has been set
+		if(!logLevel.equals(CommonConfigOptions.logLevelDefault))		
+			logger.setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
 		
 		if(searchTreeFile == null)
 			searchTreeFile = new File(defaultSearchTreeFile);
@@ -584,9 +586,9 @@ public class ROLearner extends LearningAlgorithm {
 		printStatistics(true);
 		
 		if(stop)
-			System.out.println("Algorithm stopped.");
+			logger.info("Algorithm stopped.");
 		else
-			System.out.println("Algorithm terminated succesfully.");
+			logger.info("Algorithm terminated succesfully.");
 		
 		isRunning = false;
 	}
