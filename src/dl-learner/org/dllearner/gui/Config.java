@@ -1,5 +1,3 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,6 +17,8 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+package org.dllearner.gui;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
