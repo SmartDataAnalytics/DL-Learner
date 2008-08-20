@@ -19,6 +19,7 @@
  */
 package org.dllearner.utilities.examples;
 
+import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -26,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.utilities.datastructures.SetManipulation;
+import org.dllearner.utilities.owl.OWLVocabulary;
 
 public class AutomaticNegativeExampleFinderSPARQL {
 
@@ -40,6 +42,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	private SortedSet<String> fromRelated  = new TreeSet<String>();
 	private SortedSet<String> fromSuperclasses = new TreeSet<String>();;
 	private SortedSet<String> fromParallelClasses = new TreeSet<String>();;
+	private SortedSet<String> fromRandom = new TreeSet<String>();;
 	private SortedSet<String> fromDomain = new TreeSet<String>();;
 	private SortedSet<String> fromRange = new TreeSet<String>();;
 	
@@ -68,16 +71,20 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 	/**
 	 * aggregates all collected neg examples
+	 * CAVE: it is necessary to call one of the make functions before calling this
+	 * 
 	 * @param neglimit size of negative Example set
 	 * @param stable decides whether neg Examples are randomly picked, default false, faster for developing, since the cache can be used
 	 * @return
 	 */
 	public SortedSet<String> getNegativeExamples(int neglimit, boolean stable ) {
-
 		SortedSet<String> negatives = new TreeSet<String>();
 		negatives.addAll(fromParallelClasses);
 		negatives.addAll(fromRelated);
 		negatives.addAll(fromSuperclasses);
+		if(negatives.isEmpty()) {
+			negatives.addAll(fromRandom);
+		}
 		logger.debug("neg Example size before shrinking: " + negatives.size());
 		if (stable) {
 			negatives = SetManipulation.stableShrink(negatives,neglimit);
@@ -89,6 +96,18 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		return negatives;
 	}
 
+	
+	public void makeNegativeExamplesFromRandomInstances() {
+		logger.debug("making random examples ");
+		String variable = "subject";
+		String sparqlQueryString="SELECT ?"+variable+" WHERE {" +
+				"?"+variable+" <" +OWLVocabulary.RDF_TYPE+">" + " ?o" + 
+				"}";
+		
+		fromRandom = sparqltasks.queryAsSet(sparqlQueryString, variable);
+		fromRandom.removeAll(fullPositiveSet);
+		logger.debug("|-negExample size from related: " + fromRelated.size());
+	}
 	
 	/**
 	 * makes neg ex from related instances, that take part in a role R(pos,neg)
@@ -173,23 +192,48 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 	}
 
+	
+	
+	/**
+	 * it gets the first class of an arbitrary  instance and queries the superclasses of it,
+	 * could be more elaborate.
+	 * It is better to use makeNegativeExamplesFromSuperClasses
+	 * @param positiveSet
+	 * @param sparqlResultSetLimit
+	 */
+	public void makeNegativeExamplesFromSuperClassesOfInstances(SortedSet<String> positiveSet, 
+			int sparqlResultSetLimit) {
+		SortedSet<String> classes = new TreeSet<String>();
+		Iterator<String> instanceIter = positiveSet.iterator();
+		while(classes.isEmpty() && instanceIter.hasNext()) {
+			classes.addAll(sparqltasks.getClassesForInstance(instanceIter.next(), sparqlResultSetLimit));
+		
+		}
+		makeNegativeExamplesFromSuperClasses(classes.first(), sparqlResultSetLimit);
+	}
+	
+
+	public void makeNegativeExamplesFromSuperClasses(String concept, int sparqlResultSetLimit) {
+		makeNegativeExamplesFromSuperClasses( concept,  sparqlResultSetLimit, 2);
+	}
+	
 	/**
 	 * if pos ex derive from one class, then neg ex are taken from a superclass
 	 * @param concept
-	 * @param resultLimit
+	 * @param sparqlResultSetLimit
 	 */
-	public void makeNegativeExamplesFromSuperClasses(String concept, int resultLimit) {
+	public void makeNegativeExamplesFromSuperClasses(String concept, int sparqlResultSetLimit, int depth) {
 
 		concept = concept.replaceAll("\"", "");
 		// superClasses.add(concept.replace("\"", ""));
 		// logger.debug("before"+superClasses);
-		SortedSet<String> superClasses = sparqltasks.getSuperClasses(concept, 4);
+		SortedSet<String> superClasses = sparqltasks.getSuperClasses(concept, depth);
 		logger.debug("making neg Examples from " + superClasses.size() + " superclasses");
 
 		for (String oneSuperClass : superClasses) {
 			logger.debug(oneSuperClass);
 			fromSuperclasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\""
-					+ oneSuperClass + "\"", resultLimit));
+					+ oneSuperClass + "\"", sparqlResultSetLimit));
 
 		}
 		this.fromSuperclasses.removeAll(fullPositiveSet);
@@ -197,17 +241,17 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	}
 	
 	@SuppressWarnings("unused")
-	private void makeNegativeExamplesFromDomain(String role, int resultLimit){
+	private void makeNegativeExamplesFromDomain(String role, int sparqlResultSetLimit){
 		logger.debug("making Negative Examples from Domain of : "+role);
-		fromDomain.addAll(sparqltasks.getDomainInstances(role, resultLimit));
+		fromDomain.addAll(sparqltasks.getDomainInstances(role, sparqlResultSetLimit));
 		fromDomain.removeAll(fullPositiveSet);
 		logger.debug("|-neg Example size from Domain: "+this.fromDomain.size());
 	}
 	
 	@SuppressWarnings("unused")
-	private void makeNegativeExamplesFromRange(String role, int resultLimit){
+	private void makeNegativeExamplesFromRange(String role, int sparqlResultSetLimit){
 		logger.debug("making Negative Examples from Range of : "+role);
-		fromRange.addAll(sparqltasks.getRangeInstances(role, resultLimit));
+		fromRange.addAll(sparqltasks.getRangeInstances(role, sparqlResultSetLimit));
 		fromRange.removeAll(fullPositiveSet);
 		logger.debug("|-neg Example size from Range: "+fromRange.size());
 	}
