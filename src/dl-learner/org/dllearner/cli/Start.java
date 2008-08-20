@@ -36,8 +36,11 @@ import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.Priority;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.RandomGuesser;
@@ -118,20 +121,28 @@ public class Start {
 		if (args.length > 1 && args[0].equals("-q"))
 			inQueryMode = true;
 
-		// create logger (a simple logger which outputs
+		// create loggers (a simple logger which outputs
 		// its messages to the console and a log file)
 		
-		SimpleLayout layout = new SimpleLayout();
+		// logger 1 is the console, where we print only info messages;
+		// the logger is plain, i.e. does not output log level etc.
+		Layout layout = new PatternLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		consoleAppender.setThreshold(Level.INFO);
+		
+		// logger 2 is writes to a file; it records all debug messages
+		// and includes the log level
+		Layout layout2 = new SimpleLayout();
 		FileAppender fileAppenderNormal = null;
 		File f = new File("log/sparql.txt");
 		try {
-		    	fileAppenderNormal = new FileAppender(layout, "log/log.txt", false);
+		    	fileAppenderNormal = new FileAppender(layout2, "log/log.txt", false);
 		    	f.delete();
 		    	f.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+//		fileAppenderNormal.setThreshold(Level.DEBUG);
 		
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);

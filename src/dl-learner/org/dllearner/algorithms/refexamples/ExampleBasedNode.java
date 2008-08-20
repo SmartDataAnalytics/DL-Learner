@@ -206,6 +206,15 @@ public class ExampleBasedNode {
 		return (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
 	}
 	
+	/**
+	 * Used to detect whether one node is more accurate than another one
+	 * with calculating accuracy itself.
+	 * @return Number of covered positives minus number of covered negatives.
+	 */
+	public int getCovPosMinusCovNeg() {
+		return coveredPositives.size() - coveredNegatives.size();
+	}
+	
 	public Set<Individual> getCoveredPositives() {
 		return coveredPositives;
 	}	

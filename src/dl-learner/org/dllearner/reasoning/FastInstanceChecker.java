@@ -222,7 +222,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			}
 			
 			long dematDuration = System.currentTimeMillis() - dematStartTime;
-			logger.info("TBox dematerialised in " + dematDuration + " ms");
+			logger.debug("TBox dematerialised in " + dematDuration + " ms");
 
 		} catch (ReasoningMethodUnsupportedException e) {
 			throw new ComponentInitException(
