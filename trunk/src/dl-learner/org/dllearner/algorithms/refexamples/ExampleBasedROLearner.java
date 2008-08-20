@@ -451,7 +451,9 @@ public class ExampleBasedROLearner {
 					System.out.println("solution: " + bestNode.getConcept());
 					System.out.println("maxPosOnlyExpansion: " + maxPosOnlyExpansion);
 					System.out.println("best child of this node: " + bestChild);
-					System.out.println(bestNode.getChildConcepts());
+					if(bestNode.getChildConcepts().size()<100) {
+						System.out.println(bestNode.getChildConcepts());
+					}
 					System.out.println("TODO: needs to be integrated with other stopping criteria");
 					System.out
 							.println("You tried to use this algorithm for positive only learning, which is not recommended (yet).");

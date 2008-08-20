@@ -445,21 +445,20 @@ public class Helper {
 			
 			// ignore some concepts (possibly produced by Jena)
 			if (conceptName.startsWith("anon")) {
-				System.out
-						.println("  Ignoring concept "
+				logger.debug("  Ignoring concept "
 								+ conceptName
 								+ " (probably an anonymous concept produced by Jena when reading in OWL file).");
 				it.remove();
 			} else if (conceptName.startsWith("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
-				System.out.println("  Ignoring concept " + conceptName
+				logger.debug("  Ignoring concept " + conceptName
 						+ " (RDF construct produced by Jena when reading in OWL file).");
 				it.remove();
 			} else if (conceptName.startsWith("http://www.w3.org/2000/01/rdf-schema#")) {
-				System.out.println("  Ignoring concept " + conceptName
+				logger.debug("  Ignoring concept " + conceptName
 						+ " (RDF Schema construct produced by Jena when reading in OWL file).");
 				it.remove();
 			} else if (conceptName.startsWith("http://www.w3.org/2002/07/owl#")) {
-				System.out.println("  Ignoring concept " + conceptName
+				logger.debug("  Ignoring concept " + conceptName
 						+ " (OWL construct produced by Jena when reading in OWL file).");
 				it.remove();
 			}
