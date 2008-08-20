@@ -50,7 +50,7 @@ function getResultsTable($names,$labels,$classes,$number)
 {
 	$ret="<p>These are your Searchresults. Show best ";
 	for ($k=10;$k<125;){
-		$ret.="<a href=\"#\" onclick=\"var list=tree.getAllChecked();search_it('label='+document.getElementById('label').value+'&list='+list+'&number=".$k."');return false;\"";
+		$ret.="<a href=\"#\" onclick=\"search_it('label='+document.getElementById('label').value+'&number=".$k."');return false;\"";
 		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
 		else $ret.=" style=\"text-decoration:underline;\"";
 		$ret.=">".($k)."</a>";
@@ -69,7 +69,13 @@ function getResultsTable($names,$labels,$classes,$number)
 			$name=$names[$i*25+$j];
 			$label=$labels[$i*25+$j];
 			if (strlen($label)==0) $label=urldecode(str_replace("_"," ",substr (strrchr ($name, "/"), 1)));
-			$class=$classes[$i*25+$j];
+			$class="";
+			$k=0;
+			foreach ($classes[$i*25+$j] as $cl){
+				if ($k!=count($classes[$i*25+$j])-1) $class.=$cl.' ';
+				else $class.=$cl;
+				$k++;
+			}
 			$ret.='<p style="display:'.$display.'">&nbsp;&nbsp;&nbsp;&nbsp;'.($i*25+$j+1).'.&nbsp;<a href="" class="'.$class.'" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.utf8_to_html($label).'</a></p>';
 		}
 		$i++;
@@ -231,15 +237,14 @@ function nicePredicate($predicate)
 function formatClassArray($ar) {
 	mysql_connect('localhost','navigator','dbpedia');
 	mysql_select_db("navigator_db");
-	$string="";
+	$string="<ul>";
 	for($i=0; $i<count($ar); $i++) {
 		$query="SELECT label FROM categories WHERE category='".$ar[$i]['value']."' LIMIT 1";
 		$res=mysql_query($query);
 		$result=mysql_fetch_array($res);
-		if ($ar[$i]['value']!="http://xmlns.com/foaf/0.1/Person"&&strlen($string)>0) $string .= ', ' . formatClass($ar[$i]['value'],$result['label']);
-		else if ($ar[$i]['value']!="http://xmlns.com/foaf/0.1/Person"&&strlen($string)==0) $string .= formatClass($ar[$i]['value'],$result['label']);
+		if ($ar[$i]['value']!="http://xmlns.com/foaf/0.1/Person") $string .= '<li>' . formatClass($ar[$i]['value'],$result['label']).'</li>';
 	}
-	return $string;
+	return $string."</ul>";
 }
 
 // format a class nicely, i.e. link to it and possibly display
@@ -247,7 +252,7 @@ function formatClassArray($ar) {
 function formatClass($className,$label) {
 	$yagoPrefix = 'http://dbpedia.org/class/yago/';
 	if(substr($className,0,30)==$yagoPrefix) {
-		return '<a href="#" onclick="getSubjectsFromCategory(\'category='.$className.'&label='.$label.'&number=10\');">'.$label.'</a>';	
+		return $label.'&nbsp;&nbsp;&nbsp;<a href="#" onclick="getSubjectsFromCategory(\'category='.$className.'&label='.$label.'&number=10\');">&rarr; search Instances</a>&nbsp;&nbsp;<a href="#" onclick="get_class(\'class='.$className.'&cache=-1\');">&rarr; show Class in Hierarchy</a>';	
 	// DBpedia is Linked Data, so it makes always sense to link it
 	// ToDo: instead of linking to other pages, the resource should better
 	// be openened within DBpedia Navigator
@@ -278,6 +283,49 @@ function show_Interests($sess)
 		$ret[1].=$lab." <a href=\"\" onclick=\"toPositive('subject=".$name."&label=".$lab."');return false;\"><img src=\"".$_GET['path']."images/plus.jpg\" alt=\"Plus\"/></a> <a href=\"\" onclick=\"removeNegInterest('subject=".$name."');return false;\"><img src=\"".$_GET['path']."images/remove.png\" alt=\"Delete\"/></a><br/>";
 	}
 	
+	return $ret;
+}
+
+function getClassView($fathers,$childs,$title,$class)
+{
+	$ret='This is the class view. You can browse through the hierarchy and search for instances of classes.<br/><br/>';
+	$childButtons=true;
+	if (strlen($childs)==0){
+		$childs='There are no Child classes';
+		$childButtons=false;
+	}
+	$fatherButtons=true;
+	if (strlen($fathers)==0){
+		$fathers='There are no Father classes';
+		$fatherButtons=false;
+	}
+			
+	$ret.='<table border="0" style="text-align:left;width:100%">';
+	$ret.='<tr><td style="width:90%"><b>Father classes</b></td></tr>';
+	$ret.='<tr style="height:10px"><td></td></tr>';
+	$ret.='<tr><td>'.$fathers.'</td></tr>';
+	$ret.='<tr style="height:10px"><td></td></tr>';
+	$ret.='<tr><td>';
+	if ($fatherButtons) $ret.='<input style="width:70px" type="button" value="Instances" class="button" onclick="getSubjectsFromCategory(\'category=\'+document.getElementById(\'fatherSelect\').options[document.getElementById(\'fatherSelect\').selectedIndex].value+\'&label=\'+document.getElementById(\'fatherSelect\').options[document.getElementById(\'fatherSelect\').selectedIndex].innerHTML+\'&number=10\');" title="Search Instances of Father class."/>&nbsp;&nbsp;<input style="width:70px" type="button" value="Class" class="button" onclick="get_class(\'class=\'+document.getElementById(\'fatherSelect\').options[document.getElementById(\'fatherSelect\').selectedIndex].value+\'&cache=-1\');" title="Show Father class in class view."/>';
+	$ret.='</td></tr>';
+	$ret.='<tr style="height:20px"><td><hr/></td></tr>';
+	$ret.='<tr><td><b>Current class</b></td></tr>';
+	$ret.='<tr style="height:10px"><td></td></tr>';
+	$ret.='<tr><td><b>'.$title.'</b></td></tr>';
+	$ret.='<tr style="height:10px"><td></td></tr>';
+	$ret.='<tr><td>';
+	$ret.='<input style="width:70px" type="button" value="Instances" class="button" onclick="getSubjectsFromCategory(\'category='.$class.'&label='.$title.'&number=10\');" title="Search Instances of Shown class."/>';
+	$ret.='</td></tr>';
+	$ret.='<tr style="height:20px"><td><hr/></td></tr>';
+	$ret.='<tr><td style="width:30%"><b>Child classes</b></td></tr>';
+	$ret.='<tr style="height:10px"><td></td></tr>';
+	$ret.='<tr><td>'.$childs.'</td></tr>';
+	$ret.='<tr style="height:10px"><td></td></tr>';
+	$ret.='<tr><td>';
+	if ($childButtons) $ret.='<input style="width:70px" type="button" value="Instances" class="button" onclick="getSubjectsFromCategory(\'category=\'+document.getElementById(\'childSelect\').options[document.getElementById(\'childSelect\').selectedIndex].value+\'&label=\'+document.getElementById(\'childSelect\').options[document.getElementById(\'childSelect\').selectedIndex].innerHTML+\'&number=10\');" title="Search Instances of Child class."/>&nbsp;&nbsp;<input style="width:70px" type="button" value="Class" class="button" onclick="get_class(\'class=\'+document.getElementById(\'childSelect\').options[document.getElementById(\'childSelect\').selectedIndex].value+\'&cache=-1\');" title="Show Child class in class view."/>';
+	$ret.='</td></tr>';
+	$ret.='</table>';
+				
 	return $ret;
 }
 ?>

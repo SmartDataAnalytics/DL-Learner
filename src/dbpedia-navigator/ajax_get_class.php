@@ -1,0 +1,117 @@
+<?php
+	include('helper_functions.php');
+	
+	$class=$_POST['class'];
+	$fromCache=$_POST['cache'];
+	if (isset($_POST['path'])) $path=$_POST['path'];
+	else $path="";
+		
+	session_start();
+	if (isset($_SESSION['classes'])) $classes=$_SESSION['classes'];
+	session_write_close();
+	
+		
+	//if article is in session, get it out of the session
+	if (isset($classes)){
+		foreach ($classes as $key => $value)
+		{
+			if ($value['uri']==$uri){
+				$fromCache=$key;
+				break;
+			}
+		}
+	}
+	
+	//initialize the content variables
+	$content="";
+	$lastClasses="";
+	$title="";
+			
+	//get the article
+	//if $fromCache is -1, everything is normal
+	//if $fromCache is >=0, the article is taken out of the cache
+	if ($fromCache<0) {
+		//if there are errors see catch block
+		try{
+			mysql_connect('localhost','navigator','dbpedia');
+			mysql_select_db("navigator_db");
+			
+			//build Select box with Child Classes
+			$query="SELECT child FROM classhierarchy WHERE father='$class'";
+			$res=mysql_query($query);
+			$childClasses='';
+			while ($result=mysql_fetch_array($res)){
+				$query="SELECT label FROM categories WHERE category='".$result['child']."' LIMIT 1";
+				$res2=mysql_query($query);
+				$result2=mysql_fetch_array($res2);
+				$identify=urldecode(str_replace("_"," ",substr (strrchr ($result['child'], "/"), 1)));
+				if ((strlen($identify)+strlen($result2['label']))>100) $identify=substr($identify,0,100-strlen($result2['label']));
+				$childClasses.='<option value="'.$result['child'].'">'.utf8_to_html($result2['label']).' ('.$identify.')</option>';
+			}
+			if (strlen($childClasses)>0)
+				$childClasses='<select size="1" style="width:500px" id="childSelect">'.$childClasses.'</select>';
+			
+
+			//build Select box with Father Classes
+			$query="SELECT father FROM classhierarchy WHERE child='$class'";
+			$res=mysql_query($query);
+			$fatherClasses='';
+			while ($result=mysql_fetch_array($res)){
+				$query="SELECT label FROM categories WHERE category='".$result['father']."' LIMIT 1";
+				$res2=mysql_query($query);
+				$result2=mysql_fetch_array($res2);
+				$identify=urldecode(str_replace("_"," ",substr (strrchr ($result['father'], "/"), 1)));
+				if ((strlen($identify)+strlen($result2['label']))>100) $identify=substr($identify,0,100-strlen($result2['label']));
+				$fatherClasses.='<option value="'.$result['father'].'">'.utf8_to_html($result2['label']).' ('.$identify.')</option>';
+			}
+			if (strlen($fatherClasses)>0)
+				$fatherClasses='<select size="1" style="width:500px" id="fatherSelect">'.$fatherClasses.'</select>';	
+			
+			//build Title
+			$query="SELECT label FROM categories WHERE category='$class' LIMIT 1";
+			$res=mysql_query($query);
+			$result=mysql_fetch_array($res);
+			$title=$result['label'];
+			
+			$content.=getClassView($fatherClasses,$childClasses,$title,$class);
+			
+			//Restart the Session
+			session_start();
+			
+			//store class in session, to navigate between last 5 classes quickly
+			$contentArray=array('content' => $content,'title' => $title,'uri' => $class);
+			if (!isset($_SESSION['nextClass'])){
+				$_SESSION['nextClass']=0;
+				$_SESSION['classes']=array();
+			}
+			if ($_SESSION['nextClass']==5) $_SESSION['nextClass']=0;
+			$_SESSION['classes'][$_SESSION['nextClass']]=$contentArray;
+			$_SESSION['currentClass']=$_SESSION['nextClass'];
+			$_SESSION['nextClass']++;									
+		} catch (Exception $e)
+		{
+			$content="An error occured while trying to get Class information. Please try again later.";
+			$title="Class not found";
+		}
+	}
+	else {
+		session_start();
+		//Article is in session
+		$content=$_SESSION['classes'][$fromCache]['content'];
+		$title=$_SESSION['classes'][$fromCache]['title'];
+	}
+	
+	//Build lastClasses
+	if (isset($_SESSION['classes'])){
+		foreach ($_SESSION['classes'] as $key => $value)
+		{
+			$lastClasses.="<a href=\"\" onclick=\"get_class('class=&cache=".$key."');return false;\">".$value['title']."</a><br/>";
+		}
+	}
+	
+	print $content;
+	print '$$';
+	print "Class: ".$title;
+	print '$$';
+	print $lastClasses;
+?>
