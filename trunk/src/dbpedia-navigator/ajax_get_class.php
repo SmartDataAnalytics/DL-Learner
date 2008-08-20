@@ -3,9 +3,7 @@
 	
 	$class=$_POST['class'];
 	$fromCache=$_POST['cache'];
-	if (isset($_POST['path'])) $path=$_POST['path'];
-	else $path="";
-		
+			
 	session_start();
 	if (isset($_SESSION['classes'])) $classes=$_SESSION['classes'];
 	session_write_close();
@@ -15,7 +13,7 @@
 	if (isset($classes)){
 		foreach ($classes as $key => $value)
 		{
-			if ($value['uri']==$uri){
+			if ($value['uri']==$class){
 				$fromCache=$key;
 				break;
 			}
