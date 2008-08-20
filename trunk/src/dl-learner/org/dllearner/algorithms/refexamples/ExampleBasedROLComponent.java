@@ -275,11 +275,15 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	@Override
 	public void init() throws ComponentInitException {
 		
+		// exit with a ComponentInitException if the reasoner is unsupported for this learning algorithm
 		if(rs.getReasonerType() == ReasonerType.DIG) {
 			throw new ComponentInitException("DIG does not support the inferences needed in the selected learning algorithm component: " + getName());
 		}
 		
-		logger.setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
+		// set log level if the option has been set
+		if(!logLevel.equals(CommonConfigOptions.logLevelDefault))
+			logger.setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
+		
 		if(searchTreeFile == null)
 			searchTreeFile = new File(defaultSearchTreeFile);
 

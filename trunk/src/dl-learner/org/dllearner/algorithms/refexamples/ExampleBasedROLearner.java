@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -118,9 +119,9 @@ public class ExampleBasedROLearner {
 	//extended Options
 	private long maxExecutionTimeInSeconds;
 	private boolean maxExecutionTimeShown=false;
-	private long minExecutionTimeInSeconds;
+	private long minExecutionTimeInSeconds = 0;
 	private boolean minExecutionTimeShown=false;
-	private int guaranteeXgoodDescriptions;
+	private int guaranteeXgoodDescriptions = 1;
 	private boolean guaranteeXgoodShown=false;
 	
 	// if set to false we do not test properness; this may seem wrong
@@ -217,6 +218,7 @@ public class ExampleBasedROLearner {
 
 	// prefixes
 	private String baseURI;
+	private Map<String,String> prefixes;
 	
 	public ExampleBasedROLearner(
 			LearningProblem learningProblem,
@@ -277,7 +279,8 @@ public class ExampleBasedROLearner {
 		this.useOverlyGeneralList = useOverlyGeneralList;
 		this.useShortConceptConstruction = useShortConceptConstruction;
 		this.usePropernessChecks = usePropernessChecks;
-		this.baseURI = rs.getBaseURI();
+		baseURI = rs.getBaseURI();
+		prefixes = rs.getPrefixes();
 		this.maxPosOnlyExpansion = maxPosOnlyExpansion;
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 		this.minExecutionTimeInSeconds = minExecutionTimeInSeconds;
@@ -292,7 +295,7 @@ public class ExampleBasedROLearner {
 		runtime=System.currentTimeMillis();
 		JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime").start();
 		// TODO: write a JUnit test for this problem (long-lasting or infinite loops because
-		// redundant children of a node are called recursively after when the node is extended
+		// redundant children of a node are called recursively when a node is extended
 		// twice)
 		/*
 //		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 2 \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Ar_halide\" OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND >= 5 \"http://dl-learner.org/carcinogenesis#hasBond\". TOP)))";
@@ -350,6 +353,7 @@ public class ExampleBasedROLearner {
 		candidatesStable.add(startNode);		
 
 		ExampleBasedNode bestNode = startNode;
+		ExampleBasedNode bestNodeStable = startNode;
 
 		int loop = 0;
 		
@@ -386,7 +390,14 @@ public class ExampleBasedROLearner {
 			}			
 			
 			
-//			System.out.println("next expanded: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));			
+//			System.out.println("next expanded: " + candidates.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
+			
+			// we record when a more accurate node is found and log it
+			if(bestNodeStable.getCovPosMinusCovNeg() < candidatesStable.last().getCovPosMinusCovNeg()) {
+				logger.info("more accurate node found: " + candidatesStable.last());
+				bestNodeStable = candidatesStable.last();
+			}
+			
 			// chose best node according to heuristics
 			bestNode = candidates.last();
 			// extend best node	
@@ -456,21 +467,23 @@ public class ExampleBasedROLearner {
 			
 		
 		if(solutionFound ) {
+			int solutionLimit = 20;
 			logger.info("best node " + candidatesStable.last().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI));
-			logger.info("\nsolutions ( top 5 ):");
+			logger.info("solutions (at most " + solutionLimit + " are shown):");
 			int show=1;
 			String manchester="MANCHESTER:\n";
-			String KBSyntax="KBSyntax:\n";
+			String kbSyntax="KBSyntax:\n";
 			for(Description c : solutions) {
 				logger.info(show+": " + c.toString(baseURI,null) + " (length " + c.getLength() +", depth " + c.getDepth() + ")");
-				manchester+=show+": "+c.toManchesterSyntaxString(baseURI, new HashMap<String,String>())+"\n";
-				KBSyntax+=show+": " + c.toKBSyntaxString()+"\n";
-				if(show>=5){break;}	show++;
+				manchester+=show+": "+c.toManchesterSyntaxString(baseURI, prefixes)+"\n";
+				kbSyntax+=show+": " + c.toKBSyntaxString()+"\n";
+				if(show >= solutionLimit) {
+					break;
+				}
+				show++;
 			}
 			logger.debug(manchester);
-			logger.debug(KBSyntax);
-			
-			
+			logger.debug(kbSyntax);
 		}
 		
 		logger.debug("size of candidate set: " + candidates.size());
@@ -1189,7 +1202,9 @@ public class ExampleBasedROLearner {
 	private boolean guaranteeXgoodDescriptions(){
 		if(guaranteeXgoodShown)return true;
 		if(solutions.size()>guaranteeXgoodDescriptions){
-			logger.info("Minimum number ("+guaranteeXgoodDescriptions+") of good descriptions reached, stopping now...");
+			if(guaranteeXgoodDescriptions != 1) {
+				logger.info("Minimum number ("+guaranteeXgoodDescriptions+") of good descriptions reached, stopping now.");
+			}
 			guaranteeXgoodShown=true;
 			return true;}
 		else return false;
@@ -1218,8 +1233,10 @@ public class ExampleBasedROLearner {
 		if(minExecutionTimeShown)return true;
 		long needed = System.currentTimeMillis()- this.runtime;
 		long minMilliSeconds = minExecutionTimeInSeconds *1000 ;
-		if(minMilliSeconds<needed){
-			logger.info("Minimum time ("+minExecutionTimeInSeconds+" seconds) reached, stopping when next solution is found");
+		if(minMilliSeconds<needed) {
+			if(minExecutionTimeInSeconds != 0) {
+				logger.info("Minimum time ("+minExecutionTimeInSeconds+" seconds) reached, stopping when next solution is found");
+			}
 			minExecutionTimeShown=true;
 			return true;}
 		else return false;
