@@ -20,47 +20,73 @@
 package org.dllearner.test.junit;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.dllearner.cli.QuickStart;
 import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.utilities.Helper;
 import org.junit.Test;
 
 /**
  * Tests related to learning problems in the examples directory.
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public class ExampleTests {
 
 	/**
-	 * This test runs all conf files in the examples directory. Each conf file corresponds to one
-	 * unit test, which is succesful if a concept was learned.
-	 * @throws ComponentInitException If any component initialisation exception occurs in the process.
+	 * This test runs all conf files in the examples directory. Each conf file
+	 * corresponds to one unit test, which is succesful if a concept was
+	 * learned.
+	 * 
+	 * @throws ComponentInitException
+	 *             If any component initialisation exception occurs in the
+	 *             process.
 	 */
 	@Test
 	public void testAllConfFiles() throws ComponentInitException {
+		// we use a logger, which outputs few messages (warnings, errors)
+		SimpleLayout layout = new SimpleLayout();
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		Logger logger = Logger.getRootLogger();
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.setLevel(Level.WARN);
+
 		// map containing a list of conf files for each path
 		HashMap<String, ArrayList<String>> confFiles = new HashMap<String, ArrayList<String>>();
 		String exampleDir = "." + File.separator + "examples";
 		File f = new File(exampleDir);
 		QuickStart.getAllConfs(f, exampleDir, confFiles);
+
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		
-		for(String path : confFiles.keySet()) {
-			for(String file : confFiles.get(path)) {
+		for (String path : confFiles.keySet()) {
+			for (String file : confFiles.get(path)) {
 				String conf = path + file + ".conf";
+				System.out.println("Testing " + conf + " (time: " + sdf.format(new Date()) + ").");
+				long startTime = System.nanoTime();
 				// start example
 				Start start = new Start(new File(conf));
 				start.start(false);
 				// test is successful if a concept was learned
-				assert(start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
+				assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
+				long timeNeeded = System.nanoTime() - startTime;
+				System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
 			}
 		}
-		
-		
+
 	}
-	
+
 }
