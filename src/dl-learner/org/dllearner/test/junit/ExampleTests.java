@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
@@ -34,6 +36,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.cli.QuickStart;
 import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.utilities.Helper;
 import org.junit.Test;
 
@@ -48,7 +51,7 @@ public class ExampleTests {
 	/**
 	 * This test runs all conf files in the examples directory. Each conf file
 	 * corresponds to one unit test, which is succesful if a concept was
-	 * learned.
+	 * learned. This unit test takes several hours.
 	 * 
 	 * @throws ComponentInitException
 	 *             If any component initialisation exception occurs in the
@@ -72,18 +75,34 @@ public class ExampleTests {
 
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		
+		// ignore list (examples which are temporarily not working due
+		// to server downtime, lack of features etc., but should still
+		// remain in the example directory
+		Set<String> ignore = new TreeSet<String>();
+		ignore.add("./examples/sparql/govtrack.conf"); // HTTP 500 Server error
+		ignore.add("./examples/sparql/musicbrainz.conf"); // HTTP 502 error - NullPointer in extraction
+		ignore.add("./examples/sparql/SKOSTEST_local.conf"); // Out of Memory Error
+		ignore.add("./examples/sparql/scrobble.conf"); // HTTP 502 Proxy Error
+		ignore.add("./examples/family-benchmark/Cousin.conf"); // Out of Memory Error
+		
 		for (String path : confFiles.keySet()) {
 			for (String file : confFiles.get(path)) {
 				String conf = path + file + ".conf";
-				System.out.println("Testing " + conf + " (time: " + sdf.format(new Date()) + ").");
-				long startTime = System.nanoTime();
-				// start example
-				Start start = new Start(new File(conf));
-				start.start(false);
-				// test is successful if a concept was learned
-				assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
-				long timeNeeded = System.nanoTime() - startTime;
-				System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
+				if(ignore.contains(conf)) {
+					System.out.println("Skipping " + conf + " (is on ignore list).");
+				} else {
+					System.out.println("Testing " + conf + " (time: " + sdf.format(new Date()) + ").");
+					long startTime = System.nanoTime();
+					// start example
+					Start start = new Start(new File(conf));
+					start.start(false);
+					// test is successful if a concept was learned
+					assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
+					long timeNeeded = System.nanoTime() - startTime;
+					start.getReasoningService().releaseKB();
+					ComponentManager.getInstance().freeAllComponents();
+					System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
+				}
 			}
 		}
 
