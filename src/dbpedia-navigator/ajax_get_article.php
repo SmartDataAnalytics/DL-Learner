@@ -5,9 +5,7 @@
 
 	$subject=$_POST['label'];
 	$fromCache=$_POST['cache'];
-	if (isset($_POST['path'])) $path=$_POST['path'];
-	else $path="";
-	
+		
 	if (isset($_SESSION['articles'])) $articles=$_SESSION['articles'];
 	$id=$_SESSION['id'];
 	$ksID=$_SESSION['ksID'];
@@ -32,6 +30,8 @@
 	$content="";
 	$lastArticles="";
 	$artTitle="";
+	$lat="";
+	$long="";
 			
 	//get the article
 	//if $fromCache is -1, everything is normal
@@ -69,11 +69,11 @@
 				
 			// give the link to the corresponding Wikipedia article
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
-				$content .= '<p><img src="'.$path.'images/wikipedia_favicon.png" alt="Wikipedia" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.getPrintableURL($triples['http://xmlns.com/foaf/0.1/page'][0]['value']).'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view Wikipedia article</a>, '; 
-			$content .= '<img src="'.$path.'images/dbpedia-favicon.ico" alt="DBpedia" style="max-width:20px;"/> <a href="#" onclick="window.open(\''.$uri.'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view DBpedia resource description</a>';
+				$content .= '<p><img src="images/wikipedia_favicon.png" alt="Wikipedia" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.getPrintableURL($triples['http://xmlns.com/foaf/0.1/page'][0]['value']).'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view Wikipedia article</a>, '; 
+			$content .= '<img src="images/dbpedia-favicon.ico" alt="DBpedia" style="max-width:20px;"/> <a href="#" onclick="window.open(\''.$uri.'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view DBpedia resource description</a>';
 			//display photo collection, if there is one
 			if (isset($triples['http://dbpedia.org/property/hasPhotoCollection'])){
-				$content.=', <img src="'.$path.'images/flickr.png" alt="Flickr" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view photo collection</a></p>';
+				$content.=', <img src="images/flickr.png" alt="Flickr" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view photo collection</a></p>';
 			}
 			
 			$content.='<br/><hr><h4>Classes and Categories</h4><br/>';
