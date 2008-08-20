@@ -223,8 +223,8 @@ public class WikipediaCategoryCleaner {
 		lsc.sparqlEndpoint = sparqlTasks.getSparqlEndpoint();
 
 		lsc.recursiondepth = 1;
-		lsc.noisePercentage = 15;
-		lsc.guaranteeXgoodDescriptions = 200;
+		lsc.noisePercentage = 20;
+		lsc.guaranteeXgoodDescriptions = 100;
 		lsc.maxExecutionTimeInSeconds = 50;
 		lsc.logLevel = "TRACE";
 		// lsc.searchTreeFile = "log/WikipediaCleaner.txt";

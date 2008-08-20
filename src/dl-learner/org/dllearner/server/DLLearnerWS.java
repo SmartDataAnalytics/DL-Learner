@@ -681,15 +681,28 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getNegativeExamples(int sessionID, int componentID,String[] positives, int results, String namespace) throws ClientNotKnownException
 	{
-		SortedSet<String> set = new TreeSet<String>(Arrays.asList(positives));
+		int sparqlResultSetLimit = 500;
+		SortedSet<String> positiveSet = new TreeSet<String>(Arrays.asList(positives));
 		ClientState state = getState(sessionID);
 		Component component = state.getComponent(componentID);
 		SparqlKnowledgeSource ks=(SparqlKnowledgeSource)component;
 		SPARQLTasks task=ks.getSPARQLTasks();
-		AutomaticNegativeExampleFinderSPARQL finder=new AutomaticNegativeExampleFinderSPARQL(set,task);
-		//finder.makeNegativeExamplesFromRelatedInstances(set, namespace);
-		finder.makeNegativeExamplesFromParallelClasses(set, 25);
+		AutomaticNegativeExampleFinderSPARQL finder=new AutomaticNegativeExampleFinderSPARQL(positiveSet,task);
+		
+		finder.makeNegativeExamplesFromParallelClasses(positiveSet, sparqlResultSetLimit);
 		SortedSet<String> negExamples=finder.getNegativeExamples(results);
+		if(negExamples.isEmpty()){
+			 finder.makeNegativeExamplesFromRelatedInstances(positiveSet, namespace);
+			 negExamples = finder.getNegativeExamples(results);
+			 if(negExamples.isEmpty()){
+				 finder.makeNegativeExamplesFromSuperClassesOfInstances(positiveSet, sparqlResultSetLimit);
+				 negExamples = finder.getNegativeExamples(results);
+				 if(negExamples.isEmpty()) {
+					 finder.makeNegativeExamplesFromRandomInstances();
+					 negExamples = finder.getNegativeExamples(results);
+				 }
+			 }
+		}
 		
 		return negExamples.toArray(new String[negExamples.size()]);
 	}

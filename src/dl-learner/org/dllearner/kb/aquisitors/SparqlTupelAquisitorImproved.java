@@ -122,9 +122,14 @@ public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
 	
 	@Override
 	public SortedSet<RDFNodeTuple> retrieveTuplesForClassesOnly(String uri){
+		int tmp = recursionDepth;
+		recursionDepth=4;
+		SortedSet<RDFNodeTuple> tmpSet = retrieveTupel(uri);
+		recursionDepth = tmp;
+		return tmpSet;
 		//getQuery
-		String sparqlQueryString = sparqlQueryMaker.makeSubjectQueryUsingFilters(uri);
-		return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, PREDICATE, OBJECT);
+		//String sparqlQueryString = sparqlQueryMaker.makeSubjectQueryUsingFilters(uri);
+		//return  sparqlTasks.queryAsRDFNodeTuple(sparqlQueryString, PREDICATE, OBJECT);
 	}
 	
 	
