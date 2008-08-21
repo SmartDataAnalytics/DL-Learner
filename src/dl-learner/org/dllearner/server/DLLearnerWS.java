@@ -387,6 +387,7 @@ public class DLLearnerWS {
 			json += "\"solution" + count + "\" : " + description.asJSON();
 			count++;
 		}
+		json+="}";
 		return json;
 	}
 	
@@ -561,7 +562,7 @@ public class DLLearnerWS {
 		    throw new SparqlQueryException("SparqlQuery failed"+e.toString());
 		}
 		
-		if(json == null) { throw new SparqlQueryException("SparqlQuery failed JSON was null");}
+		if(json == null) { throw new SparqlQueryException("Sparql Query failed. Please try again later.");}
 		return json;
 		//if ((json=state.getQuery(queryID).getJson())!=null) return json;
 		//else if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsJSON(resultSet); 

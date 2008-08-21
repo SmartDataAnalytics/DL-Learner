@@ -259,7 +259,7 @@ public class Cache implements Serializable {
 		if (result != null) {
 			query.setJson(result);
 			
-		    	query.setRunning(false);
+		    query.setRunning(false);
 			SparqlQuery.writeToSparqlLog("***********\nJSON retrieved from cache");
 			SparqlQuery.writeToSparqlLog("wget -S -O - '\n"+query.getSparqlEndpoint().getHTTPRequest());
 			SparqlQuery.writeToSparqlLog(query.getSparqlQueryString());
