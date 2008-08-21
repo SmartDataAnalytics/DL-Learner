@@ -116,7 +116,13 @@ public class StartGUI extends JFrame implements ActionListener {
 		tabPane.addChangeListener(new ChangeListener() {
 			// This method is called whenever the selected tab changes
 			public void stateChanged(ChangeEvent evt) {
-				init();
+				System.out.println(evt.getSource());
+				if(evt.getSource().equals(tabPane)) {
+//					tabPane.get
+//					System.out.println("Tab 2 clicked");
+//					System.exit(0);
+				}
+//				init();
 			}
 		});
 
@@ -240,10 +246,13 @@ public class StartGUI extends JFrame implements ActionListener {
 			tabPane.setForegroundAt(3, Color.RED);
 			tabPane.setForegroundAt(4, Color.RED);
 		}
-		tab0.updateAll();
-		tab1.updateAll();
-		tab2.updateAll();
-		tab3.updateAll();
+		
+		// commented out as I do not see any reason why the method should update everything
+		// (it costs performance to update everything when the user only sees one panel)
+//		tab0.updateAll();
+//		tab1.updateAll();
+//		tab2.updateAll();
+//		tab3.updateAll();
 
 	}
 }

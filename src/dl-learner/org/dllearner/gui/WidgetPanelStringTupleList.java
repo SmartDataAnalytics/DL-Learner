@@ -137,6 +137,23 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 
 	@Override
 	public void buildWidgetPanel() {
+		
+		gridbag = new GridBagLayout();
+		constraints = new GridBagConstraints();
+
+		widgetPanel = new JPanel();
+		addButton = new JButton("add");
+		removeButton = new JButton("remove");
+		clearButton = new JButton("clear");
+		stringFieldA = new JTextField(10);
+		stringFieldB = new JTextField(10);
+		exampleList = new LinkedList<StringTuple>();
+		
+		stringList = new JList();
+		listModel = new DefaultListModel();
+
+		setButton = new JButton("set");
+		
 		widgetPanel.setLayout(gridbag);
 		add(widgetPanel, BorderLayout.CENTER);
 		add(getLabel());
