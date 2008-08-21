@@ -3,7 +3,13 @@
 	
 	$category=$_POST['category'];
 	$number=$_POST['number'];
-		
+
+	session_start();
+	//write last action into session
+	$actionuri=substr (strrchr ($category, "/"), 1);
+	$_SESSION['lastAction']='searchInstances/'.$actionuri;
+	session_write_close();
+	
 	//initialise content
 	$content="";
 	$bestsearches="";

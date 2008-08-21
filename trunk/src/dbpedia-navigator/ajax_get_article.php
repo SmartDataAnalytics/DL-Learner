@@ -9,6 +9,11 @@
 	if (isset($_SESSION['articles'])) $articles=$_SESSION['articles'];
 	$id=$_SESSION['id'];
 	$ksID=$_SESSION['ksID'];
+	
+	//write last action into session
+	if (strpos($subject,"http://dbpedia.org/resource/")===0) $actionuri=substr (strrchr ($subject, "/"), 1);
+	else $actionuri=urlencode($subject);
+	$_SESSION['lastAction']='showArticle/'.$actionuri;
 	session_write_close();
 	setRunning($id,"true");
 	

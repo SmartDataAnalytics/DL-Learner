@@ -6,6 +6,9 @@
 			
 	session_start();
 	if (isset($_SESSION['classes'])) $classes=$_SESSION['classes'];
+	//write last action into session
+	$actionuri=substr (strrchr ($class, "/"), 1);
+	$_SESSION['lastAction']='showClass/'.$actionuri;
 	session_write_close();
 	
 		

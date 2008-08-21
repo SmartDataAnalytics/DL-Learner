@@ -220,57 +220,57 @@ function removePosInterest(param)
     XhrObj.send(param);
 }
     	
-    	function removeNegInterest(param)
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
+function removeNegInterest(param)
+{
+    if (document.all){
+    	//IE
+    	var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    else{
+    	//Mozilla
+    	var XhrObj = new XMLHttpRequest();
+    }
     		
-    		XhrObj.open("POST",'ajax_remove_neg_interest.php');
+    XhrObj.open("POST",'ajax_remove_neg_interest.php');
     		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('Positives').innerHTML=response[0];
-    				document.getElementById('Negatives').innerHTML=response[1];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send(param);
+    XhrObj.onreadystatechange = function()
+    {
+    	if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    		var response = XhrObj.responseText.split('$$');
+    		document.getElementById('Positives').innerHTML=response[0];
+    		document.getElementById('Negatives').innerHTML=response[1];
     	}
+    }
+    		
+    XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    XhrObj.send(param);
+}
     	
-    	function learnConcept()
-    	{
-    		if (document.all){
-    			//IE
-    			var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
-    		}
-    		else{
-    			//Mozilla
-    			var XhrObj = new XMLHttpRequest();
-    		}
-    		
-    		XhrObj.open("POST",'ajax_learn_concepts.php');
-    		
-    		XhrObj.onreadystatechange = function()
-    		{
-    			if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    				var response = XhrObj.responseText.split('$$');
-    				document.getElementById('conceptlink').innerHTML=response[0];
-    				document.getElementById('ConceptInformation').innerHTML=response[1];
-    			}
-    		}
-    		
-    		XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    		XhrObj.send();
+function learnConcept()
+{
+    if (document.all){
+    	//IE
+    	var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    else{
+    	//Mozilla
+    	var XhrObj = new XMLHttpRequest();
+    }
+    
+    XhrObj.open("POST",'ajax_learn_concepts.php');
+    
+    XhrObj.onreadystatechange = function()
+    {
+    	if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    		var response = XhrObj.responseText.split('$$');
+    		document.getElementById('conceptlink').innerHTML=response[0];
+    		document.getElementById('ConceptInformation').innerHTML=response[1];
     	}
+    }
+    		
+    XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    XhrObj.send();
+}
     	
 function stopServerCall()
 {
@@ -349,4 +349,54 @@ function getSubjectsFromCategory(param)
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
     XhrObj.send(param);
+}
+
+function setPositivesAndNegatives(param)
+{
+	if (document.all){
+		//IE
+  		var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    else{
+    	//Mozilla
+    	var XhrObj = new XMLHttpRequest();
+    }
+    		
+    XhrObj.open("POST",'ajax_set_positives_and_negatives.php');
+    
+    XhrObj.onreadystatechange = function()
+    {
+    	if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    		var response = XhrObj.responseText.split('$$');
+    		document.getElementById('Positives').innerHTML=response[0];
+    		document.getElementById('Negatives').innerHTML=response[1];
+    	}
+    }
+    		
+    XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    XhrObj.send(param);
+}
+
+function generateURL()
+{
+	if (document.all){
+		//IE
+  		var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    else{
+    	//Mozilla
+    	var XhrObj = new XMLHttpRequest();
+    }
+    		
+    XhrObj.open("POST",'ajax_generate_URL.php');
+    
+    XhrObj.onreadystatechange = function()
+    {
+    	if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    		document.getElementById('generatedURL').innerHTML=XhrObj.responseText;
+    	}
+    }
+    		
+    XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    XhrObj.send();
 }
