@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
 import javax.xml.ws.http.HTTPException;
@@ -129,6 +130,7 @@ public class SparqlQuery {
 			logger.warn("Exception in SparqlQuery\n"+ e.toString());
 			logger.warn("query was "+ sparqlQueryString);
 			writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
+			isRunning = false;
 			throw e;
 			
 		}catch (RuntimeException e) {
@@ -136,14 +138,14 @@ public class SparqlQuery {
 				logger.warn("RuntimeException in SparqlQuery"+ e.toString());
 				writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
 			//}
+			isRunning = false;
 			throw e;
 		}
 		
 		// there is a minor issue here: Jamon now also measures ResultsetConversion
 		// the code would need a second try catch block to handle it correctly
 		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
-		isRunning = false;
-		
+		isRunning = false;	
 	}
 
 	
