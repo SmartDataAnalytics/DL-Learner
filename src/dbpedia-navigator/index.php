@@ -109,7 +109,15 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   <body <?php print $onLoad;?>>
 
 <!--  <h1>DBpedia Navigator</h1> -->
-<div><table border="0" width="100%"><tr><td width="35%"><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" /></td><td width="50%"><span id="conceptlink"></span></td><td width="15%"><span id="Loading" style="display:none">Server Call... <a href=""><img src="images/remove.png" onclick="stopServerCall();return false;" /></a></span></td></tr></table></div>
+<div><table border="0" width="100%"><tr><td width="30%"><img src="images/dbpedia_navigator.png" alt="DBpedia Navigator" style="padding:5px" /></td>
+<td width="49%">
+	<div class="box" id="ConceptBox" style="display:none">
+	  <div class="boxtitle" style="cursor:help;" title="Browsing suggestions considering search relevant and not relevant articles.">Navigation Suggestions</div>
+	  <div class="boxcontent">
+	  <div id="conceptlink" style="display:block"></div>
+	  </div> <!-- boxcontent -->
+	</div> <!-- box -->
+</td><td width="19%"><span id="Loading" style="display:none">Server Call... <a href=""><img src="images/remove.png" onclick="stopServerCall();return false;" /></a></span></td></tr></table></div>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>
@@ -244,11 +252,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 </ul>
 </div>
 
-  <div class="box" id="ConceptBox" style="position:absolute;top:15px;right:15px;width:18%;opacity:0.90;display:none;z-index:5;">
-  	<div class="boxtitle">Detailed Concept Information</div>
-  	<div class="boxcontent" id="ConceptInformation"></div>
-  </div>
-  
   </body>
 </html>
 			
