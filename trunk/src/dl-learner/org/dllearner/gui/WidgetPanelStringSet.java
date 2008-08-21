@@ -169,13 +169,15 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 
 	@Override
 	public void buildWidgetPanel() {
+		gridbag = new GridBagLayout();		
 		widgetPanel = new JPanel();
 		widgetPanel.setLayout(gridbag);
 		add(widgetPanel, BorderLayout.CENTER);
 		add(getLabel());
 		
 		value = config.getConfigOptionValue(component, configOption);
-		
+
+		listModel = new DefaultListModel();		
 		// fill list
 		if (value != null) {
 			setEntry();
@@ -185,11 +187,13 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			}
 		}
 
-		gridbag = new GridBagLayout();
 		constraints = new GridBagConstraints();
 		cBL = new CheckBoxList(this);
 		stringList = new JList();
-		listModel = new DefaultListModel();
+		stringField = new JTextField(30);
+		addButton = new JButton("add");
+		removeButton = new JButton("remove");
+		clearButton = new JButton("clear");
 		
 		if (!isSpecial()) {
 			// NORMAL LAYOUT
@@ -233,8 +237,9 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 						.getIndividuals();
 				LinkedList<Individual> individuals = new LinkedList<Individual>(
 						individualsSet);
-				for (Individual ind : individuals)
+				for (Individual ind : individuals) {
 					cBL.add(ind.getName());
+				}
 			}
 			// allowedConcepts or ignoredConcepts
 			if (configOption.getName().equalsIgnoreCase("allowedConcepts")
@@ -264,10 +269,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 		}		
 		
 		stringList.setModel(listModel);
-		
-		addButton = new JButton("add");
-		removeButton = new JButton("remove");
-		clearButton = new JButton("clear");		
+				
 		// ActionListeners
 		addButton.addActionListener(this);
 		removeButton.addActionListener(this);

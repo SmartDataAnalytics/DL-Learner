@@ -53,7 +53,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	private JPanel choosePanel = new JPanel();
 	private JPanel initPanel = new JPanel();
 	private int choosenClassIndex;
-	private List<Class<? extends KnowledgeSource>> sources;
+	private List<Class<? extends KnowledgeSource>> selectableSources;
 	private OptionPanel optionPanel;
 
 	KnowledgeSourcePanel(final Config config, StartGUI startGUI) {
@@ -61,7 +61,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
 		this.config = config;
 		this.startGUI = startGUI;
-		sources = config.getComponentManager().getKnowledgeSources();
+		selectableSources = config.getComponentManager().getKnowledgeSources();
 
 		setButton = new JButton("Set");
 		setButton.addActionListener(this);
@@ -72,8 +72,8 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		initButton.setEnabled(true);
 
 		// add to comboBox
-		for (int i = 0; i < sources.size(); i++) {
-			cb.addItem(config.getComponentManager().getComponentName(sources.get(i)));
+		for (int i = 0; i < selectableSources.size(); i++) {
+			cb.addItem(config.getComponentManager().getComponentName(selectableSources.get(i)));
 		}
 		cb.addActionListener(this);
 
@@ -82,7 +82,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		choosenClassIndex = cb.getSelectedIndex();
 
 		// whenever a component is selected, we immediately create an instance (non-initialised)
-		KnowledgeSource ks = config.newKnowledgeSource(sources.get(cb.getSelectedIndex()));
+		KnowledgeSource ks = config.newKnowledgeSource(selectableSources.get(cb.getSelectedIndex()));
 		optionPanel = new OptionPanel(config, ks);
 		
 //		optionPanel = new OptionPanel(config, config.getKnowledgeSource(), sources.get(choosenClassIndex));
@@ -97,12 +97,13 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		// read selected KnowledgeSourceClass
-		// choosenClassIndex = cb.getSelectedIndex();
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			choosenClassIndex = cb.getSelectedIndex();
-			config.setInitKnowledgeSource(false);
-			init();
+			// create a new knowledge source component
+			config.newKnowledgeSource(selectableSources.get(choosenClassIndex));
+			updateAll();
+//			config.setInitKnowledgeSource(false);
+//			init();
 		}
 
 		if (e.getSource() == setButton) {
@@ -123,7 +124,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	 */
 	public void setSource() {
 		config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
-				sources.get(choosenClassIndex)));
+				selectableSources.get(choosenClassIndex)));
 		config.setInitKnowledgeSource(false);
 		updateAll();
 	}
@@ -159,7 +160,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	 */
 	public void updateComboBox() {
 		if (config.getKnowledgeSource() != null)
-			for (int i = 0; i < sources.size(); i++)
+			for (int i = 0; i < selectableSources.size(); i++)
 				if (config.getKnowledgeSource().getClass().equals(
 						config.getComponentManager().getKnowledgeSources().get(i))) {
 					cb.setSelectedIndex(i);
@@ -171,8 +172,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	 * update OptionPanel with new selection
 	 */
 	public void updateOptionPanel() {
-		// TODO implement properly !!
-//		optionPanel.update(config.getKnowledgeSource(), sources.get(choosenClassIndex));
+		optionPanel.update(config.getKnowledgeSource());
 	}
 
 	/**
