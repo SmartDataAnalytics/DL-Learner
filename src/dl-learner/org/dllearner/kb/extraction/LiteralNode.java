@@ -25,7 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.kb.aquisitors.TupelAquisitor;
+import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -59,7 +59,7 @@ public class LiteralNode extends Node {
 
 	// expands all directly connected nodes
 	@Override
-	public List<Node> expand(TupelAquisitor tupelAquisitor, Manipulator manipulator) {
+	public List<Node> expand(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
 		return new ArrayList<Node>();
 	}
 	
@@ -67,7 +67,7 @@ public class LiteralNode extends Node {
 
 	// gets the types for properties recursively
 	@Override
-	public void expandProperties(TupelAquisitor tupelAquisitor, Manipulator manipulator) {
+	public void expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
 	}
 
 	@Override

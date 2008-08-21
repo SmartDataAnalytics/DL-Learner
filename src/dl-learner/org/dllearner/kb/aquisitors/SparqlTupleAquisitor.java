@@ -32,11 +32,11 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
  * @author Sebastian Hellmann
  * 
  */
-public class SparqlTupelAquisitor extends TupelAquisitor {
+public class SparqlTupleAquisitor extends TupleAquisitor {
 	
 	
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(SparqlTupelAquisitor.class);
+	private static Logger logger = Logger.getLogger(SparqlTupleAquisitor.class);
 	protected static final String PREDICATE = "predicate";
 	protected static final String OBJECT = "object";
 	
@@ -45,7 +45,7 @@ public class SparqlTupelAquisitor extends TupelAquisitor {
 	
 	
 
-	public SparqlTupelAquisitor(SparqlQueryMaker sparqlQueryMaker, SPARQLTasks sparqlTasks) {
+	public SparqlTupleAquisitor(SparqlQueryMaker sparqlQueryMaker, SPARQLTasks sparqlTasks) {
 		
 		this.sparqlQueryMaker = sparqlQueryMaker;
 		this.sparqlTasks = sparqlTasks;

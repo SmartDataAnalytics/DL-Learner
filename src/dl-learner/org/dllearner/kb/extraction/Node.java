@@ -22,7 +22,7 @@ package org.dllearner.kb.extraction;
 import java.util.List;
 import java.util.SortedSet;
 
-import org.dllearner.kb.aquisitors.TupelAquisitor;
+import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 
 
@@ -54,7 +54,7 @@ public abstract class Node implements Comparable<Node> {
 	 * @return Vector<Node> all Nodes that are new because of expansion
 	 */
 	public abstract List<Node> expand(
-			TupelAquisitor TupelAquisitor, Manipulator manipulator);
+			TupleAquisitor TupelAquisitor, Manipulator manipulator);
 
 	/**
 	 * gets type defs for properties like rdf:type SymmetricProperties
@@ -64,7 +64,7 @@ public abstract class Node implements Comparable<Node> {
 	 * @return Vector<Node>
 	 */
 	public abstract void expandProperties(
-			TupelAquisitor TupelAquisitor, Manipulator manipulator);
+			TupleAquisitor TupelAquisitor, Manipulator manipulator);
 
 	/**
 	 * output

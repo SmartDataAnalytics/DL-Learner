@@ -25,7 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.kb.aquisitors.TupelAquisitor;
+import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.utilities.statistics.SimpleClock;
 
 /**
@@ -42,15 +42,15 @@ public class ExtractionAlgorithm {
 	private static Logger logger = Logger
 		.getLogger(ExtractionAlgorithm.class);
 
-	public ExtractionAlgorithm(Configuration Configuration) {
-		this.configuration = Configuration;
+	public ExtractionAlgorithm(Configuration configuration) {
+		this.configuration = configuration;
 	}
 
 	public Node getFirstNode(String uri) {
 		return new InstanceNode(uri);
 	}
 
-	public List<Node> expandAll(String[] uris, TupelAquisitor tupelAquisitor) {
+	public List<Node> expandAll(String[] uris, TupleAquisitor tupelAquisitor) {
 		List<Node> nodeList = new ArrayList<Node>();
 		for (String oneURI : uris) {
 			nodeList.add(expandNode(oneURI, tupelAquisitor));
@@ -67,10 +67,10 @@ public class ExtractionAlgorithm {
 	 * @param typedSparqlQuery
 	 * @return
 	 */
-	public Node expandNode(String uri, TupelAquisitor tupelAquisitor) {
+	public Node expandNode(String uri, TupleAquisitor tupelAquisitor) {
 
 		SimpleClock sc = new SimpleClock();
-		tupelAquisitor.setNextTaskToNormal();
+		
 		
 		Node seedNode = getFirstNode(uri);
 		List<Node> newNodes = new ArrayList<Node>();
@@ -91,6 +91,7 @@ public class ExtractionAlgorithm {
 				logger.info("Expanding " + nextNode);
 				// these are the new not expanded nodes
 				// the others are saved in connection with the original node
+				tupelAquisitor.setNextTaskToNormal();
 				tmp.addAll(nextNode.expand(tupelAquisitor,
 						configuration.getManipulator()));
 				//System.out.println(tmpVec);
@@ -104,58 +105,57 @@ public class ExtractionAlgorithm {
 					+ " Nodes remaining, " + sc.getAndSet(""));
 		}
 
+		
+		if(configuration.isCloseAfterRecursion()){
+			List<InstanceNode> l = getInstanceNodes(newNodes);
+			tupelAquisitor.setNextTaskToClassesForInstances();
+			collectNodes.addAll(expandCloseAfterRecursion(l, tupelAquisitor));
+			
+		}
 		// gets All Class Nodes and expands them further
 		if (configuration.isGetAllSuperClasses()) {
-			expandAllSuperClassesOfANode(collectNodes, tupelAquisitor);
+			List<ClassNode> allClassNodes = getClassNodes(collectNodes);
+			tupelAquisitor.setNextTaskToClassInformation();
+			expandAllSuperClassesOfANode(allClassNodes, tupelAquisitor);
 		}
 			
 		return seedNode;
 
 	}
 	
-	private void expandAllSuperClassesOfANode(List<Node> allNodes, TupelAquisitor tupelAquisitor) {
-		logger.info("Get all superclasses");
-		
-		
-		List<Node> classes = new ArrayList<Node>();
-		List<Node> instances = new ArrayList<Node>();
-
-		for (Node one : allNodes) {
-			if (one instanceof ClassNode) {
-				classes.add(one);
-			}
-			if (one instanceof InstanceNode) {
-				instances.add(one);
-			}
-
-		}
-		
-		//TODO LinkedData incompatibility
-		
+	private List<Node> expandCloseAfterRecursion(List<InstanceNode> instanceNodes, TupleAquisitor tupelAquisitor) {
+		List<Node> newNodes = new ArrayList<Node>();
 		tupelAquisitor.setNextTaskToClassesForInstances();
 		if (configuration.isCloseAfterRecursion()) {
-			while (!instances.isEmpty()) {
+			while (!instanceNodes.isEmpty()) {
 				logger.trace("Getting classes for remaining instances: "
-						+ instances.size());
-				Node next = instances.remove(0);
+						+ instanceNodes.size());
+				Node next = instanceNodes.remove(0);
 				logger.trace("Getting classes for: " + next);
-				classes.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
-				if (classes.size() >= configuration.getBreakSuperClassesAfter()) {
+				newNodes.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
+				if (newNodes.size() >= configuration.getBreakSuperClassesAfter()) {
 					break;
 				}//endif
 			}//endwhile
 		}//endif
+		return newNodes;
+	}
+	
+	private void expandAllSuperClassesOfANode(List<ClassNode> allClassNodes, TupleAquisitor tupelAquisitor) {
+		logger.info("Get all superclasses");
 		
-		
+		List<Node> newClasses = new ArrayList<Node>();
+		newClasses.addAll(allClassNodes);
+		//TODO LinkedData incompatibility
 		tupelAquisitor.setNextTaskToClassInformation();
 		int i = 0;
-		while (!classes.isEmpty() && false) {
-			logger.trace("Remaining classes: " + classes.size());
-			Node next = classes.remove(0);
+		while (!newClasses.isEmpty() && false) {
+			logger.trace("Remaining classes: " + newClasses.size());
+			Node next = newClasses.remove(0);
 			if (!alreadyQueriedSuperClasses.contains(next.getURI().toString())) {
 				logger.trace("Getting Superclasses for: " + next);
 				alreadyQueriedSuperClasses.add(next.getURI().toString());
-				classes.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
+				newClasses.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
 				
 				if (i > configuration.getBreakSuperClassesAfter()) {
 					break;
@@ -168,6 +168,31 @@ public class ExtractionAlgorithm {
 			alreadyQueriedSuperClasses.clear();
 		}
 
+	}
+	
+	public static List<ClassNode> getClassNodes(List<Node> l ){
+		List<ClassNode> retList = new ArrayList<ClassNode>();
+		for (Node node : l) {
+			if (node instanceof ClassNode) {
+				retList.add( (ClassNode) node);
+				
+			}
+			
+		}
+		return retList;
+	}
+	
+
+	public static List<InstanceNode> getInstanceNodes(List<Node> l ){
+		List<InstanceNode> retList = new ArrayList<InstanceNode>();
+		for (Node node : l) {
+			if (node instanceof InstanceNode) {
+				retList.add( (InstanceNode) node);
+				
+			}
+			
+		}
+		return retList;
 	}
 
 }

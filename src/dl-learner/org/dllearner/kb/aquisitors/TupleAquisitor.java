@@ -35,10 +35,10 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
  * @author Sebastian Hellmann
  * 
  */
-public abstract class TupelAquisitor {
+public abstract class TupleAquisitor {
 	
 
-	private static Logger logger = Logger.getLogger(TupelAquisitor.class);
+	private static Logger logger = Logger.getLogger(TupleAquisitor.class);
 	protected final int NORMAL = 0;
 	protected final int CLASSES_FOR_INSTANCES = 1;
 	protected final int CLASS_INFORMATION = 2;

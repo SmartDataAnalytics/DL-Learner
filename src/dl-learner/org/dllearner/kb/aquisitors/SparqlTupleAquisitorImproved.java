@@ -41,15 +41,15 @@ import com.hp.hpl.jena.sparql.resultset.ResultSetRewindable;
  * @author Sebastian Hellmann
  * 
  */
-public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
+public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 	
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(SparqlTupelAquisitorImproved.class);
+	private static Logger logger = Logger.getLogger(SparqlTupleAquisitorImproved.class);
 	private Map<String,SortedSet<RDFNodeTuple>> resources = new HashMap<String, SortedSet<RDFNodeTuple>>();
 	int recursionDepth;
 	
 
-	public SparqlTupelAquisitorImproved(SparqlQueryMaker sparqlQueryMaker, SPARQLTasks sparqlTasks, int recursionDepth) {
+	public SparqlTupleAquisitorImproved(SparqlQueryMaker sparqlQueryMaker, SPARQLTasks sparqlTasks, int recursionDepth) {
 		super(sparqlQueryMaker, sparqlTasks);
 		this.recursionDepth = recursionDepth;
 		
@@ -142,6 +142,13 @@ public class SparqlTupelAquisitorImproved extends SparqlTupelAquisitor {
 		}else {
 			set.add(tuple);
 		}
+	}
+	
+	@Override
+	public SortedSet<RDFNodeTuple> retrieveClassesForInstances(String uri){
+		// getQuery
+		return super.retrieveClassesForInstances(uri);
+		
 	}
 
 
