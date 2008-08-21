@@ -25,16 +25,9 @@
 		$sc=new DLLearnerConnection($id, $ksID);
 		try{
 			$concepts=$sc->getConceptFromExamples($posArray,$negArray);
-			$conceptDepth=$sc->getConceptDepth();
-			$conceptArity=$sc->getConceptArity();
-			
 			$concept.="<table border=0>\n";
-			$i=1;
 			foreach ($concepts as $con){
-				$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('concept=".$con."');return false;\" onMouseOver=\"showdiv('div".$i."');showdiv('ConceptBox');\" onMouseOut=\"hidediv('div".$i."');hidediv('ConceptBox');\" />".$con."</a></td></tr>";
-				//put information about concepts in divs
-				$conceptinformation.="<div id=\"div".$i."\" style=\"display:none\">Concept Depth: ".$conceptDepth[$i-1]."<br/>Concept Arity: ".$conceptArity[$i-1]."<br/>Concept Length: ".$sc->getConceptLength($con)."</div>";
-				$i++;
+				$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('concept=".$con['descriptionManchesterSyntax']."');return false;\" />".$con['descriptionManchesterSyntax']."</a> (Accuracy: ".(floatVal($con['accuracy'])*100)."%)</td></tr>";
 			}
 			$concept.="</table>";
 		} catch(Exception $e){
@@ -44,6 +37,4 @@
 	else $concept="You must choose at least one positive example.";
 	
 	print $concept;
-	print '$$';
-	print $conceptinformation;
 ?>

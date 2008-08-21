@@ -168,6 +168,7 @@
 			unset($triples['http://dbpedia.org/property/lonMin']);
 			unset($triples['http://dbpedia.org/property/latDeg']);
 			unset($triples['http://dbpedia.org/property/lonMin']);
+			unset($triples['http://www.georss.org/georss/point']);
 			
 			
 			if (count($triples)>0){
@@ -243,6 +244,4 @@
 	print $lat;
 	print '$$';
 	print $long;
-	
-	//$objResponse->call('xajax_learnConcept');
 ?>

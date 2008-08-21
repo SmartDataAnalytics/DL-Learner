@@ -109,7 +109,7 @@ class DLLearnerConnection
 			$this->client->stop($this->id);
 		}
 		//return $concepts->item;
-		return $concepts;
+		return json_decode($concepts,true);
 	}
 	
 	function getConceptDepth()

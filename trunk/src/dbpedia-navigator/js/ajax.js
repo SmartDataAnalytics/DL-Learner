@@ -52,14 +52,15 @@ function get_article(param)
     		document.getElementById('Positives').innerHTML=response[3];
     		document.getElementById('Negatives').innerHTML=response[4];
     		setRunning(false);
+    		if (response[5].length>0&&response[6].length>0)
+    			loadGoogleMap(response[5],response[6],''+response[1]);
     		if (response[1]=='Article not found'){
     			setTimeout("search_it('label='+document.getElementById('label').value+'&number=10')",2000);
     		}
     		else
     			document.getElementById('LastArticlesBox').style.display='block';
+    			setTimeout('setRunning(true);learnConcept();',1000);
     		}
-    		if (response[5].length>0&&response[6].length>0)
-    			loadGoogleMap(response[5],response[6],''+response[1]);
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -264,7 +265,8 @@ function learnConcept()
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
     		var response = XhrObj.responseText.split('$$');
     		document.getElementById('conceptlink').innerHTML=response[0];
-    		document.getElementById('ConceptInformation').innerHTML=response[1];
+    		document.getElementById('ConceptBox').style.display='block';
+    		setRunning(false);
     	}
     }
     		
