@@ -1,5 +1,3 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,12 +17,11 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigOption;
@@ -35,42 +32,20 @@ import org.dllearner.core.config.ConfigOption;
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelDefault extends WidgetPanelAbstract {
+public class WidgetPanelDefault extends AbstractWidgetPanel<Object> {
 
 	private static final long serialVersionUID = 4059515858894036769L;
 
-	private ConfigOption<?> configOption;
-	private JLabel nameLabel;
-	private JPanel widgetPanel = new JPanel();
-
-	public WidgetPanelDefault(Config config, Component component,
-			Class<? extends Component> componentOption, ConfigOption<?> configOption) {
-
-		this.configOption = configOption;
-
-		showLabel();
-		showThingToChange();
-		add(widgetPanel, BorderLayout.CENTER);
+	public WidgetPanelDefault(Config config, Component component, ConfigOption<Object> configOption) {
+		super(config, component, configOption);
 	}
 
 	@Override
-	public void showLabel() {
-		nameLabel = new JLabel(configOption.getName());
-		nameLabel.setToolTipText(configOption.getDescription());
-		widgetPanel.add(nameLabel);
-	}
-
-	@Override
-	public void showThingToChange() {
+	public void buildWidgetPanel() {
 		JLabel notImplementedLabel = new JLabel(configOption.getClass().getSimpleName()
 				+ " not implemented");
 		notImplementedLabel.setForeground(Color.RED);
-
-		widgetPanel.add(notImplementedLabel);
-	}
-
-	@Override
-	public void setEntry() {
+		add(notImplementedLabel);		
 	}
 
 }

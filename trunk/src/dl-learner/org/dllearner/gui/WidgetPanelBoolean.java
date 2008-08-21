@@ -1,5 +1,3 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,53 +17,35 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Color;
 
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.BooleanConfigOption;
+import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 /**
  * Panel for option Boolean, defined in
  * org.dllearner.core.config.BooleanConfigOption.
  * 
+ * @author Jens Lehmann
  * @author Tilo Hielscher
  */
-public class WidgetPanelBoolean extends WidgetPanelAbstract implements ActionListener {
+public class WidgetPanelBoolean extends AbstractWidgetPanel<Boolean> implements ActionListener {
 
 	private static final long serialVersionUID = -4800583253223939928L;
-	private Config config;
-	private ConfigOption<?> configOption;
-	private JLabel nameLabel;
-	private JPanel widgetPanel = new JPanel();
-	private Component component;
-	private Component oldComponent;
-	private Class<? extends Component> componentOption;
+
 	private Boolean value;
-	private String[] kbBoxItems = { "false", "true" };
-	private JComboBox cb = new JComboBox(kbBoxItems);
+//	private String[] kbBoxItems; // = { "false", "true" };
+	private JComboBox cb; // = new JComboBox(kbBoxItems);
 
-	public WidgetPanelBoolean(Config config, Component component, Component oldComponent,
-			Class<? extends Component> componentOption, ConfigOption<?> configOption) {
-		this.config = config;
-		this.configOption = configOption;
-		this.component = component;
-		this.oldComponent = oldComponent;
-		this.componentOption = componentOption;
-
-		showLabel(); // name of option and tooltip
-		showThingToChange(); // textfield, setbutton
-		add(widgetPanel, BorderLayout.CENTER);
+	public WidgetPanelBoolean(Config config, Component component, BooleanConfigOption configOption) {
+		super(config, component, configOption);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -73,76 +53,27 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements ActionLis
 			value = false;
 		else
 			value = true;
-		setEntry();
-	}
-
-	@Override
-	public void showLabel() {
-		nameLabel = new JLabel(configOption.getName());
-		nameLabel.setToolTipText(configOption.getDescription());
-		widgetPanel.add(nameLabel);
-	}
-
-	@Override
-	public void showThingToChange() {
-		if (component != null) {
-			// BooleanConfigOption
-			if (configOption.getClass().toString().contains("BooleanConfigOption")) {
-				// previous set value
-				if (configOption != null) {
-					value = (Boolean) config.getComponentManager().getConfigOptionValue(component,
-							configOption.getName());
-				}
-				// previous set value from old
-				if (component != null && oldComponent != null) {
-					if (oldComponent.getClass().equals(component.getClass())) {
-						value = (Boolean) config.getComponentManager().getConfigOptionValue(
-								oldComponent, configOption.getName());
-						if (value == null)
-							value = false;
-						else
-							setEntry();
-						// set cb-index
-						if (!value)
-							cb.setSelectedIndex(0);
-						else
-							cb.setSelectedIndex(1);
-					}
-				}
-				// default value
-				else if (value != null && configOption.getDefaultValue() != null) {
-					value = (Boolean) configOption.getDefaultValue();
-				}
-				// value == null?
-				if (value == null) {
-					value = false;
-				}
-				// set cb-index
-				if (!value)
-					cb.setSelectedIndex(0);
-				else
-					cb.setSelectedIndex(1);
-				cb.addActionListener(this);
-				widgetPanel.add(cb);
+		
+		BooleanConfigOption specialOption;
+		specialOption = (BooleanConfigOption) config.getComponentManager().getConfigOption(
+				component.getClass(), configOption.getName());
+		if (specialOption.isValidValue(value)) {
+			try {
+				ConfigEntry<Boolean> specialEntry = new ConfigEntry<Boolean>(specialOption, value);
+				config.getComponentManager().applyConfigEntry(component, specialEntry);
+				// System.out.println("set Boolean: " + configOption.getName() +
+				// " = " + value);
+			} catch (InvalidConfigOptionValueException s) {
+				s.printStackTrace();
 			}
-			// UNKNOWN
-			else {
-				JLabel notImplementedLabel = new JLabel("not a boolean");
-				notImplementedLabel.setForeground(Color.RED);
-				widgetPanel.add(notImplementedLabel);
-			}
-		} else { // configOption == NULL
-			JLabel noConfigOptionLabel = new JLabel("no init (Boolean)");
-			noConfigOptionLabel.setForeground(Color.MAGENTA);
-			widgetPanel.add(noConfigOptionLabel);
-		}
+		} else
+			System.out.println("Boolean: not valid value");		
 	}
 
-	@Override
 	public void setEntry() {
 		BooleanConfigOption specialOption;
 		specialOption = (BooleanConfigOption) config.getComponentManager().getConfigOption(
-				componentOption, configOption.getName());
+				component.getClass(), configOption.getName());
 		if (specialOption.isValidValue(value)) {
 			try {
 				ConfigEntry<Boolean> specialEntry = new ConfigEntry<Boolean>(specialOption, value);
@@ -154,6 +85,30 @@ public class WidgetPanelBoolean extends WidgetPanelAbstract implements ActionLis
 			}
 		} else
 			System.out.println("Boolean: not valid value");
+	}
+
+	@Override
+	public void buildWidgetPanel() {
+		add(getLabel());
+		
+		value = config.getConfigOptionValue(component, configOption);
+		
+		if (value == null)
+			value = false;
+		else
+			setEntry();
+		
+		// set cb-index
+		String[] kbBoxItems = { "false", "true" };
+		cb = new JComboBox(kbBoxItems);
+		if (!value)
+			cb.setSelectedIndex(0);
+		else
+			cb.setSelectedIndex(1);		
+		
+		cb.addActionListener(this);
+		add(cb);
+		
 	}
 
 }

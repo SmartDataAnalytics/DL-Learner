@@ -1,5 +1,3 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,6 +17,7 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -26,24 +25,24 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Color;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 
 /**
@@ -56,24 +55,18 @@ import org.dllearner.core.owl.ObjectProperty;
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionListener {
+public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> implements ActionListener {
 
 	private static final long serialVersionUID = 7832726987046601916L;
-	private Config config;
-	private ConfigOption<?> configOption;
+
 	private GridBagLayout gridbag = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
 
-	private JLabel nameLabel;
 	private JPanel widgetPanel = new JPanel();
 	private JButton addButton = new JButton("add");
 	private JButton removeButton = new JButton("remove");
 	private JButton clearButton = new JButton("clear");
 	private JTextField stringField = new JTextField(30);
-
-	private Component component;
-	private Component oldComponent;
-	private Class<? extends Component> componentOption;
 
 	private Set<String> value = new HashSet<String>();
 	private JList stringList = new JList();
@@ -81,24 +74,8 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 
 	private CheckBoxList cBL = new CheckBoxList(this);
 
-	public WidgetPanelStringSet(Config config, Component component, Component oldComponent,
-			Class<? extends Component> componentOption, ConfigOption<?> configOption) {
-
-		this.config = config;
-		this.configOption = configOption;
-		this.component = component;
-		this.oldComponent = oldComponent;
-		this.componentOption = componentOption;
-
-		widgetPanel.setLayout(gridbag);
-		add(widgetPanel, BorderLayout.CENTER);
-		showLabel(); // name of option and tooltip
-		showThingToChange(); // textfield, setbutton
-		stringList.setModel(listModel);
-		// ActionListeners
-		addButton.addActionListener(this);
-		removeButton.addActionListener(this);
-		clearButton.addActionListener(this);
+	public WidgetPanelStringSet(Config config, Component component, StringSetConfigOption configOption) {
+		super(config, component, configOption);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -143,140 +120,10 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 		}
 	}
 
-	@Override
-	public void showLabel() {
-		nameLabel = new JLabel(configOption.getName());
-		nameLabel.setToolTipText(configOption.getDescription());
-		buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
-		constraints.anchor = GridBagConstraints.WEST;
-		gridbag.setConstraints(nameLabel, constraints);
-		widgetPanel.add(nameLabel, constraints);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void showThingToChange() {
-		if (component != null) {
-			// StringSetConfigOption
-			if (configOption.getClass().toString().contains("StringSetConfigOption")) {
-				// previous set value
-				if (configOption != null) {
-					// take set
-					value = (Set<String>) config.getComponentManager().getConfigOptionValue(
-							component, configOption.getName());
-					// previous set value from old
-					if (component != null && oldComponent != null) {
-						if (oldComponent.getClass().equals(component.getClass())) {
-							value = (Set<String>) config.getComponentManager()
-									.getConfigOptionValue(oldComponent, configOption.getName());
-							if (value != null) {
-								setEntry();
-							}
-						}
-					}
-					// fill list
-					if (value != null) {
-						for (Iterator<String> iterator = value.iterator(); iterator.hasNext();) {
-							String item = iterator.next();
-							listModel.addElement(item);
-						}
-					}
-				}
-
-				if (!isSpecial()) {
-					// NORMAL LAYOUT
-					// stringField
-					buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
-					gridbag.setConstraints(stringField, constraints);
-					widgetPanel.add(stringField, constraints);
-					// addButton
-					buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
-					gridbag.setConstraints(addButton, constraints);
-					widgetPanel.add(addButton, constraints);
-					// list
-					stringList.setModel(listModel);
-					stringList.setLayoutOrientation(JList.VERTICAL);
-					stringList.setVisibleRowCount(-1);
-					JScrollPane stringListScroller = new JScrollPane(stringList);
-					stringListScroller.setPreferredSize(new Dimension(380, 100));
-					buildConstraints(constraints, 0, 2, 1, 2, 100, 100);
-					gridbag.setConstraints(stringListScroller, constraints);
-					widgetPanel.add(stringListScroller, constraints);
-					// removeButton
-					buildConstraints(constraints, 1, 2, 1, 1, 100, 100);
-					gridbag.setConstraints(removeButton, constraints);
-					widgetPanel.add(removeButton, constraints);
-					// clearButton
-					buildConstraints(constraints, 1, 3, 1, 1, 100, 100);
-					gridbag.setConstraints(clearButton, constraints);
-					widgetPanel.add(clearButton, constraints);
-				} else {
-					// SPECIAL LAYOUT
-					// ComboBoxList
-					buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
-					gridbag.setConstraints(cBL, constraints);
-					widgetPanel.add(cBL, constraints);
-					// DEFINE LIST
-					// positiveExamples or negativeExamples
-					if (configOption.getName().equalsIgnoreCase("positiveExamples")
-							|| configOption.getName().equalsIgnoreCase("negativeExamples")) {
-						// fill lists
-						Set<Individual> individualsSet = config.getReasoningService()
-								.getIndividuals();
-						LinkedList<Individual> individuals = new LinkedList<Individual>(
-								individualsSet);
-						for (Individual ind : individuals)
-							cBL.add(ind.getName());
-					}
-					// allowedConcepts or ignoredConcepts
-					if (configOption.getName().equalsIgnoreCase("allowedConcepts")
-							|| configOption.getName().equalsIgnoreCase("ignoredConcepts")) {
-						// fill lists
-						Set<NamedClass> atomicsSet = config.getReasoningService()
-								.getNamedClasses();
-						LinkedList<NamedClass> atomicConcepts = new LinkedList<NamedClass>(
-								atomicsSet);
-						for (NamedClass ind : atomicConcepts)
-							cBL.add(ind.getName());
-					}
-					// allowedRoles or ignoredRoles
-					if (configOption.getName().equalsIgnoreCase("allowedRoles")
-							|| configOption.getName().equalsIgnoreCase("ignoredRoles")) {
-						// fill lists
-						Set<ObjectProperty> atomicsSet = config.getReasoningService()
-								.getObjectProperties();
-						LinkedList<ObjectProperty> atomicRoles = new LinkedList<ObjectProperty>(
-								atomicsSet);
-						for (ObjectProperty ind : atomicRoles)
-							cBL.add(ind.getName());
-					}
-					// set selections
-					if (value != null)
-						cBL.setSelections(value);
-				}
-			}
-			// UNKNOWN
-			else {
-				JLabel notImplementedLabel = new JLabel(" not a set of strings");
-				notImplementedLabel.setForeground(Color.RED);
-				buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
-				gridbag.setConstraints(notImplementedLabel, constraints);
-				widgetPanel.add(notImplementedLabel);
-			}
-		} else { // configOption == NULL
-			JLabel noConfigOptionLabel = new JLabel(" no init (StringSet)");
-			noConfigOptionLabel.setForeground(Color.MAGENTA);
-			buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
-			gridbag.setConstraints(noConfigOptionLabel, constraints);
-			widgetPanel.add(noConfigOptionLabel, constraints);
-		}
-	}
-
-	@Override
 	public void setEntry() {
 		StringSetConfigOption specialOption;
 		specialOption = (StringSetConfigOption) config.getComponentManager().getConfigOption(
-				componentOption, configOption.getName());
+				component.getClass(), configOption.getName());
 		if (specialOption.isValidValue(value)) {
 			try {
 				ConfigEntry<Set<String>> specialEntry = new ConfigEntry<Set<String>>(specialOption,
@@ -318,6 +165,114 @@ public class WidgetPanelStringSet extends WidgetPanelAbstract implements ActionL
 			return true;
 		else
 			return false;
+	}
+
+	@Override
+	public void buildWidgetPanel() {
+		widgetPanel = new JPanel();
+		widgetPanel.setLayout(gridbag);
+		add(widgetPanel, BorderLayout.CENTER);
+		add(getLabel());
+		
+		value = config.getConfigOptionValue(component, configOption);
+		
+		// fill list
+		if (value != null) {
+			setEntry();
+			for (Iterator<String> iterator = value.iterator(); iterator.hasNext();) {
+				String item = iterator.next();
+				listModel.addElement(item);
+			}
+		}
+
+		gridbag = new GridBagLayout();
+		constraints = new GridBagConstraints();
+		cBL = new CheckBoxList(this);
+		stringList = new JList();
+		listModel = new DefaultListModel();
+		
+		if (!isSpecial()) {
+			// NORMAL LAYOUT
+			// stringField
+			buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+			gridbag.setConstraints(stringField, constraints);
+			widgetPanel.add(stringField, constraints);
+			// addButton
+			buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
+			gridbag.setConstraints(addButton, constraints);
+			widgetPanel.add(addButton, constraints);
+			// list
+			stringList.setModel(listModel);
+			stringList.setLayoutOrientation(JList.VERTICAL);
+			stringList.setVisibleRowCount(-1);
+			JScrollPane stringListScroller = new JScrollPane(stringList);
+			stringListScroller.setPreferredSize(new Dimension(380, 100));
+			buildConstraints(constraints, 0, 2, 1, 2, 100, 100);
+			gridbag.setConstraints(stringListScroller, constraints);
+			widgetPanel.add(stringListScroller, constraints);
+			// removeButton
+			buildConstraints(constraints, 1, 2, 1, 1, 100, 100);
+			gridbag.setConstraints(removeButton, constraints);
+			widgetPanel.add(removeButton, constraints);
+			// clearButton
+			buildConstraints(constraints, 1, 3, 1, 1, 100, 100);
+			gridbag.setConstraints(clearButton, constraints);
+			widgetPanel.add(clearButton, constraints);
+		} else {
+			// SPECIAL LAYOUT
+			// ComboBoxList
+			buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
+			gridbag.setConstraints(cBL, constraints);
+			widgetPanel.add(cBL, constraints);
+			// DEFINE LIST
+			// positiveExamples or negativeExamples
+			if (configOption.getName().equalsIgnoreCase("positiveExamples")
+					|| configOption.getName().equalsIgnoreCase("negativeExamples")) {
+				// fill lists
+				Set<Individual> individualsSet = config.getReasoningService()
+						.getIndividuals();
+				LinkedList<Individual> individuals = new LinkedList<Individual>(
+						individualsSet);
+				for (Individual ind : individuals)
+					cBL.add(ind.getName());
+			}
+			// allowedConcepts or ignoredConcepts
+			if (configOption.getName().equalsIgnoreCase("allowedConcepts")
+					|| configOption.getName().equalsIgnoreCase("ignoredConcepts")) {
+				// fill lists
+				Set<NamedClass> atomicsSet = config.getReasoningService()
+						.getNamedClasses();
+				LinkedList<NamedClass> atomicConcepts = new LinkedList<NamedClass>(
+						atomicsSet);
+				for (NamedClass ind : atomicConcepts)
+					cBL.add(ind.getName());
+			}
+			// allowedRoles or ignoredRoles
+			if (configOption.getName().equalsIgnoreCase("allowedRoles")
+					|| configOption.getName().equalsIgnoreCase("ignoredRoles")) {
+				// fill lists
+				Set<ObjectProperty> atomicsSet = config.getReasoningService()
+						.getObjectProperties();
+				LinkedList<ObjectProperty> atomicRoles = new LinkedList<ObjectProperty>(
+						atomicsSet);
+				for (ObjectProperty ind : atomicRoles)
+					cBL.add(ind.getName());
+			}
+			// set selections
+			if (value != null)
+				cBL.setSelections(value);
+		}		
+		
+		stringList.setModel(listModel);
+		
+		addButton = new JButton("add");
+		removeButton = new JButton("remove");
+		clearButton = new JButton("clear");		
+		// ActionListeners
+		addButton.addActionListener(this);
+		removeButton.addActionListener(this);
+		clearButton.addActionListener(this);		
+		
 	}
 
 }

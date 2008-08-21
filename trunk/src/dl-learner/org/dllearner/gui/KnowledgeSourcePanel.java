@@ -1,5 +1,3 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,18 +17,21 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui;
 
-import java.util.List;
-import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 
-// import org.dllearner.kb.*;
 
 /**
  * KnowledgeSourcePanel, tab 0. Choose Source, change Options and final initiate
@@ -80,9 +81,12 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		choosePanel.add(setButton);
 		choosenClassIndex = cb.getSelectedIndex();
 
-		optionPanel = new OptionPanel(config, config.getKnowledgeSource(), config
-				.getOldKnowledgeSource(), sources.get(choosenClassIndex));
-		initPanel.add(initButton);
+		// whenever a component is selected, we immediately create an instance (non-initialised)
+		KnowledgeSource ks = config.newKnowledgeSource(sources.get(cb.getSelectedIndex()));
+		optionPanel = new OptionPanel(config, ks);
+		
+//		optionPanel = new OptionPanel(config, config.getKnowledgeSource(), sources.get(choosenClassIndex));
+		// initPanel.add(initButton);
 
 		add(choosePanel, BorderLayout.PAGE_START);
 		add(optionPanel, BorderLayout.CENTER);
@@ -167,8 +171,8 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	 * update OptionPanel with new selection
 	 */
 	public void updateOptionPanel() {
-		optionPanel.update(config.getKnowledgeSource(), config.getOldKnowledgeSource(), sources
-				.get(choosenClassIndex));
+		// TODO implement properly !!
+//		optionPanel.update(config.getKnowledgeSource(), sources.get(choosenClassIndex));
 	}
 
 	/**

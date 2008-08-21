@@ -1,5 +1,3 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,6 +17,7 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -38,9 +37,10 @@ import java.io.FileWriter;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * StartGUI
+ * This class builds the basic GUI elements and is used to start the DL-Learner GUI.
  * 
  * @author Tilo Hielscher
+ * @author Jens Lehmann
  */
 public class StartGUI extends JFrame implements ActionListener {
 
@@ -49,8 +49,9 @@ public class StartGUI extends JFrame implements ActionListener {
 	private JTabbedPane tabPane = new JTabbedPane();
 
 	private Config config = new Config();
-	private ConfigLoad configLoad = new ConfigLoad(config, this);;
-	private ConfigSave configSave = new ConfigSave(config, this);;
+
+	private ConfigLoad configLoad = new ConfigLoad(config, this);
+	private ConfigSave configSave = new ConfigSave(config, this);
 
 	private KnowledgeSourcePanel tab0;
 	private ReasonerPanel tab1;
@@ -60,19 +61,23 @@ public class StartGUI extends JFrame implements ActionListener {
 
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu menuFile = new JMenu("File");
-	private JMenuItem openItem = new JMenuItem("Open Config");
-	private JMenuItem saveItem = new JMenuItem("Save As Config");
+	private JMenuItem openItem = new JMenuItem("Open Conf File ...");
+	private JMenuItem saveItem = new JMenuItem("Save As Conf File ...");
+	private JMenuItem exitItem = new JMenuItem("Exit");
+	private JMenu menuHelp = new JMenu("Help");
+	private JMenuItem aboutItem = new JMenuItem("About");
+	private JMenuItem tutorialItem = new JMenuItem("Tutorial");
 
 	public StartGUI() {
 		this(null);
 	}
-	
+
 	public StartGUI(File file) {
-		this.setTitle("DL-Learner");
+		this.setTitle("DL-Learner GUI");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationByPlatform(true);
 		this.setSize(800, 600);
-
+		
 		// set icon
 		if (this.getClass().getResource("icon.gif") != null)
 			setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(
@@ -89,15 +94,22 @@ public class StartGUI extends JFrame implements ActionListener {
 		tabPane.addTab("Learning Algorithm", tab3);
 		tabPane.addTab("Run", tab4);
 
-		this.setJMenuBar(menuBar);
+		setJMenuBar(menuBar);
 		menuBar.add(menuFile);
 		menuFile.add(openItem);
 		openItem.addActionListener(this);
 		menuFile.add(saveItem);
 		saveItem.addActionListener(this);
+		menuFile.add(exitItem);
+		exitItem.addActionListener(this);
+		menuBar.add(menuHelp);
+		menuHelp.add(tutorialItem);
+		tutorialItem.addActionListener(this);
+		menuHelp.add(aboutItem);
+		aboutItem.addActionListener(this);
 
-		this.add(tabPane);
-		this.setVisible(true);
+		add(tabPane);
+		setVisible(true);
 		updateTabColors();
 
 		// Register a change listener
@@ -107,8 +119,8 @@ public class StartGUI extends JFrame implements ActionListener {
 				init();
 			}
 		});
-		
-		if(file != null) {
+
+		if (file != null) {
 			configLoad.openFile(file);
 			configLoad.startParser();
 		}
@@ -132,10 +144,10 @@ public class StartGUI extends JFrame implements ActionListener {
 		logger.setLevel(Level.INFO);
 
 		File file = null;
-		if(args.length > 0)
+		if (args.length > 0)
 			file = new File(args[args.length - 1]);
 
-		new StartGUI(file);	
+		new StartGUI(file);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -162,9 +174,8 @@ public class StartGUI extends JFrame implements ActionListener {
 				configLoad.openFile(fc.getSelectedFile());
 				configLoad.startParser();
 			}
-		}
 		// save as config file
-		if (e.getSource() == saveItem) {
+		} else if (e.getSource() == saveItem) {
 			JFileChooser fc = new JFileChooser(new File("examples/"));
 			// FileFilter only *.conf
 			fc.addChoosableFileFilter(new FileFilter() {
@@ -194,6 +205,15 @@ public class StartGUI extends JFrame implements ActionListener {
 				}
 			}
 			System.out.println("config file saved");
+		// exit
+		} else if (e.getSource() == exitItem) {
+			dispose();
+		// tutorial
+		} else if (e.getSource() == tutorialItem) {
+			new TutorialWindow();
+		// about
+		} else if (e.getSource() == aboutItem) {
+			new AboutWindow();
 		}
 	}
 

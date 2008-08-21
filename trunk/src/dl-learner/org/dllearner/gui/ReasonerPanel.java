@@ -26,10 +26,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
  * ReasonerPanel, tab 1. Choose Resoner, change Options and final initiate
@@ -58,10 +61,13 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		this.config = config;
 		this.startGUI = startGUI;
 		reasoner = config.getComponentManager().getReasonerComponents();
+		// to set a default reasoner, we move it to the beginning of the list
+		reasoner.remove(OWLAPIReasoner.class);
+		reasoner.add(0, OWLAPIReasoner.class);
 
 		initButton = new JButton("Init Reasoner");
 		initButton.addActionListener(this);
-		initPanel.add(initButton);
+		// initPanel.add(initButton);
 		initButton.setEnabled(true);
 		setButton = new JButton("Set");
 		setButton.addActionListener(this);
@@ -73,8 +79,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 			cb.addItem(config.getComponentManager().getComponentName(reasoner.get(i)));
 		}
 
-		optionPanel = new OptionPanel(config, config.getReasoner(), config.getOldReasonerSet(),
-				reasoner.get(choosenClassIndex));
+		ReasonerComponent rc = config.newReasoner(reasoner.get(cb.getSelectedIndex()));
+		optionPanel = new OptionPanel(config, rc);
 
 		choosePanel.add(setButton);
 		cb.addActionListener(this);
@@ -168,8 +174,8 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	 * update OptionPanel with new selection
 	 */
 	public void updateOptionPanel() {
-		optionPanel.update(config.getReasoner(), config.getOldReasonerSet(), reasoner
-				.get(choosenClassIndex));
+//		 TODO: implement properly !!
+//		optionPanel.update(config.getReasoner(), reasoner.get(choosenClassIndex));
 	}
 
 	/**
