@@ -58,6 +58,7 @@ import org.dllearner.kb.manipulator.Rule.Months;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
+import org.dllearner.scripts.NT2RDF;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
 
@@ -290,7 +291,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		
 		
 		Configuration configuration = new Configuration(
-				getTupleAquisitor(), 
+				tupleAquisitor, 
 				manipulator,
 				recursionDepth,
 				getAllSuperClasses,
@@ -325,6 +326,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 					fw.close();
 
 					dumpFile = (new File(basedir + filename)).toURI().toURL();
+					if(debug){
+					NT2RDF.convertNT2RDF(basedir + filename);
+					//System.exit(0);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -388,11 +393,14 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	public SPARQLTasks getSPARQLTasks()	{
 		
+		
 		// get Options for endpoints
 		if (predefinedEndpoint == null) {
 			endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
 		} else {
 			endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
+			//System.out.println(endpoint);
+			
 		}
 		
 		if (this.useCache)

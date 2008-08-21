@@ -47,14 +47,18 @@ public class PredicateReplacementRule extends Rule{
 		for (RDFNodeTuple tuple : tuples) {
 			if(tuple.aPartContains(oldPredicate)){
 				tuple.a = new ResourceImpl(newPredicate);
-				JamonMonitorLogger.increaseCount(PredicateReplacementRule.class, "replacedPredicates");
+				logJamon();
 			}
 			keep.add(tuple);
 		}
 		return  keep;
 	}
 
-	
+	@Override
+	public void logJamon(){
+		JamonMonitorLogger.increaseCount(PredicateReplacementRule.class, "replacedPredicates");
+	}
+
 	
 	
 }

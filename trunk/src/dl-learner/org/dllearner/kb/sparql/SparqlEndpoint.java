@@ -54,8 +54,8 @@ public class SparqlEndpoint {
 	}
 	
 	public String getHTTPRequest() {
-		String ret = this.url.toString()+"/sparql?";
-		ret += (defaultGraphURIs.isEmpty())?"":"default-graph-uri="+defaultGraphURIs.remove(0)+"&";
+		String ret = this.url.toString()+"?";
+		ret += (defaultGraphURIs.isEmpty())?"":"default-graph-uri="+defaultGraphURIs.get(0)+"&";
 		ret += "query="; 
 		return ret;
 	}
@@ -68,6 +68,10 @@ public class SparqlEndpoint {
 		return namedGraphURIs;
 	}
 	
+	@Override
+	public String toString(){
+		return getHTTPRequest();
+	}
 	/*public static SparqlEndpoint getEndpointByNumber(int i) {
 
 		switch (i) {

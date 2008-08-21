@@ -43,10 +43,15 @@ public class SimpleObjectFilterRule extends Rule{
 			if(!tuple.bPartContains(objectFilter)){
 				keep.add(tuple);
 			}else{
-				JamonMonitorLogger.increaseCount(SimpleObjectFilterRule.class, "filteredTriples");
+				logJamon();
 			}
 		}
 		return  keep;
+	}
+	
+	@Override
+	public void logJamon(){
+		JamonMonitorLogger.increaseCount(SimpleObjectFilterRule.class, "filteredTriples");
 	}
 
 	/*

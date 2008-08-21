@@ -63,6 +63,11 @@ public class DBPediaNavigatorCityLocatorRule extends Rule{
 	
 	}
 	
+	@Override
+	public void logJamon(){
+		
+	}
+	
 	
 	
 	

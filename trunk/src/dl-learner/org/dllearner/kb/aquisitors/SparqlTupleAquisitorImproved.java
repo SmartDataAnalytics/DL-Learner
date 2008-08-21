@@ -85,23 +85,23 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 			RDFNode nextOBJ = binding.get(OBJECT+i);
 			RDFNode nextPRED = binding.get(PREDICATE+i);
 			RDFNodeTuple tmptuple =  new RDFNodeTuple(nextPRED, nextOBJ );
-			add(uri,tmptuple);
+			addToLocalCache(uri,tmptuple);
 			
 			boolean cont = !nextOBJ.isLiteral();
-			for (i=0; (i < recursionDepth) && cont; i++) {
+			for (i=1; (i < recursionDepth) && cont; i++) {
 				RDFNode tmpPREDURI = binding.get(PREDICATE+i);
 				RDFNode tmpOBJURI = binding.get(OBJECT+i);
 				if(tmpOBJURI==null) {
 					cont=false;
 				}else if (tmpOBJURI.isLiteral()) {
 					tmptuple =  new RDFNodeTuple(tmpPREDURI, tmpOBJURI );
-					add(nextOBJ.toString(), tmptuple);
+					addToLocalCache(nextOBJ.toString(), tmptuple);
 					//logger.trace(tmptuple);
 					//logger.trace("For: "+nextOBJ.toString()+ " added :"+resources.get(nextOBJ.toString()));
 					cont=false;
 				}else {
 					tmptuple =  new RDFNodeTuple(tmpPREDURI, tmpOBJURI );
-					add(nextOBJ.toString(), tmptuple);
+					addToLocalCache(nextOBJ.toString(), tmptuple);
 					//logger.trace(tmptuple);
 					//logger.trace("For: "+nextOBJ.toString()+ " added :"+resources.get(nextOBJ.toString()));
 					nextOBJ = tmpOBJURI;
@@ -124,6 +124,7 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 	public SortedSet<RDFNodeTuple> retrieveTuplesForClassesOnly(String uri){
 		int tmp = recursionDepth;
 		recursionDepth=4;
+		
 		SortedSet<RDFNodeTuple> tmpSet = retrieveTupel(uri);
 		recursionDepth = tmp;
 		return tmpSet;
@@ -133,12 +134,15 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 	}
 	
 	
-	private void add(String uri, RDFNodeTuple tuple){
+	private void addToLocalCache(String uri, RDFNodeTuple tuple){
 		SortedSet<RDFNodeTuple> set = resources.get(uri);
+	
+		
 		if(set==null){
 			set = new TreeSet<RDFNodeTuple>();
 			set.add(tuple);
 			resources.put(uri, set );
+			
 		}else {
 			set.add(tuple);
 		}

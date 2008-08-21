@@ -60,12 +60,19 @@ public class TypeFilterRule extends Rule{
 			if(!remove){
 				keep.add(tuple);
 			}else{
-				JamonMonitorLogger.increaseCount(TypeFilterRule.class, "filteredTriples");
+				logJamon();
 			}
 			
 		}
 		return  keep;
 	}
+	
+	@Override
+	public void logJamon(){
+		JamonMonitorLogger.increaseCount(TypeFilterRule.class, "filteredTriples");
+	}
+
+	
 	
 
 	/*

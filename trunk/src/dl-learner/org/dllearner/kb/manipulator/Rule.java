@@ -59,4 +59,6 @@ public abstract class Rule {
 		}
 		System.out.println(Months.values());
 	}
+	
+	public abstract void logJamon();
 }

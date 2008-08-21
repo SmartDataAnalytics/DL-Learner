@@ -86,6 +86,7 @@ import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -155,7 +156,9 @@ public class Start {
 		Start start = new Start(file);
 		start.start(inQueryMode);
 		// write JaMON report in HTML file
-		Files.createFile(new File("log/jamon.html"), MonitorFactory.getReport());
+		File jamonlog = new File("log/jamon.html");
+		Files.createFile(jamonlog, MonitorFactory.getReport());
+		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 	}
 
 	/**
