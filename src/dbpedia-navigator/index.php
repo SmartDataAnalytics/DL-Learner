@@ -117,7 +117,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	  <div id="conceptlink" style="display:block"></div>
 	  </div> <!-- boxcontent -->
 	</div> <!-- box -->
-</td><td width="19%"><span id="Loading" style="display:none">Server Call... <a href=""><img src="images/remove.png" onclick="stopServerCall();return false;" /></a></span></td></tr></table></div>
+</td><td width="19%" style="text-align:center"><span id="Loading" style="display:none">Server Call... <a href=""><img src="images/remove.png" onclick="stopServerCall();return false;" /></a></span></td></tr></table></div>
 <div id="layer" style="display:none">
 	<div id="layerContent" style="display:none"></div>
 </div>

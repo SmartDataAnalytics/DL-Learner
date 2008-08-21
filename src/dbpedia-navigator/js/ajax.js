@@ -9,7 +9,7 @@ function search_it(param)
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_search.php');
+    XhrObj.open("POST",'ajax_search.php',true);
     		
     XhrObj.onreadystatechange = function()
     {
@@ -40,7 +40,7 @@ function get_article(param)
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_get_article.php');
+    XhrObj.open("POST",'ajax_get_article.php',true);
     		
     XhrObj.onreadystatechange = function()
     {
@@ -59,7 +59,7 @@ function get_article(param)
     		}
     		else
     			document.getElementById('LastArticlesBox').style.display='block';
-    			setTimeout('setRunning(true);learnConcept();',1000);
+    			learnConcept();
     		}
     }
     		
@@ -78,7 +78,7 @@ function get_class(param)
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_get_class.php');
+    XhrObj.open("POST",'ajax_get_class.php',true);
     		
     XhrObj.onreadystatechange = function()
     {
@@ -106,7 +106,7 @@ function toPositive(param)
     	var XhrObj = new XMLHttpRequest();
     }
     
-    XhrObj.open("POST",'ajax_to_positive.php');
+    XhrObj.open("POST",'ajax_to_positive.php',true);
     
     XhrObj.onreadystatechange = function()
     {
@@ -132,7 +132,7 @@ function toNegative(param)
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_to_negative.php');
+    XhrObj.open("POST",'ajax_to_negative.php',true);
     		
     XhrObj.onreadystatechange = function()
     {
@@ -158,7 +158,7 @@ function clearPositives()
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_clear_positives.php');
+    XhrObj.open("POST",'ajax_clear_positives.php',true);
     		
     XhrObj.onreadystatechange = function()
     {
@@ -182,7 +182,7 @@ function clearNegatives()
     	var XhrObj = new XMLHttpRequest();
     }
     	
-    XhrObj.open("POST",'ajax_clear_negatives.php');
+    XhrObj.open("POST",'ajax_clear_negatives.php',true);
     		
     XhrObj.onreadystatechange = function()
     {
@@ -206,7 +206,7 @@ function removePosInterest(param)
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_remove_pos_interest.php');
+    XhrObj.open("POST",'ajax_remove_pos_interest.php',true);
     		
     XhrObj.onreadystatechange = function()
     {
@@ -232,7 +232,7 @@ function removeNegInterest(param)
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_remove_neg_interest.php');
+    XhrObj.open("POST",'ajax_remove_neg_interest.php',true);
     		
     XhrObj.onreadystatechange = function()
     {
@@ -249,6 +249,7 @@ function removeNegInterest(param)
     	
 function learnConcept()
 {
+	setRunning(true);
     if (document.all){
     	//IE
     	var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
@@ -258,14 +259,15 @@ function learnConcept()
     	var XhrObj = new XMLHttpRequest();
     }
     
-    XhrObj.open("POST",'ajax_learn_concepts.php');
+    XhrObj.open("POST",'ajax_learn_concepts.php',true);
     
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
-    		document.getElementById('conceptlink').innerHTML=response[0];
-    		document.getElementById('ConceptBox').style.display='block';
+    		if (XhrObj.responseText!='-'){
+	    		document.getElementById('conceptlink').innerHTML=XhrObj.responseText;
+	    		document.getElementById('ConceptBox').style.display='block';
+	    	}
     		setRunning(false);
     	}
     }
@@ -285,7 +287,7 @@ function stopServerCall()
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_stop_server_call.php');
+    XhrObj.open("POST",'ajax_stop_server_call.php',true);
     	
     XhrObj.onreadystatechange = function()
     {
@@ -308,7 +310,7 @@ function getSubjectsFromConcept(param)
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_get_subjects_from_concept.php');
+    XhrObj.open("POST",'ajax_get_subjects_from_concept.php',true);
     
     XhrObj.onreadystatechange = function()
     {
@@ -334,7 +336,7 @@ function getSubjectsFromCategory(param)
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_get_subjects_from_category.php');
+    XhrObj.open("POST",'ajax_get_subjects_from_category.php',true);
     
     XhrObj.onreadystatechange = function()
     {
@@ -364,7 +366,7 @@ function setPositivesAndNegatives(param)
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_set_positives_and_negatives.php');
+    XhrObj.open("POST",'ajax_set_positives_and_negatives.php',true);
     
     XhrObj.onreadystatechange = function()
     {
@@ -390,7 +392,7 @@ function generateURL()
     	var XhrObj = new XMLHttpRequest();
     }
     		
-    XhrObj.open("POST",'ajax_generate_URL.php');
+    XhrObj.open("POST",'ajax_generate_URL.php',true);
     
     XhrObj.onreadystatechange = function()
     {

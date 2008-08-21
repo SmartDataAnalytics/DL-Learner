@@ -25,16 +25,20 @@
 		$sc=new DLLearnerConnection($id, $ksID);
 		try{
 			$concepts=$sc->getConceptFromExamples($posArray,$negArray);
-			$concept.="<table border=0>\n";
-			foreach ($concepts as $con){
-				$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('concept=".$con['descriptionManchesterSyntax']."');return false;\" />".$con['descriptionManchesterSyntax']."</a> (Accuracy: ".(floatVal($con['accuracy'])*100)."%)</td></tr>";
+			if (count($concepts)>0){
+				$concept.="<table border=0>\n";
+				$concept.="<tr><td>You could also be interested in articles matching these descriptions:</td></tr>";
+				foreach ($concepts as $con){
+					$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('concept=".$con['descriptionManchesterSyntax']."');return false;\" />".$con['NaturalLanguage']."</a> (Accuracy: ".(floatVal($con['accuracy'])*100)."%)</td></tr>";
+				}
+				$concept.="</table>";
 			}
-			$concept.="</table>";
+			else $concept="-";
 		} catch(Exception $e){
 			$concept.=$e->getMessage();
 		}
 	}
-	else $concept="You must choose at least one positive example.";
+	else $concept="-";
 	
 	print $concept;
 ?>

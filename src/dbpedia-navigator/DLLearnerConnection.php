@@ -10,6 +10,7 @@ class DLLearnerConnection
 {
 	private $DBPediaUrl;
 	private $ttl;
+	private $learnttl;
 	private $lang;
 	// 
 	private $client;
@@ -26,6 +27,7 @@ class DLLearnerConnection
 		require_once("Settings.php");
 		$settings=new Settings();
 		$this->ttl=$settings->sparqlttl;
+		$this->learnttl=$settings->learnttl;
 		$this->lang=$settings->language;
 		$this->DBPediaUrl=$settings->dbpediauri;
 		$this->client=new SoapClient("main.wsdl",array('features' => SOAP_SINGLE_ELEMENT_ARRAYS));
@@ -89,7 +91,6 @@ class DLLearnerConnection
 				
 				// see what we have learned so far
 				//$concepts=$this->client->getCurrentlyBestConcepts($this->id,3,"kb");
-				$concepts=$this->client->getCurrentlyBestEvaluatedDescriptions($this->id,3);
 				$running=$this->client->isAlgorithmRunning($this->id);
 				
 				$seconds = $i * $sleeptime;
@@ -104,12 +105,12 @@ class DLLearnerConnection
 					$this->client->stop($this->id);
 					throw new Exception("Learning stopped");
 				}
-			} while($seconds<$this->ttl&&$running);
+			} while($seconds<$this->learnttl&&$running);
 			
 			$this->client->stop($this->id);
 		}
 		//return $concepts->item;
-		return json_decode($concepts,true);
+		return json_decode($this->client->getCurrentlyBestEvaluatedDescriptions($this->id,3),true);
 	}
 	
 	function getConceptDepth()
