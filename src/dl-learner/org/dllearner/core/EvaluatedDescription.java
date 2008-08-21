@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.kb.sparql.NaturalLanguageDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
@@ -162,6 +163,10 @@ public class EvaluatedDescription {
 		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(description, limit);
 	}
 	
+	public String getNaturalDescription(){
+		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(description);
+	}
+	
 	/**
 	 * This convenience method can be used to store and exchange evaluated
 	 * descriptions by transforming them to a JSON string.
@@ -174,6 +179,7 @@ public class EvaluatedDescription {
 			OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(description);
 			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(d));
 			object.put("accuracy", score.getAccuracy());
+			object.put("NaturalLanguage", getNaturalDescription());
 			object.put("coveredPositives", getJSONArray(score.getCoveredPositives()));
 			object.put("coveredNegatives", getJSONArray(score.getCoveredNegatives()));
 			object.put("notCoveredPositives", getJSONArray(score.getNotCoveredPositives()));
