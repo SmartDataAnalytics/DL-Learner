@@ -39,8 +39,7 @@ import org.dllearner.core.config.ConfigOption;
  */
 public final class ComponentPool {
 
-	private static Logger logger = Logger
-	.getLogger(ComponentPool.class);	
+	private static Logger logger = Logger.getLogger(ComponentPool.class);	
 	
 	// stores all components, which are live (components which are
 	// no longer used have to be deregistered)

@@ -20,12 +20,16 @@
 
 package org.dllearner.gui;
 
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.config.ConfigOption;
 
 // import org.dllearner.core.Component;
 
@@ -37,28 +41,32 @@ import org.dllearner.core.ReasonerComponent;
  * @author Tilo Hielscher
  */
 public class Config {
+	
 	private ComponentManager cm = ComponentManager.getInstance();
+	
+	// the components currently active
 	private KnowledgeSource source;
-	private KnowledgeSource oldSource;
 	private ReasonerComponent reasoner;
-	private ReasonerComponent oldReasoner;
 	private ReasoningService rs;
 	private LearningProblem lp;
-	private LearningProblem oldLearningProblem;
 	private LearningAlgorithm la;
-	private LearningAlgorithm oldLearningAlgorithm;
+
 	private boolean[] isInit = new boolean[4];
+	// stores whether a component needs to be initialised ("previous" components have changed configuration values)
+//	private boolean[] needsInit = new boolean[4];
+	
+	// learning algorithm status
 	private Boolean threadIsRunning = false;
 	private Long algorithmRunStartTime = null;
 	private Long algorithmRunStopTime = null;
-
+	
 	/**
 	 * Get ComponentManager.
 	 * 
 	 * @return ComponentManager
 	 */
 	public ComponentManager getComponentManager() {
-		return this.cm;
+		return cm;
 	}
 
 	/**
@@ -80,8 +88,7 @@ public class Config {
 	 * @param knowledgeSource
 	 */
 	public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
-		this.oldSource = this.source;
-		this.source = knowledgeSource;
+		source = knowledgeSource;
 	}
 
 	/**
@@ -94,21 +101,21 @@ public class Config {
 	}
 
 	/**
-	 * Get old KnowledgeSource.
-	 * 
-	 * @return old KnowledgeSource
+	 * Creates a knowledge source and makes it the active source.
+	 * @param clazz
+	 * @return
 	 */
-	public KnowledgeSource getOldKnowledgeSource() {
-		return this.oldSource;
+	public KnowledgeSource newKnowledgeSource(Class<? extends KnowledgeSource> clazz) {
+		source = cm.knowledgeSource(clazz);
+		return source;
 	}
-
+	
 	/**
 	 * Set Reasoner.
 	 * 
 	 * @param reasoner
 	 */
 	public void setReasoner(ReasonerComponent reasoner) {
-		this.oldReasoner = this.reasoner;
 		this.reasoner = reasoner;
 	}
 
@@ -121,15 +128,13 @@ public class Config {
 		return this.reasoner;
 	}
 
-	/**
-	 * Get old Reasoner as a set.
-	 * 
-	 * @return oldReasonerSet.
-	 */
-	public ReasonerComponent getOldReasonerSet() {
-		return this.oldReasoner;
-	}
-
+	// creates reasoner + reasoning service and makes it active
+	public ReasonerComponent newReasoner(Class<? extends ReasonerComponent> clazz) {
+		reasoner = cm.reasoner(clazz, source);
+		rs = cm.reasoningService(reasoner);
+		return reasoner;
+	}	
+	
 	/**
 	 * Set ReasoningService.
 	 * 
@@ -154,7 +159,6 @@ public class Config {
 	 * @param learningProblem
 	 */
 	public void setLearningProblem(LearningProblem learningProblem) {
-		this.oldLearningProblem = this.lp;
 		this.lp = learningProblem;
 	}
 
@@ -167,22 +171,17 @@ public class Config {
 		return this.lp;
 	}
 
-	/**
-	 * Get old LearningProblem as a set.
-	 * 
-	 * @return old learningProblemSet.
-	 */
-	public LearningProblem getOldLearningProblem() {
-		return this.oldLearningProblem;
+	public LearningProblem newLearningProblem(Class<? extends LearningProblem> clazz) {
+		lp = cm.learningProblem(clazz, rs);
+		return lp;
 	}
-
+	
 	/**
 	 * Set LearningAlgorithm.
 	 * 
 	 * @param learningAlgorithm
 	 */
 	public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
-		this.oldLearningAlgorithm = this.la;
 		this.la = learningAlgorithm;
 	}
 
@@ -195,15 +194,11 @@ public class Config {
 		return this.la;
 	}
 
-	/**
-	 * Get old LearningAlgorithmSet.
-	 * 
-	 * @return old LearningAlgorithmSet
-	 */
-	public LearningAlgorithm getOldLearningAlgorithm() {
-		return this.oldLearningAlgorithm;
-	}
-
+	public LearningAlgorithm newLearningAlgorithm(Class<? extends LearningAlgorithm> clazz) throws LearningProblemUnsupportedException {
+		la = cm.learningAlgorithm(clazz, lp, rs);
+		return la;
+	}	
+	
 	/**
 	 * KnowledgeSource.init has run?
 	 * 
@@ -331,23 +326,28 @@ public class Config {
 		return false;
 	}
 
-	/**
-	 * reInit ComponentManager.
-	 */
 	public void reInit() {
 		cm = ComponentManager.getInstance();
 		source = null;
-		oldSource = null;
 		reasoner = null;
-		oldReasoner = null;
 		rs = null;
 		lp = null;
-		oldLearningProblem = null;
 		la = null;
-		oldLearningAlgorithm = null;
 		isInit = new boolean[4];
 		threadIsRunning = false;
 		algorithmRunStartTime = null;
 		algorithmRunStopTime = null;
 	}
+	
+	// applies a configuration option - used as delegate method, which invalidates components
+	public <T> void applyConfigEntry(Component component, ConfigEntry<T> entry) {
+		cm.applyConfigEntry(component, entry);
+		// invalidate components
+	}
+	
+	// delegate method for getting 
+	public <T> T getConfigOptionValue(Component component, ConfigOption<T> option) {
+		return cm.getConfigOptionValue(component, option);
+	}
+	
 }

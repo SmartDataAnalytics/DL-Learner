@@ -60,7 +60,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 
 		initButton = new JButton("Init LearningProblem");
 		initButton.addActionListener(this);
-		initPanel.add(initButton);
+		// initPanel.add(initButton);
 		initButton.setEnabled(true);
 		setButton = new JButton("Set");
 		setButton.addActionListener(this);
@@ -76,8 +76,8 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		// read choosen LearningProblem
 		choosenClassIndex = cb.getSelectedIndex();
 
-		optionPanel = new OptionPanel(config, config.getLearningProblem(), config
-				.getOldLearningProblem(), problem.get(choosenClassIndex));
+		LearningProblem lp = config.newLearningProblem(problem.get(choosenClassIndex));
+		optionPanel = new OptionPanel(config, lp);
 
 		add(choosePanel, BorderLayout.PAGE_START);
 		add(optionPanel, BorderLayout.CENTER);
@@ -160,8 +160,8 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	 */
 	private void updateOptionPanel() {
 		// update OptionPanel
-		optionPanel.update(config.getLearningProblem(), config.getOldLearningProblem(), problem
-				.get(choosenClassIndex));
+//		 TODO: implement properly !!
+//		optionPanel.update(config.getLearningProblem(), problem.get(choosenClassIndex));
 	}
 
 	/**

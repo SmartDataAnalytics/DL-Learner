@@ -19,14 +19,18 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import javax.swing.*;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+
+import org.dllearner.algorithms.DBpediaNavigationSuggestor;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -52,16 +56,22 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	private JComboBox cb = new JComboBox(cbItems);
 	private int choosenClassIndex;
 
-	LearningAlgorithmPanel(Config config, StartGUI startGUI) {
+	public LearningAlgorithmPanel(Config config, StartGUI startGUI) {
 		super(new BorderLayout());
 
 		this.config = config;
 		this.startGUI = startGUI;
 		learner = config.getComponentManager().getLearningAlgorithms();
+		// to set a default learning algorithm, we move it to the beginning of the list
+		learner.remove(ExampleBasedROLComponent.class);
+		learner.add(0, ExampleBasedROLComponent.class);
+		// we also remove the DBpedia Navigation Suggestor (maybe shouldn't be declared as a learning algorithm at all;
+		// at least it is not doing anything useful at the moment)
+		learner.remove(DBpediaNavigationSuggestor.class);
 
 		initButton = new JButton("Init LearingAlgorithm");
 		initButton.addActionListener(this);
-		initPanel.add(initButton);
+		// initPanel.add(initButton);
 		initButton.setEnabled(true);
 		autoInitButton = new JButton("Set");
 		autoInitButton.addActionListener(this);
@@ -75,8 +85,14 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		choosePanel.add(autoInitButton);
 		cb.addActionListener(this);
 
-		optionPanel = new OptionPanel(config, config.getLearningAlgorithm(), config
-				.getOldLearningAlgorithm(), learner.get(choosenClassIndex));
+		LearningAlgorithm la = null;
+		try {
+			la = config.newLearningAlgorithm(learner.get(cb.getSelectedIndex()));
+		} catch (LearningProblemUnsupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		optionPanel = new OptionPanel(config, la);
 
 		add(choosePanel, BorderLayout.PAGE_START);
 		add(optionPanel, BorderLayout.CENTER);
@@ -161,8 +177,8 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	 */
 	public void updateOptionPanel() {
 		// update OptionPanel
-		optionPanel.update(config.getLearningAlgorithm(), config.getOldLearningAlgorithm(), learner
-				.get(choosenClassIndex));
+		// TODO implement properly !!
+//		optionPanel.update(config.getLearningAlgorithm(), learner.get(choosenClassIndex));
 	}
 
 	/**

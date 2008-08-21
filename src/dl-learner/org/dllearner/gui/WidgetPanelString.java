@@ -1,5 +1,3 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,58 +17,43 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Color;
 import java.io.File;
 
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JButton;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.StringConfigOption;
 
 /**
  * Panel for option String, defined in
- * org.dllearner.core.config.StringConfigOption.
+ * {@link org.dllearner.core.config.StringConfigOption}.
  * 
+ * @author Jens Lehmann
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelString extends WidgetPanelAbstract implements ActionListener {
+public class WidgetPanelString extends AbstractWidgetPanel<String> implements ActionListener {
 
 	private static final long serialVersionUID = -2169739820989891226L;
-	private Config config;
-	private ConfigOption<?> configOption;
-	private JLabel nameLabel;
-	private JPanel widgetPanel = new JPanel();
-	private JButton setButton = new JButton("Set");
-	private Component component;
-	private Component oldComponent;
+
+//	private JPanel widgetPanel = new JPanel();
+	private JButton setButton; // = new JButton("Set");
+
 	private Class<? extends Component> componentOption;
 
 	private String value;
-	private JTextField stringField = new JTextField(35);
+	private JTextField stringField; // = new JTextField(35);
 
-	public WidgetPanelString(Config config, Component component, Component oldComponent,
-			Class<? extends Component> componentOption, ConfigOption<?> configOption) {
-		this.config = config;
-		this.configOption = configOption;
-		this.component = component;
-		this.oldComponent = oldComponent;
-		this.componentOption = componentOption;
-
-		showLabel(); // name of option and tooltip
-		showThingToChange(); // textfield, setbutton
-		add(widgetPanel, BorderLayout.CENTER);
+	public WidgetPanelString(Config config, Component component, StringConfigOption configOption) {
+		super(config, component, configOption);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -92,64 +75,6 @@ public class WidgetPanelString extends WidgetPanelAbstract implements ActionList
 		}
 	}
 
-	@Override
-	public void showLabel() {
-		nameLabel = new JLabel(configOption.getName());
-		nameLabel.setToolTipText(configOption.getDescription());
-		widgetPanel.add(nameLabel);
-	}
-
-	@Override
-	public void showThingToChange() {
-		if (component != null) {
-			// StringConfigOption
-			if (configOption.getClass().toString().contains("StringConfigOption")) {
-				// previous set value
-				if (configOption != null) {
-					value = (String) config.getComponentManager().getConfigOptionValue(component,
-							configOption.getName());
-				}
-				// previous set value from old
-				if (component != null && oldComponent != null) {
-					if (oldComponent.getClass().equals(component.getClass())) {
-						value = (String) config.getComponentManager().getConfigOptionValue(
-								oldComponent, configOption.getName());
-						if (value != null) {
-							stringField.setText(value.toString());
-							setEntry();
-						}
-					}
-				}
-				// default value
-				else if (configOption.getDefaultValue() != null) {
-					value = (String) configOption.getDefaultValue();
-				}
-				// value == null
-				if (value == null) {
-					value = "";
-				}
-				stringField.setText(value.toString());
-				stringField.setToolTipText(configOption.getAllowedValuesDescription());
-				setButton.addActionListener(this);
-				widgetPanel.add(stringField);
-				widgetPanel.add(setButton);
-				if (checkForFilename())
-					setButton.setText("choose local file");
-			}
-			// UNKNOWN
-			else {
-				JLabel notImplementedLabel = new JLabel("not a string");
-				notImplementedLabel.setForeground(Color.RED);
-				widgetPanel.add(notImplementedLabel);
-			}
-		} else { // configOption == NULL
-			JLabel noConfigOptionLabel = new JLabel("no instance (String)");
-			noConfigOptionLabel.setForeground(Color.MAGENTA);
-			widgetPanel.add(noConfigOptionLabel);
-		}
-	}
-
-	@Override
 	public void setEntry() {
 		StringConfigOption specialOption;
 		value = stringField.getText(); // get from input
@@ -174,6 +99,34 @@ public class WidgetPanelString extends WidgetPanelAbstract implements ActionList
 	 */
 	private Boolean checkForFilename() {
 		return configOption.getName().equalsIgnoreCase("filename");
+	}
+
+	@Override
+	public void buildWidgetPanel() {
+		add(getLabel());
+
+		// get current value of this option for the given component
+		value = config.getConfigOptionValue(component, configOption);
+		// default values can be null, so we interpret this as empty string
+		if (value == null) {
+			value = "";
+		}		
+		
+		// text field for strings
+		stringField = new JTextField(35);
+		stringField.setText(value);
+		stringField.setToolTipText(configOption.getAllowedValuesDescription());
+		
+		// set button (value is only updated when this button is pressed => would better without set)
+		setButton = new JButton("Set");
+		setButton.addActionListener(this);
+		
+		add(stringField);
+		add(setButton);
+		
+		if (checkForFilename())
+			setButton.setText("choose local file");
+		
 	}
 
 }

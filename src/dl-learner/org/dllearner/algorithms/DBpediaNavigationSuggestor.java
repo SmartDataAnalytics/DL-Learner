@@ -74,6 +74,10 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 		return problems;
 	}
 	
+	public static String getName() {
+		return "DBpedia Navigation Suggestor";
+	}
+	
 	public DBpediaNavigationSuggestor(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
 		System.out.println("test1");
 	}
