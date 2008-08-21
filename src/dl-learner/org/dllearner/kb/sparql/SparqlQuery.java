@@ -98,6 +98,7 @@ public class SparqlQuery {
 		queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
 		//System.out.println(sparqlEndpoint.getDefaultGraphURIs());
 		
+		
 		for (String dgu : sparqlEndpoint.getDefaultGraphURIs()) {
 			queryExecution.addDefaultGraph(dgu);
 		}

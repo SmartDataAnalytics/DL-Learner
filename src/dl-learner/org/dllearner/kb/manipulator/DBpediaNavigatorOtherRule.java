@@ -99,5 +99,10 @@ public class DBpediaNavigatorOtherRule extends Rule{
 		}	
 		else return "http://dbpedia.org/class/custom/City_in_World";
 	}
+	
+	@Override
+	public void logJamon(){
+		
+	}
 
 }

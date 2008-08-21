@@ -44,10 +44,15 @@ public class SimplePredicateFilterRule extends Rule{
 			if(!tuple.aPartContains(predicateFilter)){
 				keep.add(tuple);
 			}else{
-				JamonMonitorLogger.increaseCount(SimplePredicateFilterRule.class, "filteredTriples");
+				logJamon();
 			}
 		}
 		return  keep;
+	}
+	
+	@Override
+	public void logJamon(){
+		JamonMonitorLogger.increaseCount(SimplePredicateFilterRule.class, "filteredTriples");
 	}
 
 	

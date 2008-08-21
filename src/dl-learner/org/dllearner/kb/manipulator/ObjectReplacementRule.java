@@ -54,6 +54,10 @@ public class ObjectReplacementRule extends Rule{
 		return  keep;
 	}
 
+	@Override
+	public void logJamon(){
+		JamonMonitorLogger.increaseCount(ObjectReplacementRule.class, "replacedObjects");
+	}
 	
 	
 	

@@ -107,14 +107,14 @@ public class SparqlQueryMaker {
 			tmpFilter = (tmpFilter.length() > 0) ? "FILTER( " + lineend + tmpFilter
 					+ "). " : " ";
 		
-		/*String returnString = "SELECT * WHERE {" +lineend + 
+		String returnString = "SELECT * WHERE {" +lineend + 
 			"<" + subject + "> ?predicate ?object;" +
 			"a ?object . "+lineend+
 			tmpFilter + "}";
-		 */
-		String returnString = "SELECT * WHERE {" +lineend + 
-			"<" + subject + ">  <"+OWLVocabulary.RDF_TYPE+"> ?object. " +lineend+
-			tmpFilter + "}";
+		
+		//String returnString = "SELECT * WHERE {" +lineend + 
+		//	"<" + subject + ">  <"+OWLVocabulary.RDF_TYPE+"> ?object. " +lineend+
+		//	tmpFilter + "}";
 
 		return returnString;
 	}

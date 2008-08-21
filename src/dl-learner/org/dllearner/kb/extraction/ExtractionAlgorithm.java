@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.utilities.statistics.SimpleClock;
@@ -108,14 +109,15 @@ public class ExtractionAlgorithm {
 		
 		if(configuration.isCloseAfterRecursion()){
 			List<InstanceNode> l = getInstanceNodes(newNodes);
+			logger.info("Getting classes for remaining instances: "+l.size() + " instances");
 			tupelAquisitor.setNextTaskToClassesForInstances();
 			collectNodes.addAll(expandCloseAfterRecursion(l, tupelAquisitor));
-			
 		}
 		// gets All Class Nodes and expands them further
 		if (configuration.isGetAllSuperClasses()) {
 			List<ClassNode> allClassNodes = getClassNodes(collectNodes);
 			tupelAquisitor.setNextTaskToClassInformation();
+			logger.info("Get all superclasses for "+allClassNodes.size() + " classes");
 			expandAllSuperClassesOfANode(allClassNodes, tupelAquisitor);
 		}
 			
@@ -124,6 +126,7 @@ public class ExtractionAlgorithm {
 	}
 	
 	private List<Node> expandCloseAfterRecursion(List<InstanceNode> instanceNodes, TupleAquisitor tupelAquisitor) {
+		
 		List<Node> newNodes = new ArrayList<Node>();
 		tupelAquisitor.setNextTaskToClassesForInstances();
 		if (configuration.isCloseAfterRecursion()) {
@@ -142,19 +145,23 @@ public class ExtractionAlgorithm {
 	}
 	
 	private void expandAllSuperClassesOfANode(List<ClassNode> allClassNodes, TupleAquisitor tupelAquisitor) {
-		logger.info("Get all superclasses");
+		
 		
 		List<Node> newClasses = new ArrayList<Node>();
 		newClasses.addAll(allClassNodes);
 		//TODO LinkedData incompatibility
-		tupelAquisitor.setNextTaskToClassInformation();
+		
 		int i = 0;
-		while (!newClasses.isEmpty() && false) {
+		
+		while (!newClasses.isEmpty() ) {
 			logger.trace("Remaining classes: " + newClasses.size());
 			Node next = newClasses.remove(0);
+			logger.trace("Getting Superclasses for: " + next);
+			
 			if (!alreadyQueriedSuperClasses.contains(next.getURI().toString())) {
-				logger.trace("Getting Superclasses for: " + next);
+				logger.trace("" + next+" not in cache retrieving");
 				alreadyQueriedSuperClasses.add(next.getURI().toString());
+				tupelAquisitor.setNextTaskToClassInformation();
 				newClasses.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
 				
 				if (i > configuration.getBreakSuperClassesAfter()) {
@@ -162,6 +169,9 @@ public class ExtractionAlgorithm {
 				}//endinnerif
 				i++;
 			}//endouterif
+			else {
+				logger.trace("" + next+"  in cache skipping");
+			}
 
 		}//endwhile
 		if(!configuration.isOptimizeForDLLearner()){

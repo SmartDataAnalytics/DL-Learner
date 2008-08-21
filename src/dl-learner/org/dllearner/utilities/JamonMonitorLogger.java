@@ -65,16 +65,23 @@ public class JamonMonitorLogger {
 	
 	
 	public static void printAllSortedByLabel() {
+		
+			System.out.println(getStringForAllSortedByLabel());
+		
+	}
+	
+	public static String getStringForAllSortedByLabel() {
 		List<Monitor> l= getMonitors();
 		SortedSet<String> sset = new TreeSet<String>();
-		
+		StringBuffer sbuf = new StringBuffer();
 		for (int i = 0; i < l.size(); i++) {
 			Monitor monitor = l.get(i);
 			sset.add(monitor.toString());
 		}
 		for (String onemon : sset) {
-			System.out.println(onemon);
+			sbuf.append(onemon+"\n");
 		}
+		return sbuf.toString();
 	}
 	
 	
