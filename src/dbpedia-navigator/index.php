@@ -16,6 +16,7 @@ $settings=new Settings();
 
 //what happens onLoad
 $onLoad="onLoad=\"document.getElementById('label').focus();";
+if (isset($_GET['positives'])||isset($_GET['negatives'])) $onLoad.="setPositivesAndNegatives('positives=".$_GET['positives']."&negatives=".$_GET['negatives']."');";
 if (isset($_GET['showArticle'])) $onLoad.="get_article('label=".$_GET['showArticle']."&cache=-1');";
 else if (isset($_GET['search'])) $onLoad.="search_it('label=".$_GET['search']."&number=10');";
 else if (isset($_GET['showClass'])) $onLoad.="get_class('class=http://dbpedia.org/class/yago/".$_GET['showClass']."&cache=-1');";
@@ -23,6 +24,7 @@ else if (isset($_GET['searchInstances'])) $onLoad.="getSubjectsFromCategory('cat
 else if (isset($_SESSION['currentArticle'])){
 	$onLoad.="get_article('label=&cache=".$_SESSION['currentArticle']."');";
 }
+
 $onLoad.="\"";
 
   
@@ -194,7 +196,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	
 </div><!--  wrapper -->
 <div id="footer">
-			<p>Licensed under the GNU General Public License (GPL) 3 as part of the DL-Learner open source
+		<div id="generatedURL"></div>
+		<input type="button" class="button" value="generate URL" onclick="generateURL();"/>
+		<p>Licensed under the GNU General Public License (GPL) 3 as part of the DL-Learner open source
 			project.<br />Copyright &copy; Jens Lehmann 2007-2008 </p>
 		<div id="validation">
 			<?php

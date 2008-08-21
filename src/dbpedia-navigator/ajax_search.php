@@ -1,9 +1,14 @@
 <?php
 	include('helper_functions.php');
 	
-	$label=$_POST['label'];
+	$label=urldecode($_POST['label']);
 	$number=$_POST['number'];
-		
+
+	session_start();
+	//write last action into session
+	$_SESSION['lastAction']='search/'.urlencode($label);
+	session_write_close();
+	
 	//initialise content
 	$content="";
 	
