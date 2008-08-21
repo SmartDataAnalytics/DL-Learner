@@ -31,15 +31,15 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
  * @author Sebastian Hellmann
  * 
  */
-public class LinkedDataTupelAquisitor extends TupelAquisitor {
+public class LinkedDataTupleAquisitor extends TupleAquisitor {
 	
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(LinkedDataTupelAquisitor.class);
+	private static Logger logger = Logger.getLogger(LinkedDataTupleAquisitor.class);
 	@SuppressWarnings("unused")
 	private Configuration configuration;
 	
 
-	public LinkedDataTupelAquisitor(Configuration configuration) {
+	public LinkedDataTupleAquisitor(Configuration configuration) {
 		this.configuration = configuration;
 	}
 

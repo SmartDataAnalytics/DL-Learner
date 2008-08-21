@@ -19,7 +19,7 @@
  */
 package org.dllearner.kb.extraction;
 
-import org.dllearner.kb.aquisitors.TupelAquisitor;
+import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 
 /**
@@ -32,7 +32,7 @@ public class Configuration {
 
 	
 	private Manipulator manipulator;
-	private TupelAquisitor tupelAquisitor;
+	private TupleAquisitor tupelAquisitor;
 	
 	// the following needs to be moved to
 	// class extraction algorithm or manipulator
@@ -44,7 +44,7 @@ public class Configuration {
 
 
 	public Configuration(
-			TupelAquisitor tupelAquisitor, 
+			TupleAquisitor tupelAquisitor, 
 			Manipulator manipulator,
 			int recursiondepth, 
 			boolean getAllSuperClasses,
@@ -87,7 +87,7 @@ public class Configuration {
 	}
 
 
-	public TupelAquisitor getTupelAquisitor() {
+	public TupleAquisitor getTupelAquisitor() {
 		return tupelAquisitor;
 	}
 

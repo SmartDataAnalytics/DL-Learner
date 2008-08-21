@@ -26,7 +26,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.kb.aquisitors.SparqlTupelAquisitorImproved;
+import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
 import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
 import org.dllearner.kb.manipulator.Manipulator;
@@ -66,7 +66,7 @@ public class SparqlExtractionTest {
 			int recursionDepth=2;
 			Manager m = new Manager();
 			Configuration conf = new Configuration (
-					new SparqlTupelAquisitorImproved(SparqlQueryMaker.getAllowYAGOFilter(),
+					new SparqlTupleAquisitorImproved(SparqlQueryMaker.getAllowYAGOFilter(),
 							SPARQLTasks.getPredefinedSPARQLTasksWithCache("DBPEDIA"),recursionDepth),
 					Manipulator.getDefaultManipulator(), 
 					recursionDepth,

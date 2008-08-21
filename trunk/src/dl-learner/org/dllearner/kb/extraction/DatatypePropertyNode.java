@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.kb.aquisitors.TupelAquisitor;
+import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
@@ -51,13 +51,13 @@ public class DatatypePropertyNode extends Node {
 	// Property Nodes are normally not expanded,
 	// this function is never called
 	@Override
-	public List<Node> expand(TupelAquisitor tupelAquisitor, Manipulator manipulator) {
+	public List<Node> expand(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
 		return null;
 	}
 
 	// gets the types for properties recursively
 	@Override
-	public void expandProperties(TupelAquisitor tupelAquisitor, Manipulator manipulator) {
+	public void expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
 	}
 	
 	

@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.utilities.owl.OWLVocabulary;
+
 /**
  * Can assemble sparql queries. can make queries for subject, predicate, object
  * according to the filter settings object SparqlQueryType, which gives the
@@ -105,11 +107,14 @@ public class SparqlQueryMaker {
 			tmpFilter = (tmpFilter.length() > 0) ? "FILTER( " + lineend + tmpFilter
 					+ "). " : " ";
 		
-		String returnString = "SELECT * WHERE {" +lineend + 
+		/*String returnString = "SELECT * WHERE {" +lineend + 
 			"<" + subject + "> ?predicate ?object;" +
 			"a ?object . "+lineend+
 			tmpFilter + "}";
-
+		 */
+		String returnString = "SELECT * WHERE {" +lineend + 
+			"<" + subject + ">  <"+OWLVocabulary.RDF_TYPE+"> ?object. " +lineend+
+			tmpFilter + "}";
 
 		return returnString;
 	}

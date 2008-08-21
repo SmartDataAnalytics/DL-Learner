@@ -46,8 +46,9 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.owl.KB;
-import org.dllearner.kb.aquisitors.SparqlTupelAquisitor;
-import org.dllearner.kb.aquisitors.TupelAquisitor;
+import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
+import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
+import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
 import org.dllearner.kb.manipulator.Manipulator;
@@ -72,6 +73,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	//DEFAULTS
 	static int recursionDepthDefault = 1;
+	static final boolean debug = false;
 	private boolean useCache=true;
 	// ConfigOptions
 	public URL url;
@@ -90,7 +92,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private boolean useLits = false;
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;
-	private int breakSuperClassRetrievalAfter = 200;
+	private int breakSuperClassRetrievalAfter = 1000;
 	private String cacheDir = "cache";
 	// private boolean learnDomain = false;
 	// private boolean learnRange = false;
@@ -283,9 +285,12 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		
 		// get Options for Manipulator
 		Manipulator manipulator = getManipulator();
-		//manipulator.addRule(newRule);
+		
+		TupleAquisitor tupleAquisitor = getTupleAquisitor();
+		
+		
 		Configuration configuration = new Configuration(
-				getTupelAquisitor(), 
+				getTupleAquisitor(), 
 				manipulator,
 				recursionDepth,
 				getAllSuperClasses,
@@ -430,10 +435,13 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	}
 	
 	
-	public TupelAquisitor getTupelAquisitor()
+	public TupleAquisitor getTupleAquisitor()
 	{
-		return new SparqlTupelAquisitor(getSparqlQueryMaker(), getSPARQLTasks());
-		//return new SparqlTupelAquisitorImproved(getSparqlQueryMaker(), getSPARQLTasks(),recursionDepth);
+		return (debug)? 
+				new SparqlTupleAquisitorImproved(getSparqlQueryMaker(), getSPARQLTasks(),recursionDepth) 
+				:
+				new SparqlTupleAquisitor(getSparqlQueryMaker(), getSPARQLTasks());
+		 
 	}
 
 	/* (non-Javadoc)
