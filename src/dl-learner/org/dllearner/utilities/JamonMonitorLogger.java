@@ -26,6 +26,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -77,7 +78,7 @@ public class JamonMonitorLogger {
 		for (int i = 0; i < l.size(); i++) {
 			Monitor monitor = l.get(i);
 			
-			sset.add(convMonitorToString(monitor));
+			sset.add(monitor.toString());
 		}
 		for (String onemon : sset) {
 			sbuf.append(onemon+"\n");
@@ -86,14 +87,17 @@ public class JamonMonitorLogger {
 	}
 	
 	public static String convMonitorToString (Monitor m) {
-		String retVal = m.getLabel();
+		String retVal = m.getLabel()+"|\t";
 		String unit = m.getUnits();
+		retVal+=unit+"|\t";
 		long content = new Double(m.getTotal()).longValue();
-		String contentstr = (unit.equals("ms."))? Helper.prettyPrintNanoSeconds(content ) : content+"" ;
+		content = content / (1000*1000);
+		String contentstr = (unit.equals("ms."))? Helper.prettyPrintNanoSeconds(content ) : m.getHits()+"" ;
 		retVal+= "total:"+contentstr+"|\t";
 		
 		long avg = new Double(m.getAvg()).longValue();
-		String avgstr = (unit.equals("ms."))? Helper.prettyPrintMilliSeconds(avg ) : avg+"" ;
+		avg = avg / (1000*1000);
+		String avgstr = (unit.equals("ms."))? Helper.prettyPrintNanoSeconds(avg ) : avg+"" ;
 		retVal+= "avg:"+avgstr+"|\t";
 		
 		return retVal;
@@ -108,10 +112,10 @@ public class JamonMonitorLogger {
 			retval= "Sparql:";
 		} else if (clazz == Cache.class) {
 			retval= "Sparql:";
-		}else if (clazz == SparqlQuery.class) {
-			retval= "sparql:";
+		}else if (clazz == ExtractionAlgorithm.class) {
+			retval= "Extraction:";
 		} else if (clazz == Manipulator.class) {
-			retval= "extraction:";
+			retval= "Extraction:";
 		} else if (clazz == SparqlQuery.class) {
 			retval= "sparql:";
 		} else if (clazz == SparqlQuery.class) {

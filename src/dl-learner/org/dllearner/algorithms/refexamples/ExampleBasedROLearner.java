@@ -52,6 +52,8 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 
+import com.jamonapi.Monitor;
+
 /**
  * Implements the example based refinement operator learning approach.
  * 
@@ -278,7 +280,7 @@ public class ExampleBasedROLearner {
 	public void start() {
 		isRunning = true;
 		runtime = System.currentTimeMillis();
-		JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime")
+		Monitor totalLearningTime = JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime")
 				.start();
 		// TODO: write a JUnit test for this problem (long-lasting or infinite
 		// loops because
@@ -397,7 +399,9 @@ public class ExampleBasedROLearner {
 			// we record when a more accurate node is found and log it
 			if (bestNodeStable.getCovPosMinusCovNeg() < candidatesStable.last()
 					.getCovPosMinusCovNeg()) {
-				logger.info("more accurate node found: " + candidatesStable.last());
+				String acc = (candidatesStable.last().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)+"").substring(2,6);
+				acc= acc.substring(0,2)+"."+acc.substring(3)+"%";
+				logger.info("more accurate ("+acc+") node found: " + candidatesStable.last());
 				bestNodeStable = candidatesStable.last();
 			}
 
@@ -507,8 +511,7 @@ public class ExampleBasedROLearner {
 		else
 			logger.info("Algorithm terminated succesfully.");
 
-		JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime")
-				.stop();
+		totalLearningTime.stop();
 		isRunning = false;
 	}
 

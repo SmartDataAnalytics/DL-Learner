@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
 import javax.xml.ws.http.HTTPException;
@@ -37,6 +36,7 @@ import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.sparql.engine.http.HttpQuery;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.jamonapi.Monitor;
 
 /**
  * Represents one SPARQL query. It includes support for stopping the SPARQL
@@ -92,8 +92,6 @@ public class SparqlQuery {
 		SparqlQuery.writeToSparqlLog("wget -S -O - '\n"+sparqlEndpoint.getHTTPRequest());
 		writeToSparqlLog(sparqlQueryString);
 		
-
-	
 		logger.trace("making queryExecution Object");
 		// Jena access to SPARQL endpoint
 		queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
@@ -108,8 +106,8 @@ public class SparqlQuery {
 		}
 		// TODO remove after overnext Jena release
 		HttpQuery.urlLimit = 3 * 1024;
-		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime")
-				.start();
+		Monitor httpTime = JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").start();
+		
 		//TODO correct Bug: when there is a & in the result like in the
 		//URL: http://www.discusmedia.com/catalog.php?catID=5.2.2&profile=map
 		//the XML Parser throws an error, because he thinks &profile is an html entitie
@@ -127,24 +125,24 @@ public class SparqlQuery {
 			//writeToSparqlLog("JSON: " + json);
 		//}catch (ResultSetException e) {
 		} catch (HTTPException e) {
-			logger.warn("Exception in SparqlQuery\n"+ e.toString());
+			logger.warn("HTTPException in SparqlQuery\n"+ e.toString());
 			logger.warn("query was "+ sparqlQueryString);
 			writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
 			isRunning = false;
 			throw e;
 			
 		}catch (RuntimeException e) {
-			//if (!(e instanceof HTTPException)) {
-				logger.warn("RuntimeException in SparqlQuery"+ e.toString());
-				writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
-			//}
+		
+			logger.warn("RuntimeException in SparqlQuery (see /log/sparql.txt): "+ e.toString());
+			logger.warn("query was (first 300 chars) "+ sparqlQueryString.substring(0,300).replaceAll("\n", " "));
+			writeToSparqlLog("ERROR: HTTPException occured: "+ e.toString());
 			isRunning = false;
 			throw e;
 		}
 		
 		// there is a minor issue here: Jamon now also measures ResultsetConversion
 		// the code would need a second try catch block to handle it correctly
-		JamonMonitorLogger.getTimeMonitor(SparqlQuery.class, "httpTime").stop();
+		httpTime.stop();
 		isRunning = false;	
 	}
 

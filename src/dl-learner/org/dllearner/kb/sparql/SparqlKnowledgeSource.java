@@ -59,8 +59,12 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
 import org.dllearner.scripts.NT2RDF;
+import org.dllearner.utilities.Files;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
+
+import com.jamonapi.MonitorFactory;
 
 /**
  * Represents the SPARQL Endpoint Component.
@@ -74,7 +78,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	//DEFAULTS
 	static int recursionDepthDefault = 1;
-	static final boolean debug = false;
+	static final boolean debug = false; //switches tupleaquisitor
+	static final boolean debug2 = false; //switches sysex und rdf generation
 	private boolean useCache=true;
 	// ConfigOptions
 	public URL url;
@@ -326,7 +331,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 					fw.close();
 
 					dumpFile = (new File(basedir + filename)).toURI().toURL();
-					if(debug){
+					if(debug2){
 					NT2RDF.convertNT2RDF(basedir + filename);
 					//System.exit(0);
 					}
@@ -346,6 +351,13 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			e.printStackTrace();
 		}
 		logger.info("SparqlModul: ****Finished " + totalTime.getAndSet("") );
+		if(debug2){
+			
+			File jamonlog = new File("log/jamon.html");
+			Files.createFile(jamonlog, MonitorFactory.getReport());
+			Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
+			System.exit(0);
+		}
 	}
 
 	/*
@@ -445,10 +457,12 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	public TupleAquisitor getTupleAquisitor()
 	{
-		return (debug)? 
-				new SparqlTupleAquisitorImproved(getSparqlQueryMaker(), getSPARQLTasks(),recursionDepth) 
-				:
-				new SparqlTupleAquisitor(getSparqlQueryMaker(), getSPARQLTasks());
+		if (debug) {
+		 return new SparqlTupleAquisitorImproved(getSparqlQueryMaker(), getSPARQLTasks(),recursionDepth);
+		}
+		else {
+		 return new SparqlTupleAquisitor(getSparqlQueryMaker(), getSPARQLTasks());
+		}
 		 
 	}
 

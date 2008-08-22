@@ -48,6 +48,7 @@ public abstract class TupleAquisitor {
 
 	public final SortedSet<RDFNodeTuple> getTupelForResource(String uri){
 		checkURIforValidity(uri);
+			
 		try{
 			if (mode == NORMAL) {
 				return retrieveTupel(uri);
@@ -59,7 +60,7 @@ public abstract class TupleAquisitor {
 			      throw new RuntimeException("undefined mode in aquisitor");
 			}
 		}catch(Exception e){
-			logger.warn("caught exception in tupleaquisitor, ignoring it"+e.toString());
+			logger.warn("Caught exception in tupleaquisitor, ignoring it: "+e.toString());
 			return new TreeSet<RDFNodeTuple>();
 			
 		}

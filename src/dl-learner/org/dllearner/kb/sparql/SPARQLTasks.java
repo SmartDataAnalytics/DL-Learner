@@ -430,9 +430,7 @@ public class SPARQLTasks {
 			String jsonString = query(sparqlQueryString);
 			rsw = SparqlQuery.convertJSONtoResultSet(jsonString);
 
-		} catch (Exception e) {
-			logger.warn(e.getMessage());
-		}
+		
 		
 		List<ResultBinding> l = ResultSetFormatter.toList(rsw);
 		for (ResultBinding resultBinding : l) {
@@ -440,6 +438,9 @@ public class SPARQLTasks {
 		}
 		
 		rsw.reset();
+		} catch (Exception e) {
+			logger.warn("Exception caught in SPARQLTasks, passing emtpy result: "+e.getMessage());
+		}
 		
 		return returnSet;
 	}
