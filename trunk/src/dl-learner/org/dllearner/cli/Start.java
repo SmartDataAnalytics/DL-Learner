@@ -115,6 +115,8 @@ public class Start {
 	 * @param args
 	 */
 	public static void main(String[] args) throws ComponentInitException {
+		
+		
 		File file = new File(args[args.length - 1]);
 
 		boolean inQueryMode = false;

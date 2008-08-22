@@ -33,6 +33,8 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.JamonMonitorLogger;
 
+import com.jamonapi.Monitor;
+
 /**
  * SPARQL query cache to avoid possibly expensive multiple queries. The queries
  * and their results are written to files. A cache has an associated cache
@@ -249,12 +251,12 @@ public class Cache implements Serializable {
 	 * @return Jena result set in JSON format
 	 */
 	public String executeSparqlQuery(SparqlQuery query) {
-		JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").start();
+		Monitor totaltime =JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").start();
 		JamonMonitorLogger.increaseCount(Cache.class, "TotalQueries");
 	
-		JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").start();
+		Monitor readTime = JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").start();
 		String result = getCacheEntry(query.getSparqlQueryString());
-		JamonMonitorLogger.getTimeMonitor(Cache.class, "ReadTime").stop();
+		readTime.stop();
 		
 		if (result != null) {
 			query.setJson(result);
@@ -286,7 +288,7 @@ public class Cache implements Serializable {
 			
 			//return json;
 		}
-		JamonMonitorLogger.getTimeMonitor(Cache.class, "TotalTimeExecuteSparqlQuery").stop();
+		totaltime.stop();
 		return result;
 	}
 	

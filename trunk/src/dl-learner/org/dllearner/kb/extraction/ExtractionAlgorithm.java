@@ -24,11 +24,13 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.statistics.SimpleClock;
+
+import com.jamonapi.Monitor;
 
 /**
  * This class is used to extract the information .
@@ -72,7 +74,9 @@ public class ExtractionAlgorithm {
 	public Node expandNode(String uri, TupleAquisitor tupelAquisitor) {
 
 		SimpleClock sc = new SimpleClock();
-		
+		if(tupelAquisitor instanceof SparqlTupleAquisitorImproved){
+			((SparqlTupleAquisitorImproved)tupelAquisitor).removeFromCache(uri);
+		}
 		
 		Node seedNode = getFirstNode(uri);
 		List<Node> newNodes = new ArrayList<Node>();
@@ -84,7 +88,7 @@ public class ExtractionAlgorithm {
 		newNodes.add(seedNode);
 		
 
-		JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBasicExtraction").start();
+		Monitor basic = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBasicExtraction").start();
 		for (int x = 1; x <= configuration.getRecursiondepth(); x++) {
 			
 			sc.reset();
@@ -106,24 +110,24 @@ public class ExtractionAlgorithm {
 			logger.info("Recursion counter: " + x + " with " + newNodes.size()
 					+ " Nodes remaining, " + sc.getAndSet(""));
 		}
-		JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBasicExtraction").stop();
+		basic.stop();
 		
 		if(configuration.isCloseAfterRecursion()){
-			JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeCloseAfterRecursion").start();
+			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeCloseAfterRecursion").start();
 			List<InstanceNode> l = getInstanceNodes(newNodes);
 			logger.info("Getting classes for remaining instances: "+l.size() + " instances");
 			tupelAquisitor.setNextTaskToClassesForInstances();
 			collectNodes.addAll(expandCloseAfterRecursion(l, tupelAquisitor));
-			JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeCloseAfterRecursion").stop();
+			m.stop();
 		}
 		// gets All Class Nodes and expands them further
 		if (configuration.isGetAllSuperClasses()) {
-			JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetAllSuperClasses").start();
+			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetAllSuperClasses").start();
 			List<ClassNode> allClassNodes = getClassNodes(collectNodes);
 			tupelAquisitor.setNextTaskToClassInformation();
 			logger.info("Get all superclasses for "+allClassNodes.size() + " classes");
 			expandAllSuperClassesOfANode(allClassNodes, tupelAquisitor);
-			JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetAllSuperClasses").stop();
+			m.stop();
 		}
 			
 		return seedNode;
@@ -134,18 +138,21 @@ public class ExtractionAlgorithm {
 		
 		List<Node> newNodes = new ArrayList<Node>();
 		tupelAquisitor.setNextTaskToClassesForInstances();
-		if (configuration.isCloseAfterRecursion()) {
-			while (!instanceNodes.isEmpty()) {
-				logger.trace("Getting classes for remaining instances: "
-						+ instanceNodes.size());
-				Node next = instanceNodes.remove(0);
-				logger.trace("Getting classes for: " + next);
-				newNodes.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
-				if (newNodes.size() >= configuration.getBreakSuperClassesAfter()) {
-					break;
-				}//endif
-			}//endwhile
-		}//endif
+		while (!instanceNodes.isEmpty()) {
+			logger.trace("Getting classes for remaining instances: "
+					+ instanceNodes.size());
+			Node next = instanceNodes.remove(0);
+			if(next.isExpanded()){
+				JamonMonitorLogger.increaseCount(this.getClass(), "skipped nodes");
+				continue;
+			}
+			logger.trace("Getting classes for: " + next);
+			newNodes.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
+			if (newNodes.size() >= configuration.getBreakSuperClassesAfter()) {
+				break;
+			}//endif
+		}//endwhile
+		
 		return newNodes;
 	}
 	

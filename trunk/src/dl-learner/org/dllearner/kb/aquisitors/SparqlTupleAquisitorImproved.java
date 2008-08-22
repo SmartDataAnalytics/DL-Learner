@@ -57,7 +57,7 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 	
 	@Override
 	public SortedSet<RDFNodeTuple> retrieveTupel(String uri){
-		
+			
 		SortedSet<RDFNodeTuple> cachedSet = resources.get(uri);
 		if(cachedSet!=null) {
 			return cachedSet;
@@ -134,6 +134,15 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 	}
 	
 	
+	
+	
+	@Override
+	public SortedSet<RDFNodeTuple> retrieveClassesForInstances(String uri){
+		// getQuery
+		return super.retrieveClassesForInstances(uri);
+		
+	}
+	
 	private void addToLocalCache(String uri, RDFNodeTuple tuple){
 		SortedSet<RDFNodeTuple> set = resources.get(uri);
 	
@@ -148,11 +157,8 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 		}
 	}
 	
-	@Override
-	public SortedSet<RDFNodeTuple> retrieveClassesForInstances(String uri){
-		// getQuery
-		return super.retrieveClassesForInstances(uri);
-		
+	public void removeFromCache(String uri){
+		resources.remove(uri);
 	}
 
 

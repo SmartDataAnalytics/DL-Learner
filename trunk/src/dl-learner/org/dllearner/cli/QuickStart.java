@@ -43,6 +43,8 @@ public class QuickStart {
 	static String pm = ".";// pathmodifier
 
 	public static void main(String[] args) {
+		
+		
 
 		String lastused = readit();
 		String tab = "	";

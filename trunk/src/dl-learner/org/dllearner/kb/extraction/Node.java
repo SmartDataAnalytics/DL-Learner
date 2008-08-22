@@ -95,5 +95,9 @@ public abstract class Node implements Comparable<Node> {
 	public int compareTo(Node n) {
 		return this.uri.toString().compareTo(n.uri.toString());
 	}
+	
+	public boolean isExpanded(){
+		return expanded;
+	}
 
 }

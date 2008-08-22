@@ -32,6 +32,8 @@ import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
+import com.jamonapi.Monitor;
+
 /**
  * Used to manipulate retrieved tupels, identify blanknodes, etc.
  * 
@@ -58,13 +60,13 @@ public class Manipulator {
 	 * triple
 	 */
 	public SortedSet<RDFNodeTuple> manipulate( Node node, SortedSet<RDFNodeTuple> tuples) {
-		JamonMonitorLogger.getTimeMonitor(Manipulator.class, "Time for Rules").start();
+		Monitor m = JamonMonitorLogger.getTimeMonitor(Manipulator.class, "Time for Rules").start();
 		//logger.warn("before: "+tuples.size());
 		for (Rule rule : rules) {
 			tuples = rule.applyRule(node, tuples);
 		}
 		//logger.warn("after: "+tuples.size());
-		JamonMonitorLogger.getTimeMonitor(Manipulator.class, "Time for Rules").stop();
+		m.stop();
 		return tuples;
 	}
 	

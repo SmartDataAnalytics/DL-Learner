@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.utilities.owl.OWLVocabulary;
-
 /**
  * Can assemble sparql queries. can make queries for subject, predicate, object
  * according to the filter settings object SparqlQueryType, which gives the
