@@ -76,12 +76,27 @@ public class JamonMonitorLogger {
 		StringBuffer sbuf = new StringBuffer();
 		for (int i = 0; i < l.size(); i++) {
 			Monitor monitor = l.get(i);
-			sset.add(monitor.toString());
+			
+			sset.add(convMonitorToString(monitor));
 		}
 		for (String onemon : sset) {
 			sbuf.append(onemon+"\n");
 		}
 		return sbuf.toString();
+	}
+	
+	public static String convMonitorToString (Monitor m) {
+		String retVal = m.getLabel();
+		String unit = m.getUnits();
+		long content = new Double(m.getTotal()).longValue();
+		String contentstr = (unit.equals("ms."))? Helper.prettyPrintNanoSeconds(content ) : content+"" ;
+		retVal+= "total:"+contentstr+"|\t";
+		
+		long avg = new Double(m.getAvg()).longValue();
+		String avgstr = (unit.equals("ms."))? Helper.prettyPrintMilliSeconds(avg ) : avg+"" ;
+		retVal+= "avg:"+avgstr+"|\t";
+		
+		return retVal;
 	}
 	
 	
