@@ -399,8 +399,10 @@ public class ExampleBasedROLearner {
 			// we record when a more accurate node is found and log it
 			if (bestNodeStable.getCovPosMinusCovNeg() < candidatesStable.last()
 					.getCovPosMinusCovNeg()) {
-				String acc = (candidatesStable.last().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)+"").substring(2,6);
-				acc= acc.substring(0,2)+"."+acc.substring(3)+"%";
+				String acc = (candidatesStable.last().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples))+"";
+				try { acc = acc.substring(2,6);
+				acc= acc.substring(0,2)+"."+acc.substring(3)+"%";}catch (Exception e) {	} 
+				// no handling needed, it will just look ugly in the output
 				logger.info("more accurate ("+acc+") node found: " + candidatesStable.last());
 				bestNodeStable = candidatesStable.last();
 			}
