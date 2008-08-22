@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.statistics.SimpleClock;
 
 /**
@@ -83,7 +84,7 @@ public class ExtractionAlgorithm {
 		newNodes.add(seedNode);
 		
 
-		
+		JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBasicExtraction").start();
 		for (int x = 1; x <= configuration.getRecursiondepth(); x++) {
 			
 			sc.reset();
@@ -105,20 +106,24 @@ public class ExtractionAlgorithm {
 			logger.info("Recursion counter: " + x + " with " + newNodes.size()
 					+ " Nodes remaining, " + sc.getAndSet(""));
 		}
-
+		JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBasicExtraction").stop();
 		
 		if(configuration.isCloseAfterRecursion()){
+			JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeCloseAfterRecursion").start();
 			List<InstanceNode> l = getInstanceNodes(newNodes);
 			logger.info("Getting classes for remaining instances: "+l.size() + " instances");
 			tupelAquisitor.setNextTaskToClassesForInstances();
 			collectNodes.addAll(expandCloseAfterRecursion(l, tupelAquisitor));
+			JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeCloseAfterRecursion").stop();
 		}
 		// gets All Class Nodes and expands them further
 		if (configuration.isGetAllSuperClasses()) {
+			JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetAllSuperClasses").start();
 			List<ClassNode> allClassNodes = getClassNodes(collectNodes);
 			tupelAquisitor.setNextTaskToClassInformation();
 			logger.info("Get all superclasses for "+allClassNodes.size() + " classes");
 			expandAllSuperClassesOfANode(allClassNodes, tupelAquisitor);
+			JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetAllSuperClasses").stop();
 		}
 			
 		return seedNode;

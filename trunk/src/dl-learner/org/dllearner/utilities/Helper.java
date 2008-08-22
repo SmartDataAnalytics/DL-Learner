@@ -170,6 +170,21 @@ public class Helper {
 
 		return str;
 	}
+	
+	public static String prettyPrintMilliSeconds(long milliSeconds) {
+	
+
+		long seconds = milliSeconds / 1000;
+		milliSeconds = milliSeconds % 1000;
+
+		// Mikrosekunden werden immer angezeigt, Sekunden nur falls größer 0
+		String str = "";
+		if (seconds > 0)
+			str = seconds + "s ";
+		str += milliSeconds + "ms";
+		
+		return str;
+	}
 
 	public static <T1, T2> void addMapEntry(Map<T1, SortedSet<T2>> map, T1 keyEntry, T2 setEntry) {
 		if (map.containsKey(keyEntry)) {
