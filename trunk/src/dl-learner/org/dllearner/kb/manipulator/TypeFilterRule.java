@@ -23,6 +23,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.kb.extraction.ClassNode;
+import org.dllearner.kb.extraction.InstanceNode;
+import org.dllearner.kb.extraction.LiteralNode;
 import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
@@ -31,16 +34,17 @@ public class TypeFilterRule extends Rule{
 	
 	public static Logger logger = Logger.getLogger(TypeFilterRule.class);
 	
-	String predicateFilter;
-	String objectFilter;
-	String classCanonicalName;
+	private String predicateFilter;
+	private String objectFilter;
+	private Nodes requiredNodeType;
+	public enum Nodes {CLASSNODE, INSTANCENODE, LITERALNODE};
 
 
-	public TypeFilterRule(Months month, String predicateFilter, String objectFilter, Class<? extends Node> clazz) {
+	public TypeFilterRule(Months month, String predicateFilter, String objectFilter, Nodes requiredNodeType) {
 		super(month);
 		this.predicateFilter = predicateFilter;
 		this.objectFilter = objectFilter;
-		this.classCanonicalName = clazz.getCanonicalName();
+		this.requiredNodeType = requiredNodeType;
 	}
 	
 
@@ -52,19 +56,35 @@ public class TypeFilterRule extends Rule{
 			//String a = tuple.a.toString();
 			//String b = tuple.b.toString();
 			//System.out.println(a+b);
-			boolean remove = (tuple.aPartContains(predicateFilter) &&
-					tuple.bPartContains(objectFilter) && 
-					// QUALITY this might be dead wrong
-					(classCanonicalName.equalsIgnoreCase(subject.getClass().getCanonicalName())) 
+			boolean remove = (
+					(tuple.aPartContains(predicateFilter) ) &&
+					(tuple.bPartContains(objectFilter) ) && 
+					(checkClass(subject))
 					);
+					
 			if(!remove){
 				keep.add(tuple);
 			}else{
 				logJamon();
+				//RBC
+				logger.debug("for "+  subject+ " removed tuple: "+tuple);
 			}
 			
 		}
 		return  keep;
+	}
+	
+	public boolean checkClass (Node n){
+		if (requiredNodeType.equals(Nodes.INSTANCENODE)){
+			return (n instanceof InstanceNode);
+		}else if (requiredNodeType.equals(Nodes.CLASSNODE)){
+			return (n instanceof ClassNode);
+		}else if (requiredNodeType.equals(Nodes.LITERALNODE)){
+			return (n instanceof LiteralNode);
+		}
+		else {
+			throw new RuntimeException("undefined TypeFilterRule");
+		}
 	}
 	
 	@Override

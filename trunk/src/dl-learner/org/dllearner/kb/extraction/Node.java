@@ -33,7 +33,7 @@ import org.dllearner.kb.manipulator.Manipulator;
  * @author Sebastian Hellmann
  * 
  */
-public abstract class Node implements Comparable<Node> {
+public abstract class Node  {
 
 	
 
@@ -85,16 +85,7 @@ public abstract class Node implements Comparable<Node> {
 	
 	
 
-	public boolean equals(Node n) {
-		if (this.uri.equals(n.uri))
-			return true;
-		else
-			return false;
-	}
-
-	public int compareTo(Node n) {
-		return this.uri.toString().compareTo(n.uri.toString());
-	}
+	
 	
 	public boolean isExpanded(){
 		return expanded;

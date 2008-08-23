@@ -78,8 +78,13 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	//DEFAULTS
 	static int recursionDepthDefault = 1;
-	static final boolean debug = false; //switches tupleaquisitor
-	static final boolean debug2 = false; //switches sysex und rdf generation
+	
+	//RBC
+	static final boolean debug = false;
+	static final boolean debugUseImprovedTupleAquisitor = debug && false; //switches tupleaquisitor
+	static final boolean debugExitAfterExtraction =  debug && false; //switches sysex und rdf generation
+	static final boolean debugAdditionallyGenerateRDF =  debug && true;
+	
 	private boolean useCache=true;
 	// ConfigOptions
 	public URL url;
@@ -331,7 +336,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 					fw.close();
 
 					dumpFile = (new File(basedir + filename)).toURI().toURL();
-					if(debug2){
+					if(debugAdditionallyGenerateRDF){
 					NT2RDF.convertNT2RDF(basedir + filename);
 					//System.exit(0);
 					}
@@ -351,7 +356,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			e.printStackTrace();
 		}
 		logger.info("SparqlModul: ****Finished " + totalTime.getAndSet("") );
-		if(debug2){
+		if(debugExitAfterExtraction){
 			
 			File jamonlog = new File("log/jamon.html");
 			Files.createFile(jamonlog, MonitorFactory.getReport());
@@ -457,7 +462,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	public TupleAquisitor getTupleAquisitor()
 	{
-		if (debug) {
+		if (debugUseImprovedTupleAquisitor) {
 		 return new SparqlTupleAquisitorImproved(getSparqlQueryMaker(), getSPARQLTasks(),recursionDepth);
 		}
 		else {

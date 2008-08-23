@@ -100,19 +100,5 @@ public class ObjectPropertyNode extends Node {
 		return s;
 	}
 
-	//TODO check
-	@Override
-	public boolean equals(Node n) {
-		if (this.uri.equals(n.uri)) {
-		  return true;  
-		}else {
-			return false;
-		}
-	}
-
-	@Override
-	public int compareTo(Node n) {
-		return super.compareTo(n);
-	}
-
+	
 }

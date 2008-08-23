@@ -75,11 +75,7 @@ public class LiteralNode extends Node {
 		return new TreeSet<String>();
 	}
 
-	@Override
-	public int compareTo(Node n) {
-		return super.compareTo(n);
-		//
-	}
+	
 	
 	
 	public String getNTripleForm() {

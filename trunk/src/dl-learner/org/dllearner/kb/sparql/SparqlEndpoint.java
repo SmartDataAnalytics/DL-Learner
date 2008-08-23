@@ -101,8 +101,10 @@ public class SparqlEndpoint {
 			return getEndpointDBpedia();
 		} else if (name.equals("LOCALDBPEDIA")) {
 			return getEndpointLOCALDBpedia();
-		} else if (name.equals("LOCALJOSECKI")) {
+		} else if (name.equals("LOCALJOSECKI") || name.equals("LOCALJOSEKI") ) {
 			return getEndpointlocalJoseki();
+		} else if (name.equals("LOCALJOSEKIBIBLE")||name.equals("LOCALJOSECKIBIBLE")) {
+			return getEndpointLocalJosekiBible();
 		} else if (name.equals("GOVTRACK")) {
 			return getEndpointGovTrack();
 		} else if (name.equals("SPARQLETTE")) {
@@ -177,6 +179,16 @@ public class SparqlEndpoint {
 		URL u = null;
 		try { 
 			u = new URL("http://localhost:2020/books");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SparqlEndpoint(u, new LinkedList<String>(), new LinkedList<String>());
+	}
+	
+	public static SparqlEndpoint getEndpointLocalJosekiBible() {
+		URL u = null;
+		try { 
+			u = new URL("http://localhost:2020/bible");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

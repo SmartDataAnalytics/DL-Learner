@@ -135,7 +135,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 
 	}
 
-	// QUALITY: keep a while may still be needed
+	// keep a while may still be needed
 	/*public void dbpediaMakeNegativeExamplesFromRelatedInstances(String subject) {
 		// SortedSet<String> result = new TreeSet<String>();
 

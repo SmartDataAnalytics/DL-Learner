@@ -41,8 +41,8 @@ public class ClassNode extends Node {
 	private static Logger logger = Logger
 		.getLogger(ClassNode.class);
 	
-	SortedSet<ObjectPropertyNode> classProperties = new TreeSet<ObjectPropertyNode>();
-	SortedSet<DatatypePropertyNode> datatypeProperties = new TreeSet<DatatypePropertyNode>();
+	List<ObjectPropertyNode> classProperties = new ArrayList<ObjectPropertyNode>();
+	List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
 
 	public ClassNode(String uri) {
 		super(uri);
@@ -73,10 +73,11 @@ public class ClassNode extends Node {
 				datatypeProperties.add(new DatatypePropertyNode(tuple.a.toString(), this, new LiteralNode(tuple.b) ));
 				return null;
 			}else if(tuple.b.isAnon()){
-				logger.warn("blanknodes not supported as of now"+ this +"in tuple" + tuple);
+				logger.warn("blanknodes not supported as of now "+ this +" in tuple" + tuple);
 				return null;
 			 // substitute rdf:type with owl:subclassof
-			}else if (property.equals(OWLVocabulary.RDF_TYPE) || property.equals(OWLVocabulary.RDFS_SUBCLASS_OF)) {
+			}else if (property.equals(OWLVocabulary.RDF_TYPE) || 
+					OWLVocabulary.isStringSubClassVocab(property)) {
 				ClassNode tmp = new ClassNode(tuple.b.toString());
 				classProperties.add(new ObjectPropertyNode( OWLVocabulary.RDFS_SUBCLASS_OF, this, 	tmp));
 				return tmp;
@@ -124,9 +125,6 @@ public class ClassNode extends Node {
 		return returnSet;
 	}
 
-	@Override
-	public int compareTo(Node n) {
-		return super.compareTo(n);
-	}
+	
 
 }
