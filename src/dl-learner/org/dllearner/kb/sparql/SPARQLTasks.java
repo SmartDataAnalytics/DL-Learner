@@ -563,7 +563,7 @@ public class SPARQLTasks {
  * here are some old functions, which were workarounds:
  * 
  * 
- * QUALITY: workaround for a sparql glitch {?a owl:subclassOf ?b} returns an
+ *  workaround for a sparql glitch {?a owl:subclassOf ?b} returns an
  * empty set on some endpoints. returns all direct subclasses of String concept
  * 
  * @param concept An URI string with no quotes @return SortedSet of direct

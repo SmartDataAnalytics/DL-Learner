@@ -33,7 +33,7 @@ import org.dllearner.core.owl.Union;
  * @author Sebastian Hellmann
  * Enables RDFS reasoning for the DL2SPARQL class
  * by concept rewriting
- * //QUALITY use SPARQLtasks
+ * 
  */
 public class SparqlQueryDescriptionConvertRDFS {
 

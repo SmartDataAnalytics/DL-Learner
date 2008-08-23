@@ -69,10 +69,10 @@ public class SetManipulation {
 	/**
 	 * XXX
 	 * getFirst n Elements from list.
-	 * changes the list!!!
+	 * changes the list object!!!
 	 * @param list
 	 * @param nrElements
-	 * @return returns the list shrunken to size. it is an ARRAYLIST now
+	 * @return returns the list shrunken to size. 
 	 */
 	public static List getFirst(List list, int nrElements) {
 		int size;

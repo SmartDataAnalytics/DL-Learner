@@ -42,10 +42,10 @@ public class InstanceNode extends Node {
 	private static Logger logger = Logger
 		.getLogger(InstanceNode.class);
 
-	private SortedSet<ClassNode> classes = new TreeSet<ClassNode>();
+	private List<ClassNode> classes = new ArrayList<ClassNode>();
 	//SortedSet<StringTuple> datatypes = new TreeSet<StringTuple>();
-	private SortedSet<ObjectPropertyNode> objectProperties = new TreeSet<ObjectPropertyNode>();
-	private SortedSet<DatatypePropertyNode> datatypeProperties = new TreeSet<DatatypePropertyNode>();
+	private List<ObjectPropertyNode> objectProperties = new ArrayList<ObjectPropertyNode>();
+	private List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
 
 	
 	public InstanceNode(String uri) {
@@ -133,10 +133,6 @@ public class InstanceNode extends Node {
 		return returnSet;
 	}
 
-	@Override
-	public int compareTo(Node n) {
-		return super.compareTo(n);
-		//
-	}
+	
 
 }

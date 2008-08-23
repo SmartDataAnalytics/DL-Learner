@@ -24,10 +24,9 @@ import java.util.List;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.kb.extraction.ClassNode;
-import org.dllearner.kb.extraction.InstanceNode;
 import org.dllearner.kb.extraction.Node;
 import org.dllearner.kb.manipulator.Rule.Months;
+import org.dllearner.kb.manipulator.TypeFilterRule.Nodes;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
@@ -101,7 +100,7 @@ public class Manipulator {
 		return m;
 	}
 	
-			//HACK
+			//
 //			if(t.a.equals("http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag")) {
 //				//hackGetLabel(t.b);
 //				
@@ -109,7 +108,7 @@ public class Manipulator {
 			
 			// GovTrack hack
 			// => we convert a string literal to a URI
-			// => TODO: introduce an option for converting literals for certain
+			// => : introduce an option for converting literals for certain
 			// properties into URIs
 //			String sp = "http://purl.org/dc/elements/1.1/subject";
 //			if(t.a.equals(sp)) {
@@ -123,10 +122,12 @@ public class Manipulator {
 	//	addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS,ClassNode.class.getCanonicalName() )) ;
 	//	addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING,InstanceNode.class.getCanonicalName() )) ;
 	//	addRule(new TypeFilterRule(month, "", OWLVocabulary.OWL_CLASS, ClassNode.class.getCanonicalName()) ) ;
-		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS,ClassNode.class )) ;
-		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING,InstanceNode.class )) ;
-		addRule(new TypeFilterRule(month, "", OWLVocabulary.OWL_CLASS, ClassNode.class) ) ;
-		addRule(new TypeFilterRule(month, "", OWLVocabulary.RDFS_CLASS, ClassNode.class) ) ;
+		
+		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_THING, Nodes.INSTANCENODE )) ;
+		
+		addRule(new TypeFilterRule(month, OWLVocabulary.RDF_TYPE, OWLVocabulary.OWL_CLASS, Nodes.CLASSNODE)) ;
+		addRule(new TypeFilterRule(month, "", OWLVocabulary.OWL_CLASS, Nodes.CLASSNODE) ) ;
+		addRule(new TypeFilterRule(month, "", OWLVocabulary.RDFS_CLASS, Nodes.CLASSNODE) ) ;
 	
 	}
 	

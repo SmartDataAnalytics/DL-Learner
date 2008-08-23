@@ -198,7 +198,7 @@ public class SPARQLExtractionEvaluation {
 
 	}
 	
-	//FIXME
+	//TODO: check whether this function is still needed
 	public static SortedSet<String> selectDBpediaConcepts(int number){
 		String query = "SELECT DISTINCT ?concept WHERE { \n" + 
 		"[] a ?concept .FILTER (regex(str(?concept),'yago'))" +
