@@ -92,6 +92,7 @@ import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.RoleComparator;
 
+import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 /**
@@ -188,6 +189,7 @@ public class Start {
 		ConfParser parser = ConfParser.parseFile(file);
 
 		// step 1: detect knowledge sources
+		Monitor ksMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initKnowledgeSource").start();
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		Map<URL, Class<? extends KnowledgeSource>> importedFiles = getImportedFiles(parser, baseDir);
 		for (Map.Entry<URL, Class<? extends KnowledgeSource>> entry : importedFiles.entrySet()) {
@@ -202,15 +204,20 @@ public class Start {
 			configureComponent(cm, ks, componentPrefixMapping, parser);
 			initComponent(cm, ks);
 		}
+		ksMonitor.stop();
 
+		
 		// step 2: detect used reasoner
+		Monitor rsMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initReasoningService").start();
 		ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
 		rc = cm.reasoner(getReasonerClass(reasonerOption), sources);
 		configureComponent(cm, rc, componentPrefixMapping, parser);
 		initComponent(cm, rc);
 		rs = cm.reasoningService(rc);
+		rsMonitor.stop();
 
 		// step 3: detect learning problem
+		Monitor lpMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initLearningProblem").start();
 		ConfFileOption problemOption = parser.getConfOptionsByName("problem");
 		lp = cm.learningProblem(getLearningProblemClass(problemOption), rs);
 		SortedSet<String> posExamples = parser.getPositiveExamples();
@@ -220,8 +227,10 @@ public class Start {
 			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 		configureComponent(cm, lp, componentPrefixMapping, parser);
 		initComponent(cm, lp);
+		lpMonitor.stop();
 
 		// step 4: detect learning algorithm
+		Monitor laMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initLearningAlgorithm").start();
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
 		try {
 			la = cm.learningAlgorithm(getLearningAlgorithm(algorithmOption), lp, rs);
@@ -230,6 +239,7 @@ public class Start {
 		}
 		configureComponent(cm, la, componentPrefixMapping, parser);
 		initComponent(cm, la);
+		laMonitor.stop();
 
 		// perform file exports
 		performExports(parser, baseDir, sources, rs);
