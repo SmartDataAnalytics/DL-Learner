@@ -41,7 +41,10 @@ class Settings{
 	
 	public $language="en";
 	
+	//localhost
 	public $googleMapsKey="ABQIAAAAWwHG9WuZ8hxFSPjRX2-D-hSOxlJeL3USfakgDtFzmQkGhQTW0xTFM1Yr38ho8qREnjt-6oLs37o4xg";
+	//db.aksw.org
+	//public $googleMapsKey="ABQIAAAAWwHG9WuZ8hxFSPjRX2-D-hRHWRcfpxRnIG10qrJMLnZO-_MKjRRpu2rZj8etMweqJES04ZL_eht1iQ";
 	
 	public $useCache=true;
 }
