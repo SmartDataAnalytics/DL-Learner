@@ -12,7 +12,7 @@
 	//initialise content
 	$content="";
 	
-	mysql_connect('localhost','navigator','dbpedia');
+	mysql_connect($mysqlServer,$mysqlUser,$mysqlPass);
 	mysql_select_db("navigator_db");
 	$query="SELECT name, label FROM rank WHERE MATCH (label) AGAINST ('$label') ORDER BY number DESC LIMIT ".$number;
 	$res=mysql_query($query);

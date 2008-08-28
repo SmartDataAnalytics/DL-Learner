@@ -9,7 +9,7 @@
 	if (strlen($negatives)>0) $negatives=explode('][',substr($negatives,1,strlen($negatives)-2));
 	else $negatives=array();
 			
-	mysql_connect('localhost','navigator','dbpedia');
+	mysql_connect($mysqlServer,$mysqlUser,$mysqlPass);
 	mysql_select_db("navigator_db");
 	
 	$ptemp=array();
