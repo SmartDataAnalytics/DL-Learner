@@ -235,7 +235,7 @@ function nicePredicate($predicate)
 }
 
 function formatClassArray($ar) {
-	mysql_connect('localhost','navigator','dbpedia');
+	mysql_connect($mysqlServer,$mysqlUser,$mysqlPass);
 	mysql_select_db("navigator_db");
 	$string="<ul>";
 	for($i=0; $i<count($ar); $i++) {

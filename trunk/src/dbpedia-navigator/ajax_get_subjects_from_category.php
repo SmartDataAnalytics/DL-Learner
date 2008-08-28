@@ -14,7 +14,7 @@
 	$content="";
 	$bestsearches="";
 	
-	mysql_connect('localhost','navigator','dbpedia');
+	mysql_connect($mysqlServer,$mysqlUser,$mysqlPass);
 	mysql_select_db("navigator_db");
 	
 	//get label of the category

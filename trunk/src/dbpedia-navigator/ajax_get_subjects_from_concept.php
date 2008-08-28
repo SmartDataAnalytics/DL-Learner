@@ -11,17 +11,20 @@
 	setRunning($id,"true");
 	
 	$concept=html_entity_decode($concept);
+	
+	$test=preg_match("/^http://dbpedia.org/class/yago/[^/]+$/",$concept);
+	
 	$content="";
-	try{
+	/*try{
 		require_once("DLLearnerConnection.php");
 		$sc=new DLLearnerConnection($id,$ksID);
 		$subjects=$sc->getSubjectsFromConcept($concept);
 		$content.=getResultsTable($subjects);
 	} catch (Exception $e){
 		$content=$e->getMessage();
-	}
+	}*/
 	
-	print $content;
+	print $test."ho";
 	print '$$';
 	print "Instances for Concept ".$concept;
 ?>

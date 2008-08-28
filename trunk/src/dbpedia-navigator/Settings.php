@@ -47,6 +47,13 @@ class Settings{
 	//public $googleMapsKey="ABQIAAAAWwHG9WuZ8hxFSPjRX2-D-hRHWRcfpxRnIG10qrJMLnZO-_MKjRRpu2rZj8etMweqJES04ZL_eht1iQ";
 	
 	public $useCache=true;
+	
+	//the server, where the mysql databank is located
+	public $mysqlServer='localhost';
+	//the user, that has rights to access the navigator databank
+	public $mysqlUser='navigator';
+	//the password of that user
+	public $mysqlPass='dbpedia';
 }
 
 ?>

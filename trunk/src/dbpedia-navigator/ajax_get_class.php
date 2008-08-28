@@ -1,5 +1,6 @@
 <?php
 	include('helper_functions.php');
+	include('Settings.php');
 	
 	$class=$_POST['class'];
 	$fromCache=$_POST['cache'];
@@ -34,7 +35,7 @@
 	if ($fromCache<0) {
 		//if there are errors see catch block
 		try{
-			mysql_connect('localhost','navigator','dbpedia');
+			mysql_connect($mysqlServer,$mysqlUser,$mysqlPass);
 			mysql_select_db("navigator_db");
 			
 			//build Select box with Child Classes
