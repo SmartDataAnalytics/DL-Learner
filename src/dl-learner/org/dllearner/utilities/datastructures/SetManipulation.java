@@ -41,6 +41,37 @@ public class SetManipulation {
 		}
 		return ret;
 	}
+	
+	/**
+	 * shrinks a set to the limit fuzzy here means the elements will be randomly
+	 * picked
+	 * 
+	 * @param set
+	 * @param limit
+	 * @return
+	 */
+	public static SortedSet<Individual> fuzzyShrinkInd(SortedSet<Individual> set, int limit) {
+		if (set.size() <= limit) {
+			return set;
+		}
+		SortedSet<Individual> ret = new TreeSet<Individual>();
+		Random r = new Random();
+		double treshold = ((double) limit) / set.size();
+		// System.out.println("treshold"+howmany);
+		// System.out.println("treshold"+allRetrieved.size());
+		// System.out.println("treshold"+treshold);
+
+		while (ret.size() < limit) {
+			for (Individual oneInd : set) {
+				if (r.nextDouble() < treshold) {
+					ret.add(oneInd);
+					if (ret.size() >= limit)
+						break;
+				}
+			}
+		}
+		return ret;
+	}
 
 	/**
 	 * shrinks a set to the limit takes the first elements up to limit
@@ -57,6 +88,30 @@ public class SetManipulation {
 		SortedSet<String> ret = new TreeSet<String>();
 
 		for (String oneInd : set) {
+			ret.add(oneInd);
+			if (ret.size() >= limit)
+				break;
+
+		}
+
+		return ret;
+	}
+	
+	/**
+	 * shrinks a set to the limit takes the first elements up to limit
+	 * 
+	 * @param set
+	 * @param limit
+	 * @return
+	 */
+	public static SortedSet<Individual> stableShrinkInd(SortedSet<Individual> set,
+			int limit) {
+		if (set.size() <= limit) {
+			return set;
+		}
+		SortedSet<Individual> ret = new TreeSet<Individual>();
+
+		for (Individual oneInd : set) {
 			ret.add(oneInd);
 			if (ret.size() >= limit)
 				break;
@@ -86,6 +141,14 @@ public class SetManipulation {
 		SortedSet<Individual> ret = new TreeSet<Individual>();
 		for (String ind : set) {
 			ret.add(new Individual(ind));
+		}
+		return ret;
+	}
+	
+	public static SortedSet<String>indToString(SortedSet<Individual> set) {
+		SortedSet<String> ret = new TreeSet<String>();
+		for (Individual ind : set) {
+			ret.add(ind.toString());
 		}
 		return ret;
 	}

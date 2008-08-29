@@ -34,6 +34,8 @@ public class OWLVocabulary {
 	public static final String OWL_SUBCLASS_OF = "http://www.w3.org/2002/07/owl#subClassOf";
 	
 	public static final String OWL_THING = "http://www.w3.org/2002/07/owl#Thing";
+	public static final String OWL_NOTHING = "http://www.w3.org/2002/07/owl#Nothing";
+	
 	//OWL2 Namespace: http://www.w3.org/2006/12/owl2#
 	
 	public static boolean isStringClassVocab (String possClass){

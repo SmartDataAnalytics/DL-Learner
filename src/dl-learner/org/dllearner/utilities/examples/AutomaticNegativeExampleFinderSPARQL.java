@@ -60,11 +60,19 @@ public class AutomaticNegativeExampleFinderSPARQL {
 			SortedSet<String> fullPositiveSet,
 			SPARQLTasks st) {
 		super();
-		this.fullPositiveSet = fullPositiveSet;
+		this.fullPositiveSet = new TreeSet<String>(); 
+		this.fullPositiveSet.addAll(fullPositiveSet);
 		this.sparqltasks = st;
 
 	}
 	
+	
+	
+	/**
+	 * see <code>  getNegativeExamples(int neglimit, boolean stable )</code>
+	 * @param neglimit
+	 * @return
+	 */
 	public SortedSet<String> getNegativeExamples(int neglimit ) {
 		return getNegativeExamples(neglimit, false);
 	}
@@ -72,8 +80,9 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	/**
 	 * aggregates all collected neg examples
 	 * CAVE: it is necessary to call one of the make functions before calling this
+	 * OTHERWISE it will choose random examples
 	 * 
-	 * @param neglimit size of negative Example set
+	 * @param neglimit size of negative Example set, 0 means all, which can be quite large several thousands
 	 * @param stable decides whether neg Examples are randomly picked, default false, faster for developing, since the cache can be used
 	 * @return
 	 */
@@ -85,6 +94,11 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		if(negatives.isEmpty()) {
 			negatives.addAll(fromRandom);
 		}
+		if(neglimit<=0){
+			logger.debug("neg Example size NO shrinking: " + negatives.size());
+			return negatives;
+		}
+		
 		logger.debug("neg Example size before shrinking: " + negatives.size());
 		if (stable) {
 			negatives = SetManipulation.stableShrink(negatives,neglimit);
@@ -106,7 +120,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		
 		fromRandom = sparqltasks.queryAsSet(sparqlQueryString, variable);
 		fromRandom.removeAll(fullPositiveSet);
-		logger.debug("|-negExample size from related: " + fromRelated.size());
+		logger.debug("|-negExample size from random: " + fromRandom.size());
 	}
 	
 	/**

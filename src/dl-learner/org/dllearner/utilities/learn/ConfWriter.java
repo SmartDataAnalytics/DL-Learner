@@ -150,6 +150,18 @@ public class ConfWriter {
 		}
 		return ret;
 	}
+	
+	
+	public static String listExamples (boolean posOrNeg, SortedSet<Individual> s ){
+		StringBuffer sbuf = new StringBuffer();
+		String sign = (posOrNeg)?"+":"-";
+		for (Individual individual : s) {
+			sbuf.append(sign+"\""+individual+"\"\n");
+		}
+		
+		return sbuf.toString();
+	}
+	
 
 	public void addToStats(String add) {
 		stats.append(add);

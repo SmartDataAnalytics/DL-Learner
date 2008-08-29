@@ -26,8 +26,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.cli.Start;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.manipulator.Manipulator;
+import org.dllearner.kb.manipulator.TypeFilterRule;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlQuery;
 
@@ -116,10 +118,10 @@ public class JamonMonitorLogger {
 			retval= "Extraction:";
 		} else if (clazz == Manipulator.class) {
 			retval= "Extraction:";
-		} else if (clazz == SparqlQuery.class) {
-			retval= "sparql:";
-		} else if (clazz == SparqlQuery.class) {
-			retval= "sparql:";
+		} else if (clazz == Start.class) {
+			retval= "Init:";
+		} else if (clazz == TypeFilterRule.class) {
+			retval= "Extraction:";
 		} else if (clazz == SparqlQuery.class) {
 			retval= "sparql:";
 		} else if (clazz == SparqlQuery.class) {
