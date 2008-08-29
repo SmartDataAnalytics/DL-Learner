@@ -61,7 +61,7 @@ public class SemanticBible {
 	private static Logger logger = Logger.getRootLogger();
 
 	// size of randomly choosen negative examples compared to positives
-	public static double NEGFACTOR = 20.0;
+	public static double NEGFACTOR = 2.0;
 
 	// different negative Ex (randomizes) each run, if set to false
 	private static final boolean DEVELOP = true;
@@ -78,6 +78,9 @@ public class SemanticBible {
 		initLogger();
 		logger.info("Start");
 		
+		
+		
+		
 		//String fileURL = new File(ontologyFile).toURI().toString();
 		
 		reasoningService = ReasoningServiceFactory.getReasoningService(
@@ -90,11 +93,14 @@ public class SemanticBible {
 
 		// }
 
-		SortedSet<NamedClass> classesToRelearn = getClassesToRelearn(true);
+		SortedSet<NamedClass> classesToRelearn = getClassesToRelearn(false);
 		SortedSet<Individual> positiveEx = new TreeSet<Individual>();
 		SortedSet<Individual> negativeEx = new TreeSet<Individual>();
 
 		for (NamedClass target : classesToRelearn) {
+			System.out.println("now learning: "+target);
+			waitForInput();
+			
 			positiveEx.clear();
 			negativeEx.clear();
 
@@ -106,17 +112,23 @@ public class SemanticBible {
 			AutomaticNegativeExampleFinderOWL ane = new AutomaticNegativeExampleFinderOWL(
 					positiveEx, reasoningService);
 			ane.makeNegativeExamplesFromSuperClasses(target);
-			ane.makeNegativeExamplesFromAllOtherInstances();
+			//ane.makeNegativeExamplesFromAllOtherInstances();
 			//double correct = ()
 			// System.out.println((positiveEx.size()*NEGFACTOR));
 			negativeEx = ane.getNegativeExamples(
 					(int) (positiveEx.size() * NEGFACTOR), DEVELOP);
 
+			if(negativeEx.size()<=3) {
+				System.out.println(target);
+				waitForInput();
+				continue;
+			}
 			// reasoningService.prepareSubsumptionHierarchy();
 			// System.out.println(reasoningService.getMoreGeneralConcepts(target));
 
 			// for every class execute the learning algorithm
 			learnOriginal(target, positiveEx, negativeEx);
+			waitForInput();
 
 		}
 
@@ -162,11 +174,13 @@ public class SemanticBible {
 		lc.guaranteeXgoodDescriptions = 20;
 		lc.maxExecutionTimeInSeconds = 0;
 		
-		lc.useAllConstructor = true;
-		lc.useCardinalityRestrictions = true;
-		lc.useExistsConstructor = true;
-		lc.useNegation = true;
+		boolean extended = false;
+		lc.useAllConstructor = extended;
+		lc.useCardinalityRestrictions = extended;
+		lc.useNegation = extended;
 
+		lc.useExistsConstructor = true;
+		
 		// lsc.searchTreeFile = "log/WikipediaCleaner.txt";
 
 		return lc;
@@ -185,7 +199,7 @@ public class SemanticBible {
 
 		lc.noisePercentage = 0;
 		lc.guaranteeXgoodDescriptions = 20;
-		lc.maxExecutionTimeInSeconds = 50;
+		lc.maxExecutionTimeInSeconds = 20;
 		lc.writeSearchTree = false;
 		lc.replaceSearchTree = true;
 		lc.searchTreeFile = "log/treeSemanticBible.txt";
@@ -357,4 +371,13 @@ public class SemanticBible {
 		return classesToRelearn;
 	}
 
+	public static void waitForInput(){
+		System.out.println("PRESS ENTER TO CONTINUE");
+		byte[] b = new byte[100];
+		try{System.in.read(b);
+		
+		}catch (Exception e) {
+			
+		}
+	}
 }
