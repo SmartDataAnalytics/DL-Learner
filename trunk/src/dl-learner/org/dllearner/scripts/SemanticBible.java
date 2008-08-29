@@ -63,7 +63,7 @@ public class SemanticBible {
 	private static Logger logger = Logger.getRootLogger();
 
 	// size of randomly choosen negative examples compared to positives
-	public static double NEGFACTOR = 2.0;
+	public static double NEGFACTOR = 200.0;
 
 	// different negative Ex (randomizes) each run, if set to false
 	private static final boolean DEVELOP = true;
@@ -84,6 +84,7 @@ public class SemanticBible {
 		logger.info("Start");
 		
 		Files.appendFile(file, "neg Ex random: "+RANDOMNEGATIVES+"\n");
+		Files.appendFile(file, "negfactor : "+NEGFACTOR+"\n");
 			
 		
 		//String fileURL = new File(ontologyFile).toURI().toString();
@@ -140,7 +141,7 @@ public class SemanticBible {
 			if(negativeEx.size()<=3) {
 				System.out.println(target);
 				waitForInput();
-				Files.appendFile(file, "SKIPPED "+target + " negEX "+negativeEx+"\n");
+				Files.appendFile(file, "SKIPPED "+target + "\n\t\t negEX "+negativeEx+"\n");
 				continue;
 			}
 			// reasoningService.prepareSubsumptionHierarchy();
@@ -185,7 +186,7 @@ public class SemanticBible {
 		//for (EvaluatedDescription description : conceptresults) {
 		//	System.out.println(description);
 		//}
-		Files.appendFile(file, target +"\t::\t"+ d+"\n" );
+		Files.appendFile(file, target +"\n\t\t"+ d+"\n" );
 	}
 
 	private static LearnSPARQLConfiguration getConfForSparql(NamedClass c) {
@@ -400,10 +401,11 @@ public class SemanticBible {
 	}
 
 	public static void waitForInput(){
-		System.out.println("PRESS ENTER TO CONTINUE");
+		
 		byte[] b = new byte[100];
 		try{
 			if(WAITFORINPUT)
+				System.out.println("PRESS ENTER TO CONTINUE");
 				System.in.read(b);
 		
 		}catch (Exception e) {
