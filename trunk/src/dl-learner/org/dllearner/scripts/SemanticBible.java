@@ -42,13 +42,11 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderOWL;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderOWL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
-import org.dllearner.utilities.learn.ConfWriter;
 import org.dllearner.utilities.learn.LearnOWLFile;
 import org.dllearner.utilities.learn.LearnOWLFileConfiguration;
 import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
@@ -63,12 +61,14 @@ public class SemanticBible {
 	private static Logger logger = Logger.getRootLogger();
 
 	// size of randomly choosen negative examples compared to positives
-	public static double NEGFACTOR = 3.0;
+	public static double NEGFACTOR = 2.0;
 
 	// different negative Ex (randomizes) each run, if set to false
 	private static final boolean DEVELOP = true;
 	
 	public static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
+	
+	private static Class usedReasoner = FastInstanceChecker.class;
 
 	/**
 	 * @param args
@@ -137,51 +137,60 @@ public class SemanticBible {
 		la = learner.learn(
 				SetManipulation.indToString(posExamples), 
 				SetManipulation.indToString(negExamples), 
-				FastInstanceChecker.class);
+				usedReasoner);
 		}catch (Exception e) {
 			// TODO: handle exception
 		}
 		la.start();
-		System.out.println(la.getCurrentlyBestDescription());
+
+		conceptresults = la.getCurrentlyBestEvaluatedDescriptions(20);
+		for (EvaluatedDescription description : conceptresults) {
+			System.out.println(description);
+		}
 	}
 
 	private static LearnSPARQLConfiguration getConfForSparql(NamedClass c) {
-		LearnSPARQLConfiguration lsc = new LearnSPARQLConfiguration();
+		LearnSPARQLConfiguration lc = new LearnSPARQLConfiguration();
 		// lsc.sparqlEndpoint = sparqlTasks.getSparqlEndpoint();
 
 		
-		lsc.recursiondepth = 2;
-		lsc.closeAfterRecursion = true;
-		lsc.ignoredConcepts.add(c.toString());
+		lc.recursiondepth = 2;
+		lc.closeAfterRecursion = true;
+		lc.ignoredConcepts.add(c.toString());
 		
-		lsc.noisePercentage = 20;
-		lsc.guaranteeXgoodDescriptions = 100;
-		lsc.maxExecutionTimeInSeconds = 50;
+		lc.noisePercentage = 0;
+		lc.guaranteeXgoodDescriptions = 20;
+		lc.maxExecutionTimeInSeconds = 0;
+		
+		lc.useAllConstructor = true;
+		lc.useCardinalityRestrictions = true;
+		lc.useExistsConstructor = true;
+		lc.useNegation = true;
 
 		// lsc.searchTreeFile = "log/WikipediaCleaner.txt";
 
-		return lsc;
+		return lc;
 
 	}
 
 	private static LearnOWLFileConfiguration getConfForOriginal(NamedClass c) {
-		LearnOWLFileConfiguration loc = new LearnOWLFileConfiguration();
+		LearnOWLFileConfiguration lc = new LearnOWLFileConfiguration();
 		
 		
-		loc.setOWLFileURL(ontologyPath);
+		lc.setOWLFileURL(ontologyPath);
 		
 		
-		//loc.ignoredConcepts.add(c.toString());
+		lc.ignoredConcepts.add(c.toString());
 		
 
-		loc.noisePercentage = 0;
-		// loc.guaranteeXgoodDescriptions = 100;
-		loc.maxExecutionTimeInSeconds = 20;
-		loc.writeSearchTree = true;
-		loc.replaceSearchTree = true;
-		loc.searchTreeFile = "log/treeSemanticBible.txt";
+		lc.noisePercentage = 0;
+		lc.guaranteeXgoodDescriptions = 20;
+		lc.maxExecutionTimeInSeconds = 50;
+		lc.writeSearchTree = false;
+		lc.replaceSearchTree = true;
+		lc.searchTreeFile = "log/treeSemanticBible.txt";
 
-		return loc;
+		return lc;
 
 	}
 
