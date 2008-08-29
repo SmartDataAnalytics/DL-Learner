@@ -69,6 +69,7 @@ public class SemanticBible {
 	private static final boolean DEVELOP = true;
 	private static final boolean WAITFORINPUT = false;
 	private static final boolean RANDOMNEGATIVES = false;
+	private static final boolean FORCESIZEOFNEG = true;
 	static File file = new File("sembib.txt");
 	
 	public static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
@@ -136,7 +137,7 @@ public class SemanticBible {
 			//double correct = ()
 			// System.out.println((positiveEx.size()*NEGFACTOR));
 			negativeEx.addAll(ane.getNegativeExamples(
-					(int) (positiveEx.size() * NEGFACTOR), DEVELOP));
+					(int) (positiveEx.size() * NEGFACTOR), DEVELOP, FORCESIZEOFNEG));
 
 			if(negativeEx.size()<0) {
 				System.out.println(target);
