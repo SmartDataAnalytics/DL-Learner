@@ -27,17 +27,19 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.utilities.owl.OWLVocabulary;
 
 /**
  * The reasoning service is the interface to the used reasoner. Basically,
@@ -50,6 +52,8 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  * 
  */
 public class ReasoningService {
+	
+	public static Logger logger = Logger.getLogger(ReasoningService.class);
 
 	// statistische Daten
 	private long instanceCheckReasoningTimeNs = 0;
@@ -150,7 +154,7 @@ public class ReasoningService {
 	public SortedSet<Individual> retrieval(Description concept) {
 		// Test, ob tatsächlich keine doppelten Retrievals ausgeführt werden
 		// retrievals.add(concept);		
-		
+			
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSet<Individual> result;
 		try {
@@ -377,6 +381,10 @@ public class ReasoningService {
 
 	public SubsumptionHierarchy getSubsumptionHierarchy() {
 		try {
+			if(reasoner.getSubsumptionHierarchy() == null){
+				this.prepareSubsumptionHierarchy();
+			}
+			
 			nrOfSubsumptionHierarchyQueries++;
 			return reasoner.getSubsumptionHierarchy();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -591,6 +599,24 @@ public class ReasoningService {
 		if(atomicConceptsList == null)
 			atomicConceptsList = new LinkedList<NamedClass>(getNamedClasses());
 		return atomicConceptsList;
+	}
+	
+	public List<NamedClass> getAtomicConceptsList(boolean removeOWLThing) {
+		if(!removeOWLThing) {
+			return getAtomicConceptsList();
+		}else {
+			List<NamedClass> l = new LinkedList<NamedClass>();
+			for (NamedClass class1 : getAtomicConceptsList()) {
+				if(class1.compareTo(new NamedClass(OWLVocabulary.OWL_NOTHING)) == 0 || 
+						class1.compareTo(new NamedClass(OWLVocabulary.OWL_THING)) == 0	){
+					;//do nothing
+				}else{
+					l.add(class1);
+				}
+			}
+			return l;
+		}
+		
 	}
 
 	public List<ObjectProperty> getAtomicRolesList() {

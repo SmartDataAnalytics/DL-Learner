@@ -226,7 +226,7 @@ public class WikipediaCategoryCleaner {
 		lsc.noisePercentage = 20;
 		lsc.guaranteeXgoodDescriptions = 100;
 		lsc.maxExecutionTimeInSeconds = 50;
-		lsc.logLevel = "TRACE";
+		
 		// lsc.searchTreeFile = "log/WikipediaCleaner.txt";
 
 		return lsc;

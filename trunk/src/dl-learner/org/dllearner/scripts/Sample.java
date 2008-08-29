@@ -124,6 +124,7 @@ public class Sample {
 		// reasoner
 		ReasonerComponent r = cm.reasoner(FastInstanceChecker.class, ks);
 		ReasoningService rs = cm.reasoningService(r);
+		
 
 		// learning problem
 		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
