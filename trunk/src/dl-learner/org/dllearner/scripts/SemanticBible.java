@@ -64,6 +64,7 @@ public class SemanticBible {
 
 	// size of randomly choosen negative examples compared to positives
 	public static double NEGFACTOR = 1.0;
+	public static int POSLIMIT = 10;
 
 	// different negative Ex (randomizes) each run, if set to false
 	private static final boolean DEVELOP = true;
@@ -128,6 +129,7 @@ public class SemanticBible {
 					reasoningService);
 			ape.makePositiveExamplesFromConcept(target);
 			positiveEx.addAll(ape.getPosExamples());
+			positiveEx = SetManipulation.stableShrinkInd(positiveEx, POSLIMIT);
 
 			AutomaticNegativeExampleFinderOWL ane = new AutomaticNegativeExampleFinderOWL(
 					positiveEx, reasoningService);
