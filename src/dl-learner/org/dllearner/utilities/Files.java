@@ -97,7 +97,11 @@ public class Files {
 	}
 
 	public static void clearFile(File file) {
+		try{
 		createFile(file, "");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

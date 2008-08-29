@@ -82,7 +82,7 @@ public class SemanticBible {
 		SimpleClock sc = new SimpleClock();
 		initLogger();
 		logger.info("Start");
-		
+		Files.clearFile(file);
 		Files.appendFile(file, "neg Ex random: "+RANDOMNEGATIVES+"\n");
 		Files.appendFile(file, "negfactor : "+NEGFACTOR+"\n");
 			
@@ -117,7 +117,7 @@ public class SemanticBible {
 		
 		
 		for (NamedClass target : classesToRelearn) {
-			System.out.println("now learning: "+target);
+			Files.appendFile(file,"now learning: "+target+"\n");
 			waitForInput();
 			
 			positiveEx.clear();
@@ -141,7 +141,7 @@ public class SemanticBible {
 			if(negativeEx.size()<=3) {
 				System.out.println(target);
 				waitForInput();
-				Files.appendFile(file, "SKIPPED "+target + "\n\t\t negEX "+negativeEx+"\n");
+				Files.appendFile(file, "\tSKIPPED negEX "+negativeEx+"\n");
 				continue;
 			}
 			// reasoningService.prepareSubsumptionHierarchy();
@@ -154,7 +154,8 @@ public class SemanticBible {
 				e.printStackTrace();
 			}
 			waitForInput();
-
+			Files.appendFile(file, "*************\n");
+			
 		}
 
 		sc.printAndSet("Finished");
@@ -181,12 +182,13 @@ public class SemanticBible {
 			// TODO: handle exception
 		}
 		
-
-		EvaluatedDescription d = la.getCurrentlyBestEvaluatedDescription();
-		//for (EvaluatedDescription description : conceptresults) {
-		//	System.out.println(description);
-		//}
-		Files.appendFile(file, target +"\n\t\t"+ d+"\n" );
+		
+		conceptresults = la.getCurrentlyBestEvaluatedDescriptions(5);
+		for (EvaluatedDescription description : conceptresults) {
+			Files.appendFile(file,"\t"+ description+"\n" );
+		}
+		
+		
 	}
 
 	private static LearnSPARQLConfiguration getConfForSparql(NamedClass c) {
