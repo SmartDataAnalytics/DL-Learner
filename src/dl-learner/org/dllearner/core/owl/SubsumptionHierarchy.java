@@ -58,9 +58,9 @@ public class SubsumptionHierarchy {
 	
 	@SuppressWarnings("unchecked")
 	public SortedSet<Description> getMoreSpecialConcepts(Description concept) {
-		if(subsumptionHierarchyDown==null) return new TreeSet<Description>();
-		else if( subsumptionHierarchyDown.get(concept)==null) return new TreeSet<Description>();
-		else return (TreeSet<Description>) subsumptionHierarchyDown.get(concept).clone();
+		if(subsumptionHierarchyDown==null) { return new TreeSet<Description>();}
+		else if( subsumptionHierarchyDown.get(concept)==null){ return new TreeSet<Description>();}
+		else {return (TreeSet<Description>) subsumptionHierarchyDown.get(concept).clone();}
 	}	
 	
 	public void improveSubsumptionHierarchy() {
