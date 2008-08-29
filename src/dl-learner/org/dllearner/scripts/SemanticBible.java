@@ -68,7 +68,7 @@ public class SemanticBible {
 	// different negative Ex (randomizes) each run, if set to false
 	private static final boolean DEVELOP = true;
 	private static final boolean WAITFORINPUT = false;
-	private static final boolean RANDOMNEGATIVES = true;
+	private static final boolean RANDOMNEGATIVES = false;
 	static File file = new File("sembib.txt");
 	
 	public static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
