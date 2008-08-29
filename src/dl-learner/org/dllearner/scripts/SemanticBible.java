@@ -147,7 +147,11 @@ public class SemanticBible {
 			// System.out.println(reasoningService.getMoreGeneralConcepts(target));
 
 			// for every class execute the learning algorithm
+			try{
 			learnOriginal(target, positiveEx, negativeEx);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
 			waitForInput();
 
 		}
@@ -170,10 +174,12 @@ public class SemanticBible {
 				SetManipulation.indToString(posExamples), 
 				SetManipulation.indToString(negExamples), 
 				usedReasoner);
+		la.start();
 		}catch (Exception e) {
+			System.out.println("ignoring the error "+e.toString());
 			// TODO: handle exception
 		}
-		la.start();
+		
 
 		EvaluatedDescription d = la.getCurrentlyBestEvaluatedDescription();
 		//for (EvaluatedDescription description : conceptresults) {
