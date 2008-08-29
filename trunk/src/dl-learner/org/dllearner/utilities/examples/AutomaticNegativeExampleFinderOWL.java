@@ -122,7 +122,8 @@ public class AutomaticNegativeExampleFinderOWL {
 	 */
 	public void makeNegativeExamplesFromAllOtherInstances() {
 		logger.debug("making random examples ");
-		fromAllOther = reasoningService.getIndividuals();
+		fromAllOther.clear();
+		fromAllOther.addAll(reasoningService.getIndividuals());
 		fromAllOther.removeAll(fullPositiveSet);
 		logger.debug("|-negExample size from random: " + fromAllOther.size());
 	}
@@ -178,7 +179,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	private void makeNegativeExamplesFromClassesOfInstances(SortedSet<Individual> positiveSet) {
 		logger.debug("making neg Examples from parallel classes");
 		SortedSet<Description> classes = new TreeSet<Description>();
-		
+		this.fromParallelClasses.clear();
 		
 		for (Individual instance : positiveSet) {
 			try{
@@ -226,7 +227,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	 */
 	public void makeNegativeExamplesFromSuperClasses(NamedClass concept, int depth) {
 
-		
+		fromSuperclasses.clear();
 		SortedSet<Description> superClasses = reasoningService.getMoreGeneralConcepts(concept);
 		logger.debug("making neg Examples from " + superClasses.size() + " superclasses");
 
@@ -246,6 +247,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	 */
 	
 	public void makeNegativeExamplesFromDomain(ObjectProperty atomicRole){
+		fromDomain.clear();
 		logger.debug("making Negative Examples from Domain of : "+atomicRole);
 		fromDomain.addAll(reasoningService.getRoleMembers(atomicRole).keySet());
 		fromDomain.removeAll(fullPositiveSet);
@@ -260,6 +262,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	 */
 
 	public void makeNegativeExamplesFromRange(ObjectProperty atomicRole){
+		fromRange.clear();
 		logger.debug("making Negative Examples from Range of : "+atomicRole);
 		Collection<SortedSet<Individual>> tmp = reasoningService.getRoleMembers(atomicRole).values();
 		for (SortedSet<Individual> set : tmp) {

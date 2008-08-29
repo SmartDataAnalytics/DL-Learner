@@ -28,7 +28,8 @@ public class AutomaticPositiveExampleFinderOWL {
 	//QUALITY resultsize is not accounted for
 	public void makePositiveExamplesFromConcept(Description concept){
 		logger.debug("making Positive Examples from Concept: "+concept);
-		this.posExamples = reasoningService.retrieval(concept);
+		this.posExamples.clear();
+		this.posExamples.addAll(reasoningService.retrieval(concept));
 		//this.posExamples = sparqltasks.retrieveInstancesForClassDescription(conceptKBSyntax, 0);
 		logger.debug("pos Example size: "+posExamples.size());
 	}

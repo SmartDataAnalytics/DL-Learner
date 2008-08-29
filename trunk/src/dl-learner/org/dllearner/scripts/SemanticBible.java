@@ -63,7 +63,7 @@ public class SemanticBible {
 	private static Logger logger = Logger.getRootLogger();
 
 	// size of randomly choosen negative examples compared to positives
-	public static double NEGFACTOR = 200.0;
+	public static double NEGFACTOR = 1.0;
 
 	// different negative Ex (randomizes) each run, if set to false
 	private static final boolean DEVELOP = true;
@@ -126,7 +126,7 @@ public class SemanticBible {
 			AutomaticPositiveExampleFinderOWL ape = new AutomaticPositiveExampleFinderOWL(
 					reasoningService);
 			ape.makePositiveExamplesFromConcept(target);
-			positiveEx = ape.getPosExamples();
+			positiveEx.addAll(ape.getPosExamples());
 
 			AutomaticNegativeExampleFinderOWL ane = new AutomaticNegativeExampleFinderOWL(
 					positiveEx, reasoningService);
@@ -135,10 +135,10 @@ public class SemanticBible {
 			else{ ane.makeNegativeExamplesFromSuperClasses(target);}
 			//double correct = ()
 			// System.out.println((positiveEx.size()*NEGFACTOR));
-			negativeEx = ane.getNegativeExamples(
-					(int) (positiveEx.size() * NEGFACTOR), DEVELOP);
+			negativeEx.addAll(ane.getNegativeExamples(
+					(int) (positiveEx.size() * NEGFACTOR), DEVELOP));
 
-			if(negativeEx.size()<=3) {
+			if(negativeEx.size()<0) {
 				System.out.println(target);
 				waitForInput();
 				Files.appendFile(file, "\tSKIPPED negEX "+negativeEx+"\n");
