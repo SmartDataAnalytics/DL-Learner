@@ -61,7 +61,7 @@ public class SemanticBible {
 	private static Logger logger = Logger.getRootLogger();
 
 	// size of randomly choosen negative examples compared to positives
-	public static double NEGFACTOR = 2.0;
+	public static double NEGFACTOR = 20.0;
 
 	// different negative Ex (randomizes) each run, if set to false
 	private static final boolean DEVELOP = true;
