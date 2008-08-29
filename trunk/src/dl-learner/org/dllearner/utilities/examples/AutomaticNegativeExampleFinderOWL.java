@@ -92,9 +92,12 @@ public class AutomaticNegativeExampleFinderOWL {
 		negatives.addAll(fromParallelClasses);
 		negatives.addAll(fromRelated);
 		negatives.addAll(fromSuperclasses);
-		if(negatives.isEmpty()) {
-			negatives.addAll(fromAllOther);
+		if(negatives.isEmpty()){
+			makeNegativeExamplesFromAllOtherInstances();
 		}
+		
+		negatives.addAll(fromAllOther);
+		
 		if(neglimit<=0){
 			logger.debug("neg Example size NO shrinking: " + negatives.size());
 			return negatives;
