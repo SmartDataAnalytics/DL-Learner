@@ -68,6 +68,7 @@ public class SemanticBible {
 	// different negative Ex (randomizes) each run, if set to false
 	private static final boolean DEVELOP = true;
 	private static final boolean WAITFORINPUT = false;
+	private static final boolean RANDOMNEGATIVES = true;
 	static File file = new File("sembib.txt");
 	
 	public static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
@@ -82,7 +83,7 @@ public class SemanticBible {
 		initLogger();
 		logger.info("Start");
 		
-		Files.appendFile(file, "");
+		Files.appendFile(file, "neg Ex random: "+RANDOMNEGATIVES+"\n");
 			
 		
 		//String fileURL = new File(ontologyFile).toURI().toString();
@@ -101,6 +102,19 @@ public class SemanticBible {
 		SortedSet<Individual> positiveEx = new TreeSet<Individual>();
 		SortedSet<Individual> negativeEx = new TreeSet<Individual>();
 
+		positiveEx.add(new Individual("http://semanticbible.org/ns/2006/NTNames#Archelaus"));
+		positiveEx.add(new Individual("http://semanticbible.org/ns/2006/NTNames#HerodAntipas"));
+				
+		
+		negativeEx.add(new Individual("http://semanticbible.org/ns/2006/NTNames#Almighty"));
+		negativeEx.add(new Individual("http://semanticbible.org/ns/2006/NTNames#Gabriel"));
+		negativeEx.add(new Individual("http://semanticbible.org/ns/2006/NTNames#Michael"));
+		negativeEx.add(new Individual("http://semanticbible.org/ns/2006/NTNames#Satan"));
+		negativeEx.add(new Individual("http://semanticbible.org/ns/2006/NTNames#Jesus"));
+		learnOriginal(null, positiveEx, negativeEx);
+		
+		
+		
 		for (NamedClass target : classesToRelearn) {
 			System.out.println("now learning: "+target);
 			waitForInput();
@@ -115,8 +129,9 @@ public class SemanticBible {
 
 			AutomaticNegativeExampleFinderOWL ane = new AutomaticNegativeExampleFinderOWL(
 					positiveEx, reasoningService);
-			ane.makeNegativeExamplesFromSuperClasses(target);
-			//ane.makeNegativeExamplesFromAllOtherInstances();
+			//ane.makeNegativeExamplesFromSuperClasses(target);
+			if(RANDOMNEGATIVES)ane.makeNegativeExamplesFromAllOtherInstances();
+			else ane.makeNegativeExamplesFromSuperClasses(target);
 			//double correct = ()
 			// System.out.println((positiveEx.size()*NEGFACTOR));
 			negativeEx = ane.getNegativeExamples(
@@ -125,7 +140,7 @@ public class SemanticBible {
 			if(negativeEx.size()<=3) {
 				System.out.println(target);
 				waitForInput();
-				Files.appendFile(file, "SKIPPED "+target + "negEX "+negativeEx);
+				Files.appendFile(file, "SKIPPED "+target + " negEX "+negativeEx+"\n");
 				continue;
 			}
 			// reasoningService.prepareSubsumptionHierarchy();
@@ -174,7 +189,8 @@ public class SemanticBible {
 		
 		lc.recursiondepth = 2;
 		lc.closeAfterRecursion = true;
-		lc.ignoredConcepts.add(c.toString());
+		
+		if(c!=null) lc.ignoredConcepts.add(c.toString());
 		
 		lc.noisePercentage = 0;
 		lc.guaranteeXgoodDescriptions = 20;
@@ -200,7 +216,7 @@ public class SemanticBible {
 		lc.setOWLFileURL(ontologyPath);
 		
 		
-		lc.ignoredConcepts.add(c.toString());
+		if(c!=null) lc.ignoredConcepts.add(c.toString());
 		
 
 		lc.noisePercentage = 0;
