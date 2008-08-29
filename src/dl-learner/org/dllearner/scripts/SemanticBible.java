@@ -19,6 +19,7 @@
  */
 package org.dllearner.scripts;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -42,6 +43,7 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderOWL;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
@@ -65,6 +67,8 @@ public class SemanticBible {
 
 	// different negative Ex (randomizes) each run, if set to false
 	private static final boolean DEVELOP = true;
+	private static final boolean WAITFORINPUT = false;
+	static File file = new File("sembib.txt");
 	
 	public static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
 	
@@ -78,8 +82,8 @@ public class SemanticBible {
 		initLogger();
 		logger.info("Start");
 		
-		
-		
+		Files.appendFile(file, "");
+			
 		
 		//String fileURL = new File(ontologyFile).toURI().toString();
 		
@@ -121,6 +125,7 @@ public class SemanticBible {
 			if(negativeEx.size()<=3) {
 				System.out.println(target);
 				waitForInput();
+				Files.appendFile(file, "SKIPPED "+target + "negEX "+negativeEx);
 				continue;
 			}
 			// reasoningService.prepareSubsumptionHierarchy();
@@ -155,10 +160,11 @@ public class SemanticBible {
 		}
 		la.start();
 
-		conceptresults = la.getCurrentlyBestEvaluatedDescriptions(20);
-		for (EvaluatedDescription description : conceptresults) {
-			System.out.println(description);
-		}
+		EvaluatedDescription d = la.getCurrentlyBestEvaluatedDescription();
+		//for (EvaluatedDescription description : conceptresults) {
+		//	System.out.println(description);
+		//}
+		Files.appendFile(file, target +"\t::\t"+ d+"\n" );
 	}
 
 	private static LearnSPARQLConfiguration getConfForSparql(NamedClass c) {
@@ -374,7 +380,9 @@ public class SemanticBible {
 	public static void waitForInput(){
 		System.out.println("PRESS ENTER TO CONTINUE");
 		byte[] b = new byte[100];
-		try{System.in.read(b);
+		try{
+			if(WAITFORINPUT)
+				System.in.read(b);
 		
 		}catch (Exception e) {
 			
