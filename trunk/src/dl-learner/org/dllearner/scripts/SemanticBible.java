@@ -131,8 +131,8 @@ public class SemanticBible {
 			AutomaticNegativeExampleFinderOWL ane = new AutomaticNegativeExampleFinderOWL(
 					positiveEx, reasoningService);
 			//ane.makeNegativeExamplesFromSuperClasses(target);
-			if(RANDOMNEGATIVES)ane.makeNegativeExamplesFromAllOtherInstances();
-			else ane.makeNegativeExamplesFromSuperClasses(target);
+			if(RANDOMNEGATIVES){ane.makeNegativeExamplesFromAllOtherInstances();}
+			else{ ane.makeNegativeExamplesFromSuperClasses(target);}
 			//double correct = ()
 			// System.out.println((positiveEx.size()*NEGFACTOR));
 			negativeEx = ane.getNegativeExamples(
@@ -404,9 +404,10 @@ public class SemanticBible {
 		
 		byte[] b = new byte[100];
 		try{
-			if(WAITFORINPUT)
+			if(WAITFORINPUT){
 				System.out.println("PRESS ENTER TO CONTINUE");
 				System.in.read(b);
+			}
 		
 		}catch (Exception e) {
 			
