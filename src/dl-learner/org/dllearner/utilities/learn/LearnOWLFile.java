@@ -45,6 +45,8 @@ public class LearnOWLFile {
 	
 	public LearnOWLFileConfiguration  configuration;
 	
+	public ComponentManager cm ;
+	
 	public LearnOWLFile (LearnOWLFileConfiguration configuration){ 
 		this.configuration = configuration;
 	}
@@ -60,7 +62,7 @@ public class LearnOWLFile {
 
 		// the component manager is the central object to create
 		// and configure components
-		ComponentManager cm = ComponentManager.getInstance();
+		cm = ComponentManager.getInstance();
 
 		// knowledge source
 		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
