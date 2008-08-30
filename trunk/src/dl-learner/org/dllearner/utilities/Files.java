@@ -103,5 +103,16 @@ public class Files {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void mkdir(String dir){
+		if (!new File(dir).exists()) {
+			try{
+			new File(dir).mkdir();
+			}catch (Exception e) {
+				e.printStackTrace();
+				// this should not be a show stopper
+			}		
+		}
+	}
 
 }
