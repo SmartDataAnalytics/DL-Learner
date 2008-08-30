@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -33,11 +34,14 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.learn.ConfWriter;
 import org.dllearner.utilities.learn.LearnOWLFile;
 import org.dllearner.utilities.learn.LearnOWLFileConfiguration;
+import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
+import org.dllearner.utilities.learn.LearnSparql;
 import org.dllearner.utilities.owl.ReasoningServiceFactory;
 import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
 
@@ -49,10 +53,14 @@ public class DumbLPFinder {
 	
 	public static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
 	
-	private static Class usedReasoner = FastInstanceChecker.class;
-	//private static Class usedReasoner = OWLAPIReasoner.class;
+	//private static Class usedReasoner = FastInstanceChecker.class;
+	private static Class usedReasoner = OWLAPIReasoner.class;
 	private static boolean allOrExists = false;
 	private static boolean tenORthirty = false;
+	
+	private static boolean sparql = true;
+	
+	private static boolean DEBUG = false;
 	//private static boolean allOrExists = true;
 
 	/**
@@ -60,6 +68,7 @@ public class DumbLPFinder {
 	 */
 	public static void main(String[] args) {
 		initLogger();
+		logger.info("started");
 		//String fileURL = new File(ontologyFile).toURI().toString();
 		
 		reasoningService = ReasoningServiceFactory.getReasoningService(
@@ -124,8 +133,12 @@ public class DumbLPFinder {
 				
 			}
 			
-			
-			EvaluatedDescription d = learnOriginal( positiveEx, negativeEx);
+			EvaluatedDescription d;
+			if(sparql){
+				d = learnSPARQL( positiveEx, negativeEx);
+			}else {
+				d = learnOriginal( positiveEx, negativeEx);
+			}
 			 
 			
 			
@@ -133,12 +146,12 @@ public class DumbLPFinder {
 				filename+=(d.getDescriptionLength()<10)?"0"+d.getDescriptionLength():d.getDescriptionLength()+"";
 				if(d.getAccuracy()>=0.99){
 					filename +="_99+";
-				}else if(d.getAccuracy()>=0.75){
-					filename +="_75+";
-				}else if(d.getAccuracy()>=0.50){
-					filename +="_50+";
+				}else if(d.getAccuracy()>=0.80){
+					filename +="_80+";
+				}else if(d.getAccuracy()>=0.60){
+					filename +="_60+";
 				}else {
-					filename +="_50-";
+					filename +="_60-";
 				}
 				filename += "_"+div+".conf";
 				
@@ -220,6 +233,28 @@ public class DumbLPFinder {
 			
 		
 	}
+	
+	private static EvaluatedDescription learnSPARQL( SortedSet<Individual> posExamples, SortedSet<Individual> negExamples) {
+		
+		LearnSparql learner = new LearnSparql(getConfForSparql());
+		LearningAlgorithm la = null;
+		try{
+		la = learner.learn(
+				SetManipulation.indToString(posExamples), 
+				SetManipulation.indToString(negExamples), 
+				usedReasoner);
+		la.start();
+		}catch (Exception e) {
+			System.out.println("ignoring the error "+e.toString());
+			
+		}
+		
+		EvaluatedDescription d = la.getCurrentlyBestEvaluatedDescription();
+		
+		return d;
+			
+		
+	}
 
 	
 
@@ -254,6 +289,40 @@ public class DumbLPFinder {
 
 	}
 	
+	private static LearnSPARQLConfiguration getConfForSparql() {
+		LearnSPARQLConfiguration lc = new LearnSPARQLConfiguration();
+		// lsc.sparqlEndpoint = sparqlTasks.getSparqlEndpoint();
+
+		
+		lc.recursiondepth = 2;
+		lc.closeAfterRecursion = true;
+		lc.useLits = true;
+		lc.predefinedEndpoint = "LOCALJOSEKIBIBLE";
+		
+		lc.noisePercentage = 0;
+		lc.guaranteeXgoodDescriptions = 1;
+		lc.maxExecutionTimeInSeconds = 30;
+		
+		
+		
+		if(allOrExists){
+			lc.useAllConstructor = true;
+			lc.useCardinalityRestrictions = true;
+			lc.useExistsConstructor =true;
+			lc.useNegation = true;
+		}else {
+			lc.useAllConstructor = false;
+			lc.useCardinalityRestrictions = false;
+			lc.useExistsConstructor =true;
+			lc.useNegation = false;
+		}
+		
+		// lsc.searchTreeFile = "log/WikipediaCleaner.txt";
+
+		return lc;
+
+	}
+	
 	
 	private static void initLogger() {
 
@@ -270,10 +339,15 @@ public class DumbLPFinder {
 
 		
 		logger.removeAllAppenders();
-		//ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		//logger.addAppender(consoleAppender);
+		if(DEBUG){
+			logger.setLevel(Level.DEBUG);
+			ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+			logger.addAppender(consoleAppender);
+		}else{
+			logger.setLevel(Level.INFO);
+		}
 		logger.addAppender(fileAppender);
-		logger.setLevel(Level.INFO);
+		
 		
 
 	}

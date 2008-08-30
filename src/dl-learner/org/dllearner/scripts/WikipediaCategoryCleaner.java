@@ -43,6 +43,7 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.scripts.improveWikipedia.ConceptSPARQLReEvaluator;
 import org.dllearner.scripts.improveWikipedia.ConceptSelector;
 import org.dllearner.scripts.improveWikipedia.WikipediaCategoryTasks;
@@ -208,7 +209,7 @@ public class WikipediaCategoryCleaner {
 		LearnSparql learner = new LearnSparql(getConfToRelearn());
 		LearningAlgorithm la = null;
 		try {
-			la = learner.learn(posExamples, negExamples);
+			la = learner.learn(posExamples, negExamples, FastInstanceChecker.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -221,6 +222,7 @@ public class WikipediaCategoryCleaner {
 	private static LearnSPARQLConfiguration getConfToFindWrongIndividuals() {
 		LearnSPARQLConfiguration lsc = new LearnSPARQLConfiguration();
 		lsc.sparqlEndpoint = sparqlTasks.getSparqlEndpoint();
+		lsc.predefinedEndpoint = "DBPEDIA";
 
 		lsc.recursiondepth = 1;
 		lsc.noisePercentage = 20;

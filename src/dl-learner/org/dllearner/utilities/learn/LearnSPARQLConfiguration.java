@@ -14,10 +14,12 @@ public class LearnSPARQLConfiguration extends LearnConfiguration {
 
 	//	 SparqlKnowledgeSource
 	public SparqlEndpoint sparqlEndpoint = SparqlEndpoint.getEndpointDBpedia();
+	public String predefinedEndpoint = null;
 	public int recursiondepth = 1;
 	public boolean closeAfterRecursion = true;
+	public boolean useLits = false;
 	public boolean randomizeCache = false;
-	public String predefinedFilter = "YAGO";
+	public String predefinedFilter = null;
 	
 
 	@Override
@@ -25,11 +27,21 @@ public class LearnSPARQLConfiguration extends LearnConfiguration {
 		try {
 			super.applyConfigEntries(cm, ks, lp, rs, la);
 			// KNOWLEDGESOURCE
-			cm.applyConfigEntry(ks, "url", sparqlEndpoint.getURL().toString());
-			cm.applyConfigEntry(ks, "predefinedEndpoint", "DBPEDIA");
+			if(predefinedEndpoint ==null){
+				cm.applyConfigEntry(ks, "url", sparqlEndpoint.getURL().toString());
+			}else {
+				cm.applyConfigEntry(ks, "predefinedEndpoint", predefinedEndpoint);
+			}
+			if(predefinedFilter==null){
+				//todo manual
+			}else{
+				cm.applyConfigEntry(ks, "predefinedFilter", predefinedFilter);
+			}
+			
+			cm.applyConfigEntry(ks, "useLits", useLits);
 			cm.applyConfigEntry(ks, "recursionDepth", recursiondepth);
 			cm.applyConfigEntry(ks, "closeAfterRecursion", closeAfterRecursion);
-			cm.applyConfigEntry(ks, "predefinedFilter", predefinedFilter);
+			
 			if (randomizeCache)
 				cm.applyConfigEntry(ks, "cacheDir", "cache/"
 						+ System.currentTimeMillis() + "");
