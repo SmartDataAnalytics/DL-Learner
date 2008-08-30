@@ -17,6 +17,7 @@ public class LearnSPARQLConfiguration extends LearnConfiguration {
 	public String predefinedEndpoint = null;
 	public int recursiondepth = 1;
 	public boolean closeAfterRecursion = true;
+	public boolean getAllSuperClasses = true;
 	public boolean useLits = false;
 	public boolean randomizeCache = false;
 	public String predefinedFilter = null;
@@ -41,6 +42,8 @@ public class LearnSPARQLConfiguration extends LearnConfiguration {
 			cm.applyConfigEntry(ks, "useLits", useLits);
 			cm.applyConfigEntry(ks, "recursionDepth", recursiondepth);
 			cm.applyConfigEntry(ks, "closeAfterRecursion", closeAfterRecursion);
+			cm.applyConfigEntry(ks, "getAllSuperClasses", getAllSuperClasses);
+			
 			
 			if (randomizeCache)
 				cm.applyConfigEntry(ks, "cacheDir", "cache/"

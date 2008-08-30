@@ -55,8 +55,8 @@ public class DumbLPFinder {
 	
 	//private static Class usedReasoner = FastInstanceChecker.class;
 	private static Class usedReasoner = OWLAPIReasoner.class;
-	private static boolean allOrExists = false;
-	private static boolean tenORthirty = false;
+	private static boolean allOrExists = true;
+	private static boolean tenORthirty = true;
 	
 	private static boolean sparql = true;
 	
@@ -89,7 +89,7 @@ public class DumbLPFinder {
 		int count = 1;
 		while(count<10000){
 			
-			if((count%5)==0){
+			/*if((count%5)==0){
 				//System.out.println(count+" "+allOrExists+"::"+tenORthirty);
 			
 				if(allOrExists && !tenORthirty){
@@ -107,7 +107,7 @@ public class DumbLPFinder {
 				}
 				//System.out.println(count+" "+allOrExists+"::"+tenORthirty);	
 			
-			}
+			}*/
 			
 			int exampleSize = (tenORthirty)?10:30;
 			int half = (tenORthirty)?5:15;
@@ -143,16 +143,21 @@ public class DumbLPFinder {
 			
 			
 				String div = (System.currentTimeMillis()%10000)+"";
-				filename+=(d.getDescriptionLength()<10)?"0"+d.getDescriptionLength():d.getDescriptionLength()+"";
 				if(d.getAccuracy()>=0.99){
-					filename +="_99+";
+					filename +="99+";
+				}else if(d.getAccuracy()>=0.90){
+					filename +="90+";
 				}else if(d.getAccuracy()>=0.80){
-					filename +="_80+";
-				}else if(d.getAccuracy()>=0.60){
-					filename +="_60+";
+					filename +="80+";
+				}else if(d.getAccuracy()>=0.70){
+					filename +="70+";
+				}else if(d.getAccuracy()>0.50){
+					filename +="50+";
 				}else {
-					filename +="_60-";
+					filename +="50-";
 				}
+				filename+="_";
+				filename+=(d.getDescriptionLength()<10)?"0"+d.getDescriptionLength():d.getDescriptionLength()+"";
 				filename += "_"+div+".conf";
 				
 				String content = fileString(true, d, positiveEx, negativeEx);
