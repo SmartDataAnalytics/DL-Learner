@@ -51,8 +51,8 @@ public class DumbLPFinder {
 	
 	private static Class usedReasoner = FastInstanceChecker.class;
 	//private static Class usedReasoner = OWLAPIReasoner.class;
-	private static boolean allOrExists = true;
-	private static boolean tenORthirty = true;
+	private static boolean allOrExists = false;
+	private static boolean tenORthirty = false;
 	//private static boolean allOrExists = true;
 
 	/**
