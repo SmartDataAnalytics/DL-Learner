@@ -30,7 +30,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.cli.Start;
+import org.dllearner.core.Component;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.extraction.Manager;
@@ -60,9 +63,9 @@ public class SemanticBible2 {
 	
 	public static String tmpFilename = dir + "tmp.conf";
 	
-	private static Class usedReasoner = FastInstanceChecker.class;
+	//private static Class usedReasoner = FastInstanceChecker.class;
 	
-	private static boolean useSPARQL = false;
+	private static boolean useSPARQL = true;
 
 	/**
 	 * @param args
@@ -73,9 +76,10 @@ public class SemanticBible2 {
 		logger.info("Start");
 		File tmpFile = new File(tmpFilename);
 		
-		List<File> confs = getFilesContaining(useSPARQL,"thirty","exists", "75+"); 
-		
+		List<File> confs = getFilesContaining(useSPARQL,"ten","all", "99+"); 
+		System.out.println(confs);
 		//reasoningService = ReasoningServiceFactory.getReasoningService(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
+		
 		try{
 		for (File file : confs) {
 			System.out.println(file.getAbsolutePath());
@@ -85,9 +89,22 @@ public class SemanticBible2 {
 			//System.out.println(tmpFile.getCanonicalPath());
 			
 			Start.main(new String[] { tmpFilename });
+			ComponentManager cm =ComponentManager.getInstance();
+			List<Component> comp = cm.getLiveComponents();
+			for (Component component : comp) {
+				System.out.println(component.getClass().getCanonicalName());
+				if(component instanceof LearningAlgorithm){
+					System.out.println("yyyy");
+					System.exit(0);
+				}
+				
+			}
+			
+			
 			Cache.getDefaultCache().clearCache();
+			cm.freeAllComponents();
 			System.exit(0);
-		}
+		}//end for
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -98,9 +115,12 @@ public class SemanticBible2 {
 		List<File> ret = new ArrayList<File>();
 		try{
 			String actualDir = (sparql)?sparqldir:normaldir;
+			System.out.println(actualDir);
 			File f = new File(actualDir);
 		    String[] files = f.list();
+		    
 		    for (int i = 0; i < files.length; i++) {
+		    	System.out.println(files[i]);
 				if(
 						files[i].contains(numExamples) 
 						&& files[i].contains(allOrEx)
@@ -130,9 +150,10 @@ public class SemanticBible2 {
 			"refexamples.useNegation = true;\n"+
 			"refexamples.useCardinalityRestrictions = true;\n"+
 			"refexamples.guaranteeXgoodDescriptions = 1;\n"+
+			"refexamples.maxExecutionTimeInSeconds = 1;\n"+
 			"\n"+
-			//"reasoner = owlAPI;\n"+
-			"reasoner = fastInstanceChecker;\n"+
+			"reasoner = owlAPI;\n"+
+			//"reasoner = fastInstanceChecker;\n"+
 			//"owlAPIReasoner.reasonerType = pellet;\n\n";
 			"";
 		return s;

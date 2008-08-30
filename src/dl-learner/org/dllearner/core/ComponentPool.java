@@ -113,5 +113,12 @@ public final class ComponentPool {
 		lastValidConfigValue = new HashMap<Component, Map<ConfigOption<?>, Object>>();
 		configEntryHistory = new HashMap<Component, List<ConfigEntry<?>>>();
 	}
+	
+	/**
+	 * @return
+	 */
+	public List<Component> getComponents(){
+		return components;
+	}
 
 }

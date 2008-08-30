@@ -686,5 +686,9 @@ public final class ComponentManager {
 	public List<Class<? extends LearningAlgorithm>> getLearningAlgorithms() {
 		return new LinkedList<Class<? extends LearningAlgorithm>>(learningAlgorithms);
 	}
+	
+	public List<Component> getLiveComponents(){
+		return pool.getComponents();
+	}
 
 }
