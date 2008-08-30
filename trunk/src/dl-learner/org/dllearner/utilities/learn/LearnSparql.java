@@ -53,7 +53,7 @@ public class LearnSparql {
 
 	//return  will be replaced by List Description
 	public LearningAlgorithm learn( SortedSet<String> posExamples,
-			SortedSet<String> negExamples) throws ComponentInitException,
+			SortedSet<String> negExamples, Class<? extends ReasonerComponent> Reasoner) throws ComponentInitException,
 			LearningProblemUnsupportedException {
 
 		logger.info("Start Learning with");
@@ -72,7 +72,7 @@ public class LearnSparql {
 		cm.applyConfigEntry(ks, "instances", instances);
 		
 		// reasoner
-		ReasonerComponent r = cm.reasoner(FastInstanceChecker.class, ks);
+		ReasonerComponent r = cm.reasoner(Reasoner, ks);
 		ReasoningService rs = cm.reasoningService(r);
 
 		// learning problem

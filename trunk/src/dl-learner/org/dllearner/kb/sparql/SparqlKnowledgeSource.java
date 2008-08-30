@@ -80,7 +80,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	static int recursionDepthDefault = 1;
 	
 	//RBC
-	static final boolean debug = true;
+	static final boolean debug = false;
 	static final boolean debugUseImprovedTupleAquisitor = debug && false; //switches tupleaquisitor
 	static final boolean debugExitAfterExtraction =  debug && false; //switches sysex und rdf generation
 	static final boolean debugAdditionallyGenerateRDF =  debug && true;
