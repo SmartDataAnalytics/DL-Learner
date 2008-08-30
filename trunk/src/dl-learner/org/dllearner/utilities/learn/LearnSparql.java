@@ -32,7 +32,6 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
-import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
  * 
