@@ -183,7 +183,7 @@ public class Cache implements Serializable {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-		}	
+		}
 		
 		// TODO: we need to check whether the query is correct
 		// (may not always be the case due to md5 hashing)
