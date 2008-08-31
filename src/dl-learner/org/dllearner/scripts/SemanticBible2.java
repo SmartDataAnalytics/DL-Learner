@@ -119,6 +119,7 @@ public class SemanticBible2 {
 		}//end for
 		}catch (Exception e) {
 			e.printStackTrace();
+			System.exit(0);
 		}
 		logger.info("Finished");
 	}
