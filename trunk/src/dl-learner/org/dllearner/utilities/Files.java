@@ -31,6 +31,7 @@ import java.io.IOException;
  * 
  */
 public class Files {
+	public static boolean debug = true;
 
 	/**
 	 * Reads in a file.
@@ -40,15 +41,20 @@ public class Files {
 	 * @return Content of the file.
 	 */
 	public static String readFile(File file) throws FileNotFoundException, IOException {
+		
+		
 		BufferedReader br = new BufferedReader(new FileReader(file));
-		String line;
 		StringBuffer content = new StringBuffer();
+		try{
+		String line;
+		
 		while ((line = br.readLine()) != null) {
 			content.append(line);
 			content.append(System.getProperty("line.separator"));
 		}
-		br.close();
+		}finally{br.close();}
 		return content.toString();
+		
 	}
 
 	/**
@@ -61,16 +67,17 @@ public class Files {
 	 *            Content of the file.
 	 */
 	public static void createFile(File file, String content) {
+		
 		try {
 			FileOutputStream fos = new FileOutputStream(file);
 			fos.write(content.getBytes());
-			fos.close();
+			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			if(debug){System.exit(0);}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			if(debug){System.exit(0);}
 		}
 	}
 
@@ -88,11 +95,11 @@ public class Files {
 			fos.write(content.getBytes());
 			fos.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			if(debug){System.exit(0);}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			if(debug){System.exit(0);}
 		}
 	}
 
@@ -101,6 +108,17 @@ public class Files {
 		createFile(file, "");
 		}catch (Exception e) {
 			e.printStackTrace();
+			if(debug){System.exit(0);}
+		}
+	}
+	
+	public static void deleteFile(File file) {
+		
+		try{
+			file.delete();
+		}catch (Exception e) {
+			e.printStackTrace();
+			if(debug){System.exit(0);}
 		}
 	}
 	
@@ -110,6 +128,7 @@ public class Files {
 			new File(dir).mkdir();
 			}catch (Exception e) {
 				e.printStackTrace();
+				if(debug){System.exit(0);}
 				// this should not be a show stopper
 			}		
 		}

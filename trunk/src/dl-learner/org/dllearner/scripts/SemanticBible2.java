@@ -116,6 +116,7 @@ public class SemanticBible2 {
 			//Cache.getDefaultCache().clearCache();
 			cm.freeAllComponents();
 			
+			
 		}//end for
 		}catch (Exception e) {
 			e.printStackTrace();
