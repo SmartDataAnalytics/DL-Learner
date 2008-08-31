@@ -38,13 +38,13 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.kb.sparql.Cache;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.StringFormatter;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.owl.ReasoningServiceFactory;
 import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
-import org.dllearner.utilities.statistics.SimpleClock;
 
 import com.jamonapi.Monitor;
 
@@ -113,9 +113,9 @@ public class SemanticBible2 {
 			logLine += StringFormatter.doubleToPercent(onOnto.getAccuracy())+del;
 			logLine += m.getTotal()+del+"missing instead size of retrieve: "+retrieved.size()+cr;
 			Files.appendFile(log, logLine);
-			//Cache.getDefaultCache().clearCache();
+			Cache.getDefaultCache().clearCache();
 			cm.freeAllComponents();
-			System.exit(0);
+			
 		}//end for
 		}catch (Exception e) {
 			e.printStackTrace();
