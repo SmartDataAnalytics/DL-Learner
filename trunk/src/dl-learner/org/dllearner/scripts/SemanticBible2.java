@@ -20,34 +20,33 @@
 package org.dllearner.scripts;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.cli.Start;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.kb.extraction.ExtractionAlgorithm;
-import org.dllearner.kb.extraction.Manager;
-import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Files;
-import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
-import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderOWL;
-import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
+import org.dllearner.utilities.JamonMonitorLogger;
+import org.dllearner.utilities.StringFormatter;
+import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.owl.ReasoningServiceFactory;
 import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
 import org.dllearner.utilities.statistics.SimpleClock;
+
+import com.jamonapi.Monitor;
 
 public class SemanticBible2 {
 
@@ -62,6 +61,8 @@ public class SemanticBible2 {
 	public static String normaldir = dir+"normal/";
 	
 	public static String tmpFilename = dir + "tmp.conf";
+	static File log = new File(dir+"results.txt");
+	
 	
 	//private static Class usedReasoner = FastInstanceChecker.class;
 	
@@ -71,72 +72,183 @@ public class SemanticBible2 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SimpleClock sc = new SimpleClock();
+		
 		initLogger();
 		logger.info("Start");
 		File tmpFile = new File(tmpFilename);
+		String del="\t";
+		String cr="\n";
+		int max = 100;
+		SortedSet<String> confs = getFilesContaining(useSPARQL,"ten","all", "99+"); 
+		analyzeFiles(confs);
+		Files.createFile(log, "accOnFragment"+del+"accOnOnt"+del+"timeFragme"+del+"timeWhole"+cr);
 		
-		List<File> confs = getFilesContaining(useSPARQL,"ten","all", "99+"); 
-		System.out.println(confs);
-		//reasoningService = ReasoningServiceFactory.getReasoningService(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
 		
+		reasoningService = ReasoningServiceFactory.getReasoningService(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
+		ComponentManager cm =ComponentManager.getInstance();
 		try{
-		for (File file : confs) {
-			System.out.println(file.getAbsolutePath());
-			StringBuffer sbuf = new StringBuffer(Files.readFile( file));
+		int i=0;
+		for (String fileContent : confs) {
+			if(i>= max) {break;}i++;
+			String logLine ="";
+			SortedSet<Individual> posEx = SetManipulation.stringToInd(getIndividuals(fileContent, true));
+			SortedSet<Individual> negEx = SetManipulation.stringToInd(getIndividuals(fileContent, false));
+			
+			
+			StringBuffer sbuf = new StringBuffer(fileContent);
 			sbuf.insert(0, (useSPARQL)?sparqlOptions():normalOptions());
 			Files.createFile(tmpFile, sbuf.toString());
 			//System.out.println(tmpFile.getCanonicalPath());
 			
+			Monitor m = JamonMonitorLogger.getTimeMonitor(SemanticBible2.class, "learn on fragment").start();
 			Start.main(new String[] { tmpFilename });
-			ComponentManager cm =ComponentManager.getInstance();
-			List<Component> comp = cm.getLiveComponents();
-			for (Component component : comp) {
-				System.out.println(component.getClass().getCanonicalName());
-				if(component instanceof LearningAlgorithm){
-					System.out.println("yyyy");
-					System.exit(0);
-				}
-				
-			}
+			m.stop();
+			LearningAlgorithm la = getLearningAlgorithm();
 			
-			
-			Cache.getDefaultCache().clearCache();
+			EvaluatedDescription onFragment =(la.getCurrentlyBestEvaluatedDescription());
+			logLine += StringFormatter.doubleToPercent(onFragment.getAccuracy())+del;
+			SortedSet<Individual> retrieved = reasoningService.retrieval(onFragment.getDescription());
+			EvaluatedDescription onOnto = reEvaluateDescription(
+					onFragment.getDescription(), retrieved, posEx, negEx);
+			logLine += StringFormatter.doubleToPercent(onOnto.getAccuracy())+del;
+			logLine += m.getTotal()+del+"missing instead size of retrieve: "+retrieved.size()+cr;
+			Files.appendFile(log, logLine);
+			//Cache.getDefaultCache().clearCache();
 			cm.freeAllComponents();
 			System.exit(0);
 		}//end for
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		logger.info("finished");
+		logger.info("Finished");
 	}
 	
-	public static List<File> getFilesContaining(boolean sparql, String numExamples, String allOrEx, String acc) {
-		List<File> ret = new ArrayList<File>();
-		try{
+	public static EvaluatedDescription reEvaluateDescription(Description d, SortedSet<Individual> retrieved ,SortedSet<Individual> posEx ,SortedSet<Individual> negEx ){
+		SortedSet<Individual> PosAsPos = new TreeSet<Individual>();
+		SortedSet<Individual> PosAsNeg = new TreeSet<Individual>();
+		SortedSet<Individual> NegAsPos = new TreeSet<Individual>();
+		SortedSet<Individual> NegAsNeg = new TreeSet<Individual>();
+		
+		// PosAsPos
+		PosAsPos.addAll(posEx);
+		PosAsPos.retainAll(retrieved);
+
+		// PosAsNeg
+		PosAsNeg.addAll(posEx);
+		PosAsNeg.removeAll(retrieved);
+		
+		// NegAsPos
+		NegAsPos.addAll(negEx);
+		NegAsPos.retainAll(retrieved);
+
+		// PosAsNeg
+		NegAsNeg.addAll(negEx);
+		NegAsNeg.removeAll(retrieved);
+		
+		return new EvaluatedDescription(d, PosAsPos, PosAsNeg, NegAsPos,NegAsNeg);
+		
+	}
+	
+	public static LearningAlgorithm getLearningAlgorithm(){
+		ComponentManager cm =ComponentManager.getInstance();
+		
+		List<Component> comp = cm.getLiveComponents();
+		for (Component component : comp) {
+			if(component instanceof LearningAlgorithm){
+				return (LearningAlgorithm) component;
+			}
+			
+		}
+		return null;
+	}
+	
+	public static SortedSet<String> getFilesContaining(boolean sparql, String numExamples, String allOrEx, String acc) {
+		//List<File> ret = new ArrayList<File>();
+		SortedSet<String> ret = new TreeSet<String>();
+		
 			String actualDir = (sparql)?sparqldir:normaldir;
-			System.out.println(actualDir);
+			logger.info(actualDir);
 			File f = new File(actualDir);
 		    String[] files = f.list();
-		    
+		    int consistent = 0;
+		  try{
 		    for (int i = 0; i < files.length; i++) {
-		    	System.out.println(files[i]);
-				if(
-						files[i].contains(numExamples) 
+		    	
+				if(		files[i].contains(numExamples) 
 						&& files[i].contains(allOrEx)
 						&& files[i].contains(acc)
 						){
-					ret.add(new File(actualDir+files[i]));
+					consistent++;
+					ret.add(Files.readFile(new File(actualDir+files[i])));
+					if(ret.size() != consistent){
+						logger.info("double file: "+files[i]);
+					}
 				}
 					
 			}    
 		}catch (Exception e) {
-			logger.warn("deleting cache failed");
+			
 			e.printStackTrace();
+		}
+		if(consistent != ret.size()){
+			logger.info("double files"+consistent+"::"+ret.size());
+			System.exit(0);
+		}else{
+			logger.info("all files different");
 		}
 	    return ret;
 	}
 	
+	public static void analyzeFiles(SortedSet<String> l){
+		SortedSet<String> differentIndividuals = new TreeSet<String>();
+		for (String content : l) {
+			differentIndividuals.addAll(getIndividuals(content, true));
+			differentIndividuals.addAll(getIndividuals(content, false));
+			
+		}
+		System.out.println("found diff inds "+differentIndividuals.size());
+		
+	}
+	
+	public static SortedSet<String> getIndividuals(String target, boolean posOrNeg){
+		if(posOrNeg){
+			return getAllStringsBetween(target, "+\"", "\"");
+		}else{
+			return getAllStringsBetween(target, "-\"", "\"");
+		}
+		
+	}
+	
+	public static  SortedSet<String> getAllStringsBetween(String target, String start, String end){
+		SortedSet<String> ret = new TreeSet<String>();
+		StringTokenizer st = new StringTokenizer(target,"\n");
+		while(st.hasMoreElements()){
+			String line = st.nextToken();
+			if(line.contains(start)){
+				line = line.substring(line.indexOf(start)+start.length());
+				String current = line.substring(0,line.indexOf(end));
+				ret.add(current);
+			}
+		}
+		
+		return ret;
+	}
+	
+	public static String getCombinedOptions(){
+		String s="\n"+
+		"algorithm = refexamples;\n"+
+		"refexamples.useAllConstructor = true;\n"+
+		"refexamples.useNegation = true;\n"+
+		"refexamples.useCardinalityRestrictions = true;\n"+
+		"refexamples.guaranteeXgoodDescriptions = 1;\n"+
+		"refexamples.maxExecutionTimeInSeconds = 100;\n"+
+		"\n"+
+		"reasoner = owlAPI;\n"+
+		//"reasoner = fastInstanceChecker;\n"+
+		"owlAPIReasoner.reasonerType = pellet;\n\n"+
+		"";
+	return s;
+	}
 	
 	public static String sparqlOptions (){
 		String s="// SPARQL options\n"+
@@ -144,17 +256,7 @@ public class SemanticBible2 {
 			"sparql.useLits = true;\n"+
 			"sparql.predefinedEndpoint = \"LOCALJOSEKIBIBLE\";\n"+
 			"import(\"lalala\",\"SPARQL\");\n"+
-
-			"algorithm = refexamples;\n"+
-			"refexamples.useAllConstructor = true;\n"+
-			"refexamples.useNegation = true;\n"+
-			"refexamples.useCardinalityRestrictions = true;\n"+
-			"refexamples.guaranteeXgoodDescriptions = 1;\n"+
-			"refexamples.maxExecutionTimeInSeconds = 1;\n"+
-			"\n"+
-			"reasoner = owlAPI;\n"+
-			//"reasoner = fastInstanceChecker;\n"+
-			//"owlAPIReasoner.reasonerType = pellet;\n\n";
+			getCombinedOptions()+
 			"";
 		return s;
 	}
@@ -162,15 +264,7 @@ public class SemanticBible2 {
 	public static String normalOptions (){
 		String s="\n"+
 			"import(\"NTNcombined.owl\");\n"+
-			"algorithm = refexamples;\n"+
-			"refexamples.useAllConstructor = true;\n"+
-			"refexamples.useNegation = true;\n"+
-			"refexamples.useCardinalityRestrictions = true;\n"+
-			"refexamples.guaranteeXgoodDescriptions = 1;\n"+
-			"\n"+
-			"reasoner = owlAPI;\n"+
-			//"reasoner = fastInstanceChecker;\n"+
-			//"owlAPIReasoner.reasonerType = pellet;\n\n";
+			getCombinedOptions()+
 			"";
 		return s;
 	}
@@ -191,9 +285,9 @@ public class SemanticBible2 {
 
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
-		logger.addAppender(consoleAppender);
+		//logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
-		logger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.INFO);
 		
 
 	}

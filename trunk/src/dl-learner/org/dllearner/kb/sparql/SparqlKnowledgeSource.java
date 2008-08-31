@@ -83,7 +83,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	static final boolean debug = false;
 	static final boolean debugUseImprovedTupleAquisitor = debug && false; //switches tupleaquisitor
 	static final boolean debugExitAfterExtraction =  debug && false; //switches sysex und rdf generation
-	static final boolean debugAdditionallyGenerateRDF =  debug && true;
+	
 	
 	private boolean useCache=true;
 	// ConfigOptions
@@ -100,6 +100,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	// private Set<String> classList;
 	private String format = "N-TRIPLES";
 	private boolean dumpToFile = true;
+	private boolean convertNT2RDF = true ;
 	private boolean useLits = false;
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;
@@ -172,6 +173,11 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 						"dumpToFile",
 						"Specifies whether the extracted ontology is written to a file or not.",
 						true));
+		options
+			.add(new BooleanConfigOption(
+				"convertNT2RDF",
+				"Specifies whether the extracted NTriples are converted to RDF and deleted.",
+				true));
 		options.add(new BooleanConfigOption("useLits",
 				"use Literals in SPARQL query"));
 		options
@@ -250,6 +256,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			format = (String) entry.getValue();
 		} else if (option.equals("dumpToFile")) {
 			dumpToFile = (Boolean) entry.getValue();
+		} else if (option.equals("convertNT2RDF")) {
+			convertNT2RDF = (Boolean) entry.getValue();
 		} else if (option.equals("useLits")) {
 			useLits = (Boolean) entry.getValue();
 		} else if (option.equals("useCache")) {
@@ -329,16 +337,21 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 						new File(basedir).mkdir();
 					}
 					
+					File dump = new File(basedir + filename);
+					
 					FileWriter fw = new FileWriter(
-							new File(basedir + filename), true);
+							dump , true);
 					fw.write(ont);
 					fw.flush();
 					fw.close();
 
-					dumpFile = (new File(basedir + filename)).toURI().toURL();
-					if(debugAdditionallyGenerateRDF){
-					NT2RDF.convertNT2RDF(basedir + filename);
-					//System.exit(0);
+					
+					dumpFile = (dump).toURI().toURL();
+				
+					
+					if(convertNT2RDF){
+						NT2RDF.convertNT2RDF(dump.getAbsolutePath());
+						
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
