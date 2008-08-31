@@ -100,7 +100,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	// private Set<String> classList;
 	private String format = "N-TRIPLES";
 	private boolean dumpToFile = true;
-	private boolean convertNT2RDF = true ;
+	private boolean convertNT2RDF = false ;
 	private boolean useLits = false;
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;

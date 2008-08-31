@@ -45,6 +45,7 @@ import org.dllearner.utilities.StringFormatter;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.owl.ReasoningServiceFactory;
 import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
+import org.dllearner.utilities.statistics.SimpleClock;
 
 import com.jamonapi.Monitor;
 
@@ -81,7 +82,13 @@ public class SemanticBible2 {
 		int max = 100;
 		SortedSet<String> confs = getFilesContaining(useSPARQL,"ten","all", "99+"); 
 		analyzeFiles(confs);
-		Files.createFile(log, "accOnFragment"+del+"accOnOnt"+del+"timeFragme"+del+"timeWhole"+cr);
+		Files.createFile(log,
+				"accOnFragment"+del+
+				"accOnOnt"+del+
+				"timeFragme"+del+
+				"coveredPos"+del+
+				"coveredNeg"+del+
+				"timeWhole"+cr);
 		
 		
 		reasoningService = ReasoningServiceFactory.getReasoningService(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
@@ -101,7 +108,9 @@ public class SemanticBible2 {
 			//System.out.println(tmpFile.getCanonicalPath());
 			
 			Monitor m = JamonMonitorLogger.getTimeMonitor(SemanticBible2.class, "learn on fragment").start();
+			SimpleClock sc = new SimpleClock();
 			Start.main(new String[] { tmpFilename });
+			long time = sc.getTime();
 			m.stop();
 			LearningAlgorithm la = getLearningAlgorithm();
 			
@@ -110,10 +119,16 @@ public class SemanticBible2 {
 			SortedSet<Individual> retrieved = reasoningService.retrieval(onFragment.getDescription());
 			EvaluatedDescription onOnto = reEvaluateDescription(
 					onFragment.getDescription(), retrieved, posEx, negEx);
+			if(onOnto.getAccuracy()!=1.0){
+				Files.appendFile(log, onOnto.toString()+"\n");
+			}
 			logLine += StringFormatter.doubleToPercent(onOnto.getAccuracy())+del;
-			logLine += m.getTotal()+del+"missing instead size of retrieve: "+retrieved.size()+cr;
-			Files.appendFile(log, logLine);
-			//Cache.getDefaultCache().clearCache();
+			logLine += time+del;
+			logLine += StringFormatter.doubleToPercent((double)(onOnto.getCoveredPositives().size()/5))+del;
+			logLine += StringFormatter.doubleToPercent((double)((5-onOnto.getCoveredNegatives().size())/5))+del;
+			logLine += " size of retrieve: "+retrieved.size();
+			Files.appendFile(log, logLine+cr);
+			Cache.getDefaultCache().clearCache();
 			cm.freeAllComponents();
 			
 			
@@ -122,7 +137,9 @@ public class SemanticBible2 {
 			e.printStackTrace();
 			
 		}
+		
 		logger.info("Finished");
+	
 	}
 	
 	public static EvaluatedDescription reEvaluateDescription(Description d, SortedSet<Individual> retrieved ,SortedSet<Individual> posEx ,SortedSet<Individual> negEx ){
@@ -243,7 +260,7 @@ public class SemanticBible2 {
 		"refexamples.useNegation = true;\n"+
 		"refexamples.useCardinalityRestrictions = true;\n"+
 		"refexamples.guaranteeXgoodDescriptions = 1;\n"+
-		"refexamples.maxExecutionTimeInSeconds = 100;\n"+
+		
 		"\n"+
 		"reasoner = owlAPI;\n"+
 		//"reasoner = fastInstanceChecker;\n"+
@@ -266,6 +283,7 @@ public class SemanticBible2 {
 	public static String normalOptions (){
 		String s="\n"+
 			"import(\"NTNcombined.owl\");\n"+
+			"refexamples.maxExecutionTimeInSeconds = 1800;\n"+
 			getCombinedOptions()+
 			"";
 		return s;
