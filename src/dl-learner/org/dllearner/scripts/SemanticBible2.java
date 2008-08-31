@@ -75,9 +75,9 @@ public class SemanticBible2 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+		SimpleClock total = new SimpleClock();
 		initLogger();
-		logger.info("Start");
+		logger.warn("Start");
 		File tmpFile = new File(tmpFilename);
 		String del="\t";
 		String cr="\n";
@@ -123,23 +123,32 @@ public class SemanticBible2 {
 			SortedSet<Individual> retrieved = reasoningService.retrieval(onFragment.getDescription());
 			EvaluatedDescription onOnto = reEvaluateDescription(
 					onFragment.getDescription(), retrieved, posEx, negEx);
-			if(onOnto.getAccuracy()!=1.0){
+			/*if(onOnto.getAccuracy()!=1.0){
 				Files.appendFile(log, onOnto.toString()+"\n");
 				System.out.println(onOnto.toString());
+				
 				System.out.println(onOnto.getCoveredPositives());
-				System.out.println(onOnto.getCoveredNegatives());
+				System.out.println(onOnto.getCoveredNegatives().size());
+				
 				System.out.println(onOnto.getNotCoveredPositives());
 				System.out.println(onOnto.getNotCoveredNegatives());
+				System.out.println("p then n");
 				System.out.println(posEx);
 				System.out.println(negEx);
 				System.out.println(retrieved);
+				System.out.println((5-onOnto.getCoveredNegatives().size())+"");
+				double n = (double) (5-onOnto.getCoveredNegatives().size());
+				System.out.println();
+				System.out.println((n/5.0));
 				System.exit(0);
-			}
+			}*/
 			logLine += StringFormatter.doubleToPercent(onOnto.getAccuracy())+del;
 			logLine += time+del;
 			logLine += StringFormatter.doubleToPercent((double)(onOnto.getCoveredPositives().size()/5))+del;
-			logLine += StringFormatter.doubleToPercent((double)((5-onOnto.getCoveredNegatives().size())/5))+del;
-			logLine += " size of retrieve: "+retrieved.size();
+			double n = (double) (5-onOnto.getCoveredNegatives().size());
+			logLine += StringFormatter.doubleToPercent(n/5.0)+del;
+			logLine += " size of retrieve: "+retrieved.size()+del;
+			logLine += f.toString();
 			Files.appendFile(log, logLine+cr);
 			Cache.getDefaultCache().clearCache();
 			cm.freeAllComponents();
@@ -151,7 +160,7 @@ public class SemanticBible2 {
 			
 		}
 		
-		logger.info("Finished");
+		logger.warn("Finished");
 	
 	}
 	
@@ -165,17 +174,26 @@ public class SemanticBible2 {
 		PosAsPos.addAll(posEx);
 		PosAsPos.retainAll(retrieved);
 
+		//System.out.println(PosAsPos);
+		
 		// PosAsNeg
 		PosAsNeg.addAll(posEx);
 		PosAsNeg.removeAll(retrieved);
 		
+		//System.out.println(PosAsNeg);
+		
 		// NegAsPos
 		NegAsPos.addAll(negEx);
 		NegAsPos.retainAll(retrieved);
+		
+		//System.out.println(NegAsPos);
 
 		// PosAsNeg
 		NegAsNeg.addAll(negEx);
 		NegAsNeg.removeAll(retrieved);
+		
+		//System.out.println(NegAsNeg);
+		
 		
 		return new EvaluatedDescription(d, PosAsPos, PosAsNeg, NegAsPos,NegAsNeg);
 		
@@ -199,7 +217,7 @@ public class SemanticBible2 {
 		//SortedSet<File> ret = new TreeSet<File>();
 		
 			String actualDir = (sparql)?sparqldir:normaldir;
-			logger.info(actualDir);
+			logger.warn(actualDir);
 			File f = new File(actualDir);
 		    String[] files = f.list();
 		    Arrays.sort(files);
@@ -214,7 +232,7 @@ public class SemanticBible2 {
 					consistent++;
 					ret.add(new File(actualDir+files[i]));
 					if(ret.size() != consistent){
-						logger.info("double file: "+files[i]);
+						logger.warn("double file: "+files[i]);
 					}
 				}
 					
@@ -224,10 +242,10 @@ public class SemanticBible2 {
 			e.printStackTrace();
 		}
 		if(consistent != ret.size()){
-			logger.info("double files"+consistent+"::"+ret.size());
+			logger.warn("double files"+consistent+"::"+ret.size());
 			System.exit(0);
 		}else{
-			logger.info("all files different");
+			logger.warn("all files different");
 		}
 	    return ret;
 	}
@@ -320,9 +338,9 @@ public class SemanticBible2 {
 
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
-		//logger.addAppender(consoleAppender);
+		logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
-		logger.setLevel(Level.INFO);
+		logger.setLevel(Level.WARN);
 		
 
 	}

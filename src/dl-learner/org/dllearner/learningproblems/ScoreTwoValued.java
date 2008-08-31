@@ -50,7 +50,7 @@ public class ScoreTwoValued extends Score {
     private double percentPerLengthUnit;
 	
 	public ScoreTwoValued(Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
-		this(0,0,posAsPos,posAsNeg,negAsPos,posAsPos);
+		this(0,0,posAsPos,posAsNeg,negAsPos,negAsNeg);
 	}    
     
 	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
