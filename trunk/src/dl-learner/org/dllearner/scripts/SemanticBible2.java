@@ -20,6 +20,8 @@
 package org.dllearner.scripts;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
@@ -79,9 +81,9 @@ public class SemanticBible2 {
 		File tmpFile = new File(tmpFilename);
 		String del="\t";
 		String cr="\n";
-		int max = 100;
-		SortedSet<String> confs = getFilesContaining(useSPARQL,"ten","all", "99+"); 
-		analyzeFiles(confs);
+		
+		List<File> confs = getFilesContaining(useSPARQL,"ten","all", "99+"); 
+		//analyzeFiles(confs);
 		Files.createFile(log,
 				"accOnFragment"+del+
 				"accOnOnt"+del+
@@ -94,9 +96,11 @@ public class SemanticBible2 {
 		reasoningService = ReasoningServiceFactory.getReasoningService(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
 		ComponentManager cm =ComponentManager.getInstance();
 		try{
-		int i=0;
-		for (String fileContent : confs) {
-			if(i>= max) {break;}i++;
+		
+		for (File f : confs) {
+			String fileContent = Files.readFile(f);
+			
+			
 			String logLine ="";
 			SortedSet<Individual> posEx = SetManipulation.stringToInd(getIndividuals(fileContent, true));
 			SortedSet<Individual> negEx = SetManipulation.stringToInd(getIndividuals(fileContent, false));
@@ -121,6 +125,15 @@ public class SemanticBible2 {
 					onFragment.getDescription(), retrieved, posEx, negEx);
 			if(onOnto.getAccuracy()!=1.0){
 				Files.appendFile(log, onOnto.toString()+"\n");
+				System.out.println(onOnto.toString());
+				System.out.println(onOnto.getCoveredPositives());
+				System.out.println(onOnto.getCoveredNegatives());
+				System.out.println(onOnto.getNotCoveredPositives());
+				System.out.println(onOnto.getNotCoveredNegatives());
+				System.out.println(posEx);
+				System.out.println(negEx);
+				System.out.println(retrieved);
+				System.exit(0);
 			}
 			logLine += StringFormatter.doubleToPercent(onOnto.getAccuracy())+del;
 			logLine += time+del;
@@ -181,14 +194,15 @@ public class SemanticBible2 {
 		return null;
 	}
 	
-	public static SortedSet<String> getFilesContaining(boolean sparql, String numExamples, String allOrEx, String acc) {
-		//List<File> ret = new ArrayList<File>();
-		SortedSet<String> ret = new TreeSet<String>();
+	public static List<File>  getFilesContaining(boolean sparql, String numExamples, String allOrEx, String acc) {
+		List<File> ret = new ArrayList<File>();
+		//SortedSet<File> ret = new TreeSet<File>();
 		
 			String actualDir = (sparql)?sparqldir:normaldir;
 			logger.info(actualDir);
 			File f = new File(actualDir);
 		    String[] files = f.list();
+		    Arrays.sort(files);
 		    int consistent = 0;
 		  try{
 		    for (int i = 0; i < files.length; i++) {
@@ -198,7 +212,7 @@ public class SemanticBible2 {
 						&& files[i].contains(acc)
 						){
 					consistent++;
-					ret.add(Files.readFile(new File(actualDir+files[i])));
+					ret.add(new File(actualDir+files[i]));
 					if(ret.size() != consistent){
 						logger.info("double file: "+files[i]);
 					}
@@ -218,16 +232,17 @@ public class SemanticBible2 {
 	    return ret;
 	}
 	
-	public static void analyzeFiles(SortedSet<String> l){
+	/*public static void analyzeFiles(List<File> l){
+		
 		SortedSet<String> differentIndividuals = new TreeSet<String>();
-		for (String content : l) {
+		for ( content : l) {
 			differentIndividuals.addAll(getIndividuals(content, true));
 			differentIndividuals.addAll(getIndividuals(content, false));
 			
 		}
 		System.out.println("found diff inds "+differentIndividuals.size());
 		
-	}
+	}*/
 	
 	public static SortedSet<String> getIndividuals(String target, boolean posOrNeg){
 		if(posOrNeg){
