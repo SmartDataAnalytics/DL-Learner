@@ -21,13 +21,14 @@ package org.dllearner.kb.sparql;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileWriter;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import javax.xml.ws.http.HTTPException;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 
 import com.hp.hpl.jena.query.ResultSet;
@@ -240,7 +241,15 @@ public class SparqlQuery {
 	 * @param s the String to log
 	 */
 	public static void writeToSparqlLog(String s) {
-		try {
+		
+		if(!logDeletedOnStart){
+			Files.createFile(new File("log/sparql.txt"),s+"\n");
+			logDeletedOnStart = true;
+		}else{
+			Files.appendFile(new File("log/sparql.txt"), s+"\n");
+		}
+		
+		/*try {
 			
 			FileWriter fw = new FileWriter("log/sparql.txt", logDeletedOnStart);
 			logDeletedOnStart = true;
@@ -252,7 +261,7 @@ public class SparqlQuery {
 			// make the e object more special FileNotFound??
 			//new File("log").mkdir();
 			//writeToSparqlLog(s);
-		}
+		}*/
 	}
 
 

@@ -31,6 +31,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 
 import com.jamonapi.Monitor;
@@ -121,9 +122,8 @@ public class Cache implements Serializable {
 		
 		this.cacheDir = cacheDir + File.separator;
 		if (!new File(cacheDir).exists()) {
-			logger
-					.info("Created directory: " + cacheDir + " : " + new File(cacheDir).mkdir()
-							+ ".");
+			Files.mkdir(cacheDir);
+			logger.info("Created directory: " + cacheDir + ".");
 		}
 	}
 
@@ -179,10 +179,13 @@ public class Cache implements Serializable {
 			FileInputStream fos = new FileInputStream(filename);
 			ObjectInputStream o = new ObjectInputStream(fos);
 			entry = (LinkedList<Object>) o.readObject();
+			o.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			if(Files.debug){System.exit(0);}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+			if(Files.debug){System.exit(0);}
 		}
 		
 		// TODO: we need to check whether the query is correct
@@ -297,17 +300,12 @@ public class Cache implements Serializable {
 	 * and can thus still be used without creating a new Cache Object
 	 */
 	public void clearCache() {
-		try{
+		
 			File f = new File(cacheDir);
 		    String[] files = f.list();
 		    for (int i = 0; i < files.length; i++) {
-				new File(cacheDir+"/"+files[i]).delete();
-			}    
-		}catch (Exception e) {
-			logger.warn("deleting cache failed");
-			e.printStackTrace();
-		}
-	    
+		    	Files.deleteFile(new File(cacheDir+"/"+files[i]));
+		    }     
 	}
 	
 	/**
