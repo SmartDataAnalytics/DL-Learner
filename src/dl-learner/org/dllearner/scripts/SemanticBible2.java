@@ -159,8 +159,8 @@ public class SemanticBible2 {
 			e.printStackTrace();
 			
 		}
-		
-		logger.warn("Finished");
+		total.printAndSet("Finished");
+		//logger.warn("Finished");
 	
 	}
 	
