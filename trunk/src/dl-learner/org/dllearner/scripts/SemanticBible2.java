@@ -113,13 +113,13 @@ public class SemanticBible2 {
 			logLine += StringFormatter.doubleToPercent(onOnto.getAccuracy())+del;
 			logLine += m.getTotal()+del+"missing instead size of retrieve: "+retrieved.size()+cr;
 			Files.appendFile(log, logLine);
-			Cache.getDefaultCache().clearCache();
+			//Cache.getDefaultCache().clearCache();
 			cm.freeAllComponents();
 			
 		}//end for
 		}catch (Exception e) {
 			e.printStackTrace();
-			System.exit(0);
+			
 		}
 		logger.info("Finished");
 	}
