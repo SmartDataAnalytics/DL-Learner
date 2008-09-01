@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -687,8 +688,43 @@ public final class ComponentManager {
 		return new LinkedList<Class<? extends LearningAlgorithm>>(learningAlgorithms);
 	}
 	
+	
+	/**
+	 * Retuns a list of all instanciated and registered Components 
+	 * @return
+	 */
 	public List<Component> getLiveComponents(){
 		return pool.getComponents();
+	}
+	
+	/**
+	 *  Retuns a list of all instanciated and registered LearningAlgorithm 
+	 * @return
+	 */
+	public List<LearningAlgorithm> getLiveLearningAlgorithms(){
+		List<LearningAlgorithm> list = new ArrayList<LearningAlgorithm>();
+		for (Component component : cm.getLiveComponents()) {
+			if(component instanceof LearningAlgorithm){
+				list.add((LearningAlgorithm) component);
+			}
+			
+		}
+		return list;
+	}
+	
+	/**
+	 *  Retuns a list of all instanciated and registered KnowledgeSource 
+	 * @return
+	 */
+	public List<KnowledgeSource> getLiveKnowledgeSources(){
+		List<KnowledgeSource> list = new ArrayList<KnowledgeSource>();
+		for (Component component : cm.getLiveComponents()) {
+			if(component instanceof KnowledgeSource){
+				list.add((KnowledgeSource) component);
+			}
+			
+		}
+		return list;
 	}
 
 }
