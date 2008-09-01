@@ -72,6 +72,7 @@ public class SparqlExtractionTest {
 					recursionDepth,
 					true,
 					true,
+					false,
 					200
 					);
 			m.useConfiguration(conf);

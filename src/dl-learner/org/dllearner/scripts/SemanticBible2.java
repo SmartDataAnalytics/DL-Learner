@@ -20,12 +20,9 @@
 package org.dllearner.scripts;
 
 import java.io.File;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -70,7 +67,7 @@ public class SemanticBible2 {
 	public static String normaldir = dir+"normal/";
 	
 	public static String tmpFilename = dir + "tmp.conf";
-	static File log = new File(dir+"results.txt");
+	static File log = new File(dir+"results+prop.txt");
 	
 	private static Stat accFragment = new Stat();
 	private static Stat accOnOnto = new Stat();
@@ -116,8 +113,7 @@ public class SemanticBible2 {
 		initLogger();
 		logger.warn("Start");
 		File tmpFile = new File(tmpFilename);
-		String del="\t";
-		String cr="\n";
+		
 		
 		List<File> confs = getFilesContaining(useSPARQL,"ten","all", "99+"); 
 		//analyzeFiles(confs);
@@ -161,7 +157,7 @@ public class SemanticBible2 {
 			SortedSet<Individual> retrieved = reasoningService.retrieval(onFragment.getDescription());
 			EvaluatedDescription onOnto = reEvaluateDescription(
 					onFragment.getDescription(), retrieved, posEx, negEx);
-			double reachedAccuracy = onOnto.getAccuracy();
+			
 			accOnOnto.addNumber(onOnto.getAccuracy());
 			
 			int tmp = (int)(Math.floor(onOnto.getAccuracy()*100));
@@ -212,6 +208,7 @@ public class SemanticBible2 {
 			cm.freeAllComponents();
 			writeLog();
 			
+			
 		}//end for
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -226,8 +223,8 @@ public class SemanticBible2 {
 	public static void writeLog(){
 		String l = "\n\n\n*********************\n";
 		l +="COUNT: "+accFragment.getCount()+"\n";
-		l +="ALL: "+fragHasAll+" BOOL: "+fragHasBooleanData+" NOT: "+fragHasNot+" <>=: "+fragHasNrRes+"\n";
-		l +="ALL: "+wholeHasAll+" BOOL: "+wholeHasBooleanData+" NOT: "+wholeHasNot+" <>=: "+wholeHasNrRes+"\n";
+		l +="FRAGMENT: ALL: "+fragHasAll+" BOOL: "+fragHasBooleanData+" NOT: "+fragHasNot+" <>=: "+fragHasNrRes+"\n";
+		l +="WHOLE: ALL: "+wholeHasAll+" BOOL: "+wholeHasBooleanData+" NOT: "+wholeHasNot+" <>=: "+wholeHasNrRes+"\n";
 		
 			
 		l+="accFragment\t\t"+accFragment.getMeanAsPercentage()+" +-"+accFragment.getStandardDeviation()+"\n";
@@ -395,6 +392,8 @@ public class SemanticBible2 {
 			"sparql.recursionDepth = 2;\n"+
 			"sparql.useLits = true;\n"+
 			"sparql.predefinedEndpoint = \"LOCALJOSEKIBIBLE\";\n"+
+			"sparql.getPropertyInformation = true;\n"+
+			"refexamples.maxExecutionTimeInSeconds = "+sparqllMaxExecution+";\n"+
 			"import(\"lalala\",\"SPARQL\");\n"+
 			getCombinedOptions()+
 			"";

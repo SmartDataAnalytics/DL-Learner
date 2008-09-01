@@ -19,6 +19,8 @@
  */
 package org.dllearner.utilities.datastructures;
 
+import org.dllearner.kb.extraction.LiteralNode;
+
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
@@ -58,6 +60,19 @@ public class RDFNodeTuple implements Comparable<RDFNodeTuple>{
 	
 	public boolean bPartContains(String partOf) {
 		return b.toString().contains(partOf);
+	}
+	
+	public String getNTriple (String subject){
+		String ret = "<"+subject+"> ";
+		ret+="<"+a.toString()+"> ";
+		if(b.isLiteral()){
+			ret+=new LiteralNode(b).getNTripleForm();
+			
+		}else{
+			ret+="<"+b.toString()+"> ";
+		}
+		ret+=".";
+		return ret;
 	}
 
 }

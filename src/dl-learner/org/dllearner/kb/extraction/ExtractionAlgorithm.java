@@ -71,11 +71,11 @@ public class ExtractionAlgorithm {
 	 * @param typedSparqlQuery
 	 * @return
 	 */
-	public Node expandNode(String uri, TupleAquisitor tupelAquisitor) {
+	public Node expandNode(String uri, TupleAquisitor tupleAquisitor) {
 
 		SimpleClock sc = new SimpleClock();
-		if(tupelAquisitor instanceof SparqlTupleAquisitorImproved){
-			((SparqlTupleAquisitorImproved)tupelAquisitor).removeFromCache(uri);
+		if(tupleAquisitor instanceof SparqlTupleAquisitorImproved){
+			((SparqlTupleAquisitorImproved)tupleAquisitor).removeFromCache(uri);
 		}
 		
 		Node seedNode = getFirstNode(uri);
@@ -97,8 +97,8 @@ public class ExtractionAlgorithm {
 				logger.info("Expanding " + nextNode);
 				// these are the new not expanded nodes
 				// the others are saved in connection with the original node
-				tupelAquisitor.setNextTaskToNormal();
-				tmp.addAll(nextNode.expand(tupelAquisitor,
+				tupleAquisitor.setNextTaskToNormal();
+				tmp.addAll(nextNode.expand(tupleAquisitor,
 						configuration.getManipulator()));
 				//System.out.println(tmpVec);
 				
@@ -116,20 +116,29 @@ public class ExtractionAlgorithm {
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeCloseAfterRecursion").start();
 			List<InstanceNode> l = getInstanceNodes(newNodes);
 			logger.info("Getting classes for remaining instances: "+l.size() + " instances");
-			tupelAquisitor.setNextTaskToClassesForInstances();
-			collectNodes.addAll(expandCloseAfterRecursion(l, tupelAquisitor));
+			tupleAquisitor.setNextTaskToClassesForInstances();
+			collectNodes.addAll(expandCloseAfterRecursion(l, tupleAquisitor));
 			m.stop();
 		}
 		// gets All Class Nodes and expands them further
 		if (configuration.isGetAllSuperClasses()) {
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetAllSuperClasses").start();
 			List<ClassNode> allClassNodes = getClassNodes(collectNodes);
-			tupelAquisitor.setNextTaskToClassInformation();
+			tupleAquisitor.setNextTaskToClassInformation();
 			logger.info("Get all superclasses for "+allClassNodes.size() + " classes");
-			expandAllSuperClassesOfANode(allClassNodes, tupelAquisitor);
+			expandAllSuperClassesOfANode(allClassNodes, tupleAquisitor);
 			m.stop();
 		}
 			
+		
+		if(configuration.isGetPropertyInformation() ){
+			
+			List<ObjectPropertyNode> l = getObjectPropertyNodes(collectNodes);
+			for (ObjectPropertyNode node : l) {
+				node.expandProperties(tupleAquisitor, configuration.getManipulator());
+			}
+		}
+	
 		return seedNode;
 
 	}
@@ -215,6 +224,18 @@ public class ExtractionAlgorithm {
 			
 		}
 		return retList;
+	}
+	
+	public static List<ObjectPropertyNode> getObjectPropertyNodes(List<Node> l ){
+		List<ObjectPropertyNode> properties = new ArrayList<ObjectPropertyNode>();
+		for (Node node : l) {
+			if (node instanceof InstanceNode) {
+				properties.addAll(( (InstanceNode) node).getObjectProperties());
+				
+			}
+			
+		}
+		return properties;
 	}
 
 }
