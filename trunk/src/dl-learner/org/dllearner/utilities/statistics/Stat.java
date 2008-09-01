@@ -20,6 +20,8 @@
 
 package org.dllearner.utilities.statistics;
 
+import java.text.DecimalFormat;
+
 /**
  * Utility class for calculating the mean and standard deviation of a given set
  * of numbers.
@@ -34,6 +36,8 @@ public class Stat {
     private double squareSum = 0;
     private double min = Double.MAX_VALUE;
     private double max = Double.MIN_NORMAL;
+    //used to give a good percentage output
+    private DecimalFormat df = new DecimalFormat( ".00%" ); 
 
     /**
      * Add a number to this object.
@@ -76,6 +80,15 @@ public class Stat {
      */
     public double getMean() {
         return sum / count;
+    }
+    
+    /**
+     * Gets the mean of all numbers as percentage 
+     * *100 so 0.5678 -> "56.78%"
+     * @return
+     */
+    public String getMeanAsPercentage(){
+    	return df.format(getMean());
     }
 
     /**

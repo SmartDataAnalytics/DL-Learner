@@ -129,6 +129,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	// received ontology as KB, the internal format
 	private KB kb;
 	
+	//mainly used for statistic
+	private int nrOfExtractedTriples = 0;
+	
 	public static String getName() {
 		return "SPARQL Endpoint";
 	}
@@ -368,6 +371,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		nrOfExtractedTriples = m.getNrOfExtractedTriples();
 		logger.info("SparqlModul: ****Finished " + totalTime.getAndSet("") );
 		if(debugExitAfterExtraction){
 			
@@ -503,6 +507,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	
 	public String getCacheDir(){
 		return cacheDir;
+	}
+
+	public int getNrOfExtractedTriples() {
+		return nrOfExtractedTriples;
 	}
 
 	/*public static void main(String[] args) throws MalformedURLException {

@@ -20,9 +20,12 @@
 package org.dllearner.scripts;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -36,20 +39,23 @@ import org.dllearner.cli.Start;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.Cache;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
-import org.dllearner.utilities.StringFormatter;
 import org.dllearner.utilities.datastructures.SetManipulation;
+import org.dllearner.utilities.learn.ConfWriter;
 import org.dllearner.utilities.owl.ReasoningServiceFactory;
 import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
 import org.dllearner.utilities.statistics.SimpleClock;
+import org.dllearner.utilities.statistics.Stat;
 
-import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 public class SemanticBible2 {
 
@@ -66,6 +72,25 @@ public class SemanticBible2 {
 	public static String tmpFilename = dir + "tmp.conf";
 	static File log = new File(dir+"results.txt");
 	
+	private static Stat accFragment = new Stat();
+	private static Stat accOnOnto = new Stat();
+	private static Stat accPosExOnOnto = new Stat();
+	private static Stat accNegExOnOnto = new Stat();
+	private static Stat timeFragment = new Stat();
+	private static Stat nrOfExtractedTriples = new Stat();
+	private static Stat dLengthFragment = new Stat();
+	private static Stat dDepthFragment = new Stat();
+	
+	private static Stat timeWhole = new Stat();
+	private static Stat accWhole = new Stat();
+	private static Stat dLengthWhole = new Stat();
+	private static Stat dDepthWhole = new Stat();
+	
+	private static int normalNoisePercentage = 0;
+	private static int normalMaxExecution = 500;
+	private static int sparqllMaxExecution = 250;
+	
+	
 	
 	//private static Class usedReasoner = FastInstanceChecker.class;
 	
@@ -76,6 +101,7 @@ public class SemanticBible2 {
 	 */
 	public static void main(String[] args) {
 		SimpleClock total = new SimpleClock();
+	
 		initLogger();
 		logger.warn("Start");
 		File tmpFile = new File(tmpFilename);
@@ -84,13 +110,7 @@ public class SemanticBible2 {
 		
 		List<File> confs = getFilesContaining(useSPARQL,"ten","all", "99+"); 
 		//analyzeFiles(confs);
-		Files.createFile(log,
-				"accOnFragment"+del+
-				"accOnOnt"+del+
-				"timeFragme"+del+
-				"coveredPos"+del+
-				"coveredNeg"+del+
-				"timeWhole"+cr);
+		
 		
 		
 		reasoningService = ReasoningServiceFactory.getReasoningService(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
@@ -98,70 +118,113 @@ public class SemanticBible2 {
 		try{
 		
 		for (File f : confs) {
+			Cache.getDefaultCache().clearCache();
 			String fileContent = Files.readFile(f);
 			
-			
-			String logLine ="";
 			SortedSet<Individual> posEx = SetManipulation.stringToInd(getIndividuals(fileContent, true));
 			SortedSet<Individual> negEx = SetManipulation.stringToInd(getIndividuals(fileContent, false));
 			
 			
 			StringBuffer sbuf = new StringBuffer(fileContent);
-			sbuf.insert(0, (useSPARQL)?sparqlOptions():normalOptions());
+			sbuf.insert(0, sparqlOptions());
 			Files.createFile(tmpFile, sbuf.toString());
-			//System.out.println(tmpFile.getCanonicalPath());
 			
-			Monitor m = JamonMonitorLogger.getTimeMonitor(SemanticBible2.class, "learn on fragment").start();
 			SimpleClock sc = new SimpleClock();
 			Start.main(new String[] { tmpFilename });
-			long time = sc.getTime();
-			m.stop();
-			LearningAlgorithm la = getLearningAlgorithm();
+			timeFragment.addNumber((double) sc.getTime());
+		
+			LearningAlgorithm la = cm.getLiveLearningAlgorithms().remove(0);
 			
 			EvaluatedDescription onFragment =(la.getCurrentlyBestEvaluatedDescription());
-			logLine += StringFormatter.doubleToPercent(onFragment.getAccuracy())+del;
+			accFragment.addNumber(onFragment.getAccuracy());
+			dDepthFragment.addNumber((double)onFragment.getDescriptionDepth());
+			dLengthFragment.addNumber((double)onFragment.getDescriptionLength());
+			
 			SortedSet<Individual> retrieved = reasoningService.retrieval(onFragment.getDescription());
 			EvaluatedDescription onOnto = reEvaluateDescription(
 					onFragment.getDescription(), retrieved, posEx, negEx);
-			/*if(onOnto.getAccuracy()!=1.0){
-				Files.appendFile(log, onOnto.toString()+"\n");
-				System.out.println(onOnto.toString());
-				
-				System.out.println(onOnto.getCoveredPositives());
-				System.out.println(onOnto.getCoveredNegatives().size());
-				
-				System.out.println(onOnto.getNotCoveredPositives());
-				System.out.println(onOnto.getNotCoveredNegatives());
-				System.out.println("p then n");
-				System.out.println(posEx);
-				System.out.println(negEx);
-				System.out.println(retrieved);
-				System.out.println((5-onOnto.getCoveredNegatives().size())+"");
-				double n = (double) (5-onOnto.getCoveredNegatives().size());
-				System.out.println();
-				System.out.println((n/5.0));
-				System.exit(0);
-			}*/
-			logLine += StringFormatter.doubleToPercent(onOnto.getAccuracy())+del;
-			logLine += time+del;
-			logLine += StringFormatter.doubleToPercent((double)(onOnto.getCoveredPositives().size()/5))+del;
+			double reachedAccuracy = onOnto.getAccuracy();
+			accOnOnto.addNumber(onOnto.getAccuracy());
+			
+			int tmp = (int)(Math.floor(onOnto.getAccuracy()*100));
+			normalNoisePercentage = 100-tmp;
+			accPosExOnOnto.addNumber((double)(onOnto.getCoveredPositives().size()/5));
 			double n = (double) (5-onOnto.getCoveredNegatives().size());
-			logLine += StringFormatter.doubleToPercent(n/5.0)+del;
-			logLine += " size of retrieve: "+retrieved.size()+del;
-			logLine += f.toString();
-			Files.appendFile(log, logLine+cr);
-			Cache.getDefaultCache().clearCache();
+			accNegExOnOnto.addNumber(n/5.0);
+			SparqlKnowledgeSource s=null;
+			for(KnowledgeSource ks : cm.getLiveKnowledgeSources()){
+				if (ks instanceof SparqlKnowledgeSource) {
+					s = (SparqlKnowledgeSource) ks;
+				}
+			}
+			
+			double nrtrip = (double)(s.getNrOfExtractedTriples());
+			nrOfExtractedTriples.addNumber(nrtrip);
+			
+			
+			
+			cm.freeAllComponents();
+			/*************comp**/
+			logger.warn("learning normal");
+
+			StringBuffer sbufNormal = new StringBuffer();
+			sbufNormal.append(normalOptions());
+			sbufNormal.append(ConfWriter.listExamples(true, posEx));
+			sbufNormal.append(ConfWriter.listExamples(false, negEx));
+			//sbufNormal.append(ConfWriter.)
+			Files.createFile(tmpFile, sbufNormal.toString());
+			
+			
+			SimpleClock scNormal = new SimpleClock();
+			Start.main(new String[] { tmpFilename });
+			timeWhole.addNumber((double) scNormal.getTime());
+			
+			la = cm.getLiveLearningAlgorithms().remove(0);
+			
+			EvaluatedDescription normalOnOnto =(la.getCurrentlyBestEvaluatedDescription());
+			accWhole.addNumber(normalOnOnto.getAccuracy());
+			dDepthWhole.addNumber((double)normalOnOnto.getDescriptionDepth());
+			dLengthWhole.addNumber((double)normalOnOnto.getDescriptionLength());
+			
 			cm.freeAllComponents();
 			
-			
+			//writeLog();
+			//System.exit(0);
 		}//end for
 		}catch (Exception e) {
 			e.printStackTrace();
 			
 		}
+		writeLog();
 		total.printAndSet("Finished");
 		//logger.warn("Finished");
 	
+	}
+	
+	public static void writeLog(){
+		String l = "a";
+		l +=
+			
+		l+="accFragment\t\t"+accFragment.getMeanAsPercentage()+" +-"+accFragment.getStandardDeviation()+"\n";
+		l+="accOnOnto\t\t"+accOnOnto.getMeanAsPercentage()+" +-"+accOnOnto.getStandardDeviation()+"\n";
+		l+="accPosExOnOnto\t\t"+accPosExOnOnto.getMeanAsPercentage()+" +-"+accPosExOnOnto.getStandardDeviation()+"\n";
+		l+="accNegExOnOnto\t\t"+accNegExOnOnto.getMeanAsPercentage()+" +-"+accNegExOnOnto.getStandardDeviation()+"\n";
+		l+="timeFragment\t\t"+timeFragment.getMean()+" +-"+timeFragment.getStandardDeviation()+"\n";
+		l+="nrOfExtractedTriples\t\t"+nrOfExtractedTriples.getMean()+" +-"+nrOfExtractedTriples.getStandardDeviation()+"\n";
+		l+="dLengthFragment\t\t"+dLengthFragment.getMean()+" +-"+dLengthFragment.getStandardDeviation()+"\n";
+		l+="dDepthFragment\t\t"+dDepthFragment.getMean()+" +-"+dDepthFragment.getStandardDeviation()+"\n";
+		
+		l+="timeWhole\t\t"+timeWhole.getMean()+" +-"+timeWhole.getStandardDeviation()+"\n";
+		l+="accWhole\t\t"+accWhole.getMeanAsPercentage()+" +-"+accWhole.getStandardDeviation()+"\n";
+		l+="dLengthWhole\t\t"+dLengthWhole.getMean()+" +-"+dLengthWhole.getStandardDeviation()+"\n";
+		l+="dDepthWhole\t\t"+dDepthWhole.getMean()+" +-"+dDepthWhole.getStandardDeviation()+"\n";
+		
+		Files.createFile(log, l);
+		
+//		 write JaMON report in HTML file
+		File jamonlog = new File("sembib/jamon.html");
+		Files.createFile(jamonlog, MonitorFactory.getReport());
+		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 	}
 	
 	public static EvaluatedDescription reEvaluateDescription(Description d, SortedSet<Individual> retrieved ,SortedSet<Individual> posEx ,SortedSet<Individual> negEx ){
@@ -304,7 +367,7 @@ public class SemanticBible2 {
 	
 	public static String sparqlOptions (){
 		String s="// SPARQL options\n"+
-			"sparql.recursionDepth = 3;\n"+
+			"sparql.recursionDepth = 2;\n"+
 			"sparql.useLits = true;\n"+
 			"sparql.predefinedEndpoint = \"LOCALJOSEKIBIBLE\";\n"+
 			"import(\"lalala\",\"SPARQL\");\n"+
@@ -316,7 +379,9 @@ public class SemanticBible2 {
 	public static String normalOptions (){
 		String s="\n"+
 			"import(\"NTNcombined.owl\");\n"+
-			"refexamples.maxExecutionTimeInSeconds = 1800;\n"+
+			"refexamples.maxExecutionTimeInSeconds = "+normalMaxExecution+";\n";
+			
+			s+="refexamples.noisePercentage = "+normalNoisePercentage+";\n"+
 			getCombinedOptions()+
 			"";
 		return s;

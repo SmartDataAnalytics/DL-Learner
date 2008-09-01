@@ -35,6 +35,7 @@ public class Manager {
 
 	private Configuration configuration;
 	private ExtractionAlgorithm extractionAlgorithm;
+	private int nrOfExtractedTriples = 0;
 	
 	private static Logger logger = Logger
 		.getLogger(Manager.class);
@@ -85,6 +86,7 @@ public class Manager {
 		logger.info("Finished extracting, start conversion");
 		StringBuffer nt = new StringBuffer(100000);
 		Object[] arr = tripleCollector.toArray();
+		nrOfExtractedTriples = arr.length;
 		for (int i = 0; i < arr.length; i++) {
 			nt.append((String) arr[i] + "\n");
 			if (i % 1000 == 0)
@@ -103,6 +105,10 @@ public class Manager {
 
 	public Configuration getConfiguration() {
 		return configuration;
+	}
+
+	public int getNrOfExtractedTriples() {
+		return nrOfExtractedTriples;
 	}
 
 }
