@@ -23,10 +23,13 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
+
+
 
 /**
  * Property node, has connection to a and b part
@@ -37,18 +40,22 @@ import org.dllearner.utilities.owl.OWLVocabulary;
 
 public class ObjectPropertyNode extends Node {
 
+	public static Logger logger = Logger.getLogger(ObjectPropertyNode.class);
+	
 	// the a and b part of a property
 	private Node a;
 	private Node b;
 	// specialtypes like owl:symmetricproperty
-	private SortedSet<String> specialTypes;
+	private SortedSet<String> specialTypes = new TreeSet<String>();
+	@SuppressWarnings("unused")
+	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<RDFNodeTuple>();
 
 	public ObjectPropertyNode(String uri, Node a, Node b) {
 		super(uri);
 		// this.type = "property";
 		this.a = a;
 		this.b = b;
-		this.specialTypes = new TreeSet<String>();
+		
 	}
 
 	// Property Nodes are normally not expanded,
@@ -65,11 +72,16 @@ public class ObjectPropertyNode extends Node {
 		SortedSet<RDFNodeTuple> newTypes = tupelAquisitor.getTupelForResource(uri);
 		for (RDFNodeTuple tuple : newTypes) {
 			try {
-				if (tuple.a.equals(OWLVocabulary.RDF_TYPE)) {
+				if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)) {
 					specialTypes.add(tuple.b.toString());
+				}else if(tuple.b.isAnon()){
+					logger.warn("blanknodes currently not implemented in this tuple aquisitor");
+				}else{
+					propertyInformation.add(tuple);
+					
 				}
 			} catch (Exception e) {
-				System.out.println(tuple);
+				logger.warn("resource "+uri+" with "+ tuple);
 				e.printStackTrace();
 			}
 		}
@@ -95,6 +107,10 @@ public class ObjectPropertyNode extends Node {
 		for (String one : specialTypes) {
 			s.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><"
 					+ one + ">.");
+		}
+		
+		for (RDFNodeTuple one : propertyInformation) {
+			s.add(one.getNTriple(uri));
 		}
 
 		return s;

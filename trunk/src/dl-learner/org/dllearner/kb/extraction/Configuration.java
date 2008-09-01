@@ -40,6 +40,7 @@ public class Configuration {
 	private int recursiondepth;
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;
+	private boolean getPropertyInformation = false;
 	private int breakSuperClassesAfter = 200;
 
 
@@ -49,6 +50,7 @@ public class Configuration {
 			int recursiondepth, 
 			boolean getAllSuperClasses,
 			boolean closeAfterRecursion, 
+			boolean getPropertyInformation,
 			int breakSuperClassesAfter) {
 		
 		this.tupelAquisitor = tupelAquisitor;
@@ -56,6 +58,7 @@ public class Configuration {
 		this.recursiondepth = recursiondepth;
 		this.getAllSuperClasses = getAllSuperClasses;
 		this.closeAfterRecursion = closeAfterRecursion;
+		this.getPropertyInformation = getPropertyInformation;
 		this.breakSuperClassesAfter = breakSuperClassesAfter;
 		
 
@@ -94,6 +97,11 @@ public class Configuration {
 
 	public boolean isOptimizeForDLLearner() {
 		return optimizeForDLLearner;
+	}
+
+
+	public boolean isGetPropertyInformation() {
+		return getPropertyInformation;
 	}
 
 

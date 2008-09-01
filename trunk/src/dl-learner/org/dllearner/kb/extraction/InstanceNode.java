@@ -133,6 +133,12 @@ public class InstanceNode extends Node {
 		return returnSet;
 	}
 
+	public List<ObjectPropertyNode> getObjectProperties() {
+		return objectProperties;
+	}
+	
+	
+
 	
 
 }

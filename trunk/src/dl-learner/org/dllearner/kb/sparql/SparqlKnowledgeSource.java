@@ -104,6 +104,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private boolean useLits = false;
 	private boolean getAllSuperClasses = true;
 	private boolean closeAfterRecursion = true;
+	private boolean getPropertyInformation = true;
 	private int breakSuperClassRetrievalAfter = 1000;
 	private String cacheDir = "cache";
 	// private boolean learnDomain = false;
@@ -197,8 +198,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				"learns the Range for a Role"));
 		options.add(new StringConfigOption("role",
 				"role to learn Domain/Range from"));
-		options.add(new StringConfigOption("blankNodeIdentifier",
-				"used to identify blanknodes in Tripels"));
 		options.add(new StringTupleListConfigOption("example", "example"));
 		options.add(new StringTupleListConfigOption("replacePredicate",
 				"rule for replacing predicates"));
@@ -210,6 +209,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				"numberOfInstancesUsedForRoleLearning", ""));
 		options.add(new BooleanConfigOption("closeAfterRecursion",
 				"gets all classes for all instances"));
+		options.add(new BooleanConfigOption("getPropertyInformation",
+		"gets all types for extracted ObjectProperties"));
 		options.add(CommonConfigOptions.getVerbosityOption());
 
 		options.add(new StringSetConfigOption("defaultGraphURIs",
@@ -267,7 +268,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			useCache = (Boolean) entry.getValue();
 		}else if (option.equals("getAllSuperClasses")) {
 			getAllSuperClasses = (Boolean) entry.getValue();
-		} else if (option.equals("example")) {
+		}else if (option.equals("getPropertyInformation")) {
+			getPropertyInformation = (Boolean) entry.getValue();
+		}else if (option.equals("example")) {
 			// System.out.println(entry.getValue());
 		} else if (option.equals("replacePredicate")) {
 			replacePredicate = (LinkedList) entry.getValue();
@@ -317,6 +320,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				recursionDepth,
 				getAllSuperClasses,
 				closeAfterRecursion,
+				getPropertyInformation,
 				breakSuperClassRetrievalAfter);
 		
 		// give everything to the manager
