@@ -90,6 +90,16 @@ public class SemanticBible2 {
 	private static int normalMaxExecution = 500;
 	private static int sparqllMaxExecution = 250;
 	
+	private static boolean fragHasNot = false;
+	private static boolean fragHasAll = false;
+	private static boolean fragHasBooleanData = false;
+	private static boolean fragHasNrRes = false;
+	
+	private static boolean wholeHasNot = false;
+	private static boolean wholeHasAll = false;
+	private static boolean wholeHasBooleanData = false;
+	private static boolean wholeHasNrRes = false;
+	
 	
 	
 	//private static Class usedReasoner = FastInstanceChecker.class;
@@ -101,6 +111,7 @@ public class SemanticBible2 {
 	 */
 	public static void main(String[] args) {
 		SimpleClock total = new SimpleClock();
+		Files.createFile(log, "");
 	
 		initLogger();
 		logger.warn("Start");
@@ -139,6 +150,13 @@ public class SemanticBible2 {
 			accFragment.addNumber(onFragment.getAccuracy());
 			dDepthFragment.addNumber((double)onFragment.getDescriptionDepth());
 			dLengthFragment.addNumber((double)onFragment.getDescriptionLength());
+			
+			String desc = onFragment.getDescription().toKBSyntaxString();
+
+			fragHasNot = ( fragHasNot || desc.contains("NOT"));
+			fragHasAll = (fragHasAll || desc.contains("ALL"));
+			fragHasBooleanData = (fragHasBooleanData || desc.contains("= FALSE")|| desc.contains("= TRUE"));
+			fragHasNrRes = (fragHasNrRes || desc.contains("<")|| desc.contains(">"));
 			
 			SortedSet<Individual> retrieved = reasoningService.retrieval(onFragment.getDescription());
 			EvaluatedDescription onOnto = reEvaluateDescription(
@@ -186,10 +204,14 @@ public class SemanticBible2 {
 			dDepthWhole.addNumber((double)normalOnOnto.getDescriptionDepth());
 			dLengthWhole.addNumber((double)normalOnOnto.getDescriptionLength());
 			
-			cm.freeAllComponents();
+			fragHasNot = ( fragHasNot || desc.contains("NOT"));
+			fragHasAll = (fragHasAll || desc.contains("ALL"));
+			fragHasBooleanData = (fragHasBooleanData || desc.contains("= FALSE")|| desc.contains("= TRUE"));
+			fragHasNrRes = (fragHasNrRes || desc.contains("<")|| desc.contains(">"));
 			
-			//writeLog();
-			//System.exit(0);
+			cm.freeAllComponents();
+			writeLog();
+			
 		}//end for
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -202,8 +224,11 @@ public class SemanticBible2 {
 	}
 	
 	public static void writeLog(){
-		String l = "a";
-		l +=
+		String l = "\n\n\n*********************\n";
+		l +="COUNT: "+accFragment.getCount()+"\n";
+		l +="ALL: "+fragHasAll+" BOOL: "+fragHasBooleanData+" NOT: "+fragHasNot+" <>=: "+fragHasNrRes+"\n";
+		l +="ALL: "+wholeHasAll+" BOOL: "+wholeHasBooleanData+" NOT: "+wholeHasNot+" <>=: "+wholeHasNrRes+"\n";
+		
 			
 		l+="accFragment\t\t"+accFragment.getMeanAsPercentage()+" +-"+accFragment.getStandardDeviation()+"\n";
 		l+="accOnOnto\t\t"+accOnOnto.getMeanAsPercentage()+" +-"+accOnOnto.getStandardDeviation()+"\n";
@@ -219,7 +244,7 @@ public class SemanticBible2 {
 		l+="dLengthWhole\t\t"+dLengthWhole.getMean()+" +-"+dLengthWhole.getStandardDeviation()+"\n";
 		l+="dDepthWhole\t\t"+dDepthWhole.getMean()+" +-"+dDepthWhole.getStandardDeviation()+"\n";
 		
-		Files.createFile(log, l);
+		Files.appendFile(log, l);
 		
 //		 write JaMON report in HTML file
 		File jamonlog = new File("sembib/jamon.html");
