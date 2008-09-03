@@ -19,6 +19,9 @@
  */
 package org.dllearner.core.config;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 /**
  * This class represents a configuration option (without a value for the
  * option).
@@ -38,12 +41,40 @@ public abstract class ConfigOption<T> {
 	protected String description;
 
 	protected T defaultValue;
+	
+	public enum Tags {NORMAL, MANDATORY, REINIT}
+	
+	protected boolean mandatory = false;
+	protected boolean reinitNecessary = false;
 
 	public ConfigOption(String name, String description) {
 		this(name, description, null);
 	}
-
-	public ConfigOption(String name, String description, T defaultValue) {
+	
+	public ConfigOption(String name, String description,  T defaultValue, Tags ...tags ) {
+		this.name = name;
+		this.description = description;
+		this.defaultValue = defaultValue;
+		boolean normal = false;
+		for(Tags t:tags){
+			if (t.equals(Tags.NORMAL)){
+				normal =true;
+			} 
+		}
+		for(Tags t:tags){
+			if(normal){
+				;//DO Nothing
+			}
+			else if (t.equals(Tags.MANDATORY)){
+				this.mandatory = true;
+			} else  if (t.equals(Tags.REINIT)){
+				this.reinitNecessary = true;
+			}
+		}
+		
+	}
+	
+	public ConfigOption(String name, String description, T defaultValue ) {
 		this.name = name;
 		this.description = description;
 		this.defaultValue = defaultValue;
@@ -63,6 +94,37 @@ public abstract class ConfigOption<T> {
 	public T getDefaultValue() {
 		return defaultValue;
 	}
+	
+	/**
+	 * @return the defaultValue
+	 */
+	public String getDefaultValueInJava() {
+		return defaultValue+"";
+	}
+	
+	/**
+	 * says, if this option is mandatory for the component
+	 * @return 
+	 */
+	public boolean isMandatory() {
+		return mandatory;
+	}
+	
+	/**
+	 * says, if this option requires that the componnent is reinitialized with init() 
+	 * @return 
+	 */
+	public boolean isReinitNecessary() {
+		return reinitNecessary;
+	}
+	
+	/**
+	 * gets java imports
+	 * @return 
+	 */
+	public SortedSet<String> getJavaImports() {
+		return new TreeSet<String>();
+	}
 
 	/**
 	 * Checks whether the object has the correct type to be used as a value for
@@ -76,6 +138,8 @@ public abstract class ConfigOption<T> {
 	public abstract boolean checkType(Object object);
 
 	public abstract boolean isValidValue(T value);
+	
+	public abstract String getValueTypeAsJavaString();
 
 	//TODO maybe change the function getClass in the options to get simpleName
 	public String getAllowedValuesDescription() {

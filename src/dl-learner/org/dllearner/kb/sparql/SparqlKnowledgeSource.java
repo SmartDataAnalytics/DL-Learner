@@ -45,6 +45,9 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
+import org.dllearner.core.config.ConfigOption.Tags;
+import org.dllearner.core.configuration.OWLFileConfigurator;
+import org.dllearner.core.configuration.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
@@ -76,14 +79,16 @@ import com.jamonapi.MonitorFactory;
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	
-	//DEFAULTS
-	static int recursionDepthDefault = 1;
 	
 	//RBC
 	static final boolean debug = false;
 	static final boolean debugUseImprovedTupleAquisitor = debug && false; //switches tupleaquisitor
 	static final boolean debugExitAfterExtraction =  debug && false; //switches sysex und rdf generation
 	
+	private SparqlKnowledgeSourceConfigurator configurator = new SparqlKnowledgeSourceConfigurator();
+	public SparqlKnowledgeSourceConfigurator getSparqlKnowledgeSourceConfigurator(){
+		return configurator;
+	}
 	
 	private boolean useCache=true;
 	// ConfigOptions
@@ -91,7 +96,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	// String host;
 	private Set<String> instances = new HashSet<String>();;
 	private URL dumpFile;
-	private int recursionDepth = recursionDepthDefault;
+	private int recursionDepth = 1;
 	private String predefinedFilter = null;
 	private String predefinedEndpoint = null;
 	private String predefinedManipulator = null;
@@ -155,9 +160,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// Endpoint"));
 		options
 				.add(new StringSetConfigOption("instances",
-						"relevant instances e.g. positive and negative examples in a learning problem"));
+						"relevant instances e.g. positive and negative examples in a learning problem",null,Tags.MANDATORY));
 		options.add(new IntegerConfigOption("recursionDepth",
-				"recursion depth of KB fragment selection", recursionDepthDefault));
+				"recursion depth of KB fragment selection", 1, Tags.NORMAL));
 		options.add(new StringConfigOption("predefinedFilter",
 				"the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST"));
 		options.add(new StringConfigOption("predefinedEndpoint",
@@ -183,34 +188,34 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				"Specifies whether the extracted NTriples are converted to RDF and deleted.",
 				true));
 		options.add(new BooleanConfigOption("useLits",
-				"use Literals in SPARQL query"));
+				"use Literals in SPARQL query", true, Tags.NORMAL));
 		options
 				.add(new BooleanConfigOption(
 						"getAllSuperClasses",
 						"If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.",
-						true));
+						true, Tags.NORMAL));
 
-		options.add(new BooleanConfigOption("learnDomain",
-				"learns the Domain for a Role"));
+		//options.add(new BooleanConfigOption("learnDomain",
+			//	"learns the Domain for a Role"));
 		options.add(new BooleanConfigOption("useCache",
-				"If true a Cache is used"));
-		options.add(new BooleanConfigOption("learnRange",
-				"learns the Range for a Role"));
-		options.add(new StringConfigOption("role",
-				"role to learn Domain/Range from"));
-		options.add(new StringTupleListConfigOption("example", "example"));
+				"If true a Cache is used",true, Tags.NORMAL));
+		//options.add(new BooleanConfigOption("learnRange",
+			//	"learns the Range for a Role"));
+		//options.add(new StringConfigOption("role",
+			//	"role to learn Domain/Range from"));
+		//options.add(new StringTupleListConfigOption("example", "example"));
 		options.add(new StringTupleListConfigOption("replacePredicate",
 				"rule for replacing predicates"));
 		options.add(new StringTupleListConfigOption("replaceObject",
 				"rule for replacing predicates"));
 		options.add(new IntegerConfigOption("breakSuperClassRetrievalAfter",
-				"stops a cyclic hierarchy after specified number of classes"));
-		options.add(new IntegerConfigOption(
-				"numberOfInstancesUsedForRoleLearning", ""));
+				"stops a cyclic hierarchy after specified number of classes", 1000));
+		//options.add(new IntegerConfigOption(
+			//	"numberOfInstancesUsedForRoleLearning", ""));
 		options.add(new BooleanConfigOption("closeAfterRecursion",
-				"gets all classes for all instances"));
+				"gets all classes for all instances", true));
 		options.add(new BooleanConfigOption("getPropertyInformation",
-		"gets all types for extracted ObjectProperties"));
+		"gets all types for extracted ObjectProperties", false));
 		options.add(CommonConfigOptions.getVerbosityOption());
 
 		options.add(new StringSetConfigOption("defaultGraphURIs",
@@ -228,6 +233,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	public <T> void applyConfigEntry(ConfigEntry<T> entry)
 			throws InvalidConfigOptionValueException {
 		String option = entry.getOptionName();
+		
 		if (option.equals("url")) {
 			String s = (String) entry.getValue();
 			try {

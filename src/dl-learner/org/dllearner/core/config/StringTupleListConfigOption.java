@@ -20,6 +20,8 @@
 package org.dllearner.core.config;
 
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.utilities.datastructures.StringTuple;
 
@@ -40,6 +42,25 @@ public class StringTupleListConfigOption extends ConfigOption<List<StringTuple>>
 		super(name, description, defaultValue);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getValueTypeAsJavaString()
+	 */
+	@Override
+	public String getValueTypeAsJavaString(){
+		return "List<StringTuple>";
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getJavaImports()
+	 */
+	@Override
+	public SortedSet<String> getJavaImports() {
+		SortedSet<String> ret = new TreeSet<String>();
+		ret.add("java.util.List");
+		ret.add("org.dllearner.utilities.datastructures.StringTuple");
+		return ret;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

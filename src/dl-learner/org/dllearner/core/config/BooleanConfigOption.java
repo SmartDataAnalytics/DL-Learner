@@ -19,20 +19,38 @@
  */
 package org.dllearner.core.config;
 
+
 /**
  * @author Jens Lehmann
  * 
  */
 public class BooleanConfigOption extends ConfigOption<Boolean> {
 
+	
+
+	public BooleanConfigOption(String name, String description, Boolean defaultValue, Tags... tags) {
+		super(name, description, defaultValue, tags);
+		
+	}
+
+	public BooleanConfigOption(String name, String description, Boolean defaultValue) {
+		super(name, description, defaultValue);
+		
+	}
+
 	public BooleanConfigOption(String name, String description) {
 		super(name, description);
+		
 	}
 
-	public BooleanConfigOption(String name, String description, boolean defaultValue) {
-		super(name, description, defaultValue);
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getValueTypeAsJavaString()
+	 */
+	@Override
+	public String getValueTypeAsJavaString(){
+		return "boolean";
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -39,6 +39,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.configuration.Configurator;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -117,9 +118,11 @@ public class Sample {
 		ComponentManager cm = ComponentManager.getInstance();
 
 		// knowledge source
-		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+		//KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+		
 		String fileURL = new File(owlFile).toURI().toString();
-		cm.applyConfigEntry(ks, "url", fileURL);
+		OWLFile ks = Configurator.getOWLFile(cm, fileURL);
+		//cm.applyConfigEntry(ks, "url", fileURL);
 
 		// reasoner
 		ReasonerComponent r = cm.reasoner(FastInstanceChecker.class, ks);

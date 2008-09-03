@@ -19,6 +19,8 @@
  */
 package org.dllearner.core.config;
 
+import org.dllearner.core.config.ConfigOption.Tags;
+
 /**
  * Represents a configuration option with values of type value. Similar to the
  * integer option a minimum and a maximum value can specified.
@@ -31,14 +33,32 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	private double lowerLimit = Double.MIN_VALUE;
 	private double upperLimit = Double.MAX_VALUE;
 
+	
+	
+	
+	public DoubleConfigOption(String name, String description, Double defaultValue, Tags... tags) {
+		super(name, description, defaultValue, tags);
+		
+	}
+
+	public DoubleConfigOption(String name, String description, Double defaultValue) {
+		super(name, description, defaultValue);
+		
+	}
+
 	public DoubleConfigOption(String name, String description) {
 		super(name, description);
+		
 	}
 
-	public DoubleConfigOption(String name, String description, double defaultValue) {
-		super(name, description, defaultValue);
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getValueTypeAsJavaString()
+	 */
+	@Override
+	public String getValueTypeAsJavaString(){
+		return "double";
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 

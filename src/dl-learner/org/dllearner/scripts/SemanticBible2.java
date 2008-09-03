@@ -46,7 +46,6 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.SetManipulation;
-import org.dllearner.utilities.examples.ExampleContainer;
 import org.dllearner.utilities.learn.ConfWriter;
 import org.dllearner.utilities.owl.ReasoningServiceFactory;
 import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
