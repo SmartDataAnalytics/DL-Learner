@@ -65,7 +65,7 @@ public class LearnOWLFile {
 		cm = ComponentManager.getInstance();
 
 		// knowledge source
-		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+		OWLFile ks = cm.knowledgeSource(OWLFile.class);
 		
 		// reasoner
 		ReasonerComponent r = cm.reasoner(Reasoner, ks);

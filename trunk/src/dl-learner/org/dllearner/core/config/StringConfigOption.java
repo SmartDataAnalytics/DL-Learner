@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.dllearner.core.config.ConfigOption.Tags;
+
 /**
  * A configuration option, which allows values of type String. Optionally a set
  * of allowed strings can be set. By default all strings are allowed.
@@ -32,16 +34,43 @@ import java.util.TreeSet;
  */
 public class StringConfigOption extends ConfigOption<String> {
 
-	private Set<String> allowedValues = new TreeSet<String>();;
+	private Set<String> allowedValues = new TreeSet<String>();
 
-	public StringConfigOption(String name, String description) {
-		super(name, description);
+	
+
+	
+
+	public StringConfigOption(String name, String description, String defaultValue, Tags... tags) {
+		super(name, description, defaultValue, tags);
+		
 	}
 
 	public StringConfigOption(String name, String description, String defaultValue) {
 		super(name, description, defaultValue);
+		
 	}
 
+	public StringConfigOption(String name, String description) {
+		super(name, description);
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getDefaultValue()
+	 */
+	@Override
+	public String getDefaultValueInJava() {
+		return (defaultValue == null)?null:"\""+defaultValue+"\"";
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getValueTypeAsJavaString()
+	 */
+	@Override
+	public String getValueTypeAsJavaString(){
+		return "String";
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

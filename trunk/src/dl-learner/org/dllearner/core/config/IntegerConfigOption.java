@@ -19,6 +19,8 @@
  */
 package org.dllearner.core.config;
 
+import org.dllearner.core.config.ConfigOption.Tags;
+
 /**
  * A configuration option, which allows values of type integer. A minimum and
  * maximum value of the argument can optionally be specified.
@@ -31,14 +33,31 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 	private int lowerLimit = Integer.MIN_VALUE;
 	private int upperLimit = Integer.MAX_VALUE;
 
+	
+
+	public IntegerConfigOption(String name, String description, Integer defaultValue, Tags... tags) {
+		super(name, description, defaultValue, tags);
+		
+	}
+
+	public IntegerConfigOption(String name, String description, Integer defaultValue) {
+		super(name, description, defaultValue);
+		
+	}
+
 	public IntegerConfigOption(String name, String description) {
 		super(name, description);
+		
 	}
 
-	public IntegerConfigOption(String name, String description, int defaultValue) {
-		super(name, description, defaultValue);
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getValueTypeAsJavaString()
+	 */
+	@Override
+	public String getValueTypeAsJavaString(){
+		return "int";
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 

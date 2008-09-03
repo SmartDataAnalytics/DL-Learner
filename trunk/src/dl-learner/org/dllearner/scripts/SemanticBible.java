@@ -166,6 +166,7 @@ public class SemanticBible {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void learnOriginal(NamedClass target, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples) {
 		List<EvaluatedDescription> conceptresults = new ArrayList<EvaluatedDescription>();
 		System.out.println("Starting to learn original");
@@ -194,7 +195,7 @@ public class SemanticBible {
 		
 	}
 
-	private static LearnSPARQLConfiguration getConfForSparql(NamedClass c) {
+	public static LearnSPARQLConfiguration getConfForSparql(NamedClass c) {
 		LearnSPARQLConfiguration lc = new LearnSPARQLConfiguration();
 		// lsc.sparqlEndpoint = sparqlTasks.getSparqlEndpoint();
 

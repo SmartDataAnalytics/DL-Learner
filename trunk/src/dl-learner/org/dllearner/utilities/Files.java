@@ -31,7 +31,7 @@ import java.io.IOException;
  * 
  */
 public class Files {
-	public static boolean debug = true;
+	public static boolean debug = false;
 
 	/**
 	 * Reads in a file.
@@ -132,6 +132,29 @@ public class Files {
 				// this should not be a show stopper
 			}		
 		}
+	}
+	
+	/**
+	 * deletes all Files in the dir, does not delete the dir itself
+	 * no warning is issued, use with care, cannot undelete files
+	 *
+	 * @param dir without a separator e.g. tmp/dirtodelete
+	 */
+	public static void deleteDir(String dir) {
+		
+			File f = new File(dir);
+			
+			if(debug){
+				System.out.println(dir);
+				System.exit(0);
+			}
+			
+		    String[] files = f.list();
+		   
+		    for (int i = 0; i < files.length; i++) {
+		    	
+		    	Files.deleteFile(new File(dir+File.separator+files[i]));
+		    }     
 	}
 
 }

@@ -72,26 +72,7 @@ public class SparqlEndpoint {
 	public String toString(){
 		return getHTTPRequest();
 	}
-	/*public static SparqlEndpoint getEndpointByNumber(int i) {
-
-		switch (i) {
-		case 0:break;
-			//should not be filled
-		case 1:
-			return dbpediaEndpoint();
-		case 2:
-			return localJoseki();
-		case 3: 
-			return govTrack();
-		case 4:
-			return revyu();
-		case 5:
-			return myopenlink();
-		case 6: 
-			return worldFactBook();
-		}
-		return null;
-	}*/
+	
 	
 	public static SparqlEndpoint getEndpointByName(String name) {
 

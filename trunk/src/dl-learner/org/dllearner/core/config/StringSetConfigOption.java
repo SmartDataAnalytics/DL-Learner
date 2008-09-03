@@ -20,6 +20,8 @@
 package org.dllearner.core.config;
 
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * A set of strings.
@@ -29,8 +31,40 @@ import java.util.Set;
  */
 public class StringSetConfigOption extends ConfigOption<Set<String>> {
 
+	
+	
+	public StringSetConfigOption(String name, String description, Set<String> defaultValue, Tags... tags) {
+		super(name, description, defaultValue, tags);
+		
+	}
+
+	public StringSetConfigOption(String name, String description, Set<String> defaultValue) {
+		super(name, description, defaultValue);
+		
+	}
+
 	public StringSetConfigOption(String name, String description) {
 		super(name, description);
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getValueTypeAsJavaString()
+	 */
+	@Override
+	public String getValueTypeAsJavaString(){
+		return "Set<String>";
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getJavaImports()
+	 */
+	@Override
+	public SortedSet<String> getJavaImports() {
+		SortedSet<String> ret = new TreeSet<String>();
+		ret.add("java.util.Set");
+		return ret;
+	
 	}
 
 	/*

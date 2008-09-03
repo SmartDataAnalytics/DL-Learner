@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -15,7 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.**/package org.dllearner.scripts;
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
+package org.dllearner.scripts;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
