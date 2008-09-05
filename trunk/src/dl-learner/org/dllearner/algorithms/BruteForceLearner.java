@@ -36,16 +36,17 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Union;
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
+import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.Union;
 
 /**
  * A brute force learning algorithm.
@@ -64,6 +65,7 @@ public class BruteForceLearner extends LearningAlgorithm {
     private Description bestDefinition;
     private Score bestScore;
     
+    //changing this wont have any effect any more
     private Integer maxLength = 7;
     private String returnType;
     
@@ -90,7 +92,7 @@ public class BruteForceLearner extends LearningAlgorithm {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new IntegerConfigOption("maxLength", "maximum length of generated concepts"));
+		options.add(new IntegerConfigOption("maxLength", "maximum length of generated concepts", 7, Tags.NORMAL));
 		options.add(CommonConfigOptions.getReturnType());
 		return options;
 	}

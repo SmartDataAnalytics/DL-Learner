@@ -39,6 +39,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.configuration.FastInstanceCheckerConfigurator;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -90,6 +91,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 	private boolean defaultNegation = true;
 	
 	private String reasonerType = "pellet";
+	
+	private FastInstanceCheckerConfigurator configurator;
+	public FastInstanceCheckerConfigurator getConfigurator (){
+		return configurator;
+	}
 	
 	private Set<NamedClass> atomicConcepts;
 	private Set<ObjectProperty> atomicRoles;

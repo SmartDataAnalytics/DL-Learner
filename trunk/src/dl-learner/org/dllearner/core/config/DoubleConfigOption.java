@@ -19,7 +19,6 @@
  */
 package org.dllearner.core.config;
 
-import org.dllearner.core.config.ConfigOption.Tags;
 
 /**
  * Represents a configuration option with values of type value. Similar to the

@@ -20,30 +20,28 @@
 package org.dllearner.core.configuration;
 
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.configuration.Configurator;
-import org.dllearner.kb.OWLFile;
+import org.dllearner.reasoning.FastRetrievalReasoner;
 
 /**
 * automatically generated, do not edit manually
 **/
 @SuppressWarnings("unused")
-public class OWLFileConfigurator extends Configurator {
+public class FastRetrievalReasonerConfigurator extends Configurator {
 
 private boolean reinitNecessary = false;
-private OWLFile OWLFile;
-private String url = null;
+private FastRetrievalReasoner FastRetrievalReasoner;
 
-public OWLFileConfigurator (OWLFile OWLFile){
-this.OWLFile = OWLFile;
+public FastRetrievalReasonerConfigurator (FastRetrievalReasoner FastRetrievalReasoner){
+this.FastRetrievalReasoner = FastRetrievalReasoner;
 }
 
 /**
-* @param url URL pointing to the OWL file
 **/
-public static OWLFile getOWLFile (ComponentManager cm, String url ) {
-OWLFile component = cm.knowledgeSource(OWLFile.class );
-cm.applyConfigEntry(component, "url", url);
+public static FastRetrievalReasoner getFastRetrievalReasoner (ComponentManager cm, KnowledgeSource knowledgeSource ) {
+FastRetrievalReasoner component = cm.reasoner(FastRetrievalReasoner.class, knowledgeSource );
 return component;
 }
 
@@ -51,28 +49,10 @@ return component;
 public <T> void applyConfigEntry(ConfigEntry<T> entry){
 String optionName = entry.getOptionName();
 if(false){//empty block 
-}else if (optionName.equals("url")){
-url = (String)  entry.getValue();
 }
 }
 
-/**
-* option name: url
-* URL pointing to the OWL file
-* default value: null
-**/
-public String getUrl ( ) {
-return this.url;
-}
 
-/**
-* option name: url
-* URL pointing to the OWL file
-* default value: null
-**/
-public void setUrl ( ComponentManager cm, String url) {
-cm.applyConfigEntry(OWLFile, "url", url);
-}
 
 public boolean isReinitNecessary(){
 return reinitNecessary;

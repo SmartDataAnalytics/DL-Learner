@@ -36,6 +36,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
@@ -118,7 +119,8 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
 		options.add(CommonConfigOptions.getLogLevel());
-		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples");
+		//TODO make a commonconfig Option out of this
+		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples",0.0,Tags.NORMAL);
 		noisePercentage.setLowerLimit(0);
 		noisePercentage.setUpperLimit(100);
 		options.add(noisePercentage);

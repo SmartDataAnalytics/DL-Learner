@@ -18,43 +18,155 @@
  **/
 
 package org.dllearner.core.configuration;
+
 import java.util.Set;
+import org.dllearner.algorithms.BruteForceLearner;
+import org.dllearner.algorithms.DBpediaNavigationSuggestor;
+import org.dllearner.algorithms.RandomGuesser;
+import org.dllearner.algorithms.gp.GP;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.configuration.BruteForceLearnerConfigurator;
+import org.dllearner.core.configuration.DBpediaNavigationSuggestorConfigurator;
+import org.dllearner.core.configuration.DIGReasonerConfigurator;
+import org.dllearner.core.configuration.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.configuration.FastInstanceCheckerConfigurator;
+import org.dllearner.core.configuration.FastRetrievalReasonerConfigurator;
+import org.dllearner.core.configuration.GPConfigurator;
+import org.dllearner.core.configuration.KBFileConfigurator;
+import org.dllearner.core.configuration.OWLAPIReasonerConfigurator;
 import org.dllearner.core.configuration.OWLFileConfigurator;
+import org.dllearner.core.configuration.PosNegDefinitionLPConfigurator;
+import org.dllearner.core.configuration.PosNegInclusionLPConfigurator;
+import org.dllearner.core.configuration.PosOnlyDefinitionLPConfigurator;
+import org.dllearner.core.configuration.ROLearnerConfigurator;
+import org.dllearner.core.configuration.RandomGuesserConfigurator;
 import org.dllearner.core.configuration.SparqlKnowledgeSourceConfigurator;
+import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.FastRetrievalReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
 * automatically generated, do not edit manually
 **/
+@SuppressWarnings("unused")
 public class Configurator  {
 
 /**
-* url: URL pointing to the OWL file
+* @param filename pointer to the KB file on local file system
 **/
-public static OWLFile getOWLFile (ComponentManager cm, String url ) {
+public static KBFile getKBFile (ComponentManager cm, String filename )  {
+return KBFileConfigurator.getKBFile(cm, filename);
+}
+
+/**
+* @param url URL pointing to the OWL file
+**/
+public static OWLFile getOWLFile (ComponentManager cm, String url )  {
 return OWLFileConfigurator.getOWLFile(cm, url);
 }
 
 /**
-* instances: relevant instances e.g. positive and negative examples in a learning problem
+* @param instances relevant instances e.g. positive and negative examples in a learning problem
 **/
-public static SparqlKnowledgeSource getSparqlKnowledgeSource (ComponentManager cm, Set<String> instances ) {
+public static SparqlKnowledgeSource getSparqlKnowledgeSource (ComponentManager cm, Set<String> instances )  {
 return SparqlKnowledgeSourceConfigurator.getSparqlKnowledgeSource(cm, instances);
 }
 
 /**
 **/
-public static FastInstanceChecker getFastInstanceChecker (ComponentManager cm, KnowledgeSource knowledgeSource ) {
+public static DIGReasoner getDIGReasoner (ComponentManager cm, KnowledgeSource knowledgeSource )  {
+return DIGReasonerConfigurator.getDIGReasoner(cm, knowledgeSource);
+}
+
+/**
+**/
+public static FastInstanceChecker getFastInstanceChecker (ComponentManager cm, KnowledgeSource knowledgeSource )  {
 return FastInstanceCheckerConfigurator.getFastInstanceChecker(cm, knowledgeSource);
+}
+
+/**
+**/
+public static FastRetrievalReasoner getFastRetrievalReasoner (ComponentManager cm, KnowledgeSource knowledgeSource )  {
+return FastRetrievalReasonerConfigurator.getFastRetrievalReasoner(cm, knowledgeSource);
+}
+
+/**
+**/
+public static OWLAPIReasoner getOWLAPIReasoner (ComponentManager cm, KnowledgeSource knowledgeSource )  {
+return OWLAPIReasonerConfigurator.getOWLAPIReasoner(cm, knowledgeSource);
+}
+
+/**
+* @param positiveExamples positive examples
+* @param negativeExamples negative examples
+**/
+public static PosNegDefinitionLP getPosNegDefinitionLP (ComponentManager cm, ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples )  {
+return PosNegDefinitionLPConfigurator.getPosNegDefinitionLP(cm, reasoningService, positiveExamples, negativeExamples);
+}
+
+/**
+* @param positiveExamples positive examples
+* @param negativeExamples negative examples
+**/
+public static PosNegInclusionLP getPosNegInclusionLP (ComponentManager cm, ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples )  {
+return PosNegInclusionLPConfigurator.getPosNegInclusionLP(cm, reasoningService, positiveExamples, negativeExamples);
+}
+
+/**
+* @param positiveExamples positive examples
+**/
+public static PosOnlyDefinitionLP getPosOnlyDefinitionLP (ComponentManager cm, ReasoningService reasoningService, Set<String> positiveExamples )  {
+return PosOnlyDefinitionLPConfigurator.getPosOnlyDefinitionLP(cm, reasoningService, positiveExamples);
+}
+
+/**
+**/
+public static BruteForceLearner getBruteForceLearner (ComponentManager cm, LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+return BruteForceLearnerConfigurator.getBruteForceLearner(cm, learningProblem, reasoningService);
+}
+
+/**
+**/
+public static DBpediaNavigationSuggestor getDBpediaNavigationSuggestor (ComponentManager cm, LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+return DBpediaNavigationSuggestorConfigurator.getDBpediaNavigationSuggestor(cm, learningProblem, reasoningService);
+}
+
+/**
+**/
+public static RandomGuesser getRandomGuesser (ComponentManager cm, LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+return RandomGuesserConfigurator.getRandomGuesser(cm, learningProblem, reasoningService);
+}
+
+/**
+**/
+public static GP getGP (ComponentManager cm, LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+return GPConfigurator.getGP(cm, learningProblem, reasoningService);
+}
+
+/**
+**/
+public static ExampleBasedROLComponent getExampleBasedROLComponent (ComponentManager cm, LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+return ExampleBasedROLComponentConfigurator.getExampleBasedROLComponent(cm, learningProblem, reasoningService);
+}
+
+/**
+**/
+public static ROLearner getROLearner (ComponentManager cm, LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+return ROLearnerConfigurator.getROLearner(cm, learningProblem, reasoningService);
 }
 
 

@@ -18,6 +18,7 @@
  **/
 
 package org.dllearner.core.configuration;
+
 import java.util.List;
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
@@ -29,9 +30,11 @@ import org.dllearner.utilities.datastructures.StringTuple;
 /**
 * automatically generated, do not edit manually
 **/
+@SuppressWarnings("unused")
 public class SparqlKnowledgeSourceConfigurator extends Configurator {
 
-SparqlKnowledgeSource SparqlKnowledgeSource;
+private boolean reinitNecessary = false;
+private SparqlKnowledgeSource SparqlKnowledgeSource;
 private String url = null;
 private String cacheDir = null;
 private Set<String> instances = null;
@@ -62,7 +65,7 @@ this.SparqlKnowledgeSource = SparqlKnowledgeSource;
 }
 
 /**
-* instances: relevant instances e.g. positive and negative examples in a learning problem
+* @param instances relevant instances e.g. positive and negative examples in a learning problem
 **/
 public static SparqlKnowledgeSource getSparqlKnowledgeSource (ComponentManager cm, Set<String> instances ) {
 SparqlKnowledgeSource component = cm.knowledgeSource(SparqlKnowledgeSource.class );
@@ -126,245 +129,393 @@ namedGraphURIs = (Set<String>)  entry.getValue();
 }
 
 /**
-url : URL of SPARQL Endpoint**/
+* option name: url
+* URL of SPARQL Endpoint
+* default value: null
+**/
 public String getUrl ( ) {
 return this.url;
 }
 /**
-cacheDir : dir of cache**/
+* option name: cacheDir
+* dir of cache
+* default value: null
+**/
 public String getCacheDir ( ) {
 return this.cacheDir;
 }
 /**
-instances : relevant instances e.g. positive and negative examples in a learning problem**/
+* option name: instances
+* relevant instances e.g. positive and negative examples in a learning problem
+* default value: null
+**/
 public Set<String> getInstances ( ) {
 return this.instances;
 }
 /**
-recursionDepth : recursion depth of KB fragment selection**/
+* option name: recursionDepth
+* recursion depth of KB fragment selection
+* default value: 1
+**/
 public int getRecursionDepth ( ) {
 return this.recursionDepth;
 }
 /**
-predefinedFilter : the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST**/
+* option name: predefinedFilter
+* the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST
+* default value: null
+**/
 public String getPredefinedFilter ( ) {
 return this.predefinedFilter;
 }
 /**
-predefinedEndpoint : the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK**/
+* option name: predefinedEndpoint
+* the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK
+* default value: null
+**/
 public String getPredefinedEndpoint ( ) {
 return this.predefinedEndpoint;
 }
 /**
-predefinedManipulator : the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR**/
+* option name: predefinedManipulator
+* the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR
+* default value: null
+**/
 public String getPredefinedManipulator ( ) {
 return this.predefinedManipulator;
 }
 /**
-predList : list of all ignored roles**/
+* option name: predList
+* list of all ignored roles
+* default value: null
+**/
 public Set<String> getPredList ( ) {
 return this.predList;
 }
 /**
-objList : list of all ignored objects**/
+* option name: objList
+* list of all ignored objects
+* default value: null
+**/
 public Set<String> getObjList ( ) {
 return this.objList;
 }
 /**
-classList : list of all ignored classes**/
+* option name: classList
+* list of all ignored classes
+* default value: null
+**/
 public Set<String> getClassList ( ) {
 return this.classList;
 }
 /**
-format : N-TRIPLES or KB format**/
+* option name: format
+* N-TRIPLES or KB format
+* default value: N-TRIPLES
+**/
 public String getFormat ( ) {
 return this.format;
 }
 /**
-dumpToFile : Specifies whether the extracted ontology is written to a file or not.**/
+* option name: dumpToFile
+* Specifies whether the extracted ontology is written to a file or not.
+* default value: true
+**/
 public boolean getDumpToFile ( ) {
 return this.dumpToFile;
 }
 /**
-convertNT2RDF : Specifies whether the extracted NTriples are converted to RDF and deleted.**/
+* option name: convertNT2RDF
+* Specifies whether the extracted NTriples are converted to RDF and deleted.
+* default value: true
+**/
 public boolean getConvertNT2RDF ( ) {
 return this.convertNT2RDF;
 }
 /**
-useLits : use Literals in SPARQL query**/
+* option name: useLits
+* use Literals in SPARQL query
+* default value: true
+**/
 public boolean getUseLits ( ) {
 return this.useLits;
 }
 /**
-getAllSuperClasses : If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.**/
+* option name: getAllSuperClasses
+* If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.
+* default value: true
+**/
 public boolean getGetAllSuperClasses ( ) {
 return this.getAllSuperClasses;
 }
 /**
-useCache : If true a Cache is used**/
+* option name: useCache
+* If true a Cache is used
+* default value: true
+**/
 public boolean getUseCache ( ) {
 return this.useCache;
 }
 /**
-replacePredicate : rule for replacing predicates**/
+* option name: replacePredicate
+* rule for replacing predicates
+* default value: null
+**/
 public List<StringTuple> getReplacePredicate ( ) {
 return this.replacePredicate;
 }
 /**
-replaceObject : rule for replacing predicates**/
+* option name: replaceObject
+* rule for replacing predicates
+* default value: null
+**/
 public List<StringTuple> getReplaceObject ( ) {
 return this.replaceObject;
 }
 /**
-breakSuperClassRetrievalAfter : stops a cyclic hierarchy after specified number of classes**/
+* option name: breakSuperClassRetrievalAfter
+* stops a cyclic hierarchy after specified number of classes
+* default value: 1000
+**/
 public int getBreakSuperClassRetrievalAfter ( ) {
 return this.breakSuperClassRetrievalAfter;
 }
 /**
-closeAfterRecursion : gets all classes for all instances**/
+* option name: closeAfterRecursion
+* gets all classes for all instances
+* default value: true
+**/
 public boolean getCloseAfterRecursion ( ) {
 return this.closeAfterRecursion;
 }
 /**
-getPropertyInformation : gets all types for extracted ObjectProperties**/
+* option name: getPropertyInformation
+* gets all types for extracted ObjectProperties
+* default value: false
+**/
 public boolean getGetPropertyInformation ( ) {
 return this.getPropertyInformation;
 }
 /**
-verbosity : control verbosity of output for this component**/
+* option name: verbosity
+* control verbosity of output for this component
+* default value: warning
+**/
 public String getVerbosity ( ) {
 return this.verbosity;
 }
 /**
-defaultGraphURIs : a list of all default Graph URIs**/
+* option name: defaultGraphURIs
+* a list of all default Graph URIs
+* default value: null
+**/
 public Set<String> getDefaultGraphURIs ( ) {
 return this.defaultGraphURIs;
 }
 /**
-namedGraphURIs : a list of all named Graph URIs**/
+* option name: namedGraphURIs
+* a list of all named Graph URIs
+* default value: null
+**/
 public Set<String> getNamedGraphURIs ( ) {
 return this.namedGraphURIs;
 }
 
 /**
-url : URL of SPARQL Endpoint**/
+* option name: url
+* URL of SPARQL Endpoint
+* default value: null
+**/
 public void setUrl ( ComponentManager cm, String url) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "url", url);
 }
 /**
-cacheDir : dir of cache**/
+* option name: cacheDir
+* dir of cache
+* default value: null
+**/
 public void setCacheDir ( ComponentManager cm, String cacheDir) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "cacheDir", cacheDir);
 }
 /**
-instances : relevant instances e.g. positive and negative examples in a learning problem**/
+* option name: instances
+* relevant instances e.g. positive and negative examples in a learning problem
+* default value: null
+**/
 public void setInstances ( ComponentManager cm, Set<String> instances) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "instances", instances);
 }
 /**
-recursionDepth : recursion depth of KB fragment selection**/
+* option name: recursionDepth
+* recursion depth of KB fragment selection
+* default value: 1
+**/
 public void setRecursionDepth ( ComponentManager cm, int recursionDepth) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "recursionDepth", recursionDepth);
 }
 /**
-predefinedFilter : the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST**/
+* option name: predefinedFilter
+* the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST
+* default value: null
+**/
 public void setPredefinedFilter ( ComponentManager cm, String predefinedFilter) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "predefinedFilter", predefinedFilter);
 }
 /**
-predefinedEndpoint : the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK**/
+* option name: predefinedEndpoint
+* the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK
+* default value: null
+**/
 public void setPredefinedEndpoint ( ComponentManager cm, String predefinedEndpoint) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "predefinedEndpoint", predefinedEndpoint);
 }
 /**
-predefinedManipulator : the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR**/
+* option name: predefinedManipulator
+* the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR
+* default value: null
+**/
 public void setPredefinedManipulator ( ComponentManager cm, String predefinedManipulator) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "predefinedManipulator", predefinedManipulator);
 }
 /**
-predList : list of all ignored roles**/
+* option name: predList
+* list of all ignored roles
+* default value: null
+**/
 public void setPredList ( ComponentManager cm, Set<String> predList) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "predList", predList);
 }
 /**
-objList : list of all ignored objects**/
+* option name: objList
+* list of all ignored objects
+* default value: null
+**/
 public void setObjList ( ComponentManager cm, Set<String> objList) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "objList", objList);
 }
 /**
-classList : list of all ignored classes**/
+* option name: classList
+* list of all ignored classes
+* default value: null
+**/
 public void setClassList ( ComponentManager cm, Set<String> classList) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "classList", classList);
 }
 /**
-format : N-TRIPLES or KB format**/
+* option name: format
+* N-TRIPLES or KB format
+* default value: N-TRIPLES
+**/
 public void setFormat ( ComponentManager cm, String format) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "format", format);
 }
 /**
-dumpToFile : Specifies whether the extracted ontology is written to a file or not.**/
+* option name: dumpToFile
+* Specifies whether the extracted ontology is written to a file or not.
+* default value: true
+**/
 public void setDumpToFile ( ComponentManager cm, boolean dumpToFile) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "dumpToFile", dumpToFile);
 }
 /**
-convertNT2RDF : Specifies whether the extracted NTriples are converted to RDF and deleted.**/
+* option name: convertNT2RDF
+* Specifies whether the extracted NTriples are converted to RDF and deleted.
+* default value: true
+**/
 public void setConvertNT2RDF ( ComponentManager cm, boolean convertNT2RDF) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "convertNT2RDF", convertNT2RDF);
 }
 /**
-useLits : use Literals in SPARQL query**/
+* option name: useLits
+* use Literals in SPARQL query
+* default value: true
+**/
 public void setUseLits ( ComponentManager cm, boolean useLits) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "useLits", useLits);
 }
 /**
-getAllSuperClasses : If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.**/
+* option name: getAllSuperClasses
+* If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.
+* default value: true
+**/
 public void setGetAllSuperClasses ( ComponentManager cm, boolean getAllSuperClasses) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "getAllSuperClasses", getAllSuperClasses);
 }
 /**
-useCache : If true a Cache is used**/
+* option name: useCache
+* If true a Cache is used
+* default value: true
+**/
 public void setUseCache ( ComponentManager cm, boolean useCache) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "useCache", useCache);
 }
 /**
-replacePredicate : rule for replacing predicates**/
+* option name: replacePredicate
+* rule for replacing predicates
+* default value: null
+**/
 public void setReplacePredicate ( ComponentManager cm, List<StringTuple> replacePredicate) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "replacePredicate", replacePredicate);
 }
 /**
-replaceObject : rule for replacing predicates**/
+* option name: replaceObject
+* rule for replacing predicates
+* default value: null
+**/
 public void setReplaceObject ( ComponentManager cm, List<StringTuple> replaceObject) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "replaceObject", replaceObject);
 }
 /**
-breakSuperClassRetrievalAfter : stops a cyclic hierarchy after specified number of classes**/
+* option name: breakSuperClassRetrievalAfter
+* stops a cyclic hierarchy after specified number of classes
+* default value: 1000
+**/
 public void setBreakSuperClassRetrievalAfter ( ComponentManager cm, int breakSuperClassRetrievalAfter) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "breakSuperClassRetrievalAfter", breakSuperClassRetrievalAfter);
 }
 /**
-closeAfterRecursion : gets all classes for all instances**/
+* option name: closeAfterRecursion
+* gets all classes for all instances
+* default value: true
+**/
 public void setCloseAfterRecursion ( ComponentManager cm, boolean closeAfterRecursion) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "closeAfterRecursion", closeAfterRecursion);
 }
 /**
-getPropertyInformation : gets all types for extracted ObjectProperties**/
+* option name: getPropertyInformation
+* gets all types for extracted ObjectProperties
+* default value: false
+**/
 public void setGetPropertyInformation ( ComponentManager cm, boolean getPropertyInformation) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "getPropertyInformation", getPropertyInformation);
 }
 /**
-verbosity : control verbosity of output for this component**/
+* option name: verbosity
+* control verbosity of output for this component
+* default value: warning
+**/
 public void setVerbosity ( ComponentManager cm, String verbosity) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "verbosity", verbosity);
 }
 /**
-defaultGraphURIs : a list of all default Graph URIs**/
+* option name: defaultGraphURIs
+* a list of all default Graph URIs
+* default value: null
+**/
 public void setDefaultGraphURIs ( ComponentManager cm, Set<String> defaultGraphURIs) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "defaultGraphURIs", defaultGraphURIs);
 }
 /**
-namedGraphURIs : a list of all named Graph URIs**/
+* option name: namedGraphURIs
+* a list of all named Graph URIs
+* default value: null
+**/
 public void setNamedGraphURIs ( ComponentManager cm, Set<String> namedGraphURIs) {
 cm.applyConfigEntry(SparqlKnowledgeSource, "namedGraphURIs", namedGraphURIs);
+}
+
+public boolean isReinitNecessary(){
+return reinitNecessary;
 }
 
 

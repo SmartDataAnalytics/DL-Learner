@@ -31,6 +31,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringSetConfigOption;
+import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.owl.Individual;
 
 /**
@@ -65,7 +66,7 @@ public abstract class PosOnlyLP extends LearningProblem {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringSetConfigOption("positiveExamples",
-				"positive examples"));
+				"positive examples", null, Tags.MANDATORY));
 		return options;
 	}		
 	

@@ -23,8 +23,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.config.ConfigOption.Tags;
-
 /**
  * A configuration option, which allows values of type String. Optionally a set
  * of allowed strings can be set. By default all strings are allowed.

@@ -18,6 +18,7 @@
  **/
 
 package org.dllearner.core.configuration;
+
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigEntry;
@@ -27,9 +28,11 @@ import org.dllearner.reasoning.FastInstanceChecker;
 /**
 * automatically generated, do not edit manually
 **/
+@SuppressWarnings("unused")
 public class FastInstanceCheckerConfigurator extends Configurator {
 
-FastInstanceChecker FastInstanceChecker;
+private boolean reinitNecessary = false;
+private FastInstanceChecker FastInstanceChecker;
 private String reasonerType = "pellet";
 
 public FastInstanceCheckerConfigurator (FastInstanceChecker FastInstanceChecker){
@@ -53,15 +56,25 @@ reasonerType = (String)  entry.getValue();
 }
 
 /**
-reasonerType : FaCT++ or Pellet to dematerialize**/
+* option name: reasonerType
+* FaCT++ or Pellet to dematerialize
+* default value: pellet
+**/
 public String getReasonerType ( ) {
 return this.reasonerType;
 }
 
 /**
-reasonerType : FaCT++ or Pellet to dematerialize**/
+* option name: reasonerType
+* FaCT++ or Pellet to dematerialize
+* default value: pellet
+**/
 public void setReasonerType ( ComponentManager cm, String reasonerType) {
 cm.applyConfigEntry(FastInstanceChecker, "reasonerType", reasonerType);
+}
+
+public boolean isReinitNecessary(){
+return reinitNecessary;
 }
 
 

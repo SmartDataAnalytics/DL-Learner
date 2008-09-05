@@ -44,16 +44,18 @@ import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.config.ConfigOption.Tags;
+import org.dllearner.core.configuration.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
-import org.dllearner.reasoning.ReasonerType;
 
 /**
  * The DL-Learner learning algorithm component for the example
@@ -91,6 +93,13 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private ReasoningService rs;
 	private LearningProblem learningProblem;	
 	
+	private ExampleBasedROLComponentConfigurator configurator;
+	public ExampleBasedROLComponentConfigurator getConfigurator(){
+		return configurator;
+	}
+	
+	
+	
 	// configuration options
 	private boolean writeSearchTree;
 	private File searchTreeFile;
@@ -116,10 +125,15 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean useNegation = CommonConfigOptions.useNegationDefault;
 	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
 	private boolean useDoubleDatatypes = CommonConfigOptions.useDoubleDatatypesDefault;
-	private double noisePercentage = 0.0;
+	private static double noisePercentageDefault = 0.0;
+	private double noisePercentage = noisePercentageDefault;
 	private NamedClass startClass = null;
-	private boolean usePropernessChecks = false;
-	private int maxPosOnlyExpansion = 4;
+	//refactor this
+	private static boolean usePropernessChecksDefault = false;
+	private boolean usePropernessChecks = usePropernessChecksDefault;
+	//	refactor this
+	private static int maxPosOnlyExpansionDefault = 4;
+	private int maxPosOnlyExpansion = maxPosOnlyExpansionDefault;
 	//extended Options
 	//in seconds
 	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
@@ -141,11 +155,13 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	public ExampleBasedROLComponent(PosNegLP learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
 		this.rs = rs;
+		this.configurator = new ExampleBasedROLComponentConfigurator(this);
 	}
 	
 	public ExampleBasedROLComponent(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
 		this.rs = rs;
+		this.configurator = new ExampleBasedROLComponentConfigurator(this);
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
@@ -188,10 +204,10 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
 		options.add(CommonConfigOptions.getLogLevel());
-		options.add(new BooleanConfigOption("usePropernessChecks", "specifies whether to check for equivalence (i.e. discard equivalent refinements)"));
+		options.add(new BooleanConfigOption("usePropernessChecks", "specifies whether to check for equivalence (i.e. discard equivalent refinements)",usePropernessChecksDefault,Tags.NORMAL));
 		options.add(new IntegerConfigOption("maxPosOnlyExpansion", "specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is" +
-				" considered as solution candidate"));
-		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples");
+				" considered as solution candidate",maxPosOnlyExpansionDefault,Tags.NORMAL));
+		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples",noisePercentageDefault,Tags.NORMAL);
 		noisePercentage.setLowerLimit(0);
 		noisePercentage.setUpperLimit(100);
 		options.add(noisePercentage);
