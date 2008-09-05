@@ -19,7 +19,6 @@
  */
 package org.dllearner.core.config;
 
-import org.dllearner.core.config.ConfigOption.Tags;
 
 /**
  * A configuration option, which allows values of type integer. A minimum and

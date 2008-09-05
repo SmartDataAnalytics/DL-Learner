@@ -33,6 +33,8 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.config.ConfigOption.Tags;
+import org.dllearner.core.configuration.KBFileConfigurator;
 import org.dllearner.core.owl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -59,12 +61,17 @@ public class KBFile extends KnowledgeSource {
 	// private File file;
 	private URL url;
 	private KB kb;
+	
+	private KBFileConfigurator configurator;
+	public KBFileConfigurator getConfigurator(){
+		return configurator;
+	}
 
 	/**
 	 * Default constructor (needed for reflection in ComponentManager).
 	 */
 	public KBFile() {
-		
+		this.configurator = new KBFileConfigurator(this);
 	}
 	
 	/**
@@ -86,8 +93,8 @@ public class KBFile extends KnowledgeSource {
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system"));
-		options.add(new StringConfigOption("url", "URL pointer to the KB file"));
+		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system",null, Tags.MANDATORY, Tags.REINIT));
+		options.add(new StringConfigOption("url", "URL pointer to the KB file",null, Tags.REINIT));
 		return options;
 	}
 
@@ -96,6 +103,8 @@ public class KBFile extends KnowledgeSource {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		configurator.applyConfigEntry(entry);
+		
 		String option = entry.getOptionName();
 		if (option.equals("filename")) {
 			// file = new File((String)entry.getValue());

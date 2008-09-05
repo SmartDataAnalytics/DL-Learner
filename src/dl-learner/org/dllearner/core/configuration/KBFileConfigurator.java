@@ -22,28 +22,29 @@ package org.dllearner.core.configuration;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.configuration.Configurator;
-import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.KBFile;
 
 /**
 * automatically generated, do not edit manually
 **/
 @SuppressWarnings("unused")
-public class OWLFileConfigurator extends Configurator {
+public class KBFileConfigurator extends Configurator {
 
 private boolean reinitNecessary = false;
-private OWLFile OWLFile;
+private KBFile KBFile;
+private String filename = null;
 private String url = null;
 
-public OWLFileConfigurator (OWLFile OWLFile){
-this.OWLFile = OWLFile;
+public KBFileConfigurator (KBFile KBFile){
+this.KBFile = KBFile;
 }
 
 /**
-* @param url URL pointing to the OWL file
+* @param filename pointer to the KB file on local file system
 **/
-public static OWLFile getOWLFile (ComponentManager cm, String url ) {
-OWLFile component = cm.knowledgeSource(OWLFile.class );
-cm.applyConfigEntry(component, "url", url);
+public static KBFile getKBFile (ComponentManager cm, String filename ) {
+KBFile component = cm.knowledgeSource(KBFile.class );
+cm.applyConfigEntry(component, "filename", filename);
 return component;
 }
 
@@ -51,14 +52,24 @@ return component;
 public <T> void applyConfigEntry(ConfigEntry<T> entry){
 String optionName = entry.getOptionName();
 if(false){//empty block 
+}else if (optionName.equals("filename")){
+filename = (String)  entry.getValue();
 }else if (optionName.equals("url")){
 url = (String)  entry.getValue();
 }
 }
 
 /**
+* option name: filename
+* pointer to the KB file on local file system
+* default value: null
+**/
+public String getFilename ( ) {
+return this.filename;
+}
+/**
 * option name: url
-* URL pointing to the OWL file
+* URL pointer to the KB file
 * default value: null
 **/
 public String getUrl ( ) {
@@ -66,12 +77,22 @@ return this.url;
 }
 
 /**
+* option name: filename
+* pointer to the KB file on local file system
+* default value: null
+**/
+public void setFilename ( ComponentManager cm, String filename) {
+cm.applyConfigEntry(KBFile, "filename", filename);
+reinitNecessary = true;
+}
+/**
 * option name: url
-* URL pointing to the OWL file
+* URL pointer to the KB file
 * default value: null
 **/
 public void setUrl ( ComponentManager cm, String url) {
-cm.applyConfigEntry(OWLFile, "url", url);
+cm.applyConfigEntry(KBFile, "url", url);
+reinitNecessary = true;
 }
 
 public boolean isReinitNecessary(){

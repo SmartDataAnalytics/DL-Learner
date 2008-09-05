@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.gp.Program;
 import org.dllearner.algorithms.gp.GPUtilities;
+import org.dllearner.algorithms.gp.Program;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
@@ -34,6 +34,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.owl.Description;
 
 public class RandomGuesser extends LearningAlgorithm {
@@ -65,8 +66,8 @@ public class RandomGuesser extends LearningAlgorithm {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new IntegerConfigOption("numberOfTrees", "number of randomly generated concepts/trees"));
-		options.add(new IntegerConfigOption("maxDepth", "maximum depth of generated concepts/trees"));
+		options.add(new IntegerConfigOption("numberOfTrees", "number of randomly generated concepts/trees", 5, Tags.NORMAL));
+		options.add(new IntegerConfigOption("maxDepth", "maximum depth of generated concepts/trees", 5, Tags.NORMAL));
 		return options;
 	}
 	

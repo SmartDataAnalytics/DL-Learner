@@ -152,6 +152,14 @@ public abstract class ConfigOption<T> {
 		return "option name: " + name + "\ndescription: " + description + "\nvalues: "
 				+ getAllowedValuesDescription() + "\ndefault value: " + defaultValue + "\n";
 	}
+	
+	public String getJavaDocString() {
+		String line = "* option name: " + name + "\n";
+		line += "* " + description + "\n";
+		//line += "* allowed values: "+ getAllowedValuesDescription() + "\n";
+		line += "* default value: " + defaultValue + "\n";
+		return line;
+	}
 
 	/**
 	 * Get a formatted value to put into configuration file.

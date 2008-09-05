@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;

@@ -19,31 +19,33 @@
 
 package org.dllearner.core.configuration;
 
+import java.util.Set;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.configuration.Configurator;
-import org.dllearner.kb.OWLFile;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 
 /**
 * automatically generated, do not edit manually
 **/
 @SuppressWarnings("unused")
-public class OWLFileConfigurator extends Configurator {
+public class PosOnlyDefinitionLPConfigurator extends Configurator {
 
 private boolean reinitNecessary = false;
-private OWLFile OWLFile;
-private String url = null;
+private PosOnlyDefinitionLP PosOnlyDefinitionLP;
+private Set<String> positiveExamples = null;
 
-public OWLFileConfigurator (OWLFile OWLFile){
-this.OWLFile = OWLFile;
+public PosOnlyDefinitionLPConfigurator (PosOnlyDefinitionLP PosOnlyDefinitionLP){
+this.PosOnlyDefinitionLP = PosOnlyDefinitionLP;
 }
 
 /**
-* @param url URL pointing to the OWL file
+* @param positiveExamples positive examples
 **/
-public static OWLFile getOWLFile (ComponentManager cm, String url ) {
-OWLFile component = cm.knowledgeSource(OWLFile.class );
-cm.applyConfigEntry(component, "url", url);
+public static PosOnlyDefinitionLP getPosOnlyDefinitionLP (ComponentManager cm, ReasoningService reasoningService, Set<String> positiveExamples ) {
+PosOnlyDefinitionLP component = cm.learningProblem(PosOnlyDefinitionLP.class, reasoningService );
+cm.applyConfigEntry(component, "positiveExamples", positiveExamples);
 return component;
 }
 
@@ -51,27 +53,27 @@ return component;
 public <T> void applyConfigEntry(ConfigEntry<T> entry){
 String optionName = entry.getOptionName();
 if(false){//empty block 
-}else if (optionName.equals("url")){
-url = (String)  entry.getValue();
+}else if (optionName.equals("positiveExamples")){
+positiveExamples = (Set<String>)  entry.getValue();
 }
 }
 
 /**
-* option name: url
-* URL pointing to the OWL file
+* option name: positiveExamples
+* positive examples
 * default value: null
 **/
-public String getUrl ( ) {
-return this.url;
+public Set<String> getPositiveExamples ( ) {
+return this.positiveExamples;
 }
 
 /**
-* option name: url
-* URL pointing to the OWL file
+* option name: positiveExamples
+* positive examples
 * default value: null
 **/
-public void setUrl ( ComponentManager cm, String url) {
-cm.applyConfigEntry(OWLFile, "url", url);
+public void setPositiveExamples ( ComponentManager cm, Set<String> positiveExamples) {
+cm.applyConfigEntry(PosOnlyDefinitionLP, "positiveExamples", positiveExamples);
 }
 
 public boolean isReinitNecessary(){

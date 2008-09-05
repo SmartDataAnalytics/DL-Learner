@@ -20,30 +20,29 @@
 package org.dllearner.core.configuration;
 
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.configuration.Configurator;
-import org.dllearner.kb.OWLFile;
+import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
 * automatically generated, do not edit manually
 **/
 @SuppressWarnings("unused")
-public class OWLFileConfigurator extends Configurator {
+public class OWLAPIReasonerConfigurator extends Configurator {
 
 private boolean reinitNecessary = false;
-private OWLFile OWLFile;
-private String url = null;
+private OWLAPIReasoner OWLAPIReasoner;
+private String reasonerType = "pellet";
 
-public OWLFileConfigurator (OWLFile OWLFile){
-this.OWLFile = OWLFile;
+public OWLAPIReasonerConfigurator (OWLAPIReasoner OWLAPIReasoner){
+this.OWLAPIReasoner = OWLAPIReasoner;
 }
 
 /**
-* @param url URL pointing to the OWL file
 **/
-public static OWLFile getOWLFile (ComponentManager cm, String url ) {
-OWLFile component = cm.knowledgeSource(OWLFile.class );
-cm.applyConfigEntry(component, "url", url);
+public static OWLAPIReasoner getOWLAPIReasoner (ComponentManager cm, KnowledgeSource knowledgeSource ) {
+OWLAPIReasoner component = cm.reasoner(OWLAPIReasoner.class, knowledgeSource );
 return component;
 }
 
@@ -51,27 +50,27 @@ return component;
 public <T> void applyConfigEntry(ConfigEntry<T> entry){
 String optionName = entry.getOptionName();
 if(false){//empty block 
-}else if (optionName.equals("url")){
-url = (String)  entry.getValue();
+}else if (optionName.equals("reasonerType")){
+reasonerType = (String)  entry.getValue();
 }
 }
 
 /**
-* option name: url
-* URL pointing to the OWL file
-* default value: null
+* option name: reasonerType
+* FaCT++ or Pellet
+* default value: pellet
 **/
-public String getUrl ( ) {
-return this.url;
+public String getReasonerType ( ) {
+return this.reasonerType;
 }
 
 /**
-* option name: url
-* URL pointing to the OWL file
-* default value: null
+* option name: reasonerType
+* FaCT++ or Pellet
+* default value: pellet
 **/
-public void setUrl ( ComponentManager cm, String url) {
-cm.applyConfigEntry(OWLFile, "url", url);
+public void setReasonerType ( ComponentManager cm, String reasonerType) {
+cm.applyConfigEntry(OWLAPIReasoner, "reasonerType", reasonerType);
 }
 
 public boolean isReinitNecessary(){
