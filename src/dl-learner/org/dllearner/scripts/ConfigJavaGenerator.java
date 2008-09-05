@@ -20,13 +20,23 @@
 package org.dllearner.scripts;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.map.LinkedMap;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.configuration.Configurator;
@@ -51,140 +61,351 @@ public class ConfigJavaGenerator {
 
 	private static final String TEMPLATE_DIR = "doc/template/";
 
-	private static final String CLASSADDITION = "Configurator";
+	private static final String CONFIGURATOR = "Configurator";
 	
 	private static final SortedSet<String> configuratorImports = new TreeSet<String>();
-	private static final SortedSet<String> configuratorMethods = new TreeSet<String>();
+	private static final List<String> configuratorMethods = new ArrayList<String>();
+	
+	Class<? extends Component> component;
+ 	String className;
+ 	String componentType;
+	List<String>  body = new ArrayList<String>();
+	List<String>  vars = new ArrayList<String>();
+	List<String>  setters = new ArrayList<String>();
+	List<String>  getters = new ArrayList<String>();
+	SortedSet<String>  imports = new TreeSet<String>();
+	Map<String,String>  additionalMandatoryVars = new LinkedHashMap<String, String>();
+	Map<String,String>  mandatoryVars = new LinkedHashMap<String, String>();
+	Map<String,String>  varMap = new LinkedHashMap<String, String>();
+	
+	List<ConfigOption<?>> mandatoryOptions = new LinkedList<ConfigOption<?>>();
+
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 
+		Files.backupDirectory(TARGET_DIR);
+		//System.exit(0);
 		Files.deleteDir(TARGET_DIR);
-
+		
 		ComponentManager cm = ComponentManager.getInstance();
 		configuratorImports.add(ComponentManager.class.getCanonicalName());
-		
+		configuratorImports.add(KnowledgeSource.class.getCanonicalName());
+		configuratorImports.add(ReasonerComponent.class.getCanonicalName());
+		configuratorImports.add(ReasoningService.class.getCanonicalName());
+		configuratorImports.add(LearningProblem.class.getCanonicalName());
+		configuratorImports.add(LearningAlgorithm.class.getCanonicalName());
 
 		for (Class<? extends KnowledgeSource> component : cm
 				.getKnowledgeSources()) {
 			String componentType = "knowledgeSource";
 			
+			
+			
 			if (component.getSimpleName().equalsIgnoreCase(
 				"OWLFile")) {
 				configuratorImports.add(component.getCanonicalName());
-				configuratorImports.add("org.dllearner.core.configuration."+component.getSimpleName()+CLASSADDITION);
-				make (component, componentType);
+					configuratorImports.add("org.dllearner.core.configuration."+component.getSimpleName()+CONFIGURATOR);
+				ConfigJavaGenerator c = new ConfigJavaGenerator(component, componentType);
+				
+				c.makeSubclasses();
+				
 			}if (component.getSimpleName().equalsIgnoreCase(
 				"SparqlKnowledgeSource")) {
 				configuratorImports.add(component.getCanonicalName());
-				configuratorImports.add("org.dllearner.core.configuration."+component.getSimpleName()+CLASSADDITION);
-				make (component, componentType);
+				configuratorImports.add("org.dllearner.core.configuration."+component.getSimpleName()+CONFIGURATOR);
+				ConfigJavaGenerator c = new ConfigJavaGenerator(component, componentType);
+				c.makeSubclasses();
 			}
 			
 			
 		}
+		for (Class<? extends ReasonerComponent> component : cm.getReasonerComponents()) {
+			
+		
+			
+			if (component.getSimpleName().equalsIgnoreCase(
+				"FastInstanceChecker")) {
+				configuratorImports.add(component.getCanonicalName());
+				configuratorImports.add("org.dllearner.core.configuration."+component.getSimpleName()+CONFIGURATOR);
+				
+				ConfigJavaGenerator c = new ConfigJavaGenerator(component, "reasoner");
+				c.imports.add("org.dllearner.core.KnowledgeSource");
+				c.additionalMandatoryVars.put("KnowledgeSource knowledgeSource","knowledgeSource");
+				c.makeSubclasses();
+				
+			}
+			
+			
+		}
+		
 		
 		makeConfiguratorSuperClass();
 
 		System.out.println("Done");
 	}
 	
-	public static void makeConfiguratorSuperClass(){
-		StringBuffer current = new StringBuffer();
-		current.append(HEADER+"\n");
-		current.append("package org.dllearner.core.configuration;\n\n");
-		for (String string : configuratorImports) {
-			current.append("import "+string+";\n");
-		}
-		current.append("\n"+getClassComment());
-		current.append("public class "+CLASSADDITION+" {\n\n");
-		for (String string : configuratorMethods) {
-			current.append(string+"\n");
-		}
-		current.append("}\n");
-		Files.createFile(new File(TARGET_DIR + "/" + CLASSADDITION + ".java"), current.toString());
-	}
-	
-	public static void  make(Class<? extends KnowledgeSource>  component, String componentType){
-		StringBuffer current = new StringBuffer();
-		StringBuffer vars = new StringBuffer();
-		StringBuffer setters = new StringBuffer();
-		StringBuffer getters = new StringBuffer();
-		SortedSet<String> imports = new TreeSet<String>();
-		String className = component.getSimpleName();
-		List<ConfigOption<?>> mandatoryOptions = new LinkedList<ConfigOption<?>>();
-
+	public ConfigJavaGenerator (Class<? extends Component>  component, String componentType){
+		className = component.getSimpleName();
+		this.component = component;
+		this.componentType = componentType;
 		imports.add(component.getCanonicalName());
 		imports.add(ComponentManager.class.getCanonicalName());
 		imports.add(Configurator.class.getCanonicalName());
 		imports.add(ConfigEntry.class.getCanonicalName());
-		//imports.add("import "+ConfigOption.class.getCanonicalName()+";");
 		
-		vars.append(className+" "+ className+";\n");
-		current.append(HEADER + "\n");
-		current.append("package org.dllearner.core.configuration;\n\n");
+		vars.add(className+" "+className+";\n");
+	
+	}
+	
+	public  void  makeSubclasses(){
+		
+		
+		
+		//imports.add("import "+ConfigOption.class.getCanonicalName()+";");
+		//vars.put(key, value)
+		//vars.add(className+" "+ className+";\n");
+		
 		
 	
 		for (ConfigOption<?> option : ComponentManager
 				.getConfigOptions(component)) {
+			
+			String type = option.getValueTypeAsJavaString();
+			String optionName = option.getName();
+			String defaultValue = option.getDefaultValueInJava();
+			String comment = option.getDescription();
+			
 			if(option.isMandatory()){
+				mandatoryVars.put(type + " " + optionName , optionName);
 				mandatoryOptions.add(option);
 				configuratorImports.addAll(option.getJavaImports());
-			}
+			}	
 			
 			imports.addAll(option.getJavaImports());
-			vars.append(getVarDef(option));
-			setters.append(getSetter(option));
-			getters.append(getGetter(option));
+			vars.add(fillVariableDefTemplate(optionName, type, defaultValue));
+			setters.add(fillSetterTemplate(className, comment, optionName, type));
+			getters.add(fillGetterTemplate(comment, optionName, type));
 			// System.out.println(option);
 			// componentOptions.get(component)) {
 
 		}
-		for (String string : imports) {
-			current.append("import "+string+";\n");
-		}
-		current.append("\n\n");
-		current.append(getClassDefinition(className));
-		current.append(vars);
-		current.append("\n\n");
-		current.append(getMandatoryFunctions(className, componentType, mandatoryOptions));
-		current.append("\n\n");
-		current.append(makeApplyConfigEntry(ComponentManager.getConfigOptions(component)));
-		current.append("\n\n");
-		current.append(setters+"\n\n"+getters+"\n\n");
-		current.append("}\n");
 		
-		configuratorMethods.add(getSuperClassFunction(className, componentType, mandatoryOptions));
+		
+		
+		
+		body.add(expandCollection(vars, "", "", 0));
+		body.add(fillConstructorTemplate(className));
+		
+		body.add(makeGetInstanceForSubclass(className, componentType, 
+				getAllCommentsForOptionList(mandatoryOptions)));
+		
+		body.add(makeApplyConfigEntryForOptionList(ComponentManager.getConfigOptions(component)));
+		
+		body.add(expandCollection(getters, "", "", 0));
+		body.add(expandCollection(setters, "", "", 0));
+		String ret = fillClassTemplate(
+				"org.dllearner.core.configuration", 
+				expandCollection(imports, "import ", ";\n", 0), 
+				className+CONFIGURATOR, 
+				CONFIGURATOR, 
+				expandCollection(body, "", "\n", 0) );
+		
+		
+		
+		
+		
+		//configuratorMethods.add((className, componentType, mandatoryOptions));
 		
 		Files.createFile(new File(TARGET_DIR + "/" + className
-				+ CLASSADDITION + ".java"), current.toString());
+				+ CONFIGURATOR + ".java"), ret);
+		
+		configuratorMethods.add(
+				makeSuperConfiguratorMethods(
+						className, 
+						componentType, 
+						getAllCommentsForOptionList(mandatoryOptions)));
 	}
 	
-	private static String getConstructor(String className){
-		return "";
-	}
 	
-	public static String makeApplyConfigEntry(List<ConfigOption<?>> options){
+	
+	public static String makeApplyConfigEntryForOptionList(List<ConfigOption<?>> options){
 		String ret ="@SuppressWarnings({ \"unchecked\" })\n" +
 				"public <T> void applyConfigEntry(ConfigEntry<T> entry){\n";
 		ret+="String optionName = entry.getOptionName();\n";
 		//ret+="ConfigOption<T> option = entry.getOption();\n";
-		if(!options.isEmpty()){
-			ConfigOption<?> first = options.remove(0);
-			ret+="if (optionName.equals("+first.getName()+")){\n" +
-				""+first.getName()+" = ("+rightType(first.getValueTypeAsJavaString())+") " +
-				" entry.getValue();\n";
-		}
+		ret+="if(false){//empty block \n}";
+		
 		for (ConfigOption<?> option : options) {
-			ret+="}else if (optionName.equals("+option.getName()+")){\n";
+			ret+="else if (optionName.equals(\""+option.getName()+"\")){\n";
 			ret+=""+option.getName()+" = ("+rightType(option.getValueTypeAsJavaString())+") " +
-				" entry.getValue();\n";
+				" entry.getValue();\n}";
 				
 		}
-		ret+="}\n}\n";
+		ret+="\n}\n";
 		return ret;
+	}
+	
+	
+	private static String getAllCommentsForOptionList(List<ConfigOption<?>> options){
+		String ret = "";
+		for (ConfigOption<?> option : options) {
+			ret+="* "+option.getName()+": "+option.getDescription()+"\n";
+		}
+		
+		return fillJavaDocComment(ret);
+	}
+	
+	private  String makeGetInstanceForSubclass(String className, String componentType, 
+			 String comments){
+		Map<String, String> parametersWithType = new LinkedHashMap<String,String>();
+		Map<String, String> parametersNoType = new LinkedHashMap<String,String>();
+		String applyConf = "";
+		parametersWithType.put("ComponentManager cm", "cm");
+		parametersNoType.put(className+".class", className+".class");
+		for (String s : additionalMandatoryVars.keySet()) {
+			parametersWithType.put(s, additionalMandatoryVars.get(s));
+			parametersNoType.put(s,  additionalMandatoryVars.get(s));
+		}
+		for (String s : mandatoryVars.keySet()) {
+			parametersWithType.put(s, mandatoryVars.get(s));
+			applyConf += fillApplyConfigEntry("component", mandatoryVars.get(s))+"";
+		}
+		
+		String parWithType = expandCollection(parametersWithType.keySet(), "", ", ", 2);
+		
+		String par = expandCollection(parametersNoType.values(), "", ", ", 2); 
+		
+		//TODO
+		String ret = comments;
+		ret += "public static "+className+" get"+className+" ("+parWithType+" ) {\n";
+		ret +=	className+" component = cm."+componentType+"(" +par+" );\n";
+		ret += applyConf;
+	
+		ret+="return component;\n}\n";
+		return ret;
+	}
+	
+	private String makeSuperConfiguratorMethods(
+			String className, String componentType, String comments){
+		
+		Map<String, String> parametersWithType = new LinkedHashMap<String,String>();
+		Map<String, String> parametersNoType = new LinkedHashMap<String,String>();
+		String applyConf = "";
+		parametersWithType.put("ComponentManager cm", "cm");
+		parametersNoType.put(className+".class", className+".class");
+		for (String s : additionalMandatoryVars.keySet()) {
+			parametersWithType.put(s, additionalMandatoryVars.get(s));
+			parametersNoType.put(s,  additionalMandatoryVars.get(s));
+		}
+		for (String s : mandatoryVars.keySet()) {
+			parametersWithType.put(s, mandatoryVars.get(s));
+			applyConf += fillApplyConfigEntry("component", mandatoryVars.get(s))+"";
+		}
+		
+		String parWithType = expandCollection(parametersWithType.keySet(), "", ", ", 2);
+		
+		String par = expandCollection(parametersWithType.values(), "", ", ", 2); 
+		
+		String ret = comments;
+		ret += "public static "+className+" get"+className+" ("+parWithType+" ) {\n" +
+		"return "+ className+CONFIGURATOR+".get"+className+"("+par+");\n}\n";
+		return ret;
+	}
+	
+	public static void makeConfiguratorSuperClass(){
+		String ret=
+			fillClassTemplate(
+				"org.dllearner.core.configuration", 
+				expandCollection(configuratorImports, "import ", ";\n",0), 
+				CONFIGURATOR, 
+				"",
+				expandCollection(configuratorMethods, "", "\n", 0)
+				);
+		
+		
+		Files.createFile(new File(TARGET_DIR + "/" + CONFIGURATOR + ".java"), ret);
+	}
+	
+
+	
+	private static String fillApplyConfigEntry(String className, String optionName){
+		return "cm.applyConfigEntry("+className+", \""+optionName+"\", "+optionName+");\n";
+	}
+	
+	private static String fillConstructorTemplate(String className){
+		return "public "+className+CONFIGURATOR+" ("+className+" "+className+"){\n" +
+				"this."+className+" = "+className+";\n" +
+				"}\n";   
+	}
+	
+
+	private static String fillVariableDefTemplate(String optionName, String type, String defaultValue) {
+		return "private " + type + " "
+				+ optionName + " = " + defaultValue
+				+ ";\n";
+
+	}
+	
+	private static String fillJavaDocComment(String lines){
+		return "/**\n"+lines+"**/\n";
+	}
+
+	
+	
+	private static String fillGetterTemplate( String comment, String optionName, String type) {
+		String ret = fillJavaDocComment (optionName+" : "+comment);
+			ret+= "public "+type+" get" + capitalize(optionName) + " ( ) {\n";
+			ret+=		"return this." + optionName+";\n";
+			ret+=		"}\n";
+			return ret;
+	}
+	private static String fillSetterTemplate(String className, String comment, String optionName, String type ){
+		String ret = fillJavaDocComment (optionName+" : "+comment);
+		ret += "public void set" + capitalize(optionName);
+		ret += " ( ComponentManager cm, " + type +" "+ optionName+") {\n";
+		ret += fillApplyConfigEntry(className, optionName);
+		ret += "}\n" ;
+		return ret;
+	}
+	
+	
+	
+	private static String fillClassTemplate(String Package, String imports, String className, String Extends, String body){
+		String ret = HEADER +"\n";
+		ret += "package "+Package+";\n";
+		ret += imports+"\n";
+		ret += fillJavaDocComment("* automatically generated, do not edit manually\n");
+		ret += "public class "+className+" "+((Extends.length()>0)?"extends "+Extends:"")+" {\n\n";
+		ret += body+"\n";
+		ret +="}\n";
+		return ret;
+		
+	}
+	
+	
+	
+	private static String expandCollection (Collection<String> col, String before, String after, int removeChars){
+			if(col.isEmpty())return "";
+			String ret ="";
+			for (String string : col) {
+				ret+= before+string+after;
+			}
+			
+			if(removeChars==0){
+				return ret;
+			}else {
+				return ret.substring(0, ret.length()-removeChars);
+			}
+		}
+		
+	
+	
+	private static String capitalize(String s){
+		String tmp = s.substring(0, 1);
+		return tmp.toUpperCase() + s.substring(1);
 	}
 	
 	public static String rightType(String type){
@@ -194,112 +415,6 @@ public class ConfigJavaGenerator {
 		
 	}
 	
-	private static String getMandatoryFunctionComment(List<ConfigOption<?>> options){
-		String ret = "/**\n";
-		for (ConfigOption<?> option : options) {
-			ret+=option.getDescription()+"\n";
-		}
-		ret+="**/\n";
-		return ret;
-	}
-	
-	private static String getMandatoryFunctions(String className, String componentType, List<ConfigOption<?>> options){
-		String mandParametersWithType = getMandatoryParameters(options, true);
-		//String mandParametersNoType = getMandatoryParameters(options, false);
-		String mandFunctionBody = mandatoryFunctionBody(options);
-		String ret= getMandatoryFunctionComment(options); 
-			ret += "public void setMandatoryOptions ("+mandParametersWithType+" ) {\n" +
-				    ""+mandFunctionBody+"}\n";
-		
-		ret+=  getMandatoryFunctionComment(options);
-		ret+= "public static "+className+" get"+className+" (ComponentManager cm, "+mandParametersWithType+" ) {\n" +
-		className+" component = cm."+componentType+"("+className+".class);\n";
-		for (ConfigOption<?> option : options) {
-			ret+="cm.applyConfigEntry(component, \""+option.getName()+"\", "+option.getName()+");\n";
-		}
-		
-		ret+="return component;\n}\n";
-		return ret;
-	}
-	
-	private static String getSuperClassFunction(String className, String componentType, List<ConfigOption<?>> options){
-		String mandParametersWithType = getMandatoryParameters(options, true);
-		String mandParametersNoType = getMandatoryParameters(options, false);
-		//String mandFunctionBody = mandatoryFunctionBody(options);
-		 String ret = getMandatoryFunctionComment(options);
-		 ret += "public static "+className+" get"+className+" (ComponentManager cm, "+mandParametersWithType+" ) {\n" +
-		"return "+ className+CLASSADDITION+".get"+className+"(cm, "+mandParametersNoType+");\n}\n";
-		return ret;
-	}
-	
-	public static String getMandatoryParameters (List<ConfigOption<?>> options, boolean includeType){
-		if(options.isEmpty())return "";
-		String ret = "";
-		String type = "";
-		for (ConfigOption<?> option : options) {
-			type = (includeType)?option.getValueTypeAsJavaString():"";
-			ret += type + " " + option.getName()+", "; 
-		}
-		ret = ret.substring(0,ret.length()-2);
-		return ret;
-	}
-	
-	private static String mandatoryFunctionBody(List<ConfigOption<?>> options){
-		String ret = "";
-		for (ConfigOption<?> option : options) {
-			ret += "this."+option.getName()+" = "+option.getName()+";\n";
-		}
-		return ret;
-	}
-	
-
-	private static String getVarDef(ConfigOption<?> option) {
-		return "private " + option.getValueTypeAsJavaString() + " "
-				+ option.getName() + " = " + option.getDefaultValueInJava()
-				+ ";\n";
-
-	}
-
-	private static String getSetter(ConfigOption<?> option) {
-		String s = option.getName().substring(0, 1);
-		s = s.toUpperCase() + option.getName().substring(1);
-		String comment = "/**\n" +
-				"* "+option.getDescription()+"\n" +
-				"**/\n";
-		
-	return comment + "public void set" + s + " (" + option.getValueTypeAsJavaString()
-				+ " "+option.getName()+") {\n" +
-						"this." + option.getName()+" = "+ option.getName()+
-						";\n" +
-						"}\n\n";
-
-	}
-	
-	private static String getGetter(ConfigOption<?> option) {
-		String s = option.getName().substring(0, 1);
-		s = s.toUpperCase() + option.getName().substring(1);
-		String comment = "/**\n" +
-				"* "+option.getDescription()+"\n" +
-				"* \n" +
-				"**/\n";
-		
-	return comment + "public "+option.getValueTypeAsJavaString()+" get" + s + " ( ) {\n" +
-						"return this." + option.getName()+";\n" +
-						"}\n\n";
-
-	}
-
-	private static String getClassDefinition(String className) {
-		String ret = getClassComment()
-				+ "public class " + className + CLASSADDITION + " extends Configurator {\n" + "\n";
-		return ret;
-	}
-	
-	private static String getClassComment(){
-		return "" + "/**\n"
-		+ "* automatically generated, do not edit manually\n" + "**/\n";
-
-	}
 
 	private static String getHeader() {
 		try {

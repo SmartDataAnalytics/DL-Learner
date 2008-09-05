@@ -46,7 +46,6 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.core.config.ConfigOption.Tags;
-import org.dllearner.core.configuration.OWLFileConfigurator;
 import org.dllearner.core.configuration.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
@@ -85,11 +84,16 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	static final boolean debugUseImprovedTupleAquisitor = debug && false; //switches tupleaquisitor
 	static final boolean debugExitAfterExtraction =  debug && false; //switches sysex und rdf generation
 	
-	private SparqlKnowledgeSourceConfigurator configurator = new SparqlKnowledgeSourceConfigurator();
+	private SparqlKnowledgeSourceConfigurator configurator;
+	
 	public SparqlKnowledgeSourceConfigurator getSparqlKnowledgeSourceConfigurator(){
 		return configurator;
 	}
 	
+/*public SparqlKnowledgeSource (){
+		this.configurator = new SparqlKnowledgeSourceConfigurator(this);
+	}
+*/	
 	private boolean useCache=true;
 	// ConfigOptions
 	public URL url;

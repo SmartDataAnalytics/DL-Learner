@@ -18,31 +18,44 @@
  **/
 
 package org.dllearner.core.configuration;
-
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.configuration.FastInstanceCheckerConfigurator;
 import org.dllearner.core.configuration.OWLFileConfigurator;
 import org.dllearner.core.configuration.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
 * automatically generated, do not edit manually
 **/
-public class Configurator {
+public class Configurator  {
 
 /**
-URL pointing to the OWL file
+* url: URL pointing to the OWL file
 **/
 public static OWLFile getOWLFile (ComponentManager cm, String url ) {
-return OWLFileConfigurator.getOWLFile(cm,  url);
+return OWLFileConfigurator.getOWLFile(cm, url);
 }
 
 /**
-relevant instances e.g. positive and negative examples in a learning problem
+* instances: relevant instances e.g. positive and negative examples in a learning problem
 **/
 public static SparqlKnowledgeSource getSparqlKnowledgeSource (ComponentManager cm, Set<String> instances ) {
-return SparqlKnowledgeSourceConfigurator.getSparqlKnowledgeSource(cm,  instances);
+return SparqlKnowledgeSourceConfigurator.getSparqlKnowledgeSource(cm, instances);
 }
+
+/**
+**/
+public static FastInstanceChecker getFastInstanceChecker (ComponentManager cm, KnowledgeSource knowledgeSource ) {
+return FastInstanceCheckerConfigurator.getFastInstanceChecker(cm, knowledgeSource);
+}
+
 
 }
