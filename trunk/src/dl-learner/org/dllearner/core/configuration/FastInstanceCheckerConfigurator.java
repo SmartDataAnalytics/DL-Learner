@@ -19,28 +19,27 @@
 
 package org.dllearner.core.configuration;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.configuration.Configurator;
-import org.dllearner.kb.OWLFile;
+import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
 * automatically generated, do not edit manually
 **/
-public class OWLFileConfigurator extends Configurator {
+public class FastInstanceCheckerConfigurator extends Configurator {
 
-OWLFile OWLFile;
-private String url = null;
+FastInstanceChecker FastInstanceChecker;
+private String reasonerType = "pellet";
 
-public OWLFileConfigurator (OWLFile OWLFile){
-this.OWLFile = OWLFile;
+public FastInstanceCheckerConfigurator (FastInstanceChecker FastInstanceChecker){
+this.FastInstanceChecker = FastInstanceChecker;
 }
 
 /**
-* url: URL pointing to the OWL file
 **/
-public static OWLFile getOWLFile (ComponentManager cm, String url ) {
-OWLFile component = cm.knowledgeSource(OWLFile.class );
-cm.applyConfigEntry(component, "url", url);
+public static FastInstanceChecker getFastInstanceChecker (ComponentManager cm, KnowledgeSource knowledgeSource ) {
+FastInstanceChecker component = cm.reasoner(FastInstanceChecker.class, knowledgeSource );
 return component;
 }
 
@@ -48,21 +47,21 @@ return component;
 public <T> void applyConfigEntry(ConfigEntry<T> entry){
 String optionName = entry.getOptionName();
 if(false){//empty block 
-}else if (optionName.equals("url")){
-url = (String)  entry.getValue();
+}else if (optionName.equals("reasonerType")){
+reasonerType = (String)  entry.getValue();
 }
 }
 
 /**
-url : URL pointing to the OWL file**/
-public String getUrl ( ) {
-return this.url;
+reasonerType : FaCT++ or Pellet to dematerialize**/
+public String getReasonerType ( ) {
+return this.reasonerType;
 }
 
 /**
-url : URL pointing to the OWL file**/
-public void setUrl ( ComponentManager cm, String url) {
-cm.applyConfigEntry(OWLFile, "url", url);
+reasonerType : FaCT++ or Pellet to dematerialize**/
+public void setReasonerType ( ComponentManager cm, String reasonerType) {
+cm.applyConfigEntry(FastInstanceChecker, "reasonerType", reasonerType);
 }
 
 

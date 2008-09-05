@@ -38,6 +38,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.configuration.Configurator;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -53,7 +54,7 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  * 
  */
-public class Sample {
+public class NewSample {
 
 	private static Logger logger = Logger.getRootLogger();
 	private static DecimalFormat df = new DecimalFormat();
@@ -119,8 +120,7 @@ public class Sample {
 		//KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
 		
 		String fileURL = new File(owlFile).toURI().toString();
-		OWLFile ks = cm.knowledgeSource(OWLFile.class);
-		cm.applyConfigEntry(ks, "url", fileURL);
+		OWLFile ks = Configurator.getOWLFile(cm, fileURL);
 		
 		
 		// reasoner

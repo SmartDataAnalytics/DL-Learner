@@ -156,5 +156,30 @@ public class Files {
 		    	Files.deleteFile(new File(dir+File.separator+files[i]));
 		    }     
 	}
+	
+	public static void backupDirectory(String dir){
+		File f = new File(dir);
+		String backupDir = "tmp/"+System.currentTimeMillis();
+		mkdir("tmp");
+		mkdir(backupDir);
+		
+		if(debug){
+			System.out.println(dir);
+			System.exit(0);
+		}
+		
+	    String[] files = f.list();
+	   try{
+	    for (int i = 0; i < files.length; i++) {
+	    	File target = new File(dir+File.separator+files[i]);
+	    	if(!target.isDirectory()){
+	    		String s = readFile(target);
+	    		createFile(new File(backupDir+File.separator+files[i]), s);
+	    	}
+	    }   
+	   }catch (Exception e) {
+		e.printStackTrace();
+	}
+	}
 
 }

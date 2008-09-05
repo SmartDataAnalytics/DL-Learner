@@ -45,7 +45,7 @@ import org.dllearner.reasoning.OWLAPIDIGConverter;
 public class OWLFile extends KnowledgeSource {
 
 	private URL url;
-	private OWLFileConfigurator configurator = new OWLFileConfigurator();
+	private OWLFileConfigurator configurator ;
 	public OWLFileConfigurator getOWLFileConfigurator(){
 		return configurator;
 	}
@@ -54,6 +54,9 @@ public class OWLFile extends KnowledgeSource {
 		return "OWL file";
 	}
 	
+	public OWLFile(){
+		configurator = new OWLFileConfigurator(this);
+	}
 	
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
@@ -67,19 +70,24 @@ public class OWLFile extends KnowledgeSource {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		configurator.applyConfigEntry(entry);
+		
+		//postprocessing
 		if (entry.getOptionName().equals("url")) {
-			String s = (String) entry.getValue();
 			try {
-				url = new URL(s);
-				// File f = new File(url.toURI());
-				//if(!f.canRead())
-				//	throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue());
+				url = new URL(configurator.getUrl());
 			} catch (MalformedURLException e) {
-				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),"malformed URL " + s);
-			} //catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			//}
+				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),"malformed URL " + configurator.getUrl());
+			} 
+			
+//			 File f = new File(url.toURI());
+//if(!f.canRead())
+//	throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue());
+//			String s = (String) entry.getValue();
+//catch (URISyntaxException e) {
+//e.printStackTrace();
+//}
+
 		}
 	}
 
