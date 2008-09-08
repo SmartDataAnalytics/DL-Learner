@@ -20,7 +20,9 @@ package org.dllearner.scripts;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -33,6 +35,7 @@ import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
@@ -119,9 +122,10 @@ public class NewSample {
 		String fileURL = new File(owlFile).toURI().toString();
 		OWLFile ks = ComponentFactory.getOWLFile( fileURL);
 		
-		
+		Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+		tmp.add(ks);
 		// reasoner
-		FastInstanceChecker f = ComponentFactory.getFastInstanceChecker( ks);
+		FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
 		ReasoningService rs = cm.reasoningService(f);
 		
 

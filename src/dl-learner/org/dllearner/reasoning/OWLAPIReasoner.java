@@ -103,7 +103,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 //	private static Logger logger = Logger
 //	.getLogger(OWLAPIReasoner.class);	
 	
-	private String reasonerType = "pellet";
+	//private String reasonerType = "pellet";
 	private OWLAPIReasonerConfigurator configurator;
 	public OWLAPIReasonerConfigurator getConfigurator(){
 		return configurator;
@@ -151,7 +151,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet, which means \"pellet\" or \"fact\"", "pellet");
+		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet, which means \"pellet\" or \"fact\"", "pellet", false, true);
 		type.setAllowedValues(new String[] {"fact", "pellet"});
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
@@ -164,9 +164,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if(name.equals("reasonerType"))
-			reasonerType = (String) entry.getValue();
+		
 	}	
 	
 	@Override
@@ -269,7 +267,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 		
 		// create actual reasoner
-		if(reasonerType.equals("fact")) {
+		if(configurator.getReasonerType().equals("fact")) {
 			try {
 				reasoner = new uk.ac.manchester.cs.factplusplus.owlapi.Reasoner(manager);
 			} catch (Exception e) {
@@ -388,7 +386,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @see org.dllearner.core.Reasoner#getReasonerType()
 	 */
 	public ReasonerType getReasonerType() {
-		if(reasonerType.equals("FaCT++"))
+		if(configurator.getReasonerType().equals("fact"))
 			return ReasonerType.FACT;
 		else
 			return ReasonerType.PELLET;
@@ -948,7 +946,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	public void setReasonerType(String type){
-		reasonerType=type;
+		configurator.setReasonerType(type);
 	}
 
 	@Override

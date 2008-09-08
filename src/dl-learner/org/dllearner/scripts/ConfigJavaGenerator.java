@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -148,7 +149,8 @@ public final class ConfigJavaGenerator {
 			ConfigJavaGenerator c = new ConfigJavaGenerator(component,
 					"reasoner");
 			c.imports.add("org.dllearner.core.KnowledgeSource");
-			c.additionalMandatoryVars.put("KnowledgeSource knowledgeSource",
+			c.imports.add(Set.class.getCanonicalName());
+			c.additionalMandatoryVars.put("Set<KnowledgeSource> knowledgeSource",
 					"knowledgeSource");
 			c.makeConfigurator();
 
@@ -338,8 +340,12 @@ public final class ConfigJavaGenerator {
 		ret += applyConf;
 
 		ret += "return component;\n}\n";
+				
 		return ret;
 	}
+	
+	
+
 
 	private String makeComponentFactoryMethods(String comments) {
 

@@ -74,16 +74,19 @@ import com.jamonapi.MonitorFactory;
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	// RBC
-	static final boolean debug = false;
+	private static final boolean debug = false;
 
 	// tupleaquisitor
-	static final boolean debugUseImprovedTupleAquisitor = debug && false; // switches
+	private static final boolean debugUseImprovedTupleAquisitor = debug && false; // switches
 	//	 sysex 
-	static final boolean debugExitAfterExtraction = debug && false; // switches
+	private static final boolean debugExitAfterExtraction = debug && false; // switches
 
 
 	private SparqlKnowledgeSourceConfigurator configurator;
 
+	/**
+	 * @return the configurator for this Knowledgesource
+	 */
 	public SparqlKnowledgeSourceConfigurator getConfigurator() {
 		return configurator;
 	}
@@ -93,7 +96,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	}
 
 	// ConfigOptions
-	public URL url;
+	private URL url;
 
 	private String format = "N-TRIPLES";
 
@@ -101,7 +104,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	private URL dumpFile;
 
-	SparqlEndpoint endpoint = null;
+	private SparqlEndpoint endpoint = null;
 
 	// received ontology as array, used if format=Array(an element of the
 	// array consists of the subject, predicate and object separated by '<'
@@ -112,6 +115,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	// mainly used for statistic
 	private int nrOfExtractedTriples = 0;
+
 
 	public static String getName() {
 		return "SPARQL Endpoint";
@@ -193,9 +197,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		options.add(CommonConfigOptions.getVerbosityOption());
 
 		options.add(new StringSetConfigOption("defaultGraphURIs",
-				"a list of all default Graph URIs", new TreeSet<String> (), false, true));
+				"a list of all default Graph URIs", new TreeSet<String>(), false, true));
 		options.add(new StringSetConfigOption("namedGraphURIs",
-				"a list of all named Graph URIs", new TreeSet<String> (), false, true));
+				"a list of all named Graph URIs", new TreeSet<String>(), false, true));
 		return options;
 	}
 
@@ -203,7 +207,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
 	@Override
-	@SuppressWarnings( { "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public <T> void applyConfigEntry(ConfigEntry<T> entry)
 			throws InvalidConfigOptionValueException {
 		//TODO remove this function
@@ -311,11 +315,12 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		if (format.equals("N-TRIPLES"))
+		if (format.equals("N-TRIPLES")){
 			return JenaOWLDIGConverter.getTellsString(dumpFile,
 					OntologyFormat.N_TRIPLES, kbURI);
-		else
+		}else {
 			return DIGConverter.getDIGString(kb, kbURI).toString();
+		}
 	}
 
 	/*
@@ -332,8 +337,16 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		throw new OntologyFormatUnsupportedException("export", format);
 	}
 
+	/**
+	 * @return the URL of the used sparql endpoint
+	 */
 	public URL getURL() {
-		return url;
+		if(url == null && endpoint!=null){
+			return endpoint.getURL();
+		}
+		else{
+			return url;
+		}
 	}
 
 	public String[] getOntArray() {
@@ -366,11 +379,12 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 		// get Options for endpoints
 		
-		if (configurator.getUseCache())
+		if (configurator.getUseCache()){
 			return new SPARQLTasks(new Cache(configurator.getCacheDir()),
 					getSparqlEndpoint());
-		else
+		}else {
 			return new SPARQLTasks(getSparqlEndpoint());
+		}
 	}
 
 	public SparqlQueryMaker getSparqlQueryMaker() {

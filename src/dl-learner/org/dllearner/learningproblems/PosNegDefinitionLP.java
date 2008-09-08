@@ -46,8 +46,7 @@ import org.dllearner.utilities.Helper;
  */
 public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 
-	 
-	
+		
 	public PosNegDefinitionLP(ReasoningService reasoningService) {
 		super(reasoningService);
 	}

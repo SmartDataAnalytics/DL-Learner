@@ -77,7 +77,7 @@ return SparqlKnowledgeSourceConfigurator.getSparqlKnowledgeSource(url, instances
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization DIGReasoner
 **/
-public static DIGReasoner getDIGReasoner(KnowledgeSource knowledgeSource)  {
+public static DIGReasoner getDIGReasoner(Set<KnowledgeSource> knowledgeSource)  {
 return DIGReasonerConfigurator.getDIGReasoner(knowledgeSource);
 }
 
@@ -85,7 +85,7 @@ return DIGReasonerConfigurator.getDIGReasoner(knowledgeSource);
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization FastInstanceChecker
 **/
-public static FastInstanceChecker getFastInstanceChecker(KnowledgeSource knowledgeSource)  {
+public static FastInstanceChecker getFastInstanceChecker(Set<KnowledgeSource> knowledgeSource)  {
 return FastInstanceCheckerConfigurator.getFastInstanceChecker(knowledgeSource);
 }
 
@@ -93,7 +93,7 @@ return FastInstanceCheckerConfigurator.getFastInstanceChecker(knowledgeSource);
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization FastRetrievalReasoner
 **/
-public static FastRetrievalReasoner getFastRetrievalReasoner(KnowledgeSource knowledgeSource)  {
+public static FastRetrievalReasoner getFastRetrievalReasoner(Set<KnowledgeSource> knowledgeSource)  {
 return FastRetrievalReasonerConfigurator.getFastRetrievalReasoner(knowledgeSource);
 }
 
@@ -101,7 +101,7 @@ return FastRetrievalReasonerConfigurator.getFastRetrievalReasoner(knowledgeSourc
 * @param knowledgeSource see KnowledgeSource
 * @return a component ready for initialization OWLAPIReasoner
 **/
-public static OWLAPIReasoner getOWLAPIReasoner(KnowledgeSource knowledgeSource)  {
+public static OWLAPIReasoner getOWLAPIReasoner(Set<KnowledgeSource> knowledgeSource)  {
 return OWLAPIReasonerConfigurator.getOWLAPIReasoner(knowledgeSource);
 }
 

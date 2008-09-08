@@ -39,6 +39,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.FastInstanceCheckerConfigurator;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DataRange;
@@ -90,8 +91,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 	private boolean defaultNegation = true;
 	
-	private String reasonerType = "pellet";
-	
 	private FastInstanceCheckerConfigurator configurator;
 	public FastInstanceCheckerConfigurator getConfigurator (){
 		return configurator;
@@ -128,12 +127,13 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 	public FastInstanceChecker(Set<KnowledgeSource> sources) {
 		this.sources = sources;
+		this.configurator = new FastInstanceCheckerConfigurator(this);
 	}
 
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet to dematerialize", "pellet");
+		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet to dematerialize", "pellet", false, true);
 		type.setAllowedValues(new String[] {"fact", "pellet"});
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
@@ -148,9 +148,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if(name.equals("reasonerType"))
-			reasonerType = (String) entry.getValue();
 	}
 
 	public static String getName() {
@@ -165,8 +162,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
-		rc = new OWLAPIReasoner(sources);
-		rc.setReasonerType(reasonerType);
+		//rc = new OWLAPIReasoner(sources);
+		rc = ComponentFactory.getOWLAPIReasoner(sources);
+		rc.getConfigurator().setReasonerType(configurator.getReasonerType());
 		rc.init();
 
 		try {
@@ -629,7 +627,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}	
 	
 	public void setReasonerType(String type){
-		reasonerType=type;
+		configurator.setReasonerType(type);
 	}
 
 
