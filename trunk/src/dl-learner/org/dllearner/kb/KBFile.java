@@ -33,7 +33,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.configuration.KBFileConfigurator;
+import org.dllearner.core.configurators.KBFileConfigurator;
 import org.dllearner.core.owl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -102,7 +102,7 @@ public class KBFile extends KnowledgeSource {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		configurator.applyConfigEntry(entry);
+		//configurator.applyConfigEntry(entry);
 		
 		String option = entry.getOptionName();
 		if (option.equals("filename")) {

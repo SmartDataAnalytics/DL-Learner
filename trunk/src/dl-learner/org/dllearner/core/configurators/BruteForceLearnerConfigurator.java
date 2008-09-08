@@ -17,26 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package org.dllearner.core.configuration;
+package org.dllearner.core.configurators;
 
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.configuration.Configurator;
 
 /**
 * automatically generated, do not edit manually
 **/
-@SuppressWarnings("unused")
-public class BruteForceLearnerConfigurator extends Configurator {
+public class BruteForceLearnerConfigurator  {
 
 private boolean reinitNecessary = false;
 private BruteForceLearner BruteForceLearner;
-private int maxLength = 7;
-private String returnType = null;
 
 public BruteForceLearnerConfigurator (BruteForceLearner BruteForceLearner){
 this.BruteForceLearner = BruteForceLearner;
@@ -44,20 +39,9 @@ this.BruteForceLearner = BruteForceLearner;
 
 /**
 **/
-public static BruteForceLearner getBruteForceLearner (ComponentManager cm, LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException{
-BruteForceLearner component = cm.learningAlgorithm(BruteForceLearner.class, learningProblem, reasoningService );
+public static BruteForceLearner getBruteForceLearner (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException{
+BruteForceLearner component = ComponentManager.getInstance().learningAlgorithm(BruteForceLearner.class, learningProblem, reasoningService );
 return component;
-}
-
-@SuppressWarnings({ "unchecked" })
-public <T> void applyConfigEntry(ConfigEntry<T> entry){
-String optionName = entry.getOptionName();
-if(false){//empty block 
-}else if (optionName.equals("maxLength")){
-maxLength = (Integer)  entry.getValue();
-}else if (optionName.equals("returnType")){
-returnType = (String)  entry.getValue();
-}
 }
 
 /**
@@ -66,7 +50,7 @@ returnType = (String)  entry.getValue();
 * default value: 7
 **/
 public int getMaxLength ( ) {
-return this.maxLength;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(BruteForceLearner,  "maxLength") ;
 }
 /**
 * option name: returnType
@@ -74,7 +58,7 @@ return this.maxLength;
 * default value: null
 **/
 public String getReturnType ( ) {
-return this.returnType;
+return (String) ComponentManager.getInstance().getConfigOptionValue(BruteForceLearner,  "returnType") ;
 }
 
 /**
@@ -82,16 +66,18 @@ return this.returnType;
 * maximum length of generated concepts
 * default value: 7
 **/
-public void setMaxLength ( ComponentManager cm, int maxLength) {
-cm.applyConfigEntry(BruteForceLearner, "maxLength", maxLength);
+public void setMaxLength ( int maxLength) {
+ComponentManager.getInstance().applyConfigEntry(BruteForceLearner, "maxLength", maxLength);
+reinitNecessary = true;
 }
 /**
 * option name: returnType
 * Specifies the type which the solution has to belong to (if already) known. This means we inform the learning algorithm that the solution is a subclass of this type.
 * default value: null
 **/
-public void setReturnType ( ComponentManager cm, String returnType) {
-cm.applyConfigEntry(BruteForceLearner, "returnType", returnType);
+public void setReturnType ( String returnType) {
+ComponentManager.getInstance().applyConfigEntry(BruteForceLearner, "returnType", returnType);
+reinitNecessary = true;
 }
 
 public boolean isReinitNecessary(){
