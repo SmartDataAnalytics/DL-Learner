@@ -45,7 +45,6 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
-import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.configuration.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
@@ -164,9 +163,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// Endpoint"));
 		options
 				.add(new StringSetConfigOption("instances",
-						"relevant instances e.g. positive and negative examples in a learning problem",null,Tags.MANDATORY));
+						"relevant instances e.g. positive and negative examples in a learning problem",null,true,false));
 		options.add(new IntegerConfigOption("recursionDepth",
-				"recursion depth of KB fragment selection", 1, Tags.NORMAL));
+				"recursion depth of KB fragment selection", 1));
 		options.add(new StringConfigOption("predefinedFilter",
 				"the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST"));
 		options.add(new StringConfigOption("predefinedEndpoint",
@@ -192,17 +191,17 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				"Specifies whether the extracted NTriples are converted to RDF and deleted.",
 				true));
 		options.add(new BooleanConfigOption("useLits",
-				"use Literals in SPARQL query", true, Tags.NORMAL));
+				"use Literals in SPARQL query", true));
 		options
 				.add(new BooleanConfigOption(
 						"getAllSuperClasses",
 						"If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.",
-						true, Tags.NORMAL));
+						true));
 
 		//options.add(new BooleanConfigOption("learnDomain",
 			//	"learns the Domain for a Role"));
 		options.add(new BooleanConfigOption("useCache",
-				"If true a Cache is used",true, Tags.NORMAL));
+				"If true a Cache is used",true));
 		//options.add(new BooleanConfigOption("learnRange",
 			//	"learns the Range for a Role"));
 		//options.add(new StringConfigOption("role",

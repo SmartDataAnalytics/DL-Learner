@@ -44,7 +44,6 @@ import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.configuration.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
@@ -204,10 +203,10 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
 		options.add(CommonConfigOptions.getLogLevel());
-		options.add(new BooleanConfigOption("usePropernessChecks", "specifies whether to check for equivalence (i.e. discard equivalent refinements)",usePropernessChecksDefault,Tags.NORMAL));
+		options.add(new BooleanConfigOption("usePropernessChecks", "specifies whether to check for equivalence (i.e. discard equivalent refinements)",usePropernessChecksDefault));
 		options.add(new IntegerConfigOption("maxPosOnlyExpansion", "specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is" +
-				" considered as solution candidate",maxPosOnlyExpansionDefault,Tags.NORMAL));
-		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples",noisePercentageDefault,Tags.NORMAL);
+				" considered as solution candidate",maxPosOnlyExpansionDefault));
+		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples",noisePercentageDefault);
 		noisePercentage.setLowerLimit(0);
 		noisePercentage.setUpperLimit(100);
 		options.add(noisePercentage);

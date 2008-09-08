@@ -32,13 +32,6 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 	private int lowerLimit = Integer.MIN_VALUE;
 	private int upperLimit = Integer.MAX_VALUE;
 
-	
-
-	public IntegerConfigOption(String name, String description, Integer defaultValue, Tags... tags) {
-		super(name, description, defaultValue, tags);
-		
-	}
-
 	public IntegerConfigOption(String name, String description, Integer defaultValue) {
 		super(name, description, defaultValue);
 		

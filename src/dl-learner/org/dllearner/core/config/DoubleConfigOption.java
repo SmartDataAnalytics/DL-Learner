@@ -32,14 +32,6 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	private double lowerLimit = Double.MIN_VALUE;
 	private double upperLimit = Double.MAX_VALUE;
 
-	
-	
-	
-	public DoubleConfigOption(String name, String description, Double defaultValue, Tags... tags) {
-		super(name, description, defaultValue, tags);
-		
-	}
-
 	public DoubleConfigOption(String name, String description, Double defaultValue) {
 		super(name, description, defaultValue);
 		

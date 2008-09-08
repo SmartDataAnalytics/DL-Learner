@@ -33,7 +33,6 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.configuration.OWLFileConfigurator;
 import org.dllearner.core.owl.KB;
 import org.dllearner.reasoning.OWLAPIDIGConverter;
@@ -61,7 +60,7 @@ public class OWLFile extends KnowledgeSource {
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("url", "URL pointing to the OWL file", null, Tags.MANDATORY ));
+		options.add(new StringConfigOption("url", "URL pointing to the OWL file", null, true, false));
 		return options;
 	}
 

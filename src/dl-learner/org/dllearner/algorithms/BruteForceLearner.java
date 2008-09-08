@@ -36,7 +36,6 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -92,7 +91,7 @@ public class BruteForceLearner extends LearningAlgorithm {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new IntegerConfigOption("maxLength", "maximum length of generated concepts", 7, Tags.NORMAL));
+		options.add(new IntegerConfigOption("maxLength", "maximum length of generated concepts", 7));
 		options.add(CommonConfigOptions.getReturnType());
 		return options;
 	}

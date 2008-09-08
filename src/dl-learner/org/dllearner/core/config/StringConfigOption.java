@@ -34,23 +34,18 @@ public class StringConfigOption extends ConfigOption<String> {
 
 	private Set<String> allowedValues = new TreeSet<String>();
 
-	
-
-	
-
-	public StringConfigOption(String name, String description, String defaultValue, Tags... tags) {
-		super(name, description, defaultValue, tags);
+	public StringConfigOption(String name, String description) {
+		super(name, description);
 		
-	}
-
+	}	
+	
 	public StringConfigOption(String name, String description, String defaultValue) {
 		super(name, description, defaultValue);
 		
 	}
 
-	public StringConfigOption(String name, String description) {
-		super(name, description);
-		
+	public StringConfigOption(String name, String description, String defaultValue, boolean mandatory, boolean requiresInit) {
+		super(name, description, defaultValue, mandatory, requiresInit);	
 	}
 
 	/* (non-Javadoc)

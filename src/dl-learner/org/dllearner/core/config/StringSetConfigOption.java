@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -31,22 +31,19 @@ import java.util.TreeSet;
  */
 public class StringSetConfigOption extends ConfigOption<Set<String>> {
 
-	
-	
-	public StringSetConfigOption(String name, String description, Set<String> defaultValue, Tags... tags) {
-		super(name, description, defaultValue, tags);
+	public StringSetConfigOption(String name, String description) {
+		super(name, description);
 		
-	}
-
+	}	
+	
 	public StringSetConfigOption(String name, String description, Set<String> defaultValue) {
 		super(name, description, defaultValue);
 		
 	}
 
-	public StringSetConfigOption(String name, String description) {
-		super(name, description);
-		
-	}
+	public StringSetConfigOption(String name, String description, Set<String> defaultValue, boolean mandatory, boolean requiresInit) {
+		super(name, description, defaultValue, mandatory, requiresInit);	
+	}	
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.config.ConfigOption#getValueTypeAsJavaString()

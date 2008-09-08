@@ -195,7 +195,7 @@ public class ConfigJavaGenerator {
 			
 			imports.addAll(option.getJavaImports());
 			vars.add(fillVariableDefTemplate(optionName, type, defaultValue));
-			setters.add(fillSetterTemplate(className, comment, optionName, type, option.isReinitNecessary()));
+			setters.add(fillSetterTemplate(className, comment, optionName, type, option.requiresInit()));
 			getters.add(fillGetterTemplate(comment, optionName, type));
 			// System.out.println(option);
 			// componentOptions.get(component)) {

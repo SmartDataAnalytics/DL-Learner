@@ -34,7 +34,6 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.owl.Description;
 
 public class RandomGuesser extends LearningAlgorithm {
@@ -66,8 +65,8 @@ public class RandomGuesser extends LearningAlgorithm {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new IntegerConfigOption("numberOfTrees", "number of randomly generated concepts/trees", 5, Tags.NORMAL));
-		options.add(new IntegerConfigOption("maxDepth", "maximum depth of generated concepts/trees", 5, Tags.NORMAL));
+		options.add(new IntegerConfigOption("numberOfTrees", "number of randomly generated concepts/trees", 5));
+		options.add(new IntegerConfigOption("maxDepth", "maximum depth of generated concepts/trees", 5));
 		return options;
 	}
 	

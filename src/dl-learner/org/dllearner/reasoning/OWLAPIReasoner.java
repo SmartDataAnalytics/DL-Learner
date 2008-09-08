@@ -44,7 +44,6 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.configuration.OWLAPIReasonerConfigurator;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
@@ -152,7 +151,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet, which means \"pellet\" or \"fact\"", "pellet", Tags.NORMAL);
+		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet, which means \"pellet\" or \"fact\"", "pellet");
 		type.setAllowedValues(new String[] {"fact", "pellet"});
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup

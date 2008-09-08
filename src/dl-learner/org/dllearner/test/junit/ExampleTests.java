@@ -82,6 +82,7 @@ public class ExampleTests {
 		ignore.add("./examples/sparql/SKOSTEST_local.conf"); // Out of Memory Error
 		ignore.add("./examples/sparql/scrobble.conf"); // HTTP 502 Proxy Error
 		ignore.add("./examples/family-benchmark/Cousin.conf"); // Out of Memory Error
+		ignore.add("./examples/sparql/SilentBobWorking2.conf"); // Out of Memory Error
 		
 		for (String path : confFiles.keySet()) {
 			for (String file : confFiles.get(path)) {

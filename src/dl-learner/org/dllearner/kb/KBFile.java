@@ -33,7 +33,6 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.configuration.KBFileConfigurator;
 import org.dllearner.core.owl.KB;
 import org.dllearner.parser.KBParser;
@@ -93,8 +92,8 @@ public class KBFile extends KnowledgeSource {
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system",null, Tags.MANDATORY, Tags.REINIT));
-		options.add(new StringConfigOption("url", "URL pointer to the KB file",null, Tags.REINIT));
+		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system",null, true, true));
+		options.add(new StringConfigOption("url", "URL pointer to the KB file",null, false, true));
 		return options;
 	}
 
