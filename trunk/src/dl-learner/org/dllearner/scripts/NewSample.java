@@ -35,7 +35,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.configuration.Configurator;
+import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -117,33 +117,33 @@ public class NewSample {
 		//KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
 		
 		String fileURL = new File(owlFile).toURI().toString();
-		OWLFile ks = Configurator.getOWLFile(cm, fileURL);
+		OWLFile ks = ComponentFactory.getOWLFile( fileURL);
 		
 		
 		// reasoner
-		FastInstanceChecker f = Configurator.getFastInstanceChecker(cm, ks);
+		FastInstanceChecker f = ComponentFactory.getFastInstanceChecker( ks);
 		ReasoningService rs = cm.reasoningService(f);
 		
 
 		// learning problem
-		PosNegDefinitionLP lp = Configurator.getPosNegDefinitionLP(cm, rs, posExamples, negExamples);
+		PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP( rs, posExamples, negExamples);
 		
 
 		// learning algorithm
-		ExampleBasedROLComponent la = Configurator.getExampleBasedROLComponent(cm, lp, rs);
+		ExampleBasedROLComponent la = ComponentFactory.getExampleBasedROLComponent( lp, rs);
 		//OPTIONAL PARAMETERS
-		la.getConfigurator().setUseAllConstructor(cm, false);
-		la.getConfigurator().setUseExistsConstructor(cm, true);
-		la.getConfigurator().setUseCardinalityRestrictions(cm, false);
-		la.getConfigurator().setUseExistsConstructor(cm, true);
-		la.getConfigurator().setUseNegation(cm, false);
-		la.getConfigurator().setWriteSearchTree(cm, false);
-		la.getConfigurator().setSearchTreeFile(cm, "log/searchTree.txt");
-		la.getConfigurator().setReplaceSearchTree(cm, true);
-		la.getConfigurator().setNoisePercentage(cm, 0.0);
+		la.getConfigurator().setUseAllConstructor( false);
+		la.getConfigurator().setUseExistsConstructor(true);
+		la.getConfigurator().setUseCardinalityRestrictions(false);
+		la.getConfigurator().setUseExistsConstructor(true);
+		la.getConfigurator().setUseNegation(false);
+		la.getConfigurator().setWriteSearchTree(false);
+		la.getConfigurator().setSearchTreeFile("log/searchTree.txt");
+		la.getConfigurator().setReplaceSearchTree(true);
+		la.getConfigurator().setNoisePercentage(0.0);
 		SortedSet<String> ignore = new TreeSet<String>();
 		ignore.add("http://example.com/foo#car");
-		la.getConfigurator().setIgnoredConcepts(cm, ignore);
+		la.getConfigurator().setIgnoredConcepts(ignore);
 		
 
 		// all components need to be initialised before they can be used
