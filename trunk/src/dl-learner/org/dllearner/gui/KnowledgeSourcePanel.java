@@ -125,7 +125,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	public void setSource() {
 		config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
 				selectableSources.get(choosenClassIndex)));
-		config.setInitKnowledgeSource(false);
+//		config.setInitKnowledgeSource(false);
 		updateAll();
 	}
 
@@ -137,7 +137,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		if (config.getKnowledgeSource() != null && config.isSetURL()) {
 			try {
 				config.getKnowledgeSource().init();
-				config.setInitKnowledgeSource(true);
+//				config.setInitKnowledgeSource(true);
 				System.out.println("init KnowledgeSource");
 				startGUI.updateTabColors();
 			} catch (ComponentInitException e) {
@@ -179,7 +179,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	 * make init-button red if you have to click
 	 */
 	public void updateInitButtonColor() {
-		if (!config.isInitKnowledgeSource()) {
+		if (!config.needsInitKnowledgeSource()) {
 			initButton.setForeground(Color.RED);
 		} else
 			initButton.setForeground(Color.BLACK);

@@ -223,6 +223,8 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			gridbag.setConstraints(clearButton, constraints);
 			widgetPanel.add(clearButton, constraints);
 		} else {
+			System.out.println("SPECIAL OPTION " + configOption.getName());
+			
 			// SPECIAL LAYOUT
 			// ComboBoxList
 			buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
@@ -238,6 +240,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 				LinkedList<Individual> individuals = new LinkedList<Individual>(
 						individualsSet);
 				for (Individual ind : individuals) {
+					System.out.println(ind.getName());
 					cBL.add(ind.getName());
 				}
 			}

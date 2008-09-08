@@ -21,6 +21,7 @@
 package org.dllearner.gui;
 
 import org.dllearner.core.Component;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblem;
@@ -38,6 +39,7 @@ import org.dllearner.core.config.ConfigOption;
  * Reasoner, ReasoningService, LearningProblem, LearningAlgorithm; also inits of
  * these components.
  * 
+ * @author Jens Lehmann
  * @author Tilo Hielscher
  */
 public class Config {
@@ -51,14 +53,25 @@ public class Config {
 	private LearningProblem lp;
 	private LearningAlgorithm la;
 
-	private boolean[] isInit = new boolean[4];
-	// stores whether a component needs to be initialised ("previous" components have changed configuration values)
-//	private boolean[] needsInit = new boolean[4];
+	// stores which components need to be initialised (either 
+	// because they have not been initialiased or previous components
+	// have changed configuration options, which require initialisation)
+	private boolean[] needsInit = new boolean[4];
 	
 	// learning algorithm status
-	private Boolean threadIsRunning = false;
+	private boolean threadIsRunning = false;
 	private Long algorithmRunStartTime = null;
 	private Long algorithmRunStopTime = null;
+	
+	private StartGUI gui;
+	
+	public Config(StartGUI gui) {
+		this.gui = gui;
+		// none of the components is initialised
+		for(int i=0; i<4; i++) {
+			needsInit[i] = true;
+		}
+	}
 	
 	/**
 	 * Get ComponentManager.
@@ -74,7 +87,7 @@ public class Config {
 	 * 
 	 * @return true, if url was set otherwise false
 	 */
-	public Boolean isSetURL() {
+	public boolean isSetURL() {
 		if (cm.getConfigOptionValue(source, "url") != null
 				|| cm.getConfigOptionValue(source, "filename") != null)
 			return true;
@@ -97,7 +110,7 @@ public class Config {
 	 * @return KnowledgeSource
 	 */
 	public KnowledgeSource getKnowledgeSource() {
-		return this.source;
+		return source;
 	}
 
 	/**
@@ -199,78 +212,82 @@ public class Config {
 		return la;
 	}	
 	
+	public boolean tabNeedsInit(int tabIndex) {
+		return needsInit[tabIndex];
+	}
+	
 	/**
 	 * KnowledgeSource.init has run?
 	 * 
 	 * @return true, if init was made, false if not
 	 */
-	public boolean isInitKnowledgeSource() {
-		return isInit[0];
+	public boolean needsInitKnowledgeSource() {
+		return needsInit[0];
 	}
 
 	/**
 	 * Set true if you run KnowwledgeSource.init. The inits from other tabs
 	 * behind will automatic set to false.
 	 */
-	public void setInitKnowledgeSource(Boolean is) {
-		isInit[0] = is;
-		for (int i = 1; i < 4; i++)
-			isInit[i] = false;
-	}
+//	public void setInitKnowledgeSource(Boolean is) {
+//		needsInit[0] = is;
+//		for (int i = 1; i < 4; i++)
+//			needsInit[i] = false;
+//	}
 
 	/**
 	 * Reasoner.init has run?
 	 * 
 	 * @return true, if init was made, false if not
 	 */
-	public boolean isInitReasoner() {
-		return isInit[1];
+	public boolean needsInitReasoner() {
+		return needsInit[1];
 	}
 
 	/**
 	 * Set true if you run Reasoner.init. The inits from other tabs behind will
 	 * automatic set to false.
 	 */
-	public void setInitReasoner(Boolean is) {
-		isInit[1] = is;
-		for (int i = 2; i < 4; i++)
-			isInit[i] = false;
-	}
+//	public void setInitReasoner(Boolean is) {
+//		needsInit[1] = is;
+//		for (int i = 2; i < 4; i++)
+//			needsInit[i] = false;
+//	}
 
 	/**
 	 * LearningProblem.init has run?
 	 * 
 	 * @return true, if init was made, false if not
 	 */
-	public boolean isInitLearningProblem() {
-		return isInit[2];
+	public boolean needsInitLearningProblem() {
+		return needsInit[2];
 	}
 
 	/**
 	 * Set true if you run LearningProblem.init. The inits from other tabs
 	 * behind will automatic set to false.
 	 */
-	public void setInitLearningProblem(Boolean is) {
-		isInit[2] = is;
-		for (int i = 3; i < 4; i++)
-			isInit[i] = false;
-	}
+//	public void setInitLearningProblem(Boolean is) {
+//		needsInit[2] = is;
+//		for (int i = 3; i < 4; i++)
+//			needsInit[i] = false;
+//	}
 
 	/**
 	 * LearningAlgorithm.init() has run?
 	 * 
 	 * @return true, if init was made, false if not
 	 */
-	public boolean isInitLearningAlgorithm() {
-		return isInit[3];
+	public boolean needsInitLearningAlgorithm() {
+		return needsInit[3];
 	}
 
 	/**
 	 * set true if you run LearningAlgorithm.init
 	 */
-	public void setInitLearningAlgorithm(Boolean is) {
-		isInit[3] = is;
-	}
+//	public void setInitLearningAlgorithm(Boolean is) {
+//		needsInit[3] = is;
+//	}
 
 	/**
 	 * Set true if you start the algorithm.
@@ -333,19 +350,56 @@ public class Config {
 		rs = null;
 		lp = null;
 		la = null;
-		isInit = new boolean[4];
+		needsInit = new boolean[4];
 		threadIsRunning = false;
 		algorithmRunStartTime = null;
 		algorithmRunStopTime = null;
+	}
+	
+	// init the specified component and record which ones where initialised
+	public void init(int tabIndex) {
+		try {
+			if(tabIndex==0) {
+				source.init();
+			} else if(tabIndex==1) {
+				reasoner.init();
+			} else if(tabIndex==2) {
+				lp.init();
+			} else if(tabIndex == 3) {
+				la.init();
+			}
+		} catch (ComponentInitException e) {
+			// TODO display message in status bar
+			e.printStackTrace();
+		}
+		
+		needsInit[tabIndex] = false;
+		System.out.println("component " + tabIndex + " initialised.");
 	}
 	
 	// applies a configuration option - used as delegate method, which invalidates components
 	public <T> void applyConfigEntry(Component component, ConfigEntry<T> entry) {
 		cm.applyConfigEntry(component, entry);
 		// invalidate components
+		if(component instanceof KnowledgeSource) {
+			needsInit[0] = true;
+			needsInit[1] = true;
+			needsInit[2] = true;
+			needsInit[3] = true;
+		} else if(component instanceof ReasonerComponent) {
+			needsInit[1] = true;
+			needsInit[2] = true;
+			needsInit[3] = true;
+		} else if(component instanceof LearningProblem) {
+			needsInit[2] = true;
+			needsInit[3] = true;
+		} else if(component instanceof LearningAlgorithm) {
+			needsInit[3] = true;	
+		}
+		gui.updateTabColors();
 	}
 	
-	// delegate method for getting 
+	// delegate method for getting config option values
 	public <T> T getConfigOptionValue(Component component, ConfigOption<T> option) {
 		return cm.getConfigOptionValue(component, option);
 	}
