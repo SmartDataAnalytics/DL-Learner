@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigEntry;
@@ -57,6 +58,9 @@ import org.semanticweb.owl.util.SimpleURIMapper;
  */
 public class KBFile extends KnowledgeSource {
 
+	private static Logger logger = Logger
+		.getLogger(KBFile.class);
+	
 	// private File file;
 	private URL url;
 	private KB kb;
@@ -102,23 +106,7 @@ public class KBFile extends KnowledgeSource {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		//configurator.applyConfigEntry(entry);
-		
-		String option = entry.getOptionName();
-		if (option.equals("filename")) {
-			// file = new File((String)entry.getValue());
-			try {
-				url = new File((String)entry.getValue()).toURI().toURL();
-			} catch (MalformedURLException e) {
-				throw new InvalidConfigOptionValueException(entry.getOption(),entry.getValue());
-			}
-		} else if(option.equals("url")) {
-			try {
-				url = new URL((String)entry.getValue());
-			} catch (MalformedURLException e) {
-				throw new InvalidConfigOptionValueException(entry.getOption(),entry.getValue());
-			}
-		}
+	
 	}
 
 	/* (non-Javadoc)
@@ -126,14 +114,29 @@ public class KBFile extends KnowledgeSource {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		//URL url = null;
 		try {
-			if(url != null)
+			String filename = configurator.getFilename();
+			String urlString = configurator.getUrl();
+			if(filename!=null){
+				url = new File(filename).toURI().toURL();
+			}else if(urlString!=null){
+				url = new URL(urlString);
+			}
+			
+			if(url != null) {
 				kb = KBParser.parseKBFile(url);
+			}
+			
+		} catch (MalformedURLException e) {
+			logger.error(e.getMessage());
+			//throw new InvalidConfigOptionValueException(entry.getOption(),entry.getValue());
 		} catch (IOException e) {
 			throw new ComponentInitException("KB file " + url + " could not be read.", e);
 		} catch (ParseException e) {
 			throw new ComponentInitException("KB file " + url + " could not be parsed correctly.", e);
 		}
+		
 	}
 	
 	/*

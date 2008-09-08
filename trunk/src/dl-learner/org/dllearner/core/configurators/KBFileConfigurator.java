@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -23,62 +24,74 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.KBFile;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class KBFileConfigurator  {
 
 private boolean reinitNecessary = false;
-private KBFile KBFile;
+@SuppressWarnings("unused")
 
-public KBFileConfigurator (KBFile KBFile){
-this.KBFile = KBFile;
+private KBFile kBFile;
+
+/**
+* @param kBFile see KBFile
+**/
+public KBFileConfigurator(KBFile kBFile){
+this.kBFile = kBFile;
 }
 
 /**
 * @param filename pointer to the KB file on local file system
+* @return KBFile
 **/
-public static KBFile getKBFile (String filename ) {
-KBFile component = ComponentManager.getInstance().knowledgeSource(KBFile.class );
+public static KBFile getKBFile(String filename) {
+KBFile component = ComponentManager.getInstance().knowledgeSource(KBFile.class);
 ComponentManager.getInstance().applyConfigEntry(component, "filename", filename);
 return component;
 }
 
 /**
-* option name: filename
-* pointer to the KB file on local file system
+* filename pointer to the KB file on local file system.
+* mandatory: true| reinit necessary: true
 * default value: null
+* @return String 
 **/
-public String getFilename ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(KBFile,  "filename") ;
+public String getFilename() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(kBFile,  "filename") ;
 }
 /**
-* option name: url
-* URL pointer to the KB file
+* url URL pointer to the KB file.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return String 
 **/
-public String getUrl ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(KBFile,  "url") ;
+public String getUrl() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(kBFile,  "url") ;
 }
 
 /**
-* option name: filename
-* pointer to the KB file on local file system
+* @param filename pointer to the KB file on local file system.
+* mandatory: true| reinit necessary: true
 * default value: null
 **/
-public void setFilename ( String filename) {
-ComponentManager.getInstance().applyConfigEntry(KBFile, "filename", filename);
+public void setFilename(String filename) {
+ComponentManager.getInstance().applyConfigEntry(kBFile, "filename", filename);
 reinitNecessary = true;
 }
 /**
-* option name: url
-* URL pointer to the KB file
+* @param url URL pointer to the KB file.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setUrl ( String url) {
-ComponentManager.getInstance().applyConfigEntry(KBFile, "url", url);
+public void setUrl(String url) {
+ComponentManager.getInstance().applyConfigEntry(kBFile, "url", url);
 reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

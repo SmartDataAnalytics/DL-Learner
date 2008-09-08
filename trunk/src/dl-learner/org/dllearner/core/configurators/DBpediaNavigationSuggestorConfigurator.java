@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -27,472 +28,508 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class DBpediaNavigationSuggestorConfigurator  {
 
 private boolean reinitNecessary = false;
-private DBpediaNavigationSuggestor DBpediaNavigationSuggestor;
+@SuppressWarnings("unused")
 
-public DBpediaNavigationSuggestorConfigurator (DBpediaNavigationSuggestor DBpediaNavigationSuggestor){
-this.DBpediaNavigationSuggestor = DBpediaNavigationSuggestor;
+private DBpediaNavigationSuggestor dBpediaNavigationSuggestor;
+
+/**
+* @param dBpediaNavigationSuggestor see DBpediaNavigationSuggestor
+**/
+public DBpediaNavigationSuggestorConfigurator(DBpediaNavigationSuggestor dBpediaNavigationSuggestor){
+this.dBpediaNavigationSuggestor = dBpediaNavigationSuggestor;
 }
 
 /**
+* @return DBpediaNavigationSuggestor
 **/
-public static DBpediaNavigationSuggestor getDBpediaNavigationSuggestor (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException{
-DBpediaNavigationSuggestor component = ComponentManager.getInstance().learningAlgorithm(DBpediaNavigationSuggestor.class, learningProblem, reasoningService );
+public static DBpediaNavigationSuggestor getDBpediaNavigationSuggestor(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
+DBpediaNavigationSuggestor component = ComponentManager.getInstance().learningAlgorithm(DBpediaNavigationSuggestor.class, learningProblem, reasoningService);
 return component;
 }
 
 /**
-* option name: writeSearchTree
-* specifies whether to write a search tree
+* writeSearchTree specifies whether to write a search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getWriteSearchTree ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "writeSearchTree") ;
+public boolean getWriteSearchTree() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "writeSearchTree") ;
 }
 /**
-* option name: searchTreeFile
-* file to use for the search tree
+* searchTreeFile file to use for the search tree.
+* mandatory: false| reinit necessary: true
 * default value: log/searchTree.txt
+* @return String 
 **/
-public String getSearchTreeFile ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "searchTreeFile") ;
+public String getSearchTreeFile() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "searchTreeFile") ;
 }
 /**
-* option name: replaceSearchTree
-* specifies whether to replace the search tree in the log file after each run or append the new search tree
+* replaceSearchTree specifies whether to replace the search tree in the log file after each run or append the new search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getReplaceSearchTree ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "replaceSearchTree") ;
+public boolean getReplaceSearchTree() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "replaceSearchTree") ;
 }
 /**
-* option name: heuristic
-* specifiy the heuristic to use
+* heuristic specifiy the heuristic to use.
+* mandatory: false| reinit necessary: true
 * default value: lexicographic
+* @return String 
 **/
-public String getHeuristic ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "heuristic") ;
+public String getHeuristic() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "heuristic") ;
 }
 /**
-* option name: applyAllFilter
-* usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)
+* applyAllFilter usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D).
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getApplyAllFilter ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "applyAllFilter") ;
+public boolean getApplyAllFilter() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "applyAllFilter") ;
 }
 /**
-* option name: applyExistsFilter
-* usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
+* applyExistsFilter usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D).
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getApplyExistsFilter ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "applyExistsFilter") ;
+public boolean getApplyExistsFilter() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "applyExistsFilter") ;
 }
 /**
-* option name: useTooWeakList
-* try to filter out too weak concepts without sending them to the reasoner
+* useTooWeakList try to filter out too weak concepts without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseTooWeakList ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "useTooWeakList") ;
+public boolean getUseTooWeakList() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "useTooWeakList") ;
 }
 /**
-* option name: useOverlyGeneralList
-* try to find overly general concept without sending them to the reasoner
+* useOverlyGeneralList try to find overly general concept without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseOverlyGeneralList ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "useOverlyGeneralList") ;
+public boolean getUseOverlyGeneralList() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "useOverlyGeneralList") ;
 }
 /**
-* option name: useShortConceptConstruction
-* shorten concept to see whether they already exist
+* useShortConceptConstruction shorten concept to see whether they already exist.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseShortConceptConstruction ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "useShortConceptConstruction") ;
+public boolean getUseShortConceptConstruction() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "useShortConceptConstruction") ;
 }
 /**
-* option name: horizontalExpansionFactor
-* horizontal expansion factor (see publication for description)
+* horizontalExpansionFactor horizontal expansion factor (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: 0.6
+* @return double 
 **/
-public double getHorizontalExpansionFactor ( ) {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "horizontalExpansionFactor") ;
+public double getHorizontalExpansionFactor() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "horizontalExpansionFactor") ;
 }
 /**
-* option name: improveSubsumptionHierarchy
-* simplify subsumption hierarchy to reduce search space (see publication for description)
+* improveSubsumptionHierarchy simplify subsumption hierarchy to reduce search space (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getImproveSubsumptionHierarchy ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "improveSubsumptionHierarchy") ;
+public boolean getImproveSubsumptionHierarchy() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "improveSubsumptionHierarchy") ;
 }
 /**
-* option name: allowedConcepts
-* concepts the algorithm is allowed to use
+* allowedConcepts concepts the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getAllowedConcepts ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "allowedConcepts") ;
+public Set<String> getAllowedConcepts() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "allowedConcepts") ;
 }
 /**
-* option name: ignoredConcepts
-* concepts the algorithm must ignore
+* ignoredConcepts concepts the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getIgnoredConcepts ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "ignoredConcepts") ;
+public Set<String> getIgnoredConcepts() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "ignoredConcepts") ;
 }
 /**
-* option name: allowedRoles
-* roles the algorithm is allowed to use
+* allowedRoles roles the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getAllowedRoles ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "allowedRoles") ;
+public Set<String> getAllowedRoles() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "allowedRoles") ;
 }
 /**
-* option name: ignoredRoles
-* roles the algorithm must ignore
+* ignoredRoles roles the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getIgnoredRoles ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "ignoredRoles") ;
+public Set<String> getIgnoredRoles() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "ignoredRoles") ;
 }
 /**
-* option name: useAllConstructor
-* specifies whether the universal concept constructor is used in the learning algorithm
+* useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseAllConstructor ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "useAllConstructor") ;
+public boolean getUseAllConstructor() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "useAllConstructor") ;
 }
 /**
-* option name: useExistsConstructor
-* specifies whether the existential concept constructor is used in the learning algorithm
+* useExistsConstructor specifies whether the existential concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseExistsConstructor ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "useExistsConstructor") ;
+public boolean getUseExistsConstructor() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "useExistsConstructor") ;
 }
 /**
-* option name: useCardinalityRestrictions
-* specifies whether CardinalityRestrictions is used in the learning algorithm
+* useCardinalityRestrictions specifies whether CardinalityRestrictions is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseCardinalityRestrictions ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "useCardinalityRestrictions") ;
+public boolean getUseCardinalityRestrictions() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "useCardinalityRestrictions") ;
 }
 /**
-* option name: useNegation
-* specifies whether negation is used in the learning algorothm
+* useNegation specifies whether negation is used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseNegation ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "useNegation") ;
+public boolean getUseNegation() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "useNegation") ;
 }
 /**
-* option name: useBooleanDatatypes
-* specifies whether boolean datatypes are used in the learning algorothm
+* useBooleanDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseBooleanDatatypes ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "useBooleanDatatypes") ;
+public boolean getUseBooleanDatatypes() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "useBooleanDatatypes") ;
 }
 /**
-* option name: maxExecutionTimeInSeconds
-* algorithm will stop after specified seconds
+* maxExecutionTimeInSeconds algorithm will stop after specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
+* @return int 
 **/
-public int getMaxExecutionTimeInSeconds ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "maxExecutionTimeInSeconds") ;
+public int getMaxExecutionTimeInSeconds() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "maxExecutionTimeInSeconds") ;
 }
 /**
-* option name: minExecutionTimeInSeconds
-* algorithm will run at least specified seconds
+* minExecutionTimeInSeconds algorithm will run at least specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
+* @return int 
 **/
-public int getMinExecutionTimeInSeconds ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "minExecutionTimeInSeconds") ;
+public int getMinExecutionTimeInSeconds() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "minExecutionTimeInSeconds") ;
 }
 /**
-* option name: guaranteeXgoodDescriptions
-* algorithm will run until X good (100%) concept descritpions are found
+* guaranteeXgoodDescriptions algorithm will run until X good (100%) concept descritpions are found.
+* mandatory: false| reinit necessary: true
 * default value: 1
+* @return int 
 **/
-public int getGuaranteeXgoodDescriptions ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "guaranteeXgoodDescriptions") ;
+public int getGuaranteeXgoodDescriptions() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "guaranteeXgoodDescriptions") ;
 }
 /**
-* option name: logLevel
-* determines the logLevel for this component, can be {TRACE, DEBUG, INFO}
+* logLevel determines the logLevel for this component, can be {TRACE, DEBUG, INFO}.
+* mandatory: false| reinit necessary: true
 * default value: DEBUG
+* @return String 
 **/
-public String getLogLevel ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "logLevel") ;
+public String getLogLevel() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "logLevel") ;
 }
 /**
-* option name: noisePercentage
-* the (approximated) percentage of noise within the examples
+* noisePercentage the (approximated) percentage of noise within the examples.
+* mandatory: false| reinit necessary: true
 * default value: 0.0
+* @return double 
 **/
-public double getNoisePercentage ( ) {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "noisePercentage") ;
+public double getNoisePercentage() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "noisePercentage") ;
 }
 /**
-* option name: startClass
-* the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)
+* startClass the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class).
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return String 
 **/
-public String getStartClass ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(DBpediaNavigationSuggestor,  "startClass") ;
+public String getStartClass() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "startClass") ;
 }
 
 /**
-* option name: writeSearchTree
-* specifies whether to write a search tree
+* @param writeSearchTree specifies whether to write a search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setWriteSearchTree ( boolean writeSearchTree) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "writeSearchTree", writeSearchTree);
+public void setWriteSearchTree(boolean writeSearchTree) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "writeSearchTree", writeSearchTree);
 reinitNecessary = true;
 }
 /**
-* option name: searchTreeFile
-* file to use for the search tree
+* @param searchTreeFile file to use for the search tree.
+* mandatory: false| reinit necessary: true
 * default value: log/searchTree.txt
 **/
-public void setSearchTreeFile ( String searchTreeFile) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "searchTreeFile", searchTreeFile);
+public void setSearchTreeFile(String searchTreeFile) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "searchTreeFile", searchTreeFile);
 reinitNecessary = true;
 }
 /**
-* option name: replaceSearchTree
-* specifies whether to replace the search tree in the log file after each run or append the new search tree
+* @param replaceSearchTree specifies whether to replace the search tree in the log file after each run or append the new search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setReplaceSearchTree ( boolean replaceSearchTree) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "replaceSearchTree", replaceSearchTree);
+public void setReplaceSearchTree(boolean replaceSearchTree) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "replaceSearchTree", replaceSearchTree);
 reinitNecessary = true;
 }
 /**
-* option name: heuristic
-* specifiy the heuristic to use
+* @param heuristic specifiy the heuristic to use.
+* mandatory: false| reinit necessary: true
 * default value: lexicographic
 **/
-public void setHeuristic ( String heuristic) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "heuristic", heuristic);
+public void setHeuristic(String heuristic) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "heuristic", heuristic);
 reinitNecessary = true;
 }
 /**
-* option name: applyAllFilter
-* usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)
+* @param applyAllFilter usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D).
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setApplyAllFilter ( boolean applyAllFilter) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "applyAllFilter", applyAllFilter);
+public void setApplyAllFilter(boolean applyAllFilter) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "applyAllFilter", applyAllFilter);
 reinitNecessary = true;
 }
 /**
-* option name: applyExistsFilter
-* usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
+* @param applyExistsFilter usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D).
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setApplyExistsFilter ( boolean applyExistsFilter) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "applyExistsFilter", applyExistsFilter);
+public void setApplyExistsFilter(boolean applyExistsFilter) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "applyExistsFilter", applyExistsFilter);
 reinitNecessary = true;
 }
 /**
-* option name: useTooWeakList
-* try to filter out too weak concepts without sending them to the reasoner
+* @param useTooWeakList try to filter out too weak concepts without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseTooWeakList ( boolean useTooWeakList) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "useTooWeakList", useTooWeakList);
+public void setUseTooWeakList(boolean useTooWeakList) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "useTooWeakList", useTooWeakList);
 reinitNecessary = true;
 }
 /**
-* option name: useOverlyGeneralList
-* try to find overly general concept without sending them to the reasoner
+* @param useOverlyGeneralList try to find overly general concept without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseOverlyGeneralList ( boolean useOverlyGeneralList) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "useOverlyGeneralList", useOverlyGeneralList);
+public void setUseOverlyGeneralList(boolean useOverlyGeneralList) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "useOverlyGeneralList", useOverlyGeneralList);
 reinitNecessary = true;
 }
 /**
-* option name: useShortConceptConstruction
-* shorten concept to see whether they already exist
+* @param useShortConceptConstruction shorten concept to see whether they already exist.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseShortConceptConstruction ( boolean useShortConceptConstruction) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "useShortConceptConstruction", useShortConceptConstruction);
+public void setUseShortConceptConstruction(boolean useShortConceptConstruction) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "useShortConceptConstruction", useShortConceptConstruction);
 reinitNecessary = true;
 }
 /**
-* option name: horizontalExpansionFactor
-* horizontal expansion factor (see publication for description)
+* @param horizontalExpansionFactor horizontal expansion factor (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: 0.6
 **/
-public void setHorizontalExpansionFactor ( double horizontalExpansionFactor) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "horizontalExpansionFactor", horizontalExpansionFactor);
+public void setHorizontalExpansionFactor(double horizontalExpansionFactor) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "horizontalExpansionFactor", horizontalExpansionFactor);
 reinitNecessary = true;
 }
 /**
-* option name: improveSubsumptionHierarchy
-* simplify subsumption hierarchy to reduce search space (see publication for description)
+* @param improveSubsumptionHierarchy simplify subsumption hierarchy to reduce search space (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setImproveSubsumptionHierarchy ( boolean improveSubsumptionHierarchy) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "improveSubsumptionHierarchy", improveSubsumptionHierarchy);
+public void setImproveSubsumptionHierarchy(boolean improveSubsumptionHierarchy) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "improveSubsumptionHierarchy", improveSubsumptionHierarchy);
 reinitNecessary = true;
 }
 /**
-* option name: allowedConcepts
-* concepts the algorithm is allowed to use
+* @param allowedConcepts concepts the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setAllowedConcepts ( Set<String> allowedConcepts) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "allowedConcepts", allowedConcepts);
+public void setAllowedConcepts(Set<String> allowedConcepts) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "allowedConcepts", allowedConcepts);
 reinitNecessary = true;
 }
 /**
-* option name: ignoredConcepts
-* concepts the algorithm must ignore
+* @param ignoredConcepts concepts the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setIgnoredConcepts ( Set<String> ignoredConcepts) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "ignoredConcepts", ignoredConcepts);
+public void setIgnoredConcepts(Set<String> ignoredConcepts) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "ignoredConcepts", ignoredConcepts);
 reinitNecessary = true;
 }
 /**
-* option name: allowedRoles
-* roles the algorithm is allowed to use
+* @param allowedRoles roles the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setAllowedRoles ( Set<String> allowedRoles) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "allowedRoles", allowedRoles);
+public void setAllowedRoles(Set<String> allowedRoles) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "allowedRoles", allowedRoles);
 reinitNecessary = true;
 }
 /**
-* option name: ignoredRoles
-* roles the algorithm must ignore
+* @param ignoredRoles roles the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setIgnoredRoles ( Set<String> ignoredRoles) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "ignoredRoles", ignoredRoles);
+public void setIgnoredRoles(Set<String> ignoredRoles) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "ignoredRoles", ignoredRoles);
 reinitNecessary = true;
 }
 /**
-* option name: useAllConstructor
-* specifies whether the universal concept constructor is used in the learning algorithm
+* @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseAllConstructor ( boolean useAllConstructor) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "useAllConstructor", useAllConstructor);
+public void setUseAllConstructor(boolean useAllConstructor) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "useAllConstructor", useAllConstructor);
 reinitNecessary = true;
 }
 /**
-* option name: useExistsConstructor
-* specifies whether the existential concept constructor is used in the learning algorithm
+* @param useExistsConstructor specifies whether the existential concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseExistsConstructor ( boolean useExistsConstructor) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "useExistsConstructor", useExistsConstructor);
+public void setUseExistsConstructor(boolean useExistsConstructor) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "useExistsConstructor", useExistsConstructor);
 reinitNecessary = true;
 }
 /**
-* option name: useCardinalityRestrictions
-* specifies whether CardinalityRestrictions is used in the learning algorithm
+* @param useCardinalityRestrictions specifies whether CardinalityRestrictions is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseCardinalityRestrictions ( boolean useCardinalityRestrictions) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "useCardinalityRestrictions", useCardinalityRestrictions);
+public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "useCardinalityRestrictions", useCardinalityRestrictions);
 reinitNecessary = true;
 }
 /**
-* option name: useNegation
-* specifies whether negation is used in the learning algorothm
+* @param useNegation specifies whether negation is used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseNegation ( boolean useNegation) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "useNegation", useNegation);
+public void setUseNegation(boolean useNegation) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "useNegation", useNegation);
 reinitNecessary = true;
 }
 /**
-* option name: useBooleanDatatypes
-* specifies whether boolean datatypes are used in the learning algorothm
+* @param useBooleanDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseBooleanDatatypes ( boolean useBooleanDatatypes) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "useBooleanDatatypes", useBooleanDatatypes);
+public void setUseBooleanDatatypes(boolean useBooleanDatatypes) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "useBooleanDatatypes", useBooleanDatatypes);
 reinitNecessary = true;
 }
 /**
-* option name: maxExecutionTimeInSeconds
-* algorithm will stop after specified seconds
+* @param maxExecutionTimeInSeconds algorithm will stop after specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
 **/
-public void setMaxExecutionTimeInSeconds ( int maxExecutionTimeInSeconds) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
+public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
 reinitNecessary = true;
 }
 /**
-* option name: minExecutionTimeInSeconds
-* algorithm will run at least specified seconds
+* @param minExecutionTimeInSeconds algorithm will run at least specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
 **/
-public void setMinExecutionTimeInSeconds ( int minExecutionTimeInSeconds) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "minExecutionTimeInSeconds", minExecutionTimeInSeconds);
+public void setMinExecutionTimeInSeconds(int minExecutionTimeInSeconds) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "minExecutionTimeInSeconds", minExecutionTimeInSeconds);
 reinitNecessary = true;
 }
 /**
-* option name: guaranteeXgoodDescriptions
-* algorithm will run until X good (100%) concept descritpions are found
+* @param guaranteeXgoodDescriptions algorithm will run until X good (100%) concept descritpions are found.
+* mandatory: false| reinit necessary: true
 * default value: 1
 **/
-public void setGuaranteeXgoodDescriptions ( int guaranteeXgoodDescriptions) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "guaranteeXgoodDescriptions", guaranteeXgoodDescriptions);
+public void setGuaranteeXgoodDescriptions(int guaranteeXgoodDescriptions) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "guaranteeXgoodDescriptions", guaranteeXgoodDescriptions);
 reinitNecessary = true;
 }
 /**
-* option name: logLevel
-* determines the logLevel for this component, can be {TRACE, DEBUG, INFO}
+* @param logLevel determines the logLevel for this component, can be {TRACE, DEBUG, INFO}.
+* mandatory: false| reinit necessary: true
 * default value: DEBUG
 **/
-public void setLogLevel ( String logLevel) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "logLevel", logLevel);
+public void setLogLevel(String logLevel) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "logLevel", logLevel);
 reinitNecessary = true;
 }
 /**
-* option name: noisePercentage
-* the (approximated) percentage of noise within the examples
+* @param noisePercentage the (approximated) percentage of noise within the examples.
+* mandatory: false| reinit necessary: true
 * default value: 0.0
 **/
-public void setNoisePercentage ( double noisePercentage) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "noisePercentage", noisePercentage);
+public void setNoisePercentage(double noisePercentage) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "noisePercentage", noisePercentage);
 reinitNecessary = true;
 }
 /**
-* option name: startClass
-* the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)
+* @param startClass the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class).
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setStartClass ( String startClass) {
-ComponentManager.getInstance().applyConfigEntry(DBpediaNavigationSuggestor, "startClass", startClass);
+public void setStartClass(String startClass) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "startClass", startClass);
 reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -24,77 +25,90 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.reasoning.DIGReasoner;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class DIGReasonerConfigurator  {
 
 private boolean reinitNecessary = false;
-private DIGReasoner DIGReasoner;
+@SuppressWarnings("unused")
 
-public DIGReasonerConfigurator (DIGReasoner DIGReasoner){
-this.DIGReasoner = DIGReasoner;
+private DIGReasoner dIGReasoner;
+
+/**
+* @param dIGReasoner see DIGReasoner
+**/
+public DIGReasonerConfigurator(DIGReasoner dIGReasoner){
+this.dIGReasoner = dIGReasoner;
 }
 
 /**
+* @return DIGReasoner
 **/
-public static DIGReasoner getDIGReasoner (KnowledgeSource knowledgeSource ) {
-DIGReasoner component = ComponentManager.getInstance().reasoner(DIGReasoner.class, knowledgeSource );
+public static DIGReasoner getDIGReasoner(KnowledgeSource knowledgeSource) {
+DIGReasoner component = ComponentManager.getInstance().reasoner(DIGReasoner.class, knowledgeSource);
 return component;
 }
 
 /**
-* option name: reasonerUrl
-* URL of the DIG reasoner
+* reasonerUrl URL of the DIG reasoner.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return String 
 **/
-public String getReasonerUrl ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(DIGReasoner,  "reasonerUrl") ;
+public String getReasonerUrl() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(dIGReasoner,  "reasonerUrl") ;
 }
 /**
-* option name: writeDIGProtocol
-* specifies whether or not to write a protocoll of send and received DIG requests
+* writeDIGProtocol specifies whether or not to write a protocoll of send and received DIG requests.
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getWriteDIGProtocol ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DIGReasoner,  "writeDIGProtocol") ;
+public boolean getWriteDIGProtocol() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dIGReasoner,  "writeDIGProtocol") ;
 }
 /**
-* option name: digProtocolFile
-* the file to store the DIG protocol
+* digProtocolFile the file to store the DIG protocol.
+* mandatory: false| reinit necessary: true
 * default value: log/digProtocol.txt
+* @return String 
 **/
-public String getDigProtocolFile ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(DIGReasoner,  "digProtocolFile") ;
+public String getDigProtocolFile() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(dIGReasoner,  "digProtocolFile") ;
 }
 
 /**
-* option name: reasonerUrl
-* URL of the DIG reasoner
+* @param reasonerUrl URL of the DIG reasoner.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setReasonerUrl ( String reasonerUrl) {
-ComponentManager.getInstance().applyConfigEntry(DIGReasoner, "reasonerUrl", reasonerUrl);
+public void setReasonerUrl(String reasonerUrl) {
+ComponentManager.getInstance().applyConfigEntry(dIGReasoner, "reasonerUrl", reasonerUrl);
 reinitNecessary = true;
 }
 /**
-* option name: writeDIGProtocol
-* specifies whether or not to write a protocoll of send and received DIG requests
+* @param writeDIGProtocol specifies whether or not to write a protocoll of send and received DIG requests.
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setWriteDIGProtocol ( boolean writeDIGProtocol) {
-ComponentManager.getInstance().applyConfigEntry(DIGReasoner, "writeDIGProtocol", writeDIGProtocol);
+public void setWriteDIGProtocol(boolean writeDIGProtocol) {
+ComponentManager.getInstance().applyConfigEntry(dIGReasoner, "writeDIGProtocol", writeDIGProtocol);
 reinitNecessary = true;
 }
 /**
-* option name: digProtocolFile
-* the file to store the DIG protocol
+* @param digProtocolFile the file to store the DIG protocol.
+* mandatory: false| reinit necessary: true
 * default value: log/digProtocol.txt
 **/
-public void setDigProtocolFile ( String digProtocolFile) {
-ComponentManager.getInstance().applyConfigEntry(DIGReasoner, "digProtocolFile", digProtocolFile);
+public void setDigProtocolFile(String digProtocolFile) {
+ComponentManager.getInstance().applyConfigEntry(dIGReasoner, "digProtocolFile", digProtocolFile);
 reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -24,26 +25,36 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.reasoning.FastRetrievalReasoner;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class FastRetrievalReasonerConfigurator  {
 
 private boolean reinitNecessary = false;
-private FastRetrievalReasoner FastRetrievalReasoner;
+@SuppressWarnings("unused")
 
-public FastRetrievalReasonerConfigurator (FastRetrievalReasoner FastRetrievalReasoner){
-this.FastRetrievalReasoner = FastRetrievalReasoner;
+private FastRetrievalReasoner fastRetrievalReasoner;
+
+/**
+* @param fastRetrievalReasoner see FastRetrievalReasoner
+**/
+public FastRetrievalReasonerConfigurator(FastRetrievalReasoner fastRetrievalReasoner){
+this.fastRetrievalReasoner = fastRetrievalReasoner;
 }
 
 /**
+* @return FastRetrievalReasoner
 **/
-public static FastRetrievalReasoner getFastRetrievalReasoner (KnowledgeSource knowledgeSource ) {
-FastRetrievalReasoner component = ComponentManager.getInstance().reasoner(FastRetrievalReasoner.class, knowledgeSource );
+public static FastRetrievalReasoner getFastRetrievalReasoner(KnowledgeSource knowledgeSource) {
+FastRetrievalReasoner component = ComponentManager.getInstance().reasoner(FastRetrievalReasoner.class, knowledgeSource);
 return component;
 }
 
 
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

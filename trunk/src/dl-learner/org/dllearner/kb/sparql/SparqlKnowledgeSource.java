@@ -24,12 +24,9 @@ import java.io.FileWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -76,60 +73,35 @@ import com.jamonapi.MonitorFactory;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
-	
-	
-	//RBC
+	// RBC
 	static final boolean debug = false;
-	static final boolean debugUseImprovedTupleAquisitor = debug && false; //switches tupleaquisitor
-	static final boolean debugExitAfterExtraction =  debug && false; //switches sysex und rdf generation
-	
+
+	// tupleaquisitor
+	static final boolean debugUseImprovedTupleAquisitor = debug && false; // switches
+	//	 sysex 
+	static final boolean debugExitAfterExtraction = debug && false; // switches
+
+
 	private SparqlKnowledgeSourceConfigurator configurator;
-	
-	public SparqlKnowledgeSourceConfigurator getSparqlKnowledgeSourceConfigurator(){
+
+	public SparqlKnowledgeSourceConfigurator getConfigurator() {
 		return configurator;
 	}
-	
-/*public SparqlKnowledgeSource (){
+
+	public SparqlKnowledgeSource() {
 		this.configurator = new SparqlKnowledgeSourceConfigurator(this);
 	}
-*/	
-	private boolean useCache=true;
+
 	// ConfigOptions
 	public URL url;
-	// String host;
-	private Set<String> instances = new HashSet<String>();;
-	private URL dumpFile;
-	private int recursionDepth = 1;
-	private String predefinedFilter = null;
-	private String predefinedEndpoint = null;
-	private String predefinedManipulator = null;
-	private SortedSet<String> predList = new TreeSet<String>();
-	private SortedSet<String> objList = new TreeSet<String>();
-	// private Set<String> classList;
-	private String format = "N-TRIPLES";
-	private boolean dumpToFile = true;
-	private boolean convertNT2RDF = false ;
-	private boolean useLits = false;
-	private boolean getAllSuperClasses = true;
-	private boolean closeAfterRecursion = true;
-	private boolean getPropertyInformation = true;
-	private int breakSuperClassRetrievalAfter = 1000;
-	private String cacheDir = "cache";
-	// private boolean learnDomain = false;
-	// private boolean learnRange = false;
-	// private int numberOfInstancesUsedForRoleLearning = 40;
-	// private String role = "";
-	//
-	// private String verbosity = "warning";
 
-	// LinkedList<StringTuple> URIParameters = new LinkedList<StringTuple>();
-	LinkedList<StringTuple> replacePredicate = new LinkedList<StringTuple>();
-	LinkedList<StringTuple> replaceObject = new LinkedList<StringTuple>();
+	private String format = "N-TRIPLES";
+
+	private boolean dumpToFile = true;
+
+	private URL dumpFile;
 
 	SparqlEndpoint endpoint = null;
-
-	private LinkedList<String> defaultGraphURIs = new LinkedList<String>();
-	private LinkedList<String> namedGraphURIs = new LinkedList<String>();
 
 	// received ontology as array, used if format=Array(an element of the
 	// array consists of the subject, predicate and object separated by '<'
@@ -137,14 +109,13 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	// received ontology as KB, the internal format
 	private KB kb;
-	
-	//mainly used for statistic
+
+	// mainly used for statistic
 	private int nrOfExtractedTriples = 0;
-	
+
 	public static String getName() {
 		return "SPARQL Endpoint";
 	}
-	
 
 	private static Logger logger = Logger
 			.getLogger(SparqlKnowledgeSource.class);
@@ -156,75 +127,75 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint"));
-		options.add(new StringConfigOption("cacheDir", "dir of cache"));
-		
-		// options.add(new StringConfigOption("host", "host of SPARQL
-		// Endpoint"));
+		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint",
+				null, true, true));
+		options.add(new StringConfigOption("cacheDir", "dir of cache", "cache",
+				false, true));
 		options
-				.add(new StringSetConfigOption("instances",
-						"relevant instances e.g. positive and negative examples in a learning problem",null,true,false));
+				.add(new StringSetConfigOption(
+						"instances",
+						"relevant instances e.g. positive and negative examples in a learning problem",
+						null, true, true));
 		options.add(new IntegerConfigOption("recursionDepth",
-				"recursion depth of KB fragment selection", 1));
-		options.add(new StringConfigOption("predefinedFilter",
-				"the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST"));
-		options.add(new StringConfigOption("predefinedEndpoint",
-				"the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK"));
-		options.add(new StringConfigOption("predefinedManipulator",
-				"the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR"));
+				"recursion depth of KB fragment selection", 1, false, true));
+		options
+				.add(new StringConfigOption(
+						"predefinedFilter",
+						"the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST",
+						null, false, true));
+		options
+				.add(new StringConfigOption(
+						"predefinedEndpoint",
+						"the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK",
+						null, false, true));
+		options
+				.add(new StringConfigOption(
+						"predefinedManipulator",
+						"the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR",
+						null, false, true));
 		options.add(new StringSetConfigOption("predList",
-				"list of all ignored roles"));
+				"list of all ignored roles", new TreeSet<String>(), false, true));
 		options.add(new StringSetConfigOption("objList",
-				"list of all ignored objects"));
-		options.add(new StringSetConfigOption("classList",
-				"list of all ignored classes"));
+				"list of all ignored objects", new TreeSet<String>(), false, true));
 		options.add(new StringConfigOption("format", "N-TRIPLES or KB format",
-				"N-TRIPLES"));
+				"N-TRIPLES", false, true));
 		options
 				.add(new BooleanConfigOption(
 						"dumpToFile",
 						"Specifies whether the extracted ontology is written to a file or not.",
-						true));
+						true, false, true));
 		options
-			.add(new BooleanConfigOption(
-				"convertNT2RDF",
-				"Specifies whether the extracted NTriples are converted to RDF and deleted.",
-				true));
+				.add(new BooleanConfigOption(
+						"convertNT2RDF",
+						"Specifies whether the extracted NTriples are converted to RDF and deleted.",
+						false, false, true));
 		options.add(new BooleanConfigOption("useLits",
-				"use Literals in SPARQL query", true));
+				"use Literals in SPARQL query", true, false, true));
 		options
 				.add(new BooleanConfigOption(
 						"getAllSuperClasses",
 						"If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.",
-						true));
-
-		//options.add(new BooleanConfigOption("learnDomain",
-			//	"learns the Domain for a Role"));
+						true, false, true));
 		options.add(new BooleanConfigOption("useCache",
-				"If true a Cache is used",true));
-		//options.add(new BooleanConfigOption("learnRange",
-			//	"learns the Range for a Role"));
-		//options.add(new StringConfigOption("role",
-			//	"role to learn Domain/Range from"));
-		//options.add(new StringTupleListConfigOption("example", "example"));
+				"If true a Cache is used", true, false, true));
 		options.add(new StringTupleListConfigOption("replacePredicate",
-				"rule for replacing predicates"));
+				"rule for replacing predicates", new ArrayList<StringTuple>(), false, true));
 		options.add(new StringTupleListConfigOption("replaceObject",
-				"rule for replacing predicates"));
+				"rule for replacing predicates", new ArrayList<StringTuple>(), false, true));
 		options.add(new IntegerConfigOption("breakSuperClassRetrievalAfter",
-				"stops a cyclic hierarchy after specified number of classes", 1000));
-		//options.add(new IntegerConfigOption(
-			//	"numberOfInstancesUsedForRoleLearning", ""));
+				"stops a cyclic hierarchy after specified number of classes",
+				1000, false, true));
 		options.add(new BooleanConfigOption("closeAfterRecursion",
-				"gets all classes for all instances", true));
+				"gets all classes for all instances", true, false, true));
 		options.add(new BooleanConfigOption("getPropertyInformation",
-		"gets all types for extracted ObjectProperties", false));
+				"gets all types for extracted ObjectProperties", false, false,
+				true));
 		options.add(CommonConfigOptions.getVerbosityOption());
 
 		options.add(new StringSetConfigOption("defaultGraphURIs",
-				"a list of all default Graph URIs"));
+				"a list of all default Graph URIs", new TreeSet<String> (), false, true));
 		options.add(new StringSetConfigOption("namedGraphURIs",
-				"a list of all named Graph URIs"));
+				"a list of all named Graph URIs", new TreeSet<String> (), false, true));
 		return options;
 	}
 
@@ -232,76 +203,11 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
 	 */
 	@Override
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings( { "unchecked" })
 	public <T> void applyConfigEntry(ConfigEntry<T> entry)
 			throws InvalidConfigOptionValueException {
-		String option = entry.getOptionName();
+		//TODO remove this function
 		
-		if (option.equals("url")) {
-			String s = (String) entry.getValue();
-			try {
-				url = new URL(s);
-			} catch (MalformedURLException e) {
-				throw new InvalidConfigOptionValueException(entry.getOption(),
-						entry.getValue(), "malformed URL " + s);
-			}
-			// } else if (option.equals("host")) {
-			// host = (String) entry.getValue();
-		} else if (option.equals("instances")) {
-			instances = (Set<String>) entry.getValue();
-		}else if (option.equals("cacheDir")) {
-			cacheDir = (String) entry.getValue();
-		} else if (option.equals("recursionDepth")) {
-			recursionDepth = (Integer) entry.getValue();
-		} else if (option.equals("predList")) {
-			predList = (SortedSet<String>) entry.getValue();
-		} else if (option.equals("objList")) {
-			objList = (SortedSet<String>) entry.getValue();
-			// } else if (option.equals("classList")) {
-			// classList = (Set<String>) entry.getValue();
-		} else if (option.equals("predefinedEndpoint")) {
-			predefinedEndpoint = ((String) entry.getValue()).toUpperCase();
-		} else if (option.equals("predefinedFilter")) {
-			predefinedFilter = ((String) entry.getValue()).toUpperCase();
-		} else if (option.equals("predefinedManipulator")) {
-			predefinedManipulator = ((String) entry.getValue()).toUpperCase();
-		} else if (option.equals("format")) {
-			format = (String) entry.getValue();
-		} else if (option.equals("dumpToFile")) {
-			dumpToFile = (Boolean) entry.getValue();
-		} else if (option.equals("convertNT2RDF")) {
-			convertNT2RDF = (Boolean) entry.getValue();
-		} else if (option.equals("useLits")) {
-			useLits = (Boolean) entry.getValue();
-		} else if (option.equals("useCache")) {
-			useCache = (Boolean) entry.getValue();
-		}else if (option.equals("getAllSuperClasses")) {
-			getAllSuperClasses = (Boolean) entry.getValue();
-		}else if (option.equals("getPropertyInformation")) {
-			getPropertyInformation = (Boolean) entry.getValue();
-		}else if (option.equals("example")) {
-			// System.out.println(entry.getValue());
-		} else if (option.equals("replacePredicate")) {
-			replacePredicate = (LinkedList) entry.getValue();
-		} else if (option.equals("replaceObject")) {
-			replaceObject = (LinkedList) entry.getValue();
-		} else if (option.equals("breakSuperClassRetrievalAfter")) {
-			breakSuperClassRetrievalAfter = (Integer) entry.getValue();
-		} else if (option.equals("closeAfterRecursion")) {
-			closeAfterRecursion = (Boolean) entry.getValue();
-		} else if (option.equals("defaultGraphURIs")) {
-			Set<String> temp = (Set<String>) entry.getValue();
-			Iterator iter = temp.iterator();
-			while (iter.hasNext()) {
-				defaultGraphURIs.add((String) iter.next());
-			}
-		} else if (option.equals("namedGraphURIs")) {
-			Set<String> temp = (Set<String>) entry.getValue();
-			Iterator iter = temp.iterator();
-			while (iter.hasNext()) {
-				namedGraphURIs.add((String) iter.next());
-			}
-		}
 	}
 
 	/*
@@ -312,36 +218,41 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	@Override
 	public void init() {
 		logger.info("SparqlModul: Collecting Ontology");
-		SimpleClock totalTime=new SimpleClock();
-		SimpleClock extractionTime=new SimpleClock();
+		SimpleClock totalTime = new SimpleClock();
+		SimpleClock extractionTime = new SimpleClock();
 
-		Manager m = new Manager();
+		try {
+			url = new URL(configurator.getUrl());
+		} catch (MalformedURLException e) {
+			logger.error(e.getMessage());
+			//throw new InvalidConfigOptionValueException(entry.getOption(),
+				//	entry.getValue(), "malformed URL " + s);
+		}
 		
+		Manager m = new Manager();
+
 		// get Options for Manipulator
 		Manipulator manipulator = getManipulator();
-		
+
 		TupleAquisitor tupleAquisitor = getTupleAquisitor();
-		
-		
-		Configuration configuration = new Configuration(
-				tupleAquisitor, 
-				manipulator,
-				recursionDepth,
-				getAllSuperClasses,
-				closeAfterRecursion,
-				getPropertyInformation,
-				breakSuperClassRetrievalAfter);
-		
+
+		Configuration configuration = new Configuration(tupleAquisitor,
+				manipulator, configurator.getRecursionDepth(), configurator
+						.getGetAllSuperClasses(), configurator
+						.getCloseAfterRecursion(), configurator
+						.getGetPropertyInformation(), configurator
+						.getBreakSuperClassRetrievalAfter());
+
 		// give everything to the manager
 		m.useConfiguration(configuration);
-		
+
 		String ont = "";
 		try {
-			
+
 			// the actual extraction is started here
-			
+
 			extractionTime.setTime();
-			ont = m.extract(instances);
+			ont = m.extract(configurator.getInstances());
 			extractionTime.printAndSet("extraction needed");
 			logger.info("Finished collecting Fragment");
 
@@ -352,22 +263,19 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 					if (!new File(basedir).exists()) {
 						new File(basedir).mkdir();
 					}
-					
+
 					File dump = new File(basedir + filename);
-					
-					FileWriter fw = new FileWriter(
-							dump , true);
+
+					FileWriter fw = new FileWriter(dump, true);
 					fw.write(ont);
 					fw.flush();
 					fw.close();
 
-					
 					dumpFile = (dump).toURI().toURL();
-				
-					
-					if(convertNT2RDF){
+
+					if (configurator.getConvertNT2RDF()) {
 						NT2RDF.convertNT2RDF(dump.getAbsolutePath());
-						
+
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -385,12 +293,13 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			e.printStackTrace();
 		}
 		nrOfExtractedTriples = m.getNrOfExtractedTriples();
-		logger.info("SparqlModul: ****Finished " + totalTime.getAndSet("") );
-		if(debugExitAfterExtraction){
-			
+		logger.info("SparqlModul: ****Finished " + totalTime.getAndSet(""));
+		if (debugExitAfterExtraction) {
+
 			File jamonlog = new File("log/jamon.html");
 			Files.createFile(jamonlog, MonitorFactory.getReport());
-			Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
+			Files.appendFile(jamonlog, "<xmp>\n"
+					+ JamonMonitorLogger.getStringForAllSortedByLabel());
 			System.exit(0);
 		}
 	}
@@ -431,77 +340,86 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return ontArray;
 	}
 
-	
 	public SparqlQuery sparqlQuery(String query) {
-		this.endpoint = new SparqlEndpoint(url, defaultGraphURIs,
-				namedGraphURIs);
-		return new SparqlQuery(query, endpoint);
+		return new SparqlQuery(query, getSparqlEndpoint());
 	}
+
 	
-	public SPARQLTasks getSPARQLTasks()	{
-		
-		
-		// get Options for endpoints
-		if (predefinedEndpoint == null) {
-			endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
-		} else {
-			endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
-			//System.out.println(endpoint);
-			
+	public SparqlEndpoint getSparqlEndpoint(){
+		if(endpoint==null) {
+			if (configurator.getPredefinedEndpoint() == null) {
+				endpoint = new SparqlEndpoint(url, new LinkedList<String>(
+						configurator.getDefaultGraphURIs()),
+						new LinkedList<String>(configurator.getNamedGraphURIs()));
+			} else {
+				endpoint = SparqlEndpoint.getEndpointByName(configurator
+						.getPredefinedEndpoint());
+				// System.out.println(endpoint);
+	
+			}
 		}
-		
-		if (this.useCache)
-			return new SPARQLTasks(new Cache(this.cacheDir), endpoint);
-		else
-			return new SPARQLTasks(endpoint);
+		return endpoint;
+
 	}
 	
-	public SparqlQueryMaker getSparqlQueryMaker()
-	{
+	public SPARQLTasks getSPARQLTasks() {
+
+		// get Options for endpoints
+		
+		if (configurator.getUseCache())
+			return new SPARQLTasks(new Cache(configurator.getCacheDir()),
+					getSparqlEndpoint());
+		else
+			return new SPARQLTasks(getSparqlEndpoint());
+	}
+
+	public SparqlQueryMaker getSparqlQueryMaker() {
 		// get Options for Filters
-		if (predefinedFilter == null) {
-			return  new SparqlQueryMaker("forbid", objList, predList,
-					useLits);
+		if (configurator.getPredefinedFilter() == null) {
+			return new SparqlQueryMaker("forbid", configurator.getObjList(),
+					configurator.getPredList(), configurator.getUseLits());
 
 		} else {
-			
-			return SparqlQueryMaker.getSparqlQueryMakerByName (predefinedFilter);
+
+			return SparqlQueryMaker.getSparqlQueryMakerByName(configurator
+					.getPredefinedFilter());
 		}
-		
+
 	}
-	
-	public Manipulator getManipulator()
-	{
+
+	public Manipulator getManipulator() {
 		// get Options for Filters
-		if (predefinedManipulator == null) {
-			return  Manipulator.getManipulatorByName(predefinedManipulator);
+		if (configurator.getPredefinedManipulator() == null) {
+			return Manipulator.getManipulatorByName(configurator
+					.getPredefinedManipulator());
 
 		} else {
 			Manipulator m = Manipulator.getDefaultManipulator();
-			for (StringTuple st : replacePredicate) {
-				m.addRule(new PredicateReplacementRule(Months.MAY, st.a,st.b));
+			for (StringTuple st : configurator.getReplacePredicate()) {
+				m.addRule(new PredicateReplacementRule(Months.MAY, st.a, st.b));
 			}
-			for (StringTuple st : replaceObject) {
-				m.addRule(new ObjectReplacementRule(Months.MAY, st.a,st.b));
+			for (StringTuple st : configurator.getReplaceObject()) {
+				m.addRule(new ObjectReplacementRule(Months.MAY, st.a, st.b));
 			}
 			return m;
 		}
-		
-	}
-	
-	
-	public TupleAquisitor getTupleAquisitor()
-	{
-		if (debugUseImprovedTupleAquisitor) {
-		 return new SparqlTupleAquisitorImproved(getSparqlQueryMaker(), getSPARQLTasks(),recursionDepth);
-		}
-		else {
-		 return new SparqlTupleAquisitor(getSparqlQueryMaker(), getSPARQLTasks());
-		}
-		 
+
 	}
 
-	/* (non-Javadoc)
+	public TupleAquisitor getTupleAquisitor() {
+		if (debugUseImprovedTupleAquisitor) {
+			return new SparqlTupleAquisitorImproved(getSparqlQueryMaker(),
+					getSPARQLTasks(), configurator.getRecursionDepth());
+		} else {
+			return new SparqlTupleAquisitor(getSparqlQueryMaker(),
+					getSPARQLTasks());
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.KnowledgeSource#toKB()
 	 */
 	@Override
@@ -509,49 +427,44 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// TODO Does this work?
 		return kb;
 	}
-	
-	public URL getNTripleURL(){
+
+	public URL getNTripleURL() {
 		return dumpFile;
 	}
-	
-	public boolean isUseCache(){
-		return useCache;
+
+	public boolean isUseCache() {
+		return configurator.getUseCache();
 	}
-	
-	public String getCacheDir(){
-		return cacheDir;
+
+	public String getCacheDir() {
+		return configurator.getCacheDir();
 	}
 
 	public int getNrOfExtractedTriples() {
 		return nrOfExtractedTriples;
 	}
 
-	/*public static void main(String[] args) throws MalformedURLException {
-		String query = "SELECT ?pred ?obj\n"
-				+ "WHERE {<http://dbpedia.org/resource/Leipzig> ?pred ?obj}";
-		URL url = new URL("http://dbpedia.openlinksw.com:8890/sparql");
-		SparqlEndpoint sse = new SparqlEndpoint(url);
-		SparqlQuery q = new SparqlQuery(query, sse);
-		String[][] array = q.getAsStringArray();
-		for (int i = 0; i < array.length; i++) {
-			for (int j = 0; j < array[0].length; j++)
-				System.out.print(array[i][j] + " ");
-			System.out.println();
-		}
-	}*/
-	
+	/*
+	 * public static void main(String[] args) throws MalformedURLException {
+	 * String query = "SELECT ?pred ?obj\n" + "WHERE {<http://dbpedia.org/resource/Leipzig>
+	 * ?pred ?obj}"; URL url = new
+	 * URL("http://dbpedia.openlinksw.com:8890/sparql"); SparqlEndpoint sse =
+	 * new SparqlEndpoint(url); SparqlQuery q = new SparqlQuery(query, sse);
+	 * String[][] array = q.getAsStringArray(); for (int i = 0; i <
+	 * array.length; i++) { for (int j = 0; j < array[0].length; j++)
+	 * System.out.print(array[i][j] + " "); System.out.println(); } }
+	 */
+
 	/*
 	 * SparqlOntologyCollector oc= // new
 	 * SparqlOntologyCollector(Datastructures.setToArray(instances), //
 	 * numberOfRecursions, filterMode, //
 	 * Datastructures.setToArray(predList),Datastructures.setToArray(
 	 * objList),Datastructures.setToArray(classList),format,url,useLits);
-	 * //HashMap<String, String> parameters = new HashMap<String,
-	 * String>(); //parameters.put("default-graph-uri",
-	 * "http://dbpedia.org"); //parameters.put("format",
-	 * "application/sparql-results.xml");
+	 * //HashMap<String, String> parameters = new HashMap<String, String>();
+	 * //parameters.put("default-graph-uri", "http://dbpedia.org");
+	 * //parameters.put("format", "application/sparql-results.xml");
 	 * 
 	 */
-	
-	
+
 }

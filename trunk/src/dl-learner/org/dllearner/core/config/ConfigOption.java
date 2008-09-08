@@ -196,9 +196,8 @@ public abstract class ConfigOption<T> {
 	}
 	
 	public String getJavaDocString() {
-		String line = "* option name: " + name + "\n";
-		line += "* " + description + "\n";
-		//line += "* allowed values: "+ getAllowedValuesDescription() + "\n";
+		String line = "* @param " + name + " " + description + ".\n";
+		line += "* mandatory: "+isMandatory()+"| reinit necessary: "+requiresInit()+"\n";
 		line += "* default value: " + defaultValue + "\n";
 		return line;
 	}

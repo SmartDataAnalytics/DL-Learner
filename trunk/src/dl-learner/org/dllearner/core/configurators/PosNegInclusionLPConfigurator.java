@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -25,115 +26,130 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class PosNegInclusionLPConfigurator  {
 
 private boolean reinitNecessary = false;
-private PosNegInclusionLP PosNegInclusionLP;
+@SuppressWarnings("unused")
 
-public PosNegInclusionLPConfigurator (PosNegInclusionLP PosNegInclusionLP){
-this.PosNegInclusionLP = PosNegInclusionLP;
+private PosNegInclusionLP posNegInclusionLP;
+
+/**
+* @param posNegInclusionLP see PosNegInclusionLP
+**/
+public PosNegInclusionLPConfigurator(PosNegInclusionLP posNegInclusionLP){
+this.posNegInclusionLP = posNegInclusionLP;
 }
 
 /**
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
+* @return PosNegInclusionLP
 **/
-public static PosNegInclusionLP getPosNegInclusionLP (ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples ) {
-PosNegInclusionLP component = ComponentManager.getInstance().learningProblem(PosNegInclusionLP.class, reasoningService );
+public static PosNegInclusionLP getPosNegInclusionLP(ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
+PosNegInclusionLP component = ComponentManager.getInstance().learningProblem(PosNegInclusionLP.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "positiveExamples", positiveExamples);
 ComponentManager.getInstance().applyConfigEntry(component, "negativeExamples", negativeExamples);
 return component;
 }
 
 /**
-* option name: positiveExamples
-* positive examples
+* positiveExamples positive examples.
+* mandatory: true| reinit necessary: false
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getPositiveExamples ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(PosNegInclusionLP,  "positiveExamples") ;
+public Set<String> getPositiveExamples() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegInclusionLP,  "positiveExamples") ;
 }
 /**
-* option name: negativeExamples
-* negative examples
+* negativeExamples negative examples.
+* mandatory: true| reinit necessary: false
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getNegativeExamples ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(PosNegInclusionLP,  "negativeExamples") ;
+public Set<String> getNegativeExamples() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegInclusionLP,  "negativeExamples") ;
 }
 /**
-* option name: useRetrievalForClassficiation
-* Specifies whether to use retrieval or instance checks for testing a concept.
+* useRetrievalForClassficiation Specifies whether to use retrieval or instance checks for testing a concept..
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getUseRetrievalForClassficiation ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(PosNegInclusionLP,  "useRetrievalForClassficiation") ;
+public boolean getUseRetrievalForClassficiation() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(posNegInclusionLP,  "useRetrievalForClassficiation") ;
 }
 /**
-* option name: percentPerLenghtUnit
-* describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one
+* percentPerLenghtUnit describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one.
+* mandatory: false| reinit necessary: true
 * default value: 0.05
+* @return double 
 **/
-public double getPercentPerLenghtUnit ( ) {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(PosNegInclusionLP,  "percentPerLenghtUnit") ;
+public double getPercentPerLenghtUnit() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegInclusionLP,  "percentPerLenghtUnit") ;
 }
 /**
-* option name: useMultiInstanceChecks
-* See UseMultiInstanceChecks enum.
+* useMultiInstanceChecks See UseMultiInstanceChecks enum..
+* mandatory: false| reinit necessary: true
 * default value: twoChecks
+* @return String 
 **/
-public String getUseMultiInstanceChecks ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(PosNegInclusionLP,  "useMultiInstanceChecks") ;
+public String getUseMultiInstanceChecks() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(posNegInclusionLP,  "useMultiInstanceChecks") ;
 }
 
 /**
-* option name: positiveExamples
-* positive examples
+* @param positiveExamples positive examples.
+* mandatory: true| reinit necessary: false
 * default value: null
 **/
-public void setPositiveExamples ( Set<String> positiveExamples) {
-ComponentManager.getInstance().applyConfigEntry(PosNegInclusionLP, "positiveExamples", positiveExamples);
+public void setPositiveExamples(Set<String> positiveExamples) {
+ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "positiveExamples", positiveExamples);
 }
 /**
-* option name: negativeExamples
-* negative examples
+* @param negativeExamples negative examples.
+* mandatory: true| reinit necessary: false
 * default value: null
 **/
-public void setNegativeExamples ( Set<String> negativeExamples) {
-ComponentManager.getInstance().applyConfigEntry(PosNegInclusionLP, "negativeExamples", negativeExamples);
+public void setNegativeExamples(Set<String> negativeExamples) {
+ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "negativeExamples", negativeExamples);
 }
 /**
-* option name: useRetrievalForClassficiation
-* Specifies whether to use retrieval or instance checks for testing a concept.
+* @param useRetrievalForClassficiation Specifies whether to use retrieval or instance checks for testing a concept..
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setUseRetrievalForClassficiation ( boolean useRetrievalForClassficiation) {
-ComponentManager.getInstance().applyConfigEntry(PosNegInclusionLP, "useRetrievalForClassficiation", useRetrievalForClassficiation);
+public void setUseRetrievalForClassficiation(boolean useRetrievalForClassficiation) {
+ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "useRetrievalForClassficiation", useRetrievalForClassficiation);
 reinitNecessary = true;
 }
 /**
-* option name: percentPerLenghtUnit
-* describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one
+* @param percentPerLenghtUnit describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one.
+* mandatory: false| reinit necessary: true
 * default value: 0.05
 **/
-public void setPercentPerLenghtUnit ( double percentPerLenghtUnit) {
-ComponentManager.getInstance().applyConfigEntry(PosNegInclusionLP, "percentPerLenghtUnit", percentPerLenghtUnit);
+public void setPercentPerLenghtUnit(double percentPerLenghtUnit) {
+ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "percentPerLenghtUnit", percentPerLenghtUnit);
 reinitNecessary = true;
 }
 /**
-* option name: useMultiInstanceChecks
-* See UseMultiInstanceChecks enum.
+* @param useMultiInstanceChecks See UseMultiInstanceChecks enum..
+* mandatory: false| reinit necessary: true
 * default value: twoChecks
 **/
-public void setUseMultiInstanceChecks ( String useMultiInstanceChecks) {
-ComponentManager.getInstance().applyConfigEntry(PosNegInclusionLP, "useMultiInstanceChecks", useMultiInstanceChecks);
+public void setUseMultiInstanceChecks(String useMultiInstanceChecks) {
+ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "useMultiInstanceChecks", useMultiInstanceChecks);
 reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

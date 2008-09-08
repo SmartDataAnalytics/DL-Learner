@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -24,43 +25,54 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class FastInstanceCheckerConfigurator  {
 
 private boolean reinitNecessary = false;
-private FastInstanceChecker FastInstanceChecker;
+@SuppressWarnings("unused")
 
-public FastInstanceCheckerConfigurator (FastInstanceChecker FastInstanceChecker){
-this.FastInstanceChecker = FastInstanceChecker;
+private FastInstanceChecker fastInstanceChecker;
+
+/**
+* @param fastInstanceChecker see FastInstanceChecker
+**/
+public FastInstanceCheckerConfigurator(FastInstanceChecker fastInstanceChecker){
+this.fastInstanceChecker = fastInstanceChecker;
 }
 
 /**
+* @return FastInstanceChecker
 **/
-public static FastInstanceChecker getFastInstanceChecker (KnowledgeSource knowledgeSource ) {
-FastInstanceChecker component = ComponentManager.getInstance().reasoner(FastInstanceChecker.class, knowledgeSource );
+public static FastInstanceChecker getFastInstanceChecker(KnowledgeSource knowledgeSource) {
+FastInstanceChecker component = ComponentManager.getInstance().reasoner(FastInstanceChecker.class, knowledgeSource);
 return component;
 }
 
 /**
-* option name: reasonerType
-* FaCT++ or Pellet to dematerialize
+* reasonerType FaCT++ or Pellet to dematerialize.
+* mandatory: false| reinit necessary: true
 * default value: pellet
+* @return String 
 **/
-public String getReasonerType ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(FastInstanceChecker,  "reasonerType") ;
+public String getReasonerType() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(fastInstanceChecker,  "reasonerType") ;
 }
 
 /**
-* option name: reasonerType
-* FaCT++ or Pellet to dematerialize
+* @param reasonerType FaCT++ or Pellet to dematerialize.
+* mandatory: false| reinit necessary: true
 * default value: pellet
 **/
-public void setReasonerType ( String reasonerType) {
-ComponentManager.getInstance().applyConfigEntry(FastInstanceChecker, "reasonerType", reasonerType);
+public void setReasonerType(String reasonerType) {
+ComponentManager.getInstance().applyConfigEntry(fastInstanceChecker, "reasonerType", reasonerType);
 reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

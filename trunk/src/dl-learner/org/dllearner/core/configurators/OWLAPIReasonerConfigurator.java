@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -24,43 +25,54 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class OWLAPIReasonerConfigurator  {
 
 private boolean reinitNecessary = false;
-private OWLAPIReasoner OWLAPIReasoner;
+@SuppressWarnings("unused")
 
-public OWLAPIReasonerConfigurator (OWLAPIReasoner OWLAPIReasoner){
-this.OWLAPIReasoner = OWLAPIReasoner;
+private OWLAPIReasoner oWLAPIReasoner;
+
+/**
+* @param oWLAPIReasoner see OWLAPIReasoner
+**/
+public OWLAPIReasonerConfigurator(OWLAPIReasoner oWLAPIReasoner){
+this.oWLAPIReasoner = oWLAPIReasoner;
 }
 
 /**
+* @return OWLAPIReasoner
 **/
-public static OWLAPIReasoner getOWLAPIReasoner (KnowledgeSource knowledgeSource ) {
-OWLAPIReasoner component = ComponentManager.getInstance().reasoner(OWLAPIReasoner.class, knowledgeSource );
+public static OWLAPIReasoner getOWLAPIReasoner(KnowledgeSource knowledgeSource) {
+OWLAPIReasoner component = ComponentManager.getInstance().reasoner(OWLAPIReasoner.class, knowledgeSource);
 return component;
 }
 
 /**
-* option name: reasonerType
-* FaCT++ or Pellet, which means "pellet" or "fact"
+* reasonerType FaCT++ or Pellet, which means "pellet" or "fact".
+* mandatory: false| reinit necessary: true
 * default value: pellet
+* @return String 
 **/
-public String getReasonerType ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(OWLAPIReasoner,  "reasonerType") ;
+public String getReasonerType() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(oWLAPIReasoner,  "reasonerType") ;
 }
 
 /**
-* option name: reasonerType
-* FaCT++ or Pellet, which means "pellet" or "fact"
+* @param reasonerType FaCT++ or Pellet, which means "pellet" or "fact".
+* mandatory: false| reinit necessary: true
 * default value: pellet
 **/
-public void setReasonerType ( String reasonerType) {
-ComponentManager.getInstance().applyConfigEntry(OWLAPIReasoner, "reasonerType", reasonerType);
+public void setReasonerType(String reasonerType) {
+ComponentManager.getInstance().applyConfigEntry(oWLAPIReasoner, "reasonerType", reasonerType);
 reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

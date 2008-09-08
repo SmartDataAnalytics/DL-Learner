@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -26,60 +27,72 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class RandomGuesserConfigurator  {
 
 private boolean reinitNecessary = false;
-private RandomGuesser RandomGuesser;
+@SuppressWarnings("unused")
 
-public RandomGuesserConfigurator (RandomGuesser RandomGuesser){
-this.RandomGuesser = RandomGuesser;
+private RandomGuesser randomGuesser;
+
+/**
+* @param randomGuesser see RandomGuesser
+**/
+public RandomGuesserConfigurator(RandomGuesser randomGuesser){
+this.randomGuesser = randomGuesser;
 }
 
 /**
+* @return RandomGuesser
 **/
-public static RandomGuesser getRandomGuesser (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException{
-RandomGuesser component = ComponentManager.getInstance().learningAlgorithm(RandomGuesser.class, learningProblem, reasoningService );
+public static RandomGuesser getRandomGuesser(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
+RandomGuesser component = ComponentManager.getInstance().learningAlgorithm(RandomGuesser.class, learningProblem, reasoningService);
 return component;
 }
 
 /**
-* option name: numberOfTrees
-* number of randomly generated concepts/trees
+* numberOfTrees number of randomly generated concepts/trees.
+* mandatory: false| reinit necessary: true
 * default value: 5
+* @return int 
 **/
-public int getNumberOfTrees ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(RandomGuesser,  "numberOfTrees") ;
+public int getNumberOfTrees() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(randomGuesser,  "numberOfTrees") ;
 }
 /**
-* option name: maxDepth
-* maximum depth of generated concepts/trees
+* maxDepth maximum depth of generated concepts/trees.
+* mandatory: false| reinit necessary: true
 * default value: 5
+* @return int 
 **/
-public int getMaxDepth ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(RandomGuesser,  "maxDepth") ;
+public int getMaxDepth() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(randomGuesser,  "maxDepth") ;
 }
 
 /**
-* option name: numberOfTrees
-* number of randomly generated concepts/trees
+* @param numberOfTrees number of randomly generated concepts/trees.
+* mandatory: false| reinit necessary: true
 * default value: 5
 **/
-public void setNumberOfTrees ( int numberOfTrees) {
-ComponentManager.getInstance().applyConfigEntry(RandomGuesser, "numberOfTrees", numberOfTrees);
+public void setNumberOfTrees(int numberOfTrees) {
+ComponentManager.getInstance().applyConfigEntry(randomGuesser, "numberOfTrees", numberOfTrees);
 reinitNecessary = true;
 }
 /**
-* option name: maxDepth
-* maximum depth of generated concepts/trees
+* @param maxDepth maximum depth of generated concepts/trees.
+* mandatory: false| reinit necessary: true
 * default value: 5
 **/
-public void setMaxDepth ( int maxDepth) {
-ComponentManager.getInstance().applyConfigEntry(RandomGuesser, "maxDepth", maxDepth);
+public void setMaxDepth(int maxDepth) {
+ComponentManager.getInstance().applyConfigEntry(randomGuesser, "maxDepth", maxDepth);
 reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -27,523 +28,562 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class ExampleBasedROLComponentConfigurator  {
 
 private boolean reinitNecessary = false;
-private ExampleBasedROLComponent ExampleBasedROLComponent;
+@SuppressWarnings("unused")
 
-public ExampleBasedROLComponentConfigurator (ExampleBasedROLComponent ExampleBasedROLComponent){
-this.ExampleBasedROLComponent = ExampleBasedROLComponent;
+private ExampleBasedROLComponent exampleBasedROLComponent;
+
+/**
+* @param exampleBasedROLComponent see ExampleBasedROLComponent
+**/
+public ExampleBasedROLComponentConfigurator(ExampleBasedROLComponent exampleBasedROLComponent){
+this.exampleBasedROLComponent = exampleBasedROLComponent;
 }
 
 /**
+* @return ExampleBasedROLComponent
 **/
-public static ExampleBasedROLComponent getExampleBasedROLComponent (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException{
-ExampleBasedROLComponent component = ComponentManager.getInstance().learningAlgorithm(ExampleBasedROLComponent.class, learningProblem, reasoningService );
+public static ExampleBasedROLComponent getExampleBasedROLComponent(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
+ExampleBasedROLComponent component = ComponentManager.getInstance().learningAlgorithm(ExampleBasedROLComponent.class, learningProblem, reasoningService);
 return component;
 }
 
 /**
-* option name: writeSearchTree
-* specifies whether to write a search tree
+* writeSearchTree specifies whether to write a search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getWriteSearchTree ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "writeSearchTree") ;
+public boolean getWriteSearchTree() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "writeSearchTree") ;
 }
 /**
-* option name: searchTreeFile
-* file to use for the search tree
+* searchTreeFile file to use for the search tree.
+* mandatory: false| reinit necessary: true
 * default value: log/searchTree.txt
+* @return String 
 **/
-public String getSearchTreeFile ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "searchTreeFile") ;
+public String getSearchTreeFile() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "searchTreeFile") ;
 }
 /**
-* option name: replaceSearchTree
-* specifies whether to replace the search tree in the log file after each run or append the new search tree
+* replaceSearchTree specifies whether to replace the search tree in the log file after each run or append the new search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getReplaceSearchTree ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "replaceSearchTree") ;
+public boolean getReplaceSearchTree() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "replaceSearchTree") ;
 }
 /**
-* option name: heuristic
-* specifiy the heuristic to use
+* heuristic specifiy the heuristic to use.
+* mandatory: false| reinit necessary: true
 * default value: lexicographic
+* @return String 
 **/
-public String getHeuristic ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "heuristic") ;
+public String getHeuristic() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "heuristic") ;
 }
 /**
-* option name: applyAllFilter
-* usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)
+* applyAllFilter usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D).
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getApplyAllFilter ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "applyAllFilter") ;
+public boolean getApplyAllFilter() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "applyAllFilter") ;
 }
 /**
-* option name: applyExistsFilter
-* usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
+* applyExistsFilter usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D).
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getApplyExistsFilter ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "applyExistsFilter") ;
+public boolean getApplyExistsFilter() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "applyExistsFilter") ;
 }
 /**
-* option name: useTooWeakList
-* try to filter out too weak concepts without sending them to the reasoner
+* useTooWeakList try to filter out too weak concepts without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseTooWeakList ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "useTooWeakList") ;
+public boolean getUseTooWeakList() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useTooWeakList") ;
 }
 /**
-* option name: useOverlyGeneralList
-* try to find overly general concept without sending them to the reasoner
+* useOverlyGeneralList try to find overly general concept without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseOverlyGeneralList ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "useOverlyGeneralList") ;
+public boolean getUseOverlyGeneralList() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useOverlyGeneralList") ;
 }
 /**
-* option name: useShortConceptConstruction
-* shorten concept to see whether they already exist
+* useShortConceptConstruction shorten concept to see whether they already exist.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseShortConceptConstruction ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "useShortConceptConstruction") ;
+public boolean getUseShortConceptConstruction() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useShortConceptConstruction") ;
 }
 /**
-* option name: horizontalExpansionFactor
-* horizontal expansion factor (see publication for description)
+* horizontalExpansionFactor horizontal expansion factor (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: 0.6
+* @return double 
 **/
-public double getHorizontalExpansionFactor ( ) {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "horizontalExpansionFactor") ;
+public double getHorizontalExpansionFactor() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "horizontalExpansionFactor") ;
 }
 /**
-* option name: improveSubsumptionHierarchy
-* simplify subsumption hierarchy to reduce search space (see publication for description)
+* improveSubsumptionHierarchy simplify subsumption hierarchy to reduce search space (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getImproveSubsumptionHierarchy ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "improveSubsumptionHierarchy") ;
+public boolean getImproveSubsumptionHierarchy() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "improveSubsumptionHierarchy") ;
 }
 /**
-* option name: allowedConcepts
-* concepts the algorithm is allowed to use
+* allowedConcepts concepts the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getAllowedConcepts ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "allowedConcepts") ;
+public Set<String> getAllowedConcepts() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "allowedConcepts") ;
 }
 /**
-* option name: ignoredConcepts
-* concepts the algorithm must ignore
+* ignoredConcepts concepts the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getIgnoredConcepts ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "ignoredConcepts") ;
+public Set<String> getIgnoredConcepts() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "ignoredConcepts") ;
 }
 /**
-* option name: allowedRoles
-* roles the algorithm is allowed to use
+* allowedRoles roles the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getAllowedRoles ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "allowedRoles") ;
+public Set<String> getAllowedRoles() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "allowedRoles") ;
 }
 /**
-* option name: ignoredRoles
-* roles the algorithm must ignore
+* ignoredRoles roles the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getIgnoredRoles ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "ignoredRoles") ;
+public Set<String> getIgnoredRoles() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "ignoredRoles") ;
 }
 /**
-* option name: useAllConstructor
-* specifies whether the universal concept constructor is used in the learning algorithm
+* useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseAllConstructor ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "useAllConstructor") ;
+public boolean getUseAllConstructor() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useAllConstructor") ;
 }
 /**
-* option name: useExistsConstructor
-* specifies whether the existential concept constructor is used in the learning algorithm
+* useExistsConstructor specifies whether the existential concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseExistsConstructor ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "useExistsConstructor") ;
+public boolean getUseExistsConstructor() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useExistsConstructor") ;
 }
 /**
-* option name: useCardinalityRestrictions
-* specifies whether CardinalityRestrictions is used in the learning algorithm
+* useCardinalityRestrictions specifies whether CardinalityRestrictions is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseCardinalityRestrictions ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "useCardinalityRestrictions") ;
+public boolean getUseCardinalityRestrictions() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useCardinalityRestrictions") ;
 }
 /**
-* option name: useNegation
-* specifies whether negation is used in the learning algorothm
+* useNegation specifies whether negation is used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseNegation ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "useNegation") ;
+public boolean getUseNegation() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useNegation") ;
 }
 /**
-* option name: useBooleanDatatypes
-* specifies whether boolean datatypes are used in the learning algorothm
+* useBooleanDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseBooleanDatatypes ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "useBooleanDatatypes") ;
+public boolean getUseBooleanDatatypes() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useBooleanDatatypes") ;
 }
 /**
-* option name: useDoubleDatatypes
-* specifies whether boolean datatypes are used in the learning algorothm
+* useDoubleDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseDoubleDatatypes ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "useDoubleDatatypes") ;
+public boolean getUseDoubleDatatypes() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useDoubleDatatypes") ;
 }
 /**
-* option name: maxExecutionTimeInSeconds
-* algorithm will stop after specified seconds
+* maxExecutionTimeInSeconds algorithm will stop after specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
+* @return int 
 **/
-public int getMaxExecutionTimeInSeconds ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "maxExecutionTimeInSeconds") ;
+public int getMaxExecutionTimeInSeconds() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "maxExecutionTimeInSeconds") ;
 }
 /**
-* option name: minExecutionTimeInSeconds
-* algorithm will run at least specified seconds
+* minExecutionTimeInSeconds algorithm will run at least specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
+* @return int 
 **/
-public int getMinExecutionTimeInSeconds ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "minExecutionTimeInSeconds") ;
+public int getMinExecutionTimeInSeconds() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "minExecutionTimeInSeconds") ;
 }
 /**
-* option name: guaranteeXgoodDescriptions
-* algorithm will run until X good (100%) concept descritpions are found
+* guaranteeXgoodDescriptions algorithm will run until X good (100%) concept descritpions are found.
+* mandatory: false| reinit necessary: true
 * default value: 1
+* @return int 
 **/
-public int getGuaranteeXgoodDescriptions ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "guaranteeXgoodDescriptions") ;
+public int getGuaranteeXgoodDescriptions() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "guaranteeXgoodDescriptions") ;
 }
 /**
-* option name: logLevel
-* determines the logLevel for this component, can be {TRACE, DEBUG, INFO}
+* logLevel determines the logLevel for this component, can be {TRACE, DEBUG, INFO}.
+* mandatory: false| reinit necessary: true
 * default value: DEBUG
+* @return String 
 **/
-public String getLogLevel ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "logLevel") ;
+public String getLogLevel() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "logLevel") ;
 }
 /**
-* option name: usePropernessChecks
-* specifies whether to check for equivalence (i.e. discard equivalent refinements)
+* usePropernessChecks specifies whether to check for equivalence (i.e. discard equivalent refinements).
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getUsePropernessChecks ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "usePropernessChecks") ;
+public boolean getUsePropernessChecks() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "usePropernessChecks") ;
 }
 /**
-* option name: maxPosOnlyExpansion
-* specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is considered as solution candidate
+* maxPosOnlyExpansion specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is considered as solution candidate.
+* mandatory: false| reinit necessary: true
 * default value: 4
+* @return int 
 **/
-public int getMaxPosOnlyExpansion ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "maxPosOnlyExpansion") ;
+public int getMaxPosOnlyExpansion() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "maxPosOnlyExpansion") ;
 }
 /**
-* option name: noisePercentage
-* the (approximated) percentage of noise within the examples
+* noisePercentage the (approximated) percentage of noise within the examples.
+* mandatory: false| reinit necessary: true
 * default value: 0.0
+* @return double 
 **/
-public double getNoisePercentage ( ) {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "noisePercentage") ;
+public double getNoisePercentage() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "noisePercentage") ;
 }
 /**
-* option name: startClass
-* the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)
+* startClass the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class).
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return String 
 **/
-public String getStartClass ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(ExampleBasedROLComponent,  "startClass") ;
+public String getStartClass() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "startClass") ;
 }
 
 /**
-* option name: writeSearchTree
-* specifies whether to write a search tree
+* @param writeSearchTree specifies whether to write a search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setWriteSearchTree ( boolean writeSearchTree) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "writeSearchTree", writeSearchTree);
+public void setWriteSearchTree(boolean writeSearchTree) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "writeSearchTree", writeSearchTree);
 reinitNecessary = true;
 }
 /**
-* option name: searchTreeFile
-* file to use for the search tree
+* @param searchTreeFile file to use for the search tree.
+* mandatory: false| reinit necessary: true
 * default value: log/searchTree.txt
 **/
-public void setSearchTreeFile ( String searchTreeFile) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "searchTreeFile", searchTreeFile);
+public void setSearchTreeFile(String searchTreeFile) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "searchTreeFile", searchTreeFile);
 reinitNecessary = true;
 }
 /**
-* option name: replaceSearchTree
-* specifies whether to replace the search tree in the log file after each run or append the new search tree
+* @param replaceSearchTree specifies whether to replace the search tree in the log file after each run or append the new search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setReplaceSearchTree ( boolean replaceSearchTree) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "replaceSearchTree", replaceSearchTree);
+public void setReplaceSearchTree(boolean replaceSearchTree) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "replaceSearchTree", replaceSearchTree);
 reinitNecessary = true;
 }
 /**
-* option name: heuristic
-* specifiy the heuristic to use
+* @param heuristic specifiy the heuristic to use.
+* mandatory: false| reinit necessary: true
 * default value: lexicographic
 **/
-public void setHeuristic ( String heuristic) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "heuristic", heuristic);
+public void setHeuristic(String heuristic) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "heuristic", heuristic);
 reinitNecessary = true;
 }
 /**
-* option name: applyAllFilter
-* usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)
+* @param applyAllFilter usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D).
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setApplyAllFilter ( boolean applyAllFilter) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "applyAllFilter", applyAllFilter);
+public void setApplyAllFilter(boolean applyAllFilter) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "applyAllFilter", applyAllFilter);
 reinitNecessary = true;
 }
 /**
-* option name: applyExistsFilter
-* usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
+* @param applyExistsFilter usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D).
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setApplyExistsFilter ( boolean applyExistsFilter) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "applyExistsFilter", applyExistsFilter);
+public void setApplyExistsFilter(boolean applyExistsFilter) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "applyExistsFilter", applyExistsFilter);
 reinitNecessary = true;
 }
 /**
-* option name: useTooWeakList
-* try to filter out too weak concepts without sending them to the reasoner
+* @param useTooWeakList try to filter out too weak concepts without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseTooWeakList ( boolean useTooWeakList) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "useTooWeakList", useTooWeakList);
+public void setUseTooWeakList(boolean useTooWeakList) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useTooWeakList", useTooWeakList);
 reinitNecessary = true;
 }
 /**
-* option name: useOverlyGeneralList
-* try to find overly general concept without sending them to the reasoner
+* @param useOverlyGeneralList try to find overly general concept without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseOverlyGeneralList ( boolean useOverlyGeneralList) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "useOverlyGeneralList", useOverlyGeneralList);
+public void setUseOverlyGeneralList(boolean useOverlyGeneralList) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useOverlyGeneralList", useOverlyGeneralList);
 reinitNecessary = true;
 }
 /**
-* option name: useShortConceptConstruction
-* shorten concept to see whether they already exist
+* @param useShortConceptConstruction shorten concept to see whether they already exist.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseShortConceptConstruction ( boolean useShortConceptConstruction) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "useShortConceptConstruction", useShortConceptConstruction);
+public void setUseShortConceptConstruction(boolean useShortConceptConstruction) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useShortConceptConstruction", useShortConceptConstruction);
 reinitNecessary = true;
 }
 /**
-* option name: horizontalExpansionFactor
-* horizontal expansion factor (see publication for description)
+* @param horizontalExpansionFactor horizontal expansion factor (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: 0.6
 **/
-public void setHorizontalExpansionFactor ( double horizontalExpansionFactor) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "horizontalExpansionFactor", horizontalExpansionFactor);
+public void setHorizontalExpansionFactor(double horizontalExpansionFactor) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "horizontalExpansionFactor", horizontalExpansionFactor);
 reinitNecessary = true;
 }
 /**
-* option name: improveSubsumptionHierarchy
-* simplify subsumption hierarchy to reduce search space (see publication for description)
+* @param improveSubsumptionHierarchy simplify subsumption hierarchy to reduce search space (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setImproveSubsumptionHierarchy ( boolean improveSubsumptionHierarchy) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "improveSubsumptionHierarchy", improveSubsumptionHierarchy);
+public void setImproveSubsumptionHierarchy(boolean improveSubsumptionHierarchy) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "improveSubsumptionHierarchy", improveSubsumptionHierarchy);
 reinitNecessary = true;
 }
 /**
-* option name: allowedConcepts
-* concepts the algorithm is allowed to use
+* @param allowedConcepts concepts the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setAllowedConcepts ( Set<String> allowedConcepts) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "allowedConcepts", allowedConcepts);
+public void setAllowedConcepts(Set<String> allowedConcepts) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "allowedConcepts", allowedConcepts);
 reinitNecessary = true;
 }
 /**
-* option name: ignoredConcepts
-* concepts the algorithm must ignore
+* @param ignoredConcepts concepts the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setIgnoredConcepts ( Set<String> ignoredConcepts) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "ignoredConcepts", ignoredConcepts);
+public void setIgnoredConcepts(Set<String> ignoredConcepts) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "ignoredConcepts", ignoredConcepts);
 reinitNecessary = true;
 }
 /**
-* option name: allowedRoles
-* roles the algorithm is allowed to use
+* @param allowedRoles roles the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setAllowedRoles ( Set<String> allowedRoles) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "allowedRoles", allowedRoles);
+public void setAllowedRoles(Set<String> allowedRoles) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "allowedRoles", allowedRoles);
 reinitNecessary = true;
 }
 /**
-* option name: ignoredRoles
-* roles the algorithm must ignore
+* @param ignoredRoles roles the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setIgnoredRoles ( Set<String> ignoredRoles) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "ignoredRoles", ignoredRoles);
+public void setIgnoredRoles(Set<String> ignoredRoles) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "ignoredRoles", ignoredRoles);
 reinitNecessary = true;
 }
 /**
-* option name: useAllConstructor
-* specifies whether the universal concept constructor is used in the learning algorithm
+* @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseAllConstructor ( boolean useAllConstructor) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "useAllConstructor", useAllConstructor);
+public void setUseAllConstructor(boolean useAllConstructor) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useAllConstructor", useAllConstructor);
 reinitNecessary = true;
 }
 /**
-* option name: useExistsConstructor
-* specifies whether the existential concept constructor is used in the learning algorithm
+* @param useExistsConstructor specifies whether the existential concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseExistsConstructor ( boolean useExistsConstructor) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "useExistsConstructor", useExistsConstructor);
+public void setUseExistsConstructor(boolean useExistsConstructor) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useExistsConstructor", useExistsConstructor);
 reinitNecessary = true;
 }
 /**
-* option name: useCardinalityRestrictions
-* specifies whether CardinalityRestrictions is used in the learning algorithm
+* @param useCardinalityRestrictions specifies whether CardinalityRestrictions is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseCardinalityRestrictions ( boolean useCardinalityRestrictions) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "useCardinalityRestrictions", useCardinalityRestrictions);
+public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useCardinalityRestrictions", useCardinalityRestrictions);
 reinitNecessary = true;
 }
 /**
-* option name: useNegation
-* specifies whether negation is used in the learning algorothm
+* @param useNegation specifies whether negation is used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseNegation ( boolean useNegation) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "useNegation", useNegation);
+public void setUseNegation(boolean useNegation) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useNegation", useNegation);
 reinitNecessary = true;
 }
 /**
-* option name: useBooleanDatatypes
-* specifies whether boolean datatypes are used in the learning algorothm
+* @param useBooleanDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseBooleanDatatypes ( boolean useBooleanDatatypes) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "useBooleanDatatypes", useBooleanDatatypes);
+public void setUseBooleanDatatypes(boolean useBooleanDatatypes) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useBooleanDatatypes", useBooleanDatatypes);
 reinitNecessary = true;
 }
 /**
-* option name: useDoubleDatatypes
-* specifies whether boolean datatypes are used in the learning algorothm
+* @param useDoubleDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseDoubleDatatypes ( boolean useDoubleDatatypes) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "useDoubleDatatypes", useDoubleDatatypes);
+public void setUseDoubleDatatypes(boolean useDoubleDatatypes) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useDoubleDatatypes", useDoubleDatatypes);
 reinitNecessary = true;
 }
 /**
-* option name: maxExecutionTimeInSeconds
-* algorithm will stop after specified seconds
+* @param maxExecutionTimeInSeconds algorithm will stop after specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
 **/
-public void setMaxExecutionTimeInSeconds ( int maxExecutionTimeInSeconds) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
+public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
 reinitNecessary = true;
 }
 /**
-* option name: minExecutionTimeInSeconds
-* algorithm will run at least specified seconds
+* @param minExecutionTimeInSeconds algorithm will run at least specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
 **/
-public void setMinExecutionTimeInSeconds ( int minExecutionTimeInSeconds) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "minExecutionTimeInSeconds", minExecutionTimeInSeconds);
+public void setMinExecutionTimeInSeconds(int minExecutionTimeInSeconds) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "minExecutionTimeInSeconds", minExecutionTimeInSeconds);
 reinitNecessary = true;
 }
 /**
-* option name: guaranteeXgoodDescriptions
-* algorithm will run until X good (100%) concept descritpions are found
+* @param guaranteeXgoodDescriptions algorithm will run until X good (100%) concept descritpions are found.
+* mandatory: false| reinit necessary: true
 * default value: 1
 **/
-public void setGuaranteeXgoodDescriptions ( int guaranteeXgoodDescriptions) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "guaranteeXgoodDescriptions", guaranteeXgoodDescriptions);
+public void setGuaranteeXgoodDescriptions(int guaranteeXgoodDescriptions) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "guaranteeXgoodDescriptions", guaranteeXgoodDescriptions);
 reinitNecessary = true;
 }
 /**
-* option name: logLevel
-* determines the logLevel for this component, can be {TRACE, DEBUG, INFO}
+* @param logLevel determines the logLevel for this component, can be {TRACE, DEBUG, INFO}.
+* mandatory: false| reinit necessary: true
 * default value: DEBUG
 **/
-public void setLogLevel ( String logLevel) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "logLevel", logLevel);
+public void setLogLevel(String logLevel) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "logLevel", logLevel);
 reinitNecessary = true;
 }
 /**
-* option name: usePropernessChecks
-* specifies whether to check for equivalence (i.e. discard equivalent refinements)
+* @param usePropernessChecks specifies whether to check for equivalence (i.e. discard equivalent refinements).
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setUsePropernessChecks ( boolean usePropernessChecks) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "usePropernessChecks", usePropernessChecks);
+public void setUsePropernessChecks(boolean usePropernessChecks) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "usePropernessChecks", usePropernessChecks);
 reinitNecessary = true;
 }
 /**
-* option name: maxPosOnlyExpansion
-* specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is considered as solution candidate
+* @param maxPosOnlyExpansion specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is considered as solution candidate.
+* mandatory: false| reinit necessary: true
 * default value: 4
 **/
-public void setMaxPosOnlyExpansion ( int maxPosOnlyExpansion) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "maxPosOnlyExpansion", maxPosOnlyExpansion);
+public void setMaxPosOnlyExpansion(int maxPosOnlyExpansion) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "maxPosOnlyExpansion", maxPosOnlyExpansion);
 reinitNecessary = true;
 }
 /**
-* option name: noisePercentage
-* the (approximated) percentage of noise within the examples
+* @param noisePercentage the (approximated) percentage of noise within the examples.
+* mandatory: false| reinit necessary: true
 * default value: 0.0
 **/
-public void setNoisePercentage ( double noisePercentage) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "noisePercentage", noisePercentage);
+public void setNoisePercentage(double noisePercentage) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "noisePercentage", noisePercentage);
 reinitNecessary = true;
 }
 /**
-* option name: startClass
-* the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)
+* @param startClass the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class).
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setStartClass ( String startClass) {
-ComponentManager.getInstance().applyConfigEntry(ExampleBasedROLComponent, "startClass", startClass);
+public void setStartClass(String startClass) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "startClass", startClass);
 reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

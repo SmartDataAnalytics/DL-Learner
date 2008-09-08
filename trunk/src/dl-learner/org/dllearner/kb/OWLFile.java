@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
@@ -43,6 +44,9 @@ import org.dllearner.reasoning.OWLAPIDIGConverter;
  */
 public class OWLFile extends KnowledgeSource {
 
+	private static Logger logger = Logger
+	.getLogger(OWLFile.class);
+	
 	private URL url;
 	private OWLFileConfigurator configurator ;
 	public OWLFileConfigurator getOWLFileConfigurator(){
@@ -60,7 +64,7 @@ public class OWLFile extends KnowledgeSource {
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("url", "URL pointing to the OWL file", null, true, false));
+		options.add(new StringConfigOption("url", "URL pointing to the OWL file", null, true, true));
 		return options;
 	}
 
@@ -69,25 +73,7 @@ public class OWLFile extends KnowledgeSource {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		//configurator.applyConfigEntry(entry);
 		
-		//postprocessing
-		if (entry.getOptionName().equals("url")) {
-			try {
-				url = new URL(configurator.getUrl());
-			} catch (MalformedURLException e) {
-				throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),"malformed URL " + configurator.getUrl());
-			} 
-			
-//			 File f = new File(url.toURI());
-//if(!f.canRead())
-//	throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue());
-//			String s = (String) entry.getValue();
-//catch (URISyntaxException e) {
-//e.printStackTrace();
-//}
-
-		}
 	}
 
 	/* (non-Javadoc)
@@ -95,7 +81,14 @@ public class OWLFile extends KnowledgeSource {
 	 */
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
+		
+			try {
+				url = new URL(configurator.getUrl());
+			} catch (MalformedURLException e) {
+				logger.error(e.getMessage());
+				//throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),"malformed URL " + configurator.getUrl());
+			} 
+		
 		
 	}
 	

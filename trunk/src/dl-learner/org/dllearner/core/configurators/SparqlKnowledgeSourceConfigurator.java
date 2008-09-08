@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -26,441 +27,461 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.datastructures.StringTuple;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class SparqlKnowledgeSourceConfigurator  {
 
 private boolean reinitNecessary = false;
-private SparqlKnowledgeSource SparqlKnowledgeSource;
+@SuppressWarnings("unused")
 
-public SparqlKnowledgeSourceConfigurator (SparqlKnowledgeSource SparqlKnowledgeSource){
-this.SparqlKnowledgeSource = SparqlKnowledgeSource;
+private SparqlKnowledgeSource sparqlKnowledgeSource;
+
+/**
+* @param sparqlKnowledgeSource see SparqlKnowledgeSource
+**/
+public SparqlKnowledgeSourceConfigurator(SparqlKnowledgeSource sparqlKnowledgeSource){
+this.sparqlKnowledgeSource = sparqlKnowledgeSource;
 }
 
 /**
+* @param url URL of SPARQL Endpoint
 * @param instances relevant instances e.g. positive and negative examples in a learning problem
+* @return SparqlKnowledgeSource
 **/
-public static SparqlKnowledgeSource getSparqlKnowledgeSource (Set<String> instances ) {
-SparqlKnowledgeSource component = ComponentManager.getInstance().knowledgeSource(SparqlKnowledgeSource.class );
+public static SparqlKnowledgeSource getSparqlKnowledgeSource(String url, Set<String> instances) {
+SparqlKnowledgeSource component = ComponentManager.getInstance().knowledgeSource(SparqlKnowledgeSource.class);
+ComponentManager.getInstance().applyConfigEntry(component, "url", url);
 ComponentManager.getInstance().applyConfigEntry(component, "instances", instances);
 return component;
 }
 
 /**
-* option name: url
-* URL of SPARQL Endpoint
+* url URL of SPARQL Endpoint.
+* mandatory: true| reinit necessary: true
 * default value: null
+* @return String 
 **/
-public String getUrl ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "url") ;
+public String getUrl() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "url") ;
 }
 /**
-* option name: cacheDir
-* dir of cache
-* default value: null
+* cacheDir dir of cache.
+* mandatory: false| reinit necessary: true
+* default value: cache
+* @return String 
 **/
-public String getCacheDir ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "cacheDir") ;
+public String getCacheDir() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "cacheDir") ;
 }
 /**
-* option name: instances
-* relevant instances e.g. positive and negative examples in a learning problem
+* instances relevant instances e.g. positive and negative examples in a learning problem.
+* mandatory: true| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getInstances ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "instances") ;
+public Set<String> getInstances() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "instances") ;
 }
 /**
-* option name: recursionDepth
-* recursion depth of KB fragment selection
+* recursionDepth recursion depth of KB fragment selection.
+* mandatory: false| reinit necessary: true
 * default value: 1
+* @return int 
 **/
-public int getRecursionDepth ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "recursionDepth") ;
+public int getRecursionDepth() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "recursionDepth") ;
 }
 /**
-* option name: predefinedFilter
-* the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST
+* predefinedFilter the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return String 
 **/
-public String getPredefinedFilter ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "predefinedFilter") ;
+public String getPredefinedFilter() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "predefinedFilter") ;
 }
 /**
-* option name: predefinedEndpoint
-* the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK
+* predefinedEndpoint the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return String 
 **/
-public String getPredefinedEndpoint ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "predefinedEndpoint") ;
+public String getPredefinedEndpoint() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "predefinedEndpoint") ;
 }
 /**
-* option name: predefinedManipulator
-* the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR
+* predefinedManipulator the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return String 
 **/
-public String getPredefinedManipulator ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "predefinedManipulator") ;
+public String getPredefinedManipulator() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "predefinedManipulator") ;
 }
 /**
-* option name: predList
-* list of all ignored roles
-* default value: null
+* predList list of all ignored roles.
+* mandatory: false| reinit necessary: true
+* default value: []
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getPredList ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "predList") ;
+public Set<String> getPredList() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "predList") ;
 }
 /**
-* option name: objList
-* list of all ignored objects
-* default value: null
+* objList list of all ignored objects.
+* mandatory: false| reinit necessary: true
+* default value: []
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getObjList ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "objList") ;
+public Set<String> getObjList() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "objList") ;
 }
 /**
-* option name: classList
-* list of all ignored classes
-* default value: null
-**/
-@SuppressWarnings("unchecked")
-public Set<String> getClassList ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "classList") ;
-}
-/**
-* option name: format
-* N-TRIPLES or KB format
+* format N-TRIPLES or KB format.
+* mandatory: false| reinit necessary: true
 * default value: N-TRIPLES
+* @return String 
 **/
-public String getFormat ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "format") ;
+public String getFormat() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "format") ;
 }
 /**
-* option name: dumpToFile
-* Specifies whether the extracted ontology is written to a file or not.
+* dumpToFile Specifies whether the extracted ontology is written to a file or not..
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getDumpToFile ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "dumpToFile") ;
+public boolean getDumpToFile() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "dumpToFile") ;
 }
 /**
-* option name: convertNT2RDF
-* Specifies whether the extracted NTriples are converted to RDF and deleted.
-* default value: true
-**/
-public boolean getConvertNT2RDF ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "convertNT2RDF") ;
-}
-/**
-* option name: useLits
-* use Literals in SPARQL query
-* default value: true
-**/
-public boolean getUseLits ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "useLits") ;
-}
-/**
-* option name: getAllSuperClasses
-* If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.
-* default value: true
-**/
-public boolean getGetAllSuperClasses ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "getAllSuperClasses") ;
-}
-/**
-* option name: useCache
-* If true a Cache is used
-* default value: true
-**/
-public boolean getUseCache ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "useCache") ;
-}
-/**
-* option name: replacePredicate
-* rule for replacing predicates
-* default value: null
-**/
-public List<StringTuple> getReplacePredicate ( ) {
-return (List<StringTuple>) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "replacePredicate") ;
-}
-/**
-* option name: replaceObject
-* rule for replacing predicates
-* default value: null
-**/
-public List<StringTuple> getReplaceObject ( ) {
-return (List<StringTuple>) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "replaceObject") ;
-}
-/**
-* option name: breakSuperClassRetrievalAfter
-* stops a cyclic hierarchy after specified number of classes
-* default value: 1000
-**/
-public int getBreakSuperClassRetrievalAfter ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "breakSuperClassRetrievalAfter") ;
-}
-/**
-* option name: closeAfterRecursion
-* gets all classes for all instances
-* default value: true
-**/
-public boolean getCloseAfterRecursion ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "closeAfterRecursion") ;
-}
-/**
-* option name: getPropertyInformation
-* gets all types for extracted ObjectProperties
+* convertNT2RDF Specifies whether the extracted NTriples are converted to RDF and deleted..
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getGetPropertyInformation ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "getPropertyInformation") ;
+public boolean getConvertNT2RDF() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "convertNT2RDF") ;
 }
 /**
-* option name: verbosity
-* control verbosity of output for this component
+* useLits use Literals in SPARQL query.
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getUseLits() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "useLits") ;
+}
+/**
+* getAllSuperClasses If true then all superclasses are retrieved until the most general class (owl:Thing) is reached..
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getGetAllSuperClasses() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "getAllSuperClasses") ;
+}
+/**
+* useCache If true a Cache is used.
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getUseCache() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "useCache") ;
+}
+/**
+* replacePredicate rule for replacing predicates.
+* mandatory: false| reinit necessary: true
+* default value: []
+* @return List(StringTuple) 
+**/
+@SuppressWarnings("unchecked")
+public List<StringTuple> getReplacePredicate() {
+return (List<StringTuple>) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "replacePredicate") ;
+}
+/**
+* replaceObject rule for replacing predicates.
+* mandatory: false| reinit necessary: true
+* default value: []
+* @return List(StringTuple) 
+**/
+@SuppressWarnings("unchecked")
+public List<StringTuple> getReplaceObject() {
+return (List<StringTuple>) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "replaceObject") ;
+}
+/**
+* breakSuperClassRetrievalAfter stops a cyclic hierarchy after specified number of classes.
+* mandatory: false| reinit necessary: true
+* default value: 1000
+* @return int 
+**/
+public int getBreakSuperClassRetrievalAfter() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "breakSuperClassRetrievalAfter") ;
+}
+/**
+* closeAfterRecursion gets all classes for all instances.
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getCloseAfterRecursion() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "closeAfterRecursion") ;
+}
+/**
+* getPropertyInformation gets all types for extracted ObjectProperties.
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getGetPropertyInformation() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "getPropertyInformation") ;
+}
+/**
+* verbosity control verbosity of output for this component.
+* mandatory: false| reinit necessary: true
 * default value: warning
+* @return String 
 **/
-public String getVerbosity ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "verbosity") ;
+public String getVerbosity() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "verbosity") ;
 }
 /**
-* option name: defaultGraphURIs
-* a list of all default Graph URIs
-* default value: null
+* defaultGraphURIs a list of all default Graph URIs.
+* mandatory: false| reinit necessary: true
+* default value: []
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getDefaultGraphURIs ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "defaultGraphURIs") ;
+public Set<String> getDefaultGraphURIs() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "defaultGraphURIs") ;
 }
 /**
-* option name: namedGraphURIs
-* a list of all named Graph URIs
-* default value: null
+* namedGraphURIs a list of all named Graph URIs.
+* mandatory: false| reinit necessary: true
+* default value: []
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getNamedGraphURIs ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(SparqlKnowledgeSource,  "namedGraphURIs") ;
+public Set<String> getNamedGraphURIs() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "namedGraphURIs") ;
 }
 
 /**
-* option name: url
-* URL of SPARQL Endpoint
+* @param url URL of SPARQL Endpoint.
+* mandatory: true| reinit necessary: true
 * default value: null
 **/
-public void setUrl ( String url) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "url", url);
+public void setUrl(String url) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "url", url);
 reinitNecessary = true;
 }
 /**
-* option name: cacheDir
-* dir of cache
-* default value: null
+* @param cacheDir dir of cache.
+* mandatory: false| reinit necessary: true
+* default value: cache
 **/
-public void setCacheDir ( String cacheDir) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "cacheDir", cacheDir);
+public void setCacheDir(String cacheDir) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "cacheDir", cacheDir);
 reinitNecessary = true;
 }
 /**
-* option name: instances
-* relevant instances e.g. positive and negative examples in a learning problem
+* @param instances relevant instances e.g. positive and negative examples in a learning problem.
+* mandatory: true| reinit necessary: true
 * default value: null
 **/
-public void setInstances ( Set<String> instances) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "instances", instances);
+public void setInstances(Set<String> instances) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "instances", instances);
+reinitNecessary = true;
 }
 /**
-* option name: recursionDepth
-* recursion depth of KB fragment selection
+* @param recursionDepth recursion depth of KB fragment selection.
+* mandatory: false| reinit necessary: true
 * default value: 1
 **/
-public void setRecursionDepth ( int recursionDepth) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "recursionDepth", recursionDepth);
+public void setRecursionDepth(int recursionDepth) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "recursionDepth", recursionDepth);
 reinitNecessary = true;
 }
 /**
-* option name: predefinedFilter
-* the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST
+* @param predefinedFilter the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setPredefinedFilter ( String predefinedFilter) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "predefinedFilter", predefinedFilter);
+public void setPredefinedFilter(String predefinedFilter) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "predefinedFilter", predefinedFilter);
 reinitNecessary = true;
 }
 /**
-* option name: predefinedEndpoint
-* the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK
+* @param predefinedEndpoint the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setPredefinedEndpoint ( String predefinedEndpoint) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "predefinedEndpoint", predefinedEndpoint);
+public void setPredefinedEndpoint(String predefinedEndpoint) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "predefinedEndpoint", predefinedEndpoint);
 reinitNecessary = true;
 }
 /**
-* option name: predefinedManipulator
-* the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR
+* @param predefinedManipulator the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setPredefinedManipulator ( String predefinedManipulator) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "predefinedManipulator", predefinedManipulator);
+public void setPredefinedManipulator(String predefinedManipulator) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "predefinedManipulator", predefinedManipulator);
 reinitNecessary = true;
 }
 /**
-* option name: predList
-* list of all ignored roles
-* default value: null
+* @param predList list of all ignored roles.
+* mandatory: false| reinit necessary: true
+* default value: []
 **/
-public void setPredList ( Set<String> predList) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "predList", predList);
+public void setPredList(Set<String> predList) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "predList", predList);
 reinitNecessary = true;
 }
 /**
-* option name: objList
-* list of all ignored objects
-* default value: null
+* @param objList list of all ignored objects.
+* mandatory: false| reinit necessary: true
+* default value: []
 **/
-public void setObjList ( Set<String> objList) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "objList", objList);
+public void setObjList(Set<String> objList) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "objList", objList);
 reinitNecessary = true;
 }
 /**
-* option name: classList
-* list of all ignored classes
-* default value: null
-**/
-public void setClassList ( Set<String> classList) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "classList", classList);
-reinitNecessary = true;
-}
-/**
-* option name: format
-* N-TRIPLES or KB format
+* @param format N-TRIPLES or KB format.
+* mandatory: false| reinit necessary: true
 * default value: N-TRIPLES
 **/
-public void setFormat ( String format) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "format", format);
+public void setFormat(String format) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "format", format);
 reinitNecessary = true;
 }
 /**
-* option name: dumpToFile
-* Specifies whether the extracted ontology is written to a file or not.
+* @param dumpToFile Specifies whether the extracted ontology is written to a file or not..
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setDumpToFile ( boolean dumpToFile) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "dumpToFile", dumpToFile);
+public void setDumpToFile(boolean dumpToFile) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "dumpToFile", dumpToFile);
 reinitNecessary = true;
 }
 /**
-* option name: convertNT2RDF
-* Specifies whether the extracted NTriples are converted to RDF and deleted.
-* default value: true
-**/
-public void setConvertNT2RDF ( boolean convertNT2RDF) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "convertNT2RDF", convertNT2RDF);
-reinitNecessary = true;
-}
-/**
-* option name: useLits
-* use Literals in SPARQL query
-* default value: true
-**/
-public void setUseLits ( boolean useLits) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "useLits", useLits);
-reinitNecessary = true;
-}
-/**
-* option name: getAllSuperClasses
-* If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.
-* default value: true
-**/
-public void setGetAllSuperClasses ( boolean getAllSuperClasses) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "getAllSuperClasses", getAllSuperClasses);
-reinitNecessary = true;
-}
-/**
-* option name: useCache
-* If true a Cache is used
-* default value: true
-**/
-public void setUseCache ( boolean useCache) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "useCache", useCache);
-reinitNecessary = true;
-}
-/**
-* option name: replacePredicate
-* rule for replacing predicates
-* default value: null
-**/
-public void setReplacePredicate ( List<StringTuple> replacePredicate) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "replacePredicate", replacePredicate);
-reinitNecessary = true;
-}
-/**
-* option name: replaceObject
-* rule for replacing predicates
-* default value: null
-**/
-public void setReplaceObject ( List<StringTuple> replaceObject) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "replaceObject", replaceObject);
-reinitNecessary = true;
-}
-/**
-* option name: breakSuperClassRetrievalAfter
-* stops a cyclic hierarchy after specified number of classes
-* default value: 1000
-**/
-public void setBreakSuperClassRetrievalAfter ( int breakSuperClassRetrievalAfter) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "breakSuperClassRetrievalAfter", breakSuperClassRetrievalAfter);
-reinitNecessary = true;
-}
-/**
-* option name: closeAfterRecursion
-* gets all classes for all instances
-* default value: true
-**/
-public void setCloseAfterRecursion ( boolean closeAfterRecursion) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "closeAfterRecursion", closeAfterRecursion);
-reinitNecessary = true;
-}
-/**
-* option name: getPropertyInformation
-* gets all types for extracted ObjectProperties
+* @param convertNT2RDF Specifies whether the extracted NTriples are converted to RDF and deleted..
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setGetPropertyInformation ( boolean getPropertyInformation) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "getPropertyInformation", getPropertyInformation);
+public void setConvertNT2RDF(boolean convertNT2RDF) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "convertNT2RDF", convertNT2RDF);
 reinitNecessary = true;
 }
 /**
-* option name: verbosity
-* control verbosity of output for this component
+* @param useLits use Literals in SPARQL query.
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setUseLits(boolean useLits) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "useLits", useLits);
+reinitNecessary = true;
+}
+/**
+* @param getAllSuperClasses If true then all superclasses are retrieved until the most general class (owl:Thing) is reached..
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setGetAllSuperClasses(boolean getAllSuperClasses) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "getAllSuperClasses", getAllSuperClasses);
+reinitNecessary = true;
+}
+/**
+* @param useCache If true a Cache is used.
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setUseCache(boolean useCache) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "useCache", useCache);
+reinitNecessary = true;
+}
+/**
+* @param replacePredicate rule for replacing predicates.
+* mandatory: false| reinit necessary: true
+* default value: []
+**/
+public void setReplacePredicate(List<StringTuple> replacePredicate) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "replacePredicate", replacePredicate);
+reinitNecessary = true;
+}
+/**
+* @param replaceObject rule for replacing predicates.
+* mandatory: false| reinit necessary: true
+* default value: []
+**/
+public void setReplaceObject(List<StringTuple> replaceObject) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "replaceObject", replaceObject);
+reinitNecessary = true;
+}
+/**
+* @param breakSuperClassRetrievalAfter stops a cyclic hierarchy after specified number of classes.
+* mandatory: false| reinit necessary: true
+* default value: 1000
+**/
+public void setBreakSuperClassRetrievalAfter(int breakSuperClassRetrievalAfter) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "breakSuperClassRetrievalAfter", breakSuperClassRetrievalAfter);
+reinitNecessary = true;
+}
+/**
+* @param closeAfterRecursion gets all classes for all instances.
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setCloseAfterRecursion(boolean closeAfterRecursion) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "closeAfterRecursion", closeAfterRecursion);
+reinitNecessary = true;
+}
+/**
+* @param getPropertyInformation gets all types for extracted ObjectProperties.
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setGetPropertyInformation(boolean getPropertyInformation) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "getPropertyInformation", getPropertyInformation);
+reinitNecessary = true;
+}
+/**
+* @param verbosity control verbosity of output for this component.
+* mandatory: false| reinit necessary: true
 * default value: warning
 **/
-public void setVerbosity ( String verbosity) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "verbosity", verbosity);
+public void setVerbosity(String verbosity) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "verbosity", verbosity);
 reinitNecessary = true;
 }
 /**
-* option name: defaultGraphURIs
-* a list of all default Graph URIs
-* default value: null
+* @param defaultGraphURIs a list of all default Graph URIs.
+* mandatory: false| reinit necessary: true
+* default value: []
 **/
-public void setDefaultGraphURIs ( Set<String> defaultGraphURIs) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "defaultGraphURIs", defaultGraphURIs);
+public void setDefaultGraphURIs(Set<String> defaultGraphURIs) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "defaultGraphURIs", defaultGraphURIs);
 reinitNecessary = true;
 }
 /**
-* option name: namedGraphURIs
-* a list of all named Graph URIs
-* default value: null
+* @param namedGraphURIs a list of all named Graph URIs.
+* mandatory: false| reinit necessary: true
+* default value: []
 **/
-public void setNamedGraphURIs ( Set<String> namedGraphURIs) {
-ComponentManager.getInstance().applyConfigEntry(SparqlKnowledgeSource, "namedGraphURIs", namedGraphURIs);
+public void setNamedGraphURIs(Set<String> namedGraphURIs) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "namedGraphURIs", namedGraphURIs);
 reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

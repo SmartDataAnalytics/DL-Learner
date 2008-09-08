@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -27,455 +28,490 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class ROLearnerConfigurator  {
 
 private boolean reinitNecessary = false;
-private ROLearner ROLearner;
+@SuppressWarnings("unused")
 
-public ROLearnerConfigurator (ROLearner ROLearner){
-this.ROLearner = ROLearner;
+private ROLearner rOLearner;
+
+/**
+* @param rOLearner see ROLearner
+**/
+public ROLearnerConfigurator(ROLearner rOLearner){
+this.rOLearner = rOLearner;
 }
 
 /**
+* @return ROLearner
 **/
-public static ROLearner getROLearner (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException{
-ROLearner component = ComponentManager.getInstance().learningAlgorithm(ROLearner.class, learningProblem, reasoningService );
+public static ROLearner getROLearner(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
+ROLearner component = ComponentManager.getInstance().learningAlgorithm(ROLearner.class, learningProblem, reasoningService);
 return component;
 }
 
 /**
-* option name: writeSearchTree
-* specifies whether to write a search tree
+* writeSearchTree specifies whether to write a search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getWriteSearchTree ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "writeSearchTree") ;
+public boolean getWriteSearchTree() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "writeSearchTree") ;
 }
 /**
-* option name: searchTreeFile
-* file to use for the search tree
+* searchTreeFile file to use for the search tree.
+* mandatory: false| reinit necessary: true
 * default value: log/searchTree.txt
+* @return String 
 **/
-public String getSearchTreeFile ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "searchTreeFile") ;
+public String getSearchTreeFile() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "searchTreeFile") ;
 }
 /**
-* option name: replaceSearchTree
-* specifies whether to replace the search tree in the log file after each run or append the new search tree
+* replaceSearchTree specifies whether to replace the search tree in the log file after each run or append the new search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getReplaceSearchTree ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "replaceSearchTree") ;
+public boolean getReplaceSearchTree() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "replaceSearchTree") ;
 }
 /**
-* option name: heuristic
-* specifiy the heuristic to use
+* heuristic specifiy the heuristic to use.
+* mandatory: false| reinit necessary: true
 * default value: lexicographic
+* @return String 
 **/
-public String getHeuristic ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "heuristic") ;
+public String getHeuristic() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "heuristic") ;
 }
 /**
-* option name: applyAllFilter
-* usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)
+* applyAllFilter usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D).
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getApplyAllFilter ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "applyAllFilter") ;
+public boolean getApplyAllFilter() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "applyAllFilter") ;
 }
 /**
-* option name: applyExistsFilter
-* usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
+* applyExistsFilter usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D).
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getApplyExistsFilter ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "applyExistsFilter") ;
+public boolean getApplyExistsFilter() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "applyExistsFilter") ;
 }
 /**
-* option name: useTooWeakList
-* try to filter out too weak concepts without sending them to the reasoner
+* useTooWeakList try to filter out too weak concepts without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseTooWeakList ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "useTooWeakList") ;
+public boolean getUseTooWeakList() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "useTooWeakList") ;
 }
 /**
-* option name: useOverlyGeneralList
-* try to find overly general concept without sending them to the reasoner
+* useOverlyGeneralList try to find overly general concept without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseOverlyGeneralList ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "useOverlyGeneralList") ;
+public boolean getUseOverlyGeneralList() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "useOverlyGeneralList") ;
 }
 /**
-* option name: useShortConceptConstruction
-* shorten concept to see whether they already exist
+* useShortConceptConstruction shorten concept to see whether they already exist.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseShortConceptConstruction ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "useShortConceptConstruction") ;
+public boolean getUseShortConceptConstruction() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "useShortConceptConstruction") ;
 }
 /**
-* option name: horizontalExpansionFactor
-* horizontal expansion factor (see publication for description)
+* horizontalExpansionFactor horizontal expansion factor (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: 0.6
+* @return double 
 **/
-public double getHorizontalExpansionFactor ( ) {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "horizontalExpansionFactor") ;
+public double getHorizontalExpansionFactor() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "horizontalExpansionFactor") ;
 }
 /**
-* option name: improveSubsumptionHierarchy
-* simplify subsumption hierarchy to reduce search space (see publication for description)
+* improveSubsumptionHierarchy simplify subsumption hierarchy to reduce search space (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getImproveSubsumptionHierarchy ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "improveSubsumptionHierarchy") ;
+public boolean getImproveSubsumptionHierarchy() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "improveSubsumptionHierarchy") ;
 }
 /**
-* option name: quiet
-* may be deprecated soon
+* quiet may be deprecated soon.
+* mandatory: false| reinit necessary: true
 * default value: false
+* @return boolean 
 **/
-public boolean getQuiet ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "quiet") ;
+public boolean getQuiet() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "quiet") ;
 }
 /**
-* option name: allowedConcepts
-* concepts the algorithm is allowed to use
+* allowedConcepts concepts the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getAllowedConcepts ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "allowedConcepts") ;
+public Set<String> getAllowedConcepts() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "allowedConcepts") ;
 }
 /**
-* option name: ignoredConcepts
-* concepts the algorithm must ignore
+* ignoredConcepts concepts the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getIgnoredConcepts ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "ignoredConcepts") ;
+public Set<String> getIgnoredConcepts() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "ignoredConcepts") ;
 }
 /**
-* option name: allowedRoles
-* roles the algorithm is allowed to use
+* allowedRoles roles the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getAllowedRoles ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "allowedRoles") ;
+public Set<String> getAllowedRoles() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "allowedRoles") ;
 }
 /**
-* option name: ignoredRoles
-* roles the algorithm must ignore
+* ignoredRoles roles the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getIgnoredRoles ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "ignoredRoles") ;
+public Set<String> getIgnoredRoles() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "ignoredRoles") ;
 }
 /**
-* option name: useAllConstructor
-* specifies whether the universal concept constructor is used in the learning algorithm
+* useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseAllConstructor ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "useAllConstructor") ;
+public boolean getUseAllConstructor() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "useAllConstructor") ;
 }
 /**
-* option name: useExistsConstructor
-* specifies whether the existential concept constructor is used in the learning algorithm
+* useExistsConstructor specifies whether the existential concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseExistsConstructor ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "useExistsConstructor") ;
+public boolean getUseExistsConstructor() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "useExistsConstructor") ;
 }
 /**
-* option name: useNegation
-* specifies whether negation is used in the learning algorothm
+* useNegation specifies whether negation is used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseNegation ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "useNegation") ;
+public boolean getUseNegation() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "useNegation") ;
 }
 /**
-* option name: useCardinalityRestrictions
-* specifies whether CardinalityRestrictions is used in the learning algorithm
+* useCardinalityRestrictions specifies whether CardinalityRestrictions is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseCardinalityRestrictions ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "useCardinalityRestrictions") ;
+public boolean getUseCardinalityRestrictions() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "useCardinalityRestrictions") ;
 }
 /**
-* option name: useBooleanDatatypes
-* specifies whether boolean datatypes are used in the learning algorothm
+* useBooleanDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
+* @return boolean 
 **/
-public boolean getUseBooleanDatatypes ( ) {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "useBooleanDatatypes") ;
+public boolean getUseBooleanDatatypes() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "useBooleanDatatypes") ;
 }
 /**
-* option name: maxExecutionTimeInSeconds
-* algorithm will stop after specified seconds
+* maxExecutionTimeInSeconds algorithm will stop after specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
+* @return int 
 **/
-public int getMaxExecutionTimeInSeconds ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "maxExecutionTimeInSeconds") ;
+public int getMaxExecutionTimeInSeconds() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "maxExecutionTimeInSeconds") ;
 }
 /**
-* option name: minExecutionTimeInSeconds
-* algorithm will run at least specified seconds
+* minExecutionTimeInSeconds algorithm will run at least specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
+* @return int 
 **/
-public int getMinExecutionTimeInSeconds ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "minExecutionTimeInSeconds") ;
+public int getMinExecutionTimeInSeconds() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "minExecutionTimeInSeconds") ;
 }
 /**
-* option name: guaranteeXgoodDescriptions
-* algorithm will run until X good (100%) concept descritpions are found
+* guaranteeXgoodDescriptions algorithm will run until X good (100%) concept descritpions are found.
+* mandatory: false| reinit necessary: true
 * default value: 1
+* @return int 
 **/
-public int getGuaranteeXgoodDescriptions ( ) {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "guaranteeXgoodDescriptions") ;
+public int getGuaranteeXgoodDescriptions() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "guaranteeXgoodDescriptions") ;
 }
 /**
-* option name: logLevel
-* determines the logLevel for this component, can be {TRACE, DEBUG, INFO}
+* logLevel determines the logLevel for this component, can be {TRACE, DEBUG, INFO}.
+* mandatory: false| reinit necessary: true
 * default value: DEBUG
+* @return String 
 **/
-public String getLogLevel ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(ROLearner,  "logLevel") ;
+public String getLogLevel() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(rOLearner,  "logLevel") ;
 }
 
 /**
-* option name: writeSearchTree
-* specifies whether to write a search tree
+* @param writeSearchTree specifies whether to write a search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setWriteSearchTree ( boolean writeSearchTree) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "writeSearchTree", writeSearchTree);
+public void setWriteSearchTree(boolean writeSearchTree) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "writeSearchTree", writeSearchTree);
 reinitNecessary = true;
 }
 /**
-* option name: searchTreeFile
-* file to use for the search tree
+* @param searchTreeFile file to use for the search tree.
+* mandatory: false| reinit necessary: true
 * default value: log/searchTree.txt
 **/
-public void setSearchTreeFile ( String searchTreeFile) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "searchTreeFile", searchTreeFile);
+public void setSearchTreeFile(String searchTreeFile) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "searchTreeFile", searchTreeFile);
 reinitNecessary = true;
 }
 /**
-* option name: replaceSearchTree
-* specifies whether to replace the search tree in the log file after each run or append the new search tree
+* @param replaceSearchTree specifies whether to replace the search tree in the log file after each run or append the new search tree.
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setReplaceSearchTree ( boolean replaceSearchTree) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "replaceSearchTree", replaceSearchTree);
+public void setReplaceSearchTree(boolean replaceSearchTree) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "replaceSearchTree", replaceSearchTree);
 reinitNecessary = true;
 }
 /**
-* option name: heuristic
-* specifiy the heuristic to use
+* @param heuristic specifiy the heuristic to use.
+* mandatory: false| reinit necessary: true
 * default value: lexicographic
 **/
-public void setHeuristic ( String heuristic) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "heuristic", heuristic);
+public void setHeuristic(String heuristic) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "heuristic", heuristic);
 reinitNecessary = true;
 }
 /**
-* option name: applyAllFilter
-* usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)
+* @param applyAllFilter usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D).
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setApplyAllFilter ( boolean applyAllFilter) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "applyAllFilter", applyAllFilter);
+public void setApplyAllFilter(boolean applyAllFilter) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "applyAllFilter", applyAllFilter);
 reinitNecessary = true;
 }
 /**
-* option name: applyExistsFilter
-* usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)
+* @param applyExistsFilter usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D).
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setApplyExistsFilter ( boolean applyExistsFilter) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "applyExistsFilter", applyExistsFilter);
+public void setApplyExistsFilter(boolean applyExistsFilter) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "applyExistsFilter", applyExistsFilter);
 reinitNecessary = true;
 }
 /**
-* option name: useTooWeakList
-* try to filter out too weak concepts without sending them to the reasoner
+* @param useTooWeakList try to filter out too weak concepts without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseTooWeakList ( boolean useTooWeakList) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "useTooWeakList", useTooWeakList);
+public void setUseTooWeakList(boolean useTooWeakList) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "useTooWeakList", useTooWeakList);
 reinitNecessary = true;
 }
 /**
-* option name: useOverlyGeneralList
-* try to find overly general concept without sending them to the reasoner
+* @param useOverlyGeneralList try to find overly general concept without sending them to the reasoner.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseOverlyGeneralList ( boolean useOverlyGeneralList) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "useOverlyGeneralList", useOverlyGeneralList);
+public void setUseOverlyGeneralList(boolean useOverlyGeneralList) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "useOverlyGeneralList", useOverlyGeneralList);
 reinitNecessary = true;
 }
 /**
-* option name: useShortConceptConstruction
-* shorten concept to see whether they already exist
+* @param useShortConceptConstruction shorten concept to see whether they already exist.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseShortConceptConstruction ( boolean useShortConceptConstruction) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "useShortConceptConstruction", useShortConceptConstruction);
+public void setUseShortConceptConstruction(boolean useShortConceptConstruction) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "useShortConceptConstruction", useShortConceptConstruction);
 reinitNecessary = true;
 }
 /**
-* option name: horizontalExpansionFactor
-* horizontal expansion factor (see publication for description)
+* @param horizontalExpansionFactor horizontal expansion factor (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: 0.6
 **/
-public void setHorizontalExpansionFactor ( double horizontalExpansionFactor) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "horizontalExpansionFactor", horizontalExpansionFactor);
+public void setHorizontalExpansionFactor(double horizontalExpansionFactor) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "horizontalExpansionFactor", horizontalExpansionFactor);
 reinitNecessary = true;
 }
 /**
-* option name: improveSubsumptionHierarchy
-* simplify subsumption hierarchy to reduce search space (see publication for description)
+* @param improveSubsumptionHierarchy simplify subsumption hierarchy to reduce search space (see publication for description).
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setImproveSubsumptionHierarchy ( boolean improveSubsumptionHierarchy) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "improveSubsumptionHierarchy", improveSubsumptionHierarchy);
+public void setImproveSubsumptionHierarchy(boolean improveSubsumptionHierarchy) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "improveSubsumptionHierarchy", improveSubsumptionHierarchy);
 reinitNecessary = true;
 }
 /**
-* option name: quiet
-* may be deprecated soon
+* @param quiet may be deprecated soon.
+* mandatory: false| reinit necessary: true
 * default value: false
 **/
-public void setQuiet ( boolean quiet) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "quiet", quiet);
+public void setQuiet(boolean quiet) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "quiet", quiet);
 reinitNecessary = true;
 }
 /**
-* option name: allowedConcepts
-* concepts the algorithm is allowed to use
+* @param allowedConcepts concepts the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setAllowedConcepts ( Set<String> allowedConcepts) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "allowedConcepts", allowedConcepts);
+public void setAllowedConcepts(Set<String> allowedConcepts) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "allowedConcepts", allowedConcepts);
 reinitNecessary = true;
 }
 /**
-* option name: ignoredConcepts
-* concepts the algorithm must ignore
+* @param ignoredConcepts concepts the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setIgnoredConcepts ( Set<String> ignoredConcepts) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "ignoredConcepts", ignoredConcepts);
+public void setIgnoredConcepts(Set<String> ignoredConcepts) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "ignoredConcepts", ignoredConcepts);
 reinitNecessary = true;
 }
 /**
-* option name: allowedRoles
-* roles the algorithm is allowed to use
+* @param allowedRoles roles the algorithm is allowed to use.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setAllowedRoles ( Set<String> allowedRoles) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "allowedRoles", allowedRoles);
+public void setAllowedRoles(Set<String> allowedRoles) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "allowedRoles", allowedRoles);
 reinitNecessary = true;
 }
 /**
-* option name: ignoredRoles
-* roles the algorithm must ignore
+* @param ignoredRoles roles the algorithm must ignore.
+* mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setIgnoredRoles ( Set<String> ignoredRoles) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "ignoredRoles", ignoredRoles);
+public void setIgnoredRoles(Set<String> ignoredRoles) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "ignoredRoles", ignoredRoles);
 reinitNecessary = true;
 }
 /**
-* option name: useAllConstructor
-* specifies whether the universal concept constructor is used in the learning algorithm
+* @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseAllConstructor ( boolean useAllConstructor) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "useAllConstructor", useAllConstructor);
+public void setUseAllConstructor(boolean useAllConstructor) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "useAllConstructor", useAllConstructor);
 reinitNecessary = true;
 }
 /**
-* option name: useExistsConstructor
-* specifies whether the existential concept constructor is used in the learning algorithm
+* @param useExistsConstructor specifies whether the existential concept constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseExistsConstructor ( boolean useExistsConstructor) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "useExistsConstructor", useExistsConstructor);
+public void setUseExistsConstructor(boolean useExistsConstructor) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "useExistsConstructor", useExistsConstructor);
 reinitNecessary = true;
 }
 /**
-* option name: useNegation
-* specifies whether negation is used in the learning algorothm
+* @param useNegation specifies whether negation is used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseNegation ( boolean useNegation) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "useNegation", useNegation);
+public void setUseNegation(boolean useNegation) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "useNegation", useNegation);
 reinitNecessary = true;
 }
 /**
-* option name: useCardinalityRestrictions
-* specifies whether CardinalityRestrictions is used in the learning algorithm
+* @param useCardinalityRestrictions specifies whether CardinalityRestrictions is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseCardinalityRestrictions ( boolean useCardinalityRestrictions) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "useCardinalityRestrictions", useCardinalityRestrictions);
+public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "useCardinalityRestrictions", useCardinalityRestrictions);
 reinitNecessary = true;
 }
 /**
-* option name: useBooleanDatatypes
-* specifies whether boolean datatypes are used in the learning algorothm
+* @param useBooleanDatatypes specifies whether boolean datatypes are used in the learning algorothm.
+* mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setUseBooleanDatatypes ( boolean useBooleanDatatypes) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "useBooleanDatatypes", useBooleanDatatypes);
+public void setUseBooleanDatatypes(boolean useBooleanDatatypes) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "useBooleanDatatypes", useBooleanDatatypes);
 reinitNecessary = true;
 }
 /**
-* option name: maxExecutionTimeInSeconds
-* algorithm will stop after specified seconds
+* @param maxExecutionTimeInSeconds algorithm will stop after specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
 **/
-public void setMaxExecutionTimeInSeconds ( int maxExecutionTimeInSeconds) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
+public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
 reinitNecessary = true;
 }
 /**
-* option name: minExecutionTimeInSeconds
-* algorithm will run at least specified seconds
+* @param minExecutionTimeInSeconds algorithm will run at least specified seconds.
+* mandatory: false| reinit necessary: true
 * default value: 0
 **/
-public void setMinExecutionTimeInSeconds ( int minExecutionTimeInSeconds) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "minExecutionTimeInSeconds", minExecutionTimeInSeconds);
+public void setMinExecutionTimeInSeconds(int minExecutionTimeInSeconds) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "minExecutionTimeInSeconds", minExecutionTimeInSeconds);
 reinitNecessary = true;
 }
 /**
-* option name: guaranteeXgoodDescriptions
-* algorithm will run until X good (100%) concept descritpions are found
+* @param guaranteeXgoodDescriptions algorithm will run until X good (100%) concept descritpions are found.
+* mandatory: false| reinit necessary: true
 * default value: 1
 **/
-public void setGuaranteeXgoodDescriptions ( int guaranteeXgoodDescriptions) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "guaranteeXgoodDescriptions", guaranteeXgoodDescriptions);
+public void setGuaranteeXgoodDescriptions(int guaranteeXgoodDescriptions) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "guaranteeXgoodDescriptions", guaranteeXgoodDescriptions);
 reinitNecessary = true;
 }
 /**
-* option name: logLevel
-* determines the logLevel for this component, can be {TRACE, DEBUG, INFO}
+* @param logLevel determines the logLevel for this component, can be {TRACE, DEBUG, INFO}.
+* mandatory: false| reinit necessary: true
 * default value: DEBUG
 **/
-public void setLogLevel ( String logLevel) {
-ComponentManager.getInstance().applyConfigEntry(ROLearner, "logLevel", logLevel);
+public void setLogLevel(String logLevel) {
+ComponentManager.getInstance().applyConfigEntry(rOLearner, "logLevel", logLevel);
 reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }
