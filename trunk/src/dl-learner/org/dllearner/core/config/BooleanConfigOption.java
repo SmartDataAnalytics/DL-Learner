@@ -26,13 +26,6 @@ package org.dllearner.core.config;
  */
 public class BooleanConfigOption extends ConfigOption<Boolean> {
 
-	
-
-	public BooleanConfigOption(String name, String description, Boolean defaultValue, Tags... tags) {
-		super(name, description, defaultValue, tags);
-		
-	}
-
 	public BooleanConfigOption(String name, String description, Boolean defaultValue) {
 		super(name, description, defaultValue);
 		

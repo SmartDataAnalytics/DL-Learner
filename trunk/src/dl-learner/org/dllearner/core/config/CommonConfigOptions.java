@@ -19,7 +19,6 @@
  */
 package org.dllearner.core.config;
 
-import org.dllearner.core.config.ConfigOption.Tags;
 
 
 /**
@@ -59,7 +58,7 @@ public final class CommonConfigOptions {
 	}
 	
 	public static DoubleConfigOption getPercentPerLenghtUnitOption(double defaultValue) {
-		DoubleConfigOption option = new DoubleConfigOption("percentPerLenghtUnit", "describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one", defaultValue, Tags.NORMAL);
+		DoubleConfigOption option = new DoubleConfigOption("percentPerLenghtUnit", "describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one", defaultValue);
 		option.setLowerLimit(0.0);
 		option.setUpperLimit(1.0);
 		return option;

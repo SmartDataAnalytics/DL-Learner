@@ -34,7 +34,6 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
-import org.dllearner.core.config.ConfigOption.Tags;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
@@ -86,13 +85,13 @@ public abstract class PosNegLP extends LearningProblem {
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
 		options.add(new StringSetConfigOption("positiveExamples",
-				"positive examples",null, Tags.MANDATORY));
+				"positive examples",null, true, false));
 		options.add(new StringSetConfigOption("negativeExamples",
-				"negative examples",null, Tags.MANDATORY));
+				"negative examples",null, true, false));
 		options.add(new BooleanConfigOption("useRetrievalForClassficiation", 
-				"Specifies whether to use retrieval or instance checks for testing a concept.", false, Tags.NORMAL));
+				"Specifies whether to use retrieval or instance checks for testing a concept.", false));
 		options.add(CommonConfigOptions.getPercentPerLenghtUnitOption(0.05));
-		StringConfigOption multiInstanceChecks = new StringConfigOption("useMultiInstanceChecks", "See UseMultiInstanceChecks enum.","twoChecks",Tags.NORMAL);
+		StringConfigOption multiInstanceChecks = new StringConfigOption("useMultiInstanceChecks", "See UseMultiInstanceChecks enum.","twoChecks");
 		multiInstanceChecks.setAllowedValues(new String[] {"never", "twoChecks", "oneCheck"});
 		options.add(multiInstanceChecks);
 		return options;

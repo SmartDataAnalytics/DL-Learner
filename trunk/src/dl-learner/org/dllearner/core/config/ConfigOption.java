@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -29,57 +29,79 @@ import java.util.TreeSet;
  * Note: Currently, handling the type of a configuration option is not
  * straightforward to implement, because Java Generics information is erased at
  * runtime. This will be fixed in Java 7, in particular JSR 308, which is due at
- * approx. the end of 2008.
+ * approx. the beginning of 2009.
  * 
+ * @param <T> The type of the config option, e.g. Integer, String etc.
  * @author Jens Lehmann
  * 
  */
 public abstract class ConfigOption<T> {
 
+	/**
+	 * Name of this option.
+	 */
 	protected String name;
 
+	/**
+	 * A short description explaining the effect of this option.
+	 */
 	protected String description;
 
+	/**
+	 * The default value of this option.
+	 */
 	protected T defaultValue;
 	
-	public enum Tags {NORMAL, MANDATORY, REINIT}
-	
+	/**
+	 * Specifies whether this option is mandatory for a component,
+	 * e.g. if a value other than the default value needs to be given.
+	 */
 	protected boolean mandatory = false;
-	protected boolean reinitNecessary = false;
+	
+	/**
+	 * Specifies whether a change of the value of the option requires
+	 * running the init method of the component again. For some options
+	 * (e.g. url of an OWL file component) a new run of init is needed,
+	 * while others can be changed without the need to re-init the 
+	 * component.
+	 */
+	protected boolean requiresInit = false;
 
+	/**
+	 * Calls this(name, description, null, false, true).
+	 * @param name Name of config option.
+	 * @param description Explanation of option.
+	 */
 	public ConfigOption(String name, String description) {
-		this(name, description, null);
+		this(name, description, null, false, true);
 	}
 	
-	public ConfigOption(String name, String description,  T defaultValue, Tags ...tags ) {
+	/**
+	 * Calls this(name, description, defaultValue, false, true).
+	 * @param name Name of config option.
+	 * @param description Explanation of option.
+	 * @param defaultValue Standard value of option.
+	 */
+	public ConfigOption(String name, String description, T defaultValue) {
+		this(name, description, defaultValue, false, true);
+	}	
+	
+	/**
+	 * Constructs a component configuration option.
+	 * @param name Name of config option.
+	 * @param description Explanation of option.
+	 * @param defaultValue Standard value of option.
+	 * @param mandatory Specifies whether assigning a value to the option is required.
+	 * @param requiresInit Says whether init() has to be called again when the option is changed.
+	 */
+	public ConfigOption(String name, String description,  T defaultValue, boolean mandatory, boolean requiresInit) {
 		this.name = name;
 		this.description = description;
 		this.defaultValue = defaultValue;
-		boolean normal = false;
-		for(Tags t:tags){
-			if (t.equals(Tags.NORMAL)){
-				normal =true;
-			} 
-		}
-		for(Tags t:tags){
-			if(normal){
-				;//DO Nothing
-			}
-			else if (t.equals(Tags.MANDATORY)){
-				this.mandatory = true;
-			} else  if (t.equals(Tags.REINIT)){
-				this.reinitNecessary = true;
-			}
-		}
-		
+		this.mandatory = mandatory;
+		this.requiresInit = requiresInit;		
 	}
 	
-	public ConfigOption(String name, String description, T defaultValue ) {
-		this.name = name;
-		this.description = description;
-		this.defaultValue = defaultValue;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -114,8 +136,8 @@ public abstract class ConfigOption<T> {
 	 * says, if this option requires that the componnent is reinitialized with init() 
 	 * @return 
 	 */
-	public boolean isReinitNecessary() {
-		return reinitNecessary;
+	public boolean requiresInit() {
+		return requiresInit;
 	}
 	
 	/**
@@ -146,7 +168,27 @@ public abstract class ConfigOption<T> {
 		return getClass().toString();
 	}
 
+	/**
+	 * @param defaultValue the defaultValue to set
+	 */
+	public void setDefaultValue(T defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	/**
+	 * @param mandatory the mandatory to set
+	 */
+	public void setMandatory(boolean mandatory) {
+		this.mandatory = mandatory;
+	}	
 	
+	/**
+	 * @param requiresInit the requiresInit to set
+	 */
+	public void setRequiresInit(boolean requiresInit) {
+		this.requiresInit = requiresInit;
+	}
+
 	@Override
 	public String toString() {
 		return "option name: " + name + "\ndescription: " + description + "\nvalues: "
