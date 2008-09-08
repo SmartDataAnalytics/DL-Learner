@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -26,28 +27,10 @@ import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.configurators.BruteForceLearnerConfigurator;
-import org.dllearner.core.configurators.DBpediaNavigationSuggestorConfigurator;
-import org.dllearner.core.configurators.DIGReasonerConfigurator;
-import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
-import org.dllearner.core.configurators.FastInstanceCheckerConfigurator;
-import org.dllearner.core.configurators.FastRetrievalReasonerConfigurator;
-import org.dllearner.core.configurators.GPConfigurator;
-import org.dllearner.core.configurators.KBFileConfigurator;
-import org.dllearner.core.configurators.OWLAPIReasonerConfigurator;
-import org.dllearner.core.configurators.OWLFileConfigurator;
-import org.dllearner.core.configurators.PosNegDefinitionLPConfigurator;
-import org.dllearner.core.configurators.PosNegInclusionLPConfigurator;
-import org.dllearner.core.configurators.PosOnlyDefinitionLPConfigurator;
-import org.dllearner.core.configurators.ROLearnerConfigurator;
-import org.dllearner.core.configurators.RandomGuesserConfigurator;
-import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -60,111 +43,154 @@ import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class ComponentFactory  {
 
 /**
 * @param filename pointer to the KB file on local file system
+* @return a component ready for initialization KBFile
 **/
-public static KBFile getKBFile (String filename )  {
+public static KBFile getKBFile(String filename)  {
 return KBFileConfigurator.getKBFile(filename);
 }
 
 /**
 * @param url URL pointing to the OWL file
+* @return a component ready for initialization OWLFile
 **/
-public static OWLFile getOWLFile (String url )  {
+public static OWLFile getOWLFile(String url)  {
 return OWLFileConfigurator.getOWLFile(url);
 }
 
 /**
+* @param url URL of SPARQL Endpoint
 * @param instances relevant instances e.g. positive and negative examples in a learning problem
+* @return a component ready for initialization SparqlKnowledgeSource
 **/
-public static SparqlKnowledgeSource getSparqlKnowledgeSource (Set<String> instances )  {
-return SparqlKnowledgeSourceConfigurator.getSparqlKnowledgeSource(instances);
+public static SparqlKnowledgeSource getSparqlKnowledgeSource(String url, Set<String> instances)  {
+return SparqlKnowledgeSourceConfigurator.getSparqlKnowledgeSource(url, instances);
 }
 
 /**
+* @param knowledgeSource see KnowledgeSource
+* @return a component ready for initialization DIGReasoner
 **/
-public static DIGReasoner getDIGReasoner (KnowledgeSource knowledgeSource )  {
+public static DIGReasoner getDIGReasoner(KnowledgeSource knowledgeSource)  {
 return DIGReasonerConfigurator.getDIGReasoner(knowledgeSource);
 }
 
 /**
+* @param knowledgeSource see KnowledgeSource
+* @return a component ready for initialization FastInstanceChecker
 **/
-public static FastInstanceChecker getFastInstanceChecker (KnowledgeSource knowledgeSource )  {
+public static FastInstanceChecker getFastInstanceChecker(KnowledgeSource knowledgeSource)  {
 return FastInstanceCheckerConfigurator.getFastInstanceChecker(knowledgeSource);
 }
 
 /**
+* @param knowledgeSource see KnowledgeSource
+* @return a component ready for initialization FastRetrievalReasoner
 **/
-public static FastRetrievalReasoner getFastRetrievalReasoner (KnowledgeSource knowledgeSource )  {
+public static FastRetrievalReasoner getFastRetrievalReasoner(KnowledgeSource knowledgeSource)  {
 return FastRetrievalReasonerConfigurator.getFastRetrievalReasoner(knowledgeSource);
 }
 
 /**
+* @param knowledgeSource see KnowledgeSource
+* @return a component ready for initialization OWLAPIReasoner
 **/
-public static OWLAPIReasoner getOWLAPIReasoner (KnowledgeSource knowledgeSource )  {
+public static OWLAPIReasoner getOWLAPIReasoner(KnowledgeSource knowledgeSource)  {
 return OWLAPIReasonerConfigurator.getOWLAPIReasoner(knowledgeSource);
 }
 
 /**
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
+* @param reasoningService see ReasoningService
+* @return a component ready for initialization PosNegDefinitionLP
 **/
-public static PosNegDefinitionLP getPosNegDefinitionLP (ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples )  {
+public static PosNegDefinitionLP getPosNegDefinitionLP(ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
 return PosNegDefinitionLPConfigurator.getPosNegDefinitionLP(reasoningService, positiveExamples, negativeExamples);
 }
 
 /**
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
+* @param reasoningService see ReasoningService
+* @return a component ready for initialization PosNegInclusionLP
 **/
-public static PosNegInclusionLP getPosNegInclusionLP (ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples )  {
+public static PosNegInclusionLP getPosNegInclusionLP(ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
 return PosNegInclusionLPConfigurator.getPosNegInclusionLP(reasoningService, positiveExamples, negativeExamples);
 }
 
 /**
 * @param positiveExamples positive examples
+* @param reasoningService see ReasoningService
+* @return a component ready for initialization PosOnlyDefinitionLP
 **/
-public static PosOnlyDefinitionLP getPosOnlyDefinitionLP (ReasoningService reasoningService, Set<String> positiveExamples )  {
+public static PosOnlyDefinitionLP getPosOnlyDefinitionLP(ReasoningService reasoningService, Set<String> positiveExamples)  {
 return PosOnlyDefinitionLPConfigurator.getPosOnlyDefinitionLP(reasoningService, positiveExamples);
 }
 
 /**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization BruteForceLearner
 **/
-public static BruteForceLearner getBruteForceLearner (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+public static BruteForceLearner getBruteForceLearner(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException {
 return BruteForceLearnerConfigurator.getBruteForceLearner(learningProblem, reasoningService);
 }
 
 /**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization DBpediaNavigationSuggestor
 **/
-public static DBpediaNavigationSuggestor getDBpediaNavigationSuggestor (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+public static DBpediaNavigationSuggestor getDBpediaNavigationSuggestor(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException {
 return DBpediaNavigationSuggestorConfigurator.getDBpediaNavigationSuggestor(learningProblem, reasoningService);
 }
 
 /**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization RandomGuesser
 **/
-public static RandomGuesser getRandomGuesser (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+public static RandomGuesser getRandomGuesser(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException {
 return RandomGuesserConfigurator.getRandomGuesser(learningProblem, reasoningService);
 }
 
 /**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization GP
 **/
-public static GP getGP (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+public static GP getGP(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException {
 return GPConfigurator.getGP(learningProblem, reasoningService);
 }
 
 /**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization ExampleBasedROLComponent
 **/
-public static ExampleBasedROLComponent getExampleBasedROLComponent (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+public static ExampleBasedROLComponent getExampleBasedROLComponent(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException {
 return ExampleBasedROLComponentConfigurator.getExampleBasedROLComponent(learningProblem, reasoningService);
 }
 
 /**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization ROLearner
 **/
-public static ROLearner getROLearner (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException {
+public static ROLearner getROLearner(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException {
 return ROLearnerConfigurator.getROLearner(learningProblem, reasoningService);
 }
 

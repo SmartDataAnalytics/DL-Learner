@@ -33,13 +33,20 @@ import org.dllearner.utilities.datastructures.StringTuple;
  */
 public class StringTupleListConfigOption extends ConfigOption<List<StringTuple>> {
 
-	public StringTupleListConfigOption(String name, String description) {
-		this(name, description, null);
+	
+	public StringTupleListConfigOption(String name, String description, List<StringTuple> defaultValue, boolean mandatory, boolean requiresInit) {
+		super(name, description, defaultValue, mandatory, requiresInit);
+		
 	}
 
-	public StringTupleListConfigOption(String name, String description,
-			List<StringTuple> defaultValue) {
+	public StringTupleListConfigOption(String name, String description, List<StringTuple> defaultValue) {
 		super(name, description, defaultValue);
+		
+	}
+
+	public StringTupleListConfigOption(String name, String description) {
+		super(name, description);
+		
 	}
 
 	/* (non-Javadoc)

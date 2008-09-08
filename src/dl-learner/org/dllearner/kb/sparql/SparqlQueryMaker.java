@@ -21,7 +21,7 @@ package org.dllearner.kb.sparql;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -47,14 +47,14 @@ public class SparqlQueryMaker {
 
 	private String filter = "";
 
-	private SortedSet<String> objectFilterList;
+	private Set<String> objectFilterList;
 
-	private SortedSet<String> predicateFilterList;
+	private Set<String> predicateFilterList;
 
 	private boolean literals = false;
 
-	public SparqlQueryMaker(SortedSet<String> objectFilterList,
-			SortedSet<String> predicateFilterList, boolean literals) {
+	public SparqlQueryMaker(Set<String> objectFilterList,
+			Set<String> predicateFilterList, boolean literals) {
 		super();
 		this.objectFilterList = objectFilterList;
 		this.predicateFilterList = predicateFilterList;
@@ -62,15 +62,15 @@ public class SparqlQueryMaker {
 	}
 
 	public SparqlQueryMaker(boolean allowMode,
-			SortedSet<String> objectFilterList,
-			SortedSet<String> predicateFilterList, boolean literals) {
+			Set<String> objectFilterList,
+			Set<String> predicateFilterList, boolean literals) {
 
 		this(objectFilterList, predicateFilterList, literals);
 		this.allowMode = allowMode;
 	}
 
-	public SparqlQueryMaker(String mode, SortedSet<String> objectFilterList,
-			SortedSet<String> predicateFilterList, boolean literals) {
+	public SparqlQueryMaker(String mode, Set<String> objectFilterList,
+			Set<String> predicateFilterList, boolean literals) {
 		this(objectFilterList, predicateFilterList, literals);
 		if (mode.equalsIgnoreCase(MODE_ALLOW)) {
 			this.allowMode = true;
@@ -207,11 +207,11 @@ public class SparqlQueryMaker {
 		return allowMode;
 	}
 
-	public SortedSet<String> getObjectFilterList() {
+	public Set<String> getObjectFilterList() {
 		return objectFilterList;
 	}
 
-	public SortedSet<String> getPredicateFilterList() {
+	public Set<String> getPredicateFilterList() {
 		return predicateFilterList;
 	}
 

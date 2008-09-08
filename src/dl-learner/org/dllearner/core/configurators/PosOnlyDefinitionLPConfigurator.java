@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -25,45 +26,56 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class PosOnlyDefinitionLPConfigurator  {
 
 private boolean reinitNecessary = false;
-private PosOnlyDefinitionLP PosOnlyDefinitionLP;
+@SuppressWarnings("unused")
 
-public PosOnlyDefinitionLPConfigurator (PosOnlyDefinitionLP PosOnlyDefinitionLP){
-this.PosOnlyDefinitionLP = PosOnlyDefinitionLP;
+private PosOnlyDefinitionLP posOnlyDefinitionLP;
+
+/**
+* @param posOnlyDefinitionLP see PosOnlyDefinitionLP
+**/
+public PosOnlyDefinitionLPConfigurator(PosOnlyDefinitionLP posOnlyDefinitionLP){
+this.posOnlyDefinitionLP = posOnlyDefinitionLP;
 }
 
 /**
 * @param positiveExamples positive examples
+* @return PosOnlyDefinitionLP
 **/
-public static PosOnlyDefinitionLP getPosOnlyDefinitionLP (ReasoningService reasoningService, Set<String> positiveExamples ) {
-PosOnlyDefinitionLP component = ComponentManager.getInstance().learningProblem(PosOnlyDefinitionLP.class, reasoningService );
+public static PosOnlyDefinitionLP getPosOnlyDefinitionLP(ReasoningService reasoningService, Set<String> positiveExamples) {
+PosOnlyDefinitionLP component = ComponentManager.getInstance().learningProblem(PosOnlyDefinitionLP.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "positiveExamples", positiveExamples);
 return component;
 }
 
 /**
-* option name: positiveExamples
-* positive examples
+* positiveExamples positive examples.
+* mandatory: true| reinit necessary: false
 * default value: null
+* @return Set(String) 
 **/
 @SuppressWarnings("unchecked")
-public Set<String> getPositiveExamples ( ) {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(PosOnlyDefinitionLP,  "positiveExamples") ;
+public Set<String> getPositiveExamples() {
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posOnlyDefinitionLP,  "positiveExamples") ;
 }
 
 /**
-* option name: positiveExamples
-* positive examples
+* @param positiveExamples positive examples.
+* mandatory: true| reinit necessary: false
 * default value: null
 **/
-public void setPositiveExamples ( Set<String> positiveExamples) {
-ComponentManager.getInstance().applyConfigEntry(PosOnlyDefinitionLP, "positiveExamples", positiveExamples);
+public void setPositiveExamples(Set<String> positiveExamples) {
+ComponentManager.getInstance().applyConfigEntry(posOnlyDefinitionLP, "positiveExamples", positiveExamples);
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }

@@ -34,6 +34,7 @@ public class SparqlEndpoint {
 	URL url;
 	List<String> defaultGraphURIs;
 	List<String> namedGraphURIs;
+	
 	//public HashMap<String, String> parameters = new HashMap<String, String>();
 
 	public SparqlEndpoint(URL u) {

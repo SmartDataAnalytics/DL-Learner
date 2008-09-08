@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- **/
+ *
+ */
 
 package org.dllearner.core.configurators;
 
@@ -23,44 +24,56 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.OWLFile;
 
 /**
-* automatically generated, do not edit manually
+* automatically generated, do not edit manually.
+* run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
 public class OWLFileConfigurator  {
 
 private boolean reinitNecessary = false;
-private OWLFile OWLFile;
+@SuppressWarnings("unused")
 
-public OWLFileConfigurator (OWLFile OWLFile){
-this.OWLFile = OWLFile;
+private OWLFile oWLFile;
+
+/**
+* @param oWLFile see OWLFile
+**/
+public OWLFileConfigurator(OWLFile oWLFile){
+this.oWLFile = oWLFile;
 }
 
 /**
 * @param url URL pointing to the OWL file
+* @return OWLFile
 **/
-public static OWLFile getOWLFile (String url ) {
-OWLFile component = ComponentManager.getInstance().knowledgeSource(OWLFile.class );
+public static OWLFile getOWLFile(String url) {
+OWLFile component = ComponentManager.getInstance().knowledgeSource(OWLFile.class);
 ComponentManager.getInstance().applyConfigEntry(component, "url", url);
 return component;
 }
 
 /**
-* option name: url
-* URL pointing to the OWL file
+* url URL pointing to the OWL file.
+* mandatory: true| reinit necessary: true
 * default value: null
+* @return String 
 **/
-public String getUrl ( ) {
-return (String) ComponentManager.getInstance().getConfigOptionValue(OWLFile,  "url") ;
+public String getUrl() {
+return (String) ComponentManager.getInstance().getConfigOptionValue(oWLFile,  "url") ;
 }
 
 /**
-* option name: url
-* URL pointing to the OWL file
+* @param url URL pointing to the OWL file.
+* mandatory: true| reinit necessary: true
 * default value: null
 **/
-public void setUrl ( String url) {
-ComponentManager.getInstance().applyConfigEntry(OWLFile, "url", url);
+public void setUrl(String url) {
+ComponentManager.getInstance().applyConfigEntry(oWLFile, "url", url);
+reinitNecessary = true;
 }
 
+/**
+* true, if this component needs reinitializsation
+**/
 public boolean isReinitNecessary(){
 return reinitNecessary;
 }
