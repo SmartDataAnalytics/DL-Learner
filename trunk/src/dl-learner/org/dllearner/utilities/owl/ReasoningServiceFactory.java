@@ -81,11 +81,11 @@ public class ReasoningServiceFactory {
 	    	  break;
 	      case OWLAPIREASONERFACT:
 	    	  rc = cm.reasoner(OWLAPIReasoner.class, ks);
-	    	  ((OWLAPIReasoner)rc).setReasonerType("fact");
+	    	  ((OWLAPIReasoner)rc).getConfigurator().setReasonerType("fact");
 	    	  break;
 	      case OWLAPIREASONERPELLET:
 	    	  rc = cm.reasoner(OWLAPIReasoner.class, ks);
-	    	  ((OWLAPIReasoner)rc).setReasonerType("pellet");
+	    	  ((OWLAPIReasoner)rc).getConfigurator().setReasonerType("pellet");
 	    	  break;
 	      default:
 	    	  rc = cm.reasoner(FastInstanceChecker.class, ks);
