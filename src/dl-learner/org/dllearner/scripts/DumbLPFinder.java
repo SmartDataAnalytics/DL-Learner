@@ -85,6 +85,7 @@ public class DumbLPFinder {
 		allIndividuals.addAll( reasoningService.getIndividuals());
 		
 		reasoningService = null;
+		ComponentManager.getInstance().freeAllComponents();
 		
 		int count = 1;
 		while(count<10000){

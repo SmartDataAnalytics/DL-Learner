@@ -626,9 +626,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 		rc.releaseKB();
 	}	
 	
-	public void setReasonerType(String type){
+	/*public void setReasonerType(String type){
 		configurator.setReasonerType(type);
-	}
+	}*/
 
 
 	@Override

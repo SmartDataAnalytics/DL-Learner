@@ -945,9 +945,9 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return owlAPIOntologies;
 	}
 	
-	public void setReasonerType(String type){
+	/*public void setReasonerType(String type){
 		configurator.setReasonerType(type);
-	}
+	}*/
 
 	@Override
 	public boolean hasDatatypeSupport() {
