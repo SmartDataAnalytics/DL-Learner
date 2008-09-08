@@ -66,7 +66,7 @@ public class StartGUI extends JFrame implements ActionListener {
 	private JMenuItem exitItem = new JMenuItem("Exit");
 	private JMenu menuHelp = new JMenu("Help");
 	private JMenuItem aboutItem = new JMenuItem("About");
-	private JMenuItem tutorialItem = new JMenuItem("Tutorial");
+	private JMenuItem tutorialItem = new JMenuItem("Quick Tutorial");
 
 	public StartGUI() {
 		this(null);
@@ -153,6 +153,22 @@ public class StartGUI extends JFrame implements ActionListener {
 		if (args.length > 0)
 			file = new File(args[args.length - 1]);
 
+		// force platform look and feel
+		try {
+			UIManager.setLookAndFeel(
+//					"com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+			   UIManager.getSystemLookAndFeelClassName());
+			// TODO: currently everything is in bold on Linux (and Win?)
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+		
 		new StartGUI(file);
 	}
 
