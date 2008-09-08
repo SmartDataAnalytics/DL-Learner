@@ -20,6 +20,7 @@
 
 package org.dllearner.core.configurators;
 
+import java.util.Set;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.reasoning.FastRetrievalReasoner;
@@ -45,7 +46,7 @@ this.fastRetrievalReasoner = fastRetrievalReasoner;
 /**
 * @return FastRetrievalReasoner
 **/
-public static FastRetrievalReasoner getFastRetrievalReasoner(KnowledgeSource knowledgeSource) {
+public static FastRetrievalReasoner getFastRetrievalReasoner(Set<KnowledgeSource> knowledgeSource) {
 FastRetrievalReasoner component = ComponentManager.getInstance().reasoner(FastRetrievalReasoner.class, knowledgeSource);
 return component;
 }
