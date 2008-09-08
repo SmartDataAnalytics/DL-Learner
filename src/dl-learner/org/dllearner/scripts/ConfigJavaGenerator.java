@@ -37,9 +37,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.configuration.Configurator;
 import org.dllearner.utilities.Files;
 
 
@@ -49,14 +47,16 @@ import org.dllearner.utilities.Files;
  * code.
  * 
  * @author Jens Lehmann
+ * @author Sebastian Hellmann
  * 
  */
 public class ConfigJavaGenerator {
 	
-	private static final boolean INCLUDE_UNUSED = true;
+	private static final boolean INCLUDE_UNUSED = false;
 	private static final String UNUSED = "@SuppressWarnings(\"unused\")\n";
 
-	private static final String TARGET_DIR = "src/dl-learner/org/dllearner/core/configuration";
+	private static final String TARGET_DIR = "src/dl-learner/org/dllearner/core/configurators";
+	private static final String TARGET_PACKAGE = "org.dllearner.core.configurators";
 
 	private static final String HEADER_FILE = "doc/header.txt";
 
@@ -69,6 +69,7 @@ public class ConfigJavaGenerator {
 	//private static final String TEMPLATE_DIR = "doc/template/";
 
 	private static final String CONFIGURATOR = "Configurator";
+	private static final String COMPONENT_FACTORY = "ComponentFactory";
 	
 	private static final SortedSet<String> configuratorImports = new TreeSet<String>();
 	private static final List<String> configuratorMethods = new ArrayList<String>();
@@ -112,7 +113,7 @@ public class ConfigJavaGenerator {
 			String componentType = "knowledgeSource";
 			
 			configuratorImports.add(component.getCanonicalName());
-			configuratorImports.add("org.dllearner.core.configuration."+component.getSimpleName()+CONFIGURATOR);
+			configuratorImports.add(TARGET_PACKAGE+"."+component.getSimpleName()+CONFIGURATOR);
 			ConfigJavaGenerator c = new ConfigJavaGenerator(component, componentType);
 			c.makeSubclasses();
 			
@@ -120,7 +121,7 @@ public class ConfigJavaGenerator {
 		for (Class<? extends ReasonerComponent> component : cm.getReasonerComponents()) {
 			
 			configuratorImports.add(component.getCanonicalName());
-			configuratorImports.add("org.dllearner.core.configuration."+component.getSimpleName()+CONFIGURATOR);
+			configuratorImports.add(TARGET_PACKAGE+"."+component.getSimpleName()+CONFIGURATOR);
 			
 			ConfigJavaGenerator c = new ConfigJavaGenerator(component, "reasoner");
 			c.imports.add("org.dllearner.core.KnowledgeSource");
@@ -131,7 +132,7 @@ public class ConfigJavaGenerator {
 		for (Class<? extends LearningProblem> component : cm.getLearningProblems()) {
 			
 			configuratorImports.add(component.getCanonicalName());
-			configuratorImports.add("org.dllearner.core.configuration."+component.getSimpleName()+CONFIGURATOR);
+			configuratorImports.add(TARGET_PACKAGE + "." + component.getSimpleName()+CONFIGURATOR);
 			
 			ConfigJavaGenerator c = new ConfigJavaGenerator(component, "learningProblem");
 			c.imports.add("org.dllearner.core.ReasoningService");
@@ -143,7 +144,7 @@ public class ConfigJavaGenerator {
 		for (Class<? extends LearningAlgorithm> component : cm.getLearningAlgorithms()) {
 			
 			configuratorImports.add(component.getCanonicalName());
-			configuratorImports.add("org.dllearner.core.configuration."+component.getSimpleName()+CONFIGURATOR);
+			configuratorImports.add(TARGET_PACKAGE+"."+ component.getSimpleName()+CONFIGURATOR);
 			
 			ConfigJavaGenerator c = new ConfigJavaGenerator(component, "learningAlgorithm");
 			c.imports.add("org.dllearner.core.LearningProblem");
@@ -159,7 +160,7 @@ public class ConfigJavaGenerator {
 		
 		
 		
-		makeConfiguratorSuperClass();
+		makeComponentFactory();
 
 		System.out.println("Done");
 	}
@@ -170,8 +171,8 @@ public class ConfigJavaGenerator {
 		this.componentType = componentType;
 		imports.add(component.getCanonicalName());
 		imports.add(ComponentManager.class.getCanonicalName());
-		imports.add(Configurator.class.getCanonicalName());
-		imports.add(ConfigEntry.class.getCanonicalName());
+		//imports.add(Configurator.class.getCanonicalName());
+		//imports.add(ConfigEntry.class.getCanonicalName());
 		
 		vars.add("private " + className+" "+className+";\n");
 	
@@ -184,7 +185,7 @@ public class ConfigJavaGenerator {
 			
 			String type = option.getValueTypeAsJavaString();
 			String optionName = option.getName();
-			String defaultValue = option.getDefaultValueInJava();
+			//String defaultValue = option.getDefaultValueInJava();
 			String comment = option.getJavaDocString();
 			
 			if(option.isMandatory()){
@@ -194,9 +195,9 @@ public class ConfigJavaGenerator {
 			}	
 			
 			imports.addAll(option.getJavaImports());
-			vars.add(fillVariableDefTemplate(optionName, type, defaultValue));
+			//vars.add(fillVariableDefTemplate(optionName, type, defaultValue));
 			setters.add(fillSetterTemplate(className, comment, optionName, type, option.requiresInit()));
-			getters.add(fillGetterTemplate(comment, optionName, type));
+			getters.add(fillGetterTemplate(className, comment, optionName, type));
 			// System.out.println(option);
 			// componentOptions.get(component)) {
 
@@ -211,16 +212,16 @@ public class ConfigJavaGenerator {
 		body.add(makeGetInstanceForSubclass(className, componentType, 
 				getAllCommentsForOptionList(mandatoryOptions)));
 		
-		body.add(makeApplyConfigEntryForOptionList(ComponentManager.getConfigOptions(component)));
+		//body.add(makeApplyConfigEntryForOptionList(ComponentManager.getConfigOptions(component)));
 		
 		body.add(expandCollection(getters, "", "", 0));
 		body.add(expandCollection(setters, "", "", 0));
 		body.add(REINITGETTER);
 		String ret = fillClassTemplate(
-				"org.dllearner.core.configuration", 
+				TARGET_PACKAGE, 
 				expandCollection(imports, "import ", ";\n", 0), 
 				className+CONFIGURATOR, 
-				CONFIGURATOR, 
+				"", 
 				expandCollection(body, "", "\n", 0) );
 		
 		
@@ -273,7 +274,7 @@ public class ConfigJavaGenerator {
 		Map<String, String> parametersWithType = new LinkedHashMap<String,String>();
 		Map<String, String> parametersNoType = new LinkedHashMap<String,String>();
 		String applyConf = "";
-		parametersWithType.put("ComponentManager cm", "cm");
+		//parametersWithType.put("ComponentManager cm", "cm");
 		parametersNoType.put(className+".class", className+".class");
 		for (String s : additionalMandatoryVars.keySet()) {
 			parametersWithType.put(s, additionalMandatoryVars.get(s));
@@ -296,7 +297,7 @@ public class ConfigJavaGenerator {
 		
 		String ret = comments;
 		ret += "public static "+className+" get"+className+" ("+parWithType+" ) "+exceptions+"{\n";
-		ret +=	className+" component = cm."+componentType+"(" +par+" );\n";
+		ret +=	className+" component = ComponentManager.getInstance()."+componentType+"(" +par+" );\n";
 		ret += applyConf;
 	
 		ret+="return component;\n}\n";
@@ -309,7 +310,7 @@ public class ConfigJavaGenerator {
 		Map<String, String> parametersWithType = new LinkedHashMap<String,String>();
 		Map<String, String> parametersNoType = new LinkedHashMap<String,String>();
 		String applyConf = "";
-		parametersWithType.put("ComponentManager cm", "cm");
+		//parametersWithType.put("ComponentManager cm", "cm");
 		parametersNoType.put(className+".class", className+".class");
 		for (String s : additionalMandatoryVars.keySet()) {
 			parametersWithType.put(s, additionalMandatoryVars.get(s));
@@ -336,24 +337,24 @@ public class ConfigJavaGenerator {
 		return ret;
 	}
 	
-	public static void makeConfiguratorSuperClass(){
+	public static void makeComponentFactory(){
 		String ret=
 			fillClassTemplate(
-				"org.dllearner.core.configuration", 
+				TARGET_PACKAGE, 
 				expandCollection(configuratorImports, "import ", ";\n",0), 
-				CONFIGURATOR, 
+				COMPONENT_FACTORY, 
 				"",
 				expandCollection(configuratorMethods, "", "\n", 0)
 				);
 		
 		
-		Files.createFile(new File(TARGET_DIR + "/" + CONFIGURATOR + ".java"), ret);
+		Files.createFile(new File(TARGET_DIR + "/" + COMPONENT_FACTORY + ".java"), ret);
 	}
 	
 
 	
 	private static String fillApplyConfigEntry(String className, String optionName){
-		return "cm.applyConfigEntry("+className+", \""+optionName+"\", "+optionName+");\n";
+		return "ComponentManager.getInstance().applyConfigEntry("+className+", \""+optionName+"\", "+optionName+");\n";
 	}
 	
 	private static String fillConstructorTemplate(String className){
@@ -376,17 +377,19 @@ public class ConfigJavaGenerator {
 
 	
 	
-	private static String fillGetterTemplate( String comment, String optionName, String type) {
+	private static String fillGetterTemplate( String className,String comment, String optionName, String type) {
 		String ret = fillJavaDocComment (comment);
+			ret+= (type.contains("<String>"))?"@SuppressWarnings(\"unchecked\")\n":"";
 			ret+= "public "+type+" get" + capitalize(optionName) + " ( ) {\n";
-			ret+=		"return this." + optionName+";\n";
+			ret+= "return ("+rightType(type)+") ComponentManager.getInstance().";
+			ret+= "getConfigOptionValue("+className+ ",  \""+optionName+"\") ;\n";
 			ret+=		"}\n";
 			return ret;
 	}
 	private static String fillSetterTemplate(String className, String comment, String optionName, String type, boolean reinit ){
 		String ret = fillJavaDocComment (comment);
 		ret += "public void set" + capitalize(optionName);
-		ret += " ( ComponentManager cm, " + type +" "+ optionName+") {\n";
+		ret += " ( "+  type +" "+ optionName+") {\n";
 		ret += fillApplyConfigEntry(className, optionName);
 		ret += (reinit)?REINITVAR + " = true;\n":"";
 		ret += "}\n" ;

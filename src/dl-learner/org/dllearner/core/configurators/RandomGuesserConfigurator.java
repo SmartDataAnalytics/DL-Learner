@@ -17,26 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package org.dllearner.core.configuration;
+package org.dllearner.core.configurators;
 
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.configuration.Configurator;
 
 /**
 * automatically generated, do not edit manually
 **/
-@SuppressWarnings("unused")
-public class RandomGuesserConfigurator extends Configurator {
+public class RandomGuesserConfigurator  {
 
 private boolean reinitNecessary = false;
 private RandomGuesser RandomGuesser;
-private int numberOfTrees = 5;
-private int maxDepth = 5;
 
 public RandomGuesserConfigurator (RandomGuesser RandomGuesser){
 this.RandomGuesser = RandomGuesser;
@@ -44,20 +39,9 @@ this.RandomGuesser = RandomGuesser;
 
 /**
 **/
-public static RandomGuesser getRandomGuesser (ComponentManager cm, LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException{
-RandomGuesser component = cm.learningAlgorithm(RandomGuesser.class, learningProblem, reasoningService );
+public static RandomGuesser getRandomGuesser (LearningProblem learningProblem, ReasoningService reasoningService ) throws LearningProblemUnsupportedException{
+RandomGuesser component = ComponentManager.getInstance().learningAlgorithm(RandomGuesser.class, learningProblem, reasoningService );
 return component;
-}
-
-@SuppressWarnings({ "unchecked" })
-public <T> void applyConfigEntry(ConfigEntry<T> entry){
-String optionName = entry.getOptionName();
-if(false){//empty block 
-}else if (optionName.equals("numberOfTrees")){
-numberOfTrees = (Integer)  entry.getValue();
-}else if (optionName.equals("maxDepth")){
-maxDepth = (Integer)  entry.getValue();
-}
 }
 
 /**
@@ -66,7 +50,7 @@ maxDepth = (Integer)  entry.getValue();
 * default value: 5
 **/
 public int getNumberOfTrees ( ) {
-return this.numberOfTrees;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(RandomGuesser,  "numberOfTrees") ;
 }
 /**
 * option name: maxDepth
@@ -74,7 +58,7 @@ return this.numberOfTrees;
 * default value: 5
 **/
 public int getMaxDepth ( ) {
-return this.maxDepth;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(RandomGuesser,  "maxDepth") ;
 }
 
 /**
@@ -82,16 +66,18 @@ return this.maxDepth;
 * number of randomly generated concepts/trees
 * default value: 5
 **/
-public void setNumberOfTrees ( ComponentManager cm, int numberOfTrees) {
-cm.applyConfigEntry(RandomGuesser, "numberOfTrees", numberOfTrees);
+public void setNumberOfTrees ( int numberOfTrees) {
+ComponentManager.getInstance().applyConfigEntry(RandomGuesser, "numberOfTrees", numberOfTrees);
+reinitNecessary = true;
 }
 /**
 * option name: maxDepth
 * maximum depth of generated concepts/trees
 * default value: 5
 **/
-public void setMaxDepth ( ComponentManager cm, int maxDepth) {
-cm.applyConfigEntry(RandomGuesser, "maxDepth", maxDepth);
+public void setMaxDepth ( int maxDepth) {
+ComponentManager.getInstance().applyConfigEntry(RandomGuesser, "maxDepth", maxDepth);
+reinitNecessary = true;
 }
 
 public boolean isReinitNecessary(){

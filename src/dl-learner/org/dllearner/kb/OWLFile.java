@@ -33,7 +33,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.configuration.OWLFileConfigurator;
+import org.dllearner.core.configurators.OWLFileConfigurator;
 import org.dllearner.core.owl.KB;
 import org.dllearner.reasoning.OWLAPIDIGConverter;
 
@@ -69,7 +69,7 @@ public class OWLFile extends KnowledgeSource {
 	 */
 	@Override
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		configurator.applyConfigEntry(entry);
+		//configurator.applyConfigEntry(entry);
 		
 		//postprocessing
 		if (entry.getOptionName().equals("url")) {

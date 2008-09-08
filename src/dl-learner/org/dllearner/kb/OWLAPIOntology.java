@@ -8,7 +8,6 @@ import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.KB;
-
 import org.semanticweb.owl.model.OWLOntology;
 
 public class OWLAPIOntology extends KnowledgeSource {

@@ -17,42 +17,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package org.dllearner.core.configuration;
+package org.dllearner.core.configurators;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.configuration.Configurator;
-import org.dllearner.reasoning.FastRetrievalReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
 * automatically generated, do not edit manually
 **/
-@SuppressWarnings("unused")
-public class FastRetrievalReasonerConfigurator extends Configurator {
+public class OWLAPIReasonerConfigurator  {
 
 private boolean reinitNecessary = false;
-private FastRetrievalReasoner FastRetrievalReasoner;
+private OWLAPIReasoner OWLAPIReasoner;
 
-public FastRetrievalReasonerConfigurator (FastRetrievalReasoner FastRetrievalReasoner){
-this.FastRetrievalReasoner = FastRetrievalReasoner;
+public OWLAPIReasonerConfigurator (OWLAPIReasoner OWLAPIReasoner){
+this.OWLAPIReasoner = OWLAPIReasoner;
 }
 
 /**
 **/
-public static FastRetrievalReasoner getFastRetrievalReasoner (ComponentManager cm, KnowledgeSource knowledgeSource ) {
-FastRetrievalReasoner component = cm.reasoner(FastRetrievalReasoner.class, knowledgeSource );
+public static OWLAPIReasoner getOWLAPIReasoner (KnowledgeSource knowledgeSource ) {
+OWLAPIReasoner component = ComponentManager.getInstance().reasoner(OWLAPIReasoner.class, knowledgeSource );
 return component;
 }
 
-@SuppressWarnings({ "unchecked" })
-public <T> void applyConfigEntry(ConfigEntry<T> entry){
-String optionName = entry.getOptionName();
-if(false){//empty block 
-}
+/**
+* option name: reasonerType
+* FaCT++ or Pellet, which means "pellet" or "fact"
+* default value: pellet
+**/
+public String getReasonerType ( ) {
+return (String) ComponentManager.getInstance().getConfigOptionValue(OWLAPIReasoner,  "reasonerType") ;
 }
 
-
+/**
+* option name: reasonerType
+* FaCT++ or Pellet, which means "pellet" or "fact"
+* default value: pellet
+**/
+public void setReasonerType ( String reasonerType) {
+ComponentManager.getInstance().applyConfigEntry(OWLAPIReasoner, "reasonerType", reasonerType);
+reinitNecessary = true;
+}
 
 public boolean isReinitNecessary(){
 return reinitNecessary;

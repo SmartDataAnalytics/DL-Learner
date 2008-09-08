@@ -17,22 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package org.dllearner.core.configuration;
+package org.dllearner.core.configurators;
 
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.configuration.Configurator;
 import org.dllearner.kb.OWLFile;
 
 /**
 * automatically generated, do not edit manually
 **/
-@SuppressWarnings("unused")
-public class OWLFileConfigurator extends Configurator {
+public class OWLFileConfigurator  {
 
 private boolean reinitNecessary = false;
 private OWLFile OWLFile;
-private String url = null;
 
 public OWLFileConfigurator (OWLFile OWLFile){
 this.OWLFile = OWLFile;
@@ -41,19 +37,10 @@ this.OWLFile = OWLFile;
 /**
 * @param url URL pointing to the OWL file
 **/
-public static OWLFile getOWLFile (ComponentManager cm, String url ) {
-OWLFile component = cm.knowledgeSource(OWLFile.class );
-cm.applyConfigEntry(component, "url", url);
+public static OWLFile getOWLFile (String url ) {
+OWLFile component = ComponentManager.getInstance().knowledgeSource(OWLFile.class );
+ComponentManager.getInstance().applyConfigEntry(component, "url", url);
 return component;
-}
-
-@SuppressWarnings({ "unchecked" })
-public <T> void applyConfigEntry(ConfigEntry<T> entry){
-String optionName = entry.getOptionName();
-if(false){//empty block 
-}else if (optionName.equals("url")){
-url = (String)  entry.getValue();
-}
 }
 
 /**
@@ -62,7 +49,7 @@ url = (String)  entry.getValue();
 * default value: null
 **/
 public String getUrl ( ) {
-return this.url;
+return (String) ComponentManager.getInstance().getConfigOptionValue(OWLFile,  "url") ;
 }
 
 /**
@@ -70,8 +57,8 @@ return this.url;
 * URL pointing to the OWL file
 * default value: null
 **/
-public void setUrl ( ComponentManager cm, String url) {
-cm.applyConfigEntry(OWLFile, "url", url);
+public void setUrl ( String url) {
+ComponentManager.getInstance().applyConfigEntry(OWLFile, "url", url);
 }
 
 public boolean isReinitNecessary(){

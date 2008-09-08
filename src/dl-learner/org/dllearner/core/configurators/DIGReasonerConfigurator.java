@@ -17,25 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package org.dllearner.core.configuration;
+package org.dllearner.core.configurators;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.configuration.Configurator;
 import org.dllearner.reasoning.DIGReasoner;
 
 /**
 * automatically generated, do not edit manually
 **/
-@SuppressWarnings("unused")
-public class DIGReasonerConfigurator extends Configurator {
+public class DIGReasonerConfigurator  {
 
 private boolean reinitNecessary = false;
 private DIGReasoner DIGReasoner;
-private String reasonerUrl = null;
-private boolean writeDIGProtocol = false;
-private String digProtocolFile = "log/digProtocol.txt";
 
 public DIGReasonerConfigurator (DIGReasoner DIGReasoner){
 this.DIGReasoner = DIGReasoner;
@@ -43,22 +37,9 @@ this.DIGReasoner = DIGReasoner;
 
 /**
 **/
-public static DIGReasoner getDIGReasoner (ComponentManager cm, KnowledgeSource knowledgeSource ) {
-DIGReasoner component = cm.reasoner(DIGReasoner.class, knowledgeSource );
+public static DIGReasoner getDIGReasoner (KnowledgeSource knowledgeSource ) {
+DIGReasoner component = ComponentManager.getInstance().reasoner(DIGReasoner.class, knowledgeSource );
 return component;
-}
-
-@SuppressWarnings({ "unchecked" })
-public <T> void applyConfigEntry(ConfigEntry<T> entry){
-String optionName = entry.getOptionName();
-if(false){//empty block 
-}else if (optionName.equals("reasonerUrl")){
-reasonerUrl = (String)  entry.getValue();
-}else if (optionName.equals("writeDIGProtocol")){
-writeDIGProtocol = (Boolean)  entry.getValue();
-}else if (optionName.equals("digProtocolFile")){
-digProtocolFile = (String)  entry.getValue();
-}
 }
 
 /**
@@ -67,7 +48,7 @@ digProtocolFile = (String)  entry.getValue();
 * default value: null
 **/
 public String getReasonerUrl ( ) {
-return this.reasonerUrl;
+return (String) ComponentManager.getInstance().getConfigOptionValue(DIGReasoner,  "reasonerUrl") ;
 }
 /**
 * option name: writeDIGProtocol
@@ -75,7 +56,7 @@ return this.reasonerUrl;
 * default value: false
 **/
 public boolean getWriteDIGProtocol ( ) {
-return this.writeDIGProtocol;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(DIGReasoner,  "writeDIGProtocol") ;
 }
 /**
 * option name: digProtocolFile
@@ -83,7 +64,7 @@ return this.writeDIGProtocol;
 * default value: log/digProtocol.txt
 **/
 public String getDigProtocolFile ( ) {
-return this.digProtocolFile;
+return (String) ComponentManager.getInstance().getConfigOptionValue(DIGReasoner,  "digProtocolFile") ;
 }
 
 /**
@@ -91,24 +72,27 @@ return this.digProtocolFile;
 * URL of the DIG reasoner
 * default value: null
 **/
-public void setReasonerUrl ( ComponentManager cm, String reasonerUrl) {
-cm.applyConfigEntry(DIGReasoner, "reasonerUrl", reasonerUrl);
+public void setReasonerUrl ( String reasonerUrl) {
+ComponentManager.getInstance().applyConfigEntry(DIGReasoner, "reasonerUrl", reasonerUrl);
+reinitNecessary = true;
 }
 /**
 * option name: writeDIGProtocol
 * specifies whether or not to write a protocoll of send and received DIG requests
 * default value: false
 **/
-public void setWriteDIGProtocol ( ComponentManager cm, boolean writeDIGProtocol) {
-cm.applyConfigEntry(DIGReasoner, "writeDIGProtocol", writeDIGProtocol);
+public void setWriteDIGProtocol ( boolean writeDIGProtocol) {
+ComponentManager.getInstance().applyConfigEntry(DIGReasoner, "writeDIGProtocol", writeDIGProtocol);
+reinitNecessary = true;
 }
 /**
 * option name: digProtocolFile
 * the file to store the DIG protocol
 * default value: log/digProtocol.txt
 **/
-public void setDigProtocolFile ( ComponentManager cm, String digProtocolFile) {
-cm.applyConfigEntry(DIGReasoner, "digProtocolFile", digProtocolFile);
+public void setDigProtocolFile ( String digProtocolFile) {
+ComponentManager.getInstance().applyConfigEntry(DIGReasoner, "digProtocolFile", digProtocolFile);
+reinitNecessary = true;
 }
 
 public boolean isReinitNecessary(){

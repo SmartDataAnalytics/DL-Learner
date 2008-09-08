@@ -44,7 +44,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.configuration.OWLAPIReasonerConfigurator;
+import org.dllearner.core.configurators.OWLAPIReasonerConfigurator;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
