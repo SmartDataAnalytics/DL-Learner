@@ -25,9 +25,11 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import javax.swing.*;
 
-import org.dllearner.core.ComponentInitException;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+
 import org.dllearner.core.LearningProblem;
 
 /**
@@ -42,7 +44,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 
 	private Config config;
 	private StartGUI startGUI;
-	private List<Class<? extends LearningProblem>> problem;
+	private List<Class<? extends LearningProblem>> lpClasses;
 	private String[] lpBoxItems = {};
 	private JComboBox cb = new JComboBox(lpBoxItems);
 	private JPanel choosePanel = new JPanel();
@@ -56,12 +58,8 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 
 		this.config = config;
 		this.startGUI = startGUI;
-		problem = config.getComponentManager().getLearningProblems();
+		lpClasses = config.getComponentManager().getLearningProblems();
 
-		initButton = new JButton("Init LearningProblem");
-		initButton.addActionListener(this);
-		// initPanel.add(initButton);
-		initButton.setEnabled(true);
 		setButton = new JButton("Set");
 		setButton.addActionListener(this);
 		choosePanel.add(cb);
@@ -69,14 +67,14 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		cb.addActionListener(this);
 
 		// add into comboBox
-		for (int i = 0; i < problem.size(); i++) {
-			cb.addItem(config.getComponentManager().getComponentName(problem.get(i)));
+		for (int i = 0; i < lpClasses.size(); i++) {
+			cb.addItem(config.getComponentManager().getComponentName(lpClasses.get(i)));
 		}
 
 		// read choosen LearningProblem
 		choosenClassIndex = cb.getSelectedIndex();
 
-		LearningProblem lp = config.newLearningProblem(problem.get(choosenClassIndex));
+		LearningProblem lp = config.newLearningProblem(lpClasses.get(choosenClassIndex));
 		optionPanel = new OptionPanel(config, lp);
 
 		add(choosePanel, BorderLayout.PAGE_START);
@@ -85,31 +83,31 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 
 		choosenClassIndex = cb.getSelectedIndex();
 		// setLearningProblem();
-		updateInitButtonColor();
+//		updateInitButtonColor();
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		// read selected LearningProblemClass
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			this.choosenClassIndex = cb.getSelectedIndex();
-			config.setInitLearningProblem(false);
-			init();
+//			config.setInitLearningProblem(false);
+//			init();
 		}
 
 		if (e.getSource() == setButton)
 			setLearningProblem();
 
-		if (e.getSource() == initButton)
-			init();
+//		if (e.getSource() == initButton)
+//			init();
 	}
 
 	/**
 	 * after this, you can change widgets
 	 */
 	private void setLearningProblem() {
-		if (config.isInitReasoner()) {
+		if (config.needsInitReasoner()) {
 			config.setLearningProblem(config.getComponentManager().learningProblem(
-					problem.get(choosenClassIndex), config.getReasoningService()));
+					lpClasses.get(choosenClassIndex), config.getReasoningService()));
 			startGUI.updateTabColors();
 			updateOptionPanel();
 		}
@@ -118,6 +116,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	/**
 	 * after this, next tab can be used
 	 */
+	/*
 	public void init() {
 		setLearningProblem();
 		if (config.getReasoner() != null && config.getLearningProblem() != null
@@ -131,7 +130,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 				e.printStackTrace();
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * updateAll
@@ -139,7 +138,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	public void updateAll() {
 		updateComboBox();
 		updateOptionPanel();
-		updateInitButtonColor();
+//		updateInitButtonColor();
 	}
 
 	/**
@@ -147,7 +146,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	 */
 	public void updateComboBox() {
 		if (config.getLearningProblem() != null)
-			for (int i = 0; i < problem.size(); i++)
+			for (int i = 0; i < lpClasses.size(); i++)
 				if (config.getLearningProblem().getClass().equals(
 						config.getComponentManager().getLearningProblems().get(i))) {
 					cb.setSelectedIndex(i);
@@ -159,18 +158,17 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	 * update OptionPanel with new selection
 	 */
 	private void updateOptionPanel() {
-		// update OptionPanel
-//		 TODO: implement properly !!
-//		optionPanel.update(config.getLearningProblem(), problem.get(choosenClassIndex));
+		optionPanel.update(config.getLearningProblem());
 	}
 
 	/**
 	 * make init-button red if you have to click
 	 */
+	/*
 	public void updateInitButtonColor() {
-		if (!config.isInitLearningProblem()) {
+		if (!config.needsInitLearningProblem()) {
 			initButton.setForeground(Color.RED);
 		} else
 			initButton.setForeground(Color.BLACK);
-	}
+	}*/
 }

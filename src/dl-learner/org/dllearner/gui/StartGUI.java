@@ -23,6 +23,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -30,6 +31,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.core.ComponentInitException;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -37,7 +39,8 @@ import java.io.FileWriter;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * This class builds the basic GUI elements and is used to start the DL-Learner GUI.
+ * This class builds the basic GUI elements and is used to start the DL-Learner
+ * GUI.
  * 
  * @author Tilo Hielscher
  * @author Jens Lehmann
@@ -48,7 +51,7 @@ public class StartGUI extends JFrame implements ActionListener {
 
 	private JTabbedPane tabPane = new JTabbedPane();
 
-	private Config config = new Config();
+	private Config config = new Config(this);
 
 	private ConfigLoad configLoad = new ConfigLoad(config, this);
 	private ConfigSave configSave = new ConfigSave(config, this);
@@ -77,7 +80,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationByPlatform(true);
 		this.setSize(800, 600);
-		
+
 		// set icon
 		if (this.getClass().getResource("icon.gif") != null)
 			setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(
@@ -116,13 +119,30 @@ public class StartGUI extends JFrame implements ActionListener {
 		tabPane.addChangeListener(new ChangeListener() {
 			// This method is called whenever the selected tab changes
 			public void stateChanged(ChangeEvent evt) {
-				System.out.println(evt.getSource());
-				if(evt.getSource().equals(tabPane)) {
-//					tabPane.get
-//					System.out.println("Tab 2 clicked");
-//					System.exit(0);
+				if (evt.getSource().equals(tabPane)) {
+
+					int index = tabPane.getSelectedIndex();
+//					System.out.println(index);
+					
+					// check whether we need to initialise components
+					if (index != 0 && config.tabNeedsInit(index - 1)) {
+						for (int i = 0; i < index; i++) {
+							config.init(i);
+						}
+					}
+
+					updateTabColors();
+
+					// TODO: handle init code here => whenever a tab
+					// is selected, we have to determine whether it
+					// and the tabs before need to be initialised
+
+					Component c = tabPane.getSelectedComponent();
+					if (c == tab0) {
+						// System.out.println(tab0);
+					}
 				}
-//				init();
+				// init();
 			}
 		});
 
@@ -132,13 +152,14 @@ public class StartGUI extends JFrame implements ActionListener {
 		}
 	}
 
+	/*
 	public void init() {
 		tab0.init();
 		tab1.init();
 		tab2.init();
 		tab3.init();
 		updateTabColors();
-	}
+	}*/
 
 	public static void main(String[] args) {
 		// create GUI logger
@@ -156,8 +177,8 @@ public class StartGUI extends JFrame implements ActionListener {
 		// force platform look and feel
 		try {
 			UIManager.setLookAndFeel(
-//					"com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-			   UIManager.getSystemLookAndFeelClassName());
+			// "com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+					UIManager.getSystemLookAndFeelClassName());
 			// TODO: currently everything is in bold on Linux (and Win?)
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -168,7 +189,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-		
+
 		new StartGUI(file);
 	}
 
@@ -196,7 +217,7 @@ public class StartGUI extends JFrame implements ActionListener {
 				configLoad.openFile(fc.getSelectedFile());
 				configLoad.startParser();
 			}
-		// save as config file
+			// save as config file
 		} else if (e.getSource() == saveItem) {
 			JFileChooser fc = new JFileChooser(new File("examples/"));
 			// FileFilter only *.conf
@@ -227,13 +248,13 @@ public class StartGUI extends JFrame implements ActionListener {
 				}
 			}
 			System.out.println("config file saved");
-		// exit
+			// exit
 		} else if (e.getSource() == exitItem) {
 			dispose();
-		// tutorial
+			// tutorial
 		} else if (e.getSource() == tutorialItem) {
 			new TutorialWindow();
-		// about
+			// about
 		} else if (e.getSource() == aboutItem) {
 			new AboutWindow();
 		}
@@ -243,32 +264,34 @@ public class StartGUI extends JFrame implements ActionListener {
 	 * Update colors of tabulators; red should be clicked, black for OK.
 	 */
 	public void updateTabColors() {
-		if (config.isInitKnowledgeSource())
-			tabPane.setForegroundAt(0, Color.BLACK);
-		else
+		if (config.needsInitKnowledgeSource())
 			tabPane.setForegroundAt(0, Color.RED);
-		if (config.isInitReasoner())
-			tabPane.setForegroundAt(1, Color.BLACK);
 		else
+			tabPane.setForegroundAt(0, Color.BLACK);
+		if (config.needsInitReasoner())
 			tabPane.setForegroundAt(1, Color.RED);
-		if (config.isInitLearningProblem())
-			tabPane.setForegroundAt(2, Color.BLACK);
 		else
+			tabPane.setForegroundAt(1, Color.BLACK);
+		if (config.needsInitLearningProblem())
 			tabPane.setForegroundAt(2, Color.RED);
-		if (config.isInitLearningAlgorithm()) {
-			tabPane.setForegroundAt(3, Color.BLACK);
-			tabPane.setForegroundAt(4, Color.BLACK);
-		} else {
+		else
+			tabPane.setForegroundAt(2, Color.BLACK);
+		if (config.needsInitLearningAlgorithm()) {
 			tabPane.setForegroundAt(3, Color.RED);
 			tabPane.setForegroundAt(4, Color.RED);
+		} else {
+			tabPane.setForegroundAt(3, Color.BLACK);
+			tabPane.setForegroundAt(4, Color.BLACK);
 		}
-		
-		// commented out as I do not see any reason why the method should update everything
-		// (it costs performance to update everything when the user only sees one panel)
-//		tab0.updateAll();
-//		tab1.updateAll();
-//		tab2.updateAll();
-//		tab3.updateAll();
+
+		// commented out as I do not see any reason why the method should update
+		// everything
+		// (it costs performance to update everything when the user only sees
+		// one panel)
+		// tab0.updateAll();
+		// tab1.updateAll();
+		// tab2.updateAll();
+		// tab3.updateAll();
 
 	}
 }

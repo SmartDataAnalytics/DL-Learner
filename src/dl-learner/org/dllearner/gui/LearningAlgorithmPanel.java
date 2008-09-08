@@ -106,15 +106,15 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		// read selected Class
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			choosenClassIndex = cb.getSelectedIndex();
-			config.setInitLearningAlgorithm(false);
-			init();
+//			config.setInitLearningAlgorithm(false);
+//			init();
 		}
 
 		if (e.getSource() == autoInitButton)
 			setLearningAlgorithm();
 
-		if (e.getSource() == initButton)
-			init();
+//		if (e.getSource() == initButton)
+//			init();
 	}
 
 	/**
@@ -136,6 +136,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	/**
 	 * after this, next tab can be used
 	 */
+	/*
 	public void init() {
 		setLearningAlgorithm();
 		if (config.getLearningProblem() != null) {
@@ -148,7 +149,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 			System.out.println("init LearningAlgorithm");
 			startGUI.updateTabColors();
 		}
-	}
+	}*/
 
 	/**
 	 * updateAll
@@ -176,16 +177,14 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	 * update OptionPanel with new selection
 	 */
 	public void updateOptionPanel() {
-		// update OptionPanel
-		// TODO implement properly !!
-//		optionPanel.update(config.getLearningAlgorithm(), learner.get(choosenClassIndex));
+		optionPanel.update(config.getLearningAlgorithm());
 	}
 
 	/**
 	 * make init-button red if you have to click
 	 */
 	public void updateInitButtonColor() {
-		if (!config.isInitLearningAlgorithm()) {
+		if (!config.needsInitLearningAlgorithm()) {
 			initButton.setForeground(Color.RED);
 		} else
 			initButton.setForeground(Color.BLACK);

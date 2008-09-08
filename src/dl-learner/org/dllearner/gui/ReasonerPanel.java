@@ -99,36 +99,37 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		// choosenClassIndex = cb.getSelectedIndex();
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			choosenClassIndex = cb.getSelectedIndex();
-			config.setInitReasoner(false);
-			init();
+//			config.setInitReasoner(false);
+//			init();
 		}
 
 		if (e.getSource() == setButton) {
-			config.setInitReasoner(false);
+//			config.setInitReasoner(false);
 			setReasoner();
 		}
 
-		if (e.getSource() == initButton)
-			init();
+//		if (e.getSource() == initButton)
+//			init();
 	}
 
 	/**
 	 * after this, you can change widgets
 	 */
 	public void setReasoner() {
-		if (config.isInitKnowledgeSource()) {
+		if (config.needsInitKnowledgeSource()) {
 			config.setReasoner(config.getComponentManager().reasoner(
 					reasoner.get(choosenClassIndex), config.getKnowledgeSource()));
 			updateOptionPanel();
-			startGUI.updateTabColors();
-			config.setInitReasoner(false);
-			updateInitButtonColor();
+//			startGUI.updateTabColors();
+//			config.setInitReasoner(false);
+//			updateInitButtonColor();
 		}
 	}
 
 	/**
 	 * after this, next tab can be used
 	 */
+	/*
 	public void init() {
 		setReasoner();
 		if (config.getKnowledgeSource() != null && config.getReasoner() != null) {
@@ -146,7 +147,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 			}
 
 		}
-	}
+	}*/
 
 	/**
 	 * updateAll
@@ -174,15 +175,14 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	 * update OptionPanel with new selection
 	 */
 	public void updateOptionPanel() {
-//		 TODO: implement properly !!
-//		optionPanel.update(config.getReasoner(), reasoner.get(choosenClassIndex));
+		optionPanel.update(config.getReasoner());
 	}
 
 	/**
 	 * make init-button red if you have to click
 	 */
 	public void updateInitButtonColor() {
-		if (!config.isInitReasoner()) {
+		if (!config.needsInitReasoner()) {
 			initButton.setForeground(Color.RED);
 		} else
 			initButton.setForeground(Color.BLACK);

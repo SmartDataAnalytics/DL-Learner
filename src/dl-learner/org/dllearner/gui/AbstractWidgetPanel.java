@@ -23,7 +23,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.dllearner.core.Component;
+import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.core.config.InvalidConfigOptionValueException;
 
 /**
  * Abstract superclass of all widgets. Each widget has an associated component and configuration option,
@@ -65,9 +67,16 @@ public abstract class AbstractWidgetPanel<T> extends JPanel {
 	
 	// subclasses should call this method if a configuration option has changed
 	public void fireValueChanged(T value) {
-		// TODO notify config that an option has changed
-		// (component manager should be accessed in config only, such that we can intelligently decide which 
-		// panels to initialise)
+		ConfigEntry<T> entry = null;
+		try {
+			entry = new ConfigEntry<T>(configOption, value);
+		} catch (InvalidConfigOptionValueException e) {
+			// TODO display a message on the status bar (where the init
+			// has been before)
+			e.printStackTrace();
+		}
+		// notify config that a value has changed -> it decides what to do
+		config.applyConfigEntry(component, entry);
 	}
 	
 	// subclasses should use this method to build the graphical representation of the widgets

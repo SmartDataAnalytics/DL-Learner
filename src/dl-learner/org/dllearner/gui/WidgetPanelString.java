@@ -28,8 +28,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 
 /**
@@ -46,8 +44,6 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 
 //	private JPanel widgetPanel = new JPanel();
 	private JButton setButton; // = new JButton("Set");
-
-	private Class<? extends Component> componentOption;
 
 	private String value;
 	private JTextField stringField; // = new JTextField(35);
@@ -67,7 +63,9 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 					stringField.setText(value);
 				}
 			}
-			setEntry();
+			value = stringField.getText();
+			fireValueChanged(value);
+//			setEntry();
 			// if url and value not ""
 			// necessary for init knowledge source
 			if (configOption.getName().equalsIgnoreCase("url") && !value.equalsIgnoreCase("")) {
@@ -75,6 +73,7 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 		}
 	}
 
+	/*
 	public void setEntry() {
 		StringConfigOption specialOption;
 		value = stringField.getText(); // get from input
@@ -91,7 +90,7 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 			}
 		} else
 			System.out.println("String: not valid value");
-	}
+	}*/
 
 	/**
 	 * Widget filename getName() == filename you should open a file dialog in

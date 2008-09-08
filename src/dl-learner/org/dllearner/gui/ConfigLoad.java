@@ -99,7 +99,7 @@ public class ConfigLoad {
 				if (config.getKnowledgeSource() != null && config.isSetURL()) {
 					try {
 						config.getKnowledgeSource().init();
-						config.setInitKnowledgeSource(true);
+//						config.setInitKnowledgeSource(true);
 						System.out.println("init KnowledgeSource");
 					} catch (ComponentInitException e) {
 						e.printStackTrace();
@@ -121,7 +121,7 @@ public class ConfigLoad {
 					config.setReasoningService(config.getComponentManager().reasoningService(
 							config.getReasoner()));
 					System.out.println("init ReasoningService");
-					config.setInitReasoner(true);
+//					config.setInitReasoner(true);
 					startGUI.updateTabColors();
 				} catch (ComponentInitException e) {
 					e.printStackTrace();
@@ -144,7 +144,7 @@ public class ConfigLoad {
 			if (config.getReasoner() != null && config.getLearningProblem() != null) {
 				try {
 					config.getLearningProblem().init();
-					config.setInitLearningProblem(true);
+//					config.setInitLearningProblem(true);
 					System.out.println("init LearningProblem");
 					startGUI.updateTabColors();
 				} catch (ComponentInitException e) {
@@ -168,7 +168,7 @@ public class ConfigLoad {
 			if (config.getLearningProblem() != null) {
 				try {
 					config.getLearningAlgorithm().init();
-					config.setInitLearningAlgorithm(true);
+//					config.setInitLearningAlgorithm(true);
 					System.out.println("init LearningAlgorithm");
 					startGUI.updateTabColors();
 				} catch (ComponentInitException e) {
