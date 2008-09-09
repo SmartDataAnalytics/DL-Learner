@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.gui;
+package org.dllearner.gui.widgets;
 
 import java.awt.Color;
 
@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.gui.Config;
 
 /**
  * Panel for not defined options.

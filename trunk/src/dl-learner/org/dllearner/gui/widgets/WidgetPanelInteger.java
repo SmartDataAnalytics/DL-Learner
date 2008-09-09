@@ -1,4 +1,4 @@
-package org.dllearner.gui;
+package org.dllearner.gui.widgets;
 
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
@@ -28,28 +28,27 @@ import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.DoubleConfigOption;
+import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.gui.Config;
 
 /**
- * Panel for option Double, defined in
- * {@link org.dllearner.core.config.DoubleConfigOption}.
+ * Panel for option Integer, defined in
+ * org.dllearner.core.config.IntegerConfigOption.
  * 
  * @author Tilo Hielscher
  * 
  */
-public class WidgetPanelDouble extends AbstractWidgetPanel<Double> implements ActionListener {
+public class WidgetPanelInteger extends AbstractWidgetPanel<Integer> implements ActionListener {
 
-	private static final long serialVersionUID = 5238903690721116289L;
+	private static final long serialVersionUID = -1802111225835164644L;
 
 	private JButton setButton = new JButton("Set");
 
-//	private Class<? extends Component> componentOption;
+	private Integer value;
+	private JTextField integerField = new JTextField(3);
 
-	private Double value;
-	private JTextField doubleField = new JTextField(5);
-
-	public WidgetPanelDouble(Config config, Component component, DoubleConfigOption configOption) {
+	public WidgetPanelInteger(Config config, Component component, IntegerConfigOption configOption) {
 		super(config, component, configOption);
 	}
 
@@ -60,43 +59,42 @@ public class WidgetPanelDouble extends AbstractWidgetPanel<Double> implements Ac
 	}
 
 	public void setEntry() {
-		DoubleConfigOption specialOption;
-		value = Double.parseDouble(doubleField.getText()); // get from input
-		specialOption = (DoubleConfigOption) config.getComponentManager().getConfigOption(
+		IntegerConfigOption specialOption;
+		value = Integer.parseInt(integerField.getText()); // get from input
+		specialOption = (IntegerConfigOption) config.getComponentManager().getConfigOption(
 				component.getClass(), configOption.getName());
 		if (specialOption.isValidValue(value)) {
 			try {
-				ConfigEntry<Double> specialEntry = new ConfigEntry<Double>(specialOption, value);
+				ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(specialOption, value);
 				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				// System.out.println("set Double: " + configOption.getName() +
+				// System.out.println("set Integer: " + configOption.getName() +
 				// " = " + value);
 			} catch (InvalidConfigOptionValueException s) {
 				s.printStackTrace();
 			}
 		} else
-			System.out.println("Double: not valid value");
+			System.out.println("Integer: not valid value");
 	}
 
 	@Override
 	public void buildWidgetPanel() {
 		add(getLabel());
-
+		
 		value = config.getConfigOptionValue(component, configOption);
 		
 		setButton = new JButton("Set");
-		doubleField = new JTextField(5);
+		integerField = new JTextField(3);		
 		if (value == null)
-			value = 0.0;
+			value = 0;
 		else {
-			doubleField.setText(value.toString());
+			integerField.setText(value.toString());
 			setEntry();
-		}		
+		}
 		
-		doubleField.setText(value.toString());
-		doubleField.setToolTipText(configOption.getAllowedValuesDescription());
+		integerField.setText(value.toString());
+		integerField.setToolTipText(configOption.getAllowedValuesDescription());
 		setButton.addActionListener(this);
-		add(doubleField);
+		add(integerField);
 		add(setButton);		
-		
 	}
 }

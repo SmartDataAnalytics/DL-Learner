@@ -1,4 +1,4 @@
-package org.dllearner.gui;
+package org.dllearner.gui.widgets;
 
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
@@ -42,6 +42,7 @@ import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringTupleListConfigOption;
+import org.dllearner.gui.Config;
 import org.dllearner.utilities.datastructures.StringTuple;
 
 /**

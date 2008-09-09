@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.gui;
+package org.dllearner.gui.widgets;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -44,6 +44,8 @@ import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.gui.CheckBoxList;
+import org.dllearner.gui.Config;
 
 /**
  * Panel for option StringSet, defined in

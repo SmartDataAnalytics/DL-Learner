@@ -20,6 +20,9 @@
 package org.dllearner.gui;
 
 import javax.swing.*;
+
+import org.dllearner.gui.widgets.WidgetPanelStringSet;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
