@@ -24,11 +24,11 @@ import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasoningService;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 
@@ -58,6 +58,10 @@ public class Config {
 	// have changed configuration options, which require initialisation)
 	private boolean[] needsInit = new boolean[4];
 	
+	// specifies whether the panel is enabled, i.e. the user
+	// can select it (all mandatory variables in selected components have been choosen)
+	private boolean[] isEnabled = new boolean[4];
+	
 	// learning algorithm status
 	private boolean threadIsRunning = false;
 	private Long algorithmRunStartTime = null;
@@ -70,6 +74,8 @@ public class Config {
 		// none of the components is initialised
 		for(int i=0; i<4; i++) {
 			needsInit[i] = true;
+			// TODO there might be knowledge source without mandatory options
+			isEnabled[i] = false;
 		}
 	}
 	
@@ -282,6 +288,14 @@ public class Config {
 		return needsInit[3];
 	}
 
+	public boolean needsInit(int tabIndex) {
+		return needsInit[tabIndex];
+	}
+	
+	public boolean isEnabled(int tabIndex) {
+		return isEnabled[tabIndex];
+	}
+	
 	/**
 	 * set true if you run LearningAlgorithm.init
 	 */
@@ -386,6 +400,9 @@ public class Config {
 			needsInit[1] = true;
 			needsInit[2] = true;
 			needsInit[3] = true;
+			if(mandatoryOptionsSpecified(component)) {
+				isEnabled[1] = true;
+			}
 		} else if(component instanceof ReasonerComponent) {
 			needsInit[1] = true;
 			needsInit[2] = true;
@@ -397,6 +414,10 @@ public class Config {
 			needsInit[3] = true;	
 		}
 		gui.updateTabColors();
+	}
+	
+	private boolean mandatoryOptionsSpecified(Component component) {
+		return false;
 	}
 	
 	// delegate method for getting config option values

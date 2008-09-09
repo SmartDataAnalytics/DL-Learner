@@ -19,24 +19,31 @@
  */
 package org.dllearner.gui;
 
-import javax.swing.*;
-import javax.swing.event.*;
-
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.core.ComponentInitException;
-
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.FileWriter;
-import javax.swing.filechooser.FileFilter;
 
 /**
  * This class builds the basic GUI elements and is used to start the DL-Learner
@@ -71,6 +78,8 @@ public class StartGUI extends JFrame implements ActionListener {
 	private JMenuItem aboutItem = new JMenuItem("About");
 	private JMenuItem tutorialItem = new JMenuItem("Quick Tutorial");
 
+	private StatusPanel statusPanel = new StatusPanel();
+	
 	public StartGUI() {
 		this(null);
 	}
@@ -111,7 +120,8 @@ public class StartGUI extends JFrame implements ActionListener {
 		menuHelp.add(aboutItem);
 		aboutItem.addActionListener(this);
 
-		add(tabPane);
+		add(tabPane, BorderLayout.CENTER);
+		add(statusPanel, BorderLayout.SOUTH);
 		setVisible(true);
 		updateTabColors();
 
@@ -177,8 +187,9 @@ public class StartGUI extends JFrame implements ActionListener {
 		// force platform look and feel
 		try {
 			UIManager.setLookAndFeel(
-			// "com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-					UIManager.getSystemLookAndFeelClassName());
+					UIManager.getCrossPlatformLookAndFeelClassName());
+//			 "com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+//					UIManager.getSystemLookAndFeelClassName());
 			// TODO: currently everything is in bold on Linux (and Win?)
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -197,21 +208,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		// open config file
 		if (e.getSource() == openItem) {
 			// file dialog
-			JFileChooser fc = new JFileChooser(new File("examples/"));
-			// FileFilter only *.conf
-			fc.addChoosableFileFilter(new FileFilter() {
-				@Override
-				public boolean accept(File f) {
-					if (f.isDirectory())
-						return true;
-					return f.getName().toLowerCase().endsWith(".conf");
-				}
-
-				@Override
-				public String getDescription() {
-					return "*.conf"; // name for filter
-				}
-			});
+			JFileChooser fc = new ExampleFileChooser("conf");
 			if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 				System.out.println("FILE: " + fc.getSelectedFile());
 				configLoad.openFile(fc.getSelectedFile());
@@ -264,25 +261,41 @@ public class StartGUI extends JFrame implements ActionListener {
 	 * Update colors of tabulators; red should be clicked, black for OK.
 	 */
 	public void updateTabColors() {
-		if (config.needsInitKnowledgeSource())
-			tabPane.setForegroundAt(0, Color.RED);
-		else
-			tabPane.setForegroundAt(0, Color.BLACK);
-		if (config.needsInitReasoner())
-			tabPane.setForegroundAt(1, Color.RED);
-		else
-			tabPane.setForegroundAt(1, Color.BLACK);
-		if (config.needsInitLearningProblem())
-			tabPane.setForegroundAt(2, Color.RED);
-		else
-			tabPane.setForegroundAt(2, Color.BLACK);
-		if (config.needsInitLearningAlgorithm()) {
-			tabPane.setForegroundAt(3, Color.RED);
-			tabPane.setForegroundAt(4, Color.RED);
-		} else {
-			tabPane.setForegroundAt(3, Color.BLACK);
-			tabPane.setForegroundAt(4, Color.BLACK);
+		for(int i=0; i<4; i++) {
+			// red = needs init, black = initialised
+			if(config.needsInit(i)) {
+				tabPane.setForegroundAt(i, Color.RED);
+			} else {
+				tabPane.setForegroundAt(i, Color.BLACK);
+			}
+			
+			// only enable tabs, which can be selected
+			// (note the i+1: knowledge source always enabled)
+			tabPane.setEnabledAt(i+1, config.isEnabled(i));			
 		}
+		
+		// run panel is enabled if all mandatory algorithm parameters have been set 
+//		tabPane.setEnabledAt(4, config.isEnabled(4));
+		
+//		if (config.needsInitKnowledgeSource())
+//			tabPane.setForegroundAt(0, Color.RED);
+//		else
+//			tabPane.setForegroundAt(0, Color.BLACK);
+//		if (config.needsInitReasoner())
+//			tabPane.setForegroundAt(1, Color.RED);
+//		else
+//			tabPane.setForegroundAt(1, Color.BLACK);
+//		if (config.needsInitLearningProblem())
+//			tabPane.setForegroundAt(2, Color.RED);
+//		else
+//			tabPane.setForegroundAt(2, Color.BLACK);
+//		if (config.needsInitLearningAlgorithm()) {
+//			tabPane.setForegroundAt(3, Color.RED);
+//			tabPane.setForegroundAt(4, Color.RED);
+//		} else {
+//			tabPane.setForegroundAt(3, Color.BLACK);
+//			tabPane.setForegroundAt(4, Color.BLACK);
+//		}
 
 		// commented out as I do not see any reason why the method should update
 		// everything
@@ -293,5 +306,9 @@ public class StartGUI extends JFrame implements ActionListener {
 		// tab2.updateAll();
 		// tab3.updateAll();
 
+	}
+	
+	public void setStatusMessage(String message) {
+		statusPanel.setStatus(message);
 	}
 }

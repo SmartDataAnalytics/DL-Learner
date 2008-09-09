@@ -30,7 +30,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
@@ -45,7 +44,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -7678275020058043937L;
 
 	private Config config;
-	private StartGUI startGUI;
+//	private StartGUI startGUI;
 	private List<Class<? extends ReasonerComponent>> reasoner;
 	private JPanel choosePanel = new JPanel();
 	private JPanel initPanel = new JPanel();
@@ -59,7 +58,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		super(new BorderLayout());
 
 		this.config = config;
-		this.startGUI = startGUI;
+//		this.startGUI = startGUI;
 		reasoner = config.getComponentManager().getReasonerComponents();
 		// to set a default reasoner, we move it to the beginning of the list
 		reasoner.remove(OWLAPIReasoner.class);

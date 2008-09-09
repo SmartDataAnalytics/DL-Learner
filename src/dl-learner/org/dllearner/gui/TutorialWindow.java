@@ -19,6 +19,8 @@
  */
 package org.dllearner.gui;
 
+import java.awt.Dimension;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
@@ -36,7 +38,7 @@ public class TutorialWindow extends JFrame {
 		setTitle("Quick Tutorial");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setLocationByPlatform(true);
-		setSize(300, 500);
+		setSize(300, 600);
 		
 		// display tutorial text
 		String text = "<html><h2>Quick Tutorial</h2><p align=\"justify\">DL-Learner has a component" +
@@ -50,12 +52,20 @@ public class TutorialWindow extends JFrame {
 				"you have to choose and configure all four types of components." +
 				" The run tab plays a special role: It is used to start the learning algorithm" +
 				" and display statistical information.</p>" +
+				"<br /><p><i>Tab color explanation:</i> <br />gray = cannot be configured yet (mandatory configuration values missing)<br />" +
+				"red = needs to be initialised<br />black = component has been initialised</p>" +
 				"<br /><p><i>Further references:</i><br />" +
 				"Homepage: <a href=\"http://dl-learner.org\">http://dl-learner.org</a><br />" +
 				"DL-Learner Architecture: <a href=\"http://dl-learner.org/wiki/Architecture\">http://dl-learner.org/wiki/Architecture</a>" +
 				"</p><br /><p>Please send questions to lehmann@informatik.uni-leipzig.de.</p></html>";
 		JLabel label = new JLabel(text);
+		label.setMaximumSize(new Dimension(300,500));
 		add(label);
+//		JScrollPane scrollPane = new JScrollPane(label);
+//		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+//		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//		scrollPane.setPreferredSize(new Dimension(300,500));
+//		add(scrollPane);
 		
 		setVisible(true);
 	}	

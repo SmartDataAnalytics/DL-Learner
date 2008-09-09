@@ -20,7 +20,6 @@
 package org.dllearner.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -29,14 +28,16 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.kb.OWLFile;
 
 
 /**
- * KnowledgeSourcePanel, tab 0. Choose Source, change Options and final initiate
- * KnowledgeSource.
+ * Knowledge source panel, tab 0. Choose source, change mandatory options and finally initialise
+ * knowledge source.
  * 
+ * @author Jens Lehmann
  * @author Tilo Hielscher
  */
 public class KnowledgeSourcePanel extends JPanel implements ActionListener {
@@ -44,14 +45,14 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -7678275020058043937L;
 
 	private Config config;
-	private StartGUI startGUI;
-	private JButton initButton;
+//	private StartGUI startGUI;
+//	private JButton initButton;
 	private JButton setButton;
 	private JButton clearButton;
 	private String[] kbBoxItems = {};
 	private JComboBox cb = new JComboBox(kbBoxItems);
 	private JPanel choosePanel = new JPanel();
-	private JPanel initPanel = new JPanel();
+//	private JPanel initPanel = new JPanel();
 	private int choosenClassIndex;
 	private List<Class<? extends KnowledgeSource>> selectableSources;
 	private OptionPanel optionPanel;
@@ -60,16 +61,21 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		super(new BorderLayout());
 
 		this.config = config;
-		this.startGUI = startGUI;
+//		this.startGUI = startGUI;
 		selectableSources = config.getComponentManager().getKnowledgeSources();
+		// to set a default source, we move it to the beginning of the list
+		selectableSources.remove(OWLFile.class);
+		selectableSources.add(0, OWLFile.class);
+		// OWL API ontology is only useful programmatically (not in the GUI itself)
+		selectableSources.remove(OWLAPIOntology.class);
 
 		setButton = new JButton("Set");
 		setButton.addActionListener(this);
 		setButton = new JButton("Clear All");
 		setButton.addActionListener(this);
-		initButton = new JButton("Init KnowledgeSource");
-		initButton.addActionListener(this);
-		initButton.setEnabled(true);
+//		initButton = new JButton("Init KnowledgeSource");
+//		initButton.addActionListener(this);
+//		initButton.setEnabled(true);
 
 		// add to comboBox
 		for (int i = 0; i < selectableSources.size(); i++) {
@@ -90,10 +96,12 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
 		add(choosePanel, BorderLayout.PAGE_START);
 		add(optionPanel, BorderLayout.CENTER);
-		add(initPanel, BorderLayout.PAGE_END);
+//		add(initPanel, BorderLayout.PAGE_END);
 
-		setSource();
-		updateAll();
+		choosenClassIndex = cb.getSelectedIndex();
+		
+//		setSource();
+//		updateAll();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -101,7 +109,10 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 			choosenClassIndex = cb.getSelectedIndex();
 			// create a new knowledge source component
 			config.newKnowledgeSource(selectableSources.get(choosenClassIndex));
-			updateAll();
+//			updateAll();
+			updateOptionPanel();
+			
+			System.out.println("update");
 //			config.setInitKnowledgeSource(false);
 //			init();
 		}
@@ -110,9 +121,9 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 			setSource();
 		}
 
-		if (e.getSource() == initButton) {
-			init();
-		}
+//		if (e.getSource() == initButton) {
+//			init();
+//		}
 
 		if (e.getSource() == clearButton) {
 			config.reInit();
@@ -132,6 +143,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	/**
 	 * after this, next tab can be used
 	 */
+	/*
 	public void init() {
 		setSource();
 		if (config.getKnowledgeSource() != null && config.isSetURL()) {
@@ -145,19 +157,21 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 			}
 		}
 	}
+	*/
 
 	/**
 	 * updateAll
 	 */
 	public void updateAll() {
-		updateComboBox();
+//		updateComboBox();
 		updateOptionPanel();
-		updateInitButtonColor();
+//		updateInitButtonColor();
 	}
 
 	/**
 	 * set ComboBox to selected class
 	 */
+	/*
 	public void updateComboBox() {
 		if (config.getKnowledgeSource() != null)
 			for (int i = 0; i < selectableSources.size(); i++)
@@ -166,7 +180,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 					cb.setSelectedIndex(i);
 				}
 		this.choosenClassIndex = cb.getSelectedIndex();
-	}
+	}*/
 
 	/**
 	 * update OptionPanel with new selection
@@ -178,11 +192,13 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	/**
 	 * make init-button red if you have to click
 	 */
+	/*
 	public void updateInitButtonColor() {
 		if (!config.needsInitKnowledgeSource()) {
 			initButton.setForeground(Color.RED);
 		} else
 			initButton.setForeground(Color.BLACK);
 	}
+	*/
 
 }

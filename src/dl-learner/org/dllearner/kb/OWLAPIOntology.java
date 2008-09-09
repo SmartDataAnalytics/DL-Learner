@@ -21,10 +21,18 @@ public class OWLAPIOntology extends KnowledgeSource {
 	
 	private OWLOntology ontology;
 	
+	public OWLAPIOntology() {
+		this(null);
+	}
+	
 	public OWLAPIOntology(OWLOntology onto)
 	{
 		this.ontology = onto;
 		this.configurator = new OWLAPIOntologyConfigurator(this);
+	}
+	
+	public static String getName() {
+		return "OWL API Ontology";
 	}
 	
 	@Override

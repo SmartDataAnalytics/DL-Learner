@@ -21,7 +21,6 @@ package org.dllearner.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -29,6 +28,7 @@ import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.kb.OWLFile;
 
 /**
  * Panel for option String, defined in
@@ -54,9 +54,14 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == setButton) {
-			if (checkForFilename()) {
-				// file dialog
-				JFileChooser fc = new JFileChooser(new File("examples/"));
+			if (configOption.getName().equals("filename")) {
+				JFileChooser fc;
+				if(component instanceof OWLFile) {
+					fc = new ExampleFileChooser("owl");
+				} else {
+					fc = new ExampleFileChooser("kb");
+				}	
+				
 				int returnVal = fc.showOpenDialog(this);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					value = fc.getSelectedFile().toString();
@@ -92,14 +97,6 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 			System.out.println("String: not valid value");
 	}*/
 
-	/**
-	 * Widget filename getName() == filename you should open a file dialog in
-	 * ActionPerformed
-	 */
-	private Boolean checkForFilename() {
-		return configOption.getName().equalsIgnoreCase("filename");
-	}
-
 	@Override
 	public void buildWidgetPanel() {
 		add(getLabel());
@@ -123,7 +120,8 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 		add(stringField);
 		add(setButton);
 		
-		if (checkForFilename())
+		// special handling for filename option
+		if (configOption.getName().equals("filename"))
 			setButton.setText("choose local file");
 		
 	}
