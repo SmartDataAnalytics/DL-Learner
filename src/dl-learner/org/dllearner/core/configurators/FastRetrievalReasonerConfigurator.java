@@ -29,7 +29,7 @@ import org.dllearner.reasoning.FastRetrievalReasoner;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class FastRetrievalReasonerConfigurator  {
+public  class FastRetrievalReasonerConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -44,6 +44,7 @@ this.fastRetrievalReasoner = fastRetrievalReasoner;
 }
 
 /**
+* @param knowledgeSource see knowledgeSource
 * @return FastRetrievalReasoner
 **/
 public static FastRetrievalReasoner getFastRetrievalReasoner(Set<KnowledgeSource> knowledgeSource) {
@@ -54,7 +55,8 @@ return component;
 
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;

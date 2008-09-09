@@ -157,6 +157,10 @@ public class Files {
 		    }     
 	}
 	
+	/**
+	 * copies all files in dir to "tmp/"+System.currentTimeMillis()
+	 * @param dir the dir to be backupped
+	 */
 	public static void backupDirectory(String dir){
 		File f = new File(dir);
 		String backupDir = "tmp/"+System.currentTimeMillis();

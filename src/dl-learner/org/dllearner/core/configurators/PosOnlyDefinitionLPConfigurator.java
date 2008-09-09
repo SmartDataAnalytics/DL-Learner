@@ -29,7 +29,7 @@ import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class PosOnlyDefinitionLPConfigurator  {
+public  class PosOnlyDefinitionLPConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -44,6 +44,7 @@ this.posOnlyDefinitionLP = posOnlyDefinitionLP;
 }
 
 /**
+* @param reasoningService see reasoningService
 * @param positiveExamples positive examples
 * @return PosOnlyDefinitionLP
 **/
@@ -74,7 +75,8 @@ ComponentManager.getInstance().applyConfigEntry(posOnlyDefinitionLP, "positiveEx
 }
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;

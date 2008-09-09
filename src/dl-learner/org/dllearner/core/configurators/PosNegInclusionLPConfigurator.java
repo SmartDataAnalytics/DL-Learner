@@ -29,7 +29,7 @@ import org.dllearner.learningproblems.PosNegInclusionLP;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class PosNegInclusionLPConfigurator  {
+public  class PosNegInclusionLPConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -44,6 +44,7 @@ this.posNegInclusionLP = posNegInclusionLP;
 }
 
 /**
+* @param reasoningService see reasoningService
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
 * @return PosNegInclusionLP
@@ -148,7 +149,8 @@ reinitNecessary = true;
 }
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;

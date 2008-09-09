@@ -29,7 +29,7 @@ import org.dllearner.reasoning.DIGReasoner;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class DIGReasonerConfigurator  {
+public  class DIGReasonerConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -44,6 +44,7 @@ this.dIGReasoner = dIGReasoner;
 }
 
 /**
+* @param knowledgeSource see knowledgeSource
 * @return DIGReasoner
 **/
 public static DIGReasoner getDIGReasoner(Set<KnowledgeSource> knowledgeSource) {
@@ -108,7 +109,8 @@ reinitNecessary = true;
 }
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;
