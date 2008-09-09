@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -59,7 +59,11 @@ public class OWLEquivalentClassesAxiomFrameSection
 	private boolean inferredEquivalentClasses = true;
 
 	private OWLFrame<OWLClass> frame;
-
+	/**
+	 * Constructor of the OWLEquivalentClassesAxiomFrameSection.
+	 * @param editorKit OWLEditorKit
+	 * @param frame OWLFrame
+	 */
 	public OWLEquivalentClassesAxiomFrameSection(OWLEditorKit editorKit,
 			OWLFrame<OWLClass> frame) {
 		super(editorKit, LABEL, frame);
