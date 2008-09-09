@@ -29,7 +29,7 @@ import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class PosNegDefinitionLPStrictConfigurator  {
+public  class PosNegDefinitionLPStrictConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -44,6 +44,7 @@ this.posNegDefinitionLPStrict = posNegDefinitionLPStrict;
 }
 
 /**
+* @param reasoningService see reasoningService
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
 * @return PosNegDefinitionLPStrict
@@ -202,7 +203,8 @@ reinitNecessary = true;
 }
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;

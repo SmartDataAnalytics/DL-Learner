@@ -29,7 +29,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class FastInstanceCheckerConfigurator  {
+public  class FastInstanceCheckerConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -44,6 +44,7 @@ this.fastInstanceChecker = fastInstanceChecker;
 }
 
 /**
+* @param knowledgeSource see knowledgeSource
 * @return FastInstanceChecker
 **/
 public static FastInstanceChecker getFastInstanceChecker(Set<KnowledgeSource> knowledgeSource) {
@@ -72,7 +73,8 @@ reinitNecessary = true;
 }
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;

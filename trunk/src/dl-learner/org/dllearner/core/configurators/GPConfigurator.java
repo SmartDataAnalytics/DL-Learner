@@ -30,7 +30,7 @@ import org.dllearner.core.ReasoningService;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class GPConfigurator  {
+public  class GPConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -45,6 +45,9 @@ this.gP = gP;
 }
 
 /**
+* @param reasoningService see reasoningService
+* @param learningProblem see learningProblem
+* @throws LearningProblemUnsupportedException see 
 * @return GP
 **/
 public static GP getGP(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
@@ -361,7 +364,8 @@ reinitNecessary = true;
 }
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;

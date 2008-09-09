@@ -31,7 +31,7 @@ import org.dllearner.core.ReasoningService;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class ROLearnerConfigurator  {
+public  class ROLearnerConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -46,6 +46,9 @@ this.rOLearner = rOLearner;
 }
 
 /**
+* @param reasoningService see reasoningService
+* @param learningProblem see learningProblem
+* @throws LearningProblemUnsupportedException see 
 * @return ROLearner
 **/
 public static ROLearner getROLearner(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
@@ -510,7 +513,8 @@ reinitNecessary = true;
 }
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;

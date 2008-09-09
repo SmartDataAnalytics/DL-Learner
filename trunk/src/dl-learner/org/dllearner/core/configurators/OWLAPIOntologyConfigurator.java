@@ -27,7 +27,7 @@ import org.dllearner.kb.OWLAPIOntology;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class OWLAPIOntologyConfigurator  {
+public  class OWLAPIOntologyConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -52,7 +52,8 @@ return component;
 
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;

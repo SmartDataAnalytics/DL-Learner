@@ -29,7 +29,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class OWLAPIReasonerConfigurator  {
+public  class OWLAPIReasonerConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -44,6 +44,7 @@ this.oWLAPIReasoner = oWLAPIReasoner;
 }
 
 /**
+* @param knowledgeSource see knowledgeSource
 * @return OWLAPIReasoner
 **/
 public static OWLAPIReasoner getOWLAPIReasoner(Set<KnowledgeSource> knowledgeSource) {
@@ -72,7 +73,8 @@ reinitNecessary = true;
 }
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;

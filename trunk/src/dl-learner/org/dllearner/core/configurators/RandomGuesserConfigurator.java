@@ -30,7 +30,7 @@ import org.dllearner.core.ReasoningService;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class RandomGuesserConfigurator  {
+public  class RandomGuesserConfigurator  {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
@@ -45,6 +45,9 @@ this.randomGuesser = randomGuesser;
 }
 
 /**
+* @param reasoningService see reasoningService
+* @param learningProblem see learningProblem
+* @throws LearningProblemUnsupportedException see 
 * @return RandomGuesser
 **/
 public static RandomGuesser getRandomGuesser(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
@@ -91,7 +94,8 @@ reinitNecessary = true;
 }
 
 /**
-* true, if this component needs reinitializsation
+* true, if this component needs reinitializsation.
+* @return boolean
 **/
 public boolean isReinitNecessary(){
 return reinitNecessary;

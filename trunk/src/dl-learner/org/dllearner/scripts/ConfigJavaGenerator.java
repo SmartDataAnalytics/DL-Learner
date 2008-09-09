@@ -66,7 +66,8 @@ public final class ConfigJavaGenerator {
 
 	private static final String REINITVAR = "reinitNecessary";
 
-	private static final String REINITGETTER = "/**\n* true, if this component needs reinitializsation\n**/\n"
+	private static final String REINITGETTER = "/**\n* true, if this component needs reinitializsation.\n"
+			+ "* @return boolean\n**/\n"
 			+ "public boolean is"
 			+ capitalize(REINITVAR)
 			+ "(){\nreturn "
@@ -115,19 +116,17 @@ public final class ConfigJavaGenerator {
 	public static void main(String[] args) {
 
 		Files.backupDirectory(TARGET_DIR);
-		// System.exit(0);
+		System.out.println("previous classes were backupped to tmp/+System.currentTimeMillis()");
 		Files.deleteDir(TARGET_DIR);
 
 		ComponentManager cm = ComponentManager.getInstance();
-		// configuratorImports.add(ComponentManager.class.getCanonicalName());
 		COMPONENT_FACTORY_IMPORTS.add(KnowledgeSource.class.getCanonicalName());
-		// configuratorImports.add(ReasonerComponent.class.getCanonicalName());
 		COMPONENT_FACTORY_IMPORTS
 				.add(ReasoningService.class.getCanonicalName());
 		COMPONENT_FACTORY_IMPORTS.add(LearningProblem.class.getCanonicalName());
-		// componentFactoryImports.add(LearningAlgorithm.class.getCanonicalName());
 		COMPONENT_FACTORY_IMPORTS.add(LearningProblemUnsupportedException.class
 				.getCanonicalName());
+		COMPONENT_FACTORY_METHODS.add("private "+COMPONENT_FACTORY+"(){}\n");
 
 		for (Class<? extends KnowledgeSource> component : cm
 				.getKnowledgeSources()) {
@@ -313,11 +312,11 @@ public final class ConfigJavaGenerator {
 		for (String s : additionalMandatoryVars.keySet()) {
 			parametersWithType.put(s, additionalMandatoryVars.get(s));
 			parametersNoType.put(s, additionalMandatoryVars.get(s));
+			comments ="* @param "+additionalMandatoryVars.get(s)+" see "+additionalMandatoryVars.get(s)+"\n"+comments;
 		}
 		for (String s : mandatoryVars.keySet()) {
 			parametersWithType.put(s, mandatoryVars.get(s));
-			applyConf += fillApplyConfigEntry("component", mandatoryVars.get(s))
-					+ "";
+			applyConf += fillApplyConfigEntry("component", mandatoryVars.get(s));
 		}
 
 		String parWithType = expandCollection(parametersWithType.keySet(), "",
@@ -329,6 +328,7 @@ public final class ConfigJavaGenerator {
 		if (!getinstanceExceptions.isEmpty()) {
 			exceptions += "throws ";
 			exceptions += expandCollection(getinstanceExceptions, "", ", ", 2);
+			comments+=expandCollection(getinstanceExceptions, "* @throws ", " see \n", 0);
 		}
 		comments = fillJavaDocComment(comments + "* @return " + className
 				+ "\n");
@@ -392,7 +392,7 @@ public final class ConfigJavaGenerator {
 		String ret = fillClassTemplate(TARGET_PACKAGE, expandCollection(
 				COMPONENT_FACTORY_IMPORTS, "import ", ";\n", 0),
 				COMPONENT_FACTORY, "", expandCollection(
-						COMPONENT_FACTORY_METHODS, "", "\n", 0));
+						COMPONENT_FACTORY_METHODS, "", "\n", 0), "final");
 
 		Files.createFile(new File(TARGET_DIR + "/" + COMPONENT_FACTORY
 				+ ".java"), ret);
@@ -462,8 +462,14 @@ public final class ConfigJavaGenerator {
 		return ret;
 	}
 
+	
 	private static String fillClassTemplate(String packagE, String imports,
 			String className, String extendS, String body) {
+		return fillClassTemplate(packagE, imports, className, extendS, body, "");
+	}
+	
+	private static String fillClassTemplate(String packagE, String imports,
+			String className, String extendS, String body, String classModifier) {
 		String comment = "* automatically generated, do not edit manually.\n";
 		comment += "* run " + ConfigJavaGenerator.class.getCanonicalName()
 				+ " to update\n";
@@ -473,7 +479,7 @@ public final class ConfigJavaGenerator {
 		ret += imports + "\n";
 		ret += fillJavaDocComment(comment);
 		ret += (INCLUDE_UNUSED) ? UNUSED : "";
-		ret += "public class " + className + " "
+		ret += "public "+classModifier+" class " + className + " "
 				+ ((extendS.length() > 0) ? "extends " + extendS : "")
 				+ " {\n\n";
 		ret += body + "\n";

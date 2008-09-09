@@ -50,7 +50,9 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public class ComponentFactory  {
+public final class ComponentFactory  {
+
+private ComponentFactory(){}
 
 /**
 * @param filename pointer to the KB file on local file system
