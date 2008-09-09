@@ -49,7 +49,8 @@ public class OWLFile extends KnowledgeSource {
 	
 	private URL url;
 	private OWLFileConfigurator configurator ;
-	public OWLFileConfigurator getOWLFileConfigurator(){
+	@Override
+	public OWLFileConfigurator getConfigurator(){
 		return configurator;
 	}
 

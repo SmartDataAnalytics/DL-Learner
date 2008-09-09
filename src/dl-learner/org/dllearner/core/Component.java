@@ -26,6 +26,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.configurators.Configurator;
 
 /**
  * Base class of all components. See also http://dl-learner.org/wiki/Architecture.
@@ -35,11 +36,13 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
  */
 public abstract class Component {
 	
-//protected Configurator configurator;
+protected Configurator configurator;
 	
-	//public Configurator<? extends Configurator> getConfigurator(){
+	public abstract Configurator getConfigurator();
 		//return configurator;
 	//}
+	
+	
 	
 	/**
 	 * Returns the name of this component. By default, "unnamed 

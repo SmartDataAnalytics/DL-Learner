@@ -29,7 +29,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class FastInstanceCheckerConfigurator  {
+public  class FastInstanceCheckerConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")

@@ -34,10 +34,17 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.configurators.RandomGuesserConfigurator;
 import org.dllearner.core.owl.Description;
 
 public class RandomGuesser extends LearningAlgorithm {
 
+	private RandomGuesserConfigurator configurator;
+	@Override
+	public RandomGuesserConfigurator getConfigurator(){
+		return configurator;
+	}
+	
     private Description bestDefinition = null;
     private Score bestScore;
     private double bestFitness = Double.NEGATIVE_INFINITY;
@@ -51,6 +58,7 @@ public class RandomGuesser extends LearningAlgorithm {
 	public RandomGuesser(LearningProblem learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
 		this.rs = rs;
+		this.configurator = new RandomGuesserConfigurator(this);
 	}
 	
 	public static String getName() {

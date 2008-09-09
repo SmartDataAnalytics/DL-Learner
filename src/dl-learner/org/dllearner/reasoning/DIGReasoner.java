@@ -46,10 +46,11 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.configurators.DIGReasonerConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
@@ -75,6 +76,13 @@ import org.kr.dl.dig.v1_1.IndividualSetDocument.IndividualSet;
  * 
  */
 public class DIGReasoner extends ReasonerComponent {
+	
+	private DIGReasonerConfigurator configurator;
+	@Override
+	public DIGReasonerConfigurator getConfigurator(){
+		return configurator;
+	}
+	
 
 	URL reasonerURL;
 	Set<KnowledgeSource> sources;
@@ -105,7 +113,10 @@ public class DIGReasoner extends ReasonerComponent {
 	private File digProtocolFile;
 	private static String defaultDIGProtocolFile = "log/digProtocol.txt";
 	
+	
+	
 	public DIGReasoner(Set<KnowledgeSource> sources) {
+		this.configurator =  new DIGReasonerConfigurator(this);
 		this.sources = sources;
 		try {
 			reasonerURL = new URL("http://localhost:8081");

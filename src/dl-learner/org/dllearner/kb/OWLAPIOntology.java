@@ -7,16 +7,24 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.configurators.OWLAPIOntologyConfigurator;
 import org.dllearner.core.owl.KB;
 import org.semanticweb.owl.model.OWLOntology;
 
 public class OWLAPIOntology extends KnowledgeSource {
 
+	private OWLAPIOntologyConfigurator configurator;
+	@Override
+	public OWLAPIOntologyConfigurator getConfigurator(){
+		return configurator;
+	}
+	
 	private OWLOntology ontology;
 	
 	public OWLAPIOntology(OWLOntology onto)
 	{
 		this.ontology = onto;
+		this.configurator = new OWLAPIOntologyConfigurator(this);
 	}
 	
 	@Override

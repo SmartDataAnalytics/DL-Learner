@@ -42,6 +42,7 @@ import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.configurators.GPConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
@@ -55,6 +56,13 @@ import org.dllearner.utilities.Helper;
  * 
  */
 public class GP extends LearningAlgorithm {
+	
+	private GPConfigurator configurator;
+	@Override
+	public GPConfigurator getConfigurator(){
+		return configurator;
+	}
+	
 	
     // NumberFormat f;
 	DecimalFormat df = new DecimalFormat("0.00");
@@ -140,6 +148,7 @@ public class GP extends LearningAlgorithm {
     public GP(PosNegLP learningProblem, ReasoningService rs) {
     	this.learningProblem = learningProblem;
     	this.rs = rs;
+    	this.configurator = new GPConfigurator(this);
     }
       
 	public static String getName() {

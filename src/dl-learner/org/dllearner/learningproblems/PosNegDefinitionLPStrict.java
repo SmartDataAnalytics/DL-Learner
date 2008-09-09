@@ -53,7 +53,7 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 	private double errorPenalty = defaultErrorPenalty;
 	
 	private PosNegDefinitionLPStrictConfigurator configurator;
-	
+	@Override
 	public PosNegDefinitionLPStrictConfigurator getConfigurator(){
 		return configurator;
 	}

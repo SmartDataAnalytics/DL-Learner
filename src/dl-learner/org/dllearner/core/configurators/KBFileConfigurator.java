@@ -27,7 +27,7 @@ import org.dllearner.kb.KBFile;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class KBFileConfigurator  {
+public  class KBFileConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
