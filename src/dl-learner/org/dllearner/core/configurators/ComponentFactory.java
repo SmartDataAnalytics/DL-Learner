@@ -24,6 +24,7 @@ import java.util.Set;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.DBpediaNavigationSuggestor;
 import org.dllearner.algorithms.RandomGuesser;
+import org.dllearner.algorithms.SimpleSuggestionLearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
@@ -32,11 +33,14 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.KBFile;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.PosOnlyInclusionLP;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
@@ -54,6 +58,13 @@ public class ComponentFactory  {
 **/
 public static KBFile getKBFile(String filename)  {
 return KBFileConfigurator.getKBFile(filename);
+}
+
+/**
+* @return a component ready for initialization OWLAPIOntology
+**/
+public static OWLAPIOntology getOWLAPIOntology()  {
+return OWLAPIOntologyConfigurator.getOWLAPIOntology();
 }
 
 /**
@@ -119,6 +130,16 @@ return PosNegDefinitionLPConfigurator.getPosNegDefinitionLP(reasoningService, po
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
 * @param reasoningService see ReasoningService
+* @return a component ready for initialization PosNegDefinitionLPStrict
+**/
+public static PosNegDefinitionLPStrict getPosNegDefinitionLPStrict(ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
+return PosNegDefinitionLPStrictConfigurator.getPosNegDefinitionLPStrict(reasoningService, positiveExamples, negativeExamples);
+}
+
+/**
+* @param positiveExamples positive examples
+* @param negativeExamples negative examples
+* @param reasoningService see ReasoningService
 * @return a component ready for initialization PosNegInclusionLP
 **/
 public static PosNegInclusionLP getPosNegInclusionLP(ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
@@ -132,6 +153,15 @@ return PosNegInclusionLPConfigurator.getPosNegInclusionLP(reasoningService, posi
 **/
 public static PosOnlyDefinitionLP getPosOnlyDefinitionLP(ReasoningService reasoningService, Set<String> positiveExamples)  {
 return PosOnlyDefinitionLPConfigurator.getPosOnlyDefinitionLP(reasoningService, positiveExamples);
+}
+
+/**
+* @param positiveExamples positive examples
+* @param reasoningService see ReasoningService
+* @return a component ready for initialization PosOnlyInclusionLP
+**/
+public static PosOnlyInclusionLP getPosOnlyInclusionLP(ReasoningService reasoningService, Set<String> positiveExamples)  {
+return PosOnlyInclusionLPConfigurator.getPosOnlyInclusionLP(reasoningService, positiveExamples);
 }
 
 /**
@@ -162,6 +192,16 @@ return DBpediaNavigationSuggestorConfigurator.getDBpediaNavigationSuggestor(lear
 **/
 public static RandomGuesser getRandomGuesser(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException {
 return RandomGuesserConfigurator.getRandomGuesser(learningProblem, reasoningService);
+}
+
+/**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization SimpleSuggestionLearningAlgorithm
+**/
+public static SimpleSuggestionLearningAlgorithm getSimpleSuggestionLearningAlgorithm(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException {
+return SimpleSuggestionLearningAlgorithmConfigurator.getSimpleSuggestionLearningAlgorithm(learningProblem, reasoningService);
 }
 
 /**
