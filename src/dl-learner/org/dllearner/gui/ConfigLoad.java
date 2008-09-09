@@ -74,7 +74,7 @@ public class ConfigLoad {
 	 * parse file
 	 */
 	public void startParser() {
-		config.reInit(); // new ComponentManager
+//		config.reInit(); // new ComponentManager
 		if (this.file.exists()) {
 			ConfParser parser = ConfParser.parseFile(file);
 			// create a mapping between components and prefixes in the conf file
@@ -94,7 +94,7 @@ public class ConfigLoad {
 				config.setKnowledgeSource(config.getKnowledgeSource());
 				Start.configureComponent(config.getComponentManager(), config.getKnowledgeSource(),
 						componentPrefixMapping, parser);
-				startGUI.updateTabColors();
+				startGUI.updateTabs();
 				// init
 				if (config.getKnowledgeSource() != null && config.isSetURL()) {
 					try {
@@ -122,7 +122,7 @@ public class ConfigLoad {
 							config.getReasoner()));
 					System.out.println("init ReasoningService");
 //					config.setInitReasoner(true);
-					startGUI.updateTabColors();
+					startGUI.updateTabs();
 				} catch (ComponentInitException e) {
 					e.printStackTrace();
 				}
@@ -146,7 +146,7 @@ public class ConfigLoad {
 					config.getLearningProblem().init();
 //					config.setInitLearningProblem(true);
 					System.out.println("init LearningProblem");
-					startGUI.updateTabColors();
+					startGUI.updateTabs();
 				} catch (ComponentInitException e) {
 					e.printStackTrace();
 				}
@@ -170,14 +170,14 @@ public class ConfigLoad {
 					config.getLearningAlgorithm().init();
 //					config.setInitLearningAlgorithm(true);
 					System.out.println("init LearningAlgorithm");
-					startGUI.updateTabColors();
+					startGUI.updateTabs();
 				} catch (ComponentInitException e) {
 					e.printStackTrace();
 				}
 			}
 
 			// update graphic
-			startGUI.updateTabColors();
+			startGUI.updateTabs();
 		}
 	}
 

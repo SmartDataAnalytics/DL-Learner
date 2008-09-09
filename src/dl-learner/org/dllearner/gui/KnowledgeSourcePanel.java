@@ -46,13 +46,10 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 
 	private Config config;
 //	private StartGUI startGUI;
-//	private JButton initButton;
-	private JButton setButton;
 	private JButton clearButton;
 	private String[] kbBoxItems = {};
 	private JComboBox cb = new JComboBox(kbBoxItems);
 	private JPanel choosePanel = new JPanel();
-//	private JPanel initPanel = new JPanel();
 	private int choosenClassIndex;
 	private List<Class<? extends KnowledgeSource>> selectableSources;
 	private OptionPanel optionPanel;
@@ -69,13 +66,8 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		// OWL API ontology is only useful programmatically (not in the GUI itself)
 		selectableSources.remove(OWLAPIOntology.class);
 
-		setButton = new JButton("Set");
-		setButton.addActionListener(this);
-		setButton = new JButton("Clear All");
-		setButton.addActionListener(this);
-//		initButton = new JButton("Init KnowledgeSource");
-//		initButton.addActionListener(this);
-//		initButton.setEnabled(true);
+		clearButton = new JButton("Reset to Default Values");
+		clearButton.addActionListener(this);
 
 		// add to comboBox
 		for (int i = 0; i < selectableSources.size(); i++) {
@@ -84,19 +76,15 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		cb.addActionListener(this);
 
 		choosePanel.add(cb);
-		choosePanel.add(setButton);
+		choosePanel.add(clearButton);
 		choosenClassIndex = cb.getSelectedIndex();
 
 		// whenever a component is selected, we immediately create an instance (non-initialised)
 		KnowledgeSource ks = config.newKnowledgeSource(selectableSources.get(cb.getSelectedIndex()));
 		optionPanel = new OptionPanel(config, ks);
-		
-//		optionPanel = new OptionPanel(config, config.getKnowledgeSource(), sources.get(choosenClassIndex));
-		// initPanel.add(initButton);
 
-		add(choosePanel, BorderLayout.PAGE_START);
+		add(choosePanel, BorderLayout.NORTH);
 		add(optionPanel, BorderLayout.CENTER);
-//		add(initPanel, BorderLayout.PAGE_END);
 
 		choosenClassIndex = cb.getSelectedIndex();
 		
@@ -117,70 +105,27 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 //			init();
 		}
 
-		if (e.getSource() == setButton) {
-			setSource();
+		if (e.getSource() == clearButton) {
+			config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
+					selectableSources.get(choosenClassIndex)));
+			updateOptionPanel();
 		}
 
 //		if (e.getSource() == initButton) {
 //			init();
 //		}
 
-		if (e.getSource() == clearButton) {
-			config.reInit();
-		}
+//		if (e.getSource() == clearButton) {
+//			config.reInit();
+//		}
 	}
 
 	/**
 	 * after this, you can change widgets
 	 */
-	public void setSource() {
-		config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
-				selectableSources.get(choosenClassIndex)));
-//		config.setInitKnowledgeSource(false);
-		updateAll();
-	}
-
-	/**
-	 * after this, next tab can be used
-	 */
-	/*
-	public void init() {
-		setSource();
-		if (config.getKnowledgeSource() != null && config.isSetURL()) {
-			try {
-				config.getKnowledgeSource().init();
-//				config.setInitKnowledgeSource(true);
-				System.out.println("init KnowledgeSource");
-				startGUI.updateTabColors();
-			} catch (ComponentInitException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	*/
-
-	/**
-	 * updateAll
-	 */
-	public void updateAll() {
-//		updateComboBox();
-		updateOptionPanel();
-//		updateInitButtonColor();
-	}
-
-	/**
-	 * set ComboBox to selected class
-	 */
-	/*
-	public void updateComboBox() {
-		if (config.getKnowledgeSource() != null)
-			for (int i = 0; i < selectableSources.size(); i++)
-				if (config.getKnowledgeSource().getClass().equals(
-						config.getComponentManager().getKnowledgeSources().get(i))) {
-					cb.setSelectedIndex(i);
-				}
-		this.choosenClassIndex = cb.getSelectedIndex();
-	}*/
+//	public void setSource() {
+//		
+//	}
 
 	/**
 	 * update OptionPanel with new selection
@@ -188,17 +133,5 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	public void updateOptionPanel() {
 		optionPanel.update(config.getKnowledgeSource());
 	}
-
-	/**
-	 * make init-button red if you have to click
-	 */
-	/*
-	public void updateInitButtonColor() {
-		if (!config.needsInitKnowledgeSource()) {
-			initButton.setForeground(Color.RED);
-		} else
-			initButton.setForeground(Color.BLACK);
-	}
-	*/
 
 }

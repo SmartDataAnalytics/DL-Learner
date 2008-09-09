@@ -31,6 +31,8 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.kb.KBFile;
+import org.dllearner.kb.OWLFile;
 
 // import org.dllearner.core.Component;
 
@@ -357,18 +359,18 @@ public class Config {
 		return false;
 	}
 
-	public void reInit() {
-		cm = ComponentManager.getInstance();
-		source = null;
-		reasoner = null;
-		rs = null;
-		lp = null;
-		la = null;
-		needsInit = new boolean[4];
-		threadIsRunning = false;
-		algorithmRunStartTime = null;
-		algorithmRunStopTime = null;
-	}
+//	public void reInit() {
+//		cm = ComponentManager.getInstance();
+//		source = null;
+//		reasoner = null;
+//		rs = null;
+//		lp = null;
+//		la = null;
+//		needsInit = new boolean[4];
+//		threadIsRunning = false;
+//		algorithmRunStartTime = null;
+//		algorithmRunStopTime = null;
+//	}
 	
 	// init the specified component and record which ones where initialised
 	public void init(int tabIndex) {
@@ -394,29 +396,63 @@ public class Config {
 	// applies a configuration option - used as delegate method, which invalidates components
 	public <T> void applyConfigEntry(Component component, ConfigEntry<T> entry) {
 		cm.applyConfigEntry(component, entry);
+		// enable tabs if setting the value completed mandatory settings
+		enableTabsIfPossible();
 		// invalidate components
 		if(component instanceof KnowledgeSource) {
 			needsInit[0] = true;
 			needsInit[1] = true;
 			needsInit[2] = true;
 			needsInit[3] = true;
-			if(mandatoryOptionsSpecified(component)) {
-				isEnabled[1] = true;
+			if(isEnabled[0]) {
+				gui.setStatusMessage("All mandatory options filled in. You can continue to the reasoner tab.");
 			}
 		} else if(component instanceof ReasonerComponent) {
 			needsInit[1] = true;
 			needsInit[2] = true;
 			needsInit[3] = true;
+			if(isEnabled[1]) {
+				gui.setStatusMessage("All mandatory options filled in. You can continue to the learning problem tab.");
+			}			
 		} else if(component instanceof LearningProblem) {
 			needsInit[2] = true;
 			needsInit[3] = true;
+			if(isEnabled[2]) {
+				gui.setStatusMessage("All mandatory options filled in. You can continue to the learning algorithm tab.");
+			}			
 		} else if(component instanceof LearningAlgorithm) {
 			needsInit[3] = true;	
+			if(isEnabled[3]) {
+				gui.setStatusMessage("All mandatory options filled in. You can now run the algorithm.");
+			}			
 		}
-		gui.updateTabColors();
+		
+		gui.updateTabs();
 	}
 	
+	private void enableTabsIfPossible() {
+		if(mandatoryOptionsSpecified(source)) {
+			isEnabled[0] = true;
+		} else if(mandatoryOptionsSpecified(reasoner)) {
+			isEnabled[1] = true;
+		} else if(mandatoryOptionsSpecified(lp)) {
+			isEnabled[2] = true;
+		} else if(mandatoryOptionsSpecified(la)) {
+			isEnabled[3] = true;
+		}
+	}
+	
+	// TODO use specification of mandatory variables
 	private boolean mandatoryOptionsSpecified(Component component) {
+		if(component instanceof OWLFile) {
+			if(cm.getConfigOptionValue(source, "url") != null) {
+				return true;
+			}
+		} else if(component instanceof KBFile) {
+			if(cm.getConfigOptionValue(source, "url") != null | cm.getConfigOptionValue(source, "filename") != null) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
