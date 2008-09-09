@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -91,7 +91,13 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			handleVerifyEditorContents();
 		}
 	};
-
+	/**
+	 * Konstruktor of the Class Description Editor with integrated DL-Learner Tab.
+	 * @param editorKit OWLEditorKit
+	 * @param description OWLDescription
+	 * @param frame OWLFrame
+	 * @param label String 
+	 */
 	public OWLClassDescriptionEditorWithDLLearnerTab(OWLEditorKit editorKit,
 			OWLDescription description, OWLFrame<OWLClass> frame, String label) {
 		this.editorKit = editorKit;
@@ -160,7 +166,10 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		}
 		return validated;
 	}
-
+	/**
+	 * Returns Editor Component.
+	 * @return JComponent
+	 */
 	public JComponent getInlineEditorComponent() {
 		// Same as general editor component
 		return editingComponent;
@@ -174,7 +183,9 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	public JComponent getEditorComponent() {
 		return editingComponent;
 	}
-
+	/**
+	 * Removes everything after closing the Class Description Editor.
+	 */
 	public void clear() {
 		dllearner.unsetEverything();
 		dllearner.makeView();
@@ -182,7 +193,10 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		// initialDescription = null;
 		editor.setText("");
 	}
-
+	/**
+	 * returns the edited Components.
+	 * @return Set of OWLDescriptions
+	 */
 	public Set<OWLDescription> getEditedObjects() {
 		if (tabbedPane.getSelectedComponent() == classSelectorPanel) {
 			return new HashSet<OWLDescription>(classSelectorPanel
@@ -216,7 +230,9 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			return null;
 		}
 	}
-
+	/**
+	 * Removes everything after protege is closed.
+	 */
 	public void dispose() {
 		if (classSelectorPanel != null) {
 			classSelectorPanel.dispose();
@@ -232,14 +248,22 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	private OWLDataFactory getDataFactory() {
 		return editorKit.getOWLModelManager().getOWLDataFactory();
 	}
-
+	/**
+	 * Adds a Status Changed Listener to all components of the 
+	 * class description editor.
+	 * @param listener InputVerificationStatusChangedListener
+	 */
 	public void addStatusChangedListener(
 			InputVerificationStatusChangedListener listener) {
 		listeners.add(listener);
 		editor.addStatusChangedListener(listener);
 		listener.verifiedStatusChanged(isValidated());
 	}
-
+	/**
+	 * Removes the Status Changed Listener from all components of the 
+	 * class description editor.
+	 * @param listener InputVerificationStatusChangedListener
+	 */
 	public void removeStatusChangedListener(
 			InputVerificationStatusChangedListener listener) {
 		listeners.remove(listener);
@@ -563,7 +587,11 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		}
 
 	}
-
+	/**
+	 * This is the class for the object restriktion creator panel.
+	 * 
+	 *
+	 */
 	private class ObjectRestrictionCreatorPanel extends JPanel {
 
 	
@@ -703,7 +731,11 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			classSelectorPanel.dispose();
 		}
 	}
-
+	/**
+	 * This is the abstract class of the restriction creator.
+	 * 
+	 *
+	 */
 	private abstract class RestrictionCreator {
 
 		private String name;
@@ -719,7 +751,11 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		abstract void createRestrictions(Set<OWLObjectProperty> properties,
 				Set<OWLDescription> fillers, Set<OWLDescription> result);
 	}
-
+	/**
+	 * This is the abstract class for the cardinality restriction creator. 
+	 *
+	 *
+	 */
 	private abstract class CardinalityRestrictionCreator extends
 			RestrictionCreator {
 

@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
- *
+ * 
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -786,7 +786,10 @@ public class DLLearnerModel implements Runnable {
 	public boolean getAlreadyLearned() {
 		return alreadyLearned;
 	}
-
+	/**
+	 * This Method returns the URI of the currently loaded Ontology.
+	 * @return URI Ontology URI
+	 */
 	public URI getURI() {
 		return editor.getOWLModelManager().getActiveOntology().getURI();
 	}
