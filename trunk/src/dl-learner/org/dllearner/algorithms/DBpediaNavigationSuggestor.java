@@ -36,6 +36,8 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.configurators.DBpediaNavigationSuggestorConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
@@ -53,18 +55,33 @@ import org.dllearner.learningproblems.PosOnlyDefinitionLP;
  */
 public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	
+	private DBpediaNavigationSuggestorConfigurator configurator;
+	@Override
+	public DBpediaNavigationSuggestorConfigurator getConfigurator(){
+		return configurator;
+	}
+	
+	
 //	private ReasoningService rs;
 	private ExampleBasedROLComponent learner;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 	
 	public DBpediaNavigationSuggestor(LearningProblem learningProblem, ReasoningService rs) {
 //		this.rs=rs;
+		this.configurator = new DBpediaNavigationSuggestorConfigurator(this);
+		try{
 		if(learningProblem instanceof PosNegLP) {
 			PosNegLP lp = (PosNegLP) learningProblem;
-			this.learner=new ExampleBasedROLComponent(lp, rs);
+			this.learner = ComponentFactory.getExampleBasedROLComponent(lp, rs);
+			//this.learner=new ExampleBasedROLComponent(lp, rs);
 		} else if(learningProblem instanceof PosOnlyDefinitionLP) {
 			PosOnlyDefinitionLP lp = (PosOnlyDefinitionLP) learningProblem;
-			this.learner=new ExampleBasedROLComponent(lp, rs);
+			this.learner = ComponentFactory.getExampleBasedROLComponent(lp, rs);
+			//this.learner=new ExampleBasedROLComponent(lp, rs);
+		}
+		}catch (Exception e) {
+			System.out.println("this error should never occur"+this.getClass().getCanonicalName());
+			e.printStackTrace();
 		}
 	}
 	

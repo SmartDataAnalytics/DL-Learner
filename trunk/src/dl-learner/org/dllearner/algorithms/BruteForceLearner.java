@@ -36,6 +36,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.configurators.BruteForceLearnerConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -57,6 +58,13 @@ import org.dllearner.core.owl.Union;
  *
  */
 public class BruteForceLearner extends LearningAlgorithm {
+	
+	private BruteForceLearnerConfigurator configurator;
+	@Override
+	public BruteForceLearnerConfigurator getConfigurator(){
+		return configurator;
+	}
+	
     
 	private LearningProblem learningProblem;
 	private ReasoningService rs;
@@ -77,6 +85,7 @@ public class BruteForceLearner extends LearningAlgorithm {
     public BruteForceLearner(LearningProblem learningProblem, ReasoningService rs) {
     	this.learningProblem = learningProblem;
     	this.rs = rs;
+    	this.configurator = new BruteForceLearnerConfigurator(this);
     }
     
 	public static String getName() {

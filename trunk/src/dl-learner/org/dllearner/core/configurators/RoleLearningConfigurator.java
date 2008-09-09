@@ -23,34 +23,34 @@ package org.dllearner.core.configurators;
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.learningproblems.RoleLearning;
 
 /**
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class PosNegInclusionLPConfigurator implements Configurator {
+public  class RoleLearningConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
 
-private PosNegInclusionLP posNegInclusionLP;
+private RoleLearning roleLearning;
 
 /**
-* @param posNegInclusionLP see PosNegInclusionLP
+* @param roleLearning see RoleLearning
 **/
-public PosNegInclusionLPConfigurator(PosNegInclusionLP posNegInclusionLP){
-this.posNegInclusionLP = posNegInclusionLP;
+public RoleLearningConfigurator(RoleLearning roleLearning){
+this.roleLearning = roleLearning;
 }
 
 /**
 * @param reasoningService see reasoningService
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
-* @return PosNegInclusionLP
+* @return RoleLearning
 **/
-public static PosNegInclusionLP getPosNegInclusionLP(ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
-PosNegInclusionLP component = ComponentManager.getInstance().learningProblem(PosNegInclusionLP.class, reasoningService);
+public static RoleLearning getRoleLearning(ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
+RoleLearning component = ComponentManager.getInstance().learningProblem(RoleLearning.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "positiveExamples", positiveExamples);
 ComponentManager.getInstance().applyConfigEntry(component, "negativeExamples", negativeExamples);
 return component;
@@ -64,7 +64,7 @@ return component;
 **/
 @SuppressWarnings("unchecked")
 public Set<String> getPositiveExamples() {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegInclusionLP,  "positiveExamples") ;
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(roleLearning,  "positiveExamples") ;
 }
 /**
 * negativeExamples negative examples.
@@ -74,7 +74,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegI
 **/
 @SuppressWarnings("unchecked")
 public Set<String> getNegativeExamples() {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegInclusionLP,  "negativeExamples") ;
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(roleLearning,  "negativeExamples") ;
 }
 /**
 * useRetrievalForClassficiation Specifies whether to use retrieval or instance checks for testing a concept..
@@ -83,7 +83,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegI
 * @return boolean 
 **/
 public boolean getUseRetrievalForClassficiation() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(posNegInclusionLP,  "useRetrievalForClassficiation") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(roleLearning,  "useRetrievalForClassficiation") ;
 }
 /**
 * percentPerLenghtUnit describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one.
@@ -92,7 +92,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(posNegInclu
 * @return double 
 **/
 public double getPercentPerLenghtUnit() {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegInclusionLP,  "percentPerLenghtUnit") ;
+return (Double) ComponentManager.getInstance().getConfigOptionValue(roleLearning,  "percentPerLenghtUnit") ;
 }
 /**
 * useMultiInstanceChecks See UseMultiInstanceChecks enum..
@@ -101,7 +101,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegInclus
 * @return String 
 **/
 public String getUseMultiInstanceChecks() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(posNegInclusionLP,  "useMultiInstanceChecks") ;
+return (String) ComponentManager.getInstance().getConfigOptionValue(roleLearning,  "useMultiInstanceChecks") ;
 }
 
 /**
@@ -110,7 +110,7 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(posNegInclus
 * default value: null
 **/
 public void setPositiveExamples(Set<String> positiveExamples) {
-ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "positiveExamples", positiveExamples);
+ComponentManager.getInstance().applyConfigEntry(roleLearning, "positiveExamples", positiveExamples);
 }
 /**
 * @param negativeExamples negative examples.
@@ -118,7 +118,7 @@ ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "positiveExam
 * default value: null
 **/
 public void setNegativeExamples(Set<String> negativeExamples) {
-ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "negativeExamples", negativeExamples);
+ComponentManager.getInstance().applyConfigEntry(roleLearning, "negativeExamples", negativeExamples);
 }
 /**
 * @param useRetrievalForClassficiation Specifies whether to use retrieval or instance checks for testing a concept..
@@ -126,7 +126,7 @@ ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "negativeExam
 * default value: false
 **/
 public void setUseRetrievalForClassficiation(boolean useRetrievalForClassficiation) {
-ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "useRetrievalForClassficiation", useRetrievalForClassficiation);
+ComponentManager.getInstance().applyConfigEntry(roleLearning, "useRetrievalForClassficiation", useRetrievalForClassficiation);
 reinitNecessary = true;
 }
 /**
@@ -135,7 +135,7 @@ reinitNecessary = true;
 * default value: 0.05
 **/
 public void setPercentPerLenghtUnit(double percentPerLenghtUnit) {
-ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "percentPerLenghtUnit", percentPerLenghtUnit);
+ComponentManager.getInstance().applyConfigEntry(roleLearning, "percentPerLenghtUnit", percentPerLenghtUnit);
 reinitNecessary = true;
 }
 /**
@@ -144,7 +144,7 @@ reinitNecessary = true;
 * default value: twoChecks
 **/
 public void setUseMultiInstanceChecks(String useMultiInstanceChecks) {
-ComponentManager.getInstance().applyConfigEntry(posNegInclusionLP, "useMultiInstanceChecks", useMultiInstanceChecks);
+ComponentManager.getInstance().applyConfigEntry(roleLearning, "useMultiInstanceChecks", useMultiInstanceChecks);
 reinitNecessary = true;
 }
 

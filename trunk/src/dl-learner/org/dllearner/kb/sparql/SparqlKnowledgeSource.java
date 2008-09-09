@@ -87,6 +87,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	/**
 	 * @return the configurator for this Knowledgesource
 	 */
+	@Override
 	public SparqlKnowledgeSourceConfigurator getConfigurator() {
 		return configurator;
 	}

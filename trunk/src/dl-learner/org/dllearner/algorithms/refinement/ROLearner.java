@@ -27,6 +27,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.configurators.ROLearnerConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -43,6 +44,12 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
 
 public class ROLearner extends LearningAlgorithm {
+	
+	private ROLearnerConfigurator configurator;
+	@Override
+	public ROLearnerConfigurator getConfigurator(){
+		return configurator;
+	}
 	
 	private static Logger logger = Logger
 	.getLogger(LearningAlgorithm.class);	
@@ -194,13 +201,16 @@ public class ROLearner extends LearningAlgorithm {
 	public ROLearner(PosNegLP learningProblem, ReasoningService rs) {
 		this.learningProblem = learningProblem;
 		this.rs = rs;
+		this.configurator =  new ROLearnerConfigurator(this);
 		posOnly=false;
 		baseURI = rs.getBaseURI();
+		
 	}
 	
 	public ROLearner(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
 		this.posOnlyLearningProblem = learningProblem;
 		this.rs = rs;
+		this.configurator =  new ROLearnerConfigurator(this);
 		posOnly=true;
 		baseURI = rs.getBaseURI();
 	}

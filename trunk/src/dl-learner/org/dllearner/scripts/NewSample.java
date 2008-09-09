@@ -121,7 +121,7 @@ public class NewSample {
 		
 		String fileURL = new File(owlFile).toURI().toString();
 		OWLFile ks = ComponentFactory.getOWLFile( fileURL);
-		
+				
 		Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 		tmp.add(ks);
 		// reasoner

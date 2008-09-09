@@ -19,15 +19,21 @@
  */
 package org.dllearner.algorithms;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.*;
+import org.dllearner.core.config.ConfigEntry;
+import org.dllearner.core.configurators.SimpleSuggestionLearningAlgorithmConfigurator;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Thing;
 
 /**
  * TODO: Javadoc
@@ -37,7 +43,13 @@ import org.dllearner.core.owl.*;
  *
  */
 public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm implements Runnable {
-
+	
+	private SimpleSuggestionLearningAlgorithmConfigurator configurator;
+	@Override
+	public SimpleSuggestionLearningAlgorithmConfigurator getConfigurator(){
+		return configurator;
+	}
+	
 //	private boolean stop = false;
 	private Score solutionScore;
 	private Description bestSollution;
@@ -45,6 +57,7 @@ public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm impleme
 
 	public SimpleSuggestionLearningAlgorithm() {
 		// this.learningProblem = learningProblem;
+		this.configurator = new SimpleSuggestionLearningAlgorithmConfigurator(this);
 	}
 
 	@Override

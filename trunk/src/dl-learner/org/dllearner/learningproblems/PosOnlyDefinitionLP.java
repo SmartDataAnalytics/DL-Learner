@@ -38,6 +38,7 @@ public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 	private PosNegDefinitionLP definitionLP;
 	private PosOnlyDefinitionLPConfigurator configurator;
 	
+	@Override
 	public PosOnlyDefinitionLPConfigurator getConfigurator(){
 		return configurator;
 	}
@@ -71,7 +72,7 @@ public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 				reasoningService, 
 				SetManipulation.indToString(positiveExamples), 
 				SetManipulation.indToString(pseudoNegatives));
-		definitionLP = new PosNegDefinitionLP(reasoningService, positiveExamples, pseudoNegatives);
+		//definitionLP = new PosNegDefinitionLP(reasoningService, positiveExamples, pseudoNegatives);
 		// TODO: we must make sure that the problem also gets the same 
 		// reasoning options (i.e. options are the same up to reversed example sets)
 		definitionLP.init();		

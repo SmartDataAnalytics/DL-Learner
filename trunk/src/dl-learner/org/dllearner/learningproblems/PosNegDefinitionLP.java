@@ -48,7 +48,7 @@ import org.dllearner.utilities.Helper;
 public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 
 	private PosNegDefinitionLPConfigurator configurator;
-		
+	@Override
 	public PosNegDefinitionLPConfigurator getConfigurator() {
 		return configurator;
 	}

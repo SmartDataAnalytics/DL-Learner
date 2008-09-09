@@ -20,44 +20,9 @@
 
 package org.dllearner.core.configurators;
 
-import org.dllearner.core.ComponentManager;
-import org.dllearner.kb.OWLAPIOntology;
-
 /**
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class OWLAPIOntologyConfigurator implements Configurator {
-
-private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
-
-private OWLAPIOntology oWLAPIOntology;
-
-/**
-* @param oWLAPIOntology see OWLAPIOntology
-**/
-public OWLAPIOntologyConfigurator(OWLAPIOntology oWLAPIOntology){
-this.oWLAPIOntology = oWLAPIOntology;
-}
-
-/**
-* @return OWLAPIOntology
-**/
-public static OWLAPIOntology getOWLAPIOntology() {
-OWLAPIOntology component = ComponentManager.getInstance().knowledgeSource(OWLAPIOntology.class);
-return component;
-}
-
-
-
-/**
-* true, if this component needs reinitializsation.
-* @return boolean
-**/
-public boolean isReinitNecessary(){
-return reinitNecessary;
-}
-
-
+public interface Configurator{
 }

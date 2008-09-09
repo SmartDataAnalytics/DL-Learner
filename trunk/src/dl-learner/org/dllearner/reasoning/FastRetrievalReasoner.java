@@ -1,8 +1,8 @@
 package org.dllearner.reasoning;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -13,10 +13,12 @@ import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.configurators.FastRetrievalReasonerConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.FlatABox;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.SubsumptionHierarchy;
@@ -25,6 +27,12 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 public class FastRetrievalReasoner extends ReasonerComponent {
 
+	private FastRetrievalReasonerConfigurator configurator;
+	@Override
+	public FastRetrievalReasonerConfigurator getConfigurator(){
+		return configurator;
+	}
+	
 	FlatABox abox;
 	FastRetrieval fastRetrieval;
 	Set<NamedClass> atomicConcepts;
@@ -34,8 +42,12 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	ReasoningService rs;
 	ReasonerComponent rc;
 	
+
+	
 	public FastRetrievalReasoner(Set<KnowledgeSource> sources) {
-		rc = new DIGReasoner(sources);
+		this.configurator = new FastRetrievalReasonerConfigurator(this);
+		
+		rc = ComponentFactory.getDIGReasoner(sources);
 		try {
 			rc.init();
 		} catch (ComponentInitException e1) {
@@ -56,6 +68,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	}	
 	
 	public FastRetrievalReasoner(FlatABox abox) {
+		this.configurator = new FastRetrievalReasonerConfigurator(this);
 		this.abox = abox;
 		fastRetrieval = new FastRetrieval(abox);
 		

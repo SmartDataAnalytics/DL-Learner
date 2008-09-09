@@ -25,6 +25,7 @@ import java.util.SortedSet;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
+import org.dllearner.core.configurators.RoleLearningConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.datastructures.StringTuple;
@@ -43,6 +44,13 @@ import org.dllearner.utilities.datastructures.StringTuple;
  */
 public class RoleLearning extends PosNegLP implements DefinitionLP {
 
+	private RoleLearningConfigurator configurator;
+	@Override
+	public RoleLearningConfigurator getConfigurator(){
+		return configurator;
+	}
+	
+	
 	public RoleLearning(ReasoningService reasoningService) {
 		super(reasoningService);
 	}
@@ -51,6 +59,7 @@ public class RoleLearning extends PosNegLP implements DefinitionLP {
 			SortedSet<Individual> positiveExamples,
 			SortedSet<Individual> negativeExamples) {
 		super(reasoningService);
+		this.configurator = new RoleLearningConfigurator(this);
 		// TODO sets have to be queried
 		this.positiveExamples = positiveExamples;
 		this.negativeExamples = negativeExamples;

@@ -82,6 +82,12 @@ import org.dllearner.utilities.Helper;
  */
 public class ExampleBasedROLComponent extends LearningAlgorithm {
 	
+	private ExampleBasedROLComponentConfigurator configurator;
+	@Override
+	public ExampleBasedROLComponentConfigurator getConfigurator(){
+		return configurator;
+	}
+	
 	// actual algorithm
 	private ExampleBasedROLearner algorithm;
 	private static Logger logger = Logger
@@ -91,14 +97,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	// learning problem to solve and background knowledge
 	private ReasoningService rs;
 	private LearningProblem learningProblem;	
-	
-	private ExampleBasedROLComponentConfigurator configurator;
-	public ExampleBasedROLComponentConfigurator getConfigurator(){
-		return configurator;
-	}
-	
-	
-	
+		
 	// configuration options
 	private boolean writeSearchTree;
 	private File searchTreeFile;

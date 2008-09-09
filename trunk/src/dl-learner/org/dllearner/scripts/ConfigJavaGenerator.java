@@ -78,6 +78,8 @@ public final class ConfigJavaGenerator {
 	private static final String CONFIGURATOR = "Configurator";
 
 	private static final String COMPONENT_FACTORY = "ComponentFactory";
+	private static final String CLASS_COMMENT = "* automatically generated, do not edit manually.\n"
+		+ "* run " + ConfigJavaGenerator.class.getCanonicalName()+ " to update\n";
 
 	private static final SortedSet<String> COMPONENT_FACTORY_IMPORTS = new TreeSet<String>();
 
@@ -194,6 +196,7 @@ public final class ConfigJavaGenerator {
 		}
 
 		makeComponentFactory();
+		makeInterface();
 
 		System.out.println("Done");
 	}
@@ -252,13 +255,20 @@ public final class ConfigJavaGenerator {
 				.add(makeGetInstanceForConfigurators(getAllCommentsForOptionList(mandatoryOptions)));
 
 		// body.add(makeApplyConfigEntryForOptionList(ComponentManager.getConfigOptions(component)));
-
+ 
 		body.add(expandCollection(getters, "", "", 0));
 		body.add(expandCollection(setters, "", "", 0));
 		body.add(REINITGETTER);
-		String ret = fillClassTemplate(TARGET_PACKAGE, expandCollection(
-				imports, "import ", ";\n", 0), className + CONFIGURATOR, "",
-				expandCollection(body, "", "\n", 0));
+		String bodytmp = expandCollection(body, "", "\n",0);
+		String importtmp =  expandCollection(imports, "import ", ";\n", 0);
+		String ret = fillClassTemplate(
+				TARGET_PACKAGE,
+				importtmp, 
+				className + CONFIGURATOR, 
+				"",
+				bodytmp ,
+				"", 
+				CONFIGURATOR); 
 
 		// configuratorMethods.add((className, componentType,
 		// mandatoryOptions));
@@ -270,6 +280,15 @@ public final class ConfigJavaGenerator {
 				.add(makeComponentFactoryMethods(getAllCommentsForOptionList(mandatoryOptions)));
 	}
 
+	private static void makeInterface(){
+		String ret ="";
+		ret+= HEADER+"\n";
+		ret+= "package "+TARGET_PACKAGE+";\n\n";
+		ret+= fillJavaDocComment(CLASS_COMMENT);
+		ret+="public interface Configurator{\n}\n";
+		Files.createFile(new File(TARGET_DIR+File.separator+CONFIGURATOR+".java"), ret);
+	}
+	
 	@SuppressWarnings("unused")
 	private static String makeApplyConfigEntryForOptionList(
 			List<ConfigOption<?>> options) {
@@ -392,7 +411,7 @@ public final class ConfigJavaGenerator {
 		String ret = fillClassTemplate(TARGET_PACKAGE, expandCollection(
 				COMPONENT_FACTORY_IMPORTS, "import ", ";\n", 0),
 				COMPONENT_FACTORY, "", expandCollection(
-						COMPONENT_FACTORY_METHODS, "", "\n", 0), "final");
+						COMPONENT_FACTORY_METHODS, "", "\n", 0), "final","");
 
 		Files.createFile(new File(TARGET_DIR + "/" + COMPONENT_FACTORY
 				+ ".java"), ret);
@@ -463,30 +482,28 @@ public final class ConfigJavaGenerator {
 	}
 
 	
-	private static String fillClassTemplate(String packagE, String imports,
-			String className, String extendS, String body) {
-		return fillClassTemplate(packagE, imports, className, extendS, body, "");
-	}
+	
 	
 	private static String fillClassTemplate(String packagE, String imports,
-			String className, String extendS, String body, String classModifier) {
-		String comment = "* automatically generated, do not edit manually.\n";
-		comment += "* run " + ConfigJavaGenerator.class.getCanonicalName()
-				+ " to update\n";
+			String className, String extendS,  String body, String classModifier, String implementS) {
+		
 
 		String ret = HEADER + "\n";
 		ret += "package " + packagE + ";\n\n";
 		ret += imports + "\n";
-		ret += fillJavaDocComment(comment);
+		ret += fillJavaDocComment(CLASS_COMMENT);
 		ret += (INCLUDE_UNUSED) ? UNUSED : "";
 		ret += "public "+classModifier+" class " + className + " "
 				+ ((extendS.length() > 0) ? "extends " + extendS : "")
+				+ ((implementS.length() > 0) ? "implements " + implementS : "")
 				+ " {\n\n";
 		ret += body + "\n";
 		ret += "}\n";
 		return ret;
 
 	}
+	
+	
 
 	private static String expandCollection(Collection<String> col,
 			String before, String after, int removeChars) {

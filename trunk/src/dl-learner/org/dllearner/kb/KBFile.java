@@ -66,6 +66,7 @@ public class KBFile extends KnowledgeSource {
 	private KB kb;
 	
 	private KBFileConfigurator configurator;
+	@Override
 	public KBFileConfigurator getConfigurator(){
 		return configurator;
 	}

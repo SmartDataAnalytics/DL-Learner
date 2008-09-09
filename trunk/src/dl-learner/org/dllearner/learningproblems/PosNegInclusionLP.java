@@ -24,7 +24,6 @@ import java.util.SortedSet;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
-import org.dllearner.core.config.CommonConfigMappings;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.PosNegInclusionLPConfigurator;
 import org.dllearner.core.owl.Description;
@@ -57,6 +56,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	private PosNegDefinitionLP definitionLP;
 	private PosNegInclusionLPConfigurator configurator;
 	
+	@Override
 	public PosNegInclusionLPConfigurator getConfigurator(){
 		return configurator;
 	}

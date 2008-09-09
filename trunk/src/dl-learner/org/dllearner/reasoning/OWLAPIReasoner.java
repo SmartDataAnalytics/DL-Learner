@@ -105,6 +105,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	//private String reasonerType = "pellet";
 	private OWLAPIReasonerConfigurator configurator;
+	@Override
 	public OWLAPIReasonerConfigurator getConfigurator(){
 		return configurator;
 	}

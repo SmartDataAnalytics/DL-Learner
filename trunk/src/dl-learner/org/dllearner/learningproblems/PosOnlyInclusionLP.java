@@ -23,6 +23,7 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.configurators.PosOnlyInclusionLPConfigurator;
 import org.dllearner.core.owl.Description;
 
 /**
@@ -31,8 +32,16 @@ import org.dllearner.core.owl.Description;
  */
 public class PosOnlyInclusionLP extends PosOnlyLP implements InclusionLP {
 
+	private PosOnlyInclusionLPConfigurator configurator;
+	@Override
+	public PosOnlyInclusionLPConfigurator getConfigurator(){
+		return configurator;
+	}
+	
+	
 	public PosOnlyInclusionLP(ReasoningService reasoningService) {
 		super(reasoningService);
+		this.configurator = new PosOnlyInclusionLPConfigurator(this);
 	}
 	
 	/* (non-Javadoc)

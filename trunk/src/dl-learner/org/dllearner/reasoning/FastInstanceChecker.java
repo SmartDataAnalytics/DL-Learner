@@ -92,6 +92,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	private boolean defaultNegation = true;
 	
 	private FastInstanceCheckerConfigurator configurator;
+	@Override
 	public FastInstanceCheckerConfigurator getConfigurator (){
 		return configurator;
 	}

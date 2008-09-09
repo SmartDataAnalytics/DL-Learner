@@ -30,7 +30,7 @@ import org.dllearner.utilities.datastructures.StringTuple;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class SparqlKnowledgeSourceConfigurator  {
+public  class SparqlKnowledgeSourceConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
