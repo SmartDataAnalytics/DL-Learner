@@ -142,6 +142,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	public OWLAPIReasoner(Set<KnowledgeSource> sources) {
 		this.sources = sources;
 		this.configurator = new OWLAPIReasonerConfigurator(this);
+		
 	}
 	
 	public static String getName() {
