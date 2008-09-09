@@ -31,7 +31,6 @@ import javax.swing.JPanel;
 
 import org.dllearner.algorithms.DBpediaNavigationSuggestor;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
 
@@ -46,8 +45,8 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 8721490771860452959L;
 
 	private Config config;
-	private StartGUI startGUI;
-	private List<Class<? extends LearningAlgorithm>> learner;
+//	private StartGUI startGUI;
+	private List<Class<? extends LearningAlgorithm>> selectableAlgorithms;
 	private JPanel choosePanel = new JPanel();
 	private OptionPanel optionPanel;
 	private JPanel initPanel = new JPanel();
@@ -60,14 +59,14 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		super(new BorderLayout());
 
 		this.config = config;
-		this.startGUI = startGUI;
-		learner = config.getComponentManager().getLearningAlgorithms();
+//		this.startGUI = startGUI;
+		selectableAlgorithms = config.getComponentManager().getLearningAlgorithms();
 		// to set a default learning algorithm, we move it to the beginning of the list
-		learner.remove(ExampleBasedROLComponent.class);
-		learner.add(0, ExampleBasedROLComponent.class);
+		selectableAlgorithms.remove(ExampleBasedROLComponent.class);
+		selectableAlgorithms.add(0, ExampleBasedROLComponent.class);
 		// we also remove the DBpedia Navigation Suggestor (maybe shouldn't be declared as a learning algorithm at all;
 		// at least it is not doing anything useful at the moment)
-		learner.remove(DBpediaNavigationSuggestor.class);
+		selectableAlgorithms.remove(DBpediaNavigationSuggestor.class);
 
 		initButton = new JButton("Init LearingAlgorithm");
 		initButton.addActionListener(this);
@@ -77,8 +76,8 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		autoInitButton.addActionListener(this);
 
 		// add into comboBox
-		for (int i = 0; i < learner.size(); i++) {
-			cb.addItem(config.getComponentManager().getComponentName(learner.get(i)));
+		for (int i = 0; i < selectableAlgorithms.size(); i++) {
+			cb.addItem(config.getComponentManager().getComponentName(selectableAlgorithms.get(i)));
 		}
 
 		choosePanel.add(cb);
@@ -87,9 +86,9 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 
 		LearningAlgorithm la = null;
 		try {
-			la = config.newLearningAlgorithm(learner.get(cb.getSelectedIndex()));
+			la = config.newLearningAlgorithm(selectableAlgorithms.get(cb.getSelectedIndex()));
 		} catch (LearningProblemUnsupportedException e) {
-			// TODO Auto-generated catch block
+			// TODO display message (or avoid selection at all)
 			e.printStackTrace();
 		}
 		optionPanel = new OptionPanel(config, la);
@@ -99,7 +98,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		add(initPanel, BorderLayout.PAGE_END);
 
 		choosenClassIndex = cb.getSelectedIndex();
-		updateInitButtonColor();
+//		updateInitButtonColor();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -124,7 +123,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 		if (config.getLearningProblem() != null && config.getReasoningService() != null) {
 			try {
 				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(
-						learner.get(choosenClassIndex), config.getLearningProblem(),
+						selectableAlgorithms.get(choosenClassIndex), config.getLearningProblem(),
 						config.getReasoningService()));
 				updateOptionPanel();
 			} catch (LearningProblemUnsupportedException e) {
@@ -165,7 +164,7 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	 */
 	public void updateComboBox() {
 		if (config.getLearningAlgorithm() != null)
-			for (int i = 0; i < learner.size(); i++)
+			for (int i = 0; i < selectableAlgorithms.size(); i++)
 				if (config.getLearningAlgorithm().getClass().equals(
 						config.getComponentManager().getLearningAlgorithms().get(i))) {
 					cb.setSelectedIndex(i);

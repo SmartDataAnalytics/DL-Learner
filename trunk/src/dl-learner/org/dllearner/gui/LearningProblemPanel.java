@@ -21,7 +21,6 @@ package org.dllearner.gui;
  */
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -50,7 +49,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	private JPanel choosePanel = new JPanel();
 	private OptionPanel optionPanel;
 	private JPanel initPanel = new JPanel();
-	private JButton initButton, setButton;
+	private JButton setButton;
 	private int choosenClassIndex;
 
 	LearningProblemPanel(final Config config, StartGUI startGUI) {
