@@ -24,10 +24,14 @@ import java.util.SortedSet;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
+import org.dllearner.core.config.CommonConfigMappings;
+import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.configurators.PosNegInclusionLPConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.datastructures.SetManipulation;
 
 /**
  * The aim of this learning problem is to find an appropriate inclusion axiom
@@ -51,9 +55,15 @@ import org.dllearner.utilities.Helper;
 public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 
 	private PosNegDefinitionLP definitionLP;
+	private PosNegInclusionLPConfigurator configurator;
+	
+	public PosNegInclusionLPConfigurator getConfigurator(){
+		return configurator;
+	}
 	
 	public PosNegInclusionLP(ReasoningService reasoningService) {
 		super(reasoningService);
+		configurator = new PosNegInclusionLPConfigurator(this); 
 	}
 /*
 	public static Collection<ConfigOption<?>> createConfigOptions() {
@@ -85,7 +95,11 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	@Override
 	public void init() {
 		super.init();
-		definitionLP = new PosNegDefinitionLP(reasoningService, negativeExamples, positiveExamples);
+		definitionLP = ComponentFactory.getPosNegDefinitionLP(
+				reasoningService, 
+				SetManipulation.indToString(negativeExamples), 
+				SetManipulation.indToString(positiveExamples));
+		//definitionLP = new PosNegDefinitionLP(reasoningService, negativeExamples, positiveExamples);
 		// TODO: we must make sure that the problem also gets the same 
 		// reasoning options (i.e. options are the same up to reversed example sets)
 		definitionLP.init();
