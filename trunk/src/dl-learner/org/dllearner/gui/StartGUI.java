@@ -123,7 +123,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		add(tabPane, BorderLayout.CENTER);
 		add(statusPanel, BorderLayout.SOUTH);
 		setVisible(true);
-		updateTabColors();
+		updateTabs();
 
 		// Register a change listener
 		tabPane.addChangeListener(new ChangeListener() {
@@ -141,18 +141,12 @@ public class StartGUI extends JFrame implements ActionListener {
 						}
 					}
 
-					updateTabColors();
+					updateTabs();
 
-					// TODO: handle init code here => whenever a tab
-					// is selected, we have to determine whether it
-					// and the tabs before need to be initialised
-
-					Component c = tabPane.getSelectedComponent();
-					if (c == tab0) {
-						// System.out.println(tab0);
-					}
+					// new tab => ask user to fill in values
+					statusPanel.setTabInitMessage();
+					
 				}
-				// init();
 			}
 		});
 
@@ -260,7 +254,7 @@ public class StartGUI extends JFrame implements ActionListener {
 	/**
 	 * Update colors of tabulators; red should be clicked, black for OK.
 	 */
-	public void updateTabColors() {
+	public void updateTabs() {
 		for(int i=0; i<4; i++) {
 			// red = needs init, black = initialised
 			if(config.needsInit(i)) {

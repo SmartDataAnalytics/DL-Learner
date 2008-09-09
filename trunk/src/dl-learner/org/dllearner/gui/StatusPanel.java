@@ -32,9 +32,9 @@ public class StatusPanel extends JPanel {
 
 	private static final long serialVersionUID = 2426470148153461670L;
 	
-	private String initText = "Please fill in the mandatory config options and proceed to the next tab.";
+	private String tabInitText = "Please fill in the mandatory config options and proceed to the next tab.";
 	
-	private JLabel statusLabel = new JLabel(initText);
+	private JLabel statusLabel = new JLabel(tabInitText);
 	
 	public StatusPanel() {
 		super();
@@ -43,6 +43,10 @@ public class StatusPanel extends JPanel {
 	
 	public void setStatus(String message) {
 		statusLabel.setText(message);
+	}
+	
+	public void setTabInitMessage() {
+		statusLabel.setText(tabInitText);
 	}
 
 }

@@ -107,7 +107,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		if (config.needsInitReasoner()) {
 			config.setLearningProblem(config.getComponentManager().learningProblem(
 					lpClasses.get(choosenClassIndex), config.getReasoningService()));
-			startGUI.updateTabColors();
+			startGUI.updateTabs();
 			updateOptionPanel();
 		}
 	}
