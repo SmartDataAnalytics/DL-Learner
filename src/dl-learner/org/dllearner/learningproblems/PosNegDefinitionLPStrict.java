@@ -30,6 +30,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.configurators.PosNegDefinitionLPStrictConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Negation;
@@ -51,8 +52,15 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 	private static final double defaultErrorPenalty = 3;
 	private double errorPenalty = defaultErrorPenalty;
 	
+	private PosNegDefinitionLPStrictConfigurator configurator;
+	
+	public PosNegDefinitionLPStrictConfigurator getConfigurator(){
+		return configurator;
+	}
+	
 	public PosNegDefinitionLPStrict(ReasoningService reasoningService) {
 		super(reasoningService);
+		this.configurator = new PosNegDefinitionLPStrictConfigurator(this);
 	}
 	
 	/* (non-Javadoc)

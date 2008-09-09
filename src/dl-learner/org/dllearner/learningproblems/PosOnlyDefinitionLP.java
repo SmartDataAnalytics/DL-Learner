@@ -21,8 +21,11 @@ package org.dllearner.learningproblems;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
+import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.configurators.PosOnlyDefinitionLPConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.datastructures.SetManipulation;
 
 /**
  * Definition learning problem from only positive examples.
@@ -33,9 +36,15 @@ import org.dllearner.utilities.Helper;
 public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 	
 	private PosNegDefinitionLP definitionLP;
+	private PosOnlyDefinitionLPConfigurator configurator;
+	
+	public PosOnlyDefinitionLPConfigurator getConfigurator(){
+		return configurator;
+	}
 	
 	public PosOnlyDefinitionLP(ReasoningService reasoningService) {
 		super(reasoningService);
+		configurator = new PosOnlyDefinitionLPConfigurator(this);
 	}
 	
 	/*
@@ -58,6 +67,10 @@ public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 		
 		// create an instance of a standard definition learning problem
 		// instanciated with pseudo-negatives
+		definitionLP = ComponentFactory.getPosNegDefinitionLP(
+				reasoningService, 
+				SetManipulation.indToString(positiveExamples), 
+				SetManipulation.indToString(pseudoNegatives));
 		definitionLP = new PosNegDefinitionLP(reasoningService, positiveExamples, pseudoNegatives);
 		// TODO: we must make sure that the problem also gets the same 
 		// reasoning options (i.e. options are the same up to reversed example sets)
