@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.gui;
+package org.dllearner.gui.widgets;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,6 +26,7 @@ import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.gui.Config;
 
 /**
  * Abstract superclass of all widgets. Each widget has an associated component and configuration option,

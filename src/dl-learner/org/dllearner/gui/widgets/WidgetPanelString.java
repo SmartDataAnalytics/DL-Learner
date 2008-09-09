@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.gui;
+package org.dllearner.gui.widgets;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +28,8 @@ import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.gui.Config;
+import org.dllearner.gui.ExampleFileChooser;
 import org.dllearner.kb.OWLFile;
 
 /**

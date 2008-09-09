@@ -32,6 +32,13 @@ import javax.swing.JScrollPane;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.config.*;
+import org.dllearner.gui.widgets.WidgetPanelBoolean;
+import org.dllearner.gui.widgets.WidgetPanelDefault;
+import org.dllearner.gui.widgets.WidgetPanelDouble;
+import org.dllearner.gui.widgets.WidgetPanelInteger;
+import org.dllearner.gui.widgets.WidgetPanelString;
+import org.dllearner.gui.widgets.WidgetPanelStringSet;
+import org.dllearner.gui.widgets.WidgetPanelStringTupleList;
 
 /**
  * OptionPanel reads all possible options and use all widgets. Definition map is
