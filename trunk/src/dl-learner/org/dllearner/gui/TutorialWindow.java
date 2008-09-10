@@ -36,7 +36,7 @@ public class TutorialWindow extends JFrame {
 
 	public TutorialWindow() {
 		setTitle("Quick Tutorial");
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationByPlatform(true);
 		setSize(300, 600);
 		
