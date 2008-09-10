@@ -58,11 +58,16 @@ public class ConfigEntry<T> {
 	 */
 	public String toConfString(String componentName) {
 		if (option.getName().equalsIgnoreCase("positiveExamples")) {
-			return option.getValueFormatting(value, 1);
+			return option.getValueFormatting(value);
 		} else if (option.getName().equalsIgnoreCase("negativeExamples")) {
-			return option.getValueFormatting(value, 2);
+			return option.getValueFormatting(value);
 		} 
 		return componentName.toString() + "." + option.getName() + " = "
-					+ option.getValueFormatting(value, 0);
+					+ option.getValueFormatting(value);
+	}
+	
+	@Override
+	public String toString() {
+		return option.name + " = " + value;
 	}
 }

@@ -16,9 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
+ */ 
 
 package org.dllearner.core.configurators;
+
+import java.net.URL;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.OWLFile;
@@ -45,7 +47,7 @@ this.oWLFile = oWLFile;
 * @param url URL pointing to the OWL file
 * @return OWLFile
 **/
-public static OWLFile getOWLFile(String url) {
+public static OWLFile getOWLFile(URL url) {
 OWLFile component = ComponentManager.getInstance().knowledgeSource(OWLFile.class);
 ComponentManager.getInstance().applyConfigEntry(component, "url", url);
 return component;
@@ -55,10 +57,10 @@ return component;
 * url URL pointing to the OWL file.
 * mandatory: true| reinit necessary: true
 * default value: null
-* @return String 
+* @return URL 
 **/
-public String getUrl() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(oWLFile,  "url") ;
+public URL getUrl() {
+return (URL) ComponentManager.getInstance().getConfigOptionValue(oWLFile,  "url") ;
 }
 
 /**
@@ -66,7 +68,7 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(oWLFile,  "u
 * mandatory: true| reinit necessary: true
 * default value: null
 **/
-public void setUrl(String url) {
+public void setUrl(URL url) {
 ComponentManager.getInstance().applyConfigEntry(oWLFile, "url", url);
 reinitNecessary = true;
 }

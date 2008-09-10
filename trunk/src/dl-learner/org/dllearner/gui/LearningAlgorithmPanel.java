@@ -109,8 +109,8 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 //			init();
 		}
 
-		if (e.getSource() == autoInitButton)
-			setLearningAlgorithm();
+//		if (e.getSource() == autoInitButton)
+//			setLearningAlgorithm();
 
 //		if (e.getSource() == initButton)
 //			init();
@@ -119,18 +119,18 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 	/**
 	 * after this, you can change widgets
 	 */
-	public void setLearningAlgorithm() {
-		if (config.getLearningProblem() != null && config.getReasoningService() != null) {
-			try {
-				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(
-						selectableAlgorithms.get(choosenClassIndex), config.getLearningProblem(),
-						config.getReasoningService()));
-				updateOptionPanel();
-			} catch (LearningProblemUnsupportedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+//	public void setLearningAlgorithm() {
+//		if (config.getLearningProblem() != null && config.getReasoningService() != null) {
+//			try {
+//				config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(
+//						selectableAlgorithms.get(choosenClassIndex), config.getLearningProblem(),
+//						config.getReasoningService()));
+//				updateOptionPanel();
+//			} catch (LearningProblemUnsupportedException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
 	/**
 	 * after this, next tab can be used

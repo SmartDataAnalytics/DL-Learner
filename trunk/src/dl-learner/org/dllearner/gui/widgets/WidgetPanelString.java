@@ -56,7 +56,7 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == setButton) {
-			if (configOption.getName().equals("filename")) {
+			if (configOption.getName().equals("filename") || configOption.getName().equals("url")) {
 				JFileChooser fc;
 				if(component instanceof OWLFile) {
 					fc = new ExampleFileChooser("owl");

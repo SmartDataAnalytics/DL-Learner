@@ -20,6 +20,15 @@
 
 package org.dllearner.gui;
 
+import java.awt.BorderLayout;
+import java.net.URL;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingWorker;
+
+import org.apache.log4j.Logger;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -33,6 +42,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.learningproblems.PosNegLP;
 
 // import org.dllearner.core.Component;
 
@@ -47,6 +57,7 @@ import org.dllearner.kb.OWLFile;
 public class Config {
 	
 	private ComponentManager cm = ComponentManager.getInstance();
+	private static Logger logger = Logger.getLogger(Config.class);
 	
 	// the components currently active
 	private KnowledgeSource source;
@@ -108,9 +119,9 @@ public class Config {
 	 * 
 	 * @param knowledgeSource
 	 */
-	public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
-		source = knowledgeSource;
-	}
+//	public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
+//		source = knowledgeSource;
+//	}
 
 	/**
 	 * Get KnowledgeSource.
@@ -128,6 +139,21 @@ public class Config {
 	 */
 	public KnowledgeSource newKnowledgeSource(Class<? extends KnowledgeSource> clazz) {
 		source = cm.knowledgeSource(clazz);
+//		logger.debug("new knowledge source " + clazz + " created");
+		return source;
+	}
+	
+	/**
+	 * Changes active knowledge source. This method does not not only 
+	 * create a knowledge source, but also updates the active reasoner
+	 * to use the new knowledge source.
+	 * @param clazz
+	 */
+	public KnowledgeSource changeKnowledgeSource(Class<? extends KnowledgeSource> clazz) {
+		source = cm.knowledgeSource(clazz);
+//		logger.debug("knowledge source " + clazz + " changed");
+		// create a new reasoner object using the current class and the selected source
+		reasoner = cm.reasoner(reasoner.getClass(), source);
 		return source;
 	}
 	
@@ -136,9 +162,9 @@ public class Config {
 	 * 
 	 * @param reasoner
 	 */
-	public void setReasoner(ReasonerComponent reasoner) {
-		this.reasoner = reasoner;
-	}
+//	public void setReasoner(ReasonerComponent reasoner) {
+//		this.reasoner = reasoner;
+//	}
 
 	/**
 	 * Get Reasoner.
@@ -161,9 +187,9 @@ public class Config {
 	 * 
 	 * @param reasoningService
 	 */
-	public void setReasoningService(ReasoningService reasoningService) {
-		this.rs = reasoningService;
-	}
+//	public void setReasoningService(ReasoningService reasoningService) {
+//		this.rs = reasoningService;
+//	}
 
 	/**
 	 * Get ReasoningService.
@@ -179,9 +205,9 @@ public class Config {
 	 * 
 	 * @param learningProblem
 	 */
-	public void setLearningProblem(LearningProblem learningProblem) {
-		this.lp = learningProblem;
-	}
+//	public void setLearningProblem(LearningProblem learningProblem) {
+//		this.lp = learningProblem;
+//	}
 
 	/**
 	 * Get LearningProblem.
@@ -202,9 +228,9 @@ public class Config {
 	 * 
 	 * @param learningAlgorithm
 	 */
-	public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
-		this.la = learningAlgorithm;
-	}
+//	public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
+//		this.la = learningAlgorithm;
+//	}
 
 	/**
 	 * Get LearningAlgorithm.
@@ -374,15 +400,110 @@ public class Config {
 	
 	// init the specified component and record which ones where initialised
 	public void init(int tabIndex) {
+		
+		// a thread class for handling inits (GUI has to remain
+		// responsive while init process is executed)
+		class InitThread extends Thread {
+			private Component component;
+			public InitThread(Component component) {
+				this.component = component;
+			}
+	        @Override
+	        public void run() {
+	        	gui.disableTabbedPane();
+	        	try {
+					component.init();
+				} catch (ComponentInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				gui.enableTabbedPane();
+	        }
+	    }
+		
+//	    final SwingWorker worker = new SwingWorker() {
+		class InitWorker extends SwingWorker<Boolean,Boolean> {
+			private Component component;
+			public InitWorker(Component component) {
+				this.component = component;
+			}	    	
+	    	
+			@Override
+			protected Boolean doInBackground() throws Exception {
+				gui.getStatusPanel().setStatus("Initialising reasoner ... ");
+//				gui.getStatusPanel().repaint();
+	        	gui.disableTabbedPane();
+	        	gui.setEnabled(false);
+	        	JFrame waitFrame = new JFrame();
+	        	waitFrame.setUndecorated(true);
+	        	waitFrame.setSize(200, 200);
+	        	URL imgURL = Config.class.getResource("ajaxloader.gif");
+	        	ImageIcon waitIcon = new ImageIcon(imgURL, "wait");	        	
+//	        	waitFrame.add(new JLabel("Wait!"), waitIcon, SwingConstants.RIGHT);
+//	        	waitFrame.add(new JLabel("Wait"));
+	        	waitFrame.add(new JLabel(waitIcon), BorderLayout.NORTH);
+	        	waitFrame.add(new JLabel("Initialising reasoner. Please wait."), BorderLayout.SOUTH);
+	        	waitFrame.setLocationRelativeTo(gui);
+	        	waitFrame.setVisible(true);
+	        	try {
+					component.init();
+				} catch (ComponentInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				gui.enableTabbedPane();
+				gui.setEnabled(true);
+				gui.getStatusPanel().extendMessage("done.");
+				waitFrame.dispose();
+				// TODO Auto-generated method stub
+//				return null;
+				return true;
+			}
+	      };
+
+		
 		try {
 			if(tabIndex==0) {
+				gui.disableTabbedPane();
+				gui.getStatusPanel().setStatus("Initialising knowledge source ... ");
 				source.init();
+				gui.getStatusPanel().extendMessage("done.");
+				gui.enableTabbedPane();
 			} else if(tabIndex==1) {
-				reasoner.init();
+//				gui.disableTabbedPane();
+//				gui.getStatusPanel().setStatus("Initialising reasoner ... ");
+//				gui.repaint();
+//				Thread initThread = new InitThread(reasoner);
+//				initThread.run();
+//				SwingWorker worker;
+//				try {
+//					SwingUtilities.invokeAndWait(initThread);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (InvocationTargetException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				
+			    InitWorker worker = new InitWorker(reasoner);
+			    worker.execute();						
+				
+//				reasoner.init();
+//				gui.getStatusPanel().extendMessage("done.");
+//				gui.enableTabbedPane();
 			} else if(tabIndex==2) {
+				gui.disableTabbedPane();
+				gui.getStatusPanel().setStatus("Initialising learning problem ... ");
 				lp.init();
+				gui.getStatusPanel().extendMessage("done.");
+				gui.enableTabbedPane();
 			} else if(tabIndex == 3) {
+				gui.disableTabbedPane();
+				gui.getStatusPanel().setStatus("Initialising learning algorithm ... ");
 				la.init();
+				gui.getStatusPanel().extendMessage("done.");
+				gui.enableTabbedPane();
 			}
 		} catch (ComponentInitException e) {
 			// TODO display message in status bar
@@ -395,6 +516,8 @@ public class Config {
 	
 	// applies a configuration option - used as delegate method, which invalidates components
 	public <T> void applyConfigEntry(Component component, ConfigEntry<T> entry) {
+		System.out.println("Applying " + entry + " to " + component.getClass().getName() + ".");
+		
 		cm.applyConfigEntry(component, entry);
 		// enable tabs if setting the value completed mandatory settings
 		enableTabsIfPossible();
@@ -433,27 +556,35 @@ public class Config {
 	private void enableTabsIfPossible() {
 		if(mandatoryOptionsSpecified(source)) {
 			isEnabled[0] = true;
-		} else if(mandatoryOptionsSpecified(reasoner)) {
+		} 
+		if(mandatoryOptionsSpecified(reasoner) && isEnabled[0]) {
 			isEnabled[1] = true;
-		} else if(mandatoryOptionsSpecified(lp)) {
+		} 
+		if(mandatoryOptionsSpecified(lp) && isEnabled[1]) {
 			isEnabled[2] = true;
-		} else if(mandatoryOptionsSpecified(la)) {
+		} 
+		if(mandatoryOptionsSpecified(la) && isEnabled[1] && isEnabled[2]) {
 			isEnabled[3] = true;
 		}
 	}
 	
 	// TODO use specification of mandatory variables
 	private boolean mandatoryOptionsSpecified(Component component) {
+//		System.out.println("check mandatory options for " + component.getClass().getName());
 		if(component instanceof OWLFile) {
-			if(cm.getConfigOptionValue(source, "url") != null) {
-				return true;
+			if(cm.getConfigOptionValue(source, "url") == null) {
+				return false;
 			}
 		} else if(component instanceof KBFile) {
-			if(cm.getConfigOptionValue(source, "url") != null | cm.getConfigOptionValue(source, "filename") != null) {
-				return true;
+			if(cm.getConfigOptionValue(source, "url") == null && cm.getConfigOptionValue(source, "filename") == null) {
+				return false;
+			}
+		} else if(component instanceof PosNegLP) {
+			if(cm.getConfigOptionValue(component, "positiveExamples")==null || cm.getConfigOptionValue(component, "negativeExamples") == null) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	// delegate method for getting config option values

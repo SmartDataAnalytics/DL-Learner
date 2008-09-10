@@ -99,9 +99,9 @@ public class StringSetConfigOption extends ConfigOption<Set<String>> {
 	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
 	 */
 	@Override
-	public String getValueFormatting(Set<String> value, Integer special) {
+	public String getValueFormatting(Set<String> value) {
 		String back = "";
-		if (value != null && special == 0) {
+		if (value != null && !name.equals("positiveExamples") && !name.equals("negativeExamples")) {
 			Integer count = 0;
 			back = "{";
 			for (String i : value) {
@@ -114,14 +114,14 @@ public class StringSetConfigOption extends ConfigOption<Set<String>> {
 			return back;
 		}
 		// positive examples
-		if (value != null && special == 1) {
+		if (value != null && name.equals("positiveExamples")) {
 			for (String i : value) {
 				back += "\n+\"" + i + "\"";
 			}
 			return back + "\n";
 		}
 		// negative examples
-		if (value != null && special == 2) {
+		if (value != null && name.equals("negativeExamples")) {
 			Integer count = 0;
 			for (String i : value) {
 				count++;

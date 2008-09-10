@@ -119,7 +119,7 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
 	 */
 	@Override
-	public String getValueFormatting(Double value, Integer special) {
+	public String getValueFormatting(Double value) {
 		if (value != null)
 			return value.toString() + ";";
 		else

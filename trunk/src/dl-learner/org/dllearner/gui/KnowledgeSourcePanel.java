@@ -96,7 +96,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			choosenClassIndex = cb.getSelectedIndex();
 			// create a new knowledge source component
-			config.newKnowledgeSource(selectableSources.get(choosenClassIndex));
+			config.changeKnowledgeSource(selectableSources.get(choosenClassIndex));
 //			updateAll();
 			updateOptionPanel();
 			
@@ -106,8 +106,8 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		}
 
 		if (e.getSource() == clearButton) {
-			config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
-					selectableSources.get(choosenClassIndex)));
+//			config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
+//					selectableSources.get(choosenClassIndex)));
 			updateOptionPanel();
 		}
 

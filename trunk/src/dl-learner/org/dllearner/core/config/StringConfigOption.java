@@ -36,12 +36,10 @@ public class StringConfigOption extends ConfigOption<String> {
 
 	public StringConfigOption(String name, String description) {
 		super(name, description);
-		
 	}	
 	
 	public StringConfigOption(String name, String description, String defaultValue) {
 		super(name, description, defaultValue);
-		
 	}
 
 	public StringConfigOption(String name, String description, String defaultValue, boolean mandatory, boolean requiresInit) {
@@ -112,7 +110,7 @@ public class StringConfigOption extends ConfigOption<String> {
 	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
 	 */
 	@Override
-	public String getValueFormatting(String value, Integer special) {
+	public String getValueFormatting(String value) {
 		if (value != null)
 			return value.toString() + ";";
 		else

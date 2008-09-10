@@ -16,9 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
+ */ 
 
 package org.dllearner.core.configurators;
+
+import java.net.URL;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.KBFile;
@@ -64,10 +66,10 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(kBFile,  "fi
 * url URL pointer to the KB file.
 * mandatory: false| reinit necessary: true
 * default value: null
-* @return String 
+* @return URL 
 **/
-public String getUrl() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(kBFile,  "url") ;
+public URL getUrl() {
+return (URL) ComponentManager.getInstance().getConfigOptionValue(kBFile,  "url") ;
 }
 
 /**
@@ -84,7 +86,7 @@ reinitNecessary = true;
 * mandatory: false| reinit necessary: true
 * default value: null
 **/
-public void setUrl(String url) {
+public void setUrl(URL url) {
 ComponentManager.getInstance().applyConfigEntry(kBFile, "url", url);
 reinitNecessary = true;
 }
