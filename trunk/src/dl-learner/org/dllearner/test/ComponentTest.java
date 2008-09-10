@@ -20,6 +20,7 @@
 package org.dllearner.test;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -47,8 +48,9 @@ public class ComponentTest {
 	/**
 	 * @param args
 	 * @throws ComponentInitException 
+	 * @throws MalformedURLException 
 	 */
-	public static void main(String[] args) throws ComponentInitException {
+	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		
 		// get singleton instance of component manager
 		ComponentManager cm = ComponentManager.getInstance();
@@ -56,11 +58,12 @@ public class ComponentTest {
 		// create knowledge source
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		String example = "examples/family/uncle.owl";
-		cm.applyConfigEntry(source, "url", new File(example).toURI().toString());
+		cm.applyConfigEntry(source, "url", new File(example).toURI().toURL());
 		source.init();
 		
-		// create DIG reasoning service with standard settings
+		// create OWL API reasoning service with standard settings
 		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		
 		// ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
 		reasoner.init();
 		ReasoningService rs = cm.reasoningService(reasoner);

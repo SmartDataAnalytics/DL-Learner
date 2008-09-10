@@ -21,7 +21,6 @@ package org.dllearner.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -40,7 +39,7 @@ import org.dllearner.kb.OWLFile;
  * @author Jens Lehmann
  * @author Tilo Hielscher
  */
-public class KnowledgeSourcePanel extends JPanel implements ActionListener {
+public class KnowledgeSourcePanel extends ComponentPanel<KnowledgeSource> {
 
 	private static final long serialVersionUID = -7678275020058043937L;
 
@@ -76,6 +75,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 		cb.addActionListener(this);
 
 		choosePanel.add(cb);
+//		choosePanel.add(new JLabel("       "));
 		choosePanel.add(clearButton);
 		choosenClassIndex = cb.getSelectedIndex();
 
@@ -97,12 +97,7 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 			choosenClassIndex = cb.getSelectedIndex();
 			// create a new knowledge source component
 			config.changeKnowledgeSource(selectableSources.get(choosenClassIndex));
-//			updateAll();
 			updateOptionPanel();
-			
-			System.out.println("update");
-//			config.setInitKnowledgeSource(false);
-//			init();
 		}
 
 		if (e.getSource() == clearButton) {
@@ -132,6 +127,15 @@ public class KnowledgeSourcePanel extends JPanel implements ActionListener {
 	 */
 	public void updateOptionPanel() {
 		optionPanel.update(config.getKnowledgeSource());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.gui.ComponentPanel#panelActivated()
+	 */
+	@Override
+	public void panelActivated() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

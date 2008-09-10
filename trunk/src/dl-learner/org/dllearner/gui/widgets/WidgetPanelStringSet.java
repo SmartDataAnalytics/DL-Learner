@@ -225,7 +225,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			gridbag.setConstraints(clearButton, constraints);
 			widgetPanel.add(clearButton, constraints);
 		} else {
-			System.out.println("SPECIAL OPTION " + configOption.getName());
+//			System.out.println("SPECIAL OPTION " + configOption.getName());
 			
 			// SPECIAL LAYOUT
 			// ComboBoxList
@@ -245,6 +245,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 					System.out.println(ind.getName());
 					cBL.add(ind.getName());
 				}
+//				cBL.add("Test");
 			}
 			// allowedConcepts or ignoredConcepts
 			if (configOption.getName().equalsIgnoreCase("allowedConcepts")

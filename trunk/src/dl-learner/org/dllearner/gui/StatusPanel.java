@@ -40,6 +40,9 @@ public class StatusPanel extends JPanel {
 	
 	private String oldMessage;
 	
+	// specifies whether the message is an exception
+	private boolean isException = false;
+	
 	public StatusPanel() {
 		super();
 		add(statusLabel);
@@ -53,11 +56,18 @@ public class StatusPanel extends JPanel {
 	}
 	
 	public void setStatus(String message) {
-		updateMessage(message);
+		if(!isException) {
+			updateMessage(message);
+		}
 	}
 	
+	public void setExceptionMessage(String message) {
+		updateMessage(message);
+		isException = true;
+	}	
+	
 	public void setTabInitMessage() {
-//		updateMessage(tabInitText);
+		updateMessage(tabInitText);
 	}
 
 	public void extendMessage(String addition) {
