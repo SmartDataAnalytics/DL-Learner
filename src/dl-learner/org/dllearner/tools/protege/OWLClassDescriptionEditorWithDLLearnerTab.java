@@ -197,6 +197,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	 * returns the edited Components.
 	 * @return Set of OWLDescriptions
 	 */
+	@Override
 	public Set<OWLDescription> getEditedObjects() {
 		if (tabbedPane.getSelectedComponent() == classSelectorPanel) {
 			return new HashSet<OWLDescription>(classSelectorPanel
@@ -630,6 +631,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			splitPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 			List<RestrictionCreator> types = new ArrayList<RestrictionCreator>();
 			types.add(new RestrictionCreator("Some (existential)") {
+				@Override
 				public void createRestrictions(
 						Set<OWLObjectProperty> properties,
 						Set<OWLDescription> fillers, Set<OWLDescription> result) {
@@ -642,6 +644,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 				}
 			});
 			types.add(new RestrictionCreator("Only (universal)") {
+				@Override
 				public void createRestrictions(
 						Set<OWLObjectProperty> properties,
 						Set<OWLDescription> fillers, Set<OWLDescription> result) {
@@ -663,6 +666,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			});
 			types.add(new CardinalityRestrictionCreator(
 					"Min (min cardinality)", cardinalitySpinner) {
+				@Override
 				public OWLDescription createRestriction(OWLObjectProperty prop,
 						OWLDescription filler, int card) {
 					return getDataFactory()
@@ -672,6 +676,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			});
 			types.add(new CardinalityRestrictionCreator(
 					"Exactly (exact cardinality)", cardinalitySpinner) {
+				@Override
 				public OWLDescription createRestriction(OWLObjectProperty prop,
 						OWLDescription filler, int card) {
 					return getDataFactory()
@@ -681,6 +686,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			});
 			types.add(new CardinalityRestrictionCreator(
 					"Max (max cardinality)", cardinalitySpinner) {
+				@Override
 				public OWLDescription createRestriction(OWLObjectProperty prop,
 						OWLDescription filler, int card) {
 					return getDataFactory()
@@ -744,6 +750,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			this.name = name;
 		}
 
+		@Override
 		public String toString() {
 			return name;
 		}
@@ -767,6 +774,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			this.cardinalitySpinner = cardinalitySpinner;
 		}
 
+		@Override
 		public void createRestrictions(Set<OWLObjectProperty> properties,
 				Set<OWLDescription> fillers, Set<OWLDescription> result) {
 			for (OWLObjectProperty prop : properties) {

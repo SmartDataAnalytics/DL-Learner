@@ -129,7 +129,7 @@ public class SetManipulation {
 	 * @param nrElements
 	 * @return returns the list shrunken to size. 
 	 */
-	public static List getFirst(List list, int nrElements) {
+	public static <T> List<T> getFirst(List<T> list, int nrElements) {
 		int size;
 		while ((size = list.size()) > nrElements) {
 			list.remove(size - 1);
@@ -153,7 +153,7 @@ public class SetManipulation {
 		return ret;
 	}
 	
-	public static void printSet(String s, SortedSet set, Logger logger) {
+	public static void printSet(String s, SortedSet<String> set, Logger logger) {
 		if(logger.getLevel().equals(Level.DEBUG)){
 			logger.info(s +" ["+ set.size()+"]: "+set);
 		}else{
@@ -162,7 +162,7 @@ public class SetManipulation {
 		
 	}
 	
-	public static void printSet(String s, SortedSet set) {
+	public static <T> void printSet(String s, SortedSet<T> set) {
 		System.out.println(s +" ["+ set.size()+"]: "+set);
 		
 	}

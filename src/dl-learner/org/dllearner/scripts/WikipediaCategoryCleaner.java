@@ -269,9 +269,9 @@ public class WikipediaCategoryCleaner {
 	
 	
 	private static void printIntermediateResults(
-			SortedSet fullSet, 
-			SortedSet correctIndividuals, 
-			SortedSet wrongIndividuals,
+			SortedSet<String> fullSet, 
+			SortedSet<String> correctIndividuals, 
+			SortedSet<String> wrongIndividuals,
 			int numberOfConcepts) {
 		SetManipulation.printSet("full  Individual set: ", fullSet, logger);
 		
