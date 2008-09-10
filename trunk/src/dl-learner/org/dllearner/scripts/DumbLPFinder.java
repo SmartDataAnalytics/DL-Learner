@@ -31,6 +31,7 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -54,7 +55,7 @@ public class DumbLPFinder {
 	public static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
 	
 	//private static Class usedReasoner = FastInstanceChecker.class;
-	private static Class usedReasoner = OWLAPIReasoner.class;
+	private static Class<? extends ReasonerComponent> usedReasoner = OWLAPIReasoner.class;
 	private static boolean allOrExists = true;
 	private static boolean tenORthirty = true;
 	
@@ -285,7 +286,7 @@ public class DumbLPFinder {
 		}
 		
 		
-		Class tmp = FastInstanceChecker.class;
+		Class<? extends ReasonerComponent> tmp = FastInstanceChecker.class;
 		if(usedReasoner.equals(tmp)){
 			lc.maxExecutionTimeInSeconds = 30;
 		}else{
