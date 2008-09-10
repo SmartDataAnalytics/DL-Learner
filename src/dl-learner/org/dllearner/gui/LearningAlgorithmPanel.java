@@ -22,7 +22,6 @@ package org.dllearner.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -40,7 +39,7 @@ import org.dllearner.core.LearningProblemUnsupportedException;
  * 
  * @author Tilo Hielscher
  */
-public class LearningAlgorithmPanel extends JPanel implements ActionListener {
+public class LearningAlgorithmPanel extends ComponentPanel<LearningAlgorithm> {
 
 	private static final long serialVersionUID = 8721490771860452959L;
 
@@ -187,5 +186,14 @@ public class LearningAlgorithmPanel extends JPanel implements ActionListener {
 			initButton.setForeground(Color.RED);
 		} else
 			initButton.setForeground(Color.BLACK);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.gui.ComponentPanel#panelActivated()
+	 */
+	@Override
+	public void panelActivated() {
+		// TODO Auto-generated method stub
+		
 	}
 }

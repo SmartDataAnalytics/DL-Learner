@@ -1,5 +1,3 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,25 +17,24 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import org.dllearner.core.LearningProblem;
 
 /**
- * LearningProblemPanel tab 2. Choose LearingProblem, change Options and final
- * initiate LearningProblem.
+ * Learning problem panel.
  * 
+ * @author Jens Lehmann
  * @author Tilo Hielscher
  */
-public class LearningProblemPanel extends JPanel implements ActionListener {
+public class LearningProblemPanel extends ComponentPanel<LearningProblem> {
 
 	private static final long serialVersionUID = -3819627680918930203L;
 
@@ -49,7 +46,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	private JPanel choosePanel = new JPanel();
 	private OptionPanel optionPanel;
 	private JPanel initPanel = new JPanel();
-	private JButton setButton;
+//	private JButton setButton;
 	private int choosenClassIndex;
 
 	LearningProblemPanel(final Config config, StartGUI startGUI) {
@@ -59,10 +56,10 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 //		this.startGUI = startGUI;
 		lpClasses = config.getComponentManager().getLearningProblems();
 
-		setButton = new JButton("Set");
-		setButton.addActionListener(this);
+//		setButton = new JButton("Set");
+//		setButton.addActionListener(this);
 		choosePanel.add(cb);
-		choosePanel.add(setButton);
+//		choosePanel.add(setButton);
 		cb.addActionListener(this);
 
 		// add into comboBox
@@ -89,8 +86,8 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		// read selected LearningProblemClass
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			this.choosenClassIndex = cb.getSelectedIndex();
-//			config.setInitLearningProblem(false);
-//			init();
+			config.changeLearningProblem(lpClasses.get(choosenClassIndex));
+			updateOptionPanel();	
 		}
 
 //		if (e.getSource() == setButton)
@@ -134,15 +131,17 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	/**
 	 * updateAll
 	 */
+	/*
 	public void updateAll() {
 		updateComboBox();
 		updateOptionPanel();
 //		updateInitButtonColor();
-	}
+	}*/
 
 	/**
 	 * set ComboBox to selected class
 	 */
+	/*
 	public void updateComboBox() {
 		if (config.getLearningProblem() != null)
 			for (int i = 0; i < lpClasses.size(); i++)
@@ -151,13 +150,22 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 					cb.setSelectedIndex(i);
 				}
 		this.choosenClassIndex = cb.getSelectedIndex();
-	}
+	}*/
 
 	/**
 	 * update OptionPanel with new selection
 	 */
-	private void updateOptionPanel() {
+	public void updateOptionPanel() {
 		optionPanel.update(config.getLearningProblem());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.gui.ComponentPanel#panelActivated()
+	 */
+	@Override
+	public void panelActivated() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**

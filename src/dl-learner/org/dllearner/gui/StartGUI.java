@@ -21,6 +21,8 @@ package org.dllearner.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -62,11 +64,11 @@ public class StartGUI extends JFrame implements ActionListener {
 	private ConfigLoad configLoad = new ConfigLoad(config, this);
 	private ConfigSave configSave = new ConfigSave(config, this);
 
-	private KnowledgeSourcePanel tab0;
-	private ReasonerPanel tab1;
-	private LearningProblemPanel tab2;
-	private LearningAlgorithmPanel tab3;
-	private RunPanel tab4;
+	protected KnowledgeSourcePanel tab0;
+	protected ReasonerPanel tab1;
+	protected LearningProblemPanel tab2;
+	protected LearningAlgorithmPanel tab3;
+	protected RunPanel tab4;
 
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu menuFile = new JMenu("File");
@@ -86,8 +88,19 @@ public class StartGUI extends JFrame implements ActionListener {
 	public StartGUI(File file) {
 		this.setTitle("DL-Learner GUI");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setLocationByPlatform(true);
+//		this.setLocationByPlatform(true);
 		this.setSize(800, 600);
+
+		// center frame
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension size = getSize();
+		screenSize.height = screenSize.height/2;
+		screenSize.width = screenSize.width/2;
+		size.height = size.height/2;
+		size.width = size.width/2;
+		int y = screenSize.height - size.height;
+		int x = screenSize.width - size.width;
+		setLocation(x, y);
 
 		// set icon
 		if (this.getClass().getResource("icon.gif") != null)
@@ -143,6 +156,14 @@ public class StartGUI extends JFrame implements ActionListener {
 					}
 
 					updateTabs();
+					
+					// send signals to panels
+					switch(index) {
+					case 0: tab0.panelActivated(); break;
+					case 1: tab1.panelActivated(); break;
+					case 2: tab2.panelActivated(); break;
+					case 3: tab3.panelActivated(); break;
+					}
 
 					// new tab => ask user to fill in values
 					statusPanel.setTabInitMessage();
