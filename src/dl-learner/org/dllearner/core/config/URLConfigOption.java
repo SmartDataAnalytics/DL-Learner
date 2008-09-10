@@ -20,6 +20,8 @@
 package org.dllearner.core.config;
 
 import java.net.URL;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Option which has an URL as value.
@@ -72,6 +74,16 @@ public class URLConfigOption extends ConfigOption<URL> {
 	@Override
 	public boolean isValidValue(URL value) {
 		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.config.ConfigOption#getJavaImports()
+	 */
+	@Override
+	public SortedSet<String> getJavaImports() {
+		SortedSet<String> ret = new TreeSet<String>();
+		ret.add("java.net.URL");
+		return ret;
 	}
 
 
