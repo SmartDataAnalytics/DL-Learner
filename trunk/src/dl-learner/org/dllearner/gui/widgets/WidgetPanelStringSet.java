@@ -115,12 +115,13 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 	/**
 	 * Use this, to set entry for layout 2.
 	 */
+	/*
 	public void specialSet() {
 		if (isSpecial()) {
 			this.value = cBL.getSelections();
 			setEntry();
 		}
-	}
+	}*/
 
 	public void setEntry() {
 		StringSetConfigOption specialOption;
@@ -239,13 +240,13 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 				// fill lists
 				Set<Individual> individualsSet = config.getReasoningService()
 						.getIndividuals();
-				LinkedList<Individual> individuals = new LinkedList<Individual>(
-						individualsSet);
-				for (Individual ind : individuals) {
-					System.out.println(ind.getName());
-					cBL.add(ind.getName());
+				if(individualsSet != null) {
+					LinkedList<Individual> individuals = new LinkedList<Individual>(
+							individualsSet);
+					for (Individual ind : individuals) {
+						cBL.add(ind.getName());
+					}
 				}
-//				cBL.add("Test");
 			}
 			// allowedConcepts or ignoredConcepts
 			if (configOption.getName().equalsIgnoreCase("allowedConcepts")
@@ -253,10 +254,12 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 				// fill lists
 				Set<NamedClass> atomicsSet = config.getReasoningService()
 						.getNamedClasses();
-				LinkedList<NamedClass> atomicConcepts = new LinkedList<NamedClass>(
-						atomicsSet);
-				for (NamedClass ind : atomicConcepts)
-					cBL.add(ind.getName());
+				if(atomicsSet != null) {
+					LinkedList<NamedClass> atomicConcepts = new LinkedList<NamedClass>(
+							atomicsSet);
+					for (NamedClass ind : atomicConcepts)
+						cBL.add(ind.getName());
+				}
 			}
 			// allowedRoles or ignoredRoles
 			if (configOption.getName().equalsIgnoreCase("allowedRoles")
@@ -264,10 +267,12 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 				// fill lists
 				Set<ObjectProperty> atomicsSet = config.getReasoningService()
 						.getObjectProperties();
-				LinkedList<ObjectProperty> atomicRoles = new LinkedList<ObjectProperty>(
-						atomicsSet);
-				for (ObjectProperty ind : atomicRoles)
-					cBL.add(ind.getName());
+				if(atomicsSet != null) {
+					LinkedList<ObjectProperty> atomicRoles = new LinkedList<ObjectProperty>(
+							atomicsSet);
+					for (ObjectProperty ind : atomicRoles)
+						cBL.add(ind.getName());
+				}
 			}
 			// set selections
 			if (value != null)

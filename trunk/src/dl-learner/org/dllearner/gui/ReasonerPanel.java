@@ -28,7 +28,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
  * Panel for configuring reasoner.
@@ -58,8 +58,8 @@ public class ReasonerPanel extends ComponentPanel<ReasonerComponent> {
 //		this.startGUI = startGUI;
 		selectableReasoners = config.getComponentManager().getReasonerComponents();
 		// to set a default reasoner, we move it to the beginning of the list
-		selectableReasoners.remove(OWLAPIReasoner.class);
-		selectableReasoners.add(0, OWLAPIReasoner.class);
+		selectableReasoners.remove(FastInstanceChecker.class);
+		selectableReasoners.add(0, FastInstanceChecker.class);
 
 		initButton = new JButton("Init Reasoner");
 		initButton.addActionListener(this);

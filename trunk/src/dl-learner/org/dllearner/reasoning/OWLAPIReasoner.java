@@ -171,6 +171,17 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	@Override
 	public void init() throws ComponentInitException {
+		// reset variables (otherwise subsequent initialisation with
+		// different knowledge sources will merge both)
+		atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
+		atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
+		datatypeProperties = new TreeSet<DatatypeProperty>();
+		booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
+		doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
+		intDatatypeProperties = new TreeSet<DatatypeProperty>();
+		individuals = new TreeSet<Individual>();	
+				
+		// create OWL API ontology manager
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		
 		// it is a bit cumbersome to obtain all classes, because there

@@ -26,6 +26,7 @@ import org.dllearner.gui.widgets.WidgetPanelStringSet;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.HashSet;
@@ -43,15 +44,21 @@ public class CheckBoxList extends JPanel implements ActionListener {
 	private LinkedList<JCheckBox> list = new LinkedList<JCheckBox>();
 	private GridBagLayout gridbag = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
-	private WidgetPanelStringSet panel;
+	private WidgetPanelStringSet widgetPanel;
 
 	/**
 	 * Make a JPanel with GridBagLayout.
 	 */
 	public CheckBoxList(WidgetPanelStringSet panel) {
-		this.panel = panel;
+		this.widgetPanel = panel;
 		checkBoxPanel.setLayout(gridbag);
-		add(checkBoxPanel, BorderLayout.CENTER);
+		
+		JScrollPane scrollPane = new JScrollPane(checkBoxPanel);
+//		scrollPane.setSize(new Dimension(500,100));
+		scrollPane.setPreferredSize(new Dimension(500, 300));
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		add(scrollPane, BorderLayout.CENTER);
+		
 		constraints.anchor = GridBagConstraints.WEST;
 	}
 
@@ -74,7 +81,7 @@ public class CheckBoxList extends JPanel implements ActionListener {
 	 */
 	public Set<String> getSelections() {
 		Set<String> selectionSet = new HashSet<String>();
-		selectionSet.clear(); // remove all
+//		selectionSet.clear(); // remove all
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i).isSelected())
 				selectionSet.add(list.get(i).getText());
@@ -123,6 +130,9 @@ public class CheckBoxList extends JPanel implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		panel.specialSet();
+		Set<String> value = getSelections();
+		widgetPanel.fireValueChanged(value);
+		
+//		widgetPanel.specialSet();
 	}
 }
