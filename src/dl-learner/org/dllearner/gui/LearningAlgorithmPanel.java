@@ -20,11 +20,9 @@ package org.dllearner.gui;
  *
  */
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
@@ -48,8 +46,8 @@ public class LearningAlgorithmPanel extends ComponentPanel<LearningAlgorithm> {
 	private List<Class<? extends LearningAlgorithm>> selectableAlgorithms;
 	private JPanel choosePanel = new JPanel();
 	private OptionPanel optionPanel;
-	private JPanel initPanel = new JPanel();
-	private JButton initButton, autoInitButton;
+//	private JPanel initPanel = new JPanel();
+//	private JButton initButton, autoInitButton;
 	private String[] cbItems = {};
 	private JComboBox cb = new JComboBox(cbItems);
 	private int choosenClassIndex;
@@ -67,12 +65,12 @@ public class LearningAlgorithmPanel extends ComponentPanel<LearningAlgorithm> {
 		// at least it is not doing anything useful at the moment)
 		selectableAlgorithms.remove(DBpediaNavigationSuggestor.class);
 
-		initButton = new JButton("Init LearingAlgorithm");
-		initButton.addActionListener(this);
+//		initButton = new JButton("Init LearingAlgorithm");
+//		initButton.addActionListener(this);
 		// initPanel.add(initButton);
-		initButton.setEnabled(true);
-		autoInitButton = new JButton("Set");
-		autoInitButton.addActionListener(this);
+//		initButton.setEnabled(true);
+//		autoInitButton = new JButton("Set");
+//		autoInitButton.addActionListener(this);
 
 		// add into comboBox
 		for (int i = 0; i < selectableAlgorithms.size(); i++) {
@@ -80,7 +78,7 @@ public class LearningAlgorithmPanel extends ComponentPanel<LearningAlgorithm> {
 		}
 
 		choosePanel.add(cb);
-		choosePanel.add(autoInitButton);
+//		choosePanel.add(autoInitButton);
 		cb.addActionListener(this);
 
 		LearningAlgorithm la = null;
@@ -94,7 +92,7 @@ public class LearningAlgorithmPanel extends ComponentPanel<LearningAlgorithm> {
 
 		add(choosePanel, BorderLayout.PAGE_START);
 		add(optionPanel, BorderLayout.CENTER);
-		add(initPanel, BorderLayout.PAGE_END);
+//		add(initPanel, BorderLayout.PAGE_END);
 
 		choosenClassIndex = cb.getSelectedIndex();
 //		updateInitButtonColor();
@@ -104,6 +102,8 @@ public class LearningAlgorithmPanel extends ComponentPanel<LearningAlgorithm> {
 		// read selected Class
 		if (choosenClassIndex != cb.getSelectedIndex()) {
 			choosenClassIndex = cb.getSelectedIndex();
+			config.changeLearningAlgorithm(selectableAlgorithms.get(choosenClassIndex));
+			updateOptionPanel();
 //			config.setInitLearningAlgorithm(false);
 //			init();
 		}
@@ -152,15 +152,17 @@ public class LearningAlgorithmPanel extends ComponentPanel<LearningAlgorithm> {
 	/**
 	 * updateAll
 	 */
+	/*
 	public void updateAll() {
 		updateComboBox();
 		updateOptionPanel();
 		updateInitButtonColor();
-	}
+	}*/
 
 	/**
 	 * set ComboBox to selected class
 	 */
+	/*
 	public void updateComboBox() {
 		if (config.getLearningAlgorithm() != null)
 			for (int i = 0; i < selectableAlgorithms.size(); i++)
@@ -169,7 +171,7 @@ public class LearningAlgorithmPanel extends ComponentPanel<LearningAlgorithm> {
 					cb.setSelectedIndex(i);
 				}
 		this.choosenClassIndex = cb.getSelectedIndex();
-	}
+	}*/
 
 	/**
 	 * update OptionPanel with new selection
@@ -181,12 +183,13 @@ public class LearningAlgorithmPanel extends ComponentPanel<LearningAlgorithm> {
 	/**
 	 * make init-button red if you have to click
 	 */
+	/*
 	public void updateInitButtonColor() {
 		if (!config.needsInitLearningAlgorithm()) {
 			initButton.setForeground(Color.RED);
 		} else
 			initButton.setForeground(Color.BLACK);
-	}
+	}*/
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.gui.ComponentPanel#panelActivated()
