@@ -46,7 +46,7 @@ public class AboutWindow extends JFrame {
 
 	public AboutWindow() {
 		setTitle("About");
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationByPlatform(true);
 		setSize(400, 400);
 

@@ -266,10 +266,12 @@ public class StartGUI extends JFrame implements ActionListener {
 			dispose();
 			// tutorial
 		} else if (e.getSource() == tutorialItem) {
-			new TutorialWindow();
+			TutorialWindow window = new TutorialWindow();
+			window.setLocationRelativeTo(this);
 			// about
 		} else if (e.getSource() == aboutItem) {
-			new AboutWindow();
+			AboutWindow window = new AboutWindow();
+			window.setLocationRelativeTo(this);
 		}
 	}
 
