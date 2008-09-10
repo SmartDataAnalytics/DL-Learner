@@ -39,6 +39,7 @@ import org.dllearner.gui.widgets.WidgetPanelInteger;
 import org.dllearner.gui.widgets.WidgetPanelString;
 import org.dllearner.gui.widgets.WidgetPanelStringSet;
 import org.dllearner.gui.widgets.WidgetPanelStringTupleList;
+import org.dllearner.gui.widgets.WidgetPanelURL;
 
 /**
  * OptionPanel reads all possible options and use all widgets. Definition map is
@@ -107,6 +108,8 @@ public class OptionPanel extends JPanel {
 				widgetPanel = new WidgetPanelDouble(config, component, (DoubleConfigOption) option);
 			} else if (option instanceof StringConfigOption) {
 				widgetPanel = new WidgetPanelString(config, component, (StringConfigOption) option);
+			} else if (option instanceof URLConfigOption) {
+				widgetPanel = new WidgetPanelURL(config, component, (URLConfigOption) option);
 			} else if (option instanceof StringSetConfigOption) {
 				widgetPanel = new WidgetPanelStringSet(config, component, (StringSetConfigOption) option);
 			} else if (option instanceof StringTupleListConfigOption) {

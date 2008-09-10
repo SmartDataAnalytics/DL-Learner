@@ -20,20 +20,20 @@
 package org.dllearner.kb;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.config.StringConfigOption;
+import org.dllearner.core.config.URLConfigOption;
 import org.dllearner.core.configurators.OWLFileConfigurator;
 import org.dllearner.core.owl.KB;
 import org.dllearner.reasoning.OWLAPIDIGConverter;
@@ -47,7 +47,7 @@ public class OWLFile extends KnowledgeSource {
 	private static Logger logger = Logger
 	.getLogger(OWLFile.class);
 	
-	private URL url;
+//	private URL url;
 	private OWLFileConfigurator configurator ;
 	@Override
 	public OWLFileConfigurator getConfigurator(){
@@ -65,7 +65,7 @@ public class OWLFile extends KnowledgeSource {
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("url", "URL pointing to the OWL file", null, true, true));
+		options.add(new URLConfigOption("url", "URL pointing to the OWL file", null, true, true));
 		return options;
 	}
 
@@ -81,15 +81,19 @@ public class OWLFile extends KnowledgeSource {
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
+		if(configurator.getUrl() == null) {
+			logger.error("Cannot initialise OWL file with empty URL");
+		}
 		
+		/*
 			try {
 				url = new URL(configurator.getUrl());
 			} catch (MalformedURLException e) {
 				logger.error(e.getMessage());
 				//throw new InvalidConfigOptionValueException(entry.getOption(), entry.getValue(),"malformed URL " + configurator.getUrl());
 			} 
-		
+		*/
 		
 	}
 	
@@ -101,14 +105,15 @@ public class OWLFile extends KnowledgeSource {
 	@Override
 	public String toDIG(URI kbURI) {
 		// TODO: need some handling for cases where the URL was not set
-		return OWLAPIDIGConverter.getTellsString(url, OntologyFormat.RDF_XML, kbURI);
+		return OWLAPIDIGConverter.getTellsString(configurator.getUrl(), OntologyFormat.RDF_XML, kbURI);
 	}
 
 	public URL getURL() {
-		return url;
+		return configurator.getUrl();
 	}
 	public void setURL(URL url) {
-		this.url = url;
+//		this.url = url;
+		configurator.setUrl(url);
 	}
 
 	/* (non-Javadoc)

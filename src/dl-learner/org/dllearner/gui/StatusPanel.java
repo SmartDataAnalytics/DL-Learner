@@ -36,17 +36,36 @@ public class StatusPanel extends JPanel {
 	
 	private JLabel statusLabel = new JLabel(tabInitText);
 	
+	private String message = tabInitText;
+	
+	private String oldMessage;
+	
 	public StatusPanel() {
 		super();
 		add(statusLabel);
 	}
 	
-	public void setStatus(String message) {
+	private void updateMessage(String message) {
+		oldMessage = this.message;
+		this.message = message;
 		statusLabel.setText(message);
+//		repaint();
+	}
+	
+	public void setStatus(String message) {
+		updateMessage(message);
 	}
 	
 	public void setTabInitMessage() {
-		statusLabel.setText(tabInitText);
+//		updateMessage(tabInitText);
 	}
 
+	public void extendMessage(String addition) {
+		message += addition;
+		statusLabel.setText(message);
+	}
+	
+	public void revertToPreviousMessage() {
+		updateMessage(oldMessage);
+	}
 }

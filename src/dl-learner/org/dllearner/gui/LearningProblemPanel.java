@@ -42,7 +42,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -3819627680918930203L;
 
 	private Config config;
-	private StartGUI startGUI;
+//	private StartGUI startGUI;
 	private List<Class<? extends LearningProblem>> lpClasses;
 	private String[] lpBoxItems = {};
 	private JComboBox cb = new JComboBox(lpBoxItems);
@@ -56,7 +56,7 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 		super(new BorderLayout());
 
 		this.config = config;
-		this.startGUI = startGUI;
+//		this.startGUI = startGUI;
 		lpClasses = config.getComponentManager().getLearningProblems();
 
 		setButton = new JButton("Set");
@@ -93,8 +93,8 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 //			init();
 		}
 
-		if (e.getSource() == setButton)
-			setLearningProblem();
+//		if (e.getSource() == setButton)
+//			setLearningProblem();
 
 //		if (e.getSource() == initButton)
 //			init();
@@ -103,14 +103,14 @@ public class LearningProblemPanel extends JPanel implements ActionListener {
 	/**
 	 * after this, you can change widgets
 	 */
-	private void setLearningProblem() {
-		if (config.needsInitReasoner()) {
-			config.setLearningProblem(config.getComponentManager().learningProblem(
-					lpClasses.get(choosenClassIndex), config.getReasoningService()));
-			startGUI.updateTabs();
-			updateOptionPanel();
-		}
-	}
+//	private void setLearningProblem() {
+//		if (config.needsInitReasoner()) {
+//			config.setLearningProblem(config.getComponentManager().learningProblem(
+//					lpClasses.get(choosenClassIndex), config.getReasoningService()));
+//			startGUI.updateTabs();
+//			updateOptionPanel();
+//		}
+//	}
 
 	/**
 	 * after this, next tab can be used

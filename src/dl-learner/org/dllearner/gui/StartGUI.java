@@ -136,7 +136,9 @@ public class StartGUI extends JFrame implements ActionListener {
 					// check whether we need to initialise components
 					if (index != 0 && config.tabNeedsInit(index - 1)) {
 						for (int i = 0; i < index; i++) {
-							config.init(i);
+							if(config.tabNeedsInit(i)) {
+								config.init(i);
+							}
 						}
 					}
 
@@ -171,7 +173,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		Logger logger = Logger.getRootLogger();
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.INFO);
+		logger.setLevel(Level.DEBUG);
 
 		File file = null;
 		if (args.length > 0)
@@ -301,7 +303,23 @@ public class StartGUI extends JFrame implements ActionListener {
 
 	}
 	
+	// freeze tab
+	public void disableTabbedPane() {
+		tabPane.setEnabled(false);
+	}
+	
+	public void enableTabbedPane() {
+		tabPane.setEnabled(true);
+	}
+	
 	public void setStatusMessage(String message) {
 		statusPanel.setStatus(message);
+	}
+
+	/**
+	 * @return the statusPanel
+	 */
+	public StatusPanel getStatusPanel() {
+		return statusPanel;
 	}
 }

@@ -19,6 +19,8 @@ package org.dllearner.scripts;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -119,7 +121,13 @@ public class NewSample {
 		// knowledge source
 		//KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
 		
-		String fileURL = new File(owlFile).toURI().toString();
+		URL fileURL = null;
+		try {
+			fileURL = new File(owlFile).toURI().toURL();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		OWLFile ks = ComponentFactory.getOWLFile( fileURL);
 				
 		Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();

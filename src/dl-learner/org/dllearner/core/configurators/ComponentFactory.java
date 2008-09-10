@@ -16,10 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
+ */ 
 
 package org.dllearner.core.configurators;
 
+import java.net.URL;
 import java.util.Set;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.DBpediaNavigationSuggestor;
@@ -41,7 +42,6 @@ import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.learningproblems.PosOnlyInclusionLP;
-import org.dllearner.learningproblems.RoleLearning;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
@@ -74,7 +74,7 @@ return OWLAPIOntologyConfigurator.getOWLAPIOntology();
 * @param url URL pointing to the OWL file
 * @return a component ready for initialization OWLFile
 **/
-public static OWLFile getOWLFile(String url)  {
+public static OWLFile getOWLFile(URL url)  {
 return OWLFileConfigurator.getOWLFile(url);
 }
 
@@ -165,16 +165,6 @@ return PosOnlyDefinitionLPConfigurator.getPosOnlyDefinitionLP(reasoningService, 
 **/
 public static PosOnlyInclusionLP getPosOnlyInclusionLP(ReasoningService reasoningService, Set<String> positiveExamples)  {
 return PosOnlyInclusionLPConfigurator.getPosOnlyInclusionLP(reasoningService, positiveExamples);
-}
-
-/**
-* @param positiveExamples positive examples
-* @param negativeExamples negative examples
-* @param reasoningService see ReasoningService
-* @return a component ready for initialization RoleLearning
-**/
-public static RoleLearning getRoleLearning(ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
-return RoleLearningConfigurator.getRoleLearning(reasoningService, positiveExamples, negativeExamples);
 }
 
 /**

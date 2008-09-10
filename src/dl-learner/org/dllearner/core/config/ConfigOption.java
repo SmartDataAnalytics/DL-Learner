@@ -205,14 +205,10 @@ public abstract class ConfigOption<T> {
 	/**
 	 * Get a formatted value to put into configuration file.
 	 * 
-	 * @param value
-	 * @param special
-	 *            0 for normal output. 
-	 *            1 for positiveExamples. 
-	 *            2 for negativeExamples.
+	 * @param value Option value.
 	 * 
-	 * @return a string to put into a file
+	 * @return A string to put into a conf file.
 	 */
-	public abstract String getValueFormatting(T value, Integer special);
+	public abstract String getValueFormatting(T value);
 
 }

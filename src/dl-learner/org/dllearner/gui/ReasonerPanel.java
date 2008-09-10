@@ -89,7 +89,7 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 		add(initPanel, BorderLayout.PAGE_END);
 
 		choosenClassIndex = cb.getSelectedIndex();
-		setReasoner();
+//		setReasoner();
 		updateInitButtonColor();
 	}
 
@@ -102,10 +102,10 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 //			init();
 		}
 
-		if (e.getSource() == setButton) {
-//			config.setInitReasoner(false);
-			setReasoner();
-		}
+//		if (e.getSource() == setButton) {
+////			config.setInitReasoner(false);
+//			setReasoner();
+//		}
 
 //		if (e.getSource() == initButton)
 //			init();
@@ -114,16 +114,16 @@ public class ReasonerPanel extends JPanel implements ActionListener {
 	/**
 	 * after this, you can change widgets
 	 */
-	public void setReasoner() {
-		if (config.needsInitKnowledgeSource()) {
-			config.setReasoner(config.getComponentManager().reasoner(
-					reasoner.get(choosenClassIndex), config.getKnowledgeSource()));
-			updateOptionPanel();
-//			startGUI.updateTabColors();
-//			config.setInitReasoner(false);
-//			updateInitButtonColor();
-		}
-	}
+//	public void setReasoner() {
+//		if (config.needsInitKnowledgeSource()) {
+//			config.setReasoner(config.getComponentManager().reasoner(
+//					reasoner.get(choosenClassIndex), config.getKnowledgeSource()));
+//			updateOptionPanel();
+////			startGUI.updateTabColors();
+////			config.setInitReasoner(false);
+////			updateInitButtonColor();
+//		}
+//	}
 
 	/**
 	 * after this, next tab can be used

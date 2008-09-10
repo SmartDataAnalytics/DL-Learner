@@ -103,7 +103,7 @@ public class StringTupleListConfigOption extends ConfigOption<List<StringTuple>>
 	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
 	 */
 	@Override
-	public String getValueFormatting(List<StringTuple> value, Integer special) {
+	public String getValueFormatting(List<StringTuple> value) {
 		Integer count = 0;
 		if (value != null) {
 			String back = "[";

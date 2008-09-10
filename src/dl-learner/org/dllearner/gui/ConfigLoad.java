@@ -24,14 +24,14 @@ import java.io.File;
 import java.net.URL;
 import java.util.Map;
 import java.util.SortedSet;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.learningproblems.PosOnlyDefinitionLP;
-import org.dllearner.parser.ConfParser;
-import org.dllearner.core.Component;
+
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.cli.Start;
+import org.dllearner.core.Component;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
+import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.parser.ConfParser;
 
 /**
  * Open a config file.
@@ -85,13 +85,13 @@ public class ConfigLoad {
 			Map<URL, Class<? extends KnowledgeSource>> importedFiles = Start.getImportedFiles(
 					parser, file.getParentFile().getPath());
 			for (Map.Entry<URL, Class<? extends KnowledgeSource>> entry : importedFiles.entrySet()) {
-				config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
-						entry.getValue()));
+//				config.setKnowledgeSource(config.getComponentManager().knowledgeSource(
+//						entry.getValue()));
 				config.getComponentManager().applyConfigEntry(config.getKnowledgeSource(), "url",
 						entry.getKey().toString());
 				// sources.add(ks);
 				// TODO more then 1 KnowledgeSource
-				config.setKnowledgeSource(config.getKnowledgeSource());
+//				config.setKnowledgeSource(config.getKnowledgeSource());
 				Start.configureComponent(config.getComponentManager(), config.getKnowledgeSource(),
 						componentPrefixMapping, parser);
 				startGUI.updateTabs();
@@ -109,8 +109,8 @@ public class ConfigLoad {
 
 			// REASONER
 			ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
-			config.setReasoner(config.getComponentManager().reasoner(
-					Start.getReasonerClass(reasonerOption), config.getKnowledgeSource()));
+//			config.setReasoner(config.getComponentManager().reasoner(
+//					Start.getReasonerClass(reasonerOption), config.getKnowledgeSource()));
 			Start.configureComponent(config.getComponentManager(), config.getReasoner(),
 					componentPrefixMapping, parser);
 			if (config.getKnowledgeSource() != null && config.getReasoner() != null) {
@@ -118,8 +118,8 @@ public class ConfigLoad {
 					config.getReasoner().init();
 					System.out.println("init Reasoner");
 					// set ReasoningService
-					config.setReasoningService(config.getComponentManager().reasoningService(
-							config.getReasoner()));
+//					config.setReasoningService(config.getComponentManager().reasoningService(
+//							config.getReasoner()));
 					System.out.println("init ReasoningService");
 //					config.setInitReasoner(true);
 					startGUI.updateTabs();
@@ -130,8 +130,8 @@ public class ConfigLoad {
 
 			// LEARNING PROBLEM
 			ConfFileOption problemOption = parser.getConfOptionsByName("problem");
-			config.setLearningProblem(config.getComponentManager().learningProblem(
-					Start.getLearningProblemClass(problemOption), config.getReasoningService()));
+//			config.setLearningProblem(config.getComponentManager().learningProblem(
+//					Start.getLearningProblemClass(problemOption), config.getReasoningService()));
 			SortedSet<String> posExamples = parser.getPositiveExamples();
 			SortedSet<String> negExamples = parser.getNegativeExamples();
 			config.getComponentManager().applyConfigEntry(config.getLearningProblem(),
@@ -155,13 +155,13 @@ public class ConfigLoad {
 			// LEARNING ALGORITHM
 			ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
 			if (config.getLearningProblem() != null && config.getReasoningService() != null) {
-				try {
-					config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(
-							Start.getLearningAlgorithm(algorithmOption),
-							config.getLearningProblem(), config.getReasoningService()));
-				} catch (LearningProblemUnsupportedException e) {
-					e.printStackTrace();
-				}
+//				try {
+//					config.setLearningAlgorithm(config.getComponentManager().learningAlgorithm(
+//							Start.getLearningAlgorithm(algorithmOption),
+//							config.getLearningProblem(), config.getReasoningService()));
+//				} catch (LearningProblemUnsupportedException e) {
+//					e.printStackTrace();
+//				}
 			}
 			Start.configureComponent(config.getComponentManager(), config.getLearningAlgorithm(),
 					componentPrefixMapping, parser);

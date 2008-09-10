@@ -77,7 +77,7 @@ public class BooleanConfigOption extends ConfigOption<Boolean> {
 	 * @see org.dllearner.core.config.ConfigOption#getValueFormatting(java.lang.Object)
 	 */
 	@Override
-	public String getValueFormatting(Boolean value, Integer special) {
+	public String getValueFormatting(Boolean value) {
 		if (value != null) {
 			if (value)
 				return "true;";

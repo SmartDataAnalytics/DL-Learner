@@ -17,12 +17,3 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */ 
-
-package org.dllearner.core.configurators;
-
-/**
-* automatically generated, do not edit manually.
-* run org.dllearner.scripts.ConfigJavaGenerator to update
-**/
-public interface Configurator{
-}
