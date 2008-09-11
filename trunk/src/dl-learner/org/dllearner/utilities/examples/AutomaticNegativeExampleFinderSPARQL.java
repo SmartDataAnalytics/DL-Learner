@@ -185,6 +185,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 			try{
 			classes.addAll(sparqltasks.getClassesForInstance(instance, sparqlResultLimit));
 			}catch (Exception e) {
+				e.printStackTrace();
 				logger.warn("ignoring SPARQLQuery failure, see log/sparql.txt");
 			}
 		}

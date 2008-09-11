@@ -21,7 +21,6 @@ package org.dllearner.kb.sparql;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.config.StringTupleListConfigOption;
+import org.dllearner.core.config.URLConfigOption;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
@@ -132,7 +132,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("url", "URL of SPARQL Endpoint",
+		options.add(new URLConfigOption("url", "URL of SPARQL Endpoint",
 				null, true, true));
 		options.add(new StringConfigOption("cacheDir", "dir of cache", "cache",
 				false, true));
@@ -226,14 +226,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		SimpleClock totalTime = new SimpleClock();
 		SimpleClock extractionTime = new SimpleClock();
 
-		try {
-			url = new URL(configurator.getUrl());
-		} catch (MalformedURLException e) {
-			logger.error(e.getMessage());
-			//throw new InvalidConfigOptionValueException(entry.getOption(),
-				//	entry.getValue(), "malformed URL " + s);
-		}
-		
+		logger.trace(getURL());
+		logger.trace(getSparqlEndpoint());
+		logger.trace(configurator.getInstances());
 		Manager m = new Manager();
 
 		// get Options for Manipulator
@@ -342,12 +337,22 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 * @return the URL of the used sparql endpoint
 	 */
 	public URL getURL() {
-		if(url == null && endpoint!=null){
+		if(endpoint == null){
+			if(url==null){
+				if(configurator.getPredefinedEndpoint() == null){
+						url = configurator.getUrl();
+					return url;
+				}else{
+					return getSparqlEndpoint().getURL();
+				}
+				
+			}else{
+				return url;
+			}
+		}else {
 			return endpoint.getURL();
 		}
-		else{
-			return url;
-		}
+		
 	}
 
 	public String[] getOntArray() {
@@ -362,7 +367,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	public SparqlEndpoint getSparqlEndpoint(){
 		if(endpoint==null) {
 			if (configurator.getPredefinedEndpoint() == null) {
-				endpoint = new SparqlEndpoint(url, new LinkedList<String>(
+				endpoint = new SparqlEndpoint(getURL(), new LinkedList<String>(
 						configurator.getDefaultGraphURIs()),
 						new LinkedList<String>(configurator.getNamedGraphURIs()));
 			} else {

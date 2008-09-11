@@ -84,7 +84,7 @@ return OWLFileConfigurator.getOWLFile(url);
 * @param instances relevant instances e.g. positive and negative examples in a learning problem
 * @return a component ready for initialization SparqlKnowledgeSource
 **/
-public static SparqlKnowledgeSource getSparqlKnowledgeSource(String url, Set<String> instances)  {
+public static SparqlKnowledgeSource getSparqlKnowledgeSource(URL url, Set<String> instances)  {
 return SparqlKnowledgeSourceConfigurator.getSparqlKnowledgeSource(url, instances);
 }
 

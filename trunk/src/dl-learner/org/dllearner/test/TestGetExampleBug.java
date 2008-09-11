@@ -27,12 +27,18 @@ public class TestGetExampleBug {
 				//Logger.getLogger(SparqlQuery.class).setLevel(Level.DEBUG);
 				
 				try {
-				String OntowikiUrl="http://localhost/ontowiki-0.8.5/service/sparql";
+				String OntowikiUrl="http://localhost/ontowiki/service/sparql";
 
-				String posExamples = "http://3ba.se/conferences/FMILeipzig";
+			
+				
 				SortedSet<String> positiveSet = new TreeSet<String>();
-				positiveSet.add(posExamples);
- 				SPARQLTasks st = new SPARQLTasks(new SparqlEndpoint(new URL(OntowikiUrl)));
+				positiveSet.add("http://3ba.se/conferences/JensLehmann");
+				positiveSet.add("http://3ba.se/conferences/MuhammadAhtishamAslam");
+				positiveSet.add("http://3ba.se/conferences/SebastianDietzold");
+				positiveSet.add("http://3ba.se/conferences/ThomasRiechert");
+				//positiveSet.add("http://3ba.se/conferences/FMILeipzig");
+
+				SPARQLTasks st = new SPARQLTasks(new SparqlEndpoint(new URL(OntowikiUrl)));
 				AutomaticNegativeExampleFinderSPARQL ane = 
 					new AutomaticNegativeExampleFinderSPARQL(positiveSet,st);
 				SortedSet<String> negExamples = new TreeSet<String>();

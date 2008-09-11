@@ -37,6 +37,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
+import org.apache.log4j.Logger;
 import org.dllearner.Info;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.DBpediaNavigationSuggestor;
@@ -86,6 +87,10 @@ import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 public class DLLearnerWS {
 
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger
+		.getLogger(DLLearnerWS.class);
+	
 	private Map<Integer, ClientState> clients = new TreeMap<Integer,ClientState>();
 	private Random rand=new Random();
 	private static ComponentManager cm = ComponentManager.getInstance();
@@ -330,7 +335,11 @@ public class DLLearnerWS {
 		String json = "{";
 		int count = 1;
 		for(EvaluatedDescription description : descriptions) {
+			//FIXME this is not a general method, but specific to dbpedia
+			// the mehtod name schould mention, that the return String is in JSON
+			// also it throws errors
 			json += "\"solution" + count + "\" : " + description.asJSON();
+			
 			count++;
 		}
 		return json;
