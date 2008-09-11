@@ -20,6 +20,7 @@
 
 package org.dllearner.core.configurators;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
@@ -49,7 +50,7 @@ this.sparqlKnowledgeSource = sparqlKnowledgeSource;
 * @param instances relevant instances e.g. positive and negative examples in a learning problem
 * @return SparqlKnowledgeSource
 **/
-public static SparqlKnowledgeSource getSparqlKnowledgeSource(String url, Set<String> instances) {
+public static SparqlKnowledgeSource getSparqlKnowledgeSource(URL url, Set<String> instances) {
 SparqlKnowledgeSource component = ComponentManager.getInstance().knowledgeSource(SparqlKnowledgeSource.class);
 ComponentManager.getInstance().applyConfigEntry(component, "url", url);
 ComponentManager.getInstance().applyConfigEntry(component, "instances", instances);
@@ -60,10 +61,10 @@ return component;
 * url URL of SPARQL Endpoint.
 * mandatory: true| reinit necessary: true
 * default value: null
-* @return String 
+* @return URL 
 **/
-public String getUrl() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "url") ;
+public URL getUrl() {
+return (URL) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "url") ;
 }
 /**
 * cacheDir dir of cache.
@@ -276,7 +277,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(sparqlK
 * mandatory: true| reinit necessary: true
 * default value: null
 **/
-public void setUrl(String url) {
+public void setUrl(URL url) {
 ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "url", url);
 reinitNecessary = true;
 }
