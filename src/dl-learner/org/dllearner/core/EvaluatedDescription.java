@@ -164,7 +164,9 @@ public class EvaluatedDescription {
 	}
 	
 	public String getNaturalDescription(){
-		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(description);
+		// TODO only works for DBpedia !! (no DBpedia SPARQL queries should be made to convert the description)
+//		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(description);
+		return "";
 	}
 	
 	/**
