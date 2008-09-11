@@ -13,10 +13,10 @@ import javax.xml.bind.annotation.XmlType;
  * Generated source version: 2.1.1
  * 
  */
-@XmlRootElement(name = "ConfigOptionTypeException", namespace = "http://server.dllearner.org/")
+@XmlRootElement(name = "MalformedURLException", namespace = "http://server.dllearner.org/")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ConfigOptionTypeException", namespace = "http://server.dllearner.org/")
-public class ConfigOptionTypeExceptionBean {
+@XmlType(name = "MalformedURLException", namespace = "http://server.dllearner.org/")
+public class MalformedURLExceptionBean {
 
     private String message;
 

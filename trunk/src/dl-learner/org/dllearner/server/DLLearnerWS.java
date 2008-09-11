@@ -19,6 +19,8 @@
  */
 package org.dllearner.server;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -217,15 +219,16 @@ public class DLLearnerWS {
 	 * Adds a knowledge source.
 	 * 
 	 * @return An identifier for the component.
+	 * @throws MalformedURLException 
 	 */
 	@WebMethod
-	public int addKnowledgeSource(int id, String component, String url) throws ClientNotKnownException, UnknownComponentException {
+	public int addKnowledgeSource(int id, String component, String url) throws ClientNotKnownException, UnknownComponentException, MalformedURLException {
 		ClientState state = getState(id);
 		Class<? extends KnowledgeSource> ksClass = knowledgeSourceMapping.get(component);
 		if(ksClass == null)
 			throw new UnknownComponentException(component);
 		KnowledgeSource ks = cm.knowledgeSource(ksClass);
-		cm.applyConfigEntry(ks, "url", url);
+		cm.applyConfigEntry(ks, "url", new URL(url));
 		return state.addKnowledgeSource(ks);
 	}
 	
@@ -435,6 +438,13 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
+	public void applyConfigEntryURL(int sessionID, int componentID, String optionName, String value) throws ClientNotKnownException, UnknownComponentException, MalformedURLException {
+		// URLs are passed as String and then converted
+		URL url = new URL(value);
+		applyConfigEntry(sessionID, componentID,optionName,url);
+	}	
+	
+	@WebMethod
 	public void applyConfigEntryStringArray(int sessionID, int componentID, String optionName, String[] value) throws ClientNotKnownException, UnknownComponentException {
 		Set<String> stringSet = new TreeSet<String>(Arrays.asList(value));
 		applyConfigEntry(sessionID, componentID,optionName,stringSet);
@@ -460,6 +470,12 @@ public class DLLearnerWS {
 	public String getConfigOptionValueString(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
 		return getConfigOptionValue(sessionID, componentID, optionName, String.class);
 	}
+	
+	@WebMethod
+	public String getConfigOptionValueURL(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
+		URL url = getConfigOptionValue(sessionID, componentID, optionName, URL.class);
+		return url.toString();
+	}	
 	
 	@WebMethod
 	public Double getConfigOptionValueDouble(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
