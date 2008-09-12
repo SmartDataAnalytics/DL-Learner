@@ -80,7 +80,7 @@ public class OptionPanel extends JPanel {
 	}
 
 	/** update this OptionPanel */
-	public void update(Component component) {
+	public void rebuild(Component component) {
 		this.component = component;
 		showWidgets();
 	}

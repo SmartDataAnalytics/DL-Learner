@@ -28,6 +28,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -45,6 +47,16 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.core.Component;
+import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasonerComponent;
+import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.kb.OWLFile;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
  * This class builds the basic GUI elements and is used to start the DL-Learner
@@ -64,11 +76,14 @@ public class StartGUI extends JFrame implements ActionListener {
 	private ConfigLoad configLoad = new ConfigLoad(config, this);
 	private ConfigSave configSave = new ConfigSave(config, this);
 
-	protected KnowledgeSourcePanel tab0;
-	protected ReasonerPanel tab1;
-	protected LearningProblemPanel tab2;
-	protected LearningAlgorithmPanel tab3;
-	protected RunPanel tab4;
+	// the four component panels
+	protected ComponentPanel[] panels = new ComponentPanel[4];
+	protected RunPanel runPanel;	
+	
+//	protected KnowledgeSourcePanel tab0;
+//	protected ReasonerPanel tab1;
+//	protected LearningProblemPanel tab2;
+//	protected LearningAlgorithmPanel tab3;
 
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu menuFile = new JMenu("File");
@@ -107,6 +122,23 @@ public class StartGUI extends JFrame implements ActionListener {
 			setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(
 					this.getClass().getResource("icon.gif")));
 
+		// create panels
+		List<Class<? extends Component>> ignoredKnowledgeSources = new LinkedList<Class<? extends Component>>();
+		ignoredKnowledgeSources.add(OWLAPIOntology.class);
+		panels[0] = new ComponentPanel(config, this, KnowledgeSource.class, OWLFile.class, ignoredKnowledgeSources);
+		panels[1] = new ComponentPanel(config, this, ReasonerComponent.class, FastInstanceChecker.class);
+		panels[2] = new ComponentPanel(config, this, LearningProblem.class, PosNegDefinitionLP.class);
+		panels[3] = new ComponentPanel(config, this, LearningAlgorithm.class, ExampleBasedROLComponent.class);
+		runPanel = new RunPanel(config, this);		
+		
+		// add tabs for panels
+		tabPane.addTab("Knowledge Source", panels[0]);
+		tabPane.addTab("Reasoner", panels[1]);
+		tabPane.addTab("Learning Problem", panels[2]);
+		tabPane.addTab("Learning Algorithm", panels[3]);
+		tabPane.addTab("Run", runPanel);
+		
+		/*
 		tab0 = new KnowledgeSourcePanel(config, this);
 		tab1 = new ReasonerPanel(config, this);
 		tab2 = new LearningProblemPanel(config, this);
@@ -117,6 +149,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		tabPane.addTab("Learning Problem", tab2);
 		tabPane.addTab("Learning Algorithm", tab3);
 		tabPane.addTab("Run", tab4);
+		*/
 
 		setJMenuBar(menuBar);
 		menuBar.add(menuFile);
@@ -159,10 +192,10 @@ public class StartGUI extends JFrame implements ActionListener {
 					
 					// send signals to panels
 					switch(index) {
-					case 0: tab0.panelActivated(); break;
-					case 1: tab1.panelActivated(); break;
-					case 2: tab2.panelActivated(); break;
-					case 3: tab3.panelActivated(); break;
+					case 0: panels[0].panelActivated(); break;
+					case 1: panels[1].panelActivated(); break;
+					case 2: panels[2].panelActivated(); break;
+					case 3: panels[3].panelActivated(); break;
 					}
 
 					// new tab => ask user to fill in values
