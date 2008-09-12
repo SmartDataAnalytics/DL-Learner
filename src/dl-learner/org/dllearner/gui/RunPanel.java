@@ -170,6 +170,7 @@ public class RunPanel extends JPanel implements ActionListener {
 	 * Show Statistics.
 	 */
 	public void showStats() {
+		System.out.println("stat update " + System.currentTimeMillis());
 		Long algorithmRunTime = null;
 		Long overallReasoningTime = null;
 		Long instanceCheckReasoningTime = null;
@@ -178,7 +179,7 @@ public class RunPanel extends JPanel implements ActionListener {
 
 		infoArea.setText("");
 		// best solutions
-		if (config.getLearningAlgorithm().getCurrentlyBestDescriptions() != null) {
+		if (config.getLearningAlgorithm().getCurrentlyBestDescription() != null) {
 			infoArea.append("Best class descriptions in Manchester OWL Syntax: \n\n"
 					+ getSolutionString(config.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(10)) + "\n");
 		}

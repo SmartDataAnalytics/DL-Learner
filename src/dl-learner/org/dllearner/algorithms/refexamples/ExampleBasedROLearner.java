@@ -21,6 +21,7 @@ package org.dllearner.algorithms.refexamples;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -30,9 +31,11 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
@@ -51,6 +54,7 @@ import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
+import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 
 import com.jamonapi.Monitor;
 
@@ -160,9 +164,13 @@ public class ExampleBasedROLearner {
 	// an ordering which does not change during the run of the algorithm
 	private NodeComparatorStable nodeComparatorStable = new NodeComparatorStable();
 	// stable candidate set; it has no functional part in the algorithm,
-	// but is a list of the currently best concepts found
-	private TreeSet<ExampleBasedNode> candidatesStable = new TreeSet<ExampleBasedNode>(
+	// but is a list of the currently best concepts found;
+	// it is very important to use a concurrent set here as other threads will
+	// access it (usual iterating is likely to throw a ConcurrentModificationException)
+	private NavigableSet<ExampleBasedNode> candidatesStable = new ConcurrentSkipListSet<ExampleBasedNode>(
 			nodeComparatorStable);
+	// evaluated descriptions
+//	private EvaluatedDescriptionSet evaluatedDescriptions = new EvaluatedDescriptionSet(LearningAlgorithm.MAX_NR_OF_RESULTS);
 
 	// comparator used to create ordered sets of concepts
 	private ConceptComparator conceptComparator = new ConceptComparator();
@@ -1191,12 +1199,13 @@ public class ExampleBasedROLearner {
 		}
 		return best;
 	}
-
+	
 	public SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+		Iterator<ExampleBasedNode> it = candidatesStable.descendingIterator();
 		int count = 0;
-		SortedSet<ExampleBasedNode> rev = candidatesStable.descendingSet();
 		SortedSet<EvaluatedDescription> cbd = new TreeSet<EvaluatedDescription>(edComparator);
-		for (ExampleBasedNode eb : rev) {
+		while(it.hasNext()) {
+			ExampleBasedNode eb = it.next();
 			cbd.add(new EvaluatedDescription(eb.getConcept(), getScore(eb.getConcept())));
 			// return a maximum of 200 elements (we need a maximum, because the
 			// candidate set can be very large)

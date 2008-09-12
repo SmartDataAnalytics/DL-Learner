@@ -232,7 +232,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		Logger logger = Logger.getRootLogger();
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.TRACE);
+		logger.setLevel(Level.DEBUG);
 
 		File file = null;
 		if (args.length > 0)
