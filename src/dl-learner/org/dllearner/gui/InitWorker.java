@@ -98,6 +98,14 @@ public class InitWorker extends SwingWorker<Boolean, Boolean> {
     	try {
     		for(Component component : components) {
     			component.init();
+    			
+    			// when the reasoner has been initialised, we need to update
+    			// the option panel (such that the user can see the existing
+    			// examples, classes etc.)
+    			if(component instanceof ReasonerComponent) {
+    				gui.panels[2].updateOptionPanel();
+    				gui.panels[3].updateOptionPanel();
+    			}		
     		}
 		} catch (ComponentInitException e) {
 			gui.getStatusPanel().setExceptionMessage(e.getMessage());
@@ -111,14 +119,6 @@ public class InitWorker extends SwingWorker<Boolean, Boolean> {
 			waitFrame.dispose();
 		}
 
-		// when the reasoner has been initialised, we need to update
-		// the option panel (such that the user can see the existing
-		// examples, classes etc.)
-		if(components instanceof ReasonerComponent) {
-			gui.panels[2].updateOptionPanel();
-			gui.panels[3].updateOptionPanel();
-		}
-		
 		return true;
 	}
 }

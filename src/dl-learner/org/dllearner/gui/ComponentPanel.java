@@ -1,7 +1,6 @@
 package org.dllearner.gui;
 
 import java.awt.BorderLayout;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
@@ -38,10 +37,6 @@ public class ComponentPanel extends JPanel implements ActionListener {
 	// GUI elements
 	private JButton clearButton;	
 	private JComboBox comboBox = new JComboBox();	
-	
-	public ComponentPanel(LayoutManager layout) {
-		super(layout);
-	}
 	
 	ComponentPanel(final Config config, StartGUI startGUI, Class<? extends Component> panelClass, Class<? extends Component> defaultComponent) {
 		this(config, startGUI, panelClass, defaultComponent,null);

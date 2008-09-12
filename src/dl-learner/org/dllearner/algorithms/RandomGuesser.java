@@ -56,6 +56,7 @@ public class RandomGuesser extends LearningAlgorithm {
 	private static Logger logger = Logger.getLogger(RandomGuesser.class);		
 	
 	public RandomGuesser(LearningProblem learningProblem, ReasoningService rs) {
+	   	super(learningProblem, rs);		
 		this.learningProblem = learningProblem;
 		this.rs = rs;
 		this.configurator = new RandomGuesserConfigurator(this);

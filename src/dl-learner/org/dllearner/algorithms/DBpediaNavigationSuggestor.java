@@ -67,6 +67,7 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 	
 	public DBpediaNavigationSuggestor(LearningProblem learningProblem, ReasoningService rs) {
+	   	super(learningProblem, rs);		
 //		this.rs=rs;
 		this.configurator = new DBpediaNavigationSuggestorConfigurator(this);
 		try{
@@ -96,10 +97,12 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	}
 	
 	public DBpediaNavigationSuggestor(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
+	   	super(learningProblem, rs);		
 		System.out.println("test1");
 	}
 	
 	public DBpediaNavigationSuggestor(PosNegDefinitionLP learningProblem, ReasoningService rs) {
+	   	super(learningProblem, rs);		
 		System.out.println("test2");
 	}
 	
