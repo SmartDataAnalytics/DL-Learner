@@ -108,8 +108,8 @@ public class InitWorker extends SwingWorker<Boolean, Boolean> {
 		// the option panel (such that the user can see the existing
 		// examples, classes etc.)
 		if(component instanceof ReasonerComponent) {
-			gui.tab2.updateOptionPanel();
-			gui.tab3.updateOptionPanel();
+			gui.panels[2].updateOptionPanel();
+			gui.panels[3].updateOptionPanel();
 		}
 		
 		return true;

@@ -121,7 +121,7 @@ public class Config {
 	public KnowledgeSource getKnowledgeSource() {
 		return source;
 	}
-
+	
 	/**
 	 * Creates a knowledge source and makes it the active source.
 	 * @param clazz
@@ -268,13 +268,8 @@ public class Config {
 		return la;
 	}	
 	
-	public LearningAlgorithm changeLearningAlgorithm(Class<? extends LearningAlgorithm> clazz) {
-		try {
-			la = cm.learningAlgorithm(clazz, lp, rs);
-		} catch (LearningProblemUnsupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+	public LearningAlgorithm changeLearningAlgorithm(Class<? extends LearningAlgorithm> clazz) throws LearningProblemUnsupportedException {
+		la = cm.learningAlgorithm(clazz, lp, rs);
 		return la;
 	}	
 	
