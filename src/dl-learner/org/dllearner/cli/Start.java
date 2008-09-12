@@ -198,7 +198,7 @@ public class Start {
 			// configuration option "url"), so this may need to be changed in
 			// the
 			// future
-			cm.applyConfigEntry(ks, "url", entry.getKey().toString());
+			cm.applyConfigEntry(ks, "url", entry.getKey());
 
 			sources.add(ks);
 			configureComponent(cm, ks, componentPrefixMapping, parser);

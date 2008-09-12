@@ -33,7 +33,6 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.config.URLConfigOption;
 import org.dllearner.core.configurators.KBFileConfigurator;
 import org.dllearner.core.owl.KB;
@@ -63,7 +62,7 @@ public class KBFile extends KnowledgeSource {
 		.getLogger(KBFile.class);
 	
 	// private File file;
-	private URL url;
+//	private URL url;
 	private KB kb;
 	
 	private KBFileConfigurator configurator;
@@ -98,8 +97,10 @@ public class KBFile extends KnowledgeSource {
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system",null, true, true));
-		options.add(new URLConfigOption("url", "URL pointer to the KB file",null, false, true));
+//		options.add(new StringConfigOption("filename", "pointer to the KB file on local file system",null, true, true));
+		URLConfigOption urlOption = new URLConfigOption("url", "URL pointer to the KB file",null, false, true);
+		urlOption.setRefersToFile(true);
+		options.add(urlOption);
 		return options;
 	}
 
@@ -118,25 +119,26 @@ public class KBFile extends KnowledgeSource {
 	public void init() throws ComponentInitException {
 		//URL url = null;
 		try {
-			String filename = configurator.getFilename();
-			String urlString = configurator.getUrl().toString();
-			if(filename!=null){
-				url = new File(filename).toURI().toURL();
-			}else if(urlString!=null){
-				url = new URL(urlString);
-			}
-			
-			if(url != null) {
-				kb = KBParser.parseKBFile(url);
-			}
+//			String filename = configurator.getFilename();
+//			String urlString = configurator.getUrl().toString();
+//			if(filename!=null){
+//				url = new File(filename).toURI().toURL();
+//			}else if(urlString!=null){
+//				url = new URL(urlString);
+//			}
+//			
+//			if(url != null) {
+//				kb = KBParser.parseKBFile(url);
+//			}
+			kb = KBParser.parseKBFile(configurator.getUrl());
 			
 		} catch (MalformedURLException e) {
 			logger.error(e.getMessage());
 			//throw new InvalidConfigOptionValueException(entry.getOption(),entry.getValue());
 		} catch (IOException e) {
-			throw new ComponentInitException("KB file " + url + " could not be read.", e);
+			throw new ComponentInitException("KB file " + configurator.getUrl() + " could not be read.", e);
 		} catch (ParseException e) {
-			throw new ComponentInitException("KB file " + url + " could not be parsed correctly.", e);
+			throw new ComponentInitException("KB file " + configurator.getUrl() + " could not be parsed correctly.", e);
 		}
 		
 	}
@@ -206,7 +208,7 @@ public class KBFile extends KnowledgeSource {
 	}
 	
 	public URL getURL() {
-		return url;
+		return configurator.getUrl();
 	}
 
 	@Override

@@ -21,8 +21,6 @@ import org.dllearner.core.ReasonerComponent;
 /**
  * Class displaying a component (and its options).
  * 
- * @param <T> The type of the panel (KnowledgeSource, ReasonerComponent,
- * LearningProblem, LearningAlgorithm).
  * @author Jens Lehmann
  *
  */

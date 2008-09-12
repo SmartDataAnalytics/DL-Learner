@@ -243,8 +243,14 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 				if(individualsSet != null) {
 					LinkedList<Individual> individuals = new LinkedList<Individual>(
 							individualsSet);
+//					int i = 0;
 					for (Individual ind : individuals) {
 						cBL.add(ind.getName());
+//						i++;
+						// do not display more than 200 examples (freezes GUI)
+//						if(i == 200) {
+//							break;
+//						}
 					}
 				}
 			}

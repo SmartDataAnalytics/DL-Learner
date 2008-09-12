@@ -141,6 +141,8 @@ public abstract class ConfigOption<T> {
 	}
 	
 	/**
+	 * TODO Method should be removed and a mapping table in ConfigJavaGenerator 
+	 * created instead.
 	 * gets java imports
 	 * @return 
 	 */

@@ -31,6 +31,8 @@ import java.util.TreeSet;
  */
 public class URLConfigOption extends ConfigOption<URL> {
 
+	private boolean refersToFile = false;
+	
 	public URLConfigOption(String name, String description) {
 		super(name, description);
 	}	
@@ -44,6 +46,24 @@ public class URLConfigOption extends ConfigOption<URL> {
 		super(name, description, defaultValue, mandatory, requiresInit);
 	}
 
+	/**
+	 * Returns whether the URI can refer to a file or not, e.g. the
+	 * URL of an OWL knowledge source does refer to a file whereas
+	 * the URL of a SPARQL endpoint cannot refer to a file. The distinction
+	 * can be useful in GUIs (e.g. they may offer to choose a local file). 
+	 * @return the refersToFile
+	 */
+	public boolean refersToFile() {
+		return refersToFile;
+	}
+
+	/**
+	 * @param refersToFile Set whether this option can refer to a file.
+	 */
+	public void setRefersToFile(boolean refersToFile) {
+		this.refersToFile = refersToFile;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.config.ConfigOption#checkType(java.lang.Object)
 	 */
