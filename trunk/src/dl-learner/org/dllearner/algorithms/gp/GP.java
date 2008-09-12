@@ -131,12 +131,9 @@ public class GP extends LearningAlgorithm {
     private Score bestScore;
     private Description bestConcept;
     
-    private PosNegLP learningProblem;
-    
     // private GeneticRefinementOperator psi;
     private Psi psi;
     
-    private ReasoningService rs;
     
     /**
      * Creates an algorithm object. By default a steady state algorithm with
@@ -146,8 +143,7 @@ public class GP extends LearningAlgorithm {
      * 
      */
     public GP(PosNegLP learningProblem, ReasoningService rs) {
-    	this.learningProblem = learningProblem;
-    	this.rs = rs;
+       	super(learningProblem, rs);
     	this.configurator = new GPConfigurator(this);
     }
       
@@ -276,14 +272,14 @@ public class GP extends LearningAlgorithm {
 	 */
 	@Override
 	public void init() {
-		rs.prepareSubsumptionHierarchy();
-		rs.prepareRoleHierarchy();		
+		reasoningService.prepareSubsumptionHierarchy();
+		reasoningService.prepareRoleHierarchy();		
 	}
 	
 	@Override
     public void start() {   	
     	// falls refinement-Wahrscheinlichkeit größer 0, dann erzeuge psi
-    	psi = new Psi(learningProblem, rs);
+    	psi = new Psi((PosNegLP)learningProblem, reasoningService);
     	
     	System.out.println();
     	System.out.println("Starting Genetic Programming Learner");
@@ -446,11 +442,11 @@ public class GP extends LearningAlgorithm {
                     i++;
                 // mutation
                 }  else if(rand >= crossoverBoundary && rand < mutationBoundary) {
-                	newIndividuals[i] = GPUtilities.mutation(learningProblem, rs, individuals[selectedIndividuals[i]]);
+                	newIndividuals[i] = GPUtilities.mutation(learningProblem, reasoningService, individuals[selectedIndividuals[i]]);
                 // hill climbing
                 } else if(rand >= mutationBoundary && rand < hillClimbingBoundary) {
                 	// System.out.println("hill climbing");
-                	newIndividuals[i] = GPUtilities.hillClimbing(learningProblem, rs, individuals[selectedIndividuals[i]]);
+                	newIndividuals[i] = GPUtilities.hillClimbing(learningProblem, reasoningService, individuals[selectedIndividuals[i]]);
                 // refinement operator
                 } else if(rand >= hillClimbingBoundary && rand < refinementBoundary) {
                 	newIndividuals[i] = psi.applyOperator(individuals[selectedIndividuals[i]]);
@@ -624,9 +620,9 @@ public class GP extends LearningAlgorithm {
         	// int depth = rand.nextInt(initMaxDepth-initMinDepth)+initMinDepth;
         	
         	if(grow)
-        		individuals[i] = GPUtilities.createGrowRandomProgram(learningProblem, rs, depth, adc);
+        		individuals[i] = GPUtilities.createGrowRandomProgram(learningProblem, reasoningService, depth, adc);
         	else
-        		individuals[i] = GPUtilities.createFullRandomProgram(learningProblem, rs, depth, adc);		
+        		individuals[i] = GPUtilities.createFullRandomProgram(learningProblem, reasoningService, depth, adc);		
     	}    	
     	
     	/*

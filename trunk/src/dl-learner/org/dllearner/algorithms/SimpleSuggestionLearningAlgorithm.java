@@ -56,7 +56,7 @@ public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm impleme
 	private Set<Description> simpleSuggestions;
 
 	public SimpleSuggestionLearningAlgorithm() {
-		// this.learningProblem = learningProblem;
+	   	super(null, null);
 		this.configurator = new SimpleSuggestionLearningAlgorithmConfigurator(this);
 	}
 

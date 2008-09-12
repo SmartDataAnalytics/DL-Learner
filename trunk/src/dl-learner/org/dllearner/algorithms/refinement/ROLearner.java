@@ -103,8 +103,6 @@ public class ROLearner extends LearningAlgorithm {
 	private boolean stop = false;
 	private boolean isRunning = false;
 	
-	private ReasoningService rs;
-	
 	private Comparator<Node> nodeComparator;
 	private NodeComparatorStable nodeComparatorStable = new NodeComparatorStable();
 	private ConceptComparator conceptComparator = new ConceptComparator();
@@ -198,21 +196,21 @@ public class ROLearner extends LearningAlgorithm {
 
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
-	public ROLearner(PosNegLP learningProblem, ReasoningService rs) {
+	public ROLearner(PosNegLP learningProblem, ReasoningService reasoningService) {
+		super(learningProblem, reasoningService);
 		this.learningProblem = learningProblem;
-		this.rs = rs;
 		this.configurator =  new ROLearnerConfigurator(this);
 		posOnly=false;
-		baseURI = rs.getBaseURI();
+		baseURI = reasoningService.getBaseURI();
 		
 	}
 	
-	public ROLearner(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
+	public ROLearner(PosOnlyDefinitionLP learningProblem, ReasoningService reasoningService) {
+		super(learningProblem, reasoningService);
 		this.posOnlyLearningProblem = learningProblem;
-		this.rs = rs;
 		this.configurator =  new ROLearnerConfigurator(this);
 		posOnly=true;
-		baseURI = rs.getBaseURI();
+		baseURI = reasoningService.getBaseURI();
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
@@ -348,7 +346,7 @@ public class ROLearner extends LearningAlgorithm {
 		}
 		
 		// this.learningProblem2 = learningProblem2;
-		operator = new RhoDown(rs, applyAllFilter, applyExistsFilter, useAllConstructor, useExistsConstructor, useNegation, useBooleanDatatypes);
+		operator = new RhoDown(reasoningService, applyAllFilter, applyExistsFilter, useAllConstructor, useExistsConstructor, useNegation, useBooleanDatatypes);
 		
 		// candidate sets entsprechend der gewählten Heuristik initialisieren
 		candidates = new TreeSet<Node>(nodeComparator);
@@ -356,30 +354,30 @@ public class ROLearner extends LearningAlgorithm {
 		
 		if(allowedConcepts != null) {
 			// sanity check to control if no non-existing concepts are in the list
-			Helper.checkConcepts(rs, allowedConcepts);
+			Helper.checkConcepts(reasoningService, allowedConcepts);
 			usedConcepts = allowedConcepts;
 		} else if(ignoredConcepts != null) {
-			usedConcepts = Helper.computeConceptsUsingIgnoreList(rs, ignoredConcepts);
+			usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoningService, ignoredConcepts);
 		} else {
-			usedConcepts = Helper.computeConcepts(rs);
+			usedConcepts = Helper.computeConcepts(reasoningService);
 		}
 		
 		if(allowedRoles != null) {
-			Helper.checkRoles(rs, allowedRoles);
+			Helper.checkRoles(reasoningService, allowedRoles);
 			usedRoles = allowedRoles;
 		} else if(ignoredRoles != null) {
-			Helper.checkRoles(rs, ignoredRoles);
-			usedRoles = Helper.difference(rs.getObjectProperties(), ignoredRoles);
+			Helper.checkRoles(reasoningService, ignoredRoles);
+			usedRoles = Helper.difference(reasoningService.getObjectProperties(), ignoredRoles);
 		} else {
-			usedRoles = rs.getObjectProperties();
+			usedRoles = reasoningService.getObjectProperties();
 		}
 		
 		// prepare subsumption and role hierarchies, because they are needed
 		// during the run of the algorithm
-		rs.prepareSubsumptionHierarchy(usedConcepts);
+		reasoningService.prepareSubsumptionHierarchy(usedConcepts);
 		if(improveSubsumptionHierarchy)
-			rs.getSubsumptionHierarchy().improveSubsumptionHierarchy();
-		rs.prepareRoleHierarchy(usedRoles);
+			reasoningService.getSubsumptionHierarchy().improveSubsumptionHierarchy();
+		reasoningService.prepareRoleHierarchy(usedRoles);
 	}
 	
 	public static String getName() {
@@ -763,7 +761,7 @@ public class ROLearner extends LearningAlgorithm {
 		if(toEvaluateConcepts.size()>0) {
 			// Test aller Konzepte auf properness (mit DIG in nur einer Anfrage)
 			long propCalcReasoningStart = System.nanoTime();
-			improperConcepts = rs.subsumes(toEvaluateConcepts, concept);
+			improperConcepts = reasoningService.subsumes(toEvaluateConcepts, concept);
 			propernessTestsReasoner+=toEvaluateConcepts.size();
 			// boolean isProper = !learningProblem.getReasoningService().subsumes(refinement, concept);
 			propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;
@@ -988,19 +986,19 @@ public class ROLearner extends LearningAlgorithm {
 			// System.out.println("properness max recursion depth: " + maxRecDepth);
 			// System.out.println("max. number of one-step refinements: " + maxNrOfRefinements);
 			// System.out.println("max. number of children of a node: " + maxNrOfChildren);
-			logger.debug("subsumption time: " + Helper.prettyPrintNanoSeconds(rs.getSubsumptionReasoningTimeNs()));
-			logger.debug("instance check time: " + Helper.prettyPrintNanoSeconds(rs.getInstanceCheckReasoningTimeNs()));					
+			logger.debug("subsumption time: " + Helper.prettyPrintNanoSeconds(reasoningService.getSubsumptionReasoningTimeNs()));
+			logger.debug("instance check time: " + Helper.prettyPrintNanoSeconds(reasoningService.getInstanceCheckReasoningTimeNs()));					
 		}
 		
 		if(showBenchmarkInformation) {
 			
 
-			long reasoningTime = rs.getOverallReasoningTimeNs();
+			long reasoningTime = reasoningService.getOverallReasoningTimeNs();
 			double reasoningPercentage = 100 * reasoningTime/(double)algorithmRuntime;
 			long propWithoutReasoning = propernessCalcTimeNs-propernessCalcReasoningTimeNs;
 			double propPercentage = 100 * propWithoutReasoning/(double)algorithmRuntime;
 			double deletionPercentage = 100 * childConceptsDeletionTimeNs/(double)algorithmRuntime;
-			long subTime = rs.getSubsumptionReasoningTimeNs();
+			long subTime = reasoningService.getSubsumptionReasoningTimeNs();
 			double subPercentage = 100 * subTime/(double)algorithmRuntime;
 			double refinementPercentage = 100 * refinementCalcTimeNs/(double)algorithmRuntime;
 			double redundancyCheckPercentage = 100 * redundancyCheckTimeNs/(double)algorithmRuntime;

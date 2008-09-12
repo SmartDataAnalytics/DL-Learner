@@ -107,7 +107,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 //	private ReasoningService rs;
 	private OWLAPIReasoner rc;
-	private Set<KnowledgeSource> sources;
 
 	// we use sorted sets (map indices) here, because they have only log(n)
 	// complexity for checking whether an element is contained in them
@@ -127,7 +126,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	private Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Integer>>>();
 
 	public FastInstanceChecker(Set<KnowledgeSource> sources) {
-		this.sources = sources;
+		super(sources);
 		this.configurator = new FastInstanceCheckerConfigurator(this);
 	}
 

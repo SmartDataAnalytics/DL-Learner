@@ -40,11 +40,38 @@ import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 
 /**
+ * Component representing a reasoner.
+ * 
  * @author Jens Lehmann
  * 
  */
 public abstract class ReasonerComponent extends Component implements Reasoner {
 
+	protected Set<KnowledgeSource> sources;
+	
+	public ReasonerComponent(Set<KnowledgeSource> sources) {
+		this.sources = sources;
+	}
+	
+	/**
+	 * @return the sources
+	 */
+	public Set<KnowledgeSource> getSources() {
+		return sources;
+	}
+
+	/**
+	 * Method to exchange the reasoner underlying the learning
+	 * problem.
+	 * Implementations, which do not only use the provided sources
+	 * class variable, must make sure that a call to this method
+	 * indeed changes them.  
+	 * @param The new knowledge sources.
+	 */
+	public void changeSources(Set<KnowledgeSource> sources) {
+		this.sources = sources;
+	}	
+	
 	public abstract boolean hasDatatypeSupport();
 	
 	public boolean subsumes(Description superConcept, Description subConcept)
@@ -258,4 +285,5 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	public Set<NamedClass> getInconsistentClasses() throws ReasoningMethodUnsupportedException{
 		throw new ReasoningMethodUnsupportedException();
 	}
+
 }

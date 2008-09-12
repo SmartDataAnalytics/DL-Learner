@@ -92,11 +92,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private ExampleBasedROLearner algorithm;
 	private static Logger logger = Logger
 		.getLogger(ExampleBasedROLearner.class);
-	private String logLevel = CommonConfigOptions.logLevelDefault;
-	
-	// learning problem to solve and background knowledge
-	private ReasoningService rs;
-	private LearningProblem learningProblem;	
+	private String logLevel = CommonConfigOptions.logLevelDefault;	
 		
 	// configuration options
 	private boolean writeSearchTree;
@@ -150,15 +146,13 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
-	public ExampleBasedROLComponent(PosNegLP learningProblem, ReasoningService rs) {
-		this.learningProblem = learningProblem;
-		this.rs = rs;
+	public ExampleBasedROLComponent(PosNegLP learningProblem, ReasoningService reasoningService) {
+		super(learningProblem, reasoningService);
 		this.configurator = new ExampleBasedROLComponentConfigurator(this);
 	}
 	
-	public ExampleBasedROLComponent(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
-		this.learningProblem = learningProblem;
-		this.rs = rs;
+	public ExampleBasedROLComponent(PosOnlyDefinitionLP learningProblem, ReasoningService reasoningService) {
+		super(learningProblem, reasoningService);
 		this.configurator = new ExampleBasedROLComponentConfigurator(this);
 	}
 	
@@ -290,7 +284,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	public void init() throws ComponentInitException {
 		
 		// exit with a ComponentInitException if the reasoner is unsupported for this learning algorithm
-		if(rs.getReasonerType() == ReasonerType.DIG) {
+		if(reasoningService.getReasonerType() == ReasonerType.DIG) {
 			throw new ComponentInitException("DIG does not support the inferences needed in the selected learning algorithm component: " + getName());
 		}
 		
@@ -327,38 +321,38 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		// concepts/roles
 		if(allowedConcepts != null) {
 			// sanity check to control if no non-existing concepts are in the list
-			Helper.checkConcepts(rs, allowedConcepts);
+			Helper.checkConcepts(reasoningService, allowedConcepts);
 			usedConcepts = allowedConcepts;
 		} else if(ignoredConcepts != null) {
-			usedConcepts = Helper.computeConceptsUsingIgnoreList(rs, ignoredConcepts);
+			usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoningService, ignoredConcepts);
 		} else {
-			usedConcepts = Helper.computeConcepts(rs);
+			usedConcepts = Helper.computeConcepts(reasoningService);
 		}
 		
 		if(allowedRoles != null) {
-			Helper.checkRoles(rs, allowedRoles);
+			Helper.checkRoles(reasoningService, allowedRoles);
 			usedRoles = allowedRoles;
 		} else if(ignoredRoles != null) {
-			Helper.checkRoles(rs, ignoredRoles);
-			usedRoles = Helper.difference(rs.getObjectProperties(), ignoredRoles);
+			Helper.checkRoles(reasoningService, ignoredRoles);
+			usedRoles = Helper.difference(reasoningService.getObjectProperties(), ignoredRoles);
 		} else {
-			usedRoles = rs.getObjectProperties();
+			usedRoles = reasoningService.getObjectProperties();
 		}
 		
 		// prepare subsumption and role hierarchies, because they are needed
 		// during the run of the algorithm
-		rs.prepareSubsumptionHierarchy(usedConcepts);
+		reasoningService.prepareSubsumptionHierarchy(usedConcepts);
 		if(improveSubsumptionHierarchy)
-			rs.getSubsumptionHierarchy().improveSubsumptionHierarchy();
-		rs.prepareRoleHierarchy(usedRoles);
+			reasoningService.getSubsumptionHierarchy().improveSubsumptionHierarchy();
+		reasoningService.prepareRoleHierarchy(usedRoles);
 		// prepare datatype hierarchy only if necessary
-		if(rs.hasDatatypeSupport())
-			rs.prepareDatatypePropertyHierarchy();
+		if(reasoningService.hasDatatypeSupport())
+			reasoningService.prepareDatatypePropertyHierarchy();
 		
 		// create a refinement operator and pass all configuration
 		// variables to it
 		RhoDRDown operator = new RhoDRDown(
-					rs,
+				reasoningService,
 					applyAllFilter,
 					applyExistsFilter,
 					useAllConstructor, 
@@ -374,7 +368,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		// options to it
 		algorithm = new ExampleBasedROLearner(
 				learningProblem,
-				rs,
+				reasoningService,
 				operator,
 				algHeuristic,
 				startClass,

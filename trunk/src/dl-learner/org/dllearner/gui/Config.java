@@ -20,8 +20,10 @@
 
 package org.dllearner.gui;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.Component;
@@ -145,17 +147,20 @@ public class Config {
 	 */
 	public KnowledgeSource changeKnowledgeSource(Class<? extends KnowledgeSource> clazz) {
 		source = cm.knowledgeSource(clazz);
+		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
+		sources.add(source);
+		reasoner.changeSources(sources);
 //		logger.debug("knowledge source " + clazz + " changed");
 		// create a new reasoner object using the current class and the selected source
-		reasoner = cm.reasoner(reasoner.getClass(), source);
-		rs = cm.reasoningService(reasoner);
-		lp = cm.learningProblem(lp.getClass(), rs);
-		try {
-			la = cm.learningAlgorithm(la.getClass(), lp, rs);
-		} catch (LearningProblemUnsupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		reasoner = cm.reasoner(reasoner.getClass(), source);
+//		rs = cm.reasoningService(reasoner);
+//		lp = cm.learningProblem(lp.getClass(), rs);
+//		try {
+//			la = cm.learningAlgorithm(la.getClass(), lp, rs);
+//		} catch (LearningProblemUnsupportedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return source;
 	}
 	
@@ -187,13 +192,15 @@ public class Config {
 	public ReasonerComponent changeReasoner(Class<? extends ReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
 		rs = cm.reasoningService(reasoner);
-		lp = cm.learningProblem(lp.getClass(), rs);
-		try {
-			la = cm.learningAlgorithm(la.getClass(), lp, rs);
-		} catch (LearningProblemUnsupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		lp.changeReasoningService(rs);
+		la.changeReasoningService(rs);
+//		lp = cm.learningProblem(lp.getClass(), rs);
+//		try {
+//			la = cm.learningAlgorithm(la.getClass(), lp, rs);
+//		} catch (LearningProblemUnsupportedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}		
 		return reasoner;
 	}	
 	
@@ -240,12 +247,13 @@ public class Config {
 	
 	public LearningProblem changeLearningProblem(Class<? extends LearningProblem> clazz) {
 		lp = cm.learningProblem(clazz, rs);
-		try {
-			la = cm.learningAlgorithm(la.getClass(), lp, rs);
-		} catch (LearningProblemUnsupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		la.changeLearningProblem(lp);
+//		try {
+//			la = cm.learningAlgorithm(la.getClass(), lp, rs);
+//		} catch (LearningProblemUnsupportedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}		
 		return lp;
 	}		
 	

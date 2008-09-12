@@ -60,6 +60,18 @@ public abstract class LearningProblem extends Component {
 	}
 	
 	/**
+	 * Method to exchange the reasoner underlying the learning
+	 * problem.
+	 * Implementations, which do not only use the provided reasoning
+	 * service class variable, must make sure that a call to this method
+	 * indeed changes the reasoning service. 
+	 * @param reasoningService New reasoning service.
+	 */
+	public void changeReasoningService(ReasoningService reasoningService) {
+		this.reasoningService = reasoningService;
+	}
+	
+	/**
 	 * Computes the <code>Score</code> of a given class description
 	 * with respect to this learning problem.
 	 * This can (but does not need to) be used by learning algorithms

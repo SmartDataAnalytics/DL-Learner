@@ -45,6 +45,56 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 public abstract class LearningAlgorithm extends Component {
 
 	/**
+	 * The learning problem variable, which must be used by
+	 * all learning algorithm implementations.
+	 */
+	protected LearningProblem learningProblem;
+	
+	/**
+	 * The reasoning service variable, which must be used by
+	 * all learning algorithm implementations.
+	 */
+	protected ReasoningService reasoningService;
+
+	/**
+	 * Each learning algorithm gets a learning problem and
+	 * a reasoner as input.
+	 * @param learningProblem The learning problem to solve.
+	 * @param reasoningService The reasoner connecting to the
+	 * underlying knowledge base.
+	 */
+	public LearningAlgorithm(LearningProblem learningProblem, ReasoningService reasoningService) {
+		this.learningProblem = learningProblem;
+		this.reasoningService = reasoningService;
+	}
+	
+	/**
+	 * Call this when you want to change the learning problem, but
+	 * leave everything else as is. Method can be used to apply
+	 * a configured algorithm to different learning problems. 
+	 * Implementations, which do not only use the provided learning
+	 * algorithm variable, must make sure that a call to this method
+	 * indeed changes the learning problem.
+	 * @param learningProblem The new learning problem.
+	 */
+	public void changeLearningProblem(LearningProblem learningProblem) {
+		this.learningProblem = learningProblem;
+	}
+
+	/**
+	 * Call this when you want to change the reasoning service, but
+	 * leave everything else as is. Method can be used to use
+	 * a configured algorithm with different reasoners. 
+	 * Implementations, which do not only use the provided reasoning
+	 * service class variable, must make sure that a call to this method
+	 * indeed changes the reasoning service.
+	 * @param reasoningService The new reasoning service.
+	 */
+	public void changeReasoningService(ReasoningService reasoningService) {
+		this.reasoningService = reasoningService;
+	}
+	
+	/**
 	 * This is the maximum number of results, which the learning
 	 * algorithms need to keep. (Often algorithms do not need 
 	 * to store any results except the best one, so this limit

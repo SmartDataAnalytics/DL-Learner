@@ -83,6 +83,7 @@ public class BruteForceLearner extends LearningAlgorithm {
     private Map<Integer,List<Description>> generatedDefinitions = new HashMap<Integer,List<Description>>();
     
     public BruteForceLearner(LearningProblem learningProblem, ReasoningService rs) {
+    	super(learningProblem, rs);
     	this.learningProblem = learningProblem;
     	this.rs = rs;
     	this.configurator = new BruteForceLearnerConfigurator(this);

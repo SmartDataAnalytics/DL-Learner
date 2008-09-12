@@ -45,6 +45,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 
 	
 	public FastRetrievalReasoner(Set<KnowledgeSource> sources) {
+		super(sources);
 		this.configurator = new FastRetrievalReasonerConfigurator(this);
 		
 		rc = ComponentFactory.getDIGReasoner(sources);
@@ -68,10 +69,11 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	}	
 	
 	public FastRetrievalReasoner(FlatABox abox) {
+		super(null);
 		this.configurator = new FastRetrievalReasonerConfigurator(this);
 		this.abox = abox;
 		fastRetrieval = new FastRetrieval(abox);
-		
+
 		// atomare Konzepte und Rollen initialisieren
 		atomicConcepts = new HashSet<NamedClass>();
 		for(String concept : abox.concepts) {

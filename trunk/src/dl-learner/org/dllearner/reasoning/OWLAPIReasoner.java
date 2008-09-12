@@ -110,7 +110,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return configurator;
 	}
 	
-	private Set<KnowledgeSource> sources;
 	private OWLReasoner reasoner;
 	// the data factory is used to generate OWL API objects
 	private OWLDataFactory factory;
@@ -141,9 +140,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
 	
 	public OWLAPIReasoner(Set<KnowledgeSource> sources) {
-		this.sources = sources;
+		super(sources);
 		this.configurator = new OWLAPIReasonerConfigurator(this);
-		
 	}
 	
 	public static String getName() {

@@ -85,7 +85,6 @@ public class DIGReasoner extends ReasonerComponent {
 	
 
 	URL reasonerURL;
-	Set<KnowledgeSource> sources;
 
 	// Variablen für Reasoner
 	DIGHTTPConnector connector;
@@ -116,8 +115,8 @@ public class DIGReasoner extends ReasonerComponent {
 	
 	
 	public DIGReasoner(Set<KnowledgeSource> sources) {
+		super(sources);
 		this.configurator =  new DIGReasonerConfigurator(this);
-		this.sources = sources;
 		try {
 			reasonerURL = new URL("http://localhost:8081");
 		} catch (MalformedURLException e) {
