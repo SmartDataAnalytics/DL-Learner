@@ -65,7 +65,9 @@ public class OWLFile extends KnowledgeSource {
 
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new URLConfigOption("url", "URL pointing to the OWL file", null, true, true));
+		URLConfigOption urlOption = new URLConfigOption("url", "URL pointing to the OWL file", null, true, true);
+		urlOption.setRefersToFile(true);
+		options.add(urlOption);
 		return options;
 	}
 

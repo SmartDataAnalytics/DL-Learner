@@ -20,6 +20,10 @@
 
 package org.dllearner.gui;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -47,7 +51,7 @@ import org.dllearner.learningproblems.PosNegLP;
 public class Config {
 	
 	private ComponentManager cm = ComponentManager.getInstance();
-//	private static Logger logger = Logger.getLogger(Config.class);
+	private static Logger logger = Logger.getLogger(Config.class);
 	
 	// the components currently active
 	private KnowledgeSource source;
@@ -425,9 +429,23 @@ public class Config {
 //		algorithmRunStopTime = null;
 //	}
 	
+	
+	
 	// init the specified component and record which ones where initialised
-	public void init(int tabIndex) {
+	public void init(List<Integer> tabIndex) {
+		List<Component> components = new LinkedList<Component>();
+		for(int i : tabIndex) {
+			switch(i) {
+			case 0: components.add(source); needsInit[i] = false; break;
+			case 1: components.add(reasoner); needsInit[i] = false; break;
+			case 2: components.add(lp); needsInit[i] = false; break;
+			case 3: components.add(la); needsInit[i] = false; break;
+			}
+		}
+		InitWorker worker = new InitWorker (components, gui);
+		worker.execute();
 		
+		/*
 //		try {
 			if(tabIndex==0) {
 				InitWorker worker = new InitWorker(source, gui);
@@ -451,9 +469,14 @@ public class Config {
 //			// TODO display message in status bar
 //			e.printStackTrace();
 //		}
+		*/
 		
-		needsInit[tabIndex] = false;
-		System.out.println("component " + tabIndex + " initialised.");
+		if(tabIndex.size() == 1) {
+			logger.info("Component " + tabIndex.get(0) + " initialised.");
+		} else if(tabIndex.size() > 1) {
+			logger.info("Components " + tabIndex + " initialised.");
+		}
+		
 	}
 	
 	// applies a configuration option - used as delegate method, which invalidates components

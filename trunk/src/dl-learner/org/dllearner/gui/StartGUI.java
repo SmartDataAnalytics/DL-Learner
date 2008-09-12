@@ -179,14 +179,19 @@ public class StartGUI extends JFrame implements ActionListener {
 					int index = tabPane.getSelectedIndex();
 //					System.out.println(index);
 					
+					// a list of all components (0 = knowledge source,
+					// 1 = reasoner etc.) which have to be initialised;
+					// the user can init several components at once
+					List<Integer> componentsToInit = new LinkedList<Integer>();
 					// check whether we need to initialise components
 					if (index != 0 && config.tabNeedsInit(index - 1)) {
 						for (int i = 0; i < index; i++) {
 							if(config.tabNeedsInit(i)) {
-								config.init(i);
+								componentsToInit.add(i);
 							}
 						}
 					}
+					config.init(componentsToInit);
 
 					updateTabs();
 					
@@ -227,7 +232,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		Logger logger = Logger.getRootLogger();
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.TRACE);
 
 		File file = null;
 		if (args.length > 0)

@@ -44,12 +44,12 @@ import org.dllearner.kb.OWLFile;
  */
 public class InitWorker extends SwingWorker<Boolean, Boolean> {
 	
-	private Component component;
+	private List<Component> components;
 	private StartGUI gui;
-	private boolean timeIntensive = true;
+	private boolean timeIntensive;
 	
-	public InitWorker(Component component, StartGUI gui) {
-		this.component = component;
+	public InitWorker(List<Component> components, StartGUI gui) {
+		this.components = components;
 		this.gui = gui;
 		
 		// create a list of components, which do need virtually
@@ -59,9 +59,14 @@ public class InitWorker extends SwingWorker<Boolean, Boolean> {
 		nonTimeIntensiveComponents.add(OWLFile.class);
 		nonTimeIntensiveComponents.add(KBFile.class);
 		
-		if(nonTimeIntensiveComponents.contains(component.getClass())) {
-			timeIntensive = false;
+		// we check if any of the components is time-intensive
+		timeIntensive = false;
+		for(Component component : components) {
+			if(!nonTimeIntensiveComponents.contains(component.getClass())) {
+				timeIntensive = true;
+			}		
 		}
+
 	}	    	
 	
 	@Override
@@ -91,7 +96,9 @@ public class InitWorker extends SwingWorker<Boolean, Boolean> {
 		}
     	
     	try {
-			component.init();
+    		for(Component component : components) {
+    			component.init();
+    		}
 		} catch (ComponentInitException e) {
 			gui.getStatusPanel().setExceptionMessage(e.getMessage());
 			e.printStackTrace();
@@ -107,7 +114,7 @@ public class InitWorker extends SwingWorker<Boolean, Boolean> {
 		// when the reasoner has been initialised, we need to update
 		// the option panel (such that the user can see the existing
 		// examples, classes etc.)
-		if(component instanceof ReasonerComponent) {
+		if(components instanceof ReasonerComponent) {
 			gui.panels[2].updateOptionPanel();
 			gui.panels[3].updateOptionPanel();
 		}
