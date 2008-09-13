@@ -122,7 +122,7 @@ public class StringSetConfigOption extends ConfigOption<Set<String>> {
 		}
 		// negative examples
 		if (value != null && name.equals("negativeExamples")) {
-			Integer count = 0;
+			int count = 0;
 			for (String i : value) {
 				count++;
 				if (count == 1)

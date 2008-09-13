@@ -20,13 +20,16 @@
 
 package org.dllearner.gui;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.dllearner.cli.Start;
 import org.dllearner.core.Component;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -85,6 +88,36 @@ public class Config {
 			needsInit[i] = true;
 			// TODO there might be knowledge source without mandatory options
 			isEnabled[i] = false;
+		}
+	}
+	
+	public void loadFile(File file) {
+		// use CLI to load file
+		try {
+			// set all loaded components as active components
+			Start start = new Start(file);
+			Set<KnowledgeSource> sources = start.getSources();
+			if(sources.size() != 1) {
+				gui.getStatusPanel().setExceptionMessage("Warning: GUI supports only one knowledge source.");
+			}
+			source = sources.iterator().next();
+			reasoner = start.getReasonerComponent();
+			rs = start.getReasoningService();
+			lp = start.getLearningProblem();
+			la = start.getLearningAlgorithm();
+			
+			// all components initialised and enabled
+			for(int i=0; i<4; i++) {
+				needsInit[i] = false;
+				isEnabled[i] = true;
+			}			
+			
+			// update tabs in GUI such that algorithm can be run
+			gui.updateTabs();
+			
+		} catch (ComponentInitException e) {
+			gui.getStatusPanel().setExceptionMessage(e.getMessage());
+			e.printStackTrace();			
 		}
 	}
 	

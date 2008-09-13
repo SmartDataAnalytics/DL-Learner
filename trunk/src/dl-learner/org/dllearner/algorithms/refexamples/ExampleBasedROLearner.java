@@ -21,7 +21,6 @@ package org.dllearner.algorithms.refexamples;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -35,7 +34,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
@@ -54,7 +52,6 @@ import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
-import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 
 import com.jamonapi.Monitor;
 

@@ -105,6 +105,9 @@ public class Start {
 
 	private static Logger logger = Logger.getRootLogger();
 
+	private static ConfMapper confMapper = new ConfMapper();
+	
+	private Set<KnowledgeSource> sources;
 	private LearningAlgorithm la;
 	private LearningProblem lp;
 	private ReasoningService rs;
@@ -182,15 +185,16 @@ public class Start {
 		message += "OK (" + Helper.prettyPrintNanoSeconds(cmTime) + ")";
 		logger.info(message);
 
-		// create a mapping between components and prefixes in the conf file
-		Map<Class<? extends Component>, String> componentPrefixMapping = createComponentPrefixMapping();
+		// create a mapping between components and prefixes in the conf file and back
+//		Map<Class<? extends Component>, String> componentPrefixMapping = createComponentPrefixMapping();
+//		Map<String, Class<? extends Component>> prefixComponentMapping = invertComponentPrefixMapping(componentPrefixMapping);
 
 		// parse conf file
 		ConfParser parser = ConfParser.parseFile(file);
 
 		// step 1: detect knowledge sources
 		Monitor ksMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initKnowledgeSource").start();
-		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
+		sources = new HashSet<KnowledgeSource>();
 		Map<URL, Class<? extends KnowledgeSource>> importedFiles = getImportedFiles(parser, baseDir);
 		for (Map.Entry<URL, Class<? extends KnowledgeSource>> entry : importedFiles.entrySet()) {
 			KnowledgeSource ks = cm.knowledgeSource(entry.getValue());
@@ -201,7 +205,7 @@ public class Start {
 			cm.applyConfigEntry(ks, "url", entry.getKey());
 
 			sources.add(ks);
-			configureComponent(cm, ks, componentPrefixMapping, parser);
+			configureComponent(cm, ks, parser);
 			initComponent(cm, ks);
 		}
 		ksMonitor.stop();
@@ -210,8 +214,14 @@ public class Start {
 		// step 2: detect used reasoner
 		Monitor rsMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initReasoningService").start();
 		ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
-		rc = cm.reasoner(getReasonerClass(reasonerOption), sources);
-		configureComponent(cm, rc, componentPrefixMapping, parser);
+		Class<? extends ReasonerComponent> rcClass;
+		if(reasonerOption != null) {
+			rcClass = confMapper.getReasonerComponentClass(reasonerOption.getStringValue()); 
+		} else {
+			rcClass = FastInstanceChecker.class;
+		}
+		rc = cm.reasoner(rcClass, sources);
+		configureComponent(cm, rc, parser);
 		initComponent(cm, rc);
 		rs = cm.reasoningService(rc);
 		rsMonitor.stop();
@@ -219,25 +229,37 @@ public class Start {
 		// step 3: detect learning problem
 		Monitor lpMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initLearningProblem").start();
 		ConfFileOption problemOption = parser.getConfOptionsByName("problem");
-		lp = cm.learningProblem(getLearningProblemClass(problemOption), rs);
+		Class<? extends LearningProblem> lpClass;
+		if(problemOption != null) {
+			lpClass = confMapper.getLearningProblemClass(problemOption.getStringValue()); 
+		} else {
+			lpClass = PosNegDefinitionLP.class;
+		}
+		lp = cm.learningProblem(lpClass, rs);
 		SortedSet<String> posExamples = parser.getPositiveExamples();
 		SortedSet<String> negExamples = parser.getNegativeExamples();
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
-		if (getLearningProblemClass(problemOption) != PosOnlyDefinitionLP.class)
+		if (lpClass != PosOnlyDefinitionLP.class)
 			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
-		configureComponent(cm, lp, componentPrefixMapping, parser);
+		configureComponent(cm, lp, parser);
 		initComponent(cm, lp);
 		lpMonitor.stop();
 
 		// step 4: detect learning algorithm
 		Monitor laMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initLearningAlgorithm").start();
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
+		Class<? extends LearningAlgorithm> laClass;
+		if(problemOption != null) {
+			laClass = confMapper.getLearningAlgorithmClass(algorithmOption.getStringValue()); 
+		} else {
+			laClass = ExampleBasedROLComponent.class;
+		}		
 		try {
-			la = cm.learningAlgorithm(getLearningAlgorithm(algorithmOption), lp, rs);
+			la = cm.learningAlgorithm(laClass, lp, rs);
 		} catch (LearningProblemUnsupportedException e) {
 			e.printStackTrace();
 		}
-		configureComponent(cm, la, componentPrefixMapping, parser);
+		configureComponent(cm, la, parser);
 		initComponent(cm, la);
 		laMonitor.stop();
 
@@ -262,8 +284,10 @@ public class Start {
 	}
 
 	/**
+	 * @deprecated See ConfMapper.
 	 * creates a mapping from components to option prefix strings
 	 */
+	@Deprecated
 	public static Map<Class<? extends Component>, String> createComponentPrefixMapping() {
 		Map<Class<? extends Component>, String> componentPrefixMapping = new HashMap<Class<? extends Component>, String>();
 		// knowledge sources
@@ -288,7 +312,7 @@ public class Start {
 
 		return componentPrefixMapping;
 	}
-
+	
 	/**
 	 * convenience method basically every prefix (e.g. "refinement" in
 	 * "refinement.horizontalExpFactor) corresponds to a specific component -
@@ -296,8 +320,8 @@ public class Start {
 	 * supported by the component
 	 */
 	public static void configureComponent(ComponentManager cm, Component component,
-			Map<Class<? extends Component>, String> componentPrefixMapping, ConfParser parser) {
-		String prefix = componentPrefixMapping.get(component.getClass());
+			ConfParser parser) {
+		String prefix = confMapper.getComponentString(component.getClass());
 		if (prefix != null)
 			configureComponent(cm, component, parser.getConfOptionsByPrefix(prefix));
 	}
@@ -401,7 +425,7 @@ public class Start {
 				URL url = null;
 				try {
 					String fileString = arguments.get(0);
-					if (fileString.startsWith("http:")) {
+					if (fileString.startsWith("http:") || fileString.startsWith("file:")) {
 						url = new URL(fileString);
 					} else {
 						File f = new File(baseDir, arguments.get(0));
@@ -777,6 +801,13 @@ public class Start {
 		System.exit(0);
 	}
 
+	/**
+	 * @return the sources
+	 */
+	public Set<KnowledgeSource> getSources() {
+		return sources;
+	}	
+	
 	public LearningAlgorithm getLearningAlgorithm() {
 		return la;
 	}
@@ -793,6 +824,12 @@ public class Start {
 		return rs;
 	}
 
+	/**
+	 * @deprecated See ConfMapper.
+	 * @param componentSuperClass
+	 * @return
+	 */
+	@Deprecated
 	public static String getCLIMapping(String componentSuperClass){
 		HashMap<String, String> m = new HashMap<String, String>();
 		m.put("KnowledgeSource", "import");
@@ -806,10 +843,12 @@ public class Start {
 	/**
 	 * Set Reasoner class. Define here all possible reasoners.
 	 * 
+	 * @deprecated See ConfMapper.
 	 * @param reasonerOption
 	 *            from config file
 	 * @return reasonerClass reasoner class
 	 */
+	@Deprecated
 	public static Class<? extends ReasonerComponent> getReasonerClass(ConfFileOption reasonerOption) {
 		Class<? extends ReasonerComponent> reasonerClass = null;
 		if (reasonerOption == null || reasonerOption.getStringValue().equals("fastInstanceChecker"))
@@ -830,10 +869,12 @@ public class Start {
 	/**
 	 * Set LearningProblem class. Define here all possible problems.
 	 * 
+	 * @deprecated See ConfMapper.
 	 * @param problemOption
 	 *            from config file
 	 * @return lpClass learning problem class
 	 */
+	@Deprecated
 	public static Class<? extends LearningProblem> getLearningProblemClass(
 			ConfFileOption problemOption) {
 		Class<? extends LearningProblem> lpClass = null;
@@ -852,10 +893,12 @@ public class Start {
 	/**
 	 * Set LearningAlorithm class. Define here all possible learning algorithms.
 	 * 
+	 * @deprecated See ConfMapper.
 	 * @param algorithmOption
 	 *            from config file
 	 * @return laClass learning algorithm class
 	 */
+	@Deprecated
 	public static Class<? extends LearningAlgorithm> getLearningAlgorithm(
 			ConfFileOption algorithmOption) {
 		Class<? extends LearningAlgorithm> laClass = null;
@@ -874,6 +917,5 @@ public class Start {
 
 		return laClass;
 	}
-
 
 }
