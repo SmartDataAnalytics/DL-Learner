@@ -1,5 +1,3 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,6 +17,7 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui;
 
 /**
  * Start statistics in a new thread.
@@ -27,8 +26,8 @@ package org.dllearner.gui;
  */
 public class ThreadStatistics extends Thread {
 
-	Config config;
-	RunPanel runPanel;
+	private Config config;
+	private RunPanel runPanel;
 
 	public ThreadStatistics(Config config, RunPanel runPanel) {
 		this.config = config;
@@ -50,7 +49,7 @@ public class ThreadStatistics extends Thread {
 			while (config.getThreadIsRunning()) {
 				try {
 					runPanel.showStats();
-					sleep(5000); // sleep 5 seconds
+					sleep(3000); // sleep 3 seconds
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

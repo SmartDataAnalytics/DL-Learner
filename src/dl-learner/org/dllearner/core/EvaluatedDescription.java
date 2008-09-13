@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
-import org.dllearner.kb.sparql.NaturalLanguageDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;

@@ -26,8 +26,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,12 +68,13 @@ public class StartGUI extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -739265982906533775L;
 
+	private static Logger logger = Logger.getLogger(StartGUI.class);	
 	private JTabbedPane tabPane = new JTabbedPane();
 
 	private Config config = new Config(this);
 
-	private ConfigLoad configLoad = new ConfigLoad(config, this);
-	private ConfigSave configSave = new ConfigSave(config, this);
+//	private ConfigLoad configLoad = new ConfigLoad(config, this);
+//	private ConfigSave configSave = new ConfigSave(config, this);
 
 	// the four component panels
 	protected ComponentPanel[] panels = new ComponentPanel[4];
@@ -210,10 +210,10 @@ public class StartGUI extends JFrame implements ActionListener {
 			}
 		});
 
-		if (file != null) {
-			configLoad.openFile(file);
-			configLoad.startParser();
-		}
+//		if (file != null) {
+//			configLoad.openFile(file);
+//			configLoad.startParser();
+//		}
 	}
 
 	/*
@@ -264,9 +264,10 @@ public class StartGUI extends JFrame implements ActionListener {
 			// file dialog
 			JFileChooser fc = new ExampleFileChooser("conf");
 			if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-				System.out.println("FILE: " + fc.getSelectedFile());
-				configLoad.openFile(fc.getSelectedFile());
-				configLoad.startParser();
+				logger.info("Loading file " + fc.getSelectedFile() + ".");
+				config.loadFile(fc.getSelectedFile());
+//				configLoad.openFile(fc.getSelectedFile());
+//				configLoad.startParser();
 			}
 			// save as config file
 		} else if (e.getSource() == saveItem) {
@@ -286,19 +287,15 @@ public class StartGUI extends JFrame implements ActionListener {
 				}
 			});
 			if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-				// System.out.println("FILE: " + fc.getSelectedFile());
-				File file = fc.getSelectedFile();
+				logger.info("Saving current configuration to " + fc.getSelectedFile() + ".");
+				ConfigSave save = new ConfigSave(config);
 				try {
-					PrintWriter out = new PrintWriter(new FileWriter(file));
-					// out.println("test");
-					configSave.startParser(out);
-					out.flush();
-					out.close();
-				} catch (Exception ex2) {
-					System.out.println(ex2);
+					save.saveFile(fc.getSelectedFile());
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
-			System.out.println("config file saved");
 			// exit
 		} else if (e.getSource() == exitItem) {
 			dispose();

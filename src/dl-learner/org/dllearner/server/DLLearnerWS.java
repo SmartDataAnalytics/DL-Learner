@@ -103,6 +103,8 @@ public class DLLearnerWS {
 	private static Set<String> components;
 	
 	public DLLearnerWS() {
+		// TODO maybe use ConfMapper (one could add methods there for removing
+		// certain components, which should not be accessible by the web service)
 		knowledgeSourceMapping.put("owlfile", OWLFile.class);
 		knowledgeSourceMapping.put("sparql", SparqlKnowledgeSource.class);
 		reasonerMapping.put("dig", DIGReasoner.class);
