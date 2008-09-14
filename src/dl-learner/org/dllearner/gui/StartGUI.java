@@ -78,7 +78,8 @@ public class StartGUI extends JFrame implements ActionListener {
 
 	// the four component panels
 	protected ComponentPanel[] panels = new ComponentPanel[4];
-	protected RunPanel runPanel;	
+	protected RunPanel runPanel;
+	private int currentPanelIndex = 0;
 	
 //	protected KnowledgeSourcePanel tab0;
 //	protected ReasonerPanel tab1;
@@ -193,7 +194,9 @@ public class StartGUI extends JFrame implements ActionListener {
 					}
 					config.init(componentsToInit);
 
+					currentPanelIndex = index;
 					updateTabs();
+					updateStatusPanel();
 					
 					// send signals to panels
 					switch(index) {
@@ -203,8 +206,7 @@ public class StartGUI extends JFrame implements ActionListener {
 					case 3: panels[3].panelActivated(); break;
 					}
 
-					// new tab => ask user to fill in values
-					statusPanel.setTabInitMessage();
+					
 					
 				}
 			}
@@ -225,6 +227,20 @@ public class StartGUI extends JFrame implements ActionListener {
 		updateTabColors();
 	}*/
 
+	public void updateStatusPanel() {
+		// new tab selected => generate an appropriate status message
+		// (e.g. user has to fill in values)
+		if(currentPanelIndex == 4) {
+			statusPanel.setRunPanelMessage();
+		} else {
+			if(config.mandatoryOptionsSpecified(panels[currentPanelIndex].getCurrentComponent())) {
+				statusPanel.setTabCompleteMessage();
+			} else {
+				statusPanel.setTabInitMessage();
+			}
+		}		
+	}
+	
 	public static void main(String[] args) {
 		// create GUI logger
 		SimpleLayout layout = new SimpleLayout();

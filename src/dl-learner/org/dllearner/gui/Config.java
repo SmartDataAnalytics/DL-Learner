@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.dllearner.gui;
 
 import java.io.File;
@@ -42,8 +41,6 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLP;
-
-// import org.dllearner.core.Component;
 
 /**
  * Config save all together used variables: ComponentManager, KnowledgeSource,
@@ -114,6 +111,10 @@ public class Config {
 			
 			// update tabs in GUI such that algorithm can be run
 			gui.updateTabs();
+			gui.updateStatusPanel();
+			for(int i=0; i<4; i++) {
+				gui.panels[i].update();
+			}
 			
 		} catch (ComponentInitException e) {
 			gui.getStatusPanel().setExceptionMessage(e.getMessage());
@@ -575,7 +576,7 @@ public class Config {
 	}
 	
 	// TODO use specification of mandatory variables
-	private boolean mandatoryOptionsSpecified(Component component) {
+	public boolean mandatoryOptionsSpecified(Component component) {
 //		System.out.println("check mandatory options for " + component.getClass().getName());
 		if(component instanceof OWLFile) {
 			if(cm.getConfigOptionValue(source, "url") == null) {

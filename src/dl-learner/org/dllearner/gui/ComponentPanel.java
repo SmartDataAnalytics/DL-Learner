@@ -31,7 +31,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 //	private StartGUI startGUI;
 	private List<Class<? extends Component>> selectableComponents;
 	private OptionPanel optionPanel;
-//	private Class<? extends Component> panelClass;
+	private Class<? extends Component> panelClass;
 	private Component currentComponent;
 	
 	// GUI elements
@@ -47,7 +47,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 
 		this.config = config;
 //		this.startGUI = startGUI;
-//		this.panelClass = panelClass;
+		this.panelClass = panelClass;
 		
 		// get all classes of the correct type
 		selectableComponents = new LinkedList<Class<? extends Component>>();
@@ -73,6 +73,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 		// create combo box
 		for (int i = 0; i < selectableComponents.size(); i++) {
 			comboBox.addItem(config.getComponentManager().getComponentName(selectableComponents.get(i)));
+//			comboBox.addItem(selectableComponents.get(i));			
 		}
 		comboBox.addActionListener(this);
 		
@@ -98,6 +99,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == comboBox) {
+			System.out.println("TESTzz");
 			// change component and update option panel
 			Class<? extends Component> c = selectableComponents.get(comboBox.getSelectedIndex());
 			currentComponent = changeInstance(c);
@@ -110,6 +112,31 @@ public class ComponentPanel extends JPanel implements ActionListener {
 		}
 	}
 
+	/**
+	 * Update according to (possibly changed) config.
+	 */
+	public void update() {
+		// detect current component
+		if(panelClass == KnowledgeSource.class) {
+			currentComponent = config.getKnowledgeSource();
+		} else if(panelClass == ReasonerComponent.class) {
+			currentComponent = config.getReasoner();
+		} else if(panelClass == LearningProblem.class) {
+			currentComponent = config.getLearningProblem();
+		} else if(panelClass == LearningAlgorithm.class) {
+			currentComponent = config.getLearningAlgorithm();
+		}		
+		// select component without sending an event;
+		// we need to disable events send by JComboBox
+		comboBox.removeActionListener(this);
+		String val = config.getComponentManager().getComponentName(currentComponent.getClass());
+		comboBox.setSelectedItem(val);
+		comboBox.addActionListener(this);
+
+		// update option panel accordingly
+		updateOptionPanel();
+	}
+	
 	/**
 	 * Updates the option panel.
 	 */
@@ -164,6 +191,13 @@ public class ComponentPanel extends JPanel implements ActionListener {
 			}
 		}		
 		return newComponent;
+	}
+
+	/**
+	 * @return the currentComponent
+	 */
+	public Component getCurrentComponent() {
+		return currentComponent;
 	}	
 	
 }
