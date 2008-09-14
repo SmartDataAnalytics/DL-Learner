@@ -19,6 +19,8 @@
  */
 package org.dllearner.gui;
 
+import java.awt.Dimension;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -34,6 +36,12 @@ public class StatusPanel extends JPanel {
 	
 	private String tabInitText = "Please fill in the mandatory config options and proceed to the next tab.";
 	
+	private String tabCompleteText = "All mandatory options filled in. You can continue to the next tab.";
+	
+	private String runPanelText = "<html><p>Choose \"run\" to start the algorithm. For unsolvable learning problems, " +
+			"there is no guarantee that the algorithm will terminate. You can choose \"stop\" to stop the" +
+			" execution of the algorithm.</p></html>";
+	
 	private JLabel statusLabel = new JLabel(tabInitText);
 	
 	private String message = tabInitText;
@@ -45,6 +53,7 @@ public class StatusPanel extends JPanel {
 	
 	public StatusPanel() {
 		super();
+		statusLabel.setPreferredSize(new Dimension(600, 50));
 		add(statusLabel);
 	}
 	
@@ -70,6 +79,14 @@ public class StatusPanel extends JPanel {
 		updateMessage(tabInitText);
 	}
 
+	public void setTabCompleteMessage() {
+		updateMessage(tabCompleteText);
+	}	
+	
+	public void setRunPanelMessage() {
+		updateMessage(runPanelText);
+	}	
+	
 	public void extendMessage(String addition) {
 		message += addition;
 		statusLabel.setText(message);
