@@ -113,14 +113,18 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 		setButton = new JButton("Set");
 		setButton.addActionListener(this);
 		
-		chooseLocalButton = new JButton("Choose Local File");
-		chooseLocalButton.addActionListener(this);
-		
 		add(stringField);
-		add(setButton);
-		add(new JLabel(" or "));
-		add(chooseLocalButton);
+		add(setButton);		
 		
+		// if the URL can refer to a file, we add the possibility to
+		// choose a local file
+		if(((URLConfigOption)configOption).refersToFile()) {
+			chooseLocalButton = new JButton("Choose Local File");
+			chooseLocalButton.addActionListener(this);
+			add(new JLabel(" or "));
+			add(chooseLocalButton);
+		}
+			
 	}
 
 }

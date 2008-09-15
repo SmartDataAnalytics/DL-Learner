@@ -20,16 +20,16 @@ package org.dllearner.gui.widgets;
  *
  */
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.IntegerConfigOption;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.gui.Config;
 
 /**
@@ -37,16 +37,18 @@ import org.dllearner.gui.Config;
  * org.dllearner.core.config.IntegerConfigOption.
  * 
  * @author Tilo Hielscher
+ * @author Jens Lehmann
  * 
  */
 public class WidgetPanelInteger extends AbstractWidgetPanel<Integer> implements ActionListener {
 
 	private static final long serialVersionUID = -1802111225835164644L;
 
-	private JButton setButton = new JButton("Set");
+	private JButton setButton; // = new JButton("Set");
+	private JLabel problemLabel ; //= new JLabel();
 
 	private Integer value;
-	private JTextField integerField = new JTextField(3);
+	private JTextField integerField; // = new JTextField(3);
 
 	public WidgetPanelInteger(Config config, Component component, IntegerConfigOption configOption) {
 		super(config, component, configOption);
@@ -54,31 +56,24 @@ public class WidgetPanelInteger extends AbstractWidgetPanel<Integer> implements 
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == setButton) {
-			setEntry();
-		}
-	}
 
-	public void setEntry() {
-		IntegerConfigOption specialOption;
-		value = Integer.parseInt(integerField.getText()); // get from input
-		specialOption = (IntegerConfigOption) config.getComponentManager().getConfigOption(
-				component.getClass(), configOption.getName());
-		if (specialOption.isValidValue(value)) {
+			// TODO need better way for integer parsing than throwing an
+			// exception
 			try {
-				ConfigEntry<Integer> specialEntry = new ConfigEntry<Integer>(specialOption, value);
-				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				// System.out.println("set Integer: " + configOption.getName() +
-				// " = " + value);
-			} catch (InvalidConfigOptionValueException s) {
-				s.printStackTrace();
+				int value = Integer.valueOf(integerField.getText());
+				fireValueChanged(value);
+				problemLabel.setText("");
+			} catch(NumberFormatException e1) {
+				problemLabel.setText("Please enter a valid integer value.");
 			}
-		} else
-			System.out.println("Integer: not valid value");
+		}
 	}
 
 	@Override
 	public void buildWidgetPanel() {
 		add(getLabel());
+		problemLabel = new JLabel();
+		problemLabel.setForeground(Color.RED);
 		
 		value = config.getConfigOptionValue(component, configOption);
 		
@@ -88,13 +83,14 @@ public class WidgetPanelInteger extends AbstractWidgetPanel<Integer> implements 
 			value = 0;
 		else {
 			integerField.setText(value.toString());
-			setEntry();
+//			setEntry();
 		}
 		
 		integerField.setText(value.toString());
 		integerField.setToolTipText(configOption.getAllowedValuesDescription());
 		setButton.addActionListener(this);
 		add(integerField);
-		add(setButton);		
+		add(setButton);	
+		add(problemLabel);
 	}
 }

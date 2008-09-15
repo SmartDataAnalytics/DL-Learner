@@ -38,8 +38,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringSetConfigOption;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -55,6 +53,7 @@ import org.dllearner.gui.Config;
  * options. Second layout shows a list of JCheckBox's.
  * 
  * @author Tilo Hielscher
+ * @author Jens Lehmann
  * 
  */
 public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> implements ActionListener {
@@ -64,17 +63,17 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 	private GridBagLayout gridbag = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
 
-	private JPanel widgetPanel = new JPanel();
-	private JButton addButton = new JButton("add");
-	private JButton removeButton = new JButton("remove");
-	private JButton clearButton = new JButton("clear");
-	private JTextField stringField = new JTextField(30);
+	private JPanel widgetPanel; // = new JPanel();
+	private JButton addButton; // = new JButton("add");
+	private JButton removeButton; // = new JButton("remove");
+	private JButton clearButton; // = new JButton("clear");
+	private JTextField stringField; //  = new JTextField(30);
 
 	private Set<String> value = new HashSet<String>();
-	private JList stringList = new JList();
-	private DefaultListModel listModel = new DefaultListModel();
+	private JList stringList; // = new JList();
+	private DefaultListModel listModel; // = new DefaultListModel();
 
-	private CheckBoxList cBL = new CheckBoxList(this);
+	private CheckBoxList cBL; // = new CheckBoxList(this);
 
 	public WidgetPanelStringSet(Config config, Component component, StringSetConfigOption configOption) {
 		super(config, component, configOption);
@@ -86,6 +85,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			Set<String> exampleSet = new HashSet<String>();
 			// add to list
 			if (e.getSource() == addButton && !listModel.contains(stringField.getText())) {
+				System.out.println("add event");
 				listModel.addElement(stringField.getText());
 			}
 			// remove selection
@@ -108,38 +108,9 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			}
 			// set entry
 			value = exampleSet;
-			setEntry();
+//			setEntry();
+			fireValueChanged(value);
 		}
-	}
-
-	/**
-	 * Use this, to set entry for layout 2.
-	 */
-	/*
-	public void specialSet() {
-		if (isSpecial()) {
-			this.value = cBL.getSelections();
-			setEntry();
-		}
-	}*/
-
-	public void setEntry() {
-		StringSetConfigOption specialOption;
-		specialOption = (StringSetConfigOption) config.getComponentManager().getConfigOption(
-				component.getClass(), configOption.getName());
-		if (specialOption.isValidValue(value)) {
-			try {
-				ConfigEntry<Set<String>> specialEntry = new ConfigEntry<Set<String>>(specialOption,
-						value);
-				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				// System.out.println("set StringSet: " + configOption.getName()
-				// + " = " + value);
-			} catch (InvalidConfigOptionValueException s) {
-				s.printStackTrace();
-			}
-		} else
-			System.out.println("StringSet: not valid value");
-
 	}
 
 	/**
@@ -183,7 +154,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 		listModel = new DefaultListModel();		
 		// fill list
 		if (value != null) {
-			setEntry();
+//			setEntry();
 			for (Iterator<String> iterator = value.iterator(); iterator.hasNext();) {
 				String item = iterator.next();
 				listModel.addElement(item);

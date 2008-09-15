@@ -23,14 +23,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.gui.Config;
-import org.dllearner.gui.ExampleFileChooser;
-import org.dllearner.kb.OWLFile;
 
 /**
  * Panel for option String, defined in
@@ -44,11 +41,10 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 
 	private static final long serialVersionUID = -2169739820989891226L;
 
-//	private JPanel widgetPanel = new JPanel();
-	private JButton setButton; // = new JButton("Set");
+	private JButton setButton;
 
 	private String value;
-	private JTextField stringField; // = new JTextField(35);
+	private JTextField stringField;
 
 	public WidgetPanelString(Config config, Component component, StringConfigOption configOption) {
 		super(config, component, configOption);
@@ -56,48 +52,11 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == setButton) {
-			if (configOption.getName().equals("filename") || configOption.getName().equals("url")) {
-				JFileChooser fc;
-				if(component instanceof OWLFile) {
-					fc = new ExampleFileChooser("owl");
-				} else {
-					fc = new ExampleFileChooser("kb");
-				}	
-				
-				int returnVal = fc.showOpenDialog(this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					value = fc.getSelectedFile().toString();
-					stringField.setText(value);
-				}
-			}
+			// fire value changed event
 			value = stringField.getText();
 			fireValueChanged(value);
-//			setEntry();
-			// if url and value not ""
-			// necessary for init knowledge source
-			if (configOption.getName().equalsIgnoreCase("url") && !value.equalsIgnoreCase("")) {
-			}
 		}
 	}
-
-	/*
-	public void setEntry() {
-		StringConfigOption specialOption;
-		value = stringField.getText(); // get from input
-		specialOption = (StringConfigOption) config.getComponentManager().getConfigOption(
-				componentOption, configOption.getName());
-		if (specialOption.isValidValue(value)) {
-			try {
-				ConfigEntry<String> specialEntry = new ConfigEntry<String>(specialOption, value);
-				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				// System.out.println("set String: " + configOption.getName() +
-				// " = " + value);
-			} catch (InvalidConfigOptionValueException s) {
-				s.printStackTrace();
-			}
-		} else
-			System.out.println("String: not valid value");
-	}*/
 
 	@Override
 	public void buildWidgetPanel() {
@@ -108,24 +67,25 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 		// default values can be null, so we interpret this as empty string
 		if (value == null) {
 			value = "";
-		}		
-		
+		}
+
 		// text field for strings
 		stringField = new JTextField(35);
 		stringField.setText(value);
 		stringField.setToolTipText(configOption.getAllowedValuesDescription());
-		
-		// set button (value is only updated when this button is pressed => would better without set)
+
+		// set button (value is only updated when this button is pressed =>
+		// would better without set)
 		setButton = new JButton("Set");
 		setButton.addActionListener(this);
-		
+
 		add(stringField);
 		add(setButton);
-		
+
 		// special handling for filename option
 		if (configOption.getName().equals("filename"))
 			setButton.setText("choose local file");
-		
+
 	}
 
 }

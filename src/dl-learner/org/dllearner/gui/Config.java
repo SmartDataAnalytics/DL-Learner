@@ -40,6 +40,7 @@ import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegLP;
 
 /**
@@ -530,7 +531,7 @@ public class Config {
 		
 		cm.applyConfigEntry(component, entry);
 		// enable tabs if setting the value completed mandatory settings
-		enableTabsIfPossible();
+		enableComponentsIfPossible();
 		// invalidate components
 		if(component instanceof KnowledgeSource) {
 			needsInit[0] = true;
@@ -563,22 +564,49 @@ public class Config {
 		gui.updateTabs();
 	}
 	
-	private void enableTabsIfPossible() {
-		if(mandatoryOptionsSpecified(source)) {
-			isEnabled[0] = true;
-		} 
-		if(mandatoryOptionsSpecified(reasoner) && isEnabled[0]) {
-			isEnabled[1] = true;
-		} 
-		if(mandatoryOptionsSpecified(lp) && isEnabled[1]) {
-			isEnabled[2] = true;
-		} 
-		if(mandatoryOptionsSpecified(la) && isEnabled[1] && isEnabled[2]) {
-			isEnabled[3] = true;
+	// note it can also happend that components become
+	// disabled if mandatory fields are cleared	
+	public void enableComponentsIfPossible() {
+		// 0: reasoner
+		// 1: problem
+		// 2: algorithm
+		// 3: run
+		
+		isEnabled[0] = mandatoryOptionsSpecified(source);
+		isEnabled[1] = isEnabled[0] && mandatoryOptionsSpecified(reasoner);
+		isEnabled[2] = isEnabled[0] && isEnabled[1] && mandatoryOptionsSpecified(lp);
+		isEnabled[3] = isEnabled[0] && isEnabled[1] && isEnabled[2] && mandatoryOptionsSpecified(la);
+				
+		
+		/*
+		// enable reasoner iff source has all options
+		isEnabled[0] = mandatoryOptionsSpecified(source);
+		
+		// enable problem if reasoner has all options
+		if(isEnabled[0]) {
+			isEnabled[1] = mandatoryOptionsSpecified(reasoner);
+		} else {
+			isEnabled[1] = false;
 		}
+		
+		// enable algorithm if reasoner enabled and problem
+		// has all options
+		if(isEnabled[0]) {
+			isEnabled[2] = mandatoryOptionsSpecified(lp);
+		} else {
+			isEnabled[2] = false;
+		}
+		
+		// enable run panel if al
+		isEnabled[3] = mandatoryOptionsSpecified(la);
+		
+		if(isEnabled[1] && isEnabled[2]) {
+			isEnabled[3] = mandatoryOptionsSpecified(la);
+		}*/
 	}
 	
 	// TODO use specification of mandatory variables
+	@SuppressWarnings("unchecked")
 	public boolean mandatoryOptionsSpecified(Component component) {
 //		System.out.println("check mandatory options for " + component.getClass().getName());
 		if(component instanceof OWLFile) {
@@ -590,10 +618,17 @@ public class Config {
 				return false;
 			}
 		} else if(component instanceof PosNegLP) {
-			if(cm.getConfigOptionValue(component, "positiveExamples")==null || cm.getConfigOptionValue(component, "negativeExamples") == null) {
+			if(cm.getConfigOptionValue(component, "positiveExamples")==null || cm.getConfigOptionValue(component, "negativeExamples") == null
+					|| ((Set<String>)cm.getConfigOptionValue(component, "positiveExamples")).size()==0 
+					|| ((Set<String>)cm.getConfigOptionValue(component, "negativeExamples")).size()==0) {
 				return false;
 			}
+		} else if(component instanceof SparqlKnowledgeSource) {
+			if(cm.getConfigOptionValue(component, "instances")==null || ((Set<String>)cm.getConfigOptionValue(component, "instances")).size()==0) {
+				return false;
+			}			
 		}
+		
 		return true;
 	}
 	
