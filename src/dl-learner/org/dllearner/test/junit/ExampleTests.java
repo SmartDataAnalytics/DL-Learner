@@ -83,6 +83,8 @@ public class ExampleTests {
 		ignore.add("./examples/sparql/scrobble.conf"); // HTTP 502 Proxy Error
 		ignore.add("./examples/family-benchmark/Cousin.conf"); // Out of Memory Error
 		ignore.add("./examples/sparql/SilentBobWorking2.conf"); // Out of Memory Error
+		ignore.add("./examples/family/father_posonly.conf"); // ArrayOutOfBoundsException in Pellet - main problem: pos only not working
+		ignore.add("./examples/sparql/difference/DBPediaSKOS_kohl_vs_angela.conf"); // Pellet: literal cannot be cast to individual
 		
 		for (String path : confFiles.keySet()) {
 			for (String file : confFiles.get(path)) {

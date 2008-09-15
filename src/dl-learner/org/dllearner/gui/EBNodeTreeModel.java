@@ -22,6 +22,7 @@ package org.dllearner.gui;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeMap;
 
 import javax.swing.event.TreeModelEvent;
@@ -92,6 +93,7 @@ public class EBNodeTreeModel implements TreeModel {
 
 	}
 
+	@SuppressWarnings("unused")
     private void fireTreeStructureChanged(ExampleBasedNode node) {
         TreeModelEvent e = new TreeModelEvent(this, 
                                               new Object[] {node});
@@ -102,13 +104,25 @@ public class EBNodeTreeModel implements TreeModel {
 	
 	// convert the set of children to a list and store it in this model
 	private List<ExampleBasedNode> getChildren(ExampleBasedNode node) {
+//		System.out.println("asking for children of " + node);
+		
 		List<ExampleBasedNode> children = childrenMap.get(node);
 		// if the children have not been cached or the list is outdated
 		// (node has more children now) we do an update
 		if(children == null || children.size() != node.getChildren().size()) {
-			children = new LinkedList<ExampleBasedNode>(node.getChildren());
+			SortedSet<ExampleBasedNode> childrenSet = node.getChildren();
+			children = new LinkedList<ExampleBasedNode>(childrenSet);
+
+			// we need to ensure that the children are sorted correctly
+//			children = new LinkedList<ExampleBasedNode>();
+//			for(ExampleBasedNode child : childrenSet) {
+//				children.add(child);
+//			}
+			
 			childrenMap.put(node, children);
-			fireTreeStructureChanged(node);
+			
+//			fireTreeStructureChanged(node);
+//			System.out.println("updating children of " + node);
 		}
 		return children;
 	}
