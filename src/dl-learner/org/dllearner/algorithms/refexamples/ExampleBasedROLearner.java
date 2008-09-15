@@ -283,6 +283,7 @@ public class ExampleBasedROLearner {
 	}
 
 	public void start() {
+		stop = false;
 		isRunning = true;
 		runtime = System.currentTimeMillis();
 		Monitor totalLearningTime = JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime")
