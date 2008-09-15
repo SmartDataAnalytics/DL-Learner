@@ -1,7 +1,8 @@
 <?php
 	include('helper_functions.php');
 	
-	$concept=$_POST['concept'];
+	$manchester=$_POST['manchester'];
+	$kb=$_POST['kb'];
 	
 	session_start();
 	$id=$_SESSION['id'];
@@ -12,8 +13,11 @@
 	
 	$concept=html_entity_decode($concept);
 	
-	$test=preg_match("/^http://dbpedia.org/class/yago/[^/]+$/",$concept);
+	$test=preg_match("/(http:\/\/dbpedia\.org\/class\/yago\/[^\040]+(\040)*(AND|OR)*)+/",$manchester);
 	
+	if ($test){
+		
+	}
 	$content="";
 	/*try{
 		require_once("DLLearnerConnection.php");

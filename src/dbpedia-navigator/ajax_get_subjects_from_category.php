@@ -1,5 +1,7 @@
 <?php
-	include('helper_functions.php');
+	include_once('helper_functions.php');
+	include_once('Settings.php');
+	include_once('DatabaseConnection.php');
 	
 	$category=$_POST['category'];
 	$number=$_POST['number'];
@@ -14,26 +16,29 @@
 	$content="";
 	$bestsearches="";
 	
-	mysql_connect($mysqlServer,$mysqlUser,$mysqlPass);
-	mysql_select_db("navigator_db");
+	//connect to the database
+	$settings=new Settings();
+	$databaseConnection=new DatabaseConnection($settings->database_type);
+	$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
+	$databaseConnection->select_database($settings->database_name);
 	
 	//get label of the category
 	$query="SELECT label FROM categories WHERE category='$category' LIMIT 1";
-	$res=mysql_query($query);
-	$result=mysql_fetch_array($res);
+	$res=$databaseConnection->query($query);
+	$result=$databaseConnection->nextEntry($res);
 	$label=$result['label'];
 		
 	$query="SELECT name FROM articlecategories WHERE category='$category' ORDER BY number DESC LIMIT ".$number;
-	$res=mysql_query($query);
+	$res=$databaseConnection->query($query);
 	$bestsearches="";
-	if (mysql_num_rows($res)>0){
+	if ($databaseConnection->numberOfEntries($res)>0){
 		$names=array();
 		$labels=array();
-		while ($result=mysql_fetch_array($res)){
+		while ($result=$databaseConnection->nextEntry($res)){
 			$names[]=$result['name'];
 			$query="SELECT label FROM rank WHERE name='".$result['name']."' LIMIT 1";
-			$res2=mysql_query($query);
-			$result2=mysql_fetch_array($res2);
+			$res2=$databaseConnection->query($query);
+			$result2=$databaseConnection->nextEntry($res2);
 			$labels[]=$result2['label'];
 		}
 		$content.=getCategoryResultsTable($names,$labels,$category,$number);

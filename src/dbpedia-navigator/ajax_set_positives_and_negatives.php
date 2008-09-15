@@ -1,5 +1,7 @@
 <?php
-	include('helper_functions.php');
+	include_once('helper_functions.php');
+	include_once('Settings.php');
+	include_once('DatabaseConnection.php');
 	
 	$positives=$_POST['positives'];
 	$negatives=$_POST['negatives'];
@@ -9,22 +11,25 @@
 	if (strlen($negatives)>0) $negatives=explode('][',substr($negatives,1,strlen($negatives)-2));
 	else $negatives=array();
 			
-	mysql_connect($mysqlServer,$mysqlUser,$mysqlPass);
-	mysql_select_db("navigator_db");
+	//connect to the database
+	$settings=new Settings();
+	$databaseConnection=new DatabaseConnection($settings->database_type);
+	$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
+	$databaseConnection->select_database($settings->database_name);
 	
 	$ptemp=array();
 	foreach ($positives as $pos){
 		$query="SELECT label FROM rank WHERE name='$pos' LIMIT 1";
-		$res=mysql_query($query);
-		$result=mysql_fetch_array($res);
+		$res=$databaseConnection->query($query);
+		$result=$databaseConnection->nextEntry($res);
 		$ptemp[$pos]=$result['label'];
 	}
 	
 	$ntemp=array();
 	foreach ($negatives as $neg){
 		$query="SELECT label FROM rank WHERE name='$neg' LIMIT 1";
-		$res=mysql_query($query);
-		$result=mysql_fetch_array($res);
+		$res=$databaseConnection->query($query);
+		$result=$databaseConnection->nextEntry($res);
 		$ntemp[$neg]=$result['label'];
 	}
 			

@@ -29,7 +29,7 @@
 				$concept.="<table border=0>\n";
 				$concept.="<tr><td>You could also be interested in articles matching these descriptions:</td></tr>";
 				foreach ($concepts as $con){
-					$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('concept=".htmlentities($con['descriptionManchesterSyntax'])."');return false;\" />".$con['NaturalLanguage']."</a> (Accuracy: ".(floatVal($con['accuracy'])*100)."%)</td></tr>";
+					$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('manchester=".htmlentities($con['descriptionManchesterSyntax'])."&kb=".htmlentities($con['descriptionKBSyntax'])."');return false;\" />".$con['NaturalLanguage']."</a> (Accuracy: ".(floatVal($con['accuracy'])*100)."%)</td></tr>";
 				}
 				$concept.="</table>";
 			}

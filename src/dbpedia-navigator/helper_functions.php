@@ -235,13 +235,19 @@ function nicePredicate($predicate)
 }
 
 function formatClassArray($ar) {
-	mysql_connect($mysqlServer,$mysqlUser,$mysqlPass);
-	mysql_select_db("navigator_db");
+	include_once('Settings.php');
+	include_once('DatabaseConnection.php');
+	//connect to the database
+	$settings=new Settings();
+	$databaseConnection=new DatabaseConnection($settings->database_type);
+	$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
+	$databaseConnection->select_database($settings->database_name);
+	
 	$string="<ul>";
 	for($i=0; $i<count($ar); $i++) {
 		$query="SELECT label FROM categories WHERE category='".$ar[$i]['value']."' LIMIT 1";
-		$res=mysql_query($query);
-		$result=mysql_fetch_array($res);
+		$res=$databaseConnection->query($query);
+		$result=$databaseConnection->nextEntry($res);
 		if ($ar[$i]['value']!="http://xmlns.com/foaf/0.1/Person") $string .= '<li>' . formatClass($ar[$i]['value'],$result['label']).'</li>';
 	}
 	return $string."</ul>";

@@ -37,7 +37,7 @@ class Settings{
 	// public $dbpediauri='http://dbpedia2.openlinksw.com:8890/isparql';
 	// in mikrosekunden
 	public $sparqlttl=60000000;
-	public $learnttl=30000000;
+	public $learnttl=60000000;
 	
 	public $language="en";
 	
@@ -48,12 +48,16 @@ class Settings{
 	
 	public $useCache=true;
 	
+	//the type of database server
+	public $database_type='mysql';
 	//the server, where the mysql databank is located
-	public $mysqlServer='localhost';
+	public $database_server='localhost';
 	//the user, that has rights to access the navigator databank
-	public $mysqlUser='navigator';
+	public $database_user='navigator';
 	//the password of that user
-	public $mysqlPass='dbpedia';
+	public $database_pass='dbpedia';
+	//the name of the used database
+	public $database_name='navigator_db';
 }
 
 ?>
