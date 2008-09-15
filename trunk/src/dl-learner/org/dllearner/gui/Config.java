@@ -614,7 +614,7 @@ public class Config {
 				return false;
 			}
 		} else if(component instanceof KBFile) {
-			if(cm.getConfigOptionValue(source, "url") == null && cm.getConfigOptionValue(source, "filename") == null) {
+			if(cm.getConfigOptionValue(source, "url") == null) {
 				return false;
 			}
 		} else if(component instanceof PosNegLP) {

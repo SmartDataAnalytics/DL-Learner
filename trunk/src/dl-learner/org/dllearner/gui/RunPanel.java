@@ -343,4 +343,12 @@ public class RunPanel extends JPanel implements ActionListener {
 		}
 		return string;
 	}
+	
+	/**
+	 * Method is called when algorithm has terminated successfully.
+	 */
+	public void algorithmTerminated() {
+		stopButton.setEnabled(false);
+		runButton.setEnabled(true);
+	}
 }
