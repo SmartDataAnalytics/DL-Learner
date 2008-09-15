@@ -45,9 +45,9 @@ public class RunPanel extends JPanel implements ActionListener {
 	private JButton runButton, stopButton, treeButton;
 	private JTextArea infoArea;
 	private Config config;
-	//private StartGUI startGUI;
+	private StartGUI startGUI;
 
-	private ThreadRun thread;
+	private long algorithmStartTime = 0;
 
 	private GridBagLayout gridbag = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
@@ -67,16 +67,19 @@ public class RunPanel extends JPanel implements ActionListener {
 	private JLabel[] time = new JLabel[5];
 	private JLabel[] percent = new JLabel[5];
 
+
+	
 	RunPanel(Config config, StartGUI startGUI) {
 		super(new BorderLayout());
 
 		this.config = config;
-		//this.startGUI = startGUI;
+		this.startGUI = startGUI;
 
 		runButton = new JButton("Run");
 		runButton.addActionListener(this);
 		showPanel.add(runButton);
 		stopButton = new JButton("Stop");
+		stopButton.setEnabled(false);
 		stopButton.addActionListener(this);
 		showPanel.add(stopButton);
 		treeButton = new JButton("Tree");
@@ -147,17 +150,35 @@ public class RunPanel extends JPanel implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		// start
-		if (e.getSource() == runButton && config.getLearningAlgorithm() != null
-				&& !config.getThreadIsRunning()) {
-			thread = new ThreadRun(config);
+		if (e.getSource() == runButton) {
+			
+			// separate thread for learning algorithm
+			Thread algorithmThread = new Thread() {
+				@Override
+				public void run() {
+					setPriority(Thread.MIN_PRIORITY);
+					config.getLearningAlgorithm().start();			
+				}
+			};			
+			
 			config.getReasoningService().resetStatistics();
-			thread.start();
-			ThreadStatistics threadStatistics = new ThreadStatistics(config, this);
+			algorithmThread.start();
+			algorithmStartTime = System.nanoTime();
+			StatisticsThread threadStatistics = new StatisticsThread(config, this);
 			threadStatistics.start();
+			runButton.setEnabled(false);
+			stopButton.setEnabled(true);
+			// disable other panes (we do not want changes while
+			// algorithm is running)
+			startGUI.disableTabbedPane();
 		}
 		// stop
-		if (e.getSource() == stopButton && config.getLearningAlgorithm() != null) {
-			thread.exit();
+		if (e.getSource() == stopButton) {
+			config.getLearningAlgorithm().stop();
+			runButton.setEnabled(true);
+			stopButton.setEnabled(false);
+			// enable panels
+			startGUI.enableTabbedPane();
 		}
 		// tree
 		if (e.getSource() == treeButton) {
@@ -170,12 +191,11 @@ public class RunPanel extends JPanel implements ActionListener {
 	 * Show Statistics.
 	 */
 	public void showStats() {
-		System.out.println("stat update " + System.currentTimeMillis());
-		Long algorithmRunTime = null;
-		Long overallReasoningTime = null;
-		Long instanceCheckReasoningTime = null;
-		Long retrievalReasoningTime = null;
-		Long subsumptionReasoningTime = null;
+//		System.out.println("stat update " + System.currentTimeMillis());
+		long overallReasoningTime = 0; // = null;
+		long instanceCheckReasoningTime = 0; // = null;
+		long retrievalReasoningTime = 0; // = null;
+		long subsumptionReasoningTime = 0; // = null;
 
 		infoArea.setText("");
 		// best solutions
@@ -189,19 +209,18 @@ public class RunPanel extends JPanel implements ActionListener {
 		// + config.getLearningAlgorithm().getSolutionScore().toString()
 		// + "\n\n");
 
-		// reasoner statistics
-		if (config.getAlgorithmRunTime() != null) {
-			algorithmRunTime = config.getAlgorithmRunTime();
-			bar[0].update(1.0);
-			time[0].setText(makeTime(algorithmRunTime));
-			percent[0].setText("100%");
-		}
-		if (config.getReasoningService() != null) {
+		// update algorith runtime
+		long algorithmRunTime = System.nanoTime() - algorithmStartTime;
+		bar[0].update(1.0);
+		time[0].setText(makeTime(algorithmRunTime));
+		percent[0].setText("100%");
+		
+		// update overall reasoning time
 			overallReasoningTime = config.getReasoningService().getOverallReasoningTimeNs();
 			bar[1].update((double) overallReasoningTime / (double) algorithmRunTime);
 			time[1].setText(makeTime(overallReasoningTime));
 			percent[1].setText(Percent(overallReasoningTime, algorithmRunTime));
-		}
+		
 		if (config.getReasoningService().getNrOfInstanceChecks() > 0) {
 			instanceCheckReasoningTime = config.getReasoningService()
 					.getInstanceCheckReasoningTimeNs();

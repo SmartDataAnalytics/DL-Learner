@@ -20,41 +20,42 @@
 package org.dllearner.gui;
 
 /**
- * Start statistics in a new thread.
+ * This thread is responsible for sending update events to the GUI.
+ * In regular intervals it tests whether the learning algorithm is
+ * running and calls methods to update the statistics in the run
+ * panel.
  * 
  * @author Tilo Hielscher
+ * @author Jens Lehmann
  */
-public class ThreadStatistics extends Thread {
+public class StatisticsThread extends Thread {
 
 	private Config config;
 	private RunPanel runPanel;
 
-	public ThreadStatistics(Config config, RunPanel runPanel) {
+	public StatisticsThread(Config config, RunPanel runPanel) {
 		this.config = config;
 		this.runPanel = runPanel;
 	}
 
 	/**
-	 * method to start thread
+	 * Calls {@link RunPanel#showStats()} in regular intervals.
 	 */
 	@Override
-	public void run() {
-		//this.setPriority(4);
-		if (config.getThreadIsRunning()) {
-			try {
-				sleep(1000); // sleep 1 second
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+	public void run() {	
+		try {
+			// initial delay of one second
+			sleep(1000);
+			while (config.getLearningAlgorithm().isRunning()) {
+				// update statistics every 3 seconds
+				runPanel.showStats();
+				sleep(3000);
 			}
-			while (config.getThreadIsRunning()) {
-				try {
-					runPanel.showStats();
-					sleep(3000); // sleep 3 seconds
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
+			// show final stats
 			runPanel.showStats();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+		
 	}
 }

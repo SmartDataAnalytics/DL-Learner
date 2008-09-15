@@ -72,9 +72,9 @@ public class Config {
 	private boolean[] isEnabled = new boolean[4];
 	
 	// learning algorithm status
-	private boolean threadIsRunning = false;
-	private Long algorithmRunStartTime = null;
-	private Long algorithmRunStopTime = null;
+//	private boolean threadIsRunning = false;
+//	private Long algorithmRunStartTime = null;
+//	private Long algorithmRunStopTime = null;
 	
 	private StartGUI gui;
 	
@@ -409,6 +409,7 @@ public class Config {
 	 * 
 	 * @param isThreadRunning
 	 */
+	/*
 	public void setThreadIsRunning(Boolean isThreadRunning) {
 		if (isThreadRunning)
 			algorithmRunStartTime = System.nanoTime();
@@ -416,16 +417,17 @@ public class Config {
 			if (algorithmRunStartTime < System.nanoTime())
 				algorithmRunStopTime = System.nanoTime();
 		this.threadIsRunning = isThreadRunning;
-	}
+	}*/
 
 	/**
 	 * Get true if algorithm has started, false if not.
 	 * 
 	 * @return true if algorithm is running, false if not.
 	 */
+	/*
 	public Boolean getThreadIsRunning() {
 		return this.threadIsRunning;
-	}
+	}*/
 
 	/**
 	 * Get time in ns for run of algorithm. If algorithm is still running return
@@ -433,6 +435,7 @@ public class Config {
 	 * 
 	 * @return time in ns
 	 */
+	/*
 	public Long getAlgorithmRunTime() {
 		if (algorithmRunStartTime != null)
 			if (algorithmRunStopTime != null) {
@@ -441,7 +444,7 @@ public class Config {
 			} else
 				return System.nanoTime() - algorithmRunStartTime;
 		return null;
-	}
+	}*/
 
 	/**
 	 * It is necessary for init LearningProblem.
