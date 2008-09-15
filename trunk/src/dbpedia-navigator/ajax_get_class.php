@@ -1,6 +1,7 @@
 <?php
-	include('helper_functions.php');
-	include('Settings.php');
+	include_once('Settings.php');
+	include_once('DatabaseConnection.php');
+	include_once('helper_functions.php');
 	
 	$class=$_POST['class'];
 	$fromCache=$_POST['cache'];
@@ -35,17 +36,20 @@
 	if ($fromCache<0) {
 		//if there are errors see catch block
 		try{
-			mysql_connect($mysqlServer,$mysqlUser,$mysqlPass);
-			mysql_select_db("navigator_db");
+			//connect to the database
+			$settings=new Settings();
+			$databaseConnection=new DatabaseConnection($settings->database_type);
+			$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
+			$databaseConnection->select_database($settings->database_name);
 			
 			//build Select box with Child Classes
 			$query="SELECT child FROM classhierarchy WHERE father='$class'";
-			$res=mysql_query($query);
+			$res=$databaseConnection->query($query);
 			$childClasses='';
-			while ($result=mysql_fetch_array($res)){
+			while ($result=$databaseConnection->nextEntry($res)){
 				$query="SELECT label FROM categories WHERE category='".$result['child']."' LIMIT 1";
-				$res2=mysql_query($query);
-				$result2=mysql_fetch_array($res2);
+				$res2=$databaseConnection->query($query);
+				$result2=$databaseConnection->nextEntry($res2);
 				$identify=urldecode(str_replace("_"," ",substr (strrchr ($result['child'], "/"), 1)));
 				if ((strlen($identify)+strlen($result2['label']))>100) $identify=substr($identify,0,100-strlen($result2['label']));
 				$childClasses.='<option value="'.$result['child'].'">'.utf8_to_html($result2['label']).' ('.$identify.')</option>';
@@ -56,12 +60,12 @@
 
 			//build Select box with Father Classes
 			$query="SELECT father FROM classhierarchy WHERE child='$class'";
-			$res=mysql_query($query);
+			$res=$databaseConnection->query($query);
 			$fatherClasses='';
-			while ($result=mysql_fetch_array($res)){
+			while ($result=$databaseConnection->nextEntry($res)){
 				$query="SELECT label FROM categories WHERE category='".$result['father']."' LIMIT 1";
-				$res2=mysql_query($query);
-				$result2=mysql_fetch_array($res2);
+				$res2=$databaseConnection->query($query);
+				$result2=$databaseConnection->nextEntry($res2);
 				$identify=urldecode(str_replace("_"," ",substr (strrchr ($result['father'], "/"), 1)));
 				if ((strlen($identify)+strlen($result2['label']))>100) $identify=substr($identify,0,100-strlen($result2['label']));
 				$fatherClasses.='<option value="'.$result['father'].'">'.utf8_to_html($result2['label']).' ('.$identify.')</option>';
@@ -71,8 +75,8 @@
 			
 			//build Title
 			$query="SELECT label FROM categories WHERE category='$class' LIMIT 1";
-			$res=mysql_query($query);
-			$result=mysql_fetch_array($res);
+			$res=$databaseConnection->query($query);
+			$result=$databaseConnection->nextEntry($res);
 			$title=$result['label'];
 			
 			$content.=getClassView($fatherClasses,$childClasses,$title,$class);
