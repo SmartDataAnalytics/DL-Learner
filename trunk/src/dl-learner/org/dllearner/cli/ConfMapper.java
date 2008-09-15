@@ -21,6 +21,7 @@ package org.dllearner.cli;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
@@ -148,5 +149,26 @@ public class ConfMapper {
 	
 	public String getComponentTypeString(Class<? extends Component> typeClass) {
 		return inverseTypeMapping.get(typeClass);
-	}		
+	}
+	
+	public Set<String> getKnowledgeSources() {
+		return knowledgeSourceMapping.keySet();
+	}
+	
+	public Set<String> getReasoners() {
+		return reasonerMapping.keySet();
+	}
+	
+	public Set<String> getLearningProblems() {
+		return learningProblemMapping.keySet();
+	}
+	
+	public Set<String> getLearningAlgorithms() {
+		return learningAlgorithmMapping.keySet();
+	}	
+	
+	public Set<String> getComponents() {
+		return componentMapping.keySet();
+	}	
+	
 }
