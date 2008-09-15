@@ -28,7 +28,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -7678275020058043937L;
 
 	private Config config;
-//	private StartGUI startGUI;
+	private StartGUI startGUI;
 	private List<Class<? extends Component>> selectableComponents;
 	private OptionPanel optionPanel;
 	private Class<? extends Component> panelClass;
@@ -46,7 +46,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 		super(new BorderLayout());
 
 		this.config = config;
-//		this.startGUI = startGUI;
+		this.startGUI = startGUI;
 		this.panelClass = panelClass;
 		
 		// get all classes of the correct type
@@ -99,11 +99,14 @@ public class ComponentPanel extends JPanel implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == comboBox) {
-			System.out.println("TESTzz");
 			// change component and update option panel
 			Class<? extends Component> c = selectableComponents.get(comboBox.getSelectedIndex());
 			currentComponent = changeInstance(c);
 			updateOptionPanel();
+			// if the component does not have mandatory values, we can
+			// enable the following tabs
+			config.enableComponentsIfPossible();
+			startGUI.updateTabs();
 		} else if (e.getSource() == clearButton) {
 			// clearing everything corresponds to changing to an unconfigured
 			// component of the same type

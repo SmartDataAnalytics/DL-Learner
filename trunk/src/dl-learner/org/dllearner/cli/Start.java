@@ -328,7 +328,7 @@ public class Start {
 	 * this way the CLI will automatically support any configuration options
 	 * supported by the component
 	 */
-	public static void configureComponent(ComponentManager cm, Component component,
+	private static void configureComponent(ComponentManager cm, Component component,
 			ConfParser parser) {
 		String prefix = confMapper.getComponentString(component.getClass());
 		if (prefix != null)

@@ -20,16 +20,16 @@ package org.dllearner.gui.widgets;
  *
  */
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.DoubleConfigOption;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.gui.Config;
 
 /**
@@ -44,6 +44,7 @@ public class WidgetPanelDouble extends AbstractWidgetPanel<Double> implements Ac
 	private static final long serialVersionUID = 5238903690721116289L;
 
 	private JButton setButton = new JButton("Set");
+	private JLabel problemLabel;
 
 //	private Class<? extends Component> componentOption;
 
@@ -56,31 +57,23 @@ public class WidgetPanelDouble extends AbstractWidgetPanel<Double> implements Ac
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == setButton) {
-			setEntry();
-		}
-	}
-
-	public void setEntry() {
-		DoubleConfigOption specialOption;
-		value = Double.parseDouble(doubleField.getText()); // get from input
-		specialOption = (DoubleConfigOption) config.getComponentManager().getConfigOption(
-				component.getClass(), configOption.getName());
-		if (specialOption.isValidValue(value)) {
+			// TODO need better way for double parsing than throwing an
+			// exception
 			try {
-				ConfigEntry<Double> specialEntry = new ConfigEntry<Double>(specialOption, value);
-				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				// System.out.println("set Double: " + configOption.getName() +
-				// " = " + value);
-			} catch (InvalidConfigOptionValueException s) {
-				s.printStackTrace();
-			}
-		} else
-			System.out.println("Double: not valid value");
+				double value = Integer.valueOf(doubleField.getText());
+				fireValueChanged(value);
+				problemLabel.setText("");
+			} catch(NumberFormatException e1) {
+				problemLabel.setText("Please enter a valid double value.");
+			}			
+		}
 	}
 
 	@Override
 	public void buildWidgetPanel() {
 		add(getLabel());
+		problemLabel = new JLabel();
+		problemLabel.setForeground(Color.RED);		
 
 		value = config.getConfigOptionValue(component, configOption);
 		
@@ -90,7 +83,7 @@ public class WidgetPanelDouble extends AbstractWidgetPanel<Double> implements Ac
 			value = 0.0;
 		else {
 			doubleField.setText(value.toString());
-			setEntry();
+//			setEntry();
 		}		
 		
 		doubleField.setText(value.toString());

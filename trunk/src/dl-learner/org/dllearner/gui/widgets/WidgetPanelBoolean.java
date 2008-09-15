@@ -26,8 +26,6 @@ import javax.swing.JComboBox;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.config.BooleanConfigOption;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.gui.Config;
 
 /**
@@ -55,37 +53,8 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel<Boolean> implements 
 		else
 			value = true;
 		
-		BooleanConfigOption specialOption;
-		specialOption = (BooleanConfigOption) config.getComponentManager().getConfigOption(
-				component.getClass(), configOption.getName());
-		if (specialOption.isValidValue(value)) {
-			try {
-				ConfigEntry<Boolean> specialEntry = new ConfigEntry<Boolean>(specialOption, value);
-				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				// System.out.println("set Boolean: " + configOption.getName() +
-				// " = " + value);
-			} catch (InvalidConfigOptionValueException s) {
-				s.printStackTrace();
-			}
-		} else
-			System.out.println("Boolean: not valid value");		
-	}
-
-	public void setEntry() {
-		BooleanConfigOption specialOption;
-		specialOption = (BooleanConfigOption) config.getComponentManager().getConfigOption(
-				component.getClass(), configOption.getName());
-		if (specialOption.isValidValue(value)) {
-			try {
-				ConfigEntry<Boolean> specialEntry = new ConfigEntry<Boolean>(specialOption, value);
-				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				// System.out.println("set Boolean: " + configOption.getName() +
-				// " = " + value);
-			} catch (InvalidConfigOptionValueException s) {
-				s.printStackTrace();
-			}
-		} else
-			System.out.println("Boolean: not valid value");
+		fireValueChanged(value);
+				
 	}
 
 	@Override
@@ -96,8 +65,8 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel<Boolean> implements 
 		
 		if (value == null)
 			value = false;
-		else
-			setEntry();
+//		else
+//			setEntry();
 		
 		// set cb-index
 		String[] kbBoxItems = { "false", "true" };

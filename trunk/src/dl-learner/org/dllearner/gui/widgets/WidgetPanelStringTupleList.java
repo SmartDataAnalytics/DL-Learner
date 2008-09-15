@@ -39,8 +39,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.config.StringTupleListConfigOption;
 import org.dllearner.gui.Config;
 import org.dllearner.utilities.datastructures.StringTuple;
@@ -58,19 +56,19 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 	private GridBagLayout gridbag = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
 
-	private JPanel widgetPanel = new JPanel();
-	private JButton addButton = new JButton("add");
-	private JButton removeButton = new JButton("remove");
-	private JButton clearButton = new JButton("clear");
-	private JTextField stringFieldA = new JTextField(10);
-	private JTextField stringFieldB = new JTextField(10);
-	private List<StringTuple> exampleList = new LinkedList<StringTuple>();
+	private JPanel widgetPanel; // = new JPanel();
+	private JButton addButton; // = new JButton("add");
+	private JButton removeButton; // = new JButton("remove");
+	private JButton clearButton; // = new JButton("clear");
+	private JTextField stringFieldA; // = new JTextField(10);
+	private JTextField stringFieldB; // = new JTextField(10);
+	private List<StringTuple> exampleList; // = new LinkedList<StringTuple>();
 
-	private List<StringTuple> value = new LinkedList<StringTuple>();
-	private JList stringList = new JList();
-	private DefaultListModel listModel = new DefaultListModel();
+	private List<StringTuple> value; // = new LinkedList<StringTuple>();
+	private JList stringList; // = new JList();
+	private DefaultListModel listModel; // = new DefaultListModel();
 
-	private JButton setButton = new JButton("set");
+	private JButton setButton; // = new JButton("set");
 
 	public WidgetPanelStringTupleList(Config config, Component component, StringTupleListConfigOption configOption) {
 		super(config, component, configOption);
@@ -102,9 +100,11 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 		}
 		// set entry
 		value = exampleList;
-		setEntry();
+//		setEntry();
+		fireValueChanged(value);
 	}
 
+	/*
 	public void setEntry() {
 		StringTupleListConfigOption specialOption;
 		specialOption = (StringTupleListConfigOption) config.getComponentManager().getConfigOption(
@@ -121,7 +121,7 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 			}
 		} else
 			System.out.println("StringTupleList: not valid value");
-	}
+	}*/
 
 	/**
 	 * Define GridBagConstraints
@@ -162,7 +162,7 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 		value = config.getConfigOptionValue(component, configOption);
 		
 		if (value != null) {
-			setEntry();
+//			setEntry();
 			exampleList = value;
 		}
 		
