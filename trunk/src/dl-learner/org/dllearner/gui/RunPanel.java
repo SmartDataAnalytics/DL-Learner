@@ -31,7 +31,9 @@ import java.util.Map;
 
 import javax.swing.*;
 
+import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 
 /**
  * @author Tilo Hielscher
@@ -82,8 +84,10 @@ public class RunPanel extends JPanel implements ActionListener {
 		stopButton.setEnabled(false);
 		stopButton.addActionListener(this);
 		showPanel.add(stopButton);
+		
 		treeButton = new JButton("Tree");
 		treeButton.addActionListener(this);
+		treeButton.setEnabled(false);
 		showPanel.add(treeButton);
 
 		infoPanel.setLayout(gridbag);
@@ -182,8 +186,8 @@ public class RunPanel extends JPanel implements ActionListener {
 		}
 		// tree
 		if (e.getSource() == treeButton) {
-			@SuppressWarnings("unused")
 			TreeWindow a = new TreeWindow(config);
+			a.setLocationRelativeTo(startGUI);
 		}
 	}
 
@@ -348,7 +352,17 @@ public class RunPanel extends JPanel implements ActionListener {
 	 * Method is called when algorithm has terminated successfully.
 	 */
 	public void algorithmTerminated() {
+		// the methods called are similar to those when the stop button is pressed
 		stopButton.setEnabled(false);
 		runButton.setEnabled(true);
+		startGUI.enableTabbedPane();
+		
+		System.out.println("TEST");
+		
+		// enable tree button
+		if((config.getLearningAlgorithm() instanceof ExampleBasedROLComponent)
+				&& (config.getLearningProblem() instanceof PosNegDefinitionLP)) {
+			treeButton.setEnabled(true);
+		}
 	}
 }

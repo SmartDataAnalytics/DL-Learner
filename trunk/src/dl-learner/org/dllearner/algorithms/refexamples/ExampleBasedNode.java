@@ -178,6 +178,29 @@ public class ExampleBasedNode {
 		return ret;
 	}
 	
+	public String getShortDescriptionHTML(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
+		String ret = "<html> " + concept.toString(baseURI,null) + " <i>[";
+		
+		if(isTooWeak)
+			ret += "q:tw";
+		else {
+			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
+			ret += "<b>acc: " + df.format(accuracy) + "% </b>";			
+			
+			// comment this out to display the heuristic score with default parameters
+			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples);
+			ret += "h:" +df.format(heuristicScore) + " ";
+			
+			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
+			ret += "q:" + wrongPositives + "p-" + coveredNegatives.size() + "n";
+		}
+		
+		ret += " ("+qualityEvaluationMethod+"), he:" + horizontalExpansion;
+		ret += " c:" + children.size() + "]";
+		
+		return ret + "</i></html>";
+	}	
+	
 	//TODO integrate this method with the one above
 	public String getStats(int nrOfPositiveExamples, int nrOfNegativeExamples) {
 		String ret = " [";

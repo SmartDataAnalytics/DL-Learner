@@ -171,6 +171,11 @@ public class StartGUI extends JFrame implements ActionListener {
 		setVisible(true);
 		updateTabs();
 
+		// load file
+		if(file != null) {
+			config.loadFile(file);
+		}
+		
 		// Register a change listener
 		tabPane.addChangeListener(new ChangeListener() {
 			// This method is called whenever the selected tab changes
