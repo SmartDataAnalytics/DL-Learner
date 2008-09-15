@@ -21,6 +21,7 @@
 package org.dllearner.utilities.owl;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 import org.dllearner.core.ComponentManager;
@@ -69,7 +70,7 @@ public class ReasoningServiceFactory {
 
 		// knowledge source
 		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
-		String fileURL = new File(ontologyFile).toURI().toString();
+		URL fileURL = new File(ontologyFile).toURI().toURL();
 		cm.applyConfigEntry(ks, "url", fileURL);
 		ks.init();
 		

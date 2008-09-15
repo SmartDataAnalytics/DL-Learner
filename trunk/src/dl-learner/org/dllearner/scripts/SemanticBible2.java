@@ -124,8 +124,11 @@ public class SemanticBible2 {
 		ComponentManager cm =ComponentManager.getInstance();
 		try{
 		
-		
+		int i=0;
 		for (File f : confs) {
+			if(i!=80){
+			i++; continue;
+			}
 			Cache.getDefaultCache().clearCache();
 			String fileContent = Files.readFile(f);
 			
@@ -396,7 +399,7 @@ public class SemanticBible2 {
 			"sparql.predefinedEndpoint = \"LOCALJOSEKIBIBLE\";\n"+
 			"sparql.getPropertyInformation = true;\n"+
 			"refexamples.maxExecutionTimeInSeconds = "+sparqllMaxExecution+";\n"+
-			"import(\"lalala\",\"SPARQL\");\n"+
+			"import(\"http://localhost:2020/bible\",\"SPARQL\");\n"+
 			getCombinedOptions()+
 			"";
 		return s;
