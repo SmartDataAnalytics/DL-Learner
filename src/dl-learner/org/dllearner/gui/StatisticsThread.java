@@ -53,6 +53,7 @@ public class StatisticsThread extends Thread {
 			}
 			// show final stats
 			runPanel.showStats();
+			runPanel.algorithmTerminated();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
