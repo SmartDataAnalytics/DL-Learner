@@ -216,7 +216,10 @@ public class Start {
 		ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
 		Class<? extends ReasonerComponent> rcClass;
 		if(reasonerOption != null) {
-			rcClass = confMapper.getReasonerComponentClass(reasonerOption.getStringValue()); 
+			rcClass = confMapper.getReasonerComponentClass(reasonerOption.getStringValue());
+			if(rcClass == null) {
+				handleError("Invalid value \"" + reasonerOption.getStringValue() + "\" in " + reasonerOption + ". Valid values are " + confMapper.getReasoners() + ".");
+			}			
 		} else {
 			rcClass = FastInstanceChecker.class;
 		}
@@ -231,7 +234,10 @@ public class Start {
 		ConfFileOption problemOption = parser.getConfOptionsByName("problem");
 		Class<? extends LearningProblem> lpClass;
 		if(problemOption != null) {
-			lpClass = confMapper.getLearningProblemClass(problemOption.getStringValue()); 
+			lpClass = confMapper.getLearningProblemClass(problemOption.getStringValue());
+			if(lpClass == null) {
+				handleError("Invalid value \"" + problemOption.getStringValue() + "\" in " + problemOption + ". Valid values are " + confMapper.getLearningProblems() + ".");
+			}			
 		} else {
 			lpClass = PosNegDefinitionLP.class;
 		}
@@ -250,7 +256,10 @@ public class Start {
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
 		Class<? extends LearningAlgorithm> laClass;
 		if(problemOption != null) {
-			laClass = confMapper.getLearningAlgorithmClass(algorithmOption.getStringValue()); 
+			laClass = confMapper.getLearningAlgorithmClass(algorithmOption.getStringValue());
+			if(laClass == null) {
+				handleError("Invalid value \"" + algorithmOption.getStringValue() + "\" in " + algorithmOption + ". Valid values are " + confMapper.getLearningAlgorithms() + ".");
+			}			
 		} else {
 			laClass = ExampleBasedROLComponent.class;
 		}		
