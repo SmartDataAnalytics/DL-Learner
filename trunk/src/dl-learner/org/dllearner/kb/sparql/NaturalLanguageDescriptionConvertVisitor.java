@@ -68,7 +68,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 		return ret;
 	}
 	
-	public static String getSparqlQuery(String descriptionKBSyntax) throws ParseException
+	public static String getNaturalLanguageDescription(String descriptionKBSyntax) throws ParseException
 	{	
 		Description d = KBParser.parseConcept(descriptionKBSyntax);
 		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor();
@@ -98,7 +98,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 			s.add("NOT \"http://dbpedia.org/class/yago/Person100007846\"");
 			s.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
 			for (String kbsyntax : s) {
-				result.put(kbsyntax,NaturalLanguageDescriptionConvertVisitor.getSparqlQuery(kbsyntax));
+				result.put(kbsyntax,NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(kbsyntax));
 			}
 			System.out.println("************************");
 			for (String string : result.keySet()) {
