@@ -52,6 +52,9 @@
   <message name="ClientNotKnownException">
     <part element="tns:ClientNotKnownException" name="fault"></part>
   </message>
+  <message name="MalformedURLException">
+    <part element="tns:MalformedURLException" name="fault"></part>
+  </message>
   <message name="removeKnowledgeSource">
     <part name="arg0" type="xsd:int"></part>
     <part name="arg1" type="xsd:int"></part>
@@ -157,6 +160,13 @@
     <part name="arg3" type="xsd:string"></part>
   </message>
   <message name="applyConfigEntryStringResponse"></message>
+  <message name="applyConfigEntryURL">
+    <part name="arg0" type="xsd:int"></part>
+    <part name="arg1" type="xsd:int"></part>
+    <part name="arg2" type="xsd:string"></part>
+    <part name="arg3" type="xsd:string"></part>
+  </message>
+  <message name="applyConfigEntryURLResponse"></message>
   <message name="applyConfigEntryStringArray">
     <part name="arg0" type="xsd:int"></part>
     <part name="arg1" type="xsd:int"></part>
@@ -188,6 +198,14 @@
     <part name="arg2" type="xsd:string"></part>
   </message>
   <message name="getConfigOptionValueStringResponse">
+    <part name="return" type="xsd:string"></part>
+  </message>
+  <message name="getConfigOptionValueURL">
+    <part name="arg0" type="xsd:int"></part>
+    <part name="arg1" type="xsd:int"></part>
+    <part name="arg2" type="xsd:string"></part>
+  </message>
+  <message name="getConfigOptionValueURLResponse">
     <part name="return" type="xsd:string"></part>
   </message>
   <message name="getConfigOptionValueDouble">
@@ -326,6 +344,12 @@
   <message name="SparqlRetrievalResponse">
     <part name="return" type="xsd:string"></part>
   </message>
+  <message name="getNaturalDescription">
+    <part name="arg0" type="xsd:string"></part>
+  </message>
+  <message name="getNaturalDescriptionResponse">
+    <part name="return" type="xsd:string"></part>
+  </message>
   <message name="getNegativeExamples">
     <part name="arg0" type="xsd:int"></part>
     <part name="arg1" type="xsd:int"></part>
@@ -388,6 +412,7 @@
       <output message="tns:addKnowledgeSourceResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
       <fault message="tns:UnknownComponentException" name="UnknownComponentException"></fault>
+      <fault message="tns:MalformedURLException" name="MalformedURLException"></fault>
     </operation>
     <operation name="removeKnowledgeSource" parameterOrder="arg0 arg1">
       <input message="tns:removeKnowledgeSource"></input>
@@ -476,6 +501,13 @@
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
       <fault message="tns:UnknownComponentException" name="UnknownComponentException"></fault>
     </operation>
+    <operation name="applyConfigEntryURL" parameterOrder="arg0 arg1 arg2 arg3">
+      <input message="tns:applyConfigEntryURL"></input>
+      <output message="tns:applyConfigEntryURLResponse"></output>
+      <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
+      <fault message="tns:UnknownComponentException" name="UnknownComponentException"></fault>
+      <fault message="tns:MalformedURLException" name="MalformedURLException"></fault>
+    </operation>
     <operation name="applyConfigEntryStringArray" parameterOrder="arg0 arg1 arg2 arg3">
       <input message="tns:applyConfigEntryStringArray"></input>
       <output message="tns:applyConfigEntryStringArrayResponse"></output>
@@ -498,6 +530,13 @@
     <operation name="getConfigOptionValueString" parameterOrder="arg0 arg1 arg2">
       <input message="tns:getConfigOptionValueString"></input>
       <output message="tns:getConfigOptionValueStringResponse"></output>
+      <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
+      <fault message="tns:UnknownComponentException" name="UnknownComponentException"></fault>
+      <fault message="tns:ConfigOptionTypeException" name="ConfigOptionTypeException"></fault>
+    </operation>
+    <operation name="getConfigOptionValueURL" parameterOrder="arg0 arg1 arg2">
+      <input message="tns:getConfigOptionValueURL"></input>
+      <output message="tns:getConfigOptionValueURLResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
       <fault message="tns:UnknownComponentException" name="UnknownComponentException"></fault>
       <fault message="tns:ConfigOptionTypeException" name="ConfigOptionTypeException"></fault>
@@ -604,6 +643,11 @@
     <operation name="SparqlRetrieval" parameterOrder="arg0">
       <input message="tns:SparqlRetrieval"></input>
       <output message="tns:SparqlRetrievalResponse"></output>
+      <fault message="tns:ParseException" name="ParseException"></fault>
+    </operation>
+    <operation name="getNaturalDescription" parameterOrder="arg0">
+      <input message="tns:getNaturalDescription"></input>
+      <output message="tns:getNaturalDescriptionResponse"></output>
       <fault message="tns:ParseException" name="ParseException"></fault>
     </operation>
     <operation name="getNegativeExamples" parameterOrder="arg0 arg1 arg2 arg3 arg4">
@@ -713,6 +757,9 @@
       </fault>
       <fault name="UnknownComponentException">
         <soap:fault name="UnknownComponentException" use="literal"></soap:fault>
+      </fault>
+      <fault name="MalformedURLException">
+        <soap:fault name="MalformedURLException" use="literal"></soap:fault>
       </fault>
     </operation>
     <operation name="removeKnowledgeSource">
@@ -928,6 +975,24 @@
         <soap:fault name="UnknownComponentException" use="literal"></soap:fault>
       </fault>
     </operation>
+    <operation name="applyConfigEntryURL">
+      <soap:operation soapAction=""></soap:operation>
+      <input>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </output>
+      <fault name="ClientNotKnownException">
+        <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
+      </fault>
+      <fault name="UnknownComponentException">
+        <soap:fault name="UnknownComponentException" use="literal"></soap:fault>
+      </fault>
+      <fault name="MalformedURLException">
+        <soap:fault name="MalformedURLException" use="literal"></soap:fault>
+      </fault>
+    </operation>
     <operation name="applyConfigEntryStringArray">
       <soap:operation soapAction=""></soap:operation>
       <input>
@@ -977,6 +1042,24 @@
       </fault>
     </operation>
     <operation name="getConfigOptionValueString">
+      <soap:operation soapAction=""></soap:operation>
+      <input>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </output>
+      <fault name="ClientNotKnownException">
+        <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
+      </fault>
+      <fault name="UnknownComponentException">
+        <soap:fault name="UnknownComponentException" use="literal"></soap:fault>
+      </fault>
+      <fault name="ConfigOptionTypeException">
+        <soap:fault name="ConfigOptionTypeException" use="literal"></soap:fault>
+      </fault>
+    </operation>
+    <operation name="getConfigOptionValueURL">
       <soap:operation soapAction=""></soap:operation>
       <input>
         <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
@@ -1238,6 +1321,18 @@
       </fault>
     </operation>
     <operation name="SparqlRetrieval">
+      <soap:operation soapAction=""></soap:operation>
+      <input>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </output>
+      <fault name="ParseException">
+        <soap:fault name="ParseException" use="literal"></soap:fault>
+      </fault>
+    </operation>
+    <operation name="getNaturalDescription">
       <soap:operation soapAction=""></soap:operation>
       <input>
         <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
