@@ -10,6 +10,6 @@
 	$interests=show_Interests($_SESSION);
 		
 	print $interests[0];
-	print '$$';
+	print '$$$';
 	print $interests[1]; 
 ?>

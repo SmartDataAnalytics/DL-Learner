@@ -48,8 +48,8 @@
 		$content.="Your Search brought no results.";
 	
 	print $content;
-	print '$$';
+	print '$$$';
 	print "Searchresult for Category \"".$label."\"";
-	print '$$';
+	print '$$$';
 	print $bestsearches;
 ?>

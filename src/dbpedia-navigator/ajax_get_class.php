@@ -116,8 +116,8 @@
 	}
 	
 	print $content;
-	print '$$';
+	print '$$$';
 	print "Class: ".$title;
-	print '$$';
+	print '$$$';
 	print $lastClasses;
 ?>
