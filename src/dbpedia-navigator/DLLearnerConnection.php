@@ -113,6 +113,11 @@ class DLLearnerConnection
 		return json_decode($this->client->getCurrentlyBestEvaluatedDescriptions($this->id,3),true);
 	}
 	
+	function getNaturalDescription($concept)
+	{
+		return $this->client->getNaturalDescription($concept);
+	}
+	
 	function getConceptDepth()
 	{
 		return $this->client->getConceptDepth($this->id,3)->item;
