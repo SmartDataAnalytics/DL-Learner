@@ -8,6 +8,8 @@
 
   <xs:element name="LearningProblemUnsupportedException" type="tns:LearningProblemUnsupportedException"></xs:element>
 
+  <xs:element name="MalformedURLException" type="tns:MalformedURLException"></xs:element>
+
   <xs:element name="ParseException" type="tns:ParseException"></xs:element>
 
   <xs:element name="SparqlQueryException" type="tns:SparqlQueryException"></xs:element>
@@ -51,6 +53,12 @@
   </xs:complexType>
 
   <xs:complexType name="LearningProblemUnsupportedException">
+    <xs:sequence>
+      <xs:element name="message" type="xs:string" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MalformedURLException">
     <xs:sequence>
       <xs:element name="message" type="xs:string" minOccurs="0"></xs:element>
     </xs:sequence>
