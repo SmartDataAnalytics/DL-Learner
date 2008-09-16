@@ -150,6 +150,48 @@ function getCategoryResultsTable($names,$labels,$category,$number)
 	return $ret;
 }
 
+function getConceptResultsTable($names,$labels,$manchester,$kb,$label,$number)
+{
+	$ret="<p>These are your results. Show best ";
+	for ($k=10;$k<125;){
+		$ret.="<a href=\"#\" onclick=\"getSubjectsFromConcept('manchester=".$manchester."&kb=".$kb."&label=".$label."number=".$k."');return false;\"";
+		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
+		else $ret.=" style=\"text-decoration:underline;\"";
+		$ret.=">".($k)."</a>";
+		if ($k!=100) $ret.=" | ";
+		if($k==10) $k=25;
+		else $k=$k+25;
+	}
+	$ret.="</p><br/>";
+	$i=0;
+	$display="block";
+	$ret.="<div id=\"results\">";
+	while($i*25<count($names))
+	{
+		for ($j=0;($j<25)&&(($i*25+$j)<count($names));$j++)
+		{
+			$name=$names[$i*25+$j];
+			$label=$labels[$i*25+$j];
+			if (strlen($label)==0) $label=urldecode(str_replace("_"," ",substr (strrchr ($name, "/"), 1)));
+			$ret.='<p style="display:'.$display.'">&nbsp;&nbsp;&nbsp;&nbsp;'.($i*25+$j+1).'.&nbsp;<a class="all" href="" onclick="get_article(\'label='.$name.'&cache=-1\');return false;">'.utf8_to_html($label).'</a></p>';
+		}
+		$i++;
+		$display="none";
+	}
+	$ret.='<input type="hidden" id="hidden_class" value="all"/><input type="hidden" id="hidden_number" value="0"/></div><br/><p style="width:100%;text-align:center;" id="sitenumbers">';
+	for ($k=0;$k<$i;$k++){
+		$ret.="<span>";
+		if ($k!=0) $ret.=" | ";
+		$ret.="<a href=\"#\" onclick=\"document.getElementById('hidden_number').value='".(25*$k)."';show_results(document.getElementById('hidden_class').value,".(25*$k).");\"";
+		if ($k==0) $ret.=" style=\"text-decoration:none;\"";
+		else $ret.=" style=\"text-decoration:underline;\"";
+		$ret.=">".($k+1)."</a>";
+		$ret.="</span>";
+	}
+	$ret.="</p>";
+	return $ret;
+}
+
 function getBestSearches($names,$labels)
 {
 	$ret="<div id=\"best-results\">";

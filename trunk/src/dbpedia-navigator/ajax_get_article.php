@@ -232,16 +232,16 @@
 	$interests=show_Interests($_SESSION);
 		
 	print $content;
-	print '$$';
+	print '$$$';
 	print $artTitle;
-	print '$$';
+	print '$$$';
 	print $lastArticles;
-	print '$$';
+	print '$$$';
 	print $interests[0];
-	print '$$';
+	print '$$$';
 	print $interests[1];
-	print '$$';
+	print '$$$';
 	print $lat;
-	print '$$';
+	print '$$$';
 	print $long;
 ?>

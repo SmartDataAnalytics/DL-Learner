@@ -65,8 +65,8 @@
 		$content.="Your Search brought no results.";
 	
 	print $content;
-	print '$$';
+	print '$$$';
 	print "Searchresult for \"".$label."\"";
-	print '$$';
+	print '$$$';
 	print $bestsearches;
 ?>

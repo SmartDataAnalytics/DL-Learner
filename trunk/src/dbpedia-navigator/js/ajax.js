@@ -14,7 +14,7 @@ function search_it(param)
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
+    		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('articlecontent').innerHTML=response[0];
     		document.getElementById('ArticleTitle').innerHTML=response[1];
     		if (response[2].length>0){
@@ -45,7 +45,7 @@ function get_article(param)
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
+    		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('articlecontent').innerHTML=response[0];
     		document.getElementById('ArticleTitle').innerHTML=response[1];
     		document.getElementById('lastarticles').innerHTML=response[2];
@@ -83,7 +83,7 @@ function get_class(param)
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
+    		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('articlecontent').innerHTML=response[0];
     		document.getElementById('ArticleTitle').innerHTML=response[1];
     		document.getElementById('lastclasses').innerHTML=response[2];
@@ -111,7 +111,7 @@ function toPositive(param)
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
+    		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
     	}
@@ -137,7 +137,7 @@ function toNegative(param)
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
+    		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
     	}
@@ -211,7 +211,7 @@ function removePosInterest(param)
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
+    		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
     	}
@@ -237,7 +237,7 @@ function removeNegInterest(param)
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
+    		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
     	}
@@ -315,9 +315,13 @@ function getSubjectsFromConcept(param)
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
+    		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('articlecontent').innerHTML=response[0];
     		document.getElementById('ArticleTitle').innerHTML=response[1];
+    		if (response[2].length>0){
+    			document.getElementById('searchcontent').innerHTML=response[2];
+    			document.getElementById('SearchResultBox').style.display='block';
+    		}
     	}
     }
     		
@@ -341,7 +345,7 @@ function getSubjectsFromCategory(param)
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
+    		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('articlecontent').innerHTML=response[0];
     		document.getElementById('ArticleTitle').innerHTML=response[1];
     		if (response[2].length>0){
@@ -371,7 +375,7 @@ function setPositivesAndNegatives(param)
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
-    		var response = XhrObj.responseText.split('$$');
+    		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
     	}
