@@ -102,8 +102,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			OWLDescription description, OWLFrame<OWLClass> frame, String label) {
 		this.editorKit = editorKit;
 		// this.initialDescription = description;
-		checker = new OWLDescriptionChecker(editorKit);
-		editor = new ExpressionEditor<OWLDescription>(editorKit, checker);
+		//checker = new OWLDescriptionChecker(editorKit);
+		editor = new ExpressionEditor<OWLDescription>(editorKit, editorKit.getModelManager().getOWLExpressionCheckerFactory().getOWLDescriptionChecker());
 		editor.setExpressionObject(description);
 		dllearner = new DLLearnerView(frame, label);
 		action = new ActionHandler(this.action, null, dllearner, null,
