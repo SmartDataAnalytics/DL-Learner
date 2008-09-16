@@ -128,6 +128,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	//	refactor this
 	private static int maxPosOnlyExpansionDefault = 4;
 	private int maxPosOnlyExpansion = maxPosOnlyExpansionDefault;
+	private boolean forceRefinementLengthIncrease = false;
 	//extended Options
 	//in seconds
 	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
@@ -204,6 +205,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		noisePercentage.setUpperLimit(100);
 		options.add(noisePercentage);
 		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
+		options.add(new BooleanConfigOption("forceRefinementLengthIncrease", "specifies whether nodes should be expanded until only longer refinements are reached"));
 		return options;
 	}
 	
@@ -274,6 +276,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			guaranteeXgoodDescriptions =  (Integer) entry.getValue();
 		} else if(name.equals("logLevel")) {
 			logLevel = ((String)entry.getValue()).toUpperCase();
+		} else if(name.equals("forceRefinementLengthIncrease")) {
+			forceRefinementLengthIncrease = (Boolean) entry.getValue();
 		}
 	}
 
@@ -385,8 +389,9 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 				maxPosOnlyExpansion,
 				maxExecutionTimeInSeconds,
 				minExecutionTimeInSeconds,
-				guaranteeXgoodDescriptions
-		);		
+				guaranteeXgoodDescriptions,
+				forceRefinementLengthIncrease
+		);
 		// note: used concepts and roles do not need to be passed
 		// as argument, because it is sufficient to prepare the
 		// concept and role hierarchy accordingly

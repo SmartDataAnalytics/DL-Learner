@@ -131,6 +131,15 @@ public class ExampleBasedROLearner {
 	// (this is called irregularly e.g. every 100 seconds)
 	private boolean useTreeTraversal = false;
 
+	// if this variable is set to true, then the refinement operator
+	// is applied until all concept of equal length have been found
+	// e.g. TOP -> A1 -> A2 -> A3 is found in one loop; the disadvantage
+	// are potentially more method calls, but the advantage is that 
+	// the algorithm is better in locating relevant concept in the 
+	// subsumption hierarchy (otherwise, if the most general concept
+	// is not promising, it may never get expanded)
+	private boolean forceRefinementLengthIncrease;
+	
 	// candidate reduction: using this mechanism we can simulate
 	// the divide&conquer approach in many ILP programs using a
 	// clause by clause search; after a period of time the candidate
@@ -233,7 +242,7 @@ public class ExampleBasedROLearner {
 			boolean useTooWeakList, boolean useOverlyGeneralList,
 			boolean useShortConceptConstruction, boolean usePropernessChecks,
 			int maxPosOnlyExpansion, int maxExecutionTimeInSeconds, int minExecutionTimeInSeconds,
-			int guaranteeXgoodDescriptions) {
+			int guaranteeXgoodDescriptions, boolean forceRefinementLengthIncrease) {
 
 		if (learningProblem instanceof PosNegLP) {
 			PosNegLP lp = (PosNegLP) learningProblem;
@@ -278,6 +287,7 @@ public class ExampleBasedROLearner {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 		this.minExecutionTimeInSeconds = minExecutionTimeInSeconds;
 		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
+		this.forceRefinementLengthIncrease = forceRefinementLengthIncrease;
 
 		// logger.setLevel(Level.DEBUG);
 	}
@@ -835,6 +845,16 @@ public class ExampleBasedROLearner {
 
 				// System.out.println(newNode.getConcept() + " " + quality);
 				node.addChild(newNode);
+				
+				// it is often useful to continue expanding until a longer node is
+				// reached (to replace atomic concepts with more specific ones)
+				if(forceRefinementLengthIncrease) {
+					// extend node again if its concept has the same length 
+					if(node.getConcept().getLength() == newNode.getConcept().getLength()) {
+						extendNodeProper(newNode, refinement, maxLength, recDepth + 1);
+					}
+				}				
+				
 			}
 		}
 
