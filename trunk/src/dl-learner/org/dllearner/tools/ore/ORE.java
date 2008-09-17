@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 import java.io.File;
@@ -26,8 +46,6 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLAPIOntology;
@@ -45,38 +63,28 @@ public class ORE {
 	private PosNegDefinitionLP lp;
 	private ComponentManager cm;
 	
-	FastInstanceChecker reasoner;
-	OWLAPIReasoner reasoner2;
+	private FastInstanceChecker fastReasoner;
+	private OWLAPIReasoner owlReasoner;
+	
 	private SortedSet<Individual> posExamples;
 	private SortedSet<Individual> negExamples;
-	NamedClass ignoredConcept;
-	Description conceptToAdd;
-	OntologyModifierOWLAPI modi;
-	private String baseURI;
-	public String getBaseURI() {
-		return baseURI;
-	}
-
-	public Map<String, String> getPrefixes() {
-		return prefixes;
-	}
-
-
-
-
-
-
-	private Map<String, String> prefixes;
-	public Set<NamedClass> allAtomicConcepts;
-	private double noise = 0.0;
 	
-	Thread t;
+	private NamedClass ignoredConcept;
+	private Description newClassDescription;
+	private Set<NamedClass> allAtomicConcepts;
+	
+	private OntologyModifier modifier;
+	
+	private String baseURI;
+	private Map<String, String> prefixes;
+	
+	private double noise = 0.0;
 	
 	
 	public ORE() {
 
 		cm = ComponentManager.getInstance();
-		
+
 	}
 	
 	// step 1: detect knowledge sources
@@ -99,11 +107,11 @@ public class ORE {
 	
 	
 	
-	public void detectReasoner(){
+	public void initReasoners(){
 		
-		reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		fastReasoner = cm.reasoner(FastInstanceChecker.class, ks);
 		try {
-			reasoner.init();
+			fastReasoner.init();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,21 +119,18 @@ public class ORE {
 		
 				
 		
-		reasoner2 = cm.reasoner(OWLAPIReasoner.class, ks);
+		owlReasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 		try {
-			reasoner2.init();
+			owlReasoner.init();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		rs = cm.reasoningService(reasoner);
-		modi = new OntologyModifierOWLAPI(reasoner2);
-		baseURI = reasoner.getBaseURI();
-		prefixes = reasoner.getPrefixes();
-		
+		rs = cm.reasoningService(fastReasoner);
+		modifier = new OntologyModifier(owlReasoner);
+		baseURI = fastReasoner.getBaseURI();
+		prefixes = fastReasoner.getPrefixes();
 	
-		
-		
 	}
 	
 	public ReasoningService getReasoningService(){
@@ -140,21 +145,47 @@ public class ORE {
 		posExamples = rs.retrieval(ignoredConcept);
 		negExamples = rs.getIndividuals();
 		
-		for (Individual rem_pos : posExamples)
-			negExamples.remove(rem_pos);
+		for (Individual pos : posExamples){
+			negExamples.remove(pos);
+		}
 	}
 	
 	public SortedSet<Individual> getNegExamples(){
 		return negExamples;
 	}
 	
+	public OntologyModifier getModifier() {
+		return modifier;
+	}
+
+
+	public Description getNewClassDescription() {
+		return newClassDescription;
+	}
+
+
+	public String getBaseURI() {
+		return baseURI;
+	}
+
+	public Map<String, String> getPrefixes() {
+		return prefixes;
+	}
+
+	public OWLAPIReasoner getOwlReasoner() {
+		return owlReasoner;
+	}
+	
+	public FastInstanceChecker getFastReasoner() {
+		return fastReasoner;
+	}
+
 	public void setLearningProblem(){
 		lp = new PosNegDefinitionLP(rs, posExamples, negExamples);
 		lp.init();
 	}
 	
 	public void setNoise(double noise){
-		
 		this.noise = noise;
 	}
 	
@@ -170,7 +201,7 @@ public class ORE {
 		
 		
 		t.add(ignoredConcept.getName());
-		cm.applyConfigEntry(la, "ignoredConcepts", t );
+		cm.applyConfigEntry(la, "ignoredConcepts", t);
 		cm.applyConfigEntry(la, "guaranteeXgoodDescriptions", 10);
 		try {
 			la.init();
@@ -184,28 +215,25 @@ public class ORE {
 	public void setConcept(NamedClass concept){
 		this.ignoredConcept = concept;
 	}
-
 	
 	public void init(){
-		
-		this.setPosNegExamples();
-		this.setLearningProblem();
-		this.setLearningAlgorithm();
 		try {
-			reasoner2.init();
-			reasoner.init();
+			owlReasoner.init();
+			fastReasoner.init();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+		this.setPosNegExamples();
+		this.setLearningProblem();
+		this.setLearningAlgorithm();
+			
 	}
 	
 	public LearningAlgorithm start(){
 		Set<String> t = new TreeSet<String>();
-		
-		cm.applyConfigEntry(la, "ignoredConcepts", t );
+		t.add(ignoredConcept.getName());
+		cm.applyConfigEntry(la, "ignoredConcepts", t);
 		cm.applyConfigEntry(la, "noisePercentage", noise);
 		try {
 			la.init();
@@ -218,20 +246,16 @@ public class ORE {
 		return la;
 	}
 	
-	
-	
-		
-
 	public List<Description> getLearningResults(int anzahl){
 		return la.getCurrentlyBestDescriptions(anzahl, true);
 	}
 	
 	/**
-	 * 
+	 * returns accuracy of a description
 	 * @param d
 	 * @return
 	 */
-	public BigDecimal getCorrectness(Description d){
+	public BigDecimal computeAccuracy(Description d){
 		int numberPosExamples = 0;
 		int numberNegExamples = 0;
 		double result_tmp = 0.0f;
@@ -267,11 +291,10 @@ public class ORE {
 		HashSet<Individual> negFailureExamples = new HashSet<Individual>() ;
 		
 		for(Individual ind : negExamples){
-			if(instanceRs.instanceCheck(conceptToAdd, ind))
+			if(instanceRs.instanceCheck(newClassDescription, ind))
 				negFailureExamples.add(ind);
 				
 		}
-		
 		
 		return negFailureExamples;
 	}
@@ -291,13 +314,13 @@ public class ORE {
 		
 		HashSet<Individual> posFailureExamples = new HashSet<Individual>() ;
 		for(Individual ind : posExamples){
-			if(!instanceRs.instanceCheck(conceptToAdd, ind))
+			if(!instanceRs.instanceCheck(newClassDescription, ind))
 				posFailureExamples.add(ind);
 		}
 		
 		HashSet<Individual> negFailureExamples = new HashSet<Individual>() ;
 		for(Individual ind : negExamples){
-			if(instanceRs.instanceCheck(conceptToAdd, ind))
+			if(instanceRs.instanceCheck(newClassDescription, ind))
 				negFailureExamples.add(ind);
 		}
 		
@@ -324,7 +347,7 @@ public class ORE {
 		
 		
 		for(Individual ind : posExamples){
-			if(!instanceRs.instanceCheck(conceptToAdd, ind))
+			if(!instanceRs.instanceCheck(newClassDescription, ind))
 				posFailureExamples.add(ind);
 				
 		}
@@ -332,25 +355,12 @@ public class ORE {
 		return posFailureExamples;
 	}
 
-
-	
-		
-	
-
-	public Description getConceptToAdd() {
-		return conceptToAdd;
-	}
-
-	public void setConceptToAdd(Description conceptToAdd) {
-		this.conceptToAdd = conceptToAdd;
+	public void setNewClassDescription(Description newClassDescription) {
+		this.newClassDescription = newClassDescription;
 	}
 
 	public LearningAlgorithm getLa() {
 		return la;
-	}
-
-	public OntologyModifierOWLAPI getModi() {
-		return modi;
 	}
 
 	public NamedClass getIgnoredConcept() {
@@ -361,82 +371,77 @@ public class ORE {
 		this.allAtomicConcepts = allAtomicConcepts;
 	}
 	
-	public Set<Description> getAllChildren(Description desc){
-		Set<Description> allChildren = new HashSet<Description>();
-		List<Description> children = desc.getChildren();
+	/**
+	 * finds out description parts that might cause inconsistency - for negative examples only
+	 * @param ind
+	 * @param desc
+	 * @return
+	 */
+	public Set<Description> getNegCriticalDescriptions(Individual ind, Description desc){
 		
-		if(children.size() >= 2)
-			for(Description d : children)
-				allChildren.addAll(getAllChildren(d));
-		else
-			allChildren.add(desc);
-				
-		return allChildren;
-	}
-		
-	public Set<Description> getCriticalDescriptions(Individual ind, Description desc){
-		
-	
 		Set<Description> criticals = new HashSet<Description>();
 		List<Description> children = desc.getChildren();
 		
-				
-		if(reasoner2.instanceCheck(desc, ind)){
+		if(owlReasoner.instanceCheck(desc, ind)){
 			
 			if(children.size() >= 2){
 				
 				if(desc instanceof Intersection){
 					for(Description d: children)
-						criticals.addAll(getCriticalDescriptions(ind, d));
+						criticals.addAll(getNegCriticalDescriptions(ind, d));
 				
 				}
 				else if(desc instanceof Union){
 					for(Description d: children)
-						if(reasoner2.instanceCheck(d, ind))
-							criticals.addAll(getCriticalDescriptions(ind, d));
+						if(owlReasoner.instanceCheck(d, ind))
+							criticals.addAll(getNegCriticalDescriptions(ind, d));
 				}
 			}
 			else
 				criticals.add(desc);
 		}
 		
-		
 		return criticals;
 	}
-	
-	public Collection<JLabel> DescriptionToJLabelNeg(Individual ind, Description desc){
-//		Set<JLabel> criticals = new HashSet<JLabel>();
+	/**
+	 * finds the description that might cause inconsistency for negative examples
+	 * @param ind
+	 * @param desc
+	 * @return vector of JLabel 
+	 */
+	public Collection<JLabel> descriptionToJLabelNeg(Individual ind, Description desc){
+
 		Collection<JLabel> criticals = new Vector<JLabel>();
 		List<Description> children = desc.getChildren();
 		
 		try {
-			if(reasoner.instanceCheck(desc, ind)){
+			if(fastReasoner.instanceCheck(desc, ind)){
 				
 				if(children.size() >= 2){
 					
 					if(desc instanceof Intersection){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
-							criticals.addAll(DescriptionToJLabelNeg(ind, desc.getChild(i)));
+							criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(i)));
 							criticals.add(new JLabel("and"));
 							
 						}
-						criticals.addAll(DescriptionToJLabelNeg(ind, desc.getChild(children.size()-1)));
+						criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(children.size()-1)));
 						criticals.add(new JLabel(")"));
 					}
 					else if(desc instanceof Union){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
-							if(reasoner.instanceCheck(desc.getChild(i), ind)){
-								criticals.addAll(DescriptionToJLabelNeg(ind, desc.getChild(i)));
+							if(fastReasoner.instanceCheck(desc.getChild(i), ind)){
+								criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(i)));
 							}
 							else{
 								criticals.add(new JLabel(desc.getChild(i).toManchesterSyntaxString(baseURI, prefixes)));
 							}
 							criticals.add(new JLabel("or"));
 						}
-						if(reasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
-							criticals.addAll(DescriptionToJLabelNeg(ind, desc.getChild(children.size()-1)));
+						if(fastReasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
+							criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(children.size()-1)));
 						}
 						else{
 							criticals.add(new JLabel(desc.getChild(children.size()-1).toManchesterSyntaxString(baseURI, prefixes)));
@@ -461,37 +466,43 @@ public class ORE {
 	return criticals;
 	}
 	
+	/**
+	 * finds the description that might cause inconsistency for positive examples
+	 * @param ind
+	 * @param desc
+	 * @return vector of JLabel 
+	 */
 	public Collection<JLabel> DescriptionToJLabelPos(Individual ind, Description desc){
 
 		Collection<JLabel> criticals = new Vector<JLabel>();
 		List<Description> children = desc.getChildren();
 		
 		try {
-			if(!reasoner.instanceCheck(desc, ind)){
+			if(!fastReasoner.instanceCheck(desc, ind)){
 				
 				if(children.size() >= 2){
 					
-					if(desc instanceof Intersection){
+					if(desc instanceof Union){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
 							criticals.addAll(DescriptionToJLabelPos(ind, desc.getChild(i)));
-							criticals.add(new JLabel("and"));
+							criticals.add(new JLabel("or"));
 						}
 						criticals.addAll(DescriptionToJLabelPos(ind, desc.getChild(children.size()-1)));
 						criticals.add(new JLabel(")"));
 					}
-					else if(desc instanceof Union){
+					else if(desc instanceof Intersection){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
-							if(!reasoner.instanceCheck(desc.getChild(i), ind)){
+							if(!fastReasoner.instanceCheck(desc.getChild(i), ind)){
 								criticals.addAll(DescriptionToJLabelPos(ind, desc.getChild(i)));
 							}
 							else{
 								criticals.add(new JLabel(desc.getChild(i).toManchesterSyntaxString(baseURI, prefixes)));
 							}
-							criticals.add(new JLabel("or"));
+							criticals.add(new JLabel("and"));
 						}
-						if(!reasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
+						if(!fastReasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
 							criticals.addAll(DescriptionToJLabelPos(ind, desc.getChild(children.size()-1)));
 						}
 						else{
@@ -517,23 +528,35 @@ public class ORE {
 	return criticals;
 	}
 	
-	public Set<Individual> getIndividualsOfPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
+	/**
+	 * returns individuals that are in range of property
+	 * @param objRestr
+	 * @param ind
+	 * @return
+	 */
+	public Set<Individual> getIndividualsInPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
 		
-		Set<Individual> individuals = reasoner2.retrieval(objRestr.getChild(0));
+		Set<Individual> individuals = owlReasoner.retrieval(objRestr.getChild(0));
 		individuals.remove(ind);
 		
 		return individuals;
 	}
 	
+	/**
+	 * returns individuals that are not in range of property
+	 * @param objRestr
+	 * @param ind
+	 * @return
+	 */
 	public Set<Individual> getIndividualsNotInPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
 		
 
 		Set<Individual> allIndividuals = new HashSet<Individual>();
 		
-		for(Individual i : reasoner2.getIndividuals()){
+		for(Individual i : owlReasoner.getIndividuals()){
 			
 			try {
-				if(!reasoner.instanceCheck(objRestr.getChild(0), i)){
+				if(!fastReasoner.instanceCheck(objRestr.getChild(0), i)){
 					allIndividuals.add(i);
 				}
 			} catch (ReasoningMethodUnsupportedException e) {
@@ -548,10 +571,12 @@ public class ORE {
 	
 	public Set<NamedClass> getpossibleClassesMoveTo(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
-		for(NamedClass nc : rs.getNamedClasses())
-			if(!rs.instanceCheck(nc, ind))
+		for(NamedClass nc : rs.getNamedClasses()){
+			if(!rs.instanceCheck(nc, ind)){
 				moveClasses.add(nc);
-
+			}
+		}
+		moveClasses.remove(ignoredConcept);
 			
 		return moveClasses;
 	}
@@ -559,8 +584,9 @@ public class ORE {
 	public Set<NamedClass> getpossibleClassesMoveFrom(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
 		for(NamedClass nc : rs.getNamedClasses()){
-			if(rs.instanceCheck(nc, ind))
+			if(rs.instanceCheck(nc, ind)){
 				moveClasses.add(nc);
+			}
 		}
 		moveClasses.remove(ignoredConcept);
 			
@@ -568,76 +594,113 @@ public class ORE {
 	}
 	
 	public void updateReasoner(){
-		reasoner = cm.reasoner(FastInstanceChecker.class, new OWLAPIOntology(modi.ontology));
+		fastReasoner = cm.reasoner(FastInstanceChecker.class, new OWLAPIOntology(modifier.getOntology()));
 		try {
-			reasoner.init();
+			fastReasoner.init();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		reasoner2 = cm.reasoner(OWLAPIReasoner.class,new OWLAPIOntology(modi.ontology));
+		owlReasoner = cm.reasoner(OWLAPIReasoner.class,new OWLAPIOntology(modifier.getOntology()));
 		
 		try {
-			reasoner2.init();
+			owlReasoner.init();
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		rs = cm.reasoningService(reasoner2);
-//		setLearningAlgorithm();
+		rs = cm.reasoningService(owlReasoner);
+		setLearningAlgorithm();
 	}
 	
+	/**
+	 * get the complement classes where individual is asserted to
+	 * @param desc
+	 * @param ind
+	 * @return
+	 */
 	public Set<NamedClass> getComplements(Description desc, Individual ind){
 		Set<NamedClass> complements = new HashSet<NamedClass>();
-		for(NamedClass nc : reasoner2.getAtomicConcepts()){
-			if(reasoner2.instanceCheck(nc, ind)){
-				if(modi.isComplement(desc, nc)){
+		for(NamedClass nc : owlReasoner.getAtomicConcepts()){
+			
+			if(owlReasoner.instanceCheck(nc, ind)){
+				if(modifier.isComplement(desc, nc)){
 					complements.add(nc);
 				}
 			}
 		}
-
+		
 		return complements;
 	}
+}
 	
 	
-	
+//	public static void main(String[] args){
+//		
+//		final ORE test = new ORE();
+//		
+//		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/neg_has_all.owl");
+//		
+//		test.setKnowledgeSource(owlFile);
+//		test.initReasoners();
+//		
+//		Individual subject = new Individual("http://example.com/father#patrick");
+//		Description newClass = new Intersection(new NamedClass("http://example.com/father#female"), 
+//												new Negation(new NamedClass("http://example.com/father#bird")));
+//		Description desc = new NamedClass("http://example.com/father#bird");
+//		
+//		Description range = new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"),
+//				new NamedClass("http://example.com/father#female"));
+//		ObjectAllRestriction role = new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"),
+//				range);
+//		System.out.println(role.toManchesterSyntaxString(test.getBaseURI(), test.getPrefixes()));
+//		try {
+//			System.out.println(test.fastReasoner.instanceCheck(role, subject));
+//		} catch (ReasoningMethodUnsupportedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		test.modifier.addObjectProperty(subject, role, new Individual("http://example.com/father#anna"));
+//		test.updateReasoner();
+//		try {
+//			System.out.println(test.fastReasoner.instanceCheck(role, subject));
+//		} catch (ReasoningMethodUnsupportedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		test.modifier.saveOntology();
+//		
+//	
+//		
+//		
 		
-	
-	
-	public static void main(String[] args){
-		
-		final ORE test = new ORE();
-		
-		File owlFile = new File("src/dl-learner/org/dllearner/tools/ore/neg_has_all.owl");
-		
-		test.setKnowledgeSource(owlFile);
-	
-		test.detectReasoner();
-		
-		Individual subject = new Individual("http://example.com/father#anton");
-		
-		Description range = new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"),
-													new NamedClass("http://example.com/father#female"));
-		ObjectAllRestriction role = new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"),
-													range);
-		Description d = new Intersection(new NamedClass("http://example.com/father#male"), role);
-		try {
-			System.out.println(test.reasoner.instanceCheck(d, subject));
-		} catch (ReasoningMethodUnsupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("vorher" + test.modi.ontology.getAxioms());
-		Individual object = new Individual("http://example.com/father#markus");
-		test.modi.addObjectProperty(subject, role, object);
-		test.updateReasoner();
-		try {
-			System.out.println(test.reasoner.instanceCheck(d, subject));
-		} catch (ReasoningMethodUnsupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		System.out.println(test.owlReasoner.getInconsistentClasses());
+//		test.getModi().reason();
+
+//		
+//		Individual subject = new Individual("http://example.com/father#anton");
+//		
+//		Description range = new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"),
+//													new NamedClass("http://example.com/father#female"));
+//		ObjectAllRestriction role = new ObjectAllRestriction(new ObjectProperty("http://example.com/father#hasChild"),
+//													range);
+//		Description d = new Intersection(new NamedClass("http://example.com/father#male"), role);
+//		try {
+//			System.out.println(test.fastReasoner.instanceCheck(d, subject));
+//		} catch (ReasoningMethodUnsupportedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.out.println("vorher" + test.modi.ontology.getAxioms());
+//		Individual object = new Individual("http://example.com/father#markus");
+//		test.modi.addObjectProperty(subject, role, object);
+//		test.updateReasoner();
+//		try {
+//			System.out.println(test.fastReasoner.instanceCheck(d, subject));
+//		} catch (ReasoningMethodUnsupportedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		
 //		test.modi.reason();
@@ -667,19 +730,12 @@ public class ORE {
 //		for(JLabel jLab : test.DescriptionToJLabel(ind, d))
 //			j.add(jLab);
 //		testFrame.setVisible(true);
-		
-		
-	
-		
-		
-		
-		
-	}
+//}
 		
 		
 		
 
-}
+
 	
 	
 	  

@@ -20,36 +20,31 @@
 
 package org.dllearner.tools.ore;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.GridLayout;
+import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
 
-public class ChangesPanel extends JPanel{
 
+public class SavePanel extends JPanel{
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -7538532926820669891L;
-
-	public ChangesPanel(){
+	private static final long serialVersionUID = 4301954036023325496L;
+	private JButton saveExit;
+	private JButton saveGoBack;
+	
+	public SavePanel(){
 		super();
-		setLayout(new GridLayout(0, 1));
-		setBackground(Color.WHITE);
-		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-		
+		saveExit = new JButton("Save and Exit");
+		saveGoBack = new JButton("Save and go to class choose panel");
+		add(saveExit);
+		add(saveGoBack);
 	}
 	
-
-	
-	public void updatePanel(Container cont){
-		remove(cont);
-		SwingUtilities.updateComponentTreeUI(this);
+	public void addActionListeners(ActionListener aL){
+		saveExit.addActionListener(aL);
+		saveGoBack.addActionListener(aL);
 	}
-	
-	
 }

@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 
@@ -62,11 +82,10 @@ public class IntroductionPanel extends JPanel {
         instructionsField.setRows(5);
         instructionsField.setFont(new Font("Serif",Font.PLAIN,14));
         instructionsField.setText("This is an test of a wizard dialog, which allows a knowledge engineer to select " +
-        							"a concept of an ontology which should be (re)learned.  \n\nOn " +
-        							"On the next page, choose a OWL file that contains an ontology. It will find any " +
-        							"concepts listed in the manifest, and also the positive and negative examples of the concept.  " +
-        							"When the concept you selected is learned, you are able to add the axiom to the ontology " +
-        							"and after all you might be able to repair if necessary. " );
+        							"a class of an ontology which should be (re)learned.\n" +
+        							"On the next page, choose a OWL file or a SPARQL-URL, that contains an ontology. After that " +
+        							"you might be able to select a class in the ontology to learn. When the class you selected is learned" +
+        							", you are able to add the axiom to the ontology and after all you might be able to repair if necessary. " );
         instructionsField.setWrapStyleWord(true);
         jScrollPane1.setViewportView(instructionsField);
               

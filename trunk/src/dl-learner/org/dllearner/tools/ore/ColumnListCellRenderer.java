@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 import java.awt.Color;
@@ -34,7 +54,7 @@ public class ColumnListCellRenderer extends JPanel implements ListCellRenderer {
 		setLayout(new GridBagLayout());
 		desc.setText(((Description) value).toManchesterSyntaxString(
 				ore.getBaseURI(), ore.getPrefixes()));
-		cor.setText((ore.getCorrectness((Description) value)).toString());
+		cor.setText((ore.computeAccuracy((Description) value)).toString());
 		add(cor,new GridBagConstraints(0, 0, 1, 1, 0.1, 0.0, GridBagConstraints.LINE_END, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));//, BorderLayout.WEST);
 		add(desc,new GridBagConstraints(1, 0, 1, 1, 0.8, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));//, BorderLayout.EAST);
 

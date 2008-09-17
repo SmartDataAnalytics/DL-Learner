@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 import java.awt.event.ActionEvent;
@@ -7,14 +27,11 @@ import java.awt.event.MouseListener;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
 
@@ -23,23 +40,25 @@ import org.semanticweb.owl.model.OWLOntologyChange;
 public class RepairPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener, MouseListener{
     
     public static final String IDENTIFIER = "REPAIR_PANEL";
+    public static final String INFORMATION = "In this panel all positive and negative examples, that cause failures are shown in the list above. " +
+	 "Select one of them and choose action to solve problem by press one of buttons aside the list.";
     
-    RepairPanel panel4;
+    private RepairPanel repairPanel;
     private Set<OWLOntologyChange> ontologyChanges;
     private ORE ore;
-    private OntologyModifierOWLAPI modi;
+    private OntologyModifier modi;
    
     
     public RepairPanelDescriptor() {
         
-        panel4 = new RepairPanel();
+        repairPanel = new RepairPanel();
        
-        panel4.addActionListeners(this);
-        panel4.addSelectionListeners(this);
-        panel4.addMouseListeners(this);
+        repairPanel.addActionListeners(this);
+        repairPanel.addSelectionListeners(this);
+        repairPanel.addMouseListeners(this);
        
         setPanelDescriptorIdentifier(IDENTIFIER);
-        setPanelComponent(panel4);
+        setPanelComponent(repairPanel);
         ontologyChanges = new HashSet<OWLOntologyChange>();
         
      
@@ -47,7 +66,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
     
     @Override
 	public Object getNextPanelDescriptor() {
-        return RepairPanelDescriptor.IDENTIFIER;
+        return SavePanelDescriptor.IDENTIFIER;
     }
     
     @Override
@@ -55,6 +74,15 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
         return LearningPanelDescriptor.IDENTIFIER;
     }
     
+    @Override
+	public void aboutToDisplayPanel() {
+    	getWizard().getInformationField().setText(INFORMATION);
+    }
+    
+    public void clearLists(){
+    	repairPanel.getNegFailureModel().clear();
+    	repairPanel.getPosFailureModel().clear();
+    }
    
     
    
@@ -68,12 +96,12 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 
 	public void actionPerformed(ActionEvent event) {
 		ore = getWizardModel().getOre();
-        modi = ore.getModi();       
+        modi = ore.getModifier();       
 		String actionName = ((JButton)event.getSource()).getName();
 		String actionType = ((JButton)event.getSource()).getParent().getName();
 		
 		if(actionType.equals("negative")){
-			Individual ind = (Individual)panel4.getNegFailureList().getSelectedValue();
+			Individual ind = (Individual)repairPanel.getNegFailureList().getSelectedValue();
 				if(actionName.equals("negRepair")){
 					RepairDialog negDialog = new RepairDialog(ind, getWizard().getDialog(), ore, "neg");
 					int returncode = negDialog.showDialog();
@@ -82,22 +110,22 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 					}
 					else if(returncode == 3){
 						ontologyChanges.addAll(negDialog.getAllChanges());
-						panel4.getNegFailureModel().removeElement(ind);
+						repairPanel.getNegFailureModel().removeElement(ind);
 					}
 				}
 				else if(actionName.equals("negAdd")){
 					ontologyChanges.addAll(modi.addClassAssertion(ind, ore.getIgnoredConcept()));
-					panel4.getNegFailureModel().removeElement(ind);
+					repairPanel.getNegFailureModel().removeElement(ind);
 					
 				}
 				else if(actionName.equals("negDelete")){
 					ontologyChanges.addAll(modi.deleteIndividual(ind));
-					panel4.getNegFailureModel().removeElement(ind);
+					repairPanel.getNegFailureModel().removeElement(ind);
 				
 				}
 		}
 		else if(actionType.equals("positive")){
-			Individual ind = (Individual)panel4.getPosFailureList().getSelectedValue();
+			Individual ind = (Individual)repairPanel.getPosFailureList().getSelectedValue();
 			if(actionName.equals("posRepair")){
 				RepairDialog posDialog = new RepairDialog(ind, getWizard().getDialog(), ore, "pos");
 				int returncode = posDialog.showDialog();
@@ -106,17 +134,17 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 				}
 				else if(returncode == 3){
 					ontologyChanges.addAll(posDialog.getAllChanges());
-					panel4.getPosFailureModel().removeElement(ind);
+					repairPanel.getPosFailureModel().removeElement(ind);
 				}
 			}
 			else if(actionName.equals("posRemove")){
 				ontologyChanges.addAll(modi.addClassAssertion(ind, ore.getIgnoredConcept()));
-				panel4.getPosFailureModel().removeElement(ind);
+				repairPanel.getPosFailureModel().removeElement(ind);
 				
 			}
 			else if(actionName.equals("posDelete")){
 				ontologyChanges.addAll(modi.deleteIndividual(ind));
-				panel4.getPosFailureModel().removeElement(ind);
+				repairPanel.getPosFailureModel().removeElement(ind);
 				
 			}
 		}
@@ -127,8 +155,8 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 	public void mouseClicked(MouseEvent e) {
 		
 		if(e.getClickCount() == 2){
-			if(e.getSource() == panel4.getNegFailureList() ){
-				Individual ind = (Individual)panel4.getNegFailureList().getSelectedValue();
+			if(e.getSource() == repairPanel.getNegFailureList() ){
+				Individual ind = (Individual)repairPanel.getNegFailureList().getSelectedValue();
 				RepairDialog negDialog = new RepairDialog(ind, getWizard().getDialog(), getWizardModel().getOre(), "neg");
 				int returncode = negDialog.showDialog();
 				if(returncode == 2){
@@ -137,11 +165,11 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 				}
 				else if(returncode == 3){
 					ontologyChanges.addAll(negDialog.getAllChanges());
-					panel4.getNegFailureModel().removeElement(ind);
+					repairPanel.getNegFailureModel().removeElement(ind);
 				}
 			}
-			else if(e.getSource() == panel4.getPosFailureList()){
-				Individual ind = (Individual)panel4.getPosFailureList().getSelectedValue();
+			else if(e.getSource() == repairPanel.getPosFailureList()){
+				Individual ind = (Individual)repairPanel.getPosFailureList().getSelectedValue();
 				RepairDialog posDialog = new RepairDialog(ind, getWizard().getDialog(), getWizardModel().getOre(), "pos");
 				int returncode = posDialog.showDialog();
 				if(returncode == 2){
@@ -150,7 +178,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 				}
 				else if(returncode == 3){
 					ontologyChanges.addAll(posDialog.getAllChanges());
-					panel4.getPosFailureModel().removeElement(ind);
+					repairPanel.getPosFailureModel().removeElement(ind);
 				}
 			}
 		}
@@ -158,21 +186,21 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 	}
 
 	public void mouseEntered(MouseEvent e) {
-		JList negList = panel4.getNegFailureList();
-		DefaultListModel negModel = panel4.getNegFailureModel();
-		if(e.getSource() instanceof JList){
-				int index = negList.locationToIndex(e.getPoint());
-		        if (-1 < index) {
-		        	Individual ind = (Individual)negModel.getElementAt(index);
-		        	StringBuffer strBuf = new StringBuffer();
-					strBuf.append("<html><b><u>classes:</b></u><br><br><BLOCKQUOTE>");
-														
-					for(NamedClass n: getWizardModel().getOre().reasoner2.getConcepts(ind))
-						strBuf.append("<br>" + n );
-					strBuf.append("</BLOCKQUOTE></html>");
-					negList.setToolTipText(strBuf.toString());
-		        }
-		}
+//		JList negList = repairPanel.getNegFailureList();
+//		DefaultListModel negModel = repairPanel.getNegFailureModel();
+//		if(e.getSource() instanceof JList){
+//				int index = negList.locationToIndex(e.getPoint());
+//		        if (-1 < index) {
+//		        	Individual ind = (Individual)negModel.getElementAt(index);
+//		        	StringBuffer strBuf = new StringBuffer();
+//					strBuf.append("<html><b><u>classes:</b></u><br><br><BLOCKQUOTE>");
+//														
+//					for(NamedClass n: getWizardModel().getOre().reasoner2.getConcepts(ind))
+//						strBuf.append("<br>" + n );
+//					strBuf.append("</BLOCKQUOTE></html>");
+//					negList.setToolTipText(strBuf.toString());
+//		        }
+//		}
 		
 				
 	}

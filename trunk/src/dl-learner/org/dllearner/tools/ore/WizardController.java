@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 
@@ -68,30 +88,34 @@ public class WizardController implements ActionListener {
         
         Object nextPanelDescriptor = descriptor.getNextPanelDescriptor();
         
-        //TODO nochmal �berdenken
+        //TODO nochmal ueberdenken
         if(nextPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
-        	((ClassPanelOWLDescriptor)model.getPanelHashMap().get(nextPanelDescriptor)).panel3.getModel().clear();
+//        	model.getOre().getOwlReasoner().isSatisfiable()
+        	((ClassPanelOWLDescriptor)model.getPanelHashMap().get(nextPanelDescriptor)).getOwlClassPanel().getModel().clear();
         	new ConceptRetriever(nextPanelDescriptor).execute();
         }
        
+        if(nextPanelDescriptor.equals("LEARNING_PANEL")){
+        	wizard.getModel().getOre().init();
+        	LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor));
+        	learnDescriptor.setPanelDefaults();
+        	        	
+        }
         
         if( nextPanelDescriptor.equals("REPAIR_PANEL")){
         	RepairPanelDescriptor repair = ((RepairPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor));
-        	repair.panel4.getNegFailureModel().clear();
-        	repair.panel4.getPosFailureModel().clear();
+        	repair.clearLists();
 //        	OWLOntologyChange change = model.getOre().getModi().addAxiomToOWL(model.getOre().getConceptToAdd(), model.getOre().getIgnoredConcept());
 //        	repair.getOntologyChanges().add(change);
         	new FailInstancesRetriever(nextPanelDescriptor).execute();
         	
                	
         }
-        if(nextPanelDescriptor.equals("LEARNING_PANEL")){
-        	wizard.getModel().getOre().init();
-        	((LearningPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor)).panel4.getStatusLabel().setText("");
-        	((LearningPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor)).panel4.getModel().clear();
-        	
-        }
         
+        if( nextPanelDescriptor.equals("SAVE_PANEL")){
+//        	model.getOre().getModi().addAxiomToOWL(model.getOre().getConceptToAdd(), model.getOre().getIgnoredConcept());
+        	model.getOre().getModifier().rewriteClassDescription(model.getOre().getNewClassDescription(), model.getOre().getIgnoredConcept());
+        }
         
         
         if (nextPanelDescriptor instanceof WizardPanelDescriptor.FinishIdentifier) {
@@ -122,18 +146,37 @@ public class WizardController implements ActionListener {
         
         
         if(backPanelDescriptor.equals("LEARNING_PANEL")){
-        	if (JOptionPane.showConfirmDialog(wizard.getDialog(),
-			        "All changes will be lost!", "Warning!", 
-			        JOptionPane.YES_NO_OPTION)
-			     == JOptionPane.YES_OPTION){
-
-        		wizard.getModel().getOre().getModi().undoChanges(((RepairPanelDescriptor)descriptor).getOntologyChanges());
-        		((RepairPanelDescriptor)descriptor).getOntologyChanges().clear();
-				wizard.setCurrentPanel(backPanelDescriptor);
+        	RepairPanelDescriptor repairDescriptor = (RepairPanelDescriptor)descriptor;
+        	if(repairDescriptor.getOntologyChanges().size() > 0){
+	        	if (JOptionPane.showConfirmDialog(wizard.getDialog(),
+				        "All changes will be lost!", "Warning!", 
+				        JOptionPane.YES_NO_OPTION)
+				     == JOptionPane.YES_OPTION){
+	
+	        		model.getOre().getModifier().undoChanges(repairDescriptor.getOntologyChanges());
+	        		repairDescriptor.getOntologyChanges().clear();
+					wizard.setCurrentPanel(backPanelDescriptor);
+			        refreshLeftPanel(backPanelDescriptor);
+				}
+        	}
+        	else{
+        		wizard.setCurrentPanel(backPanelDescriptor);
 		        refreshLeftPanel(backPanelDescriptor);
-			}
+        	}
         	
         	
+        	
+        }
+        else if(backPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
+        	LearningPanelDescriptor learnDescriptor = (LearningPanelDescriptor)descriptor;
+        	if(learnDescriptor.getLa() != null){
+        		learnDescriptor.getLa().stop();
+        		learnDescriptor.getTimer().cancel();
+        	}
+        	
+        	wizard.setCurrentPanel(backPanelDescriptor);
+	        refreshLeftPanel(backPanelDescriptor);
+    	
         }else{
         	wizard.setCurrentPanel(backPanelDescriptor);
             refreshLeftPanel(backPanelDescriptor);
@@ -158,6 +201,9 @@ public class WizardController implements ActionListener {
         }
     	if(panelDescriptor.equals("REPAIR_PANEL")){
         	wizard.setLeftPanel(4);
+        }
+    	if(panelDescriptor.equals("SAVE_PANEL")){
+        	wizard.setLeftPanel(5);
         }
     	
     	
@@ -209,22 +255,23 @@ public class WizardController implements ActionListener {
         
     }
     class ConceptRetriever extends SwingWorker<Set<NamedClass>, NamedClass> {
-		Object nextPanelID;
-		ClassPanelOWLDescriptor conceptPanel;
+		private Object nextPanelID;
+		private ClassPanelOWL owlClassPanel;
+		
 		public ConceptRetriever(Object nextPanelDescriptor) {
 
 			nextPanelID = nextPanelDescriptor;
-			conceptPanel = (ClassPanelOWLDescriptor) wizard.getModel().getPanelHashMap().get(nextPanelID);
+			owlClassPanel = ((ClassPanelOWLDescriptor) wizard.getModel().getPanelHashMap().get(nextPanelID)).getOwlClassPanel();
 		}
 
 		@Override
 		public Set<NamedClass> doInBackground() {
 
-			conceptPanel.panel3.getStatusLabel().setText("Loading concepts");
-			conceptPanel.panel3.getLoadingLabel().setBusy(true);
-			conceptPanel.panel3.getList().setCellRenderer(new ColorListCellRenderer(wizard.getModel().getOre()));
+			owlClassPanel.getStatusLabel().setText("Loading concepts");
+			owlClassPanel.getLoadingLabel().setBusy(true);
+			owlClassPanel.getList().setCellRenderer(new ColorListCellRenderer(wizard.getModel().getOre()));
 
-			wizard.getModel().getOre().detectReasoner();
+			wizard.getModel().getOre().initReasoners();
 
 			Set<NamedClass> ind = wizard.getModel().getOre()
 					.getReasoningService().getNamedClasses();
@@ -247,35 +294,39 @@ public class WizardController implements ActionListener {
 			
 			DefaultListModel dm = new DefaultListModel();
 			
-			for (NamedClass cl : ind) {
-				dm.addElement(cl);
-				
-				//nextPanel.panel3.getModel().addElement(cl);
-				
+			if(ind != null){
+				for (NamedClass cl : ind) {
+					dm.addElement(cl);
+					
+					//nextPanel.panel3.getModel().addElement(cl);
+					
+				}
 			}
-			wizard.getModel().getOre().setAllAtomicConcepts(ind);
-			conceptPanel.panel3.getList().setModel(dm);
-			conceptPanel.panel3.getStatusLabel().setText("Concepts loaded");
-			conceptPanel.panel3.getLoadingLabel().setBusy(false);
+//			wizard.getModel().getOre().setAllAtomicConcepts(ind);
+			owlClassPanel.getList().setModel(dm);
+			owlClassPanel.getStatusLabel().setText("Concepts loaded");
+			owlClassPanel.getLoadingLabel().setBusy(false);
 		}
 
 	}
     class FailInstancesRetriever extends SwingWorker<List<HashSet<Individual>>, HashSet<Individual>> {
-		Object nextPanelID;
-		RepairPanelDescriptor repairPanel;
+		
+		private RepairPanelDescriptor repairDescriptor;
+		private RepairPanel repairPanel;
 
 		public FailInstancesRetriever(Object nextPanelDescriptor) {
 
-			nextPanelID = nextPanelDescriptor;
-			repairPanel = (RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(nextPanelID);
+			
+			repairDescriptor = (RepairPanelDescriptor) wizard.getModel().getPanelHashMap().get(nextPanelDescriptor);
+			repairPanel = (RepairPanel)repairDescriptor.getPanelComponent();
 		}
 
 		@Override
 		public List<HashSet<Individual>> doInBackground() {
 			
-			repairPanel.panel4.getStatusLabel().setText("Loading conflicting instances");
-			repairPanel.panel4.getLoadingLabel().setBusy(true);
-			repairPanel.panel4.setCellRenderers(wizard.getModel().getOre());
+			repairPanel.getStatusLabel().setText("Loading conflicting instances");
+			repairPanel.getLoadingLabel().setBusy(true);
+			repairPanel.setCellRenderers(wizard.getModel().getOre());
 		
 
 			List<HashSet<Individual>> indList = wizard.getModel().getOre()
@@ -296,23 +347,22 @@ public class WizardController implements ActionListener {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			RepairPanelDescriptor nextPanel = (RepairPanelDescriptor) wizard
-					.getModel().getPanelHashMap().get(nextPanelID);
-			DefaultListModel posDm = nextPanel.panel4.getPosFailureModel();
-			DefaultListModel negDm = nextPanel.panel4.getNegFailureModel();
+			
+			DefaultListModel posDm = repairPanel.getPosFailureModel();
+			DefaultListModel negDm = repairPanel.getNegFailureModel();
 			
 			for (Individual posInd : indList.get(0)) {
 				posDm.addElement(posInd);
-				System.out.println(posInd.getName());
+				
 			}
 			for (Individual negInd : indList.get(1)) {
 				negDm.addElement(negInd);
-				System.out.println(negInd.getName());
+				
 			}
 			
-			nextPanel.panel4.getStatusLabel().setText(
+			repairPanel.getStatusLabel().setText(
 					"Instances loaded");
-			nextPanel.panel4.getLoadingLabel().setBusy(false);
+			repairPanel.getLoadingLabel().setBusy(false);
 		}
 
 	}

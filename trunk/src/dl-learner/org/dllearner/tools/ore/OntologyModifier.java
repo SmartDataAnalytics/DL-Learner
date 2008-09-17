@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 import java.net.URI;
@@ -10,19 +30,28 @@ import java.util.Set;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.debugging.BlackBoxOWLDebugger;
+import org.semanticweb.owl.debugging.OWLDebugger;
+import org.semanticweb.owl.inference.OWLReasonerException;
+import org.semanticweb.owl.inference.OWLSatisfiabilityChecker;
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owl.model.OWLObjectProperty;
@@ -37,15 +66,15 @@ import org.semanticweb.owl.model.RemoveAxiom;
 import org.semanticweb.owl.model.UnknownOWLOntologyException;
 import org.semanticweb.owl.util.OWLEntityRemover;
 
-public class OntologyModifierOWLAPI {
+public class OntologyModifier {
 
-	OWLOntology ontology;
-	OWLAPIReasoner reasoner;
-	OWLDataFactory factory;
-	OWLOntologyManager manager;
+	private OWLOntology ontology;
+	private OWLAPIReasoner reasoner;
+	private OWLDataFactory factory;
+	private OWLOntologyManager manager;
 	
 	
-	public OntologyModifierOWLAPI(OWLAPIReasoner reasoner){
+	public OntologyModifier(OWLAPIReasoner reasoner){
 		this.reasoner = reasoner;
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
@@ -54,7 +83,7 @@ public class OntologyModifierOWLAPI {
 	}
 	
 	/**
-	 * Adds an axiom to the ontology, using an EquivalentClassesAxiom
+	 * Adds an EquivalentClassesAxiom axiom to the ontology 
 	 * @param newDesc new axiom to add
 	 * @param oldDesc old description
 	 * @return
@@ -80,6 +109,46 @@ public class OntologyModifierOWLAPI {
 			e.printStackTrace();
 		}
 		return axiom;
+		
+	}
+	
+	/**
+	 * rewrite ontology by replacing old class with new learned class description
+	 * @param newDesc
+	 * @param oldClass
+	 */
+	public void rewriteClassDescription(Description newDesc, Description oldClass){
+		OWLDescription newClassDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(newDesc);
+//		OWLDescription oldClassDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldClass);
+		
+		OWLClass oldClassOWL = factory.getOWLClass(URI.create(oldClass.toString()));
+		
+		Set<OWLEquivalentClassesAxiom> equivalenceAxioms = ontology.getEquivalentClassesAxioms(oldClassOWL);
+		
+		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
+		
+		//add old equivalence axioms to changes
+		for(OWLEquivalentClassesAxiom eqAxiom : equivalenceAxioms){
+			changes.add(new RemoveAxiom(ontology, eqAxiom));
+			
+		}
+		
+		//create and add new equivalence axiom to changes
+		
+		Set<OWLDescription> newEquivalenceDesc = new HashSet<OWLDescription>();
+		newEquivalenceDesc.add(newClassDesc);
+		newEquivalenceDesc.add(oldClassOWL);
+		OWLAxiom equivalenceAxiom = factory.getOWLEquivalentClassesAxiom(newEquivalenceDesc);
+		AddAxiom addAxiom = new AddAxiom(ontology, equivalenceAxiom);
+		changes.add(addAxiom);
+		
+		//apply changes to ontology
+		try {
+			manager.applyChanges(changes);
+		} catch (OWLOntologyChangeException e) {
+			System.err.println("Error: rewriting class description failed");
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -303,17 +372,17 @@ public class OntologyModifierOWLAPI {
 		
 		Set<OWLObjectPropertyAssertionAxiom> properties = ontology.getObjectPropertyAssertionAxioms(subjectOWLAPI);
 		
-		RemoveAxiom rm = null;
+		RemoveAxiom remove = null;
 		for(OWLObjectPropertyAssertionAxiom o :properties)
 			if( (o.getProperty().equals(propertyOWLAPI)) && (o.getSubject().equals(subjectOWLAPI)) && (o.getObject().equals(objectOWLAPI))) 
-				rm = new RemoveAxiom(ontology, o);
+				remove = new RemoveAxiom(ontology, o);
 			
 		
-		changes.add(rm);
+		changes.add(remove);
 		
 		try {
-			if(rm != null){
-				manager.applyChange(rm);
+			if(remove != null){
+				manager.applyChange(remove);
 				
 			}
 			return changes;
@@ -337,15 +406,15 @@ public class OntologyModifierOWLAPI {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual subIndividualOWLAPI = factory.getOWLIndividual( URI.create(subInd.getName()));
-		OWLIndividual objIndividualOWLAPI = factory.getOWLIndividual( URI.create(objInd.getName()));
+		OWLIndividual subjectOWLAPI = factory.getOWLIndividual( URI.create(subInd.getName()));
+		OWLIndividual objectOWLAPI = factory.getOWLIndividual( URI.create(objInd.getName()));
 		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(objSome.getRole().getName()));
 		
-		OWLObjectPropertyAssertionAxiom objAssertion = factory.getOWLObjectPropertyAssertionAxiom(subIndividualOWLAPI, propertyOWLAPI, objIndividualOWLAPI);
+		OWLObjectPropertyAssertionAxiom objAssertion = factory.getOWLObjectPropertyAssertionAxiom(subjectOWLAPI, propertyOWLAPI, objectOWLAPI);
 		AddAxiom axiom = new AddAxiom(ontology, objAssertion);
 		changes.add(axiom);
 		try {
-			manager.applyChange(axiom);System.out.println("nachher:" + ontology.getObjectPropertyAssertionAxioms(subIndividualOWLAPI) + "" + ontology.getObjectPropertyAssertionAxioms(objIndividualOWLAPI));
+			manager.applyChange(axiom);
 			return changes;
 		} catch (OWLOntologyChangeException e) {
 			// TODO Auto-generated catch block
@@ -370,16 +439,14 @@ public class OntologyModifierOWLAPI {
 				try {
 					manager.applyChange(add);
 				} catch (OWLOntologyChangeException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 			else if(change instanceof AddAxiom){
-				RemoveAxiom rem = new RemoveAxiom(ontology, change.getAxiom());
+				RemoveAxiom remove = new RemoveAxiom(ontology, change.getAxiom());
 				try {
-					manager.applyChange(rem);
+					manager.applyChange(remove);
 				} catch (OWLOntologyChangeException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -389,50 +456,58 @@ public class OntologyModifierOWLAPI {
 		
 	}
 	
+	/**
+	 * checks whether desc1 and desc2 are complement of each other
+	 * @param desc1 class 1
+	 * @param desc2 class 2
+	 * @return 
+	 */
 	public boolean isComplement(Description desc1, Description desc2){
 
-		OWLDescription d1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc1);
-		OWLDescription d2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc2);
-		OWLDescription negChild = null;
-		OWLDescription negDesc = null;
-		if(desc1 instanceof Negation){
-			negChild = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc1.getChild(0));
-		}
-		else{
-			negDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(desc2));
-		}
-		System.out.println("Desc1: " + desc1);
-		System.out.println("Desc2: " + desc2);
+		OWLClass owlClass1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc1).asOWLClass();
+		OWLClass owlClass2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc2).asOWLClass();
+		
+				
+		//superclasses and class1
+		Set<OWLDescription> superClasses1 = owlClass1.getSuperClasses(ontology);
+		superClasses1.add(owlClass1);
+		
+		//superclasses and class2
+		Set<OWLDescription> superClasses2 = owlClass2.getSuperClasses(ontology);
+		superClasses2.add(owlClass2);
+		
 		for(OWLAxiom ax : ontology.getAxioms()){
 			
-			if(desc1 instanceof Negation){
-				if(ax.equals(factory.getOWLEquivalentClassesAxiom(d1, d2)))
-					return true;
-				else if(ax.equals(factory.getOWLEquivalentClassesAxiom(d2, d1)))
-					return true;
+			for(OWLDescription o1 : superClasses1){
+				OWLDescription negO1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o1.toString())));
+				for(OWLDescription o2 : superClasses2){
+					OWLDescription negO2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o2.toString())));
 				
-				else if(ax.equals(factory.getOWLDisjointClassesAxiom(negChild, d2)))
-					return true;
-				else if(ax.equals(factory.getOWLDisjointClassesAxiom(d2, negChild)))
-					return true;
-			}
-			else{
-				if(ax.equals(factory.getOWLDisjointClassesAxiom(d1, d2)))
-					return true;
-				else if(ax.equals(factory.getOWLDisjointClassesAxiom(d2, d1)))
-					return true;
-				if(ax.equals(factory.getOWLEquivalentClassesAxiom(negDesc, d1)))
-					return true;
-				if(ax.equals(factory.getOWLEquivalentClassesAxiom(d1, negDesc)))
-					return true;
-			}
+					if(ax.equals(factory.getOWLDisjointClassesAxiom(o1, o2))){
+						return true;
+					}else if(ax.equals(factory.getOWLDisjointClassesAxiom(o2, o1))){
+						return true;
+					}else if(ax.toString().equals(factory.getOWLEquivalentClassesAxiom(o1, negO2).toString())){
+						return true;
+					}else if(ax.toString().equals(factory.getOWLEquivalentClassesAxiom(o2, negO1).toString())){
+						return true;
+					}
+				}
 			
+			}
 		}
+			
+		
 	
 		return false;
 		
 	}
 	
+	/**
+	 * returns object properties for an individual
+	 * @param ind
+	 * @return
+	 */
 	public Set<ObjectPropertyAssertion> getObjectProperties(Individual ind){
 		Set<ObjectPropertyAssertion> objectProperties = new HashSet<ObjectPropertyAssertion>();
 		Set<OWLObjectPropertyAssertionAxiom> owlObjectProperties = ontology.getObjectPropertyAssertionAxioms(factory.getOWLIndividual(URI.create(ind.getName())));
@@ -447,11 +522,51 @@ public class OntologyModifierOWLAPI {
 		return objectProperties;
 	}
 	
+	/**
+	 * returns the actual ontology
+	 * @return ontology
+	 */
+	public OWLOntology getOntology() {
+		return ontology;
+	}
 
-//	public void reason(){
+	
+/**
+ * prints reasons for inconsistent classes
+ */
+	public void reason(){
 //		reasoner.getInconsistencyReasons(ontology);
-//
-//	}
+		
+		       
+
+	        /* Create a satisfiability checker */
+	        OWLSatisfiabilityChecker checker = new Reasoner(manager);
+	        try {
+				checker.loadOntologies(Collections.singleton(ontology));
+			} catch (OWLReasonerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        OWLDebugger debugger = new BlackBoxOWLDebugger(manager, ontology, checker);
+	        
+	        for(OWLClass owlClass : reasoner.getInconsistentOWLClasses()){
+	        /* Find the sets of support and print them */
+		        Set<Set<OWLAxiom>> allsos = null;
+				try {
+					allsos = debugger.getAllSOSForIncosistentClass(owlClass);
+				} catch (OWLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	
+		        for (Set<OWLAxiom> sos : allsos){
+		            System.out.println(sos);
+		        }
+	        }
+
+		
+
+	}
 	
 	
 
