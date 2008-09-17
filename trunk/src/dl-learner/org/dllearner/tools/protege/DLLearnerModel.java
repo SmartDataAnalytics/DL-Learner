@@ -112,7 +112,9 @@ public class DLLearnerModel implements Runnable {
 
 	// This is the count of Concepts which you get after learning
 
-	private static final int ANZAHL = 6;
+	// TODO make those configurable via user interface
+	private static final int nrOfDisplayedDescriptions = 6;
+	private static final double minAccuracy = 0.8;
 
 	// A Array of Concepts which the DL-Learner suggested
 
@@ -205,7 +207,7 @@ public class DLLearnerModel implements Runnable {
 
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
-	private List<EvaluatedDescription> evalDescription;
+	private List<EvaluatedDescription> evalDescriptions;
 
 	/**
 	 * This is the constructor for DL-Learner model.
@@ -263,10 +265,9 @@ public class DLLearnerModel implements Runnable {
 	 * This method adds the solutions from the DL-Learner to the List Model.
 	 */
 	private void addToListModel() {
-		evalDescription = la.getCurrentlyBestEvaluatedDescriptions(ANZAHL);
-		for (int j = 0; j < la.getCurrentlyBestEvaluatedDescriptions(ANZAHL).size(); j++) {
-			suggestModel.add(j, la
-					.getCurrentlyBestEvaluatedDescriptions(ANZAHL).get(j)
+		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(nrOfDisplayedDescriptions, minAccuracy, true);
+		for (int j = 0; j < evalDescriptions.size(); j++) {
+			suggestModel.add(j, evalDescriptions.get(j)
 					.getDescription().toManchesterSyntaxString(
 							editor.getOWLModelManager().getActiveOntology()
 									.getURI().toString()
@@ -317,7 +318,7 @@ public class DLLearnerModel implements Runnable {
 	 * @return list of evaluated descriptions
 	 */
 	public List<EvaluatedDescription> getEvaluatedDescriptionList() {
-		return evalDescription;
+		return evalDescriptions;
 	}
 
 	/**
@@ -403,7 +404,7 @@ public class DLLearnerModel implements Runnable {
 		// start the algorithm and print the best concept found
 		la.start();
 		description = new Description[la.getCurrentlyBestEvaluatedDescriptions(
-				ANZAHL).size()];
+				nrOfDisplayedDescriptions).size()];
 		addToListModel();
 		// renders the errormessage
 		view.renderErrorMessage(error);

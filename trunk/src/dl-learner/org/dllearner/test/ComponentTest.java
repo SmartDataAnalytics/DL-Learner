@@ -98,7 +98,7 @@ public class ComponentTest {
 			
 		// start the algorithm and print the best concept found
 		la.start();
-		System.out.println(la.getCurrentlyBestEvaluatedDescriptions());
+		System.out.println(la.getCurrentlyBestEvaluatedDescriptions(10, 0.8, true));
 	}
 
 }

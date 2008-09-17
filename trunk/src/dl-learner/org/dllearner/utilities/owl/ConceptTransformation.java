@@ -28,10 +28,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.Union;
@@ -441,6 +443,24 @@ public class ConceptTransformation {
 		}
 		// false if none of the checks was successful
 		return false;
+	}
+	
+	// replaces EXISTS hasChild.TOP with EXISTS hasChild.Person, 
+	// i.e. TOP is replaced by the range of the property; 
+	// this is semantically equivalent, but easier to read for some people
+	public static void replaceRange(Description description, ReasoningService rs) {
+		if(description instanceof ObjectSomeRestriction && description.getChild(0) instanceof Thing) {
+			ObjectPropertyExpression p = ((ObjectSomeRestriction)description).getRole();
+			if(p instanceof ObjectProperty) {
+				// replace TOP with range of propery
+				description.removeChild(description.getChild(0));
+				description.addChild(rs.getRange((ObjectProperty)p));
+			}
+		}
+		
+		for(Description child : description.getChildren()) {
+			replaceRange(child, rs);
+		}
 	}
 	
 }
