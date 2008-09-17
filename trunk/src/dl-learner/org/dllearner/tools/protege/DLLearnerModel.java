@@ -113,8 +113,8 @@ public class DLLearnerModel implements Runnable {
 	// This is the count of Concepts which you get after learning
 
 	// TODO make those configurable via user interface
-	private static final int nrOfDisplayedDescriptions = 6;
-	private static final double minAccuracy = 0.8;
+	private static final int NR_OF_DISPLAYED_DESCRIPTIONS = 6;
+	private static final double MIN_ACCURACY = 0.8;
 
 	// A Array of Concepts which the DL-Learner suggested
 
@@ -265,11 +265,11 @@ public class DLLearnerModel implements Runnable {
 	 * This method adds the solutions from the DL-Learner to the List Model.
 	 */
 	private void addToListModel() {
-		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(nrOfDisplayedDescriptions, minAccuracy, true);
+		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(NR_OF_DISPLAYED_DESCRIPTIONS, MIN_ACCURACY, true);
 		for (int j = 0; j < evalDescriptions.size(); j++) {
 			suggestModel.add(j, evalDescriptions.get(j)
 					.getDescription().toManchesterSyntaxString(
-							editor.getOWLModelManager().getActiveOntology()
+							editor.getModelManager().getActiveOntology()
 									.getURI().toString()
 									+ "#", null));
 		}
@@ -326,7 +326,7 @@ public class DLLearnerModel implements Runnable {
 	 * OWLAPIOntology will be available.
 	 */
 	public void setKnowledgeSource() {
-		this.source = new OWLAPIOntology(editor.getOWLModelManager()
+		this.source = new OWLAPIOntology(editor.getModelManager()
 				.getActiveOntology());
 	}
 
@@ -404,7 +404,7 @@ public class DLLearnerModel implements Runnable {
 		// start the algorithm and print the best concept found
 		la.start();
 		description = new Description[la.getCurrentlyBestEvaluatedDescriptions(
-				nrOfDisplayedDescriptions).size()];
+				NR_OF_DISPLAYED_DESCRIPTIONS).size()];
 		addToListModel();
 		// renders the errormessage
 		view.renderErrorMessage(error);
@@ -757,7 +757,7 @@ public class DLLearnerModel implements Runnable {
 			axiomOWLAPI = factory.getOWLSubClassAxiom(oldConceptOWLAPI,
 					newConceptOWLAPI);
 		}
-		OWLOntology onto = editor.getOWLModelManager().getActiveOntology();
+		OWLOntology onto = editor.getModelManager().getActiveOntology();
 		AddAxiom axiom = new AddAxiom(onto, axiomOWLAPI);
 		try {
 			// adds the new concept to the ontology
@@ -792,6 +792,6 @@ public class DLLearnerModel implements Runnable {
 	 * @return URI Ontology URI
 	 */
 	public URI getURI() {
-		return editor.getOWLModelManager().getActiveOntology().getURI();
+		return editor.getModelManager().getActiveOntology().getURI();
 	}
 }

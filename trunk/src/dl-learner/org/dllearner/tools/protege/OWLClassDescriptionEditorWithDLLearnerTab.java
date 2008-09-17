@@ -25,7 +25,7 @@ import org.protege.editor.core.ui.util.VerifiedInputEditor;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.frame.AbstractOWLFrameSectionRowObjectEditor;
 import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
-import org.protege.editor.owl.ui.clsdescriptioneditor.OWLDescriptionChecker;
+//import org.protege.editor.owl.ui.clsdescriptioneditor.OWLDescriptionChecker;
 import org.protege.editor.owl.ui.selector.OWLClassSelectorPanel;
 import org.protege.editor.owl.ui.selector.OWLObjectPropertySelectorPanel;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -67,7 +67,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 	private OWLEditorKit editorKit;
 
-	private OWLDescriptionChecker checker;
+	//private OWLDescriptionChecker checker;
 
 	private ExpressionEditor<OWLDescription> editor;
 
@@ -219,7 +219,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		try {
 			if (editor.isWellFormed()) {
 				String expression = editor.getText();
-				return editorKit.getOWLModelManager().getOWLDescriptionParser()
+				return editorKit.getModelManager().getOWLDescriptionParser()
 						.createOWLDescription(expression);
 			}
 			if (!dllearner.getSollutions().isEmpty()) {
@@ -230,6 +230,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		} catch (OWLException e) {
 			return null;
 		}
+	
 	}
 	/**
 	 * Removes everything after protege is closed.
@@ -247,7 +248,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	}
 
 	private OWLDataFactory getDataFactory() {
-		return editorKit.getOWLModelManager().getOWLDataFactory();
+		return editorKit.getModelManager().getOWLDataFactory();
 	}
 	/**
 	 * Adds a Status Changed Listener to all components of the 

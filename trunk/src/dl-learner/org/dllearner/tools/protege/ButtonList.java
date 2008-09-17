@@ -41,7 +41,7 @@ public class ButtonList extends AbstractOWLFrame<OWLClass> {
 	 * @param editorKit EditorKit from Protege
 	 */
 	public ButtonList(OWLEditorKit editorKit) {
-		super(editorKit.getOWLModelManager().getOWLOntologyManager());
+		super(editorKit.getModelManager().getOWLOntologyManager());
 		// own OWLEquivalentClassesAxiomFrameSection to add the dllearner plugin
 		// to the
 		// OWLClassDescritpionEditor
