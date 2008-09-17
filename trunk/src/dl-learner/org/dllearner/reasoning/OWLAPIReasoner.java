@@ -979,5 +979,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 		return concepts;
 	}
+	
+	
+	public Set<OWLClass> getInconsistentOWLClasses(){
+		
+		try {
+			return reasoner.getInconsistentClasses();
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+			throw new Error("Inconsistens classes check error in OWL API.");
+		}
+		
+	}
+
 
 }
