@@ -253,8 +253,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 				eDescription = i.next();
 				if (desc.equals(eDescription.getDescription()
 						.toManchesterSyntaxString(
-								editorKit.getOWLModelManager()
-										.getActiveOntology().getURI()
+								editorKit.getModelManager().getActiveOntology().getURI()
 										+ "#", null))) {
 					evaluatedDescription = eDescription;
 					break;
