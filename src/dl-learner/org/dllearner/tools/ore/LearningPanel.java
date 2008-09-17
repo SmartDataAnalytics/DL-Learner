@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 import java.awt.BorderLayout;
@@ -26,6 +46,8 @@ import org.jdesktop.swingx.JXBusyLabel;
 import org.jdesktop.swingx.icon.EmptyIcon;
 import org.jdesktop.swingx.painter.BusyPainter;
 
+
+
 public class LearningPanel extends JPanel{
 
 	private static final long serialVersionUID = -7411197973240429632L;
@@ -33,7 +55,7 @@ public class LearningPanel extends JPanel{
 	private JPanel contentPanel;
 	
 	
-	private DefaultListModel model;
+	private DefaultListModel listModel;
 	
 	private JLabel statusLabel;
 	private JXBusyLabel loadingLabel;
@@ -56,7 +78,7 @@ public class LearningPanel extends JPanel{
 	public LearningPanel() {
 		
 		super();
-		model = new DefaultListModel();
+		listModel = new DefaultListModel();
 			
 		JPanel statusPanel = new JPanel();
 		statusLabel = new JLabel();
@@ -72,62 +94,18 @@ public class LearningPanel extends JPanel{
 		loadingLabel.setBusyPainter(painter);
 		statusPanel.add(loadingLabel);
 		statusPanel.add(statusLabel);
-		
+
 		contentPanel = getContentPanel();
 		setLayout(new java.awt.BorderLayout());
-		
-		
+
 		add(contentPanel,BorderLayout.CENTER);
 		add(statusPanel, BorderLayout.SOUTH);
-	}
-
-	private JPanel getContentPanel() {
-		JPanel contentPanel = new JPanel();
-		GridBagLayout contentLayout = new GridBagLayout();
-		setPreferredSize(new Dimension(700, 500));
-		contentLayout.rowWeights = new double[] {0.5};
-		contentLayout.rowHeights = new int[] {500};
-		contentLayout.columnWeights = new double[] {0.5, 0.0};
-		contentLayout.columnWidths = new int[] {313, 7};
-		this.setLayout(contentLayout);
-		
-		
-		{
-			listPanel = new JPanel();
-			GridBagLayout jPanel1Layout = new GridBagLayout();
-			contentPanel.add(listPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-			jPanel1Layout.rowWeights = new double[] {0.0, 0.5};
-			jPanel1Layout.rowHeights = new int[] {16,400};
-			jPanel1Layout.columnWeights = new double[] {0.0, 0.5};
-			jPanel1Layout.columnWidths = new int[] {50, 700};
-			listPanel.setLayout(jPanel1Layout);
-			listPanel.setBorder(BorderFactory.createTitledBorder("Learned Concepts"));
-			{
-				listScrollPane = new JScrollPane();
-				listPanel.add(listScrollPane, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-				{
-					
-					resultList = new JList(model);
-					listScrollPane.setViewportView(resultList);
-				}
-			}
-			{
-				accuracyLabel = new JLabel();
-				listPanel.add(accuracyLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-				accuracyLabel.setText("Accuracy");
-			}
-			{
-				conceptLabel = new JLabel();
-				listPanel.add(conceptLabel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-				conceptLabel.setText("Concept");
-			}
-		}
 		{
 			buttonSliderPanel = new JPanel();
+			this.add(buttonSliderPanel, BorderLayout.EAST);
 			GridBagLayout buttonSliderPanelLayout = new GridBagLayout();
-			contentPanel.add(buttonSliderPanel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-			buttonSliderPanelLayout.rowWeights = new double[] {0.8, 0.0};
-			buttonSliderPanelLayout.rowHeights = new int[] {200, 7};
+			buttonSliderPanelLayout.rowWeights = new double[] {0.0, 0.0};
+			buttonSliderPanelLayout.rowHeights = new int[] {126, 7};
 			buttonSliderPanelLayout.columnWeights = new double[] {0.1};
 			buttonSliderPanelLayout.columnWidths = new int[] {7};
 			buttonSliderPanel.setLayout(buttonSliderPanelLayout);
@@ -135,7 +113,7 @@ public class LearningPanel extends JPanel{
 				buttonPanel = new JPanel();
 				BoxLayout buttonPanelLayout = new BoxLayout(buttonPanel, javax.swing.BoxLayout.X_AXIS);
 				buttonPanel.setLayout(buttonPanelLayout);
-				buttonSliderPanel.add(buttonPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+				buttonSliderPanel.add(buttonPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 				{
 					startButton = new JButton();
 					buttonPanel.add(startButton);
@@ -151,7 +129,7 @@ public class LearningPanel extends JPanel{
 				noisePanel = new JPanel();
 				BoxLayout noisePanelLayout = new BoxLayout(noisePanel, javax.swing.BoxLayout.Y_AXIS);
 				noisePanel.setLayout(noisePanelLayout);
-				buttonSliderPanel.add(noisePanel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+				buttonSliderPanel.add(noisePanel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 				{
 					noiseLabel = new JLabel();
 					noisePanel.add(noiseLabel);
@@ -172,19 +150,44 @@ public class LearningPanel extends JPanel{
 				}
 			}
 		}
-//		JPanel contentPanel1 = new JPanel();
-//		JScrollPane scroll = new JScrollPane();
-//		
-//		
-//		resultList = new JList(model);
-////		resultList.setCellRenderer(new ColumnListCellRenderer());
-//		scroll.setPreferredSize(new Dimension(900, 400));
-//		scroll.setViewportView(resultList);
-//			
-//		contentPanel1.add(scroll);
+	}
+
+	private JPanel getContentPanel() {
+				
+		{
+			listPanel = new JPanel();
+			GridBagLayout jPanel1Layout = new GridBagLayout();
+			jPanel1Layout.rowWeights = new double[] {0.0, 0.5};
+			jPanel1Layout.rowHeights = new int[] {16,400};
+			jPanel1Layout.columnWeights = new double[] {0.0, 0.5};
+			jPanel1Layout.columnWidths = new int[] {50, 700};
+			listPanel.setLayout(jPanel1Layout);
+			listPanel.setBorder(BorderFactory.createTitledBorder("Learned Classes"));
+			{
+				listScrollPane = new JScrollPane();
+				listPanel.add(listScrollPane, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+				{
+					
+					resultList = new JList(listModel);
+					listScrollPane.setViewportView(resultList);
+				}
+			}
+			{
+				accuracyLabel = new JLabel();
+				listPanel.add(accuracyLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+				accuracyLabel.setText("Accuracy");
+			}
+			{
+				conceptLabel = new JLabel();
+				listPanel.add(conceptLabel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+				conceptLabel.setText("Class");
+			}
+		}
+		
+		
+
 	
-	
-		return contentPanel;
+		return listPanel;
 	}
 	
 	public void addStartButtonListener(ActionListener a){
@@ -211,8 +214,9 @@ public class LearningPanel extends JPanel{
 		return stopButton;
 	}
 
-	public DefaultListModel getModel() {
-		return model;
+	public DefaultListModel getListModel() {
+		
+		return (DefaultListModel)resultList.getModel();
 	}
 	
 	public javax.swing.JList getResultList() {

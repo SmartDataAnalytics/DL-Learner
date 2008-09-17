@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 import javax.swing.event.ListSelectionEvent;
@@ -14,14 +34,14 @@ public class ClassPanelOWLDescriptor extends WizardPanelDescriptor implements Li
     public static final String INFORMATION = "In this panel all atomic classes in the ontology are shown in the list above. " +
     										 "Select one of them which should be (re)learned from then press \"Next-Button\"";
     
-    ClassPanelOWL panel3;
+    private ClassPanelOWL owlClassPanel;
     
     public ClassPanelOWLDescriptor() {
-        panel3 = new ClassPanelOWL();
-        panel3.addSelectionListener(this);
+        owlClassPanel = new ClassPanelOWL();
+        owlClassPanel.addSelectionListener(this);
              
         setPanelDescriptorIdentifier(IDENTIFIER);
-        setPanelComponent(panel3);
+        setPanelComponent(owlClassPanel);
       
     }
     
@@ -45,19 +65,23 @@ public class ClassPanelOWLDescriptor extends WizardPanelDescriptor implements Li
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected(); 
 		if (!e.getValueIsAdjusting()) 
-			 getWizardModel().getOre().setConcept((NamedClass)panel3.getList().getSelectedValue());
+			 getWizardModel().getOre().setConcept((NamedClass)owlClassPanel.getList().getSelectedValue());
 			
 	}
 	
 	private void setNextButtonAccordingToConceptSelected() {
         
-    	if (panel3.getList().getSelectedValue()!= null){
+    	if (owlClassPanel.getList().getSelectedValue()!= null){
     		getWizard().setNextFinishButtonEnabled(true);
     	}else{
     		getWizard().setNextFinishButtonEnabled(false);
     	}
    
     }
+
+	public ClassPanelOWL getOwlClassPanel() {
+		return owlClassPanel;
+	}
 	
 	
 

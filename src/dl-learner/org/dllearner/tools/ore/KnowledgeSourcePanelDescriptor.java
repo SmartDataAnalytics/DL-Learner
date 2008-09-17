@@ -1,21 +1,37 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
 
-import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import org.dllearner.core.owl.NamedClass;
 
 
 public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implements ActionListener, DocumentListener{
     
     public static final String IDENTIFIER = "KNOWLEDGESOURCE_CHOOSE_PANEL";
-    public static final String INFORMATION = "Select the KnowledgeSource(OWL-FILE) on which you want to work and " +
-    										"then press \"Next\"-button";
+    public static final String INFORMATION = "Select the type of knowledgesource you want to work with and then enter the URI."
+    									     + " After all press \"Next\"-button";
     
     private KnowledgeSourcePanel knowledgePanel;
     
@@ -73,16 +89,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     	if (knowledgePanel.isExistingOWLFile()){
     		getWizardModel().getOre().setKnowledgeSource(knowledgePanel.getOWLFile());
         	getWizard().setNextFinishButtonEnabled(true);
-//        	new ConceptRetriever().execute();
-//            System.err.println("test");    
-        }
-    
-
-        	 
-         
-            
-         else
-            getWizard().setNextFinishButtonEnabled(false);           
+    	}else{
+            getWizard().setNextFinishButtonEnabled(false); 
+    	}
     
     }
    
@@ -105,31 +114,5 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 		return knowledgePanel;
 	}
   
-  class ConceptRetriever extends SwingWorker<Set<NamedClass>, NamedClass>
-  {
-    @Override 
-    public Set<NamedClass> doInBackground()
-    {		
-  	  getWizardModel().getOre().detectReasoner();
-  	  Set<NamedClass> ind = getWizardModel().getOre().getReasoningService().getNamedClasses();
-  	  ClassPanelOWLDescriptor nextPanel = (ClassPanelOWLDescriptor)getWizardModel().getPanelHashMap().get(getNextPanelDescriptor());
-  	  nextPanel.panel3.getModel().clear();
-   
-    	for (NamedClass cl : ind){
-    		publish(cl);
-    		 nextPanel.panel3.getModel().addElement(cl);
-    		
-    	}
-    	return ind;
-    }
 
-    
-    
-    
-  }
-	
-	
-    
-    
-    
 }

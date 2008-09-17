@@ -53,49 +53,25 @@
     
 
 
-    <!-- http://example.com/father#animal -->
-
-    <owl:Class rdf:about="#animal">
-        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
-        <owl:disjointWith rdf:resource="#father"/>
-        <owl:disjointWith rdf:resource="#mother"/>
-    </owl:Class>
-    
-
-
-    <!-- http://example.com/father#bird -->
-
-    <owl:Class rdf:about="#bird">
-        <rdfs:subClassOf rdf:resource="#animal"/>
-    </owl:Class>
-    
-
-
-    <!-- http://example.com/father#cat -->
-
-    <owl:Class rdf:about="#cat">
-        <rdfs:subClassOf rdf:resource="#animal"/>
-    </owl:Class>
-    
-
-
-    <!-- http://example.com/father#dog -->
-
-    <owl:Class rdf:about="#dog">
-        <rdfs:subClassOf rdf:resource="#animal"/>
-    </owl:Class>
-    
-
-
     <!-- http://example.com/father#father -->
 
-    <owl:Class rdf:about="#father"/>
+    <owl:Class rdf:about="#father">
+        <owl:equivalentClass rdf:resource="#horse"/>
+    </owl:Class>
     
 
 
     <!-- http://example.com/father#female -->
 
     <owl:Class rdf:about="#female"/>
+    
+
+
+    <!-- http://example.com/father#horse -->
+
+    <owl:Class rdf:about="#horse">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+    </owl:Class>
     
 
 
@@ -107,14 +83,6 @@
                 <owl:complementOf rdf:resource="#female"/>
             </owl:Class>
         </owl:equivalentClass>
-    </owl:Class>
-    
-
-
-    <!-- http://example.com/father#mother -->
-
-    <owl:Class rdf:about="#mother">
-        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
     </owl:Class>
     
 
@@ -136,70 +104,17 @@
     
 
 
-    <!-- http://example.com/father#aiko -->
-
-    <dog rdf:about="#aiko"/>
-    
-
-
     <!-- http://example.com/father#anna -->
 
     <female rdf:about="#anna">
-        <rdf:type rdf:resource="#mother"/>
         <hasChild rdf:resource="#heinz"/>
     </female>
-    
-
-
-    <!-- http://example.com/father#anton -->
-
-    <father rdf:about="#anton">
-        <hasChild rdf:resource="#thomas"/>
-    </father>
-    
-
-
-    <!-- http://example.com/father#bigfoot -->
-
-    <dog rdf:about="#bigfoot"/>
-    
-
-
-    <!-- http://example.com/father#bobby -->
-
-    <father rdf:about="#bobby">
-        <rdf:type rdf:resource="#female"/>
-        <hasChild rdf:resource="#nico"/>
-    </father>
-    
-
-
-    <!-- http://example.com/father#carlo -->
-
-    <bird rdf:about="#carlo"/>
     
 
 
     <!-- http://example.com/father#heinz -->
 
     <male rdf:about="#heinz"/>
-    
-
-
-    <!-- http://example.com/father#katrin -->
-
-    <female rdf:about="#katrin">
-        <rdf:type rdf:resource="#mother"/>
-    </female>
-    
-
-
-    <!-- http://example.com/father#maik -->
-
-    <male rdf:about="#maik">
-        <rdf:type rdf:resource="#father"/>
-        <hasChild rdf:resource="#katrin"/>
-    </male>
     
 
 
@@ -216,7 +131,7 @@
 
     <male rdf:about="#martin">
         <rdf:type rdf:resource="#father"/>
-        <hasChild rdf:resource="#nina"/>
+        <hasChild rdf:resource="#heinz"/>
     </male>
     
 
@@ -227,43 +142,10 @@
     
 
 
-    <!-- http://example.com/father#minka -->
-
-    <cat rdf:about="#minka"/>
-    
-
-
-    <!-- http://example.com/father#nadine -->
-
-    <mother rdf:about="#nadine">
-        <rdf:type rdf:resource="#female"/>
-        <hasChild rdf:resource="#maik"/>
-    </mother>
-    
-
-
-    <!-- http://example.com/father#nico -->
-
-    <male rdf:about="#nico"/>
-    
-
-
-    <!-- http://example.com/father#nina -->
-
-    <female rdf:about="#nina"/>
-    
-
-
     <!-- http://example.com/father#stefan -->
 
     <father rdf:about="#stefan">
         <rdf:type rdf:resource="#male"/>
-        <hasChild rdf:resource="#michelle"/>
+        <hasChild rdf:resource="#markus"/>
     </father>
-    
-
-
-    <!-- http://example.com/father#thomas -->
-
-    <male rdf:about="#thomas"/>
 </rdf:RDF>

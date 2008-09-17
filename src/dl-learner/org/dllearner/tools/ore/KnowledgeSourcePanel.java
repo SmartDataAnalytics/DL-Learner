@@ -1,16 +1,34 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.net.URL;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
-import javax.swing.JComboBox;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,19 +39,20 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
-import org.dllearner.kb.sparql.SparqlEndpoint;
-
 public class KnowledgeSourcePanel extends JPanel{
 
 	private static final long serialVersionUID = -3997200565180270088L;
 	private javax.swing.JTextField fileURL;
 	private JTextField sparqlURL;
-	private javax.swing.JButton browseButton;
+	private JButton browseButton;
+	private JButton connectButton;
 	
-	private JComboBox sparqlBox;
+//	private JComboBox sparqlBox;
 	
 	private JPanel contentPanel;
-	private JLabel message;
+	
+	private JLabel owlMessage;
+	private JLabel sparqlMessage;
 	
 	private JRadioButton owl;
 	private JRadioButton sparql;
@@ -71,38 +90,59 @@ public class KnowledgeSourcePanel extends JPanel{
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		owlPanel.setBorder(new TitledBorder("OWL"));
-		message = new JLabel();
-		message.setText("enter or browse OWL file");
+		owlMessage = new JLabel();
+		owlMessage.setText("enter or browse OWL file");
 		fileURL = new javax.swing.JTextField(60);
 		browseButton = new javax.swing.JButton("browse");
 		layout.setHorizontalGroup(layout.createSequentialGroup()
 			    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 			         .addComponent(fileURL)
-			         .addComponent(message))
+			         .addComponent(owlMessage))
 			    .addComponent(browseButton));
-		layout.linkSize(SwingConstants.HORIZONTAL, fileURL, message);
+		layout.linkSize(SwingConstants.HORIZONTAL, fileURL, owlMessage);
 
 		layout.setVerticalGroup(layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				        .addComponent(fileURL)
 				        .addComponent(browseButton))
       
-			    .addComponent(message));
+			    .addComponent(owlMessage));
 		
 		
 		JPanel sparqlPanel = new JPanel();
+		GroupLayout sparqlLayout = new GroupLayout(sparqlPanel);
+		sparqlPanel.setLayout(sparqlLayout);
+		sparqlLayout.setAutoCreateGaps(true);
+		sparqlLayout.setAutoCreateContainerGaps(true);
 		sparqlPanel.setBorder(new TitledBorder("SPARQL"));
+		sparqlMessage = new JLabel();
+		sparqlMessage.setText("enter SPARQL-URL and press connect");
+		sparqlMessage.setVisible(false);
 		sparqlURL = new JTextField(60);
 		sparqlURL.setEnabled(false);
 		
-		Vector<URL> model = new Vector<URL>();
-		for(SparqlEndpoint e : SparqlEndpoint.listEndpoints())
-			model.add(e.getURL());
-		sparqlBox = new JComboBox(model);
-		sparqlBox.setEditable(false);
-		sparqlBox.setSelectedIndex(-1);
-		sparqlBox.setEnabled(false);
-		sparqlPanel.add(sparqlBox);
+//		Vector<URL> model = new Vector<URL>();
+//		for(SparqlEndpoint e : SparqlEndpoint.listEndpoints())
+//			model.add(e.getURL());
+//		sparqlBox = new JComboBox(model);
+//		sparqlBox.setEditable(false);
+//		sparqlBox.setSelectedIndex(-1);
+//		sparqlBox.setEnabled(false);
+//		sparqlPanel.add(sparqlURL);
+		connectButton = new javax.swing.JButton("connect");
+		sparqlLayout.setHorizontalGroup(sparqlLayout.createSequentialGroup()
+			    .addGroup(sparqlLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+			         .addComponent(sparqlURL)
+			         .addComponent(sparqlMessage))
+			    .addComponent(connectButton));
+		sparqlLayout.linkSize(SwingConstants.HORIZONTAL, sparqlURL, sparqlMessage);
+
+		sparqlLayout.setVerticalGroup(sparqlLayout.createSequentialGroup()
+				.addGroup(sparqlLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				        .addComponent(sparqlURL)
+				        .addComponent(connectButton))
+      
+			    .addComponent(sparqlMessage));
 		
 		
 		contentPanel1.setLayout(new GridLayout(0,1));
@@ -159,20 +199,20 @@ public class KnowledgeSourcePanel extends JPanel{
 	public boolean isExistingOWLFile(){
 		if(!fileURL.getText().equals("") && !getOWLFile().exists()){
 			
-			message.setText(fileURL.getText()+" does not exist");
+			owlMessage.setText(fileURL.getText()+" does not exist");
 			return false;
 		}
 		if(!fileURL.getText().equals("") && (getOWLFile().isDirectory() || (getOWLFile().isFile() && !getOWLFile().getPath().endsWith(".owl")))){
 			System.err.println(getOWLFile().getPath());
-			message.setText(fileURL.getText()+" is not a OWL file");
+			owlMessage.setText(fileURL.getText()+" is not a OWL file");
 			return false;
 		}
 		if(fileURL.getText().equals("")){
-			message.setText("enter or browse OWL file");
+			owlMessage.setText("enter or browse OWL file");
 			return false;
 		}
 		if(getOWLFile().exists() && getOWLFile().getPath().endsWith(".owl")){
-			message.setText("");
+			owlMessage.setText("");
 			return true;
 		}
 		return true;
@@ -192,20 +232,26 @@ public class KnowledgeSourcePanel extends JPanel{
 	public void setOWLMode(){
 		fileURL.setEnabled(true);
 		browseButton.setEnabled(true);
-		message.setVisible(true);
+		owlMessage.setVisible(true);
 		
-		sparqlBox.setEditable(false);
-		sparqlBox.setEnabled(false);
+		sparqlURL.setEnabled(false);
+		connectButton.setEnabled(false);
+		sparqlMessage.setVisible(false);
+//		sparqlBox.setEditable(false);
+//		sparqlBox.setEnabled(false);
 	
 	}
 	
 	public void setSPARQLMode(){
 		fileURL.setEnabled(false);
 		browseButton.setEnabled(false);
-		message.setVisible(false);
+		owlMessage.setVisible(false);
 		
-		sparqlBox.setEnabled(true);
-		sparqlBox.setEditable(true);
+		sparqlURL.setEnabled(true);
+		connectButton.setEnabled(true);
+		sparqlMessage.setVisible(true);
+//		sparqlBox.setEnabled(true);
+//		sparqlBox.setEditable(true);
 		
 	}
 	

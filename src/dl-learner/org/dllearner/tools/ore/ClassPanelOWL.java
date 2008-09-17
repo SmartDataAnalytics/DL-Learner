@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.dllearner.tools.ore;
 
 import java.awt.BorderLayout;
@@ -35,18 +55,18 @@ public class ClassPanelOWL extends JPanel{
 		super();
 		
 		model = new DefaultListModel();
-		loadingLabel = new JXBusyLabel(new Dimension(15,15));
+		loadingLabel = new JXBusyLabel(new Dimension(15, 15));
 		statusLabel = new JLabel();
 		
 	
 		BusyPainter painter = new BusyPainter(
-		new RoundRectangle2D.Float(0, 0,6.0f,2.6f,10.0f,10.0f),
-		new Ellipse2D.Float(2.0f,2.0f,11.0f,11.0f));
+		new RoundRectangle2D.Float(0, 0, 6.0f, 2.6f, 10.0f, 10.0f),
+		new Ellipse2D.Float(2.0f, 2.0f, 11.0f, 11.0f));
 		painter.setTrailLength(2);
 		painter.setPoints(7);
 		painter.setFrame(-1);
-		loadingLabel.setPreferredSize(new Dimension(15,15));
-		loadingLabel.setIcon(new EmptyIcon(15,15));
+		loadingLabel.setPreferredSize(new Dimension(15, 15));
+		loadingLabel.setIcon(new EmptyIcon(15, 15));
 		loadingLabel.setBusyPainter(painter);
 
 
