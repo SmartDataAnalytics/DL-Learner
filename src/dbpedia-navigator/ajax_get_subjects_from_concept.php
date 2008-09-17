@@ -15,24 +15,34 @@
 	
 	setRunning($id,"true");
 	
-	$concept=html_entity_decode($concept);
-	
-	$test=preg_match("/^([\(]*http:\/\/dbpedia\.org\/class\/yago\/[^\040]+[\)]*(\040(AND|OR)\040)?)+$/",$such);
+	$test=preg_match("/^([\(]*http:\/\/dbpedia\.org\/class\/yago\/[^\040]+[\)]*(\040(AND|OR)\040)?)+$/",$manchester);
 	
 	$content="";
 	if ($test){
-		preg_match_all("/http:\/\/dbpedia\.org\/class\/yago\/[^\040()]+/",$such,$treffer,PREG_OFFSET_CAPTURE);
+		//connect to the database
+		$settings=new Settings();
+		$databaseConnection=new DatabaseConnection($settings->database_type);
+		$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
+		$databaseConnection->select_database($settings->database_name);
+	
+		preg_match_all("/http:\/\/dbpedia\.org\/class\/yago\/[^\040()]+/",$manchester,$treffer,PREG_OFFSET_CAPTURE);
 
 		$final='';
 		$i=1;
 		$pos=0;
 		foreach ($treffer[0] as $tref){
-			$final.=substr($such,$pos,$tref[1]-$pos);
-			$final.='cat'.$i.'.category=\''.substr($such,$tref[1],strlen($tref[0])).'\'';
+			$final.=substr($manchester,$pos,$tref[1]-$pos).'(';
+			$category=substr($manchester,$tref[1],strlen($tref[0]));
+			$query='SELECT child FROM classhierarchy WHERE father=\''.$category.'\'';
+			$res=$databaseConnection->query($query);
+			while ($result=$databaseConnection->nextEntry($res)){
+				$final.='cat'.$i.'.category=\''.$result['child'].'\' OR ';
+			}
+			$final.='cat'.$i.'.category=\''.$category.'\')';
 			$i++;
 			$pos=$tref[1]+strlen($tref[0]);
 		}
-		$final.=substr($such,$pos);
+		$final.=substr($manchester,$pos);
 		$temp='SELECT cat1.name FROM ';
 		for ($j=0;$j<$i-1;$j++)
 			if ($j!=$i-2) $temp.='articlecategories as cat'.($j+1).',';
@@ -42,12 +52,6 @@
 			$temp.='cat'.$j.'.name=cat'.($j+1).'.name AND ';
 		
 		$query=$temp.'('.$final.') LIMIT '.$number;
-		
-		//connect to the database
-		$settings=new Settings();
-		$databaseConnection=new DatabaseConnection($settings->database_type);
-		$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
-		$databaseConnection->select_database($settings->database_name);
 		
 		$res=$databaseConnection->query($query);
 		$bestsearches="";

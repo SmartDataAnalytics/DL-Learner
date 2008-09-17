@@ -349,7 +349,7 @@ function getClassView($fathers,$childs,$title,$class)
 	}
 			
 	$ret.='<table border="0" style="text-align:left;width:100%">';
-	$ret.='<tr><td style="width:90%"><b>Father classes</b></td></tr>';
+	$ret.='<tr><td style="width:90%;font-size:14px;"><b>Father classes</b></td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
 	$ret.='<tr><td>'.$fathers.'</td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
@@ -357,7 +357,7 @@ function getClassView($fathers,$childs,$title,$class)
 	if ($fatherButtons) $ret.='<input style="width:70px" type="button" value="Instances" class="button" onclick="getSubjectsFromCategory(\'category=\'+document.getElementById(\'fatherSelect\').options[document.getElementById(\'fatherSelect\').selectedIndex].value+\'&number=10\');" title="Search Instances of Father class."/>&nbsp;&nbsp;<input style="width:70px" type="button" value="Class" class="button" onclick="get_class(\'class=\'+document.getElementById(\'fatherSelect\').options[document.getElementById(\'fatherSelect\').selectedIndex].value+\'&cache=-1\');" title="Show Father class in class view."/>';
 	$ret.='</td></tr>';
 	$ret.='<tr style="height:20px"><td><hr/></td></tr>';
-	$ret.='<tr><td><b>Current class</b></td></tr>';
+	$ret.='<tr><td style="font-size:14px;"><b>Current class</b></td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
 	$ret.='<tr><td><b>'.$title.'</b></td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
@@ -365,7 +365,7 @@ function getClassView($fathers,$childs,$title,$class)
 	$ret.='<input style="width:70px" type="button" value="Instances" class="button" onclick="getSubjectsFromCategory(\'category='.$class.'&number=10\');" title="Search Instances of Shown class."/>';
 	$ret.='</td></tr>';
 	$ret.='<tr style="height:20px"><td><hr/></td></tr>';
-	$ret.='<tr><td style="width:30%"><b>Child classes</b></td></tr>';
+	$ret.='<tr><td style="width:30%;font-size:14px;"><b>Child classes</b></td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
 	$ret.='<tr><td>'.$childs.'</td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';

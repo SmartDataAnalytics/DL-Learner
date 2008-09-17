@@ -49,7 +49,6 @@ class DLLearnerConnection
 		
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",1);
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedFilter", "DBPEDIA-NAVIGATOR");
-		//$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useLits", true);
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedEndpoint", "DBPEDIA");
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedManipulator", "DBPEDIA-NAVIGATOR");
 		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useCache", $settings->useCache);
@@ -66,8 +65,8 @@ class DLLearnerConnection
 		$this->client->setPositiveExamples($this->id, $posExamples);
 		if(!empty($negExamples))
 			$this->client->setNegativeExamples($this->id, $negExamples);
-		$this->client->setLearningAlgorithm($this->id, "dbpediaNavigationSuggestor");
-		
+		$algorithmID=$this->client->setLearningAlgorithm($this->id, "dbpediaNavigationSuggestor");
+		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "forceRefinementLengthIncrease", true);
 		$start = microtime(true);
 		
 		$this->client->initAll($this->id);

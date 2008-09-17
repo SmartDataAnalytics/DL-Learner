@@ -49,7 +49,7 @@
 	
 	print $content;
 	print '$$$';
-	print "Searchresult for Category \"".$label."\"";
+	print "Instances of Class \"".$label."\"";
 	print '$$$';
 	print $bestsearches;
 ?>
