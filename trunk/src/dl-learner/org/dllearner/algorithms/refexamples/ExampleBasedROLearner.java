@@ -848,7 +848,7 @@ public class ExampleBasedROLearner {
 				
 				// it is often useful to continue expanding until a longer node is
 				// reached (to replace atomic concepts with more specific ones)
-				if(forceRefinementLengthIncrease) {
+				if(forceRefinementLengthIncrease && !newNode.isTooWeak()) {
 					// extend node again if its concept has the same length 
 					if(node.getConcept().getLength() == newNode.getConcept().getLength()) {
 						extendNodeProper(newNode, refinement, maxLength, recDepth + 1);
