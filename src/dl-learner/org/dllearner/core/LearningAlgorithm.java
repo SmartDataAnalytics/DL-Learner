@@ -249,7 +249,7 @@ public abstract class LearningAlgorithm extends Component {
 			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed.getDescription())) {
 				// before we add the description we replace EXISTS r.TOP with
 				// EXISTS r.range(r) if range(r) is atomic
-//				ConceptTransformation.replaceRange(ed.getDescription(), reasoningService);
+				ConceptTransformation.replaceRange(ed.getDescription(), reasoningService);
 				returnList.add(ed);
 			}
 			

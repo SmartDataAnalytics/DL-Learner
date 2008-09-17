@@ -128,7 +128,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	//	refactor this
 	private static int maxPosOnlyExpansionDefault = 4;
 	private int maxPosOnlyExpansion = maxPosOnlyExpansionDefault;
-	private boolean forceRefinementLengthIncrease = false;
+	private boolean forceRefinementLengthIncrease = true;
 	//extended Options
 	//in seconds
 	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
