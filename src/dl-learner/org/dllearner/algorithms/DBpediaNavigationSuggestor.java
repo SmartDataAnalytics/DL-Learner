@@ -144,6 +144,7 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 		noisePercentage.setUpperLimit(100);
 		options.add(noisePercentage);
 		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
+		options.add(new BooleanConfigOption("forceRefinementLengthIncrease", "specifies whether nodes should be expanded until only longer refinements are reached"));
 		return options;
 	}
 	
