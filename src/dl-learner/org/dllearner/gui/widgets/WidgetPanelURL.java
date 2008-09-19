@@ -39,7 +39,7 @@ import org.dllearner.kb.OWLFile;
  * Widget panel for URLs.
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionListener {
 
@@ -51,24 +51,32 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 	private URL value;
 	private JTextField stringField;
 
+	/**
+	 * Provides a widget for URL options.
+	 * 
+	 * @param config
+	 *            Central config handler.
+	 * @param component
+	 *            The component of this option.
+	 * @param configOption
+	 *            The option to configure.
+	 */
 	public WidgetPanelURL(Config config, Component component, URLConfigOption configOption) {
 		super(config, component, configOption);
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == chooseLocalButton) {
-//			String stringValue;
 			JFileChooser fc;
-			if(component instanceof OWLFile) {
+			if (component instanceof OWLFile) {
 				fc = new ExampleFileChooser("owl");
 			} else {
 				fc = new ExampleFileChooser("kb");
-			}	
-			
+			}
+
 			int returnVal = fc.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-//				stringValue = fc.getSelectedFile().toString();
-//				stringField.setText(stringValue);
 				try {
 					// get file URI, add it into text field and fire a
 					// value changed event
@@ -78,9 +86,9 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 				} catch (MalformedURLException e1) {
 					// should never happen, because an actual file was selected
 					e1.printStackTrace();
-				}				
+				}
 			}
-		} else if(e.getSource() == setButton) {
+		} else if (e.getSource() == setButton) {
 			String stringValue = stringField.getText();
 			try {
 				value = new URL(stringValue);
@@ -98,33 +106,31 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 
 		// get current value of this option for the given component
 		value = config.getConfigOptionValue(component, configOption);
-		// default values can be null, so we interpret this as empty string
-//		if (value == null) {
-//			value = "";
-//		}		
-		
+
 		// text field for strings
 		stringField = new JTextField(35);
-		if(value != null)
+		if (value != null) {
 			stringField.setText(value.toString());
+		}
 		stringField.setToolTipText(configOption.getAllowedValuesDescription());
-		
-		// set button (value is only updated when this button is pressed => would better without set)
+
+		// set button (value is only updated when this button is pressed =>
+		// would better without set)
 		setButton = new JButton("Set");
 		setButton.addActionListener(this);
-		
+
 		add(stringField);
-		add(setButton);		
-		
+		add(setButton);
+
 		// if the URL can refer to a file, we add the possibility to
 		// choose a local file
-		if(((URLConfigOption)configOption).refersToFile()) {
+		if (((URLConfigOption) configOption).refersToFile()) {
 			chooseLocalButton = new JButton("Choose Local File");
 			chooseLocalButton.addActionListener(this);
 			add(new JLabel(" or "));
 			add(chooseLocalButton);
 		}
-			
+
 	}
 
 }

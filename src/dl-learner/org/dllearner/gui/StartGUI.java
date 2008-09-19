@@ -250,10 +250,10 @@ public class StartGUI extends JFrame implements ActionListener {
 		// create GUI logger
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		Logger logger = Logger.getRootLogger();
-		logger.removeAllAppenders();
-		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.DEBUG);
+		Logger rootLogger = Logger.getRootLogger();
+		rootLogger.removeAllAppenders();
+		rootLogger.addAppender(consoleAppender);
+		rootLogger.setLevel(Level.DEBUG);
 
 		File file = null;
 		if (args.length > 0)
@@ -337,7 +337,7 @@ public class StartGUI extends JFrame implements ActionListener {
 	public void updateTabs() {
 		for(int i=0; i<4; i++) {
 			// red = needs init, black = initialised
-			if(config.needsInit(i)) {
+			if(config.tabNeedsInit(i)) {
 				tabPane.setForegroundAt(i, Color.RED);
 			} else {
 				tabPane.setForegroundAt(i, Color.BLACK);

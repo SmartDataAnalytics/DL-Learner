@@ -1,5 +1,3 @@
-package org.dllearner.gui.widgets;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,6 +17,7 @@ package org.dllearner.gui.widgets;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui.widgets;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -51,16 +50,23 @@ public class WidgetPanelDouble extends AbstractWidgetPanel<Double> implements Ac
 	private Double value;
 	private JTextField doubleField = new JTextField(5);
 
+	/**
+	 * Provides a widget for double options.
+	 * @param config Central config handler.
+	 * @param component The component of this option.
+	 * @param configOption The option to configure.
+	 */
 	public WidgetPanelDouble(Config config, Component component, DoubleConfigOption configOption) {
 		super(config, component, configOption);
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == setButton) {
 			// TODO need better way for double parsing than throwing an
 			// exception
 			try {
-				double value = Integer.valueOf(doubleField.getText());
+				value = Double.valueOf(doubleField.getText());
 				fireValueChanged(value);
 				problemLabel.setText("");
 			} catch(NumberFormatException e1) {
@@ -79,9 +85,9 @@ public class WidgetPanelDouble extends AbstractWidgetPanel<Double> implements Ac
 		
 		setButton = new JButton("Set");
 		doubleField = new JTextField(5);
-		if (value == null)
+		if (value == null) {
 			value = 0.0;
-		else {
+		} else {
 			doubleField.setText(value.toString());
 //			setEntry();
 		}		

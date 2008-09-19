@@ -46,10 +46,17 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 	private String value;
 	private JTextField stringField;
 
+	/**
+	 * Provides a widget for string options.
+	 * @param config Central config handler.
+	 * @param component The component of this option.
+	 * @param configOption The option to configure.
+	 */
 	public WidgetPanelString(Config config, Component component, StringConfigOption configOption) {
 		super(config, component, configOption);
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == setButton) {
 			// fire value changed event
@@ -81,11 +88,6 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 
 		add(stringField);
 		add(setButton);
-
-		// special handling for filename option
-		if (configOption.getName().equals("filename"))
-			setButton.setText("choose local file");
-
 	}
 
 }

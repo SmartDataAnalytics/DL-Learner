@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.gui;
 
 import java.awt.BorderLayout;
@@ -21,7 +40,7 @@ import org.dllearner.core.ReasonerComponent;
  * Class displaying a component (and its options).
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public class ComponentPanel extends JPanel implements ActionListener {
 
@@ -33,57 +52,88 @@ public class ComponentPanel extends JPanel implements ActionListener {
 	private OptionPanel optionPanel;
 	private Class<? extends Component> panelClass;
 	private Component currentComponent;
-	
+
 	// GUI elements
-	private JButton clearButton;	
-	private JComboBox comboBox = new JComboBox();	
-	
-	ComponentPanel(final Config config, StartGUI startGUI, Class<? extends Component> panelClass, Class<? extends Component> defaultComponent) {
-		this(config, startGUI, panelClass, defaultComponent,null);
+	private JButton clearButton;
+	private JComboBox comboBox = new JComboBox();
+
+	/**
+	 * Calls this(config, startGUI, panelClass, defaultComponent,null).
+	 * 
+	 * @param config
+	 *            See main constructor.
+	 * @param startGUI
+	 *            See main constructor.
+	 * @param panelClass
+	 *            See main constructor.
+	 * @param defaultComponent
+	 *            See main constructor.
+	 */
+	ComponentPanel(final Config config, StartGUI startGUI, Class<? extends Component> panelClass,
+			Class<? extends Component> defaultComponent) {
+		this(config, startGUI, panelClass, defaultComponent, null);
 	}
-		
-	ComponentPanel(final Config config, StartGUI startGUI, Class<? extends Component> panelClass, Class<? extends Component> defaultComponent, List<Class<? extends Component>> ignoredComponents) {
+
+	/**
+	 * Constructs a panel for configuring a component.
+	 * 
+	 * @param config
+	 *            Central configuration handler.
+	 * @param startGUI
+	 *            Central GUI class.
+	 * @param panelClass
+	 *            Class of this panel, e.g. one of KnowledgeSource.class,
+	 *            ReasonerComponent.class, ...
+	 * @param defaultComponent
+	 *            The default component, e.g. OWLFile.class.
+	 * @param ignoredComponents
+	 *            Components of DL-Learner, which should not be displayed.
+	 */
+	ComponentPanel(final Config config, StartGUI startGUI, Class<? extends Component> panelClass,
+			Class<? extends Component> defaultComponent,
+			List<Class<? extends Component>> ignoredComponents) {
 		super(new BorderLayout());
 
 		this.config = config;
 		this.startGUI = startGUI;
 		this.panelClass = panelClass;
-		
+
 		// get all classes of the correct type
 		selectableComponents = new LinkedList<Class<? extends Component>>();
-		if(panelClass == KnowledgeSource.class) {
+		if (panelClass == KnowledgeSource.class) {
 			selectableComponents.addAll(config.getComponentManager().getKnowledgeSources());
-		} else if(panelClass == ReasonerComponent.class) {
+		} else if (panelClass == ReasonerComponent.class) {
 			selectableComponents.addAll(config.getComponentManager().getReasonerComponents());
-		} else if(panelClass == LearningProblem.class) {
+		} else if (panelClass == LearningProblem.class) {
 			selectableComponents.addAll(config.getComponentManager().getLearningProblems());
-		} else if(panelClass == LearningAlgorithm.class) {
+		} else if (panelClass == LearningAlgorithm.class) {
 			selectableComponents.addAll(config.getComponentManager().getLearningAlgorithms());
 		}
-		
+
 		// set default component class (move it to first position)
 		selectableComponents.remove(defaultComponent);
 		selectableComponents.add(0, defaultComponent);
-		
+
 		// remove ignored component classes
-		if(ignoredComponents != null) {
+		if (ignoredComponents != null) {
 			selectableComponents.removeAll(ignoredComponents);
 		}
-		
+
 		// create combo box
 		for (int i = 0; i < selectableComponents.size(); i++) {
-			comboBox.addItem(config.getComponentManager().getComponentName(selectableComponents.get(i)));
-//			comboBox.addItem(selectableComponents.get(i));			
+			comboBox.addItem(config.getComponentManager().getComponentName(
+					selectableComponents.get(i)));
+			// comboBox.addItem(selectableComponents.get(i));
 		}
 		comboBox.addActionListener(this);
-		
+
 		clearButton = new JButton("Reset to Default Values");
 		clearButton.addActionListener(this);
 
 		// create upper panel
 		JPanel choosePanel = new JPanel();
 		choosePanel.add(comboBox);
-//		choosePanel.add(new JLabel("       "));
+		// choosePanel.add(new JLabel(" "));
 		choosePanel.add(clearButton);
 
 		// we create a new default component
@@ -93,12 +143,11 @@ public class ComponentPanel extends JPanel implements ActionListener {
 		add(choosePanel, BorderLayout.NORTH);
 		add(optionPanel, BorderLayout.CENTER);
 
-	} 
-	
+	}
 
-	
+	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == comboBox) {
+		if (e.getSource() == comboBox) {
 			// change component and update option panel
 			Class<? extends Component> c = selectableComponents.get(comboBox.getSelectedIndex());
 			currentComponent = changeInstance(c);
@@ -120,15 +169,15 @@ public class ComponentPanel extends JPanel implements ActionListener {
 	 */
 	public void update() {
 		// detect current component
-		if(panelClass == KnowledgeSource.class) {
+		if (panelClass == KnowledgeSource.class) {
 			currentComponent = config.getKnowledgeSource();
-		} else if(panelClass == ReasonerComponent.class) {
+		} else if (panelClass == ReasonerComponent.class) {
 			currentComponent = config.getReasoner();
-		} else if(panelClass == LearningProblem.class) {
+		} else if (panelClass == LearningProblem.class) {
 			currentComponent = config.getLearningProblem();
-		} else if(panelClass == LearningAlgorithm.class) {
+		} else if (panelClass == LearningAlgorithm.class) {
 			currentComponent = config.getLearningAlgorithm();
-		}		
+		}
 		// select component without sending an event;
 		// we need to disable events send by JComboBox
 		comboBox.removeActionListener(this);
@@ -139,7 +188,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 		// update option panel accordingly
 		updateOptionPanel();
 	}
-	
+
 	/**
 	 * Updates the option panel.
 	 */
@@ -152,47 +201,47 @@ public class ComponentPanel extends JPanel implements ActionListener {
 	 */
 	public void panelActivated() {
 		// hook method, which does nothing yet
-	}	
-	
+	}
+
 	// creates an instance of the specified component class
 	@SuppressWarnings("unchecked")
 	private Component newInstance(Class<? extends Component> clazz) {
 		Component newComponent = null;
-		if(KnowledgeSource.class.isAssignableFrom(clazz)) {
+		if (KnowledgeSource.class.isAssignableFrom(clazz)) {
 			newComponent = config.newKnowledgeSource((Class<KnowledgeSource>) clazz);
-		} else if(ReasonerComponent.class.isAssignableFrom(clazz)) {
+		} else if (ReasonerComponent.class.isAssignableFrom(clazz)) {
 			newComponent = config.newReasoner((Class<ReasonerComponent>) clazz);
-		} else if(LearningProblem.class.isAssignableFrom(clazz)) {
+		} else if (LearningProblem.class.isAssignableFrom(clazz)) {
 			newComponent = config.newLearningProblem((Class<LearningProblem>) clazz);
-		} else if(LearningAlgorithm.class.isAssignableFrom(clazz)) {
+		} else if (LearningAlgorithm.class.isAssignableFrom(clazz)) {
 			try {
 				newComponent = config.newLearningAlgorithm((Class<LearningAlgorithm>) clazz);
 			} catch (LearningProblemUnsupportedException e) {
 				// TODO status message
 				e.printStackTrace();
 			}
-		}		
+		}
 		return newComponent;
 	}
-	
+
 	// changes current component to an instance of the specified class
 	@SuppressWarnings("unchecked")
 	private Component changeInstance(Class<? extends Component> clazz) {
 		Component newComponent = null;
-		if(KnowledgeSource.class.isAssignableFrom(clazz)) {
+		if (KnowledgeSource.class.isAssignableFrom(clazz)) {
 			newComponent = config.changeKnowledgeSource((Class<KnowledgeSource>) clazz);
-		} else if(ReasonerComponent.class.isAssignableFrom(clazz)) {
+		} else if (ReasonerComponent.class.isAssignableFrom(clazz)) {
 			newComponent = config.changeReasoner((Class<ReasonerComponent>) clazz);
-		} else if(LearningProblem.class.isAssignableFrom(clazz)) {
+		} else if (LearningProblem.class.isAssignableFrom(clazz)) {
 			newComponent = config.changeLearningProblem((Class<LearningProblem>) clazz);
-		} else if(LearningAlgorithm.class.isAssignableFrom(clazz)) {
+		} else if (LearningAlgorithm.class.isAssignableFrom(clazz)) {
 			try {
 				newComponent = config.changeLearningAlgorithm((Class<LearningAlgorithm>) clazz);
 			} catch (LearningProblemUnsupportedException e) {
 				// TODO status message
 				e.printStackTrace();
 			}
-		}		
+		}
 		return newComponent;
 	}
 
@@ -201,6 +250,6 @@ public class ComponentPanel extends JPanel implements ActionListener {
 	 */
 	public Component getCurrentComponent() {
 		return currentComponent;
-	}	
-	
+	}
+
 }

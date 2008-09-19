@@ -1,5 +1,3 @@
-package org.dllearner.gui.widgets;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,6 +17,7 @@ package org.dllearner.gui.widgets;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui.widgets;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -50,17 +49,24 @@ public class WidgetPanelInteger extends AbstractWidgetPanel<Integer> implements 
 	private Integer value;
 	private JTextField integerField; // = new JTextField(3);
 
+	/**
+	 * Provides a widget for integer options.
+	 * @param config Central config handler.
+	 * @param component The component of this option.
+	 * @param configOption The option to configure.
+	 */
 	public WidgetPanelInteger(Config config, Component component, IntegerConfigOption configOption) {
 		super(config, component, configOption);
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == setButton) {
 
 			// TODO need better way for integer parsing than throwing an
 			// exception
 			try {
-				int value = Integer.valueOf(integerField.getText());
+				value = Integer.valueOf(integerField.getText());
 				fireValueChanged(value);
 				problemLabel.setText("");
 			} catch(NumberFormatException e1) {
@@ -79,9 +85,9 @@ public class WidgetPanelInteger extends AbstractWidgetPanel<Integer> implements 
 		
 		setButton = new JButton("Set");
 		integerField = new JTextField(3);		
-		if (value == null)
+		if (value == null) {
 			value = 0;
-		else {
+		} else {
 			integerField.setText(value.toString());
 //			setEntry();
 		}

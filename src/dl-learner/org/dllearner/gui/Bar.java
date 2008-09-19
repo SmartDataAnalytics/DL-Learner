@@ -1,5 +1,3 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,6 +17,7 @@ package org.dllearner.gui;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui;
 
 import java.awt.*;
 import javax.swing.*;
@@ -61,11 +60,11 @@ public class Bar extends JPanel {
 	/**
 	 * Update horizontal bar.
 	 * 
-	 * @param factor
+	 * @param newFactor
 	 *            should between 0 and 1 (1 for 100%)
 	 */
-	public void update(double factor) {
-		this.factor = factor;
+	public void update(double newFactor) {
+		this.factor = newFactor;
 		repaint();
 	}
 }

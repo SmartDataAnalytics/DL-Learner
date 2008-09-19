@@ -1,5 +1,3 @@
-package org.dllearner.gui.widgets;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
  *
@@ -19,6 +17,7 @@ package org.dllearner.gui.widgets;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.dllearner.gui.widgets;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -49,7 +48,8 @@ import org.dllearner.utilities.datastructures.StringTuple;
  * 
  * @author Tilo Hielscher
  */
-public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringTuple>> implements ActionListener {
+public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringTuple>> implements
+		ActionListener {
 
 	private static final long serialVersionUID = 7832726987046601916L;
 
@@ -70,10 +70,18 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 
 	private JButton setButton; // = new JButton("set");
 
-	public WidgetPanelStringTupleList(Config config, Component component, StringTupleListConfigOption configOption) {
+	/**
+	 * Provides a widget for string tuple list options.
+	 * @param config Central config handler.
+	 * @param component The component of this option.
+	 * @param configOption The option to configure.
+	 */
+	public WidgetPanelStringTupleList(Config config, Component component,
+			StringTupleListConfigOption configOption) {
 		super(config, component, configOption);
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		// add to list
 		if (e.getSource() == addButton
@@ -100,32 +108,10 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 		}
 		// set entry
 		value = exampleList;
-//		setEntry();
+		// setEntry();
 		fireValueChanged(value);
 	}
 
-	/*
-	public void setEntry() {
-		StringTupleListConfigOption specialOption;
-		specialOption = (StringTupleListConfigOption) config.getComponentManager().getConfigOption(
-				component.getClass(), configOption.getName());
-		if (specialOption.isValidValue(value)) {
-			try {
-				ConfigEntry<List<StringTuple>> specialEntry = new ConfigEntry<List<StringTuple>>(
-						specialOption, value);
-				config.getComponentManager().applyConfigEntry(component, specialEntry);
-				// System.out.println("set StringTupleList: " +
-				// configOption.getName() + " = " + value);
-			} catch (InvalidConfigOptionValueException s) {
-				s.printStackTrace();
-			}
-		} else
-			System.out.println("StringTupleList: not valid value");
-	}*/
-
-	/**
-	 * Define GridBagConstraints
-	 */
 	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx,
 			int wy) {
 		gbc.gridx = gx;
@@ -138,7 +124,7 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 
 	@Override
 	public void buildWidgetPanel() {
-		
+
 		gridbag = new GridBagLayout();
 		constraints = new GridBagConstraints();
 
@@ -149,31 +135,31 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 		stringFieldA = new JTextField(10);
 		stringFieldB = new JTextField(10);
 		exampleList = new LinkedList<StringTuple>();
-		
+
 		stringList = new JList();
 		listModel = new DefaultListModel();
 
 		setButton = new JButton("set");
-		
+
 		widgetPanel.setLayout(gridbag);
 		add(widgetPanel, BorderLayout.CENTER);
 		add(getLabel());
-		
+
 		value = config.getConfigOptionValue(component, configOption);
-		
+
 		if (value != null) {
-//			setEntry();
+			// setEntry();
 			exampleList = value;
 		}
-		
+
 		// fill list
 		if (value != null) {
 			for (Iterator<StringTuple> iterator = value.iterator(); iterator.hasNext();) {
 				StringTuple item = iterator.next();
 				listModel.addElement(item);
 			}
-		}		
-		
+		}
+
 		// stringFieldA
 		buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
 		gridbag.setConstraints(stringFieldA, constraints);
@@ -209,7 +195,7 @@ public class WidgetPanelStringTupleList extends AbstractWidgetPanel<List<StringT
 		buildConstraints(constraints, 3, 3, 1, 1, 100, 100);
 		gridbag.setConstraints(clearButton, constraints);
 		widgetPanel.add(clearButton, constraints);
-	
+
 		stringList.setModel(listModel);
 		// ActionListeners
 		addButton.addActionListener(this);

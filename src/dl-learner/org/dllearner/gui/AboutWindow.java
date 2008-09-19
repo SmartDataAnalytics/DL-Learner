@@ -44,6 +44,9 @@ public class AboutWindow extends JFrame {
 
 	private static final long serialVersionUID = -5448814141333659068L;
 
+	/**
+	 * Displays a classical "About" window.
+	 */
 	public AboutWindow() {
 		setTitle("About");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -124,7 +127,7 @@ public class AboutWindow extends JFrame {
 		return textPane;
 	}
 
-	protected void addStylesToDocument(StyledDocument doc) {
+	private void addStylesToDocument(StyledDocument doc) {
 		Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 
 		Style regular = doc.addStyle("regular", def);
@@ -144,7 +147,7 @@ public class AboutWindow extends JFrame {
 	}
 	
 
-	protected static ImageIcon createImageIcon(String path, String description) {
+	private static ImageIcon createImageIcon(String path, String description) {
 		URL imgURL = AboutWindow.class.getResource(path);
 		if (imgURL != null) {
 			return new ImageIcon(imgURL, description);

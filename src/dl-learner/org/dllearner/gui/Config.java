@@ -52,10 +52,10 @@ import org.dllearner.learningproblems.PosNegLP;
  * @author Tilo Hielscher
  */
 public class Config {
-	
+
 	private ComponentManager cm = ComponentManager.getInstance();
 	private static Logger logger = Logger.getLogger(Config.class);
-	
+
 	// the components currently active
 	private KnowledgeSource source;
 	private ReasonerComponent reasoner;
@@ -63,66 +63,80 @@ public class Config {
 	private LearningProblem lp;
 	private LearningAlgorithm la;
 
-	// stores which components need to be initialised (either 
+	// stores which components need to be initialised (either
 	// because they have not been initialiased or previous components
 	// have changed configuration options, which require initialisation)
 	private boolean[] needsInit = new boolean[4];
-	
+
 	// specifies whether the panel is enabled, i.e. the user
-	// can select it (all mandatory variables in selected components have been choosen)
+	// can select it (all mandatory variables in selected components have been
+	// choosen)
 	private boolean[] isEnabled = new boolean[4];
-	
-	// learning algorithm status
-//	private boolean threadIsRunning = false;
-//	private Long algorithmRunStartTime = null;
-//	private Long algorithmRunStopTime = null;
-	
+
 	private StartGUI gui;
-	
+
+	/**
+	 * Create central configuration object.
+	 * 
+	 * @param gui
+	 *            The main gui object. It is passed as parameter, such that the
+	 *            configuration handler can update the GUI appropriately.
+	 */
 	public Config(StartGUI gui) {
 		this.gui = gui;
 		// none of the components is initialised
-		for(int i=0; i<4; i++) {
+		for (int i = 0; i < 4; i++) {
 			needsInit[i] = true;
 			// TODO there might be knowledge source without mandatory options
 			isEnabled[i] = false;
 		}
 	}
-	
+
+	/**
+	 * Loads a file using the commandline interface and asks it for loaded
+	 * components and config options. This way, we ensure that the loading
+	 * process is always compatible with the command line and we do not need to
+	 * implement the process again for the GUI. Afte loading, the GUI is updates
+	 * appropriately.
+	 * 
+	 * @param file
+	 *            The file to load.
+	 */
 	public void loadFile(File file) {
 		// use CLI to load file
 		try {
 			// set all loaded components as active components
 			Start start = new Start(file);
 			Set<KnowledgeSource> sources = start.getSources();
-			if(sources.size() != 1) {
-				gui.getStatusPanel().setExceptionMessage("Warning: GUI supports only one knowledge source.");
+			if (sources.size() != 1) {
+				gui.getStatusPanel().setExceptionMessage(
+						"Warning: GUI supports only one knowledge source.");
 			}
 			source = sources.iterator().next();
 			reasoner = start.getReasonerComponent();
 			rs = start.getReasoningService();
 			lp = start.getLearningProblem();
 			la = start.getLearningAlgorithm();
-			
+
 			// all components initialised and enabled
-			for(int i=0; i<4; i++) {
+			for (int i = 0; i < 4; i++) {
 				needsInit[i] = false;
 				isEnabled[i] = true;
-			}			
-			
+			}
+
 			// update tabs in GUI such that algorithm can be run
 			gui.updateTabs();
 			gui.updateStatusPanel();
-			for(int i=0; i<4; i++) {
+			for (int i = 0; i < 4; i++) {
 				gui.panels[i].update();
 			}
-			
+
 		} catch (ComponentInitException e) {
 			gui.getStatusPanel().setExceptionMessage(e.getMessage());
-			e.printStackTrace();			
+			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Get ComponentManager.
 	 * 
@@ -133,28 +147,6 @@ public class Config {
 	}
 
 	/**
-	 * It is necessary for init KnowledgeSource.
-	 * 
-	 * @return true, if url was set otherwise false
-	 */
-	public boolean isSetURL() {
-		if (cm.getConfigOptionValue(source, "url") != null
-				|| cm.getConfigOptionValue(source, "filename") != null)
-			return true;
-		else
-			return false;
-	}
-
-	/**
-	 * Set KnowledgeSource.
-	 * 
-	 * @param knowledgeSource
-	 */
-//	public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
-//		source = knowledgeSource;
-//	}
-
-	/**
 	 * Get KnowledgeSource.
 	 * 
 	 * @return KnowledgeSource
@@ -162,52 +154,57 @@ public class Config {
 	public KnowledgeSource getKnowledgeSource() {
 		return source;
 	}
-	
+
 	/**
 	 * Creates a knowledge source and makes it the active source.
+	 * 
 	 * @param clazz
-	 * @return
+	 *            knowledge source class
+	 * @return knowledge source instance
 	 */
 	public KnowledgeSource newKnowledgeSource(Class<? extends KnowledgeSource> clazz) {
 		source = cm.knowledgeSource(clazz);
-//		logger.debug("new knowledge source " + clazz + " created");
+		// logger.debug("new knowledge source " + clazz + " created");
 		return source;
 	}
-	
+
 	/**
-	 * Changes active knowledge source. This method does not not only 
-	 * create a knowledge source, but also updates the active reasoner
-	 * to use the new knowledge source.
+	 * Changes active knowledge source. This method does not not only create a
+	 * knowledge source, but also updates the active reasoner to use the new
+	 * knowledge source.
+	 * 
 	 * @param clazz
+	 *            knowledge source class
+	 * @return knowledge source instance
 	 */
 	public KnowledgeSource changeKnowledgeSource(Class<? extends KnowledgeSource> clazz) {
 		source = cm.knowledgeSource(clazz);
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		sources.add(source);
 		reasoner.changeSources(sources);
-//		logger.debug("knowledge source " + clazz + " changed");
-		// create a new reasoner object using the current class and the selected source
-//		reasoner = cm.reasoner(reasoner.getClass(), source);
-//		rs = cm.reasoningService(reasoner);
-//		lp = cm.learningProblem(lp.getClass(), rs);
-//		try {
-//			la = cm.learningAlgorithm(la.getClass(), lp, rs);
-//		} catch (LearningProblemUnsupportedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// logger.debug("knowledge source " + clazz + " changed");
+		// create a new reasoner object using the current class and the selected
+		// source
+		// reasoner = cm.reasoner(reasoner.getClass(), source);
+		// rs = cm.reasoningService(reasoner);
+		// lp = cm.learningProblem(lp.getClass(), rs);
+		// try {
+		// la = cm.learningAlgorithm(la.getClass(), lp, rs);
+		// } catch (LearningProblemUnsupportedException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 		return source;
 	}
-	
+
 	/**
 	 * Set Reasoner.
 	 * 
 	 * @param reasoner
 	 */
-//	public void setReasoner(ReasonerComponent reasoner) {
-//		this.reasoner = reasoner;
-//	}
-
+	// public void setReasoner(ReasonerComponent reasoner) {
+	// this.reasoner = reasoner;
+	// }
 	/**
 	 * Get Reasoner.
 	 * 
@@ -217,36 +214,30 @@ public class Config {
 		return this.reasoner;
 	}
 
-	// creates reasoner + reasoning service and makes it active
+	/**
+	 * Creates reasoner + reasoning service and makes it active.
+	 * @param clazz The class of the reasoner.
+	 * @return A reasoner instance.
+	 */
 	public ReasonerComponent newReasoner(Class<? extends ReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
 		rs = cm.reasoningService(reasoner);
 		return reasoner;
-	}	
-	
+	}
+
+	/**
+	 * Change the reasoner and notify the depending components
+	 * (learning problem, learning algorithm).
+	 * @param clazz The reasoner class.
+	 * @return A reasoner instance.
+	 */
 	public ReasonerComponent changeReasoner(Class<? extends ReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
 		rs = cm.reasoningService(reasoner);
 		lp.changeReasoningService(rs);
 		la.changeReasoningService(rs);
-//		lp = cm.learningProblem(lp.getClass(), rs);
-//		try {
-//			la = cm.learningAlgorithm(la.getClass(), lp, rs);
-//		} catch (LearningProblemUnsupportedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}		
 		return reasoner;
-	}	
-	
-	/**
-	 * Set ReasoningService.
-	 * 
-	 * @param reasoningService
-	 */
-//	public void setReasoningService(ReasoningService reasoningService) {
-//		this.rs = reasoningService;
-//	}
+	}
 
 	/**
 	 * Get ReasoningService.
@@ -258,15 +249,6 @@ public class Config {
 	}
 
 	/**
-	 * Set LearningProblem.
-	 * 
-	 * @param learningProblem
-	 */
-//	public void setLearningProblem(LearningProblem learningProblem) {
-//		this.lp = learningProblem;
-//	}
-
-	/**
 	 * Get LearningProblem.
 	 * 
 	 * @return learningProblem
@@ -275,31 +257,27 @@ public class Config {
 		return this.lp;
 	}
 
+	/**
+	 * Creates learning problem and makes it active.
+	 * @param clazz The class of the learning problem.
+	 * @return A learning problem instance.
+	 */	
 	public LearningProblem newLearningProblem(Class<? extends LearningProblem> clazz) {
 		lp = cm.learningProblem(clazz, rs);
 		return lp;
 	}
-	
+
+	/**
+	 * Change the learning problem and notify the depending components
+	 * (learning algorithm).
+	 * @param clazz The learning problem class.
+	 * @return A learning problem instance.
+	 */	
 	public LearningProblem changeLearningProblem(Class<? extends LearningProblem> clazz) {
 		lp = cm.learningProblem(clazz, rs);
 		la.changeLearningProblem(lp);
-//		try {
-//			la = cm.learningAlgorithm(la.getClass(), lp, rs);
-//		} catch (LearningProblemUnsupportedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}		
 		return lp;
-	}		
-	
-	/**
-	 * Set LearningAlgorithm.
-	 * 
-	 * @param learningAlgorithm
-	 */
-//	public void setLearningAlgorithm(LearningAlgorithm learningAlgorithm) {
-//		this.la = learningAlgorithm;
-//	}
+	}
 
 	/**
 	 * Get LearningAlgorithm.
@@ -310,20 +288,44 @@ public class Config {
 		return this.la;
 	}
 
-	public LearningAlgorithm newLearningAlgorithm(Class<? extends LearningAlgorithm> clazz) throws LearningProblemUnsupportedException {
+	/**
+	 * Creates learning algorithm and makes it active.
+	 * @param clazz The class of the learning algorithm.
+	 * @throws LearningProblemUnsupportedException If the learning algorithm
+	 * does not support the learning problem (TODO should be handled intelligently
+	 * by GUI).
+	 * @return A learning algorithm instance.
+	 */
+	public LearningAlgorithm newLearningAlgorithm(Class<? extends LearningAlgorithm> clazz)
+			throws LearningProblemUnsupportedException {
 		la = cm.learningAlgorithm(clazz, lp, rs);
 		return la;
-	}	
-	
-	public LearningAlgorithm changeLearningAlgorithm(Class<? extends LearningAlgorithm> clazz) throws LearningProblemUnsupportedException {
+	}
+
+	/**
+	 * Change the learning algorithm.
+	 * @param clazz The learning algorithm class.
+	 * @throws LearningProblemUnsupportedException If the learning algorithm
+	 * does not support the learning problem (TODO should be handled intelligently
+	 * by GUI).
+	 * @return A learning algorithm instance.
+	 */
+	public LearningAlgorithm changeLearningAlgorithm(Class<? extends LearningAlgorithm> clazz)
+			throws LearningProblemUnsupportedException {
 		la = cm.learningAlgorithm(clazz, lp, rs);
 		return la;
-	}	
-	
+	}
+
+	/**
+	 * Returns whether the corresponding tab needs to be initialised.
+	 * @param tabIndex Index of the tab (0 to 3).
+	 * @return True if the tab needs to be initialised for the learning
+	 * algorithm to run. False, otherwise.
+	 */
 	public boolean tabNeedsInit(int tabIndex) {
 		return needsInit[tabIndex];
 	}
-	
+
 	/**
 	 * KnowledgeSource.init has run?
 	 * 
@@ -332,16 +334,6 @@ public class Config {
 	public boolean needsInitKnowledgeSource() {
 		return needsInit[0];
 	}
-
-	/**
-	 * Set true if you run KnowwledgeSource.init. The inits from other tabs
-	 * behind will automatic set to false.
-	 */
-//	public void setInitKnowledgeSource(Boolean is) {
-//		needsInit[0] = is;
-//		for (int i = 1; i < 4; i++)
-//			needsInit[i] = false;
-//	}
 
 	/**
 	 * Reasoner.init has run?
@@ -353,16 +345,6 @@ public class Config {
 	}
 
 	/**
-	 * Set true if you run Reasoner.init. The inits from other tabs behind will
-	 * automatic set to false.
-	 */
-//	public void setInitReasoner(Boolean is) {
-//		needsInit[1] = is;
-//		for (int i = 2; i < 4; i++)
-//			needsInit[i] = false;
-//	}
-
-	/**
 	 * LearningProblem.init has run?
 	 * 
 	 * @return true, if init was made, false if not
@@ -370,16 +352,6 @@ public class Config {
 	public boolean needsInitLearningProblem() {
 		return needsInit[2];
 	}
-
-	/**
-	 * Set true if you run LearningProblem.init. The inits from other tabs
-	 * behind will automatic set to false.
-	 */
-//	public void setInitLearningProblem(Boolean is) {
-//		needsInit[2] = is;
-//		for (int i = 3; i < 4; i++)
-//			needsInit[i] = false;
-//	}
 
 	/**
 	 * LearningAlgorithm.init() has run?
@@ -390,251 +362,178 @@ public class Config {
 		return needsInit[3];
 	}
 
-	public boolean needsInit(int tabIndex) {
-		return needsInit[tabIndex];
-	}
-	
+	/**
+	 * Returns whether the corresponding tab is enabled (e.g.
+	 * we can start to configure it, because all mandatory options
+	 * of underlying components have been specified).
+	 * @param tabIndex Index of the tab (0 to 3).
+	 * @return True if the tab is enabled and false otherwise.
+	 */	
 	public boolean isEnabled(int tabIndex) {
 		return isEnabled[tabIndex];
 	}
-	
-	/**
-	 * set true if you run LearningAlgorithm.init
-	 */
-//	public void setInitLearningAlgorithm(Boolean is) {
-//		needsInit[3] = is;
-//	}
 
 	/**
-	 * Set true if you start the algorithm.
-	 * 
-	 * @param isThreadRunning
-	 */
-	/*
-	public void setThreadIsRunning(Boolean isThreadRunning) {
-		if (isThreadRunning)
-			algorithmRunStartTime = System.nanoTime();
-		else if (algorithmRunStartTime != null)
-			if (algorithmRunStartTime < System.nanoTime())
-				algorithmRunStopTime = System.nanoTime();
-		this.threadIsRunning = isThreadRunning;
-	}*/
-
-	/**
-	 * Get true if algorithm has started, false if not.
-	 * 
-	 * @return true if algorithm is running, false if not.
-	 */
-	/*
-	public Boolean getThreadIsRunning() {
-		return this.threadIsRunning;
-	}*/
-
-	/**
-	 * Get time in ns for run of algorithm. If algorithm is still running return
-	 * time between RunStartTime and now.
-	 * 
-	 * @return time in ns
-	 */
-	/*
-	public Long getAlgorithmRunTime() {
-		if (algorithmRunStartTime != null)
-			if (algorithmRunStopTime != null) {
-				if (algorithmRunStartTime < algorithmRunStopTime)
-					return algorithmRunStopTime - algorithmRunStartTime;
-			} else
-				return System.nanoTime() - algorithmRunStartTime;
-		return null;
-	}*/
-
-	/**
-	 * It is necessary for init LearningProblem.
-	 * 
-	 * @return true, if necessary example was set otherwise false
-	 */
-	public Boolean isSetExample() {
-		if (lp.getClass().getSimpleName().equals("PosOnlyDefinitionLP")) {
-			if (cm.getConfigOptionValue(lp, "positiveExamples") != null)
-				return true;
-		} else if (cm.getConfigOptionValue(lp, "positiveExamples") != null
-				&& cm.getConfigOptionValue(lp, "negativeExamples") != null)
-			return true;
-		return false;
-	}
-
-//	public void reInit() {
-//		cm = ComponentManager.getInstance();
-//		source = null;
-//		reasoner = null;
-//		rs = null;
-//		lp = null;
-//		la = null;
-//		needsInit = new boolean[4];
-//		threadIsRunning = false;
-//		algorithmRunStartTime = null;
-//		algorithmRunStopTime = null;
-//	}
-	
-	
-	
-	// init the specified component and record which ones where initialised
+	 * Initialises the specified components and records which ones where initialised.
+	 * The init process is done in a different thread, so this method
+	 * returns immediately.
+	 * @param tabIndex A list of components (0 = knowledge source, 1 = reasoner, ...).
+	 */ 
 	public void init(List<Integer> tabIndex) {
 		List<Component> components = new LinkedList<Component>();
-		for(int i : tabIndex) {
-			switch(i) {
-			case 0: components.add(source); needsInit[i] = false; break;
-			case 1: components.add(reasoner); needsInit[i] = false; break;
-			case 2: components.add(lp); needsInit[i] = false; break;
-			case 3: components.add(la); needsInit[i] = false; break;
+		for (int i : tabIndex) {
+			switch (i) {
+			case 0:
+				components.add(source);
+				needsInit[i] = false;
+				break;
+			case 1:
+				components.add(reasoner);
+				needsInit[i] = false;
+				break;
+			case 2:
+				components.add(lp);
+				needsInit[i] = false;
+				break;
+			case 3:
+				components.add(la);
+				needsInit[i] = false;
+				break;
+			default:
+				throw new Error("Illegal tab number " + i + " (needs to be 0-3).");
 			}
 		}
-		InitWorker worker = new InitWorker (components, gui);
+		InitWorker worker = new InitWorker(components, gui);
 		worker.execute();
-		
-		/*
-//		try {
-			if(tabIndex==0) {
-				InitWorker worker = new InitWorker(source, gui);
-			    worker.execute();
-			} else if(tabIndex==1) {
-			    InitWorker worker = new InitWorker(reasoner, gui);
-			    worker.execute();						
-			} else if(tabIndex==2) {
-				InitWorker worker = new InitWorker(lp, gui);
-			    worker.execute();
-			} else if(tabIndex == 3) {
-				InitWorker worker = new InitWorker(la, gui);
-			    worker.execute();				
-//				gui.disableTabbedPane();
-//				gui.getStatusPanel().setStatus("Initialising learning algorithm ... ");
-//				la.init();
-//				gui.getStatusPanel().extendMessage("done.");
-//				gui.enableTabbedPane();
-			}
-//		} catch (ComponentInitException e) {
-//			// TODO display message in status bar
-//			e.printStackTrace();
-//		}
-		*/
-		
-		if(tabIndex.size() == 1) {
+
+		if (tabIndex.size() == 1) {
 			logger.info("Component " + tabIndex.get(0) + " initialised.");
-		} else if(tabIndex.size() > 1) {
+		} else if (tabIndex.size() > 1) {
 			logger.info("Components " + tabIndex + " initialised.");
 		}
-		
+
 	}
-	
-	// applies a configuration option - used as delegate method, which invalidates components
+
+	/**
+	 * Applies a configuration option and cares for all consequences
+	 * the GUI needs to take.
+	 * @see ComponentManager#applyConfigEntry(Component, ConfigEntry)
+	 * @param <T> The type of config entry.
+	 * @param component The component to apply the entry to.
+	 * @param entry The config entry to apply.
+	 */
 	public <T> void applyConfigEntry(Component component, ConfigEntry<T> entry) {
 		System.out.println("Applying " + entry + " to " + component.getClass().getName() + ".");
-		
+
 		cm.applyConfigEntry(component, entry);
 		// enable tabs if setting the value completed mandatory settings
 		enableComponentsIfPossible();
 		// invalidate components
-		if(component instanceof KnowledgeSource) {
+		if (component instanceof KnowledgeSource) {
 			needsInit[0] = true;
 			needsInit[1] = true;
 			needsInit[2] = true;
 			needsInit[3] = true;
-			if(isEnabled[0]) {
-				gui.setStatusMessage("All mandatory options filled in. You can continue to the reasoner tab.");
+			if (isEnabled[0]) {
+				gui
+						.setStatusMessage("All mandatory options filled in. You can continue to the reasoner tab.");
 			}
-		} else if(component instanceof ReasonerComponent) {
+		} else if (component instanceof ReasonerComponent) {
 			needsInit[1] = true;
 			needsInit[2] = true;
 			needsInit[3] = true;
-			if(isEnabled[1]) {
-				gui.setStatusMessage("All mandatory options filled in. You can continue to the learning problem tab.");
-			}			
-		} else if(component instanceof LearningProblem) {
+			if (isEnabled[1]) {
+				gui
+						.setStatusMessage("All mandatory options filled in. You can continue to the learning problem tab.");
+			}
+		} else if (component instanceof LearningProblem) {
 			needsInit[2] = true;
 			needsInit[3] = true;
-			if(isEnabled[2]) {
-				gui.setStatusMessage("All mandatory options filled in. You can continue to the learning algorithm tab.");
-			}			
-		} else if(component instanceof LearningAlgorithm) {
-			needsInit[3] = true;	
-			if(isEnabled[3]) {
-				gui.setStatusMessage("All mandatory options filled in. You can now run the algorithm.");
-			}			
+			if (isEnabled[2]) {
+				gui
+						.setStatusMessage("All mandatory options filled in. You can continue to the learning algorithm tab.");
+			}
+		} else if (component instanceof LearningAlgorithm) {
+			needsInit[3] = true;
+			if (isEnabled[3]) {
+				gui
+						.setStatusMessage("All mandatory options filled in. You can now run the algorithm.");
+			}
 		}
-		
+
 		gui.updateTabs();
 	}
-	
-	// note it can also happend that components become
-	// disabled if mandatory fields are cleared	
+
+	/**
+	 * Tests whether components can be enabled. A component is enabled,
+	 * if it fulfills the following conditions:
+	 * - the "previous" component has all mandatory options specified
+	 * - all components before the previous one are enabled
+	 * Otherwise, the component is disabled.
+	 * Note it can also happend that enabled components become
+	 * disabled if mandatory fields are cleared.
+	 */
 	public void enableComponentsIfPossible() {
 		// 0: reasoner
 		// 1: problem
 		// 2: algorithm
 		// 3: run
-		
+
 		isEnabled[0] = mandatoryOptionsSpecified(source);
 		isEnabled[1] = isEnabled[0] && mandatoryOptionsSpecified(reasoner);
 		isEnabled[2] = isEnabled[0] && isEnabled[1] && mandatoryOptionsSpecified(lp);
-		isEnabled[3] = isEnabled[0] && isEnabled[1] && isEnabled[2] && mandatoryOptionsSpecified(la);
-				
-		
-		/*
-		// enable reasoner iff source has all options
-		isEnabled[0] = mandatoryOptionsSpecified(source);
-		
-		// enable problem if reasoner has all options
-		if(isEnabled[0]) {
-			isEnabled[1] = mandatoryOptionsSpecified(reasoner);
-		} else {
-			isEnabled[1] = false;
-		}
-		
-		// enable algorithm if reasoner enabled and problem
-		// has all options
-		if(isEnabled[0]) {
-			isEnabled[2] = mandatoryOptionsSpecified(lp);
-		} else {
-			isEnabled[2] = false;
-		}
-		
-		// enable run panel if al
-		isEnabled[3] = mandatoryOptionsSpecified(la);
-		
-		if(isEnabled[1] && isEnabled[2]) {
-			isEnabled[3] = mandatoryOptionsSpecified(la);
-		}*/
+		isEnabled[3] = isEnabled[0] && isEnabled[1] && isEnabled[2]
+				&& mandatoryOptionsSpecified(la);
 	}
-	
-	// TODO use specification of mandatory variables
+
+	/**
+	 * Checks whether all mandatory options have been set for 
+	 * a component. 
+	 * TODO Use specification of mandatory variables.
+	 * @param component The component to test.
+	 * @return True if all mandatory options are set and false otherwise.
+	 */
 	@SuppressWarnings("unchecked")
 	public boolean mandatoryOptionsSpecified(Component component) {
-//		System.out.println("check mandatory options for " + component.getClass().getName());
-		if(component instanceof OWLFile) {
-			if(cm.getConfigOptionValue(source, "url") == null) {
+		// System.out.println("check mandatory options for " +
+		// component.getClass().getName());
+		if (component instanceof OWLFile) {
+			if (cm.getConfigOptionValue(source, "url") == null) {
 				return false;
 			}
-		} else if(component instanceof KBFile) {
-			if(cm.getConfigOptionValue(source, "url") == null) {
+		} else if (component instanceof KBFile) {
+			if (cm.getConfigOptionValue(source, "url") == null) {
 				return false;
 			}
-		} else if(component instanceof PosNegLP) {
-			if(cm.getConfigOptionValue(component, "positiveExamples")==null || cm.getConfigOptionValue(component, "negativeExamples") == null
-					|| ((Set<String>)cm.getConfigOptionValue(component, "positiveExamples")).size()==0 
-					|| ((Set<String>)cm.getConfigOptionValue(component, "negativeExamples")).size()==0) {
+		} else if (component instanceof PosNegLP) {
+			if (cm.getConfigOptionValue(component, "positiveExamples") == null
+					|| cm.getConfigOptionValue(component, "negativeExamples") == null
+					|| ((Set<String>) cm.getConfigOptionValue(component, "positiveExamples"))
+							.size() == 0
+					|| ((Set<String>) cm.getConfigOptionValue(component, "negativeExamples"))
+							.size() == 0) {
 				return false;
 			}
-		} else if(component instanceof SparqlKnowledgeSource) {
-			if(cm.getConfigOptionValue(component, "instances")==null || ((Set<String>)cm.getConfigOptionValue(component, "instances")).size()==0) {
+		} else if (component instanceof SparqlKnowledgeSource) {
+			if (cm.getConfigOptionValue(component, "instances") == null
+					|| ((Set<String>) cm.getConfigOptionValue(component, "instances")).size() == 0) {
 				return false;
-			}			
+			}
 		}
-		
+
 		return true;
 	}
-	
-	// delegate method for getting config option values
+
+	/**
+	 * Delegate method for getting config option values.
+	 * @see ComponentManager#getConfigOptionValue(Component, ConfigOption)
+	 * @param <T> Type of option.
+	 * @param component Component, which has the option.
+	 * @param option The option for which we want to know the value.
+	 * @return The value of the specified option.
+	 */
 	public <T> T getConfigOptionValue(Component component, ConfigOption<T> option) {
 		return cm.getConfigOptionValue(component, option);
 	}
-	
+
 }
