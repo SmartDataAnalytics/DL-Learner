@@ -88,12 +88,13 @@
 				$content .= '<p>Yago classes: '.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
 
 			//skos-subjects
-			if (isset($triples['http://www.w3.org/2004/02/skos/core#subject'])){
+			//not used, because one class systems, YAGO, is enough
+			/*if (isset($triples['http://www.w3.org/2004/02/skos/core#subject'])){
 				$content .= '<br/><p>Skos categories: <ul>';
 				foreach($triples['http://www.w3.org/2004/02/skos/core#subject'] as $skos)
 					$content .= '<li><a href="'.$skos['value'].'">'.$skos['value'].'</a></li>';
 				$content .= '</ul></p>';			
-			}
+			}*/
 			
 			//not used at the moment
 			/*if(isset($triples['http://dbpedia.org/property/reference'])) {
@@ -141,11 +142,14 @@
 			$pages="";
 			foreach ($languages as $key=>$value){
 				if (isset($triples[$value])){
-					$pages.='<tr><td>'.urldecode($key).': </td><td><a href="'.$triples[$value][0]['value'].'" target="_blank">'.urldecode($triples[$value][0]['value']).'</a></td></tr>';
+					$pages.='<a href="'.$triples[$value][0]['value'].'" target="_blank">'.urldecode($key).'</a>, ';
 					unset($triples[$value]);
 				}				
 			}
-			if (strlen($pages)>0) $content.='<br/><hr><h4>Wikipedia articles in different languages</h4><br/><table border="0">'.$pages.'</table>';
+			if (strlen($pages)>0){
+				$pages=substr($pages,0,strlen($pages)-2);
+				$content.='<br/><hr><h4>Wikipedia articles in different languages</h4><br/><p>'.$pages.'</p>';
+			}
 			
 			// filter out uninteresting properties and properties which
 			// have already been displayed

@@ -72,14 +72,14 @@
 			$content.="Your Search brought no results.";
 	}
 	else{
-	/*try{
-		require_once("DLLearnerConnection.php");
-		$sc=new DLLearnerConnection($id,$ksID);
-		$subjects=$sc->getSubjectsFromConcept($concept);
-		$content.=getResultsTable($subjects);
-	} catch (Exception $e){
-		$content=$e->getMessage();
-	}*/
+		/*try{
+			require_once("DLLearnerConnection.php");
+			$sc=new DLLearnerConnection($id,$ksID);
+			$subjects=$sc->getSubjectsFromConcept($concept);
+			$content.=getResultsTable($subjects);
+		} catch (Exception $e){
+			$content=$e->getMessage();
+		}*/
 	}
 	
 	print $content;
