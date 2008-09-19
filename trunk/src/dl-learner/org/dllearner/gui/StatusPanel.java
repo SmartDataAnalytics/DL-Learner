@@ -57,21 +57,21 @@ public class StatusPanel extends JPanel {
 		add(statusLabel);
 	}
 	
-	private void updateMessage(String message) {
+	private void updateMessage(String newMessage) {
 		oldMessage = this.message;
-		this.message = message;
-		statusLabel.setText(message);
+		this.message = newMessage;
+		statusLabel.setText(newMessage);
 //		repaint();
 	}
 	
-	public void setStatus(String message) {
+	public void setStatus(String newMessage) {
 		if(!isException) {
-			updateMessage(message);
+			updateMessage(newMessage);
 		}
 	}
 	
-	public void setExceptionMessage(String message) {
-		updateMessage(message);
+	public void setExceptionMessage(String newMessage) {
+		updateMessage(newMessage);
 		isException = true;
 	}	
 	

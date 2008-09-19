@@ -37,6 +37,12 @@ public class WidgetPanelDefault extends AbstractWidgetPanel<Object> {
 
 	private static final long serialVersionUID = 4059515858894036769L;
 
+	/**
+	 * Provides a default widget panel (should never be shown).
+	 * @param config Central config handler.
+	 * @param component The component of this option.
+	 * @param configOption The option to configure.
+	 */
 	public WidgetPanelDefault(Config config, Component component, ConfigOption<Object> configOption) {
 		super(config, component, configOption);
 	}

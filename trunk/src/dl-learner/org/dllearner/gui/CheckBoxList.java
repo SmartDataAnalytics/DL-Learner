@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 /**
- * CheckBoxList constitute a list of CheckBox's
+ * CheckBoxList constitute a list of CheckBoxes.
  * 
  * @author Tilo Hielscher
  */
@@ -48,6 +48,9 @@ public class CheckBoxList extends JPanel implements ActionListener {
 
 	/**
 	 * Make a JPanel with GridBagLayout.
+	 * @param panel The StringPanel the check box list is added to.
+	 * (TODO Actually, there shouldn't be a dependency of a 
+	 * visual element to its parent.) 
 	 */
 	public CheckBoxList(WidgetPanelStringSet panel) {
 		this.widgetPanel = panel;
@@ -76,15 +79,15 @@ public class CheckBoxList extends JPanel implements ActionListener {
 		update();
 	}
 
-	/**
-	 * Return a set of selected items.
-	 */
-	public Set<String> getSelections() {
+	
+	// Return a set of selected items.
+	private Set<String> getSelections() {
 		Set<String> selectionSet = new HashSet<String>();
 //		selectionSet.clear(); // remove all
 		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).isSelected())
+			if (list.get(i).isSelected()) {
 				selectionSet.add(list.get(i).getText());
+			}
 		}
 		return selectionSet;
 	}
@@ -97,16 +100,15 @@ public class CheckBoxList extends JPanel implements ActionListener {
 	 */
 	public void setSelections(Set<String> selectionSet) {
 		for (int i = 0; i < this.list.size(); i++) {
-			if (selectionSet.contains(list.get(i).getText()))
+			if (selectionSet.contains(list.get(i).getText())) {
 				list.get(i).setSelected(true);
-			else
+			} else {
 				this.list.get(i).setSelected(false);
+			}
 		}
 	}
 
-	/**
-	 * update JCheckBox's
-	 */
+	// update checkbox
 	private void update() {
 		checkBoxPanel.removeAll();
 		for (int i = 0; i < list.size(); i++) {
@@ -116,9 +118,6 @@ public class CheckBoxList extends JPanel implements ActionListener {
 		}
 	}
 
-	/**
-	 * Define GridBagConstraints
-	 */
 	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx,
 			int wy) {
 		gbc.gridx = gx;
@@ -129,6 +128,7 @@ public class CheckBoxList extends JPanel implements ActionListener {
 		gbc.weighty = wy;
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		Set<String> value = getSelections();
 		widgetPanel.fireValueChanged(value);

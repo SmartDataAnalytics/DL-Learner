@@ -30,7 +30,7 @@ import org.dllearner.gui.Config;
 
 /**
  * Panel for option Boolean, defined in
- * org.dllearner.core.config.BooleanConfigOption.
+ * {@link org.dllearner.core.config.BooleanConfigOption}.
  * 
  * @author Jens Lehmann
  * @author Tilo Hielscher
@@ -40,21 +40,22 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel<Boolean> implements 
 	private static final long serialVersionUID = -4800583253223939928L;
 
 	private Boolean value;
-//	private String[] kbBoxItems; // = { "false", "true" };
-	private JComboBox cb; // = new JComboBox(kbBoxItems);
+	private JComboBox cb;
 
+	/**
+	 * Provides a widget for boolean options.
+	 * @param config Central config handler.
+	 * @param component The component of this option.
+	 * @param configOption The option to configure.
+	 */	
 	public WidgetPanelBoolean(Config config, Component component, BooleanConfigOption configOption) {
 		super(config, component, configOption);
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		if (cb.getSelectedIndex() == 0)
-			value = false;
-		else
-			value = true;
-		
+	@Override
+	public void actionPerformed(ActionEvent e) {			
+		value = (cb.getSelectedIndex()==0);
 		fireValueChanged(value);
-				
 	}
 
 	@Override
@@ -63,18 +64,18 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel<Boolean> implements 
 		
 		value = config.getConfigOptionValue(component, configOption);
 		
-		if (value == null)
+		if (value == null) {
 			value = false;
-//		else
-//			setEntry();
+		}
 		
 		// set cb-index
-		String[] kbBoxItems = { "false", "true" };
+		String[] kbBoxItems = { "true", "false" };
 		cb = new JComboBox(kbBoxItems);
-		if (!value)
+		if (!value) {
 			cb.setSelectedIndex(0);
-		else
-			cb.setSelectedIndex(1);		
+		} else {
+			cb.setSelectedIndex(1);
+		}
 		
 		cb.addActionListener(this);
 		add(cb);

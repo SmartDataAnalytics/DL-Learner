@@ -55,14 +55,19 @@ public class ConfigSave {
 	private Config config;
 
 	/**
-	 * set config and startGUI
+	 * Creates object to save config.
 	 * 
-	 * @param config
+	 * @param config The central configuration handler.
 	 */
 	public ConfigSave(Config config) {
 		this.config = config;
 	}
 
+	/**
+	 * Save current configuration to a conf file.
+	 * @param file The conf file to save to.
+	 * @throws IOException Thrown if any IO errors occurr while writing the file.
+	 */
 	public void saveFile(File file) throws IOException {
 		PrintWriter out = new PrintWriter(new FileWriter(file));
 		out.println("/**");
@@ -76,7 +81,7 @@ public class ConfigSave {
 //			String ksString = confMapper.getComponentString(config.getKnowledgeSource().getClass());
 			URL url = (URL) cm.getConfigOptionValue(ks, "url");
 			if(ks instanceof OWLFile || ks instanceof KBFile) {
-				out.println("import(\"" + url + "\");" );
+				out.println("import(\"" + url + "\");");
 			} else if(ks instanceof SparqlKnowledgeSource) {
 				out.println("import(\"" + url + "\",\"SPARQL\");");
 			}
@@ -127,7 +132,7 @@ public class ConfigSave {
 	 *            i.e. config.getKnowledgeSource(), config.getResaoner(), ...
 	 */
 	@SuppressWarnings("unchecked")
-	public void writeConfigEntries(Component component, PrintWriter out) {
+	private void writeConfigEntries(Component component, PrintWriter out) {
 
 		// prefix (left hand side of all entries except special cases)
 		String prefix = confMapper.getComponentString(component.getClass());
@@ -145,7 +150,7 @@ public class ConfigSave {
 				// TODO this is not very clean - maybe the special import construct
 				// should be remove to avoid this special case;
 				if (optionList.get(i).getName() != "url" && value != null) {
-					if (value != null)
+					if (value != null) {
 						// only write values which are not equal to the default value
 						if (!value.equals(defaultValue)) {
 							ConfigOption option = cm.getConfigOption(componentClass, optionList.get(i).getName());
@@ -153,6 +158,7 @@ public class ConfigSave {
 							// call toConfString method of ConfigEntry
 							out.println(entry.toConfString(prefix));
 						}
+					}
 				}
 			} catch (InvalidConfigOptionValueException e) {
 				e.printStackTrace();

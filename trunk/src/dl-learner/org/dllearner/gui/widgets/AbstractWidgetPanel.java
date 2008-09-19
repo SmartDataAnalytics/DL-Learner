@@ -33,11 +33,24 @@ import org.dllearner.gui.Config;
  * for which it allows modification by the user. 
  * 
  * @author Jens Lehmann
+ * @param <T> The type of the value, which is configured by this
+ * widget, e.g. String, Integer etc.
  */
 public abstract class AbstractWidgetPanel<T> extends JPanel {
 	
+	/**
+	 * The configuration option configured by this widget.
+	 */
 	protected ConfigOption<T> configOption;
+	
+	/**
+	 * The central configuration handler.
+	 */
 	protected Config config;
+	
+	/**
+	 * The component of the configured option.
+	 */
 	protected Component component;
 	
 	/**
@@ -59,14 +72,25 @@ public abstract class AbstractWidgetPanel<T> extends JPanel {
 		buildWidgetPanel();
 	}
 	
-	// convenience method
+	/**
+	 * Convenience method returning a JLabel with the name of
+	 * the option and its description as tooltip.
+	 * @return The described JLabel.
+	 */
 	protected JLabel getLabel() {
 		JLabel nameLabel = new JLabel(configOption.getName());
 		nameLabel.setToolTipText(configOption.getDescription());
 		return nameLabel;
 	}
 	
-	// subclasses should call this method if a configuration option has changed
+	/**
+	 * Subclasses should call this method if a configuration option
+	 * has changed. It redirects the event to the central configuration
+	 * handler, which in turn may update the gui (enabling/disabling
+	 * tabs, setting status messages etc.)
+	 * @param value The new value for the configuration option
+	 * configured by this widget.
+	 */
 	public void fireValueChanged(T value) {
 		ConfigEntry<T> entry = null;
 		try {
@@ -80,7 +104,9 @@ public abstract class AbstractWidgetPanel<T> extends JPanel {
 		config.applyConfigEntry(component, entry);
 	}
 	
-	// subclasses should use this method to build the graphical representation of the widgets
+	/**
+	 * Subclasses should use this method to build the graphical representation of the widgets.
+	 */
 	public abstract void buildWidgetPanel();
 
 }

@@ -1,7 +1,24 @@
-package org.dllearner.gui;
-
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+package org.dllearner.gui;
+/**
  *
  * This file is part of DL-Learner.
  * 
@@ -260,11 +277,11 @@ public class RunPanel extends JPanel implements ActionListener {
 	 *            is type of Long and represent a time interval in ns
 	 * @return a string like this: 3h 10min 46s 753ms
 	 */
-	public String makeTime(Long nanoSeconds) {
+	private String makeTime(Long nanoSeconds) {
 		if (nanoSeconds == null)
 			return null;
 		Long hours = 0L, minutes = 0L, seconds = 0L, millis = 0L, mikros = 0L, nanos = 0L;
-		String time = "";
+		String timeStr = "";
 
 		nanos = nanoSeconds % 1000;
 		nanoSeconds /= 1000;
@@ -279,18 +296,18 @@ public class RunPanel extends JPanel implements ActionListener {
 		hours = nanoSeconds;
 
 		if (hours > 0)
-			time += hours + "h ";
+			timeStr += hours + "h ";
 		if (minutes > 0)
-			time += minutes + "min ";
+			timeStr += minutes + "min ";
 		if (seconds > 0)
-			time += seconds + "s ";
+			timeStr += seconds + "s ";
 		if (millis > 0)
-			time += millis + "ms ";
+			timeStr += millis + "ms ";
 		if (false)
-			time += mikros + "�s ";
+			timeStr += mikros + "�s ";
 		if (false)
-			time += nanos + "ns ";
-		return time;
+			timeStr += nanos + "ns ";
+		return timeStr;
 	}
 
 	/**
@@ -300,7 +317,7 @@ public class RunPanel extends JPanel implements ActionListener {
 	 * @param b
 	 * @return string that shows percent
 	 */
-	public String Percent(Long a, Long b) {
+	private String Percent(Long a, Long b) {
 		if (a != null && b != null) {
 			Double c = (double) a / (double) b * (double) 100;
 			c = Math.ceil(c * 10) / 10;
@@ -322,7 +339,7 @@ public class RunPanel extends JPanel implements ActionListener {
 		gbc.weighty = wy;
 	}
 
-	public String getSolutionString(List<EvaluatedDescription> solutions) {
+	private String getSolutionString(List<EvaluatedDescription> solutions) {
 		String baseURI = config.getReasoningService().getBaseURI();
 		Map<String,String> prefixes = config.getReasoningService().getPrefixes();
 		String string = "";

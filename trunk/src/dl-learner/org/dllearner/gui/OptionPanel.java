@@ -60,6 +60,13 @@ public class OptionPanel extends JPanel {
 	private GridBagLayout gridBagLayout = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
 
+	/**
+	 * Constructs a panel which displays all options of a component
+	 * and their current value.
+	 * @param config The central configuration handler (used to 
+	 * retrieve option values).
+	 * @param component The active component (i.e. the one 
+	 */
 	public OptionPanel(Config config, Component component) {
 		super(new BorderLayout());
 		
@@ -79,9 +86,13 @@ public class OptionPanel extends JPanel {
 		showWidgets();
 	}
 
-	/** update this OptionPanel */
-	public void rebuild(Component component) {
-		this.component = component;
+	/** 
+	 * Update this option panel by completely rebuilding its
+	 * content.
+	 * @param newComponent The new active component. 
+	 */
+	public void rebuild(Component newComponent) {
+		this.component = newComponent;
 		showWidgets();
 	}
 
@@ -123,9 +134,7 @@ public class OptionPanel extends JPanel {
 		centerPanel.updateUI(); // update graphic
 	}
 
-	/**
-	 * Define GridBagConstraints
-	 */
+	// define grid bag constraints
 	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx,
 			int wy) {
 		gbc.gridx = gx;

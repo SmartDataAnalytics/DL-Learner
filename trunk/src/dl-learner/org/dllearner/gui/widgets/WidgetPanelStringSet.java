@@ -75,10 +75,17 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 
 	private CheckBoxList cBL; // = new CheckBoxList(this);
 
+	/**
+	 * Provides a widget for string set options.
+	 * @param config Central config handler.
+	 * @param component The component of this option.
+	 * @param configOption The option to configure.
+	 */
 	public WidgetPanelStringSet(Config config, Component component, StringSetConfigOption configOption) {
 		super(config, component, configOption);
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (!isSpecial()) {
 			// NORMAL LAYOUT
@@ -93,8 +100,9 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 				int[] selectedIndices = stringList.getSelectedIndices();
 				int count = 0;
 				// remove i.e. 2 and 4: after delete 2: 4 is now 3
-				for (int i : selectedIndices)
+				for (int i : selectedIndices) {
 					listModel.remove(i - count++);
+				}
 			}
 			// clear list
 			if (e.getSource() == clearButton) {
@@ -103,8 +111,9 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			// update
 			// stringList.setModel(listModel);
 			for (int i = 0; i < listModel.size(); i++) {
-				if (!listModel.get(i).toString().equalsIgnoreCase(""))
+				if (!listModel.get(i).toString().equalsIgnoreCase("")) {
 					exampleSet.add(listModel.get(i).toString());
+				}
 			}
 			// set entry
 			value = exampleSet;
@@ -113,9 +122,6 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 		}
 	}
 
-	/**
-	 * Define GridBagConstraints
-	 */
 	private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, int wx,
 			int wy) {
 		gbc.gridx = gx;
@@ -127,18 +133,16 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 	}
 
 	/**
-	 * special layout returns true if 2nd layout should used
+	 * Special layout returns true if 2nd layout should used.
 	 */
 	private boolean isSpecial() {
-		if (configOption.getName().equalsIgnoreCase("positiveExamples")
+		return configOption.getName().equalsIgnoreCase("positiveExamples")
 				|| configOption.getName().equalsIgnoreCase("negativeExamples")
 				|| configOption.getName().equalsIgnoreCase("allowedConcepts")
 				|| configOption.getName().equalsIgnoreCase("ignoredConcepts")
 				|| configOption.getName().equalsIgnoreCase("allowedRoles")
-				|| configOption.getName().equalsIgnoreCase("ignoredRoles"))
-			return true;
-		else
-			return false;
+				|| configOption.getName().equalsIgnoreCase("ignoredRoles");
+
 	}
 
 	@Override
@@ -234,8 +238,9 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 				if(atomicsSet != null) {
 					LinkedList<NamedClass> atomicConcepts = new LinkedList<NamedClass>(
 							atomicsSet);
-					for (NamedClass ind : atomicConcepts)
+					for (NamedClass ind : atomicConcepts) {
 						cBL.add(ind.getName());
+					}
 				}
 			}
 			// allowedRoles or ignoredRoles
@@ -247,13 +252,15 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 				if(atomicsSet != null) {
 					LinkedList<ObjectProperty> atomicRoles = new LinkedList<ObjectProperty>(
 							atomicsSet);
-					for (ObjectProperty ind : atomicRoles)
+					for (ObjectProperty ind : atomicRoles) {
 						cBL.add(ind.getName());
+					}
 				}
 			}
 			// set selections
-			if (value != null)
+			if (value != null) {
 				cBL.setSelections(value);
+			}
 		}		
 		
 		stringList.setModel(listModel);
