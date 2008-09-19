@@ -231,7 +231,10 @@ function get_triple_table($triples) {
 		$table .= '<td><ul>';
 		foreach($object as $element) {
 			if ($element['type']=="uri"){
-				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4) $table .= '<li><a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($element['value']).'</a></li>';
+				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
+					$label=substr($element['value'],28);
+					$table .= '<li><a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($label).'</a></li>';
+				}
 				else $table .= '<li><a href="'.$element['value'].'" target="_blank">'.urldecode($element['value']).'</a></li>';
 			}
 			else $table .= '<li>'.$element['value'].'</li>';
