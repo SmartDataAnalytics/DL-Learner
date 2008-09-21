@@ -25,14 +25,20 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.math.BigDecimal;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import org.dllearner.core.owl.Description;
+import org.dllearner.core.EvaluatedDescription;
 
+/**
+ * List cell renderer for 2 columns.
+ * @author Lorenz Buehmann
+ *
+ */
 public class ColumnListCellRenderer extends JPanel implements ListCellRenderer {
 
 	private static final long serialVersionUID = 3024913291199515567L;
@@ -52,9 +58,12 @@ public class ColumnListCellRenderer extends JPanel implements ListCellRenderer {
 		JLabel cor = new JLabel();
 		JLabel desc = new JLabel();
 		setLayout(new GridBagLayout());
-		desc.setText(((Description) value).toManchesterSyntaxString(
-				ore.getBaseURI(), ore.getPrefixes()));
-		cor.setText((ore.computeAccuracy((Description) value)).toString());
+		desc.setText(((EvaluatedDescription) value).getDescription().toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
+		//round accuracy to 2 digits
+		double accuracy = ((EvaluatedDescription) value).getAccuracy();
+		BigDecimal roundedAccuracy = new BigDecimal( accuracy * 100 );
+		roundedAccuracy = roundedAccuracy.setScale( 2, BigDecimal.ROUND_HALF_UP );
+		cor.setText(roundedAccuracy.toString());
 		add(cor,new GridBagConstraints(0, 0, 1, 1, 0.1, 0.0, GridBagConstraints.LINE_END, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));//, BorderLayout.WEST);
 		add(desc,new GridBagConstraints(1, 0, 1, 1, 0.8, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));//, BorderLayout.EAST);
 
