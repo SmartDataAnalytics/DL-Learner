@@ -27,12 +27,17 @@ import org.dllearner.core.owl.NamedClass;
 
 
 
-
+/**
+ * Wizard panel descriptor for selecting one of the atomic classes in OWL-ontology that 
+ * has to be (re)learned.
+ * @author Lorenz Buehmann
+ *
+ */
 public class ClassPanelOWLDescriptor extends WizardPanelDescriptor implements ListSelectionListener{
     
     public static final String IDENTIFIER = "CLASS_CHOOSE_OWL_PANEL";
     public static final String INFORMATION = "In this panel all atomic classes in the ontology are shown in the list above. " +
-    										 "Select one of them which should be (re)learned from then press \"Next-Button\"";
+    										 "Select one of them which should be (re)learned from, then press \"Next-Button\"";
     
     private ClassPanelOWL owlClassPanel;
     
@@ -65,7 +70,7 @@ public class ClassPanelOWLDescriptor extends WizardPanelDescriptor implements Li
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected(); 
 		if (!e.getValueIsAdjusting()) 
-			 getWizardModel().getOre().setConcept((NamedClass)owlClassPanel.getList().getSelectedValue());
+			 getWizardModel().getOre().setClassToLearn((NamedClass)owlClassPanel.getList().getSelectedValue());
 			
 	}
 	

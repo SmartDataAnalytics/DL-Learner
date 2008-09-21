@@ -20,10 +20,11 @@
 
 package org.dllearner.tools.ore;
 
-
-
-
-
+/**
+ * Class for SPARQL-Mode
+ * @author Lorenz Buehmann
+ *
+ */
 public class ClassPanelSparqlDescriptor extends WizardPanelDescriptor{
     
     public static final String IDENTIFIER = "CLASS_CHOOSE_SPARQL_PANEL";

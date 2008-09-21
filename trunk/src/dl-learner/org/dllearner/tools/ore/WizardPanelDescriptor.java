@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 /**
  * A base descriptor class used to reference a Component panel for the Wizard, as
  * well as provide general rules as to how the panel should behave.
+ * @author Lorenz Buehmann
  */
 public class WizardPanelDescriptor {
     

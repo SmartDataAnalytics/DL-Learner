@@ -21,7 +21,11 @@
 package org.dllearner.tools.ore;
 
 
-
+/**
+ * Wizard panel descriptor with some informations for the tool.
+ * @author Lorenz Buehmann
+ *
+ */
 public class IntroductionPanelDescriptor extends WizardPanelDescriptor {
     
     public static final String IDENTIFIER = "INTRODUCTION_PANEL";

@@ -28,6 +28,11 @@ import javax.swing.JLabel;
 
 import org.semanticweb.owl.model.OWLOntologyChange;
 
+/**
+ * A JLabel, making it possible to undo ontology changes.
+ * @author Lorenz Buehmann
+ *
+ */
 public class UndoLabel extends JLabel {
 
 	/**
@@ -44,6 +49,10 @@ public class UndoLabel extends JLabel {
 		addMouseListener(mL);
 	}
 	
+	/**
+	 * Returns the ontology changes that have been done by one repair action.
+	 * @return List of ontology changes
+	 */
 	public List<OWLOntologyChange> getChanges(){
 		return owlChanges;
 	}

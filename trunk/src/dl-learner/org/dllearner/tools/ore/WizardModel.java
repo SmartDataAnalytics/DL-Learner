@@ -29,6 +29,7 @@ import java.util.HashMap;
  * The model for the Wizard component, which tracks the text, icons, and enabled state
  * of each of the buttons, as well as the current panel that is displayed. Note that 
  * the model, in its current form, is not intended to be subclassed. 
+ * @author Lorenz Buehmann
  */
 
 
@@ -132,14 +133,15 @@ public class WizardModel {
         //  If we couldn't find the panel that should be displayed, return
         //  false.
         
-        if (nextPanel == null)
+        if (nextPanel == null){
             throw new WizardPanelNotFoundException();   
-
+        }
         WizardPanelDescriptor oldPanel = currentPanel;
         currentPanel = nextPanel;
         
-        if (oldPanel != currentPanel)
+        if (oldPanel != currentPanel){
             firePropertyChange(CURRENT_PANEL_DESCRIPTOR_PROPERTY, oldPanel, currentPanel);
+        }
         
         return true;
         

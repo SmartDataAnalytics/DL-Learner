@@ -28,6 +28,11 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+/**
+ * Navigation panel where it's shown the actual wizard step and former and following steps.
+ * @author Lorenz Buehmann
+ *
+ */
 public class LeftPanel extends JPanel{
 
 	private static final long serialVersionUID = -1205252523136710091L;
@@ -56,6 +61,10 @@ public class LeftPanel extends JPanel{
 		
 	}
 	
+	/**
+	 * Sets the actual step, that has to be printed bold in the navigation panel.
+	 * @param i number of the step
+	 */
 	public void set(int i){
 		removeAll();
 	

@@ -33,7 +33,11 @@ import org.jdesktop.swingx.JXBusyLabel;
 import org.jdesktop.swingx.icon.EmptyIcon;
 import org.jdesktop.swingx.painter.BusyPainter;
 
-
+/**
+ * Wizard Panel for SPARQL-Mode.
+ * @author Lorenz Buehmann
+ *
+ */
 public class ClassPanelSparql extends JPanel{
 
 	private static final long serialVersionUID = 3026319637264844550L;

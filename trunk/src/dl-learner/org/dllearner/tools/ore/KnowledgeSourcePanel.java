@@ -39,6 +39,12 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
+/**
+ * Wizard panel where radio buttons for choosing knowledge source type, button for browsing
+ * file system and textfields for inserting file name or SPARQL-URL are added.
+ * @author Lorenz Buehmann
+ *
+ */
 public class KnowledgeSourcePanel extends JPanel{
 
 	private static final long serialVersionUID = -3997200565180270088L;

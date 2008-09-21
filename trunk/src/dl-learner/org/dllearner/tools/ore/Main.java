@@ -26,9 +26,17 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 
-
+/**
+ * Main class starting the wizard and registering wizard panels.
+ * @author Lorenz Buehmann
+ *
+ */
 public class Main {
     
+	/**
+	 * main method.
+	 * @param args possible is to use OWL-File as parameter
+	 */
     public static void main(String[] args) {
     	try {
 			UIManager.setLookAndFeel(

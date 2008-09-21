@@ -52,6 +52,7 @@ import javax.swing.border.EmptyBorder;
  * can be closed using the 'Cancel' button. Note that even though the dialog
  * uses a CardLayout manager, the order of the panels is not linear. Each panel
  * determines at runtime what its next and previous panel will be.
+ * @author Lorenz Buehmann
  */
 public class Wizard extends WindowAdapter implements PropertyChangeListener {
 
@@ -116,7 +117,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
      * into the overloaded constructor.
      */    
     public Wizard() {
-        this((Frame)null);
+        this((Frame) null);
     }
     
     /**
@@ -253,13 +254,13 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         //  be displayed. If the identifier passed in is null, then close
         //  the dialog.
         
-        if (id == null)
+        if (id == null){
             close(ERROR_RETURN_CODE);
-        
+        }
         WizardPanelDescriptor oldPanelDescriptor = wizardModel.getCurrentPanelDescriptor();
-        if (oldPanelDescriptor != null)
+        if (oldPanelDescriptor != null){
             oldPanelDescriptor.aboutToHidePanel();
-        
+        }
         wizardModel.setCurrentPanel(id);
         wizardModel.getCurrentPanelDescriptor().aboutToDisplayPanel();
         
@@ -287,11 +288,11 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         } else if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_TEXT_PROPERTY)) {            
             cancelButton.setText(evt.getNewValue().toString());
         } else if (evt.getPropertyName().equals(WizardModel.NEXT_FINISH_BUTTON_ENABLED_PROPERTY)) {            
-            nextButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue());
+            nextButton.setEnabled(((Boolean) evt.getNewValue()).booleanValue());
         } else if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_ENABLED_PROPERTY)) {            
-            backButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue());
+            backButton.setEnabled(((Boolean) evt.getNewValue()).booleanValue());
         } else if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_ENABLED_PROPERTY)) {            
-            cancelButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue());
+            cancelButton.setEnabled(((Boolean) evt.getNewValue()).booleanValue());
         }
         
     }
@@ -433,7 +434,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         informationsField.setEditable(false);
         informationsField.setLineWrap(true);
         informationsField.setRows(3);
-        informationsField.setFont(new Font("Serif",Font.PLAIN,14));
+        informationsField.setFont(new Font("Serif", Font.PLAIN,14));
         informationsField.setWrapStyleWord(true);
         infoScrollPane.setViewportView(informationsField);
         informationPanel.add(infoScrollPane);
@@ -447,7 +448,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         wizardDialog.getContentPane().add(cardPanel, java.awt.BorderLayout.CENTER);
         
         leftPanel = new LeftPanel(0);
-        wizardDialog.getContentPane().add(leftPanel,BorderLayout.WEST);
+        wizardDialog.getContentPane().add(leftPanel, BorderLayout.WEST);
     }
     
     
@@ -461,25 +462,45 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 	public void windowClosing(WindowEvent e) {
         returnCode = CANCEL_RETURN_CODE;
     }
-
+    
+    /**
+     * Returns the left navigation panel.
+     * @return LeftPanel, subclassed from JPanel
+     */
 	public LeftPanel getLeftPanel() {
 		return leftPanel;
 	}
 	
+	/**
+	 * Sets the actual panel which has to be printed bold in the left navigation panel.
+	 * @param i the number of the panel
+	 */
 	public void setLeftPanel(int i) {
 		((LeftPanel)(wizardDialog.getContentPane().getComponent(2))).set(i);
 		
 		
 	}
 	
+	/**
+	 * Returns the information field.
+	 * @return JTextArea
+	 */
 	public JTextArea getInformationField(){
 		return informationsField;
 	}
 
+	/**
+	 * Sets the type of knowledge source - SPARQL or OWL.
+	 * @param knowledgeSourceType 0 for OWL, 1 for SPARQL
+	 */
 	public void setKnowledgeSourceType(int knowledgeSourceType) {
 		this.knowledgeSourceType = knowledgeSourceType;
 	}
 
+	/**
+	 * Returns the type of knowledge source, represented as number - 0 for OWL, 1 for SPARQL.
+	 * @return integer value
+	 */
 	public int getKnowledgeSourceType() {
 		return knowledgeSourceType;
 	}

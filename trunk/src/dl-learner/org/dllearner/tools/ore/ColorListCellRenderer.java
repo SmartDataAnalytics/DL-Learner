@@ -30,6 +30,11 @@ import javax.swing.ListCellRenderer;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 
+/**
+ * List cell renderer for colored lines to provide better view on list values.
+ * @author Lorenz Buehmann
+ *
+ */
 public class ColorListCellRenderer extends JLabel implements ListCellRenderer {
 
 	private static final long serialVersionUID = -7592805113197759247L;

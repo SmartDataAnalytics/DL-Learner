@@ -28,12 +28,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
-
+/**
+ * JPanel where all ontology changes are shown.
+ * @author Lorenz Buehmann
+ *
+ */
 public class ChangesPanel extends JPanel{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7538532926820669891L;
 
 	public ChangesPanel(){
@@ -45,7 +46,10 @@ public class ChangesPanel extends JPanel{
 	}
 	
 
-	
+	/**
+	 * Refresh the actual panel.
+	 * @param cont
+	 */
 	public void updatePanel(Container cont){
 		remove(cont);
 		SwingUtilities.updateComponentTreeUI(this);

@@ -25,7 +25,11 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-
+/**
+ * JPanel where to buttons are added to save and go back to class choose panel.
+ * @author Lorenz Buehmann
+ *
+ */
 public class SavePanel extends JPanel{
 	
 	/**
@@ -43,6 +47,10 @@ public class SavePanel extends JPanel{
 		add(saveGoBack);
 	}
 	
+	/**
+	 * Adds the action listener to both buttons.
+	 * @param aL action listener
+	 */
 	public void addActionListeners(ActionListener aL){
 		saveExit.addActionListener(aL);
 		saveGoBack.addActionListener(aL);

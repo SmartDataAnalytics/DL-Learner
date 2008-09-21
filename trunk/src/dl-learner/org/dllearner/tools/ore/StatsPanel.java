@@ -40,10 +40,13 @@ import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
 
+/**
+ * Here are shown the name of the individual, class assertions and object properties of the individual which is selected to repair. 
+ * @author Lorenz Buehmann
+ *
+ */
 public class StatsPanel extends JPanel{
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -8418286820511803278L;
 	
 	private ORE ore;
@@ -73,6 +76,9 @@ public class StatsPanel extends JPanel{
 		
 	}
 	
+	/**
+	 * Initializes the panel. 
+	 */
 	public void init(){
 		prefixes = ore.getPrefixes();
 		baseURI = ore.getBaseURI();
@@ -95,9 +101,9 @@ public class StatsPanel extends JPanel{
         classPane = new JXTaskPane();
         classPane.setTitle("Classes");
         oldClasses = ore.getOwlReasoner().getConcepts(ind);
-       	for(NamedClass nc : oldClasses)
+       	for(NamedClass nc : oldClasses){
 			classPane.add(new JLabel(nc.toManchesterSyntaxString(baseURI, prefixes)));
-        
+       	}
        	propertyPane = new JXTaskPane();
         propertyPane.setTitle("Properties");		
 		
@@ -139,7 +145,9 @@ public class StatsPanel extends JPanel{
 		
 	}
 	
-
+	/**
+	 * Updates the stats panel.
+	 */
 	public void updatePanel(){
 		
 		//update classesPanel

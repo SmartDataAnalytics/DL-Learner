@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -66,24 +67,30 @@ import org.semanticweb.owl.model.RemoveAxiom;
 import org.semanticweb.owl.model.UnknownOWLOntologyException;
 import org.semanticweb.owl.util.OWLEntityRemover;
 
+/**
+ * This class provides several methods to modify the ontology by using OWL-API.
+ * @author Lorenz Buehmann
+ *
+ */
 public class OntologyModifier {
 
 	private OWLOntology ontology;
 	private OWLAPIReasoner reasoner;
 	private OWLDataFactory factory;
 	private OWLOntologyManager manager;
+	private ReasoningService rs;
 	
 	
-	public OntologyModifier(OWLAPIReasoner reasoner){
+	public OntologyModifier(OWLAPIReasoner reasoner, ReasoningService rs){
 		this.reasoner = reasoner;
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
 		this.ontology = reasoner.getOWLAPIOntologies().get(0);
-		
+		this.rs = rs;
 	}
 	
 	/**
-	 * Adds an EquivalentClassesAxiom axiom to the ontology 
+	 * Adds an EquivalentClassesAxiom axiom to the ontology. 
 	 * @param newDesc new axiom to add
 	 * @param oldDesc old description
 	 * @return
@@ -113,11 +120,11 @@ public class OntologyModifier {
 	}
 	
 	/**
-	 * rewrite ontology by replacing old class with new learned class description
+	 * Rewrite ontology by replacing old class with new learned class description.
 	 * @param newDesc
 	 * @param oldClass
 	 */
-	public void rewriteClassDescription(Description newDesc, Description oldClass){
+	public List<OWLOntologyChange> rewriteClassDescription(Description newDesc, Description oldClass){
 		OWLDescription newClassDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(newDesc);
 //		OWLDescription oldClassDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldClass);
 		
@@ -150,10 +157,12 @@ public class OntologyModifier {
 			e.printStackTrace();
 		}
 		
+		return changes;
+		
 	}
 	
 	/**
-	 * saves the ontology as RDF-file
+	 * Saves the ontology as RDF-file.
 	 */
 	public void saveOntology(){
 		
@@ -173,7 +182,7 @@ public class OntologyModifier {
 	
 	}
 	/**
-	 * Deletes the complete individual from the ontology
+	 * Deletes the complete individual from the ontology.
 	 * @param ind the individual to delete
 	 */
 	public List<OWLOntologyChange> deleteIndividual(Individual ind){
@@ -201,7 +210,7 @@ public class OntologyModifier {
 		
 	}
 	/**
-	 * Removes a classAssertion 
+	 * Removes a classAssertion. 
 	 * @param ind the individual which has to removed from class
 	 * @param desc the class to which the individual is asserted
 	 * @return changes that have been done
@@ -231,7 +240,7 @@ public class OntologyModifier {
 	}
 	
 	/**
-	 * adds a classAssertion 
+	 * Adds a classAssertion. 
 	 * @param ind the individual which has to be asserted to class
 	 * @param desc the class to which the individual has to be asserted
 	 * @return changes that have been done
@@ -264,7 +273,7 @@ public class OntologyModifier {
 	}
 	
 	/**
-	 * removes classAssertion between individual to a old class, and creates a new classAssertion
+	 * Removes classAssertion between individual to a old class, and creates a new classAssertion.
 	 * @param ind individual which has to be moved
 	 * @param oldClass class where individual is asserted before
 	 * @param newClass class where individual is moved to
@@ -304,7 +313,7 @@ public class OntologyModifier {
 	}
 	
 	/**
-	 * 
+	 * Removes all object property assertions with role, and it's inverse.
 	 * @param ind the individual which property has to be removed
 	 * @param objSome the property which has to be removed
 	 * @return changes that have been done
@@ -321,22 +330,29 @@ public class OntologyModifier {
 		
 		OWLObjectPropertyExpression invProperty = null;
 		
-		for(OWLInverseObjectPropertiesAxiom inv : invProperties)
-			if(propertyOWLAPI.equals(inv.getSecondProperty()))
+		for(OWLInverseObjectPropertiesAxiom inv : invProperties){
+			if(propertyOWLAPI.equals(inv.getSecondProperty())){
 				invProperty  = inv.getFirstProperty();
-			else
+			}
+			else{
 				invProperty = inv.getSecondProperty();
+			}
+		}
 		
 		
 		List<RemoveAxiom> removeList = new LinkedList<RemoveAxiom>();
 		
 		for(OWLObjectPropertyAssertionAxiom o :properties){
-			if( (o.getProperty().equals(propertyOWLAPI)) && (o.getSubject().equals(individualOWLAPI))) 
+			if( (o.getProperty().equals(propertyOWLAPI)) && (o.getSubject().equals(individualOWLAPI))){ 
 				removeList.add(new RemoveAxiom(ontology, o));
-			if(invProperty != null)
-				for(OWLObjectPropertyAssertionAxiom ob :ontology.getObjectPropertyAssertionAxioms(o.getObject()))
-					if(ob.getProperty().equals(invProperty) && ob.getObject().equals(individualOWLAPI))
+			}
+			if(invProperty != null){
+				for(OWLObjectPropertyAssertionAxiom ob :ontology.getObjectPropertyAssertionAxioms(o.getObject())){
+					if(ob.getProperty().equals(invProperty) && ob.getObject().equals(individualOWLAPI)){
 						removeList.add(new RemoveAxiom(ontology, ob));
+					}
+				}
+			}
 			
 			
 		}
@@ -356,7 +372,7 @@ public class OntologyModifier {
 	
 		
 	/**
-	 * removes an object property assertion from the ontology if the axiom is existing in the ontology
+	 * Removes an object property assertion from the ontology if the axiom is existing in the ontology.
 	 * @param subject
 	 * @param objSome
 	 * @param object
@@ -396,7 +412,7 @@ public class OntologyModifier {
 	}
 	
 	/**
-	 * 
+	 * Adds an object property assertion to the ontology.
 	 * @param subInd the individual which is subject in the objectProperty 
 	 * @param objSome the property which has to be added to subject
 	 * @param objInd the individual which is object in the objectProperty 
@@ -457,7 +473,7 @@ public class OntologyModifier {
 	}
 	
 	/**
-	 * checks whether desc1 and desc2 are complement of each other
+	 * checks whether desc1 and desc2 are disjoint.
 	 * @param desc1 class 1
 	 * @param desc2 class 2
 	 * @return 
@@ -467,25 +483,35 @@ public class OntologyModifier {
 		OWLClass owlClass1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc1).asOWLClass();
 		OWLClass owlClass2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc2).asOWLClass();
 		
-				
 		//superclasses and class1
-		Set<OWLDescription> superClasses1 = owlClass1.getSuperClasses(ontology);
+//		Set<OWLDescription> superClasses1 = owlClass1.getSuperClasses(ontology);
+		Set<OWLDescription> superClasses1 = new HashSet<OWLDescription>();
+		for(Description d : rs.getMoreGeneralConcepts(desc1)){
+			superClasses1.add(OWLAPIDescriptionConvertVisitor.getOWLDescription(d));
+		}
 		superClasses1.add(owlClass1);
+//		System.out.println(desc1 + "::" + superClasses1);
 		
 		//superclasses and class2
-		Set<OWLDescription> superClasses2 = owlClass2.getSuperClasses(ontology);
+//		Set<OWLDescription> superClasses2 = owlClass2.getSuperClasses(ontology);
+		Set<OWLDescription> superClasses2 = new HashSet<OWLDescription>();
+		for(Description d : rs.getMoreGeneralConcepts(desc2)){
+			superClasses2.add(OWLAPIDescriptionConvertVisitor.getOWLDescription(d));
+		}
 		superClasses2.add(owlClass2);
 		
 		for(OWLAxiom ax : ontology.getAxioms()){
 			
 			for(OWLDescription o1 : superClasses1){
+				
 				OWLDescription negO1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o1.toString())));
 				for(OWLDescription o2 : superClasses2){
+//					System.out.println(o1 + "  " + o2);
 					OWLDescription negO2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o2.toString())));
-				
-					if(ax.equals(factory.getOWLDisjointClassesAxiom(o1, o2))){
+					System.out.println(factory.getOWLDisjointClassesAxiom(o1, o2));
+					if(ax.toString().equals(factory.getOWLDisjointClassesAxiom(o1, o2).toString())){
 						return true;
-					}else if(ax.equals(factory.getOWLDisjointClassesAxiom(o2, o1))){
+					}else if(ax.toString().equals(factory.getOWLDisjointClassesAxiom(o2, o1).toString())){
 						return true;
 					}else if(ax.toString().equals(factory.getOWLEquivalentClassesAxiom(o1, negO2).toString())){
 						return true;

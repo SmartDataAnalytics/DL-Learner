@@ -24,6 +24,11 @@ import javax.swing.JMenuItem;
 
 import org.dllearner.core.owl.Description;
 
+/**
+ * Item for possible repair action.
+ * @author Lorenz Buehmann
+ *
+ */
 public class DescriptionMenuItem extends JMenuItem {
 
 	/**
@@ -57,11 +62,18 @@ public class DescriptionMenuItem extends JMenuItem {
 		this.action = action;
 	}
 	
-		
+	/**
+	 * Returns the description part where item is asserted to.
+	 * @return description
+	 */
 	public Description getDescription(){
 		return desc;
 	}
 	
+	/**
+	 * Returns action type represented as number..
+	 * @return number
+	 */
 	public int getActionID(){
 		return action;
 	}

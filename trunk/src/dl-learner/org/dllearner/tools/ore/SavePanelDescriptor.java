@@ -23,6 +23,11 @@ package org.dllearner.tools.ore;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Wizard panel descriptor that provides saving ontology and going back to class choose panel.
+ * @author Lorenz Buehmann
+ *
+ */
 public class SavePanelDescriptor extends WizardPanelDescriptor implements ActionListener{
 	public static final String IDENTIFIER = "SAVE_PANEL";
     public static final String INFORMATION = "Press 'Save and exit' button to save the changes you made and exit the program, " +

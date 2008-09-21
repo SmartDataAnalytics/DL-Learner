@@ -29,7 +29,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.semanticweb.owl.model.OWLOntologyChange;
-
+/**
+ * JPanel where an ontology change and his undo function is listed.
+ * @author Lorenz Buehmann
+ *
+ */
 public class ChangePanel extends JPanel{
 
 	/**
@@ -38,7 +42,7 @@ public class ChangePanel extends JPanel{
 	private static final long serialVersionUID = -934113184795465461L;
 	
 	/**
-	 * Constructor for a JPanel where an ontology change and his undo function is listed	
+	 * Constructor 	
 	 * @param label
 	 * @param changes
 	 * @param mL

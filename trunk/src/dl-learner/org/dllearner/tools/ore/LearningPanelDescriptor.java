@@ -33,12 +33,16 @@ import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.owl.Description;
 
 
 
-
+/**
+ * Wizard panel descriptor where learned class description are shown.
+ * @author Lorenz Buehmann
+ *
+ */
 public class LearningPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener{
     
     public static final String IDENTIFIER = "LEARNING_PANEL";
@@ -94,13 +98,14 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 //		Description de = new NamedClass("http://example.com/father#male");
 		
 		if (!e.getValueIsAdjusting()){
-			getWizardModel().getOre().setNewClassDescription((Description)(learnPanel.getResultList().getSelectedValue())); 
-			
-					
+			getWizardModel().getOre().setNewClassDescription(((EvaluatedDescription) (learnPanel.getResultList().getSelectedValue()))); 					
 		}
 		
 	}
 
+	/**
+	 * Actions for pressing start- or stop-button.
+	 */
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("Start")){
 			learnPanel.getListModel().clear();
@@ -120,11 +125,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	        
 		}
 		
-		
-		
 	}
-
-
 
 	private void setNextButtonAccordingToConceptSelected() {
 	    
@@ -136,35 +137,51 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	
 	}
 	
+	/**
+	 * Returns the swing worker thread instance.
+	 * @return swing worker
+	 */
 	public LearnSwingWorker getWorkerThread(){
 		return worker;
 	}
 	
+	/**
+	 * Returns the timer instance.
+	 * @return timer
+	 */
 	public Timer getTimer(){
 		return timer;
 	}
 	
+	/**
+	 * Returns the learning algorithm instance.
+	 * @return learning algorithm
+	 */
 	public LearningAlgorithm getLa() {
 		return la;
 	}
 	
+	/**
+	 * Clear list and loading message.
+	 */
 	public void setPanelDefaults(){
 		learnPanel.getListModel().clear();
 		learnPanel.getStatusLabel().setText("");
 	}
 
 
-
-	class LearnSwingWorker extends SwingWorker<List<Description>, List<Description>> {
-		
-    	
+	/**
+	 * Inner class, containing the background thread for learning class descriptions.
+	 * @author Lorenz Buehmann
+	 *
+	 */
+	class LearnSwingWorker extends SwingWorker<List<EvaluatedDescription>, List<EvaluatedDescription>> {
+		    	
     	Thread t;
-    	
-    	
     	
 		@SuppressWarnings("unchecked")
 		@Override
-		public List<Description> doInBackground() {
+		public List<EvaluatedDescription> doInBackground() {
 			
 			learnPanel.getResultList().setCellRenderer(new ColumnListCellRenderer(getWizardModel().getOre()));
 			learnPanel.getLoadingLabel().setBusy(true);
@@ -177,8 +194,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				@Override
 				public void run() {
 					if(la != null){
-						
-						publish(la.getCurrentlyBestDescriptions(30, true));
+						publish(la.getCurrentlyBestEvaluatedDescriptions(30, 0.0, true));
 					}
 				}
 				
@@ -204,7 +220,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
-			List<Description> result = getWizardModel().getOre().getLearningResults(30);
+			List<EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(30, 0.0, true);
 			
 			return result;
 		}
@@ -213,7 +229,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		public void done() {
 			
 			timer.cancel();
-			List<Description> result = null;
+			List<EvaluatedDescription> result = null;
 			try {
 				result = get();
 			} catch (InterruptedException e) {
@@ -230,16 +246,16 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		}
 
 		@Override
-		protected void process(List<List<Description>> resultLists) {
+		protected void process(List<List<EvaluatedDescription>> resultLists) {
 			
 //			panel4.getModel().clear();
 			
-			for (List<Description> list : resultLists) {
+			for (List<EvaluatedDescription> list : resultLists) {
 				updateList(list);
 			}
 		}
 		
-		void updateList(final List<Description> result) {
+		void updateList(final List<EvaluatedDescription> result) {
 			
 			Runnable doUpdateList = new Runnable() {
 				
@@ -247,7 +263,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				DefaultListModel dm = new DefaultListModel();
 				public void run() {
 //					learnPanel.getListModel().clear();
-					for (Description d : result) {
+					for (EvaluatedDescription d : result) {
 						dm.addElement(d);
 //						panel4.getModel().addElement(d);
 						
