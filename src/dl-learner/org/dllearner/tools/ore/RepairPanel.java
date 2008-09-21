@@ -28,15 +28,12 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -44,43 +41,37 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionListener;
 
-import org.jdesktop.swingx.JXBusyLabel;
-import org.jdesktop.swingx.icon.EmptyIcon;
-import org.jdesktop.swingx.painter.BusyPainter;
-
+/**
+ * JPanel for repairing action.
+ * @author Lorenz Buehmann
+ *
+ */
 public class RepairPanel extends JPanel{
 
 	private static final long serialVersionUID = -7411197973240429632L;
 
 	private JPanel contentPanel;
 	
-	
 	private DefaultListModel posFailureModel;
 	private DefaultListModel negFailureModel;
 	
-	
-	private JLabel statusLabel;
-	private JXBusyLabel loadingLabel;
-	
-	
-	
 	private JPanel posPanel;
-	private JList posList;
 	private JScrollPane posScrollPane;
-	private JScrollPane negScrollPane;
+	private JList posList;
+	private JPanel posButtonPanel;
 	private JButton pos_repairButton;
 	private JButton pos_deleteButton;
 	private JButton pos_removeButton;
-	private JPanel posButtonPanel;
+	
+	private JPanel negPanel;
+	private JScrollPane negScrollPane;
+	private JList negList;
+	private JPanel negButtonPanel;
 	private JButton neg_repairButton;
 	private JButton neg_deleteButton;
 	private JButton neg_addButton;
-	private JPanel negButtonPanel;
-	private JList negList;
-	private JPanel negPanel;
 	
 	
-	@SuppressWarnings("unchecked")
 	public RepairPanel() {
 		
 		super();
@@ -90,21 +81,7 @@ public class RepairPanel extends JPanel{
 		this.setLayout(new java.awt.BorderLayout());
 		
 		JPanel labelPanel = new JPanel();
-		statusLabel = new JLabel();
-		
-		loadingLabel = new JXBusyLabel(new Dimension(15,15));
-		BusyPainter painter = new BusyPainter(
-		new RoundRectangle2D.Float(0, 0,6.0f,2.6f,10.0f,10.0f),
-		new Ellipse2D.Float(2.0f,2.0f,11.0f,11.0f));
-		painter.setTrailLength(2);
-		painter.setPoints(7);
-		painter.setFrame(-1);
-		loadingLabel.setPreferredSize(new Dimension(15,15));
-		loadingLabel.setIcon(new EmptyIcon(15,15));
-		loadingLabel.setBusyPainter(painter);
-		labelPanel.add(loadingLabel);
-		labelPanel.add(statusLabel);
-		
+				
 		contentPanel = getContentPanel();
 		
 		add(contentPanel,BorderLayout.CENTER);
@@ -247,43 +224,51 @@ public class RepairPanel extends JPanel{
 		return contentPanel;
 	}
 	
-			
-		
-	public JLabel getStatusLabel() {
-		return statusLabel;
-	}
-
-	public JXBusyLabel getLoadingLabel() {
-		return loadingLabel;
-	}
-
+	/**
+	 * Returns the list model for positive examples.
+	 * @return list model
+	 */
 	public DefaultListModel getPosFailureModel() {
 		return posFailureModel;
 	}
 	
+	/**
+	 * Returns the list model for negative examples.
+	 * @return list model
+	 */
 	public DefaultListModel getNegFailureModel() {
 		return negFailureModel;
 	}
 	
+	/**
+	 * Returns the list for positive examples.
+	 * @return positive list
+	 */
 	public javax.swing.JList getPosFailureList() {
 		return posList;
 	}
 	
+	/**
+	 * Returns the list for negative examples.
+	 * @return negative list
+	 */
 	public javax.swing.JList getNegFailureList() {
 		return negList;
 	}
 	
+	/**
+	 * adds the list selection listener for lists.
+	 * @param l list selection listener
+	 */
 	public void addSelectionListeners(ListSelectionListener l){
 		posList.addListSelectionListener(l);
 		negList.addListSelectionListener(l);
 	}
 	
-
-	public void addMouseListeners(MouseListener mL){
-		posList.addMouseListener(mL);
-		negList.addMouseListener(mL);
-	}
-	
+	/**
+	 * Adds the action listener to buttons.	
+	 * @param aL action listener
+	 */
 	public void addActionListeners(ActionListener aL){
 		pos_removeButton.addActionListener(aL);
 		pos_deleteButton.addActionListener(aL);
@@ -293,6 +278,19 @@ public class RepairPanel extends JPanel{
 		neg_repairButton.addActionListener(aL);
 	}
 	
+	/**
+	 * Adds mouse listener to lists.
+	 * @param mL mouse listener
+	 */
+	public void addMouseListeners(MouseListener mL){
+		posList.addMouseListener(mL);
+		negList.addMouseListener(mL);
+	}
+	
+	/**
+	 * Sets custom cell renderer to the lists.
+	 * @param ore
+	 */
 	public void setCellRenderers(ORE ore){
 		ColorListCellRenderer cell = new ColorListCellRenderer(ore);
 		posList.setCellRenderer(cell);

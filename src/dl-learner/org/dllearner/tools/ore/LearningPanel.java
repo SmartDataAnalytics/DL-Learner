@@ -47,7 +47,11 @@ import org.jdesktop.swingx.icon.EmptyIcon;
 import org.jdesktop.swingx.painter.BusyPainter;
 
 
-
+/**
+ * The wizard panel where list and buttons for learning step are shown.
+ * @author Lorenz Buehmann
+ *
+ */
 public class LearningPanel extends JPanel{
 
 	private static final long serialVersionUID = -7411197973240429632L;

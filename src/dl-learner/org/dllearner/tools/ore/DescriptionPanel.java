@@ -33,6 +33,11 @@ import javax.swing.border.BevelBorder;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 
+/**
+ * Panel where learned class description is shown, and parts that might occur errors are red colored.
+ * @author Lorenz Buehmann
+ *
+ */
 public class DescriptionPanel extends JPanel{
 	
 	/**
@@ -44,7 +49,7 @@ public class DescriptionPanel extends JPanel{
 	private Individual ind;
 	private ActionListener aL;
 	private String mode;
-	boolean correct = false;
+	private boolean correct = false;
 	private Description newClassDescription;
 	
 	public DescriptionPanel(ORE ore, Individual ind, ActionListener aL, String mode){
@@ -52,7 +57,7 @@ public class DescriptionPanel extends JPanel{
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		this.ore = ore;
-		this.newClassDescription = ore.getNewClassDescription();
+		this.newClassDescription = ore.getNewClassDescription().getDescription();
 		this.ind = ind;
 		this.aL = aL;
 		this.mode = mode;
@@ -70,7 +75,7 @@ public class DescriptionPanel extends JPanel{
 			}
 		}
 		else if(mode.equals("pos")){
-			for(JLabel jL : ore.DescriptionToJLabelPos(ind, newClassDescription)){
+			for(JLabel jL : ore.descriptionToJLabelPos(ind, newClassDescription)){
 				add(jL);
 				if(jL instanceof DescriptionLabel){
 					
@@ -84,6 +89,9 @@ public class DescriptionPanel extends JPanel{
 		}
 	}
 	
+	/**
+	 * Updates the panel.
+	 */
 	public void updatePanel(){
 		for(Component c : getComponents())
 			if(c instanceof JLabel)
@@ -104,7 +112,7 @@ public class DescriptionPanel extends JPanel{
 			}
 		}
 		else if(mode.equals("pos")){
-			for (JLabel jL : ore.DescriptionToJLabelPos(ind, newClassDescription)) {
+			for (JLabel jL : ore.descriptionToJLabelPos(ind, newClassDescription)) {
 				add(jL);
 				if (jL instanceof DescriptionLabel) {
 					((DescriptionLabel) jL).setIndOre(ore, ind);
@@ -119,7 +127,10 @@ public class DescriptionPanel extends JPanel{
 		
 
 	}
-	
+	/**
+	 * Checks whether description is covered by positive example, or not covered by negative example.
+	 * @return true if description is covered by positive example, or not covered by negative example, otherwise false is returned
+	 */
 	public boolean isCorrect(){
 		return correct;
 	}

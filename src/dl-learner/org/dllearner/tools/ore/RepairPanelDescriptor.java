@@ -27,6 +27,7 @@ import java.awt.event.MouseListener;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -36,7 +37,11 @@ import org.semanticweb.owl.model.OWLOntologyChange;
 
 
 
-
+/**
+ * Wizard panel descriptor where it is possible torepair wrong examples.
+ * @author Lorenz Buehmann
+ *
+ */
 public class RepairPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener, MouseListener{
     
     public static final String IDENTIFIER = "REPAIR_PANEL";
@@ -56,7 +61,7 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
         repairPanel.addActionListeners(this);
         repairPanel.addSelectionListeners(this);
         repairPanel.addMouseListeners(this);
-       
+        
         setPanelDescriptorIdentifier(IDENTIFIER);
         setPanelComponent(repairPanel);
         ontologyChanges = new HashSet<OWLOntologyChange>();
@@ -79,23 +84,34 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
     	getWizard().getInformationField().setText(INFORMATION);
     }
     
-    public void clearLists(){
-    	repairPanel.getNegFailureModel().clear();
-    	repairPanel.getPosFailureModel().clear();
+    /**
+     * Adds the wrong negative and positive examples to the lists.
+     */
+    public void refreshExampleLists(){
+    	this.ore = getWizardModel().getOre();
+    	repairPanel.setCellRenderers(ore);
+    	
+    	DefaultListModel negModel = repairPanel.getNegFailureModel();
+    	negModel.clear();
+    	for(Individual ind : ore.getNewClassDescription().getCoveredNegatives()){
+    		negModel.addElement(ind);
+    	}
+    	
+    	DefaultListModel posModel = repairPanel.getPosFailureModel();
+    	posModel.clear();
+    	for(Individual ind : ore.getNewClassDescription().getNotCoveredPositives()){
+    		posModel.addElement(ind);
+    	}
+    	
+    	
     }
    
-    
    
-
-	public void valueChanged(ListSelectionEvent e) {
-		
-//		if (!e.getValueIsAdjusting()) 
-//			 System.err.println(panel4.getNegFailureList().getSelectedValue());
-		
-	}
-
+    /**
+     * Method to control actions by button pressed.
+     */
 	public void actionPerformed(ActionEvent event) {
-		ore = getWizardModel().getOre();
+//		ore = getWizardModel().getOre();
         modi = ore.getModifier();       
 		String actionName = ((JButton)event.getSource()).getName();
 		String actionType = ((JButton)event.getSource()).getParent().getName();
@@ -152,6 +168,9 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 		
 	}
 	
+	/**
+	 * Method provides repair action by double click on list element.
+	 */
 	public void mouseClicked(MouseEvent e) {
 		
 		if(e.getClickCount() == 2){
@@ -186,22 +205,6 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 	}
 
 	public void mouseEntered(MouseEvent e) {
-//		JList negList = repairPanel.getNegFailureList();
-//		DefaultListModel negModel = repairPanel.getNegFailureModel();
-//		if(e.getSource() instanceof JList){
-//				int index = negList.locationToIndex(e.getPoint());
-//		        if (-1 < index) {
-//		        	Individual ind = (Individual)negModel.getElementAt(index);
-//		        	StringBuffer strBuf = new StringBuffer();
-//					strBuf.append("<html><b><u>classes:</b></u><br><br><BLOCKQUOTE>");
-//														
-//					for(NamedClass n: getWizardModel().getOre().reasoner2.getConcepts(ind))
-//						strBuf.append("<br>" + n );
-//					strBuf.append("</BLOCKQUOTE></html>");
-//					negList.setToolTipText(strBuf.toString());
-//		        }
-//		}
-		
 				
 	}
 
@@ -220,12 +223,19 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 		
 	}
 
-	
+	/**
+	 * Returns all ontology changes been done by repairing ontology.
+	 * @return
+	 */
 	public Set<OWLOntologyChange> getOntologyChanges() {
 		return ontologyChanges;
 	}
-	
-	
+
+	@Override
+	public void valueChanged(ListSelectionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
 

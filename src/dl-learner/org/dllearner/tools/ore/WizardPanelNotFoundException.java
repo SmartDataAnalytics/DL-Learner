@@ -21,7 +21,11 @@
 package org.dllearner.tools.ore;
 
 
-
+/**
+ * Exception which is thrown if wizard panel is not found.
+ * @author Lorenz Buehmann
+ *
+ */
 public class WizardPanelNotFoundException extends RuntimeException {
         
 	private static final long serialVersionUID = -5211930098094599993L;

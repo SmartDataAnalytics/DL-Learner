@@ -26,7 +26,11 @@ import java.awt.event.ActionListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-
+/**
+ * Wizard panel descriptor where knowledge source is selected.
+ * @author Lorenz Buehmann
+ *
+ */
 public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implements ActionListener, DocumentListener{
     
     public static final String IDENTIFIER = "KNOWLEDGESOURCE_CHOOSE_PANEL";
@@ -66,6 +70,9 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     	setNextButtonAccordingToExistingOWLFile();
     }    
 
+    /**
+     * Actions for buttons.
+     */
     public void actionPerformed(ActionEvent e) {
     	String cmd = e.getActionCommand();
     	if(cmd.equals("browse")){
@@ -110,7 +117,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 		setNextButtonAccordingToExistingOWLFile();
 		
 	}
-  public KnowledgeSourcePanel getPanel() {
+    public KnowledgeSourcePanel getPanel() {
 		return knowledgePanel;
 	}
   

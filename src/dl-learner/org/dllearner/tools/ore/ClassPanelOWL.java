@@ -36,7 +36,11 @@ import org.jdesktop.swingx.JXBusyLabel;
 import org.jdesktop.swingx.icon.EmptyIcon;
 import org.jdesktop.swingx.painter.BusyPainter;
 
-
+/**
+ * Wizard panel where atomic classes are shown in list.
+ * @author Lorenz Buehmann
+ *
+ */
 public class ClassPanelOWL extends JPanel{
 
 	private static final long serialVersionUID = 3026319637264844550L;
@@ -78,7 +82,7 @@ public class ClassPanelOWL extends JPanel{
 		
 		contentPanel = getContentPanel();
 		setLayout(new java.awt.BorderLayout());
-		add(contentPanel,BorderLayout.CENTER);
+		add(contentPanel, BorderLayout.CENTER);
 		add(labelPanel, BorderLayout.SOUTH);
 	}
 
@@ -89,7 +93,7 @@ public class ClassPanelOWL extends JPanel{
 		
 			
 		conceptList = new JList(model);
-		scroll.setPreferredSize(new Dimension(400,400));
+		scroll.setPreferredSize(new Dimension(400, 400));
 		scroll.setViewportView(conceptList);
 		contentPanel1.add(scroll);
 		
@@ -102,9 +106,7 @@ public class ClassPanelOWL extends JPanel{
 		return model;
 	}
 	
-	public void setModel(DefaultListModel dm){
-		conceptList.setModel(dm);
-	}
+	
 	
 	public void addSelectionListener(ListSelectionListener l){
 		conceptList.addListSelectionListener(l);

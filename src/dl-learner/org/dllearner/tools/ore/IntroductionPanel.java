@@ -32,7 +32,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
 
-
+/**
+ * Wizard panel with introduction text.
+ * @author Lorenz Buehmann
+ *
+ */
 public class IntroductionPanel extends JPanel {
  
 	private static final long serialVersionUID = 7184544803724152044L;

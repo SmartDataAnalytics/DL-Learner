@@ -43,6 +43,11 @@ import org.dllearner.core.owl.ObjectCardinalityRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 
+/**
+ * Label that might have menu items when clicked on it.
+ * @author Lorenz Buehmann
+ *
+ */
 public class DescriptionLabel extends JLabel implements MouseListener{
 	/**
 	 * 
@@ -84,7 +89,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 	}
 	
 	/**
-	 * initialize description label with solution
+	 * initialize description label with solution.
 	 */
 	public void init(){
 		baseURI = ore.getBaseURI();
@@ -241,14 +246,14 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 
 	
 	/**
-	 * returns actual description
+	 * returns actual description.
 	 */
 	public Description getDescription(){
 		return desc;
 	}
 	
 	/**
-	 * adds action listeners to menu items
+	 * adds action listeners to menu items.
 	 * @param aL
 	 */
 	public void addActionListeners(ActionListener aL){
@@ -275,6 +280,9 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 
 	}
 
+	/**
+	 * Underlining label when mouse over.
+	 */
 	public void mouseEntered(MouseEvent e) {
 		setText("<html><u>"
 				+ ((Description) desc).toManchesterSyntaxString(ore
@@ -286,6 +294,9 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 
 	}
 
+	/**
+	 * Removing underlining when mosue relased.
+	 */
 	public void mouseExited(MouseEvent e) {
 		setText(((Description) desc).toManchesterSyntaxString(ore.getBaseURI(),
 				ore.getPrefixes()));

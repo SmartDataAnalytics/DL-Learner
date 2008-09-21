@@ -54,6 +54,12 @@ import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
+/**
+ * The repair dialog where the learned class description (including error parts), 
+ * the statistics and the undo options are shown.
+ * @author Lorenz Buehmann
+ *
+ */
 public class RepairDialog extends JDialog implements ActionListener, MouseListener{
 	
 	/**
@@ -130,6 +136,10 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 		
 	}
 	
+	/**
+	 * Initializing and making dialog visible.
+	 * @return integer value
+	 */
 	public int showDialog(){
 		baseURI = ore.getBaseURI();
 		prefixes = ore.getPrefixes();
@@ -200,6 +210,9 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 
 	}
 
+	/**
+	 * Method controls action events triggered by clicking on red labels in class description at the top of the dialog.
+	 */
 	public void actionPerformed(ActionEvent e) {
 		
 		if(e.getSource() instanceof DescriptionMenuItem){
