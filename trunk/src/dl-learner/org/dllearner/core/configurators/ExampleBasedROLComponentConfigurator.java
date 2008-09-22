@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
+ */ 
 
 package org.dllearner.core.configurators;
 
@@ -277,6 +277,15 @@ public int getGuaranteeXgoodDescriptions() {
 return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "guaranteeXgoodDescriptions") ;
 }
 /**
+* maxClassDescriptionTests The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.).
+* mandatory: false| reinit necessary: true
+* default value: 0
+* @return int 
+**/
+public int getMaxClassDescriptionTests() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "maxClassDescriptionTests") ;
+}
+/**
 * logLevel determines the logLevel for this component, can be {TRACE, DEBUG, INFO}.
 * mandatory: false| reinit necessary: true
 * default value: DEBUG
@@ -320,6 +329,15 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 **/
 public String getStartClass() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "startClass") ;
+}
+/**
+* forceRefinementLengthIncrease specifies whether nodes should be expanded until only longer refinements are reached.
+* mandatory: false| reinit necessary: true
+* default value: null
+* @return boolean 
+**/
+public boolean getForceRefinementLengthIncrease() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "forceRefinementLengthIncrease") ;
 }
 
 /**
@@ -539,6 +557,15 @@ ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "guara
 reinitNecessary = true;
 }
 /**
+* @param maxClassDescriptionTests The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.).
+* mandatory: false| reinit necessary: true
+* default value: 0
+**/
+public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "maxClassDescriptionTests", maxClassDescriptionTests);
+reinitNecessary = true;
+}
+/**
 * @param logLevel determines the logLevel for this component, can be {TRACE, DEBUG, INFO}.
 * mandatory: false| reinit necessary: true
 * default value: DEBUG
@@ -581,6 +608,15 @@ reinitNecessary = true;
 **/
 public void setStartClass(String startClass) {
 ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "startClass", startClass);
+reinitNecessary = true;
+}
+/**
+* @param forceRefinementLengthIncrease specifies whether nodes should be expanded until only longer refinements are reached.
+* mandatory: false| reinit necessary: true
+* default value: null
+**/
+public void setForceRefinementLengthIncrease(boolean forceRefinementLengthIncrease) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "forceRefinementLengthIncrease", forceRefinementLengthIncrease);
 reinitNecessary = true;
 }
 

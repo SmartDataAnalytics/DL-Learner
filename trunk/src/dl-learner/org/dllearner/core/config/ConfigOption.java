@@ -102,10 +102,18 @@ public abstract class ConfigOption<T> {
 		this.requiresInit = requiresInit;		
 	}
 	
+	/**
+	 * 
+	 * @return The name of this option.
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @return The textual description of this option.
+	 */
 	public String getDescription() {
 		return description;
 	}
@@ -125,16 +133,20 @@ public abstract class ConfigOption<T> {
 	}
 	
 	/**
-	 * says, if this option is mandatory for the component
-	 * @return 
+	 * Specifies whether this option is mandatory for the component.
+	 * (Mandatory means that this component cannot be initialised 
+	 * without setting a value for this option.)
+	 * @return True if option is mandatory for component, false otherwise.
 	 */
 	public boolean isMandatory() {
 		return mandatory;
 	}
 	
 	/**
-	 * says, if this option requires that the componnent is reinitialized with init() 
-	 * @return 
+	 * Specifies whether setting this option requires that the 
+	 * component or any components depending on this component
+	 * need to be (re-)initialised. 
+	 * @return True if option requires init, false otherwise.
 	 */
 	public boolean requiresInit() {
 		return requiresInit;
@@ -161,6 +173,13 @@ public abstract class ConfigOption<T> {
 	 */
 	public abstract boolean checkType(Object object);
 
+	/**
+	 * Checks whether the value is valid, e.g. passing 1985 as
+	 * integer value for an option, which requires values between
+	 * 0 and 1, is not valid.
+	 * @param value A value for the option.
+	 * @return True if the value is valid and false otherwise.
+	 */
 	public abstract boolean isValidValue(T value);
 	
 	public abstract String getValueTypeAsJavaString();

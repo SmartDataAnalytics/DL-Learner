@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -21,27 +21,27 @@ package org.dllearner.core.config;
 
 
 /**
+ * A configuration option representing a boolean value.
+ * 
  * @author Jens Lehmann
  * 
  */
 public class BooleanConfigOption extends ConfigOption<Boolean> {
 
-	
-
-	public BooleanConfigOption(String name, String description, Boolean defaultValue, boolean mandatory, boolean requiresInit) {
-		super(name, description, defaultValue, mandatory, requiresInit);
-		
-	}
-
-	public BooleanConfigOption(String name, String description, Boolean defaultValue) {
-		super(name, description, defaultValue);
-		
-	}
-
 	public BooleanConfigOption(String name, String description) {
 		super(name, description);
 		
 	}
+	
+	public BooleanConfigOption(String name, String description, Boolean defaultValue) {
+		super(name, description, defaultValue);
+		
+	}	
+	
+	public BooleanConfigOption(String name, String description, Boolean defaultValue, boolean mandatory, boolean requiresInit) {
+		super(name, description, defaultValue, mandatory, requiresInit);
+		
+	}	
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.config.ConfigOption#getValueTypeAsJavaString()

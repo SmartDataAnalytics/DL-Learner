@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
+ */ 
 
 package org.dllearner.core.configurators;
 
@@ -61,6 +61,15 @@ return component;
 public String getReasonerType() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(fastInstanceChecker,  "reasonerType") ;
 }
+/**
+* defaultNegation Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class..
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getDefaultNegation() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(fastInstanceChecker,  "defaultNegation") ;
+}
 
 /**
 * @param reasonerType FaCT++ or Pellet to dematerialize.
@@ -69,6 +78,15 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(fastInstance
 **/
 public void setReasonerType(String reasonerType) {
 ComponentManager.getInstance().applyConfigEntry(fastInstanceChecker, "reasonerType", reasonerType);
+reinitNecessary = true;
+}
+/**
+* @param defaultNegation Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class..
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setDefaultNegation(boolean defaultNegation) {
+ComponentManager.getInstance().applyConfigEntry(fastInstanceChecker, "defaultNegation", defaultNegation);
 reinitNecessary = true;
 }
 
