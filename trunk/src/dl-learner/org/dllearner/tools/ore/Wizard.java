@@ -86,10 +86,10 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 
     // The text used for the buttons    
     
-    static String BACK_TEXT ="< Back";
-    static String NEXT_TEXT ="Next >";
-    static String FINISH_TEXT = "Finish";
-    static String CANCEL_TEXT = "Cancel";
+    static final String BACK_TEXT ="< Back";
+    static final String NEXT_TEXT ="Next >";
+    static final String FINISH_TEXT = "Finish";
+    static final String CANCEL_TEXT = "Cancel";
 
        
     private WizardModel wizardModel;
@@ -316,7 +316,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 
    /**
      * Mirrors the WizardModel method of the same name.
-     * @param boolean newValue The new enabled status of the button.
+     * @param newValue The new enabled status of the button.
      */ 
     public void setBackButtonEnabled(boolean newValue) {
         wizardModel.setBackButtonEnabled(new Boolean(newValue));
@@ -332,7 +332,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 
    /**
      * Mirrors the WizardModel method of the same name.
-     * @param boolean newValue The new enabled status of the button.
+     * @param newValue The new enabled status of the button.
      */ 
     public void setNextFinishButtonEnabled(boolean newValue) {
         wizardModel.setNextFinishButtonEnabled(new Boolean(newValue));
@@ -348,7 +348,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 
     /**
      * Mirrors the WizardModel method of the same name.
-     * @param boolean newValue The new enabled status of the button.
+     * @param newValue The new enabled status of the button.
      */ 
     public void setCancelButtonEnabled(boolean newValue) {
         wizardModel.setCancelButtonEnabled(new Boolean(newValue));
@@ -434,17 +434,17 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         informationsField.setEditable(false);
         informationsField.setLineWrap(true);
         informationsField.setRows(3);
-        informationsField.setFont(new Font("Serif", Font.PLAIN,14));
+        informationsField.setFont(new Font("Serif", Font.PLAIN, 14));
         informationsField.setWrapStyleWord(true);
         infoScrollPane.setViewportView(informationsField);
         informationPanel.add(infoScrollPane);
         
-        JPanel button_informationPanel = new JPanel();
-        button_informationPanel.setLayout(new BorderLayout());
-        button_informationPanel.add(buttonPanel, BorderLayout.SOUTH);
-        button_informationPanel.add(informationPanel, BorderLayout.NORTH);
+        JPanel buttonInformationPanel = new JPanel();
+        buttonInformationPanel.setLayout(new BorderLayout());
+        buttonInformationPanel.add(buttonPanel, BorderLayout.SOUTH);
+        buttonInformationPanel.add(informationPanel, BorderLayout.NORTH);
         
-        wizardDialog.getContentPane().add(button_informationPanel, java.awt.BorderLayout.SOUTH);
+        wizardDialog.getContentPane().add(buttonInformationPanel, java.awt.BorderLayout.SOUTH);
         wizardDialog.getContentPane().add(cardPanel, java.awt.BorderLayout.CENTER);
         
         leftPanel = new LeftPanel(0);
@@ -455,7 +455,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
    /**
      * If the user presses the close box on the dialog's window, treat it
      * as a cancel.
-     * @param WindowEvent The event passed in from AWT.
+     * @param e The event passed in from AWT.
      */ 
     
     @Override
@@ -476,7 +476,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 	 * @param i the number of the panel
 	 */
 	public void setLeftPanel(int i) {
-		((LeftPanel)(wizardDialog.getContentPane().getComponent(2))).set(i);
+		((LeftPanel) (wizardDialog.getContentPane().getComponent(2))).set(i);
 		
 		
 	}

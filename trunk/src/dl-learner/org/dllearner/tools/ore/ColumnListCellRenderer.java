@@ -61,11 +61,11 @@ public class ColumnListCellRenderer extends JPanel implements ListCellRenderer {
 		desc.setText(((EvaluatedDescription) value).getDescription().toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
 		//round accuracy to 2 digits
 		double accuracy = ((EvaluatedDescription) value).getAccuracy();
-		BigDecimal roundedAccuracy = new BigDecimal( accuracy * 100 );
-		roundedAccuracy = roundedAccuracy.setScale( 2, BigDecimal.ROUND_HALF_UP );
+		BigDecimal roundedAccuracy = new BigDecimal(accuracy * 100);
+		roundedAccuracy = roundedAccuracy.setScale(2, BigDecimal.ROUND_HALF_UP);
 		cor.setText(roundedAccuracy.toString());
-		add(cor,new GridBagConstraints(0, 0, 1, 1, 0.1, 0.0, GridBagConstraints.LINE_END, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));//, BorderLayout.WEST);
-		add(desc,new GridBagConstraints(1, 0, 1, 1, 0.8, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));//, BorderLayout.EAST);
+		add(cor, new GridBagConstraints(0, 0, 1, 1, 0.1, 0.0, GridBagConstraints.LINE_END, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));//, BorderLayout.WEST);
+		add(desc, new GridBagConstraints(1, 0, 1, 1, 0.8, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));//, BorderLayout.EAST);
 
 		Color background;
 		Color foreground;

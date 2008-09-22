@@ -151,7 +151,7 @@ public class KnowledgeSourcePanel extends JPanel{
 			    .addComponent(sparqlMessage));
 		
 		
-		contentPanel1.setLayout(new GridLayout(0,1));
+		contentPanel1.setLayout(new GridLayout(0, 1));
 		contentPanel1.add(buttonPanel);
 		contentPanel1.add(owlPanel);
 		contentPanel1.add(sparqlPanel);
@@ -177,28 +177,33 @@ public class KnowledgeSourcePanel extends JPanel{
 		
 		filechooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		String choosenPath = fileURL.getText();
-		if(!choosenPath.equals("") && (new File(choosenPath)).exists())
+		if(!choosenPath.equals("") && (new File(choosenPath)).exists()){
 			filechooser.setCurrentDirectory(new File(fileURL.getText()));
+		}
 	
 		filechooser.addChoosableFileFilter(new FileFilter() {
 		    @Override
 			public boolean accept(File f) {
-		      if (f.isDirectory()) return true;
+		      if(f.isDirectory()){ 
+		    	  return true;
+		      }
 		      return f.getName().toLowerCase().endsWith(".owl");
 		    }
 		    @Override
-			public String getDescription () { return "OWLs"; }  
+			public String getDescription(){
+		    	return "OWLs"; 
+		    }  
 		  });
-		int status = filechooser.showOpenDialog( null );
+		int status = filechooser.showOpenDialog(null);
         
-        if ( status == JFileChooser.APPROVE_OPTION ){
+        if (status == JFileChooser.APPROVE_OPTION){
         	String strURL = filechooser.getSelectedFile().getAbsolutePath();
         	fileURL.setText(strURL);
         
             
            
-        }else{
-            System.out.println( "Auswahl abgebrochen" );
+        } else{
+            System.out.println("Auswahl abgebrochen");
         }
 	}
 	

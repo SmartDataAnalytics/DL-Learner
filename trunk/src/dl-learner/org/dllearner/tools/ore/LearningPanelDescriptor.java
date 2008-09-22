@@ -46,8 +46,8 @@ import org.dllearner.core.LearningAlgorithm;
 public class LearningPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener{
     
     public static final String IDENTIFIER = "LEARNING_PANEL";
-    public static final String INFORMATION = "In this panel you can start the learning algorithm. While it ist running, " +
-	 "temporary results are shown in the list above. Select one of them and press Next";
+    public static final String INFORMATION = "In this panel you can start the learning algorithm. While it ist running, " 
+	 										+ "temporary results are shown in the list above. Select one of them and press Next";
     
     private LearningPanel learnPanel;
     private LearnSwingWorker worker;
@@ -105,6 +105,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 
 	/**
 	 * Actions for pressing start- or stop-button.
+	 * @param event
 	 */
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("Start")){
@@ -113,8 +114,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	        learnPanel.getStopButton().setEnabled(true);
 	        worker = new LearnSwingWorker();
 	        worker.execute();
-		}
-		else{
+		} else{
 			
 			learnPanel.getStopButton().setEnabled(false);
 			la.stop();
@@ -177,7 +177,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 */
 	class LearnSwingWorker extends SwingWorker<List<EvaluatedDescription>, List<EvaluatedDescription>> {
 		    	
-    	Thread t;
+    	private Thread t;
     	
 		@SuppressWarnings("unchecked")
 		@Override
@@ -255,7 +255,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			}
 		}
 		
-		void updateList(final List<EvaluatedDescription> result) {
+		private void updateList(final List<EvaluatedDescription> result) {
 			
 			Runnable doUpdateList = new Runnable() {
 				
@@ -275,9 +275,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 			SwingUtilities.invokeLater(doUpdateList);
 
 		}
-		
-
-		
+	
 
 	}
 }

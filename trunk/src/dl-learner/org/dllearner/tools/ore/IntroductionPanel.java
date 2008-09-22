@@ -84,12 +84,12 @@ public class IntroductionPanel extends JPanel {
         instructionsField.setEditable(false);
         instructionsField.setLineWrap(true);
         instructionsField.setRows(5);
-        instructionsField.setFont(new Font("Serif",Font.PLAIN,14));
-        instructionsField.setText("This is an test of a wizard dialog, which allows a knowledge engineer to select " +
-        							"a class of an ontology which should be (re)learned.\n" +
-        							"On the next page, choose a OWL file or a SPARQL-URL, that contains an ontology. After that " +
-        							"you might be able to select a class in the ontology to learn. When the class you selected is learned" +
-        							", you are able to add the axiom to the ontology and after all you might be able to repair if necessary. " );
+        instructionsField.setFont(new Font("Serif", Font.PLAIN, 14));
+        instructionsField.setText("This is an test of a wizard dialog, which allows a knowledge engineer to select " 
+        							+ "a class of an ontology which should be (re)learned.\n" 
+        							+ "On the next page, choose a OWL file or a SPARQL-URL, that contains an ontology. After that " 
+        							+ "you might be able to select a class in the ontology to learn. When the class you selected is learned" 
+        							+ ", you are able to add the axiom to the ontology and after all you might be able to repair if necessary. ");
         instructionsField.setWrapStyleWord(true);
         jScrollPane1.setViewportView(instructionsField);
               
@@ -99,7 +99,7 @@ public class IntroductionPanel extends JPanel {
         welcomeTitle.setText("Welcome to the DL-Learner ORE-Tool!");
         contentPanel1.add(welcomeTitle, java.awt.BorderLayout.NORTH);
         
-        jPanel1.setLayout(new java.awt.GridLayout(0, 1,0,0));
+        jPanel1.setLayout(new java.awt.GridLayout(0, 1, 0, 0));
         jPanel1.add(jScrollPane1);
         contentPanel1.add(jPanel1, java.awt.BorderLayout.CENTER);
         

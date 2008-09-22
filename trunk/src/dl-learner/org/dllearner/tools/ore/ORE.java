@@ -281,7 +281,7 @@ public class ORE {
 	
 	
 	/**
-	 * retrieves description parts that might cause inconsistency - for negative examples only
+	 * Retrieves description parts that might cause inconsistency - for negative examples only.
 	 * @param ind
 	 * @param desc
 	 * @return
@@ -296,18 +296,19 @@ public class ORE {
 			if(children.size() >= 2){
 				
 				if(desc instanceof Intersection){
-					for(Description d: children)
+					for(Description d: children){
 						criticals.addAll(getNegCriticalDescriptions(ind, d));
-				
-				}
-				else if(desc instanceof Union){
-					for(Description d: children)
-						if(owlReasoner.instanceCheck(d, ind))
+					}
+				} else if(desc instanceof Union){
+					for(Description d: children){
+						if(owlReasoner.instanceCheck(d, ind)){
 							criticals.addAll(getNegCriticalDescriptions(ind, d));
+						}
+					}
 				}
-			}
-			else
+			} else{
 				criticals.add(desc);
+			}
 		}
 		
 		return criticals;
@@ -337,36 +338,32 @@ public class ORE {
 						}
 						criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(children.size()-1)));
 						criticals.add(new JLabel(")"));
-					}
-					else if(desc instanceof Union){
+					} else if(desc instanceof Union){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
 							if(fastReasoner.instanceCheck(desc.getChild(i), ind)){
 								criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(i)));
-							}
-							else{
+							} else{
 								criticals.add(new JLabel(desc.getChild(i).toManchesterSyntaxString(baseURI, prefixes)));
 							}
 							criticals.add(new JLabel("or"));
 						}
 						if(fastReasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
 							criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(children.size()-1)));
-						}
-						else{
+						} else{
 							criticals.add(new JLabel(desc.getChild(children.size()-1).toManchesterSyntaxString(baseURI, prefixes)));
 						}
 						criticals.add(new JLabel(")"));
 						
 							
 					}
-				}
-				else{
+				} else{
 					
 					criticals.add(new DescriptionLabel(desc, "neg"));
 				}
-			}
-			else
+			} else{
 				criticals.add(new JLabel(desc.toManchesterSyntaxString(baseURI, prefixes)));
+			}
 		} catch (ReasoningMethodUnsupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -399,36 +396,29 @@ public class ORE {
 						}
 						criticals.addAll(descriptionToJLabelPos(ind, desc.getChild(children.size()-1)));
 						criticals.add(new JLabel(")"));
-					}
-					else if(desc instanceof Intersection){
+					} else if(desc instanceof Intersection){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
 							if(!fastReasoner.instanceCheck(desc.getChild(i), ind)){
 								criticals.addAll(descriptionToJLabelPos(ind, desc.getChild(i)));
-							}
-							else{
+							} else{
 								criticals.add(new JLabel(desc.getChild(i).toManchesterSyntaxString(baseURI, prefixes)));
 							}
 							criticals.add(new JLabel("and"));
 						}
 						if(!fastReasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
 							criticals.addAll(descriptionToJLabelPos(ind, desc.getChild(children.size()-1)));
-						}
-						else{
+						} else{
 							criticals.add(new JLabel(desc.getChild(children.size()-1).toManchesterSyntaxString(baseURI, prefixes)));
 						}
 						criticals.add(new JLabel(")"));
-						
-							
 					}
-				}
-				else{
-					
+				} else{
 					criticals.add(new DescriptionLabel(desc, "pos"));
 				}
-			}
-			else
+			} else{
 				criticals.add(new JLabel(desc.toManchesterSyntaxString(baseURI, prefixes)));
+			}
 		} catch (ReasoningMethodUnsupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -523,7 +513,7 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		owlReasoner = cm.reasoner(OWLAPIReasoner.class,new OWLAPIOntology(modifier.getOntology()));
+		owlReasoner = cm.reasoner(OWLAPIReasoner.class, new OWLAPIOntology(modifier.getOntology()));
 		
 		try {
 			owlReasoner.init();
@@ -552,6 +542,7 @@ public class ORE {
 				}
 			}
 		}
+		System.out.println(complements);
 		
 		return complements;
 	}

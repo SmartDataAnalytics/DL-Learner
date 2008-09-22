@@ -95,7 +95,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 		baseURI = ore.getBaseURI();
 		prefixes = ore.getPrefixes();
 		
-		setText(((Description)desc).toManchesterSyntaxString(ore.getBaseURI(),ore.getPrefixes()));
+		setText(((Description) desc).toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
 		menu = new JPopupMenu();
 		ToolTipManager.sharedInstance().setDismissDelay(7000);
 		//negative example solutions
@@ -103,22 +103,23 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 			if(!(desc instanceof Negation)){
 				if(desc instanceof NamedClass){																//1. description is a named class
 					descriptionLabel = desc.toManchesterSyntaxString(baseURI, prefixes);
-					menu.add(new DescriptionMenuItem(REMOVE_CLASS, descriptionLabel, desc) );              //1.a remove class assertion
+					menu.add(new DescriptionMenuItem(REMOVE_CLASS, descriptionLabel, desc));              //1.a remove class assertion
 					
 					JMenu dme = new JMenu("move class assertion " + descriptionLabel + " to ...");			//1.b move individual
 					for(NamedClass nc : ore.getpossibleClassesMoveTo(ind)){
-						DescriptionMenuItem move = new DescriptionMenuItem(MOVE_TO_CLASS, nc.toManchesterSyntaxString(baseURI, prefixes), (NamedClass)desc);
+						DescriptionMenuItem move = new DescriptionMenuItem(MOVE_TO_CLASS, nc.toManchesterSyntaxString(baseURI, prefixes), (NamedClass) desc);
 						move.setName(nc.toString());
 						dme.add(move);
 						Set<NamedClass> complements = ore.getComplements(nc, ind);							//check for complement error
-						if(!(complements.isEmpty() || (complements.size() == 1 && complements.toArray()[0].toString().equals(desc.toString()))  )   ){
+						if(!(complements.isEmpty() || (complements.size() == 1 && complements.toArray()[0].toString().equals(desc.toString())))){
 							move.setEnabled(false);
 							StringBuffer strBuf = new StringBuffer();
-							strBuf.append("<html>class assertion not possible because individual<br> " +
-										"is still asserted to its complements:<br><BLOCKQUOTE>");
+							strBuf.append("<html>class assertion not possible because individual<br> " 
+										+ "is still asserted to its complements:<br><BLOCKQUOTE>");
 							
-							for(NamedClass n: complements)
+							for(NamedClass n: complements){
 								strBuf.append("<br><b>" + n + "</b>");
+							}
 							strBuf.append("</BLOCKQUOTE></html>");
 	
 						
@@ -126,27 +127,25 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 						}
 					}
 					menu.add(dme);
-				}
-				else if(desc instanceof ObjectSomeRestriction){														//2. description is a object some restriction
-					String propertyName = ((ObjectSomeRestriction)desc).getRole().toString(baseURI, prefixes);
-					String propertyRange = ((ObjectSomeRestriction)desc).getChild(0).toManchesterSyntaxString(baseURI, prefixes);
+				} else if(desc instanceof ObjectSomeRestriction){														//2. description is a object some restriction
+					String propertyName = ((ObjectSomeRestriction) desc).getRole().toString(baseURI, prefixes);
+					String propertyRange = ((ObjectSomeRestriction) desc).getChild(0).toManchesterSyntaxString(baseURI, prefixes);
 					menu.add(new DescriptionMenuItem(DELETE_PROPERTY, propertyName , desc));						//2.a remove all property assertions
-					if (!(desc.getChild(0) instanceof Thing)) 
-						menu.add(new DescriptionMenuItem(REMOVE_RANGE_PROPERTY,propertyRange , desc));				//2.b remove property assertions with objects in range
-					
-				}
-				else if(desc instanceof ObjectAllRestriction){														//3. description is a object all restriction
+					if (!(desc.getChild(0) instanceof Thing)){ 
+						menu.add(new DescriptionMenuItem(REMOVE_RANGE_PROPERTY, propertyRange, desc));				//2.b remove property assertions with objects in range
+					}
+				} else if(desc instanceof ObjectAllRestriction){														//3. description is a object all restriction
 					if (!(desc.getChild(0) instanceof Thing)) {
 						JMenu dme = new JMenu("add property assertion " + ((ObjectAllRestriction) desc).getRole().toKBSyntaxString(baseURI, prefixes)	//3.a add property assertion with object not in range
 								+ " with object ...");
-						for (Individual i : ore.getIndividualsNotInPropertyRange((ObjectAllRestriction) desc, ind))
-							dme.add(new DescriptionMenuItem(ADD_PROPERTY,i.toManchesterSyntaxString(baseURI, prefixes), desc));
-						menu.add(dme);
+						for (Individual i : ore.getIndividualsNotInPropertyRange((ObjectAllRestriction) desc, ind)){
+							dme.add(new DescriptionMenuItem(ADD_PROPERTY, i.toManchesterSyntaxString(baseURI, prefixes), desc));
+						}
+							menu.add(dme);
 					}
 				}
 	
-			}
-			else if(desc instanceof Negation){
+			} else if(desc instanceof Negation){
 				if(desc.getChild(0) instanceof NamedClass){															//4. description is a negated named class
 					DescriptionMenuItem addItem = new DescriptionMenuItem(ADD_CLASS, desc.getChild(0).toManchesterSyntaxString(baseURI, prefixes), desc.getChild(0));
 					menu.add(addItem);																				//4.a add class assertion
@@ -154,11 +153,12 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 					if(!complements.isEmpty()){
 						addItem.setEnabled(false);
 						StringBuffer strBuf = new StringBuffer();
-						strBuf.append("<html>class assertion not possible because individual<br> " +
-									"is still asserted to its complements:<br><BLOCKQUOTE>");
+						strBuf.append("<html>class assertion not possible because individual<br> " 
+									  + "is still asserted to its complements:<br><BLOCKQUOTE>");
 						
-						for(NamedClass n: complements)
+						for(NamedClass n: complements){
 							strBuf.append("<br><b>" + n + "</b>");
+						}
 						strBuf.append("</BLOCKQUOTE></html>");
 
 					
@@ -166,9 +166,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 					}
 				}
 			}
-		}
-		//positive example solutions
-		else if(mode.equals("pos")){
+		} else if(mode.equals("pos")){//positive example solutions
 			if(!(desc instanceof Negation)){
 				if(desc instanceof NamedClass){
 					DescriptionMenuItem add = new DescriptionMenuItem(ADD_CLASS, desc.toManchesterSyntaxString(baseURI, prefixes), desc);
@@ -176,11 +174,12 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 					if(!(complements.isEmpty())){
 						add.setEnabled(false);
 						StringBuffer strBuf = new StringBuffer();
-						strBuf.append("<html>class assertion not possible because individual<br> " +
-									"is still asserted to its complements:<br><BLOCKQUOTE>");
+						strBuf.append("<html>class assertion not possible because individual<br> " 
+									 + "is still asserted to its complements:<br><BLOCKQUOTE>");
 						
-						for(NamedClass n: complements)
+						for(NamedClass n: complements){
 							strBuf.append("<br><b>" + n + "</b>");
+						}
 						strBuf.append("</BLOCKQUOTE></html>");
 
 					
@@ -192,18 +191,19 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 					if(moveClasses.size() > 0){
 						JMenu move = new JMenu("move to " + desc.toManchesterSyntaxString(baseURI, prefixes) + " from ...");
 						for (NamedClass m : moveClasses){System.out.println("hier" + m);
-							DescriptionMenuItem item = new DescriptionMenuItem(MOVE_FROM_CLASS,m.toManchesterSyntaxString(baseURI, prefixes), desc);
+							DescriptionMenuItem item = new DescriptionMenuItem(MOVE_FROM_CLASS, m.toManchesterSyntaxString(baseURI, prefixes), desc);
 							item.setName(m.toString());
 							move.add(item);
 							
 							if(!(complements.isEmpty() || (complements.size() == 1 && complements.toArray()[0].toString().equals(m.toString())))){
 								move.setEnabled(false);
 								StringBuffer strBuf = new StringBuffer();
-								strBuf.append("<html>moving class is not possible because individual<br> " +
-											"is still asserted to its complements:<br><BLOCKQUOTE>");
+								strBuf.append("<html>moving class is not possible because individual<br> "
+											 + "is still asserted to its complements:<br><BLOCKQUOTE>");
 								
-								for(NamedClass n: complements)
+								for(NamedClass n: complements){
 									strBuf.append("<br><b>" + n + "</b>");
+								}
 								strBuf.append("</BLOCKQUOTE></html>");
 		
 							
@@ -215,31 +215,28 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 					}
 					
 					
-				}
-				else if(desc instanceof ObjectSomeRestriction){
+				} else if(desc instanceof ObjectSomeRestriction){
 					JMenu dme = new JMenu("add property assertion " + ((ObjectSomeRestriction) desc).getRole()
 							+ " with object ...");
-					for (Individual i : ore.getIndividualsInPropertyRange((ObjectSomeRestriction) desc, ind))
-						dme.add(new DescriptionMenuItem(ADD_PROPERTY,i.toManchesterSyntaxString(baseURI, prefixes), desc));
-					menu.add(dme);
+					for (Individual i : ore.getIndividualsInPropertyRange((ObjectSomeRestriction) desc, ind)){
+						dme.add(new DescriptionMenuItem(ADD_PROPERTY, i.toManchesterSyntaxString(baseURI, prefixes), desc));
+					}
+						menu.add(dme);
 					
-				}
-				else if(desc instanceof ObjectAllRestriction){
+				} else if(desc instanceof ObjectAllRestriction){
 					if (!(desc.getChild(0) instanceof Thing)) {
-						menu.add(new DescriptionMenuItem(REMOVE_NOT_RANGE_PROPERTY,((ObjectAllRestriction) desc).getChild(0).toString(baseURI, prefixes), desc));
-						menu.add(new DescriptionMenuItem(DELETE_PROPERTY,((ObjectAllRestriction) desc).getRole().toString(baseURI, prefixes), desc));
+						menu.add(new DescriptionMenuItem(REMOVE_NOT_RANGE_PROPERTY, ((ObjectAllRestriction) desc).getChild(0).toString(baseURI, prefixes), desc));
+						menu.add(new DescriptionMenuItem(DELETE_PROPERTY, ((ObjectAllRestriction) desc).getRole().toString(baseURI, prefixes), desc));
 					}
 				}
 					
 				
 			}
 			
-		}
-		
-		else if(desc instanceof Negation){
+		} else if(desc instanceof Negation){
 			if(desc.getChild(0) instanceof NamedClass){
 				descriptionLabel = desc.toManchesterSyntaxString(baseURI, prefixes);
-				menu.add(new DescriptionMenuItem(REMOVE_CLASS, descriptionLabel, desc) );   
+				menu.add(new DescriptionMenuItem(REMOVE_CLASS, descriptionLabel, desc));   
 			}
 		}
 	}
@@ -247,6 +244,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 	
 	/**
 	 * returns actual description.
+	 * @return desc Description
 	 */
 	public Description getDescription(){
 		return desc;
@@ -254,15 +252,17 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 	
 	/**
 	 * adds action listeners to menu items.
-	 * @param aL
+	 * @param aL ActionListener
 	 */
 	public void addActionListeners(ActionListener aL){
 		for(Component c : menu.getComponents()){
-			if(c instanceof DescriptionMenuItem)
-				((DescriptionMenuItem)c).addActionListener(aL);
-			else if(c instanceof JMenu)
-				for( int i = 0; i < ((JMenu)c).getItemCount(); i++)
-					((JMenu)c).getItem(i).addActionListener(aL);
+			if(c instanceof DescriptionMenuItem){
+				((DescriptionMenuItem) c).addActionListener(aL);
+			} else if(c instanceof JMenu){
+				for(int i = 0; i < ((JMenu) c).getItemCount(); i++){
+					((JMenu) c).getItem(i).addActionListener(aL);
+				}
+			}
 				
 			
 		}

@@ -52,10 +52,11 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
     
     @Override
 	public Object getNextPanelDescriptor() {
-    	if(getWizard().getKnowledgeSourceType() == 0)
+    	if(getWizard().getKnowledgeSourceType() == 0){
     		return ClassPanelOWLDescriptor.IDENTIFIER;
-    	else
+    	} else{
     		return ClassPanelSparqlDescriptor.IDENTIFIER;
+    	}
     }
     
     @Override
@@ -72,6 +73,7 @@ public class KnowledgeSourcePanelDescriptor extends WizardPanelDescriptor implem
 
     /**
      * Actions for buttons.
+     * @param e ActionListener
      */
     public void actionPerformed(ActionEvent e) {
     	String cmd = e.getActionCommand();

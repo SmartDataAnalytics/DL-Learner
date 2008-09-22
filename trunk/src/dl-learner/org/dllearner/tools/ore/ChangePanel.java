@@ -42,10 +42,10 @@ public class ChangePanel extends JPanel{
 	private static final long serialVersionUID = -934113184795465461L;
 	
 	/**
-	 * Constructor 	
-	 * @param label
-	 * @param changes
-	 * @param mL
+	 * Constructor. 	
+	 * @param label labelname
+	 * @param changes ontology changes
+	 * @param mL mouse listener
 	 */
 	public ChangePanel(String label, List<OWLOntologyChange> changes, MouseListener mL){
 		super();

@@ -37,6 +37,9 @@ public class ChangesPanel extends JPanel{
 
 	private static final long serialVersionUID = -7538532926820669891L;
 
+	/**
+	 * Constructor.
+	 */
 	public ChangesPanel(){
 		super();
 		setLayout(new GridLayout(0, 1));
@@ -48,7 +51,7 @@ public class ChangesPanel extends JPanel{
 
 	/**
 	 * Refresh the actual panel.
-	 * @param cont
+	 * @param cont gui container for changes
 	 */
 	public void updatePanel(Container cont){
 		remove(cont);

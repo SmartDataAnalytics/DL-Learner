@@ -76,7 +76,7 @@ public class WizardPanelDescriptor {
     }
     
     /**
-     * Sets the panel's component as a class that extends java.awt.Component
+     * Sets the panel's component as a class that extends java.awt.Component.
      * @param panel java.awt.Component which serves as the wizard panel
      */    
     public final void setPanelComponent(Component panel) {

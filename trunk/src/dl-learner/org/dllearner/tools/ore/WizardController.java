@@ -62,13 +62,13 @@ public class WizardController implements ActionListener {
      */    
     public void actionPerformed(java.awt.event.ActionEvent evt) {
         
-        if (evt.getActionCommand().equals(Wizard.CANCEL_BUTTON_ACTION_COMMAND))
+        if (evt.getActionCommand().equals(Wizard.CANCEL_BUTTON_ACTION_COMMAND)){
             cancelButtonPressed();
-        else if (evt.getActionCommand().equals(Wizard.BACK_BUTTON_ACTION_COMMAND))
+        } else if (evt.getActionCommand().equals(Wizard.BACK_BUTTON_ACTION_COMMAND)){
             backButtonPressed();
-        else if (evt.getActionCommand().equals(Wizard.NEXT_BUTTON_ACTION_COMMAND))
+        } else if (evt.getActionCommand().equals(Wizard.NEXT_BUTTON_ACTION_COMMAND)){
             nextButtonPressed();
-        
+        }
     }
     
     
@@ -99,13 +99,13 @@ public class WizardController implements ActionListener {
        
         if(nextPanelDescriptor.equals("LEARNING_PANEL")){
         	ore.init();
-        	LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor));
+        	LearningPanelDescriptor learnDescriptor = ((LearningPanelDescriptor) model.getPanelHashMap().get(nextPanelDescriptor));
         	learnDescriptor.setPanelDefaults();
         	        	
         }
         
-        if( nextPanelDescriptor.equals("REPAIR_PANEL")){
-        	RepairPanelDescriptor repair = ((RepairPanelDescriptor)model.getPanelHashMap().get(nextPanelDescriptor));
+        if(nextPanelDescriptor.equals("REPAIR_PANEL")){
+        	RepairPanelDescriptor repair = ((RepairPanelDescriptor) model.getPanelHashMap().get(nextPanelDescriptor));
         	repair.refreshExampleLists();
         	
 //        	OWLOntologyChange change = model.getOre().getModi().addAxiomToOWL(model.getOre().getConceptToAdd(), model.getOre().getIgnoredConcept());
@@ -113,7 +113,7 @@ public class WizardController implements ActionListener {
 
         }
         
-        if( nextPanelDescriptor.equals("SAVE_PANEL")){
+        if(nextPanelDescriptor.equals("SAVE_PANEL")){
 
         	Description newDesc = model.getOre().getNewClassDescription().getDescription();
         	Description oldClass = model.getOre().getIgnoredConcept();
@@ -152,7 +152,7 @@ public class WizardController implements ActionListener {
         
         
         if(backPanelDescriptor.equals("LEARNING_PANEL")){
-        	RepairPanelDescriptor repairDescriptor = (RepairPanelDescriptor)descriptor;
+        	RepairPanelDescriptor repairDescriptor = (RepairPanelDescriptor) descriptor;
         	if(repairDescriptor.getOntologyChanges().size() > 0){
 	        	if (JOptionPane.showConfirmDialog(wizard.getDialog(),
 				        "All changes will be lost!", "Warning!", 
@@ -164,17 +164,15 @@ public class WizardController implements ActionListener {
 					wizard.setCurrentPanel(backPanelDescriptor);
 			        refreshLeftPanel(backPanelDescriptor);
 				}
-        	}
-        	else{
+        	} else{
         		wizard.setCurrentPanel(backPanelDescriptor);
 		        refreshLeftPanel(backPanelDescriptor);
         	}
         	
         	
         	
-        }
-        else if(backPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
-        	LearningPanelDescriptor learnDescriptor = (LearningPanelDescriptor)descriptor;
+        } else if(backPanelDescriptor.equals("CLASS_CHOOSE_OWL_PANEL")){
+        	LearningPanelDescriptor learnDescriptor = (LearningPanelDescriptor) descriptor;
         	if(learnDescriptor.getLa() != null){
         		learnDescriptor.getLa().stop();
         		learnDescriptor.getTimer().cancel();
@@ -235,19 +233,19 @@ public class WizardController implements ActionListener {
         model.setBackButtonText(Wizard.BACK_TEXT);
 
         
-        if (descriptor.getBackPanelDescriptor() != null)
+        if (descriptor.getBackPanelDescriptor() != null){
             model.setBackButtonEnabled(Boolean.TRUE);
-        else
+        } else{
             model.setBackButtonEnabled(Boolean.FALSE);
-
+        }
         //  If the panel in question has one or more panels in front of it,
         //  enable the next button. Otherwise, disable it.
  
-        if (descriptor.getNextPanelDescriptor() != null)
+        if (descriptor.getNextPanelDescriptor() != null){
             model.setNextFinishButtonEnabled(Boolean.TRUE);
-        else
+        } else{
             model.setNextFinishButtonEnabled(Boolean.FALSE);
- 
+        }
         //  If the panel in question is the last panel in the series, change
         //  the Next button to Finish. Otherwise, set the text back to Next.
         

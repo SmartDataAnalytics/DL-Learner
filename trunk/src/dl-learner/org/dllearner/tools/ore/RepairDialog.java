@@ -76,8 +76,8 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 	
 	private StatsPanel statsPanel;
 	private DescriptionPanel descPanel;
-	private JPanel ok_cancelPanel;
-	private JPanel action_stats_Panel;
+	private JPanel okCancelPanel;
+	private JPanel actionStatsPanel;
 	
 	private ChangesPanel changesPanel;
 	private JScrollPane changesScroll;
@@ -103,7 +103,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 		    public void windowClosing(WindowEvent we) {
-		    	if(allChanges.size() > 0 ){
+		    	if(allChanges.size() > 0){
 					if (JOptionPane.showConfirmDialog(dialogd,
 					        "All changes will be lost!", "Warning!", 
 					        JOptionPane.YES_NO_OPTION)
@@ -116,8 +116,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 						setVisible(false);
 						dispose();
 					}
-				}
-				else{
+				} else{
 					returncode = CANCEL_RETURN_CODE;
 					setVisible(false);
 					dispose();
@@ -143,10 +142,11 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 	public int showDialog(){
 		baseURI = ore.getBaseURI();
 		prefixes = ore.getPrefixes();
-		if(mode.equals("neg"))
+		if(mode.equals("neg")){
 			this.setTitle("Repair negative example");
-		else if(mode.equals("pos"))
+		} else if(mode.equals("pos")){
 			this.setTitle("Repair positive example");
+		}
 		this.setSize(700, 700);
 		this.setLayout(new BorderLayout());
 		
@@ -164,43 +164,43 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 		changesScroll = new JScrollPane();
 		changesScroll.setViewportView(changesPanel);
 		
-	    action_stats_Panel = new JPanel();
+	    actionStatsPanel = new JPanel();
 		
 		GridBagLayout gbl = new GridBagLayout();
 		gbl.rowWeights = new double[] {0.0, 0.1, 0.1};
 		gbl.rowHeights = new int[] {64, 7, 7};
 		gbl.columnWeights = new double[] {0.1};
 		gbl.columnWidths = new int[] {7};
-		action_stats_Panel.setLayout(gbl);
+		actionStatsPanel.setLayout(gbl);
 		
 		
-		action_stats_Panel.add(descScroll, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
-		action_stats_Panel.add(statsScroll, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
-		action_stats_Panel.add(changesScroll, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
+		actionStatsPanel.add(descScroll, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+		actionStatsPanel.add(statsScroll, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
+		actionStatsPanel.add(changesScroll, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
 		
 		
 		JSeparator separator = new JSeparator();
 		Box buttonBox = new Box(BoxLayout.X_AXIS);
 		
-		ok_cancelPanel = new JPanel();
-		ok_cancelPanel.setLayout(new BorderLayout());
-		ok_cancelPanel.add(separator, BorderLayout.NORTH);
+		okCancelPanel = new JPanel();
+		okCancelPanel.setLayout(new BorderLayout());
+		okCancelPanel.add(separator, BorderLayout.NORTH);
 		okButton = new JButton("Ok");
 		okButton.addActionListener(this);
 		cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(this);
 		
        
-        getContentPane().add(action_stats_Panel, java.awt.BorderLayout.CENTER);
+        getContentPane().add(actionStatsPanel, java.awt.BorderLayout.CENTER);
 		
 		
         buttonBox.setBorder(new EmptyBorder(new Insets(5, 10, 5, 10)));       
         buttonBox.add(okButton);
         buttonBox.add(Box.createHorizontalStrut(10));
         buttonBox.add(cancelButton);
-		ok_cancelPanel.add(buttonBox, BorderLayout.EAST);
+		okCancelPanel.add(buttonBox, BorderLayout.EAST);
         
-		getContentPane().add(ok_cancelPanel, BorderLayout.SOUTH);
+		getContentPane().add(okCancelPanel, BorderLayout.SOUTH);
 		
 		
 		this.setModal(true);
@@ -216,24 +216,23 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 	public void actionPerformed(ActionEvent e) {
 		
 		if(e.getSource() instanceof DescriptionMenuItem){
-			DescriptionMenuItem item =(DescriptionMenuItem)e.getSource();
+			DescriptionMenuItem item =(DescriptionMenuItem) e.getSource();
 			actualDesc = item.getDescription();
 			int action = item.getActionID();
 			if(action == 4){
 				Individual obj = new Individual(e.getActionCommand());
 				
-				List<OWLOntologyChange> changes  = modifier.addObjectProperty(ind, (ObjectQuantorRestriction)actualDesc, obj);
+				List<OWLOntologyChange> changes  = modifier.addObjectProperty(ind, (ObjectQuantorRestriction) actualDesc, obj);
 				allChanges.addAll(changes);
 				
 				descPanel.updatePanel();
 				
 				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("added property assertion " + ((ObjectQuantorRestriction)actualDesc).getRole().toKBSyntaxString(baseURI, prefixes) 
+				changesPanel.add(new ChangePanel("added property assertion " + ((ObjectQuantorRestriction) actualDesc).getRole().toKBSyntaxString(baseURI, prefixes) 
 													+ " to " + obj.toManchesterSyntaxString(baseURI, prefixes), changes, this));
 				changesScroll.updateUI();
-			}
-			else if(action == 5){
-				ObjectQuantorRestriction property = (ObjectQuantorRestriction)actualDesc;
+			} else if(action == 5){
+				ObjectQuantorRestriction property = (ObjectQuantorRestriction) actualDesc;
 				List<OWLOntologyChange> changes = null;
 				for(Individual i : ore.getIndividualsInPropertyRange(property, ind)){
 					changes = modifier.removeObjectPropertyAssertion(ind, property, i);
@@ -242,47 +241,42 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 				
 				descPanel.updatePanel();
 				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("removed property assertions " + 
-												((ObjectSomeRestriction)actualDesc).getRole().toKBSyntaxString(baseURI, prefixes) + 
-												" to range " + ((ObjectSomeRestriction)actualDesc).getChild(0).toManchesterSyntaxString(baseURI, prefixes), changes, this));
+				changesPanel.add(new ChangePanel("removed property assertions "  
+												+ ((ObjectSomeRestriction) actualDesc).getRole().toKBSyntaxString(baseURI, prefixes)  
+												+ " to range " + ((ObjectSomeRestriction) actualDesc).getChild(0).toManchesterSyntaxString(baseURI, prefixes), changes, this));
 				changesScroll.updateUI();
-			}
-			else if(action == 6){
-				List<OWLOntologyChange> changes = modifier.deleteObjectProperty(ind, (ObjectQuantorRestriction)actualDesc);
+			} else if(action == 6){
+				List<OWLOntologyChange> changes = modifier.deleteObjectProperty(ind, (ObjectQuantorRestriction) actualDesc);
 				allChanges.addAll(changes);
 				descPanel.updatePanel();
 				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("deleted property " + ((ObjectQuantorRestriction)actualDesc).getRole().toKBSyntaxString(baseURI, prefixes), changes, this));
+				changesPanel.add(new ChangePanel("deleted property " + ((ObjectQuantorRestriction) actualDesc).getRole().toKBSyntaxString(baseURI, prefixes), changes, this));
 				changesScroll.updateUI();
-			}
-			else if(action == 0){
+			} else if(action == 0){
 				newDesc = new NamedClass(item.getName());
 				List<OWLOntologyChange> changes  = modifier.moveIndividual(ind, actualDesc, newDesc);
 				allChanges.addAll(changes);
 				descPanel.updatePanel();
 				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("moved class assertion from " + actualDesc.toManchesterSyntaxString(baseURI, prefixes) + 
-												" to " + newDesc.toManchesterSyntaxString(baseURI, prefixes), changes, this));
+				changesPanel.add(new ChangePanel("moved class assertion from " + actualDesc.toManchesterSyntaxString(baseURI, prefixes)  
+												+ " to " + newDesc.toManchesterSyntaxString(baseURI, prefixes), changes, this));
 				changesScroll.updateUI();
-			}
-			else if(action == 3){
+			} else if(action == 3){
 				List<OWLOntologyChange> changes  = modifier.removeClassAssertion(ind, actualDesc);
 				allChanges.addAll(changes);
 				descPanel.updatePanel();
 				statsPanel.updatePanel();
 				changesPanel.add(new ChangePanel("removed class assertion to " + actualDesc.toManchesterSyntaxString(baseURI, prefixes), changes, this));
 				changesScroll.updateUI();
-			}
-			else if(action == 2){
+			} else if(action == 2){
 				List<OWLOntologyChange> changes  = modifier.addClassAssertion(ind, actualDesc);
 				allChanges.addAll(changes);
 				descPanel.updatePanel();
 				statsPanel.updatePanel();
 				changesPanel.add(new ChangePanel("added class assertion to " + actualDesc.toManchesterSyntaxString(baseURI, prefixes), changes, this));
 				changesScroll.updateUI();
-			}
-			else if(action == 7){
-				ObjectQuantorRestriction property = (ObjectQuantorRestriction)actualDesc;
+			} else if(action == 7){
+				ObjectQuantorRestriction property = (ObjectQuantorRestriction) actualDesc;
 				List<OWLOntologyChange> changes = null;
 				for(Individual i : ore.getIndividualsNotInPropertyRange(property, ind)){
 					changes = modifier.removeObjectPropertyAssertion(ind, property, i);
@@ -292,39 +286,30 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 				
 				descPanel.updatePanel();
 				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("removed property assertion " + property.getRole().toKBSyntaxString(baseURI, prefixes) + 
-										" to " + ind.toManchesterSyntaxString(baseURI, prefixes), changes, this));
+				changesPanel.add(new ChangePanel("removed property assertion " + property.getRole().toKBSyntaxString(baseURI, prefixes) 
+										       + " to " + ind.toManchesterSyntaxString(baseURI, prefixes), changes, this));
 				changesScroll.updateUI();
-			}
-			else if(action == 1){
+			} else if(action == 1){
 				Description oldDesc = new NamedClass(item.getName());
 				List<OWLOntologyChange> changes  = modifier.moveIndividual(ind, oldDesc, actualDesc);
 				allChanges.addAll(changes);
 				descPanel.updatePanel();
 				statsPanel.updatePanel();
-				changesPanel.add(new ChangePanel("moved class assertion from " + oldDesc.toManchesterSyntaxString(baseURI, prefixes) +
-												" to " + actualDesc.toManchesterSyntaxString(baseURI, prefixes), changes, this));
+				changesPanel.add(new ChangePanel("moved class assertion from " + oldDesc.toManchesterSyntaxString(baseURI, prefixes) 
+												+ " to " + actualDesc.toManchesterSyntaxString(baseURI, prefixes), changes, this));
 				changesScroll.updateUI();
 			}
-		}
-			
-			
-
-		
-		
-		else if(e.getActionCommand().equals("Ok")){
+		} else if(e.getActionCommand().equals("Ok")){
 			if(descPanel.isCorrect()){
 				returncode = VALID_RETURN_CODE;
-			}
-			else{
+			} else{
 				returncode = OK_RETURN_CODE;
 			}
 			ore.updateReasoner();
 			setVisible(false);
 			dispose();
-		}
-		else if(e.getActionCommand().equals("Cancel")){
-			if(allChanges.size() > 0 ){
+		} else if(e.getActionCommand().equals("Cancel")){
+			if(allChanges.size() > 0){
 				if (JOptionPane.showConfirmDialog(this,
 				        "All changes will be lost!", "Warning!", 
 				        JOptionPane.YES_NO_OPTION)
@@ -337,8 +322,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 					setVisible(false);
 					dispose();
 				}
-			}
-			else{
+			} else{
 				returncode = CANCEL_RETURN_CODE;
 				setVisible(false);
 				dispose();
@@ -352,12 +336,12 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 
 	public void mouseClicked(MouseEvent e) {
 		if(e.getSource() instanceof UndoLabel){
-			List<OWLOntologyChange> changes = ((UndoLabel)e.getSource()).getChanges();
+			List<OWLOntologyChange> changes = ((UndoLabel) e.getSource()).getChanges();
 			modifier.undoChanges(changes);
 			allChanges.removeAll(changes);
 			descPanel.updatePanel();
 			statsPanel.updatePanel();
-			changesPanel.updatePanel(((UndoLabel)e.getSource()).getParent());
+			changesPanel.updatePanel(((UndoLabel) e.getSource()).getParent());
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			
 		}
@@ -365,7 +349,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 
 	public void mouseEntered(MouseEvent e) {
 		if(e.getSource() instanceof UndoLabel){
-			((UndoLabel)e.getSource()).setText("<html><u>Undo</u></html>");
+			((UndoLabel) e.getSource()).setText("<html><u>Undo</u></html>");
 			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		}
 		
@@ -373,7 +357,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 
 	public void mouseExited(MouseEvent e) {
 		if(e.getSource() instanceof UndoLabel){
-			((UndoLabel)e.getSource()).setText("Undo");
+			((UndoLabel) e.getSource()).setText("Undo");
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 		
