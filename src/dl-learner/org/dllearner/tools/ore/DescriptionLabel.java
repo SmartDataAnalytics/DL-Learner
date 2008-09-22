@@ -74,7 +74,7 @@ public class DescriptionLabel extends JLabel implements MouseListener{
 	private Map<String, String> prefixes;
 
 	/**
-	 * constructor
+	 * constructor.
 	 * 
 	 * @param d
 	 * @param mode

@@ -532,6 +532,7 @@ public class ORE {
 	 * @return
 	 */
 	public Set<NamedClass> getComplements(Description desc, Individual ind){
+//		System.out.println("----------------" + desc + "---------------");
 		Set<NamedClass> complements = new HashSet<NamedClass>();
 		for(NamedClass nc : owlReasoner.getAtomicConcepts()){
 			if(!(nc.toString().endsWith("Thing"))){
@@ -542,7 +543,7 @@ public class ORE {
 				}
 			}
 		}
-		System.out.println(complements);
+//		System.out.println("Disjunkt sind: " + complements);
 		
 		return complements;
 	}
