@@ -38,13 +38,17 @@ public class LeftPanel extends JPanel{
 	private static final long serialVersionUID = -1205252523136710091L;
 	private JLabel[] jLabel;
 	
+	/**
+	 * Constructor instantiating JLabels with wizard step names.
+	 * @param i step number printed bold
+	 */
 	public LeftPanel(int i){
 		
 		jLabel = new JLabel[6];
 		setBackground(new java.awt.Color(255, 255, 255));
     	JPanel panel2 = new JPanel();
     	panel2.setBackground(new java.awt.Color(255, 255, 255));
-    	panel2.setLayout(new GridLayout(5,1,0,10));
+    	panel2.setLayout(new GridLayout(5, 1, 0, 10));
     	jLabel[0] = new JLabel("1. Introduction");
 		jLabel[1] = new JLabel("2. Knowledge Source");
 		jLabel[2] = new JLabel("3. Choose Class");
@@ -53,10 +57,11 @@ public class LeftPanel extends JPanel{
 		jLabel[5] = new JLabel("6. Save/Exit");
 		jLabel[i].setFont(jLabel[i].getFont().deriveFont(Font.BOLD));
 		
-		for(JLabel current : jLabel)
-			panel2.add(current);		
+		for(JLabel current : jLabel){
+			panel2.add(current);
+		}
 		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(140,500));
+		setPreferredSize(new Dimension(140, 500));
 		add(panel2, BorderLayout.NORTH);
 		
 	}
@@ -71,7 +76,7 @@ public class LeftPanel extends JPanel{
 		setBackground(new java.awt.Color(255, 255, 255));
     	JPanel panel2 = new JPanel();
     	panel2.setBackground(new java.awt.Color(255, 255, 255));
-    	panel2.setLayout(new GridLayout(6,1,0,10));
+    	panel2.setLayout(new GridLayout(6, 1, 0, 10));
     	jLabel[0] = new JLabel("1. Introduction");
 		jLabel[1] = new JLabel("2. Knowledge Source");
 		jLabel[2] = new JLabel("3. Choose Class");
@@ -81,8 +86,9 @@ public class LeftPanel extends JPanel{
 		
 		jLabel[i].setFont(jLabel[i].getFont().deriveFont(Font.BOLD));
 		
-		for(JLabel current : jLabel)
-			panel2.add(current);		
+		for(JLabel current : jLabel){
+			panel2.add(current);
+		}
 		setLayout(new BorderLayout());
 		add(panel2, BorderLayout.NORTH);
 	}

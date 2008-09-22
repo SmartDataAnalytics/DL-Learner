@@ -21,7 +21,7 @@
 package org.dllearner.tools.ore;
 
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+
 
 import org.dllearner.core.owl.NamedClass;
 
@@ -33,14 +33,23 @@ import org.dllearner.core.owl.NamedClass;
  * @author Lorenz Buehmann
  *
  */
-public class ClassPanelOWLDescriptor extends WizardPanelDescriptor implements ListSelectionListener{
+public class ClassPanelOWLDescriptor extends WizardPanelDescriptor implements javax.swing.event.ListSelectionListener{
     
+	/**
+	 * Identification string for class choose panel.
+	 */
     public static final String IDENTIFIER = "CLASS_CHOOSE_OWL_PANEL";
-    public static final String INFORMATION = "In this panel all atomic classes in the ontology are shown in the list above. " +
-    										 "Select one of them which should be (re)learned from, then press \"Next-Button\"";
+    /**
+     * Information string for class choose panel.
+     */
+    public static final String INFORMATION = "In this panel all atomic classes in the ontology are shown in the list above. " 
+    										 + "Select one of them which should be (re)learned from, then press \"Next-Button\"";
     
     private ClassPanelOWL owlClassPanel;
     
+    /**
+     * Constructor creates new panel and adds listener to list.
+     */
     public ClassPanelOWLDescriptor() {
         owlClassPanel = new ClassPanelOWL();
         owlClassPanel.addSelectionListener(this);
@@ -66,12 +75,15 @@ public class ClassPanelOWLDescriptor extends WizardPanelDescriptor implements Li
         setNextButtonAccordingToConceptSelected();
     }
     
-  
+    /**
+     * Method is called when other element in list is selected, and sets next button enabled.
+     * @param e ListSelectionEvent
+     */
 	public void valueChanged(ListSelectionEvent e) {
 		setNextButtonAccordingToConceptSelected(); 
-		if (!e.getValueIsAdjusting()) 
-			 getWizardModel().getOre().setClassToLearn((NamedClass)owlClassPanel.getList().getSelectedValue());
-			
+		if (!e.getValueIsAdjusting()) {
+			 getWizardModel().getOre().setClassToLearn((NamedClass) owlClassPanel.getList().getSelectedValue());
+		}
 	}
 	
 	private void setNextButtonAccordingToConceptSelected() {
@@ -83,7 +95,11 @@ public class ClassPanelOWLDescriptor extends WizardPanelDescriptor implements Li
     	}
    
     }
-
+	
+	/**
+	 * Returns the JPanel with the GUI elements.
+	 * @return extended JPanel
+	 */
 	public ClassPanelOWL getOwlClassPanel() {
 		return owlClassPanel;
 	}

@@ -80,10 +80,10 @@ public class Main {
         WizardPanelDescriptor descriptor7 = new SavePanelDescriptor();
         wizard.registerWizardPanel(SavePanelDescriptor.IDENTIFIER, descriptor7);
         
-        if ( !(args.length == 1)){
+        if (!(args.length == 1)){
         	 wizard.setCurrentPanel(IntroductionPanelDescriptor.IDENTIFIER);
-        }else{
-        	((KnowledgeSourcePanelDescriptor)descriptor2).getPanel().setFileURL(args[0]); 
+        } else{
+        	((KnowledgeSourcePanelDescriptor) descriptor2).getPanel().setFileURL(args[0]); 
         	wizard.setCurrentPanel(KnowledgeSourcePanelDescriptor.IDENTIFIER);
         	wizard.setLeftPanel(1);
         	 

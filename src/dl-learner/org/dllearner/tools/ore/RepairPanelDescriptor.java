@@ -45,8 +45,8 @@ import org.semanticweb.owl.model.OWLOntologyChange;
 public class RepairPanelDescriptor extends WizardPanelDescriptor implements ActionListener, ListSelectionListener, MouseListener{
     
     public static final String IDENTIFIER = "REPAIR_PANEL";
-    public static final String INFORMATION = "In this panel all positive and negative examples, that cause failures are shown in the list above. " +
-	 "Select one of them and choose action to solve problem by press one of buttons aside the list.";
+    public static final String INFORMATION = "In this panel all positive and negative examples, that cause failures are shown in the list above. " 
+	 										+ "Select one of them and choose action to solve problem by press one of buttons aside the list.";
     
     private RepairPanel repairPanel;
     private Set<OWLOntologyChange> ontologyChanges;
@@ -113,52 +113,45 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 	public void actionPerformed(ActionEvent event) {
 //		ore = getWizardModel().getOre();
         modi = ore.getModifier();       
-		String actionName = ((JButton)event.getSource()).getName();
-		String actionType = ((JButton)event.getSource()).getParent().getName();
+		String actionName = ((JButton) event.getSource()).getName();
+		String actionType = ((JButton) event.getSource()).getParent().getName();
 		
 		if(actionType.equals("negative")){
-			Individual ind = (Individual)repairPanel.getNegFailureList().getSelectedValue();
+			Individual ind = (Individual) repairPanel.getNegFailureList().getSelectedValue();
 				if(actionName.equals("negRepair")){
 					RepairDialog negDialog = new RepairDialog(ind, getWizard().getDialog(), ore, "neg");
 					int returncode = negDialog.showDialog();
 					if(returncode == 2){
 						ontologyChanges.addAll(negDialog.getAllChanges());
-					}
-					else if(returncode == 3){
+					} else if(returncode == 3){
 						ontologyChanges.addAll(negDialog.getAllChanges());
 						repairPanel.getNegFailureModel().removeElement(ind);
 					}
-				}
-				else if(actionName.equals("negAdd")){
+				} else if(actionName.equals("negAdd")){
 					ontologyChanges.addAll(modi.addClassAssertion(ind, ore.getIgnoredConcept()));
 					repairPanel.getNegFailureModel().removeElement(ind);
 					
-				}
-				else if(actionName.equals("negDelete")){
+				} else if(actionName.equals("negDelete")){
 					ontologyChanges.addAll(modi.deleteIndividual(ind));
 					repairPanel.getNegFailureModel().removeElement(ind);
 				
 				}
-		}
-		else if(actionType.equals("positive")){
-			Individual ind = (Individual)repairPanel.getPosFailureList().getSelectedValue();
+		} else if(actionType.equals("positive")){
+			Individual ind = (Individual) repairPanel.getPosFailureList().getSelectedValue();
 			if(actionName.equals("posRepair")){
 				RepairDialog posDialog = new RepairDialog(ind, getWizard().getDialog(), ore, "pos");
 				int returncode = posDialog.showDialog();
 				if(returncode == 2){
 					ontologyChanges.addAll(posDialog.getAllChanges());
-				}
-				else if(returncode == 3){
+				} else if(returncode == 3){
 					ontologyChanges.addAll(posDialog.getAllChanges());
 					repairPanel.getPosFailureModel().removeElement(ind);
 				}
-			}
-			else if(actionName.equals("posRemove")){
+			} else if(actionName.equals("posRemove")){
 				ontologyChanges.addAll(modi.addClassAssertion(ind, ore.getIgnoredConcept()));
 				repairPanel.getPosFailureModel().removeElement(ind);
 				
-			}
-			else if(actionName.equals("posDelete")){
+			} else if(actionName.equals("posDelete")){
 				ontologyChanges.addAll(modi.deleteIndividual(ind));
 				repairPanel.getPosFailureModel().removeElement(ind);
 				
@@ -174,28 +167,25 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 	public void mouseClicked(MouseEvent e) {
 		
 		if(e.getClickCount() == 2){
-			if(e.getSource() == repairPanel.getNegFailureList() ){
-				Individual ind = (Individual)repairPanel.getNegFailureList().getSelectedValue();
+			if(e.getSource() == repairPanel.getNegFailureList()){
+				Individual ind = (Individual) repairPanel.getNegFailureList().getSelectedValue();
 				RepairDialog negDialog = new RepairDialog(ind, getWizard().getDialog(), getWizardModel().getOre(), "neg");
 				int returncode = negDialog.showDialog();
 				if(returncode == 2){
 					ontologyChanges.addAll(negDialog.getAllChanges());
 					
-				}
-				else if(returncode == 3){
+				} else if(returncode == 3){
 					ontologyChanges.addAll(negDialog.getAllChanges());
 					repairPanel.getNegFailureModel().removeElement(ind);
 				}
-			}
-			else if(e.getSource() == repairPanel.getPosFailureList()){
-				Individual ind = (Individual)repairPanel.getPosFailureList().getSelectedValue();
+			} else if(e.getSource() == repairPanel.getPosFailureList()){
+				Individual ind = (Individual) repairPanel.getPosFailureList().getSelectedValue();
 				RepairDialog posDialog = new RepairDialog(ind, getWizard().getDialog(), getWizardModel().getOre(), "pos");
 				int returncode = posDialog.showDialog();
 				if(returncode == 2){
 					ontologyChanges.addAll(posDialog.getAllChanges());
 					
-				}
-				else if(returncode == 3){
+				} else if(returncode == 3){
 					ontologyChanges.addAll(posDialog.getAllChanges());
 					repairPanel.getPosFailureModel().removeElement(ind);
 				}
@@ -203,21 +193,21 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 		}
 		
 	}
-
+	@Override
 	public void mouseEntered(MouseEvent e) {
 				
 	}
-
+	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		

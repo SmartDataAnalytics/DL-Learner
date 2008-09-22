@@ -41,22 +41,23 @@ public class DescriptionMenuItem extends JMenuItem {
 	
 	public DescriptionMenuItem(int action, String text, Description d){
 		super();
-		if(action == 3)
+		if(action == 3){
 			setText("remove class assertion to " + text);
-		else if(action == 0)
+		} else if(action == 0){
 			setText(text);
-		else if(action == 2)
+		} else if(action == 2){
 			setText("add class assertion to " + text);
-		else if(action == 4)
+		} else if(action == 4){
 			setText(text);
-		else if(action == 6)
+		} else if(action == 6){
 			setText("delete complete property " + text);
-		else if(action == 5)
+		}else if(action == 5){
 			setText("remove all property assertions to " + text);
-		else if(action == 7)
+		} else if(action == 7){
 			setText("remove all property assertions with range not in " + text);
-		else if(action == 1)
+		} else if(action == 1){
 			setText(text);
+		}
 		
 		this.desc = d;
 		this.action = action;

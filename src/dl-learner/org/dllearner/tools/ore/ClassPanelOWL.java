@@ -53,6 +53,9 @@ public class ClassPanelOWL extends JPanel{
 	private JXBusyLabel loadingLabel;	
 	private JLabel statusLabel;
 	
+	/**
+	 * Constructor.
+	 */
 	@SuppressWarnings("unchecked")
 	public ClassPanelOWL() {
 		
@@ -102,25 +105,43 @@ public class ClassPanelOWL extends JPanel{
 		return contentPanel1;
 	}
 	
+	/**
+	 * Returns list model for owl-classes.
+	 * @return the list model
+	 */
 	public DefaultListModel getModel(){
 		return model;
 	}
 	
 	
-	
+	/**
+	 * Adds list selection listener to atomic classes list.
+	 * @param l the default list selection listener
+	 */
 	public void addSelectionListener(ListSelectionListener l){
 		conceptList.addListSelectionListener(l);
 	}
-          
+        
+	/**
+	 * Returns the list where atomic owl classes are the list elements.
+	 * @return instance of JList
+	 */
     public JList getList(){
     	return conceptList;
     }
     
-   
+    /**
+     * Returns the label which reports the loading status.
+     * @return instance of JLabel
+     */
 	public JLabel getStatusLabel() {
 		return statusLabel;
 	}
 
+	/**
+	 * Returns the animated label for loading action.
+	 * @return instance of JXBusyLabel
+	 */
 	public JXBusyLabel getLoadingLabel() {
 		return loadingLabel;
 	}

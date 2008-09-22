@@ -66,22 +66,21 @@ public class DescriptionPanel extends JPanel{
 				add(jL);
 				if(jL instanceof DescriptionLabel){
 					
-					((DescriptionLabel)jL).setIndOre(ore, ind);
-					((DescriptionLabel)jL).init();
-					((DescriptionLabel)jL).addActionListeners(aL);
+					((DescriptionLabel) jL).setIndOre(ore, ind);
+					((DescriptionLabel) jL).init();
+					((DescriptionLabel) jL).addActionListeners(aL);
 					
 				}
 				
 			}
-		}
-		else if(mode.equals("pos")){
+		} else if(mode.equals("pos")){
 			for(JLabel jL : ore.descriptionToJLabelPos(ind, newClassDescription)){
 				add(jL);
 				if(jL instanceof DescriptionLabel){
 					
-					((DescriptionLabel)jL).setIndOre(ore, ind);
-					((DescriptionLabel)jL).init();
-					((DescriptionLabel)jL).addActionListeners(aL);
+					((DescriptionLabel) jL).setIndOre(ore, ind);
+					((DescriptionLabel) jL).init();
+					((DescriptionLabel) jL).addActionListeners(aL);
 					
 				}
 				
@@ -93,10 +92,11 @@ public class DescriptionPanel extends JPanel{
 	 * Updates the panel.
 	 */
 	public void updatePanel(){
-		for(Component c : getComponents())
-			if(c instanceof JLabel)
+		for(Component c : getComponents()){
+			if(c instanceof JLabel){
 				remove(c);
-		
+			}
+		}
 		ore.updateReasoner();
 		correct = true;
 		if (mode.equals("neg")) {
@@ -110,8 +110,7 @@ public class DescriptionPanel extends JPanel{
 
 				}
 			}
-		}
-		else if(mode.equals("pos")){
+		} else if(mode.equals("pos")){
 			for (JLabel jL : ore.descriptionToJLabelPos(ind, newClassDescription)) {
 				add(jL);
 				if (jL instanceof DescriptionLabel) {

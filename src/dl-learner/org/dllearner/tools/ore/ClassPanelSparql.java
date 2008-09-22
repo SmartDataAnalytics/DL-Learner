@@ -56,15 +56,15 @@ public class ClassPanelSparql extends JPanel{
 		
 		statusLabel = new JLabel();
 		
-		loadingLabel = new JXBusyLabel(new Dimension(15,15));
+		loadingLabel = new JXBusyLabel(new Dimension(15, 15));
 		BusyPainter painter = new BusyPainter(
-		new RoundRectangle2D.Float(0, 0,6.0f,2.6f,10.0f,10.0f),
-		new Ellipse2D.Float(2.0f,2.0f,11.0f,11.0f));
+		new RoundRectangle2D.Float(0, 0, 6.0f, 2.6f, 10.0f, 10.0f),
+		new Ellipse2D.Float(2.0f, 2.0f, 11.0f, 11.0f));
 		painter.setTrailLength(2);
 		painter.setPoints(7);
 		painter.setFrame(-1);
-		loadingLabel.setPreferredSize(new Dimension(15,15));
-		loadingLabel.setIcon(new EmptyIcon(15,15));
+		loadingLabel.setPreferredSize(new Dimension(15, 15));
+		loadingLabel.setIcon(new EmptyIcon(15, 15));
 		loadingLabel.setBusyPainter(painter);
 
 				
@@ -74,7 +74,7 @@ public class ClassPanelSparql extends JPanel{
 				
 		contentPanel = getContentPanel();
 		setLayout(new java.awt.BorderLayout());
-		add(contentPanel,BorderLayout.CENTER);
+		add(contentPanel, BorderLayout.CENTER);
 		add(labelPanel, BorderLayout.SOUTH);
 	}
 

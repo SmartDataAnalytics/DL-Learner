@@ -41,32 +41,32 @@ public class WizardModel {
     public static final String CURRENT_PANEL_DESCRIPTOR_PROPERTY = "currentPanelDescriptorProperty";
     
     /**
-     * Property identification String for the Back button's text
+     * Property identification String for the Back button's text.
      */    
     public static final String BACK_BUTTON_TEXT_PROPERTY = "backButtonTextProperty";
     
     /**
-     * Property identification String for the Back button's enabled state
+     * Property identification String for the Back button's enabled state.
      */    
     public static final String BACK_BUTTON_ENABLED_PROPERTY = "backButtonEnabledProperty";
 
     /**
-     * Property identification String for the Next button's text
+     * Property identification String for the Next button's text.
      */    
     public static final String NEXT_FINISH_BUTTON_TEXT_PROPERTY = "nextButtonTextProperty";
 
     /**
-     * Property identification String for the Next button's enabled state
+     * Property identification String for the Next button's enabled state.
      */    
     public static final String NEXT_FINISH_BUTTON_ENABLED_PROPERTY = "nextButtonEnabledProperty";
     
     /**
-     * Property identification String for the Cancel button's text
+     * Property identification String for the Cancel button's text.
      */    
     public static final String CANCEL_BUTTON_TEXT_PROPERTY = "cancelButtonTextProperty";
    
     /**
-     * Property identification String for the Cancel button's enabled state
+     * Property identification String for the Cancel button's enabled state.
      */    
     public static final String CANCEL_BUTTON_ENABLED_PROPERTY = "cancelButtonEnabledProperty";
     
@@ -147,7 +147,7 @@ public class WizardModel {
         
     }
 
-    Object getBackButtonText() {
+    private Object getBackButtonText() {
         return buttonTextHashmap.get(BACK_BUTTON_TEXT_PROPERTY);
     }
     
@@ -160,7 +160,7 @@ public class WizardModel {
         }
     }
 
-    Object getNextFinishButtonText() {
+    private Object getNextFinishButtonText() {
         return buttonTextHashmap.get(NEXT_FINISH_BUTTON_TEXT_PROPERTY);
     }
     
@@ -173,7 +173,7 @@ public class WizardModel {
         }
     }
 
-    Object getCancelButtonText() {
+    private Object getCancelButtonText() {
         return buttonTextHashmap.get(CANCEL_BUTTON_TEXT_PROPERTY);
     }
     

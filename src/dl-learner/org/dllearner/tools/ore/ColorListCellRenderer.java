@@ -48,11 +48,11 @@ public class ColorListCellRenderer extends JLabel implements ListCellRenderer {
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 		
-		if(value instanceof NamedClass)
-			setText(((NamedClass)value).toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
-		else if(value instanceof Individual)
-			setText(((Individual)value).toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
-		
+		if(value instanceof NamedClass){
+			setText(((NamedClass) value).toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
+		} else if(value instanceof Individual){
+			setText(((Individual) value).toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
+		}
 		Color background;
 		Color foreground;
 		

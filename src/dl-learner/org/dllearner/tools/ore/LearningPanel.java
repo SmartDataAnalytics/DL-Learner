@@ -86,15 +86,15 @@ public class LearningPanel extends JPanel{
 			
 		JPanel statusPanel = new JPanel();
 		statusLabel = new JLabel();
-		loadingLabel = new JXBusyLabel(new Dimension(15,15));
+		loadingLabel = new JXBusyLabel(new Dimension(15, 15));
 		BusyPainter<Object> painter = new BusyPainter<Object>(
-		new RoundRectangle2D.Float(0, 0,6.0f,2.6f,10.0f,10.0f),
-		new Ellipse2D.Float(2.0f,2.0f,11.0f,11.0f));
+		new RoundRectangle2D.Float(0, 0, 6.0f, 2.6f, 10.0f, 10.0f),
+		new Ellipse2D.Float(2.0f, 2.0f, 11.0f, 11.0f));
 		painter.setTrailLength(2);
 		painter.setPoints(7);
 		painter.setFrame(-1);
-		loadingLabel.setPreferredSize(new Dimension(15,15));
-		loadingLabel.setIcon(new EmptyIcon(15,15));
+		loadingLabel.setPreferredSize(new Dimension(15, 15));
+		loadingLabel.setIcon(new EmptyIcon(15, 15));
 		loadingLabel.setBusyPainter(painter);
 		statusPanel.add(loadingLabel);
 		statusPanel.add(statusLabel);
@@ -102,7 +102,7 @@ public class LearningPanel extends JPanel{
 		contentPanel = getContentPanel();
 		setLayout(new java.awt.BorderLayout());
 
-		add(contentPanel,BorderLayout.CENTER);
+		add(contentPanel, BorderLayout.CENTER);
 		add(statusPanel, BorderLayout.SOUTH);
 		{
 			buttonSliderPanel = new JPanel();
@@ -145,10 +145,10 @@ public class LearningPanel extends JPanel{
 					noiseSlider.setMajorTickSpacing(10);
 					noiseSlider.setMinorTickSpacing(5);
 					Dictionary<Integer, JLabel> map = new Hashtable<Integer, JLabel>();
-					map.put( new Integer(0), new JLabel("0%") );
-					map.put( new Integer(50), new JLabel("50%") );
-					map.put( new Integer(100),new JLabel("100%") );
-					noiseSlider.setLabelTable( map );
+					map.put(new Integer(0), new JLabel("0%"));
+					map.put(new Integer(50), new JLabel("50%"));
+					map.put(new Integer(100), new JLabel("100%"));
+					noiseSlider.setLabelTable(map);
 					noiseSlider.setPaintLabels(true);
 					noisePanel.add(noiseSlider);
 				}
@@ -162,7 +162,7 @@ public class LearningPanel extends JPanel{
 			listPanel = new JPanel();
 			GridBagLayout jPanel1Layout = new GridBagLayout();
 			jPanel1Layout.rowWeights = new double[] {0.0, 0.5};
-			jPanel1Layout.rowHeights = new int[] {16,400};
+			jPanel1Layout.rowHeights = new int[] {16, 400};
 			jPanel1Layout.columnWeights = new double[] {0.0, 0.5};
 			jPanel1Layout.columnWidths = new int[] {50, 700};
 			listPanel.setLayout(jPanel1Layout);

@@ -116,8 +116,7 @@ public class StatsPanel extends JPanel{
         		Set<String> oldSet = oldPropMap.get(role);
         		oldSet.add(ind);
         		oldPropMap.put(role, oldSet);
-        	}
-        	else{
+        	} else{
         		Set<String> newSet = new HashSet<String>();
         		newSet.add(ind);
         		oldPropMap.put(role, newSet);
@@ -129,9 +128,10 @@ public class StatsPanel extends JPanel{
         	JXTaskPane actionPane = new JXTaskPane();
             actionPane.setTitle(key);
             actionPane.setSpecial(true);
-            Set<String> value = (Set<String>)oldPropMap.get(key);
-			for(String i : value)
+            Set<String> value = (Set<String>) oldPropMap.get(key);
+			for(String i : value){
 				actionPane.add(new JLabel(i));
+			}
 			propertyPane.add(actionPane);
         }
       
@@ -154,29 +154,29 @@ public class StatsPanel extends JPanel{
 		classPane.removeAll();
 				
 		Set<String> newClassesString = new HashSet<String>();
-		for (NamedClass nc : ore.getOwlReasoner().getConcepts(ind))
+		for (NamedClass nc : ore.getOwlReasoner().getConcepts(ind)){
 			newClassesString.add(nc.toManchesterSyntaxString(baseURI, prefixes));
+		}
 		Set<String> oldClassesString = new HashSet<String>();
-		for (NamedClass nc : oldClasses)
+		for (NamedClass nc : oldClasses){
 			oldClassesString.add(nc.toManchesterSyntaxString(baseURI, prefixes));
-		
-		for (String nc : oldClassesString)
+		}
+		for (String nc : oldClassesString){
 			if (!newClassesString.contains(nc)){
 				classPane.add(new JLabel("<html><strike>" + nc + "</strike></html>"));
-			}
-			else{
+			} else{
 				classPane.add(new JLabel(nc));
 			}
-			
-		for (String nc : newClassesString)
+		}
+		for (String nc : newClassesString){
 			if (!oldClassesString.contains(nc)) {
 
-				
 				JLabel lab = new JLabel(nc);
 				lab.setIcon(newIcon);
 				lab.setHorizontalTextPosition(JLabel.LEFT);
 				classPane.add(lab);
 			}
+		}
 		
 		//update propertyPanel
 		propertyPane.removeAll();
@@ -189,8 +189,7 @@ public class StatsPanel extends JPanel{
         		Set<String> oldSet = newPropMap.get(role);
         		oldSet.add(ind);
         		newPropMap.put(role, oldSet);
-        	}
-        	else{
+        	} else{
         		Set<String> newSet = new HashSet<String>();
         		newSet.add(ind);
         		newPropMap.put(role, newSet);
@@ -203,21 +202,20 @@ public class StatsPanel extends JPanel{
 				JXTaskPane actionPane = new JXTaskPane();
 				actionPane.setTitle("<html><strike>" + key + "</strike></html>");
 				actionPane.setSpecial(true);
-				Set<String> value = (Set<String>)oldPropMap.get(key);
-				for(String i : value)
+				Set<String> value = (Set<String>) oldPropMap.get(key);
+				for(String i : value){
 					actionPane.add(new JLabel("<html><strike>" + i + "</strike></html>"));
+				}
 				actionPane.setExpanded(false);
 				propertyPane.add(actionPane);
-			}
-			else if(newPropMap.keySet().contains(key)){
+			} else if(newPropMap.keySet().contains(key)){
 				JXTaskPane actionPane = new JXTaskPane();
 				actionPane.setTitle(key);
 				actionPane.setSpecial(true);
 				for(String value : oldPropMap.get(key)){
 					if(!newPropMap.get(key).contains(value)){
 						actionPane.add(new JLabel("<html><strike>" + value + "</strike></html>"));
-					}
-					else{
+					} else{
 						actionPane.add(new JLabel(value));
 					}
 				}

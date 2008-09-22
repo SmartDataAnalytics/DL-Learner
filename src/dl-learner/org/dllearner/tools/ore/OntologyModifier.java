@@ -189,7 +189,7 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual(URI.create(ind.getName()));
 		
 		OWLEntityRemover remover = new OWLEntityRemover(manager, Collections.singleton(ontology));
 		
@@ -219,7 +219,7 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual(URI.create(ind.getName()));
 		OWLDescription owlDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
 		
 		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(individualOWLAPI, owlDesc);
@@ -249,7 +249,7 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual(URI.create(ind.getName()));
 		OWLDescription owlDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(desc);
 		
 		OWLClassAssertionAxiom owlCl = factory.getOWLClassAssertionAxiom(individualOWLAPI, owlDesc);
@@ -283,7 +283,7 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual(URI.create(ind.getName()));
 		
 		//Loeschen
 		OWLDescription oldDesc = OWLAPIDescriptionConvertVisitor.getOWLDescription(oldClass);
@@ -300,7 +300,8 @@ public class OntologyModifier {
 		
 		
 		try {
-			manager.applyChanges(changes);saveOntology();
+			manager.applyChanges(changes);
+			saveOntology();
 			
 			return changes;
 		} catch (OWLOntologyChangeException e) {
@@ -322,7 +323,7 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual individualOWLAPI = factory.getOWLIndividual( URI.create(ind.getName()));
+		OWLIndividual individualOWLAPI = factory.getOWLIndividual(URI.create(ind.getName()));
 		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(objSome.getRole().getName()));
 		
 		Set<OWLObjectPropertyAssertionAxiom> properties = ontology.getObjectPropertyAssertionAxioms(individualOWLAPI);
@@ -333,8 +334,7 @@ public class OntologyModifier {
 		for(OWLInverseObjectPropertiesAxiom inv : invProperties){
 			if(propertyOWLAPI.equals(inv.getSecondProperty())){
 				invProperty  = inv.getFirstProperty();
-			}
-			else{
+			} else{
 				invProperty = inv.getSecondProperty();
 			}
 		}
@@ -343,7 +343,7 @@ public class OntologyModifier {
 		List<RemoveAxiom> removeList = new LinkedList<RemoveAxiom>();
 		
 		for(OWLObjectPropertyAssertionAxiom o :properties){
-			if( (o.getProperty().equals(propertyOWLAPI)) && (o.getSubject().equals(individualOWLAPI))){ 
+			if((o.getProperty().equals(propertyOWLAPI)) && (o.getSubject().equals(individualOWLAPI))){ 
 				removeList.add(new RemoveAxiom(ontology, o));
 			}
 			if(invProperty != null){
@@ -382,16 +382,19 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual subjectOWLAPI = factory.getOWLIndividual( URI.create(subject.getName()));
-		OWLIndividual objectOWLAPI = factory.getOWLIndividual( URI.create(object.getName()));
+		OWLIndividual subjectOWLAPI = factory.getOWLIndividual(URI.create(subject.getName()));
+		OWLIndividual objectOWLAPI = factory.getOWLIndividual(URI.create(object.getName()));
 		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(objSome.getRole().getName()));
 		
 		Set<OWLObjectPropertyAssertionAxiom> properties = ontology.getObjectPropertyAssertionAxioms(subjectOWLAPI);
 		
 		RemoveAxiom remove = null;
-		for(OWLObjectPropertyAssertionAxiom o :properties)
-			if( (o.getProperty().equals(propertyOWLAPI)) && (o.getSubject().equals(subjectOWLAPI)) && (o.getObject().equals(objectOWLAPI))) 
+		for(OWLObjectPropertyAssertionAxiom o :properties){
+			if((o.getProperty().equals(propertyOWLAPI)) && (o.getSubject().equals(subjectOWLAPI)) && (o.getObject().equals(objectOWLAPI))){ 
 				remove = new RemoveAxiom(ontology, o);
+			}
+		}
+		
 			
 		
 		changes.add(remove);
@@ -422,8 +425,8 @@ public class OntologyModifier {
 		
 		List<OWLOntologyChange> changes = new LinkedList<OWLOntologyChange>();
 		
-		OWLIndividual subjectOWLAPI = factory.getOWLIndividual( URI.create(subInd.getName()));
-		OWLIndividual objectOWLAPI = factory.getOWLIndividual( URI.create(objInd.getName()));
+		OWLIndividual subjectOWLAPI = factory.getOWLIndividual(URI.create(subInd.getName()));
+		OWLIndividual objectOWLAPI = factory.getOWLIndividual(URI.create(objInd.getName()));
 		OWLObjectProperty propertyOWLAPI = factory.getOWLObjectProperty(URI.create(objSome.getRole().getName()));
 		
 		OWLObjectPropertyAssertionAxiom objAssertion = factory.getOWLObjectPropertyAssertionAxiom(subjectOWLAPI, propertyOWLAPI, objectOWLAPI);
@@ -443,7 +446,7 @@ public class OntologyModifier {
 		
 
 	/**
-	 * undo changes of type {@link OWLOntologyChange}
+	 * undo changes of type {@link OWLOntologyChange}.
 	 * @param changes
 	 */
 	public void undoChanges(Collection<OWLOntologyChange> changes){
@@ -457,8 +460,7 @@ public class OntologyModifier {
 				} catch (OWLOntologyChangeException e) {
 					e.printStackTrace();
 				}
-			}
-			else if(change instanceof AddAxiom){
+			} else if(change instanceof AddAxiom){
 				RemoveAxiom remove = new RemoveAxiom(ontology, change.getAxiom());
 				try {
 					manager.applyChange(remove);
@@ -508,7 +510,7 @@ public class OntologyModifier {
 				for(OWLDescription o2 : superClasses2){
 //					System.out.println(o1 + "  " + o2);
 					OWLDescription negO2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o2.toString())));
-					System.out.println(factory.getOWLDisjointClassesAxiom(o1, o2));
+//					System.out.println(factory.getOWLDisjointClassesAxiom(o1, o2));
 					if(ax.toString().equals(factory.getOWLDisjointClassesAxiom(o1, o2).toString())){
 						return true;
 					}else if(ax.toString().equals(factory.getOWLDisjointClassesAxiom(o2, o1).toString())){
@@ -530,7 +532,7 @@ public class OntologyModifier {
 	}
 	
 	/**
-	 * returns object properties for an individual
+	 * Returns object properties for an individual.
 	 * @param ind
 	 * @return
 	 */
@@ -549,7 +551,7 @@ public class OntologyModifier {
 	}
 	
 	/**
-	 * returns the actual ontology
+	 * Returns the actual ontology.
 	 * @return ontology
 	 */
 	public OWLOntology getOntology() {
@@ -558,7 +560,7 @@ public class OntologyModifier {
 
 	
 /**
- * prints reasons for inconsistent classes
+ * Prints reasons for inconsistent classes.
  */
 	public void reason(){
 //		reasoner.getInconsistencyReasons(ontology);
