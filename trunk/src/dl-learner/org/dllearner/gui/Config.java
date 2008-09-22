@@ -194,6 +194,10 @@ public class Config {
 		// // TODO Auto-generated catch block
 		// e.printStackTrace();
 		// }
+		needsInit[0] = true;
+		needsInit[1] = true;
+		needsInit[2] = true;
+		needsInit[3] = true;		
 		return source;
 	}
 
@@ -236,6 +240,9 @@ public class Config {
 		rs = cm.reasoningService(reasoner);
 		lp.changeReasoningService(rs);
 		la.changeReasoningService(rs);
+		needsInit[1] = true;
+		needsInit[2] = true;
+		needsInit[3] = true;
 		return reasoner;
 	}
 
@@ -276,6 +283,8 @@ public class Config {
 	public LearningProblem changeLearningProblem(Class<? extends LearningProblem> clazz) {
 		lp = cm.learningProblem(clazz, rs);
 		la.changeLearningProblem(lp);
+		needsInit[2] = true;
+		needsInit[3] = true;		
 		return lp;
 	}
 
@@ -313,6 +322,7 @@ public class Config {
 	public LearningAlgorithm changeLearningAlgorithm(Class<? extends LearningAlgorithm> clazz)
 			throws LearningProblemUnsupportedException {
 		la = cm.learningAlgorithm(clazz, lp, rs);
+		needsInit[3] = true;		
 		return la;
 	}
 

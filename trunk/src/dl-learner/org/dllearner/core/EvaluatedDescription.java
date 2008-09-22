@@ -83,6 +83,15 @@ public class EvaluatedDescription {
 	}
 	
 	/**
+	 * Used for rewriting (simplification, beautification) of 
+	 * evaluated descriptions returned by the learning algorithm.
+	 * @param description The description to set.
+	 */
+	public void setDescription(Description description) {
+		this.description = description;
+	}	
+	
+	/**
 	 * @see org.dllearner.core.owl.Description#getLength()
 	 * @return Length of the description.
 	 */		
@@ -202,4 +211,5 @@ public class EvaluatedDescription {
 		}
 		return j;
 	}
+
 }

@@ -66,7 +66,7 @@ public class RunPanel extends JPanel implements ActionListener {
 	private Config config;
 	private StartGUI startGUI;
 
-	private long algorithmStartTime = 0;
+//	private long algorithmStartTime = 0;
 
 	private GridBagLayout gridbag = new GridBagLayout();
 	private GridBagConstraints constraints = new GridBagConstraints();
@@ -86,7 +86,52 @@ public class RunPanel extends JPanel implements ActionListener {
 	private JLabel[] time = new JLabel[5];
 	private JLabel[] percent = new JLabel[5];
 
-
+	private class AlgorithmThread extends Thread {
+		private long startTime;
+		private long endTime;
+		
+		@Override
+		public void run() {
+			startTime = System.nanoTime();
+//			setPriority(Thread.MIN_PRIORITY);
+			config.getLearningAlgorithm().start();
+			endTime = System.nanoTime();
+		}
+		
+		public long getRuntimeNanos() {
+			if(isAlive()) {
+				System.out.println("ALIVE");
+				return System.nanoTime() - startTime;
+			} else {
+				System.out.println("NOT ALIVE");
+				return endTime - startTime;
+			}
+		}		
+	}
+	AlgorithmThread algorithmThread;
+	
+	// separate thread for learning algorithm
+//	Thread algorithmThread = new Thread() {
+//		
+//		private long startTime;
+//		private long endTime;
+//		
+//		@Override
+//		public void run() {
+//			startTime = System.nanoTime();
+////			setPriority(Thread.MIN_PRIORITY);
+//			config.getLearningAlgorithm().start();
+//			endTime = System.nanoTime();
+//		}
+//		
+//		public long getRuntimeNanos() {
+//			if(isAlive()) {
+//				return System.nanoTime() - startTime;
+//			} else {
+//				return endTime - startTime;
+//			}
+//		}
+//	};	
 	
 	RunPanel(Config config, StartGUI startGUI) {
 		super(new BorderLayout());
@@ -172,19 +217,11 @@ public class RunPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// start
 		if (e.getSource() == runButton) {
-			
-			// separate thread for learning algorithm
-			Thread algorithmThread = new Thread() {
-				@Override
-				public void run() {
-					setPriority(Thread.MIN_PRIORITY);
-					config.getLearningAlgorithm().start();			
-				}
-			};			
-			
+			algorithmThread = new AlgorithmThread();
 			config.getReasoningService().resetStatistics();
 			algorithmThread.start();
-			algorithmStartTime = System.nanoTime();
+//			algorithmStartTime = System.nanoTime();
+//			algorithmThread.
 			StatisticsThread threadStatistics = new StatisticsThread(config, this);
 			threadStatistics.start();
 			runButton.setEnabled(false);
@@ -230,8 +267,9 @@ public class RunPanel extends JPanel implements ActionListener {
 		// + config.getLearningAlgorithm().getSolutionScore().toString()
 		// + "\n\n");
 
-		// update algorith runtime
-		long algorithmRunTime = System.nanoTime() - algorithmStartTime;
+		// update algorithm runtime
+//		long algorithmRunTime = System.nanoTime() - algorithmStartTime;
+		long algorithmRunTime = algorithmThread.getRuntimeNanos();
 		bar[0].update(1.0);
 		time[0].setText(makeTime(algorithmRunTime));
 		percent[0].setText("100%");
