@@ -35,6 +35,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
@@ -89,14 +90,15 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 	private static Logger logger = Logger.getLogger(FastInstanceChecker.class);
 
-	private boolean defaultNegation = true;
-	
+//	private boolean defaultNegation = true;
+
 	private FastInstanceCheckerConfigurator configurator;
+
 	@Override
-	public FastInstanceCheckerConfigurator getConfigurator (){
+	public FastInstanceCheckerConfigurator getConfigurator() {
 		return configurator;
 	}
-	
+
 	private Set<NamedClass> atomicConcepts;
 	private Set<ObjectProperty> atomicRoles;
 	private SortedSet<DatatypeProperty> datatypeProperties;
@@ -105,7 +107,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	private SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
 	private SortedSet<Individual> individuals;
 
-//	private ReasoningService rs;
+	// private ReasoningService rs;
 	private OWLAPIReasoner rc;
 
 	// we use sorted sets (map indices) here, because they have only log(n)
@@ -125,22 +127,30 @@ public class FastInstanceChecker extends ReasonerComponent {
 	private Map<DatatypeProperty, Map<Individual, SortedSet<Double>>> dd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Double>>>();
 	private Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Integer>>>();
 
+	/**
+	 * Creates an instance of the fast instance checker.
+	 * @param sources The knowledge sources used as input.
+	 */
 	public FastInstanceChecker(Set<KnowledgeSource> sources) {
 		super(sources);
 		this.configurator = new FastInstanceCheckerConfigurator(this);
 	}
 
-	
+	/**
+	 * @return The options of this component.
+	 */
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		StringConfigOption type = new StringConfigOption("reasonerType", "FaCT++ or Pellet to dematerialize", "pellet", false, true);
-		type.setAllowedValues(new String[] {"fact", "pellet"});
+		StringConfigOption type = new StringConfigOption("reasonerType",
+				"FaCT++ or Pellet to dematerialize", "pellet", false, true);
+		type.setAllowedValues(new String[] { "fact", "pellet" });
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
 		options.add(type);
+		options.add(new BooleanConfigOption("defaultNegation", "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", true, false, true));
 		return options;
-	}	
-	
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -150,10 +160,12 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
 	}
 
+	/**
+	 * @return The name of this component.
+	 */
 	public static String getName() {
 		return "fast instance checker";
-	}	
-	
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -162,7 +174,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
-		//rc = new OWLAPIReasoner(sources);
+		// rc = new OWLAPIReasoner(sources);
 		rc = ComponentFactory.getOWLAPIReasoner(sources);
 		rc.getConfigurator().setReasonerType(configurator.getReasonerType());
 		rc.init();
@@ -176,7 +188,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			atomicRoles = rc.getAtomicRoles();
 			individuals = rc.getIndividuals();
 
-//			rs = new ReasoningService(rc);
+			// rs = new ReasoningService(rc);
 
 			// TODO: some code taken from Helper.createFlatABox, but pasted here
 			// because additional things need to
@@ -185,46 +197,47 @@ public class FastInstanceChecker extends ReasonerComponent {
 			long dematStartTime = System.currentTimeMillis();
 
 			logger.debug("dematerialising concepts");
-			
-			for (NamedClass atomicConcept : rc.getAtomicConcepts()) {				
-				
+
+			for (NamedClass atomicConcept : rc.getAtomicConcepts()) {
+
 				SortedSet<Individual> pos = rc.retrieval(atomicConcept);
 				classInstancesPos.put(atomicConcept, pos);
-				
-				if(defaultNegation) {
-					classInstancesNeg.put(atomicConcept, Helper.difference(individuals,pos));
+
+				if (configurator.getDefaultNegation()) {
+					classInstancesNeg.put(atomicConcept, Helper.difference(individuals, pos));
 				} else {
-					// Pellet needs approximately infinite time to answer negated queries
-					// on the carcinogenesis data set (and probably others), so we have to
+					// Pellet needs approximately infinite time to answer
+					// negated queries
+					// on the carcinogenesis data set (and probably others), so
+					// we have to
 					// be careful here
 					Negation negatedAtomicConcept = new Negation(atomicConcept);
 					classInstancesNeg.put(atomicConcept, rc.retrieval(negatedAtomicConcept));
 				}
 
-
 			}
 
 			logger.debug("dematerialising object properties");
-			
+
 			for (ObjectProperty atomicRole : atomicRoles) {
 				opPos.put(atomicRole, rc.getRoleMembers(atomicRole));
 			}
 
 			logger.debug("dematerialising datatype properties");
-			
+
 			for (DatatypeProperty dp : booleanDatatypeProperties) {
 				bdPos.put(dp, rc.getTrueDatatypeMembers(dp));
 				bdNeg.put(dp, rc.getFalseDatatypeMembers(dp));
 			}
-			
+
 			for (DatatypeProperty dp : intDatatypeProperties) {
 				id.put(dp, rc.getIntDatatypeMembers(dp));
-			}			
-			
+			}
+
 			for (DatatypeProperty dp : doubleDatatypeProperties) {
 				dd.put(dp, rc.getDoubleDatatypeMembers(dp));
 			}
-			
+
 			long dematDuration = System.currentTimeMillis() - dematStartTime;
 			logger.debug("TBox dematerialised in " + dematDuration + " ms");
 
@@ -237,9 +250,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 	@Override
 	public boolean instanceCheck(Description description, Individual individual)
 			throws ReasoningMethodUnsupportedException {
-		
-//		System.out.println(description + " " + individual);
-		
+
+		// System.out.println(description + " " + individual);
+
 		if (description instanceof NamedClass) {
 			return classInstancesPos.get((NamedClass) description).contains(individual);
 		} else if (description instanceof Negation) {
@@ -260,8 +273,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 			// the union, we return true
 			List<Description> children = description.getChildren();
 			for (Description child : children) {
-				if (instanceCheck(child, individual))
+				if (instanceCheck(child, individual)) {
 					return true;
+				}
 			}
 			return false;
 		} else if (description instanceof Intersection) {
@@ -269,59 +283,42 @@ public class FastInstanceChecker extends ReasonerComponent {
 			// the union, we return true
 			List<Description> children = description.getChildren();
 			for (Description child : children) {
-				if (!instanceCheck(child, individual))
+				if (!instanceCheck(child, individual)) {
 					return false;
+				}
 			}
 			return true;
 		} else if (description instanceof ObjectSomeRestriction) {
 			ObjectPropertyExpression ope = ((ObjectSomeRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty))
+			if (!(ope instanceof ObjectProperty)) {
 				throw new ReasoningMethodUnsupportedException("Instance check for description "
 						+ description + " unsupported. Inverse object properties not supported.");
+			}
 			ObjectProperty op = (ObjectProperty) ope;
 			Description child = description.getChild(0);
 			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-			;
+
 			if (mapping == null) {
 				logger.warn("Instance check of a description with an undefinied property (" + op
 						+ ").");
 				return false;
 			}
 			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
-			if (roleFillers == null)
+			if (roleFillers == null) {
 				return false;
+			}
 			for (Individual roleFiller : roleFillers) {
-				if (instanceCheck(child, roleFiller))
+				if (instanceCheck(child, roleFiller)) {
 					return true;
+				}
 			}
 			return false;
 		} else if (description instanceof ObjectAllRestriction) {
 			ObjectPropertyExpression ope = ((ObjectAllRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty))
+			if (!(ope instanceof ObjectProperty)) {
 				throw new ReasoningMethodUnsupportedException("Instance check for description "
 						+ description + " unsupported. Inverse object properties not supported.");
-			ObjectProperty op = (ObjectProperty) ope;
-			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-			;
-			if (mapping == null) {
-				logger.warn("Instance check of a description with an undefinied property (" + op
-						+ ").");
-				return true;
 			}
-			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
-			if (roleFillers == null)
-				return true;
-			for (Individual roleFiller : roleFillers) {
-				if (!instanceCheck(child, roleFiller))
-					return false;
-			}
-			return true;
-		} else if (description instanceof ObjectMinCardinalityRestriction) {
-			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty))
-				throw new ReasoningMethodUnsupportedException("Instance check for description "
-						+ description + " unsupported. Inverse object properties not supported.");
 			ObjectProperty op = (ObjectProperty) ope;
 			Description child = description.getChild(0);
 			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
@@ -331,38 +328,69 @@ public class FastInstanceChecker extends ReasonerComponent {
 						+ ").");
 				return true;
 			}
-			
+			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			if (roleFillers == null) {
+				return true;
+			}
+			for (Individual roleFiller : roleFillers) {
+				if (!instanceCheck(child, roleFiller)) {
+					return false;
+				}
+			}
+			return true;
+		} else if (description instanceof ObjectMinCardinalityRestriction) {
+			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+
+			if (mapping == null) {
+				logger.warn("Instance check of a description with an undefinied property (" + op
+						+ ").");
+				return true;
+			}
+
 			int number = ((ObjectCardinalityRestriction) description).getNumber();
-			int nrOfFillers = 0;			
-			
+			int nrOfFillers = 0;
+
 			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
 			// special case: there are always at least zero fillers
-			if(number == 0)
+			if (number == 0) {
 				return true;
+			}
 			// return false if there are none or not enough role fillers
-			if (roleFillers == null || roleFillers.size() < number)
+			if (roleFillers == null || roleFillers.size() < number) {
 				return false;
-			 
+			}
+
 			int index = 0;
 			for (Individual roleFiller : roleFillers) {
 				index++;
 				if (instanceCheck(child, roleFiller)) {
 					nrOfFillers++;
-					if(nrOfFillers == number)
+					if (nrOfFillers == number) {
 						return true;
-				// earyl abort:	e.g. >= 10 hasStructure.Methyl;
-				// if there are 11 fillers and 2 are not Methyl, the result is false
+					}
+					// earyl abort: e.g. >= 10 hasStructure.Methyl;
+					// if there are 11 fillers and 2 are not Methyl, the result
+					// is false
 				} else {
-					if(roleFillers.size() - index < number)
+					if (roleFillers.size() - index < number) {
 						return false;
+					}
 				}
 			}
 			return false;
 		} else if (description instanceof ObjectMaxCardinalityRestriction) {
 			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty))
+			if (!(ope instanceof ObjectProperty)) {
 				throw new ReasoningMethodUnsupportedException("Instance check for description "
 						+ description + " unsupported. Inverse object properties not supported.");
+			}
 			ObjectProperty op = (ObjectProperty) ope;
 			Description child = description.getChild(0);
 			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
@@ -372,38 +400,42 @@ public class FastInstanceChecker extends ReasonerComponent {
 						+ ").");
 				return true;
 			}
-			
+
 			int number = ((ObjectCardinalityRestriction) description).getNumber();
-			int nrOfFillers = 0;		
-			
+			int nrOfFillers = 0;
+
 			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
 			// return true if there are none or not enough role fillers
-			if (roleFillers == null || roleFillers.size() < number)
+			if (roleFillers == null || roleFillers.size() < number) {
 				return true;
-			
-//			System.out.println(description + " " + individual);	
-			
+			}
+
 			int index = 0;
 			for (Individual roleFiller : roleFillers) {
 				index++;
 				if (instanceCheck(child, roleFiller)) {
 					nrOfFillers++;
-					if(nrOfFillers > number)
+					if (nrOfFillers > number) {
 						return false;
-				// earyl abort:	e.g. <= 5 hasStructure.Methyl;
-				// if there are 6 fillers and 2 are not Methyl, the result is true						
+					}
+					// early abort: e.g. <= 5 hasStructure.Methyl;
+					// if there are 6 fillers and 2 are not Methyl, the result
+					// is true
 				} else {
-					if(roleFillers.size() - index <= number)
+					if (roleFillers.size() - index <= number) {
 						return true;
+					}
 				}
 			}
 			return true;
 		} else if (description instanceof BooleanValueRestriction) {
-			DatatypeProperty dp = ((BooleanValueRestriction)description).getRestrictedPropertyExpresssion();
-			boolean value = ((BooleanValueRestriction)description).getBooleanValue();
-			
-			if(value) {
-				// check whether the individual is in the set of individuals mapped
+			DatatypeProperty dp = ((BooleanValueRestriction) description)
+					.getRestrictedPropertyExpresssion();
+			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
+
+			if (value) {
+				// check whether the individual is in the set of individuals
+				// mapped
 				// to true by this datatype property
 				return bdPos.get(dp).contains(individual);
 			} else {
@@ -414,22 +446,17 @@ public class FastInstanceChecker extends ReasonerComponent {
 			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
 			DataRange dr = dsr.getDataRange();
 			SortedSet<Double> values = dd.get(dp).get(individual);
-			
+
 			// if there is no filler for this individual and property we
 			// need to return false
-			if(values == null)
+			if (values == null) {
 				return false;
-			
-			if(dr instanceof DoubleMaxValue) {
-				if(values.first() <= ((DoubleMaxValue)dr).getValue())
-					return true;
-				else
-					return false;
-			} else if(dr instanceof DoubleMinValue) {
-				if(values.last() >= ((DoubleMinValue)dr).getValue())
-					return true;
-				else
-					return false;
+			}
+
+			if (dr instanceof DoubleMaxValue) {
+				return (values.first() <= ((DoubleMaxValue) dr).getValue());
+			} else if (dr instanceof DoubleMinValue) {
+				return (values.last() >= ((DoubleMinValue) dr).getValue());
 			}
 		}
 
@@ -438,40 +465,46 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
-	public SortedSet<Individual> retrieval(Description concept) throws ReasoningMethodUnsupportedException {
-		if(concept instanceof NamedClass)
-			return classInstancesPos.get((NamedClass)concept);
-		else if(concept instanceof Negation && concept.getChild(0) instanceof NamedClass)
-			return classInstancesNeg.get((NamedClass)concept.getChild(0));
+	public SortedSet<Individual> retrieval(Description concept)
+			throws ReasoningMethodUnsupportedException {
+		if (concept instanceof NamedClass) {
+			return classInstancesPos.get((NamedClass) concept);
+		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
+			return classInstancesNeg.get((NamedClass) concept.getChild(0));
+		}
 		
-//		return rs.retrieval(concept);
+		// return rs.retrieval(concept);
 		SortedSet<Individual> inds = new TreeSet<Individual>();
-		for(Individual i : individuals) {
-			if(instanceCheck(concept,i))
+		for (Individual i : individuals) {
+			if (instanceCheck(concept, i)) {
 				inds.add(i);
+			}
 		}
 		return inds;
-	}	
-	
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dllearner.core.Reasoner#getAtomicConcepts()
 	 */
+	@Override
 	public Set<NamedClass> getAtomicConcepts() {
 		return atomicConcepts;
 	}
 
 	@Override
-	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(
+			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getDoubleDatatypeMembers(datatypeProperty);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dllearner.core.Reasoner#getAtomicRoles()
 	 */
+	@Override
 	public Set<ObjectProperty> getAtomicRoles() {
 		return atomicRoles;
 	}
@@ -501,6 +534,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 * 
 	 * @see org.dllearner.core.Reasoner#getIndividuals()
 	 */
+	@Override
 	public SortedSet<Individual> getIndividuals() {
 		return individuals;
 	}
@@ -510,6 +544,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 * 
 	 * @see org.dllearner.core.Reasoner#getReasonerType()
 	 */
+	@Override
 	public ReasonerType getReasonerType() {
 		return ReasonerType.FAST_INSTANCE_CHECKER;
 	}
@@ -519,6 +554,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 * 
 	 * @see org.dllearner.core.Reasoner#prepareSubsumptionHierarchy(java.util.Set)
 	 */
+	@Override
 	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
 		rc.prepareSubsumptionHierarchy(allowedConcepts);
 	}
@@ -547,7 +583,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
 		return rc.getDatatypePropertyHierarchy();
 	}
-	
+
 	@Override
 	public boolean subsumes(Description superConcept, Description subConcept) {
 		// Negation neg = new Negation(subConcept);
@@ -561,9 +597,9 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 * 
 	 * @param args
 	 *            No arguments supported.
-	 * @throws ComponentInitException
-	 * @throws ParseException
-	 * @throws ReasoningMethodUnsupportedException
+	 * @throws ComponentInitException Component cannot be initialised.
+	 * @throws ParseException File cannot be parsed.
+	 * @throws ReasoningMethodUnsupportedException Reasoning method not supported.
 	 */
 	public static void main(String[] args) throws ComponentInitException, ParseException,
 			ReasoningMethodUnsupportedException {
@@ -584,16 +620,22 @@ public class FastInstanceChecker extends ReasonerComponent {
 		System.out.println(reasoner.instanceCheck(d, i));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.Reasoner#getBaseURI()
 	 */
+	@Override
 	public String getBaseURI() {
 		return rc.getBaseURI();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.Reasoner#getPrefixes()
 	 */
+	@Override
 	public Map<String, String> getPrefixes() {
 		return rc.getPrefixes();
 	}
@@ -602,38 +644,35 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public Description getDomain(ObjectProperty objectProperty) {
 		return rc.getDomain(objectProperty);
 	}
-	
+
 	@Override
 	public Description getDomain(DatatypeProperty datatypeProperty) {
 		return rc.getDomain(datatypeProperty);
 	}
-	
+
 	@Override
 	public Description getRange(ObjectProperty objectProperty) {
 		return rc.getRange(objectProperty);
 	}
 
 	@Override
-	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole)	 {
+	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) {
 		return opPos.get(atomicRole);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dllearner.core.ReasonerComponent#releaseKB()
 	 */
 	@Override
 	public void releaseKB() {
 		rc.releaseKB();
-	}	
-	
-	/*public void setReasonerType(String type){
-		configurator.setReasonerType(type);
-	}*/
-
+	}
 
 	@Override
 	public boolean hasDatatypeSupport() {
 		return true;
 	}
-	
+
 }

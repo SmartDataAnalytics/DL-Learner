@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
+ */ 
 
 package org.dllearner.core.configurators;
 
@@ -43,24 +43,13 @@ this.kBFile = kBFile;
 }
 
 /**
-* @param filename pointer to the KB file on local file system
 * @return KBFile
 **/
-public static KBFile getKBFile(String filename) {
+public static KBFile getKBFile() {
 KBFile component = ComponentManager.getInstance().knowledgeSource(KBFile.class);
-ComponentManager.getInstance().applyConfigEntry(component, "filename", filename);
 return component;
 }
 
-/**
-* filename pointer to the KB file on local file system.
-* mandatory: true| reinit necessary: true
-* default value: null
-* @return String 
-**/
-public String getFilename() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(kBFile,  "filename") ;
-}
 /**
 * url URL pointer to the KB file.
 * mandatory: false| reinit necessary: true
@@ -71,15 +60,6 @@ public URL getUrl() {
 return (URL) ComponentManager.getInstance().getConfigOptionValue(kBFile,  "url") ;
 }
 
-/**
-* @param filename pointer to the KB file on local file system.
-* mandatory: true| reinit necessary: true
-* default value: null
-**/
-public void setFilename(String filename) {
-ComponentManager.getInstance().applyConfigEntry(kBFile, "filename", filename);
-reinitNecessary = true;
-}
 /**
 * @param url URL pointer to the KB file.
 * mandatory: false| reinit necessary: true

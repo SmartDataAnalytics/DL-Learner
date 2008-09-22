@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
+ */ 
 
 package org.dllearner.core.configurators;
 
@@ -42,7 +42,6 @@ import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.learningproblems.PosOnlyInclusionLP;
-import org.dllearner.learningproblems.RoleLearning;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
@@ -57,11 +56,10 @@ public final class ComponentFactory  {
 private ComponentFactory(){}
 
 /**
-* @param filename pointer to the KB file on local file system
 * @return a component ready for initialization KBFile
 **/
-public static KBFile getKBFile(String filename)  {
-return KBFileConfigurator.getKBFile(filename);
+public static KBFile getKBFile()  {
+return KBFileConfigurator.getKBFile();
 }
 
 /**
@@ -166,16 +164,6 @@ return PosOnlyDefinitionLPConfigurator.getPosOnlyDefinitionLP(reasoningService, 
 **/
 public static PosOnlyInclusionLP getPosOnlyInclusionLP(ReasoningService reasoningService, Set<String> positiveExamples)  {
 return PosOnlyInclusionLPConfigurator.getPosOnlyInclusionLP(reasoningService, positiveExamples);
-}
-
-/**
-* @param positiveExamples positive examples
-* @param negativeExamples negative examples
-* @param reasoningService see ReasoningService
-* @return a component ready for initialization RoleLearning
-**/
-public static RoleLearning getRoleLearning(ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
-return RoleLearningConfigurator.getRoleLearning(reasoningService, positiveExamples, negativeExamples);
 }
 
 /**

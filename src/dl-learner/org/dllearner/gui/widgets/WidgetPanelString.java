@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
@@ -45,6 +46,7 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 
 	private String value;
 	private JTextField stringField;
+	private JComboBox comboBox;
 
 	/**
 	 * Provides a widget for string options.
@@ -62,6 +64,9 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 			// fire value changed event
 			value = stringField.getText();
 			fireValueChanged(value);
+		} else if(e.getSource() == comboBox) {
+			value = (String) comboBox.getSelectedItem();
+			fireValueChanged(value);
 		}
 	}
 
@@ -76,18 +81,30 @@ public class WidgetPanelString extends AbstractWidgetPanel<String> implements Ac
 			value = "";
 		}
 
-		// text field for strings
-		stringField = new JTextField(35);
-		stringField.setText(value);
-		stringField.setToolTipText(configOption.getAllowedValuesDescription());
-
-		// set button (value is only updated when this button is pressed =>
-		// would better without set)
-		setButton = new JButton("Set");
-		setButton.addActionListener(this);
-
-		add(stringField);
-		add(setButton);
+		StringConfigOption option = (StringConfigOption) configOption; 
+		if(option.getAllowedValues().size() == 0) {
+		
+			// text field for strings
+			stringField = new JTextField(35);
+			stringField.setText(value);
+			stringField.setToolTipText(configOption.getAllowedValuesDescription());
+	
+			// set button (value is only updated when this button is pressed =>
+			// would better without set)
+			setButton = new JButton("Set");
+			setButton.addActionListener(this);
+	
+			add(stringField);
+			add(setButton);
+		
+		// if there is a fixed set of strings available as options, we
+		// only offer those
+		} else {
+			comboBox = new JComboBox(option.getAllowedValues().toArray());
+			comboBox.setSelectedItem(option.getDefaultValue());
+			comboBox.addActionListener(this);
+			add(comboBox);
+		}
 	}
 
 }

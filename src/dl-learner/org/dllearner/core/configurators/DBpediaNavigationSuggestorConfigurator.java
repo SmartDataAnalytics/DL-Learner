@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
+ */ 
 
 package org.dllearner.core.configurators;
 
@@ -294,6 +294,15 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavig
 public String getStartClass() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "startClass") ;
 }
+/**
+* forceRefinementLengthIncrease specifies whether nodes should be expanded until only longer refinements are reached.
+* mandatory: false| reinit necessary: true
+* default value: null
+* @return boolean 
+**/
+public boolean getForceRefinementLengthIncrease() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "forceRefinementLengthIncrease") ;
+}
 
 /**
 * @param writeSearchTree specifies whether to write a search tree.
@@ -527,6 +536,15 @@ reinitNecessary = true;
 **/
 public void setStartClass(String startClass) {
 ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "startClass", startClass);
+reinitNecessary = true;
+}
+/**
+* @param forceRefinementLengthIncrease specifies whether nodes should be expanded until only longer refinements are reached.
+* mandatory: false| reinit necessary: true
+* default value: null
+**/
+public void setForceRefinementLengthIncrease(boolean forceRefinementLengthIncrease) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "forceRefinementLengthIncrease", forceRefinementLengthIncrease);
 reinitNecessary = true;
 }
 
