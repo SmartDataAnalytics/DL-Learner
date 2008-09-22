@@ -119,6 +119,7 @@ public class ExampleBasedROLearner {
 	private boolean minExecutionTimeShown = false;
 	private int guaranteeXgoodDescriptions = 1;
 	private boolean guaranteeXgoodShown = false;
+	private int maxClassDescriptionTests;
 
 	// if set to false we do not test properness; this may seem wrong
 	// but the disadvantage of properness testing are additional reasoner
@@ -242,7 +243,7 @@ public class ExampleBasedROLearner {
 			boolean useTooWeakList, boolean useOverlyGeneralList,
 			boolean useShortConceptConstruction, boolean usePropernessChecks,
 			int maxPosOnlyExpansion, int maxExecutionTimeInSeconds, int minExecutionTimeInSeconds,
-			int guaranteeXgoodDescriptions, boolean forceRefinementLengthIncrease) {
+			int guaranteeXgoodDescriptions, int maxClassDescriptionTests, boolean forceRefinementLengthIncrease) {
 
 		if (learningProblem instanceof PosNegLP) {
 			PosNegLP lp = (PosNegLP) learningProblem;
@@ -287,6 +288,7 @@ public class ExampleBasedROLearner {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 		this.minExecutionTimeInSeconds = minExecutionTimeInSeconds;
 		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
+		this.maxClassDescriptionTests = maxClassDescriptionTests;
 		this.forceRefinementLengthIncrease = forceRefinementLengthIncrease;
 
 		// logger.setLevel(Level.DEBUG);
@@ -296,6 +298,29 @@ public class ExampleBasedROLearner {
 		stop = false;
 		isRunning = true;
 		runtime = System.currentTimeMillis();
+		
+		// reset values (algorithms may be started several times)
+		candidates.clear();
+		candidatesStable.clear();
+		newCandidates.clear();
+		solutionFound = false;
+		solutions.clear();
+		maxExecutionTimeShown = false;
+		minExecutionTimeShown = false;
+		guaranteeXgoodShown = false;		
+		propernessTestsReasoner = 0;
+		propernessTestsAvoidedByShortConceptConstruction = 0;
+		propernessTestsAvoidedByTooWeakList = 0;
+		conceptTestsTooWeakList = 0;
+		conceptTestsOverlyGeneralList = 0;
+		propernessCalcTimeNs = 0;
+		propernessCalcReasoningTimeNs = 0;
+		childConceptsDeletionTimeNs = 0;
+		refinementCalcTimeNs = 0;
+		redundancyCheckTimeNs = 0;
+		evaluateSetCreationTimeNs = 0;
+		improperConceptsRemovalTimeNs = 0;
+		
 		Monitor totalLearningTime = JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime")
 				.start();
 		// TODO: write a JUnit test for this problem (long-lasting or infinite
@@ -1326,6 +1351,10 @@ public class ExampleBasedROLearner {
 			stop();
 			if (solutions.size() > 0)
 				solutionFound = true;
+		}
+		if(!solutionFound && maxClassDescriptionTests != 0) {
+			int conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
+			solutionFound = (conceptTests >= maxClassDescriptionTests);
 		}
 	}
 

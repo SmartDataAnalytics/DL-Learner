@@ -49,7 +49,7 @@ public class StatisticsThread extends Thread {
 			while (config.getLearningAlgorithm().isRunning()) {
 				// update statistics every 3 seconds
 				runPanel.showStats();
-				sleep(3000);
+				sleep(2000);
 			}
 			// show final stats
 			runPanel.showStats();

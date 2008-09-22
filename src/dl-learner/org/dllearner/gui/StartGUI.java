@@ -253,7 +253,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		Logger rootLogger = Logger.getRootLogger();
 		rootLogger.removeAllAppenders();
 		rootLogger.addAppender(consoleAppender);
-		rootLogger.setLevel(Level.DEBUG);
+		rootLogger.setLevel(Level.TRACE);
 
 		File file = null;
 		if (args.length > 0)
@@ -308,10 +308,17 @@ public class StartGUI extends JFrame implements ActionListener {
 				}
 			});
 			if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-				logger.info("Saving current configuration to " + fc.getSelectedFile() + ".");
+				File file = fc.getSelectedFile();
+				// returns name without path to it
+				String name= file.getName();
+				// if there is no extension, we append .conf
+				if(!name.contains(".")) {
+					file = new File(file.getAbsolutePath() + ".conf");
+				}
+				logger.info("Saving current configuration to " + file + ".");
 				ConfigSave save = new ConfigSave(config);
 				try {
-					save.saveFile(fc.getSelectedFile());
+					save.saveFile(file);
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

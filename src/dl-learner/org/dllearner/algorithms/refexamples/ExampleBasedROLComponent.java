@@ -134,6 +134,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
 	private int minExecutionTimeInSeconds = CommonConfigOptions.minExecutionTimeInSecondsDefault;
 	private int guaranteeXgoodDescriptions = CommonConfigOptions.guaranteeXgoodDescriptionsDefault;
+	private int maxClassDescriptionTests = CommonConfigOptions.maxClassDescriptionTestsDefault;
 	
 	// Variablen zur Einstellung der Protokollierung
 	// boolean quiet = false;
@@ -196,6 +197,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
+		options.add(CommonConfigOptions.maxClassDescriptionTests());
 		options.add(CommonConfigOptions.getLogLevel());
 		options.add(new BooleanConfigOption("usePropernessChecks", "specifies whether to check for equivalence (i.e. discard equivalent refinements)",usePropernessChecksDefault));
 		options.add(new IntegerConfigOption("maxPosOnlyExpansion", "specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is" +
@@ -274,6 +276,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			minExecutionTimeInSeconds = (Integer) entry.getValue();
 		}else if(name.equals("guaranteeXgoodDescriptions")) {
 			guaranteeXgoodDescriptions =  (Integer) entry.getValue();
+		} else if(name.equals("maxClassDescriptionTests")) {
+			maxClassDescriptionTests =  (Integer) entry.getValue();
 		} else if(name.equals("logLevel")) {
 			logLevel = ((String)entry.getValue()).toUpperCase();
 		} else if(name.equals("forceRefinementLengthIncrease")) {
@@ -390,6 +394,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 				maxExecutionTimeInSeconds,
 				minExecutionTimeInSeconds,
 				guaranteeXgoodDescriptions,
+				maxClassDescriptionTests,
 				forceRefinementLengthIncrease
 		);
 		// note: used concepts and roles do not need to be passed

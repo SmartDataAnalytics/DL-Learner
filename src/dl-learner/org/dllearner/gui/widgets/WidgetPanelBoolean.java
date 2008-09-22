@@ -71,7 +71,7 @@ public class WidgetPanelBoolean extends AbstractWidgetPanel<Boolean> implements 
 		// set cb-index
 		String[] kbBoxItems = { "true", "false" };
 		cb = new JComboBox(kbBoxItems);
-		if (!value) {
+		if (value) {
 			cb.setSelectedIndex(0);
 		} else {
 			cb.setSelectedIndex(1);
