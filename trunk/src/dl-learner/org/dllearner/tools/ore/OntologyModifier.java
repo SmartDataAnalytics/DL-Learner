@@ -488,8 +488,8 @@ public class OntologyModifier {
 		//superclasses and class1
 //		Set<OWLDescription> superClasses1 = owlClass1.getSuperClasses(ontology);
 		Set<OWLDescription> superClasses1 = new HashSet<OWLDescription>();
-		for(Description d : rs.getMoreGeneralConcepts(desc1)){
-			superClasses1.add(OWLAPIDescriptionConvertVisitor.getOWLDescription(d));
+		for(Description d1 : rs.getMoreGeneralConcepts(desc1)){
+			superClasses1.add(OWLAPIDescriptionConvertVisitor.getOWLDescription(d1));
 		}
 		superClasses1.add(owlClass1);
 //		System.out.println(desc1 + "::" + superClasses1);
@@ -497,33 +497,54 @@ public class OntologyModifier {
 		//superclasses and class2
 //		Set<OWLDescription> superClasses2 = owlClass2.getSuperClasses(ontology);
 		Set<OWLDescription> superClasses2 = new HashSet<OWLDescription>();
-		for(Description d : rs.getMoreGeneralConcepts(desc2)){
-			superClasses2.add(OWLAPIDescriptionConvertVisitor.getOWLDescription(d));
+		for(Description d2 : rs.getMoreGeneralConcepts(desc2)){
+			superClasses2.add(OWLAPIDescriptionConvertVisitor.getOWLDescription(d2));
 		}
 		superClasses2.add(owlClass2);
 		
-		for(OWLAxiom ax : ontology.getAxioms()){
+//		System.out.println("superklassen von " + desc2 + " sind: "  + superClasses2);
+		for(OWLDescription o1 : superClasses1){
 			
-			for(OWLDescription o1 : superClasses1){
+			OWLDescription negO1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o1.toString())));
+			for(OWLDescription o2 : superClasses2){
+
+				OWLDescription negO2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o2.toString())));
 				
-				OWLDescription negO1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o1.toString())));
-				for(OWLDescription o2 : superClasses2){
-//					System.out.println(o1 + "  " + o2);
-					OWLDescription negO2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o2.toString())));
-//					System.out.println(factory.getOWLDisjointClassesAxiom(o1, o2));
-					if(ax.toString().equals(factory.getOWLDisjointClassesAxiom(o1, o2).toString())){
-						return true;
-					}else if(ax.toString().equals(factory.getOWLDisjointClassesAxiom(o2, o1).toString())){
-						return true;
-					}else if(ax.toString().equals(factory.getOWLEquivalentClassesAxiom(o1, negO2).toString())){
-						return true;
-					}else if(ax.toString().equals(factory.getOWLEquivalentClassesAxiom(o2, negO1).toString())){
-						return true;
-					}
+				if(ontology.containsAxiom(factory.getOWLDisjointClassesAxiom(o1, o2))){
+					return true;
+				}else if(ontology.containsAxiom(factory.getOWLDisjointClassesAxiom(o2, o1))){
+					return true;
+				}else if(ontology.containsAxiom(factory.getOWLEquivalentClassesAxiom(o1, negO2))){
+					return true;
+				}else if(ontology.containsAxiom(factory.getOWLEquivalentClassesAxiom(o2, negO1))){
+					return true;
 				}
-			
 			}
+		
 		}
+		
+//		for(OWLAxiom ax : ontology.getAxioms()){
+//			
+//			for(OWLDescription o1 : superClasses1){
+//				
+//				OWLDescription negO1 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o1.toString())));
+//				for(OWLDescription o2 : superClasses2){
+//
+//					OWLDescription negO2 = OWLAPIDescriptionConvertVisitor.getOWLDescription(new Negation(new NamedClass(o2.toString())));
+//					
+//					if(ax.toString().equals(factory.getOWLDisjointClassesAxiom(o1, o2).toString())){
+//						return true;
+//					}else if(ax.toString().equals(factory.getOWLDisjointClassesAxiom(o2, o1).toString())){
+//						return true;
+//					}else if(ax.toString().equals(factory.getOWLEquivalentClassesAxiom(o1, negO2).toString())){
+//						return true;
+//					}else if(ax.toString().equals(factory.getOWLEquivalentClassesAxiom(o2, negO1).toString())){
+//						return true;
+//					}
+//				}
+//			
+//			}
+//		}
 			
 		
 	
