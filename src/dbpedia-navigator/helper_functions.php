@@ -10,10 +10,11 @@ function subjectToURI($subject)
 	$subject=ucfirst($subject);
 	//replace spaces with _
 	$subject=str_replace(' ','_',$subject);
+	$subject=urlencode($subject);
 	//add the uri
 	$subject="http://dbpedia.org/resource/".$subject;
 	
-	return urldecode($subject);
+	return $subject;
 }
 
 function getTagCloud($tags,$label)
@@ -104,6 +105,9 @@ function utf8_to_html($string)
 	$string=str_replace("u00F6","&ouml;",$string);
 	$string=str_replace("u00FC","&uuml;",$string);
 	$string=str_replace("u0161","&scaron;",$string);
+	$string=str_replace("u00FA","&uacute;",$string);
+	$string=str_replace("u00F0","&eth;",$string);
+	$string=str_replace("u00E6","&aelig;",$string);
 	
 	return $string;
 }
@@ -150,11 +154,11 @@ function getCategoryResultsTable($names,$labels,$category,$number)
 	return $ret;
 }
 
-function getConceptResultsTable($names,$labels,$manchester,$kb,$label,$number)
+function getConceptResultsTable($names,$labels,$kb,$label,$number)
 {
 	$ret="<p>These are your results. Show best ";
 	for ($k=10;$k<125;){
-		$ret.="<a href=\"#\" onclick=\"getSubjectsFromConcept('manchester=".$manchester."&kb=".$kb."&label=".$label."number=".$k."');return false;\"";
+		$ret.="<a href=\"#\" onclick=\"getSubjectsFromConcept('kb=".$kb."&number=".$k."');return false;\"";
 		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
 		else $ret.=" style=\"text-decoration:underline;\"";
 		$ret.=">".($k)."</a>";
@@ -220,9 +224,9 @@ function setRunning($id,$running)
 	fclose($file);
 }
 
-function get_triple_table($triples) {
+function get_triple_table($triples,$subjecttriples) {
 
-	$table = '<table border="0"><tr><td><b>Predicate</b></td><td><b>Object</b></td></tr>';
+	$table = '<table border="0" style="width:100%;overflow:hidden"><tr><td><b>Predicate</b></td><td><b>Object/Subject</b></td></tr>';
 	$i=1;
 	foreach($triples as $predicate=>$object) {
 		$number=count($object);
@@ -231,26 +235,73 @@ function get_triple_table($triples) {
 		$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">'.nicePredicate($predicate).'</a></td>';
 		$table .= '<td>';
 		if ($number>1) $table.='<ul>';
+		$k=1;
 		foreach($object as $element) {
+			if ($k>3) $display=" style=\"display:none\"";
+			else $display="";
 			if ($element['type']=="uri"){
 				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
 					$label=str_replace('_',' ',substr($element['value'],28));
-					if ($number>1) $table.='<li>';
+					if (strlen($label)>60) $label=substr($label,0,60).'...';
+					if ($number>1) $table.='<li'.$display.'>';
 					$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($label).'</a>';
 					if ($number>1) $table.='</li>';
 				}
 				else{
-					if ($number>1) $table.='<li>';
-					$table .= '<a href="'.$element['value'].'" target="_blank">'.urldecode($element['value']).'</a>';
+					if ($number>1) $table.='<li'.$display.'>';
+					$label=urldecode($element['value']);
+					if (strlen($label)>60) $label=substr($label,0,60).'...';
+					$table .= '<a href="'.$element['value'].'" target="_blank">'.$label.'</a>';
 					if ($number>1) $table.='</li>';
 				}
 			}
 			else{
-				if ($number>1) $table.='<li>';
+				if ($number>1) $table.='<li'.$display.'>';
 				$table .= $element['value'];
 				if ($number>1) $table.='</li>';
 			}
+			$k++;
 		}
+		if ($number>3) $table.='<a href="javascript:none()" onclick="toggleAttributes(this)"><img src="images/arrow_down.gif"/>&nbsp;show</a>';
+		if ($number>1) $table.='</ul>';
+		$table .= '</td>';
+		$i*=-1;
+	}
+	foreach($subjecttriples as $predicate=>$object) {
+		$number=count($object);
+		if ($i>0) $backgroundcolor="eee";
+		else $backgroundcolor="ffffff";
+		$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">is '.nicePredicate($predicate).' of </a></td>';
+		$table .= '<td>';
+		if ($number>1) $table.='<ul>';
+		$k=1;
+		foreach($object as $element) {
+			if ($k>3) $display=" style=\"display:none\"";
+			else $display="";
+			if ($element['type']=="uri"){
+				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
+					$label=str_replace('_',' ',substr($element['value'],28));
+					if (strlen($label)>60) $label=substr($label,0,60).'...';
+					if ($number>1) $table.='<li'.$display.'>';
+					$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($label).'</a>';
+					if ($number>1) $table.='</li>';
+				}
+				else{
+					if ($number>1) $table.='<li'.$display.'>';
+					$label=urldecode($element['value']);
+					if (strlen($label)>60) $label=substr($label,0,60).'...';
+					$table .= '<a href="'.$element['value'].'" target="_blank">'.$label.'</a>';
+					if ($number>1) $table.='</li>';
+				}
+			}
+			else{
+				if ($number>1) $table.='<li'.$display.'>';
+				$table .= $element['value'];
+				if ($number>1) $table.='</li>';
+			}
+			$k++;
+		}
+		if ($number>3) $table.='<a href="javascript:none()" onclick="toggleAttributes(this)"><img src="images/arrow_down.gif"/>&nbsp;show</a>';
 		if ($number>1) $table.='</ul>';
 		$table .= '</td>';
 		$i*=-1;
@@ -367,7 +418,7 @@ function getClassView($fathers,$childs,$title,$class)
 	$ret.='<tr style="height:20px"><td><hr/></td></tr>';
 	$ret.='<tr><td style="font-size:14px;"><b>Current class</b></td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
-	$ret.='<tr><td><b>'.$title.'</b></td></tr>';
+	$ret.='<tr><td><b>'.$title.'</b> ('.urldecode(str_replace("_"," ",substr (strrchr ($class, "/"), 1))).')</td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
 	$ret.='<tr><td>';
 	$ret.='<input style="width:70px" type="button" value="Instances" class="button" onclick="getSubjectsFromCategory(\'category='.$class.'&number=10\');" title="Search Instances of Shown class."/>';

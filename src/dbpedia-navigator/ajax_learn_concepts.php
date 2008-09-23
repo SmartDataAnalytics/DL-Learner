@@ -30,7 +30,7 @@
 				$concept.="<tr><td>You could also be interested in articles matching these descriptions:</td></tr>";
 				foreach ($concepts as $con){
 					$label=$sc->getNaturalDescription($con['descriptionKBSyntax']);
-					$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('manchester=".htmlentities($con['descriptionManchesterSyntax'])."&kb=".htmlentities($con['descriptionKBSyntax'])."&label=".$label."&number=10');return false;\" />".$label."</a> (Accuracy: ".(floatVal($con['accuracy'])*100)."%)</td></tr>";
+					$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('kb=".htmlentities($con['descriptionKBSyntax'])."&number=10');return false;\" />".$label."</a> (Accuracy: ".(floatVal($con['accuracy'])*100)."%)</td></tr>";
 				}
 				$concept.="</table>";
 			}

@@ -3,20 +3,25 @@
 	include_once('Settings.php');
 	include_once('DatabaseConnection.php');
 	
-	$manchester=html_entity_decode($_POST['manchester']);
 	$kb=html_entity_decode($_POST['kb']);
 	$number=$_POST['number'];
-	$label=$_POST['label'];
-	
+		
 	session_start();
 	$id=$_SESSION['id'];
 	$ksID=$_SESSION['ksID'];
+	//write last action into session
+	$actionuri=urlencode($kb);
+	$_SESSION['lastAction']='searchConceptInstances/'.$actionuri;
 	session_write_close();
 	
 	setRunning($id,"true");
 	
-	$test=preg_match("/^([\(]*http:\/\/dbpedia\.org\/class\/yago\/[^\040]+[\)]*(\040(AND|OR)\040)?)+$/",$manchester);
+	require_once("DLLearnerConnection.php");
+	$sc=new DLLearnerConnection($id,$ksID);
+	$label=$sc->getNaturalDescription($kb);
 	
+	$test=preg_match("/^([\(]*\"http:\/\/dbpedia\.org\/class\/yago\/[^\040]+\"[\)]*(\040(AND|OR)\040)?)+$/",$kb);
+			
 	$content="";
 	if ($test){
 		//connect to the database
@@ -25,24 +30,24 @@
 		$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
 		$databaseConnection->select_database($settings->database_name);
 	
-		preg_match_all("/http:\/\/dbpedia\.org\/class\/yago\/[^\040()]+/",$manchester,$treffer,PREG_OFFSET_CAPTURE);
+		preg_match_all("/\"http:\/\/dbpedia\.org\/class\/yago\/[^\040()]+\"/",$kb,$treffer,PREG_OFFSET_CAPTURE);
 
 		$final='';
 		$i=1;
 		$pos=0;
 		foreach ($treffer[0] as $tref){
-			$final.=substr($manchester,$pos,$tref[1]-$pos).'(';
-			$category=substr($manchester,$tref[1],strlen($tref[0]));
-			$query='SELECT child FROM classhierarchy WHERE father=\''.$category.'\'';
+			$final.=substr($kb,$pos,$tref[1]-$pos).'(';
+			$category=substr($kb,$tref[1],strlen($tref[0]));
+			$query='SELECT child FROM classhierarchy WHERE father='.$category.'';
 			$res=$databaseConnection->query($query);
 			while ($result=$databaseConnection->nextEntry($res)){
-				$final.='cat'.$i.'.category=\''.$result['child'].'\' OR ';
+				$final.='cat'.$i.'.category="'.$result['child'].'" OR ';
 			}
-			$final.='cat'.$i.'.category=\''.$category.'\')';
+			$final.='cat'.$i.'.category='.$category.')';
 			$i++;
 			$pos=$tref[1]+strlen($tref[0]);
 		}
-		$final.=substr($manchester,$pos);
+		$final.=substr($kb,$pos);
 		$temp='SELECT cat1.name FROM ';
 		for ($j=0;$j<$i-1;$j++)
 			if ($j!=$i-2) $temp.='articlecategories as cat'.($j+1).',';
@@ -65,7 +70,7 @@
 				$result2=$databaseConnection->nextEntry($res2);
 				$labels[]=$result2['label'];
 			}
-			$content.=getConceptResultsTable($names,$labels,htmlentities($manchester),htmlentities($kb),$label,$number);
+			$content.=getConceptResultsTable($names,$labels,htmlentities($kb),$label,$number);
 			$bestsearches=getBestSearches($names,$labels);
 		}
 		else

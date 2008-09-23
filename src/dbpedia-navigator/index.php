@@ -21,6 +21,7 @@ if (isset($_GET['showArticle'])) $onLoad.="get_article('label=".$_GET['showArtic
 else if (isset($_GET['search'])) $onLoad.="search_it('label=".$_GET['search']."&number=10');";
 else if (isset($_GET['showClass'])) $onLoad.="get_class('class=http://dbpedia.org/class/yago/".$_GET['showClass']."&cache=-1');";
 else if (isset($_GET['searchInstances'])) $onLoad.="getSubjectsFromCategory('category=http://dbpedia.org/class/yago/".$_GET['searchInstances']."&number=10');";
+else if (isset($_GET['searchConceptInstances'])) $onLoad.="getSubjectsFromConcept('kb=".htmlentities(urldecode($_GET['concept']))."&number=10');";
 else if (isset($_SESSION['currentArticle'])){
 	$onLoad.="get_article('label=&cache=".$_SESSION['currentArticle']."');";
 }
@@ -75,7 +76,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		</div> <!-- box -->
 
 		<div class="box" id="SearchResultBox" style="display:none">
-		  <div class="boxtitle" style="cursor:help;" title="The best 10 Search Results are shown here.">Search Results</div>
+		  <div class="boxtitle" style="cursor:help;" title="The best 10 Search Results are shown here.">Best Search Results</div>
 		  <div class="boxcontent">
 		  <div id="searchcontent" style="display:block"></div>
 		  </div> <!-- boxcontent -->

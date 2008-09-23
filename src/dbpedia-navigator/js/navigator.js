@@ -61,3 +61,21 @@ function show_results(class, number)
 			sitenumbers[i].style.display='inline';
 	}
 }
+
+function toggleAttributes(element)
+{
+	var list=element.parentNode.getElementsByTagName('li');
+	if (element.innerHTML.match('hide'+'$')=='hide'){
+		element.innerHTML='<img src="images/arrow_down.gif">&nbsp;show';
+		for (var i=3;i<list.length;i++)
+			list[i].style.display='none';
+	}
+	else {
+		element.innerHTML='<img src="images/arrow_up.gif">&nbsp;hide';
+		for (var i=3;i<list.length;i++)
+			list[i].style.display='list-item';
+	}
+}
+
+function none()
+{}

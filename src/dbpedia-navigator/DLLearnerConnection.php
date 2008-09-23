@@ -135,14 +135,18 @@ class DLLearnerConnection
 	function getTriples($uri)
 	{
 		//i am filtering the references out at the moment, because they are causing errors with URL with ...&profile=bla, the XMLParser thinks &profile is a HTML-Entitie and misses the ;
-		$query="SELECT ?pred ?obj ".
-			   "WHERE {{<".$uri."> ?pred ?obj.Filter(!regex(str(?pred),'http://dbpedia.org/property/reference'))}UNION{<".$uri."> <http://dbpedia.org/property/redirect> ?Conc.?Conc ?pred ?obj.Filter(!regex(str(?pred),'http://dbpedia.org/property/reference'))}}";
+		$query="SELECT ?pred ?obj ?sub ".
+			   "WHERE {{<".$uri."> ?pred ?obj.Filter(!regex(str(?pred),'http://dbpedia.org/property/reference'))}UNION{<".$uri."> <http://dbpedia.org/property/redirect> ?Conc.?Conc ?pred ?obj.Filter(!regex(str(?pred),'http://dbpedia.org/property/reference'))}UNION{?sub  ?pred <".$uri.">}UNION{<".$uri."> <http://dbpedia.org/property/redirect> ?Conc.?sub ?pred ?Conc}}";
 		$result=json_decode($this->getSparqlResultThreaded($query),true);
 		if (count($result['results']['bindings'])==0) throw new Exception("An article with that name does not exist. The Search is started ..."); 
 		$ret=array();
 		foreach ($result['results']['bindings'] as $results){
-			$value=$results['obj'];
-			if (!(isset($value['xml:lang'])&&($value['xml:lang']!=$this->lang))) $ret[$results['pred']['value']][]=$value;
+			if (isset($results['obj'])) $value=$results['obj'];
+			else if (isset($results['sub'])) $value=$results['sub'];
+			if (!(isset($value['xml:lang'])&&($value['xml:lang']!=$this->lang))){
+				if (isset($results['obj'])) $ret[0][$results['pred']['value']][]=$value;
+				else if (isset($results['sub'])) $ret[1][$results['pred']['value']][]=$value;
+			}
 		}
 		
 		return $ret;
@@ -256,7 +260,7 @@ class DLLearnerConnection
 		}
 		return $ret;
 	}
-	
+	/*not used at the moment
 	function getYagoSubCategories($category)
 	{
 		$query="SELECT ?subject ?label count(?subclass) as ?numberOfSubclasses\n".
@@ -272,7 +276,7 @@ class DLLearnerConnection
 			if (strlen($res['label'])>0) $ret[]=$res;
 		}
 		return $ret;
-	}
+	}*/
 	
 	public function loadWSDLfiles($wsdluri){
 		$main=DLLearnerConnection::getwsdl($wsdluri);
