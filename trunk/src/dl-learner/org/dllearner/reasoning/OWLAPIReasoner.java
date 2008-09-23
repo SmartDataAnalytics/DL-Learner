@@ -206,7 +206,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					 url = ((OWLFile)source).getURL();
 					}
 				else if(source instanceof SparqlKnowledgeSource) {
-					url=((SparqlKnowledgeSource)source).getNTripleURL();
+					url=((SparqlKnowledgeSource)source).getOntologyFragmentURL();
 				}
 
 				try {
