@@ -81,11 +81,22 @@
 				$content.=', <img src="images/flickr.png" alt="Flickr" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view photo collection</a></p>';
 			}
 			
-			$content.='<br/><hr><h4>Classes and Categories</h4><br/>';
+			if (isset($triples['http://www.w3.org/2002/07/owl#sameAs'])){
+				$content.='<br/><hr><h4>Same as</h4><br/>';
+				$content.='<ul>';
+				foreach ($triples['http://www.w3.org/2002/07/owl#sameAs'] as $same){
+					if ($same['type']=="uri")
+						$content .= '<li><a href="'.$same['value'].'" target="_blank">'.urldecode($same['value']).'</a></li>';
+					else $content.= '<li>'.urldecode($same['value']).'</li>';
+				}
+				$content.='</ul>';
+			}
+			
+			$content.='<br/><hr><h4>YAGO Classes</h4><br/>';
 			
 			// display a list of classes
 			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']))
-				$content .= '<p>Yago classes: '.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
+				$content .= '<p>'.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
 
 			//skos-subjects
 			//not used, because one class systems, YAGO, is enough
@@ -96,7 +107,8 @@
 				$content .= '</ul></p>';			
 			}*/
 			
-			//not used at the moment
+			//references not used at the moment because some urls cause problems with
+			//the xml parser that recognizes html entities, where no entities are
 			/*if(isset($triples['http://dbpedia.org/property/reference'])) {
 				$content .= '<p>references: <ul>';
 				foreach($triples['http://dbpedia.org/property/reference'] as $reference)
@@ -117,12 +129,34 @@
 			}
 			
 			//display only one birthdate
-			$birthdates=array("http://dbpedia.org/property/dateOfBirth","http://dbpedia.org/property/birth");
+			$birthdates=array("http://dbpedia.org/property/dateOfBirth","http://dbpedia.org/property/birth","http://dbpedia.org/property/birthDate");
 			$date=false;
 			foreach ($birthdates as $dates){
-				if ($date) unset($triples[$dates]); 
-				if (isset($triples[$dates])&&!$date) $date=true;
+				if ($date){
+					unset($triples[$dates]);
+					continue; 
+				}
+				if (isset($triples[$dates])&&$triples[$dates][0]['type']!='uri') $date=true;
+				else unset($triples[$dates]);
 			}
+			
+			//display only one deathdate
+			$deathdates=array("http://dbpedia.org/property/death","http://dbpedia.org/property/dateOfDeath","http://dbpedia.org/property/deathDate");
+			$date=false;
+			foreach ($deathdates as $dates){
+				if ($date){
+					unset($triples[$dates]);
+					continue; 
+				}
+				if (isset($triples[$dates])&&$triples[$dates][0]['type']!='uri') $date=true;
+				else unset($triples[$dates]);
+			}
+			
+			//display a small characteristics of a person, if at least the birth date is given 
+			if ($date){
+				$information=array();
+			}
+									
 			
 			//display foreign wiki pages
 			$languages=array('Deutsch'=>'http://dbpedia.org/property/wikipage-de'
@@ -153,6 +187,7 @@
 			
 			// filter out uninteresting properties and properties which
 			// have already been displayed
+			unset($triples['http://www.w3.org/2002/07/owl#sameAs']);
 			unset($triples['http://xmlns.com/foaf/0.1/page']);
 			unset($triples['http://xmlns.com/foaf/0.1/depiction']);
 			unset($triples['http://dbpedia.org/property/abstract']);
@@ -173,7 +208,24 @@
 			unset($triples['http://dbpedia.org/property/latDeg']);
 			unset($triples['http://dbpedia.org/property/lonMin']);
 			unset($triples['http://www.georss.org/georss/point']);
-			
+			unset($triples['http://dbpedia.org/property/audioProperty']);
+			unset($triples['http://dbpedia.org/property/wikiPageUsesTemplate']);
+			unset($triples['http://dbpedia.org/property/relatedInstance']);
+			unset($triples['http://dbpedia.org/property/boxWidth']);
+			unset($triples['http://dbpedia.org/property/pp']);
+			unset($triples['http://dbpedia.org/property/caption']);
+			unset($triples['http://dbpedia.org/property/s']);
+			unset($triples['http://dbpedia.org/property/lifetimeProperty']);
+			unset($triples['http://dbpedia.org/property/imagesize']);
+			unset($triples['http://dbpedia.org/property/id']);
+			unset($triples['http://dbpedia.org/property/issue']);
+			if ($triples['http://dbpedia.org/property/hips'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/hips']);
+			if ($triples['http://dbpedia.org/property/weight'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/weight']);
+			if ($triples['http://dbpedia.org/property/waist'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/waist']);
+			if ($triples['http://dbpedia.org/property/height'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/height']);
+			unset($triples['http://www.geonames.org/ontology#featureCode']);
+			unset($triples['http://www.geonames.org/ontology#featureClass']);
+			unset($triples['http://dbpedia.org/property/dmozProperty']);
 			
 			if (count($triples)>0){
 				$content.='<br/><hr><h4>Remaining Triples</h4><br/>';
