@@ -24,11 +24,21 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.list.TypedList;
 import org.apache.log4j.Logger;
+import org.dllearner.kb.aquisitors.RDFBlankNode;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
+import org.semanticweb.owl.expression.OWLExpressionParser;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.OWLIndividual;
+import org.semanticweb.owl.model.OWLObjectProperty;
+
+import com.hp.hpl.jena.rdf.model.Literal;
 
 /**
  * A node in the graph that is an instance.
@@ -47,10 +57,8 @@ public class InstanceNode extends Node {
 	private List<ObjectPropertyNode> objectProperties = new ArrayList<ObjectPropertyNode>();
 	private List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
 
-	
 	public InstanceNode(String uri) {
 		super(uri);
-
 	}
 
 	// expands all directly connected nodes
@@ -80,6 +88,9 @@ public class InstanceNode extends Node {
 				datatypeProperties.add(new DatatypePropertyNode(tuple.a.toString(), this, new LiteralNode(tuple.b) ));
 				return null;
 			}else if(tuple.b.isAnon()){
+				RDFBlankNode n = (RDFBlankNode) tuple.b;
+				System.out.println(n.getBNodeId());
+				System.exit(0);
 				logger.warn("blanknodes not supported as of now"+ this +"in tuple" + tuple);
 				return null;
 			
@@ -115,30 +126,85 @@ public class InstanceNode extends Node {
 		SortedSet<String> returnSet = new TreeSet<String>();
 		returnSet.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><" + OWLVocabulary.OWL_THING + ">.");
 		for (ClassNode one : classes) {
-			returnSet.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><" + one.getURI() + ">.");
+			returnSet.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><" + one.getURIString() + ">.");
 			returnSet.addAll(one.toNTriple());
 		}
 		for (ObjectPropertyNode one : objectProperties) {
-			returnSet.add("<" + uri + "><" + one.getURI() + "><" + one.getB().getURI()
+			returnSet.add("<" + uri + "><" + one.getURIString() + "><" + one.getBPart().getURIString()
 					+ ">.");
 			returnSet.addAll(one.toNTriple());
-			returnSet.addAll(one.getB().toNTriple());
+			returnSet.addAll(one.getBPart().toNTriple());
 		}
 		
 		for (DatatypePropertyNode one : datatypeProperties) {
-			returnSet.add("<" + uri + "><" + one.getURI() + "> " + one.getNTripleFormOfB()
+			returnSet.add("<" + uri + "><" + one.getURIString() + "> " + one.getNTripleFormOfB()
 					+ " .");
 		}
 
 		return returnSet;
 	}
+	
+	@Override
+	public void toOWLOntology( OWLAPIOntologyCollector owlAPIOntologyCollector){
+		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
+	
+		
+		OWLIndividual me = factory.getOWLIndividual(getURI());
+		for (ClassNode one : classes) {
+			OWLClass c = factory.getOWLClass(one.getURI());
+			owlAPIOntologyCollector.addAxiom(factory.getOWLClassAssertionAxiom(me, c));
+			one.toOWLOntology(owlAPIOntologyCollector);
+		}
+		for (ObjectPropertyNode one : objectProperties) {
+			OWLIndividual o = factory.getOWLIndividual(one.getBPart().getURI());
+			OWLObjectProperty p = factory.getOWLObjectProperty(one.getURI());
+			factory.getOWLObjectPropertyAssertionAxiom(me, p, o);
+			one.toOWLOntology(owlAPIOntologyCollector);
+			one.getBPart().toOWLOntology(owlAPIOntologyCollector);
+		}
+		
+		for (DatatypePropertyNode one : datatypeProperties) {
+			OWLDataProperty p = factory.getOWLDataProperty(one.getURI());
+			Literal ln = one.getBPart().getLiteral();
+			try{
+				
+				
+				if(one.getBPart().isString()){
+					owlAPIOntologyCollector.addAxiom(
+							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getString()));
+				} else if(one.getBPart().isDouble()){
+					owlAPIOntologyCollector.addAxiom(
+							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getDouble()));
+				} else if(one.getBPart().isFloat()){
+					owlAPIOntologyCollector.addAxiom(
+							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getFloat()));
+				} else if(one.getBPart().isInt()){
+					owlAPIOntologyCollector.addAxiom(
+							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getInt()));
+				} else if(one.getBPart().isBoolean()){
+					owlAPIOntologyCollector.addAxiom(
+							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getBoolean()));
+				} else {
+					logger.warn("missing : "+one.getURIString());
+				}
+				
+				
+			}catch (Exception e) {
+				e.printStackTrace();
+				System.exit(0);
+			}
+			
+			//factory.getOWLDataPropertyAssertionAxiom()
+			//returnSet.add("<" + uri + "><" + one.getURI() + "> " + one.getNTripleFormOfB()
+			//		+ " .");
+		}
+	}
+
 
 	public List<ObjectPropertyNode> getObjectProperties() {
 		return objectProperties;
 	}
 	
-	
-
 	
 
 }

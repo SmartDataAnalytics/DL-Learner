@@ -20,12 +20,12 @@
 package org.dllearner.kb.sparql;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -49,18 +49,18 @@ import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.extraction.Configuration;
 import org.dllearner.kb.extraction.Manager;
+import org.dllearner.kb.extraction.Node;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.ObjectReplacementRule;
 import org.dllearner.kb.manipulator.PredicateReplacementRule;
 import org.dllearner.kb.manipulator.Rule.Months;
-import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
-import org.dllearner.scripts.NT2RDF;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
+import org.semanticweb.owl.model.OWLOntology;
 
 import com.jamonapi.MonitorFactory;
 
@@ -73,7 +73,7 @@ import com.jamonapi.MonitorFactory;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
-	// RBC
+	
 	private static final boolean debug = false;
 
 	// tupleaquisitor
@@ -99,12 +99,16 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	// ConfigOptions
 	private URL url;
 
-	private String format = "N-TRIPLES";
+	//private String format = "N-TRIPLES";
+	private String format = "RDF/XML";
 
 	private boolean dumpToFile = true;
+	
 
 	private URL dumpFile;
 
+	private OWLOntology fragment;
+	
 	private SparqlEndpoint endpoint = null;
 
 	// received ontology as array, used if format=Array(an element of the
@@ -246,16 +250,23 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		// give everything to the manager
 		m.useConfiguration(configuration);
 
-		String ont = "";
+		//String ont = "";
 		try {
 
 			// the actual extraction is started here
 
 			extractionTime.setTime();
-			ont = m.extract(configurator.getInstances());
+			List<Node> seedNodes = m.extract(configurator.getInstances());
+			fragment = m.getOWLAPIOntologyForNodes(seedNodes);
+			//System.exit(0);
+			
+			//ont = m.getNTripleForNodes(seedNodes);
 			extractionTime.printAndSet("extraction needed");
 			logger.info("Finished collecting Fragment");
 
+			dumpFile = m.getPhysicalOntologyURL();
+			
+			/*
 			if (dumpToFile) {
 				String filename = System.currentTimeMillis() + ".nt";
 				String basedir = "cache" + File.separator;
@@ -280,19 +291,19 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}
-			if (format.equals("KB")) {
+			}*/
+			/*if (format.equals("KB")) {
 				try {
 					// kb = KBParser.parseKBFile(new StringReader(ont));
 					kb = KBParser.parseKBFile(dumpFile);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}
+			}*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		nrOfExtractedTriples = m.getNrOfExtractedTriples();
+		//nrOfExtractedTriples = m.getNrOfExtractedTriples();
 		logger.info("SparqlModul: ****Finished " + totalTime.getAndSet(""));
 		if (debugExitAfterExtraction) {
 
@@ -311,9 +322,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		if (format.equals("N-TRIPLES")){
+		if (format.equals("RDF/XML")){
 			return JenaOWLDIGConverter.getTellsString(dumpFile,
-					OntologyFormat.N_TRIPLES, kbURI);
+					OntologyFormat.RDF_XML, kbURI);
 		}else {
 			return DIGConverter.getDIGString(kb, kbURI).toString();
 		}

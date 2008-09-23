@@ -81,7 +81,7 @@ public class SparqlExtractionTest {
 			
 			String filename = "cache/"+System.currentTimeMillis() + ".nt";
 			FileWriter fw = new FileWriter(new File(filename), true);
-			fw.write(m.extract(u2));
+			//fw.write(m.extract(u2));
 			fw.flush();
 			fw.close();
 			

@@ -19,11 +19,16 @@
  */
 package org.dllearner.kb.extraction;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.semanticweb.owl.model.OWLOntology;
 
 /**
  * An object of this class encapsulates everything.
@@ -36,54 +41,73 @@ public class Manager {
 	private Configuration configuration;
 	private ExtractionAlgorithm extractionAlgorithm;
 	private int nrOfExtractedTriples = 0;
+	private List<Node> seedNodes = new ArrayList<Node>();
 	
 	private static Logger logger = Logger
 		.getLogger(Manager.class);
 	
 	
 	public void useConfiguration(Configuration configuration) {
-
 		this.configuration = configuration;
-		//System.out.println(this.configuration);
-		
 		this.extractionAlgorithm = new ExtractionAlgorithm(configuration);
-
 	}
 
-	public String extract(String uri) {
+	public Node extractOneURI(String uri) {
 		
-		logger.info("Start extracting");
-
+		logger.info("Start extracting: "+uri);
 		Node n = extractionAlgorithm.expandNode(uri, configuration.getTupelAquisitor());
-		SortedSet<String> s = n.toNTriple();
-		logger.info("number of triples: "+s.size());
-		StringBuffer nt = new StringBuffer(33000);
-		for (String str : s) {
-			nt.append(str + "\n");
-		}
-		logger.info("sizeofStringBuffer"+nt.length());
-		return nt.toString();
+		logger.info("Finished extracting: "+uri );
+		seedNodes.add(n);
+		return n;
 	}
+	
+	
 
-	public String extract(Set<String> instances) {
-		// this.TypedSparqlQuery.query(uri);
-		// System.out.println(ExtractionAlgorithm.getFirstNode(uri));
-		logger.info("Start extracting");
-		SortedSet<String> tripleCollector = new TreeSet<String>();
+	public List<Node> extract(Set<String> instances) {
+		List<Node> allExtractedNodes = new ArrayList<Node>();
+		logger.info("Start extracting "+instances.size() + " instances ");
 		int progress=0;
 		for (String one : instances) {
 			progress++;
-			//if(progress % 10 == 0) {
-				logger.info("Progress: "+progress+" of "+instances.size()+" finished: "+one);
-			//}
+			logger.info("Progress: "+progress+" of "+instances.size()+" finished: "+one);
 			try {
 				Node n = extractionAlgorithm.expandNode(one, configuration.getTupelAquisitor());
-				tripleCollector.addAll(n.toNTriple());
+				seedNodes.add(n);
+				allExtractedNodes.add(n);
 			} catch (Exception e) {
+				logger.warn("extraction failed for: "+one);
 				e.printStackTrace();
+				
 			}
 		}
-		logger.info("Finished extracting, start conversion");
+		logger.info("Finished extraction");
+		return allExtractedNodes;
+		
+	}
+	
+	public OWLOntology getOWLAPIOntologyForNodes(List<Node> nodes){
+		for (Node n : nodes) {
+			n.toOWLOntology(configuration.getOwlAPIOntologyCollector());
+		}
+		 configuration.getOwlAPIOntologyCollector().saveOntology();
+		return configuration.getOwlAPIOntologyCollector().getCurrentOntology();
+	}
+	
+	public URL getPhysicalOntologyURL()throws MalformedURLException{
+		return configuration.getOwlAPIOntologyCollector().getPhysicalURI().toURL();
+		
+	}
+	
+	public String getNTripleForAllExtractedNodes(){
+		return getNTripleForNodes(seedNodes);
+	}
+	
+	public String getNTripleForNodes(List<Node> nodes){
+		SortedSet<String> tripleCollector = new TreeSet<String>();
+		for (Node n : nodes) {
+			tripleCollector.addAll(n.toNTriple());
+		}
+		logger.info("Converting to NTriple");
 		StringBuffer nt = new StringBuffer(100000);
 		Object[] arr = tripleCollector.toArray();
 		nrOfExtractedTriples = arr.length;
@@ -93,11 +117,6 @@ public class Manager {
 				logger.info(i + " of  " + arr.length + " triples done");
 		}
 		logger.info(arr.length + " of  " + arr.length + " triples done");
-		/*
-		 * String tmp=""; while ( ret.size() > 0) { tmp=ret.first(); nt+=tmp;
-		 * ret.remove(tmp); System.out.println(ret.size()); } /*for (String str :
-		 * ret) { nt += str + "\n"; }
-		 */
 		logger.info("Ontology String size = " + nt.length());
 		return nt.toString();
 	}
@@ -107,6 +126,7 @@ public class Manager {
 		return configuration;
 	}
 
+	@Deprecated
 	public int getNrOfExtractedTriples() {
 		return nrOfExtractedTriples;
 	}

@@ -124,11 +124,9 @@ public class SemanticBible2 {
 		ComponentManager cm =ComponentManager.getInstance();
 		try{
 		
-		int i=0;
+		
 		for (File f : confs) {
-			if(i!=80){
-			i++; continue;
-			}
+			
 			Cache.getDefaultCache().clearCache();
 			String fileContent = Files.readFile(f);
 			
@@ -385,7 +383,7 @@ public class SemanticBible2 {
 		"refexamples.guaranteeXgoodDescriptions = 1;\n"+
 		
 		"\n"+
-		"reasoner = owlAPI;\n"+
+		"reasoner = owlAPIReasoner;\n"+
 		//"reasoner = fastInstanceChecker;\n"+
 		"owlAPIReasoner.reasonerType = pellet;\n\n"+
 		"";

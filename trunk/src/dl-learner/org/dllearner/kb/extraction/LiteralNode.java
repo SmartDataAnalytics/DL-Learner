@@ -48,13 +48,16 @@ public class LiteralNode extends Node {
 
 	public LiteralNode(String uri) {
 		super(uri);
-		// this.type = "instance";
-
+		
 	}
 	
 	public LiteralNode(RDFNode node) {
 		super(node.toString());
 		l = (Literal) node;
+	}
+	
+	public Literal getLiteral(){
+		return l;
 	}
 
 	// expands all directly connected nodes
@@ -77,7 +80,7 @@ public class LiteralNode extends Node {
 
 	
 	
-	
+	@Override
 	public String getNTripleForm() {
 		String quote = "\\\"";
 		quote = "&quot;";
@@ -92,5 +95,59 @@ public class LiteralNode extends Node {
 		}
 		
 	}
+	
+	@Override
+	public void toOWLOntology( OWLAPIOntologyCollector owlAPIOntologyCollector){
+		
+	}
+	
+	public boolean isDouble(){
+		try{
+			l.getDouble();
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public boolean isFloat(){
+		try{
+			l.getFloat();
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public boolean isInt(){
+		try{
+			l.getInt();
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public boolean isBoolean(){
+		try{
+			l.getBoolean();
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public boolean isString(){
+		try{
+			l.getString();
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	
+	
+	
+	
 
 }
