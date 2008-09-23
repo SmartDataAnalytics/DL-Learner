@@ -19,6 +19,7 @@
  */
 package org.dllearner.kb.extraction;
 
+import java.net.URI;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -73,16 +74,33 @@ public abstract class Node  {
 	 */
 	public abstract SortedSet<String> toNTriple();
 
+	public abstract void toOWLOntology( OWLAPIOntologyCollector owlAPIOntologyCollector);
+
+	/*
+	 
+	 @Override
+	public void toOWLOntology( OWLAPIOntologyCollector owlAPIOntologyCollector){
+		
+	} 
+	 */
+	
 	@Override
 	public String toString() {
 		return "Node: " + uri + ":" + this.getClass().getSimpleName();
 
 	}
 
-	public String getURI() {
+	public String getURIString() {
 		return uri;
 	}
 	
+	public URI getURI() {
+		return URI.create(uri);
+	}
+	
+	public String getNTripleForm(){
+		return "<"+uri+"> ";
+	}
 	
 
 	

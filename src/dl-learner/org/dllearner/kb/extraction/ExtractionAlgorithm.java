@@ -59,6 +59,7 @@ public class ExtractionAlgorithm {
 		for (String oneURI : uris) {
 			nodeList.add(expandNode(oneURI, tupelAquisitor));
 		}
+		
 		return nodeList;
 	}
 
@@ -135,13 +136,31 @@ public class ExtractionAlgorithm {
 			
 			List<ObjectPropertyNode> l = getObjectPropertyNodes(collectNodes);
 			for (ObjectPropertyNode node : l) {
+				//FIXME has to be transported to the next step
 				node.expandProperties(tupleAquisitor, configuration.getManipulator());
 			}
 		}
+		
+		expandBlankNodes(getBlankNodes(collectNodes),tupleAquisitor);
+		
 	
 		return seedNode;
 
 	}
+	
+	private List<Node> expandBlankNodes(List<BlankNode> blankNodes, TupleAquisitor tupelAquisitor) {
+		List<Node> newNodes = new ArrayList<Node>();
+		while (!blankNodes.isEmpty()) {
+			Node next = blankNodes.remove(0);
+			List<Node> l = next.expand(tupelAquisitor, configuration.getManipulator());
+			for (Node node : l) {
+				blankNodes.add((BlankNode) node);
+			}
+			
+		}
+		return newNodes;
+	}
+		
 	
 	private List<Node> expandCloseAfterRecursion(List<InstanceNode> instanceNodes, TupleAquisitor tupelAquisitor) {
 		
@@ -179,9 +198,9 @@ public class ExtractionAlgorithm {
 			Node next = newClasses.remove(0);
 			logger.trace("Getting Superclasses for: " + next);
 			
-			if (!alreadyQueriedSuperClasses.contains(next.getURI().toString())) {
+			if (!alreadyQueriedSuperClasses.contains(next.getURIString().toString())) {
 				logger.trace("" + next+" not in cache retrieving");
-				alreadyQueriedSuperClasses.add(next.getURI().toString());
+				alreadyQueriedSuperClasses.add(next.getURIString().toString());
 				tupelAquisitor.setNextTaskToClassInformation();
 				newClasses.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
 				
@@ -219,6 +238,18 @@ public class ExtractionAlgorithm {
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
 				retList.add( (InstanceNode) node);
+				
+			}
+			
+		}
+		return retList;
+	}
+	
+	public static List<BlankNode> getBlankNodes(List<Node> l ){
+		List<BlankNode> retList = new ArrayList<BlankNode>();
+		for (Node node : l) {
+			if (node instanceof BlankNode) {
+				retList.add( (BlankNode) node);
 				
 			}
 			

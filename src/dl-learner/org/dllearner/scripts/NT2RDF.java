@@ -23,12 +23,16 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
+
+import com.hp.hpl.jena.rdf.arp.NTriple;
 public class NT2RDF {
 	
 
 	    public static void main(String[] args) {
 	      
-	        	String ontopath=args[0];	        	
+	        	//String ontopath=args[0];	
+	        	String ontopath = "examples/semantic_bible/NTNcombined.nt";
+	        	//String ontopath = "examples/semantic_bible/test.nt";
 	    		convertNT2RDF(ontopath);
 	       
 	        
@@ -43,15 +47,17 @@ public class NT2RDF {
 	    		 
 	    	try {
     		URI inputURI = new File(ontopath).toURI();
-
+    		System.out.println(inputURI);
     		// outputURI
     		String ending = ontopath.substring(ontopath.lastIndexOf(".") + 1);
+    		System.out.println(ending);
     		ontopath = ontopath.replace("." + ending, ".rdf" );
     		URI outputURI = new File(ontopath).toURI();
 
             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
             OWLOntology ontology = manager.loadOntologyFromPhysicalURI(inputURI);
             manager.saveOntology(ontology, new RDFXMLOntologyFormat(), outputURI);
+            //manager.saveOntology(ontology, new NTriple(), outputURI);
             // Remove the ontology from the manager
             manager.removeOntology(ontology.getURI());
 	    	}

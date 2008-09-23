@@ -34,18 +34,10 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  * 
  */
 
-public class DatatypePropertyNode extends Node {
-
-	// the a and b part of a property
-	private Node a;
-	private LiteralNode b;
-	
+public class DatatypePropertyNode extends PropertyNode {
 
 	public DatatypePropertyNode(String uri, Node a, LiteralNode b) {
-		super(uri);
-		// this.type = "property";
-		this.a = a;
-		this.b = b;
+		super(uri, a, b);
 	}
 
 	// Property Nodes are normally not expanded,
@@ -60,14 +52,9 @@ public class DatatypePropertyNode extends Node {
 	public void expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
 	}
 	
-	
-
-	public Node getA() {
-		return a;
-	}
-
-	public Node getB() {
-		return b;
+	@Override
+	public LiteralNode getBPart(){
+		return (LiteralNode)b;
 	}
 	
 	public String getNTripleFormOfB() {
@@ -77,12 +64,17 @@ public class DatatypePropertyNode extends Node {
 	@Override
 	public SortedSet<String> toNTriple() {
 		SortedSet<String> s = new TreeSet<String>();
-		s.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><"
+		s.add(getNTripleForm()+"<" + OWLVocabulary.RDF_TYPE + "><"
 				+ OWLVocabulary.OWL_DATATYPPROPERTY + ">.");
 
 		return s;
 	}
-
+	
+	@Override
+	public void toOWLOntology( OWLAPIOntologyCollector owlAPIOntologyCollector){
+		
+	}
+	
 	
 
 }

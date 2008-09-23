@@ -25,10 +25,15 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.kb.aquisitors.RDFBlankNode;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLCommentAnnotation;
+import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLLabelAnnotation;
 
 /**
  * Is a node in the graph, that is a class.
@@ -66,7 +71,7 @@ public class ClassNode extends Node {
 		return newNodes;
 	}
 	
-	public Node processTuple( RDFNodeTuple tuple) {
+	private Node processTuple( RDFNodeTuple tuple) {
 		try {
 			String property = tuple.a.toString();
 			if(tuple.b.isLiteral()) {
@@ -74,6 +79,12 @@ public class ClassNode extends Node {
 				return null;
 			}else if(tuple.b.isAnon()){
 				logger.warn("blanknodes not supported as of now "+ this +" in tuple" + tuple);
+				RDFBlankNode n = (RDFBlankNode) tuple.b;
+				//SortedSet<RDFNodeTuple> bNodeTuples = BlankNodeCollector.getBlankNode(n.getBNodeId());
+				//BlankNode tmp = new BlankNode(n); 
+				//add it to the graph
+				//classProperties.add(new ObjectPropertyNode( tuple.a.toString(), this, tmp));
+				//return tmp;
 				return null;
 			 // substitute rdf:type with owl:subclassof
 			}else if (property.equals(OWLVocabulary.RDF_TYPE) || 
@@ -110,21 +121,60 @@ public class ClassNode extends Node {
 	@Override
 	public SortedSet<String> toNTriple() {
 		SortedSet<String> returnSet = new TreeSet<String>();
-		returnSet.add("<" + this.uri + "><" + OWLVocabulary.RDF_TYPE + "><" + OWLVocabulary.OWL_CLASS + ">.");
+		String subject = getNTripleForm();
+		returnSet.add(subject+"<" + OWLVocabulary.RDF_TYPE + "><" + OWLVocabulary.OWL_CLASS + ">.");
 
 		for (ObjectPropertyNode one : classProperties) {
-			returnSet.add("<" + this.uri + "><" + one.getURI() + "><"
-					+ one.getB().getURI() + ">.");
-			returnSet.addAll(one.getB().toNTriple());
+			returnSet.add(subject + one.getNTripleForm() + 
+					one.getBPart().getNTripleForm()+" .");
+			returnSet.addAll(one.getBPart().toNTriple());
 		}
 		for (DatatypePropertyNode one : datatypeProperties) {
-			returnSet.add("<" + uri + "><" + one.getURI() + "> " + one.getNTripleFormOfB()
+			returnSet.add(subject+ one.getNTripleForm() + one.getNTripleFormOfB()
 					+ " .");
 		}
 
 		return returnSet;
 	}
-
 	
+	@Override
+	public void toOWLOntology( OWLAPIOntologyCollector owlAPIOntologyCollector){
+		try{
+		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
+		OWLClass me =factory.getOWLClass(getURI());
+		for (ObjectPropertyNode one : classProperties) {
+			OWLClass c = factory.getOWLClass(one.getBPart().getURI());
+			if(OWLVocabulary.isStringSubClassVocab(one.getURIString())){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLSubClassAxiom(me, c));
+			}else if(one.getURIString().equals(OWLVocabulary.OWL_DISJOINT_WITH)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLDisjointClassesAxiom(me, c));
+			}else if(one.getURIString().equals(OWLVocabulary.OWL_EQUIVALENT_CLASS)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLEquivalentClassesAxiom(me, c));
+			}else {
+				logger.warn("missing : " +one.getURIString());
+			}
+			one.getBPart().toOWLOntology(owlAPIOntologyCollector);
+		}
+		for (DatatypePropertyNode one : datatypeProperties) {
+			//FIXME add languages
+			// watch for tail
+			if(one.getURIString().equals(OWLVocabulary.RDFS_COMMENT)){
+				OWLCommentAnnotation comment = factory.getCommentAnnotation(one.getBPart().getLiteral().getString());
+				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, comment));
+				
+			}else if(one.getURIString().equals(OWLVocabulary.RDFS_LABEL)) {
+				OWLLabelAnnotation label = factory.getOWLLabelAnnotation(one.getBPart().getLiteral().getString());
+				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
+			}else {
+				logger.warn("missing : " +one.getURIString());
+			}
+		
+		}
+		}catch (Exception e) {
+			System.out.println("aaa"+getURIString());
+			e.printStackTrace();
+		}
+	}
+		
 
 }

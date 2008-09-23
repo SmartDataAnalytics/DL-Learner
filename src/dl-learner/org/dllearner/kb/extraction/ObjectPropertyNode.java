@@ -23,11 +23,12 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
+import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLObjectProperty;
 
 
 
@@ -38,24 +39,16 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  * 
  */
 
-public class ObjectPropertyNode extends Node {
+public class ObjectPropertyNode extends PropertyNode {
 
-	public static Logger logger = Logger.getLogger(ObjectPropertyNode.class);
 	
-	// the a and b part of a property
-	private Node a;
-	private Node b;
 	// specialtypes like owl:symmetricproperty
 	private SortedSet<String> specialTypes = new TreeSet<String>();
 	@SuppressWarnings("unused")
 	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<RDFNodeTuple>();
 
-	public ObjectPropertyNode(String uri, Node a, Node b) {
-		super(uri);
-		// this.type = "property";
-		this.a = a;
-		this.b = b;
-		
+	public ObjectPropertyNode(String propertyURI, Node a, Node b) {
+		super(propertyURI, a, b);		
 	}
 
 	// Property Nodes are normally not expanded,
@@ -88,24 +81,13 @@ public class ObjectPropertyNode extends Node {
 
 	}
 	
-	
-	
-
-	public Node getA() {
-		return a;
-	}
-
-	public Node getB() {
-		return b;
-	}
-
 	@Override
 	public SortedSet<String> toNTriple() {
 		SortedSet<String> s = new TreeSet<String>();
-		s.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><"
+		s.add(getNTripleForm()+"<" + OWLVocabulary.RDF_TYPE + "><"
 				+ OWLVocabulary.OWL_OBJECTPROPERTY + ">.");
 		for (String one : specialTypes) {
-			s.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><"
+			s.add(getNTripleForm()+"<" + OWLVocabulary.RDF_TYPE + "><"
 					+ one + ">.");
 		}
 		
@@ -115,6 +97,28 @@ public class ObjectPropertyNode extends Node {
 
 		return s;
 	}
+	
+	@Override
+	public void toOWLOntology( OWLAPIOntologyCollector owlAPIOntologyCollector){
+		//FIXME Property information
+
+		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
+		OWLObjectProperty me =factory.getOWLObjectProperty(getURI());
+	
+		
+		for (String one : specialTypes) {
+			if(one.equals(OWLVocabulary.OWL_FunctionalProperty)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLFunctionalObjectPropertyAxiom(me));
+			}else if(one.equals(OWLVocabulary.OWL_InverseFunctionalProperty)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLInverseFunctionalObjectPropertyAxiom(me));
+			}else if(one.equals(OWLVocabulary.OWL_TransitiveProperty)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLTransitiveObjectPropertyAxiom(me));
+			}else if(one.equals(OWLVocabulary.OWL_SymmetricProperty)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLSymmetricObjectPropertyAxiom(me));
+			}
+		}
+	}
+	
 
 	
 }
