@@ -228,7 +228,9 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 		
 		logger.trace("NamedClass");
 		SortedSet<String> label=tasks.queryAsSet("SELECT ?label WHERE {<"+description.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
-		query+="a "+label.first();
+		String l=label.first();
+		if (l.toLowerCase().startsWith("a")||l.toLowerCase().startsWith("e")||l.toLowerCase().startsWith("i")||l.toLowerCase().startsWith("o")||l.toLowerCase().startsWith("u")) query+="an "+l;
+		else query+="a "+l;
 	}
 	
 	
