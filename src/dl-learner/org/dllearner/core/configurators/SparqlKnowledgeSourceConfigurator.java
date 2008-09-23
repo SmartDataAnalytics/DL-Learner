@@ -76,6 +76,15 @@ public String getCacheDir() {
 return (String) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "cacheDir") ;
 }
 /**
+* useCache If true a Cache is used.
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getUseCache() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "useCache") ;
+}
+/**
 * instances relevant instances e.g. positive and negative examples in a learning problem.
 * mandatory: true| reinit necessary: true
 * default value: null
@@ -142,58 +151,13 @@ public Set<String> getObjList() {
 return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "objList") ;
 }
 /**
-* format N-TRIPLES or KB format.
-* mandatory: false| reinit necessary: true
-* default value: N-TRIPLES
-* @return String 
-**/
-public String getFormat() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "format") ;
-}
-/**
-* dumpToFile Specifies whether the extracted ontology is written to a file or not..
+* saveExtractedFragment Specifies whether the extracted ontology is written to a file or not..
 * mandatory: false| reinit necessary: true
 * default value: true
 * @return boolean 
 **/
-public boolean getDumpToFile() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "dumpToFile") ;
-}
-/**
-* convertNT2RDF Specifies whether the extracted NTriples are converted to RDF and deleted..
-* mandatory: false| reinit necessary: true
-* default value: false
-* @return boolean 
-**/
-public boolean getConvertNT2RDF() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "convertNT2RDF") ;
-}
-/**
-* useLits use Literals in SPARQL query.
-* mandatory: false| reinit necessary: true
-* default value: true
-* @return boolean 
-**/
-public boolean getUseLits() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "useLits") ;
-}
-/**
-* getAllSuperClasses If true then all superclasses are retrieved until the most general class (owl:Thing) is reached..
-* mandatory: false| reinit necessary: true
-* default value: true
-* @return boolean 
-**/
-public boolean getGetAllSuperClasses() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "getAllSuperClasses") ;
-}
-/**
-* useCache If true a Cache is used.
-* mandatory: false| reinit necessary: true
-* default value: true
-* @return boolean 
-**/
-public boolean getUseCache() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "useCache") ;
+public boolean getSaveExtractedFragment() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "saveExtractedFragment") ;
 }
 /**
 * replacePredicate rule for replacing predicates.
@@ -223,6 +187,24 @@ return (List<StringTuple>) ComponentManager.getInstance().getConfigOptionValue(s
 **/
 public int getBreakSuperClassRetrievalAfter() {
 return (Integer) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "breakSuperClassRetrievalAfter") ;
+}
+/**
+* useLits use Literals in SPARQL query.
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getUseLits() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "useLits") ;
+}
+/**
+* getAllSuperClasses If true then all superclasses are retrieved until the most general class (owl:Thing) is reached..
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getGetAllSuperClasses() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "getAllSuperClasses") ;
 }
 /**
 * closeAfterRecursion gets all classes for all instances.
@@ -291,6 +273,15 @@ ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "cacheDir
 reinitNecessary = true;
 }
 /**
+* @param useCache If true a Cache is used.
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setUseCache(boolean useCache) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "useCache", useCache);
+reinitNecessary = true;
+}
+/**
 * @param instances relevant instances e.g. positive and negative examples in a learning problem.
 * mandatory: true| reinit necessary: true
 * default value: null
@@ -354,57 +345,12 @@ ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "objList"
 reinitNecessary = true;
 }
 /**
-* @param format N-TRIPLES or KB format.
-* mandatory: false| reinit necessary: true
-* default value: N-TRIPLES
-**/
-public void setFormat(String format) {
-ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "format", format);
-reinitNecessary = true;
-}
-/**
-* @param dumpToFile Specifies whether the extracted ontology is written to a file or not..
+* @param saveExtractedFragment Specifies whether the extracted ontology is written to a file or not..
 * mandatory: false| reinit necessary: true
 * default value: true
 **/
-public void setDumpToFile(boolean dumpToFile) {
-ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "dumpToFile", dumpToFile);
-reinitNecessary = true;
-}
-/**
-* @param convertNT2RDF Specifies whether the extracted NTriples are converted to RDF and deleted..
-* mandatory: false| reinit necessary: true
-* default value: false
-**/
-public void setConvertNT2RDF(boolean convertNT2RDF) {
-ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "convertNT2RDF", convertNT2RDF);
-reinitNecessary = true;
-}
-/**
-* @param useLits use Literals in SPARQL query.
-* mandatory: false| reinit necessary: true
-* default value: true
-**/
-public void setUseLits(boolean useLits) {
-ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "useLits", useLits);
-reinitNecessary = true;
-}
-/**
-* @param getAllSuperClasses If true then all superclasses are retrieved until the most general class (owl:Thing) is reached..
-* mandatory: false| reinit necessary: true
-* default value: true
-**/
-public void setGetAllSuperClasses(boolean getAllSuperClasses) {
-ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "getAllSuperClasses", getAllSuperClasses);
-reinitNecessary = true;
-}
-/**
-* @param useCache If true a Cache is used.
-* mandatory: false| reinit necessary: true
-* default value: true
-**/
-public void setUseCache(boolean useCache) {
-ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "useCache", useCache);
+public void setSaveExtractedFragment(boolean saveExtractedFragment) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "saveExtractedFragment", saveExtractedFragment);
 reinitNecessary = true;
 }
 /**
@@ -432,6 +378,24 @@ reinitNecessary = true;
 **/
 public void setBreakSuperClassRetrievalAfter(int breakSuperClassRetrievalAfter) {
 ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "breakSuperClassRetrievalAfter", breakSuperClassRetrievalAfter);
+reinitNecessary = true;
+}
+/**
+* @param useLits use Literals in SPARQL query.
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setUseLits(boolean useLits) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "useLits", useLits);
+reinitNecessary = true;
+}
+/**
+* @param getAllSuperClasses If true then all superclasses are retrieved until the most general class (owl:Thing) is reached..
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setGetAllSuperClasses(boolean getAllSuperClasses) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "getAllSuperClasses", getAllSuperClasses);
 reinitNecessary = true;
 }
 /**

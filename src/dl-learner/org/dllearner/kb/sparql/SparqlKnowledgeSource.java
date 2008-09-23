@@ -96,27 +96,26 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		this.configurator = new SparqlKnowledgeSourceConfigurator(this);
 	}
 
-	// ConfigOptions
+	// these are saved for further reference
 	private URL url;
+	private SparqlEndpoint endpoint = null;
 
 	//private String format = "N-TRIPLES";
-	private String format = "RDF/XML";
+	//private String format = "RDF/XML";
 
-	private boolean dumpToFile = true;
+	private URL ontologyFragmentURL;
+
 	
-
-	private URL dumpFile;
-
 	private OWLOntology fragment;
 	
-	private SparqlEndpoint endpoint = null;
+	
 
 	// received ontology as array, used if format=Array(an element of the
 	// array consists of the subject, predicate and object separated by '<'
-	private String[] ontArray;
+	//private String[] ontArray;
 
 	// received ontology as KB, the internal format
-	private KB kb;
+	//private KB kb;
 
 	// mainly used for statistic
 	private int nrOfExtractedTriples = 0;
@@ -140,6 +139,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				null, true, true));
 		options.add(new StringConfigOption("cacheDir", "dir of cache", "cache",
 				false, true));
+		options.add(new BooleanConfigOption("useCache",
+				"If true a Cache is used", true, false, true));
 		options
 				.add(new StringSetConfigOption(
 						"instances",
@@ -166,27 +167,14 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				"list of all ignored roles", new TreeSet<String>(), false, true));
 		options.add(new StringSetConfigOption("objList",
 				"list of all ignored objects", new TreeSet<String>(), false, true));
-		options.add(new StringConfigOption("format", "N-TRIPLES or KB format",
-				"N-TRIPLES", false, true));
 		options
 				.add(new BooleanConfigOption(
-						"dumpToFile",
+						"saveExtractedFragment",
 						"Specifies whether the extracted ontology is written to a file or not.",
 						true, false, true));
-		options
-				.add(new BooleanConfigOption(
-						"convertNT2RDF",
-						"Specifies whether the extracted NTriples are converted to RDF and deleted.",
-						false, false, true));
-		options.add(new BooleanConfigOption("useLits",
-				"use Literals in SPARQL query", true, false, true));
-		options
-				.add(new BooleanConfigOption(
-						"getAllSuperClasses",
-						"If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.",
-						true, false, true));
-		options.add(new BooleanConfigOption("useCache",
-				"If true a Cache is used", true, false, true));
+		
+		
+		
 		options.add(new StringTupleListConfigOption("replacePredicate",
 				"rule for replacing predicates", new ArrayList<StringTuple>(), false, true));
 		options.add(new StringTupleListConfigOption("replaceObject",
@@ -194,6 +182,14 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		options.add(new IntegerConfigOption("breakSuperClassRetrievalAfter",
 				"stops a cyclic hierarchy after specified number of classes",
 				1000, false, true));
+
+		options.add(new BooleanConfigOption("useLits",
+				"use Literals in SPARQL query", true, false, true));
+		options
+		.add(new BooleanConfigOption(
+				"getAllSuperClasses",
+				"If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.",
+				true, false, true));
 		options.add(new BooleanConfigOption("closeAfterRecursion",
 				"gets all classes for all instances", true, false, true));
 		options.add(new BooleanConfigOption("getPropertyInformation",
@@ -264,7 +260,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			extractionTime.printAndSet("extraction needed");
 			logger.info("Finished collecting Fragment");
 
-			dumpFile = m.getPhysicalOntologyURL();
+			ontologyFragmentURL = m.getPhysicalOntologyURL();
 			
 			/*
 			if (dumpToFile) {
@@ -322,12 +318,13 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		if (format.equals("RDF/XML")){
-			return JenaOWLDIGConverter.getTellsString(dumpFile,
+		//if (format.equals("RDF/XML")){
+			return JenaOWLDIGConverter.getTellsString(ontologyFragmentURL,
 					OntologyFormat.RDF_XML, kbURI);
-		}else {
-			return DIGConverter.getDIGString(kb, kbURI).toString();
-		}
+		//}else {
+			//throw new Error("KB Format not supported any more");
+			//return DIGConverter.getDIGString(kb, kbURI).toString();
+		//}
 	}
 
 	/*
@@ -366,9 +363,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		
 	}
 
-	public String[] getOntArray() {
+	/*public String[] getOntArray() {
 		return ontArray;
-	}
+	}*/
 
 	public SparqlQuery sparqlQuery(String query) {
 		return new SparqlQuery(query, getSparqlEndpoint());
@@ -456,11 +453,15 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	@Override
 	public KB toKB() {
 		// TODO Does this work?
-		return kb;
+		return new KB();
 	}
 
-	public URL getNTripleURL() {
-		return dumpFile;
+	public URL getOntologyFragmentURL() {
+		return ontologyFragmentURL;
+	}
+	
+	public OWLOntology getOWLAPIOntology() {
+		return fragment;
 	}
 
 	public boolean isUseCache() {
