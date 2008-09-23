@@ -225,21 +225,34 @@ function get_triple_table($triples) {
 	$table = '<table border="0"><tr><td><b>Predicate</b></td><td><b>Object</b></td></tr>';
 	$i=1;
 	foreach($triples as $predicate=>$object) {
+		$number=count($object);
 		if ($i>0) $backgroundcolor="eee";
 		else $backgroundcolor="ffffff";
 		$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">'.nicePredicate($predicate).'</a></td>';
-		$table .= '<td><ul>';
+		$table .= '<td>';
+		if ($number>1) $table.='<ul>';
 		foreach($object as $element) {
 			if ($element['type']=="uri"){
 				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
 					$label=str_replace('_',' ',substr($element['value'],28));
-					$table .= '<li><a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($label).'</a></li>';
+					if ($number>1) $table.='<li>';
+					$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($label).'</a>';
+					if ($number>1) $table.='</li>';
 				}
-				else $table .= '<li><a href="'.$element['value'].'" target="_blank">'.urldecode($element['value']).'</a></li>';
+				else{
+					if ($number>1) $table.='<li>';
+					$table .= '<a href="'.$element['value'].'" target="_blank">'.urldecode($element['value']).'</a>';
+					if ($number>1) $table.='</li>';
+				}
 			}
-			else $table .= '<li>'.$element['value'].'</li>';
+			else{
+				if ($number>1) $table.='<li>';
+				$table .= $element['value'];
+				if ($number>1) $table.='</li>';
+			}
 		}
-		$table .= '</ul></td>';
+		if ($number>1) $table.='</ul>';
+		$table .= '</td>';
 		$i*=-1;
 	}
 	$table .= '</table>';
@@ -369,6 +382,48 @@ function getClassView($fathers,$childs,$title,$class)
 	$ret.='</td></tr>';
 	$ret.='</table>';
 				
+	return $ret;
+}
+
+function createCharacteristics($char)
+{
+	$ret='<table border="0" style="padding:5px">';
+	$i=0;
+	foreach ($char as $label=>$value){
+		if ($i%2==0)
+			$ret.='<tr>';
+		$ret.='<td style="width:20%;text-align:right"><b>'.$label.'</b>:</td><td style="width:30%;text-align:left">';
+		$number=count($value);	
+		if ($number>1) $ret.='<ul>';
+		foreach ($value as $val){
+			if ($val['type']=="uri"){
+				if (strpos($val['value'],"http://dbpedia.org/resource/")===0&&substr_count($val['value'],"/")==4&&strpos($val['value'],"Template:")!=28){
+					$label=str_replace('_',' ',substr($val['value'],28));
+					if ($number>1) $ret.='<li>';
+					$ret .= '<a href="#" onclick="get_article(\'label='.$val['value'].'&cache=-1\');return false;">'.urldecode($label).'</a>';
+					if ($number>1) $ret.='</li>';
+				}
+				else{
+					if ($number>1) $ret.='<li>';
+					$ret .= '<a href="'.$val['value'].'" target="_blank">'.urldecode($val['value']).'</a>';
+					if ($number>1) $ret.='</li>';
+				}
+			}
+			else{
+				if ($number>1) $ret.='<li>';
+				$ret .= $val['value'];
+				if ($number>1) $ret.='</li>';
+			}
+		}
+		if ($number>1) $ret.='</ul>';
+		$ret.='</td>';
+		if ($i%2==1||$i==count($char)-1){
+			$ret.='</tr>';
+			$ret.='<tr><td colspan="4" style="height:10px"></td></tr>';
+		}
+		$i++;
+	}
+	$ret.='</table>';
 	return $ret;
 }
 ?>

@@ -59,8 +59,10 @@
 				$artTitle=urldecode(str_replace("_"," ",substr (strrchr ($url, "/"), 1)));
 			
 			// display a picture if there is one
+			if (isset($triples['http://dbpedia.org/property/imageCaption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/imageCaption'][0]['value'];
+			else $alt='Picture of '.$artTitle;
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
-				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="Picture of '.$artTitle.'" style="float:right; max-width:200px;" \>';
+				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="'.$alt.'" style="float:right; max-width:200px;" \>';
 			
 			//display where it was redirected from, if it was redirected
 			$redirect="";
@@ -128,33 +130,68 @@
 				$long="";
 			}
 			
+			$characteristic=array();
 			//display only one birthdate
-			$birthdates=array("http://dbpedia.org/property/dateOfBirth","http://dbpedia.org/property/birth","http://dbpedia.org/property/birthDate");
-			$date=false;
+			$birthdates=array("http://dbpedia.org/property/dateOfBirth","http://dbpedia.org/property/birth","http://dbpedia.org/property/birthdate","http://dbpedia.org/property/birthDate");
+			$birthdate=false;
+			$birthuri=false;
 			foreach ($birthdates as $dates){
-				if ($date){
+				if ($birthdate!=false){
 					unset($triples[$dates]);
 					continue; 
 				}
-				if (isset($triples[$dates])&&$triples[$dates][0]['type']!='uri') $date=true;
+				if (isset($triples[$dates])&&$triples[$dates][0]['type']!='uri'){
+					$birthdate=$dates;
+					$characteristics['Birthdate']=$triples[$dates];	
+				}
+				else if ($triples[$dates][0]['type']=='uri'&&$birthuri==false){
+					$birthuri=$dates;
+					$characteristics['Birthdate']=$triples[$dates];
+				}
 				else unset($triples[$dates]);
 			}
 			
 			//display only one deathdate
-			$deathdates=array("http://dbpedia.org/property/death","http://dbpedia.org/property/dateOfDeath","http://dbpedia.org/property/deathDate");
-			$date=false;
+			$deathdates=array("http://dbpedia.org/property/death","http://dbpedia.org/property/dateOfDeath","http://dbpedia.org/property/deathdate","http://dbpedia.org/property/deathDate");
+			$deathdate=false;
+			$deathuri=false;
 			foreach ($deathdates as $dates){
-				if ($date){
+				if ($deathdate!=false){
 					unset($triples[$dates]);
 					continue; 
 				}
-				if (isset($triples[$dates])&&$triples[$dates][0]['type']!='uri') $date=true;
+				if (isset($triples[$dates])&&$triples[$dates][0]['type']!='uri'){
+					$deathdate=$dates;
+					$characteristics['Deathdate']=$triples[$dates];
+				}
+				else if ($triples[$dates][0]['type']=='uri'&&$deathuri==false){
+					$deathuri=$dates;
+					$characteristics['Deathdate']=$triples[$dates];
+				}
 				else unset($triples[$dates]);
 			}
 			
 			//display a small characteristics of a person, if at least the birth date is given 
-			if ($date){
-				$information=array();
+			if ($birthdate!=false||$birthuri!=false){
+				$content.='<br/><hr><h4>Characteristics</h4><br/>';
+				
+				if (isset($triples['http://dbpedia.org/property/birthname'])) $characteristics['Birthname']=$triples['http://dbpedia.org/property/birthname'];
+				if (isset($triples['http://dbpedia.org/property/birthPlace'])) $characteristics['Birthplace']=$triples['http://dbpedia.org/property/birthPlace'];
+				if (isset($triples['http://dbpedia.org/property/deathPlace'])) $characteristics['Deathplace']=$triples['http://dbpedia.org/property/deathPlace'];
+				if (isset($triples['http://dbpedia.org/property/spouse'])) $characteristics['Spouse']=$triples['http://dbpedia.org/property/spouse'];
+				if (isset($triples['http://dbpedia.org/property/shortDescription'])) $characteristics['Short Description']=$triples['http://dbpedia.org/property/shortDescription'];
+				if (isset($triples['http://dbpedia.org/property/alternativeNames'])) $characteristics['Alternative Names']=$triples['http://dbpedia.org/property/alternativeNames'];
+				$content.=createCharacteristics($characteristics);
+				unset($triples['http://dbpedia.org/property/birthname']);
+				unset($triples['http://dbpedia.org/property/birthPlace']);
+				unset($triples['http://dbpedia.org/property/deathPlace']);
+				unset($triples['http://dbpedia.org/property/spouse']);
+				unset($triples['http://dbpedia.org/property/shortDescription']);
+				unset($triples['http://dbpedia.org/property/alternativeNames']);
+				if ($birthdate!=false) unset($triples[$birthdate]);
+				if ($birthuri!=false) unset($triples[$birthuri]);
+				if ($deathdate!=false) unset($triples[$deathdate]);
+				if ($deathuri!=false) unset($triples[$deathuri]);
 			}
 									
 			
@@ -226,6 +263,9 @@
 			unset($triples['http://www.geonames.org/ontology#featureCode']);
 			unset($triples['http://www.geonames.org/ontology#featureClass']);
 			unset($triples['http://dbpedia.org/property/dmozProperty']);
+			unset($triples['http://dbpedia.org/property/color']);
+			unset($triples['http://dbpedia.org/property/imageCaption']);
+			unset($triples['http://dbpedia.org/property/name']);
 			
 			if (count($triples)>0){
 				$content.='<br/><hr><h4>Remaining Triples</h4><br/>';
