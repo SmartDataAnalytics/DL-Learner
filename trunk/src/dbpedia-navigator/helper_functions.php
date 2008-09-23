@@ -13,7 +13,7 @@ function subjectToURI($subject)
 	//add the uri
 	$subject="http://dbpedia.org/resource/".$subject;
 	
-	return $subject;
+	return urldecode($subject);
 }
 
 function getTagCloud($tags,$label)
@@ -232,7 +232,7 @@ function get_triple_table($triples) {
 		foreach($object as $element) {
 			if ($element['type']=="uri"){
 				if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
-					$label=substr($element['value'],28);
+					$label=str_replace('_',' ',substr($element['value'],28));
 					$table .= '<li><a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($label).'</a></li>';
 				}
 				else $table .= '<li><a href="'.$element['value'].'" target="_blank">'.urldecode($element['value']).'</a></li>';
@@ -290,10 +290,12 @@ function formatClassArray($ar) {
 	
 	$string="<ul>";
 	for($i=0; $i<count($ar); $i++) {
+		$yagoPrefix = 'http://dbpedia.org/class/yago/';
+		if(substr($ar[$i]['value'],0,30)!=$yagoPrefix) continue;
 		$query="SELECT label FROM categories WHERE category='".$ar[$i]['value']."' LIMIT 1";
 		$res=$databaseConnection->query($query);
 		$result=$databaseConnection->nextEntry($res);
-		if ($ar[$i]['value']!="http://xmlns.com/foaf/0.1/Person") $string .= '<li>' . formatClass($ar[$i]['value'],$result['label']).'</li>';
+		$string .= '<li>' . formatClass($ar[$i]['value'],$result['label']).'</li>';
 	}
 	return $string."</ul>";
 }
@@ -301,17 +303,7 @@ function formatClassArray($ar) {
 // format a class nicely, i.e. link to it and possibly display
 // it in a better way
 function formatClass($className,$label) {
-	$yagoPrefix = 'http://dbpedia.org/class/yago/';
-	if(substr($className,0,30)==$yagoPrefix) {
-		return $label.'&nbsp;&nbsp;&nbsp;<a href="#" onclick="getSubjectsFromCategory(\'category='.$className.'&number=10\');">&rarr; search Instances</a>&nbsp;&nbsp;<a href="#" onclick="get_class(\'class='.$className.'&cache=-1\');">&rarr; show Class in Hierarchy</a>';	
-	// DBpedia is Linked Data, so it makes always sense to link it
-	// ToDo: instead of linking to other pages, the resource should better
-	// be openened within DBpedia Navigator
-	} else if(substr($className,0,14)=='http://dbpedia') {
-		return '<a href="'.$className.'" target="_blank">'.$className.'</a>';
-	} else {
-		return $className;
-	}
+	return $label.'&nbsp;&nbsp;&nbsp;<a href="#" onclick="getSubjectsFromCategory(\'category='.$className.'&number=10\');">&rarr; search Instances</a>&nbsp;&nbsp;<a href="#" onclick="get_class(\'class='.$className.'&cache=-1\');">&rarr; show Class in Hierarchy</a>';	
 }
 
 function arrayToCommaSseparatedList($ar) {
