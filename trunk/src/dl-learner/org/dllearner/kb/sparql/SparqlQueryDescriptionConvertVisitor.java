@@ -151,14 +151,12 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	/**
 	 * COMMENT: write some more
 	 * includes subclasses, costly function, because subclasses have to be received first.
-	 * @see conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache c,
+	 * TODO mentioned method cannot be found by Javadoc tool
+	 * conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache c,
 			boolean simple)
-	 * @param descriptionKBSyntax @see getSparqlQuery(Description description, int limit)
-	 * @param limit @see getSparqlQuery(Description description, int limit)
-	 * @param se
-	 * @param c
+	 * @param descriptionKBSyntax @see #getSparqlQuery(Description description, int limit)
+	 * @param resultLimit @see #getSparqlQuery(Description description, int limit)
 	 * @param maxDepth
-	 * @return
 	 * @throws ParseException
 	 */
 	public static String getSparqlQueryIncludingSubclasses(String descriptionKBSyntax, int resultLimit, SPARQLTasks st, int maxDepth) throws ParseException

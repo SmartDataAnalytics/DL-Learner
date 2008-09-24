@@ -209,7 +209,7 @@ public class PaperStatistics {
 	 * Has been used to create the statistics for the MLDM 2007 paper.
 	 * Warning: this method runs for several hours
 	 * 
-	 * @todo: This method has not been fully adapted to the base structure
+	 * TODO This method has not been fully adapted to the base structure
 	 * changes. To reproduce the results, the method has to be implemented
 	 * properly.
 	 */

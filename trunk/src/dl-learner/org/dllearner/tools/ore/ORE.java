@@ -284,7 +284,6 @@ public class ORE {
 	 * Retrieves description parts that might cause inconsistency - for negative examples only.
 	 * @param ind
 	 * @param desc
-	 * @return
 	 */
 	public Set<Description> getNegCriticalDescriptions(Individual ind, Description desc){
 		
@@ -431,7 +430,6 @@ public class ORE {
 	 * Returns individuals that are in range of property.
 	 * @param objRestr
 	 * @param ind
-	 * @return
 	 */
 	public Set<Individual> getIndividualsInPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
 		
@@ -445,7 +443,6 @@ public class ORE {
 	 * Returns individuals that are not in range of property.
 	 * @param objRestr
 	 * @param ind
-	 * @return
 	 */
 	public Set<Individual> getIndividualsNotInPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
 		
@@ -529,7 +526,6 @@ public class ORE {
 	 * Get the complement classes where individual is asserted to.
 	 * @param desc
 	 * @param ind
-	 * @return
 	 */
 	public Set<NamedClass> getComplements(Description desc, Individual ind){
 //		System.out.println("----------------" + desc + "---------------");

@@ -128,9 +128,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			.getLogger(SparqlKnowledgeSource.class);
 
 	/**
-	 * sets the ConfigOptions for this KnowledgeSource.
+	 * Specifies the configuration options for this knowledge source.
 	 * 
-	 * @return
+	 * @see org.dllearner.core.Component#createConfigOptions()
+	 * @return Options of this component.
 	 */
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();

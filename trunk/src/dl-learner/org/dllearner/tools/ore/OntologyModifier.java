@@ -93,7 +93,6 @@ public class OntologyModifier {
 	 * Adds an EquivalentClassesAxiom axiom to the ontology. 
 	 * @param newDesc new axiom to add
 	 * @param oldDesc old description
-	 * @return
 	 */
 	public OWLOntologyChange addAxiomToOWL(Description newDesc, Description oldDesc){
 		
@@ -478,7 +477,6 @@ public class OntologyModifier {
 	 * checks whether desc1 and desc2 are disjoint.
 	 * @param desc1 class 1
 	 * @param desc2 class 2
-	 * @return 
 	 */
 	public boolean isComplement(Description desc1, Description desc2){
 
@@ -555,7 +553,6 @@ public class OntologyModifier {
 	/**
 	 * Returns object properties for an individual.
 	 * @param ind
-	 * @return
 	 */
 	public Set<ObjectPropertyAssertion> getObjectProperties(Individual ind){
 		Set<ObjectPropertyAssertion> objectProperties = new HashSet<ObjectPropertyAssertion>();

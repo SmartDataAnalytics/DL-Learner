@@ -77,8 +77,6 @@ public class GP extends LearningAlgorithm {
          * In this type of algorithm offspring is produced by a number of indivuals.
          * The offspring then replaces the weakest individuals of the previous
          * generation.
-         * 
-         * @see #setNumberOfSelectedIndividuals(int)
          */    	
     	STEADY_STATE};     
     

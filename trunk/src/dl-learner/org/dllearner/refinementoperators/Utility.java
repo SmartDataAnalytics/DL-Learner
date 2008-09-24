@@ -95,7 +95,6 @@ public final class Utility {
 	 * property cannot have applicable subproperties, because subproperties
 	 * can only restrict, but not broaden their domain.)
 	 * 
-	 * @param rs The underlying reasoning service.
 	 * @param applicableObjectProperties The set of applicable properties.
 	 * @return The most general applicable properties.
 	 */

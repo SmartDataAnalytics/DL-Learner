@@ -208,7 +208,6 @@ public class Helper {
 	 * @param <T>
 	 * @param set1
 	 * @param set2
-	 * @return
 	 */
 	public static <T> Set<T> union(Set<T> set1, Set<T> set2) {
 		// TODO: effizientere Implementierung (längere Liste klonen und Elemente
@@ -450,8 +449,7 @@ public class Helper {
 	 * concepts are those having prefix "anon" and concepts belonging to
 	 * the RDF, RDFS, OWL standards.
 	 * 
-	 * @param concepts
-	 * @return
+	 * @param concepts The set from which concepts will be removed.
 	 */
 	public static void removeUninterestingConcepts(Set<NamedClass> concepts) {
 		Iterator<NamedClass> it = concepts.iterator();
@@ -536,7 +534,7 @@ public class Helper {
 	
 	/**
 	 * Checks whether the roles exist in background knowledge
-	 * @param roles The roles to check.
+	 * @param concepts The concepts to check.
 	 * @return The first non-existing role or null if they are all in the
 	 * background knowledge.
 	 */

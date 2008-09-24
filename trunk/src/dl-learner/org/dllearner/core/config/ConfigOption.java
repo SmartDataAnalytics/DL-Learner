@@ -156,7 +156,7 @@ public abstract class ConfigOption<T> {
 	 * TODO Method should be removed and a mapping table in ConfigJavaGenerator 
 	 * created instead.
 	 * gets java imports
-	 * @return 
+	 * @return Java imports.
 	 */
 	public SortedSet<String> getJavaImports() {
 		return new TreeSet<String>();
