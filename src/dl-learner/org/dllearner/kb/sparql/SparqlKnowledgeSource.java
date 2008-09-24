@@ -54,7 +54,6 @@ import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.manipulator.ObjectReplacementRule;
 import org.dllearner.kb.manipulator.PredicateReplacementRule;
 import org.dllearner.kb.manipulator.Rule.Months;
-import org.dllearner.reasoning.DIGConverter;
 import org.dllearner.reasoning.JenaOWLDIGConverter;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
