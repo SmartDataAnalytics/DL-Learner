@@ -45,7 +45,7 @@ public class DBpediaNavigatorOtherRule extends Rule{
 		RDFNode clazz = null;
 		RDFNodeTuple typeTuple = null;
 		for (RDFNodeTuple tuple : tuples) {
-			
+						
 			if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)){
 				clazz = tuple.b;
 				typeTuple = tuple;

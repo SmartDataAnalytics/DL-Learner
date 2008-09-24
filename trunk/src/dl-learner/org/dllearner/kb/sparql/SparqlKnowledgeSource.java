@@ -417,7 +417,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	public Manipulator getManipulator() {
 		// get Options for Filters
-		if (configurator.getPredefinedManipulator() == null) {
+		if (configurator.getPredefinedManipulator() != null) {
 			return Manipulator.getManipulatorByName(configurator
 					.getPredefinedManipulator());
 

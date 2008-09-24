@@ -21,6 +21,7 @@ package org.dllearner.algorithms;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
@@ -179,6 +180,11 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	@Override
 	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
 		return learner.getCurrentlyBestEvaluatedDescription();
+	}
+	
+	@Override
+	public List<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions){
+		return learner.getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, accuracyThreshold, filterNonMinimalDescriptions);
 	}
 
 	@Override
