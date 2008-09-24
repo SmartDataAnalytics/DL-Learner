@@ -150,11 +150,9 @@ class DLLearnerConnection
 		if (count($result['results']['bindings'])==0) throw new Exception("An article with that name does not exist. The Search is started ..."); 
 		$ret=array();
 		foreach ($result['results']['bindings'] as $results){
-			if (isset($results['obj'])) $value=$results['obj'];
-			else if (isset($results['sub'])) $value=$results['sub'];
-			if (!(isset($value['xml:lang'])&&($value['xml:lang']!=$this->lang))){
-				if (isset($results['obj'])) $ret[0][$results['pred']['value']][]=$value;
-				else if (isset($results['sub'])) $ret[1][$results['pred']['value']][]=$value;
+			if (!(isset($results['xml:lang'])&&($results['xml:lang']!=$this->lang))){
+				if (isset($results['obj'])) $ret[0][$results['pred']['value']][]=$results['obj'];
+				else if (isset($results['sub'])) $ret[1][$results['pred']['value']][]=$results['sub'];
 			}
 		}
 		
@@ -258,9 +256,9 @@ class DLLearnerConnection
 		return $return;
 	}*/
 	
-	function getSubjectsFromConcept($concept)
+	function getSubjectsFromConcept($concept,$number)
 	{
-		$query=$this->client->SparqlRetrieval($concept);
+		$query=$this->client->SparqlRetrieval($concept,$number);
 		$result=json_decode($this->getSparqlResultThreaded($query),true);
 		if (count($result['results']['bindings'])==0) throw new Exception("Your query brought no result.");
 		$ret=array();

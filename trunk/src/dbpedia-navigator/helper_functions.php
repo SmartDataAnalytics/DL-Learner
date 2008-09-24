@@ -154,7 +154,7 @@ function getCategoryResultsTable($names,$labels,$category,$number)
 	return $ret;
 }
 
-function getConceptResultsTable($names,$labels,$kb,$label,$number)
+function getConceptResultsTable($names,$labels,$kb,$number)
 {
 	$ret="<p>These are your results. Show best ";
 	for ($k=10;$k<125;){
@@ -224,7 +224,7 @@ function setRunning($id,$running)
 	fclose($file);
 }
 
-function get_triple_table($triples,$subjecttriples) {
+function get_triple_table($triples,$subjecttriples,$predicateLabels) {
 
 	$table = '<table border="0" style="width:100%;overflow:hidden"><tr><td><b>Predicate</b></td><td><b>Object/Subject</b></td></tr>';
 	$i=1;
@@ -313,15 +313,15 @@ function get_triple_table($triples,$subjecttriples) {
 function nicePredicate($predicate)
 {
 	if (strripos ($predicate, "#")>strripos ($predicate, "/")){
-		$namespace=substr ($predicate,0,strripos ($predicate, "#"));
+		//$namespace=substr ($predicate,0,strripos ($predicate, "#"));
 		$name=substr ($predicate,strripos ($predicate, "#")+1);
 	}
 	else{
-		$namespace=substr ($predicate,0,strripos ($predicate, "/"));
+		//$namespace=substr ($predicate,0,strripos ($predicate, "/"));
 		$name=substr ($predicate,strripos ($predicate, "/")+1);
 	}
 	
-	switch ($namespace){
+	/*switch ($namespace){
 		case "http://www.w3.org/2000/01/rdf-schema": 	$namespace="rdfs";
 													 	break;
 		case "http://www.w3.org/2002/07/owl": 		 	$namespace="owl";
@@ -336,11 +336,15 @@ function nicePredicate($predicate)
 													 	break;
 		case "http://www.georss.org/georss/point":		$namespace="georss";
 													 	break;	
-	}
+	}*/
 	
-	//fläche has strange url
-	$name=str_replace('fl_percent_C3_percent_A4che','fl%C3%A4che',$name);
-	return $namespace.':'.urldecode($name);
+	//change urls with ä,ö,ü
+	$name=str_replace('_percent_C3_percent_A4','%C3%A4',$name);
+	$name=str_replace('_percent_C3_percent_B6','%C3%B6',$name);
+	$name=str_replace('_percent_C3_percent_BC','%C3%BC',$name);
+	$name=str_replace('_',' ',$name);
+	
+	return urldecode($name);
 }
 
 function formatClassArray($ar) {
