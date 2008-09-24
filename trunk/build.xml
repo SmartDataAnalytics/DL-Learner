@@ -4,7 +4,7 @@
 	<!-- directory settings -->
 	<property name="lib_dir" value="lib" />
 	<property name="source_dir" value="src/dl-learner" />
-	<property name="protege_dir" value="/Programme/Protege_4.0_alpha/plugins" />
+	<property name="protege_dir" value="/home/jl/programme/Protege_4.0_beta/plugins" />
 	<property name="class_dir" value="classes" />
 	
 	<property name="php_client_dir" value="src/php-client" />
