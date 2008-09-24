@@ -89,8 +89,9 @@ public class Manipulator {
 	
 	public static Manipulator getDBpediaNavigatorManipulator(){
 		Manipulator m =  new Manipulator();
-		m.addRule(new DBPediaNavigatorCityLocatorRule(Months.JANUARY));
-		m.addRule(new DBpediaNavigatorOtherRule(Months.DECEMBER));
+		//m.addRule(new DBPediaNavigatorCityLocatorRule(Months.JANUARY));
+		//m.addRule(new DBpediaNavigatorOtherRule(Months.DECEMBER));
+		m.addRule(new DBpediaNavigatorFilterRule(Months.JANUARY));
 		return m;
 	}
 	

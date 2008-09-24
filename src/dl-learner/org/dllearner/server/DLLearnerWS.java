@@ -394,12 +394,26 @@ public class DLLearnerWS {
 	
 	@WebMethod
 	public String getCurrentlyBestEvaluatedDescriptions(int id, int limit) throws ClientNotKnownException{
+		return currentlyBestEvaluatedDescriptions(id,limit,-1,false);
+	}
+	
+	@WebMethod
+	public String getCurrentlyBestEvaluatedDescriptionsFiltered(int id,int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) throws ClientNotKnownException
+	{
+		return currentlyBestEvaluatedDescriptions(id,nrOfDescriptions,accuracyThreshold,filterNonMinimalDescriptions);
+	}
+	
+	private String currentlyBestEvaluatedDescriptions(int id,int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) throws ClientNotKnownException
+	{
 		ClientState state = getState(id);
-		List<EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(limit);
+		List<EvaluatedDescription> descriptions;
+		if (accuracyThreshold!=-1) descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, accuracyThreshold, filterNonMinimalDescriptions);
+		else descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions);
 		String json = "{";
 		int count = 1;
 		for(EvaluatedDescription description : descriptions) {
-			json += "\"solution" + count + "\" : " + description.asJSON();
+			if (count>1) json += ",\"solution" + count + "\" : " + description.asJSON();
+			else json += "\"solution" + count + "\" : " + description.asJSON();
 			count++;
 		}
 		json+="}";
