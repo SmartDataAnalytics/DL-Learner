@@ -1,5 +1,6 @@
 function search_it(param)
 {
+	setDatabaseRunning(true);
 	if (document.all){
     	//IE
     	var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
@@ -21,6 +22,9 @@ function search_it(param)
     			document.getElementById('searchcontent').innerHTML=response[2];
     			document.getElementById('SearchResultBox').style.display='block';
     		}
+    	}
+    	if (XhrObj.readyState == 4){
+    		setDatabaseRunning(false);
     	}
     }
     		
@@ -44,23 +48,26 @@ function get_article(param)
     		
     XhrObj.onreadystatechange = function()
     {
+    	if (XhrObj.readyState == 4)
+    		setRunning(false);
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
     		var response = XhrObj.responseText.split('$$$');
-    		document.getElementById('articlecontent').innerHTML=response[0];
-    		document.getElementById('ArticleTitle').innerHTML=response[1];
-    		document.getElementById('lastarticles').innerHTML=response[2];
-    		document.getElementById('Positives').innerHTML=response[3];
-    		document.getElementById('Negatives').innerHTML=response[4];
-    		setRunning(false);
-    		if (response[5].length>0&&response[6].length>0)
-    			loadGoogleMap(response[5],response[6],''+response[1]);
-    		if (response[1]=='Article not found'){
-    			setTimeout("search_it('label='+document.getElementById('label').value+'&number=10')",2000);
-    		}
-    		else
-    			document.getElementById('LastArticlesBox').style.display='block';
-    			learnConcept();
-    		}
+    		if (response[0]!='-'){
+	    		document.getElementById('articlecontent').innerHTML=response[0];
+	    		document.getElementById('ArticleTitle').innerHTML=response[1];
+	    		document.getElementById('lastarticles').innerHTML=response[2];
+	    		document.getElementById('Positives').innerHTML=response[3];
+	    		document.getElementById('Negatives').innerHTML=response[4];
+	    		if (response[5].length>0&&response[6].length>0)
+	    			loadGoogleMap(response[5],response[6],''+response[1]);
+	    		if (response[1]=='Article not found')
+	    			setTimeout("search_it('label='+document.getElementById('label').value+'&number=10')",2000);
+	    		else {
+	    			document.getElementById('LastArticlesBox').style.display='block';
+	    			learnConcept();
+	    		}
+	    	}
+    	}
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -69,6 +76,7 @@ function get_article(param)
 
 function get_class(param)
 {
+	setDatabaseRunning(true);
     if (document.all){
     	//IE
     	var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
@@ -89,6 +97,8 @@ function get_class(param)
     		document.getElementById('lastclasses').innerHTML=response[2];
     		document.getElementById('LastClassesBox').style.display='block';
     	}
+    	if (XhrObj.readyState == 4)
+    		setDatabaseRunning(false);
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -114,6 +124,7 @@ function toPositive(param)
     		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
+    		learnConcept();
     	}
     }
     	
@@ -140,6 +151,7 @@ function toNegative(param)
     		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
+    		learnConcept();
     	}
     }
     	
@@ -188,6 +200,7 @@ function clearNegatives()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
     		document.getElementById('Negatives').innerHTML = XhrObj.responseText;
+    		learnConcept();
     	}
     }
     	
@@ -214,6 +227,7 @@ function removePosInterest(param)
     		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
+    		learnConcept();
     	}
     }
     		
@@ -240,6 +254,7 @@ function removeNegInterest(param)
     		var response = XhrObj.responseText.split('$$$');
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
+    		learnConcept();
     	}
     }
     		
@@ -263,12 +278,14 @@ function learnConcept()
     
     XhrObj.onreadystatechange = function()
     {
+    	if (XhrObj.readyState == 4){
+    		setRunning(false);
+    	}
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
     		if (XhrObj.responseText!='-'){
 	    		document.getElementById('conceptlink').innerHTML=XhrObj.responseText;
 	    		document.getElementById('ConceptBox').style.display='block';
 	    	}
-    		setRunning(false);
     	}
     }
     		
@@ -292,6 +309,7 @@ function stopServerCall()
     XhrObj.onreadystatechange = function()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
+    		setRunning(false);
     	}
     }
     		
@@ -331,6 +349,7 @@ function getSubjectsFromConcept(param)
 
 function getSubjectsFromCategory(param)
 {
+	setDatabaseRunning(true);
 	if (document.all){
 		//IE
   		var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
@@ -353,6 +372,8 @@ function getSubjectsFromCategory(param)
     			document.getElementById('SearchResultBox').style.display='block';
     		}
     	}
+    	if (XhrObj.readyState == 4)
+    		setDatabaseRunning(false);
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');

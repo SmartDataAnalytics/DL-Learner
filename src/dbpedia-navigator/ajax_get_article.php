@@ -265,10 +265,10 @@
 			if (isset($triples['http://dbpedia.org/property/imagesize'])) unset($triples['http://dbpedia.org/property/imagesize']);
 			if (isset($triples['http://dbpedia.org/property/id'])) unset($triples['http://dbpedia.org/property/id']);
 			if (isset($triples['http://dbpedia.org/property/issue'])) unset($triples['http://dbpedia.org/property/issue']);
-			if (isset($triples['http://dbpedia.org/property/hips'][0]['type']=='uri')) unset($triples['http://dbpedia.org/property/hips']);
-			if (isset($triples['http://dbpedia.org/property/weight'][0]['type']=='uri')) unset($triples['http://dbpedia.org/property/weight']);
-			if (isset($triples['http://dbpedia.org/property/waist'][0]['type']=='uri')) unset($triples['http://dbpedia.org/property/waist']);
-			if (isset($triples['http://dbpedia.org/property/height'][0]['type']=='uri')) unset($triples['http://dbpedia.org/property/height']);
+			if (isset($triples['http://dbpedia.org/property/hips'])&&$triples['http://dbpedia.org/property/hips'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/hips']);
+			if (isset($triples['http://dbpedia.org/property/weight'])&&$triples['http://dbpedia.org/property/weight'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/weight']);
+			if (isset($triples['http://dbpedia.org/property/waist'])&&$triples['http://dbpedia.org/property/waist'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/waist']);
+			if (isset($triples['http://dbpedia.org/property/height'])&&$triples['http://dbpedia.org/property/height'][0]['type']=='uri') unset($triples['http://dbpedia.org/property/height']);
 			if (isset($triples['http://www.geonames.org/ontology#featureCode'])) unset($triples['http://www.geonames.org/ontology#featureCode']);
 			if (isset($triples['http://www.geonames.org/ontology#featureClass'])) unset($triples['http://www.geonames.org/ontology#featureClass']);
 			if (isset($triples['http://dbpedia.org/property/dmozProperty'])) unset($triples['http://dbpedia.org/property/dmozProperty']);
@@ -328,8 +328,7 @@
 									
 		} catch (Exception $e)
 		{
-			$content=$e->getMessage();
-			$artTitle="Article not found";
+			$content="-";
 		}
 	}
 	else {

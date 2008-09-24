@@ -1,4 +1,6 @@
 <?php
+	ini_set('max_execution_time',200);
+
 	include('helper_functions.php');
 	
 	session_start();
