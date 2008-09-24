@@ -76,7 +76,7 @@ public class SparqlExtractionTest {
 					200
 					);
 			m.useConfiguration(conf);
-
+			@SuppressWarnings("unused")
 			String u2 = "http://dbpedia.org/resource/Angela_Merkel";
 			
 			String filename = "cache/"+System.currentTimeMillis() + ".nt";

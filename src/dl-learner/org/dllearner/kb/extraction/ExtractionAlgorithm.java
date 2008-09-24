@@ -98,7 +98,7 @@ public class ExtractionAlgorithm {
 				tupleAquisitor.setNextTaskToNormal();
 				tmp.addAll(nextNode.expand(tupleAquisitor,
 						configuration.getManipulator()));
-				//System.out.println(tmpVec);
+				//.out.println(tmpVec);
 				
 			}
 			collectNodes.addAll(tmp);

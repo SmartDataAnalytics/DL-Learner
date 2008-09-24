@@ -151,7 +151,7 @@ public Set<String> getObjList() {
 return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "objList") ;
 }
 /**
-* saveExtractedFragment Specifies whether the extracted ontology is written to a file or not..
+* saveExtractedFragment Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir..
 * mandatory: false| reinit necessary: true
 * default value: true
 * @return boolean 
@@ -345,7 +345,7 @@ ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "objList"
 reinitNecessary = true;
 }
 /**
-* @param saveExtractedFragment Specifies whether the extracted ontology is written to a file or not..
+* @param saveExtractedFragment Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir..
 * mandatory: false| reinit necessary: true
 * default value: true
 **/

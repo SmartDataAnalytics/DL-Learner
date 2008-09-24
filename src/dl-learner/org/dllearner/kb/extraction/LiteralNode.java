@@ -70,7 +70,8 @@ public class LiteralNode extends Node {
 
 	// gets the types for properties recursively
 	@Override
-	public void expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+		return new ArrayList<BlankNode>();
 	}
 
 	@Override
@@ -144,6 +145,9 @@ public class LiteralNode extends Node {
 		}catch (Exception e) {
 			return false;
 		}
+	}
+	public boolean hasLanguageTag(){
+		return (!(l.getLanguage().length()==0));
 	}
 	
 	

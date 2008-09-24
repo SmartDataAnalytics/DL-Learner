@@ -62,7 +62,7 @@ public class RDFNodeTuple implements Comparable<RDFNodeTuple>{
 		return b.toString().contains(partOf);
 	}
 	
-	@Deprecated
+	
 	public String getNTriple (String subject){
 		String ret = "<"+subject+"> ";
 		ret+="<"+a.toString()+"> ";
