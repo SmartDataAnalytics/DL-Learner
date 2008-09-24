@@ -112,10 +112,12 @@ public class InstanceNode extends Node {
 	
 	// gets the types for properties recursively
 	@Override
-	public void expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+		List<BlankNode> ret =  new ArrayList<BlankNode>();
 		for (ObjectPropertyNode one : objectProperties) {
-			one.expandProperties(tupelAquisitor, manipulator);
+			ret.addAll(one.expandProperties(tupelAquisitor, manipulator));
 		}
+		return ret;
 
 	}
 
@@ -164,12 +166,12 @@ public class InstanceNode extends Node {
 		for (DatatypePropertyNode one : datatypeProperties) {
 			OWLDataProperty p = factory.getOWLDataProperty(one.getURI());
 			Literal ln = one.getBPart().getLiteral();
+			
 			try{
-				
-				
 				if(one.getBPart().isString()){
 					owlAPIOntologyCollector.addAxiom(
-							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getString()));
+					factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getString()));
+					
 				} else if(one.getBPart().isDouble()){
 					owlAPIOntologyCollector.addAxiom(
 							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getDouble()));
@@ -183,7 +185,7 @@ public class InstanceNode extends Node {
 					owlAPIOntologyCollector.addAxiom(
 							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getBoolean()));
 				} else {
-					logger.warn("missing : "+one.getURIString());
+					tail(getURIString()+"||"+one.getURIString());
 				}
 				
 				

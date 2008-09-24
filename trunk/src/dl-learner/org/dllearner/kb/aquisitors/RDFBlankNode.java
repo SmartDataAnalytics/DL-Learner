@@ -47,6 +47,7 @@ public class RDFBlankNode implements RDFNode {
 		return bNodeId;
 	}
 	//RBC
+	@Override
 	public String toString(){
 		//RBC
 		return "I'm a blank node with id: "+bNodeId+"||"+blankNode;

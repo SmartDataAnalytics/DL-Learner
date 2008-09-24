@@ -170,11 +170,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		options
 				.add(new BooleanConfigOption(
 						"saveExtractedFragment",
-						"Specifies whether the extracted ontology is written to a file or not.",
+						"Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir.",
 						true, false, true));
-		
-		
-		
 		options.add(new StringTupleListConfigOption("replacePredicate",
 				"rule for replacing predicates", new ArrayList<StringTuple>(), false, true));
 		options.add(new StringTupleListConfigOption("replaceObject",
@@ -253,49 +250,14 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 
 			extractionTime.setTime();
 			List<Node> seedNodes = m.extract(configurator.getInstances());
-			fragment = m.getOWLAPIOntologyForNodes(seedNodes);
-			//System.exit(0);
+			fragment = m.getOWLAPIOntologyForNodes(seedNodes, configurator.getSaveExtractedFragment());
 			
-			//ont = m.getNTripleForNodes(seedNodes);
 			extractionTime.printAndSet("extraction needed");
 			logger.info("Finished collecting Fragment");
 
 			ontologyFragmentURL = m.getPhysicalOntologyURL();
 			
-			/*
-			if (dumpToFile) {
-				String filename = System.currentTimeMillis() + ".nt";
-				String basedir = "cache" + File.separator;
-				try {
-					if (!new File(basedir).exists()) {
-						new File(basedir).mkdir();
-					}
-
-					File dump = new File(basedir + filename);
-
-					FileWriter fw = new FileWriter(dump, true);
-					fw.write(ont);
-					fw.flush();
-					fw.close();
-
-					dumpFile = (dump).toURI().toURL();
-
-					if (configurator.getConvertNT2RDF()) {
-						NT2RDF.convertNT2RDF(dump.getAbsolutePath());
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}*/
-			/*if (format.equals("KB")) {
-				try {
-					// kb = KBParser.parseKBFile(new StringReader(ont));
-					kb = KBParser.parseKBFile(dumpFile);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}*/
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -318,13 +280,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	 */
 	@Override
 	public String toDIG(URI kbURI) {
-		//if (format.equals("RDF/XML")){
 			return JenaOWLDIGConverter.getTellsString(ontologyFragmentURL,
 					OntologyFormat.RDF_XML, kbURI);
-		//}else {
-			//throw new Error("KB Format not supported any more");
-			//return DIGConverter.getDIGString(kb, kbURI).toString();
-		//}
 	}
 
 	/*
@@ -363,9 +320,6 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		
 	}
 
-	/*public String[] getOntArray() {
-		return ontArray;
-	}*/
 
 	public SparqlQuery sparqlQuery(String query) {
 		return new SparqlQuery(query, getSparqlEndpoint());

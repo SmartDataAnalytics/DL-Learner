@@ -88,7 +88,7 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 				tuple.b = new RDFBlankNode(currentId, tuple.b);
 				System.out.println(uri+" replaced blanknode "+tuple.b);
 				dissolveBlankNodes(currentId, uri, tuple);
-				System.out.println(BlankNodeCollector.getBlankNodeMap());
+				//System.out.println(BlankNodeCollector.getBlankNodeMap());
 				
 			}
 		}

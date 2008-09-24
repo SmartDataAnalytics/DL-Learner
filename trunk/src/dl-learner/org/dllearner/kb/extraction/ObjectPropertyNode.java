@@ -19,15 +19,22 @@
  */
 package org.dllearner.kb.extraction;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.kb.aquisitors.RDFBlankNode;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
+import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLLabelAnnotation;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
 
@@ -46,6 +53,7 @@ public class ObjectPropertyNode extends PropertyNode {
 	private SortedSet<String> specialTypes = new TreeSet<String>();
 	@SuppressWarnings("unused")
 	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<RDFNodeTuple>();
+	List<BlankNode> blankNodes = new ArrayList<BlankNode>();
 
 	public ObjectPropertyNode(String propertyURI, Node a, Node b) {
 		super(propertyURI, a, b);		
@@ -60,16 +68,27 @@ public class ObjectPropertyNode extends PropertyNode {
 
 	// gets the types for properties recursively
 	@Override
-	public void expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
-		b.expandProperties(tupelAquisitor, manipulator);
+	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+		List<BlankNode> ret =  new ArrayList<BlankNode>();
+		ret.addAll(b.expandProperties(tupelAquisitor, manipulator));
 		SortedSet<RDFNodeTuple> newTypes = tupelAquisitor.getTupelForResource(uri);
 		for (RDFNodeTuple tuple : newTypes) {
 			try {
+				
 				if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)) {
-					specialTypes.add(tuple.b.toString());
+					if(!tuple.b.toString().equals(OWLVocabulary.OWL_OBJECTPROPERTY)){
+						specialTypes.add(tuple.b.toString());
+					}
 				}else if(tuple.b.isAnon()){
 					logger.warn("blanknodes currently not implemented in this tuple aquisitor");
+					RDFBlankNode n = (RDFBlankNode) tuple.b;
+					
+					BlankNode tmp = new BlankNode( n, tuple.a.toString()); 
+					//add it to the graph
+					blankNodes.add(tmp);
+					ret.add( tmp);
 				}else{
+					
 					propertyInformation.add(tuple);
 					
 				}
@@ -77,7 +96,10 @@ public class ObjectPropertyNode extends PropertyNode {
 				logger.warn("resource "+uri+" with "+ tuple);
 				e.printStackTrace();
 			}
+			
 		}
+		return ret;
+		
 
 	}
 	
@@ -105,8 +127,40 @@ public class ObjectPropertyNode extends PropertyNode {
 		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
 		OWLObjectProperty me =factory.getOWLObjectProperty(getURI());
 	
+		for (RDFNodeTuple one : propertyInformation) {
+			if(one.aPartContains(OWLVocabulary.RDFS_range)){
+				OWLClass c = factory.getOWLClass(URI.create(one.a.toString()));
+				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyRangeAxiom(me, c));
+			}else if(one.aPartContains(OWLVocabulary.RDFS_domain)){
+				OWLClass c = factory.getOWLClass(URI.create(one.a.toString()));
+				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyDomainAxiom(me, c));
+			}else if(one.aPartContains(OWLVocabulary.RDFS_SUB_PROPERTY_OF)){
+				OWLObjectProperty p = factory.getOWLObjectProperty(URI.create(one.b.toString()));
+				owlAPIOntologyCollector.addAxiom(factory.getOWLSubObjectPropertyAxiom(me, p));
+				
+			}else if(one.aPartContains(OWLVocabulary.OWL_inverseOf)){
+				OWLObjectProperty p = factory.getOWLObjectProperty(URI.create(one.b.toString()));
+				owlAPIOntologyCollector.addAxiom(factory.getOWLInverseObjectPropertiesAxiom(me, p));
+			}else if(one.aPartContains(OWLVocabulary.OWL_equivalentProperty)){
+				OWLObjectProperty p = factory.getOWLObjectProperty(URI.create(one.b.toString()));
+				Set<OWLObjectProperty> tmp = new HashSet<OWLObjectProperty>();
+				tmp.add(me);tmp.add(p);
+				owlAPIOntologyCollector.addAxiom(factory.getOWLEquivalentObjectPropertiesAxiom(tmp));
+				
+			}else if(one.a.toString().equals(OWLVocabulary.RDFS_LABEL)){
+				OWLLabelAnnotation label = factory.getOWLLabelAnnotation(one.b.toString());
+				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
+			}else if(one.b.isLiteral()){
+				// XXX comments
+			}
+			else {
+				tail(getURIString()+"||"+one);
+			}
+			
+		}
 		
 		for (String one : specialTypes) {
+			
 			if(one.equals(OWLVocabulary.OWL_FunctionalProperty)){
 				owlAPIOntologyCollector.addAxiom(factory.getOWLFunctionalObjectPropertyAxiom(me));
 			}else if(one.equals(OWLVocabulary.OWL_InverseFunctionalProperty)){
@@ -115,7 +169,12 @@ public class ObjectPropertyNode extends PropertyNode {
 				owlAPIOntologyCollector.addAxiom(factory.getOWLTransitiveObjectPropertyAxiom(me));
 			}else if(one.equals(OWLVocabulary.OWL_SymmetricProperty)){
 				owlAPIOntologyCollector.addAxiom(factory.getOWLSymmetricObjectPropertyAxiom(me));
+			}else{
+				tail(getURIString()+"||"+one);
 			}
+		}
+		for (BlankNode bn : blankNodes) {
+			System.out.println(bn.getAnonymousClass(owlAPIOntologyCollector).toString());
 		}
 	}
 	

@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.SortedSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 
@@ -35,8 +36,11 @@ import org.dllearner.kb.manipulator.Manipulator;
  * 
  */
 public abstract class Node  {
-
+	private static Logger logger = Logger
+	.getLogger(Node.class);
 	
+	// make sure no information is missed during the transition to OWLAPI
+	public static final boolean DEBUGTAIL = true;
 
 	protected String uri;
 	// protected String type;
@@ -61,7 +65,7 @@ public abstract class Node  {
 	 * 
 	 * @param manipulator
 	 */
-	public abstract void expandProperties(
+	public abstract List<BlankNode> expandProperties(
 			TupleAquisitor TupelAquisitor, Manipulator manipulator);
 
 	/**
@@ -99,11 +103,16 @@ public abstract class Node  {
 		return "<"+uri+"> ";
 	}
 	
-
-	
-	
 	public boolean isExpanded(){
 		return expanded;
+	}
+	
+	public void tail(String uri){
+		if(DEBUGTAIL){
+		logger.warn("missing: "+uri);
+		System.exit(0);
+		}
+		
 	}
 
 }

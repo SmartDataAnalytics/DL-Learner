@@ -30,6 +30,10 @@ public class OWLVocabulary {
 	public static final String RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
 	public static final String RDFS_DESCRIPTION = "http://www.w3.org/2000/01/rdf-schema#description";
 	
+	public static final String RDFS_SUB_PROPERTY_OF = "http://www.w3.org/2000/01/rdf-schema#subPropertyOf";
+	public static final String RDFS_domain = "http://www.w3.org/2000/01/rdf-schema#domain";
+	public static final String RDFS_range = "http://www.w3.org/2000/01/rdf-schema#range";
+	
 	
 	public static final String OWL_SAME_AS = "http://www.w3.org/2002/07/owl#sameAs";
 	public static final String OWL_OBJECTPROPERTY = "http://www.w3.org/2002/07/owl#ObjectProperty";
@@ -40,12 +44,23 @@ public class OWLVocabulary {
 	public static final String OWL_DISJOINT_WITH = "http://www.w3.org/2002/07/owl#disjointWith";
 	public static final String OWL_EQUIVALENT_CLASS = "http://www.w3.org/2002/07/owl#equivalentClass";
 	
+	public static final String OWL_intersectionOf = "http://www.w3.org/2002/07/owl#intersectionOf";
+	public static final String OWL_unionOf = "http://www.w3.org/2002/07/owl#unionOf";
+	public static final String OWL_complementOf = "http://www.w3.org/2002/07/owl#complementOf";
+
+	
 	
 	
 	public static final String OWL_FunctionalProperty = "http://www.w3.org/2002/07/owl#FunctionalProperty";
 	public static final String OWL_InverseFunctionalProperty = "http://www.w3.org/2002/07/owl#InverseFunctionalProperty";
 	public static final String OWL_TransitiveProperty = "http://www.w3.org/2002/07/owl#TransitiveProperty";
 	public static final String OWL_SymmetricProperty = "http://www.w3.org/2002/07/owl#SymmetricProperty";
+	
+	
+	public static final String OWL_equivalentProperty = "http://www.w3.org/2002/07/owl#equivalentProperty";
+	public static final String OWL_inverseOf = "http://www.w3.org/2002/07/owl#inverseOf";
+
+
 	
 	public static final String OWL_THING = "http://www.w3.org/2002/07/owl#Thing";
 	public static final String OWL_NOTHING = "http://www.w3.org/2002/07/owl#Nothing";

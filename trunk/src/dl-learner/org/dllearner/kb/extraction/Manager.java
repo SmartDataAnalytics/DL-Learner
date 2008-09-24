@@ -85,12 +85,15 @@ public class Manager {
 		
 	}
 	
-	public OWLOntology getOWLAPIOntologyForNodes(List<Node> nodes){
+	public OWLOntology getOWLAPIOntologyForNodes(List<Node> nodes, boolean saveOntology){
 		for (Node n : nodes) {
 			n.toOWLOntology(configuration.getOwlAPIOntologyCollector());
 		}
+		if(saveOntology){
 		 configuration.getOwlAPIOntologyCollector().saveOntology();
+		}
 		return configuration.getOwlAPIOntologyCollector().getCurrentOntology();
+		
 	}
 	
 	public URL getPhysicalOntologyURL()throws MalformedURLException{

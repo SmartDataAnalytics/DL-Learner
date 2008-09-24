@@ -19,6 +19,7 @@
  */
 package org.dllearner.kb.extraction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -49,7 +50,8 @@ public class DatatypePropertyNode extends PropertyNode {
 
 	// gets the types for properties recursively
 	@Override
-	public void expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+		return new ArrayList<BlankNode>();
 	}
 	
 	@Override

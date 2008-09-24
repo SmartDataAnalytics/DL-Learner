@@ -48,7 +48,8 @@ public class ClassNode extends Node {
 	
 	List<ObjectPropertyNode> classProperties = new ArrayList<ObjectPropertyNode>();
 	List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
-
+	List<BlankNode> blankNodes = new ArrayList<BlankNode>();
+	
 	public ClassNode(String uri) {
 		super(uri);
 	}
@@ -80,12 +81,12 @@ public class ClassNode extends Node {
 			}else if(tuple.b.isAnon()){
 				logger.warn("blanknodes not supported as of now "+ this +" in tuple" + tuple);
 				RDFBlankNode n = (RDFBlankNode) tuple.b;
-				//SortedSet<RDFNodeTuple> bNodeTuples = BlankNodeCollector.getBlankNode(n.getBNodeId());
-				//BlankNode tmp = new BlankNode(n); 
+				
+				BlankNode tmp = new BlankNode( n, tuple.a.toString()); 
 				//add it to the graph
-				//classProperties.add(new ObjectPropertyNode( tuple.a.toString(), this, tmp));
+				blankNodes.add(tmp);
 				//return tmp;
-				return null;
+				return tmp;
 			 // substitute rdf:type with owl:subclassof
 			}else if (property.equals(OWLVocabulary.RDF_TYPE) || 
 					OWLVocabulary.isStringSubClassVocab(property)) {
@@ -108,7 +109,8 @@ public class ClassNode extends Node {
 
 	// gets the types for properties recursively
 	@Override
-	public void expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
+		return new ArrayList<BlankNode>();
 	}
 	
 
@@ -151,7 +153,7 @@ public class ClassNode extends Node {
 			}else if(one.getURIString().equals(OWLVocabulary.OWL_EQUIVALENT_CLASS)){
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEquivalentClassesAxiom(me, c));
 			}else {
-				logger.warn("missing : " +one.getURIString());
+				tail( getURIString()+"||"+one.getURIString());
 			}
 			one.getBPart().toOWLOntology(owlAPIOntologyCollector);
 		}
@@ -166,9 +168,12 @@ public class ClassNode extends Node {
 				OWLLabelAnnotation label = factory.getOWLLabelAnnotation(one.getBPart().getLiteral().getString());
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
 			}else {
-				logger.warn("missing : " +one.getURIString());
+				tail(getURIString()+"||"+one.getURIString());
 			}
 		
+		}
+		for (BlankNode bn : blankNodes) {
+			System.out.println(bn.getAnonymousClass(owlAPIOntologyCollector).toString());
 		}
 		}catch (Exception e) {
 			System.out.println("aaa"+getURIString());
