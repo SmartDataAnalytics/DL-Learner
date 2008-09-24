@@ -32,7 +32,7 @@ public abstract class DatatypeQuantorRestriction extends QuantorRestriction {
 	/**
 	 * Creates a <code>DatatypeQuantorRestriction</code> along the 
 	 * given property.
-	 * @param propertyExpression The datatype property along which this restriction acts.
+	 * @param datatypeProperty The datatype property along which this restriction acts.
 	 */
 	public DatatypeQuantorRestriction(DatatypeProperty datatypeProperty) {
 		super(datatypeProperty);

@@ -61,7 +61,6 @@ public class WikipediaCategoryTasks {
 	 * 
 	 * @param conceptresults
 	 * @param posExamples
-	 * @return
 	 */
 	public SortedSet<String> calculateWrongIndividualsAndNewPosEx(
 			List<EvaluatedDescription> conceptresults,
@@ -91,7 +90,6 @@ public class WikipediaCategoryTasks {
 	 * TODO could be more sophisticated
 	 * 
 	 * @param reEvaluatedDesc
-	 * @return
 	 */
 	public SortedSet<String> makeNewNegativeExamples(
 			List<EvaluatedDescription> reEvaluatedDesc,

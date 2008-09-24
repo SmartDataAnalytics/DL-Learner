@@ -178,7 +178,6 @@ public class OntologyCloserOWLAPI {
 	/**
 	 * makes some retrieval queries
 	 * @param conceptStr
-	 * @return
 	 */
 	public SortedSet<Individual> verifyConcept(String conceptStr) {
 

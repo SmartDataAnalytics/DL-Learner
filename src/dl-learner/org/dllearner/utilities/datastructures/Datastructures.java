@@ -50,7 +50,6 @@ public class Datastructures {
 	 * easy conversion
 	 * 
 	 * @param s
-	 * @return
 	 */
 	public static String[] setToArray(Set<String> s) {
 		if(s==null)return null;

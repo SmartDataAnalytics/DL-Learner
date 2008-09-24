@@ -144,7 +144,8 @@ public class SPARQLTasks {
 	/**
 	 * gets a SortedSet of all subclasses up to a certain depth
 	 * 
-	 * @see conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache
+	 * TODO the mentioned method does not exist
+	 * conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache
 	 *      c, boolean simple )
 	 * @param classURI An URI string with no quotes
 	 * @param maxDepth
@@ -276,7 +277,6 @@ public class SPARQLTasks {
 	 *            An URI string with no quotes
 	 * @param sparqlResultLimit
 	 *            Limits the ResultSet size
-	 * @return
 	 */
 	public SortedSet<String> getClassesForInstance(String instance,
 			int sparqlResultLimit) {
@@ -454,7 +454,6 @@ public class SPARQLTasks {
 	 *            The query
 	 * @param variable
 	 *            The single variable used in the query
-	 * @return
 	 */
 	public SortedSet<String> queryAsSet(String sparqlQueryString,
 			String variable) {
@@ -487,7 +486,6 @@ public class SPARQLTasks {
 	 * 
 	 * @param sparqlQueryString
 	 *            The query
-	 * @return
 	 */
 	public String query(String sparqlQueryString) {
 		String jsonString;

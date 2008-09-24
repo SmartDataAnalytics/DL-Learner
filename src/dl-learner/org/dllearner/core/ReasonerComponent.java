@@ -66,7 +66,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	 * Implementations, which do not only use the provided sources
 	 * class variable, must make sure that a call to this method
 	 * indeed changes them.  
-	 * @param The new knowledge sources.
+	 * @param sources The new knowledge sources.
 	 */
 	public void changeSources(Set<KnowledgeSource> sources) {
 		this.sources = sources;

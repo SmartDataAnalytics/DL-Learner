@@ -50,8 +50,6 @@ public class Program {
 	/**
 	 * Create a new program.
 	 * 
-	 * @param concept
-	 *            The program tree.
 	 */
 	public Program(Score score, Description hypothesis) {
 		this(score, hypothesis, null);

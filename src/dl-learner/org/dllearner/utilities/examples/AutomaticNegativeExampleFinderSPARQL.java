@@ -54,7 +54,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	 * takes as input a full positive set to make sure no negatives are added as positives
 	 *  
 	 * @param fullPositiveSet
-	 * @param SPARQLTasks st
+	 * @param st
 	 */
 	public AutomaticNegativeExampleFinderSPARQL(
 			SortedSet<String> fullPositiveSet,
@@ -71,7 +71,6 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	/**
 	 * see <code>  getNegativeExamples(int neglimit, boolean stable )</code>
 	 * @param neglimit
-	 * @return
 	 */
 	public SortedSet<String> getNegativeExamples(int neglimit ) {
 		return getNegativeExamples(neglimit, false);
@@ -84,7 +83,6 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	 * 
 	 * @param neglimit size of negative Example set, 0 means all, which can be quite large several thousands
 	 * @param stable decides whether neg Examples are randomly picked, default false, faster for developing, since the cache can be used
-	 * @return
 	 */
 	public SortedSet<String> getNegativeExamples(int neglimit, boolean stable ) {
 		SortedSet<String> negatives = new TreeSet<String>();

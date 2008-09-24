@@ -17,7 +17,6 @@ public class SetManipulation {
 	 * 
 	 * @param set
 	 * @param limit
-	 * @return
 	 */
 	public static SortedSet<String> fuzzyShrink(SortedSet<String> set, int limit) {
 		if (set.size() <= limit) {
@@ -48,7 +47,6 @@ public class SetManipulation {
 	 * 
 	 * @param set
 	 * @param limit
-	 * @return
 	 */
 	public static SortedSet<Individual> fuzzyShrinkInd(SortedSet<Individual> set, int limit) {
 		if (set.size() <= limit) {
@@ -78,7 +76,6 @@ public class SetManipulation {
 	 * 
 	 * @param set
 	 * @param limit
-	 * @return
 	 */
 	public static SortedSet<String> stableShrink(SortedSet<String> set,
 			int limit) {
@@ -102,7 +99,6 @@ public class SetManipulation {
 	 * 
 	 * @param set
 	 * @param limit
-	 * @return
 	 */
 	public static SortedSet<Individual> stableShrinkInd(SortedSet<Individual> set,
 			int limit) {

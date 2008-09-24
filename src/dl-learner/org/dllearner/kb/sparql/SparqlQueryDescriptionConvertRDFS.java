@@ -47,10 +47,6 @@ public class SparqlQueryDescriptionConvertRDFS {
 	 * ((a OR b OR c) AND (b OR a))
 	 * 
 	 * @param descriptionKBSyntax
-	 * @param se
-	 * @param c
-	 *            a cache object, makes only sense if you use this function
-	 *            often
 	 * @param maxDepth
 	 *            determines the depth of retrieval, if 1 classes are replaced by direct subclasses only,
 	 *            1 is HIGHLY RECOMMENDED FOR LARGE HIERARCHIES)

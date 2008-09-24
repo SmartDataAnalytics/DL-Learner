@@ -215,7 +215,6 @@ public class RepairPanelDescriptor extends WizardPanelDescriptor implements Acti
 
 	/**
 	 * Returns all ontology changes been done by repairing ontology.
-	 * @return
 	 */
 	public Set<OWLOntologyChange> getOntologyChanges() {
 		return ontologyChanges;

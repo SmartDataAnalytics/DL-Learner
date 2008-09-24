@@ -115,7 +115,7 @@ public final class ComponentPool {
 	}
 	
 	/**
-	 * @return
+	 * @return The components in this pool.
 	 */
 	public List<Component> getComponents(){
 		return components;

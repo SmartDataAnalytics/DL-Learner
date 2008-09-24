@@ -39,7 +39,7 @@ import org.dllearner.utilities.owl.OntologyCloserOWLAPI;
 public class CloseOntology {
 
 	/**
-	 * @param argument0
+	 * @param args
 	 *            simply the path to the owl ontology "examples/test.owl"
 	 */
 	public static void main(String[] args) {

@@ -836,7 +836,7 @@ public class Start {
 	/**
 	 * @deprecated See ConfMapper.
 	 * @param componentSuperClass
-	 * @return
+	 * @return String.
 	 */
 	@Deprecated
 	public static String getCLIMapping(String componentSuperClass){

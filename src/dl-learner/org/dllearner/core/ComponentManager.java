@@ -691,7 +691,7 @@ public final class ComponentManager {
 	
 	/**
 	 * Retuns a list of all instanciated and registered Components 
-	 * @return
+	 * @return Currently active components.
 	 */
 	public List<Component> getLiveComponents(){
 		return pool.getComponents();
@@ -699,7 +699,7 @@ public final class ComponentManager {
 	
 	/**
 	 *  Retuns a list of all instanciated and registered LearningAlgorithm 
-	 * @return
+	 * @return Currently active learning algorithms.
 	 */
 	public List<LearningAlgorithm> getLiveLearningAlgorithms(){
 		List<LearningAlgorithm> list = new ArrayList<LearningAlgorithm>();
@@ -714,7 +714,7 @@ public final class ComponentManager {
 	
 	/**
 	 *  Retuns a list of all instanciated and registered KnowledgeSource 
-	 * @return
+	 * @return Currently active knowledge sources.
 	 */
 	public List<KnowledgeSource> getLiveKnowledgeSources(){
 		List<KnowledgeSource> list = new ArrayList<KnowledgeSource>();

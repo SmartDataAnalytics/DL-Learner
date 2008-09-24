@@ -80,7 +80,6 @@ public class ConceptSPARQLReEvaluator {
 	 * Category (50/60)
 	 * 
 	 * @param positiveSet
-	 * @return
 	 */
 	public List<EvaluatedDescription> reevaluateConceptsByDataCoverage(
 			List<EvaluatedDescription> descToBeReevaluated,
@@ -136,7 +135,6 @@ public class ConceptSPARQLReEvaluator {
 	 * e.g. 50 correct out of 400 retrieved (50/400)
 	 * 
 	 * @param positiveSet
-	 * @return
 	 */
 	public List<EvaluatedDescription> reevaluateConceptsByLowestRecall(
 			List<EvaluatedDescription> descToBeReevaluated,

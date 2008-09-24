@@ -85,7 +85,7 @@ public class Stat {
     /**
      * Gets the mean of all numbers as percentage 
      * *100 so 0.5678 -> "56.78%"
-     * @return
+     * @return The mean as formatted string.
      */
     public String getMeanAsPercentage(){
     	return df.format(getMean());
@@ -94,7 +94,7 @@ public class Stat {
     /**
      * Gets the standard deviation of all numbers.
      * 
-     * @return The stanard deviation of all numbers.
+     * @return The standard deviation of all numbers.
      */
     public double getStandardDeviation() {    	
     	if(count <= 1)

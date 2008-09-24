@@ -72,7 +72,6 @@ public class AutomaticNegativeExampleFinderOWL {
 	/**
 	 * see <code>  getNegativeExamples(int neglimit, boolean stable )</code>
 	 * @param neglimit
-	 * @return
 	 */
 	public SortedSet<Individual> getNegativeExamples(int neglimit, boolean forceNegLimit ) {
 		return getNegativeExamples(neglimit, false, forceNegLimit);
@@ -86,7 +85,6 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * @param neglimit size of negative Example set, 0 means all, which can be quite large
 	 * @param stable decides whether neg Examples are randomly picked, default false, faster for developing, since the cache can be used
 	 * @param forceNegLimit forces that exactly neglimit instances are returned by adding more instances
-	 * @return
 	 */
 	public SortedSet<Individual> getNegativeExamples(int neglimit, boolean stable, boolean forceNegLimit ) {
 		SortedSet<Individual> negatives = new TreeSet<Individual>();

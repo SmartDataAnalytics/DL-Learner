@@ -33,7 +33,7 @@ public class RDF2NT {
 	    
 	    /**
 	     * converts .nt file to rdf, same file name, different ending
-	     * @param ontopath path to nt file
+	     * @param inputOntopath path to nt file
 	     */
 	    public static void convertRDF2NT(String inputOntopath){ 
 	    		 

@@ -201,7 +201,7 @@ public class ClientState {
 	}
 
 	/**
-	 * @param is A component ID.
+	 * @param id A component ID.
 	 * @return The component associated with this ID.
 	 * @see java.util.Map#get(java.lang.Object)
 	 */

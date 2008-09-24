@@ -67,10 +67,7 @@ public class ExtractionAlgorithm {
 	 * most important function expands one example 
 	 * CAVE: the recursion is not a
 	 * recursion anymore, it was transformed to an iteration
-	 * 
-	 * @param uri
-	 * @param typedSparqlQuery
-	 * @return
+	 *
 	 */
 	public Node expandNode(String uri, TupleAquisitor tupleAquisitor) {
 
