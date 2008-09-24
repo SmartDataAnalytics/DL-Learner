@@ -49,7 +49,7 @@
 			$alltriples=$sc->getTriples($uri);
 			$triples=$alltriples[0];
 			$subjecttriples=$alltriples[1];
-			
+						
 			//BUILD ARTICLE			
 			// goal: display the data in a nice (DBpedia specific way), maybe similar to
 			// dbpedia.org/search
@@ -294,7 +294,7 @@
 				$content.='<br/><hr><h4>Remaining Triples</h4><br/>';
 				
 				// display the remaining properties as list which can be used for further navigation
-				$content .= get_triple_table($triples,$subjecttriples);
+				$content .= get_triple_table($triples,$subjecttriples,$predicatelabels);
 			}
 			
 			//Restart the Session

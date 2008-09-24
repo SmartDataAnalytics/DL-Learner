@@ -19,17 +19,16 @@
 	require_once("DLLearnerConnection.php");
 	$sc=new DLLearnerConnection($id,$ksID);
 	$label=$sc->getNaturalDescription($kb);
+	//connect to the database
+	$settings=new Settings();
+	$databaseConnection=new DatabaseConnection($settings->database_type);
+	$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
+	$databaseConnection->select_database($settings->database_name);
 	
 	$test=preg_match("/^([\(]*\"http:\/\/dbpedia\.org\/class\/yago\/[^\040]+\"[\)]*(\040(AND|OR)\040)?)+$/",$kb);
 			
 	$content="";
 	if ($test){
-		//connect to the database
-		$settings=new Settings();
-		$databaseConnection=new DatabaseConnection($settings->database_type);
-		$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
-		$databaseConnection->select_database($settings->database_name);
-	
 		preg_match_all("/\"http:\/\/dbpedia\.org\/class\/yago\/[^\040()]+\"/",$kb,$treffer,PREG_OFFSET_CAPTURE);
 
 		$final='';
@@ -70,21 +69,35 @@
 				$result2=$databaseConnection->nextEntry($res2);
 				$labels[]=$result2['label'];
 			}
-			$content.=getConceptResultsTable($names,$labels,htmlentities($kb),$label,$number);
+			$content.=getConceptResultsTable($names,$labels,htmlentities($kb),$number);
 			$bestsearches=getBestSearches($names,$labels);
 		}
 		else
 			$content.="Your Search brought no results.";
 	}
 	else{
-		/*try{
-			require_once("DLLearnerConnection.php");
-			$sc=new DLLearnerConnection($id,$ksID);
-			$subjects=$sc->getSubjectsFromConcept($concept);
-			$content.=getResultsTable($subjects);
+		try{
+			$subjects=$sc->getSubjectsFromConcept($kb,$number);
+			$names=array();
+			$labels=array();
+			foreach ($subjects as $subject){
+				$query='SELECT number, label FROM rank WHERE name="'.$subject.'"';
+				$res=$databaseConnection->query($query);
+				$result=$databaseConnection->nextEntry($res);
+				$names[]=$result['number'].'<'.$subject;
+				$labels[]=$result['number'].$subject.'<'.$result['label'];
+			}
+			rsort($labels);
+			rsort($names);
+			for ($i=0;$i<count($names);$i++){
+				$labels[$i]=substr($labels[$i],strpos($labels[$i],'<')+1);
+				$names[$i]=substr($names[$i],strpos($names[$i],'<')+1);
+			}
+			$content.=getConceptResultsTable($names,$labels,htmlentities($kb),$number);
+			$bestsearches=getBestSearches($names,$labels);
 		} catch (Exception $e){
 			$content=$e->getMessage();
-		}*/
+		}
 	}
 	
 	print $content;
