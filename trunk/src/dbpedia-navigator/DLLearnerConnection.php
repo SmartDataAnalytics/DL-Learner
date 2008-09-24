@@ -70,7 +70,15 @@ class DLLearnerConnection
 		$start = microtime(true);
 		
 		$this->client->initAll($this->id);
-
+		
+		//look, if algorithm was stopped
+		$file=fopen("./temp/".$this->id.".temp","r");
+		$run=fgets($file);
+		fclose($file);
+		if ($run=="false"){
+			return array();
+		}
+				
 		$threaded=true;
 		
 		if($threaded == false) {
@@ -102,12 +110,13 @@ class DLLearnerConnection
 				fclose($file);
 				if ($run=="false"){
 					$this->client->stop($this->id);
-					throw new Exception("Learning stopped");
+					return json_decode($this->client->getCurrentlyBestEvaluatedDescriptions($this->id,3),true);
 				}
 			} while($seconds<$this->learnttl&&$running);
 			
-			$this->client->stop($this->id);
+			if ($running) $this->client->stop($this->id);
 		}
+		
 		//return $concepts->item;
 		return json_decode($this->client->getCurrentlyBestEvaluatedDescriptions($this->id,3),true);
 	}
@@ -170,7 +179,7 @@ class DLLearnerConnection
 				return $result;
 			}
 				
-			$seconds = $i * $sleeptime;
+			$microseconds = $i * $sleeptime;
 			$i++;
 			//look, if algorithm was stopped
 			$file=fopen("./temp/".$this->id.".temp","r");
@@ -180,7 +189,7 @@ class DLLearnerConnection
 				$this->client->stopSparqlThread($this->id,$queryID);
 				throw new Exception("Query stopped");
 			}
-		} while($seconds<$this->ttl);
+		} while($microseconds<$this->ttl);
 		$this->client->stopSparqlThread($this->id,$queryID);
 	}
 	

@@ -3,6 +3,12 @@ function setRunning(running)
     if (running) document.getElementById('Loading').style.display='inline';
     else document.getElementById('Loading').style.display='none';
 }
+
+function setDatabaseRunning(running)
+{
+	if (running) document.getElementById('DatabaseLoading').style.display='inline';
+    else document.getElementById('DatabaseLoading').style.display='none';
+}
     
 function loadGoogleMap(Lat,Lng,Label) 
 {
