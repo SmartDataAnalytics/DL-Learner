@@ -110,7 +110,7 @@ class DLLearnerConnection
 				fclose($file);
 				if ($run=="false"){
 					$this->client->stop($this->id);
-					return json_decode($this->client->getCurrentlyBestEvaluatedDescriptions($this->id,3),true);
+					return json_decode($this->client->getCurrentlyBestEvaluatedDescriptionsFiltered($this->id,3,0.8,true),true);
 				}
 			} while($seconds<$this->learnttl&&$running);
 			
@@ -118,7 +118,7 @@ class DLLearnerConnection
 		}
 		
 		//return $concepts->item;
-		return json_decode($this->client->getCurrentlyBestEvaluatedDescriptions($this->id,3),true);
+		return json_decode($this->client->getCurrentlyBestEvaluatedDescriptionsFiltered($this->id,3,0.8,true),true);
 	}
 	
 	function getNaturalDescription($concept)
