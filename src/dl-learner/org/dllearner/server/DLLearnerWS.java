@@ -716,9 +716,9 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public String SparqlRetrieval(String conceptString) throws ParseException {
+	public String SparqlRetrieval(String conceptString,int limit) throws ParseException {
 		// call parser to parse concept
-		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString);
+		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString,limit);
 	}
 	
 	@WebMethod
