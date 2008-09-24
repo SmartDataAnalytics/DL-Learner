@@ -137,9 +137,9 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		description.accept(visitor);
 		String ret = visitor.getSparqlQuery(resultLimit);
 		//HACK see replace might be a good solution, needs testing 
-		while (ret.contains("..")) {
+		/*while (ret.contains("..")) {
 			 ret = ret.replace("..", ".");
-		}
+		}*/
 		return ret;
 	}
 	
@@ -261,7 +261,6 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 		description.getChild(0).accept(this);
 		query+=".";
 		description.getChild(1).accept(this);
-		query+=".";
 	}
 
 	/* (non-Javadoc)
