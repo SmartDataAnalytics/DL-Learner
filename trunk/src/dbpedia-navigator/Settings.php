@@ -37,7 +37,7 @@ class Settings{
 	// public $dbpediauri='http://dbpedia2.openlinksw.com:8890/isparql';
 	// in mikrosekunden
 	public $sparqlttl=60000000;
-	public $learnttl=10;
+	public $learnttl=5;
 	
 	public $language="en";
 	
