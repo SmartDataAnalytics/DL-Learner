@@ -114,19 +114,16 @@ public class SemanticBibleComparison {
 		logger.warn("Start");
 		File tmpFile = new File(tmpFilename);
 		
-		
-		List<File> confs = getFilesContaining(useSPARQL,"ten","all", "99+"); 
-		//analyzeFiles(confs);
-		
-		
-		
+		List<String> confs = getFiles(useSPARQL);
+				
 		reasoningService = ReasoningServiceFactory.getReasoningService(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
 		ComponentManager cm =ComponentManager.getInstance();
+		
 		try{
 		
 		
-		for (File f : confs) {
-			
+		for (String filename : confs) {
+			File f = new File(filename);
 			Cache.getDefaultCache().clearCache();
 			String fileContent = Files.readFile(f);
 			
@@ -298,6 +295,16 @@ public class SemanticBibleComparison {
 			
 		}
 		return null;
+	}
+	
+	
+	public static List<String>  getFiles(boolean sparql){
+			String actualDir = (sparql)?sparqldir:normaldir;
+			logger.warn(actualDir);
+			File f = new File(actualDir);
+		    String[] files = f.list();
+		    Arrays.sort(files);
+		 return Arrays.asList(files);   
 	}
 	
 	public static List<File>  getFilesContaining(boolean sparql, String numExamples, String allOrEx, String acc) {

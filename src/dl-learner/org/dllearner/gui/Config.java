@@ -76,6 +76,30 @@ public class Config {
 	private StartGUI gui;
 
 	/**
+	 * This constructor can be used systemwide to save configurations in conf files.
+	 * Of course it should not really belong here, but either in core or utilities.
+	 * Consider refactoring using a subclass of Config for the GUI.
+	 * Nevertheless it still works.
+	 * 
+	 *  
+	 * @param cm
+	 * @param source
+	 * @param reasoner
+	 * @param rs
+	 * @param lp
+	 * @param la
+	 */
+	public Config(ComponentManager cm, KnowledgeSource source, ReasonerComponent reasoner, ReasoningService rs, LearningProblem lp, LearningAlgorithm la) {
+		super();
+		this.cm = cm;
+		this.source = source;
+		this.reasoner = reasoner;
+		this.rs = rs;
+		this.lp = lp;
+		this.la = la;
+	}
+
+	/**
 	 * Create central configuration object.
 	 * 
 	 * @param gui
