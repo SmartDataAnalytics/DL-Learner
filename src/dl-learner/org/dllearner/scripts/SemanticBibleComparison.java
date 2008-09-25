@@ -54,7 +54,7 @@ import org.dllearner.utilities.statistics.Stat;
 
 import com.jamonapi.MonitorFactory;
 
-public class SemanticBible2 {
+public class SemanticBibleComparison {
 
 	private static ReasoningService reasoningService;
 
