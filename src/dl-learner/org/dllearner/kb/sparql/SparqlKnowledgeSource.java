@@ -117,7 +117,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	//private KB kb;
 
 	// mainly used for statistic
-	private int nrOfExtractedTriples = 0;
+	private int nrOfExtractedAxioms = 0;
 
 
 	public static String getName() {
@@ -262,6 +262,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			logger.info("Finished collecting Fragment");
 
 			ontologyFragmentURL = m.getPhysicalOntologyURL();
+			
+			nrOfExtractedAxioms = configuration.getOwlAPIOntologyCollector().getNrOfExtractedAxioms();
 			
 		
 		} catch (Exception e) {
@@ -435,8 +437,8 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return configurator.getCacheDir();
 	}
 
-	public int getNrOfExtractedTriples() {
-		return nrOfExtractedTriples;
+	public int getNrOfExtractedAxioms() {
+		return nrOfExtractedAxioms;
 	}
 
 	/*

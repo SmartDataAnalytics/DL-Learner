@@ -60,9 +60,7 @@ public class DumbLPFinder {
 
 	private static String baseDir = "sembib/";
 
-	private static String baseDirSparql = baseDir + "sparql/";
-
-	private static String baseDirNormal = baseDir + "normal/";
+	private static String exampleBaseDir = baseDir + "examples/";
 
 	private static boolean allOrExists = true;
 
@@ -85,8 +83,8 @@ public class DumbLPFinder {
 				ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
 
 		Files.mkdir(baseDir);
-		Files.mkdir(baseDirSparql);
-		Files.mkdir(baseDirNormal);
+		
+		Files.mkdir(exampleBaseDir);
 
 		SortedSet<Individual> allIndividuals = new TreeSet<Individual>();
 		allIndividuals.addAll(reasoningService.getIndividuals());
@@ -162,10 +160,10 @@ public class DumbLPFinder {
 				+ d.getDescriptionLength() : d.getDescriptionLength() + "";
 		filename += "_" + div + ".conf";
 
-		String content = fileString(true, d, positiveEx, negativeEx);
-		Files.createFile(new File(baseDirSparql + filename), content);
-		content = fileString(false, d, positiveEx, negativeEx);
-		Files.createFile(new File(baseDirNormal + filename), content);
+		//String content = fileString(true, d, positiveEx, negativeEx);
+		//Files.createFile(new File(baseDirSparql + filename), content);
+		String content = fileString( d, positiveEx, negativeEx);
+		Files.createFile(new File(exampleBaseDir + filename), content);
 	}
 
 	@SuppressWarnings("unused")
@@ -181,12 +179,12 @@ public class DumbLPFinder {
 		return acc;
 	}
 
-	private static String fileString(boolean sparql, EvaluatedDescription d,
+	private static String fileString( EvaluatedDescription d,
 			SortedSet<Individual> p, SortedSet<Individual> n) {
 
 		String str = "/**\n" + d.getDescription().toKBSyntaxString() + "\n" + d
 				+ "\n" + "\n" + "**/\n" + "\n\n";
-		if (sparql) {
+		/*if (sparql) {
 			str += "sparql.instances = {\n";
 			for (Individual individual : p) {
 				str += "\"" + individual + "\",\n";
@@ -197,7 +195,7 @@ public class DumbLPFinder {
 			str = str.substring(0, str.length() - 2);
 			str += "};\n";
 
-		}
+		}*/
 
 		str += "\n" + "/**EXAMPLES**/\n" + ConfWriter.listExamples(true, p)
 				+ "\n" + ConfWriter.listExamples(false, n) + "\n";
