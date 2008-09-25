@@ -42,6 +42,7 @@ public class OWLAPIOntologyCollector {
 			 e.printStackTrace();
 		 }
 		 this.factory = manager.getOWLDataFactory();
+		 
 	 }
 
 	 public void addAxiom(OWLAxiom axiom){
@@ -73,6 +74,10 @@ public class OWLAPIOntologyCollector {
 
 	public URI getPhysicalURI() {
 		return physicalURI;
+	}
+	
+	public int getNrOfExtractedAxioms(){
+		return currentOntology.getAxioms().size();
 	}
 
    
