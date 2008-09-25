@@ -46,6 +46,7 @@ import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.learn.ConfWriter;
 import org.dllearner.utilities.owl.ReasoningServiceFactory;
 import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
+import org.dllearner.utilities.statistics.Stat;
 
 public class DumbLPFinder {
 
@@ -77,6 +78,7 @@ public class DumbLPFinder {
 	public static void main(String[] args) {
 		initLogger();
 		logger.info("started");
+		Stat acc = new Stat();
 		// String fileURL = new File(ontologyFile).toURI().toString();
 
 		reasoningService = ReasoningServiceFactory.getReasoningService(
@@ -122,6 +124,7 @@ public class DumbLPFinder {
 				EvaluatedDescription d;
 
 				d = learnSPARQL(positiveEx, negativeEx);
+				acc.addNumber(d.getAccuracy());
 
 				writeFiles(filename, d, positiveEx, negativeEx);
 
@@ -133,6 +136,8 @@ public class DumbLPFinder {
 			// System.out.println(count);
 			count++;
 		}
+		
+		logger.warn("AVERAGE ACCURACY "+acc.getMeanAsPercentage());
 
 	}
 
@@ -239,7 +244,14 @@ public class DumbLPFinder {
 			la.getConfigurator().setNoisePercentage(0.0);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
 			la.getConfigurator().setMaxExecutionTimeInSeconds(30);
+			
+			ks.init();
+			f.init();	
+			lp.init();
+			la.init();
 
+			// start learning algorithm
+			logger.debug("start learning");
 			la.start();
 		} catch (Exception e) {
 			// System.out.println("ignoring the error "+e.toString());
@@ -270,6 +282,7 @@ public class DumbLPFinder {
 			logger.addAppender(consoleAppender);
 		} else {
 			logger.setLevel(Level.INFO);
+			
 		}
 		logger.addAppender(fileAppender);
 
