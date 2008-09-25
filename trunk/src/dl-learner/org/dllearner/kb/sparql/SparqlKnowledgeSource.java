@@ -76,7 +76,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	private static final boolean debug = false;
 
 	// tupleaquisitor
-	private static final boolean debugUseImprovedTupleAquisitor = debug && false; // switches
+	//private static final boolean debugUseImprovedTupleAquisitor = debug && false; // switches
 	//	 sysex 
 	private static final boolean debugExitAfterExtraction = debug && false; // switches
 
@@ -191,6 +191,12 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				"gets all classes for all instances", true, false, true));
 		options.add(new BooleanConfigOption("getPropertyInformation",
 				"gets all types for extracted ObjectProperties", false, false,
+				true));
+		options.add(new BooleanConfigOption("dissolveBlankNodes",
+				"determines whether Blanknodes are dissolved. This is a costly function.", true, false,
+				true));
+		options.add(new BooleanConfigOption("useImprovedSparqlTupelAquisitor",
+				"uses deeply nested SparqlQueries, according to recursion depth, still EXPERIMENTAL", false, false,
 				true));
 		options.add(CommonConfigOptions.getVerbosityOption());
 
@@ -389,13 +395,16 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	}
 
 	public TupleAquisitor getTupleAquisitor() {
-		if (debugUseImprovedTupleAquisitor) {
-			return new SparqlTupleAquisitorImproved(getSparqlQueryMaker(),
+		TupleAquisitor ret = null;
+		if (configurator.getUseImprovedSparqlTupelAquisitor()) {
+			ret = new SparqlTupleAquisitorImproved(getSparqlQueryMaker(),
 					getSPARQLTasks(), configurator.getRecursionDepth());
 		} else {
-			return new SparqlTupleAquisitor(getSparqlQueryMaker(),
+			ret = new SparqlTupleAquisitor(getSparqlQueryMaker(),
 					getSPARQLTasks());
 		}
+		ret.setDissolveBlankNodes(configurator.getDissolveBlankNodes());
+		return ret;
 
 	}
 

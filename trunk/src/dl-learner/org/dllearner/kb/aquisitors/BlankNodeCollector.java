@@ -28,6 +28,8 @@ public class BlankNodeCollector {
 			blankNodes.put(id, new TreeSet<RDFNodeTuple>());
 			}
 		blankNodes.get(id).add(t);
+		//System.out.println("added: "+id+" "+t);
+		//System.out.println();
 	}
 	
 	public static  SortedSet<RDFNodeTuple> getBlankNode(int id){

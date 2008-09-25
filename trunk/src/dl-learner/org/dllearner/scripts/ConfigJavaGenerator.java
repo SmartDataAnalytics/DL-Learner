@@ -197,6 +197,7 @@ public final class ConfigJavaGenerator {
 
 		makeComponentFactory();
 		makeInterface();
+		writePackageHTML();
 
 		System.out.println("Done");
 	}
@@ -503,6 +504,21 @@ public final class ConfigJavaGenerator {
 
 	}
 	
+	private static void writePackageHTML(){
+		String c = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">"+
+		"<html>"+
+		"<head></head>"+
+		"<body bgcolor=\"white\">"+
+		"<p>Automatically generated classes, which enable programmatically setting"+
+		"and getting configuration options of components.</p>"+
+		"</body>"+
+		"</html>";
+		try{
+		Files.createFile(new File(TARGET_DIR+File.separator+"package.html"), c);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 
 	private static String expandCollection(Collection<String> col,
@@ -544,6 +560,7 @@ public final class ConfigJavaGenerator {
 		}
 
 	}
+
 
 	private static String checkstyleAdjust(String type) {
 		type = type.replaceAll("<", "(");

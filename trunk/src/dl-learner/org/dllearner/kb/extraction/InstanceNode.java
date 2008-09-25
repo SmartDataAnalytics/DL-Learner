@@ -87,6 +87,7 @@ public class InstanceNode extends Node {
 				return null;
 			}else if(tuple.b.isAnon()){
 				RDFBlankNode n = (RDFBlankNode) tuple.b;
+				//RBC
 				System.out.println(n.getBNodeId());
 				System.exit(0);
 				logger.warn("blanknodes not supported as of now"+ this +"in tuple" + tuple);

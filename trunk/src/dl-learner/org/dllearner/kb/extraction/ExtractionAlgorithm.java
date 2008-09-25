@@ -130,15 +130,17 @@ public class ExtractionAlgorithm {
 			
 		
 		if(configuration.isGetPropertyInformation() ){
-			
+			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetPropertyInformation").start();
 			List<ObjectPropertyNode> l = getObjectPropertyNodes(collectNodes);
 			for (ObjectPropertyNode node : l) {
-				//FIXME has to be transported to the next step
-				node.expandProperties(tupleAquisitor, configuration.getManipulator());
+				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator()));
 			}
+			m.stop();
 		}
 		
+		Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeBlankNode").start();
 		expandBlankNodes(getBlankNodes(collectNodes),tupleAquisitor);
+		m.stop();
 		
 	
 		return seedNode;

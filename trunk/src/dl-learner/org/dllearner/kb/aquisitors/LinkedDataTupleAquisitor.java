@@ -56,7 +56,14 @@ public class LinkedDataTupleAquisitor extends TupleAquisitor {
 	public SortedSet<RDFNodeTuple> retrieveTuplesForClassesOnly(String uri){
 		throw new RuntimeException("Not Implemented yet");
 	}
-	
+	@Override
+	protected void disambiguateBlankNodes(String uri, SortedSet<RDFNodeTuple> resultSet){
+		throw new RuntimeException("Not Implemented yet");
+	}
+	@Override
+	public SortedSet<RDFNodeTuple> getBlankNode(int id){
+		throw new RuntimeException("Not Implemented yet");
+	}
 	
 	
 

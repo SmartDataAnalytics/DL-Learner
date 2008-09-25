@@ -50,7 +50,7 @@ public class RDFBlankNode implements RDFNode {
 	@Override
 	public String toString(){
 		//RBC
-		return "I'm a blank node with id: "+bNodeId+"||"+blankNode;
+		return "bnodeid: "+bNodeId+" ||"+blankNode;
 	}
 	
 	// overidden Functions

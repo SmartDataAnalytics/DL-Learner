@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -24,6 +24,17 @@ import java.util.TreeSet;
 
 import org.dllearner.core.owl.Individual;
 
+
+
+/**
+ * A simple container for storing pos and negexamples, 
+ * basically a more simple parameter or return value.
+ * 
+ * It also contains static functions to test if all example sets are different.
+ * 
+ * @author Sebastian Hellmann
+ *
+ */
 public class ExampleContainer implements Comparable<ExampleContainer>{
 
 	

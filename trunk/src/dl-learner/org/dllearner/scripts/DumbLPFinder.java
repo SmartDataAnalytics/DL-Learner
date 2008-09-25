@@ -56,6 +56,9 @@ public class DumbLPFinder {
 	
 	//private static Class usedReasoner = FastInstanceChecker.class;
 	private static Class<? extends ReasonerComponent> usedReasoner = OWLAPIReasoner.class;
+	
+	private static int numberOfLearningProblems = 100;
+	
 	private static boolean allOrExists = true;
 	private static boolean tenORthirty = true;
 	
@@ -88,8 +91,8 @@ public class DumbLPFinder {
 		reasoningService = null;
 		ComponentManager.getInstance().freeAllComponents();
 		
-		int count = 1;
-		while(count<10000){
+		int count = 0;
+		while(count<numberOfLearningProblems){
 			
 			/*if((count%5)==0){
 				//System.out.println(count+" "+allOrExists+"::"+tenORthirty);

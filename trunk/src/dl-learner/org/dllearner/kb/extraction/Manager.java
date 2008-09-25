@@ -28,7 +28,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.utilities.JamonMonitorLogger;
 import org.semanticweb.owl.model.OWLOntology;
+
+import com.jamonapi.Monitor;
 
 /**
  * An object of this class encapsulates everything.
@@ -80,17 +83,24 @@ public class Manager {
 				
 			}
 		}
+		//((SparqlTupleAquisitor) configuration.getTupelAquisitor()).printHM();
+		//System.exit(0);
 		logger.info("Finished extraction");
 		return allExtractedNodes;
 		
 	}
 	
 	public OWLOntology getOWLAPIOntologyForNodes(List<Node> nodes, boolean saveOntology){
+		Monitor m1 = JamonMonitorLogger.getTimeMonitor(Manager.class, "Time conversion to OWL Ontology").start();
 		for (Node n : nodes) {
 			n.toOWLOntology(configuration.getOwlAPIOntologyCollector());
 		}
+		m1.stop();
+		
 		if(saveOntology){
-		 configuration.getOwlAPIOntologyCollector().saveOntology();
+			Monitor m2 = JamonMonitorLogger.getTimeMonitor(Manager.class, "Time saving Ontology").start();
+			configuration.getOwlAPIOntologyCollector().saveOntology();
+			m2.stop();
 		}
 		return configuration.getOwlAPIOntologyCollector().getCurrentOntology();
 		
