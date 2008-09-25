@@ -34,6 +34,7 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLLabelAnnotation;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
@@ -80,13 +81,15 @@ public class ObjectPropertyNode extends PropertyNode {
 						specialTypes.add(tuple.b.toString());
 					}
 				}else if(tuple.b.isAnon()){
-					logger.warn("blanknodes currently not implemented in this tuple aquisitor");
-					RDFBlankNode n = (RDFBlankNode) tuple.b;
+									
+					if(tupelAquisitor.isDissolveBlankNodes()){
+						RDFBlankNode n = (RDFBlankNode) tuple.b;
+						BlankNode tmp = new BlankNode( n, tuple.a.toString()); 
+						//add it to the graph
+						blankNodes.add(tmp);
+						ret.add( tmp);
+					}
 					
-					BlankNode tmp = new BlankNode( n, tuple.a.toString()); 
-					//add it to the graph
-					blankNodes.add(tmp);
-					ret.add( tmp);
 				}else{
 					
 					propertyInformation.add(tuple);
@@ -128,19 +131,18 @@ public class ObjectPropertyNode extends PropertyNode {
 		OWLObjectProperty me =factory.getOWLObjectProperty(getURI());
 	
 		for (RDFNodeTuple one : propertyInformation) {
+			OWLClass c = factory.getOWLClass(URI.create(one.a.toString()));
+			
 			if(one.aPartContains(OWLVocabulary.RDFS_range)){
-				OWLClass c = factory.getOWLClass(URI.create(one.a.toString()));
 				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyRangeAxiom(me, c));
 			}else if(one.aPartContains(OWLVocabulary.RDFS_domain)){
-				OWLClass c = factory.getOWLClass(URI.create(one.a.toString()));
 				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyDomainAxiom(me, c));
 			}else if(one.aPartContains(OWLVocabulary.RDFS_SUB_PROPERTY_OF)){
 				OWLObjectProperty p = factory.getOWLObjectProperty(URI.create(one.b.toString()));
 				owlAPIOntologyCollector.addAxiom(factory.getOWLSubObjectPropertyAxiom(me, p));
-				
 			}else if(one.aPartContains(OWLVocabulary.OWL_inverseOf)){
 				OWLObjectProperty p = factory.getOWLObjectProperty(URI.create(one.b.toString()));
-				owlAPIOntologyCollector.addAxiom(factory.getOWLInverseObjectPropertiesAxiom(me, p));
+				owlAPIOntologyCollector.addAxiom(factory.getOWLInverseObjectPropertiesAxiom(me, p));				
 			}else if(one.aPartContains(OWLVocabulary.OWL_equivalentProperty)){
 				OWLObjectProperty p = factory.getOWLObjectProperty(URI.create(one.b.toString()));
 				Set<OWLObjectProperty> tmp = new HashSet<OWLObjectProperty>();
@@ -174,7 +176,13 @@ public class ObjectPropertyNode extends PropertyNode {
 			}
 		}
 		for (BlankNode bn : blankNodes) {
-			System.out.println(bn.getAnonymousClass(owlAPIOntologyCollector).toString());
+			OWLDescription target = bn.getAnonymousClass(owlAPIOntologyCollector);
+			if(bn.getInBoundEdge().equals(OWLVocabulary.RDFS_range)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyRangeAxiom(me, target));
+			}else if(bn.getInBoundEdge().equals(OWLVocabulary.RDFS_domain)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyDomainAxiom(me, target));
+			}
+			//System.out.println(bn.getAnonymousClass(owlAPIOntologyCollector).toString());
 		}
 	}
 	

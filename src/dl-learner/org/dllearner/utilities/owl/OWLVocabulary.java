@@ -23,6 +23,10 @@ public class OWLVocabulary {
 
 	public static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 	
+	public static final String RDF_FIRST = "http://www.w3.org/1999/02/22-rdf-syntax-ns#first";
+	public static final String RDF_REST = "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest";
+	public static final String RDF_NIL = "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil";
+					
 	public static final String RDFS_SUBCLASS_OF = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 	public static final String RDFS_CLASS = "http://www.w3.org/2000/01/rdf-schema#Class";
 	
@@ -33,6 +37,7 @@ public class OWLVocabulary {
 	public static final String RDFS_SUB_PROPERTY_OF = "http://www.w3.org/2000/01/rdf-schema#subPropertyOf";
 	public static final String RDFS_domain = "http://www.w3.org/2000/01/rdf-schema#domain";
 	public static final String RDFS_range = "http://www.w3.org/2000/01/rdf-schema#range";
+	
 	
 	
 	public static final String OWL_SAME_AS = "http://www.w3.org/2002/07/owl#sameAs";
@@ -48,8 +53,17 @@ public class OWLVocabulary {
 	public static final String OWL_unionOf = "http://www.w3.org/2002/07/owl#unionOf";
 	public static final String OWL_complementOf = "http://www.w3.org/2002/07/owl#complementOf";
 
+	public static final String OWL_RESTRICTION =  "http://www.w3.org/2002/07/owl#Restriction";
+	public static final String OWL_ON_PROPERTY = 	"http://www.w3.org/2002/07/owl#onProperty";
 	
+	public static final String OWL_ALL_VALUES_FROM =  "http://www.w3.org/2002/07/owl#allValuesFrom";
+	public static final String OWL_SOME_VALUES_FROM =  "http://www.w3.org/2002/07/owl#allValuesFrom";
+	public static final String OWL_HAS_VALUE =  "http://www.w3.org/2002/07/owl#hasValue";
 	
+	public static final String OWL_maxCardinality  = 	"http://www.w3.org/2002/07/owl#maxCardinality";
+	public static final String OWL_minCardinality = 	"http://www.w3.org/2002/07/owl#minCardinality";
+	public static final String OWL_cardinality = 	"http://www.w3.org/2002/07/owl#cardinality";
+
 	
 	public static final String OWL_FunctionalProperty = "http://www.w3.org/2002/07/owl#FunctionalProperty";
 	public static final String OWL_InverseFunctionalProperty = "http://www.w3.org/2002/07/owl#InverseFunctionalProperty";

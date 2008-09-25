@@ -33,6 +33,7 @@ import org.dllearner.utilities.owl.OWLVocabulary;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLCommentAnnotation;
 import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLLabelAnnotation;
 
 /**
@@ -65,28 +66,31 @@ public class ClassNode extends Node {
 		List<Node> newNodes = new ArrayList<Node>();
 		Node tmp;
 		for (RDFNodeTuple tuple : newTuples) {
-			if((tmp = processTuple(tuple))!= null) {
+			if((tmp = processTuple(tuple,tupelAquisitor.isDissolveBlankNodes()))!= null) {
 				newNodes.add(tmp);
 			}		
 		}
 		return newNodes;
 	}
 	
-	private Node processTuple( RDFNodeTuple tuple) {
+	private Node processTuple( RDFNodeTuple tuple, boolean dissolveBlankNodes) {
 		try {
 			String property = tuple.a.toString();
 			if(tuple.b.isLiteral()) {
 				datatypeProperties.add(new DatatypePropertyNode(tuple.a.toString(), this, new LiteralNode(tuple.b) ));
 				return null;
 			}else if(tuple.b.isAnon()){
-				logger.warn("blanknodes not supported as of now "+ this +" in tuple" + tuple);
-				RDFBlankNode n = (RDFBlankNode) tuple.b;
-				
-				BlankNode tmp = new BlankNode( n, tuple.a.toString()); 
-				//add it to the graph
-				blankNodes.add(tmp);
-				//return tmp;
-				return tmp;
+				if(dissolveBlankNodes){
+					RDFBlankNode n = (RDFBlankNode) tuple.b;
+					BlankNode tmp = new BlankNode( n, tuple.a.toString()); 
+					//add it to the graph
+					blankNodes.add(tmp);
+					//return tmp;
+					return tmp;
+				}else{
+					//do nothing
+					return null;
+				}
 			 // substitute rdf:type with owl:subclassof
 			}else if (property.equals(OWLVocabulary.RDF_TYPE) || 
 					OWLVocabulary.isStringSubClassVocab(property)) {
@@ -173,7 +177,18 @@ public class ClassNode extends Node {
 		
 		}
 		for (BlankNode bn : blankNodes) {
-			System.out.println(bn.getAnonymousClass(owlAPIOntologyCollector).toString());
+			OWLDescription target = bn.getAnonymousClass(owlAPIOntologyCollector);
+			
+			if(OWLVocabulary.isStringSubClassVocab(bn.getInBoundEdge())){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLSubClassAxiom(me, target));
+			}else if(bn.getInBoundEdge().equals(OWLVocabulary.OWL_DISJOINT_WITH)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLDisjointClassesAxiom(me, target));
+			}else if(bn.getInBoundEdge().equals(OWLVocabulary.OWL_EQUIVALENT_CLASS)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLEquivalentClassesAxiom(me, target));
+			}else {
+				tail( getURIString()+"||"+bn.getInBoundEdge());
+			}
+			
 		}
 		}catch (Exception e) {
 			System.out.println("aaa"+getURIString());

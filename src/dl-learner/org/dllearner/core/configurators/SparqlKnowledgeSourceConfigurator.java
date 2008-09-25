@@ -225,6 +225,24 @@ public boolean getGetPropertyInformation() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "getPropertyInformation") ;
 }
 /**
+* dissolveBlankNodes determines whether Blanknodes are dissolved. This is a costly function..
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getDissolveBlankNodes() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "dissolveBlankNodes") ;
+}
+/**
+* useImprovedSparqlTupelAquisitor uses deeply nested SparqlQueries, according to recursion depth, still EXPERIMENTAL.
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getUseImprovedSparqlTupelAquisitor() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "useImprovedSparqlTupelAquisitor") ;
+}
+/**
 * verbosity control verbosity of output for this component.
 * mandatory: false| reinit necessary: true
 * default value: warning
@@ -414,6 +432,24 @@ reinitNecessary = true;
 **/
 public void setGetPropertyInformation(boolean getPropertyInformation) {
 ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "getPropertyInformation", getPropertyInformation);
+reinitNecessary = true;
+}
+/**
+* @param dissolveBlankNodes determines whether Blanknodes are dissolved. This is a costly function..
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setDissolveBlankNodes(boolean dissolveBlankNodes) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "dissolveBlankNodes", dissolveBlankNodes);
+reinitNecessary = true;
+}
+/**
+* @param useImprovedSparqlTupelAquisitor uses deeply nested SparqlQueries, according to recursion depth, still EXPERIMENTAL.
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setUseImprovedSparqlTupelAquisitor(boolean useImprovedSparqlTupelAquisitor) {
+ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "useImprovedSparqlTupelAquisitor", useImprovedSparqlTupelAquisitor);
 reinitNecessary = true;
 }
 /**

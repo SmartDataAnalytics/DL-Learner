@@ -44,7 +44,8 @@ public abstract class TupleAquisitor {
 	protected final int CLASS_INFORMATION = 2;
 	
 	protected int mode = 0;
-	private boolean uriDebugCheck = true;
+	protected boolean uriDebugCheck = true;
+	protected boolean dissolveBlankNodes = true;
 
 	public final SortedSet<RDFNodeTuple> getTupelForResource(String uri){
 		checkURIforValidity(uri);
@@ -68,6 +69,8 @@ public abstract class TupleAquisitor {
 	public abstract SortedSet<RDFNodeTuple> retrieveTupel(String uri);
 	public abstract SortedSet<RDFNodeTuple> retrieveClassesForInstances(String uri);
 	public abstract SortedSet<RDFNodeTuple> retrieveTuplesForClassesOnly(String uri);
+	protected abstract void disambiguateBlankNodes(String uri, SortedSet<RDFNodeTuple> resultSet);
+	public abstract  SortedSet<RDFNodeTuple> getBlankNode(int id);
 	
 	/*private void setMode(int mode) {
 		this.mode = mode;
@@ -90,6 +93,12 @@ public abstract class TupleAquisitor {
 			return false;
 		}
 		return true;
+	}
+	public boolean isDissolveBlankNodes() {
+		return dissolveBlankNodes;
+	}
+	public void setDissolveBlankNodes(boolean dissolveBlankNodes) {
+		this.dissolveBlankNodes = dissolveBlankNodes;
 	}
 }
 
