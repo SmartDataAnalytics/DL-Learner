@@ -8,6 +8,7 @@ import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DoubleMaxValue;
 import org.dllearner.core.owl.DoubleMinValue;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
@@ -17,6 +18,7 @@ import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.SimpleDoubleDataRange;
 import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
@@ -175,8 +177,23 @@ public class ConceptComparator implements Comparator<Description> {
 					return roleCompare;
 			} else
 				return -1;
+		} else if(concept1 instanceof ObjectValueRestriction) {
+			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectSomeRestriction || concept2 instanceof ObjectAllRestriction)
+				return 1;
+			else if(concept2 instanceof ObjectValueRestriction) {
+				int roleCompare = rc.compare(((ObjectValueRestriction)concept1).getRestrictedPropertyExpression(), ((ObjectQuantorRestriction)concept2).getRestrictedPropertyExpression());
+				
+				if(roleCompare == 0) {
+					Individual value1 = ((ObjectValueRestriction)concept1).getIndividual();
+					Individual value2 = ((ObjectValueRestriction)concept2).getIndividual();
+					return value1.compareTo(value2);
+				} else {
+					return roleCompare;
+				}
+			} else
+				return -1;			
 		} else if(concept1 instanceof ObjectMinCardinalityRestriction) {
-			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction)
+			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction || concept2 instanceof ObjectValueRestriction)
 				return 1;
 			// first criterion: object property
 			// second criterion: number
@@ -196,7 +213,7 @@ public class ConceptComparator implements Comparator<Description> {
 			} else
 				return -1;			
 		} else if(concept1 instanceof ObjectMaxCardinalityRestriction) {
-			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction || concept2 instanceof ObjectMinCardinalityRestriction)
+			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction || concept2 instanceof ObjectValueRestriction || concept2 instanceof ObjectMinCardinalityRestriction)
 				return 1;
 			// first criterion: object property
 			// second criterion: number

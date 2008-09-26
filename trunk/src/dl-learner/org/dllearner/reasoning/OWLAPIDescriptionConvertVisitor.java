@@ -36,6 +36,7 @@ import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DescriptionVisitor;
 import org.dllearner.core.owl.DoubleMinValue;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
@@ -44,6 +45,7 @@ import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.SimpleDoubleDataRange;
@@ -60,6 +62,7 @@ import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDataRange;
 import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLTypedConstant;
 import org.semanticweb.owl.vocab.OWLRestrictedDataRangeFacetVocabulary;
@@ -227,8 +230,10 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectValueRestriction)
 	 */
 	public void visit(ObjectValueRestriction description) {
-		// TODO Auto-generated method stub
-		throw new Error("OWLAPIDescriptionConverter: not implemented");
+		OWLObjectProperty role = factory.getOWLObjectProperty(
+				URI.create(((ObjectProperty)description.getRestrictedPropertyExpression()).getName()));
+		OWLIndividual i = factory.getOWLIndividual(URI.create(description.getIndividual().getName()));
+		stack.push(factory.getOWLObjectValueRestriction(role, i));
 	}
 
 	/* (non-Javadoc)
