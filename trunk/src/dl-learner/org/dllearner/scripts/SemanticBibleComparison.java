@@ -156,13 +156,20 @@ public class SemanticBibleComparison {
 			
 		}else{
 		
+			/*finished experiments:
+			 * SPARQL_10s
+			 * SPARQL_1000_CONCEPT_TESTS
+			 * 
+			 * */
+			
 			for (Experiments exp : Experiments.values()) {
 				//if(exp.equals(Experiments.SPARQL_10000_CONCEPT_TESTS))continue;
 				//if(exp.equals(Experiments.NORMAL_10000_CONCEPT_TESTS))continue;
 				//if(exp.equals(Experiments.SPARQL_100s))continue;
 				//if(exp.toString().contains("SPARQL"))continue;
-				if(exp.equals(Experiments.SPARQL_10s))conductExperiment(exp);
-				if(exp.equals(Experiments.SPARQL_1000_CONCEPT_TESTS))conductExperiment(exp);
+				if(exp.equals(Experiments.NORMAL_1000_CONCEPT_TESTS))conductExperiment(exp);
+				if(exp.equals(Experiments.SPARQL_10000_CONCEPT_TESTS))conductExperiment(exp);
+				if(exp.equals(Experiments.NORMAL_10000_CONCEPT_TESTS))conductExperiment(exp);
 				//System.exit(0);
 			}
 		}
