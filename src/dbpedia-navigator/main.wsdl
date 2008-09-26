@@ -130,6 +130,15 @@
   <message name="getCurrentlyBestConceptsResponse">
     <part xmlns:ns6="http://jaxb.dev.java.net/array" name="return" type="ns6:stringArray"></part>
   </message>
+  <message name="getCurrentlyBestEvaluatedDescriptionsFiltered">
+    <part name="arg0" type="xsd:int"></part>
+    <part name="arg1" type="xsd:int"></part>
+    <part name="arg2" type="xsd:double"></part>
+    <part name="arg3" type="xsd:boolean"></part>
+  </message>
+  <message name="getCurrentlyBestEvaluatedDescriptionsFilteredResponse">
+    <part name="return" type="xsd:string"></part>
+  </message>
   <message name="isAlgorithmRunning">
     <part name="arg0" type="xsd:int"></part>
   </message>
@@ -340,6 +349,7 @@
   </message>
   <message name="SparqlRetrieval">
     <part name="arg0" type="xsd:string"></part>
+    <part name="arg1" type="xsd:int"></part>
   </message>
   <message name="SparqlRetrievalResponse">
     <part name="return" type="xsd:string"></part>
@@ -472,6 +482,11 @@
     <operation name="getCurrentlyBestConcepts" parameterOrder="arg0 arg1 arg2">
       <input message="tns:getCurrentlyBestConcepts"></input>
       <output message="tns:getCurrentlyBestConceptsResponse"></output>
+      <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
+    </operation>
+    <operation name="getCurrentlyBestEvaluatedDescriptionsFiltered" parameterOrder="arg0 arg1 arg2 arg3">
+      <input message="tns:getCurrentlyBestEvaluatedDescriptionsFiltered"></input>
+      <output message="tns:getCurrentlyBestEvaluatedDescriptionsFilteredResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
     </operation>
     <operation name="isAlgorithmRunning" parameterOrder="arg0">
@@ -640,7 +655,7 @@
       <output message="tns:getConceptArityResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
     </operation>
-    <operation name="SparqlRetrieval" parameterOrder="arg0">
+    <operation name="SparqlRetrieval" parameterOrder="arg0 arg1">
       <input message="tns:SparqlRetrieval"></input>
       <output message="tns:SparqlRetrievalResponse"></output>
       <fault message="tns:ParseException" name="ParseException"></fault>
@@ -898,6 +913,18 @@
       </fault>
     </operation>
     <operation name="getCurrentlyBestConcepts">
+      <soap:operation soapAction=""></soap:operation>
+      <input>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </output>
+      <fault name="ClientNotKnownException">
+        <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
+      </fault>
+    </operation>
+    <operation name="getCurrentlyBestEvaluatedDescriptionsFiltered">
       <soap:operation soapAction=""></soap:operation>
       <input>
         <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
