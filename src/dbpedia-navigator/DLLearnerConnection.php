@@ -14,6 +14,7 @@ class DLLearnerConnection
 	private $lang;
 	// 
 	private $client;
+	private $endpoint;
 	
 	// ID given to this client by the web service
 	private $id;
@@ -30,6 +31,7 @@ class DLLearnerConnection
 		$this->learnttl=$settings->learnttl;
 		$this->lang=$settings->language;
 		$this->DBPediaUrl=$settings->dbpediauri;
+		$this->endpoint=$settings->endpoint;
 		$this->client=new SoapClient("main.wsdl",array('features' => SOAP_SINGLE_ELEMENT_ARRAYS));
 		$this->id=$id;
 		$this->ksID=$ksID;
@@ -49,7 +51,7 @@ class DLLearnerConnection
 		
 		$this->client->applyConfigEntryInt($this->id, $this->ksID, "recursionDepth",1);
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedFilter", "DBPEDIA-NAVIGATOR");
-		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedEndpoint", "DBPEDIA");
+		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedEndpoint", $this->endpoint);
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedManipulator", "DBPEDIA-NAVIGATOR");
 		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useCache", $settings->useCache);
 		if(empty($negExamples)){
