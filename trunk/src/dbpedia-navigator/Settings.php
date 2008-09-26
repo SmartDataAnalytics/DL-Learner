@@ -35,6 +35,12 @@ class Settings{
 	public $dbpediauri='http://dbpedia.openlinksw.com:8890/sparql';
 	// public DBpedia mirror
 	// public $dbpediauri='http://dbpedia2.openlinksw.com:8890/isparql';
+	
+	//which predefined Endpoint to use
+	public $endpoint="DBPEDIA";
+	//public $endpoint="LOCALDBPEDIA";
+	
+	
 	// in mikrosekunden
 	public $sparqlttl=60000000;
 	public $learnttl=5;
