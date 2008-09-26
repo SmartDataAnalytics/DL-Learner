@@ -186,7 +186,7 @@ public class Table implements Serializable{
     		int i=0;
     		for(TableColumn c:t.getColumns()){
     			String header = URLEncoder.encode(c.getHeader(),"UTF-8");
-    			String columnFileName = dir+File.separator+t.getTableName()+header+(i++)+column;
+    			String columnFileName = dir+File.separator+t.getTableName()+(i++)+header+column;
     			c.serialize(new File(columnFileName));
     			//Files.writeObjectToFile(c, new File(filename));
     			content += columnFileName+System.getProperty("line.separator");
