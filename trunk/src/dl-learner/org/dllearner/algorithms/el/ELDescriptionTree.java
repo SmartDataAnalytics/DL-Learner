@@ -21,10 +21,12 @@ package org.dllearner.algorithms.el;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -114,6 +116,41 @@ public class ELDescriptionTree implements Cloneable {
 		return rootNode.transformToDescription();
 	}
 
+	// checks whether this tree is minimal wrt. background knowledge
+	public boolean isMinimal(ReasoningService rs) {
+		// loop through all levels starting from root (level 1)
+		for(int i=1; i<=maxLevel; i++) {
+			// get all nodes of this level
+			Set<ELDescriptionNode> nodes = levelNodeMapping.get(i);
+			for(ELDescriptionNode node : nodes) {
+				List<ELDescriptionEdge> edges = node.getEdges();
+				// we need to compare all combination of edges
+				// (in both directions because subsumption is obviously
+				// not symmetric)
+				for(int j=0; j<edges.size(); j++) {
+					for(int k=0; k<edges.size(); k++) {
+						if(j != k) {
+							// we first check inclusion property on edges
+							ObjectProperty op1 = edges.get(j).getLabel();
+							ObjectProperty op2 = edges.get(k).getLabel();
+							if(rs.getRoleHierarchy().isSubpropertyOf(op1, op2)) {
+								ELDescriptionNode node1 = edges.get(j).getTree();
+								ELDescriptionNode node2 = edges.get(k).getTree();
+								// check simulation condition
+								if(node1.in.contains(node2) || node2.in.contains(node1)) {
+									// node1 is simulated by node2, i.e. we could remove one
+									// of them, so the tree is not minimal
+									return false;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * Internal method for updating the level node mapping. It is called when a
 	 * new node is added to the tree.

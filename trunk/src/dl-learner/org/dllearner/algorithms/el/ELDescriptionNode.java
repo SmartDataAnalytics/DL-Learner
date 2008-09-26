@@ -66,10 +66,10 @@ public class ELDescriptionNode {
 	private ELDescriptionNode parent = null;
 		
 	// simulation information (list or set?)
-	private List<ELDescriptionNode> in = new ArrayList<ELDescriptionNode>();
+	protected List<ELDescriptionNode> in = new ArrayList<ELDescriptionNode>();
 	private List<ELDescriptionNode> inSC1 = new ArrayList<ELDescriptionNode>();
 	private List<ELDescriptionNode> inSC2 = new ArrayList<ELDescriptionNode>();
-	private List<ELDescriptionNode> out = new ArrayList<ELDescriptionNode>();
+	protected List<ELDescriptionNode> out = new ArrayList<ELDescriptionNode>();
 	private List<ELDescriptionNode> outSC1 = new ArrayList<ELDescriptionNode>();
 	private List<ELDescriptionNode> outSC2 = new ArrayList<ELDescriptionNode>();
 	

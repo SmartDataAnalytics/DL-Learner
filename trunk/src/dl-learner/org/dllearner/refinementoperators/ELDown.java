@@ -35,6 +35,7 @@ import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
@@ -235,15 +236,46 @@ public class ELDown extends RefinementOperatorAdapter {
 			// TODO we need to check whether the range of this property is disjoint
 			// with the current child node;
 			// not implemented, because disjointness checks can only be done on descriptions
-			// clone operation
-			ELDescriptionTree clonedTree = tree.clone();
-			// find cloned edge and replace its label
-			ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
-			clonedEdge.setLabel(op2);
-			refinements.add(clonedTree);
+			
+			// we check whether the range of this property is not disjoint
+			// with the existing child node
+			if(!utility.isDisjoint(getFlattenedConcept(edge.getTree()), opRanges.get(op2))) {
+				// clone operation
+				ELDescriptionTree clonedTree = tree.clone();
+				// find cloned edge and replace its label
+				ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
+				clonedEdge.setLabel(op2);
+				refinements.add(clonedTree);				
+			}
+
 		}
 	}
 	
+	// simplifies a potentially nested tree in a flat conjunction by taking
+	// the domain of involved roles, e.g. for
+	// C = Professor \sqcap \exists hasChild.Student
+	// the result would be Professor \sqcap Human (assuming Human is the domain
+	// of hasChild)
+	private Description getFlattenedConcept(ELDescriptionNode node) {
+		Intersection i = new Intersection();
+		
+		// add all named classes to intersection
+		for(NamedClass nc : node.getLabel()) {
+			i.addChild(nc);
+		}
+		// add domain of all roles to intersection
+		for(ELDescriptionEdge edge : node.getEdges()) {
+			i.addChild(opDomains.get(edge.getLabel()));
+		}
+		
+		// if the intersection has just one element, we return
+		// the element itself instead
+		if(i.getChildren().size() == 1) {
+			return i.getChild(0);
+		}
+		
+		return i;
+	}
 	
 //	private void computeMg(Description index) {
 //		// compute the applicable properties if this has not been done yet
