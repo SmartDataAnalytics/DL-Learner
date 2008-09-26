@@ -27,6 +27,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
@@ -61,6 +63,7 @@ import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.semanticweb.owl.model.OWLOntology;
 
+import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 /**
@@ -72,13 +75,16 @@ import com.jamonapi.MonitorFactory;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
+	//RBC
+	private static final boolean debug = true;
 	
-	private static final boolean debug = false;
+	private static final boolean threaded = debug && true ;
+	
 
 	// tupleaquisitor
 	//private static final boolean debugUseImprovedTupleAquisitor = debug && false; // switches
 	//	 sysex 
-	private static final boolean debugExitAfterExtraction = debug && false; // switches
+	private static final boolean debugExitAfterExtraction = debug && true; // switches
 
 
 	private SparqlKnowledgeSourceConfigurator configurator;
@@ -227,7 +233,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 	public void init() {
 		logger.info("SparqlModul: Collecting Ontology");
 		SimpleClock totalTime = new SimpleClock();
-		SimpleClock extractionTime = new SimpleClock();
+		//SimpleClock extractionTime = new SimpleClock();
 
 		logger.trace(getURL());
 		logger.trace(getSparqlEndpoint());
@@ -253,13 +259,22 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		try {
 
 			// the actual extraction is started here
-
-			extractionTime.setTime();
-			List<Node> seedNodes = m.extract(configurator.getInstances());
+			Monitor extractionTime = JamonMonitorLogger.getTimeMonitor(SparqlKnowledgeSource.class, "total extraction time").start();
+			List<Node> seedNodes=new ArrayList<Node>();
+			if(!threaded){
+				seedNodes = m.extract(configurator.getInstances());
+			}else{
+				for (String uri : configurator.getInstances()) {
+					FutureTask<Node> f = new FutureTask<Node>(new ExtractOneInstance(m,uri));
+					seedNodes.add(f.get());
+				}
+			}
+			extractionTime.stop();
+			
 			fragment = m.getOWLAPIOntologyForNodes(seedNodes, configurator.getSaveExtractedFragment());
 			
-			extractionTime.printAndSet("extraction needed");
-			logger.info("Finished collecting Fragment");
+
+			logger.info("Finished collecting fragment. needed "+extractionTime.getLastValue()+" ms");
 
 			ontologyFragmentURL = m.getPhysicalOntologyURL();
 			
@@ -278,6 +293,31 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			Files.appendFile(jamonlog, "<xmp>\n"
 					+ JamonMonitorLogger.getStringForAllSortedByLabel());
 			System.exit(0);
+		}
+	}
+	
+	public List<Node> extractParallel(){
+		return null;
+	}
+	
+	private class ExtractOneInstance extends Thread implements Callable{
+		Manager m;
+		Node n;
+		String uri;
+		
+		private ExtractOneInstance(Manager m, String uri){
+			super();
+			this.m = m;
+			this.uri = uri;
+		}
+		
+		@Override
+		public void run(){
+			n = m.extractOneURI(uri);
+		}
+		
+		public Node call(){
+			return n;
 		}
 	}
 

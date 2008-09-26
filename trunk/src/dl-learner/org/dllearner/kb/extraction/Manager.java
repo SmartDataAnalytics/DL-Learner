@@ -57,9 +57,9 @@ public class Manager {
 
 	public Node extractOneURI(String uri) {
 		
-		logger.info("Start extracting: "+uri);
+		//logger.info("Start extracting: "+uri);
 		Node n = extractionAlgorithm.expandNode(uri, configuration.getTupelAquisitor());
-		logger.info("Finished extracting: "+uri );
+		//logger.info("Finished extracting: "+uri );
 		seedNodes.add(n);
 		return n;
 	}

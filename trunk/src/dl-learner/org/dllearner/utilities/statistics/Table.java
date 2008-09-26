@@ -22,6 +22,7 @@ package org.dllearner.utilities.statistics;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,17 +178,18 @@ public class Table implements Serializable{
     }
     
     public static void serializeColumns(Table t, String dir, String tableFile){
-    	String column = "column";
+    	String column = ".column";
     	String content = "";
     	dir = StringFormatter.checkIfDirEndsOnSlashAndRemove(dir);
     	Files.mkdir(dir);
     	try{
     		int i=0;
     		for(TableColumn c:t.getColumns()){
-    			String filename = dir+File.separator+t.getTableName()+column+(i++);
-    			c.serialize(new File(filename));
+    			String header = URLEncoder.encode(c.getHeader(),"UTF-8");
+    			String columnFileName = dir+File.separator+t.getTableName()+header+(i++)+column;
+    			c.serialize(new File(columnFileName));
     			//Files.writeObjectToFile(c, new File(filename));
-    			content += filename+System.getProperty("line.separator");
+    			content += columnFileName+System.getProperty("line.separator");
     		}
     		Files.createFile(new File(tableFile), content);
     		//
