@@ -121,7 +121,7 @@ public class ELDownTests {
 //		assertTrue(refinements.size() == desired.size());
 		for(Description refinement : refinements) {
 			System.out.println(refinement);
-//			assertTrue(desired.contains(refinement));
+			assertTrue(desired.contains(refinement));
 		}
 	}	
 	

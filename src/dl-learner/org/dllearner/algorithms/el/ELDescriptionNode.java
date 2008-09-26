@@ -20,18 +20,22 @@
 package org.dllearner.algorithms.el;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NavigableSet;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.utilities.Helper;
 
 /**
  * Represents an EL description tree, which corresponds to a
@@ -66,12 +70,12 @@ public class ELDescriptionNode {
 	private ELDescriptionNode parent = null;
 		
 	// simulation information (list or set?)
-	protected List<ELDescriptionNode> in = new ArrayList<ELDescriptionNode>();
-	private List<ELDescriptionNode> inSC1 = new ArrayList<ELDescriptionNode>();
-	private List<ELDescriptionNode> inSC2 = new ArrayList<ELDescriptionNode>();
-	protected List<ELDescriptionNode> out = new ArrayList<ELDescriptionNode>();
-	private List<ELDescriptionNode> outSC1 = new ArrayList<ELDescriptionNode>();
-	private List<ELDescriptionNode> outSC2 = new ArrayList<ELDescriptionNode>();
+	protected Set<ELDescriptionNode> in = new HashSet<ELDescriptionNode>();
+	private Set<ELDescriptionNode> inSC1 = new HashSet<ELDescriptionNode>();
+	private Set<ELDescriptionNode> inSC2 = new HashSet<ELDescriptionNode>();
+	protected Set<ELDescriptionNode> out = new HashSet<ELDescriptionNode>();
+	private Set<ELDescriptionNode> outSC1 = new HashSet<ELDescriptionNode>();
+	private Set<ELDescriptionNode> outSC2 = new HashSet<ELDescriptionNode>();
 	
 	/**
 	 * Constructs an EL description tree with empty root label.
@@ -92,6 +96,9 @@ public class ELDescriptionNode {
 		parent = null;
 		// this is the root node of the overall tree
 		tree.rootNode = this;
+		tree.addNodeToLevel(this, level);
+		
+		// TODO simulation update
 	}
 	
 	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, NavigableSet<NamedClass> label) {
@@ -107,6 +114,8 @@ public class ELDescriptionNode {
 		parent.edges.add(edge);
 		// we need to update the set of nodes on a particular level
 		tree.addNodeToLevel(this, level);
+		
+		// TODO simulation update
 	}
 	
 	/**
@@ -240,6 +249,92 @@ public class ELDescriptionNode {
 	public void replaceInLabel(NamedClass oldClass, NamedClass newClass) {
 		label.remove(oldClass);
 		label.add(newClass);
+		
+		// simulation update
+		
+		
+		Set<ELDescriptionNode> nodes = tree.getNodesOnLevel(level);
+		Set<ELDescriptionNode> tmp = Helper.difference(nodes, in);
+		for(ELDescriptionNode node : tmp) {
+			if(isSublabel(label, node.label)) {
+				// TODO continue later
+			}
+		}
+		
+	}
+	
+	// SC satisfied if both SC1 and SC2 satisfied
+	private boolean checkSC(ELDescriptionNode node1, ELDescriptionNode node2) {
+		return checkSC1(node1, node2) && checkSC2(node1, node2);
+	}	
+	
+	// tests simulation condition 1 (SC1)
+	private boolean checkSC1(ELDescriptionNode node1, ELDescriptionNode node2) {
+		return isSublabel(node1.label, node2.label);
+	}
+	
+	private boolean isSublabel(NavigableSet<NamedClass> subLabel, NavigableSet<NamedClass> superLabel) {
+		// implemented according to definition in article
+		// (TODO can probably be done more efficiently)
+		for(NamedClass nc : superLabel) {
+			if(!containsSubclass(nc, subLabel)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean containsSubclass(NamedClass superClass, NavigableSet<NamedClass> label) {
+		for(NamedClass nc : label) {
+			if(tree.subsumptionHierarchy.isSubclassOf(nc, superClass)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// tests simulation condition 2 (SC2)
+	private boolean checkSC2(ELDescriptionNode node1, ELDescriptionNode node2) {
+		List<ELDescriptionEdge> edges1 = node1.getEdges();
+		List<ELDescriptionEdge> edges2 = node2.getEdges();
+		
+		for(ELDescriptionEdge edge : edges1) {
+			// try to find an edge satisfying SC2 in the set
+			if(!checkSC2Edge(edge, edges2)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	// check whether edges contains an element satisfying SC2
+	private boolean checkSC2Edge(ELDescriptionEdge edge, List<ELDescriptionEdge> edges) {
+		ObjectProperty op1 = edge.getLabel();
+		ELDescriptionNode node1 = edge.getTree();
+		
+		for(ELDescriptionEdge edge2 : edges) {
+			ObjectProperty op2 = edge2.getLabel();
+			// we first check the condition on the properties
+			if(tree.roleHierarchy.isSubpropertyOf(op1, op2)) {
+				// check condition on simulations of referred nodes
+				ELDescriptionNode node2 = edge2.getTree();
+				if(node1.in.contains(node2) || node2.in.contains(node1)) {
+					// we found a node satisfying the condition, so we can return
+					return true;
+				}				
+			}
+		}
+		
+		// none of the edges in the set satisfies the 2nd simulation criterion
+		// wrt. the first edge
+		return false;
+	}
+
+	// adds (node1,node2) to simulation, takes care of all helper sets
+	private void extendSimulation(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.out.add(node2);
+		node2.in.add(node1);
 	}
 	
 	/**
@@ -248,6 +343,8 @@ public class ELDescriptionNode {
 	 */
 	public void extendLabel(NamedClass newClass) {
 		label.add(newClass);
+		
+		// TODO simulation update
 	}
 	
 	/**

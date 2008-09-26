@@ -31,7 +31,9 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.UnsupportedLanguageException;
 
@@ -49,14 +51,25 @@ public class ELDescriptionTree implements Cloneable {
 	// attach a simulation relation to the description tree
 	// private Simulation simulation;
 
-	private int maxLevel = 1;
+	// max level = 0 means that there is no tree at all
+	// (max level = 1 means the root node exists)
+	private int maxLevel = 0;
 
 	protected ELDescriptionNode rootNode;
 
 	private Map<Integer, Set<ELDescriptionNode>> levelNodeMapping = new HashMap<Integer, Set<ELDescriptionNode>>();
 
-	public ELDescriptionTree() {
-
+	// the background knowledge (we need to have it explicitly here, 
+	// since we store simulation information in the tree and simulation
+	// updates depend on background knowledge)
+	protected ReasoningService rs;
+	protected SubsumptionHierarchy subsumptionHierarchy;
+	protected ObjectPropertyHierarchy roleHierarchy;
+	
+	public ELDescriptionTree(ReasoningService rs) {
+		this.rs = rs;
+		subsumptionHierarchy = rs.getSubsumptionHierarchy();
+		roleHierarchy = rs.getRoleHierarchy();
 	}
 
 	/**
@@ -65,7 +78,8 @@ public class ELDescriptionTree implements Cloneable {
 	 * @param description
 	 *            A description
 	 */
-	public ELDescriptionTree(Description description) {
+	public ELDescriptionTree(ReasoningService rs, Description description) {
+		this(rs);
 		// construct root node and recursively build the tree
 		rootNode = new ELDescriptionNode(this);
 		constructTree(description, rootNode);
@@ -117,11 +131,14 @@ public class ELDescriptionTree implements Cloneable {
 	}
 
 	// checks whether this tree is minimal wrt. background knowledge
-	public boolean isMinimal(ReasoningService rs) {
+	public boolean isMinimal() {
+//		System.out.println(this);
+//		System.out.println(levelNodeMapping);
 		// loop through all levels starting from root (level 1)
 		for(int i=1; i<=maxLevel; i++) {
 			// get all nodes of this level
 			Set<ELDescriptionNode> nodes = levelNodeMapping.get(i);
+//			System.out.println("level " + i + ": " + nodes);
 			for(ELDescriptionNode node : nodes) {
 				List<ELDescriptionEdge> edges = node.getEdges();
 				// we need to compare all combination of edges
@@ -207,7 +224,7 @@ public class ELDescriptionTree implements Cloneable {
 	@Override
 	public ELDescriptionTree clone() {
 		// create a new reference tree
-		ELDescriptionTree treeClone = new ELDescriptionTree();
+		ELDescriptionTree treeClone = new ELDescriptionTree(rs);
 		// create a root node attached to this reference tree
 		ELDescriptionNode rootNodeClone = new ELDescriptionNode(treeClone, new TreeSet<NamedClass>(
 				rootNode.getLabel()));
