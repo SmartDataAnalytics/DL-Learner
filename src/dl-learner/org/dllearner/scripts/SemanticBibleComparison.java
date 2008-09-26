@@ -20,7 +20,9 @@
 package org.dllearner.scripts;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -42,21 +44,27 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.gui.Config;
 import org.dllearner.gui.ConfigSave;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
+import org.dllearner.utilities.StringFormatter;
 import org.dllearner.utilities.datastructures.SetManipulation;
+import org.dllearner.utilities.examples.ExampleContainer;
 import org.dllearner.utilities.owl.ReasoningServiceFactory;
 import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.dllearner.utilities.statistics.Stat;
+import org.dllearner.utilities.statistics.Table;
+import org.dllearner.utilities.statistics.TableColumn;
 
 import com.jamonapi.MonitorFactory;
 
@@ -65,42 +73,53 @@ public class SemanticBibleComparison {
 	private static ReasoningService reasoningService;
 
 	private static Logger logger = Logger.getRootLogger();
-	public static boolean flawInExperiment = false;
+	private static boolean flawInExperiment = false;
 
 	
-	public static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
-	public static String dir = "sembib/";
+	private static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
+	private static String dir = "sembib100/";
 	//public static String sparqldir = dir+"sparql/";
-	public static String exampleDir = dir+"examples/";
+	private static String exampleDir = dir+"examples/";
+	private static String tableDir = dir+"table/";
 	
-	public static String tmpFilename = dir + "tmp.conf";
-	static File log = new File(dir+"results+prop.txt");
+	private static String tmpFilename = dir + "tmp.conf";
+	//static File log = new File(dir+"results+prop.txt");
+	private static String tableFile = tableDir+"sembib.table";
+	private static String tableLatex = tableDir+"sembibLatex.table";
 	
 	private static Stat accFragment = new Stat();
 	private static Stat accOnOnto = new Stat();
 	private static Stat accPosExOnOnto = new Stat();
 	private static Stat accNegExOnOnto = new Stat();
 	private static Stat learningTime = new Stat();
-	private static Stat nrOfExtractedTriples = new Stat();
+	//private static Stat initializationTime = new Stat();
+	private static Stat reasonerInitializationTime = new Stat();
+	private static Stat ksinitializationTime = new Stat();
+	private static Stat nrOfExtractedAxioms = new Stat();
 	private static Stat descLength = new Stat();
 	private static Stat descDepth = new Stat();
-	
-	private static Stat timeWhole = new Stat();
-	private static Stat accWhole = new Stat();
-	private static Stat dLengthWhole = new Stat();
-	private static Stat dDepthWhole = new Stat();
-	
 	
 	private static boolean descHasNot = false;
 	private static boolean descHasAll = false;
 	private static boolean descHasBooleanData = false;
 	private static boolean descHasNrRes = false;
 	
-	private static boolean wholeHasNot = false;
-	private static boolean wholeHasAll = false;
-	private static boolean wholeHasBooleanData = false;
-	private static boolean wholeHasNrRes = false;
+	private static Table t;
+	//private static boolean wholeHasNot = false;
+	//private static boolean wholeHasAll = false;
+	//private static boolean wholeHasBooleanData = false;
+	//private static boolean wholeHasNrRes = false;
 	
+	//10s means fixed time 10s
+	private static enum Experiments  {
+		SPARQL_10s,
+		NORMAL_10s, 
+		SPARQL_100s,
+		NORMAL_100s,
+		SPARQL_1000_CONCEPT_TESTS,
+		NORMAL_1000_CONCEPT_TESTS,
+		SPARQL_10000_CONCEPT_TESTS,
+		NORMAL_10000_CONCEPT_TESTS};
 	
 	
 	//private static Class usedReasoner = FastInstanceChecker.class;
@@ -112,18 +131,29 @@ public class SemanticBibleComparison {
 	 */
 	public static void main(String[] args) {
 		SimpleClock total = new SimpleClock();
-		Files.createFile(log, "");
+		
 	
 		initLogger();
 		logger.warn("Start");
+		prepareTable();
 		
+		List<String> l = getFiles();
+		analyzeFiles(l);
 		
-		
-		conductExperiment(0);
+		for (Experiments exp : Experiments.values()) {
+			if(exp.equals(Experiments.SPARQL_10s))continue;
+			conductExperiment(exp);
+			System.exit(0);
+		}
+		//conductExperiment(0);
 		
 	
-		
+		//		 write JaMON report in HTML file
+		File jamonlog = new File(dir+"jamon.html");
+		Files.createFile(jamonlog, MonitorFactory.getReport());
+		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 		total.printAndSet("Finished");
+		logger.warn(total.getAndSet("Finished"));
 		if(flawInExperiment){
 			logger.error("There were exceptions");
 		}
@@ -131,29 +161,40 @@ public class SemanticBibleComparison {
 	
 	}
 	
-	public static void conductExperiment(int experiment){
+	public static void conductExperiment(Experiments exp){
 		
 		try{
 			//prepare everything
 			List<String> confs = getFiles();
 			ComponentManager cm =ComponentManager.getInstance();
 			
+			int count = 1;
 			for (String filename : confs) {
+				SimpleClock oneExperiment = new SimpleClock();
+				if (count == 6){break;}
+				
+				logger.warn(exp+" "+count +" from file "+filename);
+				
 				// read the file and get the examples
-				File f = new File(filename);
+				File f = new File(exampleDir+filename);
 				Cache.getDefaultCache().clearCache();
 				String fileContent = Files.readFile(f);
 				SortedSet<Individual> posEx = SetManipulation.stringToInd(getIndividuals(fileContent, true));
 				SortedSet<Individual> negEx = SetManipulation.stringToInd(getIndividuals(fileContent, false));
 				
-				ExampleBasedROLComponent la = experimentalSetup1(posEx,negEx);
-				//TODO measure time
+				ExampleBasedROLComponent la = experimentalSetup(exp,posEx,negEx);
+				
+				//SimpleClock init = new SimpleClock();
 				initAllComponents();
+				//initializationTime.addNumber((double) init.getTime()/1000);
+				
 				
 				SimpleClock learningTimeClock = new SimpleClock();
 				la.start();
-				learningTime.addNumber((double) learningTimeClock.getTime());
-			
+				learningTime.addNumber((double) learningTimeClock.getTime()/1000);
+				logger.warn(learningTimeClock.getAndSet("learning time")+" in stat: "+learningTime.getMean());
+				
+				
 				EvaluatedDescription bestDescription =(la.getCurrentlyBestEvaluatedDescription());
 				
 				accFragment.addNumber(bestDescription.getAccuracy());
@@ -173,6 +214,9 @@ public class SemanticBibleComparison {
 				EvaluatedDescription onOnto = reEvaluateDescription(
 						bestDescription.getDescription(), retrieved, posEx, negEx);
 				
+				logger.warn(onOnto.getDescription().toManchesterSyntaxString(null, null));
+				logger.warn(onOnto.getAccuracy());
+				
 				accOnOnto.addNumber(onOnto.getAccuracy());
 				
 				//int tmp = (int)(Math.floor(onOnto.getAccuracy()*100));
@@ -188,15 +232,17 @@ public class SemanticBibleComparison {
 				}
 				if(s!=null){
 					double nrtrip = (double)(s.getNrOfExtractedAxioms());
-					nrOfExtractedTriples.addNumber(nrtrip);
+					nrOfExtractedAxioms.addNumber(nrtrip);
 				}else{
-					nrOfExtractedTriples.addNumber(0.0);
+					nrOfExtractedAxioms.addNumber(0.0);
 				}
 				
 				cm.freeAllComponents();
 				
+				fillTable(exp, count);
 				
-				
+				logger.warn(exp+" "+count+ " " +oneExperiment.getAndSet("") );
+				count++;
 			}//end for
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -205,14 +251,56 @@ public class SemanticBibleComparison {
 		
 	}
 	
-	public static ExampleBasedROLComponent experimentalSetup1(SortedSet<Individual> posExamples, SortedSet<Individual> negExamples ){
-		ExampleBasedROLComponent la = prepareSparqlExperiment(posExamples, negExamples);
+	public static void analyzeFiles(List<String> l){
+		int countDoublettes = 0;
+		SortedSet<String> differentIndividuals = new TreeSet<String>();
+		for ( String file : l) {
+			ExampleContainer ec = new ExampleContainer(
+					SetManipulation.stringToInd(getIndividuals(file, true)),
+					SetManipulation.stringToInd(getIndividuals(file, false)));
+			differentIndividuals.addAll(getIndividuals(file, true));
+			differentIndividuals.addAll(getIndividuals(file, false));
+			if(!ExampleContainer.add(ec)){
+				countDoublettes++;
+			}
+		}
+		logger.warn("found diff inds "+differentIndividuals.size());
+		logger.warn("found doublettes " + countDoublettes);
 		
+	}
+	
+	public static ExampleBasedROLComponent experimentalSetup(Experiments exp,SortedSet<Individual> posExamples, SortedSet<Individual> negExamples ){
+		ExampleBasedROLComponent la = null;
+		if(exp.toString().contains("SPARQL"))
+			la = prepareSparqlExperiment(posExamples, negExamples);
+		else if(exp.toString().contains("NORMAL")){
+			la = prepareNormalExperiment(posExamples, negExamples);
+		}else {
+			logger.error("undefined EXPERIMENT" + exp);
+			System.exit(0);
+			}
+		
+		ExampleBasedROLComponentConfigurator c = la.getConfigurator();
+		
+		if(exp.toString().contains("10s")){
+			c.setMaxExecutionTimeInSeconds(10);
+			c.setMinExecutionTimeInSeconds(10);
+			
+		}else if(exp.toString().contains("100s")){
+			c.setMaxExecutionTimeInSeconds(100);
+			c.setMinExecutionTimeInSeconds(100);
+			
+		}else if(exp.toString().contains("1000_CONCEPT_TESTS")){
+			c.setMaxClassDescriptionTests(1000);
+		}else if(exp.toString().contains("10000_CONCEPT_TESTS")){
+			c.setMaxClassDescriptionTests(10000);
+		}
 		//la.getConfigurator();
 		//appendtoFile
 		
 		return la;
 	}
+	
 	
 	public static ExampleBasedROLComponent prepareSparqlExperiment(SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
 		
@@ -234,6 +322,7 @@ public class SemanticBibleComparison {
 			ks.getConfigurator().setUseLits(true);
 			ks.getConfigurator().setGetAllSuperClasses(true);
 			ks.getConfigurator().setGetPropertyInformation(true);
+			ks.getConfigurator().setVerbosity("warning");
 			
 			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 			tmp.add(ks);
@@ -261,46 +350,135 @@ public class SemanticBibleComparison {
 		return la;
 	}
 	
+	public static ExampleBasedROLComponent prepareNormalExperiment(SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
+		ExampleBasedROLComponent la = null;
+		try{
+			SortedSet<Individual> instances = new TreeSet<Individual>();
+			instances.addAll(posExamples);
+			instances.addAll(negExamples);	
+			
+			URL fileURL = null;
+			try {
+				fileURL = new File(ontologyPath).toURI().toURL();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				flawInExperiment = true;
+			}
+			OWLFile ks = ComponentFactory.getOWLFile( fileURL);
+					
+			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+			tmp.add(ks);
+			// reasoner
+			OWLAPIReasoner f = ComponentFactory
+					.getOWLAPIReasoner(tmp);
+			ReasoningService rs = ComponentManager.getInstance()
+					.reasoningService(f);
+	
+//			 learning problem
+			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(rs,
+					SetManipulation.indToString(posExamples), SetManipulation
+							.indToString(negExamples));
+	
+			// learning algorithm
+			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
+			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
+			Config c = new Config(ComponentManager.getInstance(), ks, f, rs, lp, la);
+			new ConfigSave(c).saveFile(new File(tmpFilename));
+			
+		}catch (Exception e) {
+			 e.printStackTrace();
+			 flawInExperiment = true;
+		}
+		return la;
+	}
+	
 	public static void initAllComponents(){
 		ComponentManager cm = ComponentManager.getInstance();
+		
 		for(Component c : cm.getLiveComponents()){
 			try{
+			SimpleClock time = new SimpleClock();
 			 c.init();
+			 if (c instanceof SparqlKnowledgeSource) {
+				ksinitializationTime.addNumber((double) time.getTime()/1000);
+				
+			}else if (c instanceof OWLFile) {
+				ksinitializationTime.addNumber((double) time.getTime()/1000);
+				
+			}else if (c instanceof OWLAPIReasoner) {
+				reasonerInitializationTime.addNumber((double) time.getTime()/1000);
+				
+			}
+			
 			}catch (Exception e) {
 				 e.printStackTrace();
 				 flawInExperiment = true;
 			}
 		}
+		
 	}
 	
-	public static void writeLog(){
-		String l = "\n\n\n*********************\n";
-		l +="COUNT: "+accFragment.getCount()+"\n";
-		l +="FRAGMENT: ALL: "+descHasAll+" BOOL: "+descHasBooleanData+" NOT: "+descHasNot+" <>=: "+descHasNrRes+"\n";
-		l +="WHOLE: ALL: "+wholeHasAll+" BOOL: "+wholeHasBooleanData+" NOT: "+wholeHasNot+" <>=: "+wholeHasNrRes+"\n";
+	public static void prepareTable(){
+		t = new Table("sembib");
+		String[] labString = new String[]{
+				"count",
+				"accuracy on fragment(%)",
+				"accuracy on whole (%)",
+				"accuracy pos examples on whole (%)",
+				"accuracy neg examples on whole (%)",
+				"extraction/parsing time",
+				"reasoner initialization time",
+				"learning time",
+				"number of axioms",
+				"description length",
+				"description depth"
+		}; //9
+		TableColumn labels = new TableColumn("Semantic Bible",labString);
+		t.addColumn(labels);
+		Table.serializeColumns(t, tableDir, tableFile);
+		Files.createFile(new File(tableLatex), t.getLatexString());
 		
-			
-		l+="accFragment\t\t"+accFragment.getMeanAsPercentage()+" +-"+accFragment.getStandardDeviation()+"\n";
-		l+="accOnOnto\t\t"+accOnOnto.getMeanAsPercentage()+" +-"+accOnOnto.getStandardDeviation()+"\n";
-		l+="accPosExOnOnto\t\t"+accPosExOnOnto.getMeanAsPercentage()+" +-"+accPosExOnOnto.getStandardDeviation()+"\n";
-		l+="accNegExOnOnto\t\t"+accNegExOnOnto.getMeanAsPercentage()+" +-"+accNegExOnOnto.getStandardDeviation()+"\n";
-		l+="timeFragment\t\t"+learningTime.getMean()+" +-"+learningTime.getStandardDeviation()+"\n";
-		l+="nrOfExtractedTriples\t\t"+nrOfExtractedTriples.getMean()+" +-"+nrOfExtractedTriples.getStandardDeviation()+"\n";
-		l+="dLengthFragment\t\t"+descLength.getMean()+" +-"+descLength.getStandardDeviation()+"\n";
-		l+="dDepthFragment\t\t"+descDepth.getMean()+" +-"+descDepth.getStandardDeviation()+"\n";
-		
-		l+="timeWhole\t\t"+timeWhole.getMean()+" +-"+timeWhole.getStandardDeviation()+"\n";
-		l+="accWhole\t\t"+accWhole.getMeanAsPercentage()+" +-"+accWhole.getStandardDeviation()+"\n";
-		l+="dLengthWhole\t\t"+dLengthWhole.getMean()+" +-"+dLengthWhole.getStandardDeviation()+"\n";
-		l+="dDepthWhole\t\t"+dDepthWhole.getMean()+" +-"+dDepthWhole.getStandardDeviation()+"\n";
-		
-		Files.appendFile(log, l);
-		
-//		 write JaMON report in HTML file
-		File jamonlog = new File("sembib/jamon.html");
-		Files.createFile(jamonlog, MonitorFactory.getReport());
-		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 	}
+	
+	public static void fillTable(Experiments exp, int count){
+		String[] columnString = new String[]{
+				count+"",
+				StringFormatter.convertStatPercentageToLatex(accFragment, 1, false, true),
+				StringFormatter.convertStatPercentageToLatex(accOnOnto, 1, false, true),
+				StringFormatter.convertStatPercentageToLatex(accPosExOnOnto, 1, false, true),
+				StringFormatter.convertStatPercentageToLatex(accNegExOnOnto, 1, false, true),
+				StringFormatter.convertStatDoubleToLatex(ksinitializationTime, 1, "", "s", true),
+				StringFormatter.convertStatDoubleToLatex(reasonerInitializationTime, 1, "", "s", true),
+				StringFormatter.convertStatDoubleToLatex(learningTime, 1, "", "s", true),
+				StringFormatter.convertStatDoubleToLatex(nrOfExtractedAxioms, 0, "", "", true),
+				StringFormatter.convertStatDoubleToLatex(descLength, 1, "", "", true),
+				StringFormatter.convertStatDoubleToLatex(descDepth, 1, "", "", true),
+		}; //9
+		t.removeColumn(exp.toString());
+		t.addColumn(new TableColumn(exp.toString(),columnString));
+		Table.serializeColumns(t, tableDir, tableFile);
+		Files.createFile(new File(tableLatex), t.getLatexString());
+		
+		
+	}
+	
+	
+	
+	public static void reinitStat(){
+		accFragment = new Stat();
+		accOnOnto = new Stat();
+		accPosExOnOnto = new Stat();
+		accNegExOnOnto = new Stat();
+		ksinitializationTime = new Stat();
+		reasonerInitializationTime = new Stat();
+		learningTime = new Stat();
+		nrOfExtractedAxioms = new Stat();
+		descLength = new Stat();
+		descDepth = new Stat();
+	}
+	
+	
+
 	
 	public static EvaluatedDescription reEvaluateDescription(Description d, SortedSet<Individual> retrieved ,SortedSet<Individual> posEx ,SortedSet<Individual> negEx ){
 		SortedSet<Individual> PosAsPos = new TreeSet<Individual>();
@@ -452,17 +630,7 @@ public class SemanticBibleComparison {
     return ret;
 }*/
 
-/*public static void analyzeFiles(List<File> l){
-	
-	SortedSet<String> differentIndividuals = new TreeSet<String>();
-	for ( content : l) {
-		differentIndividuals.addAll(getIndividuals(content, true));
-		differentIndividuals.addAll(getIndividuals(content, false));
-		
-	}
-	System.out.println("found diff inds "+differentIndividuals.size());
-	
-}*/
+
 
 	
 }
