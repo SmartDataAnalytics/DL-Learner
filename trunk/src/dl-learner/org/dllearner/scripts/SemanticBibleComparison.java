@@ -74,7 +74,7 @@ import com.jamonapi.MonitorFactory;
 public class SemanticBibleComparison {
 
 	private static boolean onJensMachine = false;
-	private static int nrOfFilesInExperiment = (onJensMachine)?1:1;
+	private static int nrOfFilesInExperiment = (onJensMachine)?1:200;
 	
 	private static ReasoningService reasoningService;
 
@@ -161,7 +161,8 @@ public class SemanticBibleComparison {
 			//if(exp.equals(Experiments.NORMAL_10000_CONCEPT_TESTS))continue;
 			//if(exp.equals(Experiments.SPARQL_100s))continue;
 			//if(exp.toString().contains("SPARQL"))continue;
-			conductExperiment(exp);
+			if(exp.equals(Experiments.SPARQL_10s))conductExperiment(exp);
+			if(exp.equals(Experiments.SPARQL_1000_CONCEPT_TESTS))conductExperiment(exp);
 			//System.exit(0);
 		}
 		//conductExperiment(0);

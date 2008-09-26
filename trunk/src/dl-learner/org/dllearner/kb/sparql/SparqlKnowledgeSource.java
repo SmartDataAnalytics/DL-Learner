@@ -27,8 +27,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.KnowledgeSource;
@@ -76,15 +74,15 @@ import com.jamonapi.MonitorFactory;
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
 	//RBC
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 	
-	private static final boolean threaded = debug && true ;
+	//private static final boolean threaded = debug && true ;
 	
 
 	// tupleaquisitor
 	//private static final boolean debugUseImprovedTupleAquisitor = debug && false; // switches
 	//	 sysex 
-	private static final boolean debugExitAfterExtraction = debug && true; // switches
+	private static final boolean debugExitAfterExtraction = debug && false; // switches
 
 
 	private SparqlKnowledgeSourceConfigurator configurator;
@@ -261,17 +259,34 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			// the actual extraction is started here
 			Monitor extractionTime = JamonMonitorLogger.getTimeMonitor(SparqlKnowledgeSource.class, "total extraction time").start();
 			List<Node> seedNodes=new ArrayList<Node>();
-			if(!threaded){
+			
+			//if(!threaded){
 				seedNodes = m.extract(configurator.getInstances());
-			}else{
+			/*}else{
+				int maxPoolSize = configurator.getInstances().size();
+				ThreadPoolExecutor ex = new ThreadPoolExecutor(5,maxPoolSize,1,TimeUnit.SECONDS,new ArrayBlockingQueue<Runnable>(100));
+				List<FutureTask<Node>> tasks = new ArrayList<FutureTask<Node>>();
+							
 				for (String uri : configurator.getInstances()) {
-					System.out.println("making future task");
-					FutureTask<Node> f = new FutureTask<Node>(new ExtractOneInstance(m,uri));
-					seedNodes.add(f.get());
-					System.out.println("finished FutureTask "+seedNodes.size());
+					
+					ExtractOneInstance e = new ExtractOneInstance(m,uri);
+					
+					FutureTask<Node> ft = new FutureTask<Node>(e);
+					ex.submit(ft);
+					tasks.add(ft);
+					//System.out.println(f.get());
+					//seedNodes.add(f.get());
+					//System.out.println("finished FutureTask "+seedNodes.size());
 				}
-			}
+				for(FutureTask<Node> ft : tasks){
+					//System.out.println(ft.get());
+					//System.out.println("aaa");
+					seedNodes.add(ft.get());
+					
+				}
+			}*/
 			extractionTime.stop();
+		
 			
 			fragment = m.getOWLAPIOntologyForNodes(seedNodes, configurator.getSaveExtractedFragment());
 			
@@ -302,7 +317,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		return null;
 	}
 	
-	private class ExtractOneInstance extends Thread implements Callable{
+	/*private class ExtractOneInstance  implements Callable{
 		Manager m;
 		Node n;
 		String uri;
@@ -313,15 +328,13 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 			this.uri = uri;
 		}
 		
-		@Override
-		public void run(){
-			n = m.extractOneURI(uri);
-		}
+		
 		
 		public Node call(){
-			return n;
+			System.out.println("funky");
+			return m.extractOneURI(uri);
 		}
-	}
+	}*/
 
 	/*
 	 * (non-Javadoc)
