@@ -54,7 +54,7 @@ public final class Utility {
 	
 	// specifies whether to do real disjoint tests or check that
 	// two named classes do not have common instances
-	private boolean instanceBasedDisjoints = true;	
+	private boolean instanceBasedDisjoints = false;	
 	
 	// cache for reasoner queries
 	private Map<Description,Map<Description,Boolean>> cachedDisjoints = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);
@@ -160,7 +160,10 @@ public final class Utility {
 		return true;
 	}	
 	
-	private boolean isDisjoint(Description d1, Description d2) {
+	public boolean isDisjoint(Description d1, Description d2) {
+//		System.out.println("d1: " + d1);
+//		System.out.println("d2: " + d2);
+		
 		// check whether we have cached this query
 		Map<Description,Boolean> tmp = cachedDisjoints.get(d1);
 		Boolean tmp2 = null;

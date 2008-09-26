@@ -68,7 +68,27 @@ public class ObjectPropertyHierarchy {
 		return (TreeSet<ObjectProperty>) roleHierarchyDown.get(role).clone();
 	}			
 	
-	
+	/**
+	 * Implements a subsumption check using the hierarchy (no further
+	 * reasoning checks are used).
+	 * @param subProperty The (supposedly) more special property.
+	 * @param superProperty The (supposedly) more general property.
+	 * @return True if <code>subProperty</code> is a subproperty of <code>superProperty</code>.
+	 */
+	public boolean isSubpropertyOf(ObjectProperty subProperty, ObjectProperty superProperty) {
+		if(subProperty.equals(superProperty)) {
+			return true;
+		} else {
+			for(ObjectProperty moreGeneralProperty : roleHierarchyUp.get(subProperty)) {	
+				if(isSubpropertyOf(moreGeneralProperty, superProperty)) {
+					return true;
+				}
+			}
+			// we cannot reach the class via any of the upper classes,
+			// so it is not a super class
+			return false;
+		}
+	}	
 	
 	@Override
 	public String toString() {
