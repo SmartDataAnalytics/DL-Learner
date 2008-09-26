@@ -182,11 +182,12 @@ public class Table implements Serializable{
     	String content = "";
     	dir = StringFormatter.checkIfDirEndsOnSlashAndRemove(dir);
     	Files.mkdir(dir);
+    	String div = (System.currentTimeMillis() % 10000) + "";
     	try{
     		int i=0;
     		for(TableColumn c:t.getColumns()){
     			String header = URLEncoder.encode(c.getHeader(),"UTF-8");
-    			String columnFileName = dir+File.separator+t.getTableName()+(i++)+header+column;
+    			String columnFileName = dir+File.separator+t.getTableName()+(i++)+header+div+column;
     			c.serialize(new File(columnFileName));
     			//Files.writeObjectToFile(c, new File(filename));
     			content += columnFileName+System.getProperty("line.separator");
