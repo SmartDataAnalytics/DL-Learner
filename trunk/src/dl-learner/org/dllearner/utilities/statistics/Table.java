@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dllearner.utilities.Files;
+import org.dllearner.utilities.StringFormatter;
 
 
 /**
@@ -117,6 +118,15 @@ public class Table implements Serializable{
     	else return columns.get(0).getSize();
     }
     
+    public void removeColumn(String header){
+    	for (int i = 0; i < columns.size(); i++) {
+			if(columns.get(i).getHeader().equals(header)){
+				columns.remove(i);
+				return;
+			}
+		}
+    }
+    
     
     public List<String> getColumnHeaders(){
     	List<String> entries = new ArrayList<String>();
@@ -169,6 +179,7 @@ public class Table implements Serializable{
     public static void serializeColumns(Table t, String dir, String tableFile){
     	String column = "column";
     	String content = "";
+    	dir = StringFormatter.checkIfDirEndsOnSlashAndRemove(dir);
     	Files.mkdir(dir);
     	try{
     		int i=0;

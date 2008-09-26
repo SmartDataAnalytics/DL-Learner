@@ -1,5 +1,10 @@
 package org.dllearner.utilities;
 
+import java.io.File;
+import java.text.DecimalFormat;
+
+import org.dllearner.utilities.statistics.Stat;
+
 
 public class StringFormatter {
 
@@ -10,16 +15,113 @@ public class StringFormatter {
 	 * @param d
 	 */
 	public static String doubleToPercent(double d){
-			if(d>1.0 || d<0.0)return "bad format: "+d;
-			else if(d == 1.0){
-				return "100.0%";
-			}else if(d == 0.0 ){
-				return "0.0%";
-			}else {
-				String acc = (d*100)+"";
-				acc = acc.substring(0,"55.5".length());
-				return acc+"%";
-			}
+		return doubleToPercent( d,  1,  true);	
+	}
+	
+	public static String doubleToPercent(double d, int decimals){
+		
+		return doubleToPercent( d,  decimals,  true);
 		
 	}
+	
+	public static String doubleToPercent(double d, int decimals, boolean addPercentSign){
+		
+		String format = (decimals==0)?"00":".";
+		for (int i = 0; i < decimals; i++) {
+			format += "0";
+		}
+		format+="%";
+		DecimalFormat df = new DecimalFormat( format ); 
+		String ret = df.format(d); 
+		ret = (addPercentSign)?ret:ret.replaceAll("%", "");
+		return ret;
+		
+	}
+	
+	public static String doubleRound(double d, int decimals, String before, String after){
+		String ret ="";
+		if(decimals==0){
+			int retInt = (int) Math.floor((d+0.5));
+			ret = retInt+"";
+		}else{
+			String format = ".";
+			for (int i = 0; i < decimals; i++) {
+				format += "0";
+			}
+			
+			DecimalFormat df = new DecimalFormat( format ); 
+			ret = df.format(d); 
+			ret = ret.replaceAll("%", "");
+		}
+		ret = before + ret+ after;
+		return ret;
+		
+	}
+	
+	public static String convertStatPercentageToLatex(Stat s, 
+			int decimals,
+			boolean addPercentSign, 
+			boolean includeSTDDeviation){
+		String ret ="";
+		
+		ret = doubleToPercent(s.getMean(), decimals, addPercentSign);
+		ret = ret.replaceAll("%", "\\%");
+		if(includeSTDDeviation){
+			ret += " ($\\pm$"+doubleToPercent(s.getStandardDeviation(), decimals, false)+")";
+		}
+		return ret;
+	}
+	
+	public static String convertStatDoubleToLatex(Stat s, 
+			int decimals,
+			boolean includeSTDDeviation){
+		return convertStatDoubleToLatex(s, decimals,"","",includeSTDDeviation);
+	}
+	
+	
+	public static String convertStatDoubleToLatex(Stat s, 
+			int decimals,
+			String before,
+			String after,
+			boolean includeSTDDeviation){
+		String ret ="";
+		
+		ret = doubleRound(s.getMean(), decimals, before, after);
+	
+		if(includeSTDDeviation){
+			ret += doubleRound(s.getStandardDeviation(), decimals," ($\\pm$", after+")" );
+		}
+		return ret;
+	}
+	
+	
+	
+	
+	
+	public static void main(String[] args) {
+		double d = 0.55555;
+		System.out.println(doubleToPercent(d, 0));
+		System.out.println(doubleToPercent(d, 1));
+		System.out.println(doubleToPercent(d, 2));
+		System.out.println(doubleToPercent(d, 3));
+		System.out.println(doubleToPercent(d, 0, false));
+		System.out.println(doubleToPercent(d, 1, false));
+		System.out.println(doubleToPercent(d, 2, false));
+		System.out.println(doubleToPercent(d, 3, false));
+		d= 55.55555;
+		System.out.println(doubleRound(d, 0, "|", "|"));
+		System.out.println(doubleRound(d, 1, "|", "|"));
+		System.out.println(doubleRound(d, 2, "|", "|"));
+		System.out.println(doubleRound(d, 3, "|", "|"));
+	
+	}
+	
+	public static String checkIfDirEndsOnSlashAndRemove(String dir){
+		if(dir.endsWith(File.separator)){
+			dir=dir.substring(0,dir.length()-File.separator.length());
+		}
+		return dir;
+	}
+	
+	
 }
