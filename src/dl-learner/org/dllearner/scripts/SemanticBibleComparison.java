@@ -73,6 +73,9 @@ import com.jamonapi.MonitorFactory;
 
 public class SemanticBibleComparison {
 
+	private static boolean onJensMachine = false;
+	private static int nrOfFilesInExperiment = (onJensMachine)?1:1;
+	
 	private static ReasoningService reasoningService;
 
 	private static Logger logger = Logger.getRootLogger();
@@ -143,13 +146,22 @@ public class SemanticBibleComparison {
 		List<String> l = getFiles();
 		analyzeFiles(l);
 		
+		if(onJensMachine){
+			conductExperiment(Experiments.NORMAL_10s);
+			conductExperiment(Experiments.NORMAL_100s);
+			conductExperiment(Experiments.NORMAL_1000_CONCEPT_TESTS);
+			conductExperiment(Experiments.NORMAL_10000_CONCEPT_TESTS);
+			
+			
+			
+		}
+		
 		for (Experiments exp : Experiments.values()) {
 			//if(exp.equals(Experiments.SPARQL_10000_CONCEPT_TESTS))continue;
 			//if(exp.equals(Experiments.NORMAL_10000_CONCEPT_TESTS))continue;
 			//if(exp.equals(Experiments.SPARQL_100s))continue;
-			//if(exp.equals(Experiments.NORMAL_100s))continue;
+			//if(exp.toString().contains("SPARQL"))continue;
 			conductExperiment(exp);
-			reinitStat();
 			//System.exit(0);
 		}
 		//conductExperiment(0);
@@ -175,12 +187,12 @@ public class SemanticBibleComparison {
 			List<String> confs = getFiles();
 			ComponentManager cm =ComponentManager.getInstance();
 			
-			int count = 1;
+			int count = 0;
 			for (String filename : confs) {
 				SimpleClock oneExperiment = new SimpleClock();
-				if (count == 2){break;}
+				if (count == nrOfFilesInExperiment){break;}
 				
-				logger.warn("****"+exp+" "+count +" from file "+filename);
+				logger.warn("****"+exp+" "+(count+1) +" from file "+filename);
 				
 				// read the file and get the examples
 				File f = new File(exampleDir+filename);
@@ -246,17 +258,17 @@ public class SemanticBibleComparison {
 				
 				cm.freeAllComponents();
 				
-				fillTable(exp, count);
+				fillTable(exp, (count+1));
 				
-				logger.warn(exp+" "+count+ " " +oneExperiment.getAndSet("")+"****" );
+				logger.warn(exp+" "+(count+1)+ " " +oneExperiment.getAndSet("")+"****" );
 				count++;
 			}//end for
 			}catch (Exception e) {
 				e.printStackTrace();
 				flawInExperiment = true;
 			}
-		
-	}
+			reinitStat();
+	}//endconduct
 	
 	public static void analyzeFiles(List<String> l){
 		int countDoublettes = 0;
