@@ -29,11 +29,12 @@ public class NT2RDF {
 
 	public static void main(String[] args) {
 
-		// String ontopath=args[0];
-		String ontopath = "examples/semantic_bible/NTNcombined.nt";
+		 String ontopath=args[0];
+		//String ontopath = "examples/semantic_bible/NTNcombined.nt";
 		// String ontopath = "examples/semantic_bible/test.nt";
 		convertNT2RDF(ontopath);
 
+				
 	}
 
 	/**
