@@ -63,6 +63,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
@@ -428,6 +429,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 				}
 			}
 			return true;
+		} else if (description instanceof ObjectValueRestriction) {
+			Individual i = ((ObjectValueRestriction)description).getIndividual();
+			ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
+			
+			return opPos.get(op).get(individual).contains(i);
 		} else if (description instanceof BooleanValueRestriction) {
 			DatatypeProperty dp = ((BooleanValueRestriction) description)
 					.getRestrictedPropertyExpresssion();

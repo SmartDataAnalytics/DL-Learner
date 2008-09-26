@@ -19,6 +19,7 @@
  */
 package org.dllearner.refinementoperators;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +55,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
@@ -148,6 +150,14 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private Map<DatatypeProperty,List<Double>> splits = new TreeMap<DatatypeProperty,List<Double>>();
 	private int maxNrOfSplits = 10;
 	
+	// experimental support for hasValue
+	private boolean useHasValue = false;
+	// data structure for a simple frequent pattern matching preprocessing phase
+	private int frequencyThreshold = 3;
+	private Map<ObjectProperty, Map<Individual, Integer>> valueFrequency = new HashMap<ObjectProperty, Map<Individual, Integer>>();
+	// data structure with identified frequent values
+	private Map<ObjectProperty, Set<Individual>> frequentValues = new HashMap<ObjectProperty, Set<Individual>>();	
+	
 	// staistics
 	public long mComputationTimeNs = 0;
 	public long topComputationTimeNs = 0;
@@ -193,7 +203,46 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		for(ObjectProperty op : rs.getObjectProperties()) {
 			opDomains.put(op, rs.getDomain(op));
 			opRanges.put(op, rs.getRange(op));
+			
+			if(useHasValue) {
+				// init
+				Map<Individual, Integer> opMap = new TreeMap<Individual, Integer>();
+				valueFrequency.put(op, opMap);
+				
+				// sets ordered by corresponding individual (which we ignore)
+				Collection<SortedSet<Individual>> fillerSets = rs.getRoleMembers(op).values();
+				for(SortedSet<Individual> fillerSet : fillerSets) {
+					for(Individual i : fillerSet) {
+//						System.out.println("op " + op + " i " + i);
+						Integer value = opMap.get(i);
+						
+						if(value != null) {
+							opMap.put(i, value+1);
+						} else {
+							opMap.put(i, 1);
+						}
+					}
+				}
+				
+				// keep only frequent patterns (TODO it would be slightly
+				// more efficient if we stop adding to valueFrequency
+				// after threshold is reached)
+				Set<Individual> frequentInds = new TreeSet<Individual>();
+				for(Individual i : opMap.keySet()) {
+					if(opMap.get(i) > frequencyThreshold) {
+						frequentInds.add(i);
+					}
+				}
+				frequentValues.put(op, frequentInds);
+				
+			}
+			
 		}
+		
+		// we do not need the temporary set anymore and let the
+		// garbage collector take care of it
+		valueFrequency = null;
+		
 		for(DatatypeProperty dp : rs.getDatatypeProperties()) {
 			dpDomains.put(dp, rs.getDomain(dp));
 		}
@@ -402,6 +451,18 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				if(maxLength > description.getLength() && maxNrOfFillers.get(ar)>1) {
 					ObjectMinCardinalityRestriction min = new ObjectMinCardinalityRestriction(2,role,description.getChild(0));
 					refinements.add(min);
+				}
+			}
+			
+			// rule 4: EXISTS r.TOP => EXISTS r.{value}
+			if(useHasValue && description.getChild(0) instanceof Thing) {
+				// watch out for frequent patterns
+				Set<Individual> frequentInds = frequentValues.get(role);
+				if(frequentInds != null) {
+					for(Individual ind : frequentInds) {
+						ObjectValueRestriction ovr = new ObjectValueRestriction(ar, ind);
+						refinements.add(ovr);
+					}			
 				}
 			}
 			
