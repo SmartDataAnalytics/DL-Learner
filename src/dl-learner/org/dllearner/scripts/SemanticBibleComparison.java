@@ -159,6 +159,10 @@ public class SemanticBibleComparison {
 			/*finished experiments:
 			 * SPARQL_10s
 			 * SPARQL_1000_CONCEPT_TESTS
+			 * running:
+			 * NORMAL_1000_CONCEPT_TESTS
+			 * SPARQL_10000_CONCEPT_TESTS
+			 * NORMAL_10000_CONCEPT_TESTS
 			 * 
 			 * */
 			
@@ -167,13 +171,16 @@ public class SemanticBibleComparison {
 				//if(exp.equals(Experiments.NORMAL_10000_CONCEPT_TESTS))continue;
 				//if(exp.equals(Experiments.SPARQL_100s))continue;
 				//if(exp.toString().contains("SPARQL"))continue;
-				if(exp.equals(Experiments.NORMAL_1000_CONCEPT_TESTS))conductExperiment(exp);
-				if(exp.equals(Experiments.SPARQL_10000_CONCEPT_TESTS))conductExperiment(exp);
-				if(exp.equals(Experiments.NORMAL_10000_CONCEPT_TESTS))conductExperiment(exp);
-				//System.exit(0);
+				 if(exp.equals(Experiments.NORMAL_10s))conductExperiment(exp);
+				 if(exp.equals(Experiments.SPARQL_100s))conductExperiment(exp);
+				 if(exp.equals(Experiments.NORMAL_100s))conductExperiment(exp);
+				//~ if(exp.equals(Experiments.NORMAL_1000_CONCEPT_TESTS))conductExperiment(exp);
+				//~ if(exp.equals(Experiments.SPARQL_10000_CONCEPT_TESTS))conductExperiment(exp);
+				//~ if(exp.equals(Experiments.NORMAL_10000_CONCEPT_TESTS))conductExperiment(exp);
+
 			}
 		}
-		//conductExperiment(0);
+
 		
 	
 		//		 write JaMON report in HTML file
