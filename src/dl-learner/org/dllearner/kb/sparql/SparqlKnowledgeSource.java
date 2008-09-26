@@ -265,8 +265,10 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 				seedNodes = m.extract(configurator.getInstances());
 			}else{
 				for (String uri : configurator.getInstances()) {
+					System.out.println("making future task");
 					FutureTask<Node> f = new FutureTask<Node>(new ExtractOneInstance(m,uri));
 					seedNodes.add(f.get());
+					System.out.println("finished FutureTask "+seedNodes.size());
 				}
 			}
 			extractionTime.stop();
