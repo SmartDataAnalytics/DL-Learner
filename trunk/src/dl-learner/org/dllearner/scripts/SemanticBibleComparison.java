@@ -251,7 +251,7 @@ public class SemanticBibleComparison {
 				EvaluatedDescription onOnto = reEvaluateDescription(
 						bestDescription.getDescription(), retrieved, posEx, negEx);
 				
-				logger.warn(onOnto.getDescription().toManchesterSyntaxString(null, null));
+				logger.warn(onOnto.getDescription().toKBSyntaxString());
 				logger.warn(onOnto.getAccuracy());
 				
 				accOnOnto.addNumber(onOnto.getAccuracy());
