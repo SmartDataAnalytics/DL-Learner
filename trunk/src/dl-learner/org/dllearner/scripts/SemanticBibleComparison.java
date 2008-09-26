@@ -20,6 +20,7 @@
 package org.dllearner.scripts;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -33,8 +34,10 @@ import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.Component;
@@ -141,9 +144,13 @@ public class SemanticBibleComparison {
 		analyzeFiles(l);
 		
 		for (Experiments exp : Experiments.values()) {
-			if(exp.equals(Experiments.SPARQL_10s))continue;
+			//if(exp.equals(Experiments.SPARQL_10000_CONCEPT_TESTS))continue;
+			//if(exp.equals(Experiments.NORMAL_10000_CONCEPT_TESTS))continue;
+			//if(exp.equals(Experiments.SPARQL_100s))continue;
+			//if(exp.equals(Experiments.NORMAL_100s))continue;
 			conductExperiment(exp);
-			System.exit(0);
+			reinitStat();
+			//System.exit(0);
 		}
 		//conductExperiment(0);
 		
@@ -152,7 +159,7 @@ public class SemanticBibleComparison {
 		File jamonlog = new File(dir+"jamon.html");
 		Files.createFile(jamonlog, MonitorFactory.getReport());
 		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
-		total.printAndSet("Finished");
+		//total.printAndSet("Finished");
 		logger.warn(total.getAndSet("Finished"));
 		if(flawInExperiment){
 			logger.error("There were exceptions");
@@ -171,9 +178,9 @@ public class SemanticBibleComparison {
 			int count = 1;
 			for (String filename : confs) {
 				SimpleClock oneExperiment = new SimpleClock();
-				if (count == 6){break;}
+				if (count == 2){break;}
 				
-				logger.warn(exp+" "+count +" from file "+filename);
+				logger.warn("****"+exp+" "+count +" from file "+filename);
 				
 				// read the file and get the examples
 				File f = new File(exampleDir+filename);
@@ -241,7 +248,7 @@ public class SemanticBibleComparison {
 				
 				fillTable(exp, count);
 				
-				logger.warn(exp+" "+count+ " " +oneExperiment.getAndSet("") );
+				logger.warn(exp+" "+count+ " " +oneExperiment.getAndSet("")+"****" );
 				count++;
 			}//end for
 			}catch (Exception e) {
@@ -255,11 +262,18 @@ public class SemanticBibleComparison {
 		int countDoublettes = 0;
 		SortedSet<String> differentIndividuals = new TreeSet<String>();
 		for ( String file : l) {
+			String fileContent = "";
+			try{fileContent = Files.readFile(new File(exampleDir+file));
+			}catch (Exception e) {
+				 e.printStackTrace();
+			}
 			ExampleContainer ec = new ExampleContainer(
-					SetManipulation.stringToInd(getIndividuals(file, true)),
-					SetManipulation.stringToInd(getIndividuals(file, false)));
-			differentIndividuals.addAll(getIndividuals(file, true));
-			differentIndividuals.addAll(getIndividuals(file, false));
+					SetManipulation.stringToInd(getIndividuals(fileContent, true)),
+					SetManipulation.stringToInd(getIndividuals(fileContent, false)));
+			
+			differentIndividuals.addAll(getIndividuals(fileContent, true));
+			differentIndividuals.addAll(getIndividuals(fileContent, false));
+			
 			if(!ExampleContainer.add(ec)){
 				countDoublettes++;
 			}
@@ -464,7 +478,7 @@ public class SemanticBibleComparison {
 	
 	
 	
-	public static void reinitStat(){
+	private static void reinitStat(){
 		accFragment = new Stat();
 		accOnOnto = new Stat();
 		accPosExOnOnto = new Stat();
@@ -531,7 +545,6 @@ public class SemanticBibleComparison {
 	
 	public static List<String>  getFiles(){
 			String actualDir = exampleDir;
-			logger.warn(actualDir);
 			File f = new File(actualDir);
 		    String[] files = f.list();
 		    Arrays.sort(files);
@@ -572,22 +585,32 @@ public class SemanticBibleComparison {
 
 	private static void initLogger() {
 
-		SimpleLayout layout = new SimpleLayout();
-		// create logger (a simple logger which outputs
-		// its messages to the console)
-		FileAppender fileAppender = null;
+		// logger 1 is the console, where we print only info messages;
+		// the logger is plain, i.e. does not output log level etc.
+		Layout layout = new PatternLayout();
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		consoleAppender.setThreshold(Level.WARN);
+		
+		// logger 2 is writes to a file; it records all debug messages
+		// and includes the log level
+		Layout layout2 = new SimpleLayout();
+		FileAppender fileAppenderNormal = null;
+		File f = new File("log/sparql.txt");
 		try {
-			fileAppender = new FileAppender(layout, "log/semBibleLog.txt",
-					false);
-		} catch (Exception e) {
+		    	fileAppenderNormal = new FileAppender(layout2, "log/semBibleLog.txt", false);
+		    	f.delete();
+		    	f.createNewFile();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		
+	
+		
 		logger.removeAllAppenders();
 		logger.addAppender(consoleAppender);
-		logger.addAppender(fileAppender);
-		logger.setLevel(Level.WARN);
+		logger.addAppender(fileAppenderNormal);
+		logger.setLevel(Level.DEBUG);
+
 		
 
 	}
