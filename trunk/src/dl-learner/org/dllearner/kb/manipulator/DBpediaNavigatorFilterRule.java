@@ -27,10 +27,6 @@ import org.dllearner.kb.extraction.Node;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
-
 
 public class DBpediaNavigatorFilterRule extends Rule{
 	
@@ -42,13 +38,13 @@ public class DBpediaNavigatorFilterRule extends Rule{
 	
 	@Override
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
-		RDFNode clazz = null;
+//		RDFNode clazz = null;
 		RDFNodeTuple typeTuple = null;
 		List<RDFNodeTuple> toRemove=new LinkedList<RDFNodeTuple>();
 		for (RDFNodeTuple tuple : tuples) {
 						
 			if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)){
-				clazz = tuple.b;
+//				clazz = tuple.b;
 				typeTuple = tuple;
 			}
 			

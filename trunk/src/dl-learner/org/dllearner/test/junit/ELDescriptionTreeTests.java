@@ -48,8 +48,9 @@ public final class ELDescriptionTreeTests {
 	@Test
 	public void simulationTest() {
 		Simulation s = new Simulation();
-		ELDescriptionTree tree1 = new ELDescriptionTree();
-		ELDescriptionTree tree2 = new ELDescriptionTree();
+		// TODO we need to add background knowledge (possibly empty)
+		ELDescriptionTree tree1 = null; // new ELDescriptionTree();
+		ELDescriptionTree tree2 = null; // new ELDescriptionTree();
 		ELDescriptionNode t1 = new ELDescriptionNode(tree1);
 		ELDescriptionNode t2 = new ELDescriptionNode(tree2);
 		TreeTuple tuple1 = new TreeTuple(t1,t2);
@@ -67,7 +68,8 @@ public final class ELDescriptionTreeTests {
 	public void cloneTest() throws ParseException {
 		Description d = KBParser.parseConcept("(male AND (human AND EXISTS hasChild.(female AND EXISTS hasChild.male)))");
 		ConceptTransformation.cleanConcept(d);
-		ELDescriptionTree tree = new ELDescriptionTree(d);
+		// TODO needs to be updated (trees now require background knowledge)
+		ELDescriptionTree tree = null; // new ELDescriptionTree(rs, d);
 		ELDescriptionTree treeCloned = tree.clone();
 		ELDescriptionTreeComparator comparator = new ELDescriptionTreeComparator();
 		assertTrue(comparator.compare(tree, treeCloned) == 0);

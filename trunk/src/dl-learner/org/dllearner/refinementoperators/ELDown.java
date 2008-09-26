@@ -21,6 +21,7 @@ package org.dllearner.refinementoperators;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -103,9 +104,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	 */
 	@Override
 	public Set<Description> refine(Description concept) {
-		// TODO according to the specification, we need to minimise 
-		// the tree (not yet implemented)
-		ELDescriptionTree tree = new ELDescriptionTree(concept);
+		ELDescriptionTree tree = new ELDescriptionTree(rs, concept);
 		Set<ELDescriptionTree> refinementTrees = refine(tree);
 //		System.out.println("Refinements finished.");
 		Set<Description> refinements = new HashSet<Description>();
@@ -171,7 +170,6 @@ public class ELDown extends RefinementOperatorAdapter {
 		}
 		
 		// option 3: new edge
-		// TODO incomplete, it is still open how to construct this refinement !!
 		SortedSet<ObjectProperty> appOPs = utility.computeApplicableObjectProperties(index);
 		Set<ObjectProperty> mgr = utility.computeMgr(appOPs);
 		// temporary set of all concepts, which still have to pass the equivalence check
@@ -182,25 +180,34 @@ public class ELDown extends RefinementOperatorAdapter {
 			ELDescriptionNode clonedNode = clonedTree.getNode(position);
 			// add a new node and edge
 			ELDescriptionNode newNode = new ELDescriptionNode(clonedNode, op, new TreeSet<NamedClass>());
-//			refinements.add(clonedTree);
 			stack.add(clonedTree);
 			
 			// recurse if concept is equivalent
-			// TODO: efficient equivalence check needs to be implemented !!
 			while(stack.size() != 0) {
 				// we pick an arbitrary tree and remove it from the stack
 				ELDescriptionTree testTree = stack.pop();
-				// test equivalence
-				boolean equivalent = false;
-				// TODO equivalence check
+				// test equivalence (we found out that we can use the
+				// minimality test for equivalence in this case)
+				boolean equivalent = !testTree.isMinimal();
+				// if the tree is equivalent, we need to populate the
+				// stack with refinements (which are later tested for
+				// equivalence)
 				if(equivalent) {
 					// edge refinement
 					// we know that the edge we added is the last one for this node
 					int edgeNr = node.getEdges().size() - 1;
+					ELDescriptionEdge edge = node.getEdges().get(edgeNr);
 					// all refinements of this edge are added to the stack
+					// (set 1 in article)
 					refineEdge(stack, tree, node, position, edgeNr);
 					// perform node refinements in non-minimize-mode
-					refinements.addAll(refineEdges(tree, newNode, position));
+					// (set 2 in article)
+//					commented out, because didn't make sense to me
+//					refinements.addAll(refineEdges(tree, newNode, position));
+					stack.addAll(refine(tree, newNode, opRanges.get(edge), false));
+				} else {
+					// tree is not equivalent, i.e. a proper refinement
+					refinements.add(testTree);
 				}
 			}			
 		}
@@ -216,6 +223,17 @@ public class ELDown extends RefinementOperatorAdapter {
 			refinements.addAll(refine(tree, edge.getTree(), range, minimize));
 		}
 		
+		// we found out that, in case we start from the TOP concept
+		// (which is assumed in the current implementation), we can
+		// simply throw away all non-minimal concepts
+		if(minimize) {
+			Iterator<ELDescriptionTree> it = refinements.iterator();
+			while(it.hasNext()) {
+				if(!it.next().isMinimal()) {
+					it.remove();
+				}
+			}
+		}
 		
 		return refinements;
 	}
@@ -233,18 +251,17 @@ public class ELDown extends RefinementOperatorAdapter {
 		ObjectProperty op = edge.getLabel();
 		// find all more special properties
 		for(ObjectProperty op2 : rs.getMoreSpecialRoles(op)) {
-			// TODO we need to check whether the range of this property is disjoint
-			// with the current child node;
-			// not implemented, because disjointness checks can only be done on descriptions
-			
 			// we check whether the range of this property is not disjoint
-			// with the existing child node
+			// with the existing child node (we do not perform a full disjointness
+			// check, but only compare with the flattened concept to keep the number
+			// of possible disjointness checks finite)
 			if(!utility.isDisjoint(getFlattenedConcept(edge.getTree()), opRanges.get(op2))) {
 				// clone operation
 				ELDescriptionTree clonedTree = tree.clone();
 				// find cloned edge and replace its label
 				ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
 				clonedEdge.setLabel(op2);
+				// TODO simulation update
 				refinements.add(clonedTree);				
 			}
 
