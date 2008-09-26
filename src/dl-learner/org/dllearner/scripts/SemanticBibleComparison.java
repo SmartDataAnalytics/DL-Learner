@@ -175,7 +175,9 @@ public class SemanticBibleComparison {
 		//total.printAndSet("Finished");
 		logger.warn(total.getAndSet("Finished"));
 		if(flawInExperiment){
-			logger.error("There were exceptions");
+			logger.error("There were exceptions, see log");
+		}else{
+			logger.warn("The experiment finished without any flaws");
 		}
 		//logger.warn("Finished");
 	
