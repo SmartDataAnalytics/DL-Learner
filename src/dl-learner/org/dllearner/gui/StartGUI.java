@@ -253,7 +253,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		Logger rootLogger = Logger.getRootLogger();
 		rootLogger.removeAllAppenders();
 		rootLogger.addAppender(consoleAppender);
-		rootLogger.setLevel(Level.TRACE);
+		rootLogger.setLevel(Level.DEBUG);
 
 		File file = null;
 		if (args.length > 0)

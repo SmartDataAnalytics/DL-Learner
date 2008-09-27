@@ -150,8 +150,6 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private Map<DatatypeProperty,List<Double>> splits = new TreeMap<DatatypeProperty,List<Double>>();
 	private int maxNrOfSplits = 10;
 	
-	// experimental support for hasValue
-	private boolean useHasValue = false;
 	// data structure for a simple frequent pattern matching preprocessing phase
 	private int frequencyThreshold = 3;
 	private Map<ObjectProperty, Map<Individual, Integer>> valueFrequency = new HashMap<ObjectProperty, Map<Individual, Integer>>();
@@ -166,6 +164,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private boolean applyExistsFilter = true;
 	private boolean useAllConstructor = true;
 	private boolean useExistsConstructor = true;
+	private boolean useHasValueConstructor = false;
 	private boolean useCardinalityRestrictions = true;
 	private boolean useNegation = true;
 	private boolean useBooleanDatatypes = true;
@@ -181,16 +180,17 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 	
 	public RhoDRDown(ReasoningService reasoningService) {
-		this(reasoningService, true, true, true, true, true, true, true, true, null);
+		this(reasoningService, true, true, true, true, true, true, true, true, true, null);
 	}
 	
 	public RhoDRDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
-			boolean useExistsConstructor,boolean  useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
+			boolean useExistsConstructor, boolean useHasValueConstructor, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
 		this.rs = reasoningService;
 		this.applyAllFilter = applyAllFilter;
 		this.applyExistsFilter = applyExistsFilter;
 		this.useAllConstructor = useAllConstructor;
 		this.useExistsConstructor = useExistsConstructor;
+		this.useHasValueConstructor = useHasValueConstructor;
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
 		this.useNegation = useNegation;
 		this.useBooleanDatatypes = useBooleanDatatypes;
@@ -204,7 +204,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			opDomains.put(op, rs.getDomain(op));
 			opRanges.put(op, rs.getRange(op));
 			
-			if(useHasValue) {
+			if(useHasValueConstructor) {
 				// init
 				Map<Individual, Integer> opMap = new TreeMap<Individual, Integer>();
 				valueFrequency.put(op, opMap);
@@ -229,7 +229,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				// after threshold is reached)
 				Set<Individual> frequentInds = new TreeSet<Individual>();
 				for(Individual i : opMap.keySet()) {
-					if(opMap.get(i) > frequencyThreshold) {
+					if(opMap.get(i) >= frequencyThreshold) {
 						frequentInds.add(i);
 					}
 				}
@@ -455,12 +455,12 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			}
 			
 			// rule 4: EXISTS r.TOP => EXISTS r.{value}
-			if(useHasValue && description.getChild(0) instanceof Thing) {
+			if(useHasValueConstructor && description.getChild(0) instanceof Thing) {
 				// watch out for frequent patterns
 				Set<Individual> frequentInds = frequentValues.get(role);
 				if(frequentInds != null) {
 					for(Individual ind : frequentInds) {
-						ObjectValueRestriction ovr = new ObjectValueRestriction(ar, ind);
+						ObjectValueRestriction ovr = new ObjectValueRestriction((ObjectProperty)role, ind);
 						refinements.add(ovr);
 					}			
 				}
@@ -661,8 +661,11 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		boolean maxDoubleOccurence = false;
 		// rule 2: min restrictions at most once
 		boolean minDoubleOccurence = false;
-		// rule 3: no double boolean datatypes
+		// rule 3: no double occurences of boolean datatypes
 		TreeSet<DatatypeProperty> occuredDP = new TreeSet<DatatypeProperty>();
+		// rule 4: no double occurences of hasValue restrictions
+		TreeSet<ObjectProperty> occuredVR = new TreeSet<ObjectProperty>();
+		
 		for(Description child : intersection.getChildren()) {
 			if(child instanceof DatatypeSomeRestriction) {
 				DataRange dr = ((DatatypeSomeRestriction)child).getDataRange();
@@ -682,6 +685,10 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 //				System.out.println("dp: " + dp);
 				// return false if the boolean property exists already
 				if(!occuredDP.add(dp))
+					return false;
+			} else if(child instanceof ObjectValueRestriction) {
+				ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)child).getRestrictedPropertyExpression();
+				if(!occuredVR.add(op))
 					return false;
 			}
 //			System.out.println(child.getClass());

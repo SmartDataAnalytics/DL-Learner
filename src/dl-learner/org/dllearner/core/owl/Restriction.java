@@ -27,7 +27,7 @@ package org.dllearner.core.owl;
  */
 public abstract class Restriction extends Description {
 	
-	PropertyExpression restrictedPropertyExpression;
+	protected PropertyExpression restrictedPropertyExpression;
 	
 	public Restriction(PropertyExpression restrictedPropertyExpression) {
 		this.restrictedPropertyExpression = restrictedPropertyExpression;

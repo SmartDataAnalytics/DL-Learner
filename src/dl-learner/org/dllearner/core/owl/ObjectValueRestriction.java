@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * Restricts the value of an object property to a single individual
- * (corresponds to owl:hasValue).
+ * (corresponds to owl:hasValue)
  * 
  * @author Jens Lehmann
  *
@@ -42,8 +42,7 @@ public class ObjectValueRestriction extends ValueRestriction {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return restrictedPropertyExpression.toString(baseURI, prefixes) + " value " + value.toString(baseURI, prefixes);
 	}
 
 	/* (non-Javadoc)
@@ -51,7 +50,6 @@ public class ObjectValueRestriction extends ValueRestriction {
 	 */
 	@Override
 	public int getArity() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -59,21 +57,18 @@ public class ObjectValueRestriction extends ValueRestriction {
 	 * @see org.dllearner.core.owl.KBElement#getLength()
 	 */
 	public int getLength() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 3;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return restrictedPropertyExpression.toString(baseURI, prefixes) + " hasValue " + value.toString(baseURI, prefixes);
 	}	
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		// TODO Auto-generated method stub
-		return null;
+		return restrictedPropertyExpression.toKBSyntaxString(baseURI, prefixes) + " hasValue " + value.toKBSyntaxString(baseURI, prefixes);
 	}	
 	
 	public Individual getIndividual() {
