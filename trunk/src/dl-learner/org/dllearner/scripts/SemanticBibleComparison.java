@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -45,9 +46,11 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
+import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.gui.Config;
@@ -56,6 +59,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
@@ -122,10 +126,16 @@ public class SemanticBibleComparison {
 		NORMAL_10s, 
 		SPARQL_100s,
 		NORMAL_100s,
-		SPARQL_1000_CONCEPT_TESTS,
-		NORMAL_1000_CONCEPT_TESTS,
-		SPARQL_10000_CONCEPT_TESTS,
-		NORMAL_10000_CONCEPT_TESTS};
+		SPARQL_1000_CTESTS,
+		NORMAL_1000_CTESTS,
+		SPARQL_10000_CTESTS,
+		NORMAL_10000_CTESTS,
+		NORMAL_10000_CTESTS_FASTINST,
+		
+		SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP,
+		SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION,
+		SPARQL_10000_CTESTS_SPECIAL_REC1,
+		SPARQL_10000_CTESTS_SPECIAL_REC3};
 	
 	
 	//private static Class usedReasoner = FastInstanceChecker.class;
@@ -149,8 +159,8 @@ public class SemanticBibleComparison {
 		if(onJensMachine){
 			conductExperiment(Experiments.NORMAL_10s);
 			conductExperiment(Experiments.NORMAL_100s);
-			conductExperiment(Experiments.NORMAL_1000_CONCEPT_TESTS);
-			conductExperiment(Experiments.NORMAL_10000_CONCEPT_TESTS);
+			conductExperiment(Experiments.NORMAL_1000_CTESTS);
+			conductExperiment(Experiments.NORMAL_10000_CTESTS);
 			
 			
 			
@@ -159,34 +169,34 @@ public class SemanticBibleComparison {
 			/*finished experiments:
 			 * SPARQL_10s
 			 * SPARQL_1000_CONCEPT_TESTS
-			 * running:
 			 * NORMAL_1000_CONCEPT_TESTS
 			 * SPARQL_10000_CONCEPT_TESTS
 			 * NORMAL_10000_CONCEPT_TESTS
+			 * missing:
+			 * NORMAL_10s
+			 * SPARQL_100s
+			 * NORMAL_100s
 			 * 
+			 * extra:
 			 * */
 			
-			for (Experiments exp : Experiments.values()) {
-				//if(exp.equals(Experiments.SPARQL_10000_CONCEPT_TESTS))continue;
-				//if(exp.equals(Experiments.NORMAL_10000_CONCEPT_TESTS))continue;
-				//if(exp.equals(Experiments.SPARQL_100s))continue;
-				//if(exp.toString().contains("SPARQL"))continue;
-				 if(exp.equals(Experiments.NORMAL_10s))conductExperiment(exp);
-				 if(exp.equals(Experiments.SPARQL_100s))conductExperiment(exp);
-				 if(exp.equals(Experiments.NORMAL_100s))conductExperiment(exp);
-				//~ if(exp.equals(Experiments.NORMAL_1000_CONCEPT_TESTS))conductExperiment(exp);
-				//~ if(exp.equals(Experiments.SPARQL_10000_CONCEPT_TESTS))conductExperiment(exp);
-				//~ if(exp.equals(Experiments.NORMAL_10000_CONCEPT_TESTS))conductExperiment(exp);
-
-			}
+			conductExperiment(Experiments.NORMAL_10s);
+			conductExperiment(Experiments.SPARQL_100s);
+			conductExperiment(Experiments.NORMAL_100s);
+			
+			//EXTRA
+			//conductExperiment(Experiments.NORMAL_10000_CTESTS_FASTINST);
+			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
+			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION);
+			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
+			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3);
+			
 		}
 
 		
 	
 		//		 write JaMON report in HTML file
-		File jamonlog = new File(dir+"jamon.html");
-		Files.createFile(jamonlog, MonitorFactory.getReport());
-		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
+		
 		//total.printAndSet("Finished");
 		logger.warn(total.getAndSet("Finished"));
 		if(flawInExperiment){
@@ -198,9 +208,15 @@ public class SemanticBibleComparison {
 	
 	}
 	
+	public static void writeJamonLog(String filename){
+		File jamonlog = new File(filename);
+		Files.createFile(jamonlog, MonitorFactory.getReport());
+		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
+	}
+	
 	public static void conductExperiment(Experiments exp){
 		
-		try{
+		
 			//prepare everything
 			List<String> confs = getFiles();
 			ComponentManager cm =ComponentManager.getInstance();
@@ -208,6 +224,9 @@ public class SemanticBibleComparison {
 			int count = 0;
 			for (String filename : confs) {
 				SimpleClock oneExperiment = new SimpleClock();
+				try{
+				//if(count!=64) continue;
+					
 				if (count == nrOfFilesInExperiment){break;}
 				
 				logger.warn("****"+exp+" "+(count+1) +" from file "+filename);
@@ -274,17 +293,24 @@ public class SemanticBibleComparison {
 					nrOfExtractedAxioms.addNumber(0.0);
 				}
 				
-				cm.freeAllComponents();
 				
-				fillTable(exp, (count+1));
+				}catch (Exception e) {
+					e.printStackTrace();
+					flawInExperiment = true;
+					logger.warn(t.getLatexString());
+					logger.warn(e);
+					
+				}finally{
+					cm.freeAllComponents();
+					
+					fillTable(exp, (count+1));
+					
+					logger.warn(exp+" "+(count+1)+ " " +oneExperiment.getAndSet("")+"****" );
+					count++;
+				}
 				
-				logger.warn(exp+" "+(count+1)+ " " +oneExperiment.getAndSet("")+"****" );
-				count++;
 			}//end for
-			}catch (Exception e) {
-				e.printStackTrace();
-				flawInExperiment = true;
-			}
+			writeJamonLog(dir+"jamon"+exp+".html");
 			reinitStat();
 	}//endconduct
 	
@@ -296,6 +322,7 @@ public class SemanticBibleComparison {
 			try{fileContent = Files.readFile(new File(exampleDir+file));
 			}catch (Exception e) {
 				 e.printStackTrace();
+				 logger.warn(e);
 			}
 			ExampleContainer ec = new ExampleContainer(
 					SetManipulation.stringToInd(getIndividuals(fileContent, true)),
@@ -316,9 +343,13 @@ public class SemanticBibleComparison {
 	public static ExampleBasedROLComponent experimentalSetup(Experiments exp,SortedSet<Individual> posExamples, SortedSet<Individual> negExamples ){
 		ExampleBasedROLComponent la = null;
 		if(exp.toString().contains("SPARQL"))
-			la = prepareSparqlExperiment(posExamples, negExamples);
+			la = prepareSparqlExperiment(exp, posExamples, negExamples);
 		else if(exp.toString().contains("NORMAL")){
-			la = prepareNormalExperiment(posExamples, negExamples);
+			if(exp.equals(Experiments.NORMAL_10000_CTESTS_FASTINST)){
+				la = prepareNormalExperiment(true, posExamples, negExamples);
+			}else{
+				la = prepareNormalExperiment(false, posExamples, negExamples);
+			}
 		}else {
 			logger.error("undefined EXPERIMENT" + exp);
 			System.exit(0);
@@ -334,10 +365,11 @@ public class SemanticBibleComparison {
 			c.setMaxExecutionTimeInSeconds(100);
 			c.setMinExecutionTimeInSeconds(100);
 			
-		}else if(exp.toString().contains("1000_CONCEPT_TESTS")){
+		}else if(exp.toString().contains("1000_CTESTS")){
 			c.setMaxClassDescriptionTests(1000);
-		}else if(exp.toString().contains("10000_CONCEPT_TESTS")){
+		}else if(exp.toString().contains("10000_CTESTS")){
 			c.setMaxClassDescriptionTests(10000);
+			
 		}
 		//la.getConfigurator();
 		//appendtoFile
@@ -346,7 +378,7 @@ public class SemanticBibleComparison {
 	}
 	
 	
-	public static ExampleBasedROLComponent prepareSparqlExperiment(SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
+	public static ExampleBasedROLComponent prepareSparqlExperiment(Experiments exp, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
 		
 
 		ExampleBasedROLComponent la = null;
@@ -360,13 +392,25 @@ public class SemanticBibleComparison {
 							"http://localhost:2020/bible").toURL(), SetManipulation
 							.indToString(instances));
 	
-			ks.getConfigurator().setCloseAfterRecursion(true);
-			ks.getConfigurator().setRecursionDepth(2);
-			ks.getConfigurator().setPredefinedEndpoint("LOCALJOSEKIBIBLE");
-			ks.getConfigurator().setUseLits(true);
-			ks.getConfigurator().setGetAllSuperClasses(true);
-			ks.getConfigurator().setGetPropertyInformation(true);
-			ks.getConfigurator().setVerbosity("warning");
+			SparqlKnowledgeSourceConfigurator c = ks.getConfigurator();
+			
+			c.setCloseAfterRecursion(true);
+			c.setRecursionDepth(2);
+			c.setPredefinedEndpoint("LOCALJOSEKIBIBLE");
+			c.setUseLits(true);
+			c.setGetAllSuperClasses(true);
+			c.setGetPropertyInformation(true);
+			c.setVerbosity("warning");
+			
+			if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP)){
+				c.setGetPropertyInformation(false);
+			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION)){
+				c.setCloseAfterRecursion(false);
+			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1)){
+				c.setRecursionDepth(1);
+			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3)){
+				c.setRecursionDepth(3);
+			}
 			
 			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 			tmp.add(ks);
@@ -384,17 +428,19 @@ public class SemanticBibleComparison {
 			// learning algorithm
 			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
-			Config c = new Config(ComponentManager.getInstance(), ks, f, rs, lp, la);
-			new ConfigSave(c).saveFile(new File(tmpFilename));
+			Config conf = new Config(ComponentManager.getInstance(), ks, f, rs, lp, la);
+			new ConfigSave(conf).saveFile(new File(tmpFilename));
 			
 		}catch (Exception e) {
 			 e.printStackTrace();
+			 logger.warn(e);
+			 logger.warn("error in sparqlprepare");
 			 flawInExperiment = true;
 		}
 		return la;
 	}
 	
-	public static ExampleBasedROLComponent prepareNormalExperiment(SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
+	public static ExampleBasedROLComponent prepareNormalExperiment(boolean fic, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
 		ExampleBasedROLComponent la = null;
 		try{
 			SortedSet<Individual> instances = new TreeSet<Individual>();
@@ -412,11 +458,16 @@ public class SemanticBibleComparison {
 					
 			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 			tmp.add(ks);
+			
+			ReasonerComponent f = null;
+			
 			// reasoner
-			OWLAPIReasoner f = ComponentFactory
-					.getOWLAPIReasoner(tmp);
-			ReasoningService rs = ComponentManager.getInstance()
-					.reasoningService(f);
+			if(fic){
+				f = ComponentFactory.getFastInstanceChecker(tmp);
+			}else{
+				f = ComponentFactory.getOWLAPIReasoner(tmp);
+			}
+			ReasoningService rs = ComponentManager.getInstance().reasoningService(f);
 	
 //			 learning problem
 			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(rs,
@@ -431,6 +482,8 @@ public class SemanticBibleComparison {
 			
 		}catch (Exception e) {
 			 e.printStackTrace();
+			 logger.warn(e);
+			 logger.warn("error in normalprepare");
 			 flawInExperiment = true;
 		}
 		return la;
@@ -439,26 +492,32 @@ public class SemanticBibleComparison {
 	public static void initAllComponents(){
 		ComponentManager cm = ComponentManager.getInstance();
 		
-		for(Component c : cm.getLiveComponents()){
+		List<Component> l = new ArrayList<Component>();
+		l.addAll(cm.getLiveComponents());
+		
+		for(Component c : l){
+			
 			try{
 			SimpleClock time = new SimpleClock();
-			 c.init();
-			 if (c instanceof SparqlKnowledgeSource) {
+			c.init();
+			if (c instanceof SparqlKnowledgeSource) {
 				ksinitializationTime.addNumber((double) time.getTime()/1000);
-				
 			}else if (c instanceof OWLFile) {
 				ksinitializationTime.addNumber((double) time.getTime()/1000);
-				
+			}else if (c instanceof FastInstanceChecker) {
+				reasonerInitializationTime.addNumber((double) time.getTime()/1000);
 			}else if (c instanceof OWLAPIReasoner) {
 				reasonerInitializationTime.addNumber((double) time.getTime()/1000);
-				
 			}
 			
 			}catch (Exception e) {
 				 e.printStackTrace();
+				 logger.warn(e);
+				 logger.warn("error in initAllComponents");
 				 flawInExperiment = true;
 			}
-		}
+		}// end for
+		
 		
 	}
 	

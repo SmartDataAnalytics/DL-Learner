@@ -53,23 +53,33 @@ public class Table implements Serializable{
     } 
     
     public static void main(String[] args) {
-		Table t = new Table("myTable");
-		String tableFile = "results/table/myTable";
-		TableColumn c1 = new TableColumn("col1", new String[]{"a","b"});
-		TableColumn c2 = new TableColumn("col2", new String[]{"c","d"});
-		t.addColumn(c1);
-		System.out.println(t.getLatexString());
-		
-		serializeColumns(t, "results/table",tableFile );
-		
-		t = createTableFromSerializedColums("myTable", tableFile);
-		System.out.println(t.getLatexString());
-		
-		t.addColumn(c2);
-		serializeColumns(t, "results/table",tableFile );
-		t = createTableFromSerializedColums("myTable", tableFile);
-		System.out.println(t.getLatexString());
-		
+		boolean production = true;
+    	if(production){
+    		String tablename = "myTable";
+    		String tableFile = "sembib100/sofar/table";
+    		
+    		Table t = createTableFromSerializedColums(tablename, tableFile);
+    		Files.createFile(new File(tableFile+".tex"), t.getLatexString());
+    		
+    	}else{
+	    		
+	    	Table t = new Table("myTable");
+			String tableFile = "results/table/myTable";
+			TableColumn c1 = new TableColumn("col1", new String[]{"a","b"});
+			TableColumn c2 = new TableColumn("col2", new String[]{"c","d"});
+			t.addColumn(c1);
+			System.out.println(t.getLatexString());
+			
+			serializeColumns(t, "results/table",tableFile );
+			
+			t = createTableFromSerializedColums("myTable", tableFile);
+			System.out.println(t.getLatexString());
+			
+			t.addColumn(c2);
+			serializeColumns(t, "results/table",tableFile );
+			t = createTableFromSerializedColums("myTable", tableFile);
+			System.out.println(t.getLatexString());
+    	}	
 		
 		
 	}
@@ -81,23 +91,31 @@ public class Table implements Serializable{
 		}
     	
     	String headers = latexRow(getColumnHeaders());
-    	  	
-    	String table="";
+    	headers = StringFormatter.myReplaceAll(headers, '_', "\\_");
+    	headers = StringFormatter.myReplaceAll(headers, '%', "\\%");
     	
-		table += "\\begin{table*}\n";
+    	String table="";
+    	table += "\\documentclass{article}\n";
+    	table += "\\usepackage{rotating}\n";
+    	table += "\\begin{document}\n";
+		table += "\\begin{sidewaystable*}\n";
 		table += "\t\\centering\n";
 		table += "\t\t\\begin{tabular}{"+tabular+"}\n";
 		table += "\\hline\n";
-		table += headers;
+		table += headers.replaceAll("\\_", "\\_");
 		table += "\\hline\n";
 		// add here
 		for (int i = 0; i < getNumberOfRows(); i++) {
-			table +=getRowInLatex(i);
+			String tmp = getRowInLatex(i);
+			tmp = StringFormatter.myReplaceAll(tmp, '_', "\\_");
+			tmp = StringFormatter.myReplaceAll(tmp, '%', "\\%");
+			table += tmp;
 		}
 		table += "\\end{tabular}\n";
 		table += "\t\\caption{"+caption+"}\n";
 		table += "\t\\label{"+label+"}\n";
-		table += "\\end{table*}\n\n";
+		table += "\\end{sidewaystable*}\n\n";
+		table += "\\end{document} \n\n";
 
 		//List<String> myList = new ArrayList<String>({""});
 		
@@ -166,6 +184,7 @@ public class Table implements Serializable{
     		
     		String[] columnFiles = Files.readFileAsArray(new File(tableFile));
     		for (String filename : columnFiles) {
+    			if(filename.replaceAll(" ", "").length()==0)continue;
     			TableColumn col = TableColumn.deSerialize(new File(filename));
     			//TableColumn col = (TableColumn) Files.readObjectfromFile(new File(filename));
 				ret.addColumn(col);
