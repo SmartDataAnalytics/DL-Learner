@@ -24,6 +24,30 @@ public class StringFormatter {
 		
 	}
 	
+	
+	/**
+	 * used for regex difficult chars like _ or %
+	 * @param s
+	 * @param search
+	 * @param replacement
+	 * @return
+	 */
+	public static String myReplaceAll(String s, char search, String replacement ){
+		String ret ="";
+		char[] arr = s.toCharArray();
+		for (int i = 0; i < arr.length; i++) {
+			if(arr[i]==search){
+				ret+=replacement;
+			}else{
+				ret+=arr[i];
+			}
+		}
+		return ret;
+		
+	}
+	
+	
+	
 	public static String doubleToPercent(double d, int decimals, boolean addPercentSign){
 		
 		String format = (decimals==0)?"00":".";
