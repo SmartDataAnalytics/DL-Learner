@@ -115,6 +115,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean improveSubsumptionHierarchy = true;
 	private boolean useAllConstructor = CommonConfigOptions.useAllConstructorDefault;
 	private boolean useExistsConstructor = CommonConfigOptions.useExistsConstructorDefault;
+	private boolean useHasValueConstructor = CommonConfigOptions.useHasValueConstructorDefault;	
 	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
 	private boolean useNegation = CommonConfigOptions.useNegationDefault;
 	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
@@ -190,6 +191,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.ignoredRoles());
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
+		options.add(CommonConfigOptions.useHasValueConstructor());
 		options.add(CommonConfigOptions.useCardinalityRestrictions());
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
@@ -254,6 +256,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			useAllConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useExistsConstructor")) {
 			useExistsConstructor = (Boolean) entry.getValue();
+		} else if(name.equals("useHasValueConstructor")) {
+			useHasValueConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useCardinalityRestrictions")) {
 			useCardinalityRestrictions = (Boolean) entry.getValue();
 		} else if(name.equals("useNegation")) {
@@ -365,6 +369,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 					applyExistsFilter,
 					useAllConstructor, 
 					useExistsConstructor,
+					useHasValueConstructor,
 					useCardinalityRestrictions,
 					useNegation,
 					useBooleanDatatypes,

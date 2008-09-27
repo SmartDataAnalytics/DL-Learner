@@ -40,6 +40,7 @@ public final class CommonConfigOptions {
 	//public static boolean improveSubsumptionHierarchyDefault = true;
 	public static boolean useAllConstructorDefault = true;
 	public static boolean useExistsConstructorDefault = true;
+	public static boolean useHasValueConstructorDefault = true;
 	public static boolean useCardinalityRestrictionsDefault = true;
 	public static boolean useNegationDefault = true;
 	public static boolean useBooleanDatatypesDefault = true;
@@ -100,6 +101,10 @@ public final class CommonConfigOptions {
 	public static BooleanConfigOption useExistsConstructor() {
 		return new BooleanConfigOption("useExistsConstructor", "specifies whether the existential concept constructor is used in the learning algorithm",useExistsConstructorDefault);
 	}
+	
+	public static BooleanConfigOption useHasValueConstructor() {
+		return new BooleanConfigOption("useHasValueConstructor", "specifies whether the hasValue constructor is used in the learning algorithm",useHasValueConstructorDefault);
+	}	
 	
 	public static BooleanConfigOption useCardinalityRestrictions() {
 		return new BooleanConfigOption("useCardinalityRestrictions", "specifies whether CardinalityRestrictions is used in the learning algorithm",useCardinalityRestrictionsDefault);

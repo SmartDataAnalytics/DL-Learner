@@ -27,7 +27,7 @@ package org.dllearner.core.owl;
  */
 public abstract class ValueRestriction extends Restriction {
 
-	KBElement value;
+	protected KBElement value;
 	
 	public ValueRestriction(PropertyExpression propertyExpression, KBElement value) {
 		super(propertyExpression);
