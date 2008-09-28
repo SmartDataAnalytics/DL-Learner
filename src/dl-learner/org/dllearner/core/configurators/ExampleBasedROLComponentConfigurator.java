@@ -214,6 +214,15 @@ public boolean getUseExistsConstructor() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useExistsConstructor") ;
 }
 /**
+* useHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getUseHasValueConstructor() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useHasValueConstructor") ;
+}
+/**
 * useCardinalityRestrictions specifies whether CardinalityRestrictions is used in the learning algorithm.
 * mandatory: false| reinit necessary: true
 * default value: true
@@ -491,6 +500,15 @@ reinitNecessary = true;
 **/
 public void setUseExistsConstructor(boolean useExistsConstructor) {
 ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useExistsConstructor", useExistsConstructor);
+reinitNecessary = true;
+}
+/**
+* @param useHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setUseHasValueConstructor(boolean useHasValueConstructor) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useHasValueConstructor", useHasValueConstructor);
 reinitNecessary = true;
 }
 /**
