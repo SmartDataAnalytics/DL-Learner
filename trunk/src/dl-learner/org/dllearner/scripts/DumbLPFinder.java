@@ -89,7 +89,7 @@ public class DumbLPFinder {
 		SortedSet<Individual> allIndividuals = new TreeSet<Individual>();
 		allIndividuals.addAll(reasoningService.getIndividuals());
 
-		reasoningService = null;
+		//reasoningService = null;
 		ComponentManager.getInstance().freeAllComponents();
 
 		int count = 0;
@@ -123,6 +123,9 @@ public class DumbLPFinder {
 
 				d = learnSPARQL(positiveEx, negativeEx);
 				acc.addNumber(d.getAccuracy());
+				logger.warn("onFragment"+d.getAccuracy());
+				
+				//logger.warn();
 
 				writeFiles(filename, d, positiveEx, negativeEx);
 

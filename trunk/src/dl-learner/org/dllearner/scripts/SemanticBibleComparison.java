@@ -180,16 +180,18 @@ public class SemanticBibleComparison {
 			 * extra:
 			 * */
 			
-			conductExperiment(Experiments.NORMAL_10s);
-			conductExperiment(Experiments.SPARQL_100s);
-			conductExperiment(Experiments.NORMAL_100s);
+			//conductExperiment(Experiments.NORMAL_10s);
+			//conductExperiment(Experiments.SPARQL_100s);
+			//conductExperiment(Experiments.NORMAL_100s);
+			
+			//conductExperiment(Experiments.SPARQL_1000_CTESTS);
 			
 			//EXTRA
-			//conductExperiment(Experiments.NORMAL_10000_CTESTS_FASTINST);
-			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
-			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION);
-			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
-			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3);
+			conductExperiment(Experiments.NORMAL_10000_CTESTS_FASTINST);
+			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
+			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION);
+			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
+			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3);
 			
 		}
 
@@ -225,7 +227,7 @@ public class SemanticBibleComparison {
 			for (String filename : confs) {
 				SimpleClock oneExperiment = new SimpleClock();
 				try{
-				//if(count!=64) continue;
+				//if(count<90) continue;
 					
 				if (count == nrOfFilesInExperiment){break;}
 				
@@ -270,6 +272,7 @@ public class SemanticBibleComparison {
 				EvaluatedDescription onOnto = reEvaluateDescription(
 						bestDescription.getDescription(), retrieved, posEx, negEx);
 				
+				logger.warn(bestDescription.getAccuracy());
 				logger.warn(onOnto.getDescription().toKBSyntaxString());
 				logger.warn(onOnto.getAccuracy());
 				
@@ -559,7 +562,7 @@ public class SemanticBibleComparison {
 		}; //9
 		t.removeColumn(exp.toString());
 		t.addColumn(new TableColumn(exp.toString(),columnString));
-		Table.serializeColumns(t, tableDir, tableFile);
+		Table.serializeColumns(t, tableDir, tableFile+exp+count);
 		Files.createFile(new File(tableLatex), t.getLatexString());
 		
 		

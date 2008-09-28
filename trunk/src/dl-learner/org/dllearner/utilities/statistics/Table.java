@@ -81,7 +81,7 @@ public class Table implements Serializable{
 			System.out.println(t.getLatexString());
     	}	
 		
-		
+		System.out.println("done");
 	}
     
     public String getLatexString(){
