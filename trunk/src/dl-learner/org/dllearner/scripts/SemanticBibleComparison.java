@@ -467,6 +467,7 @@ public class SemanticBibleComparison {
 			// reasoner
 			if(fic){
 				f = ComponentFactory.getFastInstanceChecker(tmp);
+				((FastInstanceChecker)f).getConfigurator().setDefaultNegation(false);
 			}else{
 				f = ComponentFactory.getOWLAPIReasoner(tmp);
 			}
