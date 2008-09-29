@@ -399,7 +399,7 @@ public class SemanticBibleComparison {
 		//defaultSettings:
 		c.setUseHasValueConstructor(false);
 		c.setUseBooleanDatatypes(true);
-		c.setUseDoubleDatatypes(false);
+		c.setUseDoubleDatatypes(true);
 
 		if(exp.toString().contains("HASVALUE")){
 			c.setUseHasValueConstructor(true);
