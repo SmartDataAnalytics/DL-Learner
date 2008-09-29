@@ -77,8 +77,8 @@ import com.jamonapi.MonitorFactory;
 
 public class SemanticBibleComparison {
 
-	private static boolean onJensMachine = false;
-	private static int nrOfFilesInExperiment = (onJensMachine)?1:200;
+	
+	private static int nrOfFilesInExperiment = 200;
 	
 	private static ReasoningService reasoningService;
 
@@ -132,10 +132,19 @@ public class SemanticBibleComparison {
 		NORMAL_10000_CTESTS,
 		
 		NORMAL_10000_CTESTS_FASTINST,
+		
 		SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP,
-		SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION,
+		SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSE_NOPROP,
 		SPARQL_10000_CTESTS_SPECIAL_REC1,
-		SPARQL_10000_CTESTS_SPECIAL_REC3};
+		SPARQL_10000_CTESTS_SPECIAL_REC3,
+		
+		SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP_HASVALUE,
+		SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSE_NOPROP_HASVALUE,
+		SPARQL_10000_CTESTS_SPECIAL_REC1_HASVALUE,
+		SPARQL_10000_CTESTS_SPECIAL_REC3_HASVALUE,
+		SPARQL_10000_CTESTS_HASVALUE
+		
+		};
 	
 	
 	//private static Class usedReasoner = FastInstanceChecker.class;
@@ -156,45 +165,62 @@ public class SemanticBibleComparison {
 		List<String> l = getFiles();
 		analyzeFiles(l);
 		
-		if(onJensMachine){
-			conductExperiment(Experiments.NORMAL_10s);
-			conductExperiment(Experiments.NORMAL_100s);
-			conductExperiment(Experiments.NORMAL_1000_CTESTS);
-			conductExperiment(Experiments.NORMAL_10000_CTESTS);
-			
-			
-			
-		}else{
+	
 		
 			/*finished experiments:
-			 * SPARQL_10s
-			 * SPARQL_1000_CONCEPT_TESTS
+			
 			 * NORMAL_1000_CONCEPT_TESTS
 			 * SPARQL_10000_CONCEPT_TESTS
 			 * NORMAL_10000_CONCEPT_TESTS
-			 * missing:
+			 * to be repeated:
 			 * NORMAL_10s
 			 * SPARQL_100s
 			 * NORMAL_100s
+			 * SPARQL_10s
+			 * SPARQL_1000_CONCEPT_TESTS
+			 * SPARQL_10000_CONCEPT_TESTS
+			 * NORMAL_100s
 			 * 
-			 * extra:
 			 * */
-			
-			//conductExperiment(Experiments.NORMAL_10s);
-			//conductExperiment(Experiments.SPARQL_100s);
-			//conductExperiment(Experiments.NORMAL_100s);
-			
-			//conductExperiment(Experiments.SPARQL_1000_CTESTS);
-			
-			//EXTRA
-			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
-			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION);
-			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
-			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3);
-			conductExperiment(Experiments.NORMAL_10000_CTESTS_FASTINST);
-			
-		}
+		
+			boolean jens=false;
+			if(jens){
+				
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP_HASVALUE);
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
 
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSE_NOPROP_HASVALUE);
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSE_NOPROP);
+				
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1_HASVALUE);
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
+				
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3_HASVALUE);
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3);
+
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_HASVALUE);
+				conductExperiment(Experiments.SPARQL_10000_CTESTS);
+				
+			}else{
+			
+				conductExperiment(Experiments.SPARQL_10s);
+				conductExperiment(Experiments.SPARQL_1000_CTESTS);
+				conductExperiment(Experiments.NORMAL_10s);
+				conductExperiment(Experiments.SPARQL_100s);
+				conductExperiment(Experiments.NORMAL_100s);
+				
+				
+				conductExperiment(Experiments.SPARQL_10000_CTESTS);
+				
+				
+				//EXTRA
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSE_NOPROP);
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
+				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3);
+				conductExperiment(Experiments.SPARQL_10000_CTESTS);
+			
+			}
 		
 	
 		//		 write JaMON report in HTML file
@@ -370,6 +396,16 @@ public class SemanticBibleComparison {
 		
 		ExampleBasedROLComponentConfigurator c = la.getConfigurator();
 		
+		//defaultSettings:
+		c.setUseHasValueConstructor(false);
+		c.setUseBooleanDatatypes(true);
+		c.setUseDoubleDatatypes(false);
+
+		if(exp.toString().contains("HASVALUE")){
+			c.setUseHasValueConstructor(true);
+		}
+		
+		
 		if(exp.toString().contains("10s")){
 			c.setMaxExecutionTimeInSeconds(10);
 			c.setMinExecutionTimeInSeconds(10);
@@ -417,7 +453,7 @@ public class SemanticBibleComparison {
 			
 			if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP)){
 				c.setGetPropertyInformation(false);
-			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION)){
+			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSE_NOPROP)){
 				c.setCloseAfterRecursion(false);
 				c.setGetPropertyInformation(false);
 			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1)){
