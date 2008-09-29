@@ -161,7 +161,7 @@ function toNegative(param)
     	
 function clearPositives()
 {
-    if (document.all){
+	if (document.all){
     	//IE
     	var XhrObj = new ActiveXObject("Microsoft.XMLHTTP");
     }
@@ -180,7 +180,7 @@ function clearPositives()
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    XhrObj.send();
+    XhrObj.send('');
 }
     	
 function clearNegatives()
@@ -205,7 +205,7 @@ function clearNegatives()
     }
     	
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    XhrObj.send();
+    XhrObj.send('');
 }
     	
 function removePosInterest(param)
@@ -290,7 +290,7 @@ function learnConcept()
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    XhrObj.send();
+    XhrObj.send('');
 }
     	
 function stopServerCall()
@@ -314,7 +314,7 @@ function stopServerCall()
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    XhrObj.send();
+    XhrObj.send('');
 }
     	
 function getSubjectsFromConcept(param)
@@ -427,5 +427,5 @@ function generateURL()
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-    XhrObj.send();
+    XhrObj.send('');
 }
