@@ -112,7 +112,8 @@ public class BlankNode extends Node {
 	
 	@Override
 	public void toOWLOntology( OWLAPIOntologyCollector owlAPIOntologyCollector){
-		//FIXME
+		logger.error("toOWLOntology called in blanknodes ");
+		//FIXME robably not needed
 	}
 	
 	public String getInBoundEdge(){

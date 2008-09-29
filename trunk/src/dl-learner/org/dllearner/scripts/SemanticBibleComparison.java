@@ -94,7 +94,7 @@ public class SemanticBibleComparison {
 	
 	private static String tmpFilename = dir + "tmp.conf";
 	//static File log = new File(dir+"results+prop.txt");
-	private static String tableFile = tableDir+"sembib.table";
+	//private static String tableFile = tableDir+"sembib.table";
 	private static String tableLatex = tableDir+"sembibLatex.table";
 	
 	private static Stat accFragment = new Stat();
@@ -187,10 +187,10 @@ public class SemanticBibleComparison {
 			//conductExperiment(Experiments.SPARQL_1000_CTESTS);
 			
 			//EXTRA
-			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
-			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION);
-			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
-			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3);
+			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
+			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION);
+			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
+			//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3);
 			conductExperiment(Experiments.NORMAL_10000_CTESTS_FASTINST);
 			
 		}
@@ -547,8 +547,9 @@ public class SemanticBibleComparison {
 		}; //9
 		TableColumn labels = new TableColumn("Semantic Bible",labString);
 		t.addColumn(labels);
-		Table.serializeColumns(t, tableDir, tableFile);
-		Files.createFile(new File(tableLatex), t.getLatexString());
+		Files.mkdir(tableDir);
+		//Table.serializeColumns(t, tableDir, tableFile);
+		//Files.createFile(new File(tableLatex), t.getLatexString());
 		
 	}
 	
@@ -568,8 +569,9 @@ public class SemanticBibleComparison {
 		}; //9
 		t.removeColumn(exp.toString());
 		t.addColumn(new TableColumn(exp.toString(),columnString));
-		Table.serializeColumns(t, tableDir, tableFile+exp+count);
-		Files.createFile(new File(tableLatex), t.getLatexString());
+		String expId = exp.toString()+count;
+		Table.serializeColumns(t, tableDir+expId,  tableDir+expId+File.separator+"table");
+		Files.createFile(new File(tableDir+expId+File.separator+"table.tex"), t.getLatexString());
 		
 		
 	}
