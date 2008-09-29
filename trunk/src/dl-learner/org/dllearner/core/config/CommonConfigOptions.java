@@ -40,7 +40,7 @@ public final class CommonConfigOptions {
 	//public static boolean improveSubsumptionHierarchyDefault = true;
 	public static boolean useAllConstructorDefault = true;
 	public static boolean useExistsConstructorDefault = true;
-	public static boolean useHasValueConstructorDefault = true;
+	public static boolean useHasValueConstructorDefault = false;
 	public static boolean useCardinalityRestrictionsDefault = true;
 	public static boolean useNegationDefault = true;
 	public static boolean useBooleanDatatypesDefault = true;
