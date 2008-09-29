@@ -466,7 +466,7 @@ function createCharacteristics($char)
 			}
 			else{
 				if ($number>1) $ret.='<li>';
-				$ret .= htmlentities($val['value']);
+				$ret .= $val['value'];
 				if ($number>1) $ret.='</li>';
 			}
 		}
