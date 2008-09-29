@@ -5,7 +5,8 @@
 	
 	$kb=html_entity_decode($_POST['kb']);
 	$number=$_POST['number'];
-		
+	$kb=str_replace('\"','"',$kb);
+			
 	session_start();
 	$id=$_SESSION['id'];
 	$ksID=$_SESSION['ksID'];
