@@ -66,10 +66,10 @@
 			else $alt='Picture of '.$artTitle;
 						
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction'])&&@fopen($triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'], 'r')){
-				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="'.$alt.'" style="float:right; max-width:200px;" \>';
+				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="'.$alt.'" style="float:right; max-width:200px;" title="'.$alt.'"\>';
 			}
 			else if(isset($triples['http://xmlns.com/foaf/0.1/img'])&&fopen($triples['http://xmlns.com/foaf/0.1/img'][0]['value'], 'r')){
-				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/img'][0]['value'].'" alt="'.$alt.'" style="float:right; max-width:200px;" \>';
+				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/img'][0]['value'].'" alt="'.$alt.'" style="float:right; max-width:200px;" title="'.$alt.'"\>';
 			} 	
 			
 			//display where it was redirected from, if it was redirected
