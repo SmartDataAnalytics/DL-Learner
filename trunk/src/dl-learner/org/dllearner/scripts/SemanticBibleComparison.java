@@ -130,8 +130,8 @@ public class SemanticBibleComparison {
 		NORMAL_1000_CTESTS,
 		SPARQL_10000_CTESTS,
 		NORMAL_10000_CTESTS,
-		NORMAL_10000_CTESTS_FASTINST,
 		
+		NORMAL_10000_CTESTS_FASTINST,
 		SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP,
 		SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION,
 		SPARQL_10000_CTESTS_SPECIAL_REC1,
@@ -187,11 +187,11 @@ public class SemanticBibleComparison {
 			//conductExperiment(Experiments.SPARQL_1000_CTESTS);
 			
 			//EXTRA
-			conductExperiment(Experiments.NORMAL_10000_CTESTS_FASTINST);
 			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
 			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION);
 			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
 			conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3);
+			conductExperiment(Experiments.NORMAL_10000_CTESTS_FASTINST);
 			
 		}
 
@@ -350,6 +350,9 @@ public class SemanticBibleComparison {
 		else if(exp.toString().contains("NORMAL")){
 			if(exp.equals(Experiments.NORMAL_10000_CTESTS_FASTINST)){
 				la = prepareNormalExperiment(true, posExamples, negExamples);
+				la.getConfigurator().setUseAllConstructor(false);
+				la.getConfigurator().setUseNegation(false);
+				la.getConfigurator().setUseCardinalityRestrictions(false);
 			}else{
 				la = prepareNormalExperiment(false, posExamples, negExamples);
 			}
@@ -409,6 +412,7 @@ public class SemanticBibleComparison {
 				c.setGetPropertyInformation(false);
 			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSEAFTERRECURSION)){
 				c.setCloseAfterRecursion(false);
+				c.setGetPropertyInformation(false);
 			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1)){
 				c.setRecursionDepth(1);
 			}else if(exp.equals(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3)){
@@ -467,7 +471,8 @@ public class SemanticBibleComparison {
 			// reasoner
 			if(fic){
 				f = ComponentFactory.getFastInstanceChecker(tmp);
-				((FastInstanceChecker)f).getConfigurator().setDefaultNegation(false);
+				((FastInstanceChecker)f).getConfigurator().setDefaultNegation(true);
+				
 			}else{
 				f = ComponentFactory.getOWLAPIReasoner(tmp);
 			}
