@@ -30,11 +30,14 @@ import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
+import org.semanticweb.owl.model.OWLAnnotationAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLCommentAnnotation;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLIndividual;
+import org.semanticweb.owl.model.OWLLabelAnnotation;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -189,6 +192,15 @@ public class InstanceNode extends Node {
 			OWLDataProperty p = factory.getOWLDataProperty(one.getURI());
 			Literal ln = one.getBPart().getLiteral();
 			
+			if(one.getURIString().equals(OWLVocabulary.RDFS_COMMENT)){
+				//skip
+				//OWLCommentAnnotation comment = factory.getOWL(one.b.toString());
+				//owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
+			}else if(one.getURIString().equals(OWLVocabulary.RDFS_LABEL)){
+				OWLLabelAnnotation label = factory.getOWLLabelAnnotation(one.b.toString());
+				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
+			}else{
+			
 			try{
 				
 				if(one.getBPart().isFloat()){
@@ -216,12 +228,12 @@ public class InstanceNode extends Node {
 				
 				//handover
 				one.toOWLOntology(owlAPIOntologyCollector);
-				
+			
 			}catch (Exception e) {
 				e.printStackTrace();
 				System.exit(0);
 			}
-			
+			}
 			//factory.getOWLDataPropertyAssertionAxiom()
 			//returnSet.add("<" + uri + "><" + one.getURI() + "> " + one.getNTripleFormOfB()
 			//		+ " .");
