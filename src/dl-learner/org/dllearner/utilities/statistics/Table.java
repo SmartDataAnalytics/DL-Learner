@@ -56,8 +56,8 @@ public class Table implements Serializable{
 		boolean production = true;
     	if(production){
     		String tablename = "myTable";
-    		String tableFile = "sembib100/sofar/table";
-    		
+    		//String tableFile = "sembib100/sofar/table";
+    		String tableFile = "sembib100/2ndExp/table2nd.table";
     		Table t = createTableFromSerializedColums(tablename, tableFile);
     		Files.createFile(new File(tableFile+".tex"), t.getLatexString());
     		
@@ -201,12 +201,12 @@ public class Table implements Serializable{
     	String content = "";
     	dir = StringFormatter.checkIfDirEndsOnSlashAndRemove(dir);
     	Files.mkdir(dir);
-    	String div = (System.currentTimeMillis() % 10000) + "";
+    	
     	try{
     		int i=0;
     		for(TableColumn c:t.getColumns()){
     			String header = URLEncoder.encode(c.getHeader(),"UTF-8");
-    			String columnFileName = dir+File.separator+t.getTableName()+(i++)+header+div+column;
+    			String columnFileName = dir+File.separator+t.getTableName()+(i++)+header+column;
     			c.serialize(new File(columnFileName));
     			//Files.writeObjectToFile(c, new File(filename));
     			content += columnFileName+System.getProperty("line.separator");

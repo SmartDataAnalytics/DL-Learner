@@ -30,6 +30,7 @@ import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDataProperty;
@@ -151,15 +152,24 @@ public class InstanceNode extends Node {
 	
 		
 		OWLIndividual me = factory.getOWLIndividual(getURI());
+		
 		for (ClassNode one : classes) {
+			//create Axiom
 			OWLClass c = factory.getOWLClass(one.getURI());
-			owlAPIOntologyCollector.addAxiom(factory.getOWLClassAssertionAxiom(me, c));
+			OWLAxiom ax = factory.getOWLClassAssertionAxiom(me, c);
+			//collect
+			owlAPIOntologyCollector.addAxiom(ax);
+			//handover
 			one.toOWLOntology(owlAPIOntologyCollector);
 		}
 		for (ObjectPropertyNode one : objectProperties) {
+			//create axiom
 			OWLIndividual o = factory.getOWLIndividual(one.getBPart().getURI());
 			OWLObjectProperty p = factory.getOWLObjectProperty(one.getURI());
-			factory.getOWLObjectPropertyAssertionAxiom(me, p, o);
+			OWLAxiom ax = factory.getOWLObjectPropertyAssertionAxiom(me, p, o);
+			//collect
+			owlAPIOntologyCollector.addAxiom(ax);
+			//handover
 			one.toOWLOntology(owlAPIOntologyCollector);
 			one.getBPart().toOWLOntology(owlAPIOntologyCollector);
 		}
