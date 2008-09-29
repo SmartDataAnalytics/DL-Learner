@@ -51,10 +51,10 @@
 
     <owl:ObjectProperty rdf:about="&NTNames;childOf">
         <rdfs:label>child of@en</rdfs:label>
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
+        <rdfs:range rdf:resource="&NTNames;Human"/>
         <owl:inverseOf rdf:resource="&NTNames;parentOf"/>
         <rdfs:subPropertyOf rdf:resource="&NTNames;relativeOf"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -65,10 +65,10 @@
         <rdf:type rdf:resource="&owl;SymmetricProperty"/>
         <rdfs:label
             >collaborates with@en</rdfs:label>
+        <rdfs:range rdf:resource="&NTNames;Human"/>
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
         <owl:inverseOf rdf:resource="&NTNames;collaboratesWith"/>
         <rdfs:subPropertyOf rdf:resource="&NTNames;knows"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -83,8 +83,8 @@
 
     <owl:ObjectProperty rdf:about="&NTNames;ethnicity">
         <rdfs:label>ethnicity@en</rdfs:label>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
+        <rdfs:range rdf:resource="&NTNames;EthnicityAttribute"/>
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
     </owl:ObjectProperty>
     
 
@@ -93,9 +93,9 @@
 
     <owl:ObjectProperty rdf:about="&NTNames;ethnicityOf">
         <rdfs:label>ethnicity of@en</rdfs:label>
+        <rdfs:domain rdf:resource="&NTNames;EthnicityAttribute"/>
+        <rdfs:range rdf:resource="&NTNames;Human"/>
         <owl:inverseOf rdf:resource="&NTNames;ethnicity"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -105,8 +105,8 @@
     <owl:ObjectProperty rdf:about="&NTNames;hasAntagonist">
         <rdfs:label
             >has antagonist@en</rdfs:label>
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
         <rdfs:subPropertyOf rdf:resource="&NTNames;knows"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
     </owl:ObjectProperty>
     
 
@@ -115,10 +115,10 @@
 
     <owl:ObjectProperty rdf:about="&NTNames;hasEnemy">
         <rdfs:label>has enemy@en</rdfs:label>
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
+        <rdfs:range rdf:resource="&NTNames;Human"/>
         <owl:inverseOf rdf:resource="&NTNames;enemyOf"/>
         <rdfs:subPropertyOf rdf:resource="&NTNames;knows"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -128,9 +128,9 @@
     <owl:ObjectProperty rdf:about="&NTNames;knows">
         <rdf:type rdf:resource="&owl;SymmetricProperty"/>
         <rdfs:label>knows@en</rdfs:label>
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
+        <rdfs:range rdf:resource="&NTNames;Human"/>
         <owl:inverseOf rdf:resource="&NTNames;knows"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -141,9 +141,9 @@
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
         <rdfs:label>location@en</rdfs:label>
+        <rdfs:domain rdf:resource="&NTNames;GeographicArea"/>
+        <rdfs:range rdf:resource="&NTNames;GeographicLocation"/>
         <owl:inverseOf rdf:resource="&NTNames;locationOf"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -164,9 +164,9 @@
 
     <owl:ObjectProperty rdf:about="&NTNames;memberOf">
         <rdfs:label>member of@en</rdfs:label>
+        <rdfs:range rdf:resource="&NTNames;Group"/>
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
         <owl:inverseOf rdf:resource="&NTNames;member"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -181,9 +181,9 @@
 
     <owl:ObjectProperty rdf:about="&NTNames;nativePlaceOf">
         <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="&NTNames;GeographicArea"/>
         <owl:inverseOf rdf:resource="&NTNames;nativePlace"/>
         <rdfs:subPropertyOf rdf:resource="&NTNames;visitedPlaceOf"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -200,9 +200,9 @@
 
     <owl:ObjectProperty rdf:about="&NTNames;parentOf">
         <rdfs:label>parent of@en</rdfs:label>
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
+        <rdfs:range rdf:resource="&NTNames;Human"/>
         <rdfs:subPropertyOf rdf:resource="&NTNames;relativeOf"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -218,8 +218,8 @@
     <owl:ObjectProperty rdf:about="&NTNames;religiousBelief">
         <rdfs:label
             >religious belief@en</rdfs:label>
+        <rdfs:range rdf:resource="&NTNames;ReligiousBeliefSystem"/>
         <owl:inverseOf rdf:resource="&NTNames;religiousBeliefOf"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -243,9 +243,9 @@
     <owl:ObjectProperty rdf:about="&NTNames;residentPlace">
         <rdfs:label
             >resident place@en</rdfs:label>
+        <rdfs:range rdf:resource="&NTNames;Region"/>
         <owl:inverseOf rdf:resource="&NTNames;residentPlaceOf"/>
         <rdfs:subPropertyOf rdf:resource="&NTNames;visitedPlace"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -261,8 +261,8 @@
     <!-- http://semanticbible.org/ns/2006/NTNames#residentPlaceOf -->
 
     <owl:ObjectProperty rdf:about="&NTNames;residentPlaceOf">
+        <rdfs:domain rdf:resource="&NTNames;Region"/>
         <rdfs:subPropertyOf rdf:resource="&NTNames;visitedPlaceOf"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -281,10 +281,10 @@
         <rdf:type rdf:resource="&owl;SymmetricProperty"/>
         <rdf:type rdf:resource="&owl;TransitiveProperty"/>
         <rdfs:label>sibling of@en</rdfs:label>
+        <rdfs:range rdf:resource="&NTNames;Human"/>
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
         <rdfs:subPropertyOf rdf:resource="&NTNames;relativeOf"/>
         <owl:inverseOf rdf:resource="&NTNames;siblingOf"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -294,9 +294,9 @@
     <owl:ObjectProperty rdf:about="&NTNames;spouseOf">
         <rdf:type rdf:resource="&owl;SymmetricProperty"/>
         <rdfs:label>spouse of@en</rdfs:label>
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
+        <rdfs:range rdf:resource="&NTNames;Human"/>
         <owl:inverseOf rdf:resource="&NTNames;spouseOf"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -306,9 +306,9 @@
     <owl:ObjectProperty rdf:about="&NTNames;subregion">
         <rdf:type rdf:resource="&owl;TransitiveProperty"/>
         <rdfs:label>subregion@en</rdfs:label>
+        <rdfs:range rdf:resource="&NTNames;GeographicArea"/>
+        <rdfs:domain rdf:resource="&NTNames;GeographicArea"/>
         <owl:inverseOf rdf:resource="&NTNames;subregionOf"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
     </owl:ObjectProperty>
     
 
@@ -318,8 +318,8 @@
     <owl:ObjectProperty rdf:about="&NTNames;subregionOf">
         <rdf:type rdf:resource="&owl;TransitiveProperty"/>
         <rdfs:label>subregion of@en</rdfs:label>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
-        <rdfs:range rdf:resource="&rdfs;range"/>
+        <rdfs:domain rdf:resource="&NTNames;GeographicArea"/>
+        <rdfs:range rdf:resource="&NTNames;GeographicArea"/>
     </owl:ObjectProperty>
     
 
@@ -333,8 +333,8 @@
     <!-- http://semanticbible.org/ns/2006/NTNames#visitedPlaceOf -->
 
     <owl:ObjectProperty rdf:about="&NTNames;visitedPlaceOf">
+        <rdfs:domain rdf:resource="&NTNames;Region"/>
         <owl:inverseOf rdf:resource="&NTNames;visitedPlace"/>
-        <rdfs:domain rdf:resource="&rdfs;domain"/>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -344,12 +344,6 @@
             </owl:Class>
         </rdfs:range>
     </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.w3.org/2002/07/owl#differentFrom -->
-
-    <owl:ObjectProperty rdf:about="&owl;differentFrom"/>
     
 
 
@@ -366,37 +360,55 @@
 
     <!-- http://semanticbible.org/ns/2006/NTNames#altitude -->
 
-    <owl:DatatypeProperty rdf:about="&NTNames;altitude"/>
+    <owl:DatatypeProperty rdf:about="&NTNames;altitude">
+        <rdfs:domain rdf:resource="&NTNames;GeographicLocation"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
     
 
 
     <!-- http://semanticbible.org/ns/2006/NTNames#description -->
 
-    <owl:DatatypeProperty rdf:about="&NTNames;description"/>
+    <owl:DatatypeProperty rdf:about="&NTNames;description">
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
     
 
 
     <!-- http://semanticbible.org/ns/2006/NTNames#hasOnlyGenealogyMention -->
 
-    <owl:DatatypeProperty rdf:about="&NTNames;hasOnlyGenealogyMention"/>
+    <owl:DatatypeProperty rdf:about="&NTNames;hasOnlyGenealogyMention">
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
     
 
 
     <!-- http://semanticbible.org/ns/2006/NTNames#latitude -->
 
-    <owl:DatatypeProperty rdf:about="&NTNames;latitude"/>
+    <owl:DatatypeProperty rdf:about="&NTNames;latitude">
+        <rdfs:domain rdf:resource="&NTNames;GeographicLocation"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
     
 
 
     <!-- http://semanticbible.org/ns/2006/NTNames#longitude -->
 
-    <owl:DatatypeProperty rdf:about="&NTNames;longitude"/>
+    <owl:DatatypeProperty rdf:about="&NTNames;longitude">
+        <rdfs:domain rdf:resource="&NTNames;GeographicLocation"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
     
 
 
     <!-- http://semanticbible.org/ns/2006/NTNames#occupation -->
 
-    <owl:DatatypeProperty rdf:about="&NTNames;occupation"/>
+    <owl:DatatypeProperty rdf:about="&NTNames;occupation">
+        <rdfs:domain rdf:resource="&NTNames;Human"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
     
 
 
@@ -660,7 +672,12 @@
 
     <!-- http://semanticbible.org/ns/2006/NTNames#SaltWaterArea -->
 
-    <owl:Class rdf:about="&NTNames;SaltWaterArea"/>
+    <owl:Class rdf:about="&NTNames;SaltWaterArea">
+        <rdfs:label>Salt Water Area</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&NTNames;WaterArea"/>
+        <rdfs:comment
+            >Based on SUMO, http://reliant.teknowledge.com/DAML/SUMO.owl#SaltWaterAreaSUO 1.55: July 14, 2003A &amp;%WaterArea whose &amp;%Water is saline, e.g.oceans and seas.</rdfs:comment>
+    </owl:Class>
     
 
 
@@ -719,18 +736,6 @@
         <rdfs:comment
             >SUO 1.55: July 14, 2003The class of &amp;%Female &amp;%Humans.</rdfs:comment>
     </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/2000/01/rdf-schema#domain -->
-
-    <owl:Class rdf:about="&rdfs;domain"/>
-    
-
-
-    <!-- http://www.w3.org/2000/01/rdf-schema#range -->
-
-    <owl:Class rdf:about="&rdfs;range"/>
     
 
 
@@ -808,7 +813,7 @@
         <rdfs:comment rdf:datatype="&xsd;string"
             >See OT descriptions in 2 Kings 16; Isa. 7-9; 2 Chr. 28.</rdfs:comment>
         <NTNames:occupation rdf:datatype="&xsd;string">king</NTNames:occupation>
-        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;string">true</NTNames:hasOnlyGenealogyMention>
+        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;boolean">true</NTNames:hasOnlyGenealogyMention>
         <NTNames:parentOf rdf:resource="&NTNames;Hezekiah"/>
         <NTNames:ethnicity rdf:resource="&NTNames;Jewish"/>
         <NTNames:childOf rdf:resource="&NTNames;Jotham"/>
@@ -880,7 +885,7 @@
         <rdfs:label rdf:datatype="&xsd;string">Anna</rdfs:label>
         <NTNames:description rdf:datatype="&xsd;string"
             >a prophetess who spoke about the infant Jesus in the temple</NTNames:description>
-        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;string">false</NTNames:hasOnlyGenealogyMention>
+        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;boolean">false</NTNames:hasOnlyGenealogyMention>
         <NTNames:occupation rdf:datatype="&xsd;string">prophetess</NTNames:occupation>
         <NTNames:ethnicity rdf:resource="&NTNames;Jewish"/>
         <NTNames:religiousBelief rdf:resource="&NTNames;Judaism"/>
@@ -1001,7 +1006,6 @@
         <rdfs:comment rdf:datatype="&xsd;string"
             >In the Old Testament, a people living west of the Jordan river who were partially displaced by the Israelites. In New Testament times, Canaanites lived primarily in the area of Phoenicia. Cananean, in contrast, is almost certainly political, rather than ethnic. </rdfs:comment>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Hamor"/>
-        <owl:differentFrom rdf:resource="&NTNames;Jewish"/>
     </NTNames:EthnicityAttribute>
     
 
@@ -1040,7 +1044,7 @@
 
     <NTNames:Man rdf:about="&NTNames;Cosam">
         <rdfs:label rdf:datatype="&xsd;string">Cosam</rdfs:label>
-        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;string">true</NTNames:hasOnlyGenealogyMention>
+        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;boolean">true</NTNames:hasOnlyGenealogyMention>
         <NTNames:parentOf rdf:resource="&NTNames;Addi"/>
         <NTNames:childOf rdf:resource="&NTNames;Elmadam"/>
         <NTNames:ethnicity rdf:resource="&NTNames;Jewish"/>
@@ -1126,7 +1130,7 @@
         <rdfs:label rdf:datatype="&xsd;string">Elmadam</rdfs:label>
         <NTNames:description rdf:datatype="&xsd;string"
             >One of the ancestors of Jesus mentioned in Luke&#39;s geneaology</NTNames:description>
-        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;string">true</NTNames:hasOnlyGenealogyMention>
+        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;boolean">true</NTNames:hasOnlyGenealogyMention>
         <NTNames:parentOf rdf:resource="&NTNames;Cosam"/>
         <NTNames:childOf rdf:resource="&NTNames;Er"/>
         <NTNames:ethnicity rdf:resource="&NTNames;Jewish"/>
@@ -1140,7 +1144,7 @@
         <rdfs:label rdf:datatype="&xsd;string">Er</rdfs:label>
         <NTNames:description rdf:datatype="&xsd;string"
             >One of the ancestors of Jesus mentioned in Luke&#39;s geneaology</NTNames:description>
-        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;string">true</NTNames:hasOnlyGenealogyMention>
+        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;boolean">true</NTNames:hasOnlyGenealogyMention>
         <NTNames:parentOf rdf:resource="&NTNames;Elmadam"/>
         <NTNames:ethnicity rdf:resource="&NTNames;Jewish"/>
         <NTNames:childOf rdf:resource="&NTNames;JoshuaSonOfEliezer"/>
@@ -1213,7 +1217,7 @@
     <NTNames:Man rdf:about="&NTNames;Hamor">
         <rdfs:label rdf:datatype="&xsd;string">Hamor</rdfs:label>
         <NTNames:description rdf:datatype="&xsd;string"></NTNames:description>
-        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;string">false</NTNames:hasOnlyGenealogyMention>
+        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;boolean">false</NTNames:hasOnlyGenealogyMention>
         <NTNames:occupation rdf:datatype="&xsd;string">ruler</NTNames:occupation>
         <NTNames:ethnicity rdf:resource="&NTNames;Canaanite"/>
         <NTNames:nativePlace rdf:resource="&NTNames;Shechem"/>
@@ -1265,13 +1269,12 @@
             >Israel becomes a metonym describing the nation of descendants from Jacob, so it is used both for a individual, a nation, and the members of that nation. </rdfs:comment>
         <NTNames:description rdf:datatype="&xsd;string"
             >The patriarch of the nation of Israel, son of Isaac and Abraham</NTNames:description>
-        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;string">false</NTNames:hasOnlyGenealogyMention>
+        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;boolean">false</NTNames:hasOnlyGenealogyMention>
         <NTNames:parentOf rdf:resource="&NTNames;Asher"/>
         <NTNames:parentOf rdf:resource="&NTNames;Benjamin"/>
         <NTNames:siblingOf rdf:resource="&NTNames;Esau"/>
         <NTNames:parentOf rdf:resource="&NTNames;Gad"/>
         <NTNames:childOf rdf:resource="&NTNames;Isaac"/>
-        <owl:differentFrom rdf:resource="&NTNames;JacobSonOfMatthan"/>
         <NTNames:ethnicity rdf:resource="&NTNames;Jewish"/>
         <NTNames:parentOf rdf:resource="&NTNames;JosephThePatriarch"/>
         <NTNames:parentOf rdf:resource="&NTNames;Judah"/>
@@ -1375,12 +1378,10 @@
         <NTNames:ethnicityOf rdf:resource="&NTNames;Bernice"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Boaz"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Caiaphas"/>
-        <owl:differentFrom rdf:resource="&NTNames;Canaanite"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Cosam"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;David"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Drusilla"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Eber"/>
-        <owl:differentFrom rdf:resource="&NTNames;Egyptian"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Eleazar"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;EliakimSonOfAbiud"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;EliakimSonOfMelea"/>
@@ -1393,11 +1394,9 @@
         <NTNames:ethnicityOf rdf:resource="&NTNames;Er"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Esau"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Esli"/>
-        <owl:differentFrom rdf:resource="&NTNames;Ethiopian"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Eunice"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Gad"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Gamaliel"/>
-        <owl:differentFrom rdf:resource="&NTNames;Gentile"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Gideon"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Heli"/>
         <NTNames:ethnicityOf rdf:resource="&NTNames;Hezekiah"/>
@@ -1584,7 +1583,7 @@
         <NTNames:description rdf:datatype="&xsd;string"
             >One of the ancestors of Jesus mentioned in Matthew&#39;s geneaology</NTNames:description>
         <NTNames:occupation rdf:datatype="&xsd;string">king of Judah</NTNames:occupation>
-        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;string">true</NTNames:hasOnlyGenealogyMention>
+        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;boolean">true</NTNames:hasOnlyGenealogyMention>
         <NTNames:parentOf rdf:resource="&NTNames;Ahaz"/>
         <NTNames:ethnicity rdf:resource="&NTNames;Jewish"/>
         <NTNames:childOf rdf:resource="&NTNames;Uzziah"/>
@@ -1819,10 +1818,10 @@
     <NTNames:GeographicLocation rdf:about="&NTNames;PhiladelphiaGeodata">
         <rdfs:label rdf:datatype="&xsd;string"
             >geodata for Philadelphia</rdfs:label>
-        <NTNames:altitude rdf:datatype="&xsd;string">0</NTNames:altitude>
-        <NTNames:longitude rdf:datatype="&xsd;string"
+        <NTNames:altitude rdf:datatype="&xsd;integer">0</NTNames:altitude>
+        <NTNames:longitude rdf:datatype="&xsd;double"
             >28.52643605613694</NTNames:longitude>
-        <NTNames:latitude rdf:datatype="&xsd;string"
+        <NTNames:latitude rdf:datatype="&xsd;double"
             >38.35785882454039</NTNames:latitude>
     </NTNames:GeographicLocation>
     
@@ -1840,7 +1839,7 @@
         <rdfs:label rdf:datatype="&xsd;string">Rachel</rdfs:label>
         <rdfs:comment rdf:datatype="&xsd;string"
             >Daughter of Laban and sister of Leah, who are not named in the New Testament. </rdfs:comment>
-        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;string">false</NTNames:hasOnlyGenealogyMention>
+        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;boolean">false</NTNames:hasOnlyGenealogyMention>
         <NTNames:description rdf:datatype="&xsd;string"
             >one of Jacob&#39;s wives</NTNames:description>
         <NTNames:parentOf rdf:resource="&NTNames;Benjamin"/>
@@ -1894,7 +1893,7 @@
         <rdfs:label rdf:datatype="&xsd;string">Sapphira</rdfs:label>
         <NTNames:description rdf:datatype="&xsd;string"
             >a member of the early church who misrepresented a gift and died as a     consequence</NTNames:description>
-        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;string">false</NTNames:hasOnlyGenealogyMention>
+        <NTNames:hasOnlyGenealogyMention rdf:datatype="&xsd;boolean">false</NTNames:hasOnlyGenealogyMention>
         <NTNames:spouseOf rdf:resource="&NTNames;Ananias"/>
         <NTNames:religiousBelief rdf:resource="&NTNames;Christianity"/>
         <NTNames:residentPlace rdf:resource="&NTNames;Jerusalem"/>
@@ -2072,4 +2071,50 @@
     <!-- http://semanticbible.org/ns/2006/NTNames#Zerubbabel -->
 
     <NTNames:Man rdf:about="&NTNames;Zerubbabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="&NTNames;Jewish"/>
+            <rdf:Description rdf:about="&NTNames;Ethiopian"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="&NTNames;Egyptian"/>
+            <rdf:Description rdf:about="&NTNames;Jewish"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="&NTNames;Gentile"/>
+            <rdf:Description rdf:about="&NTNames;Jewish"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="&NTNames;Jacob"/>
+            <rdf:Description rdf:about="&NTNames;JacobSonOfMatthan"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="&NTNames;Canaanite"/>
+            <rdf:Description rdf:about="&NTNames;Jewish"/>
+        </owl:distinctMembers>
+    </rdf:Description>
 </rdf:RDF>
