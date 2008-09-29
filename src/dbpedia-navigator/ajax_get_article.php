@@ -95,7 +95,7 @@
 			if (isset($triples['http://www.w3.org/2002/07/owl#sameAs'])||isset($subjecttriples['http://www.w3.org/2002/07/owl#sameAs'])){
 				$content.='<br/><hr><h4>Same as</h4><br/>';
 				$content.='<ul>';
-				foreach ($triples['http://www.w3.org/2002/07/owl#sameAs'] as $same){
+				if (isset($triples['http://www.w3.org/2002/07/owl#sameAs'])) foreach ($triples['http://www.w3.org/2002/07/owl#sameAs'] as $same){
 					if ($same['type']=="uri")
 						$content .= '<li><a href="'.$same['value'].'" target="_blank">'.urldecode($same['value']).'</a></li>';
 					else $content.= '<li>'.urldecode($same['value']).'</li>';
