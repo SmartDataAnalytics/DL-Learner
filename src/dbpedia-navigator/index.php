@@ -17,6 +17,7 @@ $settings=new Settings();
 //what happens onLoad
 $onLoad="onLoad=\"document.getElementById('label').focus();";
 if (isset($_GET['positives'])||isset($_GET['negatives'])) $onLoad.="setPositivesAndNegatives('positives=".$_GET['positives']."&negatives=".$_GET['negatives']."');";
+else if (isset($_SESSION['positives'])||isset($_SESSION['negatives'])) $onLoad.="setPositivesAndNegatives('positives=".$_SESSION['positives']."&negatives=".$_SESSION['negatives']."');";
 if (isset($_GET['showArticle'])) $onLoad.="get_article('label=".$_GET['showArticle']."&cache=-1');";
 else if (isset($_GET['search'])) $onLoad.="search_it('label=".$_GET['search']."&number=10');";
 else if (isset($_GET['showClass'])) $onLoad.="get_class('class=http://dbpedia.org/class/yago/".$_GET['showClass']."&cache=-1');";
