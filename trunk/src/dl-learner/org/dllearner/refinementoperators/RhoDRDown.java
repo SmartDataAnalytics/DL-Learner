@@ -873,10 +873,12 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		if(useDoubleDatatypes) {
 			Set<DatatypeProperty> doubleDPs = rs.getDoubleDatatypeProperties();
 			for(DatatypeProperty dp : doubleDPs) {
-				DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
-				DoubleMinValue min = new DoubleMinValue(splits.get(dp).get(0));
-				m3.add(new DatatypeSomeRestriction(dp,max));
-				m3.add(new DatatypeSomeRestriction(dp,min));
+				if(splits.get(dp).size()>0) {
+					DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
+					DoubleMinValue min = new DoubleMinValue(splits.get(dp).get(0));
+					m3.add(new DatatypeSomeRestriction(dp,max));
+					m3.add(new DatatypeSomeRestriction(dp,min));
+				}
 			}
 		}		
 		
@@ -975,10 +977,12 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 //			System.out.println("mgdd " + mgdd);
 			
 			for(DatatypeProperty dp : doubleDPs) {
-				DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
-				DoubleMinValue min = new DoubleMinValue(splits.get(dp).get(0));
-				m3.add(new DatatypeSomeRestriction(dp,max));
-				m3.add(new DatatypeSomeRestriction(dp,min));
+				if(splits.get(dp).size() > 0) {
+					DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
+					DoubleMinValue min = new DoubleMinValue(splits.get(dp).get(0));
+					m3.add(new DatatypeSomeRestriction(dp,max));
+					m3.add(new DatatypeSomeRestriction(dp,min));
+				}
 			}
 		}			
 		
