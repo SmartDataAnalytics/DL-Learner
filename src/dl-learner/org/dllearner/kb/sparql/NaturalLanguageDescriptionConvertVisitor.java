@@ -70,7 +70,6 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	
 	public static String getNaturalLanguageDescription(String descriptionKBSyntax) throws ParseException
 	{	
-		System.out.println(descriptionKBSyntax);
 		Description d = KBParser.parseConcept(descriptionKBSyntax);
 		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor();
 		d.accept(visitor);
