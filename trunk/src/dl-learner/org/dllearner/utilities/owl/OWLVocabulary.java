@@ -41,6 +41,8 @@ public class OWLVocabulary {
 	
 	
 	public static final String OWL_SAME_AS = "http://www.w3.org/2002/07/owl#sameAs";
+	public static final String OWL_DIFFERENT_FROM = "http://www.w3.org/2002/07/owl#differentFrom";
+	
 	public static final String OWL_OBJECTPROPERTY = "http://www.w3.org/2002/07/owl#ObjectProperty";
 	public static final String OWL_DATATYPPROPERTY = "http://www.w3.org/2002/07/owl#DataTypeProperty";
 	public static final String OWL_CLASS = "http://www.w3.org/2002/07/owl#Class";

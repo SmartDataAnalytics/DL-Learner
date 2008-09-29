@@ -46,7 +46,8 @@ public class RDFBlankNode implements RDFNode {
 	public int getBNodeId(){
 		return bNodeId;
 	}
-	//RBC
+	
+	
 	@Override
 	public String toString(){
 		//RBC

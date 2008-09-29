@@ -131,9 +131,14 @@ public class ExtractionAlgorithm {
 		
 		if(configuration.isGetPropertyInformation() ){
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetPropertyInformation").start();
-			List<ObjectPropertyNode> l = getObjectPropertyNodes(collectNodes);
-			for (ObjectPropertyNode node : l) {
+			List<ObjectPropertyNode> objectProperties = getObjectPropertyNodes(collectNodes);
+			for (ObjectPropertyNode node : objectProperties) {
 				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator()));
+			}
+			List<DatatypePropertyNode> datatypeProperties = getDatatypeProperties(collectNodes);
+			for (DatatypePropertyNode node : datatypeProperties) {
+				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator()));
+				//System.out.println(node+""+collectNodes.size());
 			}
 			m.stop();
 		}
@@ -195,13 +200,17 @@ public class ExtractionAlgorithm {
 		while (!newClasses.isEmpty() ) {
 			logger.trace("Remaining classes: " + newClasses.size());
 			Node next = newClasses.remove(0);
+			
 			logger.trace("Getting Superclasses for: " + next);
 			
 			if (!alreadyQueriedSuperClasses.contains(next.getURIString().toString())) {
 				logger.trace("" + next+" not in cache retrieving");
 				alreadyQueriedSuperClasses.add(next.getURIString().toString());
 				tupelAquisitor.setNextTaskToClassInformation();
+				
 				newClasses.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
+				
+				
 				
 				if (i > configuration.getBreakSuperClassesAfter()) {
 					break;
@@ -261,6 +270,18 @@ public class ExtractionAlgorithm {
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
 				properties.addAll(( (InstanceNode) node).getObjectProperties());
+				
+			}
+			
+		}
+		return properties;
+	}
+	
+	public static List<DatatypePropertyNode> getDatatypeProperties(List<Node> l ){
+		List<DatatypePropertyNode> properties = new ArrayList<DatatypePropertyNode>();
+		for (Node node : l) {
+			if (node instanceof InstanceNode) {
+				properties.addAll(( (InstanceNode) node).getDatatypePropertyNode());
 				
 			}
 			

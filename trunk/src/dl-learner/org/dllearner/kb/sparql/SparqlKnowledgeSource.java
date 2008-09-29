@@ -73,7 +73,7 @@ import com.jamonapi.MonitorFactory;
  */
 public class SparqlKnowledgeSource extends KnowledgeSource {
 
-	//RBC
+	
 	private static final boolean debug = false;
 	
 	//private static final boolean threaded = debug && true ;

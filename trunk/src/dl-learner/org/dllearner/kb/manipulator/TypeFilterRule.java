@@ -66,8 +66,7 @@ public class TypeFilterRule extends Rule{
 				keep.add(tuple);
 			}else{
 				logJamon();
-				//RBC
-				logger.debug("for "+  subject+ " removed tuple: "+tuple);
+				//logger.debug("for "+  subject+ " removed tuple: "+tuple);
 			}
 			
 		}

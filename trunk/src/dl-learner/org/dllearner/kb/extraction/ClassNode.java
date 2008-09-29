@@ -74,6 +74,7 @@ public class ClassNode extends Node {
 	}
 	
 	private Node processTuple( RDFNodeTuple tuple, boolean dissolveBlankNodes) {
+		
 		try {
 			String property = tuple.a.toString();
 			if(tuple.b.isLiteral()) {
@@ -101,7 +102,7 @@ public class ClassNode extends Node {
 				// further expansion stops here
 				ClassNode tmp = new ClassNode(tuple.b.toString());
 				classProperties.add(new ObjectPropertyNode(tuple.a.toString(), this, tmp));
-				// return tmp; is missing on purpose
+				return tmp; //is missing on purpose
 			}
 		} catch (Exception e) {
 			logger.warn("Problem with: " + this + " in tuple " + tuple);

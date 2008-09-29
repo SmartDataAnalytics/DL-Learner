@@ -52,9 +52,8 @@ public class ObjectPropertyNode extends PropertyNode {
 	
 	// specialtypes like owl:symmetricproperty
 	private SortedSet<String> specialTypes = new TreeSet<String>();
-	@SuppressWarnings("unused")
 	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<RDFNodeTuple>();
-	List<BlankNode> blankNodes = new ArrayList<BlankNode>();
+	private List<BlankNode> blankNodes = new ArrayList<BlankNode>();
 
 	public ObjectPropertyNode(String propertyURI, Node a, Node b) {
 		super(propertyURI, a, b);		
@@ -131,11 +130,13 @@ public class ObjectPropertyNode extends PropertyNode {
 		OWLObjectProperty me =factory.getOWLObjectProperty(getURI());
 	
 		for (RDFNodeTuple one : propertyInformation) {
-			OWLClass c = factory.getOWLClass(URI.create(one.a.toString()));
+			
 			
 			if(one.aPartContains(OWLVocabulary.RDFS_range)){
+				OWLClass c = factory.getOWLClass(URI.create(one.b.toString()));
 				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyRangeAxiom(me, c));
 			}else if(one.aPartContains(OWLVocabulary.RDFS_domain)){
+				OWLClass c = factory.getOWLClass(URI.create(one.b.toString()));
 				owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyDomainAxiom(me, c));
 			}else if(one.aPartContains(OWLVocabulary.RDFS_SUB_PROPERTY_OF)){
 				OWLObjectProperty p = factory.getOWLObjectProperty(URI.create(one.b.toString()));

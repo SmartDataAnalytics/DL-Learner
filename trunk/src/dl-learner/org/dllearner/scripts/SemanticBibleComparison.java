@@ -95,7 +95,7 @@ public class SemanticBibleComparison {
 	private static String tmpFilename = dir + "tmp.conf";
 	//static File log = new File(dir+"results+prop.txt");
 	//private static String tableFile = tableDir+"sembib.table";
-	private static String tableLatex = tableDir+"sembibLatex.table";
+	//private static String tableLatex = tableDir+"sembibLatex.table";
 	
 	private static Stat accFragment = new Stat();
 	private static Stat accOnOnto = new Stat();
@@ -313,6 +313,13 @@ public class SemanticBibleComparison {
 				}
 				
 			}//end for
+			String tmp="";
+			tmp+="NOT: "+descHasNot+"|";
+			tmp+="ALL: "+descHasAll+"|"; 
+			tmp+="Bool: "+descHasBooleanData+"|"; 
+			tmp+="NRRes: "+descHasNrRes+"";
+			logger.warn(tmp);
+			
 			writeJamonLog(dir+"jamon"+exp+".html");
 			reinitStat();
 	}//endconduct
