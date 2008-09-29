@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.utilities.owl;
 
 import java.util.Comparator;
@@ -25,12 +44,25 @@ import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Thing;
 
-// Comparator ist momentan inkonsistent mit equals für Konzepte, d.h. es kann sein, dass
-// zwei Konzepte nicht als gleich deklariert werden (momentan gelten Konzepte immer als
-// unterschiedlich, wenn sie nicht das gleiche Objekt im Speicher sind), aber in der
-// compare-Funktion trotzdem 0 zurückgegeben wird
+/**
+ * Implements a total order on class descriptions. Note that the
+ * comparator is, of course, inconsistent with equals on class
+ * descriptions, because currently two class descriptions are considered
+ * equal if they refer to the same memory address (Java standard), while
+ * this comparator takes the syntax of class descriptions into account.
+ *  
+ * TODO Improve implementation (better not to rely on number of children,
+ * make better use of the class hierarchy to avoid too many instanceof
+ * operations e.g. boolean description [union, intersection, negation],
+ * restrictions [card., quantor], classes [top, named, bottom] could
+ * be the first decision criterion).
+ * TODO Add a description how exactly the order is defined.
+ * 
+ * @author Jens Lehmann
+ *
+ */
 public class ConceptComparator implements Comparator<Description> {
-
+	
 	RoleComparator rc = new RoleComparator();
 	
 	// private List<AtomicConcept> atomicConcepts = new LinkedList<AtomicConcept>();
@@ -62,6 +94,23 @@ public class ConceptComparator implements Comparator<Description> {
 	// Ordnung für atomare Konzepte: Stringvergleich
 	// Ordnung für atomare Rollen: Stringvergleich
 	public int compare(Description concept1, Description concept2) {
+		
+		// test whether Intersection/Union really have more than
+		// one child (wastes some performance, but violating those
+		// restrictions can lead to difficult-to-find bugs);
+		// we test on concept2, which is the problematic case;
+		// comment out if not needed;
+		// note that the code also makes some further assumptions
+		// about how many children certain constructs can have, but
+		// all of those are obvious and unlikely to be cause by
+		// programming errors
+		// TODO: does not work at the moment, because some code 
+		// relies on temporarily have these structurs with only
+		// one child
+//		if((concept2 instanceof Intersection || concept2 instanceof Union) && concept2.getChildren().size() < 2) {
+//			throw new Error("Intersection/Union must have at least two children " + concept2);
+//		}
+		
 		// classes higher up are in the source code have lower value
 		// (they appear first in class descriptions, because sorted sets
 		// usually use an ascending order)
@@ -140,8 +189,23 @@ public class ConceptComparator implements Comparator<Description> {
 					return cmp;				
 			} else
 				return -1;
+		} else if(concept1 instanceof ObjectValueRestriction) {
+			if(concept2 instanceof Nothing || concept2 instanceof NamedClass || concept2 instanceof BooleanValueRestriction || concept2 instanceof DatatypeSomeRestriction) {
+				return 1;
+			} else if(concept2 instanceof ObjectValueRestriction) {
+				int roleCompare = rc.compare(((ObjectValueRestriction)concept1).getRestrictedPropertyExpression(), ((ObjectValueRestriction)concept2).getRestrictedPropertyExpression());
+				
+				if(roleCompare == 0) {
+					Individual value1 = ((ObjectValueRestriction)concept1).getIndividual();
+					Individual value2 = ((ObjectValueRestriction)concept2).getIndividual();
+					return value1.compareTo(value2);
+				} else {
+					return roleCompare;
+				}
+			} else
+				return -1;			
 		} else if(concept1 instanceof Thing) {
-			if(concept2 instanceof Nothing || concept2 instanceof NamedClass || concept2 instanceof BooleanValueRestriction || concept2 instanceof DatatypeSomeRestriction)
+			if(concept2 instanceof Nothing || concept2 instanceof NamedClass || concept2 instanceof BooleanValueRestriction || concept2 instanceof DatatypeSomeRestriction || concept2 instanceof ObjectValueRestriction)
 				return 1;
 			else if(concept2 instanceof Thing)
 				return 0;
@@ -177,23 +241,8 @@ public class ConceptComparator implements Comparator<Description> {
 					return roleCompare;
 			} else
 				return -1;
-		} else if(concept1 instanceof ObjectValueRestriction) {
-			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectSomeRestriction || concept2 instanceof ObjectAllRestriction)
-				return 1;
-			else if(concept2 instanceof ObjectValueRestriction) {
-				int roleCompare = rc.compare(((ObjectValueRestriction)concept1).getRestrictedPropertyExpression(), ((ObjectQuantorRestriction)concept2).getRestrictedPropertyExpression());
-				
-				if(roleCompare == 0) {
-					Individual value1 = ((ObjectValueRestriction)concept1).getIndividual();
-					Individual value2 = ((ObjectValueRestriction)concept2).getIndividual();
-					return value1.compareTo(value2);
-				} else {
-					return roleCompare;
-				}
-			} else
-				return -1;			
 		} else if(concept1 instanceof ObjectMinCardinalityRestriction) {
-			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction || concept2 instanceof ObjectValueRestriction)
+			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction)
 				return 1;
 			// first criterion: object property
 			// second criterion: number
@@ -213,7 +262,7 @@ public class ConceptComparator implements Comparator<Description> {
 			} else
 				return -1;			
 		} else if(concept1 instanceof ObjectMaxCardinalityRestriction) {
-			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction || concept2 instanceof ObjectValueRestriction || concept2 instanceof ObjectMinCardinalityRestriction)
+			if(concept2.getChildren().size()<1 || concept2 instanceof Negation || concept2 instanceof ObjectQuantorRestriction || concept2 instanceof ObjectMinCardinalityRestriction)
 				return 1;
 			// first criterion: object property
 			// second criterion: number

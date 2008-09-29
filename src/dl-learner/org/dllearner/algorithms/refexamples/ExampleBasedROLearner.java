@@ -580,6 +580,9 @@ public class ExampleBasedROLearner {
 	private void extendNodeProper(ExampleBasedNode node, Description concept, int maxLength,
 			int recDepth) {
 
+//		System.out.println("node: " + node);
+//		System.out.println("concept: " + concept);
+		
 		// do not execute methods if algorithm has been stopped (this means that
 		// the algorithm
 		// will terminate without further reasoning queries)
@@ -646,9 +649,9 @@ public class ExampleBasedROLearner {
 						propernessTestsAvoidedByShortConceptConstruction++;
 						propernessDetected = true;
 
-						// System.out.println("refinement " + refinement + " can
-						// be shortened");
-						// System.exit(0);
+//						 System.out.println("refinement " + refinement + 
+//								 " can be shortened");
+//						 System.exit(0);
 					}
 				}
 
@@ -901,8 +904,13 @@ public class ExampleBasedROLearner {
 			boolean redundant = properRefinements.contains(refinement);
 			redundancyCheckTimeNs += System.nanoTime() - redundancyCheckTimeNsStart;
 
-			if (!redundant)
+			if (!redundant) {
+//				System.out.println("node " + node);
+//				System.out.println("refinement " + refinement);
+				
 				extendNodeProper(node, refinement, maxLength, recDepth + 1);
+			}
+			
 			// for(int i=0; i<=recDepth; i++)
 			// System.out.print(" ");
 			// System.out.println("finished: " + refinement + " [maxLength " +
