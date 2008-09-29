@@ -19,14 +19,23 @@
  */
 package org.dllearner.kb.extraction;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.kb.aquisitors.RDFBlankNode;
 import org.dllearner.kb.aquisitors.TupleAquisitor;
 import org.dllearner.kb.manipulator.Manipulator;
+import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
+import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.OWLDataRange;
+import org.semanticweb.owl.model.OWLDescription;
 
 /**
  * Property node, has connection to a and b part
@@ -37,6 +46,11 @@ import org.dllearner.utilities.owl.OWLVocabulary;
 
 public class DatatypePropertyNode extends PropertyNode {
 
+	//	 specialtypes like owl:symmetricproperty
+	private SortedSet<String> specialTypes = new TreeSet<String>();
+	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<RDFNodeTuple>();	
+	private List<BlankNode> blankNodes = new ArrayList<BlankNode>();
+	
 	public DatatypePropertyNode(String uri, Node a, LiteralNode b) {
 		super(uri, a, b);
 	}
@@ -51,7 +65,38 @@ public class DatatypePropertyNode extends PropertyNode {
 	// gets the types for properties recursively
 	@Override
 	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
-		return new ArrayList<BlankNode>();
+		List<BlankNode> ret =  new ArrayList<BlankNode>();
+		//ret.addAll(b.expandProperties(tupelAquisitor, manipulator));
+		SortedSet<RDFNodeTuple> newTypes = tupelAquisitor.getTupelForResource(uri);
+		
+		for (RDFNodeTuple tuple : newTypes) {
+			try {
+				if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)) {
+					if(!tuple.b.toString().equals(OWLVocabulary.OWL_DATATYPPROPERTY)){
+						specialTypes.add(tuple.b.toString());
+					}
+				}else if(tuple.b.isAnon()){
+									
+					if(tupelAquisitor.isDissolveBlankNodes()){
+						RDFBlankNode n = (RDFBlankNode) tuple.b;
+						BlankNode tmp = new BlankNode( n, tuple.a.toString()); 
+						//add it to the graph
+						blankNodes.add(tmp);
+						ret.add( tmp);
+					}
+					
+				}else{
+					
+					propertyInformation.add(tuple);
+					
+				}
+			} catch (Exception e) {
+				logger.warn("resource "+uri+" with "+ tuple);
+				e.printStackTrace();
+			}
+			
+		}
+		return ret;
 	}
 	
 	@Override
@@ -74,6 +119,42 @@ public class DatatypePropertyNode extends PropertyNode {
 	
 	@Override
 	public void toOWLOntology( OWLAPIOntologyCollector owlAPIOntologyCollector){
+		
+
+		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
+		OWLDataProperty me =factory.getOWLDataProperty(getURI());
+	
+		for (RDFNodeTuple one : propertyInformation) {
+			
+			
+			if(one.aPartContains(OWLVocabulary.RDFS_range)){
+				//System.out.println(me + one.b.toString());
+				OWLDataRange o = factory.getOWLDataType(URI.create(one.b.toString()));
+				OWLAxiom ax = factory.getOWLDataPropertyRangeAxiom(me, o);
+				owlAPIOntologyCollector.addAxiom(ax);
+				//XXX implement
+				//OWLClass c = factory.getOWLClass(URI.create(one.b.toString()));
+				//owlAPIOntologyCollector.addAxiom(factory.getOWLDataPropertyRangeAxiom(propery, owlDataRange)(me, c));
+			}else if(one.aPartContains(OWLVocabulary.RDFS_domain)){
+				OWLClass c = factory.getOWLClass(URI.create(one.b.toString()));
+				owlAPIOntologyCollector.addAxiom(factory.getOWLDataPropertyDomainAxiom(me, c));
+			}
+		}
+		
+		
+		for (BlankNode bn : blankNodes) {
+			OWLDescription target = bn.getAnonymousClass(owlAPIOntologyCollector);
+			if(bn.getInBoundEdge().equals(OWLVocabulary.RDFS_range)){
+			
+				//XXX implement
+				//owlAPIOntologyCollector.addAxiom(factory.getOWLObjectPropertyRangeAxiom(me, target));
+			}else if(bn.getInBoundEdge().equals(OWLVocabulary.RDFS_domain)){
+				owlAPIOntologyCollector.addAxiom(factory.getOWLDataPropertyDomainAxiom(me, target));
+				
+			}
+			//System.out.println(bn.getAnonymousClass(owlAPIOntologyCollector).toString());
+		}
+		
 		
 	}
 	

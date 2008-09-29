@@ -87,11 +87,9 @@ public class InstanceNode extends Node {
 				datatypeProperties.add(new DatatypePropertyNode(tuple.a.toString(), this, new LiteralNode(tuple.b) ));
 				return null;
 			}else if(tuple.b.isAnon()){
+				@SuppressWarnings("unused")
 				RDFBlankNode n = (RDFBlankNode) tuple.b;
-				//RBC
-				System.out.println(n.getBNodeId());
-				System.exit(0);
-				logger.warn("blanknodes not supported as of now"+ this +"in tuple" + tuple);
+				logger.warn("encountered Bnode in InstanceNode"+ this +"in tuple" + tuple);
 				return null;
 			
 			// basically : if p is rdf:type then o is a class
@@ -117,6 +115,10 @@ public class InstanceNode extends Node {
 	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
 		List<BlankNode> ret =  new ArrayList<BlankNode>();
 		for (ObjectPropertyNode one : objectProperties) {
+			ret.addAll(one.expandProperties(tupelAquisitor, manipulator));
+		}
+		
+		for (DatatypePropertyNode one : datatypeProperties) {
 			ret.addAll(one.expandProperties(tupelAquisitor, manipulator));
 		}
 		return ret;
@@ -163,12 +165,21 @@ public class InstanceNode extends Node {
 			one.toOWLOntology(owlAPIOntologyCollector);
 		}
 		for (ObjectPropertyNode one : objectProperties) {
-			//create axiom
-			OWLIndividual o = factory.getOWLIndividual(one.getBPart().getURI());
-			OWLObjectProperty p = factory.getOWLObjectProperty(one.getURI());
-			OWLAxiom ax = factory.getOWLObjectPropertyAssertionAxiom(me, p, o);
+			OWLAxiom ax = null;
+			if(one.getURIString().equals(OWLVocabulary.OWL_DIFFERENT_FROM)){
+				OWLIndividual o = factory.getOWLIndividual(one.getBPart().getURI());
+				
+				ax = factory.getOWLDifferentIndividualsAxiom(new OWLIndividual[]{me,o});
+			}else{
+			
+				//create axiom
+				OWLIndividual o = factory.getOWLIndividual(one.getBPart().getURI());
+				OWLObjectProperty p = factory.getOWLObjectProperty(one.getURI());
+				ax = factory.getOWLObjectPropertyAssertionAxiom(me, p, o);
+			}
 			//collect
 			owlAPIOntologyCollector.addAxiom(ax);
+			
 			//handover
 			one.toOWLOntology(owlAPIOntologyCollector);
 			one.getBPart().toOWLOntology(owlAPIOntologyCollector);
@@ -179,26 +190,32 @@ public class InstanceNode extends Node {
 			Literal ln = one.getBPart().getLiteral();
 			
 			try{
-				if(one.getBPart().isString()){
+				
+				if(one.getBPart().isFloat()){
 					owlAPIOntologyCollector.addAxiom(
-					factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getString()));
-					
+							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getFloat()));
 				} else if(one.getBPart().isDouble()){
 					owlAPIOntologyCollector.addAxiom(
 							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getDouble()));
-				} else if(one.getBPart().isFloat()){
-					owlAPIOntologyCollector.addAxiom(
-							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getFloat()));
 				} else if(one.getBPart().isInt()){
 					owlAPIOntologyCollector.addAxiom(
 							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getInt()));
 				} else if(one.getBPart().isBoolean()){
 					owlAPIOntologyCollector.addAxiom(
 							factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getBoolean()));
-				} else {
+				}else if(one.getBPart().isString()){
+					//System.out.println(ln.getString()+" "+one.getBPart().isBoolean());
+					owlAPIOntologyCollector.addAxiom(
+					factory.getOWLDataPropertyAssertionAxiom(me, p, ln.getString()));
+					
+				}
+				
+				else {
 					tail(getURIString()+"||"+one.getURIString());
 				}
 				
+				//handover
+				one.toOWLOntology(owlAPIOntologyCollector);
 				
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -214,6 +231,10 @@ public class InstanceNode extends Node {
 
 	public List<ObjectPropertyNode> getObjectProperties() {
 		return objectProperties;
+	}
+	
+	public List<DatatypePropertyNode> getDatatypePropertyNode() {
+		return datatypeProperties;
 	}
 	
 	

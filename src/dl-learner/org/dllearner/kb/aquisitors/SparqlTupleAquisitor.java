@@ -84,7 +84,8 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 	@Override
 	public SortedSet<RDFNodeTuple> retrieveTuplesForClassesOnly(String uri){
 		SortedSet<RDFNodeTuple> ret = retrieveTupel(uri);
-		disambiguateBlankNodes(uri, ret);
+		//the next line is not necessary
+		//disambiguateBlankNodes(uri, ret);
 		return ret;
 	}
 	

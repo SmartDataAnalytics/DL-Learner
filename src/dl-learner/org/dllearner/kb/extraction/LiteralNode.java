@@ -104,17 +104,33 @@ public class LiteralNode extends Node {
 	
 	public boolean isDouble(){
 		try{
+			if(l.getDatatypeURI().contains("double")){return true;}
+			else{return false;}
+	
+			//l.getFloat();
+			
+			//l.getDouble();
+			//return true;
+		}catch (Exception e) {
+			return false;
+		}/*
+		try{
 			l.getDouble();
 			return true;
 		}catch (Exception e) {
 			return false;
-		}
+		}*/
 	}
 	
 	public boolean isFloat(){
 		try{
-			l.getFloat();
-			return true;
+			if(l.getDatatypeURI().contains("float")){return true;}
+			else{return false;}
+	
+			//l.getFloat();
+			
+			//l.getDouble();
+			//return true;
 		}catch (Exception e) {
 			return false;
 		}
@@ -122,20 +138,45 @@ public class LiteralNode extends Node {
 	
 	public boolean isInt(){
 		try{
+			if(l.getDatatypeURI().contains("int")){return true;}
+			else{return false;}
+	
+			//l.getFloat();
+			
+			//l.getDouble();
+			//return true;
+		}catch (Exception e) {
+			return false;
+		}
+		
+		
+	/*try{
 			l.getInt();
 			return true;
 		}catch (Exception e) {
 			return false;
-		}
+		}*/
 	}
 	
 	public boolean isBoolean(){
 		try{
+			if(l.getDatatypeURI().contains("boolean")){return true;}
+			else{return false;}
+	
+			//l.getFloat();
+			
+			//l.getDouble();
+			//return true;
+		}catch (Exception e) {
+			return false;
+		}
+		
+		/*try{
 			l.getBoolean();
 			return true;
 		}catch (Exception e) {
 			return false;
-		}
+		}*/
 	}
 	
 	public boolean isString(){
