@@ -62,9 +62,15 @@
 			
 			// display a picture if there is one
 			if (isset($triples['http://dbpedia.org/property/imageCaption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/imageCaption'][0]['value'];
+			else if (isset($triples['http://dbpedia.org/property/caption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/caption'][0]['value'];
 			else $alt='Picture of '.$artTitle;
-			if(isset($triples['http://xmlns.com/foaf/0.1/depiction']))
+						
+			if(isset($triples['http://xmlns.com/foaf/0.1/depiction'])&&fopen($triples['http://xmlns.com/foaf/0.1/depiction'], 'r')){
 				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="'.$alt.'" style="float:right; max-width:200px;" \>';
+			}
+			else if(isset($triples['http://xmlns.com/foaf/0.1/img'])&&fopen($triples['http://xmlns.com/foaf/0.1/img'], 'r')){
+				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/img'][0]['value'].'" alt="'.$alt.'" style="float:right; max-width:200px;" \>';
+			} 	
 			
 			//display where it was redirected from, if it was redirected
 			$redirect="";
