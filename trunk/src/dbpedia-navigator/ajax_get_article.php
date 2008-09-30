@@ -300,7 +300,7 @@
 				$content.='<br/><hr><h4>Remaining Triples</h4><br/>';
 				
 				// display the remaining properties as list which can be used for further navigation
-				$content .= get_triple_table($triples,$subjecttriples,$predicatelabels);
+				$content .= get_triple_table($triples,$subjecttriples);
 			}
 			
 			//Restart the Session
