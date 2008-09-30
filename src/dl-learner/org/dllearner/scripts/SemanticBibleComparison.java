@@ -215,11 +215,12 @@ public class SemanticBibleComparison {
 				
 				
 				//EXTRA
-				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
-				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSE_NOPROP);
-				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
+				//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP);
+				//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOCLOSE_NOPROP);
+				//conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC1);
 				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC3);
-				conductExperiment(Experiments.SPARQL_10000_CTESTS);
+				conductExperiment(Experiments.NORMAL_10000_CTESTS_FASTINST);
+				//conductExperiment(Experiments.SPARQL_10000_CTESTS);
 			
 			}
 		
