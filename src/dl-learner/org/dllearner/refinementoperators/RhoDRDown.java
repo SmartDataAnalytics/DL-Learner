@@ -101,7 +101,8 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	// limit for cardinality restrictions (this makes sense if we e.g. have compounds with up to
 	// more than 200 atoms but we are only interested in atoms with certain characteristics and do
 	// not want something like e.g. >= 204 hasAtom.NOT Carbon-87; which blows up the search space
-	private int cardinalityLimit = 5;
+	//RBC
+	private int cardinalityLimit = 2;
 	
 	// start concept (can be used to start from an arbitrary concept, needs
 	// to be Thing or NamedClass), note that when you use e.g. Compound as 
