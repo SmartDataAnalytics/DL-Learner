@@ -60,13 +60,11 @@ function get_article(param)
 	    		document.getElementById('Negatives').innerHTML=response[4];
 	    		if (response[5].length>0&&response[6].length>0)
 	    			loadGoogleMap(response[5],response[6],''+response[1]);
-	    		if (response[1]=='Article not found')
-	    			setTimeout("search_it('label='+document.getElementById('label').value+'&number=10')",2000);
 	    		else {
 	    			document.getElementById('LastArticlesBox').style.display='block';
 	    			learnConcept();
 	    		}
-	    	}
+	    	}else setTimeout("search_it('label='+document.getElementById('label').value+'&number=10')",2000);
     	}
     }
     		
