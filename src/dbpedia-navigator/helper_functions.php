@@ -227,7 +227,7 @@ function setRunning($id,$running)
 	fclose($file);
 }
 
-function get_triple_table($triples,$subjecttriples,$predicateLabels) {
+function get_triple_table($triples,$subjecttriples) {
 
 	$table = '<table border="0" style="width:100%;overflow:hidden"><tr><td><b>Predicate</b></td><td><b>Object/Subject</b></td></tr>';
 	$i=1;
