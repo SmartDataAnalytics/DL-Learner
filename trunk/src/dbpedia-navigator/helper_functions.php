@@ -84,7 +84,8 @@ function getResultsTable($names,$labels,$classes,$number)
 	}
 	$ret.='<input type="hidden" id="hidden_class" value="all"/><input type="hidden" id="hidden_number" value="0"/></div><br/><p style="width:100%;text-align:center;" id="sitenumbers">';
 	for ($k=0;$k<$i;$k++){
-		$ret.="<span>";
+		if ($i<2) $ret.="<span style=\"display:none\">";
+		else $ret.="<span>";
 		if ($k!=0) $ret.=" | ";
 		$ret.="<a href=\"#\" onclick=\"document.getElementById('hidden_number').value='".(25*$k)."';show_results(document.getElementById('hidden_class').value,".(25*$k).");\"";
 		if ($k==0) $ret.=" style=\"text-decoration:none;\"";
@@ -142,7 +143,8 @@ function getCategoryResultsTable($names,$labels,$category,$number)
 	}
 	$ret.='<input type="hidden" id="hidden_class" value="all"/><input type="hidden" id="hidden_number" value="0"/></div><br/><p style="width:100%;text-align:center;" id="sitenumbers">';
 	for ($k=0;$k<$i;$k++){
-		$ret.="<span>";
+		if ($i<2) $ret.="<span style=\"display:none\">";
+		else $ret.="<span>";
 		if ($k!=0) $ret.=" | ";
 		$ret.="<a href=\"#\" onclick=\"document.getElementById('hidden_number').value='".(25*$k)."';show_results(document.getElementById('hidden_class').value,".(25*$k).");\"";
 		if ($k==0) $ret.=" style=\"text-decoration:none;\"";
@@ -184,7 +186,8 @@ function getConceptResultsTable($names,$labels,$kb,$number)
 	}
 	$ret.='<input type="hidden" id="hidden_class" value="all"/><input type="hidden" id="hidden_number" value="0"/></div><br/><p style="width:100%;text-align:center;" id="sitenumbers">';
 	for ($k=0;$k<$i;$k++){
-		$ret.="<span>";
+		if ($i<2) $ret.="<span style=\"display:none\">";
+		else $ret.="<span>";
 		if ($k!=0) $ret.=" | ";
 		$ret.="<a href=\"#\" onclick=\"document.getElementById('hidden_number').value='".(25*$k)."';show_results(document.getElementById('hidden_class').value,".(25*$k).");\"";
 		if ($k==0) $ret.=" style=\"text-decoration:none;\"";
