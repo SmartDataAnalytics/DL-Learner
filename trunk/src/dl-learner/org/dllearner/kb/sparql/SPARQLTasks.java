@@ -263,6 +263,8 @@ public class SPARQLTasks {
 			sparqlQueryString = SparqlQueryDescriptionConvertVisitor
 					.getSparqlQueryIncludingSubclasses(conceptKBSyntax,
 							sparqlResultLimit, this, maxDepth);
+			//RBC 
+			System.out.println(sparqlQueryString);
 
 		} catch (Exception e) {
 			logger.warn(e.getMessage());

@@ -19,7 +19,9 @@
  */
 package org.dllearner.scripts;
 
+import java.io.File;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +40,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
@@ -52,6 +55,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.scripts.improveWikipedia.ConceptSPARQLReEvaluator;
 import org.dllearner.scripts.improveWikipedia.ConceptSelector;
 import org.dllearner.scripts.improveWikipedia.WikipediaCategoryTasks;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
@@ -66,7 +70,7 @@ public class WikipediaCategoryCleaner {
 	private static Logger logger = Logger.getRootLogger();
 
 	// localEndpoint switch
-	private static final boolean LOCAL = false;
+	private static final boolean LOCAL = true;
 
 	// parameters
 	// used for developing,
@@ -102,15 +106,20 @@ public class WikipediaCategoryCleaner {
 		//System.out.println(returnCat().size());
 		//System.exit(0);
 		//String test = "http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
-		//wikipediaCategories.add(test);
+		wikipediaCategories.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
+		wikipediaCategories.add("http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners");
 		//test = "http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners";
 		wikipediaCategories.addAll(returnCat());
 	//	<http://dbpedia.org/resource/Category:Assassinated_monarchs>
 	//		 <http://dbpedia.org/resource/Category:Alabama_musicians> 
 	//	wikipediaCategories.add(test);
-
+		int skipFirst = 1;
+		int i = 0;
 		for (String target : wikipediaCategories) {
-
+			if(i<skipFirst){
+				i++;
+				continue;
+			}
 			doit(target);
 
 		}
@@ -123,6 +132,13 @@ public class WikipediaCategoryCleaner {
 	
 
 	private static void doit(String target) {
+		String dir="";
+		try{
+			dir = "wiki/"+URLEncoder.encode(target,"UTF-8")+"/";
+			Files.mkdir(dir);
+		}catch (Exception e) {
+			 e.printStackTrace();
+		}
 		List<EvaluatedDescription> conceptresults;
 		SortedSet<String> currentPOSITIVEex = new TreeSet<String>();
 		SortedSet<String> currentNEGATIVEex = new TreeSet<String>();
@@ -148,23 +164,54 @@ public class WikipediaCategoryCleaner {
 		conceptresults = selectConcepts(conceptresults);
 		wrongIndividuals = wikiTasks.calculateWrongIndividualsAndNewPosEx(
 				conceptresults, currentPOSITIVEex);
+		
+		writeList(dir+"wrongIndividuals.html",wrongIndividuals);
 		currentPOSITIVEex.clear();
 		currentPOSITIVEex.addAll(wikiTasks.getCleanedPositiveSet());
 
+		writeList(dir+"correctIndividuals.html",currentPOSITIVEex);
+		
+		String content = "";
+		for (EvaluatedDescription string : conceptresults) {
+			content+=string+"\n";
+			
+		}
+		content+=conceptresults.size()+"\n";
+		Files.createFile(new File(dir+"concepts.html"), content);
+		
+		
 		// reevaluate versus the Endpoint
 		conceptresults = csparql.reevaluateConceptsByLowestRecall(
 				conceptresults, currentPOSITIVEex);
 
-		WikipediaCategoryCleaner.printEvaluatedDescriptionCollection(2,
+		try{
+			
+			SortedSet<Individual> found = new TreeSet<Individual>( conceptresults.get(0).getNotCoveredPositives());
+			writeList(dir+"foundIndividuals1.html",SetManipulation.indToString(found));
+			
+			found = new TreeSet<Individual>( conceptresults.get(1).getNotCoveredPositives());
+			writeList(dir+"foundIndividuals2.html",SetManipulation.indToString(found));
+			
+			
+		}catch (Exception e) {
+			 e.printStackTrace();
+		}
+		
+		WikipediaCategoryCleaner.printEvaluatedDescriptionCollection(5,
 				conceptresults);
-
-		printIntermediateResults(wikiTasks.getFullPositiveSet(),
-				wikiTasks.getCleanedPositiveSet(),
-				wrongIndividuals, conceptresults.size());
 		
 		System.exit(0);
+		return;
+		/*WikipediaCategoryCleaner.printEvaluatedDescriptionCollection(2,
+				conceptresults);
+*/
+		/*printIntermediateResults(wikiTasks.getFullPositiveSet(),
+				wikiTasks.getCleanedPositiveSet(),
+				wrongIndividuals, conceptresults.size());*/
+		
+		//System.exit(0);
 		// PHASE 2 ***********************
-		logger.info("PHASE 2 ***********************");
+		/*logger.info("PHASE 2 ***********************");
 		logger.info("making new Negative Examples");
 		currentNEGATIVEex = wikiTasks.makeNewNegativeExamples(conceptresults,
 				currentPOSITIVEex, NEGFACTOR);
@@ -180,8 +227,19 @@ public class WikipediaCategoryCleaner {
 				conceptresults, currentPOSITIVEex);
 
 		printEvaluatedDescriptionCollection(2, conceptresults);
-		collectResults(wikiTasks);
+		collectResults(wikiTasks);*/
 
+	}
+	
+	
+	private static void writeList(String file, Collection<String> c){
+		String content = "";
+		for (String string : c) {
+			content+="<a href='"+string+"'>"+string+"</a><br>\n";
+			
+		}
+		content+=c.size()+"\n";
+		Files.createFile(new File(file), content);
 	}
 
 	private static void collectResults(WikipediaCategoryTasks wikiTasks) {
@@ -236,15 +294,16 @@ public class WikipediaCategoryCleaner {
 			c.setGetPropertyInformation(false);
 			c.setVerbosity("warning");
 			c.setCacheDir(Cache.getPersistantCacheDir());
-			
+			c.setPredefinedFilter("YAGOONLY");
 			
 			
 			
 			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 			tmp.add(ks);
 			// reasoner
-			FastInstanceChecker f = ComponentFactory
-					.getFastInstanceChecker(tmp);
+			FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
+			f.getConfigurator().setDefaultNegation(false);
+			//OWLAPIReasoner f = ComponentFactory.getOWLAPIReasoner(tmp);
 			ReasoningService rs = ComponentManager.getInstance()
 					.reasoningService(f);
 	
@@ -254,9 +313,20 @@ public class WikipediaCategoryCleaner {
 	
 			// learning algorithm
 			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
+			ExampleBasedROLComponentConfigurator lc = la.getConfigurator();
 			la.getConfigurator().setNoisePercentage(20);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(100);
 			la.getConfigurator().setMaxExecutionTimeInSeconds(50);
+			
+			lc.setUseAllConstructor(false);
+			lc.setUseBooleanDatatypes(false);
+			lc.setUseCardinalityRestrictions(false);
+			lc.setUseNegation(false);
+			lc.setUseHasValueConstructor(false);
+			lc.setUseDoubleDatatypes(false);
+			lc.setWriteSearchTree(true);
+			lc.setSearchTreeFile("log/dbpedia.txt");
+			lc.setReplaceSearchTree(true);
 			
 			ks.init();
 			f.init();

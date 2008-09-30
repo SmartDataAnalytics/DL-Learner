@@ -240,6 +240,8 @@ public class SparqlQueryMaker {
 			return getAllowYAGOandSKOSFilter();
 		else if (name.equalsIgnoreCase("YAGOSPECIALHIERARCHY"))
 			return getYagoSpecialHierarchyFilter();
+		else if (name.equalsIgnoreCase("YAGOONLY"))
+			return getAllowYAGO_ONLYFilter();
 		else if (name.equalsIgnoreCase("TEST"))
 			return getTestFilter();
 		else if (name.equalsIgnoreCase("DBPEDIA-NAVIGATOR"))
@@ -254,6 +256,12 @@ public class SparqlQueryMaker {
 		addObjectFilter("http://dbpedia.org/resource/Category:");
 		addObjectFilter("http://dbpedia.org/resource/Template");
 	}
+	
+	private void addFiltersForDBpediaUMBEL() {
+		addObjectFilter("http://umbel.org/umbel/sc/");
+	}
+	
+	
 	private void addFiltersForYago() {
 		addObjectFilter("http://dbpedia.org/class/yago");
 		
@@ -307,6 +315,14 @@ public class SparqlQueryMaker {
 		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
 		sqm.combineWith(getAllowYAGOandSKOSFilter());
 		sqm.addFiltersForDBpediaSKOS();
+		return sqm;
+	}
+	
+	public static SparqlQueryMaker getAllowYAGO_ONLYFilter() {
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		sqm.combineWith(getAllowYAGOandSKOSFilter());
+		sqm.addFiltersForDBpediaSKOS();
+		sqm.addFiltersForDBpediaUMBEL();
 		return sqm;
 	}
 

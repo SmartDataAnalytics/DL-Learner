@@ -79,7 +79,7 @@ public class SemanticBibleComparison {
 
 	
 	private static int nrOfFilesInExperiment = 200;
-	private static boolean limit = true;
+	
 	
 	private static ReasoningService reasoningService;
 
@@ -208,10 +208,10 @@ public class SemanticBibleComparison {
 				//conductExperiment(Experiments.SPARQL_1000_CTESTS);
 				//conductExperiment(Experiments.NORMAL_10s);
 				
-				conductExperiment(Experiments.SPARQL_100s);
-				limit = false;
-				conductExperiment(Experiments.NORMAL_100s);
-				conductExperiment(Experiments.SPARQL_10000_CTESTS);
+				//conductExperiment(Experiments.SPARQL_100s);
+				
+				//conductExperiment(Experiments.NORMAL_100s);
+				//conductExperiment(Experiments.SPARQL_10000_CTESTS);
 				
 				
 				//EXTRA
@@ -257,7 +257,7 @@ public class SemanticBibleComparison {
 			for (String filename : confs) {
 				SimpleClock oneExperiment = new SimpleClock();
 				try{
-				if(((count+1)<65) && limit) continue;
+				
 					
 				if (count == nrOfFilesInExperiment){break;}
 				

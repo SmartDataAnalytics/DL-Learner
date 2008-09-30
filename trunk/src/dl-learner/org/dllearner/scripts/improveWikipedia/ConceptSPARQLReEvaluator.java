@@ -111,10 +111,19 @@ public class ConceptSPARQLReEvaluator {
 			// PosAsNeg
 			PosAsNeg.addAll(positiveSet);
 			PosAsNeg.removeAll(PosAsPos);
-
-			returnSet.add(new EvaluatedDescription(ed.getDescription(), Helper
+			
+			EvaluatedDescription d = new EvaluatedDescription(ed.getDescription(), Helper
 					.getIndividualSet(PosAsPos), Helper
-					.getIndividualSet(PosAsNeg), NegAsPos, NegAsNeg));
+					.getIndividualSet(PosAsNeg), NegAsPos, NegAsNeg);
+			
+			if(d.getAccuracy()<0.1 || d.getNotCoveredPositives().isEmpty()){
+				
+			}else{
+				returnSet.add(d);
+			}
+
+			
+		
 
 			}catch(Exception e){
 				logger.warn("ERROR occured, while evaluating, I'm ignoring it : "+e.toString());
@@ -166,9 +175,18 @@ public class ConceptSPARQLReEvaluator {
 			PosAsNeg.addAll(instances);
 			PosAsNeg.removeAll(PosAsPos);
 
-			returnSet.add(new EvaluatedDescription(ed.getDescription(), Helper
+			EvaluatedDescription d = new EvaluatedDescription(ed.getDescription(), Helper
 					.getIndividualSet(PosAsPos), Helper
-					.getIndividualSet(PosAsNeg), NegAsPos, NegAsNeg));
+					.getIndividualSet(PosAsNeg), NegAsPos, NegAsNeg);
+			
+			
+			if(d.getNotCoveredPositives().isEmpty()){
+				
+			}else{
+				returnSet.add(d);
+			}
+
+			
 			}catch(Exception e){
 				logger.warn("ERROR occured, while evaluating, I'm ignoring it :"+e.toString());
 				logger.warn("Concept was: "+ed.getDescription().toKBSyntaxString());
