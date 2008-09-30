@@ -91,7 +91,7 @@ public class Cache implements Serializable {
 	 * @return a Cache onject
 	 */
 	public static Cache getPersistentCache(){
-		Cache c = new Cache("cachePersistant"); 
+		Cache c = new Cache(getPersistantCacheDir()); 
 		c.setFreshnessInDays(365);
 		return c;
 	}
@@ -100,7 +100,7 @@ public class Cache implements Serializable {
 	 * @return the default cache object
 	 */
 	public static Cache getDefaultCache(){
-		Cache c = new Cache("cache"); 
+		Cache c = new Cache( getDefaultCacheDir()); 
 		return c;
 	}
 	
@@ -110,6 +110,14 @@ public class Cache implements Serializable {
 	 */
 	public static String getDefaultCacheDir(){
 		return "cache";
+	}
+	
+	/**
+	 * a more persistant cache used for example generation."cachePersistant"
+	 * @return persistant Cache Dir
+	 */
+	public static String getPersistantCacheDir(){
+		return "cachePersistant";
 	}
 	
 	/**

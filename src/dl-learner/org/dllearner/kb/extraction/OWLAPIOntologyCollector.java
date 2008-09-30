@@ -62,6 +62,7 @@ public class OWLAPIOntologyCollector {
 	 public void saveOntology(){
 		 try{
 		 manager.saveOntology(currentOntology);
+		 //manager.s
 		 }catch (Exception e) {
 			e.printStackTrace();
 			

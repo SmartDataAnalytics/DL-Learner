@@ -174,7 +174,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		options
 				.add(new BooleanConfigOption(
 						"saveExtractedFragment",
-						"Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir.",
+						"Specifies whether the extracted ontology is written to a file or not. " +
+						"The OWL file is written to the cache dir." +
+						"Some DBpedia URI will make the XML invalid",
 						true, false, true));
 		options.add(new StringTupleListConfigOption("replacePredicate",
 				"rule for replacing predicates", new ArrayList<StringTuple>(), false, true));
