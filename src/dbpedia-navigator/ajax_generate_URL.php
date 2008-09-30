@@ -32,7 +32,7 @@
 		$attr[]='concept='.substr($last_action,strpos($last_action, "/")+1);
 		$last_action='searchConceptInstances/Concept'; 
 	}
-	$attributes='?'.implode('&',$attr);
+	if (count($attr)>0) $attributes='?'.implode('&',$attr);
 	
 	$url='http://'.$_SERVER['HTTP_HOST'].'/dbpedia-navigator/'.$last_action.$attributes;
 	

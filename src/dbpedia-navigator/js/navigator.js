@@ -61,7 +61,7 @@ function show_results(class, number)
 	for (var i=0;i<sitenumbers.length;i++){
 		if ((parseInt(sitenumbers[i].getElementsByTagName('a')[0].innerHTML)-1)*25==number) sitenumbers[i].getElementsByTagName('a')[0].style.textDecoration='none';
 		else sitenumbers[i].getElementsByTagName('a')[0].style.textDecoration='underline';
-		if ((parseInt(sitenumbers[i].getElementsByTagName('a')[0].innerHTML)-1)*25>=j)
+		if ((parseInt(sitenumbers[i].getElementsByTagName('a')[0].innerHTML)-1)*25>=j||sitenumbers.length<2)
 			sitenumbers[i].style.display='none';
 		else 
 			sitenumbers[i].style.display='inline';
