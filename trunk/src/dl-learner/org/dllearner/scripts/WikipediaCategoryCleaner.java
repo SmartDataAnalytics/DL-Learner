@@ -19,6 +19,7 @@
  */
 package org.dllearner.scripts;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -32,9 +33,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
 import org.dllearner.kb.extraction.Manager;
@@ -43,6 +47,7 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.scripts.improveWikipedia.ConceptSPARQLReEvaluator;
 import org.dllearner.scripts.improveWikipedia.ConceptSelector;
@@ -51,7 +56,6 @@ import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
 import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
-import org.dllearner.utilities.learn.LearnSparql;
 import org.dllearner.utilities.statistics.SimpleClock;
 
 public class WikipediaCategoryCleaner {
@@ -130,9 +134,10 @@ public class WikipediaCategoryCleaner {
 				SPARQL_RESULTSET_LIMIT, DEVELOP);
 		currentPOSITIVEex.addAll(wikiTasks.getPosExamples());
 		currentNEGATIVEex.addAll(wikiTasks.getNegExamples());
+		ExampleBasedROLComponent la = learn(currentPOSITIVEex, currentNEGATIVEex);
+		la.start();
 		// get wrong individuals and reevaluate concepts
-		conceptresults = learn(getConfToFindWrongIndividuals(),
-				currentPOSITIVEex, currentNEGATIVEex);
+		conceptresults = la.getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, 0.5, true);
 		// TODO select concepts
 		conceptresults = selectConcepts(conceptresults);
 		wrongIndividuals = wikiTasks.calculateWrongIndividualsAndNewPosEx(
@@ -151,6 +156,7 @@ public class WikipediaCategoryCleaner {
 				wikiTasks.getCleanedPositiveSet(),
 				wrongIndividuals, conceptresults.size());
 		
+		System.exit(0);
 		// PHASE 2 ***********************
 		logger.info("PHASE 2 ***********************");
 		logger.info("making new Negative Examples");
@@ -158,8 +164,8 @@ public class WikipediaCategoryCleaner {
 				currentPOSITIVEex, NEGFACTOR);
 
 		logger.info("learning");
-		conceptresults = learn(getConfToRelearn(), currentPOSITIVEex,
-				currentNEGATIVEex);
+		la = learn( currentPOSITIVEex, currentNEGATIVEex);
+		conceptresults = la.getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, 0.5, true);
 		//		 TODO select concepts
 		logger.info("reducing concept size before evaluating from "+conceptresults.size());
 		conceptresults = selectConcepts(conceptresults);
@@ -195,50 +201,68 @@ public class WikipediaCategoryCleaner {
 		return concepts;
 	}
 
-	/**
-	 * All Concepts are returned, filtering these are done separately
-	 * 
-	 * @param conf
-	 * @param posExamples
-	 * @param negExamples
-	 * @return
-	 */
-	private static List<EvaluatedDescription> learn(
-			LearnSPARQLConfiguration conf, SortedSet<String> posExamples,
-			SortedSet<String> negExamples) {
-		LearnSparql learner = new LearnSparql(getConfToRelearn());
-		LearningAlgorithm la = null;
-		try {
-			la = learner.learn(posExamples, negExamples, FastInstanceChecker.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		List<EvaluatedDescription> conceptresults = la
-				.getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, 0.0,
-						true);
-		return conceptresults;
-	}
-
-	private static LearnSPARQLConfiguration getConfToFindWrongIndividuals() {
-		LearnSPARQLConfiguration lsc = new LearnSPARQLConfiguration();
-		lsc.sparqlEndpoint = sparqlTasks.getSparqlEndpoint();
-		lsc.predefinedEndpoint = "DBPEDIA";
-
-		lsc.recursiondepth = 1;
-		lsc.noisePercentage = 20;
-		lsc.guaranteeXgoodDescriptions = 100;
-		lsc.maxExecutionTimeInSeconds = 50;
+	
+	private static ExampleBasedROLComponent learn( SortedSet<String> posExamples, SortedSet<String> negExamples) {
 		
-		// lsc.searchTreeFile = "log/WikipediaCleaner.txt";
-
-		return lsc;
-
+		
+		ExampleBasedROLComponent la = null;
+		try{
+			SortedSet<Individual> instances = new TreeSet<Individual>();
+			instances.addAll(SetManipulation.stringToInd(posExamples));
+			instances.addAll(SetManipulation.stringToInd(negExamples));
+	
+			SparqlKnowledgeSource ks = ComponentFactory
+					.getSparqlKnowledgeSource(URI.create(
+							"lala").toURL(), SetManipulation
+							.indToString(instances));
+	
+			SparqlKnowledgeSourceConfigurator c = ks.getConfigurator();
+			
+			c.setCloseAfterRecursion(true);
+			c.setRecursionDepth(1);
+			if(LOCAL){
+			c.setPredefinedEndpoint("LOCALDBPEDIA");
+			}else{
+				c.setPredefinedEndpoint("DBPEDIA");
+			}
+			c.setUseLits(false);
+			c.setGetAllSuperClasses(true);
+			c.setGetPropertyInformation(false);
+			c.setVerbosity("warning");
+			
+			
+			
+			
+			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+			tmp.add(ks);
+			// reasoner
+			FastInstanceChecker f = ComponentFactory
+					.getFastInstanceChecker(tmp);
+			ReasoningService rs = ComponentManager.getInstance()
+					.reasoningService(f);
+	
+			// learning problem
+			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(rs,
+					posExamples, negExamples);
+	
+			// learning algorithm
+			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
+			la.getConfigurator().setNoisePercentage(20);
+			la.getConfigurator().setGuaranteeXgoodDescriptions(100);
+			la.getConfigurator().setMaxExecutionTimeInSeconds(50);
+			
+		}catch (Exception e) {
+			 e.printStackTrace();
+			 logger.warn(e);
+			 logger.warn("error in sparqlprepare");
+			 
+		}
+		return la;
+		
 	}
 
-	private static LearnSPARQLConfiguration getConfToRelearn() {
-		return getConfToFindWrongIndividuals();
-
-	}
+	
+	
 
 	public static void printEvaluatedDescriptionCollection(int howMany,
 			Collection<EvaluatedDescription> c) {
