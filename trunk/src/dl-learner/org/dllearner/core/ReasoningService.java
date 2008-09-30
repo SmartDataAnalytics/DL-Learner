@@ -171,6 +171,7 @@ public class ReasoningService {
 	}
 
 	public boolean instanceCheck(Description concept, Individual s) {
+		logger.debug(concept.toKBSyntaxString());
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		try {
@@ -186,6 +187,7 @@ public class ReasoningService {
 	}
 
 	public SortedSet<Individual> instanceCheck(Description concept, Set<Individual> s) {
+		logger.debug(concept.toKBSyntaxString());
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSet<Individual> result = null;
 		try {
