@@ -55,7 +55,6 @@ import org.dllearner.scripts.improveWikipedia.WikipediaCategoryTasks;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
-import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
 import org.dllearner.utilities.statistics.SimpleClock;
 
 public class WikipediaCategoryCleaner {
@@ -73,7 +72,9 @@ public class WikipediaCategoryCleaner {
 	// used for developing,
 	private static final boolean DEVELOPSTABLESETS = true;
 
-	public static final int SPARQL_RESULTSET_LIMIT = 500;
+	public static final int SPARQL_RESULTSET_LIMITa = 500;
+	public static final int SPARQL_RESULTSET_LIMIT_NEGATIVES = 20;
+	public static final int SPARQL_RESULTSET_LIMIT_CONCEPT_REEVALUATE = 500;
 	
 	private static final int DEPTH_OF_RDFS = 0;
 
@@ -83,7 +84,7 @@ public class WikipediaCategoryCleaner {
 	// size of randomly choosen negative examples compared to positives
 	public static double NEGFACTOR = 1.0;
 
-	public static int MAX_NR_CONCEPTS_TO_BE_EVALUATED = Integer.MAX_VALUE;
+	public static int MAX_NR_CONCEPTS_TO_BE_EVALUATED = 20;
 
 	public static double ACCURACY_THRESHOLD = 0.0;
 
@@ -98,12 +99,12 @@ public class WikipediaCategoryCleaner {
 		setup();
 		logger.info("Start");
 		SortedSet<String> wikipediaCategories = new TreeSet<String>();
-		
-		
-		String test = "http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
-		wikipediaCategories.add(test);
-		test = "http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners";
-		
+		//System.out.println(returnCat().size());
+		//System.exit(0);
+		//String test = "http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
+		//wikipediaCategories.add(test);
+		//test = "http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners";
+		wikipediaCategories.addAll(returnCat());
 	//	<http://dbpedia.org/resource/Category:Assassinated_monarchs>
 	//		 <http://dbpedia.org/resource/Category:Alabama_musicians> 
 	//	wikipediaCategories.add(test);
@@ -119,238 +120,7 @@ public class WikipediaCategoryCleaner {
 
 	}
 	
-	private static void findCat(){
-		String q = "SELECT DISTINCT ?cat WHERE { ?a <http://www.w3.org/2004/02/skos/core#subject> ?cat  }";
-		//System.out.println(q);
-		SortedSet<String> s = sparqlTasks.queryAsSet(q, "cat");
-		//System.out.println(s.size());
-		//System.exit(0);
-		
-		SortedSet<String> results = new TreeSet<String>();
-		int i = 0;
-		for (String category : s) {
-			System.out.println(""+(i++)+" "+results.size());
-			
-			String q2 = "SELECT DISTINCT ?subject WHERE { ?subject <http://www.w3.org/2004/02/skos/core#subject> <"+category+">  }";
-			SortedSet<String> subj = sparqlTasks.queryAsSet(q2, "subject");
-			if(40<subj.size() && subj.size()<80){
-				results.add(category);
-				
-			}
-			
-			if(results.size()>200 || i>970){
-				for (String cat : results) {
-					System.out.println("cat.add(\""+cat+"\");");
-				}
-				System.exit(0);
-			}
-			//System.out.println(subj.size() +" "+ string);
-		}
-		System.exit(0);
-	}
 	
-	private static SortedSet<String> returnCat (){
-		SortedSet<String> cat = new TreeSet<String>();
-		
-		cat.add("http://dbpedia.org/resource/Category:.NET_framework");
-		cat.add("http://dbpedia.org/resource/Category:1948_songs");
-		cat.add("http://dbpedia.org/resource/Category:1949_songs");
-		cat.add("http://dbpedia.org/resource/Category:1951_songs");
-		cat.add("http://dbpedia.org/resource/Category:1953_songs");
-		cat.add("http://dbpedia.org/resource/Category:1961_songs");
-		cat.add("http://dbpedia.org/resource/Category:1970s_pop_songs");
-		cat.add("http://dbpedia.org/resource/Category:1991_introductions");
-		cat.add("http://dbpedia.org/resource/Category:1993_introductions");
-		cat.add("http://dbpedia.org/resource/Category:1995_introductions");
-		cat.add("http://dbpedia.org/resource/Category:2001_television_films");
-		cat.add("http://dbpedia.org/resource/Category:2008_establishments");
-		cat.add("http://dbpedia.org/resource/Category:3-manifolds");
-		cat.add("http://dbpedia.org/resource/Category:Al-Qaeda_activities");
-		cat.add("http://dbpedia.org/resource/Category:Albums_produced_by_Teo_Macero");
-		cat.add("http://dbpedia.org/resource/Category:American_accordionists");
-		cat.add("http://dbpedia.org/resource/Category:American_comedy_musicians");
-		cat.add("http://dbpedia.org/resource/Category:American_entertainers");
-		cat.add("http://dbpedia.org/resource/Category:Apollo_asteroids");
-		cat.add("http://dbpedia.org/resource/Category:Assassinated_monarchs");
-		cat.add("http://dbpedia.org/resource/Category:Ayumi_Hamasaki_songs");
-		cat.add("http://dbpedia.org/resource/Category:Best_Song_Academy_Award_winning_songs");
-		cat.add("http://dbpedia.org/resource/Category:Books_about_film");
-		cat.add("http://dbpedia.org/resource/Category:Brian_Eno_albums");
-		cat.add("http://dbpedia.org/resource/Category:British_military_personnel_killed_in_action");
-		cat.add("http://dbpedia.org/resource/Category:British_military_personnel_of_the_Falklands_War");
-		cat.add("http://dbpedia.org/resource/Category:CENTR_members");
-		cat.add("http://dbpedia.org/resource/Category:Companies_of_Finland");
-		cat.add("http://dbpedia.org/resource/Category:Computing_platforms");
-		cat.add("http://dbpedia.org/resource/Category:Coordination_compounds");
-		cat.add("http://dbpedia.org/resource/Category:Dance-punk_musical_groups");
-		cat.add("http://dbpedia.org/resource/Category:Deathgrind_musical_groups");
-		cat.add("http://dbpedia.org/resource/Category:Disney_Channel_original_films");
-		cat.add("http://dbpedia.org/resource/Category:Dutch_Eurovision_songs");
-		cat.add("http://dbpedia.org/resource/Category:Executed_royalty");
-		cat.add("http://dbpedia.org/resource/Category:Films_based_on_Stephen_King%27s_works");
-		cat.add("http://dbpedia.org/resource/Category:First_Nations_history");
-		cat.add("http://dbpedia.org/resource/Category:Fluorescent_dyes");
-		cat.add("http://dbpedia.org/resource/Category:ForeFront_Records_albums");
-		cat.add("http://dbpedia.org/resource/Category:Former_municipalities_of_Utrecht_%28province%29");
-		cat.add("http://dbpedia.org/resource/Category:Fred_Astaire_songs");
-		cat.add("http://dbpedia.org/resource/Category:Home_computer_magazines");
-		cat.add("http://dbpedia.org/resource/Category:Honolulu_County%2C_Hawaii");
-		cat.add("http://dbpedia.org/resource/Category:House_of_Hashim");
-		cat.add("http://dbpedia.org/resource/Category:Hugo_Award_Winner_for_Best_Short_Story");
-		cat.add("http://dbpedia.org/resource/Category:Irish_folk_songs");
-		cat.add("http://dbpedia.org/resource/Category:Islands_of_Tonga");
-		cat.add("http://dbpedia.org/resource/Category:James_Bond");
-		cat.add("http://dbpedia.org/resource/Category:Jason_Nevins_remixes");
-		cat.add("http://dbpedia.org/resource/Category:Jay-Z_songs");
-		cat.add("http://dbpedia.org/resource/Category:Jo_Stafford_songs");
-		cat.add("http://dbpedia.org/resource/Category:.NET_framework");
-		cat.add("http://dbpedia.org/resource/Category:1930_songs");
-		cat.add("http://dbpedia.org/resource/Category:1945_songs");
-		cat.add("http://dbpedia.org/resource/Category:1948_songs");
-		cat.add("http://dbpedia.org/resource/Category:1949_songs");
-		cat.add("http://dbpedia.org/resource/Category:1951_songs");
-		cat.add("http://dbpedia.org/resource/Category:1953_songs");
-		cat.add("http://dbpedia.org/resource/Category:1955_songs");
-		cat.add("http://dbpedia.org/resource/Category:1956_singles");
-		cat.add("http://dbpedia.org/resource/Category:1961_songs");
-		cat.add("http://dbpedia.org/resource/Category:1970s_pop_songs");
-		cat.add("http://dbpedia.org/resource/Category:1980s_pop_songs");
-		cat.add("http://dbpedia.org/resource/Category:1991_introductions");
-		cat.add("http://dbpedia.org/resource/Category:1993_introductions");
-		cat.add("http://dbpedia.org/resource/Category:1995_introductions");
-		cat.add("http://dbpedia.org/resource/Category:2001_television_films");
-		cat.add("http://dbpedia.org/resource/Category:2008_establishments");
-		cat.add("http://dbpedia.org/resource/Category:3-manifolds");
-		cat.add("http://dbpedia.org/resource/Category:Agriculture_in_California");
-		cat.add("http://dbpedia.org/resource/Category:Al-Qaeda_activities");
-		cat.add("http://dbpedia.org/resource/Category:Albums_produced_by_Brendan_O%27Brien");
-		cat.add("http://dbpedia.org/resource/Category:Albums_produced_by_Teo_Macero");
-		cat.add("http://dbpedia.org/resource/Category:American_accordionists");
-		cat.add("http://dbpedia.org/resource/Category:American_children%27s_television_series");
-		cat.add("http://dbpedia.org/resource/Category:American_comedy_musicians");
-		cat.add("http://dbpedia.org/resource/Category:American_entertainers");
-		cat.add("http://dbpedia.org/resource/Category:Apollo_asteroids");
-		cat.add("http://dbpedia.org/resource/Category:Aromatic_amines");
-		cat.add("http://dbpedia.org/resource/Category:Assassinated_monarchs");
-		cat.add("http://dbpedia.org/resource/Category:Ayumi_Hamasaki_songs");
-		cat.add("http://dbpedia.org/resource/Category:Baden-W%C3%BCrttemberg_football_clubs");
-		cat.add("http://dbpedia.org/resource/Category:Bavarian_football_clubs");
-		cat.add("http://dbpedia.org/resource/Category:Beastie_Boys_songs");
-		cat.add("http://dbpedia.org/resource/Category:Best_Song_Academy_Award_winning_songs");
-		cat.add("http://dbpedia.org/resource/Category:Books_about_film");
-		cat.add("http://dbpedia.org/resource/Category:Brian_Eno_albums");
-		cat.add("http://dbpedia.org/resource/Category:British_military_personnel_killed_in_action");
-		cat.add("http://dbpedia.org/resource/Category:British_military_personnel_of_the_Falklands_War");
-		cat.add("http://dbpedia.org/resource/Category:CENTR_members");
-		cat.add("http://dbpedia.org/resource/Category:Chemical_nomenclature");
-		cat.add("http://dbpedia.org/resource/Category:Climatology");
-		cat.add("http://dbpedia.org/resource/Category:Common_Lisp_software");
-		cat.add("http://dbpedia.org/resource/Category:Companies_based_in_Utah");
-		cat.add("http://dbpedia.org/resource/Category:Companies_based_on_Long_Island");
-		cat.add("http://dbpedia.org/resource/Category:Companies_of_Finland");
-		cat.add("http://dbpedia.org/resource/Category:Computing_platforms");
-		cat.add("http://dbpedia.org/resource/Category:Concurrent_programming_languages");
-		cat.add("http://dbpedia.org/resource/Category:Coordination_compounds");
-		cat.add("http://dbpedia.org/resource/Category:Dance-punk_musical_groups");
-		cat.add("http://dbpedia.org/resource/Category:Deathgrind_musical_groups");
-		cat.add("http://dbpedia.org/resource/Category:Defunct_German_football_clubs");
-		cat.add("http://dbpedia.org/resource/Category:Digital_media");
-		cat.add("http://dbpedia.org/resource/Category:Disney_Channel_original_films");
-		cat.add("http://dbpedia.org/resource/Category:Dutch_Eurovision_songs");
-		cat.add("http://dbpedia.org/resource/Category:Dynamically-typed_programming_languages");
-		cat.add("http://dbpedia.org/resource/Category:EC_1.3.1");
-		cat.add("http://dbpedia.org/resource/Category:EC_3.1.1");
-		cat.add("http://dbpedia.org/resource/Category:EC_3.1.3");
-		cat.add("http://dbpedia.org/resource/Category:EC_3.2.1");
-		cat.add("http://dbpedia.org/resource/Category:Executed_royalty");
-		cat.add("http://dbpedia.org/resource/Category:Explosive_chemicals");
-		cat.add("http://dbpedia.org/resource/Category:Failed_pilots");
-		cat.add("http://dbpedia.org/resource/Category:Film_sound_production");
-		cat.add("http://dbpedia.org/resource/Category:Films_based_on_Stephen_King%27s_works");
-		cat.add("http://dbpedia.org/resource/Category:First_Nations_history");
-		cat.add("http://dbpedia.org/resource/Category:Fluorescent_dyes");
-		cat.add("http://dbpedia.org/resource/Category:Football_%28soccer%29_clubs_established_in_1896");
-		cat.add("http://dbpedia.org/resource/Category:Football_%28soccer%29_clubs_established_in_1899");
-		cat.add("http://dbpedia.org/resource/Category:Football_%28soccer%29_clubs_established_in_1905");
-		cat.add("http://dbpedia.org/resource/Category:ForeFront_Records_albums");
-		cat.add("http://dbpedia.org/resource/Category:Former_municipalities_of_Utrecht_%28province%29");
-		cat.add("http://dbpedia.org/resource/Category:Fred_Astaire_songs");
-		cat.add("http://dbpedia.org/resource/Category:GMA_News_and_Public_Affairs");
-		cat.add("http://dbpedia.org/resource/Category:Genetic_genealogy");
-		cat.add("http://dbpedia.org/resource/Category:Hazardous_air_pollutants");
-		cat.add("http://dbpedia.org/resource/Category:Hessian_football_clubs");
-		cat.add("http://dbpedia.org/resource/Category:Home_computer_magazines");
-		cat.add("http://dbpedia.org/resource/Category:Honolulu_County%2C_Hawaii");
-		cat.add("http://dbpedia.org/resource/Category:House_of_Hashim");
-		cat.add("http://dbpedia.org/resource/Category:Hugo_Award_Winner_for_Best_Short_Story");
-		cat.add("http://dbpedia.org/resource/Category:Hungarian_football_clubs");
-		cat.add("http://dbpedia.org/resource/Category:Hydra_Head_Records_albums");
-		cat.add("http://dbpedia.org/resource/Category:Irish_folk_songs");
-		cat.add("http://dbpedia.org/resource/Category:Iron_compounds");
-		cat.add("http://dbpedia.org/resource/Category:Islands_of_Tonga");
-		cat.add("http://dbpedia.org/resource/Category:James_Bond");
-		cat.add("http://dbpedia.org/resource/Category:James_Bond_books");
-		cat.add("http://dbpedia.org/resource/Category:Jason_Nevins_remixes");
-		cat.add("http://dbpedia.org/resource/Category:Jay-Z_songs");
-		cat.add("http://dbpedia.org/resource/Category:Jo_Stafford_songs");
-		cat.add("http://dbpedia.org/resource/Category:Lie_algebras");
-		cat.add("http://dbpedia.org/resource/Category:Light_novels");
-		cat.add("http://dbpedia.org/resource/Category:Lisp_programming_language_family");
-		cat.add("http://dbpedia.org/resource/Category:Live_Music_Archive_artists");
-		cat.add("http://dbpedia.org/resource/Category:Mary_J._Blige_songs");
-		cat.add("http://dbpedia.org/resource/Category:Maze_games");
-		cat.add("http://dbpedia.org/resource/Category:Monomers");
-		cat.add("http://dbpedia.org/resource/Category:Muppets_songs");
-		cat.add("http://dbpedia.org/resource/Category:Music_videos_directed_by_Joseph_Kahn");
-		cat.add("http://dbpedia.org/resource/Category:Musical_groups_disestablished_in_2002");
-		cat.add("http://dbpedia.org/resource/Category:Musical_groups_disestablished_in_2005");
-		cat.add("http://dbpedia.org/resource/Category:Nebula_Award_winning_works");
-		cat.add("http://dbpedia.org/resource/Category:Neighborhoods_in_Honolulu");
-		cat.add("http://dbpedia.org/resource/Category:Nitro_compounds");
-		cat.add("http://dbpedia.org/resource/Category:Number-one_singles_in_Finland");
-		cat.add("http://dbpedia.org/resource/Category:Nuremberg");
-		cat.add("http://dbpedia.org/resource/Category:Organobromides");
-		cat.add("http://dbpedia.org/resource/Category:Organometallic_compounds");
-		cat.add("http://dbpedia.org/resource/Category:Oricon_International_Singles_Chart_number-one_singles");
-		cat.add("http://dbpedia.org/resource/Category:Oxygen_heterocycles");
-		cat.add("http://dbpedia.org/resource/Category:Parody_musicians");
-		cat.add("http://dbpedia.org/resource/Category:Pearl_Jam_songs");
-		cat.add("http://dbpedia.org/resource/Category:Perry_Como_songs");
-		cat.add("http://dbpedia.org/resource/Category:Pesticides");
-		cat.add("http://dbpedia.org/resource/Category:Philadelphia_in_film_and_television");
-		cat.add("http://dbpedia.org/resource/Category:Piperazines");
-		cat.add("http://dbpedia.org/resource/Category:Placename_etymologies");
-		cat.add("http://dbpedia.org/resource/Category:R.E.M._songs");
-		cat.add("http://dbpedia.org/resource/Category:Ramallah_and_al-Bireh_Governorate");
-		cat.add("http://dbpedia.org/resource/Category:Reagents_for_organic_chemistry");
-		cat.add("http://dbpedia.org/resource/Category:Rearrangement_reactions");
-		cat.add("http://dbpedia.org/resource/Category:Relapse_Records_albums");
-		cat.add("http://dbpedia.org/resource/Category:Richard_Cheese_and_Lounge_Against_the_Machine_songs");
-		cat.add("http://dbpedia.org/resource/Category:Rod_Stewart_songs");
-		cat.add("http://dbpedia.org/resource/Category:SRC_network_shows");
-		cat.add("http://dbpedia.org/resource/Category:Satirical_magazines");
-		cat.add("http://dbpedia.org/resource/Category:Short_stories_by_Robert_A._Heinlein");
-		cat.add("http://dbpedia.org/resource/Category:Simple_aromatic_rings");
-		cat.add("http://dbpedia.org/resource/Category:Software_companies_of_Canada");
-		cat.add("http://dbpedia.org/resource/Category:Songs_about_California");
-		cat.add("http://dbpedia.org/resource/Category:Songs_with_lyrics_by_Ira_Gershwin");
-		cat.add("http://dbpedia.org/resource/Category:Songs_with_music_by_George_Gershwin");
-		cat.add("http://dbpedia.org/resource/Category:Sony_BMG_artists");
-		cat.add("http://dbpedia.org/resource/Category:Sound_production_technology");
-		cat.add("http://dbpedia.org/resource/Category:Speakers");
-		cat.add("http://dbpedia.org/resource/Category:Sport_in_North_Rhine-Westphalia");
-		cat.add("http://dbpedia.org/resource/Category:Supersymmetry");
-		cat.add("http://dbpedia.org/resource/Category:Synthpop_songs");
-		cat.add("http://dbpedia.org/resource/Category:Taliban");
-		cat.add("http://dbpedia.org/resource/Category:Techno_dance_songs");
-		cat.add("http://dbpedia.org/resource/Category:The_Temptations_songs");
-		cat.add("http://dbpedia.org/resource/Category:Thiols");
-		cat.add("http://dbpedia.org/resource/Category:Toponymy");
-		cat.add("http://dbpedia.org/resource/Category:Toronto_television_series");
-		
-		return cat;
-
-	}
 
 	private static void doit(String target) {
 		List<EvaluatedDescription> conceptresults;
@@ -362,12 +132,12 @@ public class WikipediaCategoryCleaner {
 		ConceptSPARQLReEvaluator csparql;
 		System.out.println("test");
 		wikiTasks = new WikipediaCategoryTasks(sparqlTasks);
-		csparql = new ConceptSPARQLReEvaluator(sparqlTasks, DEPTH_OF_RDFS, SPARQL_RESULTSET_LIMIT);
+		csparql = new ConceptSPARQLReEvaluator(sparqlTasks, DEPTH_OF_RDFS, SPARQL_RESULTSET_LIMIT_CONCEPT_REEVALUATE);
 
 		// PHASE 1 *************
 
 		wikiTasks.makeInitialExamples(target, PERCENT_OF_SKOSSET, NEGFACTOR,
-				SPARQL_RESULTSET_LIMIT, DEVELOPSTABLESETS);
+				SPARQL_RESULTSET_LIMIT_NEGATIVES, DEVELOPSTABLESETS);
 		currentPOSITIVEex.addAll(wikiTasks.getPosExamples());
 		currentNEGATIVEex.addAll(wikiTasks.getNegExamples());
 		ExampleBasedROLComponent la = learn(currentPOSITIVEex, currentNEGATIVEex);
@@ -449,7 +219,7 @@ public class WikipediaCategoryCleaner {
 	
 			SparqlKnowledgeSource ks = ComponentFactory
 					.getSparqlKnowledgeSource(URI.create(
-							"lala").toURL(), SetManipulation
+							"http://dbpedia.org").toURL(), SetManipulation
 							.indToString(instances));
 	
 			SparqlKnowledgeSourceConfigurator c = ks.getConfigurator();
@@ -465,6 +235,7 @@ public class WikipediaCategoryCleaner {
 			c.setGetAllSuperClasses(true);
 			c.setGetPropertyInformation(false);
 			c.setVerbosity("warning");
+			c.setCacheDir(Cache.getPersistantCacheDir());
 			
 			
 			
@@ -487,12 +258,19 @@ public class WikipediaCategoryCleaner {
 			la.getConfigurator().setGuaranteeXgoodDescriptions(100);
 			la.getConfigurator().setMaxExecutionTimeInSeconds(50);
 			
+			ks.init();
+			f.init();
+			lp.init();
+			la.init();
+			
+			
 		}catch (Exception e) {
 			 e.printStackTrace();
 			 logger.warn(e);
 			 logger.warn("error in sparqlprepare");
 			 
 		}
+		
 		return la;
 		
 	}
@@ -593,4 +371,237 @@ public class WikipediaCategoryCleaner {
 
 	}
 
+	private static void findCat(){
+		String q = "SELECT DISTINCT ?cat WHERE { ?a <http://www.w3.org/2004/02/skos/core#subject> ?cat  }";
+		//System.out.println(q);
+		SortedSet<String> s = sparqlTasks.queryAsSet(q, "cat");
+		//System.out.println(s.size());
+		//System.exit(0);
+		
+		SortedSet<String> results = new TreeSet<String>();
+		int i = 0;
+		for (String category : s) {
+			System.out.println(""+(i++)+" "+results.size());
+			
+			String q2 = "SELECT DISTINCT ?subject WHERE { ?subject <http://www.w3.org/2004/02/skos/core#subject> <"+category+">  }";
+			SortedSet<String> subj = sparqlTasks.queryAsSet(q2, "subject");
+			if(40<subj.size() && subj.size()<80){
+				results.add(category);
+				
+			}
+			
+			if(results.size()>200 || i>970){
+				for (String cat : results) {
+					System.out.println("cat.add(\""+cat+"\");");
+				}
+				System.exit(0);
+			}
+			//System.out.println(subj.size() +" "+ string);
+		}
+		System.exit(0);
+	}
+	
+	private static SortedSet<String> returnCat (){
+		SortedSet<String> cat = new TreeSet<String>();
+		
+		cat.add("http://dbpedia.org/resource/Category:.NET_framework");
+		/*cat.add("http://dbpedia.org/resource/Category:1948_songs");
+		cat.add("http://dbpedia.org/resource/Category:1949_songs");
+		cat.add("http://dbpedia.org/resource/Category:1951_songs");
+		cat.add("http://dbpedia.org/resource/Category:1953_songs");
+		cat.add("http://dbpedia.org/resource/Category:1961_songs");
+		cat.add("http://dbpedia.org/resource/Category:1970s_pop_songs");
+		cat.add("http://dbpedia.org/resource/Category:1991_introductions");
+		cat.add("http://dbpedia.org/resource/Category:1993_introductions");
+		cat.add("http://dbpedia.org/resource/Category:1995_introductions");
+		cat.add("http://dbpedia.org/resource/Category:2001_television_films");
+		cat.add("http://dbpedia.org/resource/Category:2008_establishments");
+		cat.add("http://dbpedia.org/resource/Category:3-manifolds");*/
+		cat.add("http://dbpedia.org/resource/Category:Al-Qaeda_activities");
+		/*cat.add("http://dbpedia.org/resource/Category:Albums_produced_by_Teo_Macero");
+		cat.add("http://dbpedia.org/resource/Category:American_accordionists");
+		cat.add("http://dbpedia.org/resource/Category:American_comedy_musicians");
+		cat.add("http://dbpedia.org/resource/Category:American_entertainers");
+		cat.add("http://dbpedia.org/resource/Category:Apollo_asteroids");*/
+		cat.add("http://dbpedia.org/resource/Category:Assassinated_monarchs");
+		/*cat.add("http://dbpedia.org/resource/Category:Ayumi_Hamasaki_songs");
+		cat.add("http://dbpedia.org/resource/Category:Best_Song_Academy_Award_winning_songs");
+		cat.add("http://dbpedia.org/resource/Category:Books_about_film");
+		cat.add("http://dbpedia.org/resource/Category:Brian_Eno_albums");
+		cat.add("http://dbpedia.org/resource/Category:British_military_personnel_killed_in_action");
+		cat.add("http://dbpedia.org/resource/Category:British_military_personnel_of_the_Falklands_War");
+		cat.add("http://dbpedia.org/resource/Category:CENTR_members");*/
+		cat.add("http://dbpedia.org/resource/Category:Companies_of_Finland");
+		/*cat.add("http://dbpedia.org/resource/Category:Computing_platforms");
+		cat.add("http://dbpedia.org/resource/Category:Coordination_compounds");
+		cat.add("http://dbpedia.org/resource/Category:Dance-punk_musical_groups");
+		cat.add("http://dbpedia.org/resource/Category:Deathgrind_musical_groups");
+		cat.add("http://dbpedia.org/resource/Category:Disney_Channel_original_films");
+		cat.add("http://dbpedia.org/resource/Category:Dutch_Eurovision_songs");
+		cat.add("http://dbpedia.org/resource/Category:Executed_royalty");
+		cat.add("http://dbpedia.org/resource/Category:Films_based_on_Stephen_King%27s_works");
+		cat.add("http://dbpedia.org/resource/Category:First_Nations_history");*/
+		cat.add("http://dbpedia.org/resource/Category:Fluorescent_dyes");
+	/*	cat.add("http://dbpedia.org/resource/Category:ForeFront_Records_albums");
+		cat.add("http://dbpedia.org/resource/Category:Former_municipalities_of_Utrecht_%28province%29");
+		cat.add("http://dbpedia.org/resource/Category:Fred_Astaire_songs");
+		cat.add("http://dbpedia.org/resource/Category:Home_computer_magazines");
+		cat.add("http://dbpedia.org/resource/Category:Honolulu_County%2C_Hawaii");
+		cat.add("http://dbpedia.org/resource/Category:House_of_Hashim");
+		cat.add("http://dbpedia.org/resource/Category:Hugo_Award_Winner_for_Best_Short_Story");*/
+		cat.add("http://dbpedia.org/resource/Category:Irish_folk_songs");
+		cat.add("http://dbpedia.org/resource/Category:Islands_of_Tonga");
+		/*cat.add("http://dbpedia.org/resource/Category:James_Bond");
+		cat.add("http://dbpedia.org/resource/Category:Jason_Nevins_remixes");
+		cat.add("http://dbpedia.org/resource/Category:Jay-Z_songs");
+		cat.add("http://dbpedia.org/resource/Category:Jo_Stafford_songs");
+		cat.add("http://dbpedia.org/resource/Category:.NET_framework");
+		cat.add("http://dbpedia.org/resource/Category:1930_songs");
+		cat.add("http://dbpedia.org/resource/Category:1945_songs");
+		cat.add("http://dbpedia.org/resource/Category:1948_songs");
+		cat.add("http://dbpedia.org/resource/Category:1949_songs");
+		cat.add("http://dbpedia.org/resource/Category:1951_songs");
+		cat.add("http://dbpedia.org/resource/Category:1953_songs");
+		cat.add("http://dbpedia.org/resource/Category:1955_songs");
+		cat.add("http://dbpedia.org/resource/Category:1956_singles");
+		cat.add("http://dbpedia.org/resource/Category:1961_songs");
+		cat.add("http://dbpedia.org/resource/Category:1970s_pop_songs");
+		cat.add("http://dbpedia.org/resource/Category:1980s_pop_songs");
+		cat.add("http://dbpedia.org/resource/Category:1991_introductions");
+		cat.add("http://dbpedia.org/resource/Category:1993_introductions");
+		cat.add("http://dbpedia.org/resource/Category:1995_introductions");
+		cat.add("http://dbpedia.org/resource/Category:2001_television_films");
+		cat.add("http://dbpedia.org/resource/Category:2008_establishments");
+		cat.add("http://dbpedia.org/resource/Category:3-manifolds");
+		cat.add("http://dbpedia.org/resource/Category:Agriculture_in_California");
+		cat.add("http://dbpedia.org/resource/Category:Al-Qaeda_activities");
+		cat.add("http://dbpedia.org/resource/Category:Albums_produced_by_Brendan_O%27Brien");
+		cat.add("http://dbpedia.org/resource/Category:Albums_produced_by_Teo_Macero");
+		cat.add("http://dbpedia.org/resource/Category:American_accordionists");
+		cat.add("http://dbpedia.org/resource/Category:American_children%27s_television_series");
+		cat.add("http://dbpedia.org/resource/Category:American_comedy_musicians");
+		cat.add("http://dbpedia.org/resource/Category:American_entertainers");
+		cat.add("http://dbpedia.org/resource/Category:Apollo_asteroids");
+		cat.add("http://dbpedia.org/resource/Category:Aromatic_amines");
+		cat.add("http://dbpedia.org/resource/Category:Assassinated_monarchs");
+		cat.add("http://dbpedia.org/resource/Category:Ayumi_Hamasaki_songs");
+		cat.add("http://dbpedia.org/resource/Category:Baden-W%C3%BCrttemberg_football_clubs");
+		cat.add("http://dbpedia.org/resource/Category:Bavarian_football_clubs");
+		cat.add("http://dbpedia.org/resource/Category:Beastie_Boys_songs");
+		cat.add("http://dbpedia.org/resource/Category:Best_Song_Academy_Award_winning_songs");
+		cat.add("http://dbpedia.org/resource/Category:Books_about_film");
+		cat.add("http://dbpedia.org/resource/Category:Brian_Eno_albums");
+		cat.add("http://dbpedia.org/resource/Category:British_military_personnel_killed_in_action");
+		cat.add("http://dbpedia.org/resource/Category:British_military_personnel_of_the_Falklands_War");
+		cat.add("http://dbpedia.org/resource/Category:CENTR_members");
+		cat.add("http://dbpedia.org/resource/Category:Chemical_nomenclature");
+		cat.add("http://dbpedia.org/resource/Category:Climatology");
+		cat.add("http://dbpedia.org/resource/Category:Common_Lisp_software");
+		cat.add("http://dbpedia.org/resource/Category:Companies_based_in_Utah");
+		cat.add("http://dbpedia.org/resource/Category:Companies_based_on_Long_Island");
+		cat.add("http://dbpedia.org/resource/Category:Companies_of_Finland");
+		cat.add("http://dbpedia.org/resource/Category:Computing_platforms");*/
+		cat.add("http://dbpedia.org/resource/Category:Concurrent_programming_languages");
+		/*cat.add("http://dbpedia.org/resource/Category:Coordination_compounds");
+		cat.add("http://dbpedia.org/resource/Category:Dance-punk_musical_groups");
+		cat.add("http://dbpedia.org/resource/Category:Deathgrind_musical_groups");
+		cat.add("http://dbpedia.org/resource/Category:Defunct_German_football_clubs");
+		cat.add("http://dbpedia.org/resource/Category:Digital_media");
+		cat.add("http://dbpedia.org/resource/Category:Disney_Channel_original_films");
+		cat.add("http://dbpedia.org/resource/Category:Dutch_Eurovision_songs");
+		cat.add("http://dbpedia.org/resource/Category:Dynamically-typed_programming_languages");
+		cat.add("http://dbpedia.org/resource/Category:EC_1.3.1");
+		cat.add("http://dbpedia.org/resource/Category:EC_3.1.1");
+		cat.add("http://dbpedia.org/resource/Category:EC_3.1.3");
+		cat.add("http://dbpedia.org/resource/Category:EC_3.2.1");
+		cat.add("http://dbpedia.org/resource/Category:Executed_royalty");
+		cat.add("http://dbpedia.org/resource/Category:Explosive_chemicals");
+		cat.add("http://dbpedia.org/resource/Category:Failed_pilots");
+		cat.add("http://dbpedia.org/resource/Category:Film_sound_production");
+		cat.add("http://dbpedia.org/resource/Category:Films_based_on_Stephen_King%27s_works");
+		cat.add("http://dbpedia.org/resource/Category:First_Nations_history");
+		cat.add("http://dbpedia.org/resource/Category:Fluorescent_dyes");
+		cat.add("http://dbpedia.org/resource/Category:Football_%28soccer%29_clubs_established_in_1896");
+		cat.add("http://dbpedia.org/resource/Category:Football_%28soccer%29_clubs_established_in_1899");
+		cat.add("http://dbpedia.org/resource/Category:Football_%28soccer%29_clubs_established_in_1905");
+		cat.add("http://dbpedia.org/resource/Category:ForeFront_Records_albums");
+		cat.add("http://dbpedia.org/resource/Category:Former_municipalities_of_Utrecht_%28province%29");
+		cat.add("http://dbpedia.org/resource/Category:Fred_Astaire_songs");
+		cat.add("http://dbpedia.org/resource/Category:GMA_News_and_Public_Affairs");
+		cat.add("http://dbpedia.org/resource/Category:Genetic_genealogy");
+		cat.add("http://dbpedia.org/resource/Category:Hazardous_air_pollutants");
+		cat.add("http://dbpedia.org/resource/Category:Hessian_football_clubs");
+		cat.add("http://dbpedia.org/resource/Category:Home_computer_magazines");
+		cat.add("http://dbpedia.org/resource/Category:Honolulu_County%2C_Hawaii");
+		cat.add("http://dbpedia.org/resource/Category:House_of_Hashim");
+		cat.add("http://dbpedia.org/resource/Category:Hugo_Award_Winner_for_Best_Short_Story");
+		cat.add("http://dbpedia.org/resource/Category:Hungarian_football_clubs");
+		cat.add("http://dbpedia.org/resource/Category:Hydra_Head_Records_albums");
+		cat.add("http://dbpedia.org/resource/Category:Irish_folk_songs");
+		cat.add("http://dbpedia.org/resource/Category:Iron_compounds");
+		cat.add("http://dbpedia.org/resource/Category:Islands_of_Tonga");
+		cat.add("http://dbpedia.org/resource/Category:James_Bond");
+		cat.add("http://dbpedia.org/resource/Category:James_Bond_books");
+		cat.add("http://dbpedia.org/resource/Category:Jason_Nevins_remixes");
+		cat.add("http://dbpedia.org/resource/Category:Jay-Z_songs");
+		cat.add("http://dbpedia.org/resource/Category:Jo_Stafford_songs");
+		cat.add("http://dbpedia.org/resource/Category:Lie_algebras");
+		cat.add("http://dbpedia.org/resource/Category:Light_novels");
+		cat.add("http://dbpedia.org/resource/Category:Lisp_programming_language_family");
+		cat.add("http://dbpedia.org/resource/Category:Live_Music_Archive_artists");
+		cat.add("http://dbpedia.org/resource/Category:Mary_J._Blige_songs");
+		cat.add("http://dbpedia.org/resource/Category:Maze_games");
+		cat.add("http://dbpedia.org/resource/Category:Monomers");
+		cat.add("http://dbpedia.org/resource/Category:Muppets_songs");
+		cat.add("http://dbpedia.org/resource/Category:Music_videos_directed_by_Joseph_Kahn");
+		cat.add("http://dbpedia.org/resource/Category:Musical_groups_disestablished_in_2002");
+		cat.add("http://dbpedia.org/resource/Category:Musical_groups_disestablished_in_2005");
+		cat.add("http://dbpedia.org/resource/Category:Nebula_Award_winning_works");
+		cat.add("http://dbpedia.org/resource/Category:Neighborhoods_in_Honolulu");
+		cat.add("http://dbpedia.org/resource/Category:Nitro_compounds");
+		cat.add("http://dbpedia.org/resource/Category:Number-one_singles_in_Finland");*/
+		cat.add("http://dbpedia.org/resource/Category:Nuremberg");
+		/*cat.add("http://dbpedia.org/resource/Category:Organobromides");
+		cat.add("http://dbpedia.org/resource/Category:Organometallic_compounds");
+		cat.add("http://dbpedia.org/resource/Category:Oricon_International_Singles_Chart_number-one_singles");
+		cat.add("http://dbpedia.org/resource/Category:Oxygen_heterocycles");
+		cat.add("http://dbpedia.org/resource/Category:Parody_musicians");
+		cat.add("http://dbpedia.org/resource/Category:Pearl_Jam_songs");
+		cat.add("http://dbpedia.org/resource/Category:Perry_Como_songs");
+		cat.add("http://dbpedia.org/resource/Category:Pesticides");
+		cat.add("http://dbpedia.org/resource/Category:Philadelphia_in_film_and_television");
+		cat.add("http://dbpedia.org/resource/Category:Piperazines");
+		cat.add("http://dbpedia.org/resource/Category:Placename_etymologies");
+		cat.add("http://dbpedia.org/resource/Category:R.E.M._songs");
+		cat.add("http://dbpedia.org/resource/Category:Ramallah_and_al-Bireh_Governorate");
+		cat.add("http://dbpedia.org/resource/Category:Reagents_for_organic_chemistry");
+		cat.add("http://dbpedia.org/resource/Category:Rearrangement_reactions");
+		cat.add("http://dbpedia.org/resource/Category:Relapse_Records_albums");
+		cat.add("http://dbpedia.org/resource/Category:Richard_Cheese_and_Lounge_Against_the_Machine_songs");
+		cat.add("http://dbpedia.org/resource/Category:Rod_Stewart_songs");
+		cat.add("http://dbpedia.org/resource/Category:SRC_network_shows");*/
+		cat.add("http://dbpedia.org/resource/Category:Satirical_magazines");
+		/*cat.add("http://dbpedia.org/resource/Category:Short_stories_by_Robert_A._Heinlein");
+		cat.add("http://dbpedia.org/resource/Category:Simple_aromatic_rings");
+		cat.add("http://dbpedia.org/resource/Category:Software_companies_of_Canada");
+		cat.add("http://dbpedia.org/resource/Category:Songs_about_California");
+		cat.add("http://dbpedia.org/resource/Category:Songs_with_lyrics_by_Ira_Gershwin");
+		cat.add("http://dbpedia.org/resource/Category:Songs_with_music_by_George_Gershwin");
+		cat.add("http://dbpedia.org/resource/Category:Sony_BMG_artists");
+		cat.add("http://dbpedia.org/resource/Category:Sound_production_technology");
+		cat.add("http://dbpedia.org/resource/Category:Speakers");
+		cat.add("http://dbpedia.org/resource/Category:Sport_in_North_Rhine-Westphalia");
+		cat.add("http://dbpedia.org/resource/Category:Supersymmetry");
+		cat.add("http://dbpedia.org/resource/Category:Synthpop_songs");
+		cat.add("http://dbpedia.org/resource/Category:Taliban");
+		cat.add("http://dbpedia.org/resource/Category:Techno_dance_songs");
+		cat.add("http://dbpedia.org/resource/Category:The_Temptations_songs");
+		cat.add("http://dbpedia.org/resource/Category:Thiols");
+		cat.add("http://dbpedia.org/resource/Category:Toponymy");
+		cat.add("http://dbpedia.org/resource/Category:Toronto_television_series");*/
+		
+		return cat;
+
+	}
+	
 }

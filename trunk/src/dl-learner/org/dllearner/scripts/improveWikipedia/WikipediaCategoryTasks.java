@@ -127,7 +127,7 @@ public class WikipediaCategoryTasks {
 	 * @param sparqlResultLimit
 	 */
 	public void makeInitialExamples(String targetCategory,
-			double percentOfSKOSSet, double negFactor, int sparqlResultLimit,
+			double percentOfSKOSSet, double negFactor, int sparqlResultLimitNegativeExamples,
 			boolean stable) {
 		fullPositiveSet.clear();
 		// fullPosSetWithoutPosExamples.clear();
@@ -152,7 +152,7 @@ public class WikipediaCategoryTasks {
 				fullPositiveSet, sparqlTasks);
 
 		aneg.makeNegativeExamplesFromParallelClasses(posExamples,
-				sparqlResultLimit);
+				sparqlResultLimitNegativeExamples);
 		negExamples = aneg.getNegativeExamples(neglimit, stable);
 
 		logger.debug("POSITIVE EXAMPLES");

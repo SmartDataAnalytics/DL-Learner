@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.dllearner.utilities.Files;
@@ -57,9 +58,10 @@ public class Table implements Serializable{
     	if(production){
     		String tablename = "myTable";
     		//String tableFile = "sembib100/sofar/table";
-    		String tableFile = "sembib100/2ndExp/table2nd.table";
-    		Table t = createTableFromSerializedColums(tablename, tableFile);
-    		Files.createFile(new File(tableFile+".tex"), t.getLatexString());
+    		//String tableFile = "sembib100/2ndExp/table2nd.table";
+    		String tableDir = "sembib100/sofarNew1st";
+    		Table t = createTableFromSerializedColumsInDir(tablename, tableDir);
+    		Files.createFile(new File(tableDir+File.separator+tablename+".tex"), t.getLatexString());
     		
     	}else{
 	    		
@@ -72,12 +74,12 @@ public class Table implements Serializable{
 			
 			serializeColumns(t, "results/table",tableFile );
 			
-			t = createTableFromSerializedColums("myTable", tableFile);
+			t = createTableFromSerializedColumsInFile("myTable", tableFile);
 			System.out.println(t.getLatexString());
 			
 			t.addColumn(c2);
 			serializeColumns(t, "results/table",tableFile );
-			t = createTableFromSerializedColums("myTable", tableFile);
+			t = createTableFromSerializedColumsInFile("myTable", tableFile);
 			System.out.println(t.getLatexString());
     	}	
 		
@@ -178,12 +180,37 @@ public class Table implements Serializable{
     	}
     }
     
-    public static Table createTableFromSerializedColums(String tableName, String tableFile){
+    public static Table createTableFromSerializedColumsInFile(String tableName, String tableFile){
+    	String[] columnFiles=new String[]{};
+    		try{
+    			columnFiles = Files.readFileAsArray(new File(tableFile));
+    		}catch (Exception e) {
+				 e.printStackTrace();
+			}
+    		return createTable(tableName, columnFiles);
+    	
+    }
+    
+    public static Table createTableFromSerializedColumsInDir(String tableName, String columnDir){
+    	String[] columnFiles= new File(columnDir).list();
+    		Arrays.sort(columnFiles);
+    		for (int i=0; i< columnFiles.length;i++) {
+				columnFiles[i]=columnDir+File.separator+columnFiles[i];
+    			System.out.println(columnFiles[i]);
+			}
+    		//System.exit(0);
+    		return createTable(tableName, columnFiles);
+    	
+    }
+    
+
+    private static Table createTable(String tableName, String[] columnFiles){
     	Table ret = new Table(tableName);
     	try{
     		
-    		String[] columnFiles = Files.readFileAsArray(new File(tableFile));
+    		
     		for (String filename : columnFiles) {
+    			if(!filename.endsWith(".column")){continue;}
     			if(filename.replaceAll(" ", "").length()==0)continue;
     			TableColumn col = TableColumn.deSerialize(new File(filename));
     			//TableColumn col = (TableColumn) Files.readObjectfromFile(new File(filename));
