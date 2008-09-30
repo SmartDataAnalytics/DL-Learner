@@ -307,7 +307,7 @@
 			session_start();
 			
 			//store article in session, to navigate between last 5 articles quickly
-			$contentArray=array('content' => $content,'subject' => $artTitle,'uri' => $uri);
+			$contentArray=array('content' => $content,'subject' => $artTitle,'uri' => $uri,'lat'=>$lat,'long'=>$long);
 			if (!isset($_SESSION['nextArticle'])){
 				$_SESSION['nextArticle']=0;
 				$_SESSION['articles']=array();
@@ -342,6 +342,8 @@
 		//Article is in session
 		$content=$_SESSION['articles'][$fromCache]['content'];
 		$artTitle=$_SESSION['articles'][$fromCache]['subject'];
+		$lat=$_SESSION['articles'][$fromCache]['lat'];
+		$long=$_SESSION['articles'][$fromCache]['long'];
 	}
 	
 	//Build lastArticles
