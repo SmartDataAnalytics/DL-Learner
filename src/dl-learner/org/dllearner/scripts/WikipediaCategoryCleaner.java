@@ -118,12 +118,13 @@ public class WikipediaCategoryCleaner {
 		int skipFirst = 1;
 		int i = 0;
 		for (String target : wikipediaCategories) {
+			System.out.println(i++);
 			if(i<skipFirst){
 				
 				continue;
 			}
 			System.out.println(target);
-			System.out.println(i++);
+			
 			doit(target);
 			
 		}
