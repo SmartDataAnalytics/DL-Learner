@@ -71,7 +71,7 @@ public class WikipediaCategoryCleaner {
 
 	// parameters
 	// used for developing,
-	private static final boolean DEVELOP = true;
+	private static final boolean DEVELOPSTABLESETS = true;
 
 	public static final int SPARQL_RESULTSET_LIMIT = 500;
 	
@@ -99,11 +99,37 @@ public class WikipediaCategoryCleaner {
 		logger.info("Start");
 		SortedSet<String> wikipediaCategories = new TreeSet<String>();
 		
+		String q = "SELECT * WHERE { ?a <http://www.w3.org/2004/02/skos/core#subject> ?cat  }";
+		SortedSet<String> s = sparqlTasks.queryAsSet(q, "cat");
 		
+		SortedSet<String> results = new TreeSet<String>();
+		int i = 0;
+		for (String category : s) {
+			System.out.println(""+(i++)+" "+results.size());
+			
+			String q2 = "SELECT DISTINCT ?subject WHERE { ?subject <http://www.w3.org/2004/02/skos/core#subject> <"+category+">  }";
+			SortedSet<String> subj = sparqlTasks.queryAsSet(q2, "subject");
+			if(40<subj.size() && subj.size()<80){
+				results.add(category);
+				
+			}
+			
+			if(results.size()>200){
+				for (String cat : results) {
+					System.out.println("cat.add(\""+cat+"\");");
+				}
+				System.exit(0);
+			}
+			//System.out.println(subj.size() +" "+ string);
+		}
+		System.exit(0);
 		String test = "http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
 		wikipediaCategories.add(test);
 		test = "http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners";
-		wikipediaCategories.add(test);
+		
+	//	<http://dbpedia.org/resource/Category:Assassinated_monarchs>
+	//		 <http://dbpedia.org/resource/Category:Alabama_musicians> 
+	//	wikipediaCategories.add(test);
 
 		for (String target : wikipediaCategories) {
 
@@ -113,6 +139,65 @@ public class WikipediaCategoryCleaner {
 
 		sc.printAndSet("Finished");
 		// JamonMonitorLogger.printAllSortedByLabel();
+
+	}
+	
+	private static SortedSet<String> returnCat (){
+		SortedSet<String> cat = new TreeSet<String>();
+		
+		cat.add("http://dbpedia.org/resource/Category:.NET_framework");
+		cat.add("http://dbpedia.org/resource/Category:1948_songs");
+		cat.add("http://dbpedia.org/resource/Category:1949_songs");
+		cat.add("http://dbpedia.org/resource/Category:1951_songs");
+		cat.add("http://dbpedia.org/resource/Category:1953_songs");
+		cat.add("http://dbpedia.org/resource/Category:1961_songs");
+		cat.add("http://dbpedia.org/resource/Category:1970s_pop_songs");
+		cat.add("http://dbpedia.org/resource/Category:1991_introductions");
+		cat.add("http://dbpedia.org/resource/Category:1993_introductions");
+		cat.add("http://dbpedia.org/resource/Category:1995_introductions");
+		cat.add("http://dbpedia.org/resource/Category:2001_television_films");
+		cat.add("http://dbpedia.org/resource/Category:2008_establishments");
+		cat.add("http://dbpedia.org/resource/Category:3-manifolds");
+		cat.add("http://dbpedia.org/resource/Category:Al-Qaeda_activities");
+		cat.add("http://dbpedia.org/resource/Category:Albums_produced_by_Teo_Macero");
+		cat.add("http://dbpedia.org/resource/Category:American_accordionists");
+		cat.add("http://dbpedia.org/resource/Category:American_comedy_musicians");
+		cat.add("http://dbpedia.org/resource/Category:American_entertainers");
+		cat.add("http://dbpedia.org/resource/Category:Apollo_asteroids");
+		cat.add("http://dbpedia.org/resource/Category:Assassinated_monarchs");
+		cat.add("http://dbpedia.org/resource/Category:Ayumi_Hamasaki_songs");
+		cat.add("http://dbpedia.org/resource/Category:Best_Song_Academy_Award_winning_songs");
+		cat.add("http://dbpedia.org/resource/Category:Books_about_film");
+		cat.add("http://dbpedia.org/resource/Category:Brian_Eno_albums");
+		cat.add("http://dbpedia.org/resource/Category:British_military_personnel_killed_in_action");
+		cat.add("http://dbpedia.org/resource/Category:British_military_personnel_of_the_Falklands_War");
+		cat.add("http://dbpedia.org/resource/Category:CENTR_members");
+		cat.add("http://dbpedia.org/resource/Category:Companies_of_Finland");
+		cat.add("http://dbpedia.org/resource/Category:Computing_platforms");
+		cat.add("http://dbpedia.org/resource/Category:Coordination_compounds");
+		cat.add("http://dbpedia.org/resource/Category:Dance-punk_musical_groups");
+		cat.add("http://dbpedia.org/resource/Category:Deathgrind_musical_groups");
+		cat.add("http://dbpedia.org/resource/Category:Disney_Channel_original_films");
+		cat.add("http://dbpedia.org/resource/Category:Dutch_Eurovision_songs");
+		cat.add("http://dbpedia.org/resource/Category:Executed_royalty");
+		cat.add("http://dbpedia.org/resource/Category:Films_based_on_Stephen_King%27s_works");
+		cat.add("http://dbpedia.org/resource/Category:First_Nations_history");
+		cat.add("http://dbpedia.org/resource/Category:Fluorescent_dyes");
+		cat.add("http://dbpedia.org/resource/Category:ForeFront_Records_albums");
+		cat.add("http://dbpedia.org/resource/Category:Former_municipalities_of_Utrecht_%28province%29");
+		cat.add("http://dbpedia.org/resource/Category:Fred_Astaire_songs");
+		cat.add("http://dbpedia.org/resource/Category:Home_computer_magazines");
+		cat.add("http://dbpedia.org/resource/Category:Honolulu_County%2C_Hawaii");
+		cat.add("http://dbpedia.org/resource/Category:House_of_Hashim");
+		cat.add("http://dbpedia.org/resource/Category:Hugo_Award_Winner_for_Best_Short_Story");
+		cat.add("http://dbpedia.org/resource/Category:Irish_folk_songs");
+		cat.add("http://dbpedia.org/resource/Category:Islands_of_Tonga");
+		cat.add("http://dbpedia.org/resource/Category:James_Bond");
+		cat.add("http://dbpedia.org/resource/Category:Jason_Nevins_remixes");
+		cat.add("http://dbpedia.org/resource/Category:Jay-Z_songs");
+		cat.add("http://dbpedia.org/resource/Category:Jo_Stafford_songs");
+		
+		return cat;
 
 	}
 
@@ -131,7 +216,7 @@ public class WikipediaCategoryCleaner {
 		// PHASE 1 *************
 
 		wikiTasks.makeInitialExamples(target, PERCENT_OF_SKOSSET, NEGFACTOR,
-				SPARQL_RESULTSET_LIMIT, DEVELOP);
+				SPARQL_RESULTSET_LIMIT, DEVELOPSTABLESETS);
 		currentPOSITIVEex.addAll(wikiTasks.getPosExamples());
 		currentNEGATIVEex.addAll(wikiTasks.getNegExamples());
 		ExampleBasedROLComponent la = learn(currentPOSITIVEex, currentNEGATIVEex);
