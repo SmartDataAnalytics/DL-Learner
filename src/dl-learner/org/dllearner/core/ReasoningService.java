@@ -154,7 +154,7 @@ public class ReasoningService {
 	public SortedSet<Individual> retrieval(Description concept) {
 		// Test, ob tatsächlich keine doppelten Retrievals ausgeführt werden
 		// retrievals.add(concept);		
-		logger.debug("retrieval "+concept.toKBSyntaxString());
+		//logger.debug("retrieval "+concept.toKBSyntaxString());
 		
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSet<Individual> result;
@@ -168,12 +168,12 @@ public class ReasoningService {
 		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
 		retrievalReasoningTimeNs += reasoningDurationTmp;
 		overallReasoningTimeNs += reasoningDurationTmp;
-		logger.debug("retrieval done");
+		//logger.debug("retrieval done");
 		return result;
 	}
 
 	public boolean instanceCheck(Description concept, Individual s) {
-		logger.debug("instanceCheck "+concept.toKBSyntaxString());
+		//logger.debug("instanceCheck "+concept.toKBSyntaxString());
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		try {
@@ -185,12 +185,12 @@ public class ReasoningService {
 		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
 		instanceCheckReasoningTimeNs += reasoningDurationTmp;
 		overallReasoningTimeNs += reasoningDurationTmp;
-		logger.debug("instanceCheck done");
+		//logger.debug("instanceCheck done");
 		return result;
 	}
 
 	public SortedSet<Individual> instanceCheck(Description concept, Set<Individual> s) {
-		logger.debug("instanceCheck "+concept.toKBSyntaxString());
+		//logger.debug("instanceCheck "+concept.toKBSyntaxString());
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSet<Individual> result = null;
 		try {
@@ -203,7 +203,7 @@ public class ReasoningService {
 		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
 		instanceCheckReasoningTimeNs += reasoningDurationTmp;
 		overallReasoningTimeNs += reasoningDurationTmp;
-		logger.debug("instanceCheck done");
+		//logger.debug("instanceCheck done");
 		return result;
 	}
 	
