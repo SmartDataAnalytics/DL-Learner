@@ -106,10 +106,12 @@ public class WikipediaCategoryCleaner {
 		//System.out.println(returnCat().size());
 		//System.exit(0);
 		//String test = "http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom";
-		wikipediaCategories.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
-		wikipediaCategories.add("http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners");
+		
 		//test = "http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners";
 		wikipediaCategories.addAll(returnCat());
+		
+		wikipediaCategories.add("http://dbpedia.org/resource/Category:Prime_Ministers_of_the_United_Kingdom");
+		wikipediaCategories.add("http://dbpedia.org/resource/Category:Best_Actor_Academy_Award_winners");
 	//	<http://dbpedia.org/resource/Category:Assassinated_monarchs>
 	//		 <http://dbpedia.org/resource/Category:Alabama_musicians> 
 	//	wikipediaCategories.add(test);
@@ -132,6 +134,7 @@ public class WikipediaCategoryCleaner {
 	
 
 	private static void doit(String target) {
+		try{
 		String dir="";
 		try{
 			dir = "wiki/"+URLEncoder.encode(target,"UTF-8")+"/";
@@ -200,7 +203,9 @@ public class WikipediaCategoryCleaner {
 		WikipediaCategoryCleaner.printEvaluatedDescriptionCollection(5,
 				conceptresults);
 		
-		System.exit(0);
+		}catch (Exception e) {
+			 e.printStackTrace();
+		}
 		return;
 		/*WikipediaCategoryCleaner.printEvaluatedDescriptionCollection(2,
 				conceptresults);
