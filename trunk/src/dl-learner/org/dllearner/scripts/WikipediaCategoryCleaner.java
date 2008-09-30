@@ -115,18 +115,17 @@ public class WikipediaCategoryCleaner {
 	//	<http://dbpedia.org/resource/Category:Assassinated_monarchs>
 	//		 <http://dbpedia.org/resource/Category:Alabama_musicians> 
 	//	wikipediaCategories.add(test);
-		int skipFirst = 1;
+		
 		int i = 0;
 		for (String target : wikipediaCategories) {
-			System.out.println(i++);
-			if(i<skipFirst){
-				
-				continue;
-			}
-			System.out.println(target);
 			
-			doit(target);
+		
+				System.out.println(target);
 			
+				doit(target);
+			ComponentManager.getInstance().freeAllComponents();
+			System.out.println(i);
+			i++;
 		}
 
 		sc.printAndSet("Finished");
@@ -482,7 +481,7 @@ public class WikipediaCategoryCleaner {
 	private static SortedSet<String> returnCat (){
 		SortedSet<String> cat = new TreeSet<String>();
 		
-		cat.add("http://dbpedia.org/resource/Category:.NET_framework");
+		//cat.add("http://dbpedia.org/resource/Category:.NET_framework");
 		/*cat.add("http://dbpedia.org/resource/Category:1948_songs");
 		cat.add("http://dbpedia.org/resource/Category:1949_songs");
 		cat.add("http://dbpedia.org/resource/Category:1951_songs");
