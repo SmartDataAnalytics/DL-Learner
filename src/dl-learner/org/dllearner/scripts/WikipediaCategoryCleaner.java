@@ -119,11 +119,13 @@ public class WikipediaCategoryCleaner {
 		int i = 0;
 		for (String target : wikipediaCategories) {
 			if(i<skipFirst){
-				i++;
+				
 				continue;
 			}
+			System.out.println(target);
+			System.out.println(i++);
 			doit(target);
-
+			
 		}
 
 		sc.printAndSet("Finished");
