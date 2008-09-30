@@ -232,17 +232,25 @@ public class Cache implements Serializable {
 		list.add(result);
 
 		// create the file we want to use
-		File file = new File(filename);
-
+		//File file = new File(filename);
+		FileOutputStream fos = null;
+		ObjectOutputStream o = null;
 		try {
-			file.createNewFile();
-			FileOutputStream fos = new FileOutputStream(filename, false);
-			ObjectOutputStream o = new ObjectOutputStream(fos);
+			//file.createNewFile();
+			fos = new FileOutputStream(filename, false);
+			o = new ObjectOutputStream(fos);
 			o.writeObject(list);
 			fos.flush();
-			fos.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally{
+			try{
+				fos.close();
+				o.close();
+			}catch (Exception e2) {
+				 e2.printStackTrace();
+			}
 		}
 	}
 
