@@ -427,7 +427,7 @@ public class WikipediaCategoryCleaner {
 
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
-		logger.addAppender(consoleAppender);
+		//logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
 		logger.setLevel(Level.DEBUG);
 		Logger.getLogger(Manager.class).setLevel(Level.INFO);
