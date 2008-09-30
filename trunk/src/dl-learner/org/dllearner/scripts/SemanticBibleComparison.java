@@ -243,6 +243,9 @@ public class SemanticBibleComparison {
 		Files.appendFile(jamonlog, "<xmp>\n"+JamonMonitorLogger.getStringForAllSortedByLabel());
 	}
 	
+	
+	
+	
 	public static void conductExperiment(Experiments exp){
 		
 		
@@ -399,8 +402,9 @@ public class SemanticBibleComparison {
 		
 		//defaultSettings:
 		c.setUseHasValueConstructor(false);
-		c.setUseBooleanDatatypes(true);
-		c.setUseDoubleDatatypes(true);
+		c.setUseBooleanDatatypes(false);
+		c.setUseDoubleDatatypes(false);
+		
 
 		if(exp.toString().contains("HASVALUE")){
 			c.setUseHasValueConstructor(true);
