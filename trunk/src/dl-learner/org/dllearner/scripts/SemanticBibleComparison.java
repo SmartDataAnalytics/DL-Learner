@@ -184,7 +184,7 @@ public class SemanticBibleComparison {
 			 * 
 			 * */
 		
-			boolean jens=false;
+			boolean jens=true;
 			if(jens){
 				
 				conductExperiment(Experiments.SPARQL_10000_CTESTS_SPECIAL_REC2_NOPROP_HASVALUE);

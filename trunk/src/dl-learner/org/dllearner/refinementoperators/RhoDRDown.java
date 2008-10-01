@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ReasoningService;
+import org.dllearner.core.config.CommonConfigOptions;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -152,7 +153,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private int maxNrOfSplits = 10;
 	
 	// data structure for a simple frequent pattern matching preprocessing phase
-	private int frequencyThreshold = 3;
+	private int frequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
 	private Map<ObjectProperty, Map<Individual, Integer>> valueFrequency = new HashMap<ObjectProperty, Map<Individual, Integer>>();
 	// data structure with identified frequent values
 	private Map<ObjectProperty, Set<Individual>> frequentValues = new HashMap<ObjectProperty, Set<Individual>>();	
@@ -181,17 +182,22 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 	
 	public RhoDRDown(ReasoningService reasoningService) {
-		this(reasoningService, true, true, true, true, true, true, true, true, true, null);
+		this(reasoningService, true, true, true, true, true, 3, true, true, true, true, null);
 	}
 	
+	// TODO constructor which takes a RhoDRDownConfigurator object;
+	// this should be an interface implemented e.g. by ExampleBasedROLComponentConfigurator;
+	// the goal is to use the configurator system while still being flexible enough to
+	// use one refinement operator in several learning algorithms
 	public RhoDRDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
-			boolean useExistsConstructor, boolean useHasValueConstructor, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
+			boolean useExistsConstructor, boolean useHasValueConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
 		this.rs = reasoningService;
 		this.applyAllFilter = applyAllFilter;
 		this.applyExistsFilter = applyExistsFilter;
 		this.useAllConstructor = useAllConstructor;
 		this.useExistsConstructor = useExistsConstructor;
 		this.useHasValueConstructor = useHasValueConstructor;
+		this.frequencyThreshold = valueFrequencyThreshold;
 		this.useCardinalityRestrictions = useCardinalityRestrictions;
 		this.useNegation = useNegation;
 		this.useBooleanDatatypes = useBooleanDatatypes;

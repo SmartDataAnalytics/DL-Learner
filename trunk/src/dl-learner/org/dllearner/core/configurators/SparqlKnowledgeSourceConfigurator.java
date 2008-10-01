@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
+ */ 
 
 package org.dllearner.core.configurators;
 
@@ -151,7 +151,7 @@ public Set<String> getObjList() {
 return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(sparqlKnowledgeSource,  "objList") ;
 }
 /**
-* saveExtractedFragment Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir..
+* saveExtractedFragment Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir.Some DBpedia URI will make the XML invalid.
 * mandatory: false| reinit necessary: true
 * default value: true
 * @return boolean 
@@ -363,7 +363,7 @@ ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "objList"
 reinitNecessary = true;
 }
 /**
-* @param saveExtractedFragment Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir..
+* @param saveExtractedFragment Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir.Some DBpedia URI will make the XML invalid.
 * mandatory: false| reinit necessary: true
 * default value: true
 **/
