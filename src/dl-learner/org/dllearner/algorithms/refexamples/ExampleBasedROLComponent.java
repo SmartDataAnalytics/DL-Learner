@@ -115,7 +115,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	private boolean improveSubsumptionHierarchy = true;
 	private boolean useAllConstructor = CommonConfigOptions.useAllConstructorDefault;
 	private boolean useExistsConstructor = CommonConfigOptions.useExistsConstructorDefault;
-	private boolean useHasValueConstructor = CommonConfigOptions.useHasValueConstructorDefault;	
+	private boolean useHasValueConstructor = CommonConfigOptions.useHasValueConstructorDefault;
+	private int valueFrequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
 	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
 	private boolean useNegation = CommonConfigOptions.useNegationDefault;
 	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
@@ -192,6 +193,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
 		options.add(CommonConfigOptions.useHasValueConstructor());
+		options.add(CommonConfigOptions.valueFreqencyThreshold());
 		options.add(CommonConfigOptions.useCardinalityRestrictions());
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
@@ -258,6 +260,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			useExistsConstructor = (Boolean) entry.getValue();
 		} else if(name.equals("useHasValueConstructor")) {
 			useHasValueConstructor = (Boolean) entry.getValue();
+		} else if(name.equals("valueFrequencyThreshold")) {
+			valueFrequencyThreshold = (Integer) entry.getValue();
 		} else if(name.equals("useCardinalityRestrictions")) {
 			useCardinalityRestrictions = (Boolean) entry.getValue();
 		} else if(name.equals("useNegation")) {
@@ -370,6 +374,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 					useAllConstructor, 
 					useExistsConstructor,
 					useHasValueConstructor,
+					valueFrequencyThreshold,
 					useCardinalityRestrictions,
 					useNegation,
 					useBooleanDatatypes,

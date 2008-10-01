@@ -17,16 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.learningproblems;
+package org.dllearner.scripts;
 
 import java.net.URI;
 import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.core.ReasoningService;
-import org.dllearner.core.Score;
-import org.dllearner.core.configurators.RoleLearningConfigurator;
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.datastructures.StringTuple;
 
@@ -42,24 +39,20 @@ import org.dllearner.utilities.datastructures.StringTuple;
  * The Queries can be found in SPARQLqueryType
  * 
  */
-public class RoleLearning extends PosNegLP implements DefinitionLP {
+public class RoleLearning {
 
-	private RoleLearningConfigurator configurator;
-	@Override
-	public RoleLearningConfigurator getConfigurator(){
-		return configurator;
-	}
-	
+	Set<Individual> positiveExamples;
+	Set<Individual> negativeExamples;
 	
 	public RoleLearning(ReasoningService reasoningService) {
-		super(reasoningService);
+//		super(reasoningService);
 	}
 
 	public RoleLearning(ReasoningService reasoningService,
 			SortedSet<Individual> positiveExamples,
 			SortedSet<Individual> negativeExamples) {
-		super(reasoningService);
-		this.configurator = new RoleLearningConfigurator(this);
+//		super(reasoningService);
+//		this.configurator = new RoleLearningConfigurator(this);
 		// TODO sets have to be queried
 		this.positiveExamples = positiveExamples;
 		this.negativeExamples = negativeExamples;
@@ -72,18 +65,6 @@ public class RoleLearning extends PosNegLP implements DefinitionLP {
 	 */
 	public static String getName() {
 		return "role learning";
-	}
-
-	// TODO use basic functions
-	@Override
-	public int coveredNegativeExamplesOrTooWeak(Description concept) {
-		return 0;
-	}
-
-	// TODO use basic functions
-	@Override
-	public Score computeScore(Description concept) {
-		return null;
 	}
 
 	// can be replaced by a static query, but it also can make use of filters as

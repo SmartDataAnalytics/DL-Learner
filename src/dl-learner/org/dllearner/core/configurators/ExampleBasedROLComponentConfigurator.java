@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- */
+ */ 
 
 package org.dllearner.core.configurators;
 
@@ -216,7 +216,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 /**
 * useHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm.
 * mandatory: false| reinit necessary: true
-* default value: true
+* default value: false
 * @return boolean 
 **/
 public boolean getUseHasValueConstructor() {
@@ -505,7 +505,7 @@ reinitNecessary = true;
 /**
 * @param useHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm.
 * mandatory: false| reinit necessary: true
-* default value: true
+* default value: false
 **/
 public void setUseHasValueConstructor(boolean useHasValueConstructor) {
 ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useHasValueConstructor", useHasValueConstructor);
