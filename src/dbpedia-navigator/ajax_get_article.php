@@ -108,12 +108,11 @@
 				$content.='</ul>';
 			}
 			
-			// display a list of classes
-			$content.='<br/><hr><h4>YAGO Classes</h4><br/>';
-			
-			
-			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']))
+			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'])){
+				// display a list of classes
+				$content.='<br/><hr><h4>YAGO Classes</h4><br/>';
 				$content .= '<p>'.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']).'</p>';
+			}
 
 			//skos-subjects
 			//not used, because one class systems, YAGO, is enough

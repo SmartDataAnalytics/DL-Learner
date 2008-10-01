@@ -366,7 +366,12 @@ function formatClassArray($ar) {
 		$query="SELECT label FROM categories WHERE category='".$ar[$i]['value']."' LIMIT 1";
 		$res=$databaseConnection->query($query);
 		$result=$databaseConnection->nextEntry($res);
-		$string .= '<li>' . formatClass($ar[$i]['value'],$result['label']).'</li>';
+		$label=urldecode(str_replace("_"," ",substr (strrchr ($ar[$i]['value'], "/"), 1)));
+		if (strlen($result['label'])>strlen($label)-3||preg_match('/[0-9]/',$label)===1){
+			$label=$result['label'];
+		}
+		$label=utf8_to_html($label);
+		$string .= '<li>' . formatClass($ar[$i]['value'],$label).'</li>';
 	}
 	return $string."</ul>";
 }
