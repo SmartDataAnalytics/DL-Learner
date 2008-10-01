@@ -26,6 +26,7 @@ function search_it(param)
     	if (XhrObj.readyState == 4){
     		setDatabaseRunning(false);
     	}
+    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -64,6 +65,7 @@ function get_article(param)
 	    		learnConcept();
 	    	}else setTimeout("search_it('label='+document.getElementById('label').value+'&number=10')",2000);
     	}
+    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -95,6 +97,7 @@ function get_class(param)
     	}
     	if (XhrObj.readyState == 4)
     		setDatabaseRunning(false);
+    	generateURL();	
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -337,6 +340,7 @@ function getSubjectsFromConcept(param)
     			document.getElementById('SearchResultBox').style.display='block';
     		}
     	}
+    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -370,6 +374,7 @@ function getSubjectsFromCategory(param)
     	}
     	if (XhrObj.readyState == 4)
     		setDatabaseRunning(false);
+    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');

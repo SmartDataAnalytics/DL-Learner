@@ -71,6 +71,8 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "forceRefinementLengthIncrease", true);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useHasValueConstructor", true);
 		$this->client->applyConfigEntryInt($this->id, $algorithmID, "valueFrequencyThreshold", 2);
+		$this->client->applyConfigEntryInt($this->id, $algorithmID, "guaranteeXgoodDescriptions", 3);
+		$this->client->applyConfigEntryInt($this->id, $algorithmID, "maxExecutionTimeInSeconds", 3);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useNegation", false);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useAllConstructor", false);
 		$start = microtime(true);

@@ -145,7 +145,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 </div><!--  wrapper -->
 <div id="footer">
 		<div id="generatedURL"></div>
-		<input type="button" class="button" value="generate URL" onclick="generateURL();"/>
 		<p>Licensed under the GNU General Public License (GPL) 3 as part of the DL-Learner open source
 			project.<br />Copyright &copy; Jens Lehmann 2007-2008 </p>
 		<div id="validation">
