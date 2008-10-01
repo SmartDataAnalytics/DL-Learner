@@ -44,7 +44,7 @@ class DLLearnerConnection
 		return array(0 => $id, 1 => $ksID);
 	}
 	
-	function getConceptFromExamples($posExamples,$negExamples)
+	function getConceptFromExamples($posExamples,$negExamples,$number)
 	{
 		require_once("Settings.php");
 		$settings=new Settings();
@@ -53,7 +53,7 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedFilter", "DBPEDIA-NAVIGATOR");
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedEndpoint", $this->endpoint);
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedManipulator", "DBPEDIA-NAVIGATOR");
-		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useCache", $settings->useCache);
+		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useCache", true);
 		if(empty($negExamples)){
 			$negExamples=$this->client->getNegativeExamples($this->id,$this->ksID,$posExamples,count($posExamples),"http://dbpedia.org/resource/");
 			$negExamples=$negExamples->item;
@@ -69,6 +69,10 @@ class DLLearnerConnection
 			$this->client->setNegativeExamples($this->id, $negExamples);
 		$algorithmID=$this->client->setLearningAlgorithm($this->id, "dbpediaNavigationSuggestor");
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "forceRefinementLengthIncrease", true);
+		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useHasValueConstructor", true);
+		$this->client->applyConfigEntryInt($this->id, $algorithmID, "valueFrequencyThreshold", 2);
+		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useNegation", false);
+		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useAllConstructor", false);
 		$start = microtime(true);
 		
 		$this->client->initAll($this->id);
@@ -112,7 +116,7 @@ class DLLearnerConnection
 				fclose($file);
 				if ($run=="false"){
 					$this->client->stop($this->id);
-					return json_decode($this->client->getCurrentlyBestEvaluatedDescriptionsFiltered($this->id,3,0.8,true),true);
+					return json_decode($this->client->getCurrentlyBestEvaluatedDescriptionsFiltered($this->id,$number,0.8,true),true);
 				}
 			} while($seconds<$this->learnttl&&$running);
 			
@@ -120,7 +124,7 @@ class DLLearnerConnection
 		}
 		
 		//return $concepts->item;
-		return json_decode($this->client->getCurrentlyBestEvaluatedDescriptionsFiltered($this->id,3,0.8,true),true);
+		return json_decode($this->client->getCurrentlyBestEvaluatedDescriptionsFiltered($this->id,$number,0.8,true),true);
 	}
 	
 	function getNaturalDescription($concept)

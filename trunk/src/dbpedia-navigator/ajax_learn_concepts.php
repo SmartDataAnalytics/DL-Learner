@@ -78,7 +78,7 @@
 				}
 			}
 		}
-		$groups[]=$noclass;
+		if (count($noclass)>0) $groups[]=$noclass;
 		$problems=array();
 		foreach ($groups as $group){
 			$pos=array();
@@ -92,24 +92,29 @@
 		
 		require_once("DLLearnerConnection.php");
 		$sc=new DLLearnerConnection($id, $ksID);
+		if (count($problems)==1) $number=3;
+		else if (count($problems)==2) $number=2;
+		else $number=1;
 		try{
 			$concepts=array();
-			foreach ($problems as $problem)
-				$concepts=array_merge($concepts,@$sc->getConceptFromExamples($problem['pos'],$problem['neg']));
-			
-			
+			foreach ($problems as $problem){
+				$concepts[]=@$sc->getConceptFromExamples($problem['pos'],$problem['neg'],$number);
+			}
+						
 			if (count($concepts)>0){
 				$concept.="<table border=0>\n";
 				$concept.="<tr><td>You could also be interested in articles matching these descriptions:</td></tr>";
-				foreach ($concepts as $con){
-					$label=$sc->getNaturalDescription($con['descriptionKBSyntax']);
-					$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('kb=".htmlentities($con['descriptionKBSyntax'])."&number=10');return false;\" />".$label."</a> (Accuracy: ".(floatVal($con['accuracy'])*100)."%)</td></tr>";
+				foreach ($concepts as $conc){
+					foreach ($conc as $con){
+						$label=$sc->getNaturalDescription($con['descriptionKBSyntax']);
+						$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('kb=".htmlentities($con['descriptionKBSyntax'])."&number=10');return false;\" />".$label."</a> (Accuracy: ".(floatVal($con['accuracy'])*100)."%)</td></tr>";
+					}
 				}
 				$concept.="</table>";
 			}
 			else $concept="-";
 		} catch(Exception $e){
-			$concept.=$e->getMessage();
+			$concept.="-";
 		}
 	}
 	else $concept="-";
