@@ -40,6 +40,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
     <title>DBpedia Navigator</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="css/default.css"/>
+    <link rel="Shortcut Icon" href="images/favicon.ico">
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php print $settings->googleMapsKey;?>"
       type="text/javascript"></script>
     <script  src="js/ajax.js"></script>

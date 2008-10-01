@@ -329,6 +329,12 @@
 				$array=$_SESSION['positive'];
 				if ($redirect!="") $array[$redirect] = $artTitle;
 				else $array[$uri]=$artTitle;
+				if (count($array)>3){
+					foreach ($array as $key=>$value){
+						unset($array[$key]);
+						break;
+					}
+				}
 				$_SESSION['positive']=$array;
 			}
 									
