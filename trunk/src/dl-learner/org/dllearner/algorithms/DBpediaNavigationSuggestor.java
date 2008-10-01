@@ -133,6 +133,8 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useAllConstructor());
 		options.add(CommonConfigOptions.useExistsConstructor());
 		options.add(CommonConfigOptions.useCardinalityRestrictions());
+		options.add(CommonConfigOptions.useHasValueConstructor());
+		options.add(CommonConfigOptions.valueFreqencyThreshold());
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
