@@ -223,6 +223,15 @@ public boolean getUseHasValueConstructor() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useHasValueConstructor") ;
 }
 /**
+* valueFrequencyThreshold specifies how often an object must occur as value in order to be considered for hasValue restrictions.
+* mandatory: false| reinit necessary: true
+* default value: 3
+* @return int 
+**/
+public int getValueFrequencyThreshold() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "valueFrequencyThreshold") ;
+}
+/**
 * useCardinalityRestrictions specifies whether CardinalityRestrictions is used in the learning algorithm.
 * mandatory: false| reinit necessary: true
 * default value: true
@@ -509,6 +518,15 @@ reinitNecessary = true;
 **/
 public void setUseHasValueConstructor(boolean useHasValueConstructor) {
 ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useHasValueConstructor", useHasValueConstructor);
+reinitNecessary = true;
+}
+/**
+* @param valueFrequencyThreshold specifies how often an object must occur as value in order to be considered for hasValue restrictions.
+* mandatory: false| reinit necessary: true
+* default value: 3
+**/
+public void setValueFrequencyThreshold(int valueFrequencyThreshold) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "valueFrequencyThreshold", valueFrequencyThreshold);
 reinitNecessary = true;
 }
 /**
