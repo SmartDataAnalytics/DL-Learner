@@ -125,6 +125,7 @@ function toPositive(param)
     		document.getElementById('Negatives').innerHTML=response[1];
     		learnConcept();
     	}
+    	generateURL();
     }
     	
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -152,6 +153,7 @@ function toNegative(param)
     		document.getElementById('Negatives').innerHTML=response[1];
     		learnConcept();
     	}
+    	generateURL();
     }
     	
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -176,6 +178,7 @@ function clearPositives()
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
     		document.getElementById('Positives').innerHTML = XhrObj.responseText;
     	}
+    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -201,6 +204,7 @@ function clearNegatives()
     		document.getElementById('Negatives').innerHTML = XhrObj.responseText;
     		learnConcept();
     	}
+    	generateURL();
     }
     	
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -228,6 +232,7 @@ function removePosInterest(param)
     		document.getElementById('Negatives').innerHTML=response[1];
     		learnConcept();
     	}
+    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -255,6 +260,7 @@ function removeNegInterest(param)
     		document.getElementById('Negatives').innerHTML=response[1];
     		learnConcept();
     	}
+    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');

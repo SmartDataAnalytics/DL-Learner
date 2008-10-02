@@ -158,7 +158,7 @@
 					$birthdate=$dates;
 					$characteristics['Birthdate']=$triples[$dates];	
 				}
-				else if ($triples[$dates][0]['type']=='uri'&&$birthuri==false){
+				else if (isset($triples[$dates])&&$triples[$dates][0]['type']=='uri'&&$birthuri==false){
 					$birthuri=$dates;
 					$characteristics['Birthdate']=$triples[$dates];
 				}
@@ -178,7 +178,7 @@
 					$deathdate=$dates;
 					$characteristics['Deathdate']=$triples[$dates];
 				}
-				else if ($triples[$dates][0]['type']=='uri'&&$deathuri==false){
+				else if (isset($triples[$dates])&&$triples[$dates][0]['type']=='uri'&&$deathuri==false){
 					$deathuri=$dates;
 					$characteristics['Deathdate']=$triples[$dates];
 				}
@@ -349,6 +349,27 @@
 		$artTitle=$_SESSION['articles'][$fromCache]['subject'];
 		$lat=$_SESSION['articles'][$fromCache]['lat'];
 		$long=$_SESSION['articles'][$fromCache]['long'];
+		
+		//Add Positives to Session
+		if (!isset($_SESSION['positive'])){
+			if ($redirect!=""){
+				$array=array($redirect => $artTitle);
+			}
+			else $array=array($uri => $artTitle);
+			$_SESSION['positive']=$array;
+		}
+		else{
+			$array=$_SESSION['positive'];
+			if ($redirect!="") $array[$redirect] = $artTitle;
+			else $array[$uri]=$artTitle;
+			if (count($array)>3){
+				foreach ($array as $key=>$value){
+					unset($array[$key]);
+					break;
+				}
+			}
+			$_SESSION['positive']=$array;
+		}
 	}
 	
 	//Build lastArticles

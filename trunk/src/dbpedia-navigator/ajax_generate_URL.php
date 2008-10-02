@@ -1,7 +1,7 @@
 <?php
 	session_start();
-	$positives=$_SESSION['positive'];
-	$negatives=$_SESSION['negative'];
+	if (isset($_SESSION['positive'])) $positives=$_SESSION['positive'];
+	if (isset($_SESSION['negative'])) $negatives=$_SESSION['negative'];
 	
 	$attr=array();
 	$pos="";
@@ -23,18 +23,21 @@
 		$i++;
 	}
 	if (strlen($neg)>0){
-		$neg.='negatives=['.$neg.']';
+		$neg='negatives=['.$neg.']';
 		$attr[]=$neg;
 	}
 	
-	$last_action=$_SESSION['lastAction'];
-	if (strpos($last_action,'searchConceptInstances')===0){
-		$attr[]='concept='.substr($last_action,strpos($last_action, "/")+1);
-		$last_action='searchConceptInstances/Concept'; 
+	if (isset($_SESSION['lastAction'])){
+		$last_action=$_SESSION['lastAction'];
+		if (strpos($last_action,'searchConceptInstances')===0){
+			$attr[]='concept='.substr($last_action,strpos($last_action, "/")+1);
+			$last_action='searchConceptInstances/Concept'; 
+		}
+		if (count($attr)>0) $attributes='?'.implode('&',$attr);
+		else $attributes='';
+		
+		$url='http://'.$_SERVER['HTTP_HOST'].'/dbpedia-navigator/'.$last_action.$attributes;
+		
+		print '<a href="'.$url.'">'.$url.'</a><br/><br/>';
 	}
-	if (count($attr)>0) $attributes='?'.implode('&',$attr);
-	
-	$url='http://'.$_SERVER['HTTP_HOST'].'/dbpedia-navigator/'.$last_action.$attributes;
-	
-	print '<a href="'.$url.'">'.$url.'</a><br/><br/>';
 ?>
