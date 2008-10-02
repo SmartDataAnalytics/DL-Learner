@@ -223,6 +223,24 @@ public boolean getUseCardinalityRestrictions() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "useCardinalityRestrictions") ;
 }
 /**
+* useHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
+* default value: false
+* @return boolean 
+**/
+public boolean getUseHasValueConstructor() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "useHasValueConstructor") ;
+}
+/**
+* valueFrequencyThreshold specifies how often an object must occur as value in order to be considered for hasValue restrictions.
+* mandatory: false| reinit necessary: true
+* default value: 3
+* @return int 
+**/
+public int getValueFrequencyThreshold() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(dBpediaNavigationSuggestor,  "valueFrequencyThreshold") ;
+}
+/**
 * useNegation specifies whether negation is used in the learning algorothm.
 * mandatory: false| reinit necessary: true
 * default value: true
@@ -464,6 +482,24 @@ reinitNecessary = true;
 **/
 public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
 ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "useCardinalityRestrictions", useCardinalityRestrictions);
+reinitNecessary = true;
+}
+/**
+* @param useHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm.
+* mandatory: false| reinit necessary: true
+* default value: false
+**/
+public void setUseHasValueConstructor(boolean useHasValueConstructor) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "useHasValueConstructor", useHasValueConstructor);
+reinitNecessary = true;
+}
+/**
+* @param valueFrequencyThreshold specifies how often an object must occur as value in order to be considered for hasValue restrictions.
+* mandatory: false| reinit necessary: true
+* default value: 3
+**/
+public void setValueFrequencyThreshold(int valueFrequencyThreshold) {
+ComponentManager.getInstance().applyConfigEntry(dBpediaNavigationSuggestor, "valueFrequencyThreshold", valueFrequencyThreshold);
 reinitNecessary = true;
 }
 /**
