@@ -40,8 +40,12 @@ function getTagCloud($tags,$label)
 		else if ($count>($min+$distribution)) $style="font-size:medium;";
 		else $style="font-size:small;";
 		
+		$lab=urldecode(str_replace("_"," ",substr (strrchr ($tag, "/"), 1)));
+		if (strlen($label[$tag])>strlen($lab)-3||preg_match('/[0-9]/',$lab)===1){
+			$lab=$label[$tag];
+		}
 		//$tag_with_entities=htmlentities("\"".$tag."\"");
-		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',document.getElementById(\'hidden_number\').value);">'.$label[$tag].'</a>&nbsp;';
+		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',document.getElementById(\'hidden_number\').value);">'.$lab.'</a>&nbsp;';
 	}
 	$ret.="</p><br/>";
 	return $ret;
