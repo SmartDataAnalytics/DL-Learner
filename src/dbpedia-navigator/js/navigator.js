@@ -51,6 +51,7 @@ function show_results(class, number)
 			}
 			else links[i].style.display='none';
 		}
+		links[i].innerHTML=links[i].innerHTML.substr(0,24)+j+links[i].innerHTML.substr(links[i].innerHTML.indexOf('<a')-7);
 	}
 	if (j<number){
 		show_results(class,0);
