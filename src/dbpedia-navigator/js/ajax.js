@@ -25,8 +25,8 @@ function search_it(param)
     	}
     	if (XhrObj.readyState == 4){
     		setDatabaseRunning(false);
+    		generateURL();
     	}
-    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -64,8 +64,8 @@ function get_article(param)
 	    		document.getElementById('LastArticlesBox').style.display='block';
 	    		learnConcept();
 	    	}else setTimeout("search_it('label='+document.getElementById('label').value+'&number=10')",2000);
+	    	generateURL();
     	}
-    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -95,9 +95,10 @@ function get_class(param)
     		document.getElementById('lastclasses').innerHTML=response[2];
     		document.getElementById('LastClassesBox').style.display='block';
     	}
-    	if (XhrObj.readyState == 4)
+    	if (XhrObj.readyState == 4){
     		setDatabaseRunning(false);
-    	generateURL();	
+    		generateURL();
+    	}	
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -124,8 +125,8 @@ function toPositive(param)
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
     		learnConcept();
+    		generateURL();
     	}
-    	generateURL();
     }
     	
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -152,8 +153,8 @@ function toNegative(param)
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
     		learnConcept();
+    		generateURL();
     	}
-    	generateURL();
     }
     	
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -177,8 +178,8 @@ function clearPositives()
     {
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
     		document.getElementById('Positives').innerHTML = XhrObj.responseText;
+    		generateURL();
     	}
-    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -203,8 +204,8 @@ function clearNegatives()
     	if (XhrObj.readyState == 4 && XhrObj.status == 200){
     		document.getElementById('Negatives').innerHTML = XhrObj.responseText;
     		learnConcept();
+    		generateURL();
     	}
-    	generateURL();
     }
     	
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -231,8 +232,8 @@ function removePosInterest(param)
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
     		learnConcept();
+    		generateURL();
     	}
-    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -259,8 +260,8 @@ function removeNegInterest(param)
     		document.getElementById('Positives').innerHTML=response[0];
     		document.getElementById('Negatives').innerHTML=response[1];
     		learnConcept();
+    		generateURL();
     	}
-    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -345,8 +346,8 @@ function getSubjectsFromConcept(param)
     			document.getElementById('searchcontent').innerHTML=response[2];
     			document.getElementById('SearchResultBox').style.display='block';
     		}
+    		generateURL();
     	}
-    	generateURL();
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -378,9 +379,10 @@ function getSubjectsFromCategory(param)
     			document.getElementById('SearchResultBox').style.display='block';
     		}
     	}
-    	if (XhrObj.readyState == 4)
+    	if (XhrObj.readyState == 4){
     		setDatabaseRunning(false);
-    	generateURL();
+    		generateURL();
+    	}
     }
     		
     XhrObj.setRequestHeader('Content-Type','application/x-www-form-urlencoded');

@@ -107,7 +107,7 @@
 				foreach ($concepts as $conc){
 					foreach ($conc as $con){
 						$label=$sc->getNaturalDescription($con['descriptionKBSyntax']);
-						$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('kb=".htmlentities($con['descriptionKBSyntax'])."&number=10');return false;\" />".$label."</a> (accuracy: ".(floatVal($con['accuracy'])*100)."%)</td></tr>";
+						$concept.="<tr><td><a href=\"\" onclick=\"getSubjectsFromConcept('kb=".htmlentities($con['descriptionKBSyntax'])."&number=10');return false;\" />".$label."</a></td></tr>";
 					}
 				}
 				$concept.="</table>";

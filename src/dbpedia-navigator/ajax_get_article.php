@@ -61,14 +61,14 @@
 				$artTitle=urldecode(str_replace("_"," ",substr (strrchr ($url, "/"), 1)));
 			
 			// display a picture if there is one
-			if (isset($triples['http://dbpedia.org/property/imageCaption'])&&@$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/imageCaption'][0]['value'];
+			if (isset($triples['http://dbpedia.org/property/imageCaption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/imageCaption'][0]['value'];
 			else if (isset($triples['http://dbpedia.org/property/caption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/caption'][0]['value'];
 			else $alt='Picture of '.$artTitle;
 						
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction'])&&@fopen($triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'], 'r')){
 				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'].'" alt="'.$alt.'" style="float:right; max-width:200px;" title="'.$alt.'"\>';
 			}
-			else if(isset($triples['http://xmlns.com/foaf/0.1/img'])&&fopen($triples['http://xmlns.com/foaf/0.1/img'][0]['value'], 'r')){
+			else if(isset($triples['http://xmlns.com/foaf/0.1/img'])&&@fopen($triples['http://xmlns.com/foaf/0.1/img'][0]['value'], 'r')){
 				$content.='<img src="'.$triples['http://xmlns.com/foaf/0.1/img'][0]['value'].'" alt="'.$alt.'" style="float:right; max-width:200px;" title="'.$alt.'"\>';
 			} 	
 			
@@ -77,6 +77,7 @@
 			if (isset($triples['http://dbpedia.org/property/redirect'])){
 				$content.="<span id=\"redirectedFrom\">redirected from '$subject'</span>";
 				$redirect=$triples['http://dbpedia.org/property/redirect'][0]['value'];
+				$uri=$redirect;
 			}
 			
 			// add short description in english
@@ -318,16 +319,12 @@
 				
 			//Add Positives to Session
 			if (!isset($_SESSION['positive'])){
-				if ($redirect!=""){
-					$array=array($redirect => $artTitle);
-				}
-				else $array=array($uri => $artTitle);
+				$array=array($uri => $artTitle);
 				$_SESSION['positive']=$array;
 			}
 			else{
 				$array=$_SESSION['positive'];
-				if ($redirect!="") $array[$redirect] = $artTitle;
-				else $array[$uri]=$artTitle;
+				$array[$uri]=$artTitle;
 				if (count($array)>3){
 					foreach ($array as $key=>$value){
 						unset($array[$key]);
@@ -349,19 +346,16 @@
 		$artTitle=$_SESSION['articles'][$fromCache]['subject'];
 		$lat=$_SESSION['articles'][$fromCache]['lat'];
 		$long=$_SESSION['articles'][$fromCache]['long'];
+		$uri=$_SESSION['articles'][$fromCache]['uri'];
 		
 		//Add Positives to Session
 		if (!isset($_SESSION['positive'])){
-			if ($redirect!=""){
-				$array=array($redirect => $artTitle);
-			}
-			else $array=array($uri => $artTitle);
+			$array=array($uri => $artTitle);
 			$_SESSION['positive']=$array;
 		}
 		else{
 			$array=$_SESSION['positive'];
-			if ($redirect!="") $array[$redirect] = $artTitle;
-			else $array[$uri]=$artTitle;
+			$array[$uri]=$artTitle;
 			if (count($array)>3){
 				foreach ($array as $key=>$value){
 					unset($array[$key]);
