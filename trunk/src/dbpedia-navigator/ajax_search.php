@@ -62,11 +62,11 @@
 		$bestsearches=getBestSearches($names,$labels);
 	}
 	else
-		$content.="Your Search brought no results.";
+		$content.="Your search brought no results.";
 	
 	print $content;
 	print '$$$';
-	print "Searchresult for \"".$label."\"";
+	print "search result for \"".$label."\"";
 	print '$$$';
 	print $bestsearches;
 ?>

@@ -119,7 +119,7 @@ function utf8_to_html($string)
 
 function getCategoryResultsTable($names,$labels,$category,$number)
 {
-	$ret="<p>These are your Searchresults. Show best ";
+	$ret="<p>These are your the results of your search. Show best ";
 	for ($k=10;$k<125;){
 		$ret.="<a href=\"#\" onclick=\"getSubjectsFromCategory('category=".$category."&number=".$k."');return false;\"";
 		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
