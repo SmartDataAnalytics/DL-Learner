@@ -119,10 +119,11 @@ public class SparqlQuery {
 			logger.debug("sending query: length: " + sparqlQueryString.length() + " | ENDPOINT: "
 					+ sparqlEndpoint.getURL().toString());
 			rs = queryExecution.execSelect();
-		
+					
 			logger.trace("query executed, converting to json");
 
 			json = SparqlQuery.convertResultSetToJSON(ResultSetFactory.makeRewindable(rs));
+			System.out.println(json);
 			//writeToSparqlLog("JSON: " + json);
 		//}catch (ResultSetException e) {
 		} catch (HTTPException e) {

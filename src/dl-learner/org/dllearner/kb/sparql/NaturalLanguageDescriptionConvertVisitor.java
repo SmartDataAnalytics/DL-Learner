@@ -153,7 +153,11 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(Nothing description) {
 		logger.trace("Nothing");
-		query+="nothing";
+		if (query.endsWith("which is ")) query=query.substring(0, query.length()-10);
+		if (query.endsWith("are ")) query=query.substring(0, query.length()-5);
+		if (query.endsWith("and ")) query=query.substring(0, query.length()-5);
+		if (query.endsWith("or ")) query=query.substring(0, query.length()-4);
+		//query+="nothing";
 	}
 
 	/* (non-Javadoc)
@@ -161,7 +165,11 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(Thing description) {
 		logger.trace("Thing");
-		query+="anything";
+		if (query.endsWith("which is ")) query=query.substring(0, query.length()-10);
+		if (query.endsWith("are ")) query=query.substring(0, query.length()-5);
+		if (query.endsWith("and ")) query=query.substring(0, query.length()-5);
+		if (query.endsWith("or ")) query=query.substring(0, query.length()-4);
+		//query+="anything";
 	}
 
 	/* (non-Javadoc)
@@ -227,6 +235,12 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	public void visit(NamedClass description) {
 		
 		logger.trace("NamedClass");
+		if (description.getName().equals("http://dbpedia.org/class/yago/Entity100001740")) {
+			if (query.endsWith("which is ")) query=query.substring(0, query.length()-10);
+			if (query.endsWith("are ")) query=query.substring(0, query.length()-5);
+			if (query.endsWith("and ")) query=query.substring(0, query.length()-5);
+			if (query.endsWith("or ")) query=query.substring(0, query.length()-4);
+		}
 		SortedSet<String> label=tasks.queryAsSet("SELECT ?label WHERE {<"+description.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
 		String l=label.first();
 		String l2=description.getName().substring(description.getName().lastIndexOf("/")+1, description.getName().length()).replace('_', ' ');
