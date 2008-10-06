@@ -123,7 +123,7 @@ public class SparqlQuery {
 			logger.trace("query executed, converting to json");
 
 			json = SparqlQuery.convertResultSetToJSON(ResultSetFactory.makeRewindable(rs));
-			System.out.println(json);
+			logger.trace(json);
 			//writeToSparqlLog("JSON: " + json);
 		//}catch (ResultSetException e) {
 		} catch (HTTPException e) {

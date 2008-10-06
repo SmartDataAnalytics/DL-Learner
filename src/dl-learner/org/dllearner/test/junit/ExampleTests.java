@@ -86,7 +86,7 @@ public class ExampleTests {
 		ignore.add("./examples/family/father_posonly.conf"); // ArrayOutOfBoundsException in Pellet - main problem: pos only not working
 		ignore.add("./examples/sparql/difference/DBPediaSKOS_kohl_vs_angela.conf"); // Pellet: literal cannot be cast to individual
 		ignore.add("./examples/family-benchmark/Aunt.conf"); // did not terminate so far (waited 45 minutes)
-		
+
 		for (String path : confFiles.keySet()) {
 			for (String file : confFiles.get(path)) {
 				String conf = path + file + ".conf";
