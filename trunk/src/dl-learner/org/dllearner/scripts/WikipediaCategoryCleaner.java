@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -249,6 +248,7 @@ public class WikipediaCategoryCleaner {
 		Files.createFile(new File(file), content);
 	}
 
+	@SuppressWarnings("unused")
 	private static void collectResults(WikipediaCategoryTasks wikiTasks) {
 		//logger.setLevel(Level.DEBUG);
 		SetManipulation.printSet("fullpos", wikiTasks.getFullPositiveSet(), logger);
@@ -382,7 +382,7 @@ public class WikipediaCategoryCleaner {
 	}
 
 	
-	
+	@SuppressWarnings("unused")
 	private static void printIntermediateResults(
 			SortedSet<String> fullSet, 
 			SortedSet<String> correctIndividuals, 
@@ -427,7 +427,7 @@ public class WikipediaCategoryCleaner {
 			e.printStackTrace();
 		}
 
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+//		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
 		logger.removeAllAppenders();
 		//logger.addAppender(consoleAppender);
 		logger.addAppender(fileAppender);
@@ -448,6 +448,7 @@ public class WikipediaCategoryCleaner {
 
 	}
 
+	@SuppressWarnings("unused")
 	private static void findCat(){
 		String q = "SELECT DISTINCT ?cat WHERE { ?a <http://www.w3.org/2004/02/skos/core#subject> ?cat  }";
 		//System.out.println(q);
