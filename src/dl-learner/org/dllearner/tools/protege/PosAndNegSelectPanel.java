@@ -25,11 +25,14 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.WindowConstants;
 
 /**
@@ -94,6 +97,14 @@ public class PosAndNegSelectPanel extends JPanel {
 	// This is the frame that pops up when the help button is pressed.
 
 	private JDialog assistPanel;
+	private JComboBox optionBox;
+	private JPanel optionBoxPanel;
+	private JPanel spinnerPanel;
+	private SpinnerNumberModel minAccuracyModel;
+	private SpinnerNumberModel maxNrOfResultsModel;
+	private SpinnerNumberModel maxExecutionModel;
+	private JSpinner optionSpinner;
+	private ActionHandler action;
 	private final Color colorBlack = Color.black;
 
 	/**
@@ -101,21 +112,37 @@ public class PosAndNegSelectPanel extends JPanel {
 	 * 
 	 * @param model
 	 *            DLLearnerModel
-	 * @param action
+	 * @param act
 	 *            ActionHandler
 	 */
-	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler action) {
+	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act) {
 		super();
 		pos = new JLabel("Positive Examples");
 		neg = new JLabel("Negative Examples");
+		optionBoxPanel = new JPanel(new GridLayout(0, 1));
+		spinnerPanel = new JPanel(new GridLayout(0, 1));
+		action = act;
+		minAccuracyModel = new SpinnerNumberModel(0.8, 0.0 , 1.0, 0.05);
+		maxNrOfResultsModel = new SpinnerNumberModel(5.0, 1.0 , 20.0, 1.0);
+		maxExecutionModel = new SpinnerNumberModel(10.0, 1.0 , 60.0, 1.0);  
+		optionBox = new JComboBox();
+		optionSpinner = new JSpinner();
+		optionSpinner.setModel(minAccuracyModel);
+		optionBox.addItem("min. Accuracy");
+		optionBox.addItem("max. Nr. of Results");
+		optionBox.addItem("max. Executiontime");
+		optionBoxPanel.add(optionBox);
+		spinnerPanel.add(optionSpinner);
+		setComboBoxListener();
+		spinnerPanel.setSize(50, 20);
 		// help button for positive examples
 		helpForPosExamples = new JButton("?");
 		helpForPosExamples.setSize(10, 10);
 		// help button for negative examples
 		helpForNegExamples = new JButton("?");
 		helpForNegExamples.setSize(10, 10);
-		posLabelPanel = new JPanel();
-		negLabelPanel = new JPanel();
+		posLabelPanel = new JPanel(new GridLayout(0, 1));
+		negLabelPanel = new JPanel(new GridLayout(0, 1));
 		// panel for the positive check boxes with flow layout
 		posLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		// panel for the negative check boxes with flow layout
@@ -137,6 +164,7 @@ public class PosAndNegSelectPanel extends JPanel {
 		model.clearVector();
 		model.unsetListModel();
 		model.initReasoner();
+		
 		model.setPosVector();
 		posAndNegPanel = new JPanel(new GridLayout(0, 1));
 		posAndNegPanel.add(posAndNegSelectPanel);
@@ -153,7 +181,9 @@ public class PosAndNegSelectPanel extends JPanel {
 	 * This method adds the check boxes, the labels and the help buttons for
 	 * positive and negative examples.
 	 */
-	public void setJCheckBoxen() {
+	public void setJCheckBoxes() {
+		posAndNegSelectPanel.add(optionBoxPanel);
+		posAndNegSelectPanel.add(spinnerPanel);
 		posAndNegSelectPanel.add(posLabelPanel);
 		posAndNegSelectPanel.add(negLabelPanel);
 		// adds check boxes for all examples of the ontology
@@ -165,7 +195,59 @@ public class PosAndNegSelectPanel extends JPanel {
 		}
 
 	}
-
+	
+	/**
+	 * This Methode returns the min Accuracy that the concepts must have.
+	 * @return min accuracy
+	 */
+	public float getMinAccuracyModelData() {
+		float minAccuracy = Float.valueOf(minAccuracyModel.getValue().toString()).floatValue();
+		return minAccuracy;
+	}
+	
+	/**
+	 * This Methode returns the max nr. of results selected in the option Panel.
+	 * @return Max Nr. of Results
+	 */
+	public int getMaxNrOfResultsModelData() {
+		float maxNrOfRes = Float.valueOf(maxNrOfResultsModel.getValue().toString()).floatValue();
+		int maxNrOfResults = Math.round(maxNrOfRes);
+		return maxNrOfResults;
+	}
+	
+	/**
+	 * This Methode returns the max execution time selected in the Panel.
+	 * @return Max Execution Time in seconds 
+	 */
+	public int getMaxExecutionModelData() {
+		float maxExe = Float.valueOf(maxExecutionModel.getValue().toString()).floatValue();
+		int maxExecution = Math.round(maxExe);
+		return maxExecution;
+	}
+	
+	/**
+	 * This method adds the ActionListener to the Option Combo Box.
+	 */
+	private void setComboBoxListener() {
+		optionBox.addActionListener(action);
+	}
+	/**
+	 * This Methode sets the right Spinner for the selected Option.
+	 */
+	public void setOptionSpinner() {
+		if(optionBox.getSelectedItem().equals("min. Accuracy")) {
+			optionSpinner.setModel(minAccuracyModel);
+		}
+		
+		if(optionBox.getSelectedItem().equals("max. Nr. of Results")) {
+			optionSpinner.setModel(maxNrOfResultsModel);
+		}
+		
+		if(optionBox.getSelectedItem().equals("max. Executiontime")) {
+			optionSpinner.setModel(maxExecutionModel);
+		}
+			
+	}
 	/**
 	 * This method removes the Check boxes, the labels and the help buttons
 	 * after the DL-Learner tab is closed.
@@ -177,16 +259,16 @@ public class PosAndNegSelectPanel extends JPanel {
 	/**
 	 * This method adds the item listener for every check box.
 	 * 
-	 * @param action
+	 * @param act
 	 *            ActionHandler
 	 */
-	public void addListeners(ActionHandler action) {
+	public void addListeners(ActionHandler act) {
 		// adds the listener for the checkboxes
 		for (int i = 0; i < model.getPosVector().size(); i++) {
 			// listener for the check boxes of the positive examples
-			model.getPositivJCheckBox(i).addItemListener(action);
+			model.getPositivJCheckBox(i).addItemListener(act);
 			// listener for the check boxes of the negative examples
-			model.getNegativJCheckBox(i).addItemListener(action);
+			model.getNegativJCheckBox(i).addItemListener(act);
 		}
 
 	}
@@ -223,7 +305,7 @@ public class PosAndNegSelectPanel extends JPanel {
 		assistPanel = new JDialog();
 		// no writing in the help panel is allowed
 		help.setEditable(false);
-		assistPanel.setName("Hilfe");
+		assistPanel.setName("help");
 		assistPanel.setSize(300, 100);
 		// window will be disposed if the x or the ok button is pressed
 		assistPanel.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

@@ -305,10 +305,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 		private final Color colorRed = Color.red;
 
-		// Cancel button to abort the learning algorithm
-
-		private JButton cancel;
-
 		// This is the text area for the error message when an error occurred
 
 		private JTextArea errorMessage;
@@ -338,7 +334,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		private ImageIcon icon;
 
 		// Picture of the advanced button when it is toggled
-
+		private JPanel addButtonPanel;
 		private ImageIcon toggledIcon;
 		private JTextArea hint;
 		// This is the Panel for more details of the suggested concept
@@ -366,9 +362,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			advanced = new JToggleButton(icon);
 			advanced.setVisible(true);
 			run = new JButton("Suggest " + label);
-			cancel = new JButton("Cancel");
 			accept = new JButton("ADD");
-			// why = new JButton("Why");
+			addButtonPanel = new JPanel(new BorderLayout());
 			sugPanel.addSuggestPanelMouseListener(action);
 			errorMessage = new JTextArea();
 			errorMessage.setEditable(false);
@@ -384,7 +379,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			posPanel = new PosAndNegSelectPanel(model, action);
 			addAcceptButtonListener(this.action);
 			addRunButtonListener(this.action);
-			addCancelButtonListener(this.action);
 			addAdvancedButtonListener(this.action);
 
 		}
@@ -410,32 +404,31 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			advanced.setIcon(icon);
 			model.clearVector();
 			model.unsetListModel();
-			model.initReasoner();
+			//model.initReasoner();
 			model.setPosVector();
-			posPanel.setJCheckBoxen();
-			cancel.setEnabled(false);
+			posPanel.setJCheckBoxes();
 			accept.setEnabled(false);
 			action.resetToggled();
+			addButtonPanel.add("North", accept);
 			sugPanel.setSuggestList(model.getSuggestList());
 			sugPanel = sugPanel.updateSuggestClassList();
 			advanced.setSelected(false);
-			sugPanel.setBounds(10, 40, 490, 110);
+			sugPanel.setBounds(10, 35, 490, 110);
 			adv.setBounds(40, 200, 200, 20);
+			addButtonPanel.setBounds(510, 40, 80, 110);
 			run.setBounds(10, 0, 200, 30);
 			advanced.setBounds(10, 200, 20, 20);
 			sugPanel.setVisible(true);
 			posPanel.setVisible(false);
 			posPanel.setBounds(10, 230, 490, 250);
-			cancel.setBounds(260, 0, 200, 30);
 			accept.setBounds(510, 40, 80, 110);
 			hint.setBounds(10, 150, 490, 20);
 			errorMessage.setBounds(10, 170, 490, 20);
 			learner.add(run);
 			learner.add(adv);
 			learner.add(advanced);
-			learner.add(cancel);
 			learner.add(sugPanel);
-			learner.add(accept);
+			learner.add(addButtonPanel);
 			learner.add(hint);
 			learner.add(errorMessage);
 			learner.add(posPanel);
@@ -542,14 +535,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		}
 
 		/**
-		 * This method returns the cancel button.
-		 * @return JButton
-		 */
-		public JButton getCancelButton() {
-			return cancel;
-		}
-
-		/**
 	    * Destroys the view after the plugin is closed.
 	    */
 		public void dispose() {
@@ -562,14 +547,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 */
 		public void addRunButtonListener(ActionListener a) {
 			run.addActionListener(a);
-		}
-
-		/**
-		 * Adds Actionlistener to the cancel button.
-		 * @param a ActionListener
-		 */
-		public void addCancelButtonListener(ActionListener a) {
-			cancel.addActionListener(a);
 		}
 
 		/**

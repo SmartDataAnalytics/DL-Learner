@@ -112,9 +112,6 @@ public class DLLearnerModel implements Runnable {
 
 	// This is the count of Concepts which you get after learning
 
-	// TODO make those configurable via user interface
-	private static final int NR_OF_DISPLAYED_DESCRIPTIONS = 6;
-	private static final double MIN_ACCURACY = 0.8;
 
 	// A Array of Concepts which the DL-Learner suggested
 
@@ -265,7 +262,7 @@ public class DLLearnerModel implements Runnable {
 	 * This method adds the solutions from the DL-Learner to the List Model.
 	 */
 	private void addToListModel() {
-		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(NR_OF_DISPLAYED_DESCRIPTIONS, MIN_ACCURACY, true);
+		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getMaxNrOfResultsModelData(), view.getPosAndNegSelectPanel().getMinAccuracyModelData(), true);
 		for (int j = 0; j < evalDescriptions.size(); j++) {
 			suggestModel.add(j, evalDescriptions.get(j)
 					.getDescription().toManchesterSyntaxString(
@@ -387,6 +384,7 @@ public class DLLearnerModel implements Runnable {
 		}
 		cm.applyConfigEntry(la, "numberOfTrees", 100);
 		cm.applyConfigEntry(la, "maxDepth", 5);
+		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view.getPosAndNegSelectPanel().getMaxExecutionModelData());
 		try {
 			// initializes the learning algorithm
 			la.init();
@@ -404,14 +402,13 @@ public class DLLearnerModel implements Runnable {
 		// start the algorithm and print the best concept found
 		la.start();
 		description = new Description[la.getCurrentlyBestEvaluatedDescriptions(
-				NR_OF_DISPLAYED_DESCRIPTIONS).size()];
+				view.getPosAndNegSelectPanel().getMaxNrOfResultsModelData()).size()];
 		addToListModel();
 		// renders the errormessage
 		view.renderErrorMessage(error);
 		// reenables the run button
 		view.getRunButton().setEnabled(true);
 		// disables the cancel button
-		view.getCancelButton().setEnabled(false);
 		view.getSuggestClassPanel().setSuggestList(suggestModel);
 	}
 
