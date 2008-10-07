@@ -19,6 +19,7 @@
  */
 package org.dllearner.tools.protege;
 
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.*;
@@ -82,6 +83,7 @@ public class SuggestClassPanel extends JPanel {
 	 * @param desc List model of descriptions made by the DL-Learner
 	 */
 	public void setSuggestList(DefaultListModel desc) {
+		descriptions.setForeground(Color.GREEN);
 		descriptions.setModel(desc);
 	}
 	/**

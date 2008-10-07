@@ -27,6 +27,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Iterator;
 
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -40,7 +42,7 @@ import org.protege.editor.owl.OWLEditorKit;
  * 
  */
 public class ActionHandler implements ActionListener, ItemListener,
-		MouseListener, ListSelectionListener {
+		MouseListener, ListSelectionListener, ListDataListener {
 
 	// This is the DLLearnerModel.
 
@@ -91,6 +93,11 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void actionPerformed(ActionEvent z) {
 
+		
+		if(z.getActionCommand().equals("comboBoxChanged")) {
+			view.getPosAndNegSelectPanel().setOptionSpinner();
+		}
+			
 		if (z.getActionCommand().equals("Suggest " + id)) {
 			if (model.getAlreadyLearned()) {
 				model.unsetListModel();
@@ -108,20 +115,9 @@ public class ActionHandler implements ActionListener, ItemListener,
 				this.dlLearner = new Thread(model);
 				dlLearner.start();
 				view.getRunButton().setEnabled(false);
-				view.getCancelButton().setEnabled(true);
 				view.renderErrorMessage("Learning started");
 				view.getPosAndNegSelectPanel().unsetCheckBoxes();
 			}
-		}
-
-		if (z.getActionCommand().equals("Cancel")) {
-			view.getRunButton().setEnabled(true);
-			view.getCancelButton().setEnabled(false);
-			String error = "Learning aborted";
-			view.renderErrorMessage(error);
-			dlLearner.interrupt();
-			model.getLearningAlgorithm().stop();
-			model.setErrorMessage(error);
 		}
 
 		if (z.getActionCommand().equals("ADD")) {
@@ -309,6 +305,24 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void resetToggled() {
 		toggled = false;
+	}
+
+	@Override
+	public void contentsChanged(ListDataEvent listEvent) {
+		System.out.println(listEvent);
+		
+	}
+
+	@Override
+	public void intervalAdded(ListDataEvent listEvent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void intervalRemoved(ListDataEvent listEvent) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
