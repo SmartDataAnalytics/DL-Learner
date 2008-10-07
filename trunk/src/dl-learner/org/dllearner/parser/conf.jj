@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.SortedSet;
@@ -44,7 +43,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 
 import org.dllearner.Info;
 
@@ -151,16 +149,16 @@ public class ConfParser {
 	}
 	*/
 	
-	public static ConfParser parseFile(File filename) {
+	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException {
 		ConfParser learner = null;
-		try {
+//		try {
 			learner = new ConfParser(new FileInputStream(filename));
 			learner.Start();
-		} catch(FileNotFoundException e) {
-			e.printStackTrace();
-		} catch(ParseException e) {
-			e.printStackTrace();
-		}
+//		} catch(FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch(ParseException e) {
+//			e.printStackTrace();
+//		}
 		return learner;
 	}
 	
@@ -179,7 +177,7 @@ public class ConfParser {
 	// System.out.println(args.length);
 
     File f = new File(args[args.length-1]);
-    String baseDir = "";
+//    String baseDir = "";
 
 	System.out.print("Parsing " + f.getName() + " ... ");
     long parseStartTime = System.currentTimeMillis();
@@ -188,7 +186,7 @@ public class ConfParser {
     ConfParser learner = null;
     try {
         learner = new ConfParser(new FileInputStream(args[args.length-1]));
-        baseDir = f.getParentFile().getPath();    	
+//        baseDir = f.getParentFile().getPath();    	
     } catch(IOException e) {
         System.err.println(e);
         System.exit(0);
@@ -207,13 +205,13 @@ public class ConfParser {
     long parseDuration = System.currentTimeMillis() - parseStartTime;
     System.out.println("OK (" + parseDuration + " ms)");
 
-    boolean queryMode = false;
+//    boolean queryMode = false;
     // solution test mode wird nicht unbedingt gebraucht, da man die covers
     // gleich standardmäßig beim query mit anzeigen kann
     // boolean solutionTestMode = false;
     
-    if(args.length>1 && args[0].equals("-q"))
-    	queryMode = true;
+//    if(args.length>1 && args[0].equals("-q"))
+//    	queryMode = true;
     
     //if(args.length>1 && args[0].equals("-qt")) {
     //	queryMode = true;

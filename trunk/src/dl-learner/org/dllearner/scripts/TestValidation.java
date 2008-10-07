@@ -20,6 +20,7 @@
 package org.dllearner.scripts;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Set;
 
 import org.apache.log4j.ConsoleAppender;
@@ -33,6 +34,7 @@ import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.parser.ParseException;
 
 /**
  * @author Jens Lehmann
@@ -42,7 +44,7 @@ public class TestValidation {
  
 	private static Logger logger = Logger.getRootLogger();
 	
-	public static void main(String args[]) throws ComponentInitException {
+	public static void main(String args[]) throws ComponentInitException, FileNotFoundException, ParseException {
 		
 		// create logger (a simple logger which outputs
 		// its messages to the console)
