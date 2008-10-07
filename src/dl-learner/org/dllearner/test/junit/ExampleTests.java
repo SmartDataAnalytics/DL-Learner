@@ -79,6 +79,7 @@ public class ExampleTests {
 		Set<String> ignore = new TreeSet<String>();
 		// "standard" ignores (no problem to keep those)
 		ignore.add("./examples/krk/complete_no_draw.conf"); // refers to an OWL file, which has to be auto-generated
+		ignore.add("./examples/krk/test_ZERO_against_1to16.conf"); // see above
 		
 		// ignored due to errors
 		ignore.add("./examples/sparql/govtrack.conf"); // HTTP 500 Server error

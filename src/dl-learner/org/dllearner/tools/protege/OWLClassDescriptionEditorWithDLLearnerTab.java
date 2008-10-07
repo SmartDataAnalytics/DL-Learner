@@ -49,11 +49,8 @@ import java.net.*;
 /**
  * Added a new Tab for the DL-Learner GUI.
  * 
- * @author Matthew Horridge and Christian Koetteritzsch<br>
- *         The University Of Manchester<br>
- *         Bio-Health Informatics Group<br>
- *         Date: 15-Feb-2007<br>
- * <br>
+ * @author Matthew Horridge
+ * @author Christian Koetteritzsch
  */
 public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		AbstractOWLFrameSectionRowObjectEditor<OWLDescription> implements

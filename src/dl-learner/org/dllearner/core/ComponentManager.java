@@ -42,7 +42,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.cli.Start;
+import org.dllearner.cli.ConfMapper;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
@@ -85,6 +85,8 @@ public final class ComponentManager {
 	private static Map<Class<? extends Component>, Map<String, ConfigOption<?>>> componentOptionsByName;
 	private static Map<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>> algorithmProblemsMapping;
 
+	private ConfMapper confMapper = new ConfMapper();
+	
 	// list of default values of config options
 //	private static Map<ConfigOption<?>,Object> configOptionDefaults;
 	
@@ -532,15 +534,8 @@ public final class ComponentManager {
 	private String getComponentConfigString(Class<? extends Component> component) {
 		String componentDescription =  "component: " + invokeStaticMethod(component, "getName") + " (" + component.getName() + ")";
 		String str = componentDescription + "\n";
-		String cli = Start.getCLIMapping(component.getSuperclass().getSimpleName()+"");
-		String usage ="";
-		
-		Map<Class<? extends Component>, String> m=Start.createComponentPrefixMapping();
-		for (Class<? extends Component> c : m.keySet()) {
-			if(c.getCanonicalName().equals(component.getCanonicalName())) {	
-				usage=m.get(c);
-			}
-		}
+		String cli = confMapper.getComponentTypeString(component);
+		String usage = confMapper.getComponentString(component);
 	
 		for(int i=0; i<componentDescription.length(); i++) {
 			str += "=";
