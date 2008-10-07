@@ -20,6 +20,7 @@
 package org.dllearner.gui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +43,7 @@ import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.parser.ParseException;
 
 /**
  * Config save all together used variables: ComponentManager, KnowledgeSource,
@@ -130,7 +132,16 @@ public class Config {
 		// use CLI to load file
 		try {
 			// set all loaded components as active components
-			Start start = new Start(file);
+			Start start = null;
+			try {
+				start = new Start(file);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Set<KnowledgeSource> sources = start.getSources();
 			if (sources.size() != 1) {
 				gui.getStatusPanel().setExceptionMessage(

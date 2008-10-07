@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.SortedSet;
@@ -15,14 +14,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 
 import org.dllearner.Info;
 
 import org.dllearner.cli.*;
 import org.dllearner.utilities.datastructures.*;
 
-public @SuppressWarnings("all") class ConfParser implements ConfParserConstants {
+@SuppressWarnings("all")
+public class ConfParser implements ConfParserConstants {
 
         // examples
         private SortedSet<String> positiveExamples = new TreeSet<String>();
@@ -122,16 +121,16 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
 	}
 	*/
 
-        public static ConfParser parseFile(File filename) {
+        public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException {
                 ConfParser learner = null;
-                try {
+//		try {
                         learner = new ConfParser(new FileInputStream(filename));
                         learner.Start();
-                } catch(FileNotFoundException e) {
-                        e.printStackTrace();
-                } catch(ParseException e) {
-                        e.printStackTrace();
-                }
+//		} catch(FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch(ParseException e) {
+//			e.printStackTrace();
+//		}
                 return learner;
         }
 
@@ -150,7 +149,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
         // System.out.println(args.length);
 
     File f = new File(args[args.length-1]);
-    String baseDir = "";
+//    String baseDir = "";
 
         System.out.print("Parsing " + f.getName() + " ... ");
     long parseStartTime = System.currentTimeMillis();
@@ -159,7 +158,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     ConfParser learner = null;
     try {
         learner = new ConfParser(new FileInputStream(args[args.length-1]));
-        baseDir = f.getParentFile().getPath();
+//        baseDir = f.getParentFile().getPath();    	
     } catch(IOException e) {
         System.err.println(e);
         System.exit(0);
@@ -178,13 +177,13 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     long parseDuration = System.currentTimeMillis() - parseStartTime;
     System.out.println("OK (" + parseDuration + " ms)");
 
-    boolean queryMode = false;
+//    boolean queryMode = false;
     // solution test mode wird nicht unbedingt gebraucht, da man die covers
     // gleich standardmäßig beim query mit anzeigen kann
     // boolean solutionTestMode = false;
 
-    if(args.length>1 && args[0].equals("-q"))
-        queryMode = true;
+//    if(args.length>1 && args[0].equals("-q"))
+//    	queryMode = true;
 
     //if(args.length>1 && args[0].equals("-qt")) {
     //	queryMode = true;
@@ -526,85 +525,96 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     throw new Error("Missing return statement in function");
   }
 
-  final private boolean jj_2_1(int xla) {
+  private boolean jj_2_1(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_1(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(0, xla); }
   }
 
-  final private boolean jj_2_2(int xla) {
+  private boolean jj_2_2(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_2(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(1, xla); }
   }
 
-  final private boolean jj_2_3(int xla) {
+  private boolean jj_2_3(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_3(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(2, xla); }
   }
 
-  final private boolean jj_2_4(int xla) {
+  private boolean jj_2_4(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_4(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_2_5(int xla) {
+  private boolean jj_2_5(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_5(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(4, xla); }
   }
 
-  final private boolean jj_2_6(int xla) {
+  private boolean jj_2_6(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_6(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(5, xla); }
   }
 
-  final private boolean jj_2_7(int xla) {
+  private boolean jj_2_7(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_7(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(6, xla); }
   }
 
-  final private boolean jj_2_8(int xla) {
+  private boolean jj_2_8(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_8(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(7, xla); }
   }
 
-  final private boolean jj_3R_7() {
+  private boolean jj_3R_11() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  private boolean jj_3_8() {
+    if (jj_scan_token(27)) return true;
+    if (jj_scan_token(32)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_7() {
     if (jj_3R_5()) return true;
     return false;
   }
 
-  final private boolean jj_3_7() {
+  private boolean jj_3_7() {
     if (jj_scan_token(26)) return true;
     if (jj_scan_token(31)) return true;
     return false;
   }
 
-  final private boolean jj_3R_12() {
+  private boolean jj_3R_12() {
     if (jj_scan_token(29)) return true;
     if (jj_3R_11()) return true;
     return false;
   }
 
-  final private boolean jj_3R_17() {
+  private boolean jj_3R_17() {
     if (jj_3R_11()) return true;
     return false;
   }
 
-  final private boolean jj_3_6() {
+  private boolean jj_3_6() {
     if (jj_scan_token(28)) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -623,7 +633,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return false;
   }
 
-  final private boolean jj_3_5() {
+  private boolean jj_3_5() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_13()) {
@@ -634,43 +644,43 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return false;
   }
 
-  final private boolean jj_3R_19() {
+  private boolean jj_3R_19() {
     if (jj_scan_token(NUMBER)) return true;
     return false;
   }
 
-  final private boolean jj_3R_10() {
+  private boolean jj_3R_10() {
     if (jj_3R_11()) return true;
     return false;
   }
 
-  final private boolean jj_3R_6() {
+  private boolean jj_3R_6() {
     if (jj_scan_token(COMMAND_END)) return true;
     if (jj_3R_5()) return true;
     return false;
   }
 
-  final private boolean jj_3R_16() {
+  private boolean jj_3R_16() {
     if (jj_3R_5()) return true;
     return false;
   }
 
-  final private boolean jj_3_4() {
+  private boolean jj_3_4() {
     if (jj_scan_token(NEG_EX)) return true;
     return false;
   }
 
-  final private boolean jj_3_3() {
+  private boolean jj_3_3() {
     if (jj_scan_token(POS_EX)) return true;
     return false;
   }
 
-  final private boolean jj_3R_20() {
+  private boolean jj_3R_20() {
     if (jj_scan_token(DOUBLE)) return true;
     return false;
   }
 
-  final private boolean jj_3_2() {
+  private boolean jj_3_2() {
     if (jj_3R_5()) return true;
     if (jj_scan_token(28)) return true;
     if (jj_3R_11()) return true;
@@ -684,12 +694,12 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return false;
   }
 
-  final private boolean jj_3R_14() {
+  private boolean jj_3R_14() {
     if (jj_3R_5()) return true;
     return false;
   }
 
-  final private boolean jj_3_1() {
+  private boolean jj_3_1() {
     if (jj_3R_5()) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -715,76 +725,69 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return false;
   }
 
-  final private boolean jj_3R_9() {
+  private boolean jj_3R_9() {
     if (jj_3R_20()) return true;
     return false;
   }
 
-  final private boolean jj_3R_5() {
+  private boolean jj_3R_5() {
     if (jj_scan_token(ID)) return true;
     return false;
   }
 
-  final private boolean jj_3R_15() {
+  private boolean jj_3R_15() {
     if (jj_3R_11()) return true;
     return false;
   }
 
-  final private boolean jj_3R_18() {
+  private boolean jj_3R_18() {
     if (jj_3R_5()) return true;
     return false;
   }
 
-  final private boolean jj_3R_13() {
+  private boolean jj_3R_13() {
     if (jj_3R_11()) return true;
     return false;
   }
 
-  final private boolean jj_3R_8() {
+  private boolean jj_3R_8() {
     if (jj_3R_19()) return true;
     return false;
   }
 
-  final private boolean jj_3R_11() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_8() {
-    if (jj_scan_token(27)) return true;
-    if (jj_scan_token(32)) return true;
-    return false;
-  }
-
+  /** Generated Token Manager. */
   public ConfParserTokenManager token_source;
   SimpleCharStream jj_input_stream;
-  public Token token, jj_nt;
+  /** Current token. */
+  public Token token;
+  /** Next token. */
+  public Token jj_nt;
   private int jj_ntk;
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
-  public boolean lookingAhead = false;
-  private boolean jj_semLA;
   private int jj_gen;
   final private int[] jj_la1 = new int[13];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
-      jj_la1_0();
-      jj_la1_1();
+      jj_la1_init_0();
+      jj_la1_init_1();
    }
-   private static void jj_la1_0() {
+   private static void jj_la1_init_0() {
       jj_la1_0 = new int[] {0x1c00,0x100,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1001000,0x1007000,0x4000000,0x8000000,0x20000000,0x1001000,};
    }
-   private static void jj_la1_1() {
+   private static void jj_la1_init_1() {
       jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[8];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
+  /** Constructor with InputStream. */
   public ConfParser(java.io.InputStream stream) {
      this(stream, null);
   }
+  /** Constructor with InputStream and supplied encoding */
   public ConfParser(java.io.InputStream stream, String encoding) {
     try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new ConfParserTokenManager(jj_input_stream);
@@ -795,9 +798,11 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
+  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream) {
      ReInit(stream, null);
   }
+  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream, String encoding) {
     try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
@@ -808,6 +813,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
+  /** Constructor. */
   public ConfParser(java.io.Reader stream) {
     jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new ConfParserTokenManager(jj_input_stream);
@@ -818,6 +824,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
+  /** Reinitialise. */
   public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
@@ -828,6 +835,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
+  /** Constructor with generated Token Manager. */
   public ConfParser(ConfParserTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -837,6 +845,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
+  /** Reinitialise. */
   public void ReInit(ConfParserTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -846,7 +855,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  final private Token jj_consume_token(int kind) throws ParseException {
+  private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -872,7 +881,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
 
   static private final class LookaheadSuccess extends java.lang.Error { }
   final private LookaheadSuccess jj_ls = new LookaheadSuccess();
-  final private boolean jj_scan_token(int kind) {
+  private boolean jj_scan_token(int kind) {
     if (jj_scanpos == jj_lastpos) {
       jj_la--;
       if (jj_scanpos.next == null) {
@@ -893,6 +902,8 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return false;
   }
 
+
+/** Get the next Token. */
   final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -901,8 +912,9 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return token;
   }
 
+/** Get the specific Token. */
   final public Token getToken(int index) {
-    Token t = lookingAhead ? jj_scanpos : token;
+    Token t = token;
     for (int i = 0; i < index; i++) {
       if (t.next != null) t = t.next;
       else t = t.next = token_source.getNextToken();
@@ -910,14 +922,14 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     return t;
   }
 
-  final private int jj_ntk() {
+  private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  private java.util.Vector<int[]> jj_expentries = new java.util.Vector<int[]>();
+  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
   private int[] jj_expentry;
   private int jj_kind = -1;
   private int[] jj_lasttokens = new int[100];
@@ -932,27 +944,25 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
       for (int i = 0; i < jj_endpos; i++) {
         jj_expentry[i] = jj_lasttokens[i];
       }
-      boolean exists = false;
-      for (java.util.Enumeration e = jj_expentries.elements(); e.hasMoreElements();) {
-        int[] oldentry = (int[])(e.nextElement());
+      jj_entries_loop: for (java.util.Iterator it = jj_expentries.iterator(); it.hasNext();) {
+        int[] oldentry = (int[])(it.next());
         if (oldentry.length == jj_expentry.length) {
-          exists = true;
           for (int i = 0; i < jj_expentry.length; i++) {
             if (oldentry[i] != jj_expentry[i]) {
-              exists = false;
-              break;
+              continue jj_entries_loop;
             }
           }
-          if (exists) break;
+          jj_expentries.add(jj_expentry);
+          break jj_entries_loop;
         }
       }
-      if (!exists) jj_expentries.addElement(jj_expentry);
       if (pos != 0) jj_lasttokens[(jj_endpos = pos) - 1] = kind;
     }
   }
 
+  /** Generate ParseException. */
   public ParseException generateParseException() {
-    jj_expentries.removeAllElements();
+    jj_expentries.clear();
     boolean[] la1tokens = new boolean[33];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
@@ -974,7 +984,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
-        jj_expentries.addElement(jj_expentry);
+        jj_expentries.add(jj_expentry);
       }
     }
     jj_endpos = 0;
@@ -982,18 +992,20 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     jj_add_error_token(0, 0);
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
-      exptokseq[i] = jj_expentries.elementAt(i);
+      exptokseq[i] = jj_expentries.get(i);
     }
     return new ParseException(token, exptokseq, tokenImage);
   }
 
+  /** Enable tracing. */
   final public void enable_tracing() {
   }
 
+  /** Disable tracing. */
   final public void disable_tracing() {
   }
 
-  final private void jj_rescan_token() {
+  private void jj_rescan_token() {
     jj_rescan = true;
     for (int i = 0; i < 8; i++) {
     try {
@@ -1019,7 +1031,7 @@ public @SuppressWarnings("all") class ConfParser implements ConfParserConstants 
     jj_rescan = false;
   }
 
-  final private void jj_save(int index, int xla) {
+  private void jj_save(int index, int xla) {
     JJCalls p = jj_2_rtns[index];
     while (p.gen > jj_gen) {
       if (p.next == null) { p = p.next = new JJCalls(); break; }

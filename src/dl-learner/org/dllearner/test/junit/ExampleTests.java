@@ -77,6 +77,10 @@ public class ExampleTests {
 		// to server downtime, lack of features etc., but should still
 		// remain in the example directory
 		Set<String> ignore = new TreeSet<String>();
+		// "standard" ignores (no problem to keep those)
+		ignore.add("./examples/krk/complete_no_draw.conf"); // refers to an OWL file, which has to be auto-generated
+		
+		// ignored due to errors
 		ignore.add("./examples/sparql/govtrack.conf"); // HTTP 500 Server error
 		ignore.add("./examples/sparql/musicbrainz.conf"); // HTTP 502 error - NullPointer in extraction
 		ignore.add("./examples/sparql/SKOSTEST_local.conf"); // Out of Memory Error
@@ -86,7 +90,8 @@ public class ExampleTests {
 		ignore.add("./examples/family/father_posonly.conf"); // ArrayOutOfBoundsException in Pellet - main problem: pos only not working
 		ignore.add("./examples/sparql/difference/DBPediaSKOS_kohl_vs_angela.conf"); // Pellet: literal cannot be cast to individual
 		ignore.add("./examples/family-benchmark/Aunt.conf"); // did not terminate so far (waited 45 minutes)
-
+		
+		int failedCounter = 0;
 		for (String path : confFiles.keySet()) {
 			for (String file : confFiles.get(path)) {
 				String conf = path + file + ".conf";
@@ -95,18 +100,31 @@ public class ExampleTests {
 				} else {
 					System.out.println("Testing " + conf + " (time: " + sdf.format(new Date()) + ").");
 					long startTime = System.nanoTime();
-					// start example
-					Start start = new Start(new File(conf));
-					start.start(false);
-					// test is successful if a concept was learned
-					assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
+					boolean success = false;
+					try {
+						// start example
+						Start start = new Start(new File(conf));
+						start.start(false);
+						// test is successful if a concept was learned
+						assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
+						start.getReasoningService().releaseKB();
+						success = true;
+					} catch (Exception e) {
+						// unit test not succesful (exceptions are caught explicitly to find 
+						assert ( false );
+						e.printStackTrace();
+						failedCounter++;
+					}
 					long timeNeeded = System.nanoTime() - startTime;
-					start.getReasoningService().releaseKB();
 					ComponentManager.getInstance().freeAllComponents();
+					if(!success) {
+						System.out.println("TEST FAILED.");
+					}
 					System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
 				}
 			}
 		}
+		System.out.println("Finished. " + failedCounter + " tests failed.");
 
 	}
 
