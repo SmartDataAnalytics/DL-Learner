@@ -42,6 +42,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.Info;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.gp.GP;
@@ -117,18 +118,28 @@ public class Start {
 	/**
 	 * Entry point for CLI interface.
 	 * 
-	 * @param args
-	 * @throws ParseException 
-	 * @throws FileNotFoundException 
+	 * @param args Command line arguments.
 	 */
-	public static void main(String[] args) throws ComponentInitException, FileNotFoundException, ParseException {
+	public static void main(String[] args) {
 		
+		System.out.println("DL-Learner " + Info.build + " command line interface");
+		
+		if(args.length == 0) {
+			System.out.println("You need to give a conf file as argument.");
+			System.exit(0);
+		}
 		
 		File file = new File(args[args.length - 1]);
+		
+		if(!file.exists()) {
+			System.out.println("File \"" + file + "\" does not exist.");
+			System.exit(0);			
+		}
 
 		boolean inQueryMode = false;
-		if (args.length > 1 && args[0].equals("-q"))
+		if (args.length > 1 && args[0].equals("-q")) {
 			inQueryMode = true;
+		}
 
 		// create loggers (a simple logger which outputs
 		// its messages to the console and a log file)
@@ -162,7 +173,22 @@ public class Start {
 //		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
 //		Logger.getLogger(TypedSparqlQuery.class).setLevel(Level.WARN);
 
-		Start start = new Start(file);
+		Start start = null;
+		try {
+			start = new Start(file);
+		} catch (FileNotFoundException e) {
+			System.out.println("The specified file " + file + " does not exist. See stack trace below.");
+			e.printStackTrace();
+			System.exit(0);
+		} catch (ComponentInitException e) {
+			System.out.println("A component could not be initialised. See stack trace below.");
+			e.printStackTrace();
+			System.exit(0);
+		} catch (ParseException e) {
+			System.out.println("The specified file " + file + " is not a valid conf file. See stack trace below.");
+			e.printStackTrace();
+			System.exit(0);
+		}
 		start.start(inQueryMode);
 		// write JaMON report in HTML file
 		File jamonlog = new File("log/jamon.html");
