@@ -83,7 +83,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	 * @see org.dllearner.core.Component#getName()
 	 */
 	public static String getName() {
-		return "inclusion learning problem";
+		return "two valued inclusion learning problem";
 	}
 
 		

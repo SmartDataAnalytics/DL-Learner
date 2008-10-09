@@ -36,8 +36,8 @@ import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 
 /**
- * TODO: Javadoc
- * TODO: Extend such that it can really be used as learning algorithm.
+ * Algorithm for getting "simple" suggestions, e.g. it tests some of the most likely candidates on whether 
+ * they are solutions of a learning problem.
  * 
  * @author Christian Kötteritzsch
  *
@@ -70,6 +70,10 @@ public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm impleme
 		return new EvaluatedDescription(bestSollution, solutionScore);
 	}
 
+	public static String getName() {
+		return "simple suggestion algorithm";
+	}
+	
 	@Override
 	public void stop() {
 //		stop = true;
