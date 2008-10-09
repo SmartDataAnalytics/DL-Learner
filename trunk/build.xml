@@ -187,11 +187,13 @@ public class Info {
 			    <include name="${version_dir}/dllearner" />
 			  	<include name="${version_dir}/quickstart" />
 				<include name="${version_dir}/ws" />
+				<include name="${version_dir}/gui" />
 			</tarfileset>
 			<tarfileset dir="release/">
 			    <exclude name="${version_dir}/dllearner"/>
 			  	<exclude name="${version_dir}/quickstart" />
 				<exclude name="${version_dir}/ws" />
+				<exclude name="${version_dir}/gui" />
 			</tarfileset>				
 		</tar>		
 		<delete dir="release"/>		

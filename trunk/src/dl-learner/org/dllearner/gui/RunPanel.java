@@ -100,10 +100,10 @@ public class RunPanel extends JPanel implements ActionListener {
 		
 		public long getRuntimeNanos() {
 			if(isAlive()) {
-				System.out.println("ALIVE");
+//				System.out.println("ALIVE");
 				return System.nanoTime() - startTime;
 			} else {
-				System.out.println("NOT ALIVE");
+//				System.out.println("NOT ALIVE");
 				return endTime - startTime;
 			}
 		}		
@@ -412,7 +412,7 @@ public class RunPanel extends JPanel implements ActionListener {
 		runButton.setEnabled(true);
 		startGUI.enableTabbedPane();
 		
-		System.out.println("TEST");
+//		System.out.println("TEST");
 		
 		// enable tree button
 		if((config.getLearningAlgorithm() instanceof ExampleBasedROLComponent)
