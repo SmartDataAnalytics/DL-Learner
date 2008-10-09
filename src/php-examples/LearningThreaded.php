@@ -39,10 +39,10 @@ $ontology = 'file:'.realpath("../../examples/family/uncle.owl");
 // create DL-Learner client
 $client = new SoapClient("main.wsdl");
 
-// load owl file in DIG reasoner (you need a running DIG reasoner)
+// load owl file in reasoner
 $id = $client->generateID();
 $ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);
-$rID = $client->setReasoner($id, "dig");
+$rID = $client->setReasoner($id, "owlapi");
 
 // create a learning problem
 $posExamples = array(
