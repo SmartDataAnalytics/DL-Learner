@@ -69,6 +69,9 @@ echo 'start learning ... ';
 // get concept and additional information in JSON syntax
 $concept = $client->learnDescriptionsEvaluated($id, 5);
 echo 'OK <br />';
-echo 'solution: <pre>' . $concept . '</pre>';
+
+echo 'solution: <pre>';
+var_dump(json_decode($concept, true));
+echo '</pre>';
 
 ?>

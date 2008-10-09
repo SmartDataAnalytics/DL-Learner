@@ -338,13 +338,11 @@ public class DLLearnerWS {
 		String json = "{";
 		int count = 1;
 		for(EvaluatedDescription description : descriptions) {
-			//FIXME this is not a general method, but specific to dbpedia
-			// the mehtod name schould mention, that the return String is in JSON
-			// also it throws errors
-			json += "\"solution" + count + "\" : " + description.asJSON();
-			
+			if (count>1) json += ",\"solution" + count + "\" : " + description.asJSON();
+			else json += "\"solution" + count + "\" : " + description.asJSON();
 			count++;
 		}
+		json+="}";
 		return json;
 	}
 	
