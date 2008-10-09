@@ -22,6 +22,7 @@ package org.dllearner.test.junit;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Set;
 
 import org.dllearner.core.ComponentInitException;
@@ -47,23 +48,46 @@ public class RefinementOperatorTests {
 
 	private String baseURI;
 	
+	/**
+	 * Applies the RhoDRDown operator to a concept and checks that the number of
+	 * refinements is correct.
+	 *
+	 */
 	@Test
 	public void rhoDRDownTest() {
 		try {
-			String file = "examples/carcinogenesis/pte.owl";
+			String file = "examples/carcinogenesis/carcinogenesis.owl";
 			ComponentManager cm = ComponentManager.getInstance();
 			KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
-			cm.applyConfigEntry(ks, "url", new File(file).toURI().toString());
+			try {
+				cm.applyConfigEntry(ks, "url", new File(file).toURI().toURL());
+			} catch (MalformedURLException e) {
+				// should never happen
+				e.printStackTrace();
+			}
 			ks.init();
 			ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 			rc.init();
 			baseURI = rc.getBaseURI();
 			ReasoningService rs = cm.reasoningService(rc);
+			
+			// TODO the following two lines should not be necessary
+			rs.prepareSubsumptionHierarchy();
+			rs.prepareRoleHierarchy();
+			
 			RhoDRDown op = new RhoDRDown(rs);
 			Description concept = KBParser.parseConcept(uri("Compound"));
 			Set<Description> results = op.refine(concept, 4, null);
-			System.out.println(results);
-			assertTrue(results.size()==4);
+
+			for(Description result : results) {
+				System.out.println(result);
+			}
+			
+			int desiredResultSize = 141;
+			if(results.size() != desiredResultSize) {
+				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
+			}
+			assertTrue(results.size()==desiredResultSize);
 		} catch(ComponentInitException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
