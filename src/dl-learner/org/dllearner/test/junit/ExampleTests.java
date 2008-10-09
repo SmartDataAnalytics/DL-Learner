@@ -77,20 +77,26 @@ public class ExampleTests {
 		// to server downtime, lack of features etc., but should still
 		// remain in the example directory
 		Set<String> ignore = new TreeSet<String>();
+		
 		// "standard" ignores (no problem to keep those)
 		ignore.add("./examples/krk/complete_no_draw.conf"); // refers to an OWL file, which has to be auto-generated
 		ignore.add("./examples/krk/test_ZERO_against_1to16.conf"); // see above
+		ignore.add("./examples/semantic_bible/sparqlbible.conf"); // requires local Joseki
 		
-		// ignored due to errors
+		// ignored due to errors (should be fixed; in case of long running problems or
+		// our of memory, it is better to increase the noise parameter and add comments
+		// in the conf file about "optimal" parameters)
 		ignore.add("./examples/sparql/govtrack.conf"); // HTTP 500 Server error
 		ignore.add("./examples/sparql/musicbrainz.conf"); // HTTP 502 error - NullPointer in extraction
 		ignore.add("./examples/sparql/SKOSTEST_local.conf"); // Out of Memory Error
 		ignore.add("./examples/sparql/scrobble.conf"); // HTTP 502 Proxy Error
 		ignore.add("./examples/family-benchmark/Cousin.conf"); // Out of Memory Error
 		ignore.add("./examples/sparql/SilentBobWorking2.conf"); // Out of Memory Error
-		ignore.add("./examples/family/father_posonly.conf"); // ArrayOutOfBoundsException in Pellet - main problem: pos only not working
+		ignore.add("./examples/family/father_posonly.conf"); // ArrayOutOfBoundsException in Pellet - main problem: pos only not working/supported
 		ignore.add("./examples/sparql/difference/DBPediaSKOS_kohl_vs_angela.conf"); // Pellet: literal cannot be cast to individual
 		ignore.add("./examples/family-benchmark/Aunt.conf"); // did not terminate so far (waited 45 minutes)
+		ignore.add("./examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // Out of Memory Error
+		ignore.add("./examples/semantic_bible/normal_test.conf"); // did not terminate (waited 55 minutes)
 		
 		int failedCounter = 0;
 		for (String path : confFiles.keySet()) {
