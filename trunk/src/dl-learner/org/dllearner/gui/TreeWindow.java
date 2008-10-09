@@ -71,7 +71,7 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 			this.ebNodeModel = new EBNodeTreeModel(rootNode);
 
 			// childrens to treeModel
-			Object first = ebNodeModel.getChild(rootNode, 0);
+//			Object first = ebNodeModel.getChild(rootNode, 0);
 //			System.out.println("getIndexOfChild: " + ebNodeModel.getIndexOfChild(rootNode, first));
 
 			// System.out.println("childs2: " +

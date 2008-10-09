@@ -44,6 +44,15 @@ public class PosOnlyInclusionLP extends PosOnlyLP implements InclusionLP {
 		this.configurator = new PosOnlyInclusionLPConfigurator(this);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dllearner.core.Component#getName()
+	 */
+	public static String getName() {
+		return "pos only inclusion learning problem";
+	}	
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblemNew#computeScore(org.dllearner.core.dl.Concept)
 	 */
