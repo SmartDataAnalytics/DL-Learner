@@ -107,10 +107,27 @@ public abstract class Node  {
 		return expanded;
 	}
 	
-	public void tail(String uri){
-		if(DEBUGTAIL){
-		logger.warn("missing: "+uri);
-		System.exit(0);
+	public void tail( String tailmessage){
+		boolean ignore = !DEBUGTAIL;
+		tail(ignore,  tailmessage);
+	}
+	
+	public void tail(boolean ignore, String tailmessage){
+		
+		String message = "difficult tuple. Subject is: "+ this.getURIString()+" of class"+this.getClass().getSimpleName()+" " +
+				"info: "+tailmessage;
+		if(ignore){
+			if(DEBUGTAIL){
+				logger.info("IGNORING: "+message);
+			}else {
+				logger.debug("IGNORING: "+message);
+			}
+			
+			
+		}else{
+			logger.warn(message);
+			logger.error("exiting ");
+			System.exit(0);
 		}
 		
 	}

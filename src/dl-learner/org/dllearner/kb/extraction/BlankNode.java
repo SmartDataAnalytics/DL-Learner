@@ -153,8 +153,9 @@ public class BlankNode extends Node {
 						tmp.add(next.blankNodes.get(0));
 						//System.out.println("bnode added");
 					}else{
-						System.out.println("double nesting not supported yet");
-						System.exit(0);
+						
+						tail("double nesting not supported yet");
+						
 					}
 				}
 			}//end while
@@ -165,14 +166,14 @@ public class BlankNode extends Node {
 				return factory.getOWLObjectUnionOf(target);
 			}else if(inboundEdge.equals(OWLVocabulary.OWL_complementOf)){
 				if(target.size()>1) {
-					logger.warn("more than one complement"+target);
-					System.exit(0);
+					tail("more than one complement"+target);
+					
 				}else{
 					return factory.getOWLObjectComplementOf(new ArrayList<OWLDescription>(target).remove(0));
 				}
 			}else{
 				printAll();
-				tail("wrong type: " +inboundEdge+ this);
+				tail("bnode: wrong type: " +inboundEdge+ this);
 			}
 		}
 		
@@ -193,23 +194,23 @@ public class BlankNode extends Node {
 	}
 	
 	public void printAll(){
-		System.out.println(this);
+		logger.debug(this);
 		
-		System.out.println("otherNodes");
+		logger.debug("otherNodes");
 		for (StringTuple t : otherNodes) {
-			System.out.println(""+t);
+			logger.debug(""+t);
 		}
-		System.out.println("***************");
-		System.out.println("dtype ");
+		logger.debug("***************");
+		logger.debug("dtype ");
 		for (DatatypePropertyNode d : datatypeProperties) {
-			System.out.println(d.getURIString()+" "+d.getNTripleFormOfB());
+			logger.debug(d.getURIString()+" "+d.getNTripleFormOfB());
 		}
-		System.out.println("***************");
-		System.out.println("other bnodes");
+		logger.debug("***************");
+		logger.debug("other bnodes");
 		for (BlankNode b : blankNodes) {
-			System.out.println(b);
+			logger.debug(b);
 		}
-		System.out.println("***************");
+		logger.debug("***************");
 		
 	}
 	
@@ -221,7 +222,7 @@ public class BlankNode extends Node {
 		
 		int total = otherNodes.size()+blankNodes.size()+datatypeProperties.size();
 		if(total >=4 ){
-			System.out.println("qualified p restrictions not supported currently");
+			logger.info("qualified p restrictions not supported currently");
 		}
 		
 		// get Objectproperty
