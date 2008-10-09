@@ -95,7 +95,7 @@ public class ObjectPropertyNode extends PropertyNode {
 					
 				}
 			} catch (Exception e) {
-				logger.warn("resource "+uri+" with "+ tuple);
+				tail("expand properties:  with tuple: "+ tuple);
 				e.printStackTrace();
 			}
 			
@@ -157,7 +157,7 @@ public class ObjectPropertyNode extends PropertyNode {
 				// XXX comments
 			}
 			else {
-				tail(getURIString()+"||"+one);
+				tail("conversion to ontology: property information: " + one);
 			}
 			
 		}
@@ -173,7 +173,7 @@ public class ObjectPropertyNode extends PropertyNode {
 			}else if(one.equals(OWLVocabulary.OWL_SymmetricProperty)){
 				owlAPIOntologyCollector.addAxiom(factory.getOWLSymmetricObjectPropertyAxiom(me));
 			}else{
-				tail(getURIString()+"||"+one);
+				tail("conversion to ontology: special types: " + one);
 			}
 		}
 		for (BlankNode bn : blankNodes) {

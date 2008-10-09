@@ -148,6 +148,7 @@ public class ClassNode extends Node {
 	public void toOWLOntology( OWLAPIOntologyCollector owlAPIOntologyCollector){
 		try{
 		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
+		
 		OWLClass me =factory.getOWLClass(getURI());
 		for (ObjectPropertyNode one : classProperties) {
 			OWLClass c = factory.getOWLClass(one.getBPart().getURI());
@@ -157,8 +158,12 @@ public class ClassNode extends Node {
 				owlAPIOntologyCollector.addAxiom(factory.getOWLDisjointClassesAxiom(me, c));
 			}else if(one.getURIString().equals(OWLVocabulary.OWL_EQUIVALENT_CLASS)){
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEquivalentClassesAxiom(me, c));
+			}else if(one.getURIString().equals(OWLVocabulary.RDFS_IS_DEFINED_BY)){
+				logger.warn("IGNORING: "+OWLVocabulary.RDFS_IS_DEFINED_BY);
+				continue;
 			}else {
-				tail( getURIString()+"||"+one.getURIString());
+				tail(true, "in ontology conversion"+" object property is: "+one.getURIString()+" connected with: "+one.getBPart().getURIString());
+				continue;
 			}
 			one.getBPart().toOWLOntology(owlAPIOntologyCollector);
 		}
@@ -173,7 +178,8 @@ public class ClassNode extends Node {
 				OWLLabelAnnotation label = factory.getOWLLabelAnnotation(one.getBPart().getLiteral().getString());
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
 			}else {
-				tail(getURIString()+"||"+one.getURIString());
+				tail(true, "in ontology conversion, no other datatypes, but annotation allowed for class"+" data property is: "+one.getURIString()+" connected with: "+one.getBPart().getNTripleForm());
+				
 			}
 		
 		}
@@ -187,7 +193,8 @@ public class ClassNode extends Node {
 			}else if(bn.getInBoundEdge().equals(OWLVocabulary.OWL_EQUIVALENT_CLASS)){
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEquivalentClassesAxiom(me, target));
 			}else {
-				tail( getURIString()+"||"+bn.getInBoundEdge());
+				tail( "in ontology conversion"+" bnode is: "+bn.getInBoundEdge()+"||"+ bn );
+				
 			}
 			
 		}

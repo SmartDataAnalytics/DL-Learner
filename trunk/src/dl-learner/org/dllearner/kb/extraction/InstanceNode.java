@@ -105,7 +105,7 @@ public class InstanceNode extends Node {
 				return tmp;
 			}
 		} catch (Exception e) {
-			System.out.println("Problem with: " + tuple);
+			tail("process tuple: problem with: " + tuple);
 			e.printStackTrace();
 			return null;
 		}
@@ -221,7 +221,7 @@ public class InstanceNode extends Node {
 				}
 				
 				else {
-					tail(getURIString()+"||"+one.getURIString());
+					tail("strange dataytype in ontology conversion" + one.getURIString()+" datatype: "+one.getBPart().getNTripleForm());
 				}
 				
 				//handover
@@ -229,7 +229,7 @@ public class InstanceNode extends Node {
 			
 			}catch (Exception e) {
 				e.printStackTrace();
-				System.exit(0);
+				tail("strange dataytype in ontology conversion" + one.getURIString()+" datatype: "+one.getBPart().getNTripleForm());
 			}
 			}
 			//factory.getOWLDataPropertyAssertionAxiom()

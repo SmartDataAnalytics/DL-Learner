@@ -29,6 +29,7 @@ public class OWLVocabulary {
 					
 	public static final String RDFS_SUBCLASS_OF = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 	public static final String RDFS_CLASS = "http://www.w3.org/2000/01/rdf-schema#Class";
+	public static final String RDFS_IS_DEFINED_BY = "http://www.w3.org/2000/01/rdf-schema#isDefinedBy";
 	
 	public static final String RDFS_COMMENT = "http://www.w3.org/2000/01/rdf-schema#comment";
 	public static final String RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
