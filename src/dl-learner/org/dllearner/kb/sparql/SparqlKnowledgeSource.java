@@ -292,9 +292,7 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		
 			
 			fragment = m.getOWLAPIOntologyForNodes(seedNodes, configurator.getSaveExtractedFragment());
-			for (OWLAxiom a : fragment.getClassAxioms()){
-				System.out.println(a);
-			}
+			
 
 			logger.info("Finished collecting fragment. needed "+extractionTime.getLastValue()+" ms");
 
