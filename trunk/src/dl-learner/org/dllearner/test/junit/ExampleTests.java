@@ -89,15 +89,15 @@ public class ExampleTests {
 		// ignored due to errors (should be fixed; in case of long running problems or
 		// our of memory, it is better to increase the noise parameter and add comments
 		// in the conf file about "optimal" parameters)
-		ignore.add("./examples/sparql/govtrack.conf"); // HTTP 500 Server error
+		// ignore.add("./examples/sparql/govtrack.conf"); // HTTP 500 Server error
 		ignore.add("./examples/sparql/musicbrainz.conf"); // HTTP 502 error - NullPointer in extraction
 		//working fine here ignore.add("./examples/sparql/SKOSTEST_local.conf"); // Out of Memory Error
 		ignore.add("./examples/sparql/scrobble.conf"); // HTTP 502 Proxy Error
 		// ignore.add("./examples/family-benchmark/Cousin.conf"); // Out of Memory Error => disallowing ALL helps (TODO find out details) 
 		//also working fine ignore.add("./examples/sparql/SilentBobWorking2.conf"); // Out of Memory Error
-		ignore.add("./examples/sparql/difference/DBPediaSKOS_kohl_vs_angela.conf"); // Pellet: literal cannot be cast to individual
+		// ignore.add("./examples/sparql/difference/DBPediaSKOS_kohl_vs_angela.conf"); // Pellet: literal cannot be cast to individual
 		// ignore.add("./examples/family-benchmark/Aunt.conf"); // did not terminate so far (waited 45 minutes)  => disallowing ALL helps (TODO find out details)
-		ignore.add("./examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // Out of Memory Error
+		// ignore.add("./examples/krk/KRK_ZERO_against_1to5_fastInstance.conf"); // Out of Memory Error
 		//removed ignore.add("./examples/semantic_bible/normal_test.conf"); // did not terminate (waited 55 minutes)
 		
 		int failedCounter = 0;
