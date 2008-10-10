@@ -45,8 +45,9 @@ public class ObjectReplacementRule extends Rule{
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
 		SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
 		for (RDFNodeTuple tuple : tuples) {
-			if(tuple.aPartContains(oldObject)){
-				tuple.a = new ResourceImpl(newObject);
+			if(tuple.bPartContains(oldObject)){
+				String tmp = tuple.b.toString().replace(oldObject, newObject);
+				tuple.b = new ResourceImpl(tmp);
 				JamonMonitorLogger.increaseCount(ObjectReplacementRule.class, "replacedObjects");
 			}
 			keep.add(tuple);

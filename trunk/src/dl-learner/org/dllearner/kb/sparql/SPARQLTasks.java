@@ -440,7 +440,7 @@ public class SPARQLTasks {
 		
 		rsw.reset();
 		} catch (Exception e) {
-			logger.warn("Exception caught in SPARQLTasks, passing emtpy result: "+e.getMessage());
+			logger.info("ignoring (see log for details): Exception caught in SPARQLTasks, passing emtpy result: "+e.getMessage());
 		}
 		
 		return returnSet;

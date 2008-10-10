@@ -59,6 +59,7 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLOntology;
 
 import com.jamonapi.Monitor;
@@ -291,7 +292,9 @@ public class SparqlKnowledgeSource extends KnowledgeSource {
 		
 			
 			fragment = m.getOWLAPIOntologyForNodes(seedNodes, configurator.getSaveExtractedFragment());
-			
+			for (OWLAxiom a : fragment.getClassAxioms()){
+				System.out.println(a);
+			}
 
 			logger.info("Finished collecting fragment. needed "+extractionTime.getLastValue()+" ms");
 
