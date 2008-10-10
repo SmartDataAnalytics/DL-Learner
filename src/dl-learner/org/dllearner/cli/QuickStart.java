@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * A tool to quickly start a learning example. It detects all conf files in the
@@ -38,14 +39,15 @@ import java.util.Iterator;
  * @author Jens Lehmann
  */
 public class QuickStart {
-
+ 
 //	static HashMap<String, ArrayList<String>> hm = null;
 	static String pm = ".";// pathmodifier
+	static List<String> conffiles = new ArrayList<String>();
 
 	public static void main(String[] args) {
 		
 		
-
+		
 		String lastused = readit();
 		String tab = "	";
 		int the_Number = 0;
@@ -119,7 +121,27 @@ public class QuickStart {
 					number = true;
 					break;
 				} catch (Exception e) {
+					
+					for(String one:conffiles){
+					
+						if(one.contains(cmd)){
+							System.out.println("Did you mean "+one+" ? (Press enter to confirm,\n" +
+									"any key+enter for another try)");
+							cmd = br.readLine();
+							if(cmd.length()==0){
+								writeit(one);
+								if(!query) {
+									Start.main(new String[] { one });
+								}else {
+									Start.main(new String[] {"-q",one});
+								}
+								return;
+							}else {break;}
+						}
+					}
+					
 					System.out.println("Not a number");
+					continue;
 				}
 				
 			}// end while
@@ -166,6 +188,7 @@ public class QuickStart {
 					confs.put(path, new ArrayList<String>());
 				}
 				confs.get(path).add(act[i].substring(0, act[i].length() - 5));
+				conffiles.add(path+act[i]);
 				// System.out.println(act[i].substring(0,act[i].length()-5));
 				// System.out.println(hm.get(path).size());
 				// hm.put(new

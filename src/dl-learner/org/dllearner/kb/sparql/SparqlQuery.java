@@ -127,16 +127,16 @@ public class SparqlQuery {
 			//writeToSparqlLog("JSON: " + json);
 		//}catch (ResultSetException e) {
 		} catch (HTTPException e) {
-			logger.warn("HTTPException in SparqlQuery\n"+ e.toString());
-			logger.warn("query was "+ sparqlQueryString);
+			logger.debug("HTTPException in SparqlQuery\n"+ e.toString());
+			logger.debug("query was "+ sparqlQueryString);
 			writeToSparqlLog("ERROR: HTTPException occured"+ e.toString());
 			isRunning = false;
 			throw e;
 			
 		}catch (RuntimeException e) {
 		
-			logger.warn("RuntimeException in SparqlQuery (see /log/sparql.txt): "+ e.toString());
-			logger.warn("query was (first 300 chars) "+ sparqlQueryString.substring(0,300).replaceAll("\n", " "));
+			logger.debug("RuntimeException in SparqlQuery (see /log/sparql.txt): "+ e.toString());
+			logger.debug("query was (first 300 chars) "+ sparqlQueryString.substring(0,300).replaceAll("\n", " "));
 			writeToSparqlLog("ERROR: HTTPException occured: "+ e.toString());
 			isRunning = false;
 			throw e;

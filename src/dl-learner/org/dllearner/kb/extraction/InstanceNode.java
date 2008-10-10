@@ -195,7 +195,7 @@ public class InstanceNode extends Node {
 				//OWLCommentAnnotation comment = factory.getOWL(one.b.toString());
 				//owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
 			}else if(one.getURIString().equals(OWLVocabulary.RDFS_LABEL)){
-				OWLLabelAnnotation label = factory.getOWLLabelAnnotation(one.b.toString());
+				OWLLabelAnnotation label = factory.getOWLLabelAnnotation(ln.getString());
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
 			}else{
 			
