@@ -8,8 +8,6 @@ No further installation is necessary. Just download and extract DL-Learner.
 
 Running Instructions
 ====================
-The instructions assume that you have a usable reasoner running (usually a
-DIG capable reasoner running on http://localhost:8081).
 
 Linux (and other systems)
 
@@ -31,7 +29,6 @@ Web-Service
 ===========
 
 If you want to run DL-Learner as a Web Service, you can run the scripts "ws" or
-"ws.bat". They create an own local webserver running DL-Learner. An example
-PHP client is also provided by DL-Learner. It can be downloaded at the 
-sourceforge.net project website:
-http://sourceforge.net/project/showfiles.php?group_id=203619
+"ws.bat". They create an own local webserver running DL-Learner. Some simple
+PHP example for using the web service are available at our SVN Repository:
+http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/src/php-examples/
