@@ -40,7 +40,7 @@ public abstract class Node  {
 	.getLogger(Node.class);
 	
 	// make sure no information is missed during the transition to OWLAPI
-	public static final boolean DEBUGTAIL = true;
+	public static final boolean DEBUGTAIL = false;
 
 	protected String uri;
 	// protected String type;
@@ -114,7 +114,7 @@ public abstract class Node  {
 	
 	public void tail(boolean ignore, String tailmessage){
 		
-		String message = "difficult tuple. Subject is: "+ this.getURIString()+" of class"+this.getClass().getSimpleName()+" " +
+		String message = "difficult tuple. Subject is: "+ this.getURIString()+" of type: "+this.getClass().getSimpleName()+" " +
 				"info: "+tailmessage;
 		if(ignore){
 			if(DEBUGTAIL){

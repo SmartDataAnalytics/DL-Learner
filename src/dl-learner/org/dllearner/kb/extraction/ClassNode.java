@@ -178,7 +178,7 @@ public class ClassNode extends Node {
 				OWLLabelAnnotation label = factory.getOWLLabelAnnotation(one.getBPart().getLiteral().getString());
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEntityAnnotationAxiom(me, label));
 			}else {
-				tail(true, "in ontology conversion, no other datatypes, but annotation allowed for class"+" data property is: "+one.getURIString()+" connected with: "+one.getBPart().getNTripleForm());
+				tail(true, "in ontology conversion: no other datatypes, but annotation is allowed for classes."+" data property is: "+one.getURIString()+" connected with: "+one.getBPart().getNTripleForm());
 				
 			}
 		
