@@ -135,8 +135,11 @@ public class SparqlQuery {
 			
 		}catch (RuntimeException e) {
 		
-			logger.debug("RuntimeException in SparqlQuery (see /log/sparql.txt): "+ e.toString());
-			logger.debug("query was (first 300 chars) "+ sparqlQueryString.substring(0,300).replaceAll("\n", " "));
+			if(logger.isDebugEnabled()) {
+				logger.debug("RuntimeException in SparqlQuery (see /log/sparql.txt): "+ e.toString());
+				int length = Math.min(sparqlQueryString.length(), 300); 
+				logger.debug("query was (max. 300 chars displayed) "+ sparqlQueryString.substring(0,length-1).replaceAll("\n", " "));
+			}
 			writeToSparqlLog("ERROR: HTTPException occured: "+ e.toString());
 			isRunning = false;
 			throw e;
