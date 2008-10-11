@@ -286,7 +286,7 @@ public class Start {
 		Monitor laMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initLearningAlgorithm").start();
 		ConfFileOption algorithmOption = parser.getConfOptionsByName("algorithm");
 		Class<? extends LearningAlgorithm> laClass;
-		if(problemOption != null) {
+		if(algorithmOption != null) {
 			laClass = confMapper.getLearningAlgorithmClass(algorithmOption.getStringValue());
 			if(laClass == null) {
 				handleError("Invalid value \"" + algorithmOption.getStringValue() + "\" in " + algorithmOption + ". Valid values are " + confMapper.getLearningAlgorithms() + ".");
