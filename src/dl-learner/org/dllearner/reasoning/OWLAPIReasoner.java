@@ -197,6 +197,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		Set<OWLIndividual> owlIndividuals = new TreeSet<OWLIndividual>(namedObjectComparator);
 		
 		Set<OWLOntology> allImports = new HashSet<OWLOntology>();
+		prefixes = new TreeMap<String,String>();
 		
 		for(KnowledgeSource source : sources) {
 			
@@ -204,35 +205,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				URL url=null;
 				if(source instanceof OWLFile){
 					 url = ((OWLFile)source).getURL();
-					}
-				else if(source instanceof SparqlKnowledgeSource) {
-					source = new OWLAPIOntology(((SparqlKnowledgeSource)source).getOWLAPIOntology());
-					//url=((SparqlKnowledgeSource)source).getOntologyFragmentURL();
 				}
 
 				try {
-					if(source instanceof OWLAPIOntology)
-					{
-						OWLOntology ontology = ((OWLAPIOntology)source).getOWLOntolgy();
-						owlAPIOntologies.add(ontology);
-						allImports.addAll(manager.getImportsClosure(ontology));
-						classes.addAll(ontology.getReferencedClasses());
-						owlObjectProperties.addAll(ontology.getReferencedObjectProperties());
-						owlDatatypeProperties.addAll(ontology.getReferencedDataProperties());				
-						owlIndividuals.addAll(ontology.getReferencedIndividuals());
-						
-						// TODO: this obviously works only for exactly one knowledge source
-						OWLOntologyFormat format = manager.getOntologyFormat(ontology);
-						if(format instanceof NamespaceOWLOntologyFormat) 
-						{
-							prefixes = ((NamespaceOWLOntologyFormat)format).getNamespacesByPrefixMap();
-							baseURI = prefixes.get("");
-							prefixes.remove("");
-						}
+					OWLOntology ontology;
+					if(source instanceof OWLAPIOntology) {
+						ontology = ((OWLAPIOntology)source).getOWLOntolgy();
+					} else if (source instanceof SparqlKnowledgeSource) { 
+						ontology = ((SparqlKnowledgeSource)source).getOWLAPIOntology();
+					} else {
+						ontology = manager.loadOntologyFromPhysicalURI(url.toURI());
 					}
-					else
-					{
-					OWLOntology ontology = manager.loadOntologyFromPhysicalURI(url.toURI());
+					
 					owlAPIOntologies.add(ontology);
 					allImports.addAll(manager.getImportsClosure(ontology));
 					classes.addAll(ontology.getReferencedClasses());
@@ -240,17 +224,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					owlDatatypeProperties.addAll(ontology.getReferencedDataProperties());				
 					owlIndividuals.addAll(ontology.getReferencedIndividuals());
 					
-					// TODO: this obviously works only for exactly one knowledge source
+					// if several knowledge sources are included, then we can only
+					// guarantee that the base URI is from one of those sources (there
+					// can't be more than one); but we will take care that all prefixes are
+					// correctly imported
 					OWLOntologyFormat format = manager.getOntologyFormat(ontology);
 					if(format instanceof NamespaceOWLOntologyFormat) {
-						prefixes = ((NamespaceOWLOntologyFormat)format).getNamespacesByPrefixMap();
+						prefixes.putAll(((NamespaceOWLOntologyFormat)format).getNamespacesByPrefixMap());
 						baseURI = prefixes.get("");
 						prefixes.remove("");						
 					}
-					}
 					
-				}
-				 catch (OWLOntologyCreationException e) {
+				} catch (OWLOntologyCreationException e) {
 					e.printStackTrace();
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
@@ -315,12 +300,21 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		boolean inconsistentOntology = false;
 		try {
 			reasoner.loadOntologies(allImports);
+			
+			// OWL API bug: if we test an ontology for consistency, then
+			// this ontology is automatically used for all subsequent
+			// reasoning tasks (and all others ignored)
+			boolean owlAPIbuggy = true; // remove once this problem has been resolved in OWL API
+			if(!owlAPIbuggy || sources.size() < 2) {
 			for(OWLOntology ont : owlAPIOntologies) {
+				System.out.println(ont);
 				if(!reasoner.isConsistent(ont)) {
 					inconsistentOntology = true;
 					throw new ComponentInitException("Inconsistent ontologies.");
 				}
 			}
+			}
+			
 			if(!inconsistentOntology) {
 				reasoner.classify();
 				reasoner.realise();
@@ -364,8 +358,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			}
 			datatypeProperties.add(dtp);
 		}
-		for(OWLIndividual owlIndividual : owlIndividuals)
+		for(OWLIndividual owlIndividual : owlIndividuals) {
 			individuals.add(new Individual(owlIndividual.getURI().toString()));
+		}		
+		
 	}
 
 	/* (non-Javadoc)
