@@ -307,7 +307,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			boolean owlAPIbuggy = true; // remove once this problem has been resolved in OWL API
 			if(!owlAPIbuggy || sources.size() < 2) {
 			for(OWLOntology ont : owlAPIOntologies) {
-				System.out.println(ont);
 				if(!reasoner.isConsistent(ont)) {
 					inconsistentOntology = true;
 					throw new ComponentInitException("Inconsistent ontologies.");
