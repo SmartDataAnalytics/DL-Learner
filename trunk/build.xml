@@ -154,6 +154,10 @@ public class Info {
 			</fileset>
 		</copy>
 		
+		<!-- copy special files (INSTALL, README) -->
+		<copy file="INSTALL" toDir="${release_tmp_dir}" />
+		<copy file="README" toDir="${release_tmp_dir}" />
+		
 		<!-- create tar.gz files (allows storing whether a file is executable) -->
 		<tar longfile="gnu" destfile="dllearner-nosource-${today}.tar.gz" compression="gzip">
 		  <!-- extra set for executable files -->	
