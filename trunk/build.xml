@@ -261,10 +261,10 @@ public class Info {
 		<echo file="bin/dllearner.bat" message="java -Xmx1024m -cp ${pathStringWin} org.dllearner.cli.Start %*"/>
 		<echo file="bin/ws.bat" message="java -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
 		<echo file="bin/gui.bat" message="java -cp ${pathStringWin} org.dllearner.gui.StartGUI  %*"/>		
-		<echo file="bin/quickstart" message="java -cp ${pathStringUnix} org.dllearner.cli.QuickStart"/>
-		<echo file="bin/dllearner" message="java -cp ${pathStringUnix} org.dllearner.cli.Start $@"/>
-		<echo file="bin/ws" message="java -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
-		<echo file="bin/gui" message="java -cp ${pathStringUnix}  org.dllearner.gui.StartGUI $@"/>
+		<echo file="bin/quickstart" message="#!/bin/bash${line.separator}java -cp ${pathStringUnix} org.dllearner.cli.QuickStart"/>
+		<echo file="bin/dllearner" message="#!/bin/bash${line.separator}java -cp ${pathStringUnix} org.dllearner.cli.Start $@"/>
+		<echo file="bin/ws" message="#!/bin/bash${line.separator}java -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
+		<echo file="bin/gui" message="#!/bin/bash${line.separator}java -cp ${pathStringUnix}  org.dllearner.gui.StartGUI $@"/>
 	</target>
 	
 	<!-- generate Javadoc -->
