@@ -90,7 +90,13 @@ public class InstanceNode extends Node {
 			}else if(tuple.b.isAnon()){
 				@SuppressWarnings("unused")
 				RDFBlankNode n = (RDFBlankNode) tuple.b;
-				logger.warn("encountered Bnode in InstanceNode"+ this +"in tuple" + tuple);
+				if(tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)){
+					logger.warn("blanknodes for instances not implemented yet (rare frequency). e.g. (instance rdf:type (A and B)"+" " + this+ " in tuple "+tuple);
+				}
+				else{
+					logger.warn("encountered Bnode in InstanceNode "+ this +" in tuple " + tuple);
+					logger.warn("In OWL-DL the subject of an object property assertion must be an instance (not a class). Triple will be ignored.");
+				}
 				return null;
 			
 			// basically : if p is rdf:type then o is a class
