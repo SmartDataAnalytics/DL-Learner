@@ -19,32 +19,50 @@
  */
 package org.dllearner.tools.protege;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
 import org.protege.editor.core.ui.util.VerifiedInputEditor;
 import org.protege.editor.owl.OWLEditorKit;
-import org.protege.editor.owl.ui.frame.AbstractOWLFrameSectionRowObjectEditor;
+import org.protege.editor.owl.model.cache.OWLExpressionUserCache;
 import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
-//import org.protege.editor.owl.ui.clsdescriptioneditor.OWLDescriptionChecker;
+import org.protege.editor.owl.ui.frame.AbstractOWLFrameSectionRowObjectEditor;
+import org.protege.editor.owl.ui.frame.OWLFrame;
 import org.protege.editor.owl.ui.selector.OWLClassSelectorPanel;
 import org.protege.editor.owl.ui.selector.OWLObjectPropertySelectorPanel;
+import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLObjectProperty;
-
-import org.protege.editor.owl.ui.frame.*;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
-import java.util.List;
-import java.net.*;
 
 /**
  * Added a new Tab for the DL-Learner GUI.
@@ -214,10 +232,11 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	 */
 	public OWLDescription getEditedObject() {
 		try {
+			
 			if (editor.isWellFormed()) {
-				String expression = editor.getText();
-				return editorKit.getModelManager().getOWLDescriptionParser()
-						.createOWLDescription(expression);
+				OWLDescription owlDescription = editor.createObject();
+                OWLExpressionUserCache.getInstance(editorKit.getModelManager()).add(owlDescription, editor.getText());
+                return owlDescription;
 			}
 			if (!dllearner.getSollutions().isEmpty()) {
 				return dllearner.getSollution();
