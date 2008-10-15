@@ -195,7 +195,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private void setInformation() {
 		if(eval!=null) {
 			//sets the accuracy of the selected concept
-			conceptText.append(eval.getDescription().toManchesterSyntaxString(model.getURI().toString()+"#",null));
+			conceptText.append(eval.getDescription().toManchesterSyntaxString(model.getURI().toString()+"#", null));
 			double acc = (eval.getAccuracy())*100;
 			accuracyText.append(String.valueOf(acc)+"%");
 			//sets the positive examples that are covered
