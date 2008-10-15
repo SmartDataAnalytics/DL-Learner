@@ -120,7 +120,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		//checker = new OWLDescriptionChecker(editorKit);
 		editor = new ExpressionEditor<OWLDescription>(editorKit, editorKit.getModelManager().getOWLExpressionCheckerFactory().getOWLDescriptionChecker());
 		editor.setExpressionObject(description);
-		dllearner = new DLLearnerView(frame, label, this);
+		dllearner = new DLLearnerView(frame, label);
 		action = new ActionHandler(this.action, null, dllearner, null,
 				editorKit);
 		tabbedPane = new JTabbedPane();
@@ -363,9 +363,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 * @param current OWLFrame
 		 * @param label String
 		 */
-		public DLLearnerView(OWLFrame<OWLClass> current, String label, OWLClassDescriptionEditorWithDLLearnerTab tab) {
+		public DLLearnerView(OWLFrame<OWLClass> current, String label) {
 			classSelectorPanel = new OWLClassSelectorPanel(editorKit);
-			mainWindow = tab;
 			classSelectorPanel.firePropertyChange("test", false, true);
 			URL iconUrl = this.getClass().getResource("arrow.gif");
 			icon = new ImageIcon(iconUrl);
@@ -393,7 +392,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			learner.setPreferredSize(new Dimension(600, 520));
 			accept.setPreferredSize(new Dimension(290, 50));
 			advanced.setName("Advanced");
-			posPanel = new PosAndNegSelectPanel(model, action, this);
+			posPanel = new PosAndNegSelectPanel(model, action);
 			addAcceptButtonListener(this.action);
 			addRunButtonListener(this.action);
 			addAdvancedButtonListener(this.action);
@@ -418,8 +417,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 * Returns the Mainwindow where the Plugin is integratet.
 		 * @return OWLClassDescriptionWithDLLearnerTab MainWindow
 		 */
-		public OWLClassDescriptionEditorWithDLLearnerTab getMainWindow()
-		{
+		public OWLClassDescriptionEditorWithDLLearnerTab getMainWindow() {
 			return mainWindow;
 		}
 		/**

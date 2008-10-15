@@ -106,7 +106,7 @@ public class PosAndNegSelectPanel extends JPanel {
 	 * @param act
 	 *            ActionHandler
 	 */
-	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView window) {
+	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act) {
 		super();
 		pos = new JLabel("Positive Examples");
 		neg = new JLabel("Negative Examples");
