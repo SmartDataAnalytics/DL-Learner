@@ -95,11 +95,13 @@ public class SuggestClassPanel extends JPanel {
 	}
 	
 	/**
-	 * this method adds the suggest list to the Mouse Listener.
+	 * This method adds the suggest list to the Mouse Listener.
 	 * @param action ActionHandler
 	 */
 	public void addSuggestPanelMouseListener(ActionHandler action) {
 		descriptions.addMouseListener(action);
 		
-	}          
+	}
+	
+
 }

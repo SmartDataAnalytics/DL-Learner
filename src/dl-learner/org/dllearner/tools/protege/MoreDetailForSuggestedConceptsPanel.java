@@ -103,6 +103,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	
 	private EvaluatedDescription eval;
 	private final Color colorRed = Color.red;
+	private JTextArea concept;
+	private JTextArea conceptText;
 	private final Color colorGreen = Color.green;
 	/**
 	 * This is the constructor for the Panel.
@@ -126,8 +128,11 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 */
 	public void renderDetailPanel(EvaluatedDescription desc) {
 		eval = desc;
+	
 		accuracy = new JTextArea("Accuracy:");
 		accuracy.setEditable(false);
+		conceptText = new JTextArea();
+		conceptText.setEditable(false);
 		posCoveredText = new JTextArea();
 		posCoveredText.setForeground(colorGreen);
 		//sets covered positive examples text area not editable
@@ -151,6 +156,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		examplePanel = new JPanel(new GridLayout(0, 2));
 		//this method adds the informations for the selected concept to the panel
 		setInformation();
+		concept = new JTextArea("Concept:");
+		concept.setEditable(false);
 		coveredPositiveExamples = new JLabel("Covered Positive Examples:");
 		coveredPositiveExamples.setForeground(colorGreen);
 		notCoveredPositiveExamples = new JLabel("Not Covered Positive Examples");
@@ -167,6 +174,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		detailPopup.setResizable(false);
 		detailScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		//adds all information to the example panel
+		examplePanel.add(concept);
+		examplePanel.add(conceptText);
 		examplePanel.add(accuracy);
 		examplePanel.add(accuracyText);
 		examplePanel.add(coveredPositiveExamples);
@@ -186,6 +195,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private void setInformation() {
 		if(eval!=null) {
 			//sets the accuracy of the selected concept
+			conceptText.append(eval.getDescription().toManchesterSyntaxString(model.getURI().toString()+"#",null));
 			double acc = (eval.getAccuracy())*100;
 			accuracyText.append(String.valueOf(acc)+"%");
 			//sets the positive examples that are covered
