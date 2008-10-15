@@ -102,7 +102,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		//checker = new OWLDescriptionChecker(editorKit);
 		editor = new ExpressionEditor<OWLDescription>(editorKit, editorKit.getModelManager().getOWLExpressionCheckerFactory().getOWLDescriptionChecker());
 		editor.setExpressionObject(description);
-		dllearner = new DLLearnerView(frame, label);
+		dllearner = new DLLearnerView(frame, label, this);
 		action = new ActionHandler(this.action, null, dllearner, null,
 				editorKit);
 		tabbedPane = new JTabbedPane();
@@ -279,7 +279,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	public class DLLearnerView extends JPanel {
 
 		private static final  long serialVersionUID = 624829578325729385L;
-
+		private OWLClassDescriptionEditorWithDLLearnerTab mainWindow; 
 		// this is the Component which shows the view of the dllearner
 
 		private JComponent learner;
@@ -344,12 +344,13 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 * @param current OWLFrame
 		 * @param label String
 		 */
-		public DLLearnerView(OWLFrame<OWLClass> current, String label) {
+		public DLLearnerView(OWLFrame<OWLClass> current, String label, OWLClassDescriptionEditorWithDLLearnerTab tab) {
 			classSelectorPanel = new OWLClassSelectorPanel(editorKit);
+			mainWindow = tab;
 			classSelectorPanel.firePropertyChange("test", false, true);
-			URL iconUrl = this.getClass().getResource("pfeil.gif");
+			URL iconUrl = this.getClass().getResource("arrow.gif");
 			icon = new ImageIcon(iconUrl);
-			URL toggledIconUrl = this.getClass().getResource("pfeil2.gif");
+			URL toggledIconUrl = this.getClass().getResource("arrow2.gif");
 			toggledIcon = new ImageIcon(toggledIconUrl);
 			model = new DLLearnerModel(editorKit, current, label, this);
 			sugPanel = new SuggestClassPanel();
@@ -393,7 +394,15 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public PosAndNegSelectPanel getPosAndNegSelectPanel() {
 			return posPanel;
 		}
-
+		
+		/**
+		 * Returns the Mainwindow where the Plugin is integratet.
+		 * @return OWLClassDescriptionWithDLLearnerTab MainWindow
+		 */
+		public OWLClassDescriptionEditorWithDLLearnerTab getMainWindow()
+		{
+			return mainWindow;
+		}
 		/**
 		 * This Method renders the view of the plugin.
 		 */

@@ -59,8 +59,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 	private EvaluatedDescription evaluatedDescription;
 	// This is the view of the DL-Learner tab.
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
-	private int counter;
-	private EvaluatedDescription oldEvaluatedDescription;
 
 	/**
 	 * This is the constructor for the action handler.
@@ -81,7 +79,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 		this.editorKit = editor;
 		this.view = view;
 		this.id = i;
-		counter = 0;
 		this.model = m;
 		toggled = false;
 
@@ -92,8 +89,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 * @param z ActionEvent 
 	 */
 	public void actionPerformed(ActionEvent z) {
-
-		System.out.println("Doppelklick?: "+ z);
 		if(z.getActionCommand().equals("comboBoxChanged")) {
 			view.getPosAndNegSelectPanel().setOptionSpinner();
 		}
@@ -240,7 +235,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void mouseClicked(MouseEvent m) {
 		EvaluatedDescription eDescription = null;
-		oldEvaluatedDescription = evaluatedDescription;
 		String desc = view.getSuggestClassPanel().getSuggestList()
 				.getSelectedValue().toString();
 		if (model.getEvaluatedDescriptionList() != null) {

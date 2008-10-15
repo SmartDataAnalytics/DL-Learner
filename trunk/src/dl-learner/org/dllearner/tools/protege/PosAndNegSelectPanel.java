@@ -19,21 +19,18 @@
  */
 package org.dllearner.tools.protege;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.WindowConstants;
 
 /**
  * This class is the Panel for the Check boxes where the positive and negative
@@ -92,11 +89,6 @@ public class PosAndNegSelectPanel extends JPanel {
 
 	// This is the Text area where the help message is displayed.
 
-	private JTextArea help;
-
-	// This is the frame that pops up when the help button is pressed.
-
-	private JDialog assistPanel;
 	private JComboBox optionBox;
 	private JPanel optionBoxPanel;
 	private JPanel spinnerPanel;
@@ -105,8 +97,6 @@ public class PosAndNegSelectPanel extends JPanel {
 	private SpinnerNumberModel maxExecutionModel;
 	private JSpinner optionSpinner;
 	private ActionHandler action;
-	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
-	private final Color colorBlack = Color.black;
 
 	/**
 	 * This is the constructor for the Panel that shows the check boxes.
@@ -119,7 +109,6 @@ public class PosAndNegSelectPanel extends JPanel {
 	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView window) {
 		super();
 		pos = new JLabel("Positive Examples");
-		view = window;
 		neg = new JLabel("Negative Examples");
 		optionBoxPanel = new JPanel(new GridLayout(0, 1));
 		spinnerPanel = new JPanel(new GridLayout(0, 1));
@@ -300,28 +289,12 @@ public class PosAndNegSelectPanel extends JPanel {
 	 */
 	public void renderHelpMessage(String assistance) {
 		// renders scroll bar if necessary
-		JScrollPane scrollHelp = new JScrollPane(
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		help = new JTextArea();
-		assistPanel = new JDialog();
-		// no writing in the help panel is allowed
-		help.setEditable(false);
-		assistPanel.setName("help");
-		assistPanel.setSize(300, 100);
-		// window will be disposed if the x or the ok button is pressed
-		assistPanel.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		assistPanel.setVisible(true);
-		assistPanel.setResizable(false);
-		// sets textcolor to black
-		help.setForeground(colorBlack);
-		help.setText("Help: " + assistance);
-		scrollHelp.setViewportView(help);
-		scrollHelp.setBounds(0, 0, 300, 100);
-		assistPanel.add(scrollHelp);
-		assistPanel.setLocationRelativeTo(view);
+		JOptionPane.showMessageDialog(null,
+                assistance,
+                "Help",                                            
+                JOptionPane.WARNING_MESSAGE);
 	}
-
+	
 	/**
 	 * This method adds the Action listener to the help buttons.
 	 * 
