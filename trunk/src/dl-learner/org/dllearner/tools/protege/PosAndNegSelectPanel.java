@@ -105,6 +105,7 @@ public class PosAndNegSelectPanel extends JPanel {
 	private SpinnerNumberModel maxExecutionModel;
 	private JSpinner optionSpinner;
 	private ActionHandler action;
+	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 	private final Color colorBlack = Color.black;
 
 	/**
@@ -115,9 +116,10 @@ public class PosAndNegSelectPanel extends JPanel {
 	 * @param act
 	 *            ActionHandler
 	 */
-	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act) {
+	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView window) {
 		super();
 		pos = new JLabel("Positive Examples");
+		view = window;
 		neg = new JLabel("Negative Examples");
 		optionBoxPanel = new JPanel(new GridLayout(0, 1));
 		spinnerPanel = new JPanel(new GridLayout(0, 1));
@@ -317,6 +319,7 @@ public class PosAndNegSelectPanel extends JPanel {
 		scrollHelp.setViewportView(help);
 		scrollHelp.setBounds(0, 0, 300, 100);
 		assistPanel.add(scrollHelp);
+		assistPanel.setLocationRelativeTo(view);
 	}
 
 	/**

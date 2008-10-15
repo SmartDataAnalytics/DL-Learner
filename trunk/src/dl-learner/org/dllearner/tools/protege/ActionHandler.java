@@ -93,7 +93,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void actionPerformed(ActionEvent z) {
 
-		
+		System.out.println("Doppelklick?: "+ z);
 		if(z.getActionCommand().equals("comboBoxChanged")) {
 			view.getPosAndNegSelectPanel().setOptionSpinner();
 		}
@@ -257,22 +257,10 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 			}
 		}
-		System.out.println("old: " + oldEvaluatedDescription);
-		if (oldEvaluatedDescription != null) {
-
-			if (oldEvaluatedDescription != evaluatedDescription) {
-				counter = 0;
-			}
-			counter++;
-		} else {
-			counter++;
-		}
-		if (counter == 2) {
-			counter = 0;
+		if(m.getClickCount()==2) {
 			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(
 					evaluatedDescription);
 		}
-		System.out.println("Counter: " + counter);
 	}
 
 	/**

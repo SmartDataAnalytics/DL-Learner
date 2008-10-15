@@ -373,7 +373,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			learner.setPreferredSize(new Dimension(600, 520));
 			accept.setPreferredSize(new Dimension(290, 50));
 			advanced.setName("Advanced");
-			posPanel = new PosAndNegSelectPanel(model, action);
+			posPanel = new PosAndNegSelectPanel(model, action, this);
 			addAcceptButtonListener(this.action);
 			addRunButtonListener(this.action);
 			addAdvancedButtonListener(this.action);
