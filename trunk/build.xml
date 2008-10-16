@@ -265,14 +265,14 @@ public class Info {
 			<map from="${removeprefix}" to="."/>
 		</pathconvert>
 
-		<echo file="bin/quickstart.bat" message="java -Xmx${max_memory}m -cp ${pathStringWin} org.dllearner.cli.QuickStart"/>
-		<echo file="bin/dllearner.bat" message="java -Xmx${max_memory}m -cp ${pathStringWin} org.dllearner.cli.Start %*"/>
-		<echo file="bin/ws.bat" message="java -Xmx${max_memory}m -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
-		<echo file="bin/gui.bat" message="java -Xmx${max_memory}m -cp ${pathStringWin} org.dllearner.gui.StartGUI  %*"/>		
-		<echo file="bin/quickstart" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -cp ${pathStringUnix} org.dllearner.cli.QuickStart"/>
-		<echo file="bin/dllearner" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -cp ${pathStringUnix} org.dllearner.cli.Start $@"/>
-		<echo file="bin/ws" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
-		<echo file="bin/gui" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -cp ${pathStringUnix}  org.dllearner.gui.StartGUI $@"/>
+		<echo file="bin/quickstart.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.cli.QuickStart"/>
+		<echo file="bin/dllearner.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.cli.Start %*"/>
+		<echo file="bin/ws.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.server.DLLearnerWSStart  %*"/>
+		<echo file="bin/gui.bat" message="java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringWin} org.dllearner.gui.StartGUI  %*"/>		
+		<echo file="bin/quickstart" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix} org.dllearner.cli.QuickStart"/>
+		<echo file="bin/dllearner" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix} org.dllearner.cli.Start $@"/>
+		<echo file="bin/ws" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.server.DLLearnerWSStart $@"/>
+		<echo file="bin/gui" message="#!/bin/bash${line.separator}java -Xmx${max_memory}m -Djava.library.path=lib/fact/ -cp ${pathStringUnix}  org.dllearner.gui.StartGUI $@"/>
 	</target>
 	
 	<!-- generate Javadoc -->
