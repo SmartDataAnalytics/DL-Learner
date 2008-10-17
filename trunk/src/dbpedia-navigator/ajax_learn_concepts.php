@@ -9,8 +9,14 @@
 		
 	if (isset($_SESSION['positive'])) $positives=$_SESSION['positive'];
 	if (isset($_SESSION['negative'])) $negatives=$_SESSION['negative'];
-	$id=$_SESSION['id'];
-	$ksID=$_SESSION['ksID'];
+	if (isset($_SESSION['id'])){
+		$id=$_SESSION['id'];
+		$ksID=$_SESSION['ksID'];
+	}
+	else{
+		print "Your Session expired. Please reload.";
+		die();
+	}
 	session_write_close();
 	setRunning($id,"true");
 	$concept="";

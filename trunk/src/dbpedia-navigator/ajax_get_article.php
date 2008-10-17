@@ -7,8 +7,14 @@
 	$fromCache=$_POST['cache'];
 		
 	if (isset($_SESSION['articles'])) $articles=$_SESSION['articles'];
-	$id=$_SESSION['id'];
-	$ksID=$_SESSION['ksID'];
+	if (isset($_SESSION['id'])){
+		$id=$_SESSION['id'];
+		$ksID=$_SESSION['ksID'];
+	}
+	else{
+		print "Your Session expired. Please reload.";
+		die();
+	}
 	
 	//write last action into session
 	if (strpos($subject,"http://dbpedia.org/resource/")===0) $actionuri=substr (strrchr ($subject, "/"), 1);
@@ -62,7 +68,7 @@
 			
 			// display a picture if there is one
 			if (isset($triples['http://dbpedia.org/property/imageCaption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/imageCaption'][0]['value'];
-			else if (isset($triples['http://dbpedia.org/property/caption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/caption'][0]['value'];
+			else if (isset($triples['http://dbpedia.org/property/caption'])&&$triples['http://dbpedia.org/property/caption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/caption'][0]['value'];
 			else $alt='Picture of '.$artTitle;
 						
 			if(isset($triples['http://xmlns.com/foaf/0.1/depiction'])&&@fopen($triples['http://xmlns.com/foaf/0.1/depiction'][0]['value'], 'r')){

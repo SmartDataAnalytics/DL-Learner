@@ -8,8 +8,14 @@
 	$kb=str_replace('\"','"',$kb);
 			
 	session_start();
-	$id=$_SESSION['id'];
-	$ksID=$_SESSION['ksID'];
+	if (isset($_SESSION['id'])){
+		$id=$_SESSION['id'];
+		$ksID=$_SESSION['ksID'];
+	}
+	else{
+		print "Your Session expired. Please reload.";
+		die();
+	}
 	//write last action into session
 	$actionuri=urlencode($kb);
 	$_SESSION['lastAction']='searchConceptInstances/'.$actionuri;
