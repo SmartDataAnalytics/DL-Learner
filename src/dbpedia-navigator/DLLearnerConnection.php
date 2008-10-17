@@ -131,7 +131,7 @@ class DLLearnerConnection
 	
 	function getNaturalDescription($concept)
 	{
-		return $this->client->getNaturalDescription($concept);
+		return $this->client->getNaturalDescription($concept, $this->endpoint);
 	}
 	
 	function getConceptDepth()

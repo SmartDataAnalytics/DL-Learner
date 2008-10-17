@@ -356,6 +356,7 @@
   </message>
   <message name="getNaturalDescription">
     <part name="arg0" type="xsd:string"></part>
+    <part name="arg1" type="xsd:string"></part>
   </message>
   <message name="getNaturalDescriptionResponse">
     <part name="return" type="xsd:string"></part>
@@ -660,7 +661,7 @@
       <output message="tns:SparqlRetrievalResponse"></output>
       <fault message="tns:ParseException" name="ParseException"></fault>
     </operation>
-    <operation name="getNaturalDescription" parameterOrder="arg0">
+    <operation name="getNaturalDescription" parameterOrder="arg0 arg1">
       <input message="tns:getNaturalDescription"></input>
       <output message="tns:getNaturalDescriptionResponse"></output>
       <fault message="tns:ParseException" name="ParseException"></fault>
