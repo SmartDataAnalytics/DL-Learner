@@ -56,7 +56,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	<head>
 		<title>DL-Learner Music Recommender</title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-		<?php $xajax->printJavascript('../dbpedia-navigator/xajax/'); ?>
+		<?php $xajax->printJavascript('../music-recommender/xajax/'); ?>
 		<script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>
 	</head>
 	<body>
