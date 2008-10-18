@@ -26,7 +26,7 @@
   * @author Anita Janassary
   */
 
-require_once '../dbpedia-navigator/xajax/xajax_core/xajax.inc.php';
+require_once '../music-recommender/xajax/xajax_core/xajax.inc.php';
 require_once 'DLLearnerConnection.php';
 
 $xajax = new xajax();
