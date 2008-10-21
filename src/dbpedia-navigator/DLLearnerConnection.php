@@ -21,7 +21,11 @@ class DLLearnerConnection
 	
 	// ID of the DBpedia knowledge source
 	private $ksID;
-		
+
+	private $ignoredConcepts;
+	
+	private $ignoredRoles;
+	
 	function DLLearnerConnection($id=0,$ksID=0)
 	{
 		ini_set('default_socket_timeout',200);
@@ -32,6 +36,8 @@ class DLLearnerConnection
 		$this->lang=$settings->language;
 		$this->DBPediaUrl=$settings->dbpediauri;
 		$this->endpoint=$settings->endpoint;
+		$this->ignoredConcepts=$settings->ignoredConcepts;
+		$this->ignoredRoles=$settings->ignoredRoles;
 		$this->client=new SoapClient("main.wsdl",array('features' => SOAP_SINGLE_ELEMENT_ARRAYS));
 		$this->id=$id;
 		$this->ksID=$ksID;
@@ -75,6 +81,8 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryInt($this->id, $algorithmID, "maxExecutionTimeInSeconds", 3);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useNegation", false);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useAllConstructor", false);
+		$this->client->applyConfigEntryStringArray($this->id, $algorithmID, "ignoredConcepts",$this->ignoredConcepts);
+		$this->client->applyConfigEntryStringArray($this->id, $algorithmID, "ignoredRoles",$this->ignoredRoles);
 		$start = microtime(true);
 		
 		$this->client->initAll($this->id);
