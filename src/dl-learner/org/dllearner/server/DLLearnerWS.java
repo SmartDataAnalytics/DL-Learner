@@ -720,9 +720,9 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public String getNaturalDescription(String conceptString) throws ParseException {
+	public String getNaturalDescription(String conceptString, String endpoint) throws ParseException {
 		// call parser to parse concept
-		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conceptString);
+		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conceptString, endpoint);
 	}
 	
 	@WebMethod

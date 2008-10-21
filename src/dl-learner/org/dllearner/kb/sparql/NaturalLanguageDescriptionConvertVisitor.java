@@ -44,10 +44,10 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	
 	private SPARQLTasks tasks;
 	
-	public NaturalLanguageDescriptionConvertVisitor()
+	public NaturalLanguageDescriptionConvertVisitor(String endpoint)
 	{
 		//stack.push("subject");
-		tasks=new SPARQLTasks(new Cache("cache"),SparqlEndpoint.getEndpointDBpedia());
+		tasks=new SPARQLTasks(new Cache("cache"),SparqlEndpoint.getEndpointByName(endpoint));
 	}
 	
 	private String getDescription()
@@ -62,16 +62,16 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	
 	public static String getNaturalLanguageDescription(Description description)
 	{
-		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor();
+		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor("DBpedia");
 		description.accept(visitor);
 		String ret = visitor.getDescription();
 		return ret;
 	}
 	
-	public static String getNaturalLanguageDescription(String descriptionKBSyntax) throws ParseException
+	public static String getNaturalLanguageDescription(String descriptionKBSyntax, String endpoint) throws ParseException
 	{	
 		Description d = KBParser.parseConcept(descriptionKBSyntax);
-		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor();
+		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor(endpoint);
 		d.accept(visitor);
 		String ret = visitor.getDescription();
 		return ret;
@@ -98,7 +98,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 			s.add("NOT \"http://dbpedia.org/class/yago/Person100007846\"");
 			s.add("(\"http://dbpedia.org/class/yago/HeadOfState110164747\" AND (\"http://dbpedia.org/class/yago/Negotiator110351874\" AND \"http://dbpedia.org/class/yago/Representative110522035\"))");
 			for (String kbsyntax : s) {
-				result.put(kbsyntax,NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(kbsyntax));
+				result.put(kbsyntax,NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(kbsyntax,"DBPEDIA"));
 			}
 			System.out.println("************************");
 			for (String string : result.keySet()) {
