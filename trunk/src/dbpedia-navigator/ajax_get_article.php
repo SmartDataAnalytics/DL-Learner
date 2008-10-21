@@ -331,7 +331,7 @@
 			else{
 				$array=$_SESSION['positive'];
 				$array[$uri]=$artTitle;
-				if (count($array)>3){
+				if (count($array)>10){
 					foreach ($array as $key=>$value){
 						unset($array[$key]);
 						break;
@@ -362,7 +362,7 @@
 		else{
 			$array=$_SESSION['positive'];
 			$array[$uri]=$artTitle;
-			if (count($array)>3){
+			if (count($array)>10){
 				foreach ($array as $key=>$value){
 					unset($array[$key]);
 					break;

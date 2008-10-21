@@ -54,6 +54,10 @@ class Settings{
 	
 	public $useCache=true;
 	
+	public $ignoredConcepts=array();
+	public $ignoredRoles=array();
+
+
 	//the type of database server
 	public $database_type='mysql';
 	//the server, where the mysql databank is located
