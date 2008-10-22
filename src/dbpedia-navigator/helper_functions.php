@@ -1,4 +1,24 @@
 <?php
+function getLabel($uri,$label)
+{
+	$res=urldecode(str_replace("_"," ",substr (strrchr ($uri, "/"), 1)));
+	if (strlen($label)>strlen($res)-5||preg_match('/[0-9]$/',$res)===1){
+		$res=$label;
+	}
+	$res=utf8_to_html($res);
+	
+	preg_match_all("/([A-Z])/",$res,$treffer,PREG_OFFSET_CAPTURE);
+	foreach ($treffer[0] as $treff){
+		if ($res[$treff[1]-1]!=' '&&$res[$treff[1]-1]!='-'&&$treff[1]!=0) $res=substr($res,0,$treff[1]).' '.substr($res,$treff[1]);
+	}
+	
+	//replacements
+	$res=str_replace('cities','City',$res);
+	$res=str_replace('Cities','City',$res);
+	
+	return $res;
+}
+
 function subjectToURI($subject)
 {
 	//if the subject is already a URI return it
@@ -31,29 +51,27 @@ function getTagCloud($tags,$label)
 	$distribution=$diff/3;
 	
 	$ret="<p>";
-	$ret.='<a style="font-size:xx-large;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'all\';show_results(\'all\',document.getElementById(\'hidden_number\').value);">All</a>&nbsp;';
-	if ($nc) $ret.='<a style="font-size:xx-small;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'NoCategory\';show_results(\'NoCategory\',document.getElementById(\'hidden_number\').value);">No Category</a>&nbsp;';
 	foreach ($tags as $tag=>$count){
-		if ($count==$min) $style="font-size:xx-small;";
-		else if ($count==$max) $style="font-size:xx-large;";
-		else if ($count>($min+2*$distribution)) $style="font-size:large;";
-		else if ($count>($min+$distribution)) $style="font-size:medium;";
-		else $style="font-size:small;";
+		if ($count==$min) $style="font-size:9px;";
+		else if ($count==$max) $style="font-size:17px;";
+		else if ($count>($min+2*$distribution)) $style="font-size:15px;";
+		else if ($count>($min+$distribution)) $style="font-size:13px;";
+		else $style="font-size:11px;";
 		
-		$lab=urldecode(str_replace("_"," ",substr (strrchr ($tag, "/"), 1)));
-		if (strlen($label[$tag])>strlen($lab)-3||preg_match('/[0-9]/',$lab)===1){
-			$lab=$label[$tag];
-		}
+		$lab=getLabel($tag,$label[$tag]);
 		//$tag_with_entities=htmlentities("\"".$tag."\"");
-		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',document.getElementById(\'hidden_number\').value);">'.utf8_to_html($lab).'</a>&nbsp;';
+		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',\''.utf8_to_html($lab).'\',document.getElementById(\'hidden_number\').value);">'.utf8_to_html($lab).'</a>&nbsp;';
 	}
 	$ret.="</p><br/>";
+	$ret.='<span id="FilterTags">You currently don\'t filter your search results.</span>';
+	$ret.=' You can <a style="font-size:11px;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'all\';show_results(\'all\',\'all\',document.getElementById(\'hidden_number\').value);">show all results</a>&nbsp;';
+	if ($nc) $ret.=' or <a style="font-size:11px;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'NoCategory\';show_results(\'NoCategory\',\'No Category\',document.getElementById(\'hidden_number\').value);">show results with no category</a>&nbsp;';
 	return $ret;
 }
 
 function getResultsTable($names,$labels,$classes,$number)
 {
-	$ret="<p>These are the results of your search. Show best ";
+	$ret="<p>You got ".count($names)." results. Show best ";
 	for ($k=10;$k<125;){
 		$ret.="<a href=\"#\" onclick=\"search_it('label='+document.getElementById('label').value+'&number=".$k."');return false;\"";
 		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
@@ -119,7 +137,7 @@ function utf8_to_html($string)
 
 function getCategoryResultsTable($names,$labels,$category,$number)
 {
-	$ret="<p>These are your the results of your search. Show best ";
+	$ret="<p>You got ".count($names)." results. Show best ";
 	for ($k=10;$k<125;){
 		$ret.="<a href=\"#\" onclick=\"getSubjectsFromCategory('category=".$category."&number=".$k."');return false;\"";
 		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
@@ -162,7 +180,7 @@ function getCategoryResultsTable($names,$labels,$category,$number)
 
 function getConceptResultsTable($names,$labels,$kb,$number)
 {
-	$ret="<p>These are your results. Show best ";
+	$ret="<p>You got ".count($names)." results. Show best ";
 	for ($k=10;$k<125;){
 		$ret.="<a href=\"#\" onclick=\"getSubjectsFromConcept('kb=".$kb."&number=".$k."');return false;\"";
 		if ($k==$number) $ret.=" style=\"text-decoration:none;\"";
@@ -370,10 +388,7 @@ function formatClassArray($ar) {
 		$query="SELECT label FROM categories WHERE category='".$ar[$i]['value']."' LIMIT 1";
 		$res=$databaseConnection->query($query);
 		$result=$databaseConnection->nextEntry($res);
-		$label=urldecode(str_replace("_"," ",substr (strrchr ($ar[$i]['value'], "/"), 1)));
-		if (strlen($result['label'])>strlen($label)-3||preg_match('/[0-9]$/',$label)===1){
-			$label=$result['label'];
-		}
+		$label=getLabel($ar[$i]['value'],$result['label']);
 		$label=utf8_to_html($label);
 		$string .= '<li>' . formatClass($ar[$i]['value'],$label).'</li>';
 	}
