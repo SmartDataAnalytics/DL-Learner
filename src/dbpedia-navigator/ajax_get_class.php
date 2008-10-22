@@ -111,7 +111,7 @@
 	if (isset($_SESSION['classes'])){
 		foreach ($_SESSION['classes'] as $key => $value)
 		{
-			$lastClasses.="<a href=\"\" onclick=\"get_class('class=&cache=".$key."');return false;\">".$value['title']."</a><br/>";
+			$lastClasses.="<a href=\"\" onclick=\"get_class('class=&cache=".$key."');return false;\">".$value['title']." (".urldecode(str_replace("_"," ",substr (strrchr ($value['uri'], "/"), 1))).")</a><br/>";
 		}
 	}
 	
