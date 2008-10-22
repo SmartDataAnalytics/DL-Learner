@@ -306,6 +306,25 @@
 			if (isset($triples['http://dbpedia.org/property/refLabelProperty'])) unset($triples['http://dbpedia.org/property/refLabelProperty']);
 			if (isset($triples['http://dbpedia.org/property/noteLabelProperty'])) unset($triples['http://dbpedia.org/property/noteLabelProperty']);
 			if (isset($triples['http://dbpedia.org/property/wikisourcelangProperty'])) unset($triples['http://dbpedia.org/property/wikisourcelangProperty']);
+			if (isset($triples['http://dbpedia.org/property/lk'])) unset($triples['http://dbpedia.org/property/lk']);
+			if (isset($triples['http://dbpedia.org/property/abbr'])) unset($triples['http://dbpedia.org/property/abbr']);
+			if (isset($triples['http://dbpedia.org/property/x'])) unset($triples['http://dbpedia.org/property/x']);
+			if (isset($triples['http://dbpedia.org/property/y'])) unset($triples['http://dbpedia.org/property/y']);
+			if (isset($triples['http://dbpedia.org/property/imageFlagSize'])) unset($triples['http://dbpedia.org/property/imageFlagSize']);
+			if (isset($triples['http://dbpedia.org/property/imageCoatOfArmsSize'])) unset($triples['http://dbpedia.org/property/imageCoatOfArmsSize']);
+			if (isset($triples['http://dbpedia.org/property/wikiaProperty'])) unset($triples['http://dbpedia.org/property/wikiaProperty']);
+			if (isset($triples['http://dbpedia.org/property/coorDmProperty'])) unset($triples['http://dbpedia.org/property/coorDmProperty']);
+			if (isset($triples['http://dbpedia.org/property/nuts'])) unset($triples['http://dbpedia.org/property/nuts']);
+			if (isset($triples['http://dbpedia.org/property/years'])) unset($triples['http://dbpedia.org/property/years']);
+			if (isset($triples['http://dbpedia.org/property/dateofbirth'])) unset($triples['http://dbpedia.org/property/dateofbirth']);
+			if (isset($triples['http://dbpedia.org/property/caps_percent_28goals_percent_29'])) unset($triples['http://dbpedia.org/property/caps_percent_28goals_percent_29']);
+			if (isset($triples['http://dbpedia.org/property/nationalcaps_percent_28goals_percent_29'])) unset($triples['http://dbpedia.org/property/nationalcaps_percent_28goals_percent_29']);
+			if (isset($triples['http://dbpedia.org/property/ntupdate'])) unset($triples['http://dbpedia.org/property/ntupdate']);
+			if (isset($triples['http://dbpedia.org/property/footballPlayerStatistics2Property'])) unset($triples['http://dbpedia.org/property/footballPlayerStatistics2Property']);
+			if (isset($triples['http://dbpedia.org/property/footballPlayerStatistics3Property'])) unset($triples['http://dbpedia.org/property/footballPlayerStatistics3Property']);
+			if (isset($triples['http://dbpedia.org/property/is_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23Before_of'])) unset($triples['is_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23Before_of']);
+			if (isset($triples['http://dbpedia.org/property/is_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23title_of'])) unset($triples['is_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23title_of']);
+			
 			
 			if (count($triples)>0){
 				$content.='<br/><hr><h4>Remaining Triples</h4><br/>';
