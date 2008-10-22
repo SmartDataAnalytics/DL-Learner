@@ -50,10 +50,7 @@
 				$query="SELECT label FROM categories WHERE category='".$result['child']."' LIMIT 1";
 				$res2=$databaseConnection->query($query);
 				$result2=$databaseConnection->nextEntry($res2);
-				$identify=urldecode(str_replace("_"," ",substr (strrchr ($result['child'], "/"), 1)));
-				if (strlen($result2['label'])>strlen($identify)-3||preg_match('/[0-9]$/',$identify)===1){
-					$identify=$result2['label'];
-				}
+				$identify=getLabel($result['child'],$result2['label']);
 				if (strlen($identify)>100) $identify=substr($identify,0,100);
 				$childClasses.='<option value="'.$result['child'].'">'.utf8_to_html($identify).'</option>';
 			}
@@ -69,10 +66,7 @@
 				$query="SELECT label FROM categories WHERE category='".$result['father']."' LIMIT 1";
 				$res2=$databaseConnection->query($query);
 				$result2=$databaseConnection->nextEntry($res2);
-				$identify=urldecode(str_replace("_"," ",substr (strrchr ($result['father'], "/"), 1)));
-				if (strlen($result2['label'])>strlen($identify)-3||preg_match('/[0-9]$/',$identify)===1){
-					$identify=$result2['label'];
-				}
+				$identify=getLabel($result['father'],$result2['label']);
 				if (strlen($identify)>100) $identify=substr($identify,0,100);
 				$fatherClasses.='<option value="'.$result['father'].'">'.utf8_to_html($identify).'</option>';
 			}
@@ -83,10 +77,7 @@
 			$query="SELECT label FROM categories WHERE category='$class' LIMIT 1";
 			$res=$databaseConnection->query($query);
 			$result=$databaseConnection->nextEntry($res);
-			$title=urldecode(str_replace("_"," ",substr (strrchr ($class, "/"), 1)));
-			if (strlen($result['label'])>strlen($title)-3||preg_match('/[0-9]$/',$title)===1){
-				$title=$result['label'];
-			}
+			$title=getLabel($class,$result['label']);
 				
 			$content.=getClassView($fatherClasses,$childClasses,$title,$class);
 			
