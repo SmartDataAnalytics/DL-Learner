@@ -1,6 +1,26 @@
-package org.dllearner.test;
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+package org.dllearner.scripts;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,12 +28,32 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
+import org.ini4j.IniFile;
+
+/**
+ * Fills that database needed for running DBpedia Navigator.
+ * First move the mentioned DBpedia files to the specified
+ * directory, then execute this script. Database settings are
+ * taken from the settings.ini file of DBpedia Navigator.
+ * 
+ * @author Sebastian Knappe
+ * @author Jens Lehmann
+ *
+ */
 public class CalculatePageRank {
 	
-	private final String wikilinks="../pagelinks_en.nt";
-	private final String labels="../articles_label_en.nt";
-	private final String categories="../yago_en.nt";
+	private final String datasetDir = "src/dbpedia-navigator/data/";
+	private final String wikilinks = datasetDir + "pagelinks_en.nt";
+	private final String labels = datasetDir + "articles_label_en.nt";
+	private final String categories = datasetDir + "yago_en.nt";
+	
+	private static String dbServer;
+	private static String dbName;
+	private static String dbUser;
+	private static String dbPass;	
 	
 	private void calculateLinks()
 	{
@@ -25,10 +65,10 @@ public class CalculatePageRank {
 			Class.forName("com.mysql.jdbc.Driver");
 		
 			String url =
-			            "jdbc:mysql://localhost:3306/navigator_db";
+			            "jdbc:mysql://"+dbServer+":3306/"+dbName;
 		
 			Connection con = DriverManager.getConnection(
-			                                 url,"navigator", "dbpedia");
+			                                 url, dbUser, dbPass);
 			
 			stmt = con.createStatement();
 			BufferedReader in = new BufferedReader(new FileReader(wikilinks));
@@ -221,7 +261,16 @@ public class CalculatePageRank {
 		}
 	}
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws BackingStoreException{
+		
+		// reading values from ini file
+		String iniFile = "src/dbpedia-navigator/settings.ini";
+		Preferences prefs = new IniFile(new File(iniFile));
+		dbServer = prefs.node("database").get("name", null);
+		dbName = prefs.node("database").get("name", null);
+		dbUser = prefs.node("database").get("user", null);
+		dbPass = prefs.node("database").get("pass", null);
+
 		CalculatePageRank cal=new CalculatePageRank();
 		cal.calculateLinks();
 		cal.addLabels();
