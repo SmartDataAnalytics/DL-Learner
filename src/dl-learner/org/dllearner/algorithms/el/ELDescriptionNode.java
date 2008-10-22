@@ -115,7 +115,34 @@ public class ELDescriptionNode {
 		// we need to update the set of nodes on a particular level
 		tree.addNodeToLevel(this, level);
 		
-		// TODO simulation update
+		// simulation update
+		// the nodes, which need to be updated
+		Set<ELDescriptionNode> update = new TreeSet<ELDescriptionNode>();
+		
+		// loop over all nodes on the same level, which are not in the in set
+		Set<ELDescriptionNode> nodes = tree.getNodesOnLevel(level);
+		for(ELDescriptionNode w : nodes) {
+			if(w.label.size() == 0) {
+				
+			}
+			
+			if(inSC1.contains(w) && checkSC2(this, w)) {
+				extendSimulation(this, w);
+				update.add(w.parent);
+			}
+		}
+		
+		// loop over all nodes in out set
+		for(ELDescriptionNode w : out) {
+			if(!checkSC1(this, w)) {
+				shrinkSimulation(this, w);
+				update.add(w.parent);
+			}
+		}
+		
+		// apply updates recursively top-down
+		tree.updateSimulation(update);		
+		
 	}
 	
 	/**
@@ -249,18 +276,45 @@ public class ELDescriptionNode {
 	public void replaceInLabel(NamedClass oldClass, NamedClass newClass) {
 		label.remove(oldClass);
 		label.add(newClass);
+		labelSimulationUpdate();
+	}
+	
+	/**
+	 * Adds an entry to the node label.
+	 * @param newClass Class to add to label.
+	 */
+	public void extendLabel(NamedClass newClass) {
+		label.add(newClass);
+		labelSimulationUpdate();
+	}	
+	
+	// simulation update when extending or refining label 
+	// (same in both cases)
+	private void labelSimulationUpdate() {
+		// compute the nodes, which need to be updated
+		Set<ELDescriptionNode> update = new TreeSet<ELDescriptionNode>();
 		
-		// simulation update
-		
-		
+		// loop over all nodes on the same level, which are not in the in set
 		Set<ELDescriptionNode> nodes = tree.getNodesOnLevel(level);
 		Set<ELDescriptionNode> tmp = Helper.difference(nodes, in);
-		for(ELDescriptionNode node : tmp) {
-			if(isSublabel(label, node.label)) {
-				// TODO continue later
+		for(ELDescriptionNode w : tmp) {
+			// we only need to recompute SC2
+			if(inSC1.contains(w) && checkSC2(this, w)) {
+				extendSimulation(this, w);
+				update.add(w.parent);
 			}
 		}
 		
+		// loop over all nodes in out set
+		for(ELDescriptionNode w : out) {
+			if(!checkSC1(this, w)) {
+				shrinkSimulation(this, w);
+				update.add(w.parent);
+			}
+		}
+		
+		// apply updates recursively top-down
+		tree.updateSimulation(update);		
 	}
 	
 	// SC satisfied if both SC1 and SC2 satisfied
@@ -335,16 +389,14 @@ public class ELDescriptionNode {
 	private void extendSimulation(ELDescriptionNode node1, ELDescriptionNode node2) {
 		node1.out.add(node2);
 		node2.in.add(node1);
+		// TODO: SC1, SC2 sets ?
 	}
 	
-	/**
-	 * Adds an entry to the node label.
-	 * @param newClass Class to add to label.
-	 */
-	public void extendLabel(NamedClass newClass) {
-		label.add(newClass);
-		
-		// TODO simulation update
+	// removes (node1,node2) from simulation, takes care of all helper sets
+	private void shrinkSimulation(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.out.remove(node2);
+		node2.in.remove(node1);
+		// TODO: SC1, SC2 sets ?
 	}
 	
 	/**

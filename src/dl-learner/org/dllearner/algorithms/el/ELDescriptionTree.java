@@ -221,6 +221,17 @@ public class ELDescriptionTree implements Cloneable {
 		return currentNode;
 	}
 
+	protected void updateSimulation(Set<ELDescriptionNode> nUpdate) {
+//		for(ELDescriptionNode node : nodes) {
+//			
+//		}
+		Set<ELDescriptionNode> update;
+		while(nUpdate.size() != 0) {
+			update = nUpdate; // TODO: clone
+			
+		}
+	}
+	
 	@Override
 	public ELDescriptionTree clone() {
 		// create a new reference tree
