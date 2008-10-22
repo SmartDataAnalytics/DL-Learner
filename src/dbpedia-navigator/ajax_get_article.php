@@ -322,8 +322,8 @@
 			if (isset($triples['http://dbpedia.org/property/ntupdate'])) unset($triples['http://dbpedia.org/property/ntupdate']);
 			if (isset($triples['http://dbpedia.org/property/footballPlayerStatistics2Property'])) unset($triples['http://dbpedia.org/property/footballPlayerStatistics2Property']);
 			if (isset($triples['http://dbpedia.org/property/footballPlayerStatistics3Property'])) unset($triples['http://dbpedia.org/property/footballPlayerStatistics3Property']);
-			if (isset($triples['http://dbpedia.org/property/is_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23Before_of'])) unset($triples['is_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23Before_of']);
-			if (isset($triples['http://dbpedia.org/property/is_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23title_of'])) unset($triples['is_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23title_of']);
+			if (isset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23Before'])) unset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23Before']);
+			if (isset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23title'])) unset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23title']);
 			
 			
 			if (count($triples)>0){
