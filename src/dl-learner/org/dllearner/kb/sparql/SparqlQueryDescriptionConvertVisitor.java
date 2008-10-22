@@ -34,6 +34,7 @@ import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DescriptionVisitor;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
@@ -42,6 +43,7 @@ import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.Thing;
@@ -301,7 +303,9 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor{
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectValueRestriction)
 	 */
 	public void visit(ObjectValueRestriction description) {
-		logger.trace("ObjectValueRestriction");
+		ObjectProperty op = (ObjectProperty) description.getRestrictedPropertyExpression();
+		Individual ind = description.getIndividual();
+		query+="?"+stack.peek()+" <"+op.getName()+"> <"+ind.getName()+">";
 	}
 
 	/* (non-Javadoc)

@@ -13,6 +13,7 @@ import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DescriptionVisitor;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
@@ -21,6 +22,7 @@ import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.Thing;
@@ -221,7 +223,13 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectValueRestriction)
 	 */
 	public void visit(ObjectValueRestriction description) {
-		logger.trace("ObjectValueRestriction");
+		ObjectProperty op = (ObjectProperty) description.getRestrictedPropertyExpression();
+		Individual ind = description.getIndividual();
+		SortedSet<String> label = tasks.queryAsSet("SELECT ?label WHERE {<"+ind.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
+		String indLabel =label.first();
+		label = tasks.queryAsSet("SELECT ?label WHERE {<"+op.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
+		String propLabel =label.first();		
+		query += propLabel + " is " + indLabel;
 	}
 
 	/* (non-Javadoc)
