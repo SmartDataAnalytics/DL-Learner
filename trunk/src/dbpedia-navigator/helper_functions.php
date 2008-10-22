@@ -434,7 +434,7 @@ function getClassView($fathers,$childs,$title,$class)
 	$ret.='<tr style="height:20px"><td><hr/></td></tr>';
 	$ret.='<tr><td style="font-size:14px;"><b>Current class</b></td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
-	$ret.='<tr><td><b>'.$title.'</b> ('.urldecode(str_replace("_"," ",substr (strrchr ($class, "/"), 1))).')</td></tr>';
+	$ret.='<tr><td><b>'.$title.'</b></td></tr>';
 	$ret.='<tr style="height:10px"><td></td></tr>';
 	$ret.='<tr><td>';
 	$ret.='<input style="width:70px" type="button" value="Instances" class="button" onclick="getSubjectsFromCategory(\'category='.$class.'&number=10\');" title="Search Instances of Shown class."/>';
