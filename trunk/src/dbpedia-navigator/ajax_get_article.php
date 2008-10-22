@@ -324,6 +324,20 @@
 			if (isset($triples['http://dbpedia.org/property/footballPlayerStatistics3Property'])) unset($triples['http://dbpedia.org/property/footballPlayerStatistics3Property']);
 			if (isset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23Before'])) unset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23Before']);
 			if (isset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23title'])) unset($triples['http://dbpedia.org/property/_percent_7D_percent_7D_percent_7B_percent_7BsuccessionBox_percent_23_percent_23_percent_23_percent_23title']);
+			if (isset($triples['http://dbpedia.org/property/accessdate'])) unset($triples['http://dbpedia.org/property/accessdate']);
+			if (isset($triples['http://dbpedia.org/property/state'])) unset($triples['http://dbpedia.org/property/state']);
+			if (isset($triples['http://dbpedia.org/property/coordinates'])) unset($triples['http://dbpedia.org/property/coordinates']);
+			if (isset($triples['http://dbpedia.org/property/lga'])) unset($triples['http://dbpedia.org/property/lga']);
+			if (isset($triples['http://dbpedia.org/property/fedgov'])) unset($triples['http://dbpedia.org/property/fedgov']);
+			if (isset($triples['http://dbpedia.org/property/dist'])) unset($triples['http://dbpedia.org/property/dist']);
+			if (isset($triples['http://dbpedia.org/property/dir'])) unset($triples['http://dbpedia.org/property/dir']);
+			if (isset($triples['http://dbpedia.org/property/float'])) unset($triples['http://dbpedia.org/property/float']);
+			if (isset($triples['http://dbpedia.org/property/left'])) unset($triples['http://dbpedia.org/property/left']);
+			if (isset($triples['http://dbpedia.org/property/quick'])) unset($triples['http://dbpedia.org/property/quick']);
+			if (isset($triples['http://dbpedia.org/property/clear'])) unset($triples['http://dbpedia.org/property/clear']);
+			if (isset($triples['http://dbpedia.org/property/utc'])) unset($triples['http://dbpedia.org/property/utc']);
+			if (isset($triples['http://dbpedia.org/property/utcDst'])) unset($triples['http://dbpedia.org/property/utcDst']);
+			if (isset($triples['http://dbpedia.org/property/spokenWikipedia2Property'])) unset($triples['http://dbpedia.org/property/spokenWikipedia2Property']);
 			
 			
 			if (count($triples)>0){
@@ -400,7 +414,7 @@
 	if (isset($_SESSION['articles'])){
 		foreach ($_SESSION['articles'] as $key => $value)
 		{
-			$lastArticles.="<a href=\"\" onclick=\"get_article('label=&cache=".$key."');return false;\">".$value['subject']."</a><br/>";
+			$lastArticles.="<a href=\"\" onclick=\"get_article('label=\'".$value['subject']."\'&cache=".$key."');return false;\">".$value['subject']."</a><br/>";
 		}
 	}
 	
