@@ -61,10 +61,10 @@
 			// dbpedia.org/search
 			
 			//BUILD ARTICLE TITLE
-			if (strlen($triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'])>0)
+			if (isset($triples['http://www.w3.org/2000/01/rdf-schema#label'])&&strlen($triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'])>0)
 				$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
 			else
-				$artTitle=urldecode(str_replace("_"," ",substr (strrchr ($url, "/"), 1)));
+				$artTitle=urldecode(str_replace("_"," ",substr (strrchr ($uri, "/"), 1)));
 			
 			// display a picture if there is one
 			if (isset($triples['http://dbpedia.org/property/imageCaption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/imageCaption'][0]['value'];
@@ -87,7 +87,12 @@
 			}
 			
 			// add short description in english
-			$content.="<h4>Short Description</h4><p>".urldecode($triples['http://dbpedia.org/property/abstract'][0]['value'])."</p>";
+			$content.="<h4>Short Description</h4><p>";
+			if (isset($triples['http://dbpedia.org/property/abstract']))
+				$content.=urldecode($triples['http://dbpedia.org/property/abstract'][0]['value']);
+			else
+				$content.="No Short Description available.";
+			$content.="</p>";
 				
 			// give the link to the corresponding Wikipedia article
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
