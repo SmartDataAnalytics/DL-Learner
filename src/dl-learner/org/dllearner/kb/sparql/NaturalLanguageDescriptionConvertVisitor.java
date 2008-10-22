@@ -84,7 +84,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public static void main(String[] args) {
 		try {
-			SortedSet<String> s = new TreeSet<String>();
+			/*SortedSet<String> s = new TreeSet<String>();
 			HashMap<String,String> result = new HashMap<String,String>();
 			String conj="(\"http://dbpedia.org/class/yago/Person100007846\" AND \"http://dbpedia.org/class/yago/Head110162991\")";
 			s.add("EXISTS \"http://dbpedia.org/property/disambiguates\".TOP");
@@ -106,7 +106,9 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 				System.out.println("Query:\n"+result.get(string));
 				System.out.println("************************");
 			}
-			System.out.println("Finished");
+			System.out.println("Finished");*/
+			String conj="\"http://dbpedia.org/class/yago/PlannedCities\"";
+			System.out.println(NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conj, "DBPEDIA"));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -245,6 +247,13 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 		String l=label.first();
 		String l2=description.getName().substring(description.getName().lastIndexOf("/")+1, description.getName().length()).replace('_', ' ');
 		if (l.length()+5<l2.length()&&!l2.matches(".*[0-9]")) l=l2;
+		
+		//replacements
+		l=l.replaceAll("cities", "City");
+		l=l.replaceAll("Cities", "City");
+		
+		l=l.replaceAll("([^-0\040])([A-Z])", "$1 $2");
+				
 		if (l.toLowerCase().startsWith("a")||l.toLowerCase().startsWith("e")||l.toLowerCase().startsWith("i")||l.toLowerCase().startsWith("o")||l.toLowerCase().startsWith("u")) query+="an "+l;
 		else query+="a "+l;
 	}
