@@ -86,7 +86,7 @@
 			$title=urldecode(str_replace("_"," ",substr (strrchr ($class, "/"), 1)));
 			if (strlen($result['label'])>strlen($title)-3||preg_match('/[0-9]$/',$title)===1){
 				$title=$result['label'];
-			}´
+			}
 				
 			$content.=getClassView($fatherClasses,$childClasses,$title,$class);
 			
