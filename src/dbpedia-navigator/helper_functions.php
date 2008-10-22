@@ -9,7 +9,7 @@ function getLabel($uri,$label)
 	
 	$final='';
 	$offset=0;
-	preg_match_all("/[^A-Z]([A-Z])/",$res,$treffer,PREG_OFFSET_CAPTURE);
+	preg_match_all("/[^-0\040A-Z]([A-Z])/",$res,$treffer,PREG_OFFSET_CAPTURE);
 	foreach ($treffer[1] as $treff){
 		if ($res[$treff[1]-1]!=' '&&$res[$treff[1]-1]!='-'&&$treff[1]!=0){
 			$final.=substr($res,$offset,$treff[1]-$offset).' ';
