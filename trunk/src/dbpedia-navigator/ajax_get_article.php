@@ -414,7 +414,7 @@
 	if (isset($_SESSION['articles'])){
 		foreach ($_SESSION['articles'] as $key => $value)
 		{
-			$lastArticles.="<a href=\"\" onclick=\"get_article('label=\'".$value['subject']."\'&cache=".$key."');return false;\">".$value['subject']."</a><br/>";
+			$lastArticles.="<a href=\"\" onclick=\"get_article('label=".$value['subject']."&cache=".$key."');return false;\">".$value['subject']."</a><br/>";
 		}
 	}
 	
