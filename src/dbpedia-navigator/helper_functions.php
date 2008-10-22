@@ -45,7 +45,7 @@ function getTagCloud($tags,$label)
 			$lab=$label[$tag];
 		}
 		//$tag_with_entities=htmlentities("\"".$tag."\"");
-		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',document.getElementById(\'hidden_number\').value);">'.$lab.'</a>&nbsp;';
+		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',document.getElementById(\'hidden_number\').value);">'.utf8_to_html($lab).'</a>&nbsp;';
 	}
 	$ret.="</p><br/>";
 	return $ret;
@@ -371,7 +371,7 @@ function formatClassArray($ar) {
 		$res=$databaseConnection->query($query);
 		$result=$databaseConnection->nextEntry($res);
 		$label=urldecode(str_replace("_"," ",substr (strrchr ($ar[$i]['value'], "/"), 1)));
-		if (strlen($result['label'])>strlen($label)-3||preg_match('/[0-9]/',$label)===1){
+		if (strlen($result['label'])>strlen($label)-3||preg_match('/[0-9]$/',$label)===1){
 			$label=$result['label'];
 		}
 		$label=utf8_to_html($label);
