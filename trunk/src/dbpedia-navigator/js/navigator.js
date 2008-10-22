@@ -30,9 +30,9 @@ function show_results(class, label, number)
 	var names;
 	var hasClass;
 	
-	if (class='all') document.getElementById('FilterTags').innerHTML='You currently don\'t filter your search results.';
-	else document.getElementById('FilterTags').innerHTML='You filter your search results by class '+label+'.';
-	
+	if (class=='all') document.getElementById('FilterTags').innerHTML='You currently don\'t filter your search results.';
+	else document.getElementById('FilterTags').innerHTML='Filtered by class: '+label+'.';
+		
 	for (var i=0;i<links.length;i++){
 		if (class=='all'){
 			if ((j+1)>number&&j<(number+25)) links[i].style.display='block';

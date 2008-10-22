@@ -66,6 +66,7 @@ function getTagCloud($tags,$label)
 	$ret.='<span id="FilterTags">You currently don\'t filter your search results.</span>';
 	$ret.=' You can <a style="font-size:11px;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'all\';show_results(\'all\',\'all\',document.getElementById(\'hidden_number\').value);">show all results</a>&nbsp;';
 	if ($nc) $ret.=' or <a style="font-size:11px;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'NoCategory\';show_results(\'NoCategory\',\'No Category\',document.getElementById(\'hidden_number\').value);">show results with no category</a>&nbsp;';
+	$ret.='<br/><br/>';
 	return $ret;
 }
 
