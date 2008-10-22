@@ -51,8 +51,11 @@
 				$res2=$databaseConnection->query($query);
 				$result2=$databaseConnection->nextEntry($res2);
 				$identify=urldecode(str_replace("_"," ",substr (strrchr ($result['child'], "/"), 1)));
-				if ((strlen($identify)+strlen($result2['label']))>100) $identify=substr($identify,0,100-strlen($result2['label']));
-				$childClasses.='<option value="'.$result['child'].'">'.utf8_to_html($result2['label']).' ('.$identify.')</option>';
+				if (strlen($result2['label'])>strlen($identify)-3||preg_match('/[0-9]$/',$identify)===1){
+					$identify=$result2['label'];
+				}
+				if (strlen($identify)>100) $identify=substr($identify,0,100);
+				$childClasses.='<option value="'.$result['child'].'">'.utf8_to_html($identify).'</option>';
 			}
 			if (strlen($childClasses)>0)
 				$childClasses='<select size="1" style="width:500px" id="childSelect">'.$childClasses.'</select>';
@@ -67,8 +70,11 @@
 				$res2=$databaseConnection->query($query);
 				$result2=$databaseConnection->nextEntry($res2);
 				$identify=urldecode(str_replace("_"," ",substr (strrchr ($result['father'], "/"), 1)));
-				if ((strlen($identify)+strlen($result2['label']))>100) $identify=substr($identify,0,100-strlen($result2['label']));
-				$fatherClasses.='<option value="'.$result['father'].'">'.utf8_to_html($result2['label']).' ('.$identify.')</option>';
+				if (strlen($result2['label'])>strlen($identify)-3||preg_match('/[0-9]$/',$identify)===1){
+					$identify=$result2['label'];
+				}
+				if (strlen($identify)>100) $identify=substr($identify,0,100);
+				$fatherClasses.='<option value="'.$result['father'].'">'.utf8_to_html($identify).'</option>';
 			}
 			if (strlen($fatherClasses)>0)
 				$fatherClasses='<select size="1" style="width:500px" id="fatherSelect">'.$fatherClasses.'</select>';	
@@ -77,8 +83,11 @@
 			$query="SELECT label FROM categories WHERE category='$class' LIMIT 1";
 			$res=$databaseConnection->query($query);
 			$result=$databaseConnection->nextEntry($res);
-			$title=$result['label'];
-			
+			$title=urldecode(str_replace("_"," ",substr (strrchr ($class, "/"), 1)));
+			if (strlen($result['label'])>strlen($title)-3||preg_match('/[0-9]$/',$title)===1){
+				$title=$result['label'];
+			}´
+				
 			$content.=getClassView($fatherClasses,$childClasses,$title,$class);
 			
 			//Restart the Session
@@ -111,7 +120,7 @@
 	if (isset($_SESSION['classes'])){
 		foreach ($_SESSION['classes'] as $key => $value)
 		{
-			$lastClasses.="<a href=\"\" onclick=\"get_class('class=&cache=".$key."');return false;\">".$value['title']." (".urldecode(str_replace("_"," ",substr (strrchr ($value['uri'], "/"), 1))).")</a><br/>";
+			$lastClasses.="<a href=\"\" onclick=\"get_class('class=".$value['uri']."&cache=".$key."');return false;\">".$value['title']."</a><br/>";
 		}
 	}
 	
