@@ -7,10 +7,18 @@ function getLabel($uri,$label)
 	}
 	$res=utf8_to_html($res);
 	
-	preg_match_all("/([A-Z])/",$res,$treffer,PREG_OFFSET_CAPTURE);
-	foreach ($treffer[0] as $treff){
-		if ($res[$treff[1]-1]!=' '&&$res[$treff[1]-1]!='-'&&$treff[1]!=0) $res=substr($res,0,$treff[1]).' '.substr($res,$treff[1]);
+	$final='';
+	$offset=0;
+	preg_match_all("/[^A-Z]([A-Z])/",$res,$treffer,PREG_OFFSET_CAPTURE);
+	foreach ($treffer[1] as $treff){
+		if ($res[$treff[1]-1]!=' '&&$res[$treff[1]-1]!='-'&&$treff[1]!=0){
+			$final.=substr($res,$offset,$treff[1]-$offset).' ';
+			$offset=$treff[1];
+		}
 	}
+	$final.=substr($res,$offset);
+	
+	$res=$final;
 	
 	//replacements
 	$res=str_replace('cities','City',$res);
