@@ -59,10 +59,10 @@ function get_article(param)
 	    		document.getElementById('lastarticles').innerHTML=response[2];
 	    		document.getElementById('Positives').innerHTML=response[3];
 	    		document.getElementById('Negatives').innerHTML=response[4];
-	    		if (response[5].length>0&&response[6].length>0)
-	    			loadGoogleMap(response[5],response[6],''+response[1]);
+	    		if (response[6].length>0&&response[7].length>0)
+	    			loadGoogleMap(response[6],response[7],''+response[1]);
 	    		document.getElementById('LastArticlesBox').style.display='block';
-	    		learnConcept();
+	    		if (response[5]=="false") learnConcept();
 	    	}else setTimeout("search_it('label='+document.getElementById('label').value+'&number=10')",2000);
 	    	generateURL();
     	}
