@@ -109,7 +109,8 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 				System.out.println("************************");
 			}
 			System.out.println("Finished");*/
-			String conj="\"http://dbpedia.org/class/yago/PlannedCities\"";
+			//String conj="EXISTS \"http://xmlns.com/foaf/0.1/page\".<= 0 \"http://www.w3.org/2004/02/skos/core#subject\".TOP";
+			String conj="(\"Male\" AND (\"hasDog\" = 18))";
 			System.out.println(NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conj, "DBPEDIA"));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -203,6 +204,9 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(ObjectMinCardinalityRestriction description) {
 		logger.trace("ObjectMinCardinalityRestriction");
+		if (query.endsWith("which is ")) query=query.substring(0, query.length()-3)+"has ";
+		query+="at least "+description.getCardinality()+" "+description.getRole().toString()+" which is ";
+		description.getChild(0).accept(this);
 	}
 
 	/* (non-Javadoc)
@@ -210,6 +214,9 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(ObjectExactCardinalityRestriction description) {
 		logger.trace("ObjectExactCardinalityRestriction");
+		if (query.endsWith("which is ")) query=query.substring(0, query.length()-3)+"has ";
+		query+="exactly "+description.getCardinality()+" "+description.getRole().toString()+" which is ";
+		description.getChild(0).accept(this);
 	}
 
 	/* (non-Javadoc)
@@ -217,6 +224,9 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(ObjectMaxCardinalityRestriction description) {
 		logger.trace("ObjectMaxCardinalityRestriction");
+		if (query.endsWith("which is ")) query=query.substring(0, query.length()-3)+"has ";
+		query+="at most "+description.getCardinality()+" "+description.getRole().toString()+" which is ";
+		description.getChild(0).accept(this);		
 	}
 
 	/* (non-Javadoc)
@@ -237,6 +247,8 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(DatatypeValueRestriction description) {
 		logger.trace("DatatypeValueRestriction");
+		//if (query.endsWith("which is ")) query=query.substring(0, query.length()-3)+"has ";
+		query+=description.getRestrictedPropertyExpression().toString()+" has the value "+description.getValue();
 	}
 
 	/* (non-Javadoc)
