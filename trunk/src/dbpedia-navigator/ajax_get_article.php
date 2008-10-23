@@ -362,19 +362,24 @@
 			$_SESSION['nextArticle']++;
 				
 			//Add Positives to Session
+			$noChange="false";
 			if (!isset($_SESSION['positive'])){
 				$array=array($uri => $artTitle);
 				$_SESSION['positive']=$array;
 			}
 			else{
 				$array=$_SESSION['positive'];
-				$array[$uri]=$artTitle;
-				if (count($array)>10){
-					foreach ($array as $key=>$value){
-						unset($array[$key]);
-						break;
+				if (!isset($array[$uri])){
+					$array[$uri]=$artTitle;
+					if (count($array)>10){
+						foreach ($array as $key=>$value){
+							unset($array[$key]);
+							break;
+						}
 					}
 				}
+				else
+					$noChange="true";
 				$_SESSION['positive']=$array;
 			}
 									
@@ -393,19 +398,24 @@
 		$uri=$_SESSION['articles'][$fromCache]['uri'];
 		
 		//Add Positives to Session
+		$noChange="false";
 		if (!isset($_SESSION['positive'])){
 			$array=array($uri => $artTitle);
 			$_SESSION['positive']=$array;
 		}
 		else{
 			$array=$_SESSION['positive'];
-			$array[$uri]=$artTitle;
-			if (count($array)>10){
-				foreach ($array as $key=>$value){
-					unset($array[$key]);
-					break;
+			if (!isset($array[$uri])){
+				$array[$uri]=$artTitle;
+				if (count($array)>10){
+					foreach ($array as $key=>$value){
+						unset($array[$key]);
+						break;
+					}
 				}
 			}
+			else
+				$noChange="true";
 			$_SESSION['positive']=$array;
 		}
 	}
@@ -430,6 +440,8 @@
 	print $interests[0];
 	print '$$$';
 	print $interests[1];
+	print '$$$';
+	print $noChange;
 	print '$$$';
 	print $lat;
 	print '$$$';
