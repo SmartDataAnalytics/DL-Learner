@@ -269,8 +269,8 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 		if (l.length()+5<l2.length()&&!l2.matches(".*[0-9]")) l=l2;
 		
 		//replacements
-		l=l.replaceAll("cities", "City");
 		l=l.replaceAll("Cities", "City");
+		l=l.replaceAll("Players", "Player");
 		
 		l=l.replaceAll("([^-0\040])([A-Z])([^A-Z])", "$1 $2$3");
 				
