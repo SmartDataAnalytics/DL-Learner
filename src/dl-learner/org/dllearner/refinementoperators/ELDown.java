@@ -259,9 +259,9 @@ public class ELDown extends RefinementOperatorAdapter {
 				// clone operation
 				ELDescriptionTree clonedTree = tree.clone();
 				// find cloned edge and replace its label
-				ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
-				clonedEdge.setLabel(op2);
-				// TODO simulation update
+				clonedTree.getNode(position).refineEdge(edgeNumber, op2);
+//				ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
+//				clonedEdge.setLabel(op2);
 				refinements.add(clonedTree);				
 			}
 
