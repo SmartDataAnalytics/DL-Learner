@@ -65,7 +65,8 @@
 				$artTitle=$triples['http://www.w3.org/2000/01/rdf-schema#label'][0]['value'];
 			else
 				$artTitle=urldecode(str_replace("_"," ",substr (strrchr ($uri, "/"), 1)));
-			
+			if (strpos($artTitle,'"')==strlen($artTitle)-1) $artTitle=substr($artTitle,0,strlen($artTitle)-1);		
+				
 			// display a picture if there is one
 			if (isset($triples['http://dbpedia.org/property/imageCaption'])&&$triples['http://dbpedia.org/property/imageCaption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/imageCaption'][0]['value'];
 			else if (isset($triples['http://dbpedia.org/property/caption'])&&$triples['http://dbpedia.org/property/caption'][0]['type']!='uri') $alt=$triples['http://dbpedia.org/property/caption'][0]['value'];
@@ -96,11 +97,11 @@
 				
 			// give the link to the corresponding Wikipedia article
 			if(isset($triples['http://xmlns.com/foaf/0.1/page']))
-				$content .= '<p><img src="images/wikipedia_favicon.png" alt="Wikipedia" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.getPrintableURL($triples['http://xmlns.com/foaf/0.1/page'][0]['value']).'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view Wikipedia article</a>, '; 
-			$content .= '<img src="images/dbpedia-favicon.ico" alt="DBpedia" style="max-width:20px;"/> <a href="#" onclick="window.open(\''.$uri.'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view DBpedia resource description</a>';
+				$content .= '<p><img src="images/wikipedia_favicon.png" alt="Wikipedia" style="max-width:20px;" /> <a href="'.$triples['http://xmlns.com/foaf/0.1/page'][0]['value'].'" onclick="window.open(\''.getPrintableURL($triples['http://xmlns.com/foaf/0.1/page'][0]['value']).'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view Wikipedia article</a>, '; 
+			$content .= '<img src="images/dbpedia-favicon.ico" alt="DBpedia" style="max-width:20px;"/> <a href="'.$uri.'" onclick="window.open(\''.$uri.'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view DBpedia resource description</a>';
 			//display photo collection, if there is one
 			if (isset($triples['http://dbpedia.org/property/hasPhotoCollection'])){
-				$content.=', <img src="images/flickr.png" alt="Flickr" style="max-width:20px;" /> <a href="#" onclick="window.open(\''.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view photo collection</a></p>';
+				$content.=', <img src="images/flickr.png" alt="Flickr" style="max-width:20px;" /> <a href="'.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'" onclick="window.open(\''.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');">view photo collection</a></p>';
 			}
 			
 			//display owl:sameAs properties
