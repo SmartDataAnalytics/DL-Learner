@@ -272,7 +272,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 		l=l.replaceAll("Cities", "City");
 		l=l.replaceAll("Players", "Player");
 		
-		l=l.replaceAll("([^-0\040])([A-Z])([^A-Z])", "$1 $2$3");
+		l=l.replaceAll("([^-\040])([A-Z])([^A-Z])", "$1 $2$3");
 				
 		if (l.toLowerCase().startsWith("a")||l.toLowerCase().startsWith("e")||l.toLowerCase().startsWith("i")||l.toLowerCase().startsWith("o")||l.toLowerCase().startsWith("u")) query+="an "+l;
 		else query+="a "+l;
