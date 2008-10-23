@@ -6,9 +6,11 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMinCardinalityRestriction;
+import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
@@ -110,9 +112,10 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 			}
 			System.out.println("Finished");*/
 			//String conj="EXISTS \"http://xmlns.com/foaf/0.1/page\".<= 0 \"http://www.w3.org/2004/02/skos/core#subject\".TOP";
-			String conj="(\"Male\" AND (\"hasDog\" = 18))";
-			System.out.println(NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conj, "DBPEDIA"));
-		} catch (ParseException e) {
+			//String conj="(\"Male\" AND (\"hasDog\" = 18))";
+			ObjectValueRestriction rest=new ObjectValueRestriction(new ObjectProperty("hasAge"),new Individual("18"));
+			System.out.println(NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(rest));
+		} catch (/*Parse*/Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -236,9 +239,17 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 		ObjectProperty op = (ObjectProperty) description.getRestrictedPropertyExpression();
 		Individual ind = description.getIndividual();
 		SortedSet<String> label = tasks.queryAsSet("SELECT ?label WHERE {<"+ind.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
-		String indLabel =label.first();
+		String indLabel;
+		if (label.size()>0)
+			indLabel =label.first();
+		else 
+			indLabel =ind.getName();
 		label = tasks.queryAsSet("SELECT ?label WHERE {<"+op.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
-		String propLabel =label.first();		
+		String propLabel;
+		if (label.size()>0)
+			propLabel =label.first();
+		else 
+			propLabel =op.getName();		
 		query += propLabel + " is " + indLabel;
 	}
 
