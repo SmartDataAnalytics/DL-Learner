@@ -21,8 +21,8 @@ function getLabel($uri,$label)
 	$res=$final;
 	
 	//replacements
-	$res=str_replace('cities','City',$res);
 	$res=str_replace('Cities','City',$res);
+	$res=str_replace('Players','Player',$res);
 	
 	return $res;
 }
