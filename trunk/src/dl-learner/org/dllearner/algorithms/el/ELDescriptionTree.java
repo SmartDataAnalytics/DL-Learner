@@ -23,7 +23,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import org.dllearner.core.ReasoningService;
@@ -222,15 +224,117 @@ public class ELDescriptionTree implements Cloneable {
 	}
 
 	protected void updateSimulation(Set<ELDescriptionNode> nUpdate) {
-//		for(ELDescriptionNode node : nodes) {
-//			
-//		}
-		Set<ELDescriptionNode> update;
-		while(nUpdate.size() != 0) {
-			update = nUpdate; // TODO: clone
-			
+		// create a stack and initialize it with the nodes to be updated
+		Stack<ELDescriptionNode> stack = new Stack<ELDescriptionNode>();
+		stack.addAll(nUpdate);
+		
+		while(stack.size() != 0) {
+			// take element from bottom of stack (to ensure that all nodes on the 
+			// same level are tested before any node of a lower level is tested)
+			ELDescriptionNode v = stack.peek(); // TODO: lookup whether peek is correct (had no Javadoc here)
+			// loop through all nodes on same level
+			for(ELDescriptionNode w : levelNodeMapping.get(v.getLevel())) {
+				if(!v.out.contains(w) && v.outSC1.contains(w) && checkSC2(v,w)) {
+					extendSimulation(v,w);
+					stack.add(v.getParent());
+					stack.add(w.getParent());
+				}
+				if(!w.out.contains(v) && w.outSC1.contains(v) && checkSC2(w,v)) {
+					extendSimulation(w,v);
+					stack.add(v.getParent());
+					stack.add(w.getParent());
+				}
+			}
 		}
 	}
+	
+	// SC satisfied if both SC1 and SC2 satisfied
+	public boolean checkSC(ELDescriptionNode node1, ELDescriptionNode node2) {
+		return checkSC1(node1, node2) && checkSC2(node1, node2);
+	}	
+	
+	// tests simulation condition 1 (SC1)
+	public boolean checkSC1(ELDescriptionNode node1, ELDescriptionNode node2) {
+		return isSublabel(node1.getLabel(), node2.getLabel());
+	}
+	
+	private boolean isSublabel(NavigableSet<NamedClass> subLabel, NavigableSet<NamedClass> superLabel) {
+		// implemented according to definition in article
+		// (TODO can probably be done more efficiently)
+		for(NamedClass nc : superLabel) {
+			if(!containsSubclass(nc, subLabel)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean containsSubclass(NamedClass superClass, NavigableSet<NamedClass> label) {
+		for(NamedClass nc : label) {
+			if(subsumptionHierarchy.isSubclassOf(nc, superClass)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// tests simulation condition 2 (SC2)
+	public boolean checkSC2(ELDescriptionNode node1, ELDescriptionNode node2) {
+		List<ELDescriptionEdge> edges1 = node1.getEdges();
+		List<ELDescriptionEdge> edges2 = node2.getEdges();
+		
+		for(ELDescriptionEdge edge : edges1) {
+			// try to find an edge satisfying SC2 in the set
+			if(!checkSC2Edge(edge, edges2)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	// check whether edges contains an element satisfying SC2
+	private boolean checkSC2Edge(ELDescriptionEdge edge, List<ELDescriptionEdge> edges) {
+		ObjectProperty op1 = edge.getLabel();
+		ELDescriptionNode node1 = edge.getTree();
+		
+		for(ELDescriptionEdge edge2 : edges) {
+			ObjectProperty op2 = edge2.getLabel();
+			// we first check the condition on the properties
+			if(roleHierarchy.isSubpropertyOf(op1, op2)) {
+				// check condition on simulations of referred nodes
+				ELDescriptionNode node2 = edge2.getTree();
+				if(node1.in.contains(node2) || node2.in.contains(node1)) {
+					// we found a node satisfying the condition, so we can return
+					return true;
+				}				
+			}
+		}
+		
+		// none of the edges in the set satisfies the 2nd simulation criterion
+		// wrt. the first edge
+		return false;
+	}	
+	
+	// adds (node1,node2) to simulation, takes care of all helper sets
+	public void extendSimulation(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.out.add(node2);
+		node1.outSC1.add(node2);
+		node1.outSC2.add(node2);
+		node2.in.add(node1);
+		node2.inSC1.add(node1);
+		node2.inSC2.add(node1);
+	}
+	
+	// removes (node1,node2) from simulation, takes care of all helper sets
+	public void shrinkSimulation(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.out.remove(node2);
+		node1.outSC1.remove(node2);
+		node1.outSC2.remove(node2);
+		node2.in.remove(node1);
+		node2.inSC1.remove(node1);
+		node2.inSC2.remove(node1);
+	}	
 	
 	@Override
 	public ELDescriptionTree clone() {
