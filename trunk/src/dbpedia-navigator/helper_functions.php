@@ -9,7 +9,7 @@ function getLabel($uri,$label)
 	
 	$final='';
 	$offset=0;
-	preg_match_all("/[^-0\040]([A-Z])[^A-Z]/",$res,$treffer,PREG_OFFSET_CAPTURE);
+	preg_match_all("/[^-\040]([A-Z])[^A-Z]/",$res,$treffer,PREG_OFFSET_CAPTURE);
 	foreach ($treffer[1] as $treff){
 		if ($res[$treff[1]-1]!=' '&&$res[$treff[1]-1]!='-'&&$treff[1]!=0){
 			$final.=substr($res,$offset,$treff[1]-$offset).' ';
@@ -278,7 +278,7 @@ function get_triple_table($triples,$subjecttriples) {
 					$label=str_replace('_',' ',substr($element['value'],28));
 					if (strlen($label)>60) $label=substr($label,0,60).'...';
 					if ($number>1) $table.='<li'.$display.'>';
-					$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($label).'</a>';
+					$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');">'.urldecode($label).'</a>';
 					if ($number>1) $table.='</li>';
 				}
 				else{
@@ -317,7 +317,7 @@ function get_triple_table($triples,$subjecttriples) {
 					$label=str_replace('_',' ',substr($element['value'],28));
 					if (strlen($label)>60) $label=substr($label,0,60).'...';
 					if ($number>1) $table.='<li'.$display.'>';
-					$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');return false;">'.urldecode($label).'</a>';
+					$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');">'.urldecode($label).'</a>';
 					if ($number>1) $table.='</li>';
 				}
 				else{
