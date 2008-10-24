@@ -705,6 +705,55 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return map;
 	}
 	
+	@Override
+	public Set<Individual> getRelatedIndividuals(Individual individual, ObjectProperty objectProperty) {
+		OWLIndividual ind = factory.getOWLIndividual(URI.create(individual.getName()));
+		OWLObjectProperty prop = getOWLAPIDescription(objectProperty);
+		Set<OWLIndividual> inds = null;
+		try {
+			inds = reasoner.getRelatedIndividuals(ind, prop);
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+		}
+		// convert data back to DL-Learner structures
+		SortedSet<Individual> is = new TreeSet<Individual>();
+		for(OWLIndividual oi : inds) {
+			is.add(new Individual(oi.getURI().toString()));
+		}
+		return is;
+	}
+	
+	@Override
+	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty) {
+		OWLIndividual ind = factory.getOWLIndividual(URI.create(individual.getName()));
+		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
+		Set<OWLConstant> constants = null;
+		try {
+			constants = reasoner.getRelatedValues(ind, prop);
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+		}
+		// convert data back to DL-Learner structures
+		SortedSet<Constant> is = new TreeSet<Constant>();
+		for(OWLConstant oi : constants) {
+			// for typed constants we have to figure out the correct
+			// data type and value
+			if(oi instanceof OWLTypedConstant) {
+				Datatype dt = convertDatatype(((OWLTypedConstant)oi).getDataType());
+				is.add(new TypedConstant(oi.getLiteral(),dt));
+			// for untyped constants we have to figure out the value
+			// and language tag (if any)
+			} else {
+				OWLUntypedConstant ouc = (OWLUntypedConstant) oi;
+				if(ouc.hasLang())
+					is.add(new UntypedConstant(ouc.getLiteral(), ouc.getLang()));
+				else
+					is.add(new UntypedConstant(ouc.getLiteral()));
+			}
+		}		
+		return is;	
+	}	
+	
 	public Map<Individual, SortedSet<Double>> getDoubleValues(DatatypeProperty datatypeProperty) {
 		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
 		Map<Individual, SortedSet<Double>> map = new TreeMap<Individual, SortedSet<Double>>();

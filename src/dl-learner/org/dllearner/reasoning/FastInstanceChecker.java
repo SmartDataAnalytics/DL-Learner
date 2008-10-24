@@ -43,6 +43,7 @@ import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.FastInstanceCheckerConfigurator;
 import org.dllearner.core.owl.BooleanValueRestriction;
+import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -666,6 +667,16 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return opPos.get(atomicRole);
 	}
 
+	@Override
+	public Set<Individual> getRelatedIndividuals(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+		return rc.getRelatedIndividuals(individual, objectProperty);
+	}
+	
+	@Override
+	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		return rc.getRelatedValues(individual, datatypeProperty);
+	}	
+	
 	/*
 	 * (non-Javadoc)
 	 * 

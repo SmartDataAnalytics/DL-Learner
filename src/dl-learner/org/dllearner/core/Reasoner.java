@@ -75,6 +75,10 @@ public interface Reasoner {
 	
 	public SortedSet<Individual> retrieval(Description concept) throws ReasoningMethodUnsupportedException;
 	
+	public Set<Individual> getRelatedIndividuals(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException;
+	
+	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;	
+	
 	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) throws ReasoningMethodUnsupportedException;
 	
 	public Map<Individual, SortedSet<Constant>> getDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;

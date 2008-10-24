@@ -28,6 +28,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -456,8 +457,24 @@ public class ReasoningService {
 		return result;
 	}
 
-	// gibt zu einer Rolle alle Elemente zur�ck
-	// private, da es keine Standardoperation ist
+	public Set<Individual> getRelatedIndividuals(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+		try {
+			return reasoner.getRelatedIndividuals(individual, objectProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}		
+	}
+	
+	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		try {
+			return reasoner.getRelatedValues(individual, datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}	
+	
 	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) {
 		reasoningStartTimeTmp = System.nanoTime();
 		Map<Individual, SortedSet<Individual>> result;		
