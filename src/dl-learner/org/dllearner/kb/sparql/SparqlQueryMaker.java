@@ -332,6 +332,7 @@ public class SparqlQueryMaker {
 		sqm.addPredicateFilter("http://www.w3.org/2000/01/rdf-schema#subClassOf");
 		sqm.addPredicateFilter("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
 		sqm.addPredicateFilter("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+		sqm.addPredicateFilter("http://www.w3.org/2000/01/rdf-schema#label");
 		// pred.add("http://dbpedia.org/property/wikipage");
 		// pred.add("http://dbpedia.org/property/wikiPageUsesTemplate");
 		// pred.add("http://dbpedia.org/property/relatedInstance");

@@ -54,6 +54,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -720,9 +721,11 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public String getNaturalDescription(String conceptString, String endpoint) throws ParseException {
+	public String getNaturalDescription(int id, String conceptString, String endpoint) throws ParseException, ClientNotKnownException {
 		// call parser to parse concept
-		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conceptString, endpoint);
+		ClientState state = getState(id);
+		ReasoningService service = state.getReasoningService();
+		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conceptString, service);
 	}
 	
 	@WebMethod

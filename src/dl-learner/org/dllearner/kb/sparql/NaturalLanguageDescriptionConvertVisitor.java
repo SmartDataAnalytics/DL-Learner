@@ -1,9 +1,14 @@
 package org.dllearner.kb.sparql;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.ReasoningService;
+import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMinCardinalityRestriction;
@@ -11,6 +16,7 @@ import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DescriptionVisitor;
+import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -42,12 +48,12 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 
 	private String query="";
 	
-	private SPARQLTasks tasks;
+	private ReasoningService service;
 	
-	public NaturalLanguageDescriptionConvertVisitor(String endpoint)
+	public NaturalLanguageDescriptionConvertVisitor(ReasoningService service)
 	{
 		//stack.push("subject");
-		tasks=new SPARQLTasks(new Cache("cache"),SparqlEndpoint.getEndpointByName(endpoint));
+		this.service=service;
 	}
 	
 	private String getDescription()
@@ -60,21 +66,40 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 		return query;
 	}
 	
-	public static String getNaturalLanguageDescription(Description description)
+	public static String getNaturalLanguageDescription(Description description, ReasoningService service)
 	{
-		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor("DBpedia");
+		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor(service);
 		description.accept(visitor);
 		String ret = visitor.getDescription();
 		return ret;
 	}
 	
-	public static String getNaturalLanguageDescription(String descriptionKBSyntax, String endpoint) throws ParseException
+	public static String getNaturalLanguageDescription(String descriptionKBSyntax, ReasoningService service) throws ParseException
 	{	
 		Description d = KBParser.parseConcept(descriptionKBSyntax);
-		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor(endpoint);
+		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor(service);
 		d.accept(visitor);
 		String ret = visitor.getDescription();
 		return ret;
+	}
+	
+	private String getLabelFromReasoner(Entity ent)
+	{
+		String label;
+		try{
+			Set<Constant> set=service.getLabel(ent);
+			if (set.size()>0){
+				Iterator<Constant> iter=set.iterator();
+				label=iter.next().getLiteral();
+			}
+			else label="";
+		}
+		catch (ReasoningMethodUnsupportedException e)
+		{
+			label="";
+		}
+		
+		return label;
 	}
 	
 	/**
@@ -110,7 +135,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 			//String conj="EXISTS \"http://xmlns.com/foaf/0.1/page\".<= 0 \"http://www.w3.org/2004/02/skos/core#subject\".TOP";
 			//String conj="(\"Male\" AND (\"hasDog\" = 18))";
 			ObjectValueRestriction rest=new ObjectValueRestriction(new ObjectProperty("hasAge"),new Individual("18"));
-			System.out.println(NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(rest));
+			//System.out.println(NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(rest));
 		} catch (/*Parse*/Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -131,8 +156,8 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(ObjectAllRestriction description) {
 		logger.trace("ObjectAllRestriction");
-		SortedSet<String> label=tasks.queryAsSet("SELECT ?label WHERE {<"+description.getRole().toString()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
-		if (label.size()>0) query+="all "+label.first()+" are ";
+		String label=getLabelFromReasoner((ObjectProperty)description.getRole());
+		if (label.length()>0) query+="all "+label+" are ";
 		else query+="all "+description.getRole().toString().substring(description.getRole().toString().lastIndexOf("/")+1)+" are ";
 		description.getChild(0).accept(this);
 		logger.trace(description.getRole().toString());
@@ -144,8 +169,8 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	 */
 	public void visit(ObjectSomeRestriction description) {
 		logger.trace("ObjectSomeRestriction");
-		SortedSet<String> label=tasks.queryAsSet("SELECT ?label WHERE {<"+description.getRole().toString()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
-		if (label.size()>0) query+="has "+label.first()+" which is ";
+		String label=getLabelFromReasoner((ObjectProperty)description.getRole());
+		if (label.length()>0) query+="has "+label+" which is ";
 		else query+="has "+description.getRole().toString().substring(description.getRole().toString().lastIndexOf("/")+1)+" which is ";
 		description.getChild(0).accept(this);
 		logger.trace(description.getRole().toString());
@@ -234,16 +259,16 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	public void visit(ObjectValueRestriction description) {
 		ObjectProperty op = (ObjectProperty) description.getRestrictedPropertyExpression();
 		Individual ind = description.getIndividual();
-		SortedSet<String> label = tasks.queryAsSet("SELECT ?label WHERE {<"+ind.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
+		String label=getLabelFromReasoner(ind);
 		String indLabel;
-		if (label.size()>0)
-			indLabel =label.first();
+		if (label.length()>0)
+			indLabel =label;
 		else 
 			indLabel =ind.getName();
-		label = tasks.queryAsSet("SELECT ?label WHERE {<"+op.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
+		label=getLabelFromReasoner(op);
 		String propLabel;
-		if (label.size()>0)
-			propLabel =label.first();
+		if (label.length()>0)
+			propLabel =label;
 		else 
 			propLabel =op.getName();		
 		query += propLabel + " is " + indLabel;
@@ -270,10 +295,10 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 			if (query.endsWith("and ")) query=query.substring(0, query.length()-5);
 			if (query.endsWith("or ")) query=query.substring(0, query.length()-4);
 		}
-		SortedSet<String> label=tasks.queryAsSet("SELECT ?label WHERE {<"+description.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
-		String l=label.first();
+		//SortedSet<String> label=tasks.queryAsSet("SELECT ?label WHERE {<"+description.getName()+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label}", "label");
+		String l=getLabelFromReasoner(description);
 		String l2=description.getName().substring(description.getName().lastIndexOf("/")+1, description.getName().length()).replace('_', ' ');
-		if (l.length()+5<l2.length()&&!l2.matches(".*[0-9]")) l=l2;
+		if ((l.length()==0)||(l.length()+5<l2.length()&&!l2.matches(".*[0-9]"))) l=l2;
 		
 		//replacements
 		l=l.replaceAll("Cities", "City");
