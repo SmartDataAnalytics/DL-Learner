@@ -51,6 +51,7 @@ import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DoubleMaxValue;
 import org.dllearner.core.owl.DoubleMinValue;
+import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -675,6 +676,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 	@Override
 	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getRelatedValues(individual, datatypeProperty);
+	}	
+	
+	@Override
+	public Set<Constant> getLabel(Entity entity) throws ReasoningMethodUnsupportedException {
+		return rc.getLabel(entity);
 	}	
 	
 	/*

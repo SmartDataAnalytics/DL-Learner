@@ -33,6 +33,7 @@ import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
@@ -474,6 +475,16 @@ public class ReasoningService {
 			return null;
 		}
 	}	
+	
+	public Set<Constant> getLabel(Entity entity) throws ReasoningMethodUnsupportedException {
+		try {
+			return reasoner.getLabel(entity);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}		
+	}
+		
 	
 	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) {
 		reasoningStartTimeTmp = System.nanoTime();

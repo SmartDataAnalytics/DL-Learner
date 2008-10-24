@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TreeSet;
 
 import org.dllearner.core.ReasoningService;
