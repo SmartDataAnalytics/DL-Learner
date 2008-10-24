@@ -19,10 +19,12 @@
  */
 package org.dllearner.tools.protege;
 
-import java.awt.Color;
 import java.awt.Dimension;
 
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
  * This class is the panel for the suggest list.
@@ -65,6 +67,7 @@ public class SuggestClassPanel extends JPanel {
 		suggestPanel.add(descriptions);
 		suggestScroll.setPreferredSize(new Dimension(490, 108));
 		suggestScroll.setViewportView(descriptions);
+		descriptions.setCellRenderer(new SuggestListCellRenderer());
 		add(suggestScroll);
 	}
 	
@@ -83,7 +86,6 @@ public class SuggestClassPanel extends JPanel {
 	 * @param desc List model of descriptions made by the DL-Learner
 	 */
 	public void setSuggestList(DefaultListModel desc) {
-		descriptions.setForeground(Color.GREEN);
 		descriptions.setModel(desc);
 	}
 	/**

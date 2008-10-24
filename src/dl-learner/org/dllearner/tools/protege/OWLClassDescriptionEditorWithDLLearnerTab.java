@@ -128,12 +128,13 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		editingComponent = new JPanel(new BorderLayout());
 		editingComponent.add(tabbedPane);
 		editingComponent.setPreferredSize(new Dimension(600, 520));
-
+		if(dllearner.getNrOfIndividuals()!=0) {	
 		if (label.equals("Equivalent classes")) {
 			tabbedPane.add(SUGGEST_EQUIVALENT_CLASS_LABEL, dllearner);
 		}
 		if (label.equals("Superclasses")) {
 			tabbedPane.add(SUGGEST_SUBCLASS_LABEL, dllearner);
+		}
 		}
 		tabbedPane.add(CLASS_EXPRESSION_EDITOR_LABEL, new JScrollPane(editor));
 		if (description == null || !description.isAnonymous()) {
@@ -515,7 +516,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 		/**
 		 * Returns the last added description.
-		 * @return OWLDescriptio
+		 * @return OWLDescription
 		 */
 		public OWLDescription getSollution() {
 			return model.getSolution();
@@ -532,7 +533,14 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			posPanel.unsetPosAndNegPanel();
 			learner.removeAll();
 		}
-
+		/**
+		 * This method returns the nummers of Individuals present in the Ontology.
+		 * @return int amount of Individuals in the Ontology
+		 */
+		public int getNrOfIndividuals() {
+			int counter = model.getPosVector().size();
+			return counter;
+		}
 		/**
 		 * Renders the error message when an error occured.
 		 * @param s String 
