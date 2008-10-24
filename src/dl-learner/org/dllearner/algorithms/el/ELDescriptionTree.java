@@ -21,6 +21,7 @@ package org.dllearner.algorithms.el;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
@@ -225,24 +226,24 @@ public class ELDescriptionTree implements Cloneable {
 
 	protected void updateSimulation(Set<ELDescriptionNode> nUpdate) {
 		// create a stack and initialize it with the nodes to be updated
-		Stack<ELDescriptionNode> stack = new Stack<ELDescriptionNode>();
-		stack.addAll(nUpdate);
+		LinkedList<ELDescriptionNode> list = new LinkedList<ELDescriptionNode>();
+		list.addAll(nUpdate);
 		
-		while(stack.size() != 0) {
+		while(list.size() != 0) {
 			// take element from bottom of stack (to ensure that all nodes on the 
 			// same level are tested before any node of a lower level is tested)
-			ELDescriptionNode v = stack.peek(); // TODO: lookup whether peek is correct (had no Javadoc here)
+			ELDescriptionNode v = list.pollFirst();
 			// loop through all nodes on same level
 			for(ELDescriptionNode w : levelNodeMapping.get(v.getLevel())) {
 				if(!v.out.contains(w) && v.outSC1.contains(w) && checkSC2(v,w)) {
 					extendSimulation(v,w);
-					stack.add(v.getParent());
-					stack.add(w.getParent());
+					list.add(v.getParent());
+					list.add(w.getParent());
 				}
 				if(!w.out.contains(v) && w.outSC1.contains(v) && checkSC2(w,v)) {
 					extendSimulation(w,v);
-					stack.add(v.getParent());
-					stack.add(w.getParent());
+					list.add(v.getParent());
+					list.add(w.getParent());
 				}
 			}
 		}
