@@ -235,8 +235,9 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void mouseClicked(MouseEvent m) {
 		EvaluatedDescription eDescription = null;
-		String desc = view.getSuggestClassPanel().getSuggestList()
-				.getSelectedValue().toString();
+		SuggestListItem item = (SuggestListItem) view.getSuggestClassPanel().getSuggestList()
+		.getSelectedValue();
+		String desc = item.getValue();
 		if (model.getEvaluatedDescriptionList() != null) {
 			for (Iterator<EvaluatedDescription> i = model
 					.getEvaluatedDescriptionList().iterator(); i.hasNext();) {

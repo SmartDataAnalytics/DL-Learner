@@ -20,6 +20,7 @@
 
 package org.dllearner.tools.protege;
 
+import java.awt.Color;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,7 +33,6 @@ import java.util.Vector;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 
-import org.dllearner.algorithms.SimpleSuggestionLearningAlgorithm;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -112,7 +112,6 @@ public class DLLearnerModel implements Runnable {
 
 	// This is the count of Concepts which you get after learning
 
-
 	// A Array of Concepts which the DL-Learner suggested
 
 	private Description[] description;
@@ -185,11 +184,6 @@ public class DLLearnerModel implements Runnable {
 
 	private Set<Individual> individual;
 
-	// This is a simple learning algorithm to get the first concepts before
-	// learning
-
-	private SimpleSuggestionLearningAlgorithm test;
-
 	// The error message which is rendered when an error occured
 
 	private String error;
@@ -228,7 +222,6 @@ public class DLLearnerModel implements Runnable {
 		owlDescription = new HashSet<OWLDescription>();
 		positiv = new Vector<JCheckBox>();
 		negativ = new Vector<JCheckBox>();
-		test = new SimpleSuggestionLearningAlgorithm();
 		ComponentManager.setComponentClasses(componenten);
 		cm = ComponentManager.getInstance();
 		ds = new HashSet<OWLDescription>();
@@ -246,29 +239,34 @@ public class DLLearnerModel implements Runnable {
 		alreadyLearned = false;
 		setKnowledgeSource();
 		setReasoner();
-		SortedSet<Individual> pos = rs.getIndividuals();
-		Set<Description> descri = test.getSimpleSuggestions(rs, pos);
-		int i = 0;
-		for (Iterator<Description> j = descri.iterator(); j.hasNext();) {
-			suggestModel.add(i, j.next());
-		}
-		// suggestModel.add(0,test.getCurrentlyBestEvaluatedDescription().
-		// getDescription
-		// ().toManchesterSyntaxString(editor.getOWLModelManager().
-		// getActiveOntology().getURI().toString()+"#", null));
 	}
 
 	/**
 	 * This method adds the solutions from the DL-Learner to the List Model.
 	 */
 	private void addToListModel() {
-		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getMaxNrOfResultsModelData(), view.getPosAndNegSelectPanel().getMinAccuracyModelData(), true);
+		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(view
+				.getPosAndNegSelectPanel().getMaxNrOfResultsModelData(), view
+				.getPosAndNegSelectPanel().getMinAccuracyModelData(), true);
 		for (int j = 0; j < evalDescriptions.size(); j++) {
-			suggestModel.add(j, evalDescriptions.get(j)
-					.getDescription().toManchesterSyntaxString(
-							editor.getModelManager().getActiveOntology()
-									.getURI().toString()
-									+ "#", null));
+			System.out.println("KLICKEN: "+ evalDescriptions.get(j).getNotCoveredPositives());
+			if (isConsistent(evalDescriptions.get(j))) {
+				suggestModel.add(j, new SuggestListItem(Color.GREEN,
+						evalDescriptions.get(j).getDescription()
+								.toManchesterSyntaxString(
+										editor.getModelManager()
+												.getActiveOntology().getURI()
+												.toString()
+												+ "#", null)));
+			} else {
+				suggestModel.add(j, new SuggestListItem(Color.RED,
+						evalDescriptions.get(j).getDescription()
+								.toManchesterSyntaxString(
+										editor.getModelManager()
+												.getActiveOntology().getURI()
+												.toString()
+												+ "#", null)));
+			}
 		}
 	}
 
@@ -382,9 +380,12 @@ public class DLLearnerModel implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("3: "
+				+ view.getPosAndNegSelectPanel().getMaxExecutionModelData());
 		cm.applyConfigEntry(la, "numberOfTrees", 100);
 		cm.applyConfigEntry(la, "maxDepth", 5);
-		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view.getPosAndNegSelectPanel().getMaxExecutionModelData());
+		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
+				.getPosAndNegSelectPanel().getMaxExecutionModelData());
 		try {
 			// initializes the learning algorithm
 			la.init();
@@ -402,7 +403,8 @@ public class DLLearnerModel implements Runnable {
 		// start the algorithm and print the best concept found
 		la.start();
 		description = new Description[la.getCurrentlyBestEvaluatedDescriptions(
-				view.getPosAndNegSelectPanel().getMaxNrOfResultsModelData()).size()];
+				view.getPosAndNegSelectPanel().getMaxNrOfResultsModelData())
+				.size()];
 		addToListModel();
 		// renders the errormessage
 		view.renderErrorMessage(error);
@@ -709,6 +711,15 @@ public class DLLearnerModel implements Runnable {
 	}
 
 	/**
+	 * This methode returns the Model for the suggested Concepts.
+	 * 
+	 * @return DefaultListModel
+	 */
+	public DefaultListModel getSuggestModel() {
+		return suggestModel;
+	}
+
+	/**
 	 * This method gets the old concept from checking the positive examples.
 	 */
 	private void setOldConceptOWLAPI() {
@@ -742,7 +753,8 @@ public class DLLearnerModel implements Runnable {
 	 * @param descript
 	 *            Description learn by the DL-Learner
 	 */
-	public void changeDLLearnerDescriptionsToOWLDescriptions(Description descript) {
+	public void changeDLLearnerDescriptionsToOWLDescriptions(
+			Description descript) {
 		setNewConceptOWLAPI(descript);
 		setOldConceptOWLAPI();
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -783,8 +795,20 @@ public class DLLearnerModel implements Runnable {
 	public boolean getAlreadyLearned() {
 		return alreadyLearned;
 	}
+
+	private boolean isConsistent(EvaluatedDescription eDescription) {
+		boolean isConsistent = false;
+		if (eDescription.getNotCoveredPositives().isEmpty()) {
+			isConsistent = true;
+		} else {
+			isConsistent = false;
+		}
+		return isConsistent;
+	}
+
 	/**
 	 * This Method returns the URI of the currently loaded Ontology.
+	 * 
 	 * @return URI Ontology URI
 	 */
 	public URI getURI() {
