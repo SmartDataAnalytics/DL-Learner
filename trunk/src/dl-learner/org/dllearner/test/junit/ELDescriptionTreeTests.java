@@ -28,11 +28,14 @@ import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
 import org.dllearner.algorithms.el.Simulation;
 import org.dllearner.algorithms.el.TreeTuple;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
+import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.junit.Test;
 
@@ -47,10 +50,10 @@ public final class ELDescriptionTreeTests {
 
 	@Test
 	public void simulationTest() {
+		ReasoningService rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		Simulation s = new Simulation();
-		// TODO we need to add background knowledge (possibly empty)
-		ELDescriptionTree tree1 = null; // new ELDescriptionTree();
-		ELDescriptionTree tree2 = null; // new ELDescriptionTree();
+		ELDescriptionTree tree1 = new ELDescriptionTree(rs);
+		ELDescriptionTree tree2 = new ELDescriptionTree(rs);
 		ELDescriptionNode t1 = new ELDescriptionNode(tree1);
 		ELDescriptionNode t2 = new ELDescriptionNode(tree2);
 		TreeTuple tuple1 = new TreeTuple(t1,t2);
@@ -65,11 +68,21 @@ public final class ELDescriptionTreeTests {
 	}
 	
 	@Test
+	public void minimalityTest() throws ParseException, ComponentInitException {
+		ReasoningService rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
+		// the following should be recognized as non-minimal
+		Description d = KBParser.parseConcept("(human AND (EXISTS has.animal AND EXISTS has.TOP))");
+		ConceptTransformation.cleanConcept(d);
+		ELDescriptionTree tree = new ELDescriptionTree(rs, d);
+		assertFalse(tree.isMinimal());
+	}
+	
+	@Test
 	public void cloneTest() throws ParseException {
+		ReasoningService rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		Description d = KBParser.parseConcept("(male AND (human AND EXISTS hasChild.(female AND EXISTS hasChild.male)))");
 		ConceptTransformation.cleanConcept(d);
-		// TODO needs to be updated (trees now require background knowledge)
-		ELDescriptionTree tree = null; // new ELDescriptionTree(rs, d);
+		ELDescriptionTree tree = new ELDescriptionTree(rs, d);
 		ELDescriptionTree treeCloned = tree.clone();
 		ELDescriptionTreeComparator comparator = new ELDescriptionTreeComparator();
 		assertTrue(comparator.compare(tree, treeCloned) == 0);
