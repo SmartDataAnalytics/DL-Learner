@@ -355,8 +355,9 @@
     <part name="return" type="xsd:string"></part>
   </message>
   <message name="getNaturalDescription">
-    <part name="arg0" type="xsd:string"></part>
+    <part name="arg0" type="xsd:int"></part>
     <part name="arg1" type="xsd:string"></part>
+    <part name="arg2" type="xsd:string"></part>
   </message>
   <message name="getNaturalDescriptionResponse">
     <part name="return" type="xsd:string"></part>
@@ -661,10 +662,11 @@
       <output message="tns:SparqlRetrievalResponse"></output>
       <fault message="tns:ParseException" name="ParseException"></fault>
     </operation>
-    <operation name="getNaturalDescription" parameterOrder="arg0 arg1">
+    <operation name="getNaturalDescription" parameterOrder="arg0 arg1 arg2">
       <input message="tns:getNaturalDescription"></input>
       <output message="tns:getNaturalDescriptionResponse"></output>
       <fault message="tns:ParseException" name="ParseException"></fault>
+      <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
     </operation>
     <operation name="getNegativeExamples" parameterOrder="arg0 arg1 arg2 arg3 arg4">
       <input message="tns:getNegativeExamples"></input>
@@ -1370,6 +1372,9 @@
       </output>
       <fault name="ParseException">
         <soap:fault name="ParseException" use="literal"></soap:fault>
+      </fault>
+      <fault name="ClientNotKnownException">
+        <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
       </fault>
     </operation>
     <operation name="getNegativeExamples">
