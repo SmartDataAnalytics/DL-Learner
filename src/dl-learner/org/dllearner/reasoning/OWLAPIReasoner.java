@@ -50,6 +50,7 @@ import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
@@ -68,6 +69,7 @@ import org.dllearner.utilities.owl.RoleComparator;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
+import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -75,7 +77,9 @@ import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDataRange;
 import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLIndividual;
+import org.semanticweb.owl.model.OWLLabelAnnotation;
 import org.semanticweb.owl.model.OWLNamedObject;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
@@ -733,25 +737,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 		}
-		// convert data back to DL-Learner structures
-		SortedSet<Constant> is = new TreeSet<Constant>();
-		for(OWLConstant oi : constants) {
-			// for typed constants we have to figure out the correct
-			// data type and value
-			if(oi instanceof OWLTypedConstant) {
-				Datatype dt = convertDatatype(((OWLTypedConstant)oi).getDataType());
-				is.add(new TypedConstant(oi.getLiteral(),dt));
-			// for untyped constants we have to figure out the value
-			// and language tag (if any)
-			} else {
-				OWLUntypedConstant ouc = (OWLUntypedConstant) oi;
-				if(ouc.hasLang())
-					is.add(new UntypedConstant(ouc.getLiteral(), ouc.getLang()));
-				else
-					is.add(new UntypedConstant(ouc.getLiteral()));
-			}
-		}		
-		return is;	
+		return convertConstants(constants);	
 	}	
 	
 	public Map<Individual, SortedSet<Double>> getDoubleValues(DatatypeProperty datatypeProperty) {
@@ -907,6 +893,33 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}	
 	
+	public static Set<Constant> convertConstants(Set<OWLConstant> constants) {
+		SortedSet<Constant> is = new TreeSet<Constant>();
+		for(OWLConstant oi : constants) {
+			is.add(convertConstant(oi));
+		}		
+		return is;			
+	}
+	
+	public static Constant convertConstant(OWLConstant constant) {
+		Constant c;
+		// for typed constants we have to figure out the correct
+		// data type and value
+		if(constant instanceof OWLTypedConstant) {
+			Datatype dt = convertDatatype(((OWLTypedConstant)constant).getDataType());
+			c = new TypedConstant(constant.getLiteral(),dt);
+		// for untyped constants we have to figure out the value
+		// and language tag (if any)
+		} else {
+			OWLUntypedConstant ouc = (OWLUntypedConstant) constant;
+			if(ouc.hasLang())
+				c = new UntypedConstant(ouc.getLiteral(), ouc.getLang());
+			else
+				c = new UntypedConstant(ouc.getLiteral());
+		}		
+		return c;
+	}
+	
 	public static Datatype convertDatatype(OWLDataType dataType) {
 		URI uri = dataType.getURI();
 		if(uri.equals(Datatype.BOOLEAN.getURI()))
@@ -925,6 +938,19 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	private static OWLDataProperty getOWLAPIDescription(DatatypeProperty datatypeProperty) {
 		return staticFactory.getOWLDataProperty(URI.create(datatypeProperty.getName()));
+	}
+	
+	private static OWLEntity getOWLAPIEntity(Entity entity) {
+		if(entity instanceof ObjectProperty) {
+			return staticFactory.getOWLObjectProperty(URI.create(entity.getName()));
+		} else if(entity instanceof DatatypeProperty) {
+			return staticFactory.getOWLDataProperty(URI.create(entity.getName()));	
+		} else if(entity instanceof NamedClass) {
+			return staticFactory.getOWLClass(URI.create(entity.getName()));			
+		} else if(entity instanceof OWLIndividual) {
+			return staticFactory.getOWLIndividual(URI.create(entity.getName()));						
+		}
+		throw new Error("OWL API entity conversion for " + entity + " not supported.");
 	}
 	
 	/**
@@ -1037,5 +1063,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		
 	}
 
-
+	@Override
+	@SuppressWarnings("all")
+	public Set<Constant> getLabel(Entity entity) {
+		OWLEntity owlEntity = getOWLAPIEntity(entity);
+		Set<OWLAnnotation> labelAnnotations = owlEntity.getAnnotations(owlAPIOntologies.get(0), URI.create("http://www.w3.org/2000/01/rdf-schema#label"));
+		Set<Constant> annotations = new HashSet<Constant>();
+		for(OWLAnnotation label : labelAnnotations) {
+			OWLConstant c =  ((OWLLabelAnnotation)label).getAnnotationValue();
+			annotations.add(convertConstant(c));
+		}
+		return annotations;
+	}
+	
+	
 }

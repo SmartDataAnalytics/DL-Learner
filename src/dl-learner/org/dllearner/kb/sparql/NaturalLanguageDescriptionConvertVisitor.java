@@ -1,16 +1,12 @@
 package org.dllearner.kb.sparql;
-import java.util.HashMap;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMinCardinalityRestriction;
-import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.DatatypeValueRestriction;
 import org.dllearner.core.owl.Description;

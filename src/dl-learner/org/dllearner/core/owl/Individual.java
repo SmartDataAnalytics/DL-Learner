@@ -29,7 +29,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class Individual implements NamedKBElement, Comparable<Individual> {
+public class Individual implements Entity, NamedKBElement, Comparable<Individual> {
 
 	private String name;
 

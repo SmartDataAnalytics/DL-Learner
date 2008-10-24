@@ -102,6 +102,7 @@ public class RepairDialog extends JDialog implements ActionListener, MouseListen
 		final Component dialogd = this.getParent();
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
+			@Override
 		    public void windowClosing(WindowEvent we) {
 		    	if(allChanges.size() > 0){
 					if (JOptionPane.showConfirmDialog(dialogd,

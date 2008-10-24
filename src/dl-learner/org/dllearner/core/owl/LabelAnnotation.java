@@ -19,30 +19,16 @@
  */
 package org.dllearner.core.owl;
 
+import java.net.URI;
+
 /**
- * Visitor for all elements of a knowledge base.
- * 
  * @author Jens Lehmann
  *
  */
-public interface KBElementVisitor extends AxiomVisitor, DescriptionVisitor, PropertyExpressionVisitor {
+public class LabelAnnotation extends ConstantAnnotation {
 
-	void visit(Datatype datatype);	
-	
-	void visit(BooleanDataRange booleanDataRange);
-
-	void visit(DoubleMaxValue doubleMaxValue);
-
-	void visit(DoubleMinValue doubleMinValue);
-
-	void visit(Individual individual);
-
-	void visit(KB kb);
-
-	void visit(TypedConstant typedConstant);
-
-	void visit(UntypedConstant untypedConstant);
-
-	void visit(Annotation annotation);
+	public LabelAnnotation(URI annotationURI, Constant annotationValue) {
+		super(annotationURI, annotationValue);
+	}
 
 }

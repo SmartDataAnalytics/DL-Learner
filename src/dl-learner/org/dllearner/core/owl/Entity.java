@@ -20,29 +20,11 @@
 package org.dllearner.core.owl;
 
 /**
- * Visitor for all elements of a knowledge base.
+ * Marker interface for classes, properties, individuals.
  * 
  * @author Jens Lehmann
  *
  */
-public interface KBElementVisitor extends AxiomVisitor, DescriptionVisitor, PropertyExpressionVisitor {
-
-	void visit(Datatype datatype);	
-	
-	void visit(BooleanDataRange booleanDataRange);
-
-	void visit(DoubleMaxValue doubleMaxValue);
-
-	void visit(DoubleMinValue doubleMinValue);
-
-	void visit(Individual individual);
-
-	void visit(KB kb);
-
-	void visit(TypedConstant typedConstant);
-
-	void visit(UntypedConstant untypedConstant);
-
-	void visit(Annotation annotation);
+public interface Entity extends NamedKBElement {
 
 }

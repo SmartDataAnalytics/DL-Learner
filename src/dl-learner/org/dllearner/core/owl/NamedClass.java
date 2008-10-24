@@ -30,7 +30,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class NamedClass extends Description implements NamedKBElement, Comparable<NamedClass> {
+public class NamedClass extends Description implements Entity, NamedKBElement, Comparable<NamedClass> {
 
     String name;
     

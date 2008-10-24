@@ -28,6 +28,7 @@ import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -82,6 +83,11 @@ public interface Reasoner {
 	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) throws ReasoningMethodUnsupportedException;
 	
 	public Map<Individual, SortedSet<Constant>> getDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;
+	
+	// annotations (not strictly reasoning methods)
+	// [OWL API supports only annotations specified in a given ontology, which 
+	// is uncomfortable to handle when several ontologies are loaded]
+	public Set<Constant> getLabel(Entity entity) throws ReasoningMethodUnsupportedException;
 	
 	// some convenience methods
 	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException;
