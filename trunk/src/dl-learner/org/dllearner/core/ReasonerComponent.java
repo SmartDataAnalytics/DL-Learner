@@ -104,6 +104,14 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
+	public Set<Individual> getRelatedIndividuals(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+	
+	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+	
 	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
