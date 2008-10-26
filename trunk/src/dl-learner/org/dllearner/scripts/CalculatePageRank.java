@@ -52,11 +52,11 @@ public class CalculatePageRank {
 	private static String dbUser;
 	private static String dbPass;
 	
-	private final String wikilinks = datasetDir + "pagelinks_en.nt";
-	private final String labels = datasetDir + "articles_label_en.nt";
-	private final String categories = datasetDir + "yago_en.nt";
-	private final String categoriesNewOntology = datasetDir + "dbpedia-ontology-schema.nt";
-	private final String categoriesNewOntology2 = datasetDir + "dbpedia-ontology-types.nt";
+	private String wikilinks;
+	private String labels;
+	private String categories;
+	private String categoriesNewOntology;
+	private String categoriesNewOntology2;
 	
 	private static Connection con;
 	
@@ -70,6 +70,12 @@ public class CalculatePageRank {
 		dbUser = prefs.node("database").get("user", null);
 		dbPass = prefs.node("database").get("pass", null);
 		datasetDir = prefs.node("database").get("datasetDir", null);
+		
+		wikilinks = datasetDir + "pagelinks_en.nt";
+		labels = datasetDir + "articles_label_en.nt";
+		categories = datasetDir + "yago_en.nt";
+		categoriesNewOntology = datasetDir + "dbpedia-ontology-schema.nt";
+		categoriesNewOntology2 = datasetDir + "dbpedia-ontology-types.nt";
 	}
 	
 	private void calculateLinks()
