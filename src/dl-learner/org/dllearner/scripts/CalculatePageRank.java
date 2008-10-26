@@ -321,15 +321,13 @@ public class CalculatePageRank {
 	}
 	
 	public static void main(String[] args) throws ClassNotFoundException,SQLException,BackingStoreException{
-		Class.forName("com.mysql.jdbc.Driver");
-		
-		String url =
-		            "jdbc:mysql://"+dbServer+":3306/"+dbName;
-	
-		con = DriverManager.getConnection(
-		                                 url, dbUser, dbPass);
-		
 		CalculatePageRank cal=new CalculatePageRank();
+		Class.forName("com.mysql.jdbc.Driver");
+		String url =
+            "jdbc:mysql://"+dbServer+":3306/"+dbName;
+
+		con = DriverManager.getConnection(
+                                 url, dbUser, dbPass);
 		cal.calculateLinks();
 		cal.addLabels();
 		//cal.calculateCategories();
