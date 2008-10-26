@@ -65,7 +65,7 @@ public class CalculatePageRank {
 		// reading values from ini file
 		String iniFile = "../src/dbpedia-navigator/settings.ini";
 		Preferences prefs = new IniFile(new File(iniFile));
-		dbServer = prefs.node("database").get("name", null);
+		dbServer = prefs.node("database").get("server", null);
 		dbName = prefs.node("database").get("name", null);
 		dbUser = prefs.node("database").get("user", null);
 		dbPass = prefs.node("database").get("pass", null);
