@@ -17,4 +17,6 @@ user = navigator
 ; the password of that user
 pass = dbpedia
 ; the name of the used database
-name = navigator_db
+name = navigator_db_new
+; the name of the datasetDir for the CalculatePageRank Script
+datasetDir = /mnt/sdb1/local_virtuoso_dbpedia_data_new/
