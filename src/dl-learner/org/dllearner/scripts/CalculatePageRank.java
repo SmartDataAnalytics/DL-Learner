@@ -49,6 +49,8 @@ public class CalculatePageRank {
 	private final String wikilinks = datasetDir + "pagelinks_en.nt";
 	private final String labels = datasetDir + "articles_label_en.nt";
 	private final String categories = datasetDir + "yago_en.nt";
+	private final String categoriesNewOntology = datasetDir + "dbpedia-ontology-schema.nt";
+	private final String categoriesNewOntology2 = datasetDir + "dbpedia-ontology-types.nt";
 	
 	private static String dbServer;
 	private static String dbName;
@@ -181,8 +183,6 @@ public class CalculatePageRank {
 			
 			stmt = con.createStatement();
 			
-			stmt.executeUpdate("ALTER TABLE rank DROP COLUMN category");
-			
 			BufferedReader in = new BufferedReader(new FileReader(categories));
 			
 			String line;
@@ -237,6 +237,96 @@ public class CalculatePageRank {
 		}
 	}
 	
+	private void calculateCategoriesNewOntology()
+	{
+		try{
+			Statement stmt;
+						
+			Class.forName("com.mysql.jdbc.Driver");
+		
+			String url =
+			            "jdbc:mysql://localhost:3306/navigator_db";
+		
+			Connection con = DriverManager.getConnection(
+			                                 url,"navigator", "dbpedia");
+			
+			stmt = con.createStatement();
+			
+			BufferedReader in = new BufferedReader(new FileReader(categoriesNewOntology));
+			
+			String line;
+			String[] split;
+			String name;
+			String label;
+			String pred;
+			int i=0;
+			boolean isClassLabel;
+			String className;
+			while ((line=in.readLine())!=null)
+			{
+				split=line.split(">");
+				name=split[0].substring(1);
+				className=name.substring(name.lastIndexOf("/")+1,name.lastIndexOf("/")+2);
+				if (className.toLowerCase().equals(className))
+					isClassLabel=false;
+				else
+					isClassLabel=true;
+				pred=split[1].substring(2);
+				if (pred.equals("http://www.w3.org/2000/01/rdf-schema#label"))
+					label=split[2].substring(split[2].indexOf("\"")+1, split[2].lastIndexOf("\""));
+				else
+					label=split[2].substring(2);
+				if (pred.equals("http://www.w3.org/2000/01/rdf-schema#label")&&isClassLabel){
+					try{
+						stmt.executeUpdate("INSERT INTO categories (category,label) VALUES (\""+name+"\",\""+label+"\")");
+					}catch(Exception e)
+					{}
+				}
+				else{
+					if (pred.equals("http://www.w3.org/2000/01/rdf-schema#subClassOf")){
+						try{
+							stmt.executeUpdate("INSERT INTO classhierarchy (father,child) VALUES ('"+label+"','"+name+"')");
+						}catch(Exception e)
+						{}
+					}
+				}
+				if (i%100000==0) System.out.println(i);
+				i++;
+			}
+			
+			in.close();
+			
+			in = new BufferedReader(new FileReader(categoriesNewOntology2));
+			
+			i=0;
+			while ((line=in.readLine())!=null)
+			{
+				split=line.split(">");
+				name=split[0].substring(1);
+				label=split[2].substring(2);
+				try{
+					stmt.executeUpdate("INSERT INTO articlecategories (name,category) VALUES ('"+name+"','"+label+"')");
+				}catch(Exception e)
+				{}
+				if (i%100000==0) System.out.println(i);
+				i++;
+			}
+			
+			in.close();
+			
+			con.close();
+		} catch (FileNotFoundException e)
+		{
+			System.out.println("File not found");
+		} catch (IOException e)
+		{
+			System.out.println("IOException");
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	private void copyNumbers()
 	{
 		try{
@@ -274,7 +364,8 @@ public class CalculatePageRank {
 		CalculatePageRank cal=new CalculatePageRank();
 		cal.calculateLinks();
 		cal.addLabels();
-		cal.calculateCategories();
+		//cal.calculateCategories();
+		cal.calculateCategoriesNewOntology();
 		cal.copyNumbers();
 	}
 }
