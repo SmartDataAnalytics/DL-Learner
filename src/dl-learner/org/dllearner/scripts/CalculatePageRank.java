@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -45,17 +46,31 @@ import org.ini4j.IniFile;
  */
 public class CalculatePageRank {
 	
-	private final String datasetDir = "src/dbpedia-navigator/data/";
+	private static String datasetDir;
+	private static String dbServer;
+	private static String dbName;
+	private static String dbUser;
+	private static String dbPass;
+	
 	private final String wikilinks = datasetDir + "pagelinks_en.nt";
 	private final String labels = datasetDir + "articles_label_en.nt";
 	private final String categories = datasetDir + "yago_en.nt";
 	private final String categoriesNewOntology = datasetDir + "dbpedia-ontology-schema.nt";
 	private final String categoriesNewOntology2 = datasetDir + "dbpedia-ontology-types.nt";
 	
-	private static String dbServer;
-	private static String dbName;
-	private static String dbUser;
-	private static String dbPass;	
+	private static Connection con;
+	
+	public CalculatePageRank() throws BackingStoreException
+	{
+		// reading values from ini file
+		String iniFile = "src/dbpedia-navigator/settings.ini";
+		Preferences prefs = new IniFile(new File(iniFile));
+		dbServer = prefs.node("database").get("name", null);
+		dbName = prefs.node("database").get("name", null);
+		dbUser = prefs.node("database").get("user", null);
+		dbPass = prefs.node("database").get("pass", null);
+		datasetDir = prefs.node("database").get("datasetDir", null);
+	}
 	
 	private void calculateLinks()
 	{
@@ -64,14 +79,6 @@ public class CalculatePageRank {
 			ResultSet rs;
 			int number;
 
-			Class.forName("com.mysql.jdbc.Driver");
-		
-			String url =
-			            "jdbc:mysql://"+dbServer+":3306/"+dbName;
-		
-			Connection con = DriverManager.getConnection(
-			                                 url, dbUser, dbPass);
-			
 			stmt = con.createStatement();
 			BufferedReader in = new BufferedReader(new FileReader(wikilinks));
 			
@@ -100,7 +107,6 @@ public class CalculatePageRank {
 			}
 			
 			in.close();
-			con.close();
 		} catch (FileNotFoundException e)
 		{
 			System.out.println("File not found");
@@ -118,14 +124,6 @@ public class CalculatePageRank {
 		try{
 			Statement stmt;
 			ResultSet rs;
-			
-			Class.forName("com.mysql.jdbc.Driver");
-		
-			String url =
-			            "jdbc:mysql://localhost:3306/navigator_db";
-		
-			Connection con = DriverManager.getConnection(
-			                                 url,"navigator", "dbpedia");
 			
 			stmt = con.createStatement();
 			BufferedReader in = new BufferedReader(new FileReader(labels));
@@ -155,7 +153,6 @@ public class CalculatePageRank {
 			}
 			
 			in.close();
-			con.close();
 		} catch (FileNotFoundException e)
 		{
 			System.out.println("File not found");
@@ -173,14 +170,6 @@ public class CalculatePageRank {
 		try{
 			Statement stmt;
 						
-			Class.forName("com.mysql.jdbc.Driver");
-		
-			String url =
-			            "jdbc:mysql://localhost:3306/navigator_db";
-		
-			Connection con = DriverManager.getConnection(
-			                                 url,"navigator", "dbpedia");
-			
 			stmt = con.createStatement();
 			
 			BufferedReader in = new BufferedReader(new FileReader(categories));
@@ -224,7 +213,6 @@ public class CalculatePageRank {
 			}
 			
 			in.close();
-			con.close();
 		} catch (FileNotFoundException e)
 		{
 			System.out.println("File not found");
@@ -242,14 +230,6 @@ public class CalculatePageRank {
 		try{
 			Statement stmt;
 						
-			Class.forName("com.mysql.jdbc.Driver");
-		
-			String url =
-			            "jdbc:mysql://localhost:3306/navigator_db";
-		
-			Connection con = DriverManager.getConnection(
-			                                 url,"navigator", "dbpedia");
-			
 			stmt = con.createStatement();
 			
 			BufferedReader in = new BufferedReader(new FileReader(categoriesNewOntology));
@@ -313,8 +293,6 @@ public class CalculatePageRank {
 			}
 			
 			in.close();
-			
-			con.close();
 		} catch (FileNotFoundException e)
 		{
 			System.out.println("File not found");
@@ -332,40 +310,32 @@ public class CalculatePageRank {
 		try{
 			Statement stmt;
 						
-			Class.forName("com.mysql.jdbc.Driver");
-		
-			String url =
-			            "jdbc:mysql://localhost:3306/navigator_db";
-		
-			Connection con = DriverManager.getConnection(
-			                                 url,"navigator", "dbpedia");
-			
 			stmt = con.createStatement();
 			
 			stmt.executeUpdate("UPDATE articlecategories SET number=(SELECT number FROM rank WHERE articlecategories.name=rank.name)");
-			
-			con.close();
+				
 		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
 	
-	public static void main(String[] args) throws BackingStoreException{
+	public static void main(String[] args) throws ClassNotFoundException,SQLException,BackingStoreException{
+		Class.forName("com.mysql.jdbc.Driver");
 		
-		// reading values from ini file
-		String iniFile = "src/dbpedia-navigator/settings.ini";
-		Preferences prefs = new IniFile(new File(iniFile));
-		dbServer = prefs.node("database").get("name", null);
-		dbName = prefs.node("database").get("name", null);
-		dbUser = prefs.node("database").get("user", null);
-		dbPass = prefs.node("database").get("pass", null);
-
+		String url =
+		            "jdbc:mysql://"+dbServer+":3306/"+dbName;
+	
+		con = DriverManager.getConnection(
+		                                 url, dbUser, dbPass);
+		
 		CalculatePageRank cal=new CalculatePageRank();
 		cal.calculateLinks();
 		cal.addLabels();
 		//cal.calculateCategories();
 		cal.calculateCategoriesNewOntology();
 		cal.copyNumbers();
+		
+		con.close();
 	}
 }
