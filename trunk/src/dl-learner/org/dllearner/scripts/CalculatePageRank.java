@@ -63,7 +63,7 @@ public class CalculatePageRank {
 	public CalculatePageRank() throws BackingStoreException
 	{
 		// reading values from ini file
-		String iniFile = "src/dbpedia-navigator/settings.ini";
+		String iniFile = "../src/dbpedia-navigator/settings.ini";
 		Preferences prefs = new IniFile(new File(iniFile));
 		dbServer = prefs.node("database").get("name", null);
 		dbName = prefs.node("database").get("name", null);
