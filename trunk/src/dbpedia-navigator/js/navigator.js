@@ -30,8 +30,8 @@ function show_results(class, label, number)
 	var names;
 	var hasClass;
 	
-	if (class=='all') document.getElementById('FilterTags').innerHTML='You currently don\'t filter your search results.';
-	else document.getElementById('FilterTags').innerHTML='Filtered by class: '+label+'.';
+	if (class=='all'&&document.getElementById('FilterTags')) document.getElementById('FilterTags').innerHTML='You currently don\'t filter your search results.';
+	else if (document.getElementById('FilterTags')) document.getElementById('FilterTags').innerHTML='Filtered by class: '+label+'.';
 		
 	for (var i=0;i<links.length;i++){
 		if (class=='all'){
