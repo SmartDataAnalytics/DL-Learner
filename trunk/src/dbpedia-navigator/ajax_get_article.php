@@ -63,7 +63,9 @@
 			require_once("DLLearnerConnection.php");
 			$sc=new DLLearnerConnection($id,$ksID);
 			$alltriples=$sc->getTriples($uri);
+			// triples where resource is subject
 			$triples=$alltriples[0];
+			// triples where resource is object
 			$subjecttriples=$alltriples[1];
 						
 			//BUILD ARTICLE			
