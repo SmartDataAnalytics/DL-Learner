@@ -253,17 +253,21 @@ public class CalculatePageRank {
 				split=line.split(">");
 				if (split.length<3) continue;
 				name=split[0].substring(1);
-				if (name.length()>name.lastIndexOf("/")+1) className=name.substring(name.lastIndexOf("/")+1,name.lastIndexOf("/")+1);
-				else className="t";
-				if (className.toLowerCase().equals(className))
-					isClassLabel=false;
-				else
-					isClassLabel=true;
 				pred=split[1].substring(2);
-				if (pred.equals("http://www.w3.org/2000/01/rdf-schema#label"))
+				if (i>100) break;
+				if (pred.equals("http://www.w3.org/2000/01/rdf-schema#label")){
 					label=split[2].substring(split[2].indexOf("\"")+1, split[2].lastIndexOf("\""));
-				else
+					if (name.length()>name.lastIndexOf("/")+1) className=name.substring(name.lastIndexOf("/")+1,name.lastIndexOf("/")+2);
+					else className="t";
+					if (className.toLowerCase().equals(className))
+						isClassLabel=false;
+					else
+						isClassLabel=true;
+				}
+				else{
 					label=split[2].substring(2);
+					isClassLabel=false;
+				}
 				if (pred.equals("http://www.w3.org/2000/01/rdf-schema#label")&&isClassLabel){
 					try{
 						stmt.executeUpdate("INSERT INTO categories (category,label) VALUES (\""+name+"\",\""+label+"\")");
@@ -284,7 +288,7 @@ public class CalculatePageRank {
 			
 			in.close();
 			
-			in = new BufferedReader(new FileReader(categoriesNewOntology2));
+			/*in = new BufferedReader(new FileReader(categoriesNewOntology2));
 			
 			i=0;
 			while ((line=in.readLine())!=null)
@@ -300,7 +304,7 @@ public class CalculatePageRank {
 				i++;
 			}
 			
-			in.close();
+			in.close();*/
 		} catch (FileNotFoundException e)
 		{
 			System.out.println("File not found");
@@ -330,18 +334,18 @@ public class CalculatePageRank {
 	
 	public static void main(String[] args) throws ClassNotFoundException,SQLException,BackingStoreException{
 		CalculatePageRank cal=new CalculatePageRank();
-		Class.forName("com.mysql.jdbc.Driver");
-		String url =
-            "jdbc:mysql://"+dbServer+":3306/"+dbName;
+		//Class.forName("com.mysql.jdbc.Driver");
+		//String url =
+        //    "jdbc:mysql://"+dbServer+":3306/"+dbName;
 
-		con = DriverManager.getConnection(
-                                 url, dbUser, dbPass);
+		//con = DriverManager.getConnection(
+        //                         url, dbUser, dbPass);
 		//cal.calculateLinks();
 		//cal.addLabels();
 		//cal.calculateCategories();
 		cal.calculateCategoriesNewOntology();
-		cal.copyNumbers();
+		//cal.copyNumbers();
 		
-		con.close();
+		//con.close();
 	}
 }
