@@ -34,16 +34,14 @@ abstract class AbstractTemplate {
 	
 	// function to be called after all "special" actions have been taken;
 	// it displays all remaining triples
-	function printRemainingTriples($triples) {
-		$i=1;
-		if (is_array($triples) && count($triples)>0) {
-			foreach($triples as $predicate=>$object) {
+	function printRemainingTriples($triples,$subjecttriples) {
+		if ((is_array($triples)&&count($triples)>0)||(is_array($subjecttriples)&&count($subjecttriples)>0)){
+			$table = '<table border="0" style="width:100%;overflow:hidden"><tr><td><b>Predicate</b></td><td><b>Object/Subject</b></td></tr>';
+			$i=1;
+			if (is_array($triples)&&count($triples)>0) foreach($triples as $predicate=>$object) {
 				$number=count($object);
-				if ($i>0) 
-					$backgroundcolor="eee";
-				else 
-					$backgroundcolor="ffffff";
-					
+				if ($i>0) $backgroundcolor="eee";
+				else $backgroundcolor="ffffff";
 				$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">'.nicePredicate($predicate).'</a></td>';
 				$table .= '<td>';
 				if ($number>1) $table.='<ul>';
@@ -51,32 +49,26 @@ abstract class AbstractTemplate {
 				foreach($object as $element) {
 					if ($k>3) $display=" style=\"display:none\"";
 					else $display="";
-					if ($element['type']=="uri") {
+					if ($element['type']=="uri"){
 						if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
 							$label=str_replace('_',' ',substr($element['value'],28));
-							if (strlen($label)>60) 
-								$label=substr($label,0,60).'...';
-							if ($number>1) 
-								$table.='<li'.$display.'>';
+							if (strlen($label)>60) $label=substr($label,0,60).'...';
+							if ($number>1) $table.='<li'.$display.'>';
 							$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');">'.urldecode($label).'</a>';
-							if ($number>1) 
-								$table.='</li>';
-						} else {
-							if ($number>1) 
-								$table.='<li'.$display.'>';
-							$label=urldecode($element['value']);
-							if (strlen($label)>60) 
-								$label=substr($label,0,60).'...';
-							$table .= '<a href="'.$element['value'].'" target="_blank">'.$label.'</a>';
-							if ($number>1) 
-								$table.='</li>';
+							if ($number>1) $table.='</li>';
 						}
-					} else {
-						if ($number>1) 
-							$table.='<li'.$display.'>';
+						else{
+							if ($number>1) $table.='<li'.$display.'>';
+							$label=urldecode($element['value']);
+							if (strlen($label)>60) $label=substr($label,0,60).'...';
+							$table .= '<a href="'.$element['value'].'" target="_blank">'.$label.'</a>';
+							if ($number>1) $table.='</li>';
+						}
+					}
+					else{
+						if ($number>1) $table.='<li'.$display.'>';
 						$table .= $element['value'];
-						if ($number>1) 
-							$table.='</li>';
+						if ($number>1) $table.='</li>';
 					}
 					$k++;
 				}
@@ -85,8 +77,48 @@ abstract class AbstractTemplate {
 				$table .= '</td>';
 				$i*=-1;
 			}
+			if (is_array($subjecttriples)&&count($subjecttriples)>0) foreach($subjecttriples as $predicate=>$object) {
+				$number=count($object);
+				if ($i>0) $backgroundcolor="eee";
+				else $backgroundcolor="ffffff";
+				$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">is '.nicePredicate($predicate).' of </a></td>';
+				$table .= '<td>';
+				if ($number>1) $table.='<ul>';
+				$k=1;
+				foreach($object as $element) {
+					if ($k>3) $display=" style=\"display:none\"";
+					else $display="";
+					if ($element['type']=="uri"){
+						if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
+							$label=str_replace('_',' ',substr($element['value'],28));
+							if (strlen($label)>60) $label=substr($label,0,60).'...';
+							if ($number>1) $table.='<li'.$display.'>';
+							$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');">'.urldecode($label).'</a>';
+							if ($number>1) $table.='</li>';
+						}
+						else{
+							if ($number>1) $table.='<li'.$display.'>';
+							$label=urldecode($element['value']);
+							if (strlen($label)>60) $label=substr($label,0,60).'...';
+							$table .= '<a href="'.$element['value'].'" target="_blank">'.$label.'</a>';
+							if ($number>1) $table.='</li>';
+						}
+					}
+					else{
+						if ($number>1) $table.='<li'.$display.'>';
+						$table .= $element['value'];
+						if ($number>1) $table.='</li>';
+					}
+					$k++;
+				}
+				if ($number>3) $table.='<a href="javascript:none()" onclick="toggleAttributes(this)"><img src="images/arrow_down.gif"/>&nbsp;show</a>';
+				if ($number>1) $table.='</ul>';
+				$table .= '</td>';
+				$i*=-1;
+			}
+			$table .= '</table>';
 		}
-		$table .= '</table>';
+		else $table="No Tripel left.";
 		return $table;
 	}
 	
