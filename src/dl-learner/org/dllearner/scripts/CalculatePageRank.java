@@ -254,7 +254,6 @@ public class CalculatePageRank {
 				if (split.length<3) continue;
 				name=split[0].substring(1);
 				pred=split[1].substring(2);
-				if (i>100) break;
 				if (pred.equals("http://www.w3.org/2000/01/rdf-schema#label")){
 					label=split[2].substring(split[2].indexOf("\"")+1, split[2].lastIndexOf("\""));
 					if (name.length()>name.lastIndexOf("/")+1) className=name.substring(name.lastIndexOf("/")+1,name.lastIndexOf("/")+2);
