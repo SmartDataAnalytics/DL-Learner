@@ -20,23 +20,17 @@
  */
 
 /**
- * Template for cities.
- *  
- * @author Jens Lehmann
+ * Template for all populated places.
  */
-class CityTemplate extends PopulatedPlaceTemplate {
+abstract class PopulatedPlaceTemplate extends PlaceTemplate {
 
-	function getTemplate($triples) {
-		$content = "";
-		$content .= '<table>';
-		$content .= '<tr><td colspan="2">City Information</td></tr>';
-		$content .= '<tr><td>total population</td><td>' + getPopulationString($triples) + '</td></tr>';
-		$content .= '</table>';
+	// return a nicely formatted string for the population of the place 
+	public getPopulationString() {
+		$number = number_format(extractPropValue('populationTotal'));
+		$asOf = extractPropValue('populationAsOf');
 		
-		// .. continue ...
-		
-		return $content;
+		return $number + ' (as of ' + $asOf + ')';
 	}
-	
+
 }
 ?>

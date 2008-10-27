@@ -28,33 +28,30 @@
  *  
  * @author Jens Lehmann
  */
-class AbstractTemplate {
+abstract class PlaceTemplate extends AbstractTemplate {
 
-	abstract function printTemplate($triples);
-	
-	// utility method, which checks whether the given DBpedia ontology properties exists in the triples
-	// is they exist, the method returns true and false otherwise;
-	// TODO: use $dbpediaOntologyPrefix in $settings (how do we access those settings in all scripts?)
-	function areDBpediaPropertiesSet($triples, $properties) {
-		foreach($properties as $property) {
-			if(!isset($triples['http://dbpedia.org/ontology/'.$property])) {
-				return false;
-			}
+	// returns a latitude string of the form 49°1′0″N or "unknown"
+	public getLatitudeString($triples) {
+		if(!areDBpediaPropertiesSet(array('latitudedegrees','latitudeminutes','latitudeseconds'))) {
+			return "unknown";
 		}
-		return true;
-	}
 	
-	// gets the value of the property
-	function getPropValue($triples, $property) {
-		return $triples['http://dbpedia.org/ontology/'.$property];
+		$latitude = $triples['http://dbpedia.org/ontology/latitutedegrees'] + "° "
+			+ $triples['http://dbpedia.org/ontology/latitudeminutes'] + "′"
+			+ $triples['http://dbpedia.org/ontology/latitudeseconds'] + "″N";
+		return $latitude;	
 	}
+
+	// returns a latitude string of the form 49°1′0″E or "unknown"
+	public getLongitudeString($triples) {
+		if(!areDBpediaPropertiesSet(array('longitudedegrees','longitudeminutes','longitudeseconds'))) {
+			return "unknown";
+		}
 	
-	// gets the value of the property and removes it from the triple array
-	// (this means you cannot access this information anymore afterwards)
-	function extractPropValue($triples, $property) {
-		$value = $triples['http://dbpedia.org/ontology/'.$property];
-		unset($triples['http://dbpedia.org/ontology/'.$property]);
-		return $value;
+		$longitude = $triples['http://dbpedia.org/ontology/longitutedegrees'] + "° "
+			+ $triples['http://dbpedia.org/ontology/longitudeminutes'] + "′"
+			+ $triples['http://dbpedia.org/ontology/longitudeseconds'] + "″N";
+		return $longitude;	
 	}
 	
 }

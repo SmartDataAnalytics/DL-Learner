@@ -40,6 +40,8 @@ class Settings{
 	public $endpoint="DBPEDIA";
 	//public $endpoint="LOCALDBPEDIA";
 	
+	public $dbpediaPropertyPrefix = 'http://dbpedia.org/ontology/';
+	public $dbpediaClassPrefix = 'http://dbpedia.org/ontology/';
 	
 	// in mikrosekunden
 	public $sparqlttl=60000000;
