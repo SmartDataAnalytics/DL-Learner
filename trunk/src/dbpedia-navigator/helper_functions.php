@@ -397,7 +397,7 @@ function formatClassArray($ar,$classSystem) {
 	
 	$string="<ul>";
 	for($i=0; $i<count($ar); $i++) {
-		if ($classSystem=="YAGO") $prefix = 'http://dbpedia.org/class/yago/';
+		if ($settings->classSystem=="YAGO") $prefix = 'http://dbpedia.org/class/yago/';
 		if(substr($ar[$i]['value'],0,30)!=$prefix) continue;
 		$query="SELECT label FROM categories WHERE category='".$ar[$i]['value']."' LIMIT 1";
 		$res=$databaseConnection->query($query);
