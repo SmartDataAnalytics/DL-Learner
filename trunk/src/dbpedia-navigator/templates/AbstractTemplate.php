@@ -32,6 +32,64 @@ class AbstractTemplate {
 
 	abstract function printTemplate($triples);
 	
+	// function to be called after all "special" actions have been taken;
+	// it displays all remaining triples
+	function printRemainingTriples($triples) {
+		$i=1;
+		if (is_array($triples) && count($triples)>0) {
+			foreach($triples as $predicate=>$object) {
+				$number=count($object);
+				if ($i>0) 
+					$backgroundcolor="eee";
+				else 
+					$backgroundcolor="ffffff";
+					
+				$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">'.nicePredicate($predicate).'</a></td>';
+				$table .= '<td>';
+				if ($number>1) $table.='<ul>';
+				$k=1;
+				foreach($object as $element) {
+					if ($k>3) $display=" style=\"display:none\"";
+					else $display="";
+					if ($element['type']=="uri") {
+						if (strpos($element['value'],"http://dbpedia.org/resource/")===0&&substr_count($element['value'],"/")==4&&strpos($element['value'],"Template:")!=28){
+							$label=str_replace('_',' ',substr($element['value'],28));
+							if (strlen($label)>60) 
+								$label=substr($label,0,60).'...';
+							if ($number>1) 
+								$table.='<li'.$display.'>';
+							$table .= '<a href="#" onclick="get_article(\'label='.$element['value'].'&cache=-1\');">'.urldecode($label).'</a>';
+							if ($number>1) 
+								$table.='</li>';
+						} else {
+							if ($number>1) 
+								$table.='<li'.$display.'>';
+							$label=urldecode($element['value']);
+							if (strlen($label)>60) 
+								$label=substr($label,0,60).'...';
+							$table .= '<a href="'.$element['value'].'" target="_blank">'.$label.'</a>';
+							if ($number>1) 
+								$table.='</li>';
+						}
+					} else {
+						if ($number>1) 
+							$table.='<li'.$display.'>';
+						$table .= $element['value'];
+						if ($number>1) 
+							$table.='</li>';
+					}
+					$k++;
+				}
+				if ($number>3) $table.='<a href="javascript:none()" onclick="toggleAttributes(this)"><img src="images/arrow_down.gif"/>&nbsp;show</a>';
+				if ($number>1) $table.='</ul>';
+				$table .= '</td>';
+				$i*=-1;
+			}
+		}
+		$table .= '</table>';
+		return $table;
+	}
+	
 	// utility method, which checks whether the given DBpedia ontology properties exists in the triples
 	// is they exist, the method returns true and false otherwise;
 	// TODO: use $dbpediaOntologyPrefix in $settings (how do we access those settings in all scripts?)
@@ -55,6 +113,15 @@ class AbstractTemplate {
 		$value = $triples['http://dbpedia.org/ontology/'.$property];
 		unset($triples['http://dbpedia.org/ontology/'.$property]);
 		return $value;
+	}
+	
+	// displays as list of values for this property;
+	// TODO: add toggle button here (as in remaining triples)
+	function displayMultipleValues($triples, $property) {
+		$objects = $triples[$property];
+		foreach($objects as $object) {
+			// ...
+		}
 	}
 	
 }
