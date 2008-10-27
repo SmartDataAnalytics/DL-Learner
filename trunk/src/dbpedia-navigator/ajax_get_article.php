@@ -128,7 +128,7 @@
 				// display a list of classes
 				if ($settings->classSystem=="YAGO") $content.='<br/><hr><h4>YAGO Classes</h4><br/>';
 				else if ($settings->classSystem=="DBpedia") $content.='<br/><hr><h4>DBpedia Classes</h4><br/>';
-				$content .= '<p>'.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],$classSystem).'</p>';
+				$content .= '<p>'.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],$settings->classSystem).'</p>';
 			}
 
 			//skos-subjects
