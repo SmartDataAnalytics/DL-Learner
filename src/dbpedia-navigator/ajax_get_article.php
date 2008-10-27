@@ -250,7 +250,7 @@
 			
 			// filter out uninteresting properties and properties which
 			// have already been displayed
-			filterTriples($triples, $subjecttriples);
+			filterTriples(&$triples, &$subjecttriples);
 			
 			
 			if (count($triples)>0||count($subjecttriples)>0){
