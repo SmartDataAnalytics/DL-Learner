@@ -120,10 +120,6 @@
 			// detect appropriate template (currently always default)
 			$template = new DefaultTemplate();
 			
-			// display template for this instance (currently the template is similar to the remaining
-			// instance view apart from beautifications)
-			$content .= $template->printTemplate($triples);
-			
 			//display owl:sameAs properties
 			if (isset($triples['http://www.w3.org/2002/07/owl#sameAs'])||isset($subjecttriples['http://www.w3.org/2002/07/owl#sameAs'])){
 				$content.='<br/><hr><h4>Same as</h4><br/>';
@@ -272,13 +268,15 @@
 			// have already been displayed
 			filterTriples(&$triples, &$subjecttriples);
 			
-			
-			if (count($triples)>0||count($subjecttriples)>0){
+			// display template for this instance (currently the template is similar to the remaining
+			// instance view apart from beautifications)
+			$content .= $template->printTemplate($triples,$subjecttriples);
+			/*if (count($triples)>0||count($subjecttriples)>0){
 				$content.='<br/><hr><h4>Remaining Triples</h4><br/>';
 				
 				// display the remaining properties as list which can be used for further navigation
 				$content .= get_triple_table($triples,$subjecttriples);
-			}
+			}*/
 			
 			//Restart the Session
 			session_start();
