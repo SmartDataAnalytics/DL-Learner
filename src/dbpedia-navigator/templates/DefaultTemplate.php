@@ -20,29 +20,18 @@
  */
 
 /**
- * Template for cities.
- *  
+ * The default template. It should correspond to the "remaining triples"
+ * view.
+ * 
  * @author Jens Lehmann
  */
-class CityTemplate extends PopulatedPlaceTemplate {
+class DefaultTemplate extends AbstractTemplate {
 
-	function getTemplate($triples) {
-		$content = "";
-		$content .= '<table>';
-		$content .= '<tr><td colspan="2">City Information</td></tr>';
-		// population
-		$content .= '<tr><td>total population</td><td>' + getPopulationString($triples) + '</td></tr>';
-		// location
-		$content .= '<tr><td>latitude</td><td>' + getLatitudeString($triples) + '</td></tr>';
-		$content .= '<tr><td>longitude</td><td>' + getLongitudeString($triples) + '</td></tr>';
-		// resources related to city
-		$content .= displayMultipleValues('city');
-		$content .= '</table>';
-		
-		// .. continue ...
-		
-		return $content;
+	// simply prints all triples without doing anything special
+	function printTemplate($triples) {
+		return printRemainingTriples($triples);
 	}
-	
+
 }
+
 ?>
