@@ -28,7 +28,7 @@
 	$result=$databaseConnection->nextEntry($res);
 	$label=$result['label'];
 		
-	$query="SELECT name FROM articlecategories WHERE category='$category' ORDER BY number DESC LIMIT ".$number;
+	$query="SELECT DISTINCT name FROM articlecategories WHERE category='$category' ORDER BY number DESC LIMIT ".$number;
 	$res=$databaseConnection->query($query);
 	$bestsearches="";
 	if ($databaseConnection->numberOfEntries($res)>0){

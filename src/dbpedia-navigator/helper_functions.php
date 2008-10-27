@@ -399,7 +399,7 @@ function formatClassArray($ar,$classSystem) {
 	for($i=0; $i<count($ar); $i++) {
 		if ($classSystem=="YAGO") $prefix = 'http://dbpedia.org/class/yago/';
 		else if ($classSystem=="DBpedia") $prefix='http://dbpedia.org/ontology/';
-		if (substr($ar[$i]['value'],0,strlen($prefix))!=$prefix) continue;
+		if (substr($ar[$i]['value'],0,strlen($prefix))!=$prefix||$ar[$i]['value']=='http://dbpedia.org/ontology/Resource') continue;
 		$query="SELECT label FROM categories WHERE category='".$ar[$i]['value']."' LIMIT 1";
 		$res=$databaseConnection->query($query);
 		$result=$databaseConnection->nextEntry($res);
