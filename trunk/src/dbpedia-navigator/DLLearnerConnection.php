@@ -76,6 +76,7 @@ class DLLearnerConnection
 		$algorithmID=$this->client->setLearningAlgorithm($this->id, "dbpediaNavigationSuggestor");
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "forceRefinementLengthIncrease", true);
 		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useHasValueConstructor", true);
+		$this->client->applyConfigEntryBoolean($this->id, $algorithmID, "useCardinalityRestrictions", false);
 		$this->client->applyConfigEntryInt($this->id, $algorithmID, "valueFrequencyThreshold", 2);
 		$this->client->applyConfigEntryInt($this->id, $algorithmID, "guaranteeXgoodDescriptions", 3);
 		$this->client->applyConfigEntryInt($this->id, $algorithmID, "maxExecutionTimeInSeconds", 3);

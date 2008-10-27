@@ -32,12 +32,14 @@
 	$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
 	$databaseConnection->select_database($settings->database_name);
 	
-	$test=preg_match("/^([\(]*\"http:\/\/dbpedia\.org\/class\/yago\/[^\040]+\"[\)]*(\040(AND|OR)\040)?)+$/",$kb);
+	if ($settings->classSystem=="YAGO") $test=preg_match("/^([\(]*\"http:\/\/dbpedia\.org\/class\/yago\/[^\040]+\"[\)]*(\040(AND|OR)\040)?)+$/",$kb);
+	else if ($settings->classSystem=="DBpedia") $test=preg_match("/^([\(]*\"http:\/\/dbpedia\.org\/ontology\/[^\040]+\"[\)]*(\040(AND|OR)\040)?)+$/",$kb);
 			
 	$content="";
 	if ($test){
-		preg_match_all("/\"http:\/\/dbpedia\.org\/class\/yago\/[^\040()]+\"/",$kb,$treffer,PREG_OFFSET_CAPTURE);
-
+		if ($settings->classSystem=="YAGO") preg_match_all("/\"http:\/\/dbpedia\.org\/class\/yago\/[^\040()]+\"/",$kb,$treffer,PREG_OFFSET_CAPTURE);
+		else if ($settings->classSystem=="DBpedia") preg_match_all("/\"http:\/\/dbpedia\.org\/ontology\/[^\040()]+\"/",$kb,$treffer,PREG_OFFSET_CAPTURE);
+		
 		$final='';
 		$i=1;
 		$pos=0;
