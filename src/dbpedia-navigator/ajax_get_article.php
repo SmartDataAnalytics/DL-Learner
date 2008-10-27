@@ -17,6 +17,8 @@
 		die();
 	}
 	
+	$settings=new Settings();
+	
 	//write last action into session
 	if (strpos($subject,"http://dbpedia.org/resource/")===0) $actionuri=substr (strrchr ($subject, "/"), 1);
 	else $actionuri=urlencode($subject);
@@ -124,7 +126,7 @@
 			
 			if(isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'])){
 				// display a list of classes
-				if ($classSystem=="YAGO") $content.='<br/><hr><h4>YAGO Classes</h4><br/>';
+				if ($settings->classSystem=="YAGO") $content.='<br/><hr><h4>YAGO Classes</h4><br/>';
 				$content .= '<p>'.formatClassArray($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'],$classSystem).'</p>';
 			}
 
