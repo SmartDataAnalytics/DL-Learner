@@ -27,9 +27,11 @@
  */
 class DefaultTemplate extends AbstractTemplate {
 
-	// simply prints all triples without doing anything special
+	// simply prints all triples without doing anything special to group/format them
 	function printTemplate($triples) {
-		return printRemainingTriples($triples);
+		$content = '<table>';
+		$content .= $this->printRemainingTriples($triples);
+		return $content;
 	}
 
 }

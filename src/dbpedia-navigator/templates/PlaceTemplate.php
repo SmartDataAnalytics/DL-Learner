@@ -31,7 +31,7 @@
 abstract class PlaceTemplate extends AbstractTemplate {
 
 	// returns a latitude string of the form 49°1′0″N or "unknown"
-	public getLatitudeString($triples) {
+	public function getLatitudeString($triples) {
 		if(!areDBpediaPropertiesSet(array('latitudedegrees','latitudeminutes','latitudeseconds'))) {
 			return "unknown";
 		}
@@ -43,7 +43,7 @@ abstract class PlaceTemplate extends AbstractTemplate {
 	}
 
 	// returns a latitude string of the form 49°1′0″E or "unknown"
-	public getLongitudeString($triples) {
+	public function getLongitudeString($triples) {
 		if(!areDBpediaPropertiesSet(array('longitudedegrees','longitudeminutes','longitudeseconds'))) {
 			return "unknown";
 		}

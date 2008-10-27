@@ -28,7 +28,7 @@
  *  
  * @author Jens Lehmann
  */
-class AbstractTemplate {
+abstract class AbstractTemplate {
 
 	abstract function printTemplate($triples);
 	
@@ -44,7 +44,7 @@ class AbstractTemplate {
 				else 
 					$backgroundcolor="ffffff";
 					
-				$table .= '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">'.nicePredicate($predicate).'</a></td>';
+				$table = '<tr style="background-color:#'.$backgroundcolor.';"><td><a href="'.$predicate.'" target="_blank">'.nicePredicate($predicate).'</a></td>';
 				$table .= '<td>';
 				if ($number>1) $table.='<ul>';
 				$k=1;

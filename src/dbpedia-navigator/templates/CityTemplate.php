@@ -19,6 +19,8 @@
  *
  */
 
+include_once('PopulatedPlaceTemplate.php');
+
 /**
  * Template for cities.
  *  
@@ -26,17 +28,17 @@
  */
 class CityTemplate extends PopulatedPlaceTemplate {
 
-	function getTemplate($triples) {
+	function printTemplate($triples) {
 		$content = "";
 		$content .= '<table>';
 		$content .= '<tr><td colspan="2">City Information</td></tr>';
 		// population
-		$content .= '<tr><td>total population</td><td>' + getPopulationString($triples) + '</td></tr>';
+		$content .= '<tr><td>total population</td><td>' + $this->getPopulationString($triples) + '</td></tr>';
 		// location
-		$content .= '<tr><td>latitude</td><td>' + getLatitudeString($triples) + '</td></tr>';
-		$content .= '<tr><td>longitude</td><td>' + getLongitudeString($triples) + '</td></tr>';
+		$content .= '<tr><td>latitude</td><td>' + $this->getLatitudeString($triples) + '</td></tr>';
+		$content .= '<tr><td>longitude</td><td>' + $this->getLongitudeString($triples) + '</td></tr>';
 		// resources related to city
-		$content .= displayMultipleValues('city');
+		// $content .= displayMultipleValues('city');
 		$content .= '</table>';
 		
 		// .. continue ...
