@@ -19,15 +19,18 @@
  *
  */
 
+include_once('PlaceTemplate.php');
+
 /**
  * Template for all populated places.
  */
 abstract class PopulatedPlaceTemplate extends PlaceTemplate {
 
 	// return a nicely formatted string for the population of the place 
-	public getPopulationString() {
-		$number = number_format(extractPropValue('populationTotal'));
-		$asOf = extractPropValue('populationAsOf');
+	function getPopulationString() {
+		$population = $this->extractPropValue($triples, 'populationTotal'); 
+		$number = number_format($population);
+		$asOf = $this->extractPropValue('populationAsOf');
 		
 		return $number + ' (as of ' + $asOf + ')';
 	}

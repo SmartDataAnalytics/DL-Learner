@@ -27,7 +27,7 @@ class PersonTemplate extends AbstractTemplate {
 	function printTemplate($triples) {
 		$content = "";
 		
-		$content .= printRemainingTriples($triples);
+		$content .= $this->printRemainingTriples($triples);
 		return $content;
 	}
 
