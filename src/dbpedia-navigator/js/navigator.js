@@ -23,7 +23,7 @@ function loadGoogleMap(Lat,Lng,Label)
 	}
 }
     	
-function show_results(class, label, number) 
+function show_results(class, number, label) 
 {
 	var links=document.getElementById('results').getElementsByTagName('p');
 	var j=0;

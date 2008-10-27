@@ -70,12 +70,12 @@ function getTagCloud($tags,$label)
 		
 		$lab=getLabel($tag,$label[$tag]);
 		//$tag_with_entities=htmlentities("\"".$tag."\"");
-		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',\''.utf8_to_html($lab).'\',document.getElementById(\'hidden_number\').value);">'.utf8_to_html($lab).'</a>&nbsp;';
+		$ret.='<a style="'.$style.'" href="#" onclick="document.getElementById(\'hidden_class\').value=\''.$tag.'\';show_results(\''.$tag.'\',document.getElementById(\'hidden_number\').value,\''.utf8_to_html($lab).'\');">'.utf8_to_html($lab).'</a>&nbsp;';
 	}
 	$ret.="</p><br/>";
 	$ret.='<span id="FilterTags">You currently don\'t filter your search results.</span>';
-	$ret.=' You can <a style="font-size:11px;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'all\';show_results(\'all\',\'all\',document.getElementById(\'hidden_number\').value);">show all results</a>&nbsp;';
-	if ($nc) $ret.=' or <a style="font-size:11px;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'NoCategory\';show_results(\'NoCategory\',\'No Category\',document.getElementById(\'hidden_number\').value);">show results with no category</a>&nbsp;';
+	$ret.=' You can <a style="font-size:11px;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'all\';show_results(\'all\',document.getElementById(\'hidden_number\').value,\'all\');">show all results</a>&nbsp;';
+	if ($nc) $ret.=' or <a style="font-size:11px;" href="#" onclick="document.getElementById(\'hidden_class\').value=\'NoCategory\';show_results(\'NoCategory\',document.getElementById(\'hidden_number\').value,\'No Category\');">show results with no category</a>&nbsp;';
 	$ret.='<br/><br/>';
 	return $ret;
 }
