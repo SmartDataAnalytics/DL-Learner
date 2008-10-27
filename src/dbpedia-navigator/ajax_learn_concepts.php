@@ -41,16 +41,18 @@
 		
 		$classes=array();
 		$noclass=array();
+		if ($settings->classSystem=="YAGO") $rekursion=1;
+		else if ($settings->classSystem=="DBpedia") $rekursion=0;
 		foreach ($all as $pos){
 			$newclasses=array();
 			$query="SELECT category FROM articlecategories WHERE name='$pos'";
 			$res=$databaseConnection->query($query);
 			if (mysql_num_rows($res)<1) $noclass[]=$pos; 
 			while ($result=$databaseConnection->nextEntry($res)){
-				$classes[$pos][]=$result['category'];
-				$newclasses[]=$result['category'];
+				if ($result['category']!="http://dbpedia.org/ontology/Resource") $classes[$pos][]=$result['category'];
+				if ($result['category']!="http://dbpedia.org/ontology/Resource") $newclasses[]=$result['category'];
 			}
-			for ($i=0;$i<1;$i++){
+			for ($i=0;$i<$rekursion;$i++){
 				$tempclasses=array();
 				foreach ($newclasses as $clas){
 					$query="SELECT father FROM classhierarchy WHERE child='$clas'";
