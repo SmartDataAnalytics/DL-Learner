@@ -48,7 +48,10 @@ public class DBpediaNavigatorFilterRule extends Rule{
 				typeTuple = tuple;
 			}
 			
-			if (tuple.a.toString().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type") && !(tuple.b.toString().startsWith("http://dbpedia.org/class/yago"))){
+			/*if (tuple.a.toString().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type") && !(tuple.b.toString().startsWith("http://dbpedia.org/class/yago"))){
+				toRemove.add(typeTuple);
+			}*/
+			if (tuple.a.toString().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type") && !(tuple.b.toString().startsWith("http://dbpedia.org/ontology"))){
 				toRemove.add(typeTuple);
 			}
 		}//end for
