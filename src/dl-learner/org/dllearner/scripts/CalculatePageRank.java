@@ -251,6 +251,7 @@ public class CalculatePageRank {
 			while ((line=in.readLine())!=null)
 			{
 				split=line.split(">");
+				if (split.length<3) continue;
 				name=split[0].substring(1);
 				if (name.length()>name.lastIndexOf("/")+1) className=name.substring(name.lastIndexOf("/")+1,name.lastIndexOf("/")+1);
 				else className="t";
@@ -336,7 +337,7 @@ public class CalculatePageRank {
 		con = DriverManager.getConnection(
                                  url, dbUser, dbPass);
 		//cal.calculateLinks();
-		cal.addLabels();
+		//cal.addLabels();
 		//cal.calculateCategories();
 		cal.calculateCategoriesNewOntology();
 		cal.copyNumbers();
