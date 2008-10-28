@@ -44,6 +44,7 @@ import org.ini4j.IniFile;
  * @author Jens Lehmann
  *
  */
+@SuppressWarnings("unused")
 public class CalculatePageRank {
 	
 	private static String datasetDir;

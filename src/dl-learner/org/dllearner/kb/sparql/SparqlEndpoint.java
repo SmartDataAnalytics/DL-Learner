@@ -83,6 +83,8 @@ public class SparqlEndpoint {
 			return getEndpointDBpedia();
 		} else if (name.equals("LOCALDBPEDIA")) {
 			return getEndpointLOCALDBpedia();
+		} else if (name.equals("LOCALGEONAMES")) {
+			return getEndpointLOCALGeonames();
 		} else if (name.equals("LOCALJOSECKI") || name.equals("LOCALJOSEKI") ) {
 			return getEndpointlocalJoseki();
 		} else if (name.equals("LOCALJOSEKIBIBLE")||name.equals("LOCALJOSECKIBIBLE")) {
@@ -157,6 +159,18 @@ public class SparqlEndpoint {
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
 
+	public static SparqlEndpoint getEndpointLOCALGeonames() {
+		URL u = null;
+		try { 
+			u = new URL("http://139.18.2.37:8890/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		defaultGraphURIs.add("http://geonames.org");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+	}	
+	
 	public static SparqlEndpoint getEndpointlocalJoseki() {
 		URL u = null;
 		try { 
