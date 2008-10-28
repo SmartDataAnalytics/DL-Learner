@@ -116,10 +116,6 @@
 				$content.=', <img src="images/flickr.png" alt="Flickr" style="max-width:20px;" /> <a href="'.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'" onclick="window.open(\''.$triples['http://dbpedia.org/property/hasPhotoCollection'][0]['value'].'\',\'Wikiwindow\',\'width=800,height=500,top=50,left=50,scrollbars=yes\');return false;">view photo collection</a></p>';
 			}
 			
-			$content .= '<br/><hr><h4>Further Information</h4><br/>';
-			// detect appropriate template (currently always default)
-			$template = new DefaultTemplate();
-			
 			//display owl:sameAs properties
 			if (isset($triples['http://www.w3.org/2002/07/owl#sameAs'])||isset($subjecttriples['http://www.w3.org/2002/07/owl#sameAs'])){
 				$content.='<br/><hr><h4>Same as</h4><br/>';
@@ -268,6 +264,9 @@
 			// have already been displayed
 			filterTriples(&$triples, &$subjecttriples);
 			
+			$content .= '<br/><hr><h4>Further Information</h4><br/>';
+			// detect appropriate template (currently always default)
+			$template = new DefaultTemplate();
 			// display template for this instance (currently the template is similar to the remaining
 			// instance view apart from beautifications)
 			$content .= $template->printTemplate($triples,$subjecttriples);
