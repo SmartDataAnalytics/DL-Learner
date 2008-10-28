@@ -681,6 +681,7 @@ public class DLLearnerWS {
 	 * @return The result of the SPARQL query in JSON format or null if the endpoint does not exist.
 	 * @see SPARQLEndpoint#getEndpointByName;
 	 */
+	@WebMethod
 	public String sparqlQueryPredefinedEndpoint(String predefinedEndpoint, String query, boolean useCache) {
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
 		SPARQLTasks st;
