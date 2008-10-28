@@ -24,10 +24,10 @@
  */
 class PersonTemplate extends AbstractTemplate {
 
-	function printTemplate($triples) {
+	function printTemplate($triples,$subjecttriples) {
 		$content = "";
 		
-		$content .= $this->printRemainingTriples($triples);
+		$content .= $this->printRemainingTriples($triples,$subjecttriples);
 		return $content;
 	}
 
