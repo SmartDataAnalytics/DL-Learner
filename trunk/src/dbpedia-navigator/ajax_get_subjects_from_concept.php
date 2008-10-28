@@ -64,7 +64,7 @@
 		for ($j=1;$j<$i-1;$j++)
 			$temp.='cat'.$j.'.name=cat'.($j+1).'.name AND ';
 		
-		$query=$temp.'('.$final.') ORDER BY number LIMIT '.$number;
+		$query=$temp.'('.$final.') ORDER BY number DESC LIMIT '.$number;
 		
 		$res=$databaseConnection->query($query);
 		$bestsearches="";
