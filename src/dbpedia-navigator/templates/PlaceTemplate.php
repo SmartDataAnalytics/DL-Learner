@@ -36,9 +36,9 @@ abstract class PlaceTemplate extends AbstractTemplate {
 			return "unknown";
 		}
 	
-		$latitude = $triples['http://dbpedia.org/ontology/latitutedegrees'] + "° "
-			+ $triples['http://dbpedia.org/ontology/latitudeminutes'] + "′"
-			+ $triples['http://dbpedia.org/ontology/latitudeseconds'] + "″N";
+		$latitude = $this->extractPropValue('latitutedegrees') + "° "
+			+ $this->extractPropValue('latitudeminutes') + "′"
+			+ $this->extractPropValue('latitudeseconds') + "″N";
 		return $latitude;	
 	}
 
@@ -48,10 +48,10 @@ abstract class PlaceTemplate extends AbstractTemplate {
 			return "unknown";
 		}
 	
-		$longitude = $triples['http://dbpedia.org/ontology/longitutedegrees'] + "° "
-			+ $triples['http://dbpedia.org/ontology/longitudeminutes'] + "′"
-			+ $triples['http://dbpedia.org/ontology/longitudeseconds'] + "″N";
-		return $longitude;	
+		$longitude = $this->extractPropValue('longitutedegrees') + "° "
+			+ $this->extractPropValue('http://dbpedia.org/ontology/longitudeminutes') + "′"
+			+ $this->extractPropValue('http://dbpedia.org/ontology/longitudeseconds') + "″N";
+		return $longitude;
 	}
 	
 }

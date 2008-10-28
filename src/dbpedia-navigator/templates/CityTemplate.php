@@ -29,9 +29,8 @@ include_once('PopulatedPlaceTemplate.php');
 class CityTemplate extends PopulatedPlaceTemplate {
 
 	function printTemplate($triples,$subjecttriples) {
-		$content = "";
-		$content .= '<table>';
-		$content .= '<tr><td colspan="2">City Information</td></tr>';
+		$content = $this-getTableHeader();
+		// $content .= '<tr><td colspan="2">City Information</td></tr>';
 		// population
 		$content .= '<tr><td>total population</td><td>' + $this->getPopulationString($triples) + '</td></tr>';
 		// location
@@ -39,9 +38,9 @@ class CityTemplate extends PopulatedPlaceTemplate {
 		$content .= '<tr><td>longitude</td><td>' + $this->getLongitudeString($triples) + '</td></tr>';
 		// resources related to city
 		// $content .= displayMultipleValues('city');
-		$content .= '</table>';
+		// $content .= '</table>';
 		
-		// .. continue ...
+		$content .= $this->printRemainingTriples();
 		
 		return $content;
 	}

@@ -259,14 +259,22 @@
 				$pages=substr($pages,0,strlen($pages)-2);
 				$content.='<br/><hr><h4>Wikipedia articles in different languages</h4><br/><p>'.$pages.'</p>';
 			}
+						
+			$content .= '<br/><hr><h4>Further Information</h4><br/>';
+			
+			// detect appropriate template (currently always default)
+			if($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']) == 'http://dbpedia.org/ontology/City) {
+				$template = new CityTemplate();
+			} else if($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']) == 'http://dbpedia.org/ontology/Person) {
+				$template = new PersonTemplate();
+			} else {
+				$template = new DefaultTemplate();
+			}
 			
 			// filter out uninteresting properties and properties which
 			// have already been displayed
-			filterTriples(&$triples, &$subjecttriples);
+			filterTriples(&$triples, &$subjecttriples);			
 			
-			$content .= '<br/><hr><h4>Further Information</h4><br/>';
-			// detect appropriate template (currently always default)
-			$template = new DefaultTemplate();
 			// display template for this instance (currently the template is similar to the remaining
 			// instance view apart from beautifications)
 			$content .= $template->printTemplate($triples,$subjecttriples);

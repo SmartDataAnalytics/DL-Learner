@@ -32,11 +32,15 @@ abstract class AbstractTemplate {
 
 	abstract function printTemplate($triples,$subjecttriples);
 	
+	function getTableHeader() {
+		return '<table border="0" style="width:100%;overflow:hidden"><tr><td><b>Predicate</b></td><td><b>Object/Subject</b></td></tr>';
+	}
+	
 	// function to be called after all "special" actions have been taken;
 	// it displays all remaining triples
 	function printRemainingTriples($triples,$subjecttriples) {
+		$table = '';
 		if ((is_array($triples)&&count($triples)>0)||(is_array($subjecttriples)&&count($subjecttriples)>0)){
-			$table = '<table border="0" style="width:100%;overflow:hidden"><tr><td><b>Predicate</b></td><td><b>Object/Subject</b></td></tr>';
 			$i=1;
 			if (is_array($triples)&&count($triples)>0) foreach($triples as $predicate=>$object) {
 				$number=count($object);
@@ -118,7 +122,7 @@ abstract class AbstractTemplate {
 			}
 			$table .= '</table>';
 		}
-		else $table="No Tripel left.";
+		else $table="No triple left.";
 		return $table;
 	}
 	
