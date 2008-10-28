@@ -62,7 +62,7 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useCache", true);
 		if(empty($negExamples)){
 			if ($settings->classSystem=="YAGO") $filterClasses=array("http://xmlns.com/foaf/","http://dbpedia.org/ontology/");
-			else if ($settings->classSystem=="DBpedia") $filterClasses=array("http://xmlns.com/foaf/","http://dbpedia.org/class/yago/");
+			else if ($settings->classSystem=="DBpedia") $filterClasses=array("http://xmlns.com/foaf/","http://dbpedia.org/class/yago/","http://dbpedia.org/ontology/Resource");
 			$negExamples=$this->client->getNegativeExamples($this->id,$this->ksID,$posExamples,count($posExamples),"http://dbpedia.org/resource/",$filterClasses);
 			$negExamples=$negExamples->item;
 		}
