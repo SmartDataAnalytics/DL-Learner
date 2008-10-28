@@ -616,4 +616,51 @@ function filterTriples($triples,$subjecttriples){
 			if (isset($triples['http://dbpedia.org/property/utcDst'])) unset($triples['http://dbpedia.org/property/utcDst']);
 			if (isset($triples['http://dbpedia.org/property/spokenWikipedia2Property'])) unset($triples['http://dbpedia.org/property/spokenWikipedia2Property']);
 }
+
+public function getNegativeExamplesFromParallelClass($posExamples){
+	include_once('Settings.php');
+	include_once('DatabaseConnection.php');
+	//connect to the database
+	$settings=new Settings();
+	$databaseConnection=new DatabaseConnection($settings->database_type);
+	$databaseConnection->connect($settings->database_server,$settings->database_user,$settings->database_pass);
+	$databaseConnection->select_database($settings->database_name);
+	
+	$examples=array();
+	foreach ($posExamples as $pos){
+		$query="SELECT category FROM articlecategories WHERE name='".$pos."' AND category!='http://dbpedia.org/ontology/Resource'";
+		$res=$databaseConnection->query($query);
+		if ($databaseConnection->numberOfEntries($res)>0) $zufall = rand(1,$databaseConnection->numberOfEntries($res));
+		$i=1;
+		while ($result=$databaseConnection->nextEntry($res)){
+			if ($i==$zufall) $class=$result['category'];
+			$i++;
+		}
+		$query="SELECT father FROM classhierarchy WHERE child='".$class."'";
+		$res=$databaseConnection->query($query);
+		if ($databaseConnection->numberOfEntries($res)>0) $zufall = rand(1,$databaseConnection->numberOfEntries($res));
+		$i=1;
+		while ($result=$databaseConnection->nextEntry($res)){
+			if ($i==$zufall) $father=$result['father'];
+			$i++;
+		}	
+		
+		$query="SELECT child FROM classhierarchy WHERE father='".$father."' AND child!='".$class."'";
+		$res=$databaseConnection->query($query);
+		if ($databaseConnection->numberOfEntries($res)>0) $zufall = rand(1,$databaseConnection->numberOfEntries($res));
+		$i=1;
+		while ($result=$databaseConnection->nextEntry($res)){
+			if ($i==$zufall) $child=$result['child'];
+			$i++;
+		}
+		$query="SELECT name FROM articlecategories WHERE category='".$child."' AND name!='".$pos."' ORDER BY RAND() LIMIT 1";
+		$res=$databaseConnection->query($query);
+		if ($databaseConnection->numberOfEntries($res)>0){
+			$result=$databaseConnection->nextEntry($res);
+			$examples[]=$result['name'];
+		}	
+	}
+	
+	return $examples;
+}
 ?>
