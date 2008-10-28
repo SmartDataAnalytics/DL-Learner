@@ -5,14 +5,6 @@ ini_set('max_execution_time',200);
 ini_set("soap.wsdl_cache_enabled","1");
 
 session_start();
-require_once('DLLearnerConnection.php');
-$sc=new DLLearnerConnection();
-$ids=$sc->getIDs();
-$_SESSION['id']=$ids[0];
-$_SESSION['ksID']=$ids[1];
-
-require_once('Settings.php');
-$settings=new Settings();
 
 //what happens onLoad
 $onLoad="onLoad=\"document.getElementById('label').focus();";
@@ -44,6 +36,14 @@ else if (isset($_SESSION['currentArticle'])){
 
 $onLoad.="\"";
 
+require_once('DLLearnerConnection.php');
+$sc=new DLLearnerConnection();
+$ids=$sc->getIDs();
+$_SESSION['id']=$ids[0];
+$_SESSION['ksID']=$ids[1];
+
+require_once('Settings.php');
+$settings=new Settings();
   
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
