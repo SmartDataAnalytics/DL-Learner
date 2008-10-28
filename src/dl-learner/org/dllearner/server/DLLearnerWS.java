@@ -677,12 +677,18 @@ public class DLLearnerWS {
 	 * Queries one of the standard endpoints defined in DL-Learner.
 	 * @param predefinedEndpoint A string describing the endpoint e.g. DBpedia.
 	 * @param query The SPARQL query.
+	 * @param useCache Specify whether to use a cache for queries.
 	 * @return The result of the SPARQL query in JSON format or null if the endpoint does not exist.
 	 * @see SPARQLEndpoint#getEndpointByName;
 	 */
-	public String sparqlQueryPredefinedEndpoint(String predefinedEndpoint, String query) {
+	public String sparqlQueryPredefinedEndpoint(String predefinedEndpoint, String query, boolean useCache) {
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
-		SPARQLTasks st = new SPARQLTasks(endpoint);
+		SPARQLTasks st;
+		if(useCache) {
+			st = new SPARQLTasks(endpoint);
+		} else {
+			st = new SPARQLTasks(Cache.getDefaultCache(), endpoint);
+		}
 		return st.query(query);
 	}
 	
