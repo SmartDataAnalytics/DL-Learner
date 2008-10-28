@@ -262,14 +262,16 @@
 						
 			$content .= '<br/><hr><h4>Further Information</h4><br/>';
 			
+			$template="";
 			// detect appropriate template (currently always default)
-			if($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']) == 'http://dbpedia.org/ontology/City) {
-				$template = new CityTemplate();
-			} else if($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']) == 'http://dbpedia.org/ontology/Person) {
-				$template = new PersonTemplate();
-			} else {
-				$template = new DefaultTemplate();
+			foreach ($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'] as $classes){
+				if($class['value'] == 'http://dbpedia.org/ontology/City') {
+					$template = new CityTemplate();
+				} else if($class['value'] == 'http://dbpedia.org/ontology/Person') {
+					$template = new PersonTemplate();
+				}
 			}
+			if ($template=="") $template = new DefaultTemplate();
 			
 			// filter out uninteresting properties and properties which
 			// have already been displayed
