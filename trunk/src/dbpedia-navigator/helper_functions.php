@@ -617,7 +617,7 @@ function filterTriples($triples,$subjecttriples){
 			if (isset($triples['http://dbpedia.org/property/spokenWikipedia2Property'])) unset($triples['http://dbpedia.org/property/spokenWikipedia2Property']);
 }
 
-public function getNegativeExamplesFromParallelClass($posExamples){
+function getNegativeExamplesFromParallelClass($posExamples){
 	include_once('Settings.php');
 	include_once('DatabaseConnection.php');
 	//connect to the database
