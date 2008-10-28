@@ -28,7 +28,7 @@ include_once('PopulatedPlaceTemplate.php');
  */
 class CityTemplate extends PopulatedPlaceTemplate {
 
-	function printTemplate($triples) {
+	function printTemplate($triples,$subjecttriples) {
 		$content = "";
 		$content .= '<table>';
 		$content .= '<tr><td colspan="2">City Information</td></tr>';
