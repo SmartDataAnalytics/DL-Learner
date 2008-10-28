@@ -13,6 +13,8 @@
 
 	$subject=$_POST['label'];
 	$fromCache=$_POST['cache'];
+	if ($fromCache==-2) $fromrest=true;
+	else $fromrest=false;
 		
 	if (isset($_SESSION['articles'])) $articles=$_SESSION['articles'];
 	if (isset($_SESSION['id'])){
@@ -309,7 +311,7 @@
 			}
 			else{
 				$array=$_SESSION['positive'];
-				if (!isset($array[$uri])){
+				if (!isset($array[$uri])||$fromrest){
 					$array[$uri]=$artTitle;
 					if (count($array)>10){
 						foreach ($array as $key=>$value){
@@ -345,7 +347,7 @@
 		}
 		else{
 			$array=$_SESSION['positive'];
-			if (!isset($array[$uri])){
+			if (!isset($array[$uri])||$fromrest){
 				$array[$uri]=$artTitle;
 				if (count($array)>10){
 					foreach ($array as $key=>$value){
