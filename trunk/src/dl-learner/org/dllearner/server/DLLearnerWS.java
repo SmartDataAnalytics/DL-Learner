@@ -761,11 +761,11 @@ public class DLLearnerWS {
 		SPARQLTasks task=ks.getSPARQLTasks();
 		AutomaticNegativeExampleFinderSPARQL finder=new AutomaticNegativeExampleFinderSPARQL(positiveSet,task,filterSet);
 		
-		finder.makeNegativeExamplesFromNearbyClasses(positiveSet, sparqlResultSetLimit);
+		/*finder.makeNegativeExamplesFromNearbyClasses(positiveSet, sparqlResultSetLimit);
 		SortedSet<String> negExamples=finder.getNegativeExamples(results);
-		if (negExamples.isEmpty()){
+		if (negExamples.isEmpty()){*/
 			finder.makeNegativeExamplesFromParallelClasses(positiveSet, sparqlResultSetLimit);
-			negExamples=finder.getNegativeExamples(results);
+			SortedSet<String> negExamples=finder.getNegativeExamples(results);
 			if(negExamples.isEmpty()){
 				 finder.makeNegativeExamplesFromRelatedInstances(positiveSet, namespace);
 				 negExamples = finder.getNegativeExamples(results);
@@ -778,7 +778,7 @@ public class DLLearnerWS {
 					 }
 				 }
 			}
-		}
+		//}
 		
 		return negExamples.toArray(new String[negExamples.size()]);
 	}
