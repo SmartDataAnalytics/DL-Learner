@@ -62,11 +62,11 @@ class DLLearnerConnection
 		$this->client->applyConfigEntryString($this->id, $this->ksID, "predefinedManipulator", "DBPEDIA-NAVIGATOR");
 		$this->client->applyConfigEntryBoolean($this->id, $this->ksID, "useCache", true);
 		if(empty($negExamples)){
-			/*if ($settings->classSystem=="YAGO") $filterClasses=array("http://xmlns.com/foaf/","http://dbpedia.org/ontology/");
+			if ($settings->classSystem=="YAGO") $filterClasses=array("http://xmlns.com/foaf/","http://dbpedia.org/ontology/");
 			else if ($settings->classSystem=="DBpedia") $filterClasses=array("http://xmlns.com/foaf/","http://dbpedia.org/class/yago/","http://dbpedia.org/ontology/Resource");
 			$negExamples=$this->client->getNegativeExamples($this->id,$this->ksID,$posExamples,count($posExamples),"http://dbpedia.org/resource/",$filterClasses);
-			$negExamples=$negExamples->item;*/
-			$negExamples=getNegativeExamplesFromParallelClass($posExamples);
+			$negExamples=$negExamples->item;
+			//$negExamples=getNegativeExamplesFromParallelClass($posExamples);
 		}
 		$this->client->applyConfigEntryStringArray($this->id, $this->ksID, "instances", array_merge($posExamples,$negExamples));
 		$this->client->setReasoner($this->id, "fastInstanceChecker");
