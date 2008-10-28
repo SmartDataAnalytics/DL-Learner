@@ -1,7 +1,6 @@
 package org.dllearner.kb.sparql;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
@@ -134,7 +133,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 			System.out.println("Finished");*/
 			//String conj="EXISTS \"http://xmlns.com/foaf/0.1/page\".<= 0 \"http://www.w3.org/2004/02/skos/core#subject\".TOP";
 			//String conj="(\"Male\" AND (\"hasDog\" = 18))";
-			ObjectValueRestriction rest=new ObjectValueRestriction(new ObjectProperty("hasAge"),new Individual("18"));
+//			ObjectValueRestriction rest=new ObjectValueRestriction(new ObjectProperty("hasAge"),new Individual("18"));
 			//System.out.println(NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(rest));
 		} catch (/*Parse*/Exception e) {
 			// TODO Auto-generated catch block

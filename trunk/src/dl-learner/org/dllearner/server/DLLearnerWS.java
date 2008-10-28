@@ -64,6 +64,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.NaturalLanguageDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.SPARQLTasks;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.SparqlQueryException;
@@ -670,6 +671,19 @@ public class DLLearnerWS {
 			return cache.executeSparqlQuery(sparql);
 		}
 		else return sparql.getJson();*/
+	}
+	
+	/**
+	 * Queries one of the standard endpoints defined in DL-Learner.
+	 * @param predefinedEndpoint A string describing the endpoint e.g. DBpedia.
+	 * @param query The SPARQL query.
+	 * @return The result of the SPARQL query in JSON format or null if the endpoint does not exist.
+	 * @see SPARQLEndpoint#getEndpointByName;
+	 */
+	public String sparqlQueryPredefinedEndpoint(String predefinedEndpoint, String query) {
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
+		SPARQLTasks st = new SPARQLTasks(endpoint);
+		return st.query(query);
 	}
 	
 	@WebMethod
