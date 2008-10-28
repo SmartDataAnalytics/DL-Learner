@@ -51,7 +51,7 @@ public class GeoInference {
 		BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
 		
 		// db.aksw.org SPARQL endpoint
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointLOCALGeonames();
+		SparqlEndpoint endpoint = null;//SparqlEndpoint.getEndpointLOCALGeonames();
 		SPARQLTasks st = new SPARQLTasks(endpoint);
 		
 		URI test = URI.create("http://sws.geonames.org/2959441/");
