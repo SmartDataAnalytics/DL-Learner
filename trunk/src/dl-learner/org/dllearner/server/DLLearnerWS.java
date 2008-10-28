@@ -731,7 +731,6 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getNegativeExamples(int sessionID, int componentID,String[] positives, int results, String namespace, String[] filterClasses) throws ClientNotKnownException
 	{
-		System.out.println(filterClasses.length);
 		int sparqlResultSetLimit = 500;
 		SortedSet<String> positiveSet = new TreeSet<String>(Arrays.asList(positives));
 		SortedSet<String> filterSet = new TreeSet<String>(Arrays.asList(filterClasses));
