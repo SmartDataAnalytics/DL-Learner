@@ -180,7 +180,7 @@ class DLLearnerConnection
 		}
 		//geonames
 		$query="SELECT ?obj WHERE {?s <http://www.w3.org/2002/07/owl#sameAs> <".$uri.">.?s ?p ?obj}";
-		$result=json_decode($this->client->sparqlQueryPredefinedEndpoint("LOCALGEONAMES", $query),true);
+		$result=json_decode($this->client->sparqlQueryPredefinedEndpoint("LOCALGEONAMES", $query, true),true);
 		var_dump($result);		
 		
 		return $ret;

@@ -338,6 +338,14 @@
   <message name="sparqlQueryResponse">
     <part name="return" type="xsd:string"></part>
   </message>
+  <message name="sparqlQueryPredefinedEndpoint">
+    <part name="arg0" type="xsd:string"></part>
+    <part name="arg1" type="xsd:string"></part>
+    <part name="arg2" type="xsd:boolean"></part>
+  </message>
+  <message name="sparqlQueryPredefinedEndpointResponse">
+    <part name="return" type="xsd:string"></part>
+  </message>
   <message name="isSparqlQueryRunning">
     <part name="arg0" type="xsd:int"></part>
     <part name="arg1" type="xsd:int"></part>
@@ -657,6 +665,10 @@
       <input message="tns:sparqlQuery"></input>
       <output message="tns:sparqlQueryResponse"></output>
       <fault message="tns:ClientNotKnownException" name="ClientNotKnownException"></fault>
+    </operation>
+    <operation name="sparqlQueryPredefinedEndpoint" parameterOrder="arg0 arg1 arg2">
+      <input message="tns:sparqlQueryPredefinedEndpoint"></input>
+      <output message="tns:sparqlQueryPredefinedEndpointResponse"></output>
     </operation>
     <operation name="isSparqlQueryRunning" parameterOrder="arg0 arg1">
       <input message="tns:isSparqlQueryRunning"></input>
@@ -1350,6 +1362,15 @@
       <fault name="ClientNotKnownException">
         <soap:fault name="ClientNotKnownException" use="literal"></soap:fault>
       </fault>
+    </operation>
+    <operation name="sparqlQueryPredefinedEndpoint">
+      <soap:operation soapAction=""></soap:operation>
+      <input>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://server.dllearner.org/"></soap:body>
+      </output>
     </operation>
     <operation name="isSparqlQueryRunning">
       <soap:operation soapAction=""></soap:operation>
