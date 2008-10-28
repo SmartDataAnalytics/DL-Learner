@@ -174,7 +174,10 @@ public class AutomaticNegativeExampleFinderSPARQL {
 			for (String oneClass : classes){
 				Iterator<String> iter=filterClasses.iterator();
 				while (iter.hasNext()){
-					if (!oneClass.startsWith(iter.next())){
+					if (oneClass.startsWith(iter.next())){
+						break;
+					}
+					else{
 						concept=oneClass;
 						br=true;
 						break;
@@ -192,8 +195,10 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		}
 		classes.remove(concept);
 		for (String oneClass : classes) {
-			fromNearbyClasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\""
-					+ oneClass + "\"", sparqlResultLimit));
+			try{
+				fromNearbyClasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\""
+						+ oneClass + "\"", sparqlResultLimit));
+			} catch (Exception e){}
 		}
 		
 		this.fromNearbyClasses.removeAll(fullPositiveSet);
