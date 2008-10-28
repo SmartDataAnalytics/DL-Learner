@@ -25,8 +25,7 @@
 class PersonTemplate extends AbstractTemplate {
 
 	function printTemplate($triples,$subjecttriples) {
-		$content = "";
-		
+		$content = $this->getTableHeader();
 		$content .= $this->printRemainingTriples($triples,$subjecttriples);
 		return $content;
 	}
