@@ -189,7 +189,6 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		}
 		logger.debug("getting negExamples from " + classes.size() + " parallel classes");
 		for (String oneClass : classes) {
-			System.out.println(oneClass);
 			logger.debug(oneClass);
 			// rsc = new
 			// JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
