@@ -264,7 +264,7 @@
 			
 			$template="";
 			// detect appropriate template (currently always default)
-			foreach ($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'] as $classes){
+			if (isset($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'])) foreach ($triples['http://www.w3.org/1999/02/22-rdf-syntax-ns#type'] as $classes){
 				if($class['value'] == 'http://dbpedia.org/ontology/City') {
 					$template = new CityTemplate();
 				} else if($class['value'] == 'http://dbpedia.org/ontology/Person') {

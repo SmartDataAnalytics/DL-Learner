@@ -182,11 +182,11 @@ class DLLearnerConnection
 			}
 		}
 		//geonames
-		if (strlen($geonames)>0){
-			$query="SELECT * WHERE {<".$geonames."> <http://www.geonames.org/ontology#parent> ?parent.<".$geonames."> <http://www.geonames.org/ontology#children> ?children.<".$geonames."> <http://www.geonames.org/ontology#neighbours> ?neighbours.}";
+		/*if (strlen($geonames)>0){
+			$query="SELECT * WHERE {<".$geonames."> <http://www.geonames.org/ontology#parentFeature> ?parent.<".$geonames."> <http://www.geonames.org/ontology#children> ?children.<".$geonames."> <http://www.geonames.org/ontology#nearbyFeatures> ?neighbours.}";
 			$result=json_decode($this->client->sparqlQueryPredefinedEndpoint("LOCALGEONAMES", $query, true),true);
 			var_dump($result);
-		}		
+		}*/		
 		
 		return $ret;
 	}
