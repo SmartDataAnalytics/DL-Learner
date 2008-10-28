@@ -170,18 +170,23 @@ class DLLearnerConnection
 		$result=json_decode($this->getSparqlResultThreaded($query),true);
 		if (count($result['results']['bindings'])==0) throw new Exception("An article with that name does not exist. The Search is started ..."); 
 		$ret=array();
+		$geonames="";
 		foreach ($result['results']['bindings'] as $results){
 			if (!(isset($results['xml:lang'])&&($results['xml:lang']!=$this->lang))){
 				if (isset($results['obj'])){
 					$ret[0][$results['pred']['value']][]=$results['obj'];
+					if ($results['pred']['value']=="http://www.w3.org/2002/07/owl#sameAs"&&strlen($results['obj']['value'])>24&&substr($results['obj']['value'],0,24)=='http://sws.geonames.org/')
+						$geonames=$results['obj']['value'];
 				}
 				else if (isset($results['sub'])) $ret[1][$results['pred']['value']][]=$results['sub'];
 			}
 		}
 		//geonames
-		$query="SELECT ?obj WHERE {?s <http://www.w3.org/2002/07/owl#sameAs> <".$uri.">.?s ?p ?obj}";
-		$result=json_decode($this->client->sparqlQueryPredefinedEndpoint("LOCALGEONAMES", $query, true),true);
-		var_dump($result);		
+		if (strlen($geonames)>0){
+			$query="SELECT ?obj WHERE {<".$geonames."> ?p ?obj}";
+			$result=json_decode($this->client->sparqlQueryPredefinedEndpoint("LOCALGEONAMES", $query, true),true);
+			var_dump($result);
+		}		
 		
 		return $ret;
 	}
