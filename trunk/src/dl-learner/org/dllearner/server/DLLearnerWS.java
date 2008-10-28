@@ -729,29 +729,34 @@ public class DLLearnerWS {
 	}
 	
 	@WebMethod
-	public String[] getNegativeExamples(int sessionID, int componentID,String[] positives, int results, String namespace) throws ClientNotKnownException
+	public String[] getNegativeExamples(int sessionID, int componentID,String[] positives, int results, String namespace, String[] filterClasses) throws ClientNotKnownException
 	{
 		int sparqlResultSetLimit = 500;
 		SortedSet<String> positiveSet = new TreeSet<String>(Arrays.asList(positives));
+		SortedSet<String> filterSet = new TreeSet<String>(Arrays.asList(filterClasses));
 		ClientState state = getState(sessionID);
 		Component component = state.getComponent(componentID);
 		SparqlKnowledgeSource ks=(SparqlKnowledgeSource)component;
 		SPARQLTasks task=ks.getSPARQLTasks();
-		AutomaticNegativeExampleFinderSPARQL finder=new AutomaticNegativeExampleFinderSPARQL(positiveSet,task);
+		AutomaticNegativeExampleFinderSPARQL finder=new AutomaticNegativeExampleFinderSPARQL(positiveSet,task,filterSet);
 		
-		finder.makeNegativeExamplesFromParallelClasses(positiveSet, sparqlResultSetLimit);
+		finder.makeNegativeExamplesFromNearbyClasses(positiveSet, sparqlResultSetLimit);
 		SortedSet<String> negExamples=finder.getNegativeExamples(results);
-		if(negExamples.isEmpty()){
-			 finder.makeNegativeExamplesFromRelatedInstances(positiveSet, namespace);
-			 negExamples = finder.getNegativeExamples(results);
-			 if(negExamples.isEmpty()){
-				 finder.makeNegativeExamplesFromSuperClassesOfInstances(positiveSet, sparqlResultSetLimit);
+		if (negExamples.isEmpty()){
+			finder.makeNegativeExamplesFromParallelClasses(positiveSet, sparqlResultSetLimit);
+			negExamples=finder.getNegativeExamples(results);
+			if(negExamples.isEmpty()){
+				 finder.makeNegativeExamplesFromRelatedInstances(positiveSet, namespace);
 				 negExamples = finder.getNegativeExamples(results);
-				 if(negExamples.isEmpty()) {
-					 finder.makeNegativeExamplesFromRandomInstances();
+				 if(negExamples.isEmpty()){
+					 finder.makeNegativeExamplesFromSuperClassesOfInstances(positiveSet, sparqlResultSetLimit);
 					 negExamples = finder.getNegativeExamples(results);
+					 if(negExamples.isEmpty()) {
+						 finder.makeNegativeExamplesFromRandomInstances();
+						 negExamples = finder.getNegativeExamples(results);
+					 }
 				 }
-			 }
+			}
 		}
 		
 		return negExamples.toArray(new String[negExamples.size()]);

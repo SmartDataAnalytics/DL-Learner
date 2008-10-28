@@ -149,7 +149,7 @@ public class WikipediaCategoryTasks {
 		// NEGATIVES
 
 		AutomaticNegativeExampleFinderSPARQL aneg = new AutomaticNegativeExampleFinderSPARQL(
-				fullPositiveSet, sparqlTasks);
+				fullPositiveSet, sparqlTasks, new TreeSet<String>());
 
 		aneg.makeNegativeExamplesFromParallelClasses(posExamples,
 				sparqlResultLimitNegativeExamples);
