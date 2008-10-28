@@ -40,7 +40,7 @@ public class TestGetExampleBug {
 
 				SPARQLTasks st = new SPARQLTasks(new SparqlEndpoint(new URL(OntowikiUrl)));
 				AutomaticNegativeExampleFinderSPARQL ane = 
-					new AutomaticNegativeExampleFinderSPARQL(positiveSet,st);
+					new AutomaticNegativeExampleFinderSPARQL(positiveSet,st, new TreeSet<String>());
 				SortedSet<String> negExamples = new TreeSet<String>();
 				int results=100;
 				if(negExamples.isEmpty()){

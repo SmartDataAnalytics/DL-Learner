@@ -20,6 +20,7 @@
 package org.dllearner.tools.ore;
 
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
@@ -49,7 +50,7 @@ public class SPARQLTest{
 		pos.makePositiveExamplesFromConcept("angela_merkel");
 		SortedSet<String> posExamples = pos.getPosExamples();
 		
-		AutomaticNegativeExampleFinderSPARQL neg = new AutomaticNegativeExampleFinderSPARQL(posExamples, task);
+		AutomaticNegativeExampleFinderSPARQL neg = new AutomaticNegativeExampleFinderSPARQL(posExamples, task, new TreeSet<String>());
 		SortedSet<String> negExamples = neg.getNegativeExamples(20);
 		
 		LearnSPARQLConfiguration conf = new LearnSPARQLConfiguration();
