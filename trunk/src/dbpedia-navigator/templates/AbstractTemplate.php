@@ -30,7 +30,7 @@
  */
 abstract class AbstractTemplate {
 
-	abstract function printTemplate($triples);
+	abstract function printTemplate($triples,$subjecttriples);
 	
 	// function to be called after all "special" actions have been taken;
 	// it displays all remaining triples
