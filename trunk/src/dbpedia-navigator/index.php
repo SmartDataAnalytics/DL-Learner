@@ -12,7 +12,7 @@ if (isset($_GET['positives'])||isset($_GET['negatives'])) $onLoad.="setPositives
 else if (isset($_SESSION['positives'])||isset($_SESSION['negatives'])) $onLoad.="setPositivesAndNegatives('positives=".$_SESSION['positives']."&negatives=".$_SESSION['negatives']."');";
 if (isset($_GET['showArticle'])){
 	session_unset();
-	$onLoad.="get_article('label=".$_GET['showArticle']."&cache=-1');";
+	$onLoad.="get_article('label=".$_GET['showArticle']."&cache=-2');";
 }
 else if (isset($_GET['search'])){
 	session_unset();
