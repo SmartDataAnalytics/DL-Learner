@@ -183,7 +183,7 @@ class DLLearnerConnection
 		}
 		//geonames
 		/*if (strlen($geonames)>0){
-			$query="SELECT * WHERE {<".$geonames."> <http://www.geonames.org/ontology#parentFeature> ?parent.<".$geonames."> <http://www.geonames.org/ontology#childrenFeatures> ?children.<".$geonames."> <http://www.geonames.org/ontology#nearbyFeatures> ?neighbours.}";
+			$query="SELECT * WHERE {<".$geonames."> <http://www.geonames.org/ontology#parentFeature> ?parent.?parent <http://www.w3.org/2002/07/owl#sameAs> ?parentName.<".$geonames."> <http://www.geonames.org/ontology#childrenFeatures> ?children.<".$geonames."> <http://www.geonames.org/ontology#nearbyFeatures> ?neighbours.}";
 			$result=json_decode($this->client->sparqlQueryPredefinedEndpoint("LOCALGEONAMES", $query, true),true);
 			var_dump($result);
 		}*/		
