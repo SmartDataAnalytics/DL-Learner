@@ -45,8 +45,8 @@ private OWLFrameList2<OWLClass> list;
 	public void initialiseClassView() throws Exception {
 		list = new OWLFrameList2<OWLClass>(getOWLEditorKit(), new ButtonList(getOWLEditorKit()));
 		setLayout(new BorderLayout());
-		JScrollPane hallo = new JScrollPane(list);
-		add(hallo);
+		JScrollPane dlLearner = new JScrollPane(list);
+		add(dlLearner);
 		
 		
 	}

@@ -249,7 +249,6 @@ public class DLLearnerModel implements Runnable {
 				.getPosAndNegSelectPanel().getMaxNrOfResultsModelData(), view
 				.getPosAndNegSelectPanel().getMinAccuracyModelData(), true);
 		for (int j = 0; j < evalDescriptions.size(); j++) {
-			System.out.println("KLICKEN: "+ evalDescriptions.get(j).getNotCoveredPositives());
 			if (isConsistent(evalDescriptions.get(j))) {
 				suggestModel.add(j, new SuggestListItem(Color.GREEN,
 						evalDescriptions.get(j).getDescription()
@@ -490,8 +489,10 @@ public class DLLearnerModel implements Runnable {
 	public void unsetNewConcepts() {
 		while (owlDescription.iterator().hasNext()) {
 			owlDescription.remove(owlDescription.iterator().next());
+			
 		}
 	}
+	
 
 	/**
 	 * This method sets the individuals that belong to the concept which is
@@ -738,6 +739,7 @@ public class DLLearnerModel implements Runnable {
 							.hasNext();) {
 						OWLDescription oldOWLAPI = OWLAPIDescriptionConvertVisitor
 								.getOWLDescription(k.next());
+						oldConceptOWLAPI = oldOWLAPI;
 						ds.add(oldOWLAPI);
 					}
 
@@ -763,8 +765,8 @@ public class DLLearnerModel implements Runnable {
 		if (id.equals("Equivalent classes")) {
 			axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
 		} else {
-			axiomOWLAPI = factory.getOWLSubClassAxiom(oldConceptOWLAPI,
-					newConceptOWLAPI);
+			axiomOWLAPI = factory.getOWLSubClassAxiom(newConceptOWLAPI,
+					oldConceptOWLAPI);
 		}
 		OWLOntology onto = editor.getModelManager().getActiveOntology();
 		AddAxiom axiom = new AddAxiom(onto, axiomOWLAPI);

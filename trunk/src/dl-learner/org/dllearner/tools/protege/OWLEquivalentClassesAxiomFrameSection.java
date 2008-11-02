@@ -73,6 +73,7 @@ public class OWLEquivalentClassesAxiomFrameSection
 
 	@Override
 	protected void clear() {
+		added.clear();
 	}
 
 	/**

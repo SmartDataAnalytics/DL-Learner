@@ -82,8 +82,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 	private OWLEditorKit editorKit;
 
-	//private OWLDescriptionChecker checker;
-
 	private ExpressionEditor<OWLDescription> editor;
 
 	private JComponent editingComponent;
@@ -120,7 +118,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		//checker = new OWLDescriptionChecker(editorKit);
 		editor = new ExpressionEditor<OWLDescription>(editorKit, editorKit.getModelManager().getOWLExpressionCheckerFactory().getOWLDescriptionChecker());
 		editor.setExpressionObject(description);
-		dllearner = new DLLearnerView(frame, label);
+		dllearner = new DLLearnerView(frame, label, this);
 		action = new ActionHandler(this.action, null, dllearner, null,
 				editorKit);
 		tabbedPane = new JTabbedPane();
@@ -136,6 +134,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			tabbedPane.add(SUGGEST_SUBCLASS_LABEL, dllearner);
 		}
 		}
+		//
 		tabbedPane.add(CLASS_EXPRESSION_EDITOR_LABEL, new JScrollPane(editor));
 		if (description == null || !description.isAnonymous()) {
 			classSelectorPanel = new OWLClassSelectorPanel(editorKit);
@@ -154,6 +153,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 			tabbedPane.addChangeListener(changeListener);
 		}
+		
 	}
 
 	private void handleVerifyEditorContents() {
@@ -205,6 +205,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	public void clear() {
 		dllearner.unsetEverything();
 		dllearner.makeView();
+
 		handleVerifyEditorContents();
 		// initialDescription = null;
 		editor.setText("");
@@ -285,10 +286,12 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	 */
 	public void removeStatusChangedListener(
 			InputVerificationStatusChangedListener listener) {
+		//TODO: Suchen
+		//System.out.println("Comp: "+editorKit.getWorkspace().getComponents());
 		listeners.remove(listener);
 		editor.removeStatusChangedListener(listener);
 	}
-
+	
 	/**
 	 * This class is responsible for the view of the dllearner. It renders the
 	 * output for the user and is the graphical component of the plugin.
@@ -363,9 +366,11 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 * 
 		 * @param current OWLFrame
 		 * @param label String
+		 * @param dlLearner OWLClassDescriptionEditorWithDLLearnerTab
 		 */
-		public DLLearnerView(OWLFrame<OWLClass> current, String label) {
+		public DLLearnerView(OWLFrame<OWLClass> current, String label, OWLClassDescriptionEditorWithDLLearnerTab dlLearner) {
 			classSelectorPanel = new OWLClassSelectorPanel(editorKit);
+			mainWindow = dlLearner;
 			classSelectorPanel.firePropertyChange("test", false, true);
 			URL iconUrl = this.getClass().getResource("arrow.gif");
 			icon = new ImageIcon(iconUrl);
@@ -397,6 +402,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			addAcceptButtonListener(this.action);
 			addRunButtonListener(this.action);
 			addAdvancedButtonListener(this.action);
+			
 
 		}
 		/**
@@ -504,7 +510,13 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public JButton getAddButton() {
 			return accept;
 		}
-
+		/**
+		 * This Method updates the the view of protege after
+		 * adding a new concept.
+		 */
+		public void updateWindow() {
+			mainWindow.getHandler().handleEditingFinished(mainWindow.getEditedObjects());
+		}
 		/**
 		 * Returns all added descriptions.
 		 * @return Set(OWLDescription) 
@@ -569,7 +581,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	    * Destroys the view after the plugin is closed.
 	    */
 		public void dispose() {
-			System.out.println("dispose");
 		}
 
 		/**
