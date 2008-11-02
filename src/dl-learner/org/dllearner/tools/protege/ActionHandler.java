@@ -117,17 +117,13 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 		if (z.getActionCommand().equals("ADD")) {
 			if (evaluatedDescription != null) {
-				model
-						.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription
-								.getDescription());
+				model.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription.getDescription());
 			} else {
-				model
-						.changeDLLearnerDescriptionsToOWLDescriptions((Description) view
-								.getSuggestClassPanel().getSuggestList()
-								.getSelectedValue());
+				model.changeDLLearnerDescriptionsToOWLDescriptions((Description) view.getSuggestClassPanel().getSuggestList().getSelectedValue());
 			}
 			String message = "Concept added";
 			view.renderErrorMessage(message);
+			view.updateWindow();
 		}
 
 		if (z.getActionCommand().equals("?")) {
