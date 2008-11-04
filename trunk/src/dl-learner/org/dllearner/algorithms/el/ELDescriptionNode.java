@@ -20,6 +20,7 @@
 package org.dllearner.algorithms.el;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,17 +58,17 @@ import org.dllearner.utilities.Helper;
 public class ELDescriptionNode {
 
 	// the reference tree for storing values, must not be null
-	private ELDescriptionTree tree;
+	protected ELDescriptionTree tree;
 	
-	private NavigableSet<NamedClass> label;
+	protected TreeSet<NamedClass> label;
 	
-	private List<ELDescriptionEdge> edges;
+	protected List<ELDescriptionEdge> edges;
 
-	private int level;
+	protected int level;
 	
 	// parent node in the tree;
 	// null indicates that this node is a root node
-	private ELDescriptionNode parent = null;
+	protected ELDescriptionNode parent = null;
 		
 	// simulation information (list or set?)
 	protected Set<ELDescriptionNode> in = new HashSet<ELDescriptionNode>();
@@ -76,6 +77,13 @@ public class ELDescriptionNode {
 	protected Set<ELDescriptionNode> out = new HashSet<ELDescriptionNode>();
 	protected Set<ELDescriptionNode> outSC1 = new HashSet<ELDescriptionNode>();
 	protected Set<ELDescriptionNode> outSC2 = new HashSet<ELDescriptionNode>();
+	
+	/**
+	 * Internal constructor used for cloning nodes.
+	 */
+	protected ELDescriptionNode() {
+		
+	}
 	
 	/**
 	 * Constructs an EL description tree with empty root label.
@@ -88,7 +96,7 @@ public class ELDescriptionNode {
 	 * Constructs an EL description tree given its root label.
 	 * @param label Label of the root node.
 	 */
-	public ELDescriptionNode(ELDescriptionTree tree, NavigableSet<NamedClass> label) {
+	public ELDescriptionNode(ELDescriptionTree tree, TreeSet<NamedClass> label) {
 		this.label = label;
 		this.edges = new LinkedList<ELDescriptionEdge>();	
 		this.tree = tree;
@@ -97,11 +105,14 @@ public class ELDescriptionNode {
 		// this is the root node of the overall tree
 		tree.rootNode = this;
 		tree.addNodeToLevel(this, level);
-		
-		// TODO simulation initialization
 	}
 	
-	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, NavigableSet<NamedClass> label) {
+	// convenience constructor
+	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, NamedClass... label) {
+		this(parentNode, parentProperty, new TreeSet<NamedClass>(Arrays.asList(label)));
+	}
+	
+	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, TreeSet<NamedClass> label) {
 		this.label = label;
 		this.edges = new LinkedList<ELDescriptionEdge>();
 		parent = parentNode;
@@ -393,5 +404,47 @@ public class ELDescriptionNode {
 
 	public ELDescriptionNode getParent() {
 		return parent;
+	}
+
+	/**
+	 * @return the in
+	 */
+	public Set<ELDescriptionNode> getIn() {
+		return in;
+	}
+
+	/**
+	 * @return the inSC1
+	 */
+	public Set<ELDescriptionNode> getInSC1() {
+		return inSC1;
+	}
+
+	/**
+	 * @return the inSC2
+	 */
+	public Set<ELDescriptionNode> getInSC2() {
+		return inSC2;
+	}
+
+	/**
+	 * @return the out
+	 */
+	public Set<ELDescriptionNode> getOut() {
+		return out;
+	}
+
+	/**
+	 * @return the outSC1
+	 */
+	public Set<ELDescriptionNode> getOutSC1() {
+		return outSC1;
+	}
+
+	/**
+	 * @return the outSC2
+	 */
+	public Set<ELDescriptionNode> getOutSC2() {
+		return outSC2;
 	}
 }

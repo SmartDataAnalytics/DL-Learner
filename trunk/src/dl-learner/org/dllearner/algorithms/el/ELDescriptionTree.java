@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
@@ -335,6 +337,62 @@ public class ELDescriptionTree implements Cloneable {
 		node2.inSC1.remove(node1);
 		node2.inSC2.remove(node1);
 	}	
+	
+	@SuppressWarnings("unchecked")
+	public ELDescriptionTree cloneNew() {
+		// clone "global" tree
+		ELDescriptionTree treeClone = new ELDescriptionTree(rs);
+		
+		// a mapping between "old" and "new" nodes
+		// (hash map should be fast here, but one could also
+		// experiment with TreeMap)
+		Map<ELDescriptionNode, ELDescriptionNode> cloneMap =
+			new HashMap<ELDescriptionNode, ELDescriptionNode>();
+		
+		// create a new (empty) node for each node in the tree
+		// (we loop through the level mapping, because it is cheaper
+		// than creating a set of all nodes)
+		for(int i=1; i<=maxLevel; i++) {
+			Set<ELDescriptionNode> tmp = levelNodeMapping.get(i);
+			for(ELDescriptionNode node : tmp) {
+				ELDescriptionNode nodeNew = new ELDescriptionNode();
+				cloneMap.put(node, nodeNew);
+			}
+		}
+		
+		ELDescriptionNode newRoot = null;
+		
+		// loop through all nodes and perform copy operations
+		for(Entry<ELDescriptionNode, ELDescriptionNode> entry : cloneMap.entrySet()) {
+			ELDescriptionNode oldNode = entry.getKey();
+			ELDescriptionNode newNode = entry.getValue();
+			
+			newNode.tree = treeClone;
+			newNode.level = oldNode.level;
+			newNode.label = (TreeSet<NamedClass>) oldNode.label.clone();
+			if(oldNode.parent != null) {
+				newNode.parent = cloneMap.get(oldNode.parent);
+			} else {
+				newRoot = newNode;
+			}
+			
+			// TODO: edges, simulation information ...
+		}
+		
+		// update global tree
+		treeClone.rootNode = newRoot;
+		treeClone.maxLevel = maxLevel;
+		for(int i=1; i<=maxLevel; i++) {
+			Set<ELDescriptionNode> oldNodes = levelNodeMapping.get(i);
+			Set<ELDescriptionNode> newNodes = new HashSet<ELDescriptionNode>();
+			for(ELDescriptionNode oldNode : oldNodes) {
+				newNodes.add(cloneMap.get(oldNode));
+			}
+			treeClone.levelNodeMapping.put(i, newNodes);
+		}
+		
+		return treeClone;
+	}
 	
 	@Override
 	public ELDescriptionTree clone() {
