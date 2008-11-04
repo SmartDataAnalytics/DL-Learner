@@ -2,7 +2,7 @@
   <plugin>
   	<extension id="org.dllearner.tools.protege.ProtegePlugin"
 			point="org.protege.editor.core.application.ViewComponent">
-  		<label value="DL-Learner Plugin"/>
+  		<label value="Class Descriptions (including DL-Learner plugin)"/>
   		<class value="org.dllearner.tools.protege.ProtegePlugin"/>
   		<headerColor value="@org.protege.classcolor"/>
   		<category value="@org.protege.classcategory"/>

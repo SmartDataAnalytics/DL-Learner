@@ -52,7 +52,7 @@ public class OWLEquivalentClassesAxiomFrameSection
 		extends
 		AbstractOWLFrameSection<OWLClass, OWLEquivalentClassesAxiom, OWLDescription> {
 
-	private static final String LABEL = "Equivalent classes";
+	private static final String LABEL = "equivalent classes";
 
 	private Set<OWLClass> added;
 

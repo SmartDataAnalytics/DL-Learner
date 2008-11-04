@@ -18,9 +18,8 @@
  *
  */
 package org.dllearner.tools.protege;
-import java.awt.GridLayout;
 import java.awt.Color;
-
+import java.awt.GridLayout;
 import java.util.Iterator;
 
 import javax.swing.JDialog;
@@ -100,7 +99,12 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private JScrollPane detailScroll;
 	
 	 // Evaluated description of the selected concept
-	
+	private JPanel conceptPanel;
+	private JPanel accuracyPanel;
+	private JPanel posCoveredPanel;
+	private JPanel posNotCoveredPanel;
+	private JPanel negCoveredPanel;
+	private JPanel negNotCoveredPanel;
 	private EvaluatedDescription eval;
 	private final Color colorRed = Color.red;
 	private JTextArea concept;
@@ -128,7 +132,12 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 */
 	public void renderDetailPanel(EvaluatedDescription desc) {
 		eval = desc;
-	
+		conceptPanel = new JPanel(new GridLayout(0,2));
+		accuracyPanel = new JPanel(new GridLayout(0,2));
+		posCoveredPanel = new JPanel(new GridLayout(0,2));
+		posNotCoveredPanel = new JPanel(new GridLayout(0,2));
+		negCoveredPanel = new JPanel(new GridLayout(0,2));
+		negNotCoveredPanel = new JPanel(new GridLayout(0,2));
 		accuracy = new JTextArea("Accuracy:");
 		accuracy.setEditable(false);
 		conceptText = new JTextArea();
@@ -153,10 +162,10 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		//sets accuracy text area not editable
 		accuracyText.setEditable(false);
 		//panel for the informations of the selected concept
-		examplePanel = new JPanel(new GridLayout(0, 2));
+		examplePanel = new JPanel(new GridLayout(0,1));
 		//this method adds the informations for the selected concept to the panel
 		setInformation();
-		concept = new JTextArea("Concept:");
+		concept = new JTextArea("Class Description:");
 		concept.setEditable(false);
 		coveredPositiveExamples = new JLabel("Covered Positive Examples:");
 		coveredPositiveExamples.setForeground(colorGreen);
@@ -174,18 +183,29 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		detailPopup.setResizable(false);
 		detailScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		//adds all information to the example panel
-		examplePanel.add(concept);
-		examplePanel.add(conceptText);
-		examplePanel.add(accuracy);
-		examplePanel.add(accuracyText);
-		examplePanel.add(coveredPositiveExamples);
-		examplePanel.add(notCoveredPositiveExamples);
-		examplePanel.add(posCoveredText);
-		examplePanel.add(posNotCoveredText);
-		examplePanel.add(coveredNegativeExamples);
-		examplePanel.add(notCoveredNegativeExamples);
-		examplePanel.add(negCoveredText);
-		examplePanel.add(negNotCoveredText);
+		conceptPanel.add(concept);
+		conceptPanel.add(conceptText);
+		accuracyPanel.add(accuracy);
+		accuracyPanel.add(accuracyText);
+		//examplePanel.add(concept);
+		//examplePanel.add(conceptText);
+		//examplePanel.add(accuracy);
+		//examplePanel.add(accuracyText);
+		posCoveredPanel.add(coveredPositiveExamples);
+		posCoveredPanel.add(posCoveredText);
+		posNotCoveredPanel.add(notCoveredPositiveExamples);
+		posNotCoveredPanel.add(posNotCoveredText);
+		negCoveredPanel.add(coveredNegativeExamples);
+		negCoveredPanel.add(negCoveredText);
+		negNotCoveredPanel.add(notCoveredNegativeExamples);
+		
+		negNotCoveredPanel.add(negNotCoveredText);
+		examplePanel.add(conceptPanel);
+		examplePanel.add(accuracyPanel);
+		examplePanel.add(posCoveredPanel);
+		examplePanel.add(posNotCoveredPanel);
+		examplePanel.add(negCoveredPanel);
+		examplePanel.add(negNotCoveredPanel);
 		detailScroll.setViewportView(examplePanel);
 		detailPopup.add(detailScroll);
 	}

@@ -29,8 +29,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 
 /**
  * This class is the Panel for the Check boxes where the positive and negative
@@ -88,14 +86,9 @@ public class PosAndNegSelectPanel extends JPanel {
 	private JButton helpForNegExamples;
 
 	// This is the Text area where the help message is displayed.
-
+	private OptionPanel optionPanel;
 	private JComboBox optionBox;
 	private JPanel optionBoxPanel;
-	private JPanel spinnerPanel;
-	private SpinnerNumberModel minAccuracyModel;
-	private SpinnerNumberModel maxNrOfResultsModel;
-	private SpinnerNumberModel maxExecutionModel;
-	private JSpinner optionSpinner;
 	private ActionHandler action;
 
 	/**
@@ -107,25 +100,18 @@ public class PosAndNegSelectPanel extends JPanel {
 	 *            ActionHandler
 	 */
 	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act) {
-		super();
+		super(new GridLayout(0,1));
+		optionPanel = new OptionPanel();
 		pos = new JLabel("Positive Examples");
 		neg = new JLabel("Negative Examples");
 		optionBoxPanel = new JPanel(new GridLayout(0, 1));
-		spinnerPanel = new JPanel(new GridLayout(0, 1));
-		action = act;
-		minAccuracyModel = new SpinnerNumberModel(0.8, 0.0 , 1.0, 0.05);
-		maxNrOfResultsModel = new SpinnerNumberModel(5.0, 1.0 , 20.0, 1.0);
-		maxExecutionModel = new SpinnerNumberModel(10.0, 1.0 , 60.0, 1.0);  
+		action = act; 
 		optionBox = new JComboBox();
-		optionSpinner = new JSpinner();
-		optionSpinner.setModel(minAccuracyModel);
-		optionBox.addItem("min. Accuracy");
-		optionBox.addItem("max. Nr. of Results");
-		optionBox.addItem("max. Executiontime");
+		optionBox.addItem("min. accuracy");
+		optionBox.addItem("max. nr. of results");
+		optionBox.addItem("max. executiontime");
 		optionBoxPanel.add(optionBox);
-		spinnerPanel.add(optionSpinner);
 		setComboBoxListener();
-		spinnerPanel.setSize(50, 20);
 		// help button for positive examples
 		helpForPosExamples = new JButton("?");
 		helpForPosExamples.setSize(10, 10);
@@ -163,7 +149,9 @@ public class PosAndNegSelectPanel extends JPanel {
 		scrollPanel = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPanel.setViewportView(posAndNegPanel);
-		scrollPanel.setPreferredSize(new Dimension(490, 248));
+		optionPanel.setPreferredSize(new Dimension(490, 70));
+		scrollPanel.setPreferredSize(new Dimension(490, 180));
+		add(optionPanel);
 		add(scrollPanel);
 		addListeners(action);
 	}
@@ -173,8 +161,6 @@ public class PosAndNegSelectPanel extends JPanel {
 	 * positive and negative examples.
 	 */
 	public void setJCheckBoxes() {
-		posAndNegSelectPanel.add(optionBoxPanel);
-		posAndNegSelectPanel.add(spinnerPanel);
 		posAndNegSelectPanel.add(posLabelPanel);
 		posAndNegSelectPanel.add(negLabelPanel);
 		// adds check boxes for all examples of the ontology
@@ -188,57 +174,12 @@ public class PosAndNegSelectPanel extends JPanel {
 	}
 	
 	/**
-	 * This Methode returns the min Accuracy that the concepts must have.
-	 * @return min accuracy
-	 */
-	public float getMinAccuracyModelData() {
-		float minAccuracy = Float.valueOf(minAccuracyModel.getValue().toString()).floatValue();
-		return minAccuracy;
-	}
-	
-	/**
-	 * This Methode returns the max nr. of results selected in the option Panel.
-	 * @return Max Nr. of Results
-	 */
-	public int getMaxNrOfResultsModelData() {
-		float maxNrOfRes = Float.valueOf(maxNrOfResultsModel.getValue().toString()).floatValue();
-		int maxNrOfResults = Math.round(maxNrOfRes);
-		return maxNrOfResults;
-	}
-	
-	/**
-	 * This Methode returns the max execution time selected in the Panel.
-	 * @return Max Execution Time in seconds 
-	 */
-	public int getMaxExecutionModelData() {
-		float maxExe = Float.valueOf(maxExecutionModel.getValue().toString()).floatValue();
-		int maxExecution = Math.round(maxExe);
-		return maxExecution;
-	}
-	
-	/**
 	 * This method adds the ActionListener to the Option Combo Box.
 	 */
 	private void setComboBoxListener() {
 		optionBox.addActionListener(action);
 	}
-	/**
-	 * This Methode sets the right Spinner for the selected Option.
-	 */
-	public void setOptionSpinner() {
-		if(optionBox.getSelectedItem().equals("min. Accuracy")) {
-			optionSpinner.setModel(minAccuracyModel);
-		}
-		
-		if(optionBox.getSelectedItem().equals("max. Nr. of Results")) {
-			optionSpinner.setModel(maxNrOfResultsModel);
-		}
-		
-		if(optionBox.getSelectedItem().equals("max. Executiontime")) {
-			optionSpinner.setModel(maxExecutionModel);
-		}
-			
-	}
+	
 	/**
 	 * This method removes the Check boxes, the labels and the help buttons
 	 * after the DL-Learner tab is closed.
@@ -246,7 +187,7 @@ public class PosAndNegSelectPanel extends JPanel {
 	public void unsetPosAndNegPanel() {
 		posAndNegSelectPanel.removeAll();
 	}
-
+	
 	/**
 	 * This method adds the item listener for every check box.
 	 * 
@@ -263,7 +204,15 @@ public class PosAndNegSelectPanel extends JPanel {
 		}
 
 	}
-
+	
+	public void setCheckBoxesEnable(boolean enable) {
+		for (int j = 0; j < model.getPosVector().size(); j++) {
+			model.getPositivJCheckBox(j).setEnabled(enable);
+			model.getNegativJCheckBox(j).setEnabled(enable);
+		}
+		
+	}
+	
 	/**
 	 * This method returns the Panel where the check boxes, labels and help
 	 * buttons are in.
@@ -306,6 +255,10 @@ public class PosAndNegSelectPanel extends JPanel {
 		helpForPosExamples.addActionListener(a);
 		// adds listener to the help button for the negative examples
 		helpForNegExamples.addActionListener(a);
+	}
+	
+	public OptionPanel getOptionPanel() {
+		return optionPanel;
 	}
 
 }

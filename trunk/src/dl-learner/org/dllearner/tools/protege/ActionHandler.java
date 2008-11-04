@@ -89,9 +89,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 * @param z ActionEvent 
 	 */
 	public void actionPerformed(ActionEvent z) {
-		if(z.getActionCommand().equals("comboBoxChanged")) {
-			view.getPosAndNegSelectPanel().setOptionSpinner();
-		}
+
 			
 		if (z.getActionCommand().equals("Suggest " + id)) {
 			if (model.getAlreadyLearned()) {
@@ -102,6 +100,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 				view
 						.renderErrorMessage("Could not start learning. No Examples where available");
 			} else {
+				view.getPosAndNegSelectPanel().setCheckBoxesEnable(false);
 				model.setKnowledgeSource();
 				model.setReasoner();
 				model.setPositiveAndNegativeExamples();
@@ -111,7 +110,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 				dlLearner.start();
 				view.getRunButton().setEnabled(false);
 				view.renderErrorMessage("Learning started");
-				view.getPosAndNegSelectPanel().unsetCheckBoxes();
+				//view.getPosAndNegSelectPanel().unsetCheckBoxes();
 			}
 		}
 
@@ -128,7 +127,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 		if (z.getActionCommand().equals("?")) {
 			if (z.getSource().toString().contains("PosHelpButton")) {
-				String help = "A Instance that follows from the classdescription.\nPer Default all that belongs to the class.";
+				String help = "An individual that should be an instance of the learned class description.\n"
+					+"Per Default all that belongs to the class.";
 				view.getPosAndNegSelectPanel().renderHelpMessage(help);
 			}
 

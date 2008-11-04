@@ -51,7 +51,7 @@ import org.semanticweb.owl.model.OWLSubClassAxiom;
 public class OWLSubClassAxiomFrameSection extends
 		AbstractOWLFrameSection<OWLClass, OWLSubClassAxiom, OWLDescription> {
 
-	private static final String LABEL = "Superclasses";
+	private static final String LABEL = "superclasses";
 
 	private Set<OWLDescription> added = new HashSet<OWLDescription>();
 

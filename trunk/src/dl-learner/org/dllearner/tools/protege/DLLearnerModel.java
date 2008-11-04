@@ -81,7 +81,6 @@ public class DLLearnerModel implements Runnable {
 			"org.dllearner.learningproblems.PosNegInclusionLP",
 			"org.dllearner.learningproblems.PosNegDefinitionLP",
 			"org.dllearner.algorithms.RandomGuesser",
-			"org.dllearner.algorithms.BruteForceLearner",
 			"org.dllearner.algorithms.refinement.ROLearner",
 			"org.dllearner.algorithms.refexamples.ExampleBasedROLComponent",
 			"org.dllearner.algorithms.gp.GP" };
@@ -245,9 +244,7 @@ public class DLLearnerModel implements Runnable {
 	 * This method adds the solutions from the DL-Learner to the List Model.
 	 */
 	private void addToListModel() {
-		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(view
-				.getPosAndNegSelectPanel().getMaxNrOfResultsModelData(), view
-				.getPosAndNegSelectPanel().getMinAccuracyModelData(), true);
+		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts(), view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true);
 		for (int j = 0; j < evalDescriptions.size(); j++) {
 			if (isConsistent(evalDescriptions.get(j))) {
 				suggestModel.add(j, new SuggestListItem(Color.GREEN,
@@ -278,11 +275,12 @@ public class DLLearnerModel implements Runnable {
 		negativeExamples = new TreeSet<String>();
 		for (int i = 0; i < positiv.size(); i++) {
 			if (positiv.get(i).isSelected()) {
-				positiveExamples.add(positiv.get(i).getText());
+				
+				positiveExamples.add(editor.getModelManager().getActiveOntology().getURI().toString()+"#"+positiv.get(i).getText());
 			}
 
 			if (negativ.get(i).isSelected()) {
-				negativeExamples.add(negativ.get(i).getText());
+				negativeExamples.add(editor.getModelManager().getActiveOntology().getURI().toString()+"#"+negativ.get(i).getText());
 			}
 		}
 	}
@@ -346,12 +344,12 @@ public class DLLearnerModel implements Runnable {
 	 * classes.
 	 */
 	public void setLearningProblem() {
-		if (id.equals("Equivalent classes")) {
+		if (id.equals("equivalent classes")) {
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
 			lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
 		}
-		if (id.equals("Superclasses")) {
+		if (id.equals("superclasses")) {
 			// sets the learning problem to PosNegInclusionLP when the dllearner
 			// should suggest a subclass
 			lp = cm.learningProblem(PosNegInclusionLP.class, rs);
@@ -379,12 +377,9 @@ public class DLLearnerModel implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("3: "
-				+ view.getPosAndNegSelectPanel().getMaxExecutionModelData());
 		cm.applyConfigEntry(la, "numberOfTrees", 100);
 		cm.applyConfigEntry(la, "maxDepth", 5);
-		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
-				.getPosAndNegSelectPanel().getMaxExecutionModelData());
+		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime());
 		try {
 			// initializes the learning algorithm
 			la.init();
@@ -399,17 +394,19 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public void run() {
 		error = "Learning succesful";
+		String message = "To view details about why a class description was suggested, please doubleclick on it.";
 		// start the algorithm and print the best concept found
 		la.start();
-		description = new Description[la.getCurrentlyBestEvaluatedDescriptions(
-				view.getPosAndNegSelectPanel().getMaxNrOfResultsModelData())
+		description = new Description[la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts())
 				.size()];
 		addToListModel();
 		// renders the errormessage
 		view.renderErrorMessage(error);
+		view.setHintMessage(message);
 		// reenables the run button
 		view.getRunButton().setEnabled(true);
 		// disables the cancel button
+		view.getPosAndNegSelectPanel().setCheckBoxesEnable(true);
 		view.getSuggestClassPanel().setSuggestList(suggestModel);
 	}
 
@@ -458,7 +455,9 @@ public class DLLearnerModel implements Runnable {
 		setPositiveConcept();
 		for (Iterator<Individual> j = rs.getIndividuals().iterator(); j
 				.hasNext();) {
-			String ind = j.next().toString();
+			String ind = j.next().toManchesterSyntaxString(editor.getModelManager()
+												.getActiveOntology().getURI()
+												.toString()+"#", null);
 			// checks if individual belongs to the selected concept
 			if (setPositivExamplesChecked(ind)) {
 				// when yes then it sets the positive example checked
