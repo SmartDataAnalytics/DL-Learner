@@ -516,6 +516,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 */
 		public void updateWindow() {
 			mainWindow.getHandler().handleEditingFinished(mainWindow.getEditedObjects());
+			mainWindow.dispose();
 		}
 		/**
 		 * Returns all added descriptions.
