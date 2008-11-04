@@ -77,8 +77,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	private static final String CLASS_EXPRESSION_EDITOR_LABEL = "Class expression editor";
 	private static final String CLASS_TREE_LABEL = "Class tree";
 	private static final String RESTRICTION_CREATOR_LABEL = "Restriction creator";
-	private static final String SUGGEST_EQUIVALENT_CLASS_LABEL = "Suggest a equivalent class";
-	private static final String SUGGEST_SUBCLASS_LABEL = "Suggest a subclass";
+	private static final String SUGGEST_EQUIVALENT_CLASS_LABEL = "Suggest equivalent class";
+	private static final String SUGGEST_SUBCLASS_LABEL = "Suggest super class";
 
 	private OWLEditorKit editorKit;
 
@@ -127,10 +127,10 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		editingComponent.add(tabbedPane);
 		editingComponent.setPreferredSize(new Dimension(600, 520));
 		if(dllearner.getNrOfIndividuals()!=0) {	
-		if (label.equals("Equivalent classes")) {
+		if (label.equals("equivalent classes")) {
 			tabbedPane.add(SUGGEST_EQUIVALENT_CLASS_LABEL, dllearner);
 		}
-		if (label.equals("Superclasses")) {
+		if (label.equals("superclasses")) {
 			tabbedPane.add(SUGGEST_SUBCLASS_LABEL, dllearner);
 		}
 		}
@@ -380,7 +380,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			sugPanel = new SuggestClassPanel();
 			action = new ActionHandler(this.action, model, this, label,
 					editorKit);
-			adv = new JLabel("Advanced");
+			adv = new JLabel("Advanced Settings");
 			advanced = new JToggleButton(icon);
 			advanced.setVisible(true);
 			run = new JButton("Suggest " + label);
@@ -391,7 +391,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			errorMessage.setEditable(false);
 			hint = new JTextArea();
 			hint.setEditable(false);
-			hint.setText("To get more Detail please doubleclick a concept");
+			hint.setText("To get suggestions for class descriptions, please click the button above.");
 			learner = new JPanel();
 			advanced.setSize(20, 20);
 			learner.setLayout(null);
@@ -478,7 +478,15 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 				advanced.setIcon(icon);
 			}
 		}
-
+		
+		/**
+		 * This Method changes the hint message. 
+		 * @param message String hintmessage
+		 */
+		public void setHintMessage(String message) {
+			hint.setText(message);
+		}
+		
 		/**
 		 * This Method returns the DL_Learner tab.
 		 * @return JComponent
