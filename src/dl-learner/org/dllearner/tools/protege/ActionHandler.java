@@ -231,27 +231,35 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void mouseClicked(MouseEvent m) {
 		EvaluatedDescription eDescription = null;
-		SuggestListItem item = (SuggestListItem) view.getSuggestClassPanel().getSuggestList()
-		.getSelectedValue();
-		String desc = item.getValue();
-		if (model.getEvaluatedDescriptionList() != null) {
-			for (Iterator<EvaluatedDescription> i = model
-					.getEvaluatedDescriptionList().iterator(); i.hasNext();) {
-				eDescription = i.next();
-				if (desc.equals(eDescription.getDescription()
-						.toManchesterSyntaxString(
-								editorKit.getModelManager().getActiveOntology().getURI()
-										+ "#", null))) {
-					evaluatedDescription = eDescription;
-					break;
-				}
+		if (view.getSuggestClassPanel().getSuggestList()
+				.getSelectedValue() != null) {
+			SuggestListItem item = (SuggestListItem) view.getSuggestClassPanel().getSuggestList()
+			.getSelectedValue();
+			String desc = item.getValue();
+			if (model.getEvaluatedDescriptionList() != null) {
+				for (Iterator<EvaluatedDescription> i = model
+						.getEvaluatedDescriptionList().iterator(); i.hasNext();) {
+					eDescription = i.next();
+					if (desc.equals(eDescription.getDescription()
+							.toManchesterSyntaxString(
+									editorKit.getModelManager().getActiveOntology().getURI()
+											+ "#", null))) {
+						evaluatedDescription = eDescription;
+						break;
+					}
 
+				}
 			}
-		}
+		
+		
 		if(m.getClickCount()==2) {
 			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(
 					evaluatedDescription);
 		}
+	} else {
+		String message = "No concept to select.";
+		view.renderErrorMessage(message);
+	}
 	}
 
 	/**
@@ -267,9 +275,12 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 * @param m MouseEvent
 	 */
 	public void mousePressed(MouseEvent m) {
-		if (!view.getAddButton().isEnabled()) {
-			view.getAddButton().setEnabled(true);
-		}
+		if (view.getSuggestClassPanel().getSuggestList()
+				.getSelectedValue()!= null) {
+			if (!view.getAddButton().isEnabled()) {
+				view.getAddButton().setEnabled(true);
+			} 
+		} 
 	}
 
 	/**
