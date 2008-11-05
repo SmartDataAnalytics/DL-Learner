@@ -198,6 +198,7 @@ public class DLLearnerModel implements Runnable {
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
 	private List<EvaluatedDescription> evalDescriptions;
+	private Vector<String> normalIndividuals;
 
 	/**
 	 * This is the constructor for DL-Learner model.
@@ -221,6 +222,7 @@ public class DLLearnerModel implements Runnable {
 		owlDescription = new HashSet<OWLDescription>();
 		positiv = new Vector<JCheckBox>();
 		negativ = new Vector<JCheckBox>();
+		normalIndividuals = new Vector<String>();
 		ComponentManager.setComponentClasses(componenten);
 		cm = ComponentManager.getInstance();
 		ds = new HashSet<OWLDescription>();
@@ -276,11 +278,11 @@ public class DLLearnerModel implements Runnable {
 		for (int i = 0; i < positiv.size(); i++) {
 			if (positiv.get(i).isSelected()) {
 				
-				positiveExamples.add(editor.getModelManager().getActiveOntology().getURI().toString()+"#"+positiv.get(i).getText());
+				positiveExamples.add(normalIndividuals.get(i));
 			}
 
 			if (negativ.get(i).isSelected()) {
-				negativeExamples.add(editor.getModelManager().getActiveOntology().getURI().toString()+"#"+negativ.get(i).getText());
+				negativeExamples.add(normalIndividuals.get(i));
 			}
 		}
 	}
@@ -377,8 +379,6 @@ public class DLLearnerModel implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		cm.applyConfigEntry(la, "numberOfTrees", 100);
-		cm.applyConfigEntry(la, "maxDepth", 5);
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime());
 		try {
 			// initializes the learning algorithm
@@ -455,27 +455,27 @@ public class DLLearnerModel implements Runnable {
 		setPositiveConcept();
 		for (Iterator<Individual> j = rs.getIndividuals().iterator(); j
 				.hasNext();) {
-			String ind = j.next().toManchesterSyntaxString(editor.getModelManager()
-												.getActiveOntology().getURI()
-												.toString()+"#", null);
+			Individual ind = j.next();
+			normalIndividuals.add(ind.toString());
+			String indiv = ind.toString();
 			// checks if individual belongs to the selected concept
-			if (setPositivExamplesChecked(ind)) {
+			if (setPositivExamplesChecked(indiv)) {
 				// when yes then it sets the positive example checked
-				JCheckBox box = new JCheckBox(ind.toString(), true);
+				JCheckBox box = new JCheckBox(ind.toManchesterSyntaxString(editor.getModelManager().getActiveOntology().getURI().toString()+"#", null), true);
 				box.setName("Positive");
 				positiv.add(box);
 				// and ne genative examples unchecked
-				JCheckBox box2 = new JCheckBox(ind.toString(), false);
+				JCheckBox box2 = new JCheckBox(ind.toManchesterSyntaxString(editor.getModelManager().getActiveOntology().getURI().toString()+"#", null), false);
 				box.setName("Negative");
 				negativ.add(box2);
 
 			} else {
 				// When no it unchecks the positive example
-				JCheckBox box = new JCheckBox(ind.toString(), false);
+				JCheckBox box = new JCheckBox(ind.toManchesterSyntaxString(editor.getModelManager().getActiveOntology().getURI().toString()+"#", null), false);
 				box.setName("Positive");
 				positiv.add(box);
 				// and checks the negative example
-				JCheckBox box2 = new JCheckBox(ind.toString(), true);
+				JCheckBox box2 = new JCheckBox(ind.toManchesterSyntaxString(editor.getModelManager().getActiveOntology().getURI().toString()+"#", null), true);
 				box.setName("Negative");
 				negativ.add(box2);
 			}

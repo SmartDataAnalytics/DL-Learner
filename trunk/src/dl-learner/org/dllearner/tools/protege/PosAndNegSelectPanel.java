@@ -100,7 +100,9 @@ public class PosAndNegSelectPanel extends JPanel {
 	 *            ActionHandler
 	 */
 	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act) {
-		super(new GridLayout(0,1));
+		super();
+		setLayout(new GridLayout(0,1));
+		setPreferredSize(new Dimension(490, 250));
 		optionPanel = new OptionPanel();
 		pos = new JLabel("Positive Examples");
 		neg = new JLabel("Negative Examples");
@@ -149,8 +151,8 @@ public class PosAndNegSelectPanel extends JPanel {
 		scrollPanel = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPanel.setViewportView(posAndNegPanel);
-		optionPanel.setPreferredSize(new Dimension(490, 70));
-		scrollPanel.setPreferredSize(new Dimension(490, 180));
+		optionPanel.setPreferredSize(new Dimension(490, 100));
+		scrollPanel.setPreferredSize(new Dimension(490, 140));
 		add(optionPanel);
 		add(scrollPanel);
 		addListeners(action);
@@ -241,7 +243,7 @@ public class PosAndNegSelectPanel extends JPanel {
 		JOptionPane.showMessageDialog(null,
                 assistance,
                 "Help",                                            
-                JOptionPane.WARNING_MESSAGE);
+                JOptionPane.OK_OPTION);
 	}
 	
 	/**
