@@ -36,6 +36,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -355,6 +356,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 		// Picture of the advanced button when it is toggled
 		private JPanel addButtonPanel;
+		private JTextArea wikiPane;
 		private ImageIcon toggledIcon;
 		private JTextArea hint;
 		// This is the Panel for more details of the suggested concept
@@ -371,6 +373,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public DLLearnerView(OWLFrame<OWLClass> current, String label, OWLClassDescriptionEditorWithDLLearnerTab dlLearner) {
 			classSelectorPanel = new OWLClassSelectorPanel(editorKit);
 			mainWindow = dlLearner;
+			wikiPane = new JTextArea("See http://dl-learner.org/wiki/ProtegePlugin for an introduction.");
+			wikiPane.setEditable(false);
 			classSelectorPanel.firePropertyChange("test", false, true);
 			URL iconUrl = this.getClass().getResource("arrow.gif");
 			icon = new ImageIcon(iconUrl);
@@ -445,6 +449,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			advanced.setSelected(false);
 			sugPanel.setBounds(10, 35, 490, 110);
 			adv.setBounds(40, 200, 200, 20);
+			wikiPane.setBounds(220, 10, 350, 30);
 			addButtonPanel.setBounds(510, 40, 80, 110);
 			run.setBounds(10, 0, 200, 30);
 			advanced.setBounds(10, 200, 20, 20);
@@ -455,6 +460,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			hint.setBounds(10, 150, 490, 20);
 			errorMessage.setBounds(10, 170, 490, 20);
 			learner.add(run);
+			learner.add(wikiPane);
 			learner.add(adv);
 			learner.add(advanced);
 			learner.add(sugPanel);

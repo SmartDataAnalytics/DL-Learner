@@ -1,5 +1,6 @@
 package org.dllearner.tools.protege;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
@@ -26,7 +27,8 @@ public class OptionPanel extends JPanel {
 	 */
 	public OptionPanel() {
 
-
+		setPreferredSize(new Dimension(490, 120));
+		setLayout(new GridLayout(0,1));
 		optionPanel = new JPanel(new GridLayout(0,2));
 		minAccuracyLabel = new JLabel("minimum accuracy");
 		maxExecutionTimeLabel = new JLabel("maximum execution time");
