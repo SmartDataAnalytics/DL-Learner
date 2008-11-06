@@ -207,6 +207,17 @@ public class PosAndNegSelectPanel extends JPanel {
 
 	}
 	
+	public void removeListeners(ActionHandler act) {
+		// adds the listener for the checkboxes
+		for (int i = 0; i < model.getPosVector().size(); i++) {
+			// listener for the check boxes of the positive examples
+			model.getPositivJCheckBox(i).removeItemListener(act);
+			// listener for the check boxes of the negative examples
+			model.getNegativJCheckBox(i).removeItemListener(act);
+		}
+
+	}
+	
 	public void setCheckBoxesEnable(boolean enable) {
 		for (int j = 0; j < model.getPosVector().size(); j++) {
 			model.getPositivJCheckBox(j).setEnabled(enable);
@@ -240,10 +251,8 @@ public class PosAndNegSelectPanel extends JPanel {
 	 */
 	public void renderHelpMessage(String assistance) {
 		// renders scroll bar if necessary
-		JOptionPane.showMessageDialog(null,
-                assistance,
-                "Help",                                            
-                JOptionPane.OK_OPTION);
+		JOptionPane.showMessageDialog(null, assistance);
+
 	}
 	
 	/**
@@ -259,6 +268,10 @@ public class PosAndNegSelectPanel extends JPanel {
 		helpForNegExamples.addActionListener(a);
 	}
 	
+	public void removeHelpButtonListener(ActionHandler a) {
+		helpForPosExamples.removeActionListener(a);
+		helpForNegExamples.removeActionListener(a);
+	}
 	public OptionPanel getOptionPanel() {
 		return optionPanel;
 	}

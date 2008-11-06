@@ -51,11 +51,12 @@ import org.semanticweb.owl.model.OWLSubClassAxiom;
 public class OWLSubClassAxiomFrameSection extends
 		AbstractOWLFrameSection<OWLClass, OWLSubClassAxiom, OWLDescription> {
 
-	private static final String LABEL = "superclasses";
+	private static final String LABEL = "super classes";
 
 	private Set<OWLDescription> added = new HashSet<OWLDescription>();
 
 	private OWLFrame<OWLClass> frame;
+	private OWLClassDescriptionEditorWithDLLearnerTab dlLearner;
 	/**
 	 * Constructor of the OWLSubClassesAxiomFrameSection.
 	 * @param editorKit OWLEditorKit
@@ -121,8 +122,9 @@ public class OWLSubClassAxiomFrameSection extends
 	public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
 		// Own OWLClassDescriptionEditor to integrate the dllearner in protege
 		// this is to suggest subclasses
-		return new OWLClassDescriptionEditorWithDLLearnerTab(getOWLEditorKit(),
+		dlLearner = new OWLClassDescriptionEditorWithDLLearnerTab(getOWLEditorKit(),
 				null, frame, LABEL);
+		return dlLearner;
 	}
 
 	@Override
