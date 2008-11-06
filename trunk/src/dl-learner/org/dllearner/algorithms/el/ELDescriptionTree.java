@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
@@ -338,8 +337,9 @@ public class ELDescriptionTree implements Cloneable {
 		node2.inSC2.remove(node1);
 	}	
 	
+	@Override
 	@SuppressWarnings("unchecked")
-	public ELDescriptionTree cloneNew() {
+	public ELDescriptionTree clone() {
 		// clone "global" tree
 		ELDescriptionTree treeClone = new ELDescriptionTree(rs);
 		
@@ -376,7 +376,32 @@ public class ELDescriptionTree implements Cloneable {
 				newRoot = newNode;
 			}
 			
-			// TODO: edges, simulation information ...
+			// simulation information
+			for(ELDescriptionNode node : oldNode.in) {
+				newNode.in.add(cloneMap.get(node));
+			}
+			for(ELDescriptionNode node : oldNode.inSC1) {
+				newNode.inSC1.add(cloneMap.get(node));
+			}
+			for(ELDescriptionNode node : oldNode.inSC2) {
+				newNode.inSC2.add(cloneMap.get(node));
+			}
+			for(ELDescriptionNode node : oldNode.out) {
+				newNode.out.add(cloneMap.get(node));
+			}
+			for(ELDescriptionNode node : oldNode.outSC1) {
+				newNode.outSC1.add(cloneMap.get(node));
+			}
+			for(ELDescriptionNode node : oldNode.outSC2) {
+				newNode.outSC2.add(cloneMap.get(node));
+			}			
+			
+			// edges
+			for(ELDescriptionEdge edge : oldNode.edges) {
+				// create a new edge with same label and replace the node the edge points to
+				newNode.edges.add(new ELDescriptionEdge(edge.getLabel(), cloneMap.get(edge.getTree())));
+			}
+			
 		}
 		
 		// update global tree
@@ -394,8 +419,7 @@ public class ELDescriptionTree implements Cloneable {
 		return treeClone;
 	}
 	
-	@Override
-	public ELDescriptionTree clone() {
+	public ELDescriptionTree cloneOld() {
 		// create a new reference tree
 		ELDescriptionTree treeClone = new ELDescriptionTree(rs);
 		// create a root node attached to this reference tree

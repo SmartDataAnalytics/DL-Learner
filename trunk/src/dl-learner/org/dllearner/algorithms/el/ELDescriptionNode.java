@@ -62,7 +62,7 @@ public class ELDescriptionNode {
 	
 	protected TreeSet<NamedClass> label;
 	
-	protected List<ELDescriptionEdge> edges;
+	protected List<ELDescriptionEdge> edges = new LinkedList<ELDescriptionEdge>();
 
 	protected int level;
 	

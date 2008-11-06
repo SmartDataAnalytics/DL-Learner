@@ -36,6 +36,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.junit.Test;
 
@@ -83,7 +84,21 @@ public final class ELDescriptionTreeTests {
 		Description d = KBParser.parseConcept("(male AND (human AND EXISTS hasChild.(female AND EXISTS hasChild.male)))");
 		ConceptTransformation.cleanConcept(d);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, d);
-		ELDescriptionTree treeCloned = tree.clone();
+		// clone performance (false for simple unit test, true for clone performance test)
+		boolean testPerformance = false;
+		ELDescriptionTree treeCloned = null;
+		if(testPerformance) {
+			int runs = 1000000;
+			long startTime = System.nanoTime();
+			for(int i=0; i<runs; i++) {
+				treeCloned = tree.clone();
+			}
+			long runTime = System.nanoTime() - startTime;
+			System.out.println(Helper.prettyPrintNanoSeconds(runTime/runs, true, true) + " per clone operation");
+		} else {
+			treeCloned = tree.clone();
+		}
+		
 		ELDescriptionTreeComparator comparator = new ELDescriptionTreeComparator();
 		assertTrue(comparator.compare(tree, treeCloned) == 0);
 	}
