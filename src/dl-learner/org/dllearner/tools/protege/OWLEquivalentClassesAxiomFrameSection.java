@@ -57,6 +57,7 @@ public class OWLEquivalentClassesAxiomFrameSection
 	private Set<OWLClass> added;
 
 	private boolean inferredEquivalentClasses = true;
+	private OWLClassDescriptionEditorWithDLLearnerTab dlLearner;
 
 	private OWLFrame<OWLClass> frame;
 	/**
@@ -146,8 +147,9 @@ public class OWLEquivalentClassesAxiomFrameSection
 	public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
 		// Own OWLClassDescriptionEditor to integrate the dllearner in protege
 		// This is to suggest equivalent classes
-		return new OWLClassDescriptionEditorWithDLLearnerTab(getOWLEditorKit(),
+		dlLearner = new OWLClassDescriptionEditorWithDLLearnerTab(getOWLEditorKit(),
 				null, frame, LABEL);
+		return dlLearner;
 	}
 
 	@Override

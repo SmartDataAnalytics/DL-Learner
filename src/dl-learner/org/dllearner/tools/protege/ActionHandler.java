@@ -257,8 +257,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 					evaluatedDescription);
 		}
 	} else {
-		String message = "No concept to select.";
-		view.renderErrorMessage(message);
+		
 	}
 	}
 

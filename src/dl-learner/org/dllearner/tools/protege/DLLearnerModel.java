@@ -25,6 +25,7 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -194,6 +195,8 @@ public class DLLearnerModel implements Runnable {
 	// This is necessary to get the details of the suggested concept
 
 	private JXTaskPane detailPane;
+	private String ontologyURI;
+	private Map<String, String> prefixes;
 
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
@@ -219,6 +222,7 @@ public class DLLearnerModel implements Runnable {
 		current = h;
 		this.id = id;
 		this.view = view;
+		ontologyURI = editor.getModelManager().getActiveOntology().getURI().toString()+"#";
 		owlDescription = new HashSet<OWLDescription>();
 		positiv = new Vector<JCheckBox>();
 		negativ = new Vector<JCheckBox>();
@@ -240,30 +244,25 @@ public class DLLearnerModel implements Runnable {
 		alreadyLearned = false;
 		setKnowledgeSource();
 		setReasoner();
+		prefixes = reasoner.getPrefixes();
+
 	}
 
 	/**
 	 * This method adds the solutions from the DL-Learner to the List Model.
 	 */
 	private void addToListModel() {
+		
 		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts(), view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true);
 		for (int j = 0; j < evalDescriptions.size(); j++) {
 			if (isConsistent(evalDescriptions.get(j))) {
 				suggestModel.add(j, new SuggestListItem(Color.GREEN,
 						evalDescriptions.get(j).getDescription()
-								.toManchesterSyntaxString(
-										editor.getModelManager()
-												.getActiveOntology().getURI()
-												.toString()
-												+ "#", null)));
+								.toManchesterSyntaxString(ontologyURI, prefixes)));
 			} else {
 				suggestModel.add(j, new SuggestListItem(Color.RED,
 						evalDescriptions.get(j).getDescription()
-								.toManchesterSyntaxString(
-										editor.getModelManager()
-												.getActiveOntology().getURI()
-												.toString()
-												+ "#", null)));
+								.toManchesterSyntaxString(ontologyURI, prefixes)));
 			}
 		}
 	}
@@ -351,7 +350,7 @@ public class DLLearnerModel implements Runnable {
 			// dllearner should suggest an equivalent class
 			lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
 		}
-		if (id.equals("superclasses")) {
+		if (id.equals("super classes")) {
 			// sets the learning problem to PosNegInclusionLP when the dllearner
 			// should suggest a subclass
 			lp = cm.learningProblem(PosNegInclusionLP.class, rs);
@@ -379,6 +378,7 @@ public class DLLearnerModel implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("TIME: "+view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime());
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime());
 		try {
 			// initializes the learning algorithm
@@ -461,21 +461,21 @@ public class DLLearnerModel implements Runnable {
 			// checks if individual belongs to the selected concept
 			if (setPositivExamplesChecked(indiv)) {
 				// when yes then it sets the positive example checked
-				JCheckBox box = new JCheckBox(ind.toManchesterSyntaxString(editor.getModelManager().getActiveOntology().getURI().toString()+"#", null), true);
+				JCheckBox box = new JCheckBox(ind.toManchesterSyntaxString(ontologyURI, prefixes), true);
 				box.setName("Positive");
 				positiv.add(box);
 				// and ne genative examples unchecked
-				JCheckBox box2 = new JCheckBox(ind.toManchesterSyntaxString(editor.getModelManager().getActiveOntology().getURI().toString()+"#", null), false);
+				JCheckBox box2 = new JCheckBox(ind.toManchesterSyntaxString(ontologyURI, prefixes), false);
 				box.setName("Negative");
 				negativ.add(box2);
 
 			} else {
 				// When no it unchecks the positive example
-				JCheckBox box = new JCheckBox(ind.toManchesterSyntaxString(editor.getModelManager().getActiveOntology().getURI().toString()+"#", null), false);
+				JCheckBox box = new JCheckBox(ind.toManchesterSyntaxString(ontologyURI, prefixes), false);
 				box.setName("Positive");
 				positiv.add(box);
 				// and checks the negative example
-				JCheckBox box2 = new JCheckBox(ind.toManchesterSyntaxString(editor.getModelManager().getActiveOntology().getURI().toString()+"#", null), true);
+				JCheckBox box2 = new JCheckBox(ind.toManchesterSyntaxString(ontologyURI, prefixes), true);
 				box.setName("Negative");
 				negativ.add(box2);
 			}
@@ -524,7 +524,27 @@ public class DLLearnerModel implements Runnable {
 			individual = rs.getIndividuals();
 		}
 	}
-
+	public boolean hasIndividuals(OWLClass OWLConcept) {
+		boolean hasIndividuals = false;
+		NamedClass concept = null;
+		NamedClass selectedConcept = null;
+		Iterator<NamedClass> it = reasoner.getAtomicConcepts().iterator();
+		while(it.hasNext()) {
+			concept = it.next();
+			if (concept.toManchesterSyntaxString(ontologyURI, prefixes).equals(OWLConcept.toString())) {
+				selectedConcept = concept;
+				break;
+			}
+		}
+		System.out.println("CON: "+ concept);
+		System.out.println("SIZE: "+ reasoner.retrieval(concept).size());
+		if (reasoner.retrieval(selectedConcept).size() > 0) {
+			hasIndividuals = true;
+		}
+		concept = null;
+		selectedConcept = null;
+		return hasIndividuals;
+	}
 	/**
 	 * This method gets an Individual and checks if this individual belongs to
 	 * the concept chosen in protege.

@@ -65,6 +65,7 @@ public class SuggestListCellRenderer extends JLabel implements ListCellRenderer 
 		} else {
 			setBorder(BorderFactory.createLineBorder(list.getBackground(), 2));
 		}
+		 setEnabled(list.isEnabled());
 
 		return this;
 	}

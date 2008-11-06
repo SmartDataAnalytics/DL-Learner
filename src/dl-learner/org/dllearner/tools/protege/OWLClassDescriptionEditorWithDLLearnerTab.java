@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +37,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -127,14 +127,13 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		editingComponent = new JPanel(new BorderLayout());
 		editingComponent.add(tabbedPane);
 		editingComponent.setPreferredSize(new Dimension(600, 520));
-		if(dllearner.getNrOfIndividuals()!=0) {	
 		if (label.equals("equivalent classes")) {
 			tabbedPane.add(SUGGEST_EQUIVALENT_CLASS_LABEL, dllearner);
 		}
-		if (label.equals("superclasses")) {
+		if (label.equals("super classes")) {
 			tabbedPane.add(SUGGEST_SUBCLASS_LABEL, dllearner);
 		}
-		}
+		
 		//
 		tabbedPane.add(CLASS_EXPRESSION_EDITOR_LABEL, new JScrollPane(editor));
 		if (description == null || !description.isAnonymous()) {
@@ -356,11 +355,13 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 		// Picture of the advanced button when it is toggled
 		private JPanel addButtonPanel;
-		private JTextArea wikiPane;
+		private JLabel wikiPane;
 		private ImageIcon toggledIcon;
 		private JTextArea hint;
 		// This is the Panel for more details of the suggested concept
 		private MoreDetailForSuggestedConceptsPanel detail;
+		OWLFrame<OWLClass> frame;
+		private URL pluginURL;
 
 		/**
 		 * The constructor for the DL-Learner tab in the class description
@@ -373,8 +374,16 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public DLLearnerView(OWLFrame<OWLClass> current, String label, OWLClassDescriptionEditorWithDLLearnerTab dlLearner) {
 			classSelectorPanel = new OWLClassSelectorPanel(editorKit);
 			mainWindow = dlLearner;
-			wikiPane = new JTextArea("See http://dl-learner.org/wiki/ProtegePlugin for an introduction.");
-			wikiPane.setEditable(false);
+			frame = current;
+			try {
+				pluginURL = new URL("http://dl-learner.org/wiki/ProtegePlugin");
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			wikiPane = new JLabel("See " + pluginURL + " for an introduction.");
+			//wikiPane.setEditable(false);
+			
 			classSelectorPanel.firePropertyChange("test", false, true);
 			URL iconUrl = this.getClass().getResource("arrow.gif");
 			icon = new ImageIcon(iconUrl);
@@ -387,6 +396,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			adv = new JLabel("Advanced Settings");
 			advanced = new JToggleButton(icon);
 			advanced.setVisible(true);
+			
 			run = new JButton("Suggest " + label);
 			accept = new JButton("ADD");
 			addButtonPanel = new JPanel(new BorderLayout());
@@ -435,6 +445,15 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 * This Method renders the view of the plugin.
 		 */
 		public void makeView() {
+			System.out.println("CURRENT: "+ frame.getRootObject());
+			System.out.println("MODEL: "+model.hasIndividuals(frame.getRootObject()));
+			if (model.hasIndividuals(frame.getRootObject())) {
+				run.setEnabled(true);
+			} else {
+				run.setEnabled(false);
+				String message ="There are no Instances for "+ frame.getRootObject()+" available. Please insert some Instances.";
+				renderErrorMessage(message);
+			}	
 			advanced.setIcon(icon);
 			model.clearVector();
 			model.unsetListModel();
@@ -596,6 +615,12 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	    * Destroys the view after the plugin is closed.
 	    */
 		public void dispose() {
+			System.out.println("hier");
+			run.removeActionListener(action);
+			accept.removeActionListener(action);
+			advanced.removeActionListener(action);
+			posPanel.removeListeners(action);
+			posPanel.removeHelpButtonListener(action);
 		}
 
 		/**
