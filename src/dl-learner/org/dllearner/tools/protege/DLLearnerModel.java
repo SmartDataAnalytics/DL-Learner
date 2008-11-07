@@ -280,14 +280,11 @@ public class DLLearnerModel implements Runnable {
 	public void setPositiveAndNegativeExamples() {
 		positiveExamples = new TreeSet<String>();
 		negativeExamples = new TreeSet<String>();
-		for (int i = 0; i < positiv.size(); i++) {
-			if (positiv.get(i).isSelected()) {
-				
-				positiveExamples.add(normalIndividuals.get(i));
-			}
-
-			if (negativ.get(i).isSelected()) {
-				negativeExamples.add(normalIndividuals.get(i));
+		for (int i = 0; i < individualVector.size(); i++) {
+			if (individualVector.get(i).isPositiveExample()) {
+				positiveExamples.add(individualVector.get(i).getIndividualString());
+			} else {
+				negativeExamples.add(individualVector.get(i).getIndividualString());
 			}
 		}
 	}
@@ -400,6 +397,7 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public void run() {
 		error = "Learning succesful";
+		
 		String message = "To view details about why a class description was suggested, please doubleclick on it.";
 		// start the algorithm and print the best concept found
 		la.start();

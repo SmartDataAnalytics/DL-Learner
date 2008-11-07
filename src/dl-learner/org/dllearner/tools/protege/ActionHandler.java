@@ -95,11 +95,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 			if (model.getAlreadyLearned()) {
 				model.unsetListModel();
 			}
-			if (view.getPosAndNegSelectPanel().getPosAndNegSelectPanel()
-					.getComponentCount() <= 2) {
-				view
-						.renderErrorMessage("Could not start learning. No Examples where available");
-			} else {
 				view.getPosAndNegSelectPanel().setCheckBoxesEnable(false);
 				model.setKnowledgeSource();
 				model.setReasoner();
@@ -111,7 +106,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 				view.getRunButton().setEnabled(false);
 				view.renderErrorMessage("Learning started");
 				//view.getPosAndNegSelectPanel().unsetCheckBoxes();
-			}
+			
 		}
 
 		if (z.getActionCommand().equals("ADD")) {

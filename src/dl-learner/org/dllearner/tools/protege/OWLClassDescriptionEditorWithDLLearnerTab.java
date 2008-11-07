@@ -458,7 +458,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			model.unsetListModel();
 			model.initReasoner();
 			model.setPosVector();
-			System.out.println(model.getPosListModel());
 			posPanel.setExampleList(model.getPosListModel(), model.getNegListModel());
 			accept.setEnabled(false);
 			action.resetToggled();
@@ -474,6 +473,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			advanced.setBounds(10, 200, 20, 20);
 			sugPanel.setVisible(true);
 			posPanel.setVisible(false);
+			posPanel.getAddToNegPanelButton().setEnabled(false);
+			posPanel.getAddToPosPanelButton().setEnabled(false);
 			posPanel.setBounds(10, 230, 490, 250);
 			accept.setBounds(510, 40, 80, 110);
 			hint.setBounds(10, 150, 490, 20);

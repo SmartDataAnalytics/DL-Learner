@@ -148,8 +148,6 @@ public class PosAndNegSelectPanel extends JPanel {
 		buttonPanel.setPreferredSize(new Dimension(90, 85));
 		addToPosExamples.setBounds(0, 50, 70, 30);
 		addToNegExamples.setBounds(0, 80, 70, 30);
-		addToPosExamples.setEnabled(false);
-		addToNegExamples.setEnabled(false);
 		buttonPanel.add(addToPosExamples);
 		buttonPanel.add(addToNegExamples);
 		posLabelPanel.add(pos);
@@ -184,6 +182,10 @@ public class PosAndNegSelectPanel extends JPanel {
 		addHelpButtonListener(handler);
 		add(optionPanel);
 		add(examplePanel);
+		posList.addMouseListener(handler);
+		negList.addMouseListener(handler);
+		addToPosExamples.addActionListener(handler);
+		addToNegExamples.addActionListener(handler);
 	}
 
 	/**
@@ -260,6 +262,41 @@ public class PosAndNegSelectPanel extends JPanel {
 
 	}
 	
+	public void setExampleToOtherList(boolean toPos, String example) {
+		if (toPos) {
+			for(int i = 0; i < negListModel.size(); i++) {
+				if(negListModel.get(i).equals(example)) {
+					negListModel.remove(i);
+					for (int j = 0; j < model.getIndividualVector().size(); j++ ) {
+						if (model.getIndividualVector().get(j).getManchesterIndividual().equals(example)) {
+							model.getIndividualVector().get(j).setExamplePositive(true);
+							break;
+						}
+					}
+					
+				}
+			}
+			posListModel.add(0, example);
+		} else {
+			for(int i = 0; i < posListModel.size(); i++) {
+				if(posListModel.get(i).equals(example)) {
+					posListModel.remove(i);
+					for (int j = 0; j < model.getIndividualVector().size(); j++ ) {
+						if (model.getIndividualVector().get(j).getManchesterIndividual().equals(example)) {
+							model.getIndividualVector().get(j).setExamplePositive(false);
+						}
+					}
+					break;
+				}
+			}
+			negListModel.add(0, example);
+		}
+		setExampleList(posListModel, negListModel);
+		addToPosExamples.setEnabled(false);
+		addToNegExamples.setEnabled(false);
+		
+	}
+	
 	/**
 	 * This method adds the Action listener to the help buttons.
 	 * 
@@ -279,6 +316,14 @@ public class PosAndNegSelectPanel extends JPanel {
 	}
 	public OptionPanel getOptionPanel() {
 		return optionPanel;
+	}
+	
+	public JList getPosExampleList() {
+		return posList;
+	}
+	
+	public JList getNegExampleList() {
+		return negList;
 	}
 
 }

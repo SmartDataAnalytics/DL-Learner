@@ -27,4 +27,5 @@ public class IndividualObject {
 	public void setExamplePositive(boolean pos) {
 		isPos = pos;
 	}
+	
 }
