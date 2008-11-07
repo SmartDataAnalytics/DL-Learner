@@ -124,20 +124,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 			view.renderErrorMessage(message);
 			view.updateWindow();
 		}
-
-		if (z.getActionCommand().equals("?")) {
-			if (z.getSource().toString().contains("PosHelpButton")) {
-				String help = "An individual that should be an instance of the learned class description.\n"
-					+"Per Default all that belongs to the class.";
-				view.getPosAndNegSelectPanel().renderHelpMessage(help);
-			}
-
-			if (z.getSource().toString().contains("NegHelpButton")) {
-				String help = "A Instance tht doesn't follow from the classdescription.";
-				view.getPosAndNegSelectPanel().renderHelpMessage(help);
-			}
-
-		}
 		if (z.getActionCommand().equals("")) {
 			if (!toggled) {
 				toggled = true;

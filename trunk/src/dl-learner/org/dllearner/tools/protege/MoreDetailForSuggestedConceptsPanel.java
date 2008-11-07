@@ -73,7 +73,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	
 	 // Panel where the informations of the selected panel are rendered
 	 
-	private JPanel examplePanel;
+	//private JPanel examplePanel;
 	
 	 // Text area that shows the covered positive examples
 	 
@@ -178,7 +178,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		//sets accuracy text area not editable
 		accuracyText.setEditable(false);
 		//panel for the informations of the selected concept
-		examplePanel = new JPanel(new GridLayout(0,2));
+		//examplePanel = new JPanel(new GridLayout(0,2));
 		//this method adds the informations for the selected concept to the panel
 		setInformation();
 		

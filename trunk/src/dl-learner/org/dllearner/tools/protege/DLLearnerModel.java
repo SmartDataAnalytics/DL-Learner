@@ -197,6 +197,9 @@ public class DLLearnerModel implements Runnable {
 	private JXTaskPane detailPane;
 	private String ontologyURI;
 	private Map<String, String> prefixes;
+	private DefaultListModel posListModel;
+	private DefaultListModel negListModel;
+	private Vector<IndividualObject> individualVector;
 
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
@@ -225,9 +228,12 @@ public class DLLearnerModel implements Runnable {
 		ontologyURI = editor.getModelManager().getActiveOntology().getURI().toString()+"#";
 		owlDescription = new HashSet<OWLDescription>();
 		positiv = new Vector<JCheckBox>();
+		posListModel = new DefaultListModel();
+		negListModel = new DefaultListModel();
 		negativ = new Vector<JCheckBox>();
 		normalIndividuals = new Vector<String>();
 		ComponentManager.setComponentClasses(componenten);
+		individualVector = new Vector<IndividualObject>();
 		cm = ComponentManager.getInstance();
 		ds = new HashSet<OWLDescription>();
 		suggestModel = new DefaultListModel();
@@ -461,23 +467,13 @@ public class DLLearnerModel implements Runnable {
 			// checks if individual belongs to the selected concept
 			if (setPositivExamplesChecked(indiv)) {
 				// when yes then it sets the positive example checked
-				JCheckBox box = new JCheckBox(ind.toManchesterSyntaxString(ontologyURI, prefixes), true);
-				box.setName("Positive");
-				positiv.add(box);
-				// and ne genative examples unchecked
-				JCheckBox box2 = new JCheckBox(ind.toManchesterSyntaxString(ontologyURI, prefixes), false);
-				box.setName("Negative");
-				negativ.add(box2);
+				posListModel.add(0, ind.toManchesterSyntaxString(ontologyURI, prefixes));
+				individualVector.add(new IndividualObject(indiv, ind.toManchesterSyntaxString(ontologyURI, prefixes), true));
 
 			} else {
 				// When no it unchecks the positive example
-				JCheckBox box = new JCheckBox(ind.toManchesterSyntaxString(ontologyURI, prefixes), false);
-				box.setName("Positive");
-				positiv.add(box);
-				// and checks the negative example
-				JCheckBox box2 = new JCheckBox(ind.toManchesterSyntaxString(ontologyURI, prefixes), true);
-				box.setName("Negative");
-				negativ.add(box2);
+				negListModel.add(0, ind.toManchesterSyntaxString(ontologyURI, prefixes));
+				individualVector.add(new IndividualObject(indiv, ind.toManchesterSyntaxString(ontologyURI, prefixes), false));
 			}
 		}
 	}
@@ -492,7 +488,9 @@ public class DLLearnerModel implements Runnable {
 		}
 	}
 	
-
+	public Vector<IndividualObject> getIndividualVector() {
+		return individualVector;
+	}
 	/**
 	 * This method sets the individuals that belong to the concept which is
 	 * chosen in protege.
@@ -573,6 +571,9 @@ public class DLLearnerModel implements Runnable {
 	 * closed.
 	 */
 	public void clearVector() {
+		individualVector.removeAllElements();
+		posListModel.removeAllElements();
+		negListModel.removeAllElements();
 		positiv.removeAllElements();
 		negativ.removeAllElements();
 	}
@@ -587,7 +588,14 @@ public class DLLearnerModel implements Runnable {
 	public void setDescriptionList(Description[] list) {
 		description = list;
 	}
-
+	
+	public DefaultListModel getPosListModel() {
+		return posListModel;
+	}
+	
+	public DefaultListModel getNegListModel() {
+		return negListModel;
+	}
 	/**
 	 * This method returns the current learning algorithm that is used to learn
 	 * new concepts.

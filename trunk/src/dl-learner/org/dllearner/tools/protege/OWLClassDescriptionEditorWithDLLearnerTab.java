@@ -412,7 +412,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			learner.setPreferredSize(new Dimension(600, 520));
 			accept.setPreferredSize(new Dimension(290, 50));
 			advanced.setName("Advanced");
-			posPanel = new PosAndNegSelectPanel(model, action);
+			posPanel = new PosAndNegSelectPanel(model, action, this);
 			addAcceptButtonListener(this.action);
 			addRunButtonListener(this.action);
 			addAdvancedButtonListener(this.action);
@@ -445,21 +445,21 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 * This Method renders the view of the plugin.
 		 */
 		public void makeView() {
-			System.out.println("CURRENT: "+ frame.getRootObject());
-			System.out.println("MODEL: "+model.hasIndividuals(frame.getRootObject()));
+			/*	
 			if (model.hasIndividuals(frame.getRootObject())) {
 				run.setEnabled(true);
 			} else {
 				run.setEnabled(false);
 				String message ="There are no Instances for "+ frame.getRootObject()+" available. Please insert some Instances.";
 				renderErrorMessage(message);
-			}	
+			}*/	
 			advanced.setIcon(icon);
 			model.clearVector();
 			model.unsetListModel();
-			//model.initReasoner();
+			model.initReasoner();
 			model.setPosVector();
-			posPanel.setJCheckBoxes();
+			System.out.println(model.getPosListModel());
+			posPanel.setExampleList(model.getPosListModel(), model.getNegListModel());
 			accept.setEnabled(false);
 			action.resetToggled();
 			addButtonPanel.add("North", accept);
@@ -487,7 +487,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			learner.add(hint);
 			learner.add(errorMessage);
 			learner.add(posPanel);
-			posPanel.addHelpButtonListener(action);
 			detail = new MoreDetailForSuggestedConceptsPanel(model);
 			add(learner);
 		}
