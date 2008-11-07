@@ -20,12 +20,12 @@
 package org.dllearner.tools.protege;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -44,7 +44,7 @@ public class PosAndNegSelectPanel extends JPanel {
 	// This is the Panel here the check boxes, the labels, and the help buttons
 	// are in.
 
-	private JPanel posAndNegPanel;
+	//private JPanel posAndNegPanel;
 
 	// this is the Panel where the check boxes are.
 
@@ -57,7 +57,19 @@ public class PosAndNegSelectPanel extends JPanel {
 	// This is the Scroll pane if there are more Check boxes than the view can
 	// show
 
-	private JScrollPane scrollPanel;
+	private JScrollPane posScrollList;
+	
+	private JScrollPane negScrollList;
+	
+	private JList posList;
+	private JList negList;
+	private JPanel posPanel;
+	private JPanel negPanel;
+	private JPanel buttonPanel;
+	private JButton addToNegExamples;
+	private JButton addToPosExamples;
+	private JPanel posLabelPanel;
+	private JPanel negLabelPanel;
 
 	// This is the Label that shows "Positive Examples"
 
@@ -70,12 +82,6 @@ public class PosAndNegSelectPanel extends JPanel {
 	// This is the Panel where the Label for Positive Examples and
 	// a help Button is in
 
-	private JPanel posLabelPanel;
-
-	// This is the Panel where the Label for Negative Examples and
-	// a help Button is in
-
-	private JPanel negLabelPanel;
 
 	// This is the Help button for positive examples
 
@@ -87,9 +93,14 @@ public class PosAndNegSelectPanel extends JPanel {
 
 	// This is the Text area where the help message is displayed.
 	private OptionPanel optionPanel;
-	private JComboBox optionBox;
-	private JPanel optionBoxPanel;
-	private ActionHandler action;
+	//private JComboBox optionBox;
+	//private JPanel optionBoxPanel;
+	//private ActionHandler action;
+	private DefaultListModel posListModel;
+	private DefaultListModel negListModel;
+	private JPanel examplePanel;
+	private PosAndNegSelectPanelHandler handler;
+	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 
 	/**
 	 * This is the constructor for the Panel that shows the check boxes.
@@ -99,87 +110,99 @@ public class PosAndNegSelectPanel extends JPanel {
 	 * @param act
 	 *            ActionHandler
 	 */
-	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act) {
+	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView v) {
+		//set layout for parent Panel
 		super();
-		setLayout(new GridLayout(0,1));
+		setLayout(new GridLayout(0, 1));
 		setPreferredSize(new Dimension(490, 250));
+		view = v;
+		this.model = model;
+		handler = new PosAndNegSelectPanelHandler(model, view, this);
+		//Instantiate all objects needed
 		optionPanel = new OptionPanel();
+		examplePanel = new JPanel(null);
+		posLabelPanel = new JPanel(null);
+		negLabelPanel = new JPanel(null);
+		posListModel = new DefaultListModel();
+		negListModel = new DefaultListModel();
 		pos = new JLabel("Positive Examples");
+		pos.setBounds(0, 0, 100, 30);
 		neg = new JLabel("Negative Examples");
-		optionBoxPanel = new JPanel(new GridLayout(0, 1));
-		action = act; 
-		optionBox = new JComboBox();
-		optionBox.addItem("min. accuracy");
-		optionBox.addItem("max. nr. of results");
-		optionBox.addItem("max. executiontime");
-		optionBoxPanel.add(optionBox);
-		setComboBoxListener();
-		// help button for positive examples
+		neg.setBounds(0, 0, 100, 30);
+		posList = new JList(posListModel);
+		negList = new JList(negListModel);	
+		addToPosExamples = new JButton("pos");
+		addToNegExamples = new JButton("neg");
 		helpForPosExamples = new JButton("?");
-		helpForPosExamples.setSize(10, 10);
-		// help button for negative examples
+		helpForPosExamples.setBounds(100, 5, 20, 20);
 		helpForNegExamples = new JButton("?");
-		helpForNegExamples.setSize(10, 10);
-		posLabelPanel = new JPanel(new GridLayout(0, 1));
-		negLabelPanel = new JPanel(new GridLayout(0, 1));
-		// panel for the positive check boxes with flow layout
-		posLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		// panel for the negative check boxes with flow layout
-		negLabelPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		// sets the name for the positive examples help button to
-		// differ which button is pressed
+		helpForNegExamples.setBounds(100, 5, 20, 20);
 		helpForPosExamples.setName("PosHelpButton");
+		helpForNegExamples.setName("NegHelpButton");
+		//set size for components that have no layout.
+		posPanel = new JPanel(null);
+		posPanel.setPreferredSize(new Dimension(200, 100));
+		negPanel = new JPanel(null);
+		negPanel.setPreferredSize(new Dimension(200, 100));
+		buttonPanel = new JPanel(null);
+		buttonPanel.setPreferredSize(new Dimension(90, 85));
+		addToPosExamples.setBounds(0, 50, 70, 30);
+		addToNegExamples.setBounds(0, 80, 70, 30);
+		addToPosExamples.setEnabled(false);
+		addToNegExamples.setEnabled(false);
+		buttonPanel.add(addToPosExamples);
+		buttonPanel.add(addToNegExamples);
 		posLabelPanel.add(pos);
 		posLabelPanel.add(helpForPosExamples);
-		// sets the name for the negative examples help button to
-		// differ which button is pressed
-		helpForNegExamples.setName("NegHelpButton");
 		negLabelPanel.add(neg);
 		negLabelPanel.add(helpForNegExamples);
-		this.model = model;
-		// panel for the check boxes
-		posAndNegSelectPanel = new JPanel(new GridLayout(0, 2));
-
-		model.clearVector();
-		model.unsetListModel();
-		model.initReasoner();
-		
-		model.setPosVector();
-		posAndNegPanel = new JPanel(new GridLayout(0, 1));
-		posAndNegPanel.add(posAndNegSelectPanel);
-		// renders scroll bars if necessary
-		scrollPanel = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		posScrollList = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPanel.setViewportView(posAndNegPanel);
-		optionPanel.setPreferredSize(new Dimension(490, 100));
-		scrollPanel.setPreferredSize(new Dimension(490, 140));
+		posScrollList.setViewportView(posList);
+		
+		negScrollList = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		negScrollList.setViewportView(negList);
+		
+		posLabelPanel.setBounds(0, 0, 200, 30);
+		posScrollList.setBounds(0, 40, 190, 85);
+		
+		posPanel.add(posScrollList);
+		posPanel.add(posLabelPanel);
+		
+		negLabelPanel.setBounds(0, 0, 200, 30);
+		negScrollList.setBounds(0, 40, 185, 85);
+		negPanel.add(negLabelPanel);
+		negPanel.add(negScrollList);
+		
+		posPanel.setBounds(0, 0, 200, 250);
+		buttonPanel.setBounds(210, 0, 90, 250);
+		negPanel.setBounds(300, 0, 200, 250);
+		examplePanel.add(posPanel);
+		examplePanel.add(buttonPanel);
+		examplePanel.add(negPanel);
+		addHelpButtonListener(handler);
 		add(optionPanel);
-		add(scrollPanel);
-		addListeners(action);
+		add(examplePanel);
 	}
 
 	/**
 	 * This method adds the check boxes, the labels and the help buttons for
 	 * positive and negative examples.
 	 */
-	public void setJCheckBoxes() {
-		posAndNegSelectPanel.add(posLabelPanel);
-		posAndNegSelectPanel.add(negLabelPanel);
-		// adds check boxes for all examples of the ontology
-		for (int j = 0; j < model.getPosVector().size(); j++) {
-			// this is for the check boxes of the positive examples
-			posAndNegSelectPanel.add(model.getPositivJCheckBox(j));
-			// this is for the check boxes of the negative examples
-			posAndNegSelectPanel.add(model.getNegativJCheckBox(j));
-		}
-
+	public void setExampleList(DefaultListModel posData, DefaultListModel negData) {
+		posListModel = posData;
+		negListModel = negData;
+		posList.setModel(posListModel);
+		negList.setModel(negListModel);
 	}
 	
-	/**
-	 * This method adds the ActionListener to the Option Combo Box.
-	 */
-	private void setComboBoxListener() {
-		optionBox.addActionListener(action);
+	public JButton getAddToPosPanelButton() {
+		return addToPosExamples;
+	}
+	
+	public JButton getAddToNegPanelButton() {
+		return addToNegExamples;
 	}
 	
 	/**
@@ -187,7 +210,7 @@ public class PosAndNegSelectPanel extends JPanel {
 	 * after the DL-Learner tab is closed.
 	 */
 	public void unsetPosAndNegPanel() {
-		posAndNegSelectPanel.removeAll();
+		
 	}
 	
 	/**
@@ -198,32 +221,14 @@ public class PosAndNegSelectPanel extends JPanel {
 	 */
 	public void addListeners(ActionHandler act) {
 		// adds the listener for the checkboxes
-		for (int i = 0; i < model.getPosVector().size(); i++) {
-			// listener for the check boxes of the positive examples
-			model.getPositivJCheckBox(i).addItemListener(act);
-			// listener for the check boxes of the negative examples
-			model.getNegativJCheckBox(i).addItemListener(act);
-		}
 
 	}
 	
 	public void removeListeners(ActionHandler act) {
-		// adds the listener for the checkboxes
-		for (int i = 0; i < model.getPosVector().size(); i++) {
-			// listener for the check boxes of the positive examples
-			model.getPositivJCheckBox(i).removeItemListener(act);
-			// listener for the check boxes of the negative examples
-			model.getNegativJCheckBox(i).removeItemListener(act);
-		}
 
 	}
 	
 	public void setCheckBoxesEnable(boolean enable) {
-		for (int j = 0; j < model.getPosVector().size(); j++) {
-			model.getPositivJCheckBox(j).setEnabled(enable);
-			model.getNegativJCheckBox(j).setEnabled(enable);
-		}
-		
 	}
 	
 	/**
@@ -261,11 +266,11 @@ public class PosAndNegSelectPanel extends JPanel {
 	 * @param a
 	 *            ActionHandler
 	 */
-	public void addHelpButtonListener(ActionHandler a) {
+	public void addHelpButtonListener(PosAndNegSelectPanelHandler handle) {
 		// adds listener to the help button for the positive examples
-		helpForPosExamples.addActionListener(a);
+		helpForPosExamples.addActionListener(handle);
 		// adds listener to the help button for the negative examples
-		helpForNegExamples.addActionListener(a);
+		helpForNegExamples.addActionListener(handle);
 	}
 	
 	public void removeHelpButtonListener(ActionHandler a) {
