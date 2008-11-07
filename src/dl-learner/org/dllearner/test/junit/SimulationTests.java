@@ -40,6 +40,10 @@ import org.junit.Test;
  */
 public class SimulationTests {
 
+	/**
+	 * Empty tree - empty simulation.
+	 *
+	 */
 	@Test
 	public void test1() {
 		// perform test with empty background knowledge and TOP concept
@@ -119,6 +123,70 @@ public class SimulationTests {
 		assertSC2(v4, v2, v3);
 		assertSC1(v4);
 		assertSC(v4);			
+	}
+	
+	/**
+	 * K: r2 \sqsubset r3; A2 \sqsubset A3
+	 * 
+	 *            v1: {}
+     *           /      \
+     *         r1        r1
+     *         /          \
+     *     v2:{A2,A3}    v3:{}
+     *     /      |        |
+     *   r1      r2        r3
+     *   /        |        |
+     * v4:{A1} v5:{A1,A2} v6:{A3}
+	 *
+	 * v1: -
+     * v2: in=inSC1=inSC2={v3}, out=outSC1=outSC2={}
+     * v3: in=inSC1=inSC2={}, out=outSC1=outSC2={v2}
+     * v4: out=outSC1={v5}, outSC2=inSC2={v5,v6}, in=inSC1={}
+     * v5: out=outSC1={}, in=inSC1=inSC2=outSC2={v4,v6}
+     * v6: out=outSC1={v5}, outSC2=inSC2={v4,v5}, in=inSC1={}
+	 *
+	 */
+	@Test
+	public void test4() {
+		ReasoningService rs = TestOntologies.getTestOntology(TestOntology.SIMPLE2);
+		ELDescriptionTree tree = new ELDescriptionTree(rs);
+		ObjectProperty r1 = new ObjectProperty("r1");
+		ObjectProperty r2 = new ObjectProperty("r2");
+		ObjectProperty r3 = new ObjectProperty("r3");
+		NamedClass a1 = new NamedClass("a1");
+		NamedClass a2 = new NamedClass("a2");
+		NamedClass a3 = new NamedClass("a3");		
+		ELDescriptionNode v1 = new ELDescriptionNode(tree);
+		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, a2, a3);
+		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1);
+		ELDescriptionNode v4 = new ELDescriptionNode(v2, r1, a1);
+		ELDescriptionNode v5 = new ELDescriptionNode(v2, r2, a1, a2);
+		ELDescriptionNode v6 = new ELDescriptionNode(v3, r3, a3);
+		
+		assertEmpty(v1);
+		
+		assertAllIn(v2, v3);
+		assertAllOut(v2);
+		
+		assertAllIn(v3);
+		assertAllOut(v2);
+		
+		assertSC2(v4,v5,v6);
+		assertInSC1(v4);
+		assertIn(v4);
+		assertOut(v4,v5);
+		assertOutSC1(v4,v5);
+		
+		assertAllIn(v5,v4,v6);
+		assertOutSC2(v5,v4,v6);
+		assertOutSC1(v5);
+		assertOut(v5);
+		
+		assertSC2(v6,v4,v5);
+		assertInSC1(v6);
+		assertIn(v6);
+		assertOut(v6,v5);
+		assertOutSC1(v6,v5);		
 	}
 	
 	// all relations (in, inSC1, inSC2) should have the 
