@@ -19,6 +19,11 @@
  */
 package org.dllearner.core;
 
+import java.util.Set;
+
+import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.NamedClass;
+
 /**
  * Reasoning requests/queries related to individuals in the knowledge base.
  * 
@@ -27,4 +32,13 @@ package org.dllearner.core;
  */
 public interface IndividualReasoner {
 
+	/**
+	 * Returns types of an individual, i.e. those classes where the individual
+	 * is instance of. For instance, the individual eric could have type Person. 
+	 * 
+	 * @param individual An individual in the knowledge base.
+	 * @return Types this individual is instance of.
+	 */
+	public Set<NamedClass> getTypes(Individual individual);
+	
 }

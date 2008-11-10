@@ -758,7 +758,7 @@ public class DLLearnerModel implements Runnable {
 			if (positiveExamples != null) {
 				if (positiveExamples.toString().contains(indi2.toString())) {
 					// if yes then get the concepts of this individuals
-					Set<NamedClass> concept = reasoner.getConcepts(indi2);
+					Set<NamedClass> concept = reasoner.getTypes(indi2);
 					// adds all concepts to old concept OWLAPI
 					for (Iterator<NamedClass> k = concept.iterator(); k
 							.hasNext();) {

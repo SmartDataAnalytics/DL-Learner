@@ -504,7 +504,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}		
 	
 	@Override
-	public boolean subsumes(Description superConcept, Description subConcept) {
+	public boolean subsumesImpl(Description superConcept, Description subConcept) {
 		try {
 			return reasoner.isSubClassOf(OWLAPIDescriptionConvertVisitor.getOWLDescription(subConcept), OWLAPIDescriptionConvertVisitor.getOWLDescription(superConcept));			
 		} catch (OWLReasonerException e) {
@@ -612,7 +612,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public Set<NamedClass> getConcepts(Individual individual) {
+	public Set<NamedClass> getTypesImpl(Individual individual) {
 		Set<Set<OWLClass>> result = null;
 		try {
 			 result = reasoner.getTypes(factory.getOWLIndividual(URI.create(individual.getName())),false);
@@ -766,7 +766,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}	
 	
 	@Override
-	public Map<Individual, SortedSet<Constant>> getDatatypeMembers(DatatypeProperty datatypeProperty) {
+	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
 		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
 		Map<Individual, SortedSet<Constant>> map = new TreeMap<Individual, SortedSet<Constant>>();
 		for(Individual i : individuals) {
@@ -1037,7 +1037,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public Set<NamedClass> getInconsistentClasses(){
+	public Set<NamedClass> getInconsistentClassesImpl(){
 		Set<NamedClass> concepts = new HashSet<NamedClass>();
 		
 		try {

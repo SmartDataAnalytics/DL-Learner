@@ -127,7 +127,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 
 	// C \sqsubseteq D is rewritten to a retrieval for \not C \sqcap D
 	@Override
-	public boolean subsumes(Description superConcept, Description subConcept) {
+	public boolean subsumesImpl(Description superConcept, Description subConcept) {
 //		Negation neg = new Negation(subConcept);
 //		Intersection c = new Intersection(neg,superConcept);
 //		return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
