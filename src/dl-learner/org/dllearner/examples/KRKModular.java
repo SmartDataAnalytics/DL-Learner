@@ -22,7 +22,6 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;

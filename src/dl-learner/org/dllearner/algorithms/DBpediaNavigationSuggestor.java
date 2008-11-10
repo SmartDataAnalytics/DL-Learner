@@ -29,7 +29,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.CommonConfigOptions;

@@ -40,7 +40,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -139,7 +138,6 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		rs = cm.reasoningService(fastReasoner);
 		modifier = new OntologyModifier(owlReasoner, rs);
 		baseURI = fastReasoner.getBaseURI();
 		prefixes = fastReasoner.getPrefixes();
@@ -323,7 +321,7 @@ public class ORE {
 		Collection<JLabel> criticals = new Vector<JLabel>();
 		List<Description> children = desc.getChildren();
 		
-		try {
+//		try {
 			if(fastReasoner.instanceCheck(desc, ind)){
 				
 				if(children.size() >= 2){
@@ -363,10 +361,10 @@ public class ORE {
 			} else{
 				criticals.add(new JLabel(desc.toManchesterSyntaxString(baseURI, prefixes)));
 			}
-		} catch (ReasoningMethodUnsupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		} catch (ReasoningMethodUnsupportedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	
 	return criticals;
 	}
@@ -382,7 +380,7 @@ public class ORE {
 		Collection<JLabel> criticals = new Vector<JLabel>();
 		List<Description> children = desc.getChildren();
 		
-		try {
+//		try {
 			if(!fastReasoner.instanceCheck(desc, ind)){
 				
 				if(children.size() >= 2){
@@ -418,10 +416,10 @@ public class ORE {
 			} else{
 				criticals.add(new JLabel(desc.toManchesterSyntaxString(baseURI, prefixes)));
 			}
-		} catch (ReasoningMethodUnsupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		} catch (ReasoningMethodUnsupportedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	
 	return criticals;
 	}
@@ -451,14 +449,14 @@ public class ORE {
 		
 		for(Individual i : owlReasoner.getIndividuals()){
 			
-			try {
+//			try {
 				if(!fastReasoner.instanceCheck(objRestr.getChild(0), i)){
 					allIndividuals.add(i);
 				}
-			} catch (ReasoningMethodUnsupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			} catch (ReasoningMethodUnsupportedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 		
 	
@@ -518,7 +516,7 @@ public class ORE {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		rs = cm.reasoningService(owlReasoner);
+//		rs = cm.reasoningService(owlReasoner);
 		setLearningAlgorithm();
 	}
 	
@@ -530,7 +528,7 @@ public class ORE {
 	public Set<NamedClass> getComplements(Description desc, Individual ind){
 //		System.out.println("----------------" + desc + "---------------");
 		Set<NamedClass> complements = new HashSet<NamedClass>();
-		for(NamedClass nc : owlReasoner.getAtomicConcepts()){
+		for(NamedClass nc : owlReasoner.getNamedClasses()){
 			if(!(nc.toString().endsWith("Thing"))){
 				if(owlReasoner.instanceCheck(nc, ind)){
 					if(modifier.isComplement(desc, nc)){

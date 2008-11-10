@@ -33,8 +33,8 @@ public interface SchemaReasoner {
 
 	public boolean subsumes(Description superConcept, Description subConcept);	
 	
-	public Set<Description> subsumes(Description superConcept, Set<Description> subConcepts);
+	//public Set<Description> subsumes(Description superConcept, Set<Description> subConcepts);
 	
 	public Set<Description> subsumes(Set<Description> superConcepts, Description subConcept);	
-		
+		 
 }

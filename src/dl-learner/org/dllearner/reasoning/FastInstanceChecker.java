@@ -182,13 +182,13 @@ public class FastInstanceChecker extends ReasonerComponent {
 		rc.getConfigurator().setReasonerType(configurator.getReasonerType());
 		rc.init();
 
-		try {
-			atomicConcepts = rc.getAtomicConcepts();
+//		try {
+			atomicConcepts = rc.getNamedClasses();
 			datatypeProperties = rc.getDatatypeProperties();
 			booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
 			doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
 			intDatatypeProperties = rc.getIntDatatypeProperties();
-			atomicRoles = rc.getAtomicRoles();
+			atomicRoles = rc.getObjectProperties();
 			individuals = rc.getIndividuals();
 
 			// rs = new ReasonerComponent(rc);
@@ -201,7 +201,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 			logger.debug("dematerialising concepts");
 
-			for (NamedClass atomicConcept : rc.getAtomicConcepts()) {
+			for (NamedClass atomicConcept : rc.getNamedClasses()) {
 
 				SortedSet<Individual> pos = rc.retrieval(atomicConcept);
 				classInstancesPos.put(atomicConcept, pos);
@@ -244,10 +244,10 @@ public class FastInstanceChecker extends ReasonerComponent {
 			long dematDuration = System.currentTimeMillis() - dematStartTime;
 			logger.debug("TBox dematerialised in " + dematDuration + " ms");
 
-		} catch (ReasoningMethodUnsupportedException e) {
-			throw new ComponentInitException(
-					"Underlying reasoner does not support all necessary reasoning methods.", e);
-		}
+//		} catch (ReasoningMethodUnsupportedException e) {
+//			throw new ComponentInitException(
+//					"Underlying reasoner does not support all necessary reasoning methods.", e);
+//		}
 	}
 
 	@Override
@@ -562,8 +562,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	 * 
 	 * @see org.dllearner.core.Reasoner#prepareSubsumptionHierarchy(java.util.Set)
 	 */
-	@Override
-	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
+	public void prepareSubsumptionHierarchyImpl(Set<NamedClass> allowedConcepts) {
 		rc.prepareSubsumptionHierarchy(allowedConcepts);
 	}
 
@@ -573,7 +572,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
-	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
+	public void prepareRoleHierarchyImpl(Set<ObjectProperty> allowedRoles) {
 		rc.prepareRoleHierarchy(allowedRoles);
 	}
 
@@ -583,8 +582,8 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
-	public void prepareDatatypePropertyHierarchy(Set<DatatypeProperty> allowedRoles) {
-		rc.prepareDatatypePropertyHierarchy(allowedRoles);
+	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
+		rc.prepareDatatypePropertyHierarchyImpl(allowedRoles);
 	}
 
 	@Override
@@ -617,7 +616,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		cm.applyConfigEntry(owl, "url", owlFile);
 		owl.init();
 		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, owl);
-		cm.reasoningService(reasoner);
+//		cm.reasoningService(reasoner);
 		reasoner.init();
 
 		KBParser.internalNamespace = "http://example.com/father#";
@@ -696,6 +695,14 @@ public class FastInstanceChecker extends ReasonerComponent {
 	@Override
 	public boolean hasDatatypeSupport() {
 		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.ReasonerComponent#getTypesImpl(org.dllearner.core.owl.Individual)
+	 */
+	@Override
+	protected Set<NamedClass> getTypesImpl(Individual individual) {
+		return rc.getTypesImpl(individual);
 	}
 
 }

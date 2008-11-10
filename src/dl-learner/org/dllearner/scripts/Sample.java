@@ -37,7 +37,6 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -125,16 +124,14 @@ public class Sample {
 		
 		// reasoner
 		ReasonerComponent r = cm.reasoner(FastInstanceChecker.class, ks);
-		ReasonerComponent rs = cm.reasoningService(r);
-		
 
 		// learning problem
-		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
+		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, r);
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
 		cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 
 		// learning algorithm
-		LearningAlgorithm la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
+		LearningAlgorithm la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, r);
 		cm.applyConfigEntry(la, "useAllConstructor", false);
 		cm.applyConfigEntry(la, "useExistsConstructor", true);
 		cm.applyConfigEntry(la, "useCardinalityRestrictions", false);

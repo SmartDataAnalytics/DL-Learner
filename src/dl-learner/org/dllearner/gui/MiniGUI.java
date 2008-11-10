@@ -46,7 +46,6 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
@@ -151,8 +150,8 @@ public class MiniGUI extends JPanel implements ActionListener {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				rs = cm.reasoningService(reasoner);
-				Set<Individual> individualsSet = rs.getIndividuals();
+//				rs = cm.reasoningService(reasoner);
+				Set<Individual> individualsSet = reasoner.getIndividuals();
 				individuals = new LinkedList<Individual>(individualsSet);
 				
 				DefaultListModel listModel = new DefaultListModel();

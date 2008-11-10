@@ -47,7 +47,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
@@ -61,13 +60,12 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.StringFormatter;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.ExampleContainer;
-import org.dllearner.utilities.owl.ReasonerComponentFactory;
-import org.dllearner.utilities.owl.ReasonerComponentFactory.AvailableReasoners;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.dllearner.utilities.statistics.Stat;
 import org.dllearner.utilities.statistics.Table;
@@ -298,7 +296,7 @@ public class SemanticBibleComparison {
 				descHasNrRes = (descHasNrRes || desc.contains("<")|| desc.contains(">"));
 				
 				// evaluate Concept versus Ontology
-				reasoningService = ReasonerComponentFactory.getReasonerComponent(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
+				reasoningService = org.dllearner.utilities.components.ReasonerComponentFactory.getReasonerComponent(ontologyPath, ReasonerType.OWLAPI_PELLET);
 				SortedSet<Individual> retrieved = reasoningService.retrieval(bestDescription.getDescription());
 				EvaluatedDescription onOnto = reEvaluateDescription(
 						bestDescription.getDescription(), retrieved, posEx, negEx);
@@ -473,16 +471,14 @@ public class SemanticBibleComparison {
 			// reasoner
 			OWLAPIReasoner f = ComponentFactory
 					.getOWLAPIReasoner(tmp);
-			ReasonerComponent rs = ComponentManager.getInstance()
-					.reasoningService(f);
 	
 			// learning problem
-			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(rs,
+			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(f,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 	
 			// learning algorithm
-			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
+			la = ComponentFactory.getExampleBasedROLComponent(lp, f);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
 			Config conf = new Config(ComponentManager.getInstance(), ks, f, lp, la);
 			new ConfigSave(conf).saveFile(new File(tmpFilename));
@@ -525,15 +521,15 @@ public class SemanticBibleComparison {
 			}else{
 				f = ComponentFactory.getOWLAPIReasoner(tmp);
 			}
-			ReasonerComponent rs = ComponentManager.getInstance().reasoningService(f);
+//			ReasonerComponent rs = ComponentManager.getInstance().reasoningService(f);
 	
 //			 learning problem
-			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(rs,
+			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(f,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 	
 			// learning algorithm
-			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
+			la = ComponentFactory.getExampleBasedROLComponent(lp, f);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
 			Config c = new Config(ComponentManager.getInstance(), ks, f, lp, la);
 			new ConfigSave(c).saveFile(new File(tmpFilename));

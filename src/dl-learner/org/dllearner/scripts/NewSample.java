@@ -35,11 +35,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -114,18 +112,11 @@ public class NewSample {
 		logger.info("positive examples: \t" + posExamples.size());
 		logger.info("negative examples: \t" + negExamples.size());
 
-		// the component manager is the central object to create
-		// and configure components
-		ComponentManager cm = ComponentManager.getInstance();
-
 		// knowledge source
-		//KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
-		
 		URL fileURL = null;
 		try {
 			fileURL = new File(owlFile).toURI().toURL();
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		OWLFile ks = ComponentFactory.getOWLFile( fileURL);
@@ -134,15 +125,12 @@ public class NewSample {
 		tmp.add(ks);
 		// reasoner
 		FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
-		ReasonerComponent rs = cm.reasoningService(f);
-		
 
 		// learning problem
-		PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP( rs, posExamples, negExamples);
+		PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP( f, posExamples, negExamples);
 		
-
 		// learning algorithm
-		ExampleBasedROLComponent la = ComponentFactory.getExampleBasedROLComponent( lp, rs);
+		ExampleBasedROLComponent la = ComponentFactory.getExampleBasedROLComponent( lp, f);
 		//OPTIONAL PARAMETERS
 		la.getConfigurator().setUseAllConstructor( false);
 		la.getConfigurator().setUseExistsConstructor(true);

@@ -25,7 +25,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.ScoreTwoValued;
-import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.json.JSONArray;
 import org.json.JSONException;

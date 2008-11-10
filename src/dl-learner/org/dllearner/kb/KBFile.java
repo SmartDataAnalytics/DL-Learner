@@ -38,7 +38,7 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.DIGConverter;
-import org.dllearner.reasoning.OWLAPIAxiomConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;

@@ -64,6 +64,8 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  *   create method() and methodImpl() as before, but this time methodImpl() is
  *   not abstract and throws a {@link ReasoningMethodUnsupportedException} 
  *   </li>
+ *   <li>a few very basic methods (where we do not care about statistics) 
+ *   do not have an "Impl" variant, e.g. getting all named classes of a KB</li>
  * </ul>
  * Note, that the method delegation is done to collect statistical information
  * about reasoning performance, e.g. count how often certain methods were called
@@ -189,10 +191,18 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 
 	@Override
 	public final Set<NamedClass> getTypes(Individual individual) {
-		return getTypesImpl(individual);
+		Set<NamedClass> types = null;
+		try {
+			types = getTypesImpl(individual);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+		}
+		return types;
 	}
 	
-	protected abstract Set<NamedClass> getTypesImpl(Individual individual);
+	protected Set<NamedClass> getTypesImpl(Individual individual) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException("Reasoner does not support to determine type of individual.");
+	}
 	
 	@Override
 	public final boolean subsumes(Description superClass, Description subClass) {
@@ -210,7 +220,8 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return result;
 	}
 
-	public Set<Description> subsumes(Set<Description> superConcepts, Description subConcept) {
+	@Override
+	public final Set<Description> subsumes(Set<Description> superConcepts, Description subConcept) {
 		reasoningStartTimeTmp = System.nanoTime();
 		Set<Description> result = null;
 		try {

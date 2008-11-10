@@ -35,7 +35,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
@@ -44,17 +43,16 @@ import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Files;
+import org.dllearner.utilities.components.ReasonerComponentFactory;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderOWL;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderOWL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
-import org.dllearner.utilities.learn.LearnOWLFile;
 import org.dllearner.utilities.learn.LearnOWLFileConfiguration;
 import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
-import org.dllearner.utilities.owl.ReasonerComponentFactory;
-import org.dllearner.utilities.owl.ReasonerComponentFactory.AvailableReasoners;
 import org.dllearner.utilities.statistics.SimpleClock;
 
 public class SemanticBible {
@@ -93,7 +91,7 @@ public class SemanticBible {
 		//String fileURL = new File(ontologyFile).toURI().toString();
 		
 		reasoningService = ReasonerComponentFactory.getReasonerComponent(
-				ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
+				ontologyPath, ReasonerType.OWLAPI_PELLET);
 		// SortedSet<NamedClass> classesToRelearn = new
 		// TreeSet<NamedClass>(rs.getAtomicConceptsList(true));
 		// for (NamedClass target : classesToRelearn) {
@@ -174,13 +172,13 @@ public class SemanticBible {
 		//System.out.println(ConfWriter.listExamples(true, posExamples));
 		//System.out.println(ConfWriter.listExamples(false, negExamples));
 		//System.exit(0);
-		LearnOWLFile learner = new LearnOWLFile(getConfForOriginal(target));
+//		LearnOWLFile learner = new LearnOWLFile(getConfForOriginal(target));
 		LearningAlgorithm la = null;
 		try{
-		la = learner.learn(
-				SetManipulation.indToString(posExamples), 
-				SetManipulation.indToString(negExamples), 
-				usedReasoner);
+//		la = learner.learn(
+//				SetManipulation.indToString(posExamples), 
+//				SetManipulation.indToString(negExamples), 
+//				usedReasoner);
 		la.start();
 		}catch (Exception e) {
 			System.out.println("ignoring the error "+e.toString());
@@ -223,6 +221,7 @@ public class SemanticBible {
 
 	}
 
+	@SuppressWarnings("unused")
 	private static LearnOWLFileConfiguration getConfForOriginal(NamedClass c) {
 		LearnOWLFileConfiguration lc = new LearnOWLFileConfiguration();
 		
