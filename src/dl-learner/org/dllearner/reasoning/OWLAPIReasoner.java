@@ -39,7 +39,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
@@ -102,7 +102,7 @@ import org.semanticweb.owl.vocab.NamespaceOWLOntologyFormat;
  * @author Jens Lehmann
  *
  */
-public class OWLAPIReasoner extends ReasonerComponentOld {
+public class OWLAPIReasoner extends ReasonerComponent {
 
 //	private static Logger logger = Logger
 //	.getLogger(OWLAPIReasoner.class);	
@@ -513,7 +513,7 @@ public class OWLAPIReasoner extends ReasonerComponentOld {
 		}
 	}
 	
-	private TreeSet<Description> getMoreGeneralConcepts(Description concept) {
+	private TreeSet<Description> getMoreGeneralConceptsImpl(Description concept) {
 		Set<Set<OWLClass>> classes = null;
 		try {
 			classes = reasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLDescription(concept));
@@ -524,7 +524,7 @@ public class OWLAPIReasoner extends ReasonerComponentOld {
 		return getFirstClasses(classes);
 	}
 	
-	private TreeSet<Description> getMoreSpecialConcepts(Description concept) {
+	private TreeSet<Description> getMoreSpecialConceptsImpl(Description concept) {
 		Set<Set<OWLClass>> classes = null;
 		try {
 //			System.out.println(OWLAPIDescriptionConvertVisitor.getOWLDescription(concept));
@@ -538,7 +538,7 @@ public class OWLAPIReasoner extends ReasonerComponentOld {
 		return getFirstClasses(classes);
 	}	
 	
-	private TreeSet<ObjectProperty> getMoreGeneralRoles(ObjectProperty role) {
+	private TreeSet<ObjectProperty> getMoreGeneralRolesImpl(ObjectProperty role) {
 		Set<Set<OWLObjectProperty>> properties;
 		try {
 			properties = reasoner.getSuperProperties(getOWLAPIDescription(role));
@@ -549,7 +549,7 @@ public class OWLAPIReasoner extends ReasonerComponentOld {
 		return getFirstObjectProperties(properties);
 	}
 	
-	private TreeSet<ObjectProperty> getMoreSpecialRoles(ObjectProperty role) {
+	private TreeSet<ObjectProperty> getMoreSpecialRolesImpl(ObjectProperty role) {
 		Set<Set<OWLObjectProperty>> properties;
 		try {
 			properties = reasoner.getSubProperties(getOWLAPIDescription(role));
@@ -560,7 +560,7 @@ public class OWLAPIReasoner extends ReasonerComponentOld {
 		return getFirstObjectProperties(properties);		
 	}
 	
-	private TreeSet<DatatypeProperty> getMoreGeneralDatatypeProperties(DatatypeProperty role) {
+	private TreeSet<DatatypeProperty> getMoreGeneralDatatypePropertiesImpl(DatatypeProperty role) {
 		Set<Set<OWLDataProperty>> properties;
 		try {
 			properties = reasoner.getSuperProperties(getOWLAPIDescription(role));
@@ -571,7 +571,7 @@ public class OWLAPIReasoner extends ReasonerComponentOld {
 		return getFirstDatatypeProperties(properties);
 	}
 	
-	private TreeSet<DatatypeProperty> getMoreSpecialDatatypeProperties(DatatypeProperty role) {
+	private TreeSet<DatatypeProperty> getMoreSpecialDatatypePropertiesImpl(DatatypeProperty role) {
 		Set<Set<OWLDataProperty>> properties;
 		try {
 			properties = reasoner.getSubProperties(getOWLAPIDescription(role));

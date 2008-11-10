@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
@@ -75,7 +75,7 @@ public class ReasoningServiceFactory {
 		ks.init();
 		
 		// reasoner
-		ReasonerComponentOld rc;
+		ReasonerComponent rc;
 		switch (r) {
 	      case FASTINSTANCECHECKER:
 	    	  rc = cm.reasoner(FastInstanceChecker.class, ks);

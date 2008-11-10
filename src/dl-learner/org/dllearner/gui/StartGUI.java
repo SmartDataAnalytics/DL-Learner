@@ -51,7 +51,7 @@ import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -127,7 +127,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		List<Class<? extends Component>> ignoredKnowledgeSources = new LinkedList<Class<? extends Component>>();
 		ignoredKnowledgeSources.add(OWLAPIOntology.class);
 		panels[0] = new ComponentPanel(config, this, KnowledgeSource.class, OWLFile.class, ignoredKnowledgeSources);
-		panels[1] = new ComponentPanel(config, this, ReasonerComponentOld.class, FastInstanceChecker.class);
+		panels[1] = new ComponentPanel(config, this, ReasonerComponent.class, FastInstanceChecker.class);
 		panels[2] = new ComponentPanel(config, this, LearningProblem.class, PosNegDefinitionLP.class);
 		panels[3] = new ComponentPanel(config, this, LearningAlgorithm.class, ExampleBasedROLComponent.class);
 		runPanel = new RunPanel(config, this);		

@@ -71,7 +71,7 @@ public final class ComponentManager {
 	// these variables are valid for the complete lifetime of a DL-Learner session
 	private static Collection<Class<? extends Component>> components;
 	private static Collection<Class<? extends KnowledgeSource>> knowledgeSources;
-	private static Collection<Class<? extends ReasonerComponentOld>> reasonerComponents;
+	private static Collection<Class<? extends ReasonerComponent>> reasonerComponents;
 	private static Collection<Class<? extends LearningProblem>> learningProblems;
 	private static Collection<Class<? extends LearningAlgorithm>> learningAlgorithms;
 	// you can either use the components.ini file or directly specify the classes to use
@@ -111,7 +111,7 @@ public final class ComponentManager {
 		// component list
 		components = new TreeSet<Class<? extends Component>>(classComparator);
 		knowledgeSources = new TreeSet<Class<? extends KnowledgeSource>>(classComparator);
-		reasonerComponents = new TreeSet<Class<? extends ReasonerComponentOld>>(classComparator);
+		reasonerComponents = new TreeSet<Class<? extends ReasonerComponent>>(classComparator);
 		learningProblems = new TreeSet<Class<? extends LearningProblem>>(classComparator);
 		learningAlgorithms = new TreeSet<Class<? extends LearningAlgorithm>>(classComparator);
 		algorithmProblemsMapping = new TreeMap<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>>(
@@ -126,8 +126,8 @@ public final class ComponentManager {
 
 				if (KnowledgeSource.class.isAssignableFrom(component)) {
 					knowledgeSources.add((Class<? extends KnowledgeSource>) component);
-				} else if (ReasonerComponentOld.class.isAssignableFrom(component)) {
-					reasonerComponents.add((Class<? extends ReasonerComponentOld>) component);
+				} else if (ReasonerComponent.class.isAssignableFrom(component)) {
+					reasonerComponents.add((Class<? extends ReasonerComponent>) component);
 				} else if (LearningProblem.class.isAssignableFrom(component)) {
 					learningProblems.add((Class<? extends LearningProblem>) component);
 				} else if (LearningAlgorithm.class.isAssignableFrom(component)) {
@@ -324,7 +324,7 @@ public final class ComponentManager {
 	 * @param source A knowledge source.
 	 * @return A reasoner component.
 	 */
-	public <T extends ReasonerComponentOld> T reasoner(Class<T> reasoner,
+	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
 			KnowledgeSource source) {
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		sources.add(source);
@@ -340,7 +340,7 @@ public final class ComponentManager {
 	 * @param sources A set of knowledge sources.
 	 * @return A reasoner component.
 	 */
-	public <T extends ReasonerComponentOld> T reasoner(Class<T> reasoner,
+	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
 			Set<KnowledgeSource> sources) {
 		if (!reasonerComponents.contains(reasoner)) {
 			System.err.println("Warning: reasoner component " + reasoner
@@ -365,9 +365,9 @@ public final class ComponentManager {
 	 * @param reasoner A reasoner component.
 	 * @return The reasoning service encapsulating the reasoner.
 	 */
-	public ReasoningService reasoningService(ReasonerComponentOld reasoner) {
-		return new ReasoningService(reasoner);
-	}
+//	public ReasoningService reasoningService(ReasonerComponent reasoner) {
+//		return new ReasoningService(reasoner);
+//	}
 	
 	/**
 	 * Factory method for creating a learning problem component.
@@ -376,13 +376,13 @@ public final class ComponentManager {
 	 * @param reasoner A reasoning service object.
 	 * @return A learning problem component.
 	 */
-	public <T extends LearningProblem> T learningProblem(Class<T> lpClass, ReasoningService reasoner) {
+	public <T extends LearningProblem> T learningProblem(Class<T> lpClass, ReasonerComponent reasoner) {
 		if (!learningProblems.contains(lpClass)) {
 			System.err.println("Warning: learning problem " + lpClass
 					+ " is not a registered learning problem component.");
 		}
 
-		T lp = invokeConstructor(lpClass, new Class[] { ReasoningService.class },
+		T lp = invokeConstructor(lpClass, new Class[] { ReasonerComponent.class },
 				new Object[] { reasoner });
 		pool.registerComponent(lp);
 		return lp;
@@ -399,7 +399,7 @@ public final class ComponentManager {
 	 * @throws LearningProblemUnsupportedException Thrown when the learning problem and
 	 * the learning algorithm are not compatible.
 	 */
-	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasoningService rs) throws LearningProblemUnsupportedException {
+	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, LearningProblem lp, ReasonerComponent rs) throws LearningProblemUnsupportedException {
 		if (!learningAlgorithms.contains(laClass)) {
 			System.err.println("Warning: learning algorithm " + laClass
 					+ " is not a registered learning algorithm component.");
@@ -423,7 +423,7 @@ public final class ComponentManager {
 //			return null;
 		}
 
-		T la = invokeConstructor(laClass, new Class[] { constructorArgument, ReasoningService.class }, new Object[] { lp, rs });
+		T la = invokeConstructor(laClass, new Class[] { constructorArgument, ReasonerComponent.class }, new Object[] { lp, rs });
 		pool.registerComponent(la);
 		return la;
 	}
@@ -659,8 +659,8 @@ public final class ComponentManager {
 	 * @return the components A list of reasoner component classes available in this
 	 * instance of <code>ComponentManager</code>.
 	 */	
-	public List<Class<? extends ReasonerComponentOld>> getReasonerComponents() {
-		return new LinkedList<Class<? extends ReasonerComponentOld>>(reasonerComponents);
+	public List<Class<? extends ReasonerComponent>> getReasonerComponents() {
+		return new LinkedList<Class<? extends ReasonerComponent>>(reasonerComponents);
 	}
 
 	/**

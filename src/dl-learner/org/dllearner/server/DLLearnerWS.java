@@ -53,7 +53,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Description;
@@ -100,7 +100,7 @@ public class DLLearnerWS {
 	
 	// defines the components, which are accessible for the web service
 	private static Map<String,Class<? extends KnowledgeSource>> knowledgeSourceMapping = new TreeMap<String,Class<? extends KnowledgeSource>>();
-	private static Map<String,Class<? extends ReasonerComponentOld>> reasonerMapping = new TreeMap<String,Class<? extends ReasonerComponentOld>>();
+	private static Map<String,Class<? extends ReasonerComponent>> reasonerMapping = new TreeMap<String,Class<? extends ReasonerComponent>>();
 	private static Map<String,Class<? extends LearningProblem>> learningProblemMapping = new TreeMap<String,Class<? extends LearningProblem>>();
 	private static Map<String,Class<? extends LearningAlgorithm>> learningAlgorithmMapping = new TreeMap<String,Class<? extends LearningAlgorithm>>();
 	private static Set<String> components;
@@ -250,11 +250,11 @@ public class DLLearnerWS {
 	@WebMethod
 	public int setReasoner(int id, String component) throws ClientNotKnownException, UnknownComponentException {
 		ClientState state = getState(id);
-		Class<? extends ReasonerComponentOld> rcClass = reasonerMapping.get(component);
+		Class<? extends ReasonerComponent> rcClass = reasonerMapping.get(component);
 		if(rcClass == null)
 			throw new UnknownComponentException(component);
 		
-		ReasonerComponentOld rc = cm.reasoner(rcClass, state.getKnowledgeSources());
+		ReasonerComponent rc = cm.reasoner(rcClass, state.getKnowledgeSources());
 		return state.setReasonerComponent(rc);
 	}
 	

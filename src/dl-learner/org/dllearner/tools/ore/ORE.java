@@ -193,7 +193,7 @@ public class ORE {
 	}
 
 	public void setLearningProblem(){
-		lp = new PosNegDefinitionLP(rs, posExamples, negExamples);
+		lp = new PosNegDefinitionLP(owlReasoner, posExamples, negExamples);
 		lp.init();
 	}
 	
@@ -203,7 +203,7 @@ public class ORE {
 	
 	public void setLearningAlgorithm(){
 		try {
-			la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
+			la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, owlReasoner);
 		} catch (LearningProblemUnsupportedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

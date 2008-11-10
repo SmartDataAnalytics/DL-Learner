@@ -46,6 +46,7 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  * @author Jens Lehmann
  * 
  */
+@Deprecated
 public abstract class ReasonerComponentOld extends Component implements ReasonerOld {
 
 	protected Set<KnowledgeSource> sources;

@@ -19,6 +19,7 @@
  */
 package org.dllearner.learningproblems;
 
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.configurators.ComponentFactory;
@@ -43,7 +44,7 @@ public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 		return configurator;
 	}
 	
-	public PosOnlyDefinitionLP(ReasoningService reasoningService) {
+	public PosOnlyDefinitionLP(ReasonerComponent reasoningService) {
 		super(reasoningService);
 		configurator = new PosOnlyDefinitionLPConfigurator(this);
 	}
@@ -64,12 +65,12 @@ public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 	@Override
 	public void init() {
 		// by default we test all other instances of the knowledge base
-		pseudoNegatives = Helper.difference(reasoningService.getIndividuals(), positiveExamples);
+		pseudoNegatives = Helper.difference(reasoner.getIndividuals(), positiveExamples);
 		
 		// create an instance of a standard definition learning problem
 		// instanciated with pseudo-negatives
 		definitionLP = ComponentFactory.getPosNegDefinitionLP(
-				reasoningService, 
+				reasoner, 
 				SetManipulation.indToString(positiveExamples), 
 				SetManipulation.indToString(pseudoNegatives));
 		//definitionLP = new PosNegDefinitionLP(reasoningService, positiveExamples, pseudoNegatives);

@@ -19,6 +19,7 @@
  */
 package org.dllearner.learningproblems;
 
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigEntry;
@@ -39,7 +40,7 @@ public class PosOnlyInclusionLP extends PosOnlyLP implements InclusionLP {
 	}
 	
 	
-	public PosOnlyInclusionLP(ReasoningService reasoningService) {
+	public PosOnlyInclusionLP(ReasonerComponent reasoningService) {
 		super(reasoningService);
 		this.configurator = new PosOnlyInclusionLPConfigurator(this);
 	}

@@ -22,6 +22,7 @@ package org.dllearner.learningproblems;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.configurators.ComponentFactory;
@@ -61,7 +62,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 		return configurator;
 	}
 	
-	public PosNegInclusionLP(ReasoningService reasoningService) {
+	public PosNegInclusionLP(ReasonerComponent reasoningService) {
 		super(reasoningService);
 		configurator = new PosNegInclusionLPConfigurator(this); 
 	}
@@ -96,7 +97,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	public void init() {
 		super.init();
 		definitionLP = ComponentFactory.getPosNegDefinitionLP(
-				reasoningService, 
+				reasoner, 
 				SetManipulation.indToString(negativeExamples), 
 				SetManipulation.indToString(positiveExamples));
 		//definitionLP = new PosNegDefinitionLP(reasoningService, negativeExamples, positiveExamples);
@@ -125,7 +126,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	public int coveredNegativeExamplesOrTooWeak(Description concept) {
 
 		if (useRetrievalForClassification) {
-			SortedSet<Individual> inNegatedConcept = reasoningService.retrieval(new Negation(concept));
+			SortedSet<Individual> inNegatedConcept = reasoner.retrieval(new Negation(concept));
 
 			for (Individual posExample : positiveExamples) {
 				// if any positive example follows from the negation, then
@@ -142,18 +143,18 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
 				// two checks
 				if (useMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
-					Set<Individual> posExInNegatedConcept = reasoningService.instanceCheck(new Negation(concept), positiveExamples);
+					Set<Individual> posExInNegatedConcept = reasoner.instanceCheck(new Negation(concept), positiveExamples);
 					
 					if(posExInNegatedConcept.size()>0) {
 						return -1;
 					} else {
-						Set<Individual> negExInNegatedConcept = reasoningService.instanceCheck(new Negation(concept), negativeExamples);
+						Set<Individual> negExInNegatedConcept = reasoner.instanceCheck(new Negation(concept), negativeExamples);
 						return (negativeExamples.size() - negExInNegatedConcept.size());
 					}
 						
 					// one check
 				} else {
-					Set<Individual> inNegatedConcept = reasoningService.instanceCheck(new Negation(concept), allExamples);
+					Set<Individual> inNegatedConcept = reasoner.instanceCheck(new Negation(concept), allExamples);
 					
 					for(Individual i : positiveExamples) {
 						if(inNegatedConcept.contains(i))
@@ -170,11 +171,11 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 				int coverCount = negativeExamples.size();
 
 				for (Individual example : positiveExamples) {
-					if (reasoningService.instanceCheck(new Negation(concept), example))
+					if (reasoner.instanceCheck(new Negation(concept), example))
 						return -1;
 				}
 				for (Individual example : negativeExamples) {
-					if (!reasoningService.instanceCheck(new Negation(concept), example))
+					if (!reasoner.instanceCheck(new Negation(concept), example))
 						coverCount--;
 				}
 

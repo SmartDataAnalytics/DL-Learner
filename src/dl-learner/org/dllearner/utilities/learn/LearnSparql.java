@@ -28,7 +28,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -52,7 +52,7 @@ public class LearnSparql {
 
 	//return  will be replaced by List Description
 	public LearningAlgorithm learn( SortedSet<String> posExamples,
-			SortedSet<String> negExamples, Class<? extends ReasonerComponentOld> Reasoner) throws ComponentInitException,
+			SortedSet<String> negExamples, Class<? extends ReasonerComponent> Reasoner) throws ComponentInitException,
 			LearningProblemUnsupportedException {
 
 		logger.info("Start Learning with");
@@ -71,7 +71,7 @@ public class LearnSparql {
 		cm.applyConfigEntry(ks, "instances", instances);
 		
 		// reasoner
-		ReasonerComponentOld r = cm.reasoner(Reasoner, ks);
+		ReasonerComponent r = cm.reasoner(Reasoner, ks);
 		ReasoningService rs = cm.reasoningService(r);
 
 		// learning problem

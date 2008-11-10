@@ -53,6 +53,7 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  * @author Jens Lehmann
  * 
  */
+@Deprecated
 public class ReasoningService {
 	
 	public static Logger logger = Logger.getLogger(ReasoningService.class);

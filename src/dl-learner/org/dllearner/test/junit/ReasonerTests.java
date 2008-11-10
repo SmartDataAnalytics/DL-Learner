@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -81,9 +81,9 @@ public class ReasonerTests {
 			// d = KBParser.parseConcept("man");
 			d = KBParser.parseConcept("(person AND EXISTS hasChild.female)");
 			Individual i = new Individual(KBParser.getInternalURI("stephen"));
-			List<Class<? extends ReasonerComponentOld>> reasonerClasses = cm.getReasonerComponents();
-			for (Class<? extends ReasonerComponentOld> reasonerClass : reasonerClasses) {
-				ReasonerComponentOld reasoner = cm.reasoner(reasonerClass, ks);
+			List<Class<? extends ReasonerComponent>> reasonerClasses = cm.getReasonerComponents();
+			for (Class<? extends ReasonerComponent> reasonerClass : reasonerClasses) {
+				ReasonerComponent reasoner = cm.reasoner(reasonerClass, ks);
 				reasoner.init();
 //				long startTime = System.nanoTime();
 				boolean result = false;

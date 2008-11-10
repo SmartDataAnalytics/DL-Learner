@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.ClassAssertionAxiom;
 import org.dllearner.core.owl.Description;
@@ -36,7 +37,7 @@ public class OntologyCloser {
 	boolean isKB = true;
 
 	// Set<KnowledgeSource> ks;
-	ReasoningService rs;
+	ReasonerComponent rs;
 	HashMap<Individual, Set<ObjectExactCardinalityRestriction>> indToRestr;
 	HashMap<Individual, Set<Description>> indToNamedClass;
 	HashSet<Description> classes;
@@ -56,7 +57,8 @@ public class OntologyCloser {
 		}
 		this.indToRestr = new HashMap<Individual, Set<ObjectExactCardinalityRestriction>>();
 		this.classes = new HashSet<Description>();
-		this.rs = new ReasoningService(owlapi);
+//		this.rs = new ReasoningService(owlapi);
+		rs = owlapi;
 
 	}
 	
@@ -77,7 +79,8 @@ public class OntologyCloser {
 			e.printStackTrace();
 		}
 		sc.printAndSet();
-		this.rs = new ReasoningService(owlapi);
+//		this.rs = new ReasoningService(owlapi);
+		rs = owlapi;
 		
 	}
 

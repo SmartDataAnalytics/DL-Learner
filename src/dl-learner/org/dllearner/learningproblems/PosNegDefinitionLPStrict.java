@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.BooleanConfigOption;
@@ -58,7 +59,7 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 		return configurator;
 	}
 	
-	public PosNegDefinitionLPStrict(ReasoningService reasoningService) {
+	public PosNegDefinitionLPStrict(ReasonerComponent reasoningService) {
 		super(reasoningService);
 		this.configurator = new PosNegDefinitionLPStrictConfigurator(this);
 	}
@@ -105,7 +106,7 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 		// compute neutral examples, i.e. those which are neither positive
 		// nor negative (we have to take care to copy sets instead of 
 		// modifying them)
-		neutralExamples = Helper.intersection(reasoningService.getIndividuals(),positiveExamples);
+		neutralExamples = Helper.intersection(reasoner.getIndividuals(),positiveExamples);
 		neutralExamples.retainAll(negativeExamples);
 	}
 
@@ -115,22 +116,22 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 	@Override
 	public Score computeScore(Description concept) {
 	   	if(useRetrievalForClassification) {
-    		if(reasoningService.getReasonerType() == ReasonerType.FAST_RETRIEVAL) {
-        		SortedSetTuple<Individual> tuple = reasoningService.doubleRetrieval(concept);
+    		if(reasoner.getReasonerType() == ReasonerType.FAST_RETRIEVAL) {
+        		SortedSetTuple<Individual> tuple = reasoner.doubleRetrieval(concept);
         		// this.defPosSet = tuple.getPosSet();
         		// this.defNegSet = tuple.getNegSet();  
-        		SortedSet<Individual> neutClassified = Helper.intersectionTuple(reasoningService.getIndividuals(),tuple);
+        		SortedSet<Individual> neutClassified = Helper.intersectionTuple(reasoner.getIndividuals(),tuple);
         		return new ScoreThreeValued(concept.getLength(),accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, tuple.getPosSet(),neutClassified,tuple.getNegSet(),positiveExamples,neutralExamples,negativeExamples);
-    		} else if(reasoningService.getReasonerType() == ReasonerType.KAON2) {
-    			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
-    			SortedSet<Individual> negClassified = reasoningService.retrieval(new Negation(concept));
-    			SortedSet<Individual> neutClassified = Helper.intersection(reasoningService.getIndividuals(),posClassified);
+    		} else if(reasoner.getReasonerType() == ReasonerType.KAON2) {
+    			SortedSet<Individual> posClassified = reasoner.retrieval(concept);
+    			SortedSet<Individual> negClassified = reasoner.retrieval(new Negation(concept));
+    			SortedSet<Individual> neutClassified = Helper.intersection(reasoner.getIndividuals(),posClassified);
     			neutClassified.retainAll(negClassified);
     			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples);     			
     		} else
     			throw new Error("score cannot be computed in this configuration");
     	} else {
-    		if(reasoningService.getReasonerType() == ReasonerType.KAON2) {
+    		if(reasoner.getReasonerType() == ReasonerType.KAON2) {
     			if(penaliseNeutralExamples)
     				throw new Error("It does not make sense to use single instance checks when" +
     						"neutral examples are penalized. Use Retrievals instead.");
@@ -145,26 +146,26 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
     			// umstellen
     			// pos => pos
     			for(Individual example : positiveExamples) {
-    				if(reasoningService.instanceCheck(concept, example))
+    				if(reasoner.instanceCheck(concept, example))
     					posClassified.add(example);
     			}
     			// neg => pos
     			for(Individual example: negativeExamples) {
-    				if(reasoningService.instanceCheck(concept, example))
+    				if(reasoner.instanceCheck(concept, example))
     					posClassified.add(example);
     			}
     			// pos => neg
     			for(Individual example : positiveExamples) {
-    				if(reasoningService.instanceCheck(new Negation(concept), example))
+    				if(reasoner.instanceCheck(new Negation(concept), example))
     					negClassified.add(example);
     			}
     			// neg => neg
     			for(Individual example : negativeExamples) {
-    				if(reasoningService.instanceCheck(new Negation(concept), example))
+    				if(reasoner.instanceCheck(new Negation(concept), example))
     					negClassified.add(example);
     			}    			
     			
-    			SortedSet<Individual> neutClassified = Helper.intersection(reasoningService.getIndividuals(),posClassified);
+    			SortedSet<Individual> neutClassified = Helper.intersection(reasoner.getIndividuals(),posClassified);
     			neutClassified.retainAll(negClassified);
     			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples); 		
     		} else

@@ -20,11 +20,11 @@
 package org.dllearner.core;
 
 /**
- * List of available reasoning/query methods.
+ * Reasoning requests/queries related to individuals in the knowledge base.
  * 
  * @author Jens Lehmann
  *
  */
-public interface ReasonerNew extends BaseReasoner, SchemaReasoner, IndividualReasoner {
+public interface IndividualReasoner {
 
 }

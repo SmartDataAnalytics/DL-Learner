@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
@@ -53,12 +54,12 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 		return configurator;
 	}
 
-	public PosNegDefinitionLP(ReasoningService reasoningService) {
+	public PosNegDefinitionLP(ReasonerComponent reasoningService) {
 		super(reasoningService);
 		this.configurator = new PosNegDefinitionLPConfigurator(this);
 	}
 
-	public PosNegDefinitionLP(ReasoningService reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
+	public PosNegDefinitionLP(ReasonerComponent reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
 		super(reasoningService);
 		this.positiveExamples = positiveExamples;
 		this.negativeExamples = negativeExamples;
@@ -96,7 +97,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 	public int coveredNegativeExamplesOrTooWeak(Description concept) {
 
 		if (useRetrievalForClassification) {
-			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
+			SortedSet<Individual> posClassified = reasoner.retrieval(concept);
 			SortedSet<Individual> negAsPos = Helper.intersection(negativeExamples, posClassified);
 			SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
 
@@ -118,18 +119,18 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
 				// two checks
 				if (useMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
-					Set<Individual> s = reasoningService.instanceCheck(concept, positiveExamples);
+					Set<Individual> s = reasoner.instanceCheck(concept, positiveExamples);
 					// if the concept is too weak, then do not query negative
 					// examples
 					if (s.size() != positiveExamples.size())
 						return -1;
 					else {
-						s = reasoningService.instanceCheck(concept, negativeExamples);
+						s = reasoner.instanceCheck(concept, negativeExamples);
 						return s.size();
 					}
 					// one check
 				} else {
-					Set<Individual> s = reasoningService.instanceCheck(concept, allExamples);
+					Set<Individual> s = reasoner.instanceCheck(concept, allExamples);
 					// test whether all positive examples are covered
 					if (s.containsAll(positiveExamples))
 						return s.size() - positiveExamples.size();
@@ -141,12 +142,12 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 				SortedSet<Individual> negAsPos = new TreeSet<Individual>();
 
 				for (Individual example : positiveExamples) {
-					if (!reasoningService.instanceCheck(concept, example))
+					if (!reasoner.instanceCheck(concept, example))
 						return -1;
 					// posAsNeg.add(example);
 				}
 				for (Individual example : negativeExamples) {
-					if (reasoningService.instanceCheck(concept, example))
+					if (reasoner.instanceCheck(concept, example))
 						negAsPos.add(example);
 				}
 
@@ -171,7 +172,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 	@Override
 	public Score computeScore(Description concept) {
 		if (useRetrievalForClassification) {
-			SortedSet<Individual> posClassified = reasoningService.retrieval(concept);
+			SortedSet<Individual> posClassified = reasoner.retrieval(concept);
 			SortedSet<Individual> posAsPos = Helper.intersection(positiveExamples, posClassified);
 			SortedSet<Individual> negAsPos = Helper.intersection(negativeExamples, posClassified);
 			SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
@@ -195,7 +196,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 			SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
 			
 			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
-				SortedSet<Individual> posClassified = reasoningService.instanceCheck(concept,
+				SortedSet<Individual> posClassified = reasoner.instanceCheck(concept,
 						allExamples);
 				SortedSet<Individual> negClassified = Helper.difference(allExamples,
 						posClassified);
@@ -212,14 +213,14 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 				System.out.println("TEST");
 				
 				for (Individual example : positiveExamples) {
-					if (reasoningService.instanceCheck(concept, example)) {
+					if (reasoner.instanceCheck(concept, example)) {
 						posAsPos.add(example);
 					} else {
 						posAsNeg.add(example); System.out.println(concept + " " + example);
 					}
 				}
 				for (Individual example : negativeExamples) {
-					if (reasoningService.instanceCheck(concept, example))
+					if (reasoner.instanceCheck(concept, example))
 						negAsPos.add(example);
 					else
 						negAsNeg.add(example);
