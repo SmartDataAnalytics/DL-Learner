@@ -30,7 +30,7 @@ import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -55,7 +55,7 @@ public class ClientState {
 	
 	private LearningProblem learningProblem;
 	
-	private ReasonerComponent reasonerComponent;
+	private ReasonerComponentOld reasonerComponent;
 	private ReasoningService reasoningService;
 	
 	private LearningAlgorithm learningAlgorithm;
@@ -162,7 +162,7 @@ public class ClientState {
 	/**
 	 * @return the reasonerComponent
 	 */
-	public ReasonerComponent getReasonerComponent() {
+	public ReasonerComponentOld getReasonerComponent() {
 		return reasonerComponent;
 	}
 
@@ -172,7 +172,7 @@ public class ClientState {
 	 * 
 	 * @param reasonerComponent the reasonerComponent to set
 	 */
-	public int setReasonerComponent(ReasonerComponent reasonerComponent) {
+	public int setReasonerComponent(ReasonerComponentOld reasonerComponent) {
 		this.reasonerComponent = reasonerComponent;
 		reasoningService = new ReasoningService(reasonerComponent);
 		return generateComponentID(reasonerComponent);

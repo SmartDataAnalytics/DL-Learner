@@ -32,7 +32,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
@@ -90,9 +90,9 @@ public class ConfigSave {
 		
 		// reasoner
 		out.println("\n// reasoner");
-		ReasonerComponent rc = config.getReasoner();
+		ReasonerComponentOld rc = config.getReasoner();
 		if (rc != null) {
-			String typeString = confMapper.getComponentTypeString(ReasonerComponent.class);
+			String typeString = confMapper.getComponentTypeString(ReasonerComponentOld.class);
 			String componentString = confMapper.getComponentString(rc.getClass());
 			out.println(typeString + " = " + componentString + ";");
 			

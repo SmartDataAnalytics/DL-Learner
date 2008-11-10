@@ -46,7 +46,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
@@ -515,7 +515,7 @@ public class SemanticBibleComparison {
 			Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
 			tmp.add(ks);
 			
-			ReasonerComponent f = null;
+			ReasonerComponentOld f = null;
 			
 			// reasoner
 			if(fic){

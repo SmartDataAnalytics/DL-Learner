@@ -86,7 +86,7 @@ public class ReasoningService {
 
 	// private SortedSet<Concept> retrievalsSet = new TreeSet<Concept>(new ConceptComparator());
 	
-	private ReasonerComponent reasoner;
+	private ReasonerComponentOld reasoner;
 	
 	/**
 	 * Constructs a reasoning service object. Note that you must not 
@@ -99,7 +99,7 @@ public class ReasoningService {
 	 * 
 	 * @param reasoner
 	 */
-	public ReasoningService(ReasonerComponent reasoner) {
+	public ReasoningService(ReasonerComponentOld reasoner) {
 		this.reasoner = reasoner;
 
 		resetStatistics();		

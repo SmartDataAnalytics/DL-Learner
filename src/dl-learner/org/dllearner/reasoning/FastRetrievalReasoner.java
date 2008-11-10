@@ -8,7 +8,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
@@ -25,7 +25,7 @@ import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 
-public class FastRetrievalReasoner extends ReasonerComponent {
+public class FastRetrievalReasoner extends ReasonerComponentOld {
 
 	private FastRetrievalReasonerConfigurator configurator;
 	@Override
@@ -40,7 +40,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	SortedSet<Individual> individuals;
 	
 	ReasoningService rs;
-	ReasonerComponent rc;
+	ReasonerComponentOld rc;
 	
 
 	

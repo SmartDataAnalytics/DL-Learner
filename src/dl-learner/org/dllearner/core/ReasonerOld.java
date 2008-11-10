@@ -44,7 +44,7 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  * @author Jens Lehmann
  *
  */
-public interface Reasoner {
+public interface ReasonerOld {
 
 	public ReasonerType getReasonerType();
 	

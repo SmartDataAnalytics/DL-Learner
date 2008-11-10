@@ -10,7 +10,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -63,7 +63,7 @@ public class LearnSparqlold {
 		//System.out.println(ks.getNTripleURL());
 		//
 		
-		ReasonerComponent r = new FastInstanceChecker(sources);
+		ReasonerComponentOld r = new FastInstanceChecker(sources);
 		//cm.applyConfigEntry(r,"useAllConstructor",false);
 		//cm.applyConfigEntry(r,"useExistsConstructor",true);
 		r.init();
