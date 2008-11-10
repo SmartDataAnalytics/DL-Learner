@@ -21,7 +21,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.ClassAssertionAxiom;
@@ -85,12 +85,12 @@ public class KRKModular {
 	static HashMap<String, SortedSet<Individual>> classToInd = new HashMap<String, SortedSet<Individual>>();
 	static HashMap<Individual, String> indToClass = new HashMap<Individual, String>();
 	
-	static Set<ReasonerComponentOld> allReasoners =  new HashSet<ReasonerComponentOld>();
+	static Set<ReasonerComponent> allReasoners =  new HashSet<ReasonerComponent>();
 	static int negativeExamplesAdded = 200;
 	
 	// static LinkedList<String> words;
 	public KB kb;
-	public ReasonerComponentOld reasoner;
+	public ReasonerComponent reasoner;
 	
 	
 	//public FastInstanceChecker fic;
@@ -254,19 +254,19 @@ public class KRKModular {
 		try {
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		sources.add(new KBFile(kb));
-		ReasonerComponentOld r = new FastInstanceChecker(sources);
+		ReasonerComponent r = new FastInstanceChecker(sources);
 		r.init();
-		ReasoningService rs = new ReasoningService(r); 
+//		ReasoningService rs = new ReasoningService(r); 
 		
 		//cm.learningProblem(lpClass, reasoner)
-		LearningProblem lp = new PosNegDefinitionLP(rs);
+		LearningProblem lp = new PosNegDefinitionLP(r);
 		//cm.getConfigOptionValue(lp, "");
 		cm.applyConfigEntry(lp, "positiveExamples",pos);
 		cm.applyConfigEntry(lp, "negativeExamples",neg);
 		
 		lp.init();
 		
-		la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
+		la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, r);
 		SortedSet<String> ignoredConcepts = getIgnoredConcepts(pos, neg);
 		
 		cm.applyConfigEntry(la,"useAllConstructor",false);
@@ -470,7 +470,7 @@ public class KRKModular {
 		SortedSet<Individual> ret = new TreeSet<Individual>(); 
 		try{
 			
-			for (ReasonerComponentOld onereasoner : allReasoners) {
+			for (ReasonerComponent onereasoner : allReasoners) {
 				ret.addAll(onereasoner.retrieval(d));
 			}
 			

@@ -28,7 +28,7 @@ import java.util.Set;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.kb.OWLFile;
@@ -66,7 +66,7 @@ public class RefinementOperatorTests {
 				e.printStackTrace();
 			}
 			ks.init();
-			ReasonerComponentOld rc = cm.reasoner(OWLAPIReasoner.class, ks);
+			ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 			rc.init();
 			baseURI = rc.getBaseURI();
 			ReasoningService rs = cm.reasoningService(rc);

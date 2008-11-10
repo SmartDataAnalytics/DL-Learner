@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.CommonConfigMappings;
@@ -78,7 +79,7 @@ public abstract class PosNegLP extends LearningProblem {
 		ONECHECK
 	};
 	
-	public PosNegLP(ReasoningService reasoningService) {
+	public PosNegLP(ReasonerComponent reasoningService) {
 		super(reasoningService);
 	}
 	

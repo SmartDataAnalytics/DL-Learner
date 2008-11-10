@@ -34,7 +34,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 
 /**
  * Class displaying a component (and its options).
@@ -102,7 +102,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 		selectableComponents = new LinkedList<Class<? extends Component>>();
 		if (panelClass == KnowledgeSource.class) {
 			selectableComponents.addAll(config.getComponentManager().getKnowledgeSources());
-		} else if (panelClass == ReasonerComponentOld.class) {
+		} else if (panelClass == ReasonerComponent.class) {
 			selectableComponents.addAll(config.getComponentManager().getReasonerComponents());
 		} else if (panelClass == LearningProblem.class) {
 			selectableComponents.addAll(config.getComponentManager().getLearningProblems());
@@ -171,7 +171,7 @@ public class ComponentPanel extends JPanel implements ActionListener {
 		// detect current component
 		if (panelClass == KnowledgeSource.class) {
 			currentComponent = config.getKnowledgeSource();
-		} else if (panelClass == ReasonerComponentOld.class) {
+		} else if (panelClass == ReasonerComponent.class) {
 			currentComponent = config.getReasoner();
 		} else if (panelClass == LearningProblem.class) {
 			currentComponent = config.getLearningProblem();
@@ -209,8 +209,8 @@ public class ComponentPanel extends JPanel implements ActionListener {
 		Component newComponent = null;
 		if (KnowledgeSource.class.isAssignableFrom(clazz)) {
 			newComponent = config.newKnowledgeSource((Class<KnowledgeSource>) clazz);
-		} else if (ReasonerComponentOld.class.isAssignableFrom(clazz)) {
-			newComponent = config.newReasoner((Class<ReasonerComponentOld>) clazz);
+		} else if (ReasonerComponent.class.isAssignableFrom(clazz)) {
+			newComponent = config.newReasoner((Class<ReasonerComponent>) clazz);
 		} else if (LearningProblem.class.isAssignableFrom(clazz)) {
 			newComponent = config.newLearningProblem((Class<LearningProblem>) clazz);
 		} else if (LearningAlgorithm.class.isAssignableFrom(clazz)) {
@@ -230,8 +230,8 @@ public class ComponentPanel extends JPanel implements ActionListener {
 		Component newComponent = null;
 		if (KnowledgeSource.class.isAssignableFrom(clazz)) {
 			newComponent = config.changeKnowledgeSource((Class<KnowledgeSource>) clazz);
-		} else if (ReasonerComponentOld.class.isAssignableFrom(clazz)) {
-			newComponent = config.changeReasoner((Class<ReasonerComponentOld>) clazz);
+		} else if (ReasonerComponent.class.isAssignableFrom(clazz)) {
+			newComponent = config.changeReasoner((Class<ReasonerComponent>) clazz);
 		} else if (LearningProblem.class.isAssignableFrom(clazz)) {
 			newComponent = config.changeLearningProblem((Class<LearningProblem>) clazz);
 		} else if (LearningAlgorithm.class.isAssignableFrom(clazz)) {

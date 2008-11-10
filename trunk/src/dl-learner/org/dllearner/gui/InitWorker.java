@@ -30,7 +30,7 @@ import javax.swing.SwingWorker;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 
@@ -102,7 +102,7 @@ public class InitWorker extends SwingWorker<Boolean, Boolean> {
     			// when the reasoner has been initialised, we need to update
     			// the option panel (such that the user can see the existing
     			// examples, classes etc.)
-    			if(component instanceof ReasonerComponentOld) {
+    			if(component instanceof ReasonerComponent) {
     				gui.panels[2].updateOptionPanel();
     				gui.panels[3].updateOptionPanel();
     			}		

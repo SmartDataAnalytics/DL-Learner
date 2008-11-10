@@ -35,8 +35,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponentOld;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.KBFile;
@@ -60,8 +59,8 @@ public class Config {
 
 	// the components currently active
 	private KnowledgeSource source;
-	private ReasonerComponentOld reasoner;
-	private ReasoningService rs;
+	private ReasonerComponent reasoner;
+//	private ReasoningService rs;
 	private LearningProblem lp;
 	private LearningAlgorithm la;
 
@@ -91,12 +90,11 @@ public class Config {
 	 * @param lp
 	 * @param la
 	 */
-	public Config(ComponentManager cm, KnowledgeSource source, ReasonerComponentOld reasoner, ReasoningService rs, LearningProblem lp, LearningAlgorithm la) {
+	public Config(ComponentManager cm, KnowledgeSource source, ReasonerComponent reasoner, LearningProblem lp, LearningAlgorithm la) {
 		super();
 		this.cm = cm;
 		this.source = source;
 		this.reasoner = reasoner;
-		this.rs = rs;
 		this.lp = lp;
 		this.la = la;
 	}
@@ -249,7 +247,7 @@ public class Config {
 	 * 
 	 * @return reasoner
 	 */
-	public ReasonerComponentOld getReasoner() {
+	public ReasonerComponent getReasoner() {
 		return this.reasoner;
 	}
 
@@ -258,7 +256,7 @@ public class Config {
 	 * @param clazz The class of the reasoner.
 	 * @return A reasoner instance.
 	 */
-	public ReasonerComponentOld newReasoner(Class<? extends ReasonerComponentOld> clazz) {
+	public ReasonerComponent newReasoner(Class<? extends ReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
 		rs = cm.reasoningService(reasoner);
 		return reasoner;
@@ -270,24 +268,15 @@ public class Config {
 	 * @param clazz The reasoner class.
 	 * @return A reasoner instance.
 	 */
-	public ReasonerComponentOld changeReasoner(Class<? extends ReasonerComponentOld> clazz) {
+	public ReasonerComponent changeReasoner(Class<? extends ReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
-		rs = cm.reasoningService(reasoner);
+//		rs = cm.reasoningService(reasoner);
 		lp.changeReasoningService(rs);
 		la.changeReasoningService(rs);
 		needsInit[1] = true;
 		needsInit[2] = true;
 		needsInit[3] = true;
 		return reasoner;
-	}
-
-	/**
-	 * Get ReasoningService.
-	 * 
-	 * @return ReasoningService
-	 */
-	public ReasoningService getReasoningService() {
-		return this.rs;
 	}
 
 	/**
@@ -483,7 +472,7 @@ public class Config {
 				gui
 						.setStatusMessage("All mandatory options filled in. You can continue to the reasoner tab.");
 			}
-		} else if (component instanceof ReasonerComponentOld) {
+		} else if (component instanceof ReasonerComponent) {
 			needsInit[1] = true;
 			needsInit[2] = true;
 			needsInit[3] = true;

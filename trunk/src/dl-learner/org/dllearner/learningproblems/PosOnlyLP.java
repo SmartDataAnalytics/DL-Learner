@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.core.LearningProblem;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.CommonConfigMappings;
 import org.dllearner.core.config.ConfigEntry;
@@ -44,7 +45,7 @@ public abstract class PosOnlyLP extends LearningProblem {
 	protected SortedSet<Individual> positiveExamples;
 	protected SortedSet<Individual> pseudoNegatives;	
 	
-	public PosOnlyLP(ReasoningService reasoningService) {
+	public PosOnlyLP(ReasonerComponent reasoningService) {
 		super(reasoningService);
 	}
 

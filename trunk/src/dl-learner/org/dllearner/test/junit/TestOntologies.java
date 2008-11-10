@@ -21,7 +21,7 @@ package org.dllearner.test.junit;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.KBFile;
@@ -68,7 +68,7 @@ public final class TestOntologies {
 			// create reasoner
 			ComponentManager cm = ComponentManager.getInstance();
 			KBFile source = new KBFile(kb);
-			ReasonerComponentOld rc = cm.reasoner(FastInstanceChecker.class, source);
+			ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, source);
 			ReasoningService rs = cm.reasoningService(rc);
 			source.init();
 			rc.init();

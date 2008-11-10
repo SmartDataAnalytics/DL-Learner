@@ -10,7 +10,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -63,20 +63,20 @@ public class LearnSparqlold {
 		//System.out.println(ks.getNTripleURL());
 		//
 		
-		ReasonerComponentOld r = new FastInstanceChecker(sources);
+		ReasonerComponent r = new FastInstanceChecker(sources);
 		//cm.applyConfigEntry(r,"useAllConstructor",false);
 		//cm.applyConfigEntry(r,"useExistsConstructor",true);
 		r.init();
-		rs = new ReasoningService(r); 
+//		rs = new ReasoningService(r); 
 		
-		lp = new PosNegDefinitionLP(rs);
+		lp = new PosNegDefinitionLP(r);
 		//cm.applyConfigEntry(lp, "positiveExamples",toInd(posExamples));
 		((PosNegLP) lp).setPositiveExamples(SetManipulation.stringToInd(posExamples));
 		((PosNegLP) lp).setNegativeExamples(SetManipulation.stringToInd(negExamples));
 		//cm.applyConfigEntry(lp, "negativeExamples",toInd(negExamples));
 		lp.init();
 		
-		la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
+		la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, r);
 
 		cm.applyConfigEntry(la,"useAllConstructor",false);
 		cm.applyConfigEntry(la,"useExistsConstructor",true);

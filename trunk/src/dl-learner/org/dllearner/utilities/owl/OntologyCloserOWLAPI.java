@@ -31,17 +31,17 @@ import uk.ac.manchester.cs.owl.OWLObjectIntersectionOfImpl;
 public class OntologyCloserOWLAPI {
 
 	OWLOntology onto;
-	OWLAPIReasoner reasoner;
-	ReasoningService rs;
+	OWLAPIReasoner rs;
+//	ReasoningService rs;
 	HashMap<Individual, Set<OWLObjectExactCardinalityRestrictionImpl>> indToRestr;
 	OWLDataFactory factory;
 	OWLOntologyManager manager;
 	public int numberOfStatementsChanged = 0;
 
 	public OntologyCloserOWLAPI(OWLAPIReasoner reasoner) {
-		this.reasoner = reasoner;
+		this.rs = reasoner;
 		this.indToRestr = new HashMap<Individual, Set<OWLObjectExactCardinalityRestrictionImpl>>();
-		this.rs = new ReasoningService(reasoner);
+//		this.rs = new ReasoningService(reasoner);
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
 		this.onto = reasoner.getOWLAPIOntologies().get(0);

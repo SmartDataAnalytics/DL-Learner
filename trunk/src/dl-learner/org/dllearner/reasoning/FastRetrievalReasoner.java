@@ -8,7 +8,7 @@ import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigEntry;
@@ -25,7 +25,7 @@ import org.dllearner.core.owl.SubsumptionHierarchy;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 
-public class FastRetrievalReasoner extends ReasonerComponentOld {
+public class FastRetrievalReasoner extends ReasonerComponent {
 
 	private FastRetrievalReasonerConfigurator configurator;
 	@Override
@@ -40,7 +40,7 @@ public class FastRetrievalReasoner extends ReasonerComponentOld {
 	SortedSet<Individual> individuals;
 	
 	ReasoningService rs;
-	ReasonerComponentOld rc;
+	ReasonerComponent rc;
 	
 
 	
@@ -55,10 +55,10 @@ public class FastRetrievalReasoner extends ReasonerComponentOld {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		atomicConcepts = rc.getAtomicConcepts();
-		atomicRoles = rc.getAtomicRoles();
+		atomicConcepts = rc.getNamedClasses();
+		atomicRoles = rc.getObjectProperties();
 		individuals = rc.getIndividuals();
-		rs = new ReasoningService(rc);
+//		rs = new ReasoningService(rc);
 		try {
 			abox = Helper.createFlatABox(rs);
 		} catch (ReasoningMethodUnsupportedException e) {

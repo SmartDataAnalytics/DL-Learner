@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponentOld;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.ConfigEntry;
@@ -89,7 +89,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  * 
  */
-public class FastInstanceChecker extends ReasonerComponentOld {
+public class FastInstanceChecker extends ReasonerComponent {
 
 	private static Logger logger = Logger.getLogger(FastInstanceChecker.class);
 
@@ -251,7 +251,7 @@ public class FastInstanceChecker extends ReasonerComponentOld {
 	}
 
 	@Override
-	public boolean instanceCheck(Description description, Individual individual)
+	public boolean instanceCheckImpl(Description description, Individual individual)
 			throws ReasoningMethodUnsupportedException {
 
 		// System.out.println(description + " " + individual);
@@ -473,7 +473,7 @@ public class FastInstanceChecker extends ReasonerComponentOld {
 	}
 
 	@Override
-	public SortedSet<Individual> retrieval(Description concept)
+	public SortedSet<Individual> retrievalImpl(Description concept)
 			throws ReasoningMethodUnsupportedException {
 		if (concept instanceof NamedClass) {
 			return classInstancesPos.get((NamedClass) concept);
@@ -497,13 +497,13 @@ public class FastInstanceChecker extends ReasonerComponentOld {
 	 * @see org.dllearner.core.Reasoner#getAtomicConcepts()
 	 */
 	@Override
-	public Set<NamedClass> getAtomicConcepts() {
+	public Set<NamedClass> getNamedClasses() {
 		return atomicConcepts;
 	}
 
 	@Override
 	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+			DatatypeProperty datatypeProperty) {
 		return rc.getDoubleDatatypeMembers(datatypeProperty);
 	}
 
@@ -513,7 +513,7 @@ public class FastInstanceChecker extends ReasonerComponentOld {
 	 * @see org.dllearner.core.Reasoner#getAtomicRoles()
 	 */
 	@Override
-	public Set<ObjectProperty> getAtomicRoles() {
+	public Set<ObjectProperty> getObjectProperties() {
 		return atomicRoles;
 	}
 
@@ -616,7 +616,7 @@ public class FastInstanceChecker extends ReasonerComponentOld {
 		String owlFile = new File("examples/family/father.owl").toURI().toString();
 		cm.applyConfigEntry(owl, "url", owlFile);
 		owl.init();
-		ReasonerComponentOld reasoner = cm.reasoner(FastInstanceChecker.class, owl);
+		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, owl);
 		cm.reasoningService(reasoner);
 		reasoner.init();
 

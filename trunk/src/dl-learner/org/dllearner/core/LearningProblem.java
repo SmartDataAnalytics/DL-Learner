@@ -46,17 +46,17 @@ public abstract class LearningProblem extends Component {
 	 * Implementations of learning problems can use this class
 	 * variable to perform reasoner operations.
 	 */
-	protected ReasoningService reasoningService;
+	protected ReasonerComponent reasoner;
 	
 	/**
 	 * Constructs a learning problem using a reasoning service for
 	 * querying the background knowledge. It can be used for 
 	 * evaluating solution candidates.
-	 * @param reasoningService The reasoning service used as 
+	 * @param reasoner The reasoning service used as 
 	 * background knowledge.
 	 */
-	public LearningProblem(ReasoningService reasoningService) {
-		this.reasoningService = reasoningService;
+	public LearningProblem(ReasonerComponent reasoner) {
+		this.reasoner = reasoner;
 	}
 	
 	/**
@@ -65,10 +65,10 @@ public abstract class LearningProblem extends Component {
 	 * Implementations, which do not only use the provided reasoning
 	 * service class variable, must make sure that a call to this method
 	 * indeed changes the reasoning service. 
-	 * @param reasoningService New reasoning service.
+	 * @param reasoner New reasoning service.
 	 */
-	public void changeReasoningService(ReasoningService reasoningService) {
-		this.reasoningService = reasoningService;
+	public void changeReasoningService(ReasonerComponent reasoner) {
+		this.reasoner = reasoner;
 	}
 	
 	/**
