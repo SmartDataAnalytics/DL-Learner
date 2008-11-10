@@ -87,7 +87,7 @@ public class ReasonerTests {
 //				long startTime = System.nanoTime();
 				boolean result = false;
 //				for(int n=0; n<10000; n++) {
-					result = reasoner.instanceCheck(d, i);
+					result = reasoner.hasType(d, i);
 //				}
 //				long time = System.nanoTime() - startTime;
 				logger.debug("instance check: " + reasoner + " " + d + " " + i + " " + result);

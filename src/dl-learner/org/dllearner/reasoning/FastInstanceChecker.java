@@ -66,7 +66,7 @@ import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
-import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLFile;
@@ -203,7 +203,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 
 			for (NamedClass atomicConcept : rc.getNamedClasses()) {
 
-				SortedSet<Individual> pos = rc.retrieval(atomicConcept);
+				SortedSet<Individual> pos = rc.getIndividuals(atomicConcept);
 				classInstancesPos.put(atomicConcept, pos);
 
 				if (configurator.getDefaultNegation()) {
@@ -215,7 +215,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 					// we have to
 					// be careful here
 					Negation negatedAtomicConcept = new Negation(atomicConcept);
-					classInstancesNeg.put(atomicConcept, rc.retrieval(negatedAtomicConcept));
+					classInstancesNeg.put(atomicConcept, rc.getIndividuals(negatedAtomicConcept));
 				}
 
 			}
@@ -251,7 +251,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
-	public boolean instanceCheckImpl(Description description, Individual individual)
+	public boolean hasTypeImpl(Description description, Individual individual)
 			throws ReasoningMethodUnsupportedException {
 
 		// System.out.println(description + " " + individual);
@@ -276,7 +276,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			// the union, we return true
 			List<Description> children = description.getChildren();
 			for (Description child : children) {
-				if (instanceCheck(child, individual)) {
+				if (hasType(child, individual)) {
 					return true;
 				}
 			}
@@ -286,7 +286,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			// the union, we return true
 			List<Description> children = description.getChildren();
 			for (Description child : children) {
-				if (!instanceCheck(child, individual)) {
+				if (!hasType(child, individual)) {
 					return false;
 				}
 			}
@@ -311,7 +311,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 				return false;
 			}
 			for (Individual roleFiller : roleFillers) {
-				if (instanceCheck(child, roleFiller)) {
+				if (hasType(child, roleFiller)) {
 					return true;
 				}
 			}
@@ -336,7 +336,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 				return true;
 			}
 			for (Individual roleFiller : roleFillers) {
-				if (!instanceCheck(child, roleFiller)) {
+				if (!hasType(child, roleFiller)) {
 					return false;
 				}
 			}
@@ -373,7 +373,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			int index = 0;
 			for (Individual roleFiller : roleFillers) {
 				index++;
-				if (instanceCheck(child, roleFiller)) {
+				if (hasType(child, roleFiller)) {
 					nrOfFillers++;
 					if (nrOfFillers == number) {
 						return true;
@@ -416,7 +416,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			int index = 0;
 			for (Individual roleFiller : roleFillers) {
 				index++;
-				if (instanceCheck(child, roleFiller)) {
+				if (hasType(child, roleFiller)) {
 					nrOfFillers++;
 					if (nrOfFillers > number) {
 						return false;
@@ -473,7 +473,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
-	public SortedSet<Individual> retrievalImpl(Description concept)
+	public SortedSet<Individual> getIndividualsImpl(Description concept)
 			throws ReasoningMethodUnsupportedException {
 		if (concept instanceof NamedClass) {
 			return classInstancesPos.get((NamedClass) concept);
@@ -484,7 +484,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		// return rs.retrieval(concept);
 		SortedSet<Individual> inds = new TreeSet<Individual>();
 		for (Individual i : individuals) {
-			if (instanceCheck(concept, i)) {
+			if (hasType(concept, i)) {
 				inds.add(i);
 			}
 		}
@@ -557,19 +557,15 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return ReasonerType.FAST_INSTANCE_CHECKER;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Reasoner#prepareSubsumptionHierarchy(java.util.Set)
-	 */
-	public void prepareSubsumptionHierarchyImpl(Set<NamedClass> allowedConcepts) {
-		rc.prepareSubsumptionHierarchy(allowedConcepts);
+	@Override
+	public ClassHierarchy prepareSubsumptionHierarchy() {
+		return rc.prepareSubsumptionHierarchy();
 	}
 
-	@Override
-	public SubsumptionHierarchy getSubsumptionHierarchy() {
-		return rc.getSubsumptionHierarchy();
-	}
+//	@Override
+//	public ClassHierarchy getClassHierarchy() {
+//		return rc.getClassHierarchy();
+//	}
 
 	@Override
 	public void prepareRoleHierarchyImpl(Set<ObjectProperty> allowedRoles) {
@@ -592,11 +588,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
-	public boolean subsumesImpl(Description superConcept, Description subConcept) {
+	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
 		// Negation neg = new Negation(subConcept);
 		// Intersection c = new Intersection(neg,superConcept);
 		// return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
-		return rc.subsumes(superConcept, subConcept);
+		return rc.isSuperClassOf(superConcept, subConcept);
 	}
 
 	/**
@@ -624,7 +620,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		Description d = KBParser.parseConcept(query);
 		System.out.println(d);
 		Individual i = new Individual("http://example.com/father#markus");
-		System.out.println(reasoner.instanceCheck(d, i));
+		System.out.println(reasoner.hasType(d, i));
 	}
 
 	/*

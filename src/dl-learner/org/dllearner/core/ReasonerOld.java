@@ -34,7 +34,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 
@@ -69,7 +69,7 @@ public interface ReasonerOld {
 	// public SortedSet<Concept> getMoreGeneralConcepts(Concept concept) throws ReasoningMethodUnsupportedException;
 	// public SortedSet<Concept> getMoreSpecialConcepts(Concept concept) throws ReasoningMethodUnsupportedException;
 	
-	public SubsumptionHierarchy getSubsumptionHierarchy() throws ReasoningMethodUnsupportedException;
+	public ClassHierarchy getSubsumptionHierarchy() throws ReasoningMethodUnsupportedException;
 	
 	public ObjectPropertyHierarchy getRoleHierarchy() throws ReasoningMethodUnsupportedException;
 	

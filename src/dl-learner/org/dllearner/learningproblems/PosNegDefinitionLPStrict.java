@@ -122,8 +122,8 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
         		SortedSet<Individual> neutClassified = Helper.intersectionTuple(reasoner.getIndividuals(),tuple);
         		return new ScoreThreeValued(concept.getLength(),accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, tuple.getPosSet(),neutClassified,tuple.getNegSet(),positiveExamples,neutralExamples,negativeExamples);
     		} else if(reasoner.getReasonerType() == ReasonerType.KAON2) {
-    			SortedSet<Individual> posClassified = reasoner.retrieval(concept);
-    			SortedSet<Individual> negClassified = reasoner.retrieval(new Negation(concept));
+    			SortedSet<Individual> posClassified = reasoner.getIndividuals(concept);
+    			SortedSet<Individual> negClassified = reasoner.getIndividuals(new Negation(concept));
     			SortedSet<Individual> neutClassified = Helper.intersection(reasoner.getIndividuals(),posClassified);
     			neutClassified.retainAll(negClassified);
     			return new ScoreThreeValued(concept.getLength(), accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified,neutClassified,negClassified,positiveExamples,neutralExamples,negativeExamples);     			
@@ -145,22 +145,22 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
     			// umstellen
     			// pos => pos
     			for(Individual example : positiveExamples) {
-    				if(reasoner.instanceCheck(concept, example))
+    				if(reasoner.hasType(concept, example))
     					posClassified.add(example);
     			}
     			// neg => pos
     			for(Individual example: negativeExamples) {
-    				if(reasoner.instanceCheck(concept, example))
+    				if(reasoner.hasType(concept, example))
     					posClassified.add(example);
     			}
     			// pos => neg
     			for(Individual example : positiveExamples) {
-    				if(reasoner.instanceCheck(new Negation(concept), example))
+    				if(reasoner.hasType(new Negation(concept), example))
     					negClassified.add(example);
     			}
     			// neg => neg
     			for(Individual example : negativeExamples) {
-    				if(reasoner.instanceCheck(new Negation(concept), example))
+    				if(reasoner.hasType(new Negation(concept), example))
     					negClassified.add(example);
     			}    			
     			

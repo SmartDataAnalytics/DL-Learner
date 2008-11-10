@@ -57,7 +57,7 @@ import org.dllearner.core.owl.ObjectPropertyExpression;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
-import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.Helper;
@@ -90,7 +90,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private ReasonerComponent rs;
 	
 	// hierarchies
-	private SubsumptionHierarchy subHierarchy;
+	private ClassHierarchy subHierarchy;
 	
 	// domains and ranges
 	private Map<ObjectProperty,Description> opDomains = new TreeMap<ObjectProperty,Description>();
@@ -203,7 +203,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		this.useDoubleDatatypes = useDoubleDatatypes;
 		
-		subHierarchy = rs.getSubsumptionHierarchy();
+		subHierarchy = rs.getClassHierarchy();
 		
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
@@ -1136,7 +1136,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				result = isDisjointInstanceBased(d1,d2);
 			} else {
 				Description d = new Intersection(d1, d2);
-				result = rs.subsumes(new Nothing(), d);				
+				result = rs.isSuperClassOf(new Nothing(), d);				
 			}
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
@@ -1163,8 +1163,8 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	}	
 	
 	private boolean isDisjointInstanceBased(Description d1, Description d2) {
-		SortedSet<Individual> d1Instances = rs.retrieval(d1);
-		SortedSet<Individual> d2Instances = rs.retrieval(d2);
+		SortedSet<Individual> d1Instances = rs.getIndividuals(d1);
+		SortedSet<Individual> d2Instances = rs.getIndividuals(d2);
 //		System.out.println(d1 + " " + d2);
 //		System.out.println(d1 + " " + d1Instances);
 //		System.out.println(d2 + " " + d2Instances);
@@ -1194,7 +1194,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 //		if(tmp2==null) {
 			Description notA = new Negation(a);
 			Description d = new Intersection(notA, b);
-			Boolean result = rs.subsumes(new Nothing(), d);
+			Boolean result = rs.isSuperClassOf(new Nothing(), d);
 			// ... add to cache ...
 			return result;
 //		} else
@@ -1208,7 +1208,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		Description notA = new Negation(a);
 		Description d = new Intersection(notA, b);
 		// check b subClassOf b AND NOT A (if yes then it is not meaningful)
-		return !rs.subsumes(d, b);
+		return !rs.isSuperClassOf(d, b);
 	}
 	
 	private void computeSplits(DatatypeProperty dp) {

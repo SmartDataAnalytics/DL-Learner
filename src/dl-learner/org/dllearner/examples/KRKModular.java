@@ -470,7 +470,7 @@ public class KRKModular {
 		try{
 			
 			for (ReasonerComponent onereasoner : allReasoners) {
-				ret.addAll(onereasoner.retrieval(d));
+				ret.addAll(onereasoner.getIndividuals(d));
 			}
 			
 		}catch (Exception e) {e.printStackTrace();}

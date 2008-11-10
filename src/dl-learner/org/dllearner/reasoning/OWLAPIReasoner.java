@@ -57,7 +57,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.UntypedConstant;
@@ -124,7 +124,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	private RoleComparator roleComparator = new RoleComparator();
-	private SubsumptionHierarchy subsumptionHierarchy;
+	private ClassHierarchy subsumptionHierarchy;
 	private ObjectPropertyHierarchy roleHierarchy;	
 	private DatatypePropertyHierarchy datatypePropertyHierarchy;
 	private Set<Description> allowedConceptsInSubsumptionHierarchy;
@@ -406,6 +406,38 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			return ReasonerType.OWLAPI_PELLET;
 	}
 
+	@Override
+	public ClassHierarchy prepareSubsumptionHierarchy() {
+
+		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, TreeSet<Description>>(
+				conceptComparator);
+		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, TreeSet<Description>>(
+				conceptComparator);
+
+		// refinements of top
+		TreeSet<Description> tmp = getMoreSpecialConceptsImpl(new Thing());
+		subsumptionHierarchyDown.put(new Thing(), tmp);
+
+		// refinements of bottom
+		tmp = getMoreGeneralConceptsImpl(new Nothing());
+		subsumptionHierarchyUp.put(new Nothing(), tmp);
+
+		// refinements of atomic concepts
+		for (NamedClass atom : atomicConcepts) {
+			tmp = getMoreSpecialConceptsImpl(atom);
+			subsumptionHierarchyDown.put(atom, tmp);
+
+			tmp = getMoreGeneralConceptsImpl(atom);
+			subsumptionHierarchyUp.put(atom, tmp);
+		}
+
+		// create subsumption hierarchy
+		subsumptionHierarchy = new ClassHierarchy(atomicConcepts,
+				subsumptionHierarchyUp, subsumptionHierarchyDown);	
+		
+		return subsumptionHierarchy;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#prepareSubsumptionHierarchy(java.util.Set)
 	 */
@@ -446,14 +478,14 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 
 		// create subsumption hierarchy
-		subsumptionHierarchy = new SubsumptionHierarchy(allowedConcepts,
+		subsumptionHierarchy = new ClassHierarchy(allowedConcepts,
 				subsumptionHierarchyUp, subsumptionHierarchyDown);		
 	}
 
-	@Override
-	public SubsumptionHierarchy getSubsumptionHierarchy() {
-		return subsumptionHierarchy;
-	}	
+//	@Override
+//	public ClassHierarchy getClassHierarchy() {
+//		return subsumptionHierarchy;
+//	}	
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#prepareRoleHierarchy(java.util.Set)
@@ -506,7 +538,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}		
 	
 	@Override
-	public boolean subsumesImpl(Description superConcept, Description subConcept) {
+	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
 		try {
 			return reasoner.isSubClassOf(OWLAPIDescriptionConvertVisitor.getOWLDescription(subConcept), OWLAPIDescriptionConvertVisitor.getOWLDescription(superConcept));			
 		} catch (OWLReasonerException e) {
@@ -585,7 +617,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}	
 	
 	@Override
-	public boolean instanceCheck(Description concept, Individual individual) {
+	public boolean hasTypeImpl(Description concept, Individual individual) {
 		OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
 		OWLIndividual i = factory.getOWLIndividual(URI.create(individual.getName()));
 		try {
@@ -597,7 +629,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public SortedSet<Individual> retrieval(Description concept) {
+	public SortedSet<Individual> getIndividualsImpl(Description concept) {
 //		OWLDescription d = getOWLAPIDescription(concept);
 		OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(concept);
 		Set<OWLIndividual> individuals = null;

@@ -40,7 +40,7 @@ import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 
 /**
@@ -69,7 +69,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	private ReasonerComponent rs;
 	
 	// hierarchies
-	private SubsumptionHierarchy subsumptionHierarchy;
+	private ClassHierarchy subsumptionHierarchy;
 	private ObjectPropertyHierarchy opHierarchy;
 	
 	// domains and ranges
@@ -88,7 +88,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	public ELDown(ReasonerComponent rs) {
 		this.rs = rs;
 		utility = new Utility(rs);
-		subsumptionHierarchy = rs.getSubsumptionHierarchy();
+		subsumptionHierarchy = rs.getClassHierarchy();
 		opHierarchy = rs.getRoleHierarchy();
 		
 		// query reasoner for domains and ranges

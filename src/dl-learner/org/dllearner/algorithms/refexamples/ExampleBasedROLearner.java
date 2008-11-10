@@ -719,7 +719,7 @@ public class ExampleBasedROLearner {
 			// Test aller Konzepte auf properness (mit DIG in nur einer Anfrage)
 			if (usePropernessChecks) {
 				long propCalcReasoningStart = System.nanoTime();
-				improperConcepts = rs.subsumes(toEvaluateConcepts, concept);
+				improperConcepts = rs.isSuperClassOf(toEvaluateConcepts, concept);
 				propernessTestsReasoner += toEvaluateConcepts.size();
 				// boolean isProper =
 				// !learningProblem.getReasonerComponent().subsumes(refinement,
@@ -813,7 +813,7 @@ public class ExampleBasedROLearner {
 					for (Individual i : coveredPositives) {
 						// TODO: move code to a separate function
 						if (quality != -1) {
-							boolean covered = rs.instanceCheck(refinement, i);
+							boolean covered = rs.hasType(refinement, i);
 							if (!covered)
 								misclassifiedPositives++;
 							else
@@ -831,7 +831,7 @@ public class ExampleBasedROLearner {
 						newlyCoveredNegatives = new HashSet<Individual>();
 
 						for (Individual i : coveredNegatives) {
-							boolean covered = rs.instanceCheck(refinement, i);
+							boolean covered = rs.hasType(refinement, i);
 							if (covered)
 								newlyCoveredNegatives.add(i);
 						}

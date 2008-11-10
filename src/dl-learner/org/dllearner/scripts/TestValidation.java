@@ -67,7 +67,7 @@ public class TestValidation {
 		ReasonerComponent rs = startTest.getReasonerComponent();
 		LearningProblem lp = startTest.getLearningProblem();
 		
-		Set<Individual> result = rs.retrieval(solution);
+		Set<Individual> result = rs.getIndividuals(solution);
 		System.out.println("retrieval result: " + result);
 
 		Score score = lp.computeScore(solution);

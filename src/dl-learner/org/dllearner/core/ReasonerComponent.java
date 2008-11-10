@@ -40,7 +40,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
@@ -54,18 +54,18 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  * 
  * Guidelines for extending the class:
  * <ul>
- *   <li>add the needed method to the corresponding interface (currenty
- *   {@link BaseReasoner}, {@link SchemaReasoner}, {@link IndividualReasoner}
- *   exist)</li>
- *   <li>reasoning methods which need to be supported by all reasoners: 
- *   create method() and methodImpl() here, where the former is an overridden, final 
- *   method delegating to the latter abstract, protected method</li>
- *   <li>reasoning method, which do not need to be supported by all reasoners:
- *   create method() and methodImpl() as before, but this time methodImpl() is
- *   not abstract and throws a {@link ReasoningMethodUnsupportedException} 
- *   </li>
- *   <li>a few very basic methods (where we do not care about statistics) 
- *   do not have an "Impl" variant, e.g. getting all named classes of a KB</li>
+ * <li>add the needed method to the corresponding interface (currenty
+ * {@link BaseReasoner}, {@link SchemaReasoner}, {@link IndividualReasoner}
+ * exist)</li>
+ * <li>reasoning methods which need to be supported by all reasoners: create
+ * method() and methodImpl() here, where the former is an overridden, final
+ * method delegating to the latter abstract, protected method</li>
+ * <li>reasoning method, which do not need to be supported by all reasoners:
+ * create method() and methodImpl() as before, but this time methodImpl() is not
+ * abstract and throws a {@link ReasoningMethodUnsupportedException} </li>
+ * <li>a few very basic methods (where we do not care about statistics) do not
+ * have an "Impl" variant, e.g. getting all named classes of a KB; those are
+ * directly inherited from the reasoner interface</li>
  * </ul>
  * Note, that the method delegation is done to collect statistical information
  * about reasoning performance, e.g. count how often certain methods were called
@@ -105,9 +105,9 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	private List<ObjectProperty> atomicRolesList;
 
 	// hierarchies (they are computed the first time they are needed)
-	private SubsumptionHierarchy subsumptionHierarchy;
-	private ObjectPropertyHierarchy roleHierarchy;
-	private DatatypePropertyHierarchy datatypePropertyHierarchy;
+	private ClassHierarchy subsumptionHierarchy = null;
+	private ObjectPropertyHierarchy roleHierarchy = null;
+	private DatatypePropertyHierarchy datatypePropertyHierarchy = null;
 
 	/**
 	 * The underlying knowledge sources.
@@ -173,6 +173,16 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	}
 
 	/**
+	 * Notify the reasoner component that the underlying knowledge base has
+	 * changed and all caches (for named classes, subsumption hierarchies, etc.)
+	 * should be invalidaded. TODO Currently, nothing is done to behave
+	 * correctly after updates.
+	 */
+	public void setUpdated() {
+		// TODO currently, nothing is done to behave correctly after updates
+	}
+
+	/**
 	 * Call this method to release the knowledge base. Not calling the method
 	 * may (depending on the underlying reasoner) result in resources for this
 	 * knowledge base not being freed, which can cause memory leaks.
@@ -199,17 +209,19 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 		return types;
 	}
-	
-	protected Set<NamedClass> getTypesImpl(Individual individual) throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException("Reasoner does not support to determine type of individual.");
+
+	protected Set<NamedClass> getTypesImpl(Individual individual)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException(
+				"Reasoner does not support to determine type of individual.");
 	}
-	
+
 	@Override
-	public final boolean subsumes(Description superClass, Description subClass) {
+	public final boolean isSuperClassOf(Description superClass, Description subClass) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		try {
-			result = subsumesImpl(superClass, subClass);
+			result = isSuperClassOfImpl(superClass, subClass);
 		} catch (ReasoningMethodUnsupportedException e) {
 			handleExceptions(e);
 		}
@@ -220,12 +232,18 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return result;
 	}
 
+	protected boolean isSuperClassOfImpl(Description superConcept, Description subConcept)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
 	@Override
-	public final Set<Description> subsumes(Set<Description> superConcepts, Description subConcept) {
+	public final Set<Description> isSuperClassOf(Set<Description> superConcepts,
+			Description subConcept) {
 		reasoningStartTimeTmp = System.nanoTime();
 		Set<Description> result = null;
 		try {
-			result = subsumesImpl(superConcepts, subConcept);
+			result = isSuperClassOfImpl(superConcepts, subConcept);
 		} catch (ReasoningMethodUnsupportedException e) {
 			handleExceptions(e);
 		}
@@ -234,10 +252,21 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
 		subsumptionReasoningTimeNs += reasoningDurationTmp;
 		overallReasoningTimeNs += reasoningDurationTmp;
-		return result;		
-	}	
-	
-	public SortedSetTuple<Individual> doubleRetrieval(Description concept) {
+		return result;
+	}
+
+	protected Set<Description> isSuperClassOfImpl(Set<Description> superConcepts,
+			Description subConcept) throws ReasoningMethodUnsupportedException {
+		Set<Description> returnSet = new HashSet<Description>();
+		for (Description superConcept : superConcepts) {
+			if (isSuperClassOf(superConcept, subConcept))
+				returnSet.add(superConcept);
+		}
+		return returnSet;
+	}
+
+	@Override
+	public final SortedSetTuple<Individual> doubleRetrieval(Description concept) {
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSetTuple<Individual> result;
 		try {
@@ -252,26 +281,17 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return result;
 	}
 
-	public SortedSetTuple<Individual> doubleRetrieval(Description concept, Description adc) {
-		reasoningStartTimeTmp = System.nanoTime();
-		SortedSetTuple<Individual> result;
-		try {
-			result = doubleRetrievalImpl(concept, adc);
-		} catch (ReasoningMethodUnsupportedException e) {
-			handleExceptions(e);
-			return null;
-		}
-		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
-		otherReasoningTimeNs += reasoningDurationTmp;
-		overallReasoningTimeNs += reasoningDurationTmp;
-		return result;
+	protected SortedSetTuple<Individual> doubleRetrievalImpl(Description concept)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public SortedSet<Individual> retrieval(Description concept) {
+	@Override
+	public final SortedSet<Individual> getIndividuals(Description concept) {
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSet<Individual> result;
 		try {
-			result = retrievalImpl(concept);
+			result = getIndividualsImpl(concept);
 		} catch (ReasoningMethodUnsupportedException e) {
 			handleExceptions(e);
 			return null;
@@ -283,11 +303,17 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return result;
 	}
 
-	public boolean instanceCheck(Description concept, Individual s) {
+	protected SortedSet<Individual> getIndividualsImpl(Description concept)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final boolean hasType(Description concept, Individual s) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		try {
-			result = instanceCheckImpl(concept, s);
+			result = hasTypeImpl(concept, s);
 		} catch (ReasoningMethodUnsupportedException e) {
 			handleExceptions(e);
 		}
@@ -297,6 +323,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		overallReasoningTimeNs += reasoningDurationTmp;
 		return result;
 	}
+
+	protected boolean hasTypeImpl(Description concept, Individual individual)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	// ////// STOPPED HERE //////////
 
 	public SortedSet<Individual> instanceCheck(Description concept, Set<Individual> s) {
 		// logger.debug("instanceCheck "+concept.toKBSyntaxString());
@@ -324,7 +357,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	 * @return A set of more general concepts.
 	 */
 	public SortedSet<Description> getMoreGeneralConcepts(Description concept) {
-		return getSubsumptionHierarchy().getMoreGeneralConcepts(concept);
+		return getClassHierarchy().getMoreGeneralConcepts(concept);
 	}
 
 	/**
@@ -335,7 +368,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	 * @return A set of more special concepts.
 	 */
 	public SortedSet<Description> getMoreSpecialConcepts(Description concept) {
-		return getSubsumptionHierarchy().getMoreSpecialConcepts(concept);
+		return getClassHierarchy().getMoreSpecialConcepts(concept);
 	}
 
 	/**
@@ -418,22 +451,29 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return getDatatypePropertyHierarchy().getMostSpecialRoles();
 	}
 
-	protected void prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
+	protected ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException(
 				"Subsumption hierarchy creation not supported by this reasoner.");
 	}
 
-	public SubsumptionHierarchy getSubsumptionHierarchy() {
-		if (subsumptionHierarchy == null) {
-			try {
-				prepareSubsumptionHierarchy();
-			} catch (ReasoningMethodUnsupportedException e) {
-				handleExceptions(e);
+	@Override
+	public final ClassHierarchy getClassHierarchy() {
+		try {
+			if (subsumptionHierarchy == null) {
+				subsumptionHierarchy = prepareSubsumptionHierarchy();
 			}
+//			subsumptionHierarchy = getSubsumptionHierarchyImpl();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
 		}
+
 		return subsumptionHierarchy;
 	}
 
+	public ClassHierarchy getSubsumptionHierarchyImpl() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
 	protected void prepareRoleHierarchy() throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException(
 				"Object property hierarchy creation not supported by this reasoner.");
@@ -723,36 +763,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return nrOfMultiInstanceChecks;
 	}
 
-	public boolean subsumesImpl(Description superConcept, Description subConcept)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public Set<Description> subsumesImpl(Description superConcept, Set<Description> subConcepts)
-			throws ReasoningMethodUnsupportedException {
-		Set<Description> returnSet = new HashSet<Description>();
-		for (Description subConcept : subConcepts) {
-			if (subsumes(superConcept, subConcept))
-				returnSet.add(subConcept);
-		}
-		return returnSet;
-	}
-
-	public Set<Description> subsumesImpl(Set<Description> superConcepts, Description subConcept)
-			throws ReasoningMethodUnsupportedException {
-		Set<Description> returnSet = new HashSet<Description>();
-		for (Description superConcept : superConcepts) {
-			if (subsumes(superConcept, subConcept))
-				returnSet.add(superConcept);
-		}
-		return returnSet;
-	}
-
-	public SortedSet<Individual> retrievalImpl(Description concept)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
 	public Set<Individual> getRelatedIndividualsImpl(Individual individual,
 			ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
@@ -864,24 +874,14 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return ret;
 	}
 
-	public boolean instanceCheckImpl(Description concept, Individual individual)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
 	public SortedSet<Individual> instanceCheckImpl(Description concept, Set<Individual> individuals)
 			throws ReasoningMethodUnsupportedException {
 		SortedSet<Individual> returnSet = new TreeSet<Individual>();
 		for (Individual individual : individuals) {
-			if (instanceCheck(concept, individual))
+			if (hasType(concept, individual))
 				returnSet.add(individual);
 		}
 		return returnSet;
-	}
-
-	public SortedSetTuple<Individual> doubleRetrievalImpl(Description concept)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
 	}
 
 	public SortedSetTuple<Individual> doubleRetrievalImpl(Description concept, Description adc)
@@ -893,10 +893,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public SubsumptionHierarchy getSubsumptionHierarchyImpl()
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
+
 
 	public void prepareRoleHierarchyImpl(Set<ObjectProperty> allowedRoles)
 			throws ReasoningMethodUnsupportedException {
