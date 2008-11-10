@@ -47,7 +47,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
@@ -66,8 +66,8 @@ import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.StringFormatter;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.examples.ExampleContainer;
-import org.dllearner.utilities.owl.ReasoningServiceFactory;
-import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
+import org.dllearner.utilities.owl.ReasonerComponentFactory;
+import org.dllearner.utilities.owl.ReasonerComponentFactory.AvailableReasoners;
 import org.dllearner.utilities.statistics.SimpleClock;
 import org.dllearner.utilities.statistics.Stat;
 import org.dllearner.utilities.statistics.Table;
@@ -81,7 +81,7 @@ public class SemanticBibleComparison {
 	private static int nrOfFilesInExperiment = 200;
 	
 	
-	private static ReasoningService reasoningService;
+	private static ReasonerComponent reasoningService;
 
 	private static Logger logger = Logger.getRootLogger();
 	private static boolean flawInExperiment = false;
@@ -298,7 +298,7 @@ public class SemanticBibleComparison {
 				descHasNrRes = (descHasNrRes || desc.contains("<")|| desc.contains(">"));
 				
 				// evaluate Concept versus Ontology
-				reasoningService = ReasoningServiceFactory.getReasoningService(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
+				reasoningService = ReasonerComponentFactory.getReasonerComponent(ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
 				SortedSet<Individual> retrieved = reasoningService.retrieval(bestDescription.getDescription());
 				EvaluatedDescription onOnto = reEvaluateDescription(
 						bestDescription.getDescription(), retrieved, posEx, negEx);
@@ -473,7 +473,7 @@ public class SemanticBibleComparison {
 			// reasoner
 			OWLAPIReasoner f = ComponentFactory
 					.getOWLAPIReasoner(tmp);
-			ReasoningService rs = ComponentManager.getInstance()
+			ReasonerComponent rs = ComponentManager.getInstance()
 					.reasoningService(f);
 	
 			// learning problem
@@ -484,7 +484,7 @@ public class SemanticBibleComparison {
 			// learning algorithm
 			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
-			Config conf = new Config(ComponentManager.getInstance(), ks, f, rs, lp, la);
+			Config conf = new Config(ComponentManager.getInstance(), ks, f, lp, la);
 			new ConfigSave(conf).saveFile(new File(tmpFilename));
 			
 		}catch (Exception e) {
@@ -525,7 +525,7 @@ public class SemanticBibleComparison {
 			}else{
 				f = ComponentFactory.getOWLAPIReasoner(tmp);
 			}
-			ReasoningService rs = ComponentManager.getInstance().reasoningService(f);
+			ReasonerComponent rs = ComponentManager.getInstance().reasoningService(f);
 	
 //			 learning problem
 			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(rs,
@@ -535,7 +535,7 @@ public class SemanticBibleComparison {
 			// learning algorithm
 			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
-			Config c = new Config(ComponentManager.getInstance(), ks, f, rs, lp, la);
+			Config c = new Config(ComponentManager.getInstance(), ks, f, lp, la);
 			new ConfigSave(c).saveFile(new File(tmpFilename));
 			
 		}catch (Exception e) {

@@ -11,7 +11,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
@@ -33,7 +33,7 @@ public class LearnSparqlold {
 	
 		ComponentManager cm = ComponentManager.getInstance();
 		LearningAlgorithm la = null;
-		ReasoningService rs = null;
+		ReasonerComponent rs = null;
 		LearningProblem lp = null; 
 		SparqlKnowledgeSource ks =null;
 		try {
@@ -67,7 +67,7 @@ public class LearnSparqlold {
 		//cm.applyConfigEntry(r,"useAllConstructor",false);
 		//cm.applyConfigEntry(r,"useExistsConstructor",true);
 		r.init();
-//		rs = new ReasoningService(r); 
+//		rs = new ReasonerComponent(r); 
 		
 		lp = new PosNegDefinitionLP(r);
 		//cm.applyConfigEntry(lp, "positiveExamples",toInd(posExamples));

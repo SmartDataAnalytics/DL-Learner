@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
@@ -32,7 +32,7 @@ public class OntologyCloserOWLAPI {
 
 	OWLOntology onto;
 	OWLAPIReasoner rs;
-//	ReasoningService rs;
+//	ReasonerComponent rs;
 	HashMap<Individual, Set<OWLObjectExactCardinalityRestrictionImpl>> indToRestr;
 	OWLDataFactory factory;
 	OWLOntologyManager manager;
@@ -41,7 +41,7 @@ public class OntologyCloserOWLAPI {
 	public OntologyCloserOWLAPI(OWLAPIReasoner reasoner) {
 		this.rs = reasoner;
 		this.indToRestr = new HashMap<Individual, Set<OWLObjectExactCardinalityRestrictionImpl>>();
-//		this.rs = new ReasoningService(reasoner);
+//		this.rs = new ReasonerComponent(reasoner);
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
 		this.onto = reasoner.getOWLAPIOntologies().get(0);

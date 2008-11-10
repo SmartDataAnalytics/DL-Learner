@@ -25,7 +25,7 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
@@ -47,7 +47,7 @@ public class SimulationTests {
 	@Test
 	public void test1() {
 		// perform test with empty background knowledge and TOP concept
-		ReasoningService rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		ELDescriptionNode root = new ELDescriptionNode(tree);
 		
@@ -69,7 +69,7 @@ public class SimulationTests {
 	@Test
 	public void test2() {
 		// perform test with empty background knowledge and A1 AND EXISTS r1.TOP AND EXISTS r2.TOP
-		ReasoningService rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
 		ObjectProperty r1 = new ObjectProperty("r1");
@@ -98,7 +98,7 @@ public class SimulationTests {
 	 */
 	@Test
 	public void test3() {
-		ReasoningService rs = TestOntologies.getTestOntology(TestOntology.R1SUBR2);
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.R1SUBR2);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
 		ObjectProperty r1 = new ObjectProperty("r1");
@@ -148,7 +148,7 @@ public class SimulationTests {
 	 */
 	@Test
 	public void test4() {
-		ReasoningService rs = TestOntologies.getTestOntology(TestOntology.SIMPLE2);
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE2);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		ObjectProperty r1 = new ObjectProperty("r1");
 		ObjectProperty r2 = new ObjectProperty("r2");

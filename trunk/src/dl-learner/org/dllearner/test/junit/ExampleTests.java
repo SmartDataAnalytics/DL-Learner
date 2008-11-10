@@ -117,7 +117,7 @@ public class ExampleTests {
 						start.start(false);
 						// test is successful if a concept was learned
 						assert (start.getLearningAlgorithm().getCurrentlyBestDescription() != null);
-						start.getReasoningService().releaseKB();
+						start.getReasonerComponent().releaseKB();
 						success = true;
 					} catch (Exception e) {
 						// unit test not succesful (exceptions are caught explicitly to find 

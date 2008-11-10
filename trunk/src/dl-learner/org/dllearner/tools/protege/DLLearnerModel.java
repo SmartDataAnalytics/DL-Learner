@@ -42,7 +42,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -100,7 +100,7 @@ public class DLLearnerModel implements Runnable {
 
 	// The Reasoning Service for the Reasoner
 
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 
 	// The Knowledge source for the reasoner
 
@@ -809,7 +809,7 @@ public class DLLearnerModel implements Runnable {
 	 * 
 	 * @return current reasoning service
 	 */
-	public ReasoningService getReasoningService() {
+	public ReasonerComponent getReasonerComponent() {
 		return rs;
 	}
 

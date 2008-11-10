@@ -34,7 +34,7 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.el.ELDescriptionEdge;
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
@@ -66,7 +66,7 @@ public class ELDown extends RefinementOperatorAdapter {
 
 //	private static Logger logger = Logger.getLogger(ELDown.class);	
 	
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 	
 	// hierarchies
 	private SubsumptionHierarchy subsumptionHierarchy;
@@ -85,7 +85,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	// utility class
 	private Utility utility;
 	
-	public ELDown(ReasoningService rs) {
+	public ELDown(ReasonerComponent rs) {
 		this.rs = rs;
 		utility = new Utility(rs);
 		subsumptionHierarchy = rs.getSubsumptionHierarchy();

@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -53,7 +53,7 @@ public class ELDownTests {
 	 */
 	@Test
 	public void refinementTest() throws ParseException, ComponentInitException {
-		ReasoningService rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
 		
 		// input description
 		Description input = KBParser.parseConcept("(human AND EXISTS has.animal)");

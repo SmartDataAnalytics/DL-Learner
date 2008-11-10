@@ -38,7 +38,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Files;
 
@@ -125,7 +125,7 @@ public final class ConfigJavaGenerator {
 		ComponentManager cm = ComponentManager.getInstance();
 		COMPONENT_FACTORY_IMPORTS.add(KnowledgeSource.class.getCanonicalName());
 		COMPONENT_FACTORY_IMPORTS
-				.add(ReasoningService.class.getCanonicalName());
+				.add(ReasonerComponent.class.getCanonicalName());
 		COMPONENT_FACTORY_IMPORTS.add(LearningProblem.class.getCanonicalName());
 		COMPONENT_FACTORY_IMPORTS.add(LearningProblemUnsupportedException.class
 				.getCanonicalName());
@@ -166,8 +166,8 @@ public final class ConfigJavaGenerator {
 
 			ConfigJavaGenerator c = new ConfigJavaGenerator(component,
 					"learningProblem");
-			c.imports.add("org.dllearner.core.ReasoningService");
-			c.additionalMandatoryVars.put("ReasoningService reasoningService",
+			c.imports.add("org.dllearner.core.ReasonerComponent");
+			c.additionalMandatoryVars.put("ReasonerComponent reasoningService",
 					"reasoningService");
 			c.makeConfigurator();
 
@@ -183,13 +183,13 @@ public final class ConfigJavaGenerator {
 			ConfigJavaGenerator c = new ConfigJavaGenerator(component,
 					"learningAlgorithm");
 			c.imports.add("org.dllearner.core.LearningProblem");
-			c.imports.add("org.dllearner.core.ReasoningService");
+			c.imports.add("org.dllearner.core.ReasonerComponent");
 			c.imports.add(LearningProblemUnsupportedException.class
 					.getCanonicalName());
 
 			c.additionalMandatoryVars.put("LearningProblem learningProblem",
 					"learningProblem");
-			c.additionalMandatoryVars.put("ReasoningService reasoningService",
+			c.additionalMandatoryVars.put("ReasonerComponent reasoningService",
 					"reasoningService");
 			c.getinstanceExceptions.add("LearningProblemUnsupportedException");
 			c.makeConfigurator();

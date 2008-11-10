@@ -35,7 +35,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.apache.log4j.Logger;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -75,7 +76,7 @@ public class ExampleBasedROLearner {
 	private static Logger logger = Logger.getLogger(ExampleBasedROLearner.class);
 
 	// basic setup: learning problem and reasoning service
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 	// often the learning problems needn't be accessed directly; instead
 	// use the example sets below and the posonly variable
 	private PosNegLP learningProblem;
@@ -233,7 +234,7 @@ public class ExampleBasedROLearner {
 
 	public ExampleBasedROLearner(
 			LearningProblem learningProblem,
-			ReasoningService rs,
+			ReasonerComponent rs,
 			RefinementOperator operator,
 			ExampleBasedHeuristic heuristic,
 			Description startDescription,
@@ -722,7 +723,7 @@ public class ExampleBasedROLearner {
 				improperConcepts = rs.subsumes(toEvaluateConcepts, concept);
 				propernessTestsReasoner += toEvaluateConcepts.size();
 				// boolean isProper =
-				// !learningProblem.getReasoningService().subsumes(refinement,
+				// !learningProblem.getReasonerComponent().subsumes(refinement,
 				// concept);
 				propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;
 			}

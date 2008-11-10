@@ -29,7 +29,8 @@ import java.util.Map;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.CommonConfigOptions;
 import org.dllearner.core.config.ConfigEntry;
@@ -67,7 +68,7 @@ public class BruteForceLearner extends LearningAlgorithm {
 	
     
 	private LearningProblem learningProblem;
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 	
     private Description bestDefinition;
     private Score bestScore;
@@ -82,7 +83,7 @@ public class BruteForceLearner extends LearningAlgorithm {
     // list of all generated concepts sorted by length
     private Map<Integer,List<Description>> generatedDefinitions = new HashMap<Integer,List<Description>>();
     
-    public BruteForceLearner(LearningProblem learningProblem, ReasoningService rs) {
+    public BruteForceLearner(LearningProblem learningProblem, ReasonerComponent rs) {
     	super(learningProblem, rs);
     	this.learningProblem = learningProblem;
     	this.rs = rs;

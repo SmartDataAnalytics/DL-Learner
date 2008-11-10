@@ -54,7 +54,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -265,7 +265,7 @@ public class DLLearnerWS {
 		if(lpClass == null)
 			throw new UnknownComponentException(component);
 		
-		LearningProblem lp = cm.learningProblem(lpClass, state.getReasoningService());
+		LearningProblem lp = cm.learningProblem(lpClass, state.getReasonerComponent());
 		return state.setLearningProblem(lp);
 	}
 	
@@ -276,7 +276,7 @@ public class DLLearnerWS {
 		if(laClass == null)
 			throw new UnknownComponentException(component);
 		
-		LearningAlgorithm la = cm.learningAlgorithm(laClass, state.getLearningProblem(), state.getReasoningService());
+		LearningAlgorithm la = cm.learningAlgorithm(laClass, state.getLearningProblem(), state.getReasonerComponent());
 		return state.setLearningAlgorithm(la);
 	}
 	
@@ -325,7 +325,7 @@ public class DLLearnerWS {
 		state.getLearningAlgorithm().start();
 		Description solution = state.getLearningAlgorithm().getCurrentlyBestDescription();
 		if(format.equals("manchester"))
-			return solution.toManchesterSyntaxString(state.getReasoningService().getBaseURI(), new HashMap<String,String>());
+			return solution.toManchesterSyntaxString(state.getReasonerComponent().getBaseURI(), new HashMap<String,String>());
 		else if(format.equals("kb"))
 			return solution.toKBSyntaxString();
 		else
@@ -384,7 +384,7 @@ public class DLLearnerWS {
 		Iterator<Description> iter=bestConcepts.iterator();
 		while (iter.hasNext())
 			if (format.equals("manchester"))
-				conc.add(iter.next().toManchesterSyntaxString(state.getReasoningService().getBaseURI(), new HashMap<String,String>()));
+				conc.add(iter.next().toManchesterSyntaxString(state.getReasonerComponent().getBaseURI(), new HashMap<String,String>()));
 			else if(format.equals("kb"))
 				conc.add(iter.next().toKBSyntaxString());
 			else
@@ -539,13 +539,13 @@ public class DLLearnerWS {
 	
 	@WebMethod
 	public String[] getAtomicConcepts(int id) throws ClientNotKnownException {
-		Set<NamedClass> atomicConcepts = getState(id).getReasoningService().getNamedClasses();
+		Set<NamedClass> atomicConcepts = getState(id).getReasonerComponent().getNamedClasses();
 		return Datastructures.sortedSet2StringListConcepts(atomicConcepts);
 	}
 	
 	@WebMethod
 	public String getSubsumptionHierarchy(int id) throws ClientNotKnownException {
-		return getState(id).getReasoningService().toString();
+		return getState(id).getReasonerComponent().toString();
 	}
 	
 	@WebMethod
@@ -554,7 +554,7 @@ public class DLLearnerWS {
 		// call parser to parse concept
 		Description concept = null;
 		concept = KBParser.parseConcept(conceptString);
-		Set<Individual> individuals = state.getReasoningService().retrieval(concept);
+		Set<Individual> individuals = state.getReasonerComponent().retrieval(concept);
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
 	
@@ -567,21 +567,21 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getAtomicRoles(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		Set<ObjectProperty> roles = state.getReasoningService().getObjectProperties();
+		Set<ObjectProperty> roles = state.getReasonerComponent().getObjectProperties();
 		return Datastructures.sortedSet2StringListRoles(roles);
 	}
 	
 	@WebMethod
 	public String[] getInstances(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		Set<Individual> individuals = state.getReasoningService().getIndividuals();
+		Set<Individual> individuals = state.getReasonerComponent().getIndividuals();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
 	
 	@WebMethod
 	public String[] getIndividualsForARole(int id, String role) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		Map<Individual,SortedSet<Individual>> m = state.getReasoningService().getRoleMembers(new ObjectProperty(role));
+		Map<Individual,SortedSet<Individual>> m = state.getReasonerComponent().getRoleMembers(new ObjectProperty(role));
 		Set<Individual> individuals = m.keySet();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
@@ -745,7 +745,7 @@ public class DLLearnerWS {
 	public String getNaturalDescription(int id, String conceptString, String endpoint) throws ParseException, ClientNotKnownException {
 		// call parser to parse concept
 		ClientState state = getState(id);
-		ReasoningService service = state.getReasoningService();
+		ReasonerComponent service = state.getReasonerComponent();
 		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conceptString, service);
 	}
 	

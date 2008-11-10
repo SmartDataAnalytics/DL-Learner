@@ -54,7 +54,7 @@ public abstract class LearningAlgorithm extends Component {
 	 * The reasoning service variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
-	protected ReasoningService reasoningService;
+	protected ReasonerComponent reasoner;
 
 	/**
 	 * Each learning algorithm gets a learning problem and
@@ -63,9 +63,9 @@ public abstract class LearningAlgorithm extends Component {
 	 * @param reasoningService The reasoner connecting to the
 	 * underlying knowledge base.
 	 */
-	public LearningAlgorithm(LearningProblem learningProblem, ReasoningService reasoningService) {
+	public LearningAlgorithm(LearningProblem learningProblem, ReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
-		this.reasoningService = reasoningService;
+		this.reasoner = reasoningService;
 	}
 	
 	/**
@@ -90,8 +90,8 @@ public abstract class LearningAlgorithm extends Component {
 	 * indeed changes the reasoning service.
 	 * @param reasoningService The new reasoning service.
 	 */
-	public void changeReasoningService(ReasoningService reasoningService) {
-		this.reasoningService = reasoningService;
+	public void changeReasonerComponent(ReasonerComponent reasoningService) {
+		this.reasoner = reasoningService;
 	}
 	
 	/**
@@ -253,7 +253,7 @@ public abstract class LearningAlgorithm extends Component {
 				// be in the search of the learning algorith, which leads to
 				// unpredictable behaviour)
 				Description d = ed.getDescription().clone();
-				ConceptTransformation.replaceRange(d, reasoningService);
+				ConceptTransformation.replaceRange(d, reasoner);
 				ed.setDescription(d);
 				
 				returnList.add(ed);

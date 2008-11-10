@@ -35,7 +35,7 @@ import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -44,15 +44,15 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.learn.ConfWriter;
-import org.dllearner.utilities.owl.ReasoningServiceFactory;
-import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
+import org.dllearner.utilities.owl.ReasonerComponentFactory;
+import org.dllearner.utilities.owl.ReasonerComponentFactory.AvailableReasoners;
 import org.dllearner.utilities.statistics.Stat;
 
 public class DumbLPFinder {
 
 	private static Logger logger = Logger.getRootLogger();
 
-	private static ReasoningService reasoningService;
+	private static ReasonerComponent reasoningService;
 
 	private static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
 
@@ -79,7 +79,7 @@ public class DumbLPFinder {
 		Stat acc = new Stat();
 		// String fileURL = new File(ontologyFile).toURI().toString();
 
-		reasoningService = ReasoningServiceFactory.getReasoningService(
+		reasoningService = ReasonerComponentFactory.getReasonerComponent(
 				ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
 
 		Files.mkdir(baseDir);
@@ -232,7 +232,7 @@ public class DumbLPFinder {
 			// reasoner
 			OWLAPIReasoner f = ComponentFactory
 					.getOWLAPIReasoner(tmp);
-			ReasoningService rs = ComponentManager.getInstance()
+			ReasonerComponent rs = ComponentManager.getInstance()
 					.reasoningService(f);
 
 			// learning problem

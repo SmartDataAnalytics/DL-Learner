@@ -25,7 +25,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -37,7 +37,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	// LOGGER: ComponentManager
 	private static Logger logger = Logger.getLogger(ComponentManager.class);
 
-	private ReasoningService reasoningService;
+	private ReasonerComponent reasoningService;
 	
 	private SortedSet<Individual> fullPositiveSet;
 
@@ -61,7 +61,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	 */
 	public AutomaticNegativeExampleFinderOWL(
 			SortedSet<Individual> fullPositiveSet,
-			ReasoningService reasoningService) {
+			ReasonerComponent reasoningService) {
 		super();
 		this.fullPositiveSet = new TreeSet<Individual>();
 		this.fullPositiveSet.addAll(fullPositiveSet);

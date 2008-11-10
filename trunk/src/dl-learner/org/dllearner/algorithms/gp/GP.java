@@ -33,7 +33,7 @@ import org.dllearner.algorithms.hybridgp.Psi;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.ConfigEntry;
@@ -140,7 +140,7 @@ public class GP extends LearningAlgorithm {
      * 1.0 and a probability of mutation of 0.01.
      * 
      */
-    public GP(PosNegLP learningProblem, ReasoningService rs) {
+    public GP(PosNegLP learningProblem, ReasonerComponent rs) {
        	super(learningProblem, rs);
     	this.configurator = new GPConfigurator(this);
     }
@@ -270,14 +270,14 @@ public class GP extends LearningAlgorithm {
 	 */
 	@Override
 	public void init() {
-		reasoningService.prepareSubsumptionHierarchy();
-		reasoningService.prepareRoleHierarchy();		
+//		reasoner.prepareSubsumptionHierarchy();
+//		reasoner.prepareRoleHierarchy();		
 	}
 	
 	@Override
     public void start() {   	
     	// falls refinement-Wahrscheinlichkeit größer 0, dann erzeuge psi
-    	psi = new Psi((PosNegLP)learningProblem, reasoningService);
+    	psi = new Psi((PosNegLP)learningProblem, reasoner);
     	
     	System.out.println();
     	System.out.println("Starting Genetic Programming Learner");
@@ -440,11 +440,11 @@ public class GP extends LearningAlgorithm {
                     i++;
                 // mutation
                 }  else if(rand >= crossoverBoundary && rand < mutationBoundary) {
-                	newIndividuals[i] = GPUtilities.mutation(learningProblem, reasoningService, individuals[selectedIndividuals[i]]);
+                	newIndividuals[i] = GPUtilities.mutation(learningProblem, reasoner, individuals[selectedIndividuals[i]]);
                 // hill climbing
                 } else if(rand >= mutationBoundary && rand < hillClimbingBoundary) {
                 	// System.out.println("hill climbing");
-                	newIndividuals[i] = GPUtilities.hillClimbing(learningProblem, reasoningService, individuals[selectedIndividuals[i]]);
+                	newIndividuals[i] = GPUtilities.hillClimbing(learningProblem, reasoner, individuals[selectedIndividuals[i]]);
                 // refinement operator
                 } else if(rand >= hillClimbingBoundary && rand < refinementBoundary) {
                 	newIndividuals[i] = psi.applyOperator(individuals[selectedIndividuals[i]]);
@@ -583,7 +583,7 @@ public class GP extends LearningAlgorithm {
         }
           
         /*
-        Collection<Concept> test = ReasoningService.retrievals;
+        Collection<Concept> test = ReasonerComponent.retrievals;
 //         for(Concept c : )
         
         test.removeAll(psi.evalCache.keySet());
@@ -618,9 +618,9 @@ public class GP extends LearningAlgorithm {
         	// int depth = rand.nextInt(initMaxDepth-initMinDepth)+initMinDepth;
         	
         	if(grow)
-        		individuals[i] = GPUtilities.createGrowRandomProgram(learningProblem, reasoningService, depth, adc);
+        		individuals[i] = GPUtilities.createGrowRandomProgram(learningProblem, reasoner, depth, adc);
         	else
-        		individuals[i] = GPUtilities.createFullRandomProgram(learningProblem, reasoningService, depth, adc);		
+        		individuals[i] = GPUtilities.createFullRandomProgram(learningProblem, reasoner, depth, adc);		
     	}    	
     	
     	/*
@@ -843,7 +843,7 @@ public class GP extends LearningAlgorithm {
         // long algorithmTime = System.nanoTime() - Main.getAlgorithmStartTime();
         long algorithmTime = System.nanoTime() - startTime;
         System.out.println("overall algorithm runtime: " + Helper.prettyPrintNanoSeconds(algorithmTime));
-        // System.out.println("instance checks: " + learningProblem.getReasoningService().getNrOfInstanceChecks());
+        // System.out.println("instance checks: " + learningProblem.getReasonerComponent().getNrOfInstanceChecks());
         // System.out.println("fitness evals: " + Program.fitnessEvaluations);
         // System.out.println("nr. of individuals: " + individuals.length + " (" + numberOfSelectedIndividuals + " selected)");
         

@@ -2,16 +2,16 @@ package org.dllearner.algorithms.refexamples;
 
 import java.util.Comparator;
 
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.utilities.owl.ConceptComparator;
 
 public class SubsumptionComparator implements Comparator<Description> {
 
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 	private ConceptComparator cc = new ConceptComparator();
 	
-	public SubsumptionComparator(ReasoningService rs) {
+	public SubsumptionComparator(ReasonerComponent rs) {
 		this.rs = rs;
 	}
 	

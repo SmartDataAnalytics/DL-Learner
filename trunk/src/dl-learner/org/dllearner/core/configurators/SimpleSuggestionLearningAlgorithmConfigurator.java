@@ -24,7 +24,7 @@ import org.dllearner.algorithms.SimpleSuggestionLearningAlgorithm;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 
 /**
 * automatically generated, do not edit manually.
@@ -50,7 +50,7 @@ this.simpleSuggestionLearningAlgorithm = simpleSuggestionLearningAlgorithm;
 * @throws LearningProblemUnsupportedException see 
 * @return SimpleSuggestionLearningAlgorithm
 **/
-public static SimpleSuggestionLearningAlgorithm getSimpleSuggestionLearningAlgorithm(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
+public static SimpleSuggestionLearningAlgorithm getSimpleSuggestionLearningAlgorithm(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 SimpleSuggestionLearningAlgorithm component = ComponentManager.getInstance().learningAlgorithm(SimpleSuggestionLearningAlgorithm.class, learningProblem, reasoningService);
 return component;
 }

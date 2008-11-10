@@ -25,7 +25,7 @@ import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 
 /**
 * automatically generated, do not edit manually.
@@ -51,7 +51,7 @@ this.exampleBasedROLComponent = exampleBasedROLComponent;
 * @throws LearningProblemUnsupportedException see 
 * @return ExampleBasedROLComponent
 **/
-public static ExampleBasedROLComponent getExampleBasedROLComponent(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
+public static ExampleBasedROLComponent getExampleBasedROLComponent(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 ExampleBasedROLComponent component = ComponentManager.getInstance().learningAlgorithm(ExampleBasedROLComponent.class, learningProblem, reasoningService);
 return component;
 }

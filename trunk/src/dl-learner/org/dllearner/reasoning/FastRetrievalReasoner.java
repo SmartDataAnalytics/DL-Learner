@@ -10,7 +10,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.configurators.ComponentFactory;
@@ -39,7 +39,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	Set<ObjectProperty> atomicRoles;
 	SortedSet<Individual> individuals;
 	
-	ReasoningService rs;
+	ReasonerComponent rs;
 	ReasonerComponent rc;
 	
 
@@ -58,7 +58,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		atomicConcepts = rc.getNamedClasses();
 		atomicRoles = rc.getObjectProperties();
 		individuals = rc.getIndividuals();
-//		rs = new ReasoningService(rc);
+//		rs = new ReasonerComponent(rc);
 		try {
 			abox = Helper.createFlatABox(rs);
 		} catch (ReasoningMethodUnsupportedException e) {
