@@ -28,7 +28,8 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.CommonConfigOptions;
@@ -63,11 +64,11 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	}
 	
 	
-//	private ReasoningService rs;
+//	private ReasonerComponent rs;
 	private ExampleBasedROLComponent learner;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 	
-	public DBpediaNavigationSuggestor(LearningProblem learningProblem, ReasoningService rs) {
+	public DBpediaNavigationSuggestor(LearningProblem learningProblem, ReasonerComponent rs) {
 	   	super(learningProblem, rs);		
 //		this.rs=rs;
 		this.configurator = new DBpediaNavigationSuggestorConfigurator(this);
@@ -97,12 +98,12 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 		return "DBpedia Navigation Suggestor";
 	}
 	
-	public DBpediaNavigationSuggestor(PosOnlyDefinitionLP learningProblem, ReasoningService rs) {
+	public DBpediaNavigationSuggestor(PosOnlyDefinitionLP learningProblem, ReasonerComponent rs) {
 	   	super(learningProblem, rs);		
 		System.out.println("test1");
 	}
 	
-	public DBpediaNavigationSuggestor(PosNegDefinitionLP learningProblem, ReasoningService rs) {
+	public DBpediaNavigationSuggestor(PosNegDefinitionLP learningProblem, ReasonerComponent rs) {
 	   	super(learningProblem, rs);		
 		System.out.println("test2");
 	}

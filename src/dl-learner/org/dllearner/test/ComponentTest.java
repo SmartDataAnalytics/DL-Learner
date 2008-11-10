@@ -32,7 +32,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -64,9 +64,9 @@ public class ComponentTest {
 		// create OWL API reasoning service with standard settings
 		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
 		
-		// ReasoningService rs = cm.reasoningService(DIGReasonerNew.class, source);
+		// ReasonerComponent rs = cm.reasoningService(DIGReasonerNew.class, source);
 		reasoner.init();
-		ReasoningService rs = cm.reasoningService(reasoner);
+		ReasonerComponent rs = cm.reasoningService(reasoner);
 		
 		// create a learning problem and set positive and negative examples
 		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);

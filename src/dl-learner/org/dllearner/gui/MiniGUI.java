@@ -46,7 +46,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
@@ -64,7 +64,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 	private static final long serialVersionUID = -4247224068574471307L;
 
 	private static ComponentManager cm = ComponentManager.getInstance();
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 	private File selectedFile;
 	
 	private JButton openButton;

@@ -218,7 +218,7 @@ public class RunPanel extends JPanel implements ActionListener {
 		// start
 		if (e.getSource() == runButton) {
 			algorithmThread = new AlgorithmThread();
-			config.getReasoningService().resetStatistics();
+			config.getReasonerComponent().resetStatistics();
 			algorithmThread.start();
 //			algorithmStartTime = System.nanoTime();
 //			algorithmThread.
@@ -275,32 +275,32 @@ public class RunPanel extends JPanel implements ActionListener {
 		percent[0].setText("100%");
 		
 		// update overall reasoning time
-			overallReasoningTime = config.getReasoningService().getOverallReasoningTimeNs();
+			overallReasoningTime = config.getReasonerComponent().getOverallReasoningTimeNs();
 			bar[1].update((double) overallReasoningTime / (double) algorithmRunTime);
 			time[1].setText(makeTime(overallReasoningTime));
 			percent[1].setText(Percent(overallReasoningTime, algorithmRunTime));
 		
-		if (config.getReasoningService().getNrOfInstanceChecks() > 0) {
-			instanceCheckReasoningTime = config.getReasoningService()
+		if (config.getReasonerComponent().getNrOfInstanceChecks() > 0) {
+			instanceCheckReasoningTime = config.getReasonerComponent()
 					.getInstanceCheckReasoningTimeNs();
-			name[2].setText(names[2] + " (" + config.getReasoningService().getNrOfInstanceChecks()
+			name[2].setText(names[2] + " (" + config.getReasonerComponent().getNrOfInstanceChecks()
 					+ ")");
 			bar[2].update((double) instanceCheckReasoningTime / (double) algorithmRunTime);
 			time[2].setText(makeTime(instanceCheckReasoningTime));
 			percent[2].setText(Percent(instanceCheckReasoningTime, algorithmRunTime));
 		}
-		if (config.getReasoningService().getNrOfRetrievals() > 0) {
-			retrievalReasoningTime = config.getReasoningService().getRetrievalReasoningTimeNs();
-			name[3].setText(names[3] + " (" + config.getReasoningService().getNrOfRetrievals()
+		if (config.getReasonerComponent().getNrOfRetrievals() > 0) {
+			retrievalReasoningTime = config.getReasonerComponent().getRetrievalReasoningTimeNs();
+			name[3].setText(names[3] + " (" + config.getReasonerComponent().getNrOfRetrievals()
 					+ ")");
 			bar[3].update((double) retrievalReasoningTime / (double) algorithmRunTime);
 			time[3].setText(makeTime(retrievalReasoningTime));
 			percent[3].setText(Percent(retrievalReasoningTime, algorithmRunTime));
 		}
-		if (config.getReasoningService().getNrOfSubsumptionChecks() > 0) {
-			subsumptionReasoningTime = config.getReasoningService().getSubsumptionReasoningTimeNs();
+		if (config.getReasonerComponent().getNrOfSubsumptionChecks() > 0) {
+			subsumptionReasoningTime = config.getReasonerComponent().getSubsumptionReasoningTimeNs();
 			name[4].setText(names[4] + " ("
-					+ config.getReasoningService().getNrOfSubsumptionChecks() + ")");
+					+ config.getReasonerComponent().getNrOfSubsumptionChecks() + ")");
 			bar[4].update((double) subsumptionReasoningTime / (double) algorithmRunTime);
 			time[4].setText(makeTime(subsumptionReasoningTime));
 			percent[4].setText(Percent(subsumptionReasoningTime, algorithmRunTime));
@@ -378,8 +378,8 @@ public class RunPanel extends JPanel implements ActionListener {
 	}
 
 	private String getSolutionString(List<EvaluatedDescription> solutions) {
-		String baseURI = config.getReasoningService().getBaseURI();
-		Map<String,String> prefixes = config.getReasoningService().getPrefixes();
+		String baseURI = config.getReasonerComponent().getBaseURI();
+		Map<String,String> prefixes = config.getReasonerComponent().getPrefixes();
 		String string = "";
 		for (EvaluatedDescription d : solutions) {
 			string += "accuracy: " + (df.format(d.getAccuracy()*100)) + "%: \t"

@@ -34,7 +34,7 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.CommonConfigOptions;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DataRange;
@@ -87,7 +87,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	private static Logger logger = Logger
 	.getLogger(RhoDRDown.class);	
 	
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 	
 	// hierarchies
 	private SubsumptionHierarchy subHierarchy;
@@ -181,7 +181,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABDisjoint = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 	
-	public RhoDRDown(ReasoningService reasoningService) {
+	public RhoDRDown(ReasonerComponent reasoningService) {
 		this(reasoningService, true, true, true, true, true, 3, true, true, true, true, null);
 	}
 	
@@ -189,7 +189,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	// this should be an interface implemented e.g. by ExampleBasedROLComponentConfigurator;
 	// the goal is to use the configurator system while still being flexible enough to
 	// use one refinement operator in several learning algorithms
-	public RhoDRDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
+	public RhoDRDown(ReasonerComponent reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
 			boolean useExistsConstructor, boolean useHasValueConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
 		this.rs = reasoningService;
 		this.applyAllFilter = applyAllFilter;

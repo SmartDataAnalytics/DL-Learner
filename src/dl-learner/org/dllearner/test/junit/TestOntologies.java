@@ -22,7 +22,7 @@ package org.dllearner.test.junit;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.KBFile;
 import org.dllearner.parser.KBParser;
@@ -39,7 +39,7 @@ public final class TestOntologies {
 
 	public enum TestOntology { EMPTY, SIMPLE, SIMPLE2, R1SUBR2 };
 	
-	public static ReasoningService getTestOntology(TestOntology ont) {
+	public static ReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
 		
 		if(ont.equals(TestOntology.EMPTY)) {
@@ -69,7 +69,7 @@ public final class TestOntologies {
 			ComponentManager cm = ComponentManager.getInstance();
 			KBFile source = new KBFile(kb);
 			ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, source);
-			ReasoningService rs = cm.reasoningService(rc);
+			ReasonerComponent rs = cm.reasoningService(rc);
 			source.init();
 			rc.init();
 			// TODO there shouldn't be a need to call this explicitly!

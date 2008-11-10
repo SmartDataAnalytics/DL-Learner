@@ -50,7 +50,7 @@ public interface ReasonerOld {
 	public ReasonerType getReasonerType();
 	
 	// Methode, die Subsumptionhierarchie initialisiert (sollte nur einmal
-	// pro erstelltem ReasoningService bzw. Reasoner aufgerufen werden)
+	// pro erstelltem ReasonerComponent bzw. Reasoner aufgerufen werden)
 	// => erstellt auch vereinfachte Sichten auf Subsumptionhierarchie
 	// (siehe einfacher Traversal in Diplomarbeit)
 	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts);

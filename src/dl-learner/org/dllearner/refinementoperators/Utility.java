@@ -25,7 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -46,7 +46,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
  */
 public final class Utility {
 		
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 	SubsumptionHierarchy sh; 
 	
 	// concept comparator
@@ -60,7 +60,7 @@ public final class Utility {
 	private Map<Description,Map<Description,Boolean>> cachedDisjoints = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);
 		
 
-	public Utility(ReasoningService rs) {
+	public Utility(ReasonerComponent rs) {
 		this.rs = rs;
 		sh = rs.getSubsumptionHierarchy();
 	}

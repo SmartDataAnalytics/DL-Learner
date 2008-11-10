@@ -57,7 +57,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.ConfigEntry;
@@ -112,7 +112,6 @@ public class Start {
 	private Set<KnowledgeSource> sources;
 	private LearningAlgorithm la;
 	private LearningProblem lp;
-	private ReasoningService rs;
 	private ReasonerComponent rc;
 
 	/**
@@ -243,7 +242,7 @@ public class Start {
 
 		
 		// step 2: detect used reasoner
-		Monitor rsMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initReasoningService").start();
+		Monitor rsMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initReasonerComponent").start();
 		ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
 		Class<? extends ReasonerComponent> rcClass;
 		if(reasonerOption != null) {
@@ -257,7 +256,6 @@ public class Start {
 		rc = cm.reasoner(rcClass, sources);
 		configureComponent(cm, rc, parser);
 		initComponent(cm, rc);
-		rs = cm.reasoningService(rc);
 		rsMonitor.stop();
 
 		// step 3: detect learning problem
@@ -272,7 +270,7 @@ public class Start {
 		} else {
 			lpClass = PosNegDefinitionLP.class;
 		}
-		lp = cm.learningProblem(lpClass, rs);
+		lp = cm.learningProblem(lpClass, rc);
 		SortedSet<String> posExamples = parser.getPositiveExamples();
 		SortedSet<String> negExamples = parser.getNegativeExamples();
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
@@ -295,7 +293,7 @@ public class Start {
 			laClass = ExampleBasedROLComponent.class;
 		}		
 		try {
-			la = cm.learningAlgorithm(laClass, lp, rs);
+			la = cm.learningAlgorithm(laClass, lp, rc);
 		} catch (LearningProblemUnsupportedException e) {
 			e.printStackTrace();
 		}
@@ -304,22 +302,22 @@ public class Start {
 		laMonitor.stop();
 
 		// perform file exports
-		performExports(parser, baseDir, sources, rs);
+		performExports(parser, baseDir, sources, rc);
 
 		// handle any CLI options
-		processCLIOptions(cm, parser, rs, lp);
+		processCLIOptions(cm, parser, rc, lp);
 	}
 
 	public void start(boolean inQueryMode) {
 		if (inQueryMode)
-			processQueryMode(lp, rs);
+			processQueryMode(lp, rc);
 		else {
 			// start algorithm
 			long algStartTime = System.nanoTime();
 			la.start();
 			long algDuration = System.nanoTime() - algStartTime;
 
-			printConclusions(rs, algDuration);
+			printConclusions(rc, algDuration);
 		}
 	}
 
@@ -519,7 +517,7 @@ public class Start {
 	}
 
 	private static void performExports(ConfParser parser, String baseDir,
-			Set<KnowledgeSource> sources, ReasoningService rs) {
+			Set<KnowledgeSource> sources, ReasonerComponent rs) {
 		List<List<String>> exports = parser.getFunctionCalls().get("export");
 
 		if (exports == null)
@@ -556,7 +554,7 @@ public class Start {
 	}
 
 	private static void processCLIOptions(ComponentManager cm, ConfParser parser,
-			ReasoningService rs, LearningProblem lp) {
+			ReasonerComponent rs, LearningProblem lp) {
 		// CLI options (i.e. options which are related to the CLI
 		// user interface but not to one of the components)
 		List<ConfFileOption> cliOptions = parser.getConfOptionsByPrefix("cli");
@@ -684,7 +682,7 @@ public class Start {
 				+ Helper.prettyPrintNanoSeconds(initTime, false, false) + ")");
 	}
 
-	private static void printConclusions(ReasoningService rs, long algorithmDuration) {
+	private static void printConclusions(ReasonerComponent rs, long algorithmDuration) {
 		if (rs.getNrOfRetrievals() > 0) {
 			logger.info("number of retrievals: " + rs.getNrOfRetrievals());
 			logger.info("retrieval reasoning time: "
@@ -731,7 +729,7 @@ public class Start {
 	}
 
 	// performs a query - used for debugging learning examples
-	private static void processQueryMode(LearningProblem lp, ReasoningService rs) {
+	private static void processQueryMode(LearningProblem lp, ReasonerComponent rs) {
 
 		logger.info("Entering query mode. Enter a concept for performing "
 				+ "retrieval or q to quit. Use brackets for complex expresssions,"
@@ -858,10 +856,6 @@ public class Start {
 
 	public ReasonerComponent getReasonerComponent() {
 		return rc;
-	}
-	
-	public ReasoningService getReasoningService() {
-		return rs;
 	}
 
 	/**

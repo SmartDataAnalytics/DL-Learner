@@ -29,7 +29,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
@@ -69,7 +69,7 @@ public class RefinementOperatorTests {
 			ReasonerComponent rc = cm.reasoner(OWLAPIReasoner.class, ks);
 			rc.init();
 			baseURI = rc.getBaseURI();
-			ReasoningService rs = cm.reasoningService(rc);
+			ReasonerComponent rs = cm.reasoningService(rc);
 			
 			// TODO the following two lines should not be necessary
 			rs.prepareSubsumptionHierarchy();

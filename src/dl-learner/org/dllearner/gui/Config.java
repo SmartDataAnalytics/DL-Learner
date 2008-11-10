@@ -46,7 +46,7 @@ import org.dllearner.parser.ParseException;
 
 /**
  * Config save all together used variables: ComponentManager, KnowledgeSource,
- * Reasoner, ReasoningService, LearningProblem, LearningAlgorithm; also inits of
+ * Reasoner, ReasonerComponent, LearningProblem, LearningAlgorithm; also inits of
  * these components.
  * 
  * @author Jens Lehmann
@@ -60,7 +60,7 @@ public class Config {
 	// the components currently active
 	private KnowledgeSource source;
 	private ReasonerComponent reasoner;
-//	private ReasoningService rs;
+//	private ReasonerComponent rs;
 	private LearningProblem lp;
 	private LearningAlgorithm la;
 
@@ -147,7 +147,7 @@ public class Config {
 			}
 			source = sources.iterator().next();
 			reasoner = start.getReasonerComponent();
-			rs = start.getReasoningService();
+//			rs = start.getReasonerComponent();
 			lp = start.getLearningProblem();
 			la = start.getLearningAlgorithm();
 
@@ -258,7 +258,7 @@ public class Config {
 	 */
 	public ReasonerComponent newReasoner(Class<? extends ReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
-		rs = cm.reasoningService(reasoner);
+//		rs = cm.reasoningService(reasoner);
 		return reasoner;
 	}
 
@@ -271,8 +271,8 @@ public class Config {
 	public ReasonerComponent changeReasoner(Class<? extends ReasonerComponent> clazz) {
 		reasoner = cm.reasoner(clazz, source);
 //		rs = cm.reasoningService(reasoner);
-		lp.changeReasoningService(rs);
-		la.changeReasoningService(rs);
+		lp.changeReasonerComponent(reasoner);
+		la.changeReasonerComponent(reasoner);
 		needsInit[1] = true;
 		needsInit[2] = true;
 		needsInit[3] = true;
@@ -294,7 +294,7 @@ public class Config {
 	 * @return A learning problem instance.
 	 */	
 	public LearningProblem newLearningProblem(Class<? extends LearningProblem> clazz) {
-		lp = cm.learningProblem(clazz, rs);
+		lp = cm.learningProblem(clazz, reasoner);
 		return lp;
 	}
 
@@ -305,7 +305,7 @@ public class Config {
 	 * @return A learning problem instance.
 	 */	
 	public LearningProblem changeLearningProblem(Class<? extends LearningProblem> clazz) {
-		lp = cm.learningProblem(clazz, rs);
+		lp = cm.learningProblem(clazz, reasoner);
 		la.changeLearningProblem(lp);
 		needsInit[2] = true;
 		needsInit[3] = true;		
@@ -331,7 +331,7 @@ public class Config {
 	 */
 	public LearningAlgorithm newLearningAlgorithm(Class<? extends LearningAlgorithm> clazz)
 			throws LearningProblemUnsupportedException {
-		la = cm.learningAlgorithm(clazz, lp, rs);
+		la = cm.learningAlgorithm(clazz, lp, reasoner);
 		return la;
 	}
 
@@ -345,7 +345,7 @@ public class Config {
 	 */
 	public LearningAlgorithm changeLearningAlgorithm(Class<? extends LearningAlgorithm> clazz)
 			throws LearningProblemUnsupportedException {
-		la = cm.learningAlgorithm(clazz, lp, rs);
+		la = cm.learningAlgorithm(clazz, lp, reasoner);
 		needsInit[3] = true;		
 		return la;
 	}

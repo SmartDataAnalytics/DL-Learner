@@ -22,7 +22,7 @@ package org.dllearner.core.configurators;
 
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.learningproblems.PosOnlyInclusionLP;
 
 /**
@@ -48,7 +48,7 @@ this.posOnlyInclusionLP = posOnlyInclusionLP;
 * @param positiveExamples positive examples
 * @return PosOnlyInclusionLP
 **/
-public static PosOnlyInclusionLP getPosOnlyInclusionLP(ReasoningService reasoningService, Set<String> positiveExamples) {
+public static PosOnlyInclusionLP getPosOnlyInclusionLP(ReasonerComponent reasoningService, Set<String> positiveExamples) {
 PosOnlyInclusionLP component = ComponentManager.getInstance().learningProblem(PosOnlyInclusionLP.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "positiveExamples", positiveExamples);
 return component;

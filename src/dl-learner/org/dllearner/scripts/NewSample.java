@@ -39,7 +39,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -134,7 +134,7 @@ public class NewSample {
 		tmp.add(ks);
 		// reasoner
 		FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
-		ReasoningService rs = cm.reasoningService(f);
+		ReasonerComponent rs = cm.reasoningService(f);
 		
 
 		// learning problem

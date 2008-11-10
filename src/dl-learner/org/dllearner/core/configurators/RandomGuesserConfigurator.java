@@ -24,7 +24,7 @@ import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 
 /**
 * automatically generated, do not edit manually.
@@ -50,7 +50,7 @@ this.randomGuesser = randomGuesser;
 * @throws LearningProblemUnsupportedException see 
 * @return RandomGuesser
 **/
-public static RandomGuesser getRandomGuesser(LearningProblem learningProblem, ReasoningService reasoningService) throws LearningProblemUnsupportedException{
+public static RandomGuesser getRandomGuesser(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
 RandomGuesser component = ComponentManager.getInstance().learningAlgorithm(RandomGuesser.class, learningProblem, reasoningService);
 return component;
 }

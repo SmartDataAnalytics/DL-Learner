@@ -27,19 +27,19 @@ import java.util.List;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
- * This class should maybe be included in ReasoningService
+ * This class should maybe be included in ReasonerComponent
  * 
  * @author Sebastian Hellmann
  *
  */
-public class ReasoningServiceFactory {
+public class ReasonerComponentFactory {
 
 	public enum AvailableReasoners {FASTINSTANCECHECKER, OWLAPIREASONERPELLET, OWLAPIREASONERFACT};
 	
@@ -47,10 +47,10 @@ public class ReasoningServiceFactory {
 		String ontologyURL = "examples/arch/arch.owl";
 		System.out.println(ontologyURL);
 		
-		ReasoningService rs;
+		ReasonerComponent rs;
 		for (AvailableReasoners r : AvailableReasoners.values()) {
 			System.out.println(r);
-			rs = getReasoningService(ontologyURL, r);
+			rs = getReasonerComponent(ontologyURL, r);
 			List<NamedClass> l = rs.getAtomicConceptsList();
 			System.out.println(l);
 			l = rs.getAtomicConceptsList(true);
@@ -61,8 +61,8 @@ public class ReasoningServiceFactory {
 		
 	}
 	
-	public static ReasoningService getReasoningService (String ontologyFile, AvailableReasoners r ){
-		ReasoningService rs = null;
+	public static ReasonerComponent getReasonerComponent (String ontologyFile, AvailableReasoners r ){
+		ReasonerComponent rs = null;
 		try{
 		// the component manager is the central object to create
 		// and configure components

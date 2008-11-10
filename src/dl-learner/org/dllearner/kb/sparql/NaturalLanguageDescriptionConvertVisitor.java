@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
 import org.dllearner.core.owl.DatatypeMaxCardinalityRestriction;
@@ -47,9 +47,9 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 
 	private String query="";
 	
-	private ReasoningService service;
+	private ReasonerComponent service;
 	
-	public NaturalLanguageDescriptionConvertVisitor(ReasoningService service)
+	public NaturalLanguageDescriptionConvertVisitor(ReasonerComponent service)
 	{
 		//stack.push("subject");
 		this.service=service;
@@ -65,7 +65,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 		return query;
 	}
 	
-	public static String getNaturalLanguageDescription(Description description, ReasoningService service)
+	public static String getNaturalLanguageDescription(Description description, ReasonerComponent service)
 	{
 		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor(service);
 		description.accept(visitor);
@@ -73,7 +73,7 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 		return ret;
 	}
 	
-	public static String getNaturalLanguageDescription(String descriptionKBSyntax, ReasoningService service) throws ParseException
+	public static String getNaturalLanguageDescription(String descriptionKBSyntax, ReasonerComponent service) throws ParseException
 	{	
 		Description d = KBParser.parseConcept(descriptionKBSyntax);
 		NaturalLanguageDescriptionConvertVisitor visitor=new NaturalLanguageDescriptionConvertVisitor(service);

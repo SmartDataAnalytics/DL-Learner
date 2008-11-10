@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.ObjectAllRestriction;
@@ -62,7 +62,7 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 public class RhoDown extends RefinementOperatorAdapter {
 
 //	private PosNegLP learningProblem;
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 	
 	// gibt die Gr��e an bis zu der die Refinements des Top-Konzepts
 	// bereits berechnet worden => entspricht der max. L�nge der Menge M
@@ -97,7 +97,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 	
 	// braucht man wirklich das learningProblem oder reicht der Reasoning-Service?
 	// TODO: conceptComparator könnte auch noch Parameter sein
-	public RhoDown(ReasoningService reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
+	public RhoDown(ReasonerComponent reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
 	boolean useExistsConstructor, boolean useNegation, boolean useBooleanDatatypes) {
 		this.rs = reasoningService;
 		this.applyAllFilter = applyAllFilter;
@@ -108,7 +108,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		
 //		this.learningProblem = learningProblem;
-//		rs = learningProblem.getReasoningService();
+//		rs = learningProblem.getReasonerComponent();
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 			// TODO: der Cast auf SortedSet ist nur ein Hack und muss später geeignet
 			// behandelt werden
 			refinements = rs.getMoreSpecialConcepts(concept);
-			// refinements.addAll(learningProblem.getReasoningService().getMoreSpecialConcepts(concept));
+			// refinements.addAll(learningProblem.getReasonerComponent().getMoreSpecialConcepts(concept));
 			
 			// Bottom rausschmeißen (nicht im Operator vorgesehen)
 			// Iterator<Concept> it = refinements.iterator();

@@ -35,7 +35,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
@@ -53,13 +53,13 @@ import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
 import org.dllearner.utilities.learn.LearnOWLFile;
 import org.dllearner.utilities.learn.LearnOWLFileConfiguration;
 import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
-import org.dllearner.utilities.owl.ReasoningServiceFactory;
-import org.dllearner.utilities.owl.ReasoningServiceFactory.AvailableReasoners;
+import org.dllearner.utilities.owl.ReasonerComponentFactory;
+import org.dllearner.utilities.owl.ReasonerComponentFactory.AvailableReasoners;
 import org.dllearner.utilities.statistics.SimpleClock;
 
 public class SemanticBible {
 
-	private static ReasoningService reasoningService;
+	private static ReasonerComponent reasoningService;
 
 	private static Logger logger = Logger.getRootLogger();
 
@@ -92,7 +92,7 @@ public class SemanticBible {
 		
 		//String fileURL = new File(ontologyFile).toURI().toString();
 		
-		reasoningService = ReasoningServiceFactory.getReasoningService(
+		reasoningService = ReasonerComponentFactory.getReasonerComponent(
 				ontologyPath, AvailableReasoners.OWLAPIREASONERPELLET);
 		// SortedSet<NamedClass> classesToRelearn = new
 		// TreeSet<NamedClass>(rs.getAtomicConceptsList(true));

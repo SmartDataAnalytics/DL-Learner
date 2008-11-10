@@ -22,7 +22,7 @@ package org.dllearner.core.configurators;
 
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
 
 /**
@@ -49,7 +49,7 @@ this.posNegDefinitionLPStrict = posNegDefinitionLPStrict;
 * @param negativeExamples negative examples
 * @return PosNegDefinitionLPStrict
 **/
-public static PosNegDefinitionLPStrict getPosNegDefinitionLPStrict(ReasoningService reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
+public static PosNegDefinitionLPStrict getPosNegDefinitionLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
 PosNegDefinitionLPStrict component = ComponentManager.getInstance().learningProblem(PosNegDefinitionLPStrict.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "positiveExamples", positiveExamples);
 ComponentManager.getInstance().applyConfigEntry(component, "negativeExamples", negativeExamples);

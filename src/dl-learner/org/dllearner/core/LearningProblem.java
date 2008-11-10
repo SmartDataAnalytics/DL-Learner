@@ -67,7 +67,7 @@ public abstract class LearningProblem extends Component {
 	 * indeed changes the reasoning service. 
 	 * @param reasoner New reasoning service.
 	 */
-	public void changeReasoningService(ReasonerComponent reasoner) {
+	public void changeReasonerComponent(ReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 	}
 	

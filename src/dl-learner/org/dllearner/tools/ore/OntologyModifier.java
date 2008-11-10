@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -78,10 +78,10 @@ public class OntologyModifier {
 	private OWLAPIReasoner reasoner;
 	private OWLDataFactory factory;
 	private OWLOntologyManager manager;
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 	
 	
-	public OntologyModifier(OWLAPIReasoner reasoner, ReasoningService rs){
+	public OntologyModifier(OWLAPIReasoner reasoner, ReasonerComponent rs){
 		this.reasoner = reasoner;
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();

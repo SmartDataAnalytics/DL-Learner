@@ -41,7 +41,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -62,7 +62,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 public class ORE {
 	
 	private LearningAlgorithm la;
-	private ReasoningService rs;
+	private ReasonerComponent rs;
 	private KnowledgeSource ks; 
 	private PosNegDefinitionLP lp;
 	private ComponentManager cm;
@@ -150,7 +150,7 @@ public class ORE {
 	 * Returns the reasoningservice.
 	 * @return reasoning service
 	 */
-	public ReasoningService getReasoningService(){
+	public ReasonerComponent getReasonerComponent(){
 		return rs;
 	}
 	

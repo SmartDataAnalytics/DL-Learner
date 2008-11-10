@@ -110,7 +110,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	private SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
 	private SortedSet<Individual> individuals;
 
-	// private ReasoningService rs;
+	// private ReasonerComponent rs;
 	private OWLAPIReasoner rc;
 
 	// we use sorted sets (map indices) here, because they have only log(n)
@@ -191,7 +191,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			atomicRoles = rc.getAtomicRoles();
 			individuals = rc.getIndividuals();
 
-			// rs = new ReasoningService(rc);
+			// rs = new ReasonerComponent(rc);
 
 			// TODO: some code taken from Helper.createFlatABox, but pasted here
 			// because additional things need to

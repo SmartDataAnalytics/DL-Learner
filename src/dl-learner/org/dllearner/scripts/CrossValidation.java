@@ -38,7 +38,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.PosNegLP;
@@ -123,8 +123,8 @@ public class CrossValidation {
 		}
 		
 		LearningProblem lp = start.getLearningProblem();
-//		ReasoningService rs = start.getReasoningService();
-//		start.getReasoningService().releaseKB();
+//		ReasonerComponent rs = start.getReasonerComponent();
+//		start.getReasonerComponent().releaseKB();
 
 		// the training and test sets used later on
 		List<Set<Individual>> trainingSetsPos = new LinkedList<Set<Individual>>();
@@ -238,7 +238,7 @@ public class CrossValidation {
 			
 			Description concept = la.getCurrentlyBestDescription();
 			
-			ReasoningService rs = start.getReasoningService();
+			ReasonerComponent rs = start.getReasonerComponent();
 			Set<Individual> tmp = rs.instanceCheck(concept, testSetsPos.get(currFold));
 			Set<Individual> tmp2 = Helper.difference(testSetsPos.get(currFold), tmp);
 			Set<Individual> tmp3 = rs.instanceCheck(concept, testSetsNeg.get(currFold));
@@ -285,11 +285,11 @@ public class CrossValidation {
 		
 	}
 	
-	private int getCorrectPosClassified(ReasoningService rs, Description concept, Set<Individual> testSetPos) {
+	private int getCorrectPosClassified(ReasonerComponent rs, Description concept, Set<Individual> testSetPos) {
 		return rs.instanceCheck(concept, testSetPos).size();
 	}
 	
-	private int getCorrectNegClassified(ReasoningService rs, Description concept, Set<Individual> testSetNeg) {
+	private int getCorrectNegClassified(ReasonerComponent rs, Description concept, Set<Individual> testSetNeg) {
 		return testSetNeg.size() - rs.instanceCheck(concept, testSetNeg).size();
 	}
 	

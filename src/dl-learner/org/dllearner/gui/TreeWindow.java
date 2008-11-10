@@ -81,7 +81,7 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 			PosNegDefinitionLP lp = (PosNegDefinitionLP) config.getLearningProblem();
 			Set<String> posExamples = lp.getConfigurator().getPositiveExamples();
 			Set<String> negExamples = lp.getConfigurator().getNegativeExamples();
-			String baseURI = config.getReasoningService().getBaseURI();
+			String baseURI = config.getReasonerComponent().getBaseURI();
 			int nrOfPositiveExamples = posExamples.size();
 			int nrOfNegativeExamples = negExamples.size();
 			

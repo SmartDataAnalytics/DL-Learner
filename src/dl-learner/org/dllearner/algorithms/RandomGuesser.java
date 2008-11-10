@@ -28,7 +28,7 @@ import org.dllearner.algorithms.gp.Program;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
@@ -48,17 +48,14 @@ public class RandomGuesser extends LearningAlgorithm {
     private Description bestDefinition = null;
     private Score bestScore;
     private double bestFitness = Double.NEGATIVE_INFINITY;
-    private LearningProblem learningProblem;
-    private ReasoningService rs;
+
 	private int numberOfTrees;
 	private int maxDepth;
     
 	private static Logger logger = Logger.getLogger(RandomGuesser.class);		
 	
-	public RandomGuesser(LearningProblem learningProblem, ReasoningService rs) {
-	   	super(learningProblem, rs);		
-		this.learningProblem = learningProblem;
-		this.rs = rs;
+	public RandomGuesser(LearningProblem learningProblem, ReasonerComponent rs) {
+	   	super(learningProblem, rs);
 		this.configurator = new RandomGuesserConfigurator(this);
 	}
 	
@@ -110,7 +107,7 @@ public class RandomGuesser extends LearningAlgorithm {
 		
 		for(int i=0; i<numberOfTrees; i++) {
 			// p = GPUtilities.createGrowRandomProgram(learningProblem, maxDepth);
-			p = GPUtilities.createGrowRandomProgram(learningProblem, rs, maxDepth, false);
+			p = GPUtilities.createGrowRandomProgram(learningProblem, reasoner, maxDepth, false);
 			if(p.getFitness()>bestFitness) {
 				bestFitness = p.getFitness();
 				bestScore = p.getScore();

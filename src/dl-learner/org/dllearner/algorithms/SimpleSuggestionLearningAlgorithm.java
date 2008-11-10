@@ -25,7 +25,7 @@ import java.util.Set;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.ReasoningService;
+import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.configurators.SimpleSuggestionLearningAlgorithmConfigurator;
@@ -103,7 +103,7 @@ public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm impleme
 
 	}
 
-	public Set<Description> getSimpleSuggestions(ReasoningService rs, Set<Individual> indi) {
+	public Set<Description> getSimpleSuggestions(ReasonerComponent rs, Set<Individual> indi) {
 		// EXISTS property.TOP
 		// ESISTS hasChild
 		// EXISTS hasChild.male

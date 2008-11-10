@@ -354,8 +354,8 @@ public final class ComponentManager {
 	}
 
 	/**
-	 * This method returns an instance of <code>ReasoningService</code>. The
-	 * difference between <code>ReasoningService</code> and <code>ReasonerComponent</code>
+	 * This method returns an instance of <code>ReasonerComponent</code>. The
+	 * difference between <code>ReasonerComponent</code> and <code>ReasonerComponent</code>
 	 * is that the former delegates all calls to the latter and collects statistics
 	 * while doing this. This means that the reasoning service enables the
 	 * collection of query information, while the <code>ReasonerComponent</code>
@@ -365,8 +365,8 @@ public final class ComponentManager {
 	 * @param reasoner A reasoner component.
 	 * @return The reasoning service encapsulating the reasoner.
 	 */
-//	public ReasoningService reasoningService(ReasonerComponent reasoner) {
-//		return new ReasoningService(reasoner);
+//	public ReasonerComponent reasoningService(ReasonerComponent reasoner) {
+//		return new ReasonerComponent(reasoner);
 //	}
 	
 	/**
