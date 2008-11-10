@@ -399,7 +399,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public boolean subsumes(Description superConcept, Description subConcept) {
+	public boolean subsumesImpl(Description superConcept, Description subConcept) {
 		// System.out.println("subsumes(" + superConcept + "," + subConcept +
 		// ")");
 		String subsumesDIG = asksPrefix;
@@ -671,7 +671,7 @@ public class DIGReasoner extends ReasonerComponent {
 
 	// ToDo: gibt momentan nur einen Wert bei äquivalenten Klassen aus
 	@Override
-	public Set<NamedClass> getConcepts(Individual individual) {
+	public Set<NamedClass> getTypesImpl(Individual individual) {
 		String typesDIG = asksPrefix;
 		typesDIG += "<types id=\"query_types\">";
 		typesDIG += "<individual name=\"" + individual.getName() + "\" />";

@@ -52,6 +52,23 @@ import org.dllearner.utilities.owl.OWLVocabulary;
  * In addition to calling the actual implementations of reasoning operations,
  * the class also collects statistical information, which can be queried.
  * 
+ * Guidelines for extending the class:
+ * <ul>
+ *   <li>add the needed method to the corresponding interface (currenty
+ *   {@link BaseReasoner}, {@link SchemaReasoner}, {@link IndividualReasoner}
+ *   exist)</li>
+ *   <li>reasoning methods which need to be supported by all reasoners: 
+ *   create method() and methodImpl() here, where the former is an overridden, final 
+ *   method delegating to the latter abstract, protected method</li>
+ *   <li>reasoning method, which do not need to be supported by all reasoners:
+ *   create method() and methodImpl() as before, but this time methodImpl() is
+ *   not abstract and throws a {@link ReasoningMethodUnsupportedException} 
+ *   </li>
+ * </ul>
+ * Note, that the method delegation is done to collect statistical information
+ * about reasoning performance, e.g. count how often certain methods were called
+ * and how long it took to execute them.
+ * 
  * @author Jens Lehmann
  * 
  */
@@ -171,7 +188,14 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	}
 
 	@Override
-	public boolean subsumes(Description superClass, Description subClass) {
+	public final Set<NamedClass> getTypes(Individual individual) {
+		return getTypesImpl(individual);
+	}
+	
+	protected abstract Set<NamedClass> getTypesImpl(Individual individual);
+	
+	@Override
+	public final boolean subsumes(Description superClass, Description subClass) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		try {
@@ -880,10 +904,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 
 	public DatatypePropertyHierarchy getDatatypePropertyHierarchyImpl()
 			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public Set<NamedClass> getConceptsImpl(Individual i) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 

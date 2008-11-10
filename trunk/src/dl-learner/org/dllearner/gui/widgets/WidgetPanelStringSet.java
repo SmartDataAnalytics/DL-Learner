@@ -213,7 +213,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			if (configOption.getName().equalsIgnoreCase("positiveExamples")
 					|| configOption.getName().equalsIgnoreCase("negativeExamples")) {
 				// fill lists
-				Set<Individual> individualsSet = config.getReasonerComponent()
+				Set<Individual> individualsSet = config.getReasoner()
 						.getIndividuals();
 				if(individualsSet != null) {
 					LinkedList<Individual> individuals = new LinkedList<Individual>(
@@ -233,7 +233,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			if (configOption.getName().equalsIgnoreCase("allowedConcepts")
 					|| configOption.getName().equalsIgnoreCase("ignoredConcepts")) {
 				// fill lists
-				Set<NamedClass> atomicsSet = config.getReasonerComponent()
+				Set<NamedClass> atomicsSet = config.getReasoner()
 						.getNamedClasses();
 				if(atomicsSet != null) {
 					LinkedList<NamedClass> atomicConcepts = new LinkedList<NamedClass>(
@@ -247,7 +247,7 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			if (configOption.getName().equalsIgnoreCase("allowedRoles")
 					|| configOption.getName().equalsIgnoreCase("ignoredRoles")) {
 				// fill lists
-				Set<ObjectProperty> atomicsSet = config.getReasonerComponent()
+				Set<ObjectProperty> atomicsSet = config.getReasoner()
 						.getObjectProperties();
 				if(atomicsSet != null) {
 					LinkedList<ObjectProperty> atomicRoles = new LinkedList<ObjectProperty>(

@@ -33,6 +33,8 @@ import org.dllearner.core.owl.ObjectProperty;
  *   <li>queries for elements contained in the knowledge base (classes, properties, ...)</li>
  *   <li>basic reasoning requests related to the knowledge base as a whole (e.g. consistency)</li>
  * </ul>
+ * (Many methods in this interface do not require reasoning algorithms, but rather
+ * return information about the knowledge base.)
  * 
  * @author Jens Lehmann
  *

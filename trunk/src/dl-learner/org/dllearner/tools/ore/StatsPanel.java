@@ -100,7 +100,7 @@ public class StatsPanel extends JPanel{
            
         classPane = new JXTaskPane();
         classPane.setTitle("Classes");
-        oldClasses = ore.getOwlReasoner().getConcepts(ind);
+        oldClasses = ore.getOwlReasoner().getTypes(ind);
        	for(NamedClass nc : oldClasses){
 			classPane.add(new JLabel(nc.toManchesterSyntaxString(baseURI, prefixes)));
        	}
@@ -154,7 +154,7 @@ public class StatsPanel extends JPanel{
 		classPane.removeAll();
 				
 		Set<String> newClassesString = new HashSet<String>();
-		for (NamedClass nc : ore.getOwlReasoner().getConcepts(ind)){
+		for (NamedClass nc : ore.getOwlReasoner().getTypes(ind)){
 			newClassesString.add(nc.toManchesterSyntaxString(baseURI, prefixes));
 		}
 		Set<String> oldClassesString = new HashSet<String>();
