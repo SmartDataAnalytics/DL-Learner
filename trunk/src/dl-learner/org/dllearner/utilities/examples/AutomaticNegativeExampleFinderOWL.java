@@ -196,7 +196,7 @@ public class AutomaticNegativeExampleFinderOWL {
 			// rsc = new
 			// JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
 			try{
-			this.fromParallelClasses.addAll(reasoningService.retrieval(oneClass));
+			this.fromParallelClasses.addAll(reasoningService.getIndividuals(oneClass));
 			}catch (Exception e) {
 				logger.warn("not implemented in "+this.getClass());
 			}
@@ -234,7 +234,7 @@ public class AutomaticNegativeExampleFinderOWL {
 
 		for (Description oneSuperClass : superClasses) {
 			logger.debug(oneSuperClass);
-			fromSuperclasses.addAll(reasoningService.retrieval(oneSuperClass));
+			fromSuperclasses.addAll(reasoningService.getIndividuals(oneSuperClass));
 		}
 		this.fromSuperclasses.removeAll(fullPositiveSet);
 		logger.debug("|-neg Example from superclass: " + fromSuperclasses.size());

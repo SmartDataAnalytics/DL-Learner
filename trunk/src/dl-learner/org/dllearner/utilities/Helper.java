@@ -556,10 +556,10 @@ public class Helper {
 		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
 		for (NamedClass atomicConcept : rs.getNamedClasses()) {
 			aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
-					.retrieval(atomicConcept)));
+					.getIndividuals(atomicConcept)));
 			Negation negatedAtomicConcept = new Negation(atomicConcept);
 			aBox.atomicConceptsNeg.put(atomicConcept.getName(), getStringSet(rs
-					.retrieval(negatedAtomicConcept)));
+					.getIndividuals(negatedAtomicConcept)));
 			aBox.concepts.add(atomicConcept.getName());
 		}
 

@@ -33,7 +33,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -47,7 +47,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public final class Utility {
 		
 	private ReasonerComponent rs;
-	SubsumptionHierarchy sh; 
+	ClassHierarchy sh; 
 	
 	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();	
@@ -62,7 +62,7 @@ public final class Utility {
 
 	public Utility(ReasonerComponent rs) {
 		this.rs = rs;
-		sh = rs.getSubsumptionHierarchy();
+		sh = rs.getClassHierarchy();
 	}
 	
 	/**
@@ -176,7 +176,7 @@ public final class Utility {
 				result = isDisjointInstanceBased(d1,d2);
 			} else {
 				Description d = new Intersection(d1, d2);
-				result = rs.subsumes(new Nothing(), d);				
+				result = rs.isSuperClassOf(new Nothing(), d);				
 			}
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
@@ -199,8 +199,8 @@ public final class Utility {
 	}	
 	
 	private boolean isDisjointInstanceBased(Description d1, Description d2) {
-		SortedSet<Individual> d1Instances = rs.retrieval(d1);
-		SortedSet<Individual> d2Instances = rs.retrieval(d2);
+		SortedSet<Individual> d1Instances = rs.getIndividuals(d1);
+		SortedSet<Individual> d2Instances = rs.getIndividuals(d2);
 		for(Individual d1Instance : d1Instances) {
 			if(d2Instances.contains(d1Instance))
 				return false;

@@ -96,7 +96,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 	public int coveredNegativeExamplesOrTooWeak(Description concept) {
 
 		if (useRetrievalForClassification) {
-			SortedSet<Individual> posClassified = reasoner.retrieval(concept);
+			SortedSet<Individual> posClassified = reasoner.getIndividuals(concept);
 			SortedSet<Individual> negAsPos = Helper.intersection(negativeExamples, posClassified);
 			SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
 
@@ -141,12 +141,12 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 				SortedSet<Individual> negAsPos = new TreeSet<Individual>();
 
 				for (Individual example : positiveExamples) {
-					if (!reasoner.instanceCheck(concept, example))
+					if (!reasoner.hasType(concept, example))
 						return -1;
 					// posAsNeg.add(example);
 				}
 				for (Individual example : negativeExamples) {
-					if (reasoner.instanceCheck(concept, example))
+					if (reasoner.hasType(concept, example))
 						negAsPos.add(example);
 				}
 
@@ -171,7 +171,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 	@Override
 	public Score computeScore(Description concept) {
 		if (useRetrievalForClassification) {
-			SortedSet<Individual> posClassified = reasoner.retrieval(concept);
+			SortedSet<Individual> posClassified = reasoner.getIndividuals(concept);
 			SortedSet<Individual> posAsPos = Helper.intersection(positiveExamples, posClassified);
 			SortedSet<Individual> negAsPos = Helper.intersection(negativeExamples, posClassified);
 			SortedSet<Individual> posAsNeg = new TreeSet<Individual>();
@@ -212,14 +212,14 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 				System.out.println("TEST");
 				
 				for (Individual example : positiveExamples) {
-					if (reasoner.instanceCheck(concept, example)) {
+					if (reasoner.hasType(concept, example)) {
 						posAsPos.add(example);
 					} else {
 						posAsNeg.add(example); System.out.println(concept + " " + example);
 					}
 				}
 				for (Individual example : negativeExamples) {
-					if (reasoner.instanceCheck(concept, example))
+					if (reasoner.hasType(concept, example))
 						negAsPos.add(example);
 					else
 						negAsNeg.add(example);

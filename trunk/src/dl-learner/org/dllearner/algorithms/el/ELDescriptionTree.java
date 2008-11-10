@@ -36,7 +36,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.UnsupportedLanguageException;
 
@@ -66,12 +66,12 @@ public class ELDescriptionTree implements Cloneable {
 	// since we store simulation information in the tree and simulation
 	// updates depend on background knowledge)
 	protected ReasonerComponent rs;
-	protected SubsumptionHierarchy subsumptionHierarchy;
+	protected ClassHierarchy subsumptionHierarchy;
 	protected ObjectPropertyHierarchy roleHierarchy;
 	
 	public ELDescriptionTree(ReasonerComponent rs) {
 		this.rs = rs;
-		subsumptionHierarchy = rs.getSubsumptionHierarchy();
+		subsumptionHierarchy = rs.getClassHierarchy();
 		roleHierarchy = rs.getRoleHierarchy();
 	}
 

@@ -297,7 +297,7 @@ public class SemanticBibleComparison {
 				
 				// evaluate Concept versus Ontology
 				reasoningService = org.dllearner.utilities.components.ReasonerComponentFactory.getReasonerComponent(ontologyPath, ReasonerType.OWLAPI_PELLET);
-				SortedSet<Individual> retrieved = reasoningService.retrieval(bestDescription.getDescription());
+				SortedSet<Individual> retrieved = reasoningService.getIndividuals(bestDescription.getDescription());
 				EvaluatedDescription onOnto = reEvaluateDescription(
 						bestDescription.getDescription(), retrieved, posEx, negEx);
 				

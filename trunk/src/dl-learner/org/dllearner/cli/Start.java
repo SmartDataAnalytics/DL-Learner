@@ -621,7 +621,7 @@ public class Start {
 				} else if (name.equals("showSubsumptionHierarchy")) {
 					if (cliOption.getStringValue().equals("true")) {
 						System.out.println("Subsumption Hierarchy:");
-						System.out.println(rs.getSubsumptionHierarchy());
+						System.out.println(rs.getClassHierarchy());
 					}
 					// satisfiability check
 				} else if (name.equals("checkSatisfiability")) {
@@ -812,7 +812,7 @@ public class Start {
 
 						// pose retrieval query
 						Set<Individual> result = null;
-						result = rs.retrieval(concept);
+						result = rs.getIndividuals(concept);
 
 						logger.info("retrieval result (" + result.size() + "): " + result);
 

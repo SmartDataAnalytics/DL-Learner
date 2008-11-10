@@ -155,7 +155,7 @@ public class ORE {
 	
 	
 	public void setPosNegExamples(){
-		posExamples = rs.retrieval(classToLearn);
+		posExamples = rs.getIndividuals(classToLearn);
 		negExamples = rs.getIndividuals();
 		
 		for (Individual pos : posExamples){
@@ -288,7 +288,7 @@ public class ORE {
 		Set<Description> criticals = new HashSet<Description>();
 		List<Description> children = desc.getChildren();
 		
-		if(owlReasoner.instanceCheck(desc, ind)){
+		if(owlReasoner.hasType(desc, ind)){
 			
 			if(children.size() >= 2){
 				
@@ -298,7 +298,7 @@ public class ORE {
 					}
 				} else if(desc instanceof Union){
 					for(Description d: children){
-						if(owlReasoner.instanceCheck(d, ind)){
+						if(owlReasoner.hasType(d, ind)){
 							criticals.addAll(getNegCriticalDescriptions(ind, d));
 						}
 					}
@@ -322,7 +322,7 @@ public class ORE {
 		List<Description> children = desc.getChildren();
 		
 //		try {
-			if(fastReasoner.instanceCheck(desc, ind)){
+			if(fastReasoner.hasType(desc, ind)){
 				
 				if(children.size() >= 2){
 					
@@ -338,14 +338,14 @@ public class ORE {
 					} else if(desc instanceof Union){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
-							if(fastReasoner.instanceCheck(desc.getChild(i), ind)){
+							if(fastReasoner.hasType(desc.getChild(i), ind)){
 								criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(i)));
 							} else{
 								criticals.add(new JLabel(desc.getChild(i).toManchesterSyntaxString(baseURI, prefixes)));
 							}
 							criticals.add(new JLabel("or"));
 						}
-						if(fastReasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
+						if(fastReasoner.hasType(desc.getChild(children.size()-1), ind)){
 							criticals.addAll(descriptionToJLabelNeg(ind, desc.getChild(children.size()-1)));
 						} else{
 							criticals.add(new JLabel(desc.getChild(children.size()-1).toManchesterSyntaxString(baseURI, prefixes)));
@@ -381,7 +381,7 @@ public class ORE {
 		List<Description> children = desc.getChildren();
 		
 //		try {
-			if(!fastReasoner.instanceCheck(desc, ind)){
+			if(!fastReasoner.hasType(desc, ind)){
 				
 				if(children.size() >= 2){
 					
@@ -396,14 +396,14 @@ public class ORE {
 					} else if(desc instanceof Intersection){
 						criticals.add(new JLabel("("));
 						for(int i = 0; i<children.size()-1; i++){
-							if(!fastReasoner.instanceCheck(desc.getChild(i), ind)){
+							if(!fastReasoner.hasType(desc.getChild(i), ind)){
 								criticals.addAll(descriptionToJLabelPos(ind, desc.getChild(i)));
 							} else{
 								criticals.add(new JLabel(desc.getChild(i).toManchesterSyntaxString(baseURI, prefixes)));
 							}
 							criticals.add(new JLabel("and"));
 						}
-						if(!fastReasoner.instanceCheck(desc.getChild(children.size()-1), ind)){
+						if(!fastReasoner.hasType(desc.getChild(children.size()-1), ind)){
 							criticals.addAll(descriptionToJLabelPos(ind, desc.getChild(children.size()-1)));
 						} else{
 							criticals.add(new JLabel(desc.getChild(children.size()-1).toManchesterSyntaxString(baseURI, prefixes)));
@@ -431,7 +431,7 @@ public class ORE {
 	 */
 	public Set<Individual> getIndividualsInPropertyRange(ObjectQuantorRestriction objRestr, Individual ind){
 		
-		Set<Individual> individuals = owlReasoner.retrieval(objRestr.getChild(0));
+		Set<Individual> individuals = owlReasoner.getIndividuals(objRestr.getChild(0));
 		individuals.remove(ind);
 		
 		return individuals;
@@ -450,7 +450,7 @@ public class ORE {
 		for(Individual i : owlReasoner.getIndividuals()){
 			
 //			try {
-				if(!fastReasoner.instanceCheck(objRestr.getChild(0), i)){
+				if(!fastReasoner.hasType(objRestr.getChild(0), i)){
 					allIndividuals.add(i);
 				}
 //			} catch (ReasoningMethodUnsupportedException e) {
@@ -471,7 +471,7 @@ public class ORE {
 	public Set<NamedClass> getpossibleClassesMoveTo(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
 		for(NamedClass nc : rs.getNamedClasses()){
-			if(!rs.instanceCheck(nc, ind)){
+			if(!rs.hasType(nc, ind)){
 				moveClasses.add(nc);
 			}
 		}
@@ -488,7 +488,7 @@ public class ORE {
 	public Set<NamedClass> getpossibleClassesMoveFrom(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
 		for(NamedClass nc : rs.getNamedClasses()){
-			if(rs.instanceCheck(nc, ind)){
+			if(rs.hasType(nc, ind)){
 				moveClasses.add(nc);
 			}
 		}
@@ -530,7 +530,7 @@ public class ORE {
 		Set<NamedClass> complements = new HashSet<NamedClass>();
 		for(NamedClass nc : owlReasoner.getNamedClasses()){
 			if(!(nc.toString().endsWith("Thing"))){
-				if(owlReasoner.instanceCheck(nc, ind)){
+				if(owlReasoner.hasType(nc, ind)){
 					if(modifier.isComplement(desc, nc)){
 						complements.add(nc);
 					}

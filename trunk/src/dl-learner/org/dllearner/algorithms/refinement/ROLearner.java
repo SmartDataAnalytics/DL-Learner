@@ -374,7 +374,7 @@ public class ROLearner extends LearningAlgorithm {
 		// during the run of the algorithm
 //		reasoner.prepareSubsumptionHierarchy(usedConcepts);
 		if(improveSubsumptionHierarchy)
-			reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
+			reasoner.getClassHierarchy().improveSubsumptionHierarchy();
 //		reasoner.prepareRoleHierarchy(usedRoles);
 	}
 	
@@ -759,7 +759,7 @@ public class ROLearner extends LearningAlgorithm {
 		if(toEvaluateConcepts.size()>0) {
 			// Test aller Konzepte auf properness (mit DIG in nur einer Anfrage)
 			long propCalcReasoningStart = System.nanoTime();
-			improperConcepts = reasoner.subsumes(toEvaluateConcepts, concept);
+			improperConcepts = reasoner.isSuperClassOf(toEvaluateConcepts, concept);
 			propernessTestsReasoner+=toEvaluateConcepts.size();
 			// boolean isProper = !learningProblem.getReasonerComponent().subsumes(refinement, concept);
 			propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;

@@ -509,8 +509,8 @@ public class DLLearnerModel implements Runnable {
 							"#" + current.getRootObject().toString())) {
 						// if individuals is not null it gets all individuals of
 						// the concept
-						if (rs.retrieval(concept) != null) {
-							individual = rs.retrieval(concept);
+						if (rs.getIndividuals(concept) != null) {
+							individual = rs.getIndividuals(concept);
 							break;
 						}
 					}
@@ -533,8 +533,8 @@ public class DLLearnerModel implements Runnable {
 			}
 		}
 		System.out.println("CON: "+ concept);
-		System.out.println("SIZE: "+ reasoner.retrieval(concept).size());
-		if (reasoner.retrieval(selectedConcept).size() > 0) {
+		System.out.println("SIZE: "+ reasoner.getIndividuals(concept).size());
+		if (reasoner.getIndividuals(selectedConcept).size() > 0) {
 			hasIndividuals = true;
 		}
 		concept = null;

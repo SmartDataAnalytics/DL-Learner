@@ -553,7 +553,7 @@ public class DLLearnerWS {
 		// call parser to parse concept
 		Description concept = null;
 		concept = KBParser.parseConcept(conceptString);
-		Set<Individual> individuals = state.getReasonerComponent().retrieval(concept);
+		Set<Individual> individuals = state.getReasonerComponent().getIndividuals(concept);
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
 	

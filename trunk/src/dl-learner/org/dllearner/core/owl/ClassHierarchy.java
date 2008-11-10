@@ -32,14 +32,14 @@ import org.dllearner.utilities.owl.ConceptComparator;
  * @author Jens Lehmann
  *
  */
-public class SubsumptionHierarchy {
+public class ClassHierarchy {
 
 	ConceptComparator conceptComparator = new ConceptComparator();
 	TreeMap<Description,TreeSet<Description>> subsumptionHierarchyUp; // = new TreeMap<Concept,TreeSet<Concept>>(conceptComparator);
 	TreeMap<Description,TreeSet<Description>> subsumptionHierarchyDown; // = new TreeMap<Concept,TreeSet<Concept>>(conceptComparator);
 	Set<Description> allowedConceptsInSubsumptionHierarchy;
 	
-	public SubsumptionHierarchy(Set<NamedClass> atomicConcepts, TreeMap<Description,TreeSet<Description>> subsumptionHierarchyUp , TreeMap<Description,TreeSet<Description>> subsumptionHierarchyDown) {
+	public ClassHierarchy(Set<NamedClass> atomicConcepts, TreeMap<Description,TreeSet<Description>> subsumptionHierarchyUp , TreeMap<Description,TreeSet<Description>> subsumptionHierarchyDown) {
 		this.subsumptionHierarchyUp = subsumptionHierarchyUp;
 		
 		this.subsumptionHierarchyDown = subsumptionHierarchyDown;

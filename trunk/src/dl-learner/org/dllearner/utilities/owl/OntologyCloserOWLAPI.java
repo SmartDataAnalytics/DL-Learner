@@ -193,7 +193,7 @@ public class OntologyCloserOWLAPI {
 					new HashMap<String, String>()));
 			// System.out.println(d.toString());
 			sc.setTime();
-			this.rs.retrieval(d);
+			this.rs.getIndividuals(d);
 
 			System.out.println("retrieved: " + ind.size() + " instances");
 			sc.printAndSet();

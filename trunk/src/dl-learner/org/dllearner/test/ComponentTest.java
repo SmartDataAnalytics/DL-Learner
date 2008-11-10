@@ -75,7 +75,6 @@ public class ComponentTest {
 		negativeExamples.add("http://localhost/foo#hanna");
 		cm.applyConfigEntry(lp, "positiveExamples", positiveExamples);
 		cm.applyConfigEntry(lp, "negativeExamples", negativeExamples);
-		
 		lp.init();
 		
 		// create the learning algorithm

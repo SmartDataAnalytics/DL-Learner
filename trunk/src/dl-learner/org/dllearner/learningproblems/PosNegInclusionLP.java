@@ -125,7 +125,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	public int coveredNegativeExamplesOrTooWeak(Description concept) {
 
 		if (useRetrievalForClassification) {
-			SortedSet<Individual> inNegatedConcept = reasoner.retrieval(new Negation(concept));
+			SortedSet<Individual> inNegatedConcept = reasoner.getIndividuals(new Negation(concept));
 
 			for (Individual posExample : positiveExamples) {
 				// if any positive example follows from the negation, then
@@ -170,11 +170,11 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 				int coverCount = negativeExamples.size();
 
 				for (Individual example : positiveExamples) {
-					if (reasoner.instanceCheck(new Negation(concept), example))
+					if (reasoner.hasType(new Negation(concept), example))
 						return -1;
 				}
 				for (Individual example : negativeExamples) {
-					if (!reasoner.instanceCheck(new Negation(concept), example))
+					if (!reasoner.hasType(new Negation(concept), example))
 						coverCount--;
 				}
 

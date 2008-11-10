@@ -53,7 +53,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -103,7 +103,7 @@ public class DIGReasoner extends ReasonerComponent {
 	// alternativ wäre auch eine Indizierung über Strings möglich
 	ConceptComparator conceptComparator = new ConceptComparator();
 	RoleComparator roleComparator = new RoleComparator();
-	SubsumptionHierarchy subsumptionHierarchy;
+	ClassHierarchy subsumptionHierarchy;
 	ObjectPropertyHierarchy roleHierarchy;
 	// enthält atomare Konzepte, sowie Top und Bottom
 	Set<Description> allowedConceptsInSubsumptionHierarchy;
@@ -258,7 +258,7 @@ public class DIGReasoner extends ReasonerComponent {
 			subsumptionHierarchyUp.put(atom, tmp);
 		}
 
-		subsumptionHierarchy = new SubsumptionHierarchy(allowedConcepts,
+		subsumptionHierarchy = new ClassHierarchy(allowedConcepts,
 				subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
 
@@ -399,7 +399,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public boolean subsumesImpl(Description superConcept, Description subConcept) {
+	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
 		// System.out.println("subsumes(" + superConcept + "," + subConcept +
 		// ")");
 		String subsumesDIG = asksPrefix;
@@ -411,35 +411,35 @@ public class DIGReasoner extends ReasonerComponent {
 		return parseBooleanAnswer(subsumesDIG);
 	}
 
+//	@Override
+//	public Set<Description> subsumesImpl(Description superConcept, Set<Description> subConcepts) {
+//		String subsumesDIG = asksPrefix;
+//		int id = 0;
+//		// ID-Konzept-Zuordnung speichern, da bei der Antwort nur die IDs
+//		// ausgegeben werden
+//		Map<String, Description> queryMap = new HashMap<String, Description>();
+//		for (Description subConcept : subConcepts) {
+//			queryMap.put("query" + id, subConcept);
+//			subsumesDIG += "<subsumes id=\"query" + id + "\">";
+//			subsumesDIG += DIGConverter.getDIGString(superConcept);
+//			subsumesDIG += DIGConverter.getDIGString(subConcept);
+//			subsumesDIG += "</subsumes>";
+//			id++;
+//		}
+//		subsumesDIG += "</asks>";
+//
+//		ResponsesDocument rd = connector.asks(subsumesDIG);
+//		IdType[] subsumedConceptsIds = rd.getResponses().getTrueArray();
+//
+//		Set<Description> returnSet = new HashSet<Description>();
+//		for (IdType idType : subsumedConceptsIds) {
+//			returnSet.add(queryMap.get(idType.getId()));
+//		}
+//		return returnSet;
+//	}
+
 	@Override
-	public Set<Description> subsumesImpl(Description superConcept, Set<Description> subConcepts) {
-		String subsumesDIG = asksPrefix;
-		int id = 0;
-		// ID-Konzept-Zuordnung speichern, da bei der Antwort nur die IDs
-		// ausgegeben werden
-		Map<String, Description> queryMap = new HashMap<String, Description>();
-		for (Description subConcept : subConcepts) {
-			queryMap.put("query" + id, subConcept);
-			subsumesDIG += "<subsumes id=\"query" + id + "\">";
-			subsumesDIG += DIGConverter.getDIGString(superConcept);
-			subsumesDIG += DIGConverter.getDIGString(subConcept);
-			subsumesDIG += "</subsumes>";
-			id++;
-		}
-		subsumesDIG += "</asks>";
-
-		ResponsesDocument rd = connector.asks(subsumesDIG);
-		IdType[] subsumedConceptsIds = rd.getResponses().getTrueArray();
-
-		Set<Description> returnSet = new HashSet<Description>();
-		for (IdType idType : subsumedConceptsIds) {
-			returnSet.add(queryMap.get(idType.getId()));
-		}
-		return returnSet;
-	}
-
-	@Override
-	public Set<Description> subsumesImpl(Set<Description> superConcepts, Description subConcept) {
+	public Set<Description> isSuperClassOfImpl(Set<Description> superConcepts, Description subConcept) {
 		String subsumesDIG = asksPrefix;
 		int id = 0;
 		Map<String, Description> queryMap = new HashMap<String, Description>();
@@ -475,11 +475,6 @@ public class DIGReasoner extends ReasonerComponent {
 	 * subsumptionHierarchyDown.get(concept).clone(); // return
 	 * subsumptionHierarchyDown.get(concept); // ohne klonen geht es nicht }
 	 */
-
-	@Override
-	public SubsumptionHierarchy getSubsumptionHierarchy() {
-		return subsumptionHierarchy;
-	}
 
 	@Override
 	public ObjectPropertyHierarchy getRoleHierarchy() {
@@ -614,7 +609,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public boolean instanceCheck(Description concept, Individual individual) {
+	public boolean hasTypeImpl(Description concept, Individual individual) {
 		String instanceCheckDIG = asksPrefix;
 		instanceCheckDIG += "<instance id= \"query_instance\">";
 		instanceCheckDIG += "<individual name=\"" + individual.getName() + "\"/>";
@@ -652,7 +647,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public SortedSet<Individual> retrieval(Description concept) {
+	public SortedSet<Individual> getIndividualsImpl(Description concept) {
 
 		String retrievalDIG = asksPrefix;
 		retrievalDIG += "<instances id= \"query_instance\">";

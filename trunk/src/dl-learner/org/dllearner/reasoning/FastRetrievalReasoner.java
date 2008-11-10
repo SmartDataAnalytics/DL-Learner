@@ -20,7 +20,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.SubsumptionHierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 
@@ -94,18 +94,18 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	}
 
 	@Override		
-	public SortedSetTuple<Individual> doubleRetrieval(Description concept) {
+	public SortedSetTuple<Individual> doubleRetrievalImpl(Description concept) {
 		return Helper.getIndividualTuple(fastRetrieval.calculateSets(concept));
 	}	
 	
-	@Override		
-	public SortedSetTuple<Individual> doubleRetrieval(Description concept, Description adc) {
-		SortedSetTuple<String> adcSet = fastRetrieval.calculateSets(adc);
-		return Helper.getIndividualTuple(fastRetrieval.calculateSetsADC(concept, adcSet));
-	}	
+//	@Override		
+//	public SortedSetTuple<Individual> doubleRetrieval(Description concept, Description adc) {
+//		SortedSetTuple<String> adcSet = fastRetrieval.calculateSets(adc);
+//		return Helper.getIndividualTuple(fastRetrieval.calculateSetsADC(concept, adcSet));
+//	}	
 	
 	@Override		
-	public SortedSet<Individual> retrieval(Description concept) {
+	public SortedSet<Individual> getIndividualsImpl(Description concept) {
 		return Helper.getIndividualSet(fastRetrieval.calculateSets(concept).getPosSet());
 	}
 	
@@ -128,11 +128,11 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 
 	// C \sqsubseteq D is rewritten to a retrieval for \not C \sqcap D
 	@Override
-	public boolean subsumesImpl(Description superConcept, Description subConcept) {
+	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
 //		Negation neg = new Negation(subConcept);
 //		Intersection c = new Intersection(neg,superConcept);
 //		return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
-		return rs.subsumes(superConcept, subConcept);
+		return rs.isSuperClassOf(superConcept, subConcept);
 	}
 	
 //	@Override
@@ -149,10 +149,10 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 //		rs.prepareSubsumptionHierarchy(allowedConcepts);
 //	}
 
-	@Override
-	public SubsumptionHierarchy getSubsumptionHierarchy() {
-		return rs.getSubsumptionHierarchy();
-	}	
+//	@Override
+//	public ClassHierarchy getClassHierarchy() {
+//		return rs.getClassHierarchy();
+//	}	
 	
 	@Override
 	public boolean isSatisfiable() {
@@ -160,7 +160,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public boolean instanceCheck(Description concept, Individual individual) {
+	public boolean hasTypeImpl(Description concept, Individual individual) {
 		return fastRetrieval.calculateSets(concept).getPosSet().contains(individual.getName());
 	}
 	
