@@ -22,16 +22,12 @@ package org.dllearner.tools.ore;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.examples.AutomaticPositiveExampleFinderSPARQL;
 import org.dllearner.utilities.learn.LearnSPARQLConfiguration;
-import org.dllearner.utilities.learn.LearnSparql;
 
 /**
  * Test class for SPARQL mode.
@@ -40,6 +36,7 @@ import org.dllearner.utilities.learn.LearnSparql;
  */
 public class SPARQLTest{
 	
+	@SuppressWarnings("unused")
 	public static void main(String[] args){
 	
 		SparqlEndpoint endPoint = SparqlEndpoint.getEndpointDBpedia();
@@ -54,19 +51,23 @@ public class SPARQLTest{
 		SortedSet<String> negExamples = neg.getNegativeExamples(20);
 		
 		LearnSPARQLConfiguration conf = new LearnSPARQLConfiguration();
-		LearnSparql learn = new LearnSparql(conf);
+		
+		// TODO Please update class to either use ComponentManager or 
+		// add a convenience constructor to org.dllearner.utilities.components.ComponentCombo 
+		
+//		LearnSparql learn = new LearnSparql(conf);
 		
 		LearningAlgorithm la = null;
 		
-			try {
-				la = learn.learn(posExamples, negExamples, OWLAPIReasoner.class);
-			} catch (ComponentInitException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (LearningProblemUnsupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+////				la = learn.learn(posExamples, negExamples, OWLAPIReasoner.class);
+//			} catch (ComponentInitException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (LearningProblemUnsupportedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		
 		la.start();
 	}

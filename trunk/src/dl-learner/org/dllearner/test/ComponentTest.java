@@ -32,7 +32,6 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -63,13 +62,10 @@ public class ComponentTest {
 		
 		// create OWL API reasoning service with standard settings
 		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
-		
-		// ReasonerComponent rs = cm.reasoningService(DIGReasonerNew.class, source);
 		reasoner.init();
-		ReasonerComponent rs = cm.reasoningService(reasoner);
 		
 		// create a learning problem and set positive and negative examples
-		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
+		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, reasoner);
 		Set<String> positiveExamples = new TreeSet<String>();
 		positiveExamples.add("http://localhost/foo#heinz");
 		positiveExamples.add("http://localhost/foo#alex");
@@ -82,20 +78,15 @@ public class ComponentTest {
 		
 		lp.init();
 		
-		
 		// create the learning algorithm
 		LearningAlgorithm la = null;
 		try {
-			la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, rs);
+			la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, reasoner);
+			la.init();
 		} catch (LearningProblemUnsupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		try{
-			la.init();
-		}catch (Exception e){
-		}
-			
+	
 		// start the algorithm and print the best concept found
 		la.start();
 		System.out.println(la.getCurrentlyBestEvaluatedDescriptions(10, 0.8, true));

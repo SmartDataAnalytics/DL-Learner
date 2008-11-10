@@ -22,7 +22,6 @@ package org.dllearner.test.junit;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.KBFile;
 import org.dllearner.parser.KBParser;
@@ -69,14 +68,14 @@ public final class TestOntologies {
 			ComponentManager cm = ComponentManager.getInstance();
 			KBFile source = new KBFile(kb);
 			ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, source);
-			ReasonerComponent rs = cm.reasoningService(rc);
+//			ReasonerComponent rs = cm.reasoningService(rc);
 			source.init();
 			rc.init();
 			// TODO there shouldn't be a need to call this explicitly!
 			// (otherwise we get a NullPointerException, because the hierarchy is not created)
-			rs.prepareSubsumptionHierarchy();
-			rs.prepareRoleHierarchy();
-			return rs;	
+//			rs.prepareSubsumptionHierarchy();
+//			rs.prepareRoleHierarchy();
+			return rc;	
 		} catch(ParseException e) {
 			e.printStackTrace();
 		} catch (ComponentInitException e) {

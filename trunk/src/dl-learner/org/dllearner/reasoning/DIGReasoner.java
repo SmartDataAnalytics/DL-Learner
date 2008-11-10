@@ -268,7 +268,6 @@ public class DIGReasoner extends ReasonerComponent {
 	 * 
 	 * TODO Does not yet take ignored roles into account.
 	 */
-	@Override
 	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
 		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
 				roleComparator);
@@ -289,7 +288,7 @@ public class DIGReasoner extends ReasonerComponent {
 	// bei null bleibt; bei der aktuellen Implementierung ist der parent-Link
 	// nicht immer null, was bei GP negative Auswirkungen haben könnte
 	// Update: wird durch klonen innerhalb der GP-Operationen erledigt
-	public Set<NamedClass> getAtomicConcepts() {
+	public Set<NamedClass> getNamedClasses() {
 		/*
 		 * if(Config.algorithm == Config.Algorithm.GP || Config.algorithm ==
 		 * Config.Algorithm.HYBRID_GP) { Set<AtomicConcept> returnSet = new
@@ -343,7 +342,7 @@ public class DIGReasoner extends ReasonerComponent {
 		return atomicConcepts;
 	}
 
-	public Set<ObjectProperty> getAtomicRoles() {
+	public Set<ObjectProperty> getObjectProperties() {
 		return atomicRoles;
 	}
 
@@ -394,6 +393,7 @@ public class DIGReasoner extends ReasonerComponent {
 		return digIndividuals;
 	}
 
+	@Override
 	public ReasonerType getReasonerType() {
 		return ReasonerType.DIG;
 	}
@@ -412,7 +412,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public Set<Description> subsumes(Description superConcept, Set<Description> subConcepts) {
+	public Set<Description> subsumesImpl(Description superConcept, Set<Description> subConcepts) {
 		String subsumesDIG = asksPrefix;
 		int id = 0;
 		// ID-Konzept-Zuordnung speichern, da bei der Antwort nur die IDs
@@ -439,7 +439,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public Set<Description> subsumes(Set<Description> superConcepts, Description subConcept) {
+	public Set<Description> subsumesImpl(Set<Description> superConcepts, Description subConcept) {
 		String subsumesDIG = asksPrefix;
 		int id = 0;
 		Map<String, Description> queryMap = new HashMap<String, Description>();

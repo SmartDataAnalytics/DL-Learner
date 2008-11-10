@@ -49,8 +49,8 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
-import org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.jdesktop.swingx.JXTaskPane;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.frame.OWLFrame;
@@ -339,7 +339,7 @@ public class DLLearnerModel implements Runnable {
 			System.out.println("fehler!!!!!!!!!");
 			e.printStackTrace();
 		}
-		rs = cm.reasoningService(reasoner);
+//		rs = cm.reasoningService(reasoner);
 	}
 
 	/**
@@ -524,7 +524,7 @@ public class DLLearnerModel implements Runnable {
 		boolean hasIndividuals = false;
 		NamedClass concept = null;
 		NamedClass selectedConcept = null;
-		Iterator<NamedClass> it = reasoner.getAtomicConcepts().iterator();
+		Iterator<NamedClass> it = reasoner.getNamedClasses().iterator();
 		while(it.hasNext()) {
 			concept = it.next();
 			if (concept.toManchesterSyntaxString(ontologyURI, prefixes).equals(OWLConcept.toString())) {

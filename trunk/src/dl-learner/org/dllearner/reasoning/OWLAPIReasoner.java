@@ -65,6 +65,8 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.RoleComparator;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
@@ -370,14 +372,14 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getAtomicConcepts()
 	 */
-	public Set<NamedClass> getAtomicConcepts() {
+	public Set<NamedClass> getNamedClasses() {
 		return atomicConcepts;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getAtomicRoles()
 	 */
-	public Set<ObjectProperty> getAtomicRoles() {
+	public Set<ObjectProperty> getObjectProperties() {
 		return atomicRoles;
 	}
 
@@ -396,11 +398,12 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getReasonerType()
 	 */
+	@Override
 	public ReasonerType getReasonerType() {
 		if(configurator.getReasonerType().equals("fact"))
-			return ReasonerType.FACT;
+			return ReasonerType.OWLAPI_FACT;
 		else
-			return ReasonerType.PELLET;
+			return ReasonerType.OWLAPI_PELLET;
 	}
 
 	/* (non-Javadoc)
@@ -422,22 +425,22 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				conceptComparator);
 
 		// refinements of top
-		TreeSet<Description> tmp = getMoreSpecialConcepts(new Thing());
+		TreeSet<Description> tmp = getMoreSpecialConceptsImpl(new Thing());
 		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
 		subsumptionHierarchyDown.put(new Thing(), tmp);
 
 		// refinements of bottom
-		tmp = getMoreGeneralConcepts(new Nothing());
+		tmp = getMoreGeneralConceptsImpl(new Nothing());
 		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
 		subsumptionHierarchyUp.put(new Nothing(), tmp);
 
 		// refinements of atomic concepts
 		for (NamedClass atom : atomicConcepts) {
-			tmp = getMoreSpecialConcepts(atom);
+			tmp = getMoreSpecialConceptsImpl(atom);
 			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
 			subsumptionHierarchyDown.put(atom, tmp);
 
-			tmp = getMoreGeneralConcepts(atom);
+			tmp = getMoreGeneralConceptsImpl(atom);
 			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
 			subsumptionHierarchyUp.put(atom, tmp);
 		}
@@ -455,7 +458,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#prepareRoleHierarchy(java.util.Set)
 	 */
-	@Override
 	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
 		// code copied from DIG reasoner
 		
@@ -466,8 +468,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
  
 		// refinement of atomic concepts
 		for (ObjectProperty role : atomicRoles) {
-			roleHierarchyDown.put(role, getMoreSpecialRoles(role));
-			roleHierarchyUp.put(role, getMoreGeneralRoles(role));
+			roleHierarchyDown.put(role, getMoreSpecialRolesImpl(role));
+			roleHierarchyUp.put(role, getMoreGeneralRolesImpl(role));
 		}
 
 		roleHierarchy = new ObjectPropertyHierarchy(allowedRoles, roleHierarchyUp,
@@ -480,7 +482,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}	
 	
 	@Override
-	public void prepareDatatypePropertyHierarchy(Set<DatatypeProperty> allowedRoles) {
+	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
 		// code copied from DIG reasoner
 		
 		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyUp = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
@@ -490,8 +492,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
  
 		// refinement of atomic concepts
 		for (DatatypeProperty role : datatypeProperties) {
-			datatypePropertyHierarchyDown.put(role, getMoreSpecialDatatypeProperties(role));
-			datatypePropertyHierarchyUp.put(role, getMoreGeneralDatatypeProperties(role));
+			datatypePropertyHierarchyDown.put(role, getMoreSpecialDatatypePropertiesImpl(role));
+			datatypePropertyHierarchyUp.put(role, getMoreGeneralDatatypePropertiesImpl(role));
 		}
 
 		datatypePropertyHierarchy = new DatatypePropertyHierarchy(allowedRoles, datatypePropertyHierarchyUp,

@@ -19,6 +19,8 @@
  */
 package org.dllearner.test.junit;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -26,7 +28,6 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
@@ -34,8 +35,6 @@ import org.dllearner.kb.KBFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * A suite of JUnit tests related to the DL-Learner reasoning.
@@ -96,8 +95,8 @@ public class ReasonerTests {
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
-		} catch (ReasoningMethodUnsupportedException e) {
-			e.printStackTrace();
+//		} catch (ReasoningMethodUnsupportedException e) {
+//			e.printStackTrace(); 
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
 		}

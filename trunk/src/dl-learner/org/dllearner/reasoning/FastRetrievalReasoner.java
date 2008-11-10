@@ -10,7 +10,6 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.configurators.ComponentFactory;
@@ -89,6 +88,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		
 	}
 	
+	@Override
 	public ReasonerType getReasonerType() {
 		return ReasonerType.FAST_RETRIEVAL;
 	}
@@ -109,11 +109,12 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		return Helper.getIndividualSet(fastRetrieval.calculateSets(concept).getPosSet());
 	}
 	
-	public Set<NamedClass> getAtomicConcepts() {
+	public Set<NamedClass> getNamedClasses() {
 		return atomicConcepts;
 	}
 
-	public Set<ObjectProperty> getAtomicRoles() {
+	@Override
+	public Set<ObjectProperty> getObjectProperties() {
 		return atomicRoles;
 	}
 
@@ -134,19 +135,19 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		return rs.subsumes(superConcept, subConcept);
 	}
 	
-	@Override
-	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
-		rs.prepareRoleHierarchy(allowedRoles);
-	}	
+//	@Override
+//	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
+//		rs.prepareRoleHierarchy(allowedRoles);
+//	}	
 	
 	@Override
 	public ObjectPropertyHierarchy getRoleHierarchy() {
 		return rs.getRoleHierarchy();
 	}	
 	
-	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
-		rs.prepareSubsumptionHierarchy(allowedConcepts);
-	}
+//	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
+//		rs.prepareSubsumptionHierarchy(allowedConcepts);
+//	}
 
 	@Override
 	public SubsumptionHierarchy getSubsumptionHierarchy() {

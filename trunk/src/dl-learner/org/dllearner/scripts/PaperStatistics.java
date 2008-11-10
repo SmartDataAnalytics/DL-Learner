@@ -32,7 +32,6 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.reasoning.DIGReasoner;
@@ -284,9 +283,9 @@ public class PaperStatistics {
 					ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, ks);
 					// reasoner.prepareSubsumptionHierarchy();
 					// rs = new ReasonerComponent(reasoner);
-					ReasonerComponent rs = cm.reasoningService(reasoner);
+//					ReasonerComponent rs = cm.reasoningService(reasoner);
 					// learningProblem = new LearningProblem(rs, posExamples, negExamples);
-					learningProblem = cm.learningProblem(PosNegDefinitionLP.class, rs);
+					learningProblem = cm.learningProblem(PosNegDefinitionLP.class, reasoner);
 					
 					// TODO: set up pos/neg examples
 					cm.applyConfigEntry(learningProblem, "positiveExamples", null);

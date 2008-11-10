@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.utilities.learn;
+package org.dllearner.utilities.components;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -37,6 +37,8 @@ import org.dllearner.reasoning.FastInstanceChecker;
 /**
  * A mix of components, which are typically combined to create a full 
  * learning task.
+ * 
+ * TODO: init/learn methods, more constructors
  * 
  * @author Jens Lehmann
  *

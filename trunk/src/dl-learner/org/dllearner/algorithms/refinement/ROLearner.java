@@ -18,7 +18,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.CommonConfigMappings;
@@ -373,10 +372,10 @@ public class ROLearner extends LearningAlgorithm {
 		
 		// prepare subsumption and role hierarchies, because they are needed
 		// during the run of the algorithm
-		reasoner.prepareSubsumptionHierarchy(usedConcepts);
+//		reasoner.prepareSubsumptionHierarchy(usedConcepts);
 		if(improveSubsumptionHierarchy)
 			reasoner.getSubsumptionHierarchy().improveSubsumptionHierarchy();
-		reasoner.prepareRoleHierarchy(usedRoles);
+//		reasoner.prepareRoleHierarchy(usedRoles);
 	}
 	
 	public static String getName() {

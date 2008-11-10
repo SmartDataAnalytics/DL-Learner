@@ -37,7 +37,6 @@ import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
@@ -311,15 +310,13 @@ public class WikipediaCategoryCleaner {
 			FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
 			f.getConfigurator().setDefaultNegation(false);
 			//OWLAPIReasoner f = ComponentFactory.getOWLAPIReasoner(tmp);
-			ReasonerComponent rs = ComponentManager.getInstance()
-					.reasoningService(f);
 	
 			// learning problem
-			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(rs,
+			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(f,
 					posExamples, negExamples);
 	
 			// learning algorithm
-			la = ComponentFactory.getExampleBasedROLComponent(lp, rs);
+			la = ComponentFactory.getExampleBasedROLComponent(lp, f);
 			ExampleBasedROLComponentConfigurator lc = la.getConfigurator();
 			la.getConfigurator().setNoisePercentage(20);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(100);

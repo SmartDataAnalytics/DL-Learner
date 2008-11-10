@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.reasoning;
+package org.dllearner.utilities.owl;
+
+import static org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor.getOWLDescription;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -47,6 +49,7 @@ import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
+import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -57,12 +60,10 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLTypedConstant;
 import org.semanticweb.owl.vocab.XSDVocabulary;
-
-// static import for easy access to the description converter
-import static org.dllearner.reasoning.OWLAPIDescriptionConvertVisitor.getOWLDescription;
 
 /**
  * A converter from DL-Learner axioms to OWL API axioms based on the visitor
@@ -80,21 +81,43 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 	OWLDataFactory factory;
 	private OWLOntology ontology;
 	private OWLOntologyManager manager;
+	private OWLAxiom lastAxiom;
 
-	public OWLAPIAxiomConvertVisitor(OWLOntologyManager manager, OWLOntology ontology, KB kb) {
+	/**
+	 * Creates a default visitor with ontology URI "http://example.com"
+	 * and default ontology manager.
+	 */
+	public OWLAPIAxiomConvertVisitor() {
+		manager = OWLManager.createOWLOntologyManager();
+		URI ontologyURI = URI.create("http://example.com");
+		try {
+			ontology = manager.createOntology(ontologyURI);
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}		
+		factory = manager.getOWLDataFactory();
+	}
+	
+	public OWLAPIAxiomConvertVisitor(OWLOntologyManager manager, OWLOntology ontology) {
 		this.manager = manager;
 		this.ontology = ontology;
 		factory = manager.getOWLDataFactory();
 	}
 	
 	public static void fillOWLOntology(OWLOntologyManager manager, OWLOntology ontology, KB kb) {
-		OWLAPIAxiomConvertVisitor converter = new OWLAPIAxiomConvertVisitor(manager, ontology, kb);
+		OWLAPIAxiomConvertVisitor converter = new OWLAPIAxiomConvertVisitor(manager, ontology);
 		for(Axiom axiom : kb.getTbox())
 			axiom.accept(converter);
 		for(Axiom axiom : kb.getRbox())
 			axiom.accept(converter);
 		for(Axiom axiom : kb.getAbox())
 			axiom.accept(converter);		
+	}
+	
+	public static OWLAxiom convertAxiom(Axiom axiom) {
+		OWLAPIAxiomConvertVisitor converter = new OWLAPIAxiomConvertVisitor();
+		axiom.accept(converter);
+		return converter.lastAxiom;
 	}
 	
 	// convencience function for adding an axiom to the ontology
@@ -105,6 +128,7 @@ public class OWLAPIAxiomConvertVisitor implements AxiomVisitor {
 		} catch (OWLOntologyChangeException e) {
 			e.printStackTrace();
 		}
+		lastAxiom = axiom;
 	}
 
 	/*

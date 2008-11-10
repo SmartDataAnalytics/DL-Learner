@@ -36,7 +36,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
