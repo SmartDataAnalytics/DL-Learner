@@ -35,7 +35,7 @@ import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -58,7 +58,7 @@ public class ConfMapper {
 
 	// mappings between component classes and their names in conf files
 	private static Map<String,Class<? extends KnowledgeSource>> knowledgeSourceMapping = new TreeMap<String,Class<? extends KnowledgeSource>>();
-	private static Map<String,Class<? extends ReasonerComponent>> reasonerMapping = new TreeMap<String,Class<? extends ReasonerComponent>>();
+	private static Map<String,Class<? extends ReasonerComponentOld>> reasonerMapping = new TreeMap<String,Class<? extends ReasonerComponentOld>>();
 	private static Map<String,Class<? extends LearningProblem>> learningProblemMapping = new TreeMap<String,Class<? extends LearningProblem>>();
 	private static Map<String,Class<? extends LearningAlgorithm>> learningAlgorithmMapping = new TreeMap<String,Class<? extends LearningAlgorithm>>();
 	private static TreeMap<String,Class<? extends Component>> componentMapping = new TreeMap<String,Class<? extends Component>>();		
@@ -108,7 +108,7 @@ public class ConfMapper {
 	private static void buildKeys() {
 		// edit this part manually
 		componentTypeMapping.put("import", KnowledgeSource.class);
-		componentTypeMapping.put("reasoner", ReasonerComponent.class);
+		componentTypeMapping.put("reasoner", ReasonerComponentOld.class);
 		componentTypeMapping.put("problem", LearningProblem.class);
 		componentTypeMapping.put("algorithm", LearningAlgorithm.class);
 		
@@ -123,7 +123,7 @@ public class ConfMapper {
 		return knowledgeSourceMapping.get(confString);
 	}	
 	
-	public Class<? extends ReasonerComponent> getReasonerComponentClass(String confString) {
+	public Class<? extends ReasonerComponentOld> getReasonerComponentClass(String confString) {
 		return reasonerMapping.get(confString);
 	}
 	

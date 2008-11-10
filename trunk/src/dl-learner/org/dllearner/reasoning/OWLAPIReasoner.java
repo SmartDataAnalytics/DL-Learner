@@ -39,7 +39,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.InvalidConfigOptionValueException;
@@ -102,7 +102,7 @@ import org.semanticweb.owl.vocab.NamespaceOWLOntologyFormat;
  * @author Jens Lehmann
  *
  */
-public class OWLAPIReasoner extends ReasonerComponent {
+public class OWLAPIReasoner extends ReasonerComponentOld {
 
 //	private static Logger logger = Logger
 //	.getLogger(OWLAPIReasoner.class);	

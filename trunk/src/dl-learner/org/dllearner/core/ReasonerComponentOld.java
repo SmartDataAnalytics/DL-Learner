@@ -46,11 +46,11 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  * @author Jens Lehmann
  * 
  */
-public abstract class ReasonerComponent extends Component implements Reasoner {
+public abstract class ReasonerComponentOld extends Component implements ReasonerOld {
 
 	protected Set<KnowledgeSource> sources;
 	
-	public ReasonerComponent(Set<KnowledgeSource> sources) {
+	public ReasonerComponentOld(Set<KnowledgeSource> sources) {
 		this.sources = sources;
 	}
 	

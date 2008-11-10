@@ -36,7 +36,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Files;
@@ -141,7 +141,7 @@ public final class ConfigJavaGenerator {
 			c.makeConfigurator();
 
 		}
-		for (Class<? extends ReasonerComponent> component : cm
+		for (Class<? extends ReasonerComponentOld> component : cm
 				.getReasonerComponents()) {
 
 			COMPONENT_FACTORY_IMPORTS.add(component.getCanonicalName());

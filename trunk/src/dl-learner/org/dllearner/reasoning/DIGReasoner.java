@@ -40,7 +40,7 @@ import org.apache.xmlbeans.XmlCursor;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.ConfigEntry;
 import org.dllearner.core.config.ConfigOption;
@@ -75,7 +75,7 @@ import org.kr.dl.dig.v1_1.IndividualSetDocument.IndividualSet;
  * @author Jens Lehmann
  * 
  */
-public class DIGReasoner extends ReasonerComponent {
+public class DIGReasoner extends ReasonerComponentOld {
 	
 	private DIGReasonerConfigurator configurator;
 	@Override

@@ -56,7 +56,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.BooleanConfigOption;
@@ -113,7 +113,7 @@ public class Start {
 	private LearningAlgorithm la;
 	private LearningProblem lp;
 	private ReasoningService rs;
-	private ReasonerComponent rc;
+	private ReasonerComponentOld rc;
 
 	/**
 	 * Entry point for CLI interface.
@@ -245,7 +245,7 @@ public class Start {
 		// step 2: detect used reasoner
 		Monitor rsMonitor = JamonMonitorLogger.getTimeMonitor(Start.class, "initReasoningService").start();
 		ConfFileOption reasonerOption = parser.getConfOptionsByName("reasoner");
-		Class<? extends ReasonerComponent> rcClass;
+		Class<? extends ReasonerComponentOld> rcClass;
 		if(reasonerOption != null) {
 			rcClass = confMapper.getReasonerComponentClass(reasonerOption.getStringValue());
 			if(rcClass == null) {
@@ -856,7 +856,7 @@ public class Start {
 		return lp;
 	}
 
-	public ReasonerComponent getReasonerComponent() {
+	public ReasonerComponentOld getReasonerComponent() {
 		return rc;
 	}
 	
@@ -889,8 +889,8 @@ public class Start {
 	 * @return reasonerClass reasoner class
 	 */
 	@Deprecated
-	public static Class<? extends ReasonerComponent> getReasonerClass(ConfFileOption reasonerOption) {
-		Class<? extends ReasonerComponent> reasonerClass = null;
+	public static Class<? extends ReasonerComponentOld> getReasonerClass(ConfFileOption reasonerOption) {
+		Class<? extends ReasonerComponentOld> reasonerClass = null;
 		if (reasonerOption == null || reasonerOption.getStringValue().equals("fastInstanceChecker"))
 			reasonerClass = FastInstanceChecker.class;
 		else if (reasonerOption.getStringValue().equals("owlAPI"))

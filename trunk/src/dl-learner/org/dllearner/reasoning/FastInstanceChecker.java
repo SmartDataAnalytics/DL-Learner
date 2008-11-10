@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.BooleanConfigOption;
 import org.dllearner.core.config.ConfigEntry;
@@ -89,7 +89,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  * 
  */
-public class FastInstanceChecker extends ReasonerComponent {
+public class FastInstanceChecker extends ReasonerComponentOld {
 
 	private static Logger logger = Logger.getLogger(FastInstanceChecker.class);
 
@@ -616,7 +616,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		String owlFile = new File("examples/family/father.owl").toURI().toString();
 		cm.applyConfigEntry(owl, "url", owlFile);
 		owl.init();
-		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, owl);
+		ReasonerComponentOld reasoner = cm.reasoner(FastInstanceChecker.class, owl);
 		cm.reasoningService(reasoner);
 		reasoner.init();
 

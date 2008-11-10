@@ -45,7 +45,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -144,7 +144,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 				
 				// use a reasoner to find out which instances exist
 				// in the background knowledge
-				ReasonerComponent reasoner = cm.reasoner(DIGReasoner.class, source);
+				ReasonerComponentOld reasoner = cm.reasoner(DIGReasoner.class, source);
 				try {
 					reasoner.init();
 				} catch (ComponentInitException e1) {

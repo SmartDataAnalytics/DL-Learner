@@ -21,7 +21,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.ClassAssertionAxiom;
@@ -85,12 +85,12 @@ public class KRKModular {
 	static HashMap<String, SortedSet<Individual>> classToInd = new HashMap<String, SortedSet<Individual>>();
 	static HashMap<Individual, String> indToClass = new HashMap<Individual, String>();
 	
-	static Set<ReasonerComponent> allReasoners =  new HashSet<ReasonerComponent>();
+	static Set<ReasonerComponentOld> allReasoners =  new HashSet<ReasonerComponentOld>();
 	static int negativeExamplesAdded = 200;
 	
 	// static LinkedList<String> words;
 	public KB kb;
-	public ReasonerComponent reasoner;
+	public ReasonerComponentOld reasoner;
 	
 	
 	//public FastInstanceChecker fic;
@@ -254,7 +254,7 @@ public class KRKModular {
 		try {
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		sources.add(new KBFile(kb));
-		ReasonerComponent r = new FastInstanceChecker(sources);
+		ReasonerComponentOld r = new FastInstanceChecker(sources);
 		r.init();
 		ReasoningService rs = new ReasoningService(r); 
 		
@@ -470,7 +470,7 @@ public class KRKModular {
 		SortedSet<Individual> ret = new TreeSet<Individual>(); 
 		try{
 			
-			for (ReasonerComponent onereasoner : allReasoners) {
+			for (ReasonerComponentOld onereasoner : allReasoners) {
 				ret.addAll(onereasoner.retrieval(d));
 			}
 			

@@ -34,7 +34,7 @@ import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasonerComponentOld;
 import org.dllearner.core.ReasoningService;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -76,7 +76,7 @@ public class SemanticBible {
 	
 	public static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
 	
-	private static Class<? extends ReasonerComponent> usedReasoner = FastInstanceChecker.class;
+	private static Class<? extends ReasonerComponentOld> usedReasoner = FastInstanceChecker.class;
 
 	/**
 	 * @param args

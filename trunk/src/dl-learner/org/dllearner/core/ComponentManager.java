@@ -71,7 +71,7 @@ public final class ComponentManager {
 	// these variables are valid for the complete lifetime of a DL-Learner session
 	private static Collection<Class<? extends Component>> components;
 	private static Collection<Class<? extends KnowledgeSource>> knowledgeSources;
-	private static Collection<Class<? extends ReasonerComponent>> reasonerComponents;
+	private static Collection<Class<? extends ReasonerComponentOld>> reasonerComponents;
 	private static Collection<Class<? extends LearningProblem>> learningProblems;
 	private static Collection<Class<? extends LearningAlgorithm>> learningAlgorithms;
 	// you can either use the components.ini file or directly specify the classes to use
@@ -111,7 +111,7 @@ public final class ComponentManager {
 		// component list
 		components = new TreeSet<Class<? extends Component>>(classComparator);
 		knowledgeSources = new TreeSet<Class<? extends KnowledgeSource>>(classComparator);
-		reasonerComponents = new TreeSet<Class<? extends ReasonerComponent>>(classComparator);
+		reasonerComponents = new TreeSet<Class<? extends ReasonerComponentOld>>(classComparator);
 		learningProblems = new TreeSet<Class<? extends LearningProblem>>(classComparator);
 		learningAlgorithms = new TreeSet<Class<? extends LearningAlgorithm>>(classComparator);
 		algorithmProblemsMapping = new TreeMap<Class<? extends LearningAlgorithm>, Collection<Class<? extends LearningProblem>>>(
@@ -126,8 +126,8 @@ public final class ComponentManager {
 
 				if (KnowledgeSource.class.isAssignableFrom(component)) {
 					knowledgeSources.add((Class<? extends KnowledgeSource>) component);
-				} else if (ReasonerComponent.class.isAssignableFrom(component)) {
-					reasonerComponents.add((Class<? extends ReasonerComponent>) component);
+				} else if (ReasonerComponentOld.class.isAssignableFrom(component)) {
+					reasonerComponents.add((Class<? extends ReasonerComponentOld>) component);
 				} else if (LearningProblem.class.isAssignableFrom(component)) {
 					learningProblems.add((Class<? extends LearningProblem>) component);
 				} else if (LearningAlgorithm.class.isAssignableFrom(component)) {
@@ -324,7 +324,7 @@ public final class ComponentManager {
 	 * @param source A knowledge source.
 	 * @return A reasoner component.
 	 */
-	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
+	public <T extends ReasonerComponentOld> T reasoner(Class<T> reasoner,
 			KnowledgeSource source) {
 		Set<KnowledgeSource> sources = new HashSet<KnowledgeSource>();
 		sources.add(source);
@@ -340,7 +340,7 @@ public final class ComponentManager {
 	 * @param sources A set of knowledge sources.
 	 * @return A reasoner component.
 	 */
-	public <T extends ReasonerComponent> T reasoner(Class<T> reasoner,
+	public <T extends ReasonerComponentOld> T reasoner(Class<T> reasoner,
 			Set<KnowledgeSource> sources) {
 		if (!reasonerComponents.contains(reasoner)) {
 			System.err.println("Warning: reasoner component " + reasoner
@@ -365,7 +365,7 @@ public final class ComponentManager {
 	 * @param reasoner A reasoner component.
 	 * @return The reasoning service encapsulating the reasoner.
 	 */
-	public ReasoningService reasoningService(ReasonerComponent reasoner) {
+	public ReasoningService reasoningService(ReasonerComponentOld reasoner) {
 		return new ReasoningService(reasoner);
 	}
 	
@@ -659,8 +659,8 @@ public final class ComponentManager {
 	 * @return the components A list of reasoner component classes available in this
 	 * instance of <code>ComponentManager</code>.
 	 */	
-	public List<Class<? extends ReasonerComponent>> getReasonerComponents() {
-		return new LinkedList<Class<? extends ReasonerComponent>>(reasonerComponents);
+	public List<Class<? extends ReasonerComponentOld>> getReasonerComponents() {
+		return new LinkedList<Class<? extends ReasonerComponentOld>>(reasonerComponents);
 	}
 
 	/**
