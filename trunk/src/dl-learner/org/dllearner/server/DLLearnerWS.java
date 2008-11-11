@@ -580,7 +580,7 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getIndividualsForARole(int id, String role) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		Map<Individual,SortedSet<Individual>> m = state.getReasonerComponent().getRoleMembers(new ObjectProperty(role));
+		Map<Individual,SortedSet<Individual>> m = state.getReasonerComponent().getPropertyMembers(new ObjectProperty(role));
 		Set<Individual> individuals = m.keySet();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}

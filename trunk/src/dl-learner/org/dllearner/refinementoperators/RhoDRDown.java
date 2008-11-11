@@ -217,7 +217,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 				valueFrequency.put(op, opMap);
 				
 				// sets ordered by corresponding individual (which we ignore)
-				Collection<SortedSet<Individual>> fillerSets = rs.getRoleMembers(op).values();
+				Collection<SortedSet<Individual>> fillerSets = rs.getPropertyMembers(op).values();
 				for(SortedSet<Individual> fillerSet : fillerSets) {
 					for(Individual i : fillerSet) {
 //						System.out.println("op " + op + " i " + i);
@@ -264,7 +264,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		if(useCardinalityRestrictions) {
 		for(ObjectProperty op : rs.getObjectProperties()) {
 			int maxFillers = 0;
-			Map<Individual,SortedSet<Individual>> opMembers = rs.getRoleMembers(op);
+			Map<Individual,SortedSet<Individual>> opMembers = rs.getPropertyMembers(op);
 			for(SortedSet<Individual> inds : opMembers.values()) {
 				if(inds.size()>maxFillers)
 					maxFillers = inds.size();

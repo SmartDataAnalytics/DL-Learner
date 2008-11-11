@@ -564,7 +564,7 @@ public class Helper {
 		}
 
 		for (ObjectProperty atomicRole : rs.getObjectProperties()) {
-			aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getRoleMembers(atomicRole)));
+			aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getPropertyMembers(atomicRole)));
 			aBox.roles.add(atomicRole.getName());
 		}
 

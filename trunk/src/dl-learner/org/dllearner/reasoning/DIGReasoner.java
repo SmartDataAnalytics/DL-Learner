@@ -699,7 +699,7 @@ public class DIGReasoner extends ReasonerComponent {
 	// das in Responsegroup auch nicht definiert
 	// => deswegen wird hier die XML-Cursor-API verwendet
 	@Override
-	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) {
+	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
 		String relatedIndividualsDIG = asksPrefix;
 		relatedIndividualsDIG += "<relatedIndividuals id=\"related_individuals\">";
 		relatedIndividualsDIG += "<ratom name=\"" + atomicRole.getName() + "\" />";
@@ -800,9 +800,9 @@ public class DIGReasoner extends ReasonerComponent {
 		return null;
 	}
 
-	@Override
-	public boolean hasDatatypeSupport() {
-		return false;
-	}
+//	@Override
+//	public boolean hasDatatypeSupport() {
+//		return false;
+//	}
 
 }

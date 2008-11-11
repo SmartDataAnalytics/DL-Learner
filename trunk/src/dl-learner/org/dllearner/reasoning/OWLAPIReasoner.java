@@ -384,7 +384,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getDatatypePropertiesImpl() {
 		return datatypeProperties;
 	}
 	
@@ -512,8 +512,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 //	public ObjectPropertyHierarchy getRoleHierarchy() {
 //		return roleHierarchy;
 //	}	
-	
-	@Override
+		
 	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
 		// code copied from DIG reasoner
 		
@@ -668,7 +667,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public Description getDomain(ObjectProperty objectProperty) {
+	public Description getDomainImpl(ObjectProperty objectProperty) {
 		OWLObjectProperty prop = getOWLAPIDescription(objectProperty);
 		try {
 			// TODO: look up why OWL API return a two dimensional set here
@@ -687,7 +686,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public Description getDomain(DatatypeProperty datatypeProperty) {
+	public Description getDomainImpl(DatatypeProperty datatypeProperty) {
 		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
 		try {
 			// TODO: look up why OWL API return a two dimensional set here
@@ -706,7 +705,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public Description getRange(ObjectProperty objectProperty) {
+	public Description getRangeImpl(ObjectProperty objectProperty) {
 		OWLObjectProperty prop = getOWLAPIDescription(objectProperty);
 		try {
 			Set<OWLDescription> set = reasoner.getRanges(prop);
@@ -720,7 +719,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) {
+	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
 		OWLObjectProperty prop = getOWLAPIDescription(atomicRole);
 		Map<Individual, SortedSet<Individual>> map = new TreeMap<Individual, SortedSet<Individual>>();
 		for(Individual i : individuals) {
@@ -744,7 +743,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public Set<Individual> getRelatedIndividuals(Individual individual, ObjectProperty objectProperty) {
+	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) {
 		OWLIndividual ind = factory.getOWLIndividual(URI.create(individual.getName()));
 		OWLObjectProperty prop = getOWLAPIDescription(objectProperty);
 		Set<OWLIndividual> inds = null;
@@ -762,7 +761,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty) {
+	public Set<Constant> getRelatedValuesImpl(Individual individual, DatatypeProperty datatypeProperty) {
 		OWLIndividual ind = factory.getOWLIndividual(URI.create(individual.getName()));
 		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
 		Set<OWLConstant> constants = null;
@@ -1009,7 +1008,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @return the booleanDatatypeProperties
 	 */
 	@Override
-	public SortedSet<DatatypeProperty> getBooleanDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getBooleanDatatypePropertiesImpl() {
 		return booleanDatatypeProperties;
 	}
 
@@ -1017,7 +1016,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @return the doubleDatatypeProperties
 	 */
 	@Override
-	public SortedSet<DatatypeProperty> getDoubleDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getDoubleDatatypePropertiesImpl() {
 		return doubleDatatypeProperties;
 	}
 
@@ -1025,7 +1024,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	 * @return the intDatatypeProperties
 	 */
 	@Override
-	public SortedSet<DatatypeProperty> getIntDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl() {
 		return intDatatypeProperties;
 	}
 
@@ -1065,10 +1064,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		configurator.setReasonerType(type);
 	}*/
 
-	@Override
-	public boolean hasDatatypeSupport() {
-		return true;
-	}
+//	@Override
+//	public boolean hasDatatypeSupport() {
+//		return true;
+//	}
 	
 	@Override
 	public Set<NamedClass> getInconsistentClassesImpl(){
@@ -1099,7 +1098,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 
 	@Override
 	@SuppressWarnings("all")
-	public Set<Constant> getLabel(Entity entity) {
+	public Set<Constant> getLabelImpl(Entity entity) {
 		OWLEntity owlEntity = getOWLAPIEntity(entity);
 		Set<OWLAnnotation> labelAnnotations = owlEntity.getAnnotations(owlAPIOntologies.get(0), URI.create("http://www.w3.org/2000/01/rdf-schema#label"));
 		Set<Constant> annotations = new HashSet<Constant>();

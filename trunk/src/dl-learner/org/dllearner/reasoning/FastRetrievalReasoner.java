@@ -208,8 +208,8 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 		rc.releaseKB();
 	}
 
-	@Override
-	public boolean hasDatatypeSupport() {
-		return true;
-	}
+//	@Override
+//	public boolean hasDatatypeSupport() {
+//		return true;
+//	}
 }

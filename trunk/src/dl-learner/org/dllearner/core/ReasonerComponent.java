@@ -328,7 +328,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
-	
+
 	@Override
 	public final SortedSet<Individual> hasType(Description concept, Set<Individual> s) {
 		// logger.debug("instanceCheck "+concept.toKBSyntaxString());
@@ -356,8 +356,22 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 				returnSet.add(individual);
 		}
 		return returnSet;
-	}	
+	}
 
+	@Override
+	public final Set<NamedClass> getInconsistentClasses() {
+		try {
+			return getInconsistentClassesImpl();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}	
+	
+	protected Set<NamedClass> getInconsistentClassesImpl() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
 	@Override
 	public final boolean isSatisfiable() {
 		reasoningStartTimeTmp = System.nanoTime();
@@ -376,10 +390,11 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 
 	protected boolean isSatisfiableImpl() throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
-	}	
-	
-	public Set<Individual> getRelatedIndividuals(Individual individual,
-			ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+	}
+
+	@Override
+	public final Set<Individual> getRelatedIndividuals(Individual individual,
+			ObjectProperty objectProperty) {
 		try {
 			return getRelatedIndividualsImpl(individual, objectProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -388,8 +403,14 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty)
-			throws ReasoningMethodUnsupportedException {
+	protected Set<Individual> getRelatedIndividualsImpl(Individual individual,
+			ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final Set<Constant> getRelatedValues(Individual individual,
+			DatatypeProperty datatypeProperty) {
 		try {
 			return getRelatedValuesImpl(individual, datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -398,7 +419,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public Set<Constant> getLabel(Entity entity) throws ReasoningMethodUnsupportedException {
+	protected Set<Constant> getRelatedValuesImpl(Individual individual,
+			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final Set<Constant> getLabel(Entity entity) {
 		try {
 			return getLabelImpl(entity);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -407,11 +434,16 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) {
+	protected Set<Constant> getLabelImpl(Entity entity) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final Map<Individual, SortedSet<Individual>> getPropertyMembers(ObjectProperty atomicRole) {
 		reasoningStartTimeTmp = System.nanoTime();
 		Map<Individual, SortedSet<Individual>> result;
 		try {
-			result = getRoleMembersImpl(atomicRole);
+			result = getPropertyMembersImpl(atomicRole);
 		} catch (ReasoningMethodUnsupportedException e) {
 			handleExceptions(e);
 			return null;
@@ -422,9 +454,29 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return result;
 	}
 
-	public abstract boolean hasDatatypeSupport();
+	protected Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(
+			ObjectProperty atomicRole) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
 
-	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(
+	@Override
+	public final Map<Individual, SortedSet<Constant>> getDatatypeMembers(
+			DatatypeProperty datatypeProperty) {
+		try {
+			return getDatatypeMembersImpl(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+
+	protected Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(
+			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(
 			DatatypeProperty datatypeProperty) {
 		try {
 			return getDoubleDatatypeMembersImpl(datatypeProperty);
@@ -434,7 +486,24 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public Map<Individual, SortedSet<Integer>> getIntDatatypeMembers(
+	protected Map<Individual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
+			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<Individual, SortedSet<Double>> ret = new TreeMap<Individual, SortedSet<Double>>();
+		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			SortedSet<Double> valuesDouble = new TreeSet<Double>();
+			for (Constant c : values) {
+				double v = Double.valueOf(c.getLiteral());
+				valuesDouble.add(v);
+			}
+			ret.put(e.getKey(), valuesDouble);
+		}
+		return ret;
+	}
+
+	@Override
+	public final Map<Individual, SortedSet<Integer>> getIntDatatypeMembers(
 			DatatypeProperty datatypeProperty) {
 		try {
 			return getIntDatatypeMembersImpl(datatypeProperty);
@@ -444,7 +513,58 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public SortedSet<Individual> getTrueDatatypeMembers(DatatypeProperty datatypeProperty) {
+	protected Map<Individual, SortedSet<Integer>> getIntDatatypeMembersImpl(
+			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<Individual, SortedSet<Integer>> ret = new TreeMap<Individual, SortedSet<Integer>>();
+		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			SortedSet<Integer> valuesInt = new TreeSet<Integer>();
+			for (Constant c : values) {
+				int v = Integer.valueOf(c.getLiteral());
+				valuesInt.add(v);
+			}
+			ret.put(e.getKey(), valuesInt);
+		}
+		return ret;
+	}
+
+	@Override
+	public final Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembers(
+			DatatypeProperty datatypeProperty) {
+		try {
+			return getBooleanDatatypeMembersImpl(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+
+	protected Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembersImpl(
+			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<Individual, SortedSet<Boolean>> ret = new TreeMap<Individual, SortedSet<Boolean>>();
+		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			SortedSet<Boolean> valuesBoolean = new TreeSet<Boolean>();
+			for (Constant c : values) {
+				String s = c.getLiteral();
+				if (s.equalsIgnoreCase("true")) {
+					valuesBoolean.add(true);
+				} else if (s.equalsIgnoreCase("false")) {
+					valuesBoolean.add(false);
+				} else {
+					logger.warn("Requested to parse boolean value of property " + datatypeProperty
+							+ ", but " + c + " could not be parsed successfully.");
+				}
+			}
+			ret.put(e.getKey(), valuesBoolean);
+		}
+		return ret;
+	}
+
+	@Override
+	public final SortedSet<Individual> getTrueDatatypeMembers(DatatypeProperty datatypeProperty) {
 		try {
 			return getTrueDatatypeMembersImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -453,7 +573,26 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public SortedSet<Individual> getFalseDatatypeMembers(DatatypeProperty datatypeProperty) {
+	protected SortedSet<Individual> getTrueDatatypeMembersImpl(DatatypeProperty datatypeProperty)
+			throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		SortedSet<Individual> ret = new TreeSet<Individual>();
+		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			if (values.size() > 1) {
+				logger.warn("Property " + datatypeProperty + " has value " + e.getValue()
+						+ ". Cannot determine whether it is true.");
+			} else {
+				if (values.first().getLiteral().equalsIgnoreCase("true")) {
+					ret.add(e.getKey());
+				}
+			}
+		}
+		return ret;
+	}
+
+	@Override
+	public final SortedSet<Individual> getFalseDatatypeMembers(DatatypeProperty datatypeProperty) {
 		try {
 			return getFalseDatatypeMembersImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -462,7 +601,26 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public SortedSet<DatatypeProperty> getDatatypeProperties() {
+	protected SortedSet<Individual> getFalseDatatypeMembersImpl(DatatypeProperty datatypeProperty)
+			throws ReasoningMethodUnsupportedException {
+		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		SortedSet<Individual> ret = new TreeSet<Individual>();
+		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
+			SortedSet<Constant> values = e.getValue();
+			if (values.size() > 1) {
+				logger.warn("Property " + datatypeProperty + " has value " + e.getValue()
+						+ ". Cannot determine whether it is false.");
+			} else {
+				if (values.first().getLiteral().equalsIgnoreCase("false")) {
+					ret.add(e.getKey());
+				}
+			}
+		}
+		return ret;
+	}
+
+	@Override
+	public final SortedSet<DatatypeProperty> getDatatypeProperties() {
 		try {
 			return getDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -471,7 +629,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public SortedSet<DatatypeProperty> getBooleanDatatypeProperties() {
+	protected SortedSet<DatatypeProperty> getDatatypePropertiesImpl()
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final SortedSet<DatatypeProperty> getBooleanDatatypeProperties() {
 		try {
 			return getBooleanDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -480,7 +644,17 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public SortedSet<DatatypeProperty> getIntDatatypeProperties() {
+	// TODO Even if there is a small performance penalty, we could implement
+	// the method right here by iterating over all data properties and
+	// querying their ranges. At least, this should be done once we have a
+	// reasoner independant of OWL API with datatype support.
+	protected SortedSet<DatatypeProperty> getBooleanDatatypePropertiesImpl()
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final SortedSet<DatatypeProperty> getIntDatatypeProperties() {
 		try {
 			return getIntDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -489,7 +663,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public SortedSet<DatatypeProperty> getDoubleDatatypeProperties() {
+	protected SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl()
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final SortedSet<DatatypeProperty> getDoubleDatatypeProperties() {
 		try {
 			return getDoubleDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -498,7 +678,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public Description getDomain(ObjectProperty objectProperty) {
+	protected SortedSet<DatatypeProperty> getDoubleDatatypePropertiesImpl()
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final Description getDomain(ObjectProperty objectProperty) {
 		try {
 			return getDomainImpl(objectProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -507,7 +693,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public Description getDomain(DatatypeProperty datatypeProperty) {
+	protected Description getDomainImpl(ObjectProperty objectProperty)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final Description getDomain(DatatypeProperty datatypeProperty) {
 		try {
 			return getDomainImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -516,7 +708,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public Description getRange(ObjectProperty objectProperty) {
+	protected Description getDomainImpl(DatatypeProperty datatypeProperty)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final Description getRange(ObjectProperty objectProperty) {
 		try {
 			return getRangeImpl(objectProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -525,7 +723,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public DataRange getRange(DatatypeProperty datatypeProperty) {
+	protected Description getRangeImpl(ObjectProperty objectProperty)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+
+	@Override
+	public final DataRange getRange(DatatypeProperty datatypeProperty) {
 		try {
 			return getRangeImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -534,191 +738,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public Set<Individual> getRelatedIndividualsImpl(Individual individual,
-			ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public Set<Constant> getRelatedValuesImpl(Individual individual,
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public Set<Constant> getLabelImpl(Entity entity) throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public Map<Individual, SortedSet<Individual>> getRoleMembersImpl(ObjectProperty atomicRole)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	// convenience method to get int value mappings of a datatype property
-	public Map<Individual, SortedSet<Integer>> getIntDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<Individual, SortedSet<Integer>> ret = new TreeMap<Individual, SortedSet<Integer>>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
-			SortedSet<Integer> valuesInt = new TreeSet<Integer>();
-			for (Constant c : values) {
-				int v = Integer.parseInt(c.getLiteral());
-				valuesInt.add(v);
-			}
-			ret.put(e.getKey(), valuesInt);
-		}
-		return ret;
-	}
-
-	// convenience method to get double value mappings of a datatype property
-	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<Individual, SortedSet<Double>> ret = new TreeMap<Individual, SortedSet<Double>>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
-			SortedSet<Double> valuesDouble = new TreeSet<Double>();
-			for (Constant c : values) {
-				double v = Double.parseDouble(c.getLiteral());
-				valuesDouble.add(v);
-			}
-			ret.put(e.getKey(), valuesDouble);
-		}
-		return ret;
-	}
-
-	// convenience method to get boolean value mappings of a datatype property
-	public Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<Individual, SortedSet<Boolean>> ret = new TreeMap<Individual, SortedSet<Boolean>>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
-			SortedSet<Boolean> valuesBoolean = new TreeSet<Boolean>();
-			for (Constant c : values) {
-				boolean v = Boolean.parseBoolean(c.getLiteral());
-				valuesBoolean.add(v);
-			}
-			ret.put(e.getKey(), valuesBoolean);
-		}
-		return ret;
-	}
-
-	// convenience method returning those values which have value "true" for
-	// this
-	// datatype property
-	public SortedSet<Individual> getTrueDatatypeMembersImpl(DatatypeProperty datatypeProperty)
-			throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		SortedSet<Individual> ret = new TreeSet<Individual>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
-			for (Constant c : values) {
-				boolean v = Boolean.parseBoolean(c.getLiteral());
-				if (v == true)
-					ret.add(e.getKey());
-			}
-		}
-		return ret;
-	}
-
-	// convenience method returning those values which have value "false" for
-	// this
-	// datatype property
-	public SortedSet<Individual> getFalseDatatypeMembersImpl(DatatypeProperty datatypeProperty)
-			throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		SortedSet<Individual> ret = new TreeSet<Individual>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
-			for (Constant c : values) {
-				boolean v = Boolean.parseBoolean(c.getLiteral());
-				if (v == false)
-					ret.add(e.getKey());
-			}
-		}
-		return ret;
-	}
-
-
-	public SortedSetTuple<Individual> doubleRetrievalImpl(Description concept, Description adc)
+	protected DataRange getRangeImpl(DatatypeProperty datatypeProperty)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 
 
-
-
-	public void prepareRoleHierarchyImpl(Set<ObjectProperty> allowedRoles)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedDatatypeProperties)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public ObjectPropertyHierarchy getRoleHierarchyImpl()
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public DatatypePropertyHierarchy getDatatypePropertyHierarchyImpl()
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public Description getDomainImpl(ObjectProperty objectProperty)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public Description getDomainImpl(DatatypeProperty datatypeProperty)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public Description getRangeImpl(ObjectProperty objectProperty)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public DataRange getRangeImpl(DatatypeProperty datatypeProperty)
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public SortedSet<DatatypeProperty> getDatatypePropertiesImpl()
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public SortedSet<DatatypeProperty> getBooleanDatatypePropertiesImpl()
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public SortedSet<DatatypeProperty> getDoubleDatatypePropertiesImpl()
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl()
-			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
-
-	public Set<NamedClass> getInconsistentClassesImpl() throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}	
-	
 	@Override
 	public final SortedSet<Description> getSuperClasses(Description concept) {
 		return getClassHierarchy().getMoreGeneralConcepts(concept);
@@ -769,7 +795,16 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return getDatatypePropertyHierarchy().getMostSpecialRoles();
 	}
 
-	protected ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
+	/**
+	 * Creates the class hierarchy. Invoking this method is optional (if not
+	 * called explicitly, it is called the first time, it is needed).
+	 * 
+	 * @return The class hierarchy.
+	 * @throws ReasoningMethodUnsupportedException
+	 *             Thrown if subsumption hierarchy creation is not supported by
+	 *             the reasoner.
+	 */
+	public ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException(
 				"Subsumption hierarchy creation not supported by this reasoner.");
 	}
@@ -780,7 +815,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 			if (subsumptionHierarchy == null) {
 				subsumptionHierarchy = prepareSubsumptionHierarchy();
 			}
-//			subsumptionHierarchy = getSubsumptionHierarchyImpl();
+			// subsumptionHierarchy = getSubsumptionHierarchyImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
 			handleExceptions(e);
 		}
@@ -788,11 +823,17 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return subsumptionHierarchy;
 	}
 
-//	public ClassHierarchy getSubsumptionHierarchyImpl() throws ReasoningMethodUnsupportedException {
-//		throw new ReasoningMethodUnsupportedException();
-//	}	
-	
-	protected ObjectPropertyHierarchy prepareRoleHierarchy() throws ReasoningMethodUnsupportedException {
+	/**
+	 * Creates the object property hierarchy. Invoking this method is optional
+	 * (if not called explicitly, it is called the first time, it is needed).
+	 * 
+	 * @return The object property hierarchy.
+	 * @throws ReasoningMethodUnsupportedException
+	 *             Thrown if object property hierarchy creation is not supported
+	 *             by the reasoner.
+	 */
+	public ObjectPropertyHierarchy prepareRoleHierarchy()
+			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException(
 				"Object property hierarchy creation not supported by this reasoner.");
 	}
@@ -809,7 +850,17 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return roleHierarchy;
 	}
 
-	protected DatatypePropertyHierarchy prepareDatatypePropertyHierarchy() throws ReasoningMethodUnsupportedException {
+	/**
+	 * Creates the data property hierarchy. Invoking this method is optional (if
+	 * not called explicitly, it is called the first time, it is needed).
+	 * 
+	 * @return The data property hierarchy.
+	 * @throws ReasoningMethodUnsupportedException
+	 *             Thrown if data property hierarchy creation is not supported
+	 *             by the reasoner.
+	 */
+	public DatatypePropertyHierarchy prepareDatatypePropertyHierarchy()
+			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException(
 				"Datatype property hierarchy creation not supported by this reasoner.");
 	}
@@ -824,8 +875,8 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 			}
 		}
 		return datatypePropertyHierarchy;
-	}	
-	
+	}
+
 	public List<NamedClass> getAtomicConceptsList() {
 		if (atomicConceptsList == null)
 			atomicConceptsList = new LinkedList<NamedClass>(getNamedClasses());
@@ -880,10 +931,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return subsumptionReasoningTimeNs;
 	}
 
-	/*
-	 * public long getSubsumptionHierarchyTimeNs() { return
-	 * subsumptionHierarchyTimeNs; }
-	 */
 	public int getNrOfSubsumptionHierarchyQueries() {
 		return nrOfSubsumptionHierarchyQueries;
 	}
