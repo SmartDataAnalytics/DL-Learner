@@ -45,6 +45,7 @@ import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
@@ -356,10 +357,13 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		}
 		
 		// prepare subsumption and role hierarchies, because they are needed
-		// during the run of the algorithm
-//		reasoner.prepareSubsumptionHierarchy(usedConcepts);
+		// during the run of the algorithm;
+		// in contrast to before, the learning algorithms have to maintain their
+		// own view on the class hierarchy
+		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
 		if(improveSubsumptionHierarchy)
-			reasoner.getClassHierarchy().thinOutSubsumptionHierarchy();
+			classHierarchy.thinOutSubsumptionHierarchy();
+		
 //		reasoner.prepareRoleHierarchy(usedRoles);
 		// prepare datatype hierarchy only if necessary
 //		if(reasoner.hasDatatypeSupport())
@@ -369,6 +373,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		// variables to it
 		RhoDRDown operator = new RhoDRDown(
 				reasoner,
+				classHierarchy,
 					applyAllFilter,
 					applyExistsFilter,
 					useAllConstructor, 

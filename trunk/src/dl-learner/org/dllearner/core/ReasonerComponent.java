@@ -749,7 +749,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 
 	@Override
 	public final SortedSet<Description> getSuperClasses(Description concept) {
-		return getClassHierarchy().getMoreGeneralConcepts(concept);
+		return getClassHierarchy().getSuperClasses(concept);
 	}
 
 	protected SortedSet<Description> getSuperClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
@@ -758,7 +758,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	
 	@Override
 	public final SortedSet<Description> getSubClasses(Description concept) {
-		return getClassHierarchy().getMoreSpecialConcepts(concept);
+		return getClassHierarchy().getSubClasses(concept);
 	}
 
 	protected SortedSet<Description> getSubClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
@@ -819,15 +819,19 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, SortedSet<Description>>(
 				conceptComparator);
 
-		// refinements of top
+		// parents/children of top ...
 		SortedSet<Description> tmp = getSubClassesImpl(Thing.instance);
-		subsumptionHierarchyDown.put(new Thing(), tmp);
+		subsumptionHierarchyUp.put(Thing.instance, new TreeSet<Description>());
+		subsumptionHierarchyDown.put(Thing.instance, tmp);
 
-		// refinements of bottom
+		
+		
+		// ... bottom ...
 		tmp = getSuperClassesImpl(Nothing.instance);
-		subsumptionHierarchyUp.put(new Nothing(), tmp);
+		subsumptionHierarchyUp.put(Nothing.instance, tmp);
+		subsumptionHierarchyDown.put(Nothing.instance, new TreeSet<Description>());
 
-		// refinements of atomic concepts
+		// ... and named classes
 		Set<NamedClass> atomicConcepts = getNamedClasses();
 		for (NamedClass atom : atomicConcepts) {
 			tmp = getSubClassesImpl(atom);
@@ -845,6 +849,8 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 			subsumptionHierarchyUp.put(atom, tmp);
 		}		
 
+		
+		
 		return new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
 

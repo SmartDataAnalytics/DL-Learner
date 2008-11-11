@@ -54,10 +54,12 @@ public class ClassHierarchy {
 		
 		this.subsumptionHierarchyUp = subsumptionHierarchyUp;
 		this.subsumptionHierarchyDown = subsumptionHierarchyDown;
+		
+		
 
 	}
 
-	public SortedSet<Description> getMoreGeneralConcepts(Description concept) {
+	public SortedSet<Description> getSuperClasses(Description concept) {
 		SortedSet<Description> result =  subsumptionHierarchyUp.get(concept);
 		if(result == null) {
 			logger.error("Query for super class of " + concept + " in subsumption hierarchy, but the class is not contained in the (upward) hierarchy");
@@ -68,7 +70,7 @@ public class ClassHierarchy {
 		return new TreeSet<Description>(result);
 	}
 
-	public SortedSet<Description> getMoreSpecialConcepts(Description concept) {
+	public SortedSet<Description> getSubClasses(Description concept) {
 		SortedSet<Description> result =  subsumptionHierarchyDown.get(concept);
 		if(result == null) {
 			logger.error("Query for sub class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy");
@@ -200,22 +202,31 @@ public class ClassHierarchy {
 	 * if we have subclass relationships between 1sYearStudent, Student, and
 	 * Person, but Student is not allowed, then there a is a subclass relationship
 	 * between 1stYearStudent and Person.
+	 * Currently, owl:Thing and owl:Nothing are always allowed for technical
+	 * reasons.
 	 * @param allowedClasses The classes, which are allowed to occur in the new
 	 * class hierarchy.
 	 * @return A copy of this hierarchy, which is restricted to a certain set
 	 * of classes.
 	 */
 	public ClassHierarchy cloneAndRestrict(Set<NamedClass> allowedClasses) {
+		// currently TOP and BOTTOM are always allowed
+		// (TODO would be easier if Thing/Nothing were declared as named classes)
+		Set<Description> allowed = new TreeSet<Description>(conceptComparator);
+		allowed.addAll(allowedClasses);
+		allowed.add(Thing.instance);
+		allowed.add(Nothing.instance);
+		
 		// create new maps
 		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUpNew
-		= new TreeMap<Description, SortedSet<Description>>();
+		= new TreeMap<Description, SortedSet<Description>>(conceptComparator);
 		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDownNew 
-		= new TreeMap<Description, SortedSet<Description>>();
+		= new TreeMap<Description, SortedSet<Description>>(conceptComparator);
 		
 		for(Entry<Description, SortedSet<Description>> entry : subsumptionHierarchyUp.entrySet()) {
 			Description key = entry.getKey();
 			// we only store mappings for allowed classes
-			if(allowedClasses.contains(key)) {
+			if(allowed.contains(key)) {
 				// copy the set of all super classes (we consume them until
 				// they are empty)
 				TreeSet<Description> superClasses = new TreeSet<Description>(entry.getValue());
@@ -226,7 +237,7 @@ public class ClassHierarchy {
 					// pick and remove the first element
 					Description d = superClasses.pollFirst();
 					// case 1: it is allowed, so we add it
-					if(allowedClasses.contains(d)) {
+					if(allowed.contains(d)) {
 						newSuperClasses.add(d);
 					// case 2: it is not allowed, so we try its super classes
 					} else {
@@ -241,13 +252,13 @@ public class ClassHierarchy {
 		// downward case is analogous
 		for(Entry<Description, SortedSet<Description>> entry : subsumptionHierarchyDown.entrySet()) {
 			Description key = entry.getKey();
-			if(allowedClasses.contains(key)) {
+			if(allowed.contains(key)) {
 				TreeSet<Description> subClasses = new TreeSet<Description>(entry.getValue());
 				TreeSet<Description> newSubClasses = new TreeSet<Description>(entry.getValue());
 				
 				while(!subClasses.isEmpty()) {
 					Description d = subClasses.pollFirst();
-					if(allowedClasses.contains(d)) {
+					if(allowed.contains(d)) {
 						newSubClasses.add(d);
 					} else {
 						subClasses.addAll(subsumptionHierarchyDown.get(d));
