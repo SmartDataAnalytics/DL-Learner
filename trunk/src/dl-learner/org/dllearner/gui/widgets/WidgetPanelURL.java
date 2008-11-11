@@ -30,7 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.config.URLConfigOption;
+import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.gui.Config;
 import org.dllearner.gui.ExampleFileChooser;
 import org.dllearner.kb.OWLFile;

@@ -388,8 +388,8 @@ public class ExampleBasedROLearner {
 			startNode.setCoveredExamples(positiveExamples, negativeExamples);
 		} else {
 			startNode = new ExampleBasedNode(startDescription);
-			Set<Individual> coveredNegatives = rs.instanceCheck(startDescription, negativeExamples);
-			Set<Individual> coveredPositives = rs.instanceCheck(startDescription, positiveExamples);
+			Set<Individual> coveredNegatives = rs.hasType(startDescription, negativeExamples);
+			Set<Individual> coveredPositives = rs.hasType(startDescription, positiveExamples);
 			startNode.setCoveredExamples(coveredPositives, coveredNegatives);
 		}
 

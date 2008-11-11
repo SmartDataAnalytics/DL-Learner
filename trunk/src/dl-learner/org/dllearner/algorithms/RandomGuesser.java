@@ -30,11 +30,11 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerConfigOption;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.configurators.RandomGuesserConfigurator;
+import org.dllearner.core.options.ConfigEntry;
+import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.IntegerConfigOption;
+import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.Description;
 
 public class RandomGuesser extends LearningAlgorithm {

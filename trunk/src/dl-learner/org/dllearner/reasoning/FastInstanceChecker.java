@@ -35,18 +35,18 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.config.BooleanConfigOption;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.FastInstanceCheckerConfigurator;
+import org.dllearner.core.options.BooleanConfigOption;
+import org.dllearner.core.options.ConfigEntry;
+import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.InvalidConfigOptionValueException;
+import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.BooleanValueRestriction;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.DoubleMaxValue;
@@ -63,10 +63,8 @@ import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyExpression;
-import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
-import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLFile;
@@ -572,20 +570,20 @@ public class FastInstanceChecker extends ReasonerComponent {
 		rc.prepareRoleHierarchy(allowedRoles);
 	}
 
-	@Override
-	public ObjectPropertyHierarchy getRoleHierarchy() {
-		return rc.getRoleHierarchy();
-	}
+//	@Override
+//	public ObjectPropertyHierarchy getRoleHierarchy() {
+//		return rc.getRoleHierarchy();
+//	}
 
 	@Override
 	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
 		rc.prepareDatatypePropertyHierarchyImpl(allowedRoles);
 	}
 
-	@Override
-	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
-		return rc.getDatatypePropertyHierarchy();
-	}
+//	@Override
+//	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
+//		return rc.getDatatypePropertyHierarchy();
+//	}
 
 	@Override
 	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {

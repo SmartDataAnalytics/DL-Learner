@@ -38,7 +38,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.config.StringSetConfigOption;
+import org.dllearner.core.options.StringSetConfigOption;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;

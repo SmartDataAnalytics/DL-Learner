@@ -43,9 +43,9 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.cli.ConfMapper;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
+import org.dllearner.core.options.ConfigEntry;
+import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.utilities.Files;
 
 /**

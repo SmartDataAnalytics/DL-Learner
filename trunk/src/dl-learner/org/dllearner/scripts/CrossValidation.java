@@ -239,9 +239,9 @@ public class CrossValidation {
 			Description concept = la.getCurrentlyBestDescription();
 			
 			ReasonerComponent rs = start.getReasonerComponent();
-			Set<Individual> tmp = rs.instanceCheck(concept, testSetsPos.get(currFold));
+			Set<Individual> tmp = rs.hasType(concept, testSetsPos.get(currFold));
 			Set<Individual> tmp2 = Helper.difference(testSetsPos.get(currFold), tmp);
-			Set<Individual> tmp3 = rs.instanceCheck(concept, testSetsNeg.get(currFold));
+			Set<Individual> tmp3 = rs.hasType(concept, testSetsNeg.get(currFold));
 			
 			System.out.println("test set errors pos: " + tmp2);
 			System.out.println("test set errors neg: " + tmp3);
@@ -286,11 +286,11 @@ public class CrossValidation {
 	}
 	
 	private int getCorrectPosClassified(ReasonerComponent rs, Description concept, Set<Individual> testSetPos) {
-		return rs.instanceCheck(concept, testSetPos).size();
+		return rs.hasType(concept, testSetPos).size();
 	}
 	
 	private int getCorrectNegClassified(ReasonerComponent rs, Description concept, Set<Individual> testSetNeg) {
-		return testSetNeg.size() - rs.instanceCheck(concept, testSetNeg).size();
+		return testSetNeg.size() - rs.hasType(concept, testSetNeg).size();
 	}
 	
 	private Set<Individual> getTestingSet(List<Individual> examples, int[] splits, int fold) {

@@ -99,7 +99,7 @@ public final class Utility {
 	 * @return The most general applicable properties.
 	 */
 	public SortedSet<ObjectProperty> computeMgr(SortedSet<ObjectProperty> applicableObjectProperties) {
-		return Helper.intersection(rs.getMostGeneralRoles(), applicableObjectProperties);
+		return Helper.intersection(rs.getMostGeneralProperties(), applicableObjectProperties);
 	}
 	
 	public Set<NamedClass> getClassCandidates(Description index, Set<NamedClass> existingClasses) {

@@ -38,7 +38,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.config.StringTupleListConfigOption;
+import org.dllearner.core.options.StringTupleListConfigOption;
 import org.dllearner.gui.Config;
 import org.dllearner.utilities.datastructures.StringTuple;
 

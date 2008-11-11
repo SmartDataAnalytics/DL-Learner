@@ -42,6 +42,12 @@ import org.dllearner.core.owl.ObjectProperty;
 public interface BaseReasoner {
 
 	/**
+	 * Checks consistency of the knowledge.
+	 * @return True if the knowledge base is consistent and false otherwise.
+	 */
+	public boolean isSatisfiable();
+	
+	/**
 	 * Gets all named classes in the knowledge base, e.g. Person, City, Car.
 	 * @return All named classes in KB.
 	 */

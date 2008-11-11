@@ -72,7 +72,7 @@ public class ELDescriptionTree implements Cloneable {
 	public ELDescriptionTree(ReasonerComponent rs) {
 		this.rs = rs;
 		subsumptionHierarchy = rs.getClassHierarchy();
-		roleHierarchy = rs.getRoleHierarchy();
+		roleHierarchy = rs.getObjectPropertyHierarchy();
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class ELDescriptionTree implements Cloneable {
 							// we first check inclusion property on edges
 							ObjectProperty op1 = edges.get(j).getLabel();
 							ObjectProperty op2 = edges.get(k).getLabel();
-							if(rs.getRoleHierarchy().isSubpropertyOf(op1, op2)) {
+							if(rs.getObjectPropertyHierarchy().isSubpropertyOf(op1, op2)) {
 								ELDescriptionNode node1 = edges.get(j).getTree();
 								ELDescriptionNode node2 = edges.get(k).getTree();
 								// check simulation condition

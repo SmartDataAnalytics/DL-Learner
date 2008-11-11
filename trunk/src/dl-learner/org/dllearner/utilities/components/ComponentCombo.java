@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -38,7 +39,8 @@ import org.dllearner.reasoning.FastInstanceChecker;
  * A mix of components, which are typically combined to create a full 
  * learning task.
  * 
- * TODO: init/learn methods, more constructors
+ * Add more constructors if you like (they should be useful in general,
+ * not just for a very specific scenario).
  * 
  * @author Jens Lehmann
  *
@@ -50,10 +52,24 @@ public class ComponentCombo {
 	private LearningProblem problem;
 	private LearningAlgorithm algorithm;
 	
+	/**
+	 * Builds a component combination object from the specified components. 
+	 * @param source A knowledge source.
+	 * @param reasoner A reasoner.
+	 * @param problem A learning problem.
+	 * @param algorithm A learning algorithm.
+	 */
 	public ComponentCombo(KnowledgeSource source, ReasonerComponent reasoner, LearningProblem problem, LearningAlgorithm algorithm) {
 		this(getSourceSet(source), reasoner, problem, algorithm);
 	}	
 	
+	/**
+	 * Builds a component combination object from the specified components. 
+	 * @param sources A set of knowledge sources.
+	 * @param reasoner A reasoner.
+	 * @param problem A learning problem.
+	 * @param algorithm A learning algorithm.
+	 */	
 	public ComponentCombo(Set<KnowledgeSource> sources, ReasonerComponent reasoner, LearningProblem problem, LearningAlgorithm algorithm) {
 		this.sources = sources;
 		this.reasoner = reasoner;
@@ -66,7 +82,16 @@ public class ComponentCombo {
 		sources.add(source);
 		return sources;
 	}
-	
+
+	/**
+	 * Builds a standard combination of components. Currently, this is an OWL
+	 * File, the FastInstanceChecker reasoning algorithm, a definition learning
+	 * problem with positive and negative examples, and the example based
+	 * refinement algorithm.
+	 * @param owlFile URL of an OWL file (background knowledge).
+	 * @param posExamples Set of positive examples.
+	 * @param negExamples Set of negative examples.
+	 */
 	public ComponentCombo(URL owlFile, Set<String> posExamples, Set<String> negExamples) {
 		ComponentManager cm = ComponentManager.getInstance();
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
@@ -82,6 +107,19 @@ public class ComponentCombo {
 		}
 	}
 
+	/**
+	 * Initialise all components.
+	 * @throws ComponentInitException Thrown if a component could not be initialised properly.
+	 */
+	public void initAll() throws ComponentInitException {
+		for(KnowledgeSource source : sources) {
+			source.init();
+		}
+		reasoner.init();
+		problem.init();
+		algorithm.init();
+	}
+	
 	/**
 	 * @return the sources
 	 */

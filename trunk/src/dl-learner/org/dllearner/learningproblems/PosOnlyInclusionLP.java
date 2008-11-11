@@ -21,9 +21,9 @@ package org.dllearner.learningproblems;
 
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.configurators.PosOnlyInclusionLPConfigurator;
+import org.dllearner.core.options.ConfigEntry;
+import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.Description;
 
 /**

@@ -486,7 +486,7 @@ public class OntologyModifier {
 		//superclasses and class1
 //		Set<OWLDescription> superClasses1 = owlClass1.getSuperClasses(ontology);
 		Set<OWLDescription> superClasses1 = new HashSet<OWLDescription>();
-		for(Description d1 : rs.getMoreGeneralConcepts(desc1)){
+		for(Description d1 : rs.getSuperClasses(desc1)){
 			superClasses1.add(OWLAPIDescriptionConvertVisitor.getOWLDescription(d1));
 		}
 		superClasses1.add(owlClass1);
@@ -495,7 +495,7 @@ public class OntologyModifier {
 		//superclasses and class2
 //		Set<OWLDescription> superClasses2 = owlClass2.getSuperClasses(ontology);
 		Set<OWLDescription> superClasses2 = new HashSet<OWLDescription>();
-		for(Description d2 : rs.getMoreGeneralConcepts(desc2)){
+		for(Description d2 : rs.getSuperClasses(desc2)){
 			superClasses2.add(OWLAPIDescriptionConvertVisitor.getOWLDescription(d2));
 		}
 		superClasses2.add(owlClass2);

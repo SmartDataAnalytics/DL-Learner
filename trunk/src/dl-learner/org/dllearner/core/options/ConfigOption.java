@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core.config;
+package org.dllearner.core.options;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
