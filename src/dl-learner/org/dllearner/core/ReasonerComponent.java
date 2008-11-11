@@ -328,15 +328,14 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
-
-	// ////// STOPPED HERE //////////
-
-	public SortedSet<Individual> instanceCheck(Description concept, Set<Individual> s) {
+	
+	@Override
+	public final SortedSet<Individual> hasType(Description concept, Set<Individual> s) {
 		// logger.debug("instanceCheck "+concept.toKBSyntaxString());
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSet<Individual> result = null;
 		try {
-			result = instanceCheckImpl(concept, s);
+			result = hasTypeImpl(concept, s);
 		} catch (ReasoningMethodUnsupportedException e) {
 			handleExceptions(e);
 		}
@@ -349,164 +348,18 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return result;
 	}
 
-	/**
-	 * Returns more general concepts in the subsumption hierarchy.
-	 * 
-	 * @param concept
-	 *            Atomic concept, top, or bottom.
-	 * @return A set of more general concepts.
-	 */
-	public SortedSet<Description> getMoreGeneralConcepts(Description concept) {
-		return getClassHierarchy().getMoreGeneralConcepts(concept);
-	}
-
-	/**
-	 * Returns more special concepts in the subsumption hierarchy.
-	 * 
-	 * @param concept
-	 *            Atomic concept, top, or bottom.
-	 * @return A set of more special concepts.
-	 */
-	public SortedSet<Description> getMoreSpecialConcepts(Description concept) {
-		return getClassHierarchy().getMoreSpecialConcepts(concept);
-	}
-
-	/**
-	 * Returns more general concepts in the subsumption hierarchy.
-	 * 
-	 * @see ObjectPropertyHierarchy#getMoreGeneralRoles(ObjectProperty)
-	 * @param role
-	 *            Atomic concept, top, or bottom.
-	 * @return A set of more general concepts.
-	 */
-	public SortedSet<ObjectProperty> getMoreGeneralRoles(ObjectProperty role) {
-		return getRoleHierarchy().getMoreGeneralRoles(role);
-	}
-
-	/**
-	 * Returns more special concepts in the subsumption hierarchy.
-	 * 
-	 * @see ObjectPropertyHierarchy#getMoreSpecialRoles(ObjectProperty)
-	 * @param role
-	 *            Atomic concept, top, or bottom.
-	 * @return A set of more special concepts.
-	 */
-	public SortedSet<ObjectProperty> getMoreSpecialRoles(ObjectProperty role) {
-		return getRoleHierarchy().getMoreSpecialRoles(role);
-	}
-
-	/**
-	 * @see ObjectPropertyHierarchy#getMostGeneralRoles()
-	 * @return The most general roles.
-	 */
-	public TreeSet<ObjectProperty> getMostGeneralRoles() {
-		return getRoleHierarchy().getMostGeneralRoles();
-	}
-
-	/**
-	 * @see ObjectPropertyHierarchy#getMostSpecialRoles()
-	 * @return The most special roles.
-	 */
-	public TreeSet<ObjectProperty> getMostSpecialRoles() {
-		return getRoleHierarchy().getMostSpecialRoles();
-	}
-
-	/**
-	 * Returns more general concepts in the subsumption hierarchy.
-	 * 
-	 * @see ObjectPropertyHierarchy#getMoreGeneralRoles(ObjectProperty)
-	 * @param role
-	 *            Atomic concept, top, or bottom.
-	 * @return A set of more general concepts.
-	 */
-	public SortedSet<DatatypeProperty> getMoreGeneralDatatypeProperties(DatatypeProperty role) {
-		return getDatatypePropertyHierarchy().getMoreGeneralRoles(role);
-	}
-
-	/**
-	 * Returns more special concepts in the subsumption hierarchy.
-	 * 
-	 * @see ObjectPropertyHierarchy#getMoreSpecialRoles(ObjectProperty)
-	 * @param role
-	 *            Atomic concept, top, or bottom.
-	 * @return A set of more special concepts.
-	 */
-	public SortedSet<DatatypeProperty> getMoreSpecialDatatypeProperties(DatatypeProperty role) {
-		return getDatatypePropertyHierarchy().getMoreSpecialRoles(role);
-	}
-
-	/**
-	 * @see ObjectPropertyHierarchy#getMostGeneralRoles()
-	 * @return The most general roles.
-	 */
-	public TreeSet<DatatypeProperty> getMostGeneralDatatypeProperties() {
-		return getDatatypePropertyHierarchy().getMostGeneralRoles();
-	}
-
-	/**
-	 * @see ObjectPropertyHierarchy#getMostSpecialRoles()
-	 * @return The most special roles.
-	 */
-	public TreeSet<DatatypeProperty> getMostSpecialDatatypeProperties() {
-		return getDatatypePropertyHierarchy().getMostSpecialRoles();
-	}
-
-	protected ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException(
-				"Subsumption hierarchy creation not supported by this reasoner.");
-	}
+	protected SortedSet<Individual> hasTypeImpl(Description concept, Set<Individual> individuals)
+			throws ReasoningMethodUnsupportedException {
+		SortedSet<Individual> returnSet = new TreeSet<Individual>();
+		for (Individual individual : individuals) {
+			if (hasType(concept, individual))
+				returnSet.add(individual);
+		}
+		return returnSet;
+	}	
 
 	@Override
-	public final ClassHierarchy getClassHierarchy() {
-		try {
-			if (subsumptionHierarchy == null) {
-				subsumptionHierarchy = prepareSubsumptionHierarchy();
-			}
-//			subsumptionHierarchy = getSubsumptionHierarchyImpl();
-		} catch (ReasoningMethodUnsupportedException e) {
-			handleExceptions(e);
-		}
-
-		return subsumptionHierarchy;
-	}
-
-	public ClassHierarchy getSubsumptionHierarchyImpl() throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}	
-	
-	protected void prepareRoleHierarchy() throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException(
-				"Object property hierarchy creation not supported by this reasoner.");
-	}
-
-	public ObjectPropertyHierarchy getRoleHierarchy() {
-		if (roleHierarchy == null) {
-			try {
-				prepareRoleHierarchy();
-			} catch (ReasoningMethodUnsupportedException e) {
-				handleExceptions(e);
-			}
-		}
-		return roleHierarchy;
-	}
-
-	protected void prepareDatatypePropertyHierarchy() throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException(
-				"Datatype property hierarchy creation not supported by this reasoner.");
-	}
-
-	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
-		if (datatypePropertyHierarchy == null) {
-			try {
-				prepareDatatypePropertyHierarchy();
-			} catch (ReasoningMethodUnsupportedException e) {
-				handleExceptions(e);
-			}
-		}
-		return datatypePropertyHierarchy;
-	}
-
-	public boolean isSatisfiable() {
+	public final boolean isSatisfiable() {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result;
 		try {
@@ -521,6 +374,10 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return result;
 	}
 
+	protected boolean isSatisfiableImpl() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
 	public Set<Individual> getRelatedIndividuals(Individual individual,
 			ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
 		try {
@@ -677,92 +534,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		}
 	}
 
-	public List<NamedClass> getAtomicConceptsList() {
-		if (atomicConceptsList == null)
-			atomicConceptsList = new LinkedList<NamedClass>(getNamedClasses());
-		return atomicConceptsList;
-	}
-
-	public List<NamedClass> getAtomicConceptsList(boolean removeOWLThing) {
-		if (!removeOWLThing) {
-			return getAtomicConceptsList();
-		} else {
-			List<NamedClass> l = new LinkedList<NamedClass>();
-			for (NamedClass class1 : getAtomicConceptsList()) {
-				if (class1.compareTo(new NamedClass(OWLVocabulary.OWL_NOTHING)) == 0
-						|| class1.compareTo(new NamedClass(OWLVocabulary.OWL_THING)) == 0) {
-					;// do nothing
-				} else {
-					l.add(class1);
-				}
-			}
-			return l;
-		}
-
-	}
-
-	public List<ObjectProperty> getAtomicRolesList() {
-		if (atomicRolesList == null)
-			atomicRolesList = new LinkedList<ObjectProperty>(getObjectProperties());
-		return atomicRolesList;
-	}
-
-	public long getInstanceCheckReasoningTimeNs() {
-		return instanceCheckReasoningTimeNs;
-	}
-
-	public long getRetrievalReasoningTimeNs() {
-		return retrievalReasoningTimeNs;
-	}
-
-	public int getNrOfInstanceChecks() {
-		return nrOfInstanceChecks;
-	}
-
-	public int getNrOfRetrievals() {
-		return nrOfRetrievals;
-	}
-
-	public int getNrOfSubsumptionChecks() {
-		return nrOfSubsumptionChecks;
-	}
-
-	public long getSubsumptionReasoningTimeNs() {
-		return subsumptionReasoningTimeNs;
-	}
-
-	/*
-	 * public long getSubsumptionHierarchyTimeNs() { return
-	 * subsumptionHierarchyTimeNs; }
-	 */
-	public int getNrOfSubsumptionHierarchyQueries() {
-		return nrOfSubsumptionHierarchyQueries;
-	}
-
-	public long getOverallReasoningTimeNs() {
-		return overallReasoningTimeNs;
-	}
-
-	public long getTimePerRetrievalNs() {
-		return retrievalReasoningTimeNs / nrOfRetrievals;
-	}
-
-	public long getTimePerInstanceCheckNs() {
-		return instanceCheckReasoningTimeNs / nrOfInstanceChecks;
-	}
-
-	public long getTimePerSubsumptionCheckNs() {
-		return subsumptionReasoningTimeNs / nrOfSubsumptionChecks;
-	}
-
-	public int getNrOfMultiSubsumptionChecks() {
-		return nrOfMultiSubsumptionChecks;
-	}
-
-	public int getNrOfMultiInstanceChecks() {
-		return nrOfMultiInstanceChecks;
-	}
-
 	public Set<Individual> getRelatedIndividualsImpl(Individual individual,
 			ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
@@ -874,24 +645,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return ret;
 	}
 
-	public SortedSet<Individual> instanceCheckImpl(Description concept, Set<Individual> individuals)
-			throws ReasoningMethodUnsupportedException {
-		SortedSet<Individual> returnSet = new TreeSet<Individual>();
-		for (Individual individual : individuals) {
-			if (hasType(concept, individual))
-				returnSet.add(individual);
-		}
-		return returnSet;
-	}
 
 	public SortedSetTuple<Individual> doubleRetrievalImpl(Description concept, Description adc)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-	public boolean isSatisfiableImpl() throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
-	}
+
 
 
 
@@ -957,6 +717,199 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 
 	public Set<NamedClass> getInconsistentClassesImpl() throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
+	}	
+	
+	@Override
+	public final SortedSet<Description> getSuperClasses(Description concept) {
+		return getClassHierarchy().getMoreGeneralConcepts(concept);
+	}
+
+	@Override
+	public final SortedSet<Description> getSubClasses(Description concept) {
+		return getClassHierarchy().getMoreSpecialConcepts(concept);
+	}
+
+	@Override
+	public final SortedSet<ObjectProperty> getSuperProperties(ObjectProperty role) {
+		return getObjectPropertyHierarchy().getMoreGeneralRoles(role);
+	}
+
+	@Override
+	public final SortedSet<ObjectProperty> getSubProperties(ObjectProperty role) {
+		return getObjectPropertyHierarchy().getMoreSpecialRoles(role);
+	}
+
+	@Override
+	public final TreeSet<ObjectProperty> getMostGeneralProperties() {
+		return getObjectPropertyHierarchy().getMostGeneralRoles();
+	}
+
+	@Override
+	public final TreeSet<ObjectProperty> getMostSpecialProperties() {
+		return getObjectPropertyHierarchy().getMostSpecialRoles();
+	}
+
+	@Override
+	public final SortedSet<DatatypeProperty> getSuperProperties(DatatypeProperty role) {
+		return getDatatypePropertyHierarchy().getMoreGeneralRoles(role);
+	}
+
+	@Override
+	public final SortedSet<DatatypeProperty> getSubProperties(DatatypeProperty role) {
+		return getDatatypePropertyHierarchy().getMoreSpecialRoles(role);
+	}
+
+	@Override
+	public final TreeSet<DatatypeProperty> getMostGeneralDatatypeProperties() {
+		return getDatatypePropertyHierarchy().getMostGeneralRoles();
+	}
+
+	@Override
+	public final TreeSet<DatatypeProperty> getMostSpecialDatatypeProperties() {
+		return getDatatypePropertyHierarchy().getMostSpecialRoles();
+	}
+
+	protected ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException(
+				"Subsumption hierarchy creation not supported by this reasoner.");
+	}
+
+	@Override
+	public final ClassHierarchy getClassHierarchy() {
+		try {
+			if (subsumptionHierarchy == null) {
+				subsumptionHierarchy = prepareSubsumptionHierarchy();
+			}
+//			subsumptionHierarchy = getSubsumptionHierarchyImpl();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+		}
+
+		return subsumptionHierarchy;
+	}
+
+//	public ClassHierarchy getSubsumptionHierarchyImpl() throws ReasoningMethodUnsupportedException {
+//		throw new ReasoningMethodUnsupportedException();
+//	}	
+	
+	protected ObjectPropertyHierarchy prepareRoleHierarchy() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException(
+				"Object property hierarchy creation not supported by this reasoner.");
+	}
+
+	@Override
+	public final ObjectPropertyHierarchy getObjectPropertyHierarchy() {
+		if (roleHierarchy == null) {
+			try {
+				prepareRoleHierarchy();
+			} catch (ReasoningMethodUnsupportedException e) {
+				handleExceptions(e);
+			}
+		}
+		return roleHierarchy;
+	}
+
+	protected DatatypePropertyHierarchy prepareDatatypePropertyHierarchy() throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException(
+				"Datatype property hierarchy creation not supported by this reasoner.");
+	}
+
+	@Override
+	public final DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
+		if (datatypePropertyHierarchy == null) {
+			try {
+				prepareDatatypePropertyHierarchy();
+			} catch (ReasoningMethodUnsupportedException e) {
+				handleExceptions(e);
+			}
+		}
+		return datatypePropertyHierarchy;
+	}	
+	
+	public List<NamedClass> getAtomicConceptsList() {
+		if (atomicConceptsList == null)
+			atomicConceptsList = new LinkedList<NamedClass>(getNamedClasses());
+		return atomicConceptsList;
+	}
+
+	public List<NamedClass> getAtomicConceptsList(boolean removeOWLThing) {
+		if (!removeOWLThing) {
+			return getAtomicConceptsList();
+		} else {
+			List<NamedClass> l = new LinkedList<NamedClass>();
+			for (NamedClass class1 : getAtomicConceptsList()) {
+				if (class1.compareTo(new NamedClass(OWLVocabulary.OWL_NOTHING)) == 0
+						|| class1.compareTo(new NamedClass(OWLVocabulary.OWL_THING)) == 0) {
+					;// do nothing
+				} else {
+					l.add(class1);
+				}
+			}
+			return l;
+		}
+
+	}
+
+	public List<ObjectProperty> getAtomicRolesList() {
+		if (atomicRolesList == null)
+			atomicRolesList = new LinkedList<ObjectProperty>(getObjectProperties());
+		return atomicRolesList;
+	}
+
+	public long getInstanceCheckReasoningTimeNs() {
+		return instanceCheckReasoningTimeNs;
+	}
+
+	public long getRetrievalReasoningTimeNs() {
+		return retrievalReasoningTimeNs;
+	}
+
+	public int getNrOfInstanceChecks() {
+		return nrOfInstanceChecks;
+	}
+
+	public int getNrOfRetrievals() {
+		return nrOfRetrievals;
+	}
+
+	public int getNrOfSubsumptionChecks() {
+		return nrOfSubsumptionChecks;
+	}
+
+	public long getSubsumptionReasoningTimeNs() {
+		return subsumptionReasoningTimeNs;
+	}
+
+	/*
+	 * public long getSubsumptionHierarchyTimeNs() { return
+	 * subsumptionHierarchyTimeNs; }
+	 */
+	public int getNrOfSubsumptionHierarchyQueries() {
+		return nrOfSubsumptionHierarchyQueries;
+	}
+
+	public long getOverallReasoningTimeNs() {
+		return overallReasoningTimeNs;
+	}
+
+	public long getTimePerRetrievalNs() {
+		return retrievalReasoningTimeNs / nrOfRetrievals;
+	}
+
+	public long getTimePerInstanceCheckNs() {
+		return instanceCheckReasoningTimeNs / nrOfInstanceChecks;
+	}
+
+	public long getTimePerSubsumptionCheckNs() {
+		return subsumptionReasoningTimeNs / nrOfSubsumptionChecks;
+	}
+
+	public int getNrOfMultiSubsumptionChecks() {
+		return nrOfMultiSubsumptionChecks;
+	}
+
+	public int getNrOfMultiInstanceChecks() {
+		return nrOfMultiInstanceChecks;
 	}
 
 }

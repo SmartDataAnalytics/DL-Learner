@@ -61,10 +61,10 @@ public class PsiDown extends RefinementOperatorAdapter {
 		topSet.add(md);
 		
 		// allgemeinste Konzepte
-		topSet.addAll(reasoningService.getMoreSpecialConcepts(new Thing()));
+		topSet.addAll(reasoningService.getSubClasses(new Thing()));
 		
 		// negierte speziellste Konzepte
-		Set<Description> tmp = reasoningService.getMoreGeneralConcepts(new Nothing());
+		Set<Description> tmp = reasoningService.getSuperClasses(new Nothing());
 		for(Description c : tmp) 
 			topSet.add(new Negation(c));
 	
@@ -92,10 +92,10 @@ public class PsiDown extends RefinementOperatorAdapter {
 			// beachte weiter: die zurückgegebenen Instanzen dürfen nicht verändert werden,
 			// da beim Caching der Subsumptionhierarchie (momentan) keine Kopien gemacht werden
 			// Bottom wird hier ggf. automatisch mit zurückgegeben
-			refinements.addAll(reasoningService.getMoreSpecialConcepts(concept));
+			refinements.addAll(reasoningService.getSubClasses(concept));
 		// negiertes atomares Konzept
 		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
-			tmp.addAll(reasoningService.getMoreGeneralConcepts(concept.getChild(0)));
+			tmp.addAll(reasoningService.getSuperClasses(concept.getChild(0)));
 			
 			// Top rausschmeissen
 			boolean containsTop = false;

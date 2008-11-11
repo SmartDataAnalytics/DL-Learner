@@ -55,6 +55,15 @@ public interface IndividualReasoner {
 	public boolean hasType(Description description, Individual individual);
 	
 	/**
+	 * Performs instance checks on a set of instances (reasoners might be more
+	 * efficient than handling each check separately).
+	 * @param description An OWL class description.
+	 * @param individuals An individual.
+	 * @return The subset of those instances, which have the given type.
+	 */
+	public SortedSet<Individual> hasType(Description description, Set<Individual> individuals);
+	
+	/**
 	 * Gets all instances of a given class description in the knowledge base.
 	 * @param description An OWL class description.
 	 * @return All instances of the class description.

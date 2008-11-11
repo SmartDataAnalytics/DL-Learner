@@ -28,12 +28,12 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.config.DoubleConfigOption;
+import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.gui.Config;
 
 /**
  * Panel for option Double, defined in
- * {@link org.dllearner.core.config.DoubleConfigOption}.
+ * {@link org.dllearner.core.options.DoubleConfigOption}.
  * 
  * @author Tilo Hielscher
  * 

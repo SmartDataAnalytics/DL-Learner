@@ -41,12 +41,12 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.config.BooleanConfigOption;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.configurators.DIGReasonerConfigurator;
+import org.dllearner.core.options.BooleanConfigOption;
+import org.dllearner.core.options.ConfigEntry;
+import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.InvalidConfigOptionValueException;
+import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -476,10 +476,10 @@ public class DIGReasoner extends ReasonerComponent {
 	 * subsumptionHierarchyDown.get(concept); // ohne klonen geht es nicht }
 	 */
 
-	@Override
-	public ObjectPropertyHierarchy getRoleHierarchy() {
-		return roleHierarchy;
-	}
+//	@Override
+//	public ObjectPropertyHierarchy getRoleHierarchy() {
+//		return roleHierarchy;
+//	}
 
 	private TreeSet<Description> getMoreGeneralConceptsDIG(Description concept) {
 		String moreGeneralDIG = asksPrefix;
@@ -620,7 +620,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public SortedSet<Individual> instanceCheck(Description concept, Set<Individual> individuals) {
+	public SortedSet<Individual> hasTypeImpl(Description concept, Set<Individual> individuals) {
 		String instanceCheckDIG = asksPrefix;
 		int id = 0;
 		// ID-Konzept-Zuordnung speichern, da bei der Antwort nur die IDs
@@ -744,7 +744,7 @@ public class DIGReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public boolean isSatisfiable() {
+	public boolean isSatisfiableImpl() {
 		String satisfiableDIG = asksPrefix;
 		// wenn Top erfüllbar ist, dann gibt es auch ein Modell für die KB
 		// (satisfiability für KB ist nicht Teil von DIG 1.1)

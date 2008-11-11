@@ -89,7 +89,7 @@ public class ELDown extends RefinementOperatorAdapter {
 		this.rs = rs;
 		utility = new Utility(rs);
 		subsumptionHierarchy = rs.getClassHierarchy();
-		opHierarchy = rs.getRoleHierarchy();
+		opHierarchy = rs.getObjectPropertyHierarchy();
 		
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
@@ -149,7 +149,7 @@ public class ELDown extends RefinementOperatorAdapter {
 		// loop through all classes in label
 		for(NamedClass nc : node.getLabel()) {
 			// find all more special classes for the given label
-			for(Description moreSpecial : rs.getMoreSpecialConcepts(nc)) {
+			for(Description moreSpecial : rs.getSubClasses(nc)) {
 				if(moreSpecial instanceof NamedClass) {
 					// clone operation
 					ELDescriptionTree clonedTree = tree.clone();
@@ -250,7 +250,7 @@ public class ELDown extends RefinementOperatorAdapter {
 		ELDescriptionEdge edge = node.getEdges().get(edgeNumber);
 		ObjectProperty op = edge.getLabel();
 		// find all more special properties
-		for(ObjectProperty op2 : rs.getMoreSpecialRoles(op)) {
+		for(ObjectProperty op2 : rs.getSubProperties(op)) {
 			// we check whether the range of this property is not disjoint
 			// with the existing child node (we do not perform a full disjointness
 			// check, but only compare with the flattened concept to keep the number

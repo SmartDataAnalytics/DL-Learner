@@ -26,8 +26,8 @@ import java.util.TreeSet;
 
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
-import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.configurators.PosNegDefinitionLPConfigurator;
+import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
@@ -118,18 +118,18 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
 				// two checks
 				if (useMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
-					Set<Individual> s = reasoner.instanceCheck(concept, positiveExamples);
+					Set<Individual> s = reasoner.hasType(concept, positiveExamples);
 					// if the concept is too weak, then do not query negative
 					// examples
 					if (s.size() != positiveExamples.size())
 						return -1;
 					else {
-						s = reasoner.instanceCheck(concept, negativeExamples);
+						s = reasoner.hasType(concept, negativeExamples);
 						return s.size();
 					}
 					// one check
 				} else {
-					Set<Individual> s = reasoner.instanceCheck(concept, allExamples);
+					Set<Individual> s = reasoner.hasType(concept, allExamples);
 					// test whether all positive examples are covered
 					if (s.containsAll(positiveExamples))
 						return s.size() - positiveExamples.size();
@@ -195,7 +195,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 			SortedSet<Individual> negAsNeg = new TreeSet<Individual>();
 			
 			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
-				SortedSet<Individual> posClassified = reasoner.instanceCheck(concept,
+				SortedSet<Individual> posClassified = reasoner.hasType(concept,
 						allExamples);
 				SortedSet<Individual> negClassified = Helper.difference(allExamples,
 						posClassified);

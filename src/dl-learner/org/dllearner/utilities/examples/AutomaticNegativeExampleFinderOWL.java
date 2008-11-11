@@ -229,7 +229,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	public void makeNegativeExamplesFromSuperClasses(NamedClass concept, int depth) {
 
 		fromSuperclasses.clear();
-		SortedSet<Description> superClasses = reasoningService.getMoreGeneralConcepts(concept);
+		SortedSet<Description> superClasses = reasoningService.getSuperClasses(concept);
 		logger.debug("making neg Examples from " + superClasses.size() + " superclasses");
 
 		for (Description oneSuperClass : superClasses) {

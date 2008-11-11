@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.config.CommonConfigOptions;
+import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -373,7 +373,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			refinements.remove(new Nothing());
 		} else if (description instanceof Negation && description.getChild(0) instanceof NamedClass) {
 		
-			tmp = rs.getMoreGeneralConcepts(description.getChild(0));
+			tmp = rs.getSuperClasses(description.getChild(0));
 				
 			for(Description c : tmp) {
 				if(!(c instanceof Thing))
@@ -448,7 +448,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
-			Set<ObjectProperty> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
+			Set<ObjectProperty> moreSpecialRoles = rs.getSubProperties(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles)
 				refinements.add(new ObjectSomeRestriction(moreSpecialRole, description.getChild(0)));
 
@@ -492,7 +492,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
-			Set<ObjectProperty> moreSpecialRoles = rs.getMoreSpecialRoles(ar);
+			Set<ObjectProperty> moreSpecialRoles = rs.getSubProperties(ar);
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
 				refinements.add(new ObjectAllRestriction(moreSpecialRole, description.getChild(0)));
 			}
@@ -839,12 +839,12 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			m.put(i, new TreeSet<Description>(conceptComparator));
 		}
 		
-		SortedSet<Description> m1 = rs.getMoreSpecialConcepts(new Thing()); 
+		SortedSet<Description> m1 = rs.getSubClasses(new Thing()); 
 		m.put(1,m1);		
 		
 		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
 		if(useNegation) {
-			Set<Description> m2tmp = rs.getMoreGeneralConcepts(new Nothing());
+			Set<Description> m2tmp = rs.getSuperClasses(new Nothing());
 			for(Description c : m2tmp) {
 				m2.add(new Negation(c));
 			}
@@ -863,7 +863,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		SortedSet<Description> m3 = new TreeSet<Description>(conceptComparator);
 		if(useExistsConstructor) {
 			// only uses most general roles
-			for(ObjectProperty r : rs.getMostGeneralRoles()) {
+			for(ObjectProperty r : rs.getMostGeneralProperties()) {
 				m3.add(new ObjectSomeRestriction(r, new Thing()));
 			}				
 		}
@@ -872,7 +872,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			// we allow \forall r.\top here because otherwise the operator
 			// becomes too difficult to manage due to dependencies between
 			// M_A and M_A' where A'=ran(r)
-			for(ObjectProperty r : rs.getMostGeneralRoles()) {
+			for(ObjectProperty r : rs.getMostGeneralProperties()) {
 				m3.add(new ObjectAllRestriction(r, new Thing()));
 			}				
 		}		
@@ -893,7 +893,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		
 		SortedSet<Description> m4 = new TreeSet<Description>(conceptComparator);
 		if(useCardinalityRestrictions) {
-			for(ObjectProperty r : rs.getMostGeneralRoles()) {
+			for(ObjectProperty r : rs.getMostGeneralProperties()) {
 				int maxFillers = maxNrOfFillers.get(r);
 				// zero fillers: <= -1 r.C does not make sense
 				// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
@@ -919,7 +919,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			mA.get(nc).put(i, new TreeSet<Description>(conceptComparator));
 		}
 		
-		SortedSet<Description> m1 = rs.getMoreSpecialConcepts(nc); 
+		SortedSet<Description> m1 = rs.getSubClasses(nc); 
 		mA.get(nc).put(1,m1);
 		
 		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
@@ -930,7 +930,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			// recursive method because for A subClassOf A' we have not A'
 			// subClassOf A and thus: if A and B are disjoint then also A'
 			// and B; if not A AND B = B then also not A' AND B = B
-			SortedSet<Description> m2tmp = rs.getMoreGeneralConcepts(new Nothing());
+			SortedSet<Description> m2tmp = rs.getSuperClasses(new Nothing());
 			
 			for(Description c : m2tmp) {
 				if(c instanceof Thing)
@@ -1021,7 +1021,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		mgbd.put(domain, new TreeSet<DatatypeProperty>());
 		mgdd.put(domain, new TreeSet<DatatypeProperty>());
 		
-		SortedSet<ObjectProperty> mostGeneral = rs.getMostGeneralRoles();
+		SortedSet<ObjectProperty> mostGeneral = rs.getMostGeneralProperties();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
 		SortedSet<DatatypeProperty> mostGeneralDP = rs.getMostGeneralDatatypeProperties();
 		// we make the (reasonable) assumption here that all sub and super
@@ -1037,7 +1037,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			if(appOP.get(domain).contains(prop))
 				mgrTmp.add(prop);
 			else
-				computeMgrRecursive(domain, rs.getMoreSpecialRoles(prop), mgrTmp);
+				computeMgrRecursive(domain, rs.getSubProperties(prop), mgrTmp);
 		}
 	}
 	
@@ -1046,7 +1046,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			if(appBD.get(domain).contains(prop))
 				mgbdTmp.add(prop);
 			else
-				computeMgbdRecursive(domain, rs.getMoreSpecialDatatypeProperties(prop), mgbdTmp);
+				computeMgbdRecursive(domain, rs.getSubProperties(prop), mgbdTmp);
 		}
 	}	
 	
@@ -1055,7 +1055,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			if(appDD.get(domain).contains(prop))
 				mgddTmp.add(prop);
 			else
-				computeMgddRecursive(domain, rs.getMoreSpecialDatatypeProperties(prop), mgddTmp);
+				computeMgddRecursive(domain, rs.getSubProperties(prop), mgddTmp);
 		}
 	}		
 	

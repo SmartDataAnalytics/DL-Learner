@@ -10,17 +10,15 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.FastRetrievalReasonerConfigurator;
+import org.dllearner.core.options.ConfigEntry;
+import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.FlatABox;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 
@@ -140,10 +138,10 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 //		rs.prepareRoleHierarchy(allowedRoles);
 //	}	
 	
-	@Override
-	public ObjectPropertyHierarchy getRoleHierarchy() {
-		return rs.getRoleHierarchy();
-	}	
+//	@Override
+//	public ObjectPropertyHierarchy getRoleHierarchy() {
+//		return rs.getRoleHierarchy();
+//	}	
 	
 //	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
 //		rs.prepareSubsumptionHierarchy(allowedConcepts);
@@ -155,7 +153,7 @@ public class FastRetrievalReasoner extends ReasonerComponent {
 //	}	
 	
 	@Override
-	public boolean isSatisfiable() {
+	public boolean isSatisfiableImpl() {
 		return rs.isSatisfiable();
 	}
 	

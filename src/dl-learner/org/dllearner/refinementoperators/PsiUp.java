@@ -49,10 +49,10 @@ public class PsiUp extends RefinementOperatorAdapter {
 		bottomSet.add(mc);
 		
 		// speziellste Konzepte
-		bottomSet.addAll(reasoningService.getMoreGeneralConcepts(new Nothing()));
+		bottomSet.addAll(reasoningService.getSuperClasses(new Nothing()));
 		
 		// negierte allgemeinste Konzepte
-		Set<Description> tmp = reasoningService.getMoreSpecialConcepts(new Thing());
+		Set<Description> tmp = reasoningService.getSubClasses(new Thing());
 		for(Description c : tmp) 
 			bottomSet.add(new Negation(c));
 	
@@ -76,11 +76,11 @@ public class PsiUp extends RefinementOperatorAdapter {
 			return (Set<Description>) bottomSet.clone();			
 		} else if (concept instanceof NamedClass) {
 			// Top darf hier mit dabei sein
-			refinements.addAll(reasoningService.getMoreGeneralConcepts(concept));
+			refinements.addAll(reasoningService.getSuperClasses(concept));
 			
 		// negiertes atomares Konzept
 		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
-			tmp.addAll(reasoningService.getMoreSpecialConcepts(concept.getChild(0)));
+			tmp.addAll(reasoningService.getSubClasses(concept.getChild(0)));
 			
 			// Bottom rausschmeissen
 			boolean containsBottom = false;

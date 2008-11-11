@@ -30,11 +30,11 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.config.URLConfigOption;
 import org.dllearner.core.configurators.OWLFileConfigurator;
+import org.dllearner.core.options.ConfigEntry;
+import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.InvalidConfigOptionValueException;
+import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.core.owl.KB;
 import org.dllearner.reasoning.OWLAPIDIGConverter;
 

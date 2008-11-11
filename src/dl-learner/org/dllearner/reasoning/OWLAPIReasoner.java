@@ -40,11 +40,11 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
-import org.dllearner.core.config.StringConfigOption;
 import org.dllearner.core.configurators.OWLAPIReasonerConfigurator;
+import org.dllearner.core.options.ConfigEntry;
+import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.InvalidConfigOptionValueException;
+import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -508,10 +508,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				roleHierarchyDown);
 	}	
 	
-	@Override
-	public ObjectPropertyHierarchy getRoleHierarchy() {
-		return roleHierarchy;
-	}	
+//	@Override
+//	public ObjectPropertyHierarchy getRoleHierarchy() {
+//		return roleHierarchy;
+//	}	
 	
 	@Override
 	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
@@ -532,10 +532,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				datatypePropertyHierarchyDown);
 	}	
 	
-	@Override
-	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
-		return datatypePropertyHierarchy;
-	}		
+//	@Override
+//	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
+//		return datatypePropertyHierarchy;
+//	}		
 	
 	@Override
 	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
@@ -658,7 +658,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
-	public boolean isSatisfiable() {
+	public boolean isSatisfiableImpl() {
 		try {
 			return reasoner.isSatisfiable(factory.getOWLThing());
 		} catch (OWLReasonerException e) {

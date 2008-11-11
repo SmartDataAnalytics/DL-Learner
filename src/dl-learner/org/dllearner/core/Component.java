@@ -22,11 +22,11 @@ package org.dllearner.core;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.dllearner.core.config.ConfigEntry;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.DoubleConfigOption;
-import org.dllearner.core.config.InvalidConfigOptionValueException;
 import org.dllearner.core.configurators.Configurator;
+import org.dllearner.core.options.ConfigEntry;
+import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.options.DoubleConfigOption;
+import org.dllearner.core.options.InvalidConfigOptionValueException;
 
 /**
  * Base class of all components. See also http://dl-learner.org/wiki/Architecture.

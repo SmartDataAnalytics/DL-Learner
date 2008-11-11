@@ -142,18 +142,18 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
 				// two checks
 				if (useMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
-					Set<Individual> posExInNegatedConcept = reasoner.instanceCheck(new Negation(concept), positiveExamples);
+					Set<Individual> posExInNegatedConcept = reasoner.hasType(new Negation(concept), positiveExamples);
 					
 					if(posExInNegatedConcept.size()>0) {
 						return -1;
 					} else {
-						Set<Individual> negExInNegatedConcept = reasoner.instanceCheck(new Negation(concept), negativeExamples);
+						Set<Individual> negExInNegatedConcept = reasoner.hasType(new Negation(concept), negativeExamples);
 						return (negativeExamples.size() - negExInNegatedConcept.size());
 					}
 						
 					// one check
 				} else {
-					Set<Individual> inNegatedConcept = reasoner.instanceCheck(new Negation(concept), allExamples);
+					Set<Individual> inNegatedConcept = reasoner.hasType(new Negation(concept), allExamples);
 					
 					for(Individual i : positiveExamples) {
 						if(inNegatedConcept.contains(i))
