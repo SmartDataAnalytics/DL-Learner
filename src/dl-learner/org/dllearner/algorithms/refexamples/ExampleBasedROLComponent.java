@@ -359,7 +359,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		// during the run of the algorithm
 //		reasoner.prepareSubsumptionHierarchy(usedConcepts);
 		if(improveSubsumptionHierarchy)
-			reasoner.getClassHierarchy().improveSubsumptionHierarchy();
+			reasoner.getClassHierarchy().thinOutSubsumptionHierarchy();
 //		reasoner.prepareRoleHierarchy(usedRoles);
 		// prepare datatype hierarchy only if necessary
 //		if(reasoner.hasDatatypeSupport())

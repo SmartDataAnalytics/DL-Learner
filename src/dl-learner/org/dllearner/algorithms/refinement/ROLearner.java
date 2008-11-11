@@ -374,7 +374,7 @@ public class ROLearner extends LearningAlgorithm {
 		// during the run of the algorithm
 //		reasoner.prepareSubsumptionHierarchy(usedConcepts);
 		if(improveSubsumptionHierarchy)
-			reasoner.getClassHierarchy().improveSubsumptionHierarchy();
+			reasoner.getClassHierarchy().thinOutSubsumptionHierarchy();
 //		reasoner.prepareRoleHierarchy(usedRoles);
 	}
 	

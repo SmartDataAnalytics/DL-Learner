@@ -47,13 +47,13 @@ import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -223,44 +223,44 @@ public class DIGReasoner extends ReasonerComponent {
 	 * Construct a subsumption hierarchy using DIG queries. After calling this
 	 * method one can ask for children or parents in the subsumption hierarchy.
 	 */
-	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
-		allowedConceptsInSubsumptionHierarchy = new TreeSet<Description>(conceptComparator);
-		allowedConceptsInSubsumptionHierarchy.addAll(allowedConcepts);
-		allowedConceptsInSubsumptionHierarchy.add(new Thing());
-		allowedConceptsInSubsumptionHierarchy.add(new Nothing());
-
-		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, TreeSet<Description>>(
-				conceptComparator);
-		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, TreeSet<Description>>(
-				conceptComparator);
-
-		// Subsumptionhierarchy berechnen
-		// TODO: kann man effizienter auch in einer Abfrage machen
-
-		// Refinements von Top
-		TreeSet<Description> tmp = getMoreSpecialConceptsDIG(new Thing());
-		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-		subsumptionHierarchyDown.put(new Thing(), tmp);
-
-		// Refinements von Bottom
-		tmp = getMoreGeneralConceptsDIG(new Nothing());
-		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-		subsumptionHierarchyUp.put(new Nothing(), tmp);
-
-		// Refinement atomarer Konzepte
-		for (NamedClass atom : atomicConcepts) {
-			tmp = getMoreSpecialConceptsDIG(atom);
-			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-			subsumptionHierarchyDown.put(atom, tmp);
-
-			tmp = getMoreGeneralConceptsDIG(atom);
-			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-			subsumptionHierarchyUp.put(atom, tmp);
-		}
-
-		subsumptionHierarchy = new ClassHierarchy(allowedConcepts,
-				subsumptionHierarchyUp, subsumptionHierarchyDown);
-	}
+//	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
+//		allowedConceptsInSubsumptionHierarchy = new TreeSet<Description>(conceptComparator);
+//		allowedConceptsInSubsumptionHierarchy.addAll(allowedConcepts);
+//		allowedConceptsInSubsumptionHierarchy.add(new Thing());
+//		allowedConceptsInSubsumptionHierarchy.add(new Nothing());
+//
+//		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, TreeSet<Description>>(
+//				conceptComparator);
+//		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, TreeSet<Description>>(
+//				conceptComparator);
+//
+//		// Subsumptionhierarchy berechnen
+//		// TODO: kann man effizienter auch in einer Abfrage machen
+//
+//		// Refinements von Top
+//		TreeSet<Description> tmp = getMoreSpecialConceptsDIG(new Thing());
+//		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+//		subsumptionHierarchyDown.put(new Thing(), tmp);
+//
+//		// Refinements von Bottom
+//		tmp = getMoreGeneralConceptsDIG(new Nothing());
+//		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+//		subsumptionHierarchyUp.put(new Nothing(), tmp);
+//
+//		// Refinement atomarer Konzepte
+//		for (NamedClass atom : atomicConcepts) {
+//			tmp = getMoreSpecialConceptsDIG(atom);
+//			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+//			subsumptionHierarchyDown.put(atom, tmp);
+//
+//			tmp = getMoreGeneralConceptsDIG(atom);
+//			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
+//			subsumptionHierarchyUp.put(atom, tmp);
+//		}
+//
+//		subsumptionHierarchy = new ClassHierarchy(
+//				subsumptionHierarchyUp, subsumptionHierarchyDown);
+//	}
 
 	/**
 	 * Constructs a role hierarchy using DIG queries. After calling this method,
@@ -481,7 +481,8 @@ public class DIGReasoner extends ReasonerComponent {
 //		return roleHierarchy;
 //	}
 
-	private TreeSet<Description> getMoreGeneralConceptsDIG(Description concept) {
+	@Override
+	protected TreeSet<Description> getSuperClassesImpl(Description concept) {
 		String moreGeneralDIG = asksPrefix;
 		moreGeneralDIG += "<parents id=\"query_parents\">";
 		moreGeneralDIG += DIGConverter.getDIGString(concept);
@@ -520,7 +521,7 @@ public class DIGReasoner extends ReasonerComponent {
 				// Konzept ist
 				// (sonst wäre es weiter oben gefunden wurden)
 				NamedClass ignoredAtomicConcept = new NamedClass(atoms[0].getName());
-				resultsSet.addAll(getMoreGeneralConceptsDIG(ignoredAtomicConcept));
+				resultsSet.addAll(getSuperClassesImpl(ignoredAtomicConcept));
 			}
 
 		}
@@ -528,7 +529,8 @@ public class DIGReasoner extends ReasonerComponent {
 		return resultsSet;
 	}
 
-	private TreeSet<Description> getMoreSpecialConceptsDIG(Description concept) {
+	@Override
+	protected TreeSet<Description> getSubClassesImpl(Description concept) {
 		String moreSpecialDIG = asksPrefix;
 		moreSpecialDIG += "<children id=\"query_children\">";
 		moreSpecialDIG += DIGConverter.getDIGString(concept);
@@ -553,7 +555,7 @@ public class DIGReasoner extends ReasonerComponent {
 
 			if (resultsSet.size() == 0 && atoms.length > 0) {
 				NamedClass ignoredAtomicConcept = new NamedClass(atoms[0].getName());
-				resultsSet.addAll(getMoreSpecialConceptsDIG(ignoredAtomicConcept));
+				resultsSet.addAll(getSubClassesImpl(ignoredAtomicConcept));
 			}
 		}
 

@@ -57,7 +57,6 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.UntypedConstant;
@@ -124,10 +123,10 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	private RoleComparator roleComparator = new RoleComparator();
-	private ClassHierarchy subsumptionHierarchy;
+//	private ClassHierarchy subsumptionHierarchy;
 	private ObjectPropertyHierarchy roleHierarchy;	
 	private DatatypePropertyHierarchy datatypePropertyHierarchy;
-	private Set<Description> allowedConceptsInSubsumptionHierarchy;
+//	private Set<Description> allowedConceptsInSubsumptionHierarchy;
 	
 	// primitives
 	Set<NamedClass> atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
@@ -407,85 +406,24 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	public ClassHierarchy prepareSubsumptionHierarchy() {
-
-		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, TreeSet<Description>>(
-				conceptComparator);
-		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, TreeSet<Description>>(
-				conceptComparator);
-
-		// refinements of top
-		TreeSet<Description> tmp = getMoreSpecialConceptsImpl(new Thing());
-		subsumptionHierarchyDown.put(new Thing(), tmp);
-
-		// refinements of bottom
-		tmp = getMoreGeneralConceptsImpl(new Nothing());
-		subsumptionHierarchyUp.put(new Nothing(), tmp);
-
-		// refinements of atomic concepts
-		for (NamedClass atom : atomicConcepts) {
-			tmp = getMoreSpecialConceptsImpl(atom);
-			subsumptionHierarchyDown.put(atom, tmp);
-
-			tmp = getMoreGeneralConceptsImpl(atom);
-			subsumptionHierarchyUp.put(atom, tmp);
+	public ObjectPropertyHierarchy prepareRoleHierarchy() {
+		// code copied from DIG reasoner
+		
+		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
+				roleComparator);
+		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
+				roleComparator);
+ 
+		// refinement of atomic concepts
+		for (ObjectProperty role : atomicRoles) {
+			roleHierarchyDown.put(role, getMoreSpecialRolesImpl(role));
+			roleHierarchyUp.put(role, getMoreGeneralRolesImpl(role));
 		}
 
-		// create subsumption hierarchy
-		subsumptionHierarchy = new ClassHierarchy(atomicConcepts,
-				subsumptionHierarchyUp, subsumptionHierarchyDown);	
-		
-		return subsumptionHierarchy;
+		roleHierarchy = new ObjectPropertyHierarchy(atomicRoles, roleHierarchyUp,
+				roleHierarchyDown);
+		return roleHierarchy;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Reasoner#prepareSubsumptionHierarchy(java.util.Set)
-	 */
-	public void prepareSubsumptionHierarchy(Set<NamedClass> allowedConcepts) {
-		
-		// implementation almost identical to DIG reasoner
-		// except function calls
-		
-		allowedConceptsInSubsumptionHierarchy = new TreeSet<Description>(conceptComparator);
-		allowedConceptsInSubsumptionHierarchy.addAll(allowedConcepts);
-		allowedConceptsInSubsumptionHierarchy.add(new Thing());
-		allowedConceptsInSubsumptionHierarchy.add(new Nothing());
-
-		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, TreeSet<Description>>(
-				conceptComparator);
-		TreeMap<Description, TreeSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, TreeSet<Description>>(
-				conceptComparator);
-
-		// refinements of top
-		TreeSet<Description> tmp = getMoreSpecialConceptsImpl(new Thing());
-		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-		subsumptionHierarchyDown.put(new Thing(), tmp);
-
-		// refinements of bottom
-		tmp = getMoreGeneralConceptsImpl(new Nothing());
-		tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-		subsumptionHierarchyUp.put(new Nothing(), tmp);
-
-		// refinements of atomic concepts
-		for (NamedClass atom : atomicConcepts) {
-			tmp = getMoreSpecialConceptsImpl(atom);
-			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-			subsumptionHierarchyDown.put(atom, tmp);
-
-			tmp = getMoreGeneralConceptsImpl(atom);
-			tmp.retainAll(allowedConceptsInSubsumptionHierarchy);
-			subsumptionHierarchyUp.put(atom, tmp);
-		}
-
-		// create subsumption hierarchy
-		subsumptionHierarchy = new ClassHierarchy(allowedConcepts,
-				subsumptionHierarchyUp, subsumptionHierarchyDown);		
-	}
-
-//	@Override
-//	public ClassHierarchy getClassHierarchy() {
-//		return subsumptionHierarchy;
-//	}	
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#prepareRoleHierarchy(java.util.Set)
@@ -546,7 +484,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		}
 	}
 	
-	private TreeSet<Description> getMoreGeneralConceptsImpl(Description concept) {
+	@Override
+	protected TreeSet<Description> getSuperClassesImpl(Description concept) {
 		Set<Set<OWLClass>> classes = null;
 		try {
 			classes = reasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLDescription(concept));
@@ -557,19 +496,17 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return getFirstClasses(classes);
 	}
 	
-	private TreeSet<Description> getMoreSpecialConceptsImpl(Description concept) {
+	@Override
+	protected TreeSet<Description> getSubClassesImpl(Description concept) {
 		Set<Set<OWLClass>> classes = null;
 		try {
-//			System.out.println(OWLAPIDescriptionConvertVisitor.getOWLDescription(concept));
-//			System.out.println(getSubsumptionHierarchy());
-//			System.out.println(reasoner);
 			classes = reasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLDescription(concept));
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 			throw new Error("OWL API classification error.");
 		}
 		return getFirstClasses(classes);
-	}	
+	}
 	
 	private TreeSet<ObjectProperty> getMoreGeneralRolesImpl(ObjectProperty role) {
 		Set<Set<OWLObjectProperty>> properties;

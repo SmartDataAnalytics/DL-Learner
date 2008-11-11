@@ -38,11 +38,14 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLVocabulary;
 
 /**
@@ -366,12 +369,13 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 			handleExceptions(e);
 			return null;
 		}
-	}	
-	
-	protected Set<NamedClass> getInconsistentClassesImpl() throws ReasoningMethodUnsupportedException {
+	}
+
+	protected Set<NamedClass> getInconsistentClassesImpl()
+			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
-	}	
-	
+	}
+
 	@Override
 	public final boolean isSatisfiable() {
 		reasoningStartTimeTmp = System.nanoTime();
@@ -743,18 +747,24 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
-
-
 	@Override
 	public final SortedSet<Description> getSuperClasses(Description concept) {
 		return getClassHierarchy().getMoreGeneralConcepts(concept);
 	}
 
+	protected SortedSet<Description> getSuperClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+	
 	@Override
 	public final SortedSet<Description> getSubClasses(Description concept) {
 		return getClassHierarchy().getMoreSpecialConcepts(concept);
 	}
 
+	protected SortedSet<Description> getSubClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
 	@Override
 	public final SortedSet<ObjectProperty> getSuperProperties(ObjectProperty role) {
 		return getObjectPropertyHierarchy().getMoreGeneralRoles(role);
@@ -800,26 +810,54 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	 * called explicitly, it is called the first time, it is needed).
 	 * 
 	 * @return The class hierarchy.
-	 * @throws ReasoningMethodUnsupportedException
-	 *             Thrown if subsumption hierarchy creation is not supported by
-	 *             the reasoner.
+	 * @throws ReasoningMethodUnsupportedException 
 	 */
-	public ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException(
-				"Subsumption hierarchy creation not supported by this reasoner.");
+	public final ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
+		ConceptComparator conceptComparator = new ConceptComparator();
+		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, SortedSet<Description>>(
+				conceptComparator);
+		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, SortedSet<Description>>(
+				conceptComparator);
+
+		// refinements of top
+		SortedSet<Description> tmp = getSubClassesImpl(Thing.instance);
+		subsumptionHierarchyDown.put(new Thing(), tmp);
+
+		// refinements of bottom
+		tmp = getSuperClassesImpl(Nothing.instance);
+		subsumptionHierarchyUp.put(new Nothing(), tmp);
+
+		// refinements of atomic concepts
+		Set<NamedClass> atomicConcepts = getNamedClasses();
+		for (NamedClass atom : atomicConcepts) {
+			tmp = getSubClassesImpl(atom);
+			// quality control: we explicitly check that no reasoner implementation returns null here
+			if(tmp == null) {
+				logger.error("Class hierarchy: getSubClasses returned null instead of empty set."); 
+			}			
+			subsumptionHierarchyDown.put(atom, tmp);
+
+			tmp = getSuperClassesImpl(atom);
+			// quality control: we explicitly check that no reasoner implementation returns null here
+			if(tmp == null) {
+				logger.error("Class hierarchy: getSuperClasses returned null instead of empty set."); 
+			}			
+			subsumptionHierarchyUp.put(atom, tmp);
+		}		
+
+		return new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
 
 	@Override
 	public final ClassHierarchy getClassHierarchy() {
-		try {
-			if (subsumptionHierarchy == null) {
+		// class hierarchy is created on first invocation
+		if (subsumptionHierarchy == null) {
+			try {
 				subsumptionHierarchy = prepareSubsumptionHierarchy();
+			} catch (ReasoningMethodUnsupportedException e) {
+				handleExceptions(e);
 			}
-			// subsumptionHierarchy = getSubsumptionHierarchyImpl();
-		} catch (ReasoningMethodUnsupportedException e) {
-			handleExceptions(e);
 		}
-
 		return subsumptionHierarchy;
 	}
 
@@ -840,13 +878,15 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 
 	@Override
 	public final ObjectPropertyHierarchy getObjectPropertyHierarchy() {
-		if (roleHierarchy == null) {
-			try {
-				prepareRoleHierarchy();
-			} catch (ReasoningMethodUnsupportedException e) {
-				handleExceptions(e);
+
+		try {
+			if (roleHierarchy == null) {
+				roleHierarchy = prepareRoleHierarchy();
 			}
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
 		}
+
 		return roleHierarchy;
 	}
 
@@ -867,13 +907,15 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 
 	@Override
 	public final DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
-		if (datatypePropertyHierarchy == null) {
-			try {
+
+		try {
+			if (datatypePropertyHierarchy == null) {
 				prepareDatatypePropertyHierarchy();
-			} catch (ReasoningMethodUnsupportedException e) {
-				handleExceptions(e);
 			}
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
 		}
+
 		return datatypePropertyHierarchy;
 	}
 

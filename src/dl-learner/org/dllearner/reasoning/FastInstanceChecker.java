@@ -43,7 +43,6 @@ import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.BooleanValueRestriction;
-import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
@@ -553,11 +552,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 	@Override
 	public ReasonerType getReasonerType() {
 		return ReasonerType.FAST_INSTANCE_CHECKER;
-	}
-
-	@Override
-	public ClassHierarchy prepareSubsumptionHierarchy() {
-		return rc.prepareSubsumptionHierarchy();
 	}
 
 //	@Override
