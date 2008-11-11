@@ -182,16 +182,17 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 	
 	public RhoDRDown(ReasonerComponent reasoningService) {
-		this(reasoningService, true, true, true, true, true, 3, true, true, true, true, null);
+		this(reasoningService, reasoningService.getClassHierarchy(), true, true, true, true, true, 3, true, true, true, true, null);
 	}
 	
 	// TODO constructor which takes a RhoDRDownConfigurator object;
 	// this should be an interface implemented e.g. by ExampleBasedROLComponentConfigurator;
 	// the goal is to use the configurator system while still being flexible enough to
 	// use one refinement operator in several learning algorithms
-	public RhoDRDown(ReasonerComponent reasoningService, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
+	public RhoDRDown(ReasonerComponent reasoningService, ClassHierarchy subHierarchy, boolean applyAllFilter, boolean applyExistsFilter, boolean useAllConstructor,
 			boolean useExistsConstructor, boolean useHasValueConstructor, int valueFrequencyThreshold, boolean useCardinalityRestrictions,boolean useNegation, boolean useBooleanDatatypes, boolean useDoubleDatatypes, NamedClass startClass) {
 		this.rs = reasoningService;
+		this.subHierarchy = subHierarchy;
 		this.applyAllFilter = applyAllFilter;
 		this.applyExistsFilter = applyExistsFilter;
 		this.useAllConstructor = useAllConstructor;
@@ -203,7 +204,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		this.useDoubleDatatypes = useDoubleDatatypes;
 		
-		subHierarchy = rs.getClassHierarchy();
+//		subHierarchy = rs.getClassHierarchy();
 		
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
@@ -369,11 +370,11 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		} else if(description instanceof Nothing) {
 			// cannot be further refined
 		} else if(description instanceof NamedClass) {
-			refinements.addAll(subHierarchy.getMoreSpecialConcepts(description));
+			refinements.addAll(subHierarchy.getSubClasses(description));
 			refinements.remove(new Nothing());
 		} else if (description instanceof Negation && description.getChild(0) instanceof NamedClass) {
 		
-			tmp = rs.getSuperClasses(description.getChild(0));
+			tmp = subHierarchy.getSuperClasses(description.getChild(0));
 				
 			for(Description c : tmp) {
 				if(!(c instanceof Thing))
@@ -839,12 +840,12 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			m.put(i, new TreeSet<Description>(conceptComparator));
 		}
 		
-		SortedSet<Description> m1 = rs.getSubClasses(new Thing()); 
+		SortedSet<Description> m1 = subHierarchy.getSubClasses(new Thing()); 
 		m.put(1,m1);		
 		
 		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
 		if(useNegation) {
-			Set<Description> m2tmp = rs.getSuperClasses(new Nothing());
+			Set<Description> m2tmp = subHierarchy.getSuperClasses(new Nothing());
 			for(Description c : m2tmp) {
 				m2.add(new Negation(c));
 			}
@@ -919,7 +920,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			mA.get(nc).put(i, new TreeSet<Description>(conceptComparator));
 		}
 		
-		SortedSet<Description> m1 = rs.getSubClasses(nc); 
+		SortedSet<Description> m1 = subHierarchy.getSubClasses(nc); 
 		mA.get(nc).put(1,m1);
 		
 		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
@@ -930,7 +931,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 			// recursive method because for A subClassOf A' we have not A'
 			// subClassOf A and thus: if A and B are disjoint then also A'
 			// and B; if not A AND B = B then also not A' AND B = B
-			SortedSet<Description> m2tmp = rs.getSuperClasses(new Nothing());
+			SortedSet<Description> m2tmp = subHierarchy.getSuperClasses(new Nothing());
 			
 			for(Description c : m2tmp) {
 				if(c instanceof Thing)
