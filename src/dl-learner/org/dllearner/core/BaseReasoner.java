@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.dllearner.core.owl.Constant;
+import org.dllearner.core.owl.DatatypeProperty;
+import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
@@ -60,6 +63,37 @@ public interface BaseReasoner {
 	public Set<ObjectProperty> getObjectProperties();
 	
 	/**
+	 * Gets all data properties in the knowledge base, e.g. hasIncome, height.
+	 * @return All data properties in KB.
+	 */
+	public SortedSet<DatatypeProperty> getDatatypeProperties();
+	
+	/**
+	 * Gets all data properties with range xsd:boolean.
+	 * @see org.dllearner.core.owl.Datatype#BOOLEAN
+	 * @return Boolean data properties in KB.
+	 */
+	public SortedSet<DatatypeProperty> getBooleanDatatypeProperties();
+	
+	/**
+	 * Gets all data properties with range xsd:double.
+	 * TODO We could extend this to all types, which can be parsed into
+	 * a double value, e.g. floats.
+	 * @see org.dllearner.core.owl.Datatype#DOUBLE
+	 * @return Double data properties in KB.
+	 */
+	public SortedSet<DatatypeProperty> getDoubleDatatypeProperties();
+	
+	/**
+	 * Gets all data properties with range xsd:int.
+	 * TODO We could extend this to all types, which can be parsed into
+	 * Integers, e.g. xsd:integer, xsd:negativeInteger, xsd:nonNegativeInteger etc.
+	 * @see org.dllearner.core.owl.Datatype#INT
+	 * @return Integer data properties in KB.
+	 */
+	public SortedSet<DatatypeProperty> getIntDatatypeProperties();
+	
+	/**
 	 * Gets all individuals in the knowledge base, e.g. Eric, London, Car829. 
 	 * @return All individuals in KB.
 	 */	
@@ -80,5 +114,12 @@ public interface BaseReasoner {
 	 * @return The prefix mapping.
 	 */
 	public Map<String, String> getPrefixes();
+	
+	/**
+	 * Returns the RDFS labels of an entity.
+	 * @param entity An entity, e.g. Machine.
+	 * @return All values of rdfs:label for the entity, e.g. {"Machine"@en, "Maschine"@de}. 
+	 */
+	public Set<Constant> getLabel(Entity entity);
 	
 }

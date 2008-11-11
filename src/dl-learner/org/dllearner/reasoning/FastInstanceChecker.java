@@ -221,7 +221,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			logger.debug("dematerialising object properties");
 
 			for (ObjectProperty atomicRole : atomicRoles) {
-				opPos.put(atomicRole, rc.getRoleMembers(atomicRole));
+				opPos.put(atomicRole, rc.getPropertyMembers(atomicRole));
 			}
 
 			logger.debug("dematerialising datatype properties");
@@ -499,11 +499,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return atomicConcepts;
 	}
 
-	@Override
-	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(
-			DatatypeProperty datatypeProperty) {
-		return rc.getDoubleDatatypeMembers(datatypeProperty);
-	}
+//	@Override
+//	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
+//			DatatypeProperty datatypeProperty) {
+//		return rc.getDoubleDatatypeMembers(datatypeProperty);
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -516,22 +516,22 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getDatatypePropertiesImpl() {
 		return datatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getBooleanDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getBooleanDatatypePropertiesImpl() {
 		return booleanDatatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getDoubleDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getDoubleDatatypePropertiesImpl() {
 		return doubleDatatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getIntDatatypeProperties() {
+	public SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl() {
 		return intDatatypeProperties;
 	}
 
@@ -565,20 +565,20 @@ public class FastInstanceChecker extends ReasonerComponent {
 //		return rc.getClassHierarchy();
 //	}
 
-	@Override
-	public void prepareRoleHierarchyImpl(Set<ObjectProperty> allowedRoles) {
-		rc.prepareRoleHierarchy(allowedRoles);
-	}
+//	@Override
+//	public void prepareRoleHierarchyImpl(Set<ObjectProperty> allowedRoles) {
+//		rc.prepareRoleHierarchy(allowedRoles);
+//	}
 
 //	@Override
 //	public ObjectPropertyHierarchy getRoleHierarchy() {
 //		return rc.getRoleHierarchy();
 //	}
 
-	@Override
-	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
-		rc.prepareDatatypePropertyHierarchyImpl(allowedRoles);
-	}
+//	@Override
+//	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
+//		rc.prepareDatatypePropertyHierarchyImpl(allowedRoles);
+//	}
 
 //	@Override
 //	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
@@ -642,37 +642,37 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
-	public Description getDomain(ObjectProperty objectProperty) {
+	public Description getDomainImpl(ObjectProperty objectProperty) {
 		return rc.getDomain(objectProperty);
 	}
 
 	@Override
-	public Description getDomain(DatatypeProperty datatypeProperty) {
+	public Description getDomainImpl(DatatypeProperty datatypeProperty) {
 		return rc.getDomain(datatypeProperty);
 	}
 
 	@Override
-	public Description getRange(ObjectProperty objectProperty) {
+	public Description getRangeImpl(ObjectProperty objectProperty) {
 		return rc.getRange(objectProperty);
 	}
 
 	@Override
-	public Map<Individual, SortedSet<Individual>> getRoleMembers(ObjectProperty atomicRole) {
+	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
 		return opPos.get(atomicRole);
 	}
 
 	@Override
-	public Set<Individual> getRelatedIndividuals(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getRelatedIndividuals(individual, objectProperty);
 	}
 	
 	@Override
-	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+	public Set<Constant> getRelatedValuesImpl(Individual individual, DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getRelatedValues(individual, datatypeProperty);
 	}	
 	
 	@Override
-	public Set<Constant> getLabel(Entity entity) throws ReasoningMethodUnsupportedException {
+	public Set<Constant> getLabelImpl(Entity entity) throws ReasoningMethodUnsupportedException {
 		return rc.getLabel(entity);
 	}	
 	
@@ -686,10 +686,10 @@ public class FastInstanceChecker extends ReasonerComponent {
 		rc.releaseKB();
 	}
 
-	@Override
-	public boolean hasDatatypeSupport() {
-		return true;
-	}
+//	@Override
+//	public boolean hasDatatypeSupport() {
+//		return true;
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.ReasonerComponent#getTypesImpl(org.dllearner.core.owl.Individual)

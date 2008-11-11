@@ -96,7 +96,7 @@ public class OntologyCloser {
 
 			// System.out.println(oneRole.getClass());
 			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
-					.getRoleMembers(oneRole);
+					.getPropertyMembers(oneRole);
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				if (fillers.size() > 0) {
@@ -126,7 +126,7 @@ public class OntologyCloser {
 
 			// System.out.println(oneRole.getClass());
 			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
-					.getRoleMembers(oneRole);
+					.getPropertyMembers(oneRole);
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				if (fillers.size() > 0) {
@@ -177,7 +177,7 @@ public class OntologyCloser {
 
 			// System.out.println(oneRole.getClass());
 			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
-					.getRoleMembers(oneRole);
+					.getPropertyMembers(oneRole);
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				//if (fillers.size() > 0) {

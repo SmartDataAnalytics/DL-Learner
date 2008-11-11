@@ -23,10 +23,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 
@@ -37,6 +39,43 @@ import org.dllearner.core.owl.ObjectPropertyHierarchy;
  *
  */
 public interface SchemaReasoner {
+	
+	/**
+	 * Returns all named classes, which are not satisfiable, i.e. cannot 
+	 * have instances.
+	 * @return The set of inconsistent classes.
+	 */
+	public Set<NamedClass> getInconsistentClasses();	
+	
+	/**
+	 * Returns the domain of this object property. (Theoretically, there could
+	 * be more than one domain axiom. However, this can be considered a modelling
+	 * error.)
+	 * @param objectProperty An object property in the knowledge base.
+	 * @return The rdfs:domain of <code>objectProperty</code>
+	 */
+	public Description getDomain(ObjectProperty objectProperty);
+	
+	/**
+	 * Returns the domain of this data property.
+	 * @param datatypeProperty An data property in the knowledge base.
+	 * @return The rdfs:domain of <code>datatypeProperty</code>
+	 */	
+	public Description getDomain(DatatypeProperty datatypeProperty);
+	
+	/**
+	 * Returns the range of this object property.
+	 * @param objectProperty An object property in the knowledge base.
+	 * @return The rdfs:range of <code>objectProperty</code>
+	 */	
+	public Description getRange(ObjectProperty objectProperty);
+	
+	/**
+	 * Returns the range of this data property.
+	 * @param datatypeProperty An data property in the knowledge base.
+	 * @return The rdfs:range of <code>datatypeProperty</code>
+	 */		
+	public DataRange getRange(DatatypeProperty datatypeProperty);
 	
 	/**
 	 * Checks whether <code>superClass</code> is a super class of <code>subClass</code>.

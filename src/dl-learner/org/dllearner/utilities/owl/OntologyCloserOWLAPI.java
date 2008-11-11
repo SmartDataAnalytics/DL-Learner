@@ -59,7 +59,7 @@ public class OntologyCloserOWLAPI {
 		for (ObjectProperty oneRole : allRoles) {
 
 			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
-					.getRoleMembers(oneRole);
+					.getPropertyMembers(oneRole);
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				// only where roles exist
@@ -100,7 +100,7 @@ public class OntologyCloserOWLAPI {
 		// collect info for roles and individuals
 		for (ObjectProperty oneRole : allRoles) {
 			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
-					.getRoleMembers(oneRole);
+					.getPropertyMembers(oneRole);
 			for (Individual oneInd : allRoleMembers.keySet()) {
 				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
 				if (fillers.size() > 0) {

@@ -250,7 +250,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	public void makeNegativeExamplesFromDomain(ObjectProperty atomicRole){
 		fromDomain.clear();
 		logger.debug("making Negative Examples from Domain of : "+atomicRole);
-		fromDomain.addAll(reasoningService.getRoleMembers(atomicRole).keySet());
+		fromDomain.addAll(reasoningService.getPropertyMembers(atomicRole).keySet());
 		fromDomain.removeAll(fullPositiveSet);
 		logger.debug("|-neg Example size from Domain: "+this.fromDomain.size());
 	}
@@ -265,7 +265,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	public void makeNegativeExamplesFromRange(ObjectProperty atomicRole){
 		fromRange.clear();
 		logger.debug("making Negative Examples from Range of : "+atomicRole);
-		Collection<SortedSet<Individual>> tmp = reasoningService.getRoleMembers(atomicRole).values();
+		Collection<SortedSet<Individual>> tmp = reasoningService.getPropertyMembers(atomicRole).values();
 		for (SortedSet<Individual> set : tmp) {
 			fromRange.addAll(set);
 		}

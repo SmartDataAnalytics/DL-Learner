@@ -5,7 +5,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
@@ -85,18 +84,18 @@ public class NaturalLanguageDescriptionConvertVisitor implements DescriptionVisi
 	private String getLabelFromReasoner(Entity ent)
 	{
 		String label;
-		try{
+//		try{
 			Set<Constant> set=service.getLabel(ent);
 			if (set.size()>0){
 				Iterator<Constant> iter=set.iterator();
 				label=iter.next().getLiteral();
 			}
 			else label="";
-		}
-		catch (ReasoningMethodUnsupportedException e)
-		{
-			label="";
-		}
+//		}
+//		catch (ReasoningMethodUnsupportedException e)
+//		{
+//			label="";
+//		}
 		
 		return label;
 	}
