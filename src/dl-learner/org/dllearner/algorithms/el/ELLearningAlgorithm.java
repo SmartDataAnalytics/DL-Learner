@@ -130,6 +130,9 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 			}
 		}
 		
+		// print solution(s)
+		logger.info("solution : " + bestEvaluatedDescriptions.getBest());
+		
 		isRunning = false;
 	}
 
