@@ -268,21 +268,21 @@ public class DIGReasoner extends ReasonerComponent {
 	 * 
 	 * TODO Does not yet take ignored roles into account.
 	 */
-	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
-		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-				roleComparator);
-		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-				roleComparator);
- 
-		// Refinement atomarer Konzepte
-		for (ObjectProperty role : atomicRoles) {
-			roleHierarchyDown.put(role, getMoreSpecialRolesDIG(role));
-			roleHierarchyUp.put(role, getMoreGeneralRolesDIG(role));
-		}
-
-		roleHierarchy = new ObjectPropertyHierarchy(allowedRoles, roleHierarchyUp,
-				roleHierarchyDown);
-	}
+//	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
+//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
+//				roleComparator);
+//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
+//				roleComparator);
+// 
+//		// Refinement atomarer Konzepte
+//		for (ObjectProperty role : atomicRoles) {
+//			roleHierarchyDown.put(role, getMoreSpecialRolesDIG(role));
+//			roleHierarchyUp.put(role, getMoreGeneralRolesDIG(role));
+//		}
+//
+//		roleHierarchy = new ObjectPropertyHierarchy(allowedRoles, roleHierarchyUp,
+//				roleHierarchyDown);
+//	}
 
 	// eigentlich müsste man klonen um sicherzustellen, dass der parent-Link
 	// bei null bleibt; bei der aktuellen Implementierung ist der parent-Link
@@ -562,7 +562,8 @@ public class DIGReasoner extends ReasonerComponent {
 		return resultsSet;
 	}
 
-	private TreeSet<ObjectProperty> getMoreGeneralRolesDIG(ObjectProperty role) {
+	@Override
+	protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {
 		String moreGeneralRolesDIG = asksPrefix;
 		moreGeneralRolesDIG += "<rparents id=\"query_parents\">";
 		moreGeneralRolesDIG += "<ratom name=\"" + role.getName() + "\" />";
@@ -587,7 +588,8 @@ public class DIGReasoner extends ReasonerComponent {
 		return resultsSet;
 	}
 
-	private TreeSet<ObjectProperty> getMoreSpecialRolesDIG(ObjectProperty role) {
+	@Override
+	protected TreeSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) {
 		String moreSpecialRolesDIG = asksPrefix;
 		moreSpecialRolesDIG += "<rchildren id=\"query_children\">";
 		moreSpecialRolesDIG += "<ratom name=\"" + role.getName() + "\" />";

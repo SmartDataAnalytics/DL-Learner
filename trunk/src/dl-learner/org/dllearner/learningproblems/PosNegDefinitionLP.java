@@ -81,7 +81,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 	
 	/**
 	 * This method computes (using the reasoner) whether a concept is too weak.
-	 * If it is not weak, it returns the number of covered negative example. It
+	 * If it is not weak, it returns the number of covered negative examples. It
 	 * can use retrieval or instance checks for classification.
 	 * 
 	 * @see org.dllearner.learningproblems.PosNegLP.UseMultiInstanceChecks

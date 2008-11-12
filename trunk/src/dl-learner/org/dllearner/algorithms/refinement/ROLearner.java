@@ -1099,7 +1099,7 @@ public class ROLearner extends LearningAlgorithm {
 		return best;
 	}
 	
-	@Override
+//	@Override
 	public Score getSolutionScore() {
 		if(posOnly)
 			return posOnlyLearningProblem.computeScore(getCurrentlyBestDescription());

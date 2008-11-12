@@ -36,13 +36,17 @@ import org.dllearner.core.options.InvalidConfigOptionValueException;
  */
 public abstract class Component {
 	
-protected Configurator configurator;
+	protected Configurator configurator;
 	
+	/**
+	 * For each component, a configurator class is generated in package
+	 * org.dllearner.core.configurators using the script 
+	 * {@link org.dllearner.scripts.ConfigJavaGenerator}. The configurator
+	 * provides set and get methods for the configuration options of 
+	 * a component.
+	 * @return An object allowing to configure this component.
+	 */
 	public abstract Configurator getConfigurator();
-		//return configurator;
-	//}
-	
-	
 	
 	/**
 	 * Returns the name of this component. By default, "unnamed 
@@ -83,6 +87,15 @@ protected Configurator configurator;
 	 * perform an action (usually setting an internal variable to 
 	 * an appropriate value).
 	 * 
+	 * Since the availability of configurators, it is optional for 
+	 * components to implement this method. Instead of using this method
+	 * to take an action based on a configuration value, components can
+	 * also use the getters defined in the components configurator. 
+	 * 
+	 * Important note: Never call this method directly. All calls are
+	 * done via the {@link org.dllearner.core.ComponentManager}.
+	 * 
+	 * @see #getConfigurator()
 	 * @param <T> Type of the config entry (Integer, String etc.).
 	 * @param entry A configuration entry.
 	 * @throws InvalidConfigOptionValueException This exception is thrown if the
@@ -94,15 +107,8 @@ protected Configurator configurator;
 	 * an interval for the value). This means that, as a component developer, you
 	 * often do not need to implement further validity checks.  
 	 */
-	public abstract <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException;
+	protected <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
+		
+	}
 	
-	/**
-	 * Gets the value of a configuration option of this component.
-	 * 
-	 * @param <T> Option type.
-	 * @param option A configuration option of this component.
-	 * @return Current value of the configuration option.
-	 */
-// now implemented in ComponentManager
-//	public abstract <T> T getConfigValue(ConfigOption<T> option) throws UnknownConfigOptionException;
 }

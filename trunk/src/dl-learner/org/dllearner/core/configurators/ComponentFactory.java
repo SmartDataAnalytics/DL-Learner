@@ -26,6 +26,7 @@ import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.DBpediaNavigationSuggestor;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.SimpleSuggestionLearningAlgorithm;
+import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
@@ -121,7 +122,7 @@ return OWLAPIReasonerConfigurator.getOWLAPIReasoner(knowledgeSource);
 /**
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @return a component ready for initialization PosNegDefinitionLP
 **/
 public static PosNegDefinitionLP getPosNegDefinitionLP(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
@@ -131,7 +132,7 @@ return PosNegDefinitionLPConfigurator.getPosNegDefinitionLP(reasoningService, po
 /**
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @return a component ready for initialization PosNegDefinitionLPStrict
 **/
 public static PosNegDefinitionLPStrict getPosNegDefinitionLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
@@ -141,7 +142,7 @@ return PosNegDefinitionLPStrictConfigurator.getPosNegDefinitionLPStrict(reasonin
 /**
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @return a component ready for initialization PosNegInclusionLP
 **/
 public static PosNegInclusionLP getPosNegInclusionLP(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
@@ -150,7 +151,7 @@ return PosNegInclusionLPConfigurator.getPosNegInclusionLP(reasoningService, posi
 
 /**
 * @param positiveExamples positive examples
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @return a component ready for initialization PosOnlyDefinitionLP
 **/
 public static PosOnlyDefinitionLP getPosOnlyDefinitionLP(ReasonerComponent reasoningService, Set<String> positiveExamples)  {
@@ -159,7 +160,7 @@ return PosOnlyDefinitionLPConfigurator.getPosOnlyDefinitionLP(reasoningService, 
 
 /**
 * @param positiveExamples positive examples
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @return a component ready for initialization PosOnlyInclusionLP
 **/
 public static PosOnlyInclusionLP getPosOnlyInclusionLP(ReasonerComponent reasoningService, Set<String> positiveExamples)  {
@@ -168,7 +169,7 @@ return PosOnlyInclusionLPConfigurator.getPosOnlyInclusionLP(reasoningService, po
 
 /**
 * @param learningProblem see LearningProblem
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization BruteForceLearner
 **/
@@ -178,7 +179,7 @@ return BruteForceLearnerConfigurator.getBruteForceLearner(learningProblem, reaso
 
 /**
 * @param learningProblem see LearningProblem
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization DBpediaNavigationSuggestor
 **/
@@ -188,7 +189,7 @@ return DBpediaNavigationSuggestorConfigurator.getDBpediaNavigationSuggestor(lear
 
 /**
 * @param learningProblem see LearningProblem
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization RandomGuesser
 **/
@@ -198,7 +199,7 @@ return RandomGuesserConfigurator.getRandomGuesser(learningProblem, reasoningServ
 
 /**
 * @param learningProblem see LearningProblem
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization SimpleSuggestionLearningAlgorithm
 **/
@@ -208,7 +209,17 @@ return SimpleSuggestionLearningAlgorithmConfigurator.getSimpleSuggestionLearning
 
 /**
 * @param learningProblem see LearningProblem
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization ELLearningAlgorithm
+**/
+public static ELLearningAlgorithm getELLearningAlgorithm(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+return ELLearningAlgorithmConfigurator.getELLearningAlgorithm(learningProblem, reasoningService);
+}
+
+/**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization GP
 **/
@@ -218,7 +229,7 @@ return GPConfigurator.getGP(learningProblem, reasoningService);
 
 /**
 * @param learningProblem see LearningProblem
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization ExampleBasedROLComponent
 **/
@@ -228,7 +239,7 @@ return ExampleBasedROLComponentConfigurator.getExampleBasedROLComponent(learning
 
 /**
 * @param learningProblem see LearningProblem
-* @param reasoningService see ReasonerComponent
+* @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization ROLearner
 **/

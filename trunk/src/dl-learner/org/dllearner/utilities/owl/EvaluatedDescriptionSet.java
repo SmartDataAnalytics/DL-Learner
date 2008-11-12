@@ -21,10 +21,13 @@ package org.dllearner.utilities.owl;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.owl.Description;
 
 /**
  * A set of evaluated descriptions, which is bound by a maximum
@@ -68,4 +71,11 @@ public class EvaluatedDescriptionSet {
 		return set;
 	}
 	
+	public List<Description> toDescriptionList() {
+		List<Description> list = new LinkedList<Description>();
+		for(EvaluatedDescription ed : set) {
+			list.add(ed.getDescription());
+		}
+		return list;
+	}
 }
