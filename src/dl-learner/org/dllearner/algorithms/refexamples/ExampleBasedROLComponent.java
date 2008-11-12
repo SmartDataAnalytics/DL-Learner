@@ -430,7 +430,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		algorithm.start();
 	}
 	
-	@Override
+//	@Override
 	public Score getSolutionScore() {
 		return algorithm.getSolutionScore();
 	}

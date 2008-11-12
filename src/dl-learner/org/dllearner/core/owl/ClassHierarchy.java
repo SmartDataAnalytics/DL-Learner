@@ -55,8 +55,6 @@ public class ClassHierarchy {
 		this.subsumptionHierarchyUp = subsumptionHierarchyUp;
 		this.subsumptionHierarchyDown = subsumptionHierarchyDown;
 		
-		
-
 	}
 
 	public SortedSet<Description> getSuperClasses(Description concept) {

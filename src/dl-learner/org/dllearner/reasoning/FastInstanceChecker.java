@@ -534,6 +534,26 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return intDatatypeProperties;
 	}
 
+	@Override
+	protected SortedSet<Description> getSuperClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
+		return rc.getSuperClassesImpl(concept);
+	}
+	
+	@Override
+	protected SortedSet<Description> getSubClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
+		return rc.getSubClassesImpl(concept);
+	}		
+
+	@Override
+	protected SortedSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+		return rc.getSuperPropertiesImpl(role);
+	}	
+
+	@Override
+	protected SortedSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+		return rc.getSubPropertiesImpl(role);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

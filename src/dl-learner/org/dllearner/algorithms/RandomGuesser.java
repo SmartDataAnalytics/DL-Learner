@@ -120,7 +120,7 @@ public class RandomGuesser extends LearningAlgorithm {
 		logger.info("fitness: " + bestFitness);
 	}
 
-	@Override
+//	@Override
 	public Score getSolutionScore() {
 		return bestScore;
 	}

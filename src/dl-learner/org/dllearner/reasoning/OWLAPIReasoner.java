@@ -56,7 +56,6 @@ import org.dllearner.core.owl.KB;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.core.owl.UntypedConstant;
@@ -124,7 +123,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	private RoleComparator roleComparator = new RoleComparator();
 //	private ClassHierarchy subsumptionHierarchy;
-	private ObjectPropertyHierarchy roleHierarchy;	
+//	private ObjectPropertyHierarchy roleHierarchy;	
 	private DatatypePropertyHierarchy datatypePropertyHierarchy;
 //	private Set<Description> allowedConceptsInSubsumptionHierarchy;
 	
@@ -405,46 +404,46 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			return ReasonerType.OWLAPI_PELLET;
 	}
 
-	@Override
-	public ObjectPropertyHierarchy prepareRoleHierarchy() {
-		// code copied from DIG reasoner
-		
-		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-				roleComparator);
-		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-				roleComparator);
- 
-		// refinement of atomic concepts
-		for (ObjectProperty role : atomicRoles) {
-			roleHierarchyDown.put(role, getMoreSpecialRolesImpl(role));
-			roleHierarchyUp.put(role, getMoreGeneralRolesImpl(role));
-		}
-
-		roleHierarchy = new ObjectPropertyHierarchy(atomicRoles, roleHierarchyUp,
-				roleHierarchyDown);
-		return roleHierarchy;
-	}
+//	@Override
+//	public ObjectPropertyHierarchy prepareRoleHierarchy() {
+//		// code copied from DIG reasoner
+//		
+//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
+//				roleComparator);
+//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
+//				roleComparator);
+// 
+//		// refinement of atomic concepts
+//		for (ObjectProperty role : atomicRoles) {
+//			roleHierarchyDown.put(role, getMoreSpecialRolesImpl(role));
+//			roleHierarchyUp.put(role, getMoreGeneralRolesImpl(role));
+//		}
+//
+//		roleHierarchy = new ObjectPropertyHierarchy(atomicRoles, roleHierarchyUp,
+//				roleHierarchyDown);
+//		return roleHierarchy;
+//	}
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#prepareRoleHierarchy(java.util.Set)
 	 */
-	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
-		// code copied from DIG reasoner
-		
-		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-				roleComparator);
-		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-				roleComparator);
- 
-		// refinement of atomic concepts
-		for (ObjectProperty role : atomicRoles) {
-			roleHierarchyDown.put(role, getMoreSpecialRolesImpl(role));
-			roleHierarchyUp.put(role, getMoreGeneralRolesImpl(role));
-		}
-
-		roleHierarchy = new ObjectPropertyHierarchy(allowedRoles, roleHierarchyUp,
-				roleHierarchyDown);
-	}	
+//	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
+//		// code copied from DIG reasoner
+//		
+//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
+//				roleComparator);
+//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
+//				roleComparator);
+// 
+//		// refinement of atomic concepts
+//		for (ObjectProperty role : atomicRoles) {
+//			roleHierarchyDown.put(role, getMoreSpecialRolesImpl(role));
+//			roleHierarchyUp.put(role, getMoreGeneralRolesImpl(role));
+//		}
+//
+//		roleHierarchy = new ObjectPropertyHierarchy(allowedRoles, roleHierarchyUp,
+//				roleHierarchyDown);
+//	}	
 	
 //	@Override
 //	public ObjectPropertyHierarchy getRoleHierarchy() {
@@ -508,7 +507,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return getFirstClasses(classes);
 	}
 	
-	private TreeSet<ObjectProperty> getMoreGeneralRolesImpl(ObjectProperty role) {
+	@Override
+	protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {
 		Set<Set<OWLObjectProperty>> properties;
 		try {
 			properties = reasoner.getSuperProperties(getOWLAPIDescription(role));
@@ -519,7 +519,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return getFirstObjectProperties(properties);
 	}
 	
-	private TreeSet<ObjectProperty> getMoreSpecialRolesImpl(ObjectProperty role) {
+	@Override
+	protected TreeSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) {
 		Set<Set<OWLObjectProperty>> properties;
 		try {
 			properties = reasoner.getSubProperties(getOWLAPIDescription(role));

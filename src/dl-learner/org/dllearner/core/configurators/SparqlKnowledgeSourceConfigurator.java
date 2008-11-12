@@ -153,7 +153,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(sparqlK
 /**
 * saveExtractedFragment Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir.Some DBpedia URI will make the XML invalid.
 * mandatory: false| reinit necessary: true
-* default value: true
+* default value: false
 * @return boolean 
 **/
 public boolean getSaveExtractedFragment() {
@@ -365,7 +365,7 @@ reinitNecessary = true;
 /**
 * @param saveExtractedFragment Specifies whether the extracted ontology is written to a file or not. The OWL file is written to the cache dir.Some DBpedia URI will make the XML invalid.
 * mandatory: false| reinit necessary: true
-* default value: true
+* default value: false
 **/
 public void setSaveExtractedFragment(boolean saveExtractedFragment) {
 ComponentManager.getInstance().applyConfigEntry(sparqlKnowledgeSource, "saveExtractedFragment", saveExtractedFragment);

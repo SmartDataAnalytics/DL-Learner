@@ -189,7 +189,7 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 		return learner.getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, accuracyThreshold, filterNonMinimalDescriptions);
 	}
 
-	@Override
+//	@Override
 	public Score getSolutionScore() {
 		return learner.getSolutionScore();
 	}

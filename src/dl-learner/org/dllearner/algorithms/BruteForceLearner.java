@@ -287,7 +287,7 @@ public class BruteForceLearner extends LearningAlgorithm {
         }
     }
 
-    @Override
+//    @Override
 	public Score getSolutionScore() {
 		return bestScore;
 	}

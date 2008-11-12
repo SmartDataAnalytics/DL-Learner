@@ -26,7 +26,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 
 /**
  * This comparator is stable, because it only takes covered examples, concept
- * length and the concepts itself (using again a stable comparator) into a
+ * length and the concepts itself (using again a stable comparator) into
  * account, which do not change during the run of the algorithm.
  * 
  * @author Jens Lehmann

@@ -96,9 +96,10 @@ public abstract class LearningAlgorithm extends Component {
 	
 	/**
 	 * This is the maximum number of results, which the learning
-	 * algorithms need to keep. (Often algorithms do not need 
-	 * to store any results except the best one, so this limit
-	 * is used to limit the performance cost for storing results.)
+	 * algorithms are asked to store. (Note, that algorithms are not 
+	 * required to store any results except the best one, so this limit
+	 * is used to limit the performance cost for those which 
+	 * choose to store results.)
 	 */
 	public static final int MAX_NR_OF_RESULTS = 100;
 	
@@ -143,8 +144,8 @@ public abstract class LearningAlgorithm extends Component {
 	 * 
 	 * @return Best score.
 	 */
-	@Deprecated
-	public abstract Score getSolutionScore();
+//	@Deprecated
+//	public abstract Score getSolutionScore();
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()

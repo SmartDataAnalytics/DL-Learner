@@ -94,7 +94,7 @@ public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm impleme
 
 	}
 
-	@Override
+//	@Override
 	public Score getSolutionScore() {
 		return solutionScore;
 	}

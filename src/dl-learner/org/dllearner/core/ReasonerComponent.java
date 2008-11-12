@@ -47,6 +47,7 @@ import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLVocabulary;
+import org.dllearner.utilities.owl.RoleComparator;
 
 /**
  * Abstract component representing a reasoner. Only a few reasoning operations
@@ -770,21 +771,37 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return getObjectPropertyHierarchy().getMoreGeneralRoles(role);
 	}
 
+	protected SortedSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
 	@Override
 	public final SortedSet<ObjectProperty> getSubProperties(ObjectProperty role) {
 		return getObjectPropertyHierarchy().getMoreSpecialRoles(role);
 	}
 
+	protected SortedSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}	
+	
 	@Override
 	public final TreeSet<ObjectProperty> getMostGeneralProperties() {
 		return getObjectPropertyHierarchy().getMostGeneralRoles();
 	}
 
+//	protected SortedSet<ObjectProperty> getMostGeneralPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+//		throw new ReasoningMethodUnsupportedException();
+//	}	
+	
 	@Override
 	public final TreeSet<ObjectProperty> getMostSpecialProperties() {
 		return getObjectPropertyHierarchy().getMostSpecialRoles();
 	}
 
+//	protected SortedSet<ObjectProperty> getMostSpecialPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+//		throw new ReasoningMethodUnsupportedException();
+//	}
+	
 	@Override
 	public final SortedSet<DatatypeProperty> getSuperProperties(DatatypeProperty role) {
 		return getDatatypePropertyHierarchy().getMoreGeneralRoles(role);
@@ -810,7 +827,8 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	 * called explicitly, it is called the first time, it is needed).
 	 * 
 	 * @return The class hierarchy.
-	 * @throws ReasoningMethodUnsupportedException 
+	 * @throws ReasoningMethodUnsupportedException If any method needed to
+	 * create the hierarchy is not supported by the underlying reasoner.
 	 */
 	public final ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
 		ConceptComparator conceptComparator = new ConceptComparator();
@@ -824,8 +842,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		subsumptionHierarchyUp.put(Thing.instance, new TreeSet<Description>());
 		subsumptionHierarchyDown.put(Thing.instance, tmp);
 
-		
-		
 		// ... bottom ...
 		tmp = getSuperClassesImpl(Nothing.instance);
 		subsumptionHierarchyUp.put(Nothing.instance, tmp);
@@ -849,8 +865,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 			subsumptionHierarchyUp.put(atom, tmp);
 		}		
 
-		
-		
 		return new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
 
@@ -873,13 +887,28 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	 * 
 	 * @return The object property hierarchy.
 	 * @throws ReasoningMethodUnsupportedException
-	 *             Thrown if object property hierarchy creation is not supported
-	 *             by the reasoner.
+	 *             Thrown if a reasoning method for object property 
+	 *             hierarchy creation is not supported by the reasoner.
 	 */
 	public ObjectPropertyHierarchy prepareRoleHierarchy()
 			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException(
-				"Object property hierarchy creation not supported by this reasoner.");
+		
+		RoleComparator roleComparator = new RoleComparator();
+		TreeMap<ObjectProperty, SortedSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, SortedSet<ObjectProperty>>(
+				roleComparator);
+		TreeMap<ObjectProperty, SortedSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, SortedSet<ObjectProperty>>(
+				roleComparator);
+ 
+		// refinement of atomic concepts
+		Set<ObjectProperty> atomicRoles = getObjectProperties();
+		for (ObjectProperty role : atomicRoles) {
+			roleHierarchyDown.put(role, getSubPropertiesImpl(role));
+			roleHierarchyUp.put(role, getSuperPropertiesImpl(role));
+		}
+
+		roleHierarchy = new ObjectPropertyHierarchy(atomicRoles, roleHierarchyUp,
+				roleHierarchyDown);
+		return roleHierarchy;		
 	}
 
 	@Override

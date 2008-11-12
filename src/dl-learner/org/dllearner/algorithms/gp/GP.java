@@ -946,7 +946,7 @@ public class GP extends LearningAlgorithm {
         System.exit(0);
     }
 
-    @Override
+//    @Override
 	public Score getSolutionScore() {
 		return bestScore;
 	}
