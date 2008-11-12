@@ -443,4 +443,13 @@ public class ELDescriptionTree implements Cloneable {
 	public String toString() {
 		return rootNode.toString();
 	}
+	
+	/**
+	 * Returns a string of the tree description (without the overhead of converting
+	 * the tree into a description).
+	 * @return A string for the description the tree stands for.  
+	 */
+	public String toDescriptionString() {
+		return rootNode.toDescriptionString();
+	}
 }

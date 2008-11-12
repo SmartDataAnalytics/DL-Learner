@@ -37,11 +37,11 @@ import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.HTMLLayout;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.SimpleLayout;
 import org.dllearner.Info;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.RandomGuesser;
@@ -104,7 +104,8 @@ import com.jamonapi.MonitorFactory;
  */
 public class Start {
 
-	private static Logger logger = Logger.getRootLogger();
+	private static Logger logger = Logger.getLogger(Start.class);
+	private static Logger rootLogger = Logger.getRootLogger();
 
 	private static ConfMapper confMapper = new ConfMapper();
 	
@@ -145,27 +146,50 @@ public class Start {
 		// logger 1 is the console, where we print only info messages;
 		// the logger is plain, i.e. does not output log level etc.
 		Layout layout = new PatternLayout();
+
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		// setting a threshold suppresses log messages below this level;
+		// this means that if you want to e.g. see all trace messages on
+		// console, you have to set the threshold and log level to trace
+		// (but we recommend just setting the log level to trace and observe
+		// the log file)
 		consoleAppender.setThreshold(Level.INFO);
 		
 		// logger 2 is writes to a file; it records all debug messages
-		// and includes the log level
-		Layout layout2 = new SimpleLayout();
+		// (you can choose HTML or TXT)
+		boolean htmlLog = false;
+		Layout layout2 = null;
 		FileAppender fileAppenderNormal = null;
-		File f = new File("log/sparql.txt");
+		String fileName;
+		if(htmlLog) {
+			layout2 = new HTMLLayout();
+			fileName = "log/log.html";
+		} else {
+			// simple variant: layout2 = new SimpleLayout();
+			layout2 = new PatternLayout("%r [%t] %-5p %c :\n%m%n\n");
+			fileName = "log/log.txt";
+		}
 		try {
-		    	fileAppenderNormal = new FileAppender(layout2, "log/log.txt", false);
-		    	f.delete();
-		    	f.createNewFile();
+			fileAppenderNormal = new FileAppender(layout2, fileName, false);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-//		fileAppenderNormal.setThreshold(Level.DEBUG);
+		}		
 		
-		logger.removeAllAppenders();
-		logger.addAppender(consoleAppender);
-		logger.addAppender(fileAppenderNormal);
-		logger.setLevel(Level.DEBUG);
+		// add both loggers
+		rootLogger.removeAllAppenders();
+		rootLogger.addAppender(consoleAppender);
+		rootLogger.addAppender(fileAppenderNormal);
+		rootLogger.setLevel(Level.DEBUG);
+		
+		// SPARQL log
+		File f = new File("log/sparql.txt");
+    	f.delete();
+    	try {
+			f.createNewFile();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 //		Logger.getLogger(KnowledgeSource.class).setLevel(Level.WARN);
 //		Logger.getLogger(SparqlKnowledgeSource.class).setLevel(Level.WARN);
@@ -640,19 +664,19 @@ public class Start {
 				} else if (name.equals("logLevel")) {
 					String level = cliOption.getStringValue();
 					if (level.equals("off"))
-						logger.setLevel(Level.OFF);
+						rootLogger.setLevel(Level.OFF);
 					else if (level.equals("trace"))
-						logger.setLevel(Level.TRACE);
+						rootLogger.setLevel(Level.TRACE);
 					else if (level.equals("info"))
-						logger.setLevel(Level.INFO);
+						rootLogger.setLevel(Level.INFO);
 					else if (level.equals("debug"))
-						logger.setLevel(Level.DEBUG);
+						rootLogger.setLevel(Level.DEBUG);
 					else if (level.equals("warn"))
-						logger.setLevel(Level.WARN);
+						rootLogger.setLevel(Level.WARN);
 					else if (level.equals("error"))
-						logger.setLevel(Level.ERROR);
+						rootLogger.setLevel(Level.ERROR);
 					else if (level.equals("fatal"))
-						logger.setLevel(Level.FATAL);
+						rootLogger.setLevel(Level.FATAL);
 				} else
 					handleError("Unknown CLI option \"" + name + "\".");
 			}

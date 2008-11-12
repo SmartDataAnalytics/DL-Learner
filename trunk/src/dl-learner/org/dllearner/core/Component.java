@@ -51,7 +51,8 @@ public abstract class Component {
 	/**
 	 * Returns the name of this component. By default, "unnamed 
 	 * component" is returned, but all implementations of components
-	 * are strongly encouraged to overwrite this method.
+	 * are strongly encouraged to provide a static method returning 
+	 * the name.
 	 * @return The name of this component.
 	 */
 	public static String getName() {

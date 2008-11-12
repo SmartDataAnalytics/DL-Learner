@@ -21,6 +21,7 @@ package org.dllearner.algorithms.el;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NavigableSet;
@@ -399,6 +400,28 @@ public class ELDescriptionNode {
 		return str;
 	}
 
+	public String toDescriptionString() {
+		String str = "";
+		if(label.isEmpty()) {
+			str = "TOP";
+		} else {
+			Iterator<NamedClass> it = label.iterator();
+			while(it.hasNext()) {
+				NamedClass nc = it.next();
+				if(it.hasNext()) {
+					str += nc.toString() + " AND ";
+				} else {
+					str += nc.toString();
+				}
+			}
+		}
+		for(ELDescriptionEdge edge : edges) {
+			str += " AND EXISTS " + edge.getLabel().toString() + ".(";
+			str += edge.getTree().toDescriptionString() + ")";
+		}
+		return str;		
+	}
+	
 	public ELDescriptionNode getParent() {
 		return parent;
 	}
