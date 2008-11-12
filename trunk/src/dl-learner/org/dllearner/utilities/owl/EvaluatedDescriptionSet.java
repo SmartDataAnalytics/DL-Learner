@@ -69,11 +69,11 @@ public class EvaluatedDescriptionSet {
 	}
 	
 	public EvaluatedDescription getBest() {
-		return set.last();
+		return set.first();
 	}
 	
 	public EvaluatedDescription getWorst() {
-		return set.first();
+		return set.last();
 	}
 	
 	/**
