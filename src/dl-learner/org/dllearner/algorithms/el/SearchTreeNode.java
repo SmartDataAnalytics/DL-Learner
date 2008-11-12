@@ -19,7 +19,10 @@
  */
 package org.dllearner.algorithms.el;
 
+import java.util.LinkedList;
 import java.util.List;
+
+import org.dllearner.algorithms.refinement.Node;
 
 /**
  * A node in the search tree of an EL algorithm.
@@ -31,7 +34,7 @@ public class SearchTreeNode {
 
 	private ELDescriptionTree descriptionTree;
 	
-	private List<SearchTreeNode> children;
+	private List<SearchTreeNode> children = new LinkedList<SearchTreeNode>();
 	
 	private int coveredNegatives;
 	private boolean tooWeak = false;
@@ -86,5 +89,33 @@ public class SearchTreeNode {
 	public List<SearchTreeNode> getChildren() {
 		return children;
 	}
+	
+	@Override		
+	public String toString() {
+		String ret = descriptionTree.toDescriptionString() + " [q:";
+		if(tooWeak)
+			ret += "tw";
+		else
+			ret += coveredNegatives;
+		ret += ", children:" + children.size() + "]";
+		return ret;
+	}
+	
+	public String getTreeString() {
+		return getTreeString(0).toString();
+	}
+	
+	private StringBuilder getTreeString(int depth) {
+		StringBuilder treeString = new StringBuilder();
+		for(int i=0; i<depth-1; i++)
+			treeString.append("  ");
+		if(depth!=0)
+			treeString.append("|--> ");
+		treeString.append(toString()+"\n");
+		for(SearchTreeNode child : children) {
+			treeString.append(child.getTreeString(depth+1));
+		}
+		return treeString;
+	}	
 	
 }

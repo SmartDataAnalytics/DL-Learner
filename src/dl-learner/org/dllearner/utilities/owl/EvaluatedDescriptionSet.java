@@ -64,6 +64,18 @@ public class EvaluatedDescriptionSet {
 		}
 	}	
 	
+	public int size() {
+		return set.size();
+	}
+	
+	public EvaluatedDescription getBest() {
+		return set.last();
+	}
+	
+	public EvaluatedDescription getWorst() {
+		return set.first();
+	}
+	
 	/**
 	 * @return the set
 	 */

@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
@@ -36,7 +37,6 @@ import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.configurators.ELLearningAlgorithmConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.refinementoperators.ELDown;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
@@ -52,6 +52,7 @@ import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
  */
 public class ELLearningAlgorithm extends LearningAlgorithm {
 
+	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
 	private ELLearningAlgorithmConfigurator configurator;
 	
 	private ELDown operator;
@@ -64,11 +65,15 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 
 	private SearchTreeNode startNode;
 	private ELHeuristic heuristic;
-	private SortedSet<SearchTreeNode> candidates;
+	private TreeSet<SearchTreeNode> candidates;
 	
 	public ELLearningAlgorithm(PosNegLP problem, ReasonerComponent reasoner) {
 		super(problem, reasoner);
 	}
+	
+	public static String getName() {
+		return "standard EL learning algorithm";
+	}	
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
@@ -101,17 +106,27 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 		isRunning = true;
 		reset();
 		
+		// create start node
 		ELDescriptionTree top = new ELDescriptionTree(reasoner, Thing.instance);
 		addDescriptionTree(top, null);
 		
+		// main loop
+		int loop = 0;
 		while(!stop && !stoppingCriteriaSatisfied()) {
 			// pick the best candidate according to the heuristic
-			SearchTreeNode best = candidates.last();
+			SearchTreeNode best = candidates.pollLast();
 			// apply operator
 			Set<ELDescriptionTree> refinements = operator.refine(best.getDescriptionTree());
 			// add all refinements to search tree, candidates, best descriptions
 			for(ELDescriptionTree refinement : refinements) {
 				addDescriptionTree(refinement, best);
+			}
+			loop++;
+			// logging
+			if(logger.isTraceEnabled()) {
+				logger.trace("Choosen node " + best);
+				logger.trace(startNode.getTreeString());
+				logger.trace("Loop " + loop + " completed.");
 			}
 		}
 		
@@ -146,18 +161,16 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 			
 			// check whether we want to add it to the best evaluated descriptions;
 			// to do this we pick the worst considered evaluated description
-			// (remember that the set has limited size, so it's likely not the worst overall)
-			EvaluatedDescription worst = bestEvaluatedDescriptions.getSet().first();
+			// (remember that the set has limited size, so it's likely not the worst overall);
 			// the description has a chance to make it in the set if it has
 			// at least as high accuracy - if not we can save the reasoner calls
 			// for fully computing the evaluated description
-			if(worst.getCoveredNegatives().size() >= node.getCoveredNegatives()) {
+			if(bestEvaluatedDescriptions.size() == 0 || bestEvaluatedDescriptions.getWorst().getCoveredNegatives().size() >= node.getCoveredNegatives()) {
 				Score score = learningProblem.computeScore(description);
 				EvaluatedDescription ed = new EvaluatedDescription(description, score);
 				bestEvaluatedDescriptions.add(ed);
 			}
-			// TODO add a method to EvaluatedDescriptionSet for returning the
-			// minimum accuracy required
+			
 		}
 		
 	}
