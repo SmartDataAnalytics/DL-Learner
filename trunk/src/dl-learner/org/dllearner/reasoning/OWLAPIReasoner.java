@@ -41,7 +41,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.configurators.OWLAPIReasonerConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;

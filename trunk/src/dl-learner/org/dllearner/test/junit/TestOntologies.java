@@ -36,7 +36,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
  */
 public final class TestOntologies {
 
-	public enum TestOntology { EMPTY, SIMPLE, SIMPLE2, R1SUBR2 };
+	public enum TestOntology { EMPTY, SIMPLE, SIMPLE2, R1SUBR2, DATA1 };
 	
 	public static ReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
@@ -59,6 +59,14 @@ public final class TestOntologies {
 			kbString += "a2 SUB a4";
 		} else if(ont.equals(TestOntology.R1SUBR2)) {
 			kbString += "Subrole(r1,r2).\n";
+		} else if(ont.equals(TestOntology.DATA1)) {
+			kbString += "man SUB person.\n";
+			kbString += "woman SUB person.\n";
+			kbString += "man(eric).\n";
+			kbString += "woman(diana).\n";
+			kbString += "married(eric,diana).\n";
+			kbString += "hasChild(eric,frank).\n";
+			kbString += "hasChild(eric,tim).\n";
 		}
 		
 		try {	
