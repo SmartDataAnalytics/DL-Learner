@@ -22,8 +22,6 @@ package org.dllearner.algorithms.el;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dllearner.algorithms.refinement.Node;
-
 /**
  * A node in the search tree of an EL algorithm.
  * 
