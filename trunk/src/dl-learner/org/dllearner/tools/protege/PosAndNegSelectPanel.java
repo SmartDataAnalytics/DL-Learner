@@ -41,11 +41,6 @@ public class PosAndNegSelectPanel extends JPanel {
 
 	private static final long serialVersionUID = 23632947283479L;
 
-	// This is the Panel here the check boxes, the labels, and the help buttons
-	// are in.
-
-	//private JPanel posAndNegPanel;
-
 	// this is the Panel where the check boxes are.
 
 	private JPanel posAndNegSelectPanel;
@@ -93,9 +88,6 @@ public class PosAndNegSelectPanel extends JPanel {
 
 	// This is the Text area where the help message is displayed.
 	private OptionPanel optionPanel;
-	//private JComboBox optionBox;
-	//private JPanel optionBoxPanel;
-	//private ActionHandler action;
 	private DefaultListModel posListModel;
 	private DefaultListModel negListModel;
 	private JPanel examplePanel;
@@ -109,6 +101,7 @@ public class PosAndNegSelectPanel extends JPanel {
 	 *            DLLearnerModel
 	 * @param act
 	 *            ActionHandler
+	 * @param v DLLearnerView
 	 */
 	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView v) {
 		//set layout for parent Panel
@@ -191,6 +184,8 @@ public class PosAndNegSelectPanel extends JPanel {
 	/**
 	 * This method adds the check boxes, the labels and the help buttons for
 	 * positive and negative examples.
+	 * @param posData DefaultListModel
+	 * @param negData DefaultListModel
 	 */
 	public void setExampleList(DefaultListModel posData, DefaultListModel negData) {
 		posListModel = posData;
@@ -199,10 +194,18 @@ public class PosAndNegSelectPanel extends JPanel {
 		negList.setModel(negListModel);
 	}
 	
+	/**
+	 * This method returns the pos button.
+	 * @return JButton
+	 */
 	public JButton getAddToPosPanelButton() {
 		return addToPosExamples;
 	}
 	
+	/**
+	 * This method returns the neg button.
+	 * @return JButton
+	 */
 	public JButton getAddToNegPanelButton() {
 		return addToNegExamples;
 	}
@@ -226,10 +229,18 @@ public class PosAndNegSelectPanel extends JPanel {
 
 	}
 	
+	/**
+	 * Nothing.
+	 * @param act ActionHandler
+	 */
 	public void removeListeners(ActionHandler act) {
 
 	}
 	
+	/**
+	 * Nothing.
+	 * @param enable boolean
+	 */
 	public void setCheckBoxesEnable(boolean enable) {
 	}
 	
@@ -244,14 +255,6 @@ public class PosAndNegSelectPanel extends JPanel {
 	}
 
 	/**
-	 * This method unselect the selected check boxes after learning.
-	 */
-	public void unsetCheckBoxes() {
-		// after the learning the check boxes will be unset.
-		model.unsetJCheckBoxen();
-	}
-
-	/**
 	 * This message displays the help message after the help button is pressed.
 	 * 
 	 * @param assistance String
@@ -262,12 +265,17 @@ public class PosAndNegSelectPanel extends JPanel {
 
 	}
 	
+	/**
+	 * this method sets the example to the other list when button is pressed.
+	 * @param toPos boolean
+	 * @param example String
+	 */
 	public void setExampleToOtherList(boolean toPos, String example) {
 		if (toPos) {
 			for(int i = 0; i < negListModel.size(); i++) {
 				if(negListModel.get(i).equals(example)) {
 					negListModel.remove(i);
-					for (int j = 0; j < model.getIndividualVector().size(); j++ ) {
+					for (int j = 0; j < model.getIndividualVector().size(); j++) {
 						if (model.getIndividualVector().get(j).getManchesterIndividual().equals(example)) {
 							model.getIndividualVector().get(j).setExamplePositive(true);
 							break;
@@ -281,7 +289,7 @@ public class PosAndNegSelectPanel extends JPanel {
 			for(int i = 0; i < posListModel.size(); i++) {
 				if(posListModel.get(i).equals(example)) {
 					posListModel.remove(i);
-					for (int j = 0; j < model.getIndividualVector().size(); j++ ) {
+					for (int j = 0; j < model.getIndividualVector().size(); j++) {
 						if (model.getIndividualVector().get(j).getManchesterIndividual().equals(example)) {
 							model.getIndividualVector().get(j).setExamplePositive(false);
 						}
@@ -300,8 +308,8 @@ public class PosAndNegSelectPanel extends JPanel {
 	/**
 	 * This method adds the Action listener to the help buttons.
 	 * 
-	 * @param a
-	 *            ActionHandler
+	 * @param handle
+	 *            PosAndNegSelectPanelHandler
 	 */
 	public void addHelpButtonListener(PosAndNegSelectPanelHandler handle) {
 		// adds listener to the help button for the positive examples
@@ -309,19 +317,35 @@ public class PosAndNegSelectPanel extends JPanel {
 		// adds listener to the help button for the negative examples
 		helpForNegExamples.addActionListener(handle);
 	}
-	
+	/**
+	 * This Method removes the listeners for the help button.
+	 * @param a ActionHandler
+	 */
 	public void removeHelpButtonListener(ActionHandler a) {
 		helpForPosExamples.removeActionListener(a);
 		helpForNegExamples.removeActionListener(a);
 	}
+	
+	/**
+	 * This method returns the option panel.
+	 * @return OptionPanel 
+	 */
 	public OptionPanel getOptionPanel() {
 		return optionPanel;
 	}
 	
+	/**
+	 * This method returns the list of positive examples.
+	 * @return JList posExampleList
+	 */
 	public JList getPosExampleList() {
 		return posList;
 	}
 	
+	/**
+	 * This method returns the list of negative examples.
+	 * @return JList negExampleList
+	 */
 	public JList getNegExampleList() {
 		return negList;
 	}

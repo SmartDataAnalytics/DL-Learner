@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.tools.protege;
 
 import java.awt.Dimension;
@@ -28,8 +47,8 @@ public class OptionPanel extends JPanel {
 	public OptionPanel() {
 
 		setPreferredSize(new Dimension(490, 120));
-		setLayout(new GridLayout(0,1));
-		optionPanel = new JPanel(new GridLayout(0,2));
+		setLayout(new GridLayout(0, 1));
+		optionPanel = new JPanel(new GridLayout(0, 2));
 		minAccuracyLabel = new JLabel("minimum accuracy");
 		maxExecutionTimeLabel = new JLabel("maximum execution time");
 		nrOfConceptsLabel = new JLabel("maximum number of results");

@@ -32,7 +32,6 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JCheckBox;
 
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
@@ -86,13 +85,6 @@ public class DLLearnerModel implements Runnable {
 			"org.dllearner.algorithms.refexamples.ExampleBasedROLComponent",
 			"org.dllearner.algorithms.gp.GP" };
 
-	// This Vector stores the check boxes for the view.
-
-	private Vector<JCheckBox> positiv;
-
-	// This Vector stores the negative Examples.
-
-	private Vector<JCheckBox> negativ;
 
 	// Component Manager that manages the components of the DL-Learner
 
@@ -204,7 +196,6 @@ public class DLLearnerModel implements Runnable {
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
 	private List<EvaluatedDescription> evalDescriptions;
-	private Vector<String> normalIndividuals;
 
 	/**
 	 * This is the constructor for DL-Learner model.
@@ -227,11 +218,8 @@ public class DLLearnerModel implements Runnable {
 		this.view = view;
 		ontologyURI = editor.getModelManager().getActiveOntology().getURI().toString()+"#";
 		owlDescription = new HashSet<OWLDescription>();
-		positiv = new Vector<JCheckBox>();
 		posListModel = new DefaultListModel();
 		negListModel = new DefaultListModel();
-		negativ = new Vector<JCheckBox>();
-		normalIndividuals = new Vector<String>();
 		ComponentManager.setComponentClasses(componenten);
 		individualVector = new Vector<IndividualObject>();
 		cm = ComponentManager.getInstance();
@@ -351,12 +339,12 @@ public class DLLearnerModel implements Runnable {
 		if (id.equals("equivalent classes")) {
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
-			lp = cm.learningProblem(PosNegDefinitionLP.class, rs);
+			lp = cm.learningProblem(PosNegDefinitionLP.class, reasoner);
 		}
 		if (id.equals("super classes")) {
 			// sets the learning problem to PosNegInclusionLP when the dllearner
 			// should suggest a subclass
-			lp = cm.learningProblem(PosNegInclusionLP.class, rs);
+			lp = cm.learningProblem(PosNegInclusionLP.class, reasoner);
 		}
 		// adds the positive examples
 		cm.applyConfigEntry(lp, "positiveExamples", positiveExamples);
@@ -376,7 +364,7 @@ public class DLLearnerModel implements Runnable {
 		try {
 			// sets the learning algorithm to ROlearner
 			this.la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp,
-					rs);
+					reasoner);
 		} catch (LearningProblemUnsupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -397,21 +385,25 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public void run() {
 		error = "Learning succesful";
-		
+		setKnowledgeSource();
+		setReasoner();
+		setPositiveAndNegativeExamples();
+		setLearningProblem();
+		setLearningAlgorithm();
 		String message = "To view details about why a class description was suggested, please doubleclick on it.";
 		// start the algorithm and print the best concept found
 		la.start();
-		description = new Description[la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts())
-				.size()];
-		addToListModel();
+		//description = new Description[la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts())
+		//		.size()];
+		//addToListModel();
 		// renders the errormessage
 		view.renderErrorMessage(error);
 		view.setHintMessage(message);
 		// reenables the run button
-		view.getRunButton().setEnabled(true);
+		//view.getRunButton().setEnabled(true);
 		// disables the cancel button
-		view.getPosAndNegSelectPanel().setCheckBoxesEnable(true);
-		view.getSuggestClassPanel().setSuggestList(suggestModel);
+		//view.getPosAndNegSelectPanel().setCheckBoxesEnable(true);
+		//view.getSuggestClassPanel().setSuggestList(suggestModel);
 	}
 
 	/**
@@ -421,24 +413,6 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public Description[] getSolutions() {
 		return description;
-	}
-
-	/**
-	 * This method returns the check boxes for the positive examples.
-	 * 
-	 * @return Vector of check boxes for positive examples
-	 */
-	public Vector<JCheckBox> getPosVector() {
-		return positiv;
-	}
-
-	/**
-	 * This method returns the check boxes for the negative examples.
-	 * 
-	 * @return Vector of check boxes for negative examples
-	 */
-	public Vector<JCheckBox> getNegVector() {
-		return negativ;
 	}
 
 	/**
@@ -457,10 +431,10 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public void setPosVector() {
 		setPositiveConcept();
-		for (Iterator<Individual> j = rs.getIndividuals().iterator(); j
+
+		for (Iterator<Individual> j = reasoner.getIndividuals().iterator(); j
 				.hasNext();) {
 			Individual ind = j.next();
-			normalIndividuals.add(ind.toString());
 			String indiv = ind.toString();
 			// checks if individual belongs to the selected concept
 			if (setPositivExamplesChecked(indiv)) {
@@ -486,6 +460,10 @@ public class DLLearnerModel implements Runnable {
 		}
 	}
 	
+	/**
+	 * This method returns the Vector of IndividualObjects.
+	 * @return individualVector Vector
+	 */
 	public Vector<IndividualObject> getIndividualVector() {
 		return individualVector;
 	}
@@ -495,11 +473,12 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public void setPositiveConcept() {
 		SortedSet<Individual> individuals = null;
+		//System.out.println("TEST: " +  rs.getNamedClasses());
 		// checks if selected concept is thing when yes then it selects all
 		// individuals
 		if (!current.getRootObject().toString().equals("Thing")) {
-
-			for (Iterator<NamedClass> i = rs.getNamedClasses().iterator(); i
+			
+			for (Iterator<NamedClass> i = reasoner.getAtomicConceptsList().iterator(); i
 					.hasNext();) {
 				// if individuals is null
 				if (individuals == null) {
@@ -509,31 +488,35 @@ public class DLLearnerModel implements Runnable {
 							"#" + current.getRootObject().toString())) {
 						// if individuals is not null it gets all individuals of
 						// the concept
-						if (rs.getIndividuals(concept) != null) {
-							individual = rs.getIndividuals(concept);
+						if (reasoner.getIndividuals(concept) != null) {
+							individual = reasoner.getIndividuals(concept);
 							break;
 						}
 					}
 				}
 			}
 		} else {
-			individual = rs.getIndividuals();
+			individual = reasoner.getIndividuals();
 		}
 	}
-	public boolean hasIndividuals(OWLClass OWLConcept) {
+	
+	/**
+	 * This Method checks if the selected class has any individuals.
+	 * @param owlConcept OWLClass
+	 * @return boolean hasIndividuals
+	 */
+	public boolean hasIndividuals(OWLClass owlConcept) {
 		boolean hasIndividuals = false;
 		NamedClass concept = null;
 		NamedClass selectedConcept = null;
 		Iterator<NamedClass> it = reasoner.getNamedClasses().iterator();
 		while(it.hasNext()) {
 			concept = it.next();
-			if (concept.toManchesterSyntaxString(ontologyURI, prefixes).equals(OWLConcept.toString())) {
+			if (concept.toManchesterSyntaxString(ontologyURI, prefixes).equals(owlConcept.toString())) {
 				selectedConcept = concept;
 				break;
 			}
 		}
-		System.out.println("CON: "+ concept);
-		System.out.println("SIZE: "+ reasoner.getIndividuals(concept).size());
 		if (reasoner.getIndividuals(selectedConcept).size() > 0) {
 			hasIndividuals = true;
 		}
@@ -572,8 +555,6 @@ public class DLLearnerModel implements Runnable {
 		individualVector.removeAllElements();
 		posListModel.removeAllElements();
 		negListModel.removeAllElements();
-		positiv.removeAllElements();
-		negativ.removeAllElements();
 	}
 
 	/**
@@ -587,10 +568,18 @@ public class DLLearnerModel implements Runnable {
 		description = list;
 	}
 	
+	/**
+	 * This method returns the PosListModel.
+	 * @return DefaultListModel posListModel
+	 */
 	public DefaultListModel getPosListModel() {
 		return posListModel;
 	}
 	
+	/**
+	 * This method returns the NegListModel.
+	 * @return DefaultListModel negListModel
+	 */
 	public DefaultListModel getNegListModel() {
 		return negListModel;
 	}
@@ -605,57 +594,12 @@ public class DLLearnerModel implements Runnable {
 	}
 
 	/**
-	 * This method gets an integer to return the positive examples check box on
-	 * that position.
-	 * 
-	 * @param i
-	 *            integer for the position in the vector
-	 * @return Positive examples check box on position i.
-	 */
-	public JCheckBox getPositivJCheckBox(int i) {
-		return positiv.get(i);
-	}
-
-	/**
-	 * This method gets an integer to return the negative examples check box on
-	 * that position.
-	 * 
-	 * @param i
-	 *            integer for the position in the vector
-	 * @return Negative examples check box on position i.
-	 */
-	public JCheckBox getNegativJCheckBox(int i) {
-		return negativ.get(i);
-	}
-
-	/**
 	 * This method resets the array of concepts from the DL_Learner. It is
 	 * called after the DL-Learner tab is closed.
 	 */
 	public void resetSuggestionList() {
 		for (int i = 0; i < description.length; i++) {
 			description[i] = null;
-		}
-	}
-
-	/**
-	 * This method unchecks the checkboxes that are checked after the process of
-	 * learning.
-	 */
-	public void unsetJCheckBoxen() {
-		for (int j = 0; j < positiv.size(); j++) {
-			// unselect all check poxes of the positive examples
-			if (positiv.get(j).isSelected()) {
-				JCheckBox i = positiv.get(j);
-				i.setSelected(false);
-				positiv.set(j, i);
-			}
-			// unselect all check boxes of the negative examples
-			if (negativ.get(j).isSelected()) {
-				JCheckBox i = negativ.get(j);
-				i.setSelected(false);
-				negativ.set(j, i);
-			}
 		}
 	}
 
@@ -750,7 +694,7 @@ public class DLLearnerModel implements Runnable {
 	 */
 	private void setOldConceptOWLAPI() {
 		// gets all individuals
-		SortedSet<Individual> indi = rs.getIndividuals();
+		SortedSet<Individual> indi = reasoner.getIndividuals();
 		// Iterator of Individuals
 		for (Iterator<Individual> i = indi.iterator(); i.hasNext();) {
 			Individual indi2 = i.next();
@@ -823,7 +767,7 @@ public class DLLearnerModel implements Runnable {
 		return alreadyLearned;
 	}
 
-	private boolean isConsistent(EvaluatedDescription eDescription) {
+	public boolean isConsistent(EvaluatedDescription eDescription) {
 		boolean isConsistent = false;
 		if (eDescription.getNotCoveredPositives().isEmpty()) {
 			isConsistent = true;
@@ -840,5 +784,9 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public URI getURI() {
 		return editor.getModelManager().getActiveOntology().getURI();
+	}
+	
+	public void setSuggestList(List<EvaluatedDescription> list) {
+		evalDescriptions = list;
 	}
 }

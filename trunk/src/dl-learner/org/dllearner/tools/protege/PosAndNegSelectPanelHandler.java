@@ -1,44 +1,62 @@
+/**
+ * Copyright (C) 2007-2008, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.tools.protege;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-
+/**
+ * This class handles the commands for the example panel.
+ * @author christian Koetteritzsch
+ *
+ */
 public class PosAndNegSelectPanelHandler implements ActionListener, MouseListener {
 
 
 // This is the DLLearnerModel.
 
-private DLLearnerModel model;
+//private DLLearnerModel model;
 private PosAndNegSelectPanel panel;
 // This is the view of the DL-Learner tab.
 private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 
 /**
- * This is the constructor for the action handler.
- * 
- * @param a
- *            ActionHandler
+ * This is the constructor for the PosAndNegSelectPanelHandler.
  * @param m
  *            DLLearnerModel
- * @param view
- *            DLlearner tab
- * @param i
- *            id if it is a subclass or an equivalent class
- * @param editor OWLEditorKit
+ * @param v
+ *            OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView
+ * @param p
+ *            PosAndNegSelectPanel
  */
 public PosAndNegSelectPanelHandler(DLLearnerModel m, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView v, PosAndNegSelectPanel p) {
-	model = m;
+	//model = m;
 	panel = p;
 	view = v;
 }
 
 /**
  * When a Button is pressed this method select the right.
- * @param z ActionEvent 
+ * @param action ActionEvent 
  */
 public void actionPerformed(ActionEvent action) {
 
@@ -66,42 +84,7 @@ public void actionPerformed(ActionEvent action) {
 	}
 }
 
-/**
- * select/deselect the Check boxes.
- * @param i ItemEvent
- */
-public void itemStateChanged(ItemEvent i) {
-	if (i.getItem().toString().contains("Positive")) {
-		for (int j = 0; j < model.getPosVector().size(); j++) {
-			if (i.getItem().toString().contains(
-					model.getPosVector().get(j).getText().toString())) {
-				if (!model.getPosVector().get(j).isSelected()) {
-					model.getPosVector().get(j).setSelected(true);
-					break;
-				}
-				if (model.getPosVector().get(j).isSelected()) {
-					model.getPosVector().get(j).setSelected(false);
-					break;
-				}
-			}
-		}
-	}
-	if (i.getItem().toString().contains("Negative")) {
-		for (int j = 0; j < model.getNegVector().size(); j++) {
-			if (i.getItem().toString().contains(
-					model.getNegVector().get(j).getText().toString())) {
-				if (!model.getNegVector().get(j).isSelected()) {
-					model.getNegVector().get(j).setSelected(true);
-					break;
-				}
-				if (model.getNegVector().get(j).isSelected()) {
-					model.getNegVector().get(j).setSelected(false);
-					break;
-				}
-			}
-		}
-	}
-}
+
 
 
 /**
