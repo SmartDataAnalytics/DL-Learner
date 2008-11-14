@@ -71,10 +71,6 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 
 	private JDialog detailPopup;
 	
-	 // Panel where the informations of the selected panel are rendered
-	 
-	//private JPanel examplePanel;
-	
 	 // Text area that shows the covered positive examples
 	 
 	private JTextArea posCoveredText;
@@ -135,8 +131,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 */
 	public void renderDetailPanel(EvaluatedDescription desc) {
 		eval = desc;
-		JPanel posBox = new JPanel(new GridLayout(0,2));
-		JPanel negBox = new JPanel(new GridLayout(0,2));
+		JPanel posBox = new JPanel(new GridLayout(0, 2));
+		JPanel negBox = new JPanel(new GridLayout(0, 2));
 		Box exampleBox = Box.createVerticalBox();
 		concept = new JTextArea("Class Description:");
 		concept.setEditable(false);
@@ -148,12 +144,12 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		coveredNegativeExamples.setForeground(colorRed);
 		notCoveredNegativeExamples = new JLabel("Not Covered Negative Examples");
 		notCoveredNegativeExamples.setForeground(colorGreen);
-		conceptPanel = new JPanel(new GridLayout(0,1));
-		accuracyPanel = new JPanel(new GridLayout(0,1));
-		posCoveredPanel = new JPanel(new GridLayout(0,1));
-		posNotCoveredPanel = new JPanel(new GridLayout(0,1));
-		negCoveredPanel = new JPanel(new GridLayout(0,1));
-		negNotCoveredPanel = new JPanel(new GridLayout(0,1));
+		conceptPanel = new JPanel(new GridLayout(0, 1));
+		accuracyPanel = new JPanel(new GridLayout(0, 1));
+		posCoveredPanel = new JPanel(new GridLayout(0, 1));
+		posNotCoveredPanel = new JPanel(new GridLayout(0, 1));
+		negCoveredPanel = new JPanel(new GridLayout(0, 1));
+		negNotCoveredPanel = new JPanel(new GridLayout(0, 1));
 		accuracy = new JTextArea("Accuracy:");
 		accuracy.setEditable(false);
 		conceptText = new JTextArea();
@@ -178,7 +174,6 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		//sets accuracy text area not editable
 		accuracyText.setEditable(false);
 		//panel for the informations of the selected concept
-		//examplePanel = new JPanel(new GridLayout(0,2));
 		//this method adds the informations for the selected concept to the panel
 		setInformation();
 		
@@ -225,28 +220,24 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				JLabel posLabel = new JLabel(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null));
 				posLabel.setForeground(colorGreen);
 				posCoveredPanel.add(posLabel);
-				//posCoveredText.append(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null)+"\n");
 			}
 			//sets the positive examples that are not covered
 			for(Iterator<Individual> i = eval.getNotCoveredPositives().iterator(); i.hasNext();) {
 				JLabel posLabel = new JLabel(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null));
 				posLabel.setForeground(colorRed);
 				posNotCoveredPanel.add(posLabel);
-				//posNotCoveredText.append(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null)+"\n");
 			}
 			//sets the negative examples that are covered
 			for(Iterator<Individual> i = eval.getCoveredNegatives().iterator(); i.hasNext();) {
 				JLabel posLabel = new JLabel(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null));
 				posLabel.setForeground(colorRed);
 				negCoveredPanel.add(posLabel);
-				//negCoveredText.append(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null)+"\n");
 			}
 			//sets the negative examples that are not covered
 			for(Iterator<Individual> i = eval.getNotCoveredNegatives().iterator(); i.hasNext();) {
 				JLabel posLabel = new JLabel(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null));
 				posLabel.setForeground(colorGreen);
 				negNotCoveredPanel.add(posLabel);
-				//negNotCoveredText.append(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null)+"\n");
 			}
 		}
 	}

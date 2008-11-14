@@ -19,6 +19,7 @@
  */
 package org.dllearner.tools.protege;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -26,7 +27,14 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 
+import javax.swing.DefaultListModel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
@@ -37,7 +45,8 @@ import org.dllearner.core.owl.Description;
 import org.protege.editor.owl.OWLEditorKit;
 
 /**
- * This class  processes input from the user. 
+ * This class processes input from the user.
+ * 
  * @author Christian Koetteritzsch
  * 
  */
@@ -59,6 +68,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	private EvaluatedDescription evaluatedDescription;
 	// This is the view of the DL-Learner tab.
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
+	private Timer timer;
 
 	/**
 	 * This is the constructor for the action handler.
@@ -71,7 +81,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 *            DLlearner tab
 	 * @param i
 	 *            id if it is a subclass or an equivalent class
-	 * @param editor OWLEditorKit
+	 * @param editor
+	 *            OWLEditorKit
 	 */
 	public ActionHandler(ActionHandler a, DLLearnerModel m,
 			OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view,
@@ -86,34 +97,36 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 	/**
 	 * When a Button is pressed this method select the right.
-	 * @param z ActionEvent 
+	 * 
+	 * @param z
+	 *            ActionEvent
 	 */
 	public void actionPerformed(ActionEvent z) {
 
-			
 		if (z.getActionCommand().equals("Suggest " + id)) {
 			if (model.getAlreadyLearned()) {
 				model.unsetListModel();
 			}
-				view.getPosAndNegSelectPanel().setCheckBoxesEnable(false);
-				model.setKnowledgeSource();
-				model.setReasoner();
-				model.setPositiveAndNegativeExamples();
-				model.setLearningProblem();
-				model.setLearningAlgorithm();
-				this.dlLearner = new Thread(model);
-				dlLearner.start();
-				view.getRunButton().setEnabled(false);
-				view.renderErrorMessage("Learning started");
-				//view.getPosAndNegSelectPanel().unsetCheckBoxes();
-			
+			view.getRunButton().setEnabled(false);
+			view.renderErrorMessage("Learning started");
+			view.getPosAndNegSelectPanel().setCheckBoxesEnable(false);
+			final SuggestionRetriever retriever = new SuggestionRetriever();
+			//
+			// dlLearner.start();
+			retriever.execute();
+
 		}
 
 		if (z.getActionCommand().equals("ADD")) {
 			if (evaluatedDescription != null) {
-				model.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription.getDescription());
+				model
+						.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription
+								.getDescription());
 			} else {
-				model.changeDLLearnerDescriptionsToOWLDescriptions((Description) view.getSuggestClassPanel().getSuggestList().getSelectedValue());
+				model
+						.changeDLLearnerDescriptionsToOWLDescriptions((Description) view
+								.getSuggestClassPanel().getSuggestList()
+								.getSelectedValue());
 			}
 			String message = "Concept added";
 			view.renderErrorMessage(message);
@@ -144,47 +157,21 @@ public class ActionHandler implements ActionListener, ItemListener,
 		return id;
 	}
 
-	
 	/**
 	 * select/deselect the Check boxes.
-	 * @param i ItemEvent
+	 * 
+	 * @param i
+	 *            ItemEvent
 	 */
 	public void itemStateChanged(ItemEvent i) {
-		if (i.getItem().toString().contains("Positive")) {
-			for (int j = 0; j < model.getPosVector().size(); j++) {
-				if (i.getItem().toString().contains(
-						model.getPosVector().get(j).getText().toString())) {
-					if (!model.getPosVector().get(j).isSelected()) {
-						model.getPosVector().get(j).setSelected(true);
-						break;
-					}
-					if (model.getPosVector().get(j).isSelected()) {
-						model.getPosVector().get(j).setSelected(false);
-						break;
-					}
-				}
-			}
-		}
-		if (i.getItem().toString().contains("Negative")) {
-			for (int j = 0; j < model.getNegVector().size(); j++) {
-				if (i.getItem().toString().contains(
-						model.getNegVector().get(j).getText().toString())) {
-					if (!model.getNegVector().get(j).isSelected()) {
-						model.getNegVector().get(j).setSelected(true);
-						break;
-					}
-					if (model.getNegVector().get(j).isSelected()) {
-						model.getNegVector().get(j).setSelected(false);
-						break;
-					}
-				}
-			}
-		}
+
 	}
-	
+
 	/**
 	 * Nothing happens here.
-	 * @param e ListSelectionEvent 
+	 * 
+	 * @param e
+	 *            ListSelectionEvent
 	 */
 	public void valueChanged(ListSelectionEvent e) {
 
@@ -192,30 +179,37 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 	/**
 	 * Nothing happens here.
-	 * @param m MouseEvent
+	 * 
+	 * @param m
+	 *            MouseEvent
 	 */
 	public void mouseReleased(MouseEvent m) {
 
 	}
 
- 	/**
+	/**
 	 * Nothing happens here.
-	 * @param m MouseEvent
+	 * 
+	 * @param m
+	 *            MouseEvent
 	 */
 	public void mouseEntered(MouseEvent m) {
 
 	}
 
 	/**
-	 * Choses the right EvaluatedDescription object after a concept is chosen in the list.
-	 * @param m MouseEvent
+	 * Choses the right EvaluatedDescription object after a concept is chosen in
+	 * the list.
+	 * 
+	 * @param m
+	 *            MouseEvent
 	 */
 	public void mouseClicked(MouseEvent m) {
 		EvaluatedDescription eDescription = null;
-		if (view.getSuggestClassPanel().getSuggestList()
-				.getSelectedValue() != null) {
-			SuggestListItem item = (SuggestListItem) view.getSuggestClassPanel().getSuggestList()
-			.getSelectedValue();
+		
+		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
+			SuggestListItem item = (SuggestListItem) view
+					.getSuggestClassPanel().getSuggestList().getSelectedValue();
 			String desc = item.getValue();
 			if (model.getEvaluatedDescriptionList() != null) {
 				for (Iterator<EvaluatedDescription> i = model
@@ -223,28 +217,29 @@ public class ActionHandler implements ActionListener, ItemListener,
 					eDescription = i.next();
 					if (desc.equals(eDescription.getDescription()
 							.toManchesterSyntaxString(
-									editorKit.getModelManager().getActiveOntology().getURI()
+									editorKit.getModelManager()
+											.getActiveOntology().getURI()
 											+ "#", null))) {
 						evaluatedDescription = eDescription;
+						
 						break;
 					}
 
 				}
 			}
-		
-		
-		if(m.getClickCount()==2) {
-			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(
-					evaluatedDescription);
+
+			if (m.getClickCount() == 2) {
+				view.getMoreDetailForSuggestedConceptsPanel()
+						.renderDetailPanel(evaluatedDescription);
+			}
 		}
-	} else {
-		
-	}
 	}
 
 	/**
 	 * Nothing happens here.
-	 * @param m MouseEvent
+	 * 
+	 * @param m
+	 *            MouseEvent
 	 */
 	public void mouseExited(MouseEvent m) {
 
@@ -252,15 +247,16 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 	/**
 	 * Sets the ADD button enable after a concept is chosen.
-	 * @param m MouseEvent
+	 * 
+	 * @param m
+	 *            MouseEvent
 	 */
 	public void mousePressed(MouseEvent m) {
-		if (view.getSuggestClassPanel().getSuggestList()
-				.getSelectedValue()!= null) {
+		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
 			if (!view.getAddButton().isEnabled()) {
 				view.getAddButton().setEnabled(true);
-			} 
-		} 
+			}
+		}
 	}
 
 	/**
@@ -271,7 +267,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	}
 
 	/**
-	 *  Resets the toggled Button after the plugin is closed.
+	 * Resets the toggled Button after the plugin is closed.
 	 */
 	public void resetToggled() {
 		toggled = false;
@@ -280,19 +276,131 @@ public class ActionHandler implements ActionListener, ItemListener,
 	@Override
 	public void contentsChanged(ListDataEvent listEvent) {
 		System.out.println(listEvent);
-		
+
 	}
 
 	@Override
 	public void intervalAdded(ListDataEvent listEvent) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void intervalRemoved(ListDataEvent listEvent) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	class SuggestionRetriever extends
+			SwingWorker<List<EvaluatedDescription>, List<EvaluatedDescription>> {
+
+		public SuggestionRetriever() {
+
+		}
+
+		@Override
+		protected List<EvaluatedDescription> doInBackground() throws Exception {
+			// DefaultListModel descriptions = new DefaultListModel();
+			// List<Description> descriptionList =
+			// model.getLearningAlgorithm().getCurrentlyBestDescriptions();
+			// Iterator<Description> it = descriptionList.iterator();
+			timer = new Timer();
+			timer.schedule(new TimerTask() {
+
+				@SuppressWarnings("unchecked")
+				@Override
+				public void run() {
+					if (model.getLearningAlgorithm() != null) {
+						publish(model.getLearningAlgorithm()
+								.getCurrentlyBestEvaluatedDescriptions(30, 0.0,
+										true));
+					}
+				}
+
+			}, 1000, 2000);
+
+			dlLearner = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+
+					model.run();
+				}
+
+			});
+			dlLearner.start();
+
+			try {
+				dlLearner.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			List<EvaluatedDescription> result = model.getLearningAlgorithm()
+					.getCurrentlyBestEvaluatedDescriptions(
+							view.getPosAndNegSelectPanel().getOptionPanel()
+									.getNrOfConcepts(),
+							view.getPosAndNegSelectPanel().getOptionPanel()
+									.getMinAccuracy(), true);
+			
+
+			return result;
+		}
+
+		@Override
+		public void done() {
+
+			timer.cancel();
+			List<EvaluatedDescription> result = null;
+			try {
+				result = get();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+
+			view.getRunButton().setEnabled(true);
+			updateList(result);
+		}
+
+		@Override
+		protected void process(List<List<EvaluatedDescription>> resultLists) {
+
+			// panel4.getModel().clear();
+
+			for (List<EvaluatedDescription> list : resultLists) {
+				updateList(list);
+			}
+		}
+
+		private void updateList(final List<EvaluatedDescription> result) {
+
+			Runnable doUpdateList = new Runnable() {
+
+				DefaultListModel dm = new DefaultListModel();
+
+				public void run() {
+					model.setSuggestList(result);
+					// learnPanel.getListModel().clear();
+					Iterator<EvaluatedDescription> it = result.iterator();
+					//it.next().getDescription().toManchesterSyntaxString(baseURI, prefixes);
+					while (it.hasNext()) {
+						EvaluatedDescription eval = it.next();
+						if(model.isConsistent(eval)) {
+							dm.add(0, new SuggestListItem(Color.GREEN, eval.getDescription().toManchesterSyntaxString(model.getURI().toString()+"#", null)));
+						} else {
+							dm.add(0, new SuggestListItem(Color.RED, eval.getDescription().toManchesterSyntaxString(model.getURI().toString()+"#", null)));
+						}
+					}
+					view.getSuggestClassPanel().getSuggestList().setModel(dm);
+					
+				}
+			};
+			SwingUtilities.invokeLater(doUpdateList);
+
+		}
+
 	}
 
 }

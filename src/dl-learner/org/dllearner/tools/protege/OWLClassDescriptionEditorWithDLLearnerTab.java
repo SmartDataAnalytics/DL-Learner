@@ -315,8 +315,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 		private JButton run;
 
-		// private JButton why;
-
 		// This is the label for the advanced button.
 
 		private JLabel adv;
@@ -360,7 +358,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		private JTextArea hint;
 		// This is the Panel for more details of the suggested concept
 		private MoreDetailForSuggestedConceptsPanel detail;
-		OWLFrame<OWLClass> frame;
+		//private OWLFrame<OWLClass> frame;
 		private URL pluginURL;
 
 		/**
@@ -374,7 +372,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public DLLearnerView(OWLFrame<OWLClass> current, String label, OWLClassDescriptionEditorWithDLLearnerTab dlLearner) {
 			classSelectorPanel = new OWLClassSelectorPanel(editorKit);
 			mainWindow = dlLearner;
-			frame = current;
+			//frame = current;
 			try {
 				pluginURL = new URL("http://dl-learner.org/wiki/ProtegePlugin");
 			} catch (MalformedURLException e) {
@@ -549,7 +547,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 */
 		public void updateWindow() {
 			mainWindow.getHandler().handleEditingFinished(mainWindow.getEditedObjects());
-			mainWindow.dispose();
 		}
 		/**
 		 * Returns all added descriptions.
@@ -579,14 +576,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			posPanel.unsetPosAndNegPanel();
 			learner.removeAll();
 		}
-		/**
-		 * This method returns the nummers of Individuals present in the Ontology.
-		 * @return int amount of Individuals in the Ontology
-		 */
-		public int getNrOfIndividuals() {
-			int counter = model.getPosVector().size();
-			return counter;
-		}
+
 		/**
 		 * Renders the error message when an error occured.
 		 * @param s String 
@@ -615,7 +605,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	    * Destroys the view after the plugin is closed.
 	    */
 		public void dispose() {
-			System.out.println("hier");
 			run.removeActionListener(action);
 			accept.removeActionListener(action);
 			advanced.removeActionListener(action);
