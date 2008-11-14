@@ -498,12 +498,6 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return atomicConcepts;
 	}
 
-//	@Override
-//	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
-//			DatatypeProperty datatypeProperty) {
-//		return rc.getDoubleDatatypeMembers(datatypeProperty);
-//	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -553,6 +547,16 @@ public class FastInstanceChecker extends ReasonerComponent {
 	protected SortedSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSubPropertiesImpl(role);
 	}
+	
+	@Override
+	protected SortedSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+		return rc.getSuperPropertiesImpl(role);
+	}	
+
+	@Override
+	protected SortedSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+		return rc.getSubPropertiesImpl(role);
+	}	
 	
 	/*
 	 * (non-Javadoc)
@@ -675,6 +679,28 @@ public class FastInstanceChecker extends ReasonerComponent {
 		return opPos.get(atomicRole);
 	}
 
+	@Override
+	public final SortedSet<Individual> getTrueDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
+		return bdPos.get(datatypeProperty);
+	}
+	
+	@Override
+	public final SortedSet<Individual> getFalseDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
+		return bdNeg.get(datatypeProperty);
+	}
+	
+	@Override
+	public Map<Individual, SortedSet<Integer>> getIntDatatypeMembersImpl(
+			DatatypeProperty datatypeProperty) {
+		return id.get(datatypeProperty);
+	}		
+	
+	@Override
+	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
+			DatatypeProperty datatypeProperty) {
+		return dd.get(datatypeProperty);
+	}	
+	
 	@Override
 	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getRelatedIndividuals(individual, objectProperty);

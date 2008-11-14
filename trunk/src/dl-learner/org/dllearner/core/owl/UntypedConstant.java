@@ -89,4 +89,13 @@ public class UntypedConstant extends Constant {
 	public void accept(KBElementVisitor visitor) {
 		visitor.visit(this);
 	}	
+	
+	@Override
+	public String toString() {
+		if(hasLang) {
+			return literal + "@" + lang;
+		} else {
+			return literal;
+		}
+	}	
 }

@@ -38,12 +38,12 @@ import org.dllearner.utilities.owl.RoleComparator;
 public class DatatypePropertyHierarchy {
 
 	RoleComparator rc = new RoleComparator();
-	TreeMap<DatatypeProperty,TreeSet<DatatypeProperty>> roleHierarchyUp;
-	TreeMap<DatatypeProperty,TreeSet<DatatypeProperty>> roleHierarchyDown;	
+	TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> roleHierarchyUp;
+	TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> roleHierarchyDown;	
 	TreeSet<DatatypeProperty> mostGeneralRoles = new TreeSet<DatatypeProperty>(rc);
 	TreeSet<DatatypeProperty> mostSpecialRoles = new TreeSet<DatatypeProperty>(rc);
 	
-	public DatatypePropertyHierarchy(Set<DatatypeProperty> atomicRoles, TreeMap<DatatypeProperty,TreeSet<DatatypeProperty>> roleHierarchyUp , TreeMap<DatatypeProperty,TreeSet<DatatypeProperty>> roleHierarchyDown) {
+	public DatatypePropertyHierarchy(Set<DatatypeProperty> atomicRoles, TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> roleHierarchyUp , TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> roleHierarchyDown) {
 		this.roleHierarchyUp = roleHierarchyUp;
 		this.roleHierarchyDown = roleHierarchyDown;
 		
@@ -56,19 +56,15 @@ public class DatatypePropertyHierarchy {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")	
 	public SortedSet<DatatypeProperty> getMoreGeneralRoles(DatatypeProperty role) {
 		// we clone all concepts before returning them such that they cannot be
 		// modified externally
-		return (TreeSet<DatatypeProperty>) roleHierarchyUp.get(role).clone();	
+		return new TreeSet<DatatypeProperty>(roleHierarchyUp.get(role));	
 	}
 	
-	@SuppressWarnings("unchecked")
 	public SortedSet<DatatypeProperty> getMoreSpecialRoles(DatatypeProperty role) {
-		return (TreeSet<DatatypeProperty>) roleHierarchyDown.get(role).clone();
-	}			
-	
-	
+		return new TreeSet<DatatypeProperty>(roleHierarchyDown.get(role));
+	}	
 	
 	@Override
 	public String toString() {
@@ -79,7 +75,7 @@ public class DatatypePropertyHierarchy {
 		return str;
 	}
 	
-	private String toString(TreeMap<DatatypeProperty,TreeSet<DatatypeProperty>> hierarchy, DatatypeProperty role, int depth) {
+	private String toString(TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> hierarchy, DatatypeProperty role, int depth) {
 		String str = "";
 		for(int i=0; i<depth; i++)
 			str += "  ";
