@@ -82,5 +82,10 @@ public class TypedConstant extends Constant implements Comparable<TypedConstant>
 		} else
 			return datatypeComparision;
 	}	
+	
+	@Override
+	public String toString() {
+		return literal + "^^" + datatype;
+	}
 
 }

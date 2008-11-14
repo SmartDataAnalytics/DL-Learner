@@ -452,23 +452,23 @@ public class OWLAPIReasoner extends ReasonerComponent {
 //		return roleHierarchy;
 //	}	
 		
-	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
-		// code copied from DIG reasoner
-		
-		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyUp = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
-				roleComparator);
-		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyDown = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
-				roleComparator);
- 
-		// refinement of atomic concepts
-		for (DatatypeProperty role : datatypeProperties) {
-			datatypePropertyHierarchyDown.put(role, getMoreSpecialDatatypePropertiesImpl(role));
-			datatypePropertyHierarchyUp.put(role, getMoreGeneralDatatypePropertiesImpl(role));
-		}
-
-		datatypePropertyHierarchy = new DatatypePropertyHierarchy(allowedRoles, datatypePropertyHierarchyUp,
-				datatypePropertyHierarchyDown);
-	}	
+//	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
+//		// code copied from DIG reasoner
+//		
+//		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyUp = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
+//				roleComparator);
+//		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyDown = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
+//				roleComparator);
+// 
+//		// refinement of atomic concepts
+//		for (DatatypeProperty role : datatypeProperties) {
+//			datatypePropertyHierarchyDown.put(role, getMoreSpecialDatatypePropertiesImpl(role));
+//			datatypePropertyHierarchyUp.put(role, getMoreGeneralDatatypePropertiesImpl(role));
+//		}
+//
+//		datatypePropertyHierarchy = new DatatypePropertyHierarchy(allowedRoles, datatypePropertyHierarchyUp,
+//				datatypePropertyHierarchyDown);
+//	}	
 	
 //	@Override
 //	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
@@ -533,7 +533,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return getFirstObjectProperties(properties);		
 	}
 	
-	private TreeSet<DatatypeProperty> getMoreGeneralDatatypePropertiesImpl(DatatypeProperty role) {
+	@Override
+	protected TreeSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) {
 		Set<Set<OWLDataProperty>> properties;
 		try {
 			properties = reasoner.getSuperProperties(OWLAPIConverter.getOWLAPIDataProperty(role));
@@ -544,7 +545,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 		return getFirstDatatypeProperties(properties);
 	}
 	
-	private TreeSet<DatatypeProperty> getMoreSpecialDatatypePropertiesImpl(DatatypeProperty role) {
+	@Override
+	protected TreeSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) {
 		Set<Set<OWLDataProperty>> properties;
 		try {
 			properties = reasoner.getSubProperties(OWLAPIConverter.getOWLAPIDataProperty(role));

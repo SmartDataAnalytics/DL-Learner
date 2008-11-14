@@ -600,8 +600,9 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
 			SortedSet<Constant> values = e.getValue();
 			if (values.size() > 1) {
-				logger.warn("Property " + datatypeProperty + " has value " + e.getValue()
-						+ ". Cannot determine whether it is true.");
+				logger.warn("Property " + datatypeProperty + " has more than one value " + e.getValue()
+						+ " for individual " + e.getKey() + ". We ignore the value.");
+				// d135
 			} else {
 				if (values.first().getLiteral().equalsIgnoreCase("true")) {
 					ret.add(e.getKey());
@@ -822,11 +823,19 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		return getDatatypePropertyHierarchy().getMoreGeneralRoles(role);
 	}
 
+	protected SortedSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}		
+	
 	@Override
 	public final SortedSet<DatatypeProperty> getSubProperties(DatatypeProperty role) {
 		return getDatatypePropertyHierarchy().getMoreSpecialRoles(role);
 	}
 
+	protected SortedSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}		
+	
 	@Override
 	public final TreeSet<DatatypeProperty> getMostGeneralDatatypeProperties() {
 		return getDatatypePropertyHierarchy().getMostGeneralRoles();
@@ -914,7 +923,6 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		TreeMap<ObjectProperty, SortedSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, SortedSet<ObjectProperty>>(
 				roleComparator);
  
-		// refinement of atomic concepts
 		Set<ObjectProperty> atomicRoles = getObjectProperties();
 		for (ObjectProperty role : atomicRoles) {
 			roleHierarchyDown.put(role, getSubPropertiesImpl(role));
@@ -951,16 +959,29 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	 */
 	public DatatypePropertyHierarchy prepareDatatypePropertyHierarchy()
 			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException(
-				"Datatype property hierarchy creation not supported by this reasoner.");
+	
+		RoleComparator roleComparator = new RoleComparator();
+		TreeMap<DatatypeProperty, SortedSet<DatatypeProperty>> datatypePropertyHierarchyUp = new TreeMap<DatatypeProperty, SortedSet<DatatypeProperty>>(
+				roleComparator);
+		TreeMap<DatatypeProperty, SortedSet<DatatypeProperty>> datatypePropertyHierarchyDown = new TreeMap<DatatypeProperty, SortedSet<DatatypeProperty>>(
+				roleComparator);
+ 
+		Set<DatatypeProperty> datatypeProperties = getDatatypeProperties();
+		for (DatatypeProperty role : datatypeProperties) {
+			datatypePropertyHierarchyDown.put(role, getSubPropertiesImpl(role));
+			datatypePropertyHierarchyUp.put(role, getSuperPropertiesImpl(role));
+		}
+
+		return new DatatypePropertyHierarchy(datatypeProperties, datatypePropertyHierarchyUp,
+				datatypePropertyHierarchyDown);		
 	}
 
 	@Override
 	public final DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
-
+	
 		try {
 			if (datatypePropertyHierarchy == null) {
-				prepareDatatypePropertyHierarchy();
+				datatypePropertyHierarchy = prepareDatatypePropertyHierarchy();
 			}
 		} catch (ReasoningMethodUnsupportedException e) {
 			handleExceptions(e);
