@@ -34,12 +34,14 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.configurators.OWLAPIReasonerConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -64,6 +66,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.RoleComparator;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -118,7 +121,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	// the data factory is used to generate OWL API objects
 	private OWLDataFactory factory;
 	// static factory
-	private static OWLDataFactory staticFactory = OWLManager.createOWLOntologyManager().getOWLDataFactory();
+//	private static OWLDataFactory staticFactory = OWLManager.createOWLOntologyManager().getOWLDataFactory();
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	private RoleComparator roleComparator = new RoleComparator();
@@ -511,7 +514,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {
 		Set<Set<OWLObjectProperty>> properties;
 		try {
-			properties = reasoner.getSuperProperties(getOWLAPIDescription(role));
+			properties = reasoner.getSuperProperties(OWLAPIConverter.getOWLAPIObjectProperty(role));
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 			throw new Error("OWL API classification error.");
@@ -523,7 +526,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	protected TreeSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) {
 		Set<Set<OWLObjectProperty>> properties;
 		try {
-			properties = reasoner.getSubProperties(getOWLAPIDescription(role));
+			properties = reasoner.getSubProperties(OWLAPIConverter.getOWLAPIObjectProperty(role));
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 			throw new Error("OWL API classification error.");
@@ -534,7 +537,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private TreeSet<DatatypeProperty> getMoreGeneralDatatypePropertiesImpl(DatatypeProperty role) {
 		Set<Set<OWLDataProperty>> properties;
 		try {
-			properties = reasoner.getSuperProperties(getOWLAPIDescription(role));
+			properties = reasoner.getSuperProperties(OWLAPIConverter.getOWLAPIDataProperty(role));
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 			throw new Error("OWL API classification error.");
@@ -545,7 +548,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private TreeSet<DatatypeProperty> getMoreSpecialDatatypePropertiesImpl(DatatypeProperty role) {
 		Set<Set<OWLDataProperty>> properties;
 		try {
-			properties = reasoner.getSubProperties(getOWLAPIDescription(role));
+			properties = reasoner.getSubProperties(OWLAPIConverter.getOWLAPIDataProperty(role));
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 			throw new Error("OWL API classification error.");
@@ -606,7 +609,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	@Override
 	public Description getDomainImpl(ObjectProperty objectProperty) {
-		OWLObjectProperty prop = getOWLAPIDescription(objectProperty);
+		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
 		try {
 			// TODO: look up why OWL API return a two dimensional set here
 			// instead of only one description (probably there can be several
@@ -625,7 +628,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	@Override
 	public Description getDomainImpl(DatatypeProperty datatypeProperty) {
-		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
+		OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
 		try {
 			// TODO: look up why OWL API return a two dimensional set here
 			// instead of only one description (probably there can be several
@@ -644,7 +647,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	@Override
 	public Description getRangeImpl(ObjectProperty objectProperty) {
-		OWLObjectProperty prop = getOWLAPIDescription(objectProperty);
+		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
 		try {
 			Set<OWLDescription> set = reasoner.getRanges(prop);
 			if(set.size()==0)
@@ -658,7 +661,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	@Override
 	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
-		OWLObjectProperty prop = getOWLAPIDescription(atomicRole);
+		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(atomicRole);
 		Map<Individual, SortedSet<Individual>> map = new TreeMap<Individual, SortedSet<Individual>>();
 		for(Individual i : individuals) {
 			OWLIndividual ind = factory.getOWLIndividual(URI.create(i.getName()));
@@ -681,9 +684,27 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 	
 	@Override
+	protected Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationshipsImpl(Individual individual) {
+		OWLIndividual ind = factory.getOWLIndividual(URI.create(individual.getName()));
+		Map<OWLObjectProperty,Set<OWLIndividual>> mapAPI = null;
+		try {
+			mapAPI = reasoner.getObjectPropertyRelationships(ind);
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+		}
+		Map<ObjectProperty,Set<Individual>> map = new TreeMap<ObjectProperty, Set<Individual>>();
+		for(Entry<OWLObjectProperty,Set<OWLIndividual>> entry : mapAPI.entrySet()) {
+			ObjectProperty prop = OWLAPIConverter.convertObjectProperty(entry.getKey());
+			Set<Individual> inds = OWLAPIConverter.convertIndividuals(entry.getValue());
+			map.put(prop, inds);
+		}
+		return map;
+	}
+	
+	@Override
 	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) {
 		OWLIndividual ind = factory.getOWLIndividual(URI.create(individual.getName()));
-		OWLObjectProperty prop = getOWLAPIDescription(objectProperty);
+		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
 		Set<OWLIndividual> inds = null;
 		try {
 			inds = reasoner.getRelatedIndividuals(ind, prop);
@@ -701,18 +722,18 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	@Override
 	public Set<Constant> getRelatedValuesImpl(Individual individual, DatatypeProperty datatypeProperty) {
 		OWLIndividual ind = factory.getOWLIndividual(URI.create(individual.getName()));
-		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
+		OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
 		Set<OWLConstant> constants = null;
 		try {
 			constants = reasoner.getRelatedValues(ind, prop);
 		} catch (OWLReasonerException e) {
 			e.printStackTrace();
 		}
-		return convertConstants(constants);	
+		return OWLAPIConverter.convertConstants(constants);	
 	}	
 	
 	public Map<Individual, SortedSet<Double>> getDoubleValues(DatatypeProperty datatypeProperty) {
-		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
+		OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
 		Map<Individual, SortedSet<Double>> map = new TreeMap<Individual, SortedSet<Double>>();
 		for(Individual i : individuals) {
 			OWLIndividual ind = factory.getOWLIndividual(URI.create(i.getName()));
@@ -738,7 +759,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	
 	@Override
 	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
-		OWLDataProperty prop = getOWLAPIDescription(datatypeProperty);
+		OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
 		Map<Individual, SortedSet<Constant>> map = new TreeMap<Individual, SortedSet<Constant>>();
 		for(Individual i : individuals) {
 			OWLIndividual ind = factory.getOWLIndividual(URI.create(i.getName()));
@@ -757,7 +778,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 				// for typed constants we have to figure out the correct
 				// data type and value
 				if(oi instanceof OWLTypedConstant) {
-					Datatype dt = convertDatatype(((OWLTypedConstant)oi).getDataType());
+					Datatype dt = OWLAPIConverter.convertDatatype(((OWLTypedConstant)oi).getDataType());
 					is.add(new TypedConstant(oi.getLiteral(),dt));
 				// for untyped constants we have to figure out the value
 				// and language tag (if any)
@@ -832,12 +853,8 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private Set<Description> owlClassesToAtomicConcepts(Set<OWLClass> owlClasses) {
 		Set<Description> concepts = new HashSet<Description>();
 		for(OWLClass owlClass : owlClasses)
-			concepts.add(owlClassToAtomicConcept(owlClass));
+			concepts.add(OWLAPIConverter.convertClass(owlClass));
 		return concepts;
-	}
-	
-	private Description owlClassToAtomicConcept(OWLClass owlClass) {
-		return new NamedClass(owlClass.getURI().toString());
 	}
 	
 	public static void exportKBToOWL(File owlOutputFile, KB kb, URI ontologyURI) {
@@ -863,66 +880,6 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			e.printStackTrace();
 		}
 	}	
-	
-	public static Set<Constant> convertConstants(Set<OWLConstant> constants) {
-		SortedSet<Constant> is = new TreeSet<Constant>();
-		for(OWLConstant oi : constants) {
-			is.add(convertConstant(oi));
-		}		
-		return is;			
-	}
-	
-	public static Constant convertConstant(OWLConstant constant) {
-		Constant c;
-		// for typed constants we have to figure out the correct
-		// data type and value
-		if(constant instanceof OWLTypedConstant) {
-			Datatype dt = convertDatatype(((OWLTypedConstant)constant).getDataType());
-			c = new TypedConstant(constant.getLiteral(),dt);
-		// for untyped constants we have to figure out the value
-		// and language tag (if any)
-		} else {
-			OWLUntypedConstant ouc = (OWLUntypedConstant) constant;
-			if(ouc.hasLang())
-				c = new UntypedConstant(ouc.getLiteral(), ouc.getLang());
-			else
-				c = new UntypedConstant(ouc.getLiteral());
-		}		
-		return c;
-	}
-	
-	public static Datatype convertDatatype(OWLDataType dataType) {
-		URI uri = dataType.getURI();
-		if(uri.equals(Datatype.BOOLEAN.getURI()))
-			return Datatype.BOOLEAN;
-		else if(uri.equals(Datatype.DOUBLE.getURI()))
-			return Datatype.DOUBLE;
-		else if(uri.equals(Datatype.INT.getURI()))
-			return Datatype.INT;			
-		
-		throw new Error("Unsupported datatype " + dataType + ". Please inform a DL-Learner developer to add it.");
-	}
-	
-	private static OWLObjectProperty getOWLAPIDescription(ObjectProperty role) {
-		return staticFactory.getOWLObjectProperty(URI.create(role.getName()));
-	}
-	
-	private static OWLDataProperty getOWLAPIDescription(DatatypeProperty datatypeProperty) {
-		return staticFactory.getOWLDataProperty(URI.create(datatypeProperty.getName()));
-	}
-	
-	private static OWLEntity getOWLAPIEntity(Entity entity) {
-		if(entity instanceof ObjectProperty) {
-			return staticFactory.getOWLObjectProperty(URI.create(entity.getName()));
-		} else if(entity instanceof DatatypeProperty) {
-			return staticFactory.getOWLDataProperty(URI.create(entity.getName()));	
-		} else if(entity instanceof NamedClass) {
-			return staticFactory.getOWLClass(URI.create(entity.getName()));			
-		} else if(entity instanceof OWLIndividual) {
-			return staticFactory.getOWLIndividual(URI.create(entity.getName()));						
-		}
-		throw new Error("OWL API entity conversion for " + entity + " not supported.");
-	}
 	
 	/**
 	 * Test 
@@ -1035,14 +992,14 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	}
 
 	@Override
-	@SuppressWarnings("all")
+	@SuppressWarnings("unchecked")
 	public Set<Constant> getLabelImpl(Entity entity) {
-		OWLEntity owlEntity = getOWLAPIEntity(entity);
+		OWLEntity owlEntity = OWLAPIConverter.getOWLAPIEntity(entity);
 		Set<OWLAnnotation> labelAnnotations = owlEntity.getAnnotations(owlAPIOntologies.get(0), URI.create("http://www.w3.org/2000/01/rdf-schema#label"));
 		Set<Constant> annotations = new HashSet<Constant>();
 		for(OWLAnnotation label : labelAnnotations) {
 			OWLConstant c =  ((OWLLabelAnnotation)label).getAnnotationValue();
-			annotations.add(convertConstant(c));
+			annotations.add(OWLAPIConverter.convertConstant(c));
 		}
 		return annotations;
 	}

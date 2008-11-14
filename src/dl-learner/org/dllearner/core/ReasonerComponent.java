@@ -398,6 +398,21 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 	}
 
 	@Override
+	public final Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationships(Individual individual) {
+		try {
+			return getObjectPropertyRelationshipsImpl(individual);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}		
+	}
+	
+	protected Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationshipsImpl(Individual individual) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+			
+	
+	@Override
 	public final Set<Individual> getRelatedIndividuals(Individual individual,
 			ObjectProperty objectProperty) {
 		try {

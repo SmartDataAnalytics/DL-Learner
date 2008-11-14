@@ -106,6 +106,16 @@ public interface IndividualReasoner {
 	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty);
 	
 	/**
+	 * A map of properties related to an individual, e.g. 
+	 * {hasChild => {eric,anna}, hasSibling => {sebastian}}.
+	 * 
+	 * @param individual An individual.
+	 * @return A map of of properties connected to the individual as keys and the individuals
+	 * they point to as values.
+	 */
+	public Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationships(Individual individual); 
+	
+	/**
 	 * Computes and returns all connections between individuals through the specified
 	 * property, e.g. {eric => {maria, anna}, anna => {eric}}.
 	 * @param objectProperty An object property.
