@@ -357,6 +357,24 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 public boolean getForceRefinementLengthIncrease() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "forceRefinementLengthIncrease") ;
 }
+/**
+* negativeWeight Used to penalise errors on negative examples different from those of positive examples (lower = less importance for negatives)..
+* mandatory: false| reinit necessary: true
+* default value: 1.0
+* @return double 
+**/
+public double getNegativeWeight() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "negativeWeight") ;
+}
+/**
+* startNodeBonus You can use this to give a heuristic bonus on the start node (= initially broader exploration of search space)..
+* mandatory: false| reinit necessary: true
+* default value: 0.0
+* @return double 
+**/
+public double getStartNodeBonus() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "startNodeBonus") ;
+}
 
 /**
 * @param writeSearchTree specifies whether to write a search tree.
@@ -653,6 +671,24 @@ reinitNecessary = true;
 **/
 public void setForceRefinementLengthIncrease(boolean forceRefinementLengthIncrease) {
 ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "forceRefinementLengthIncrease", forceRefinementLengthIncrease);
+reinitNecessary = true;
+}
+/**
+* @param negativeWeight Used to penalise errors on negative examples different from those of positive examples (lower = less importance for negatives)..
+* mandatory: false| reinit necessary: true
+* default value: 1.0
+**/
+public void setNegativeWeight(double negativeWeight) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "negativeWeight", negativeWeight);
+reinitNecessary = true;
+}
+/**
+* @param startNodeBonus You can use this to give a heuristic bonus on the start node (= initially broader exploration of search space)..
+* mandatory: false| reinit necessary: true
+* default value: 0.0
+**/
+public void setStartNodeBonus(double startNodeBonus) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "startNodeBonus", startNodeBonus);
 reinitNecessary = true;
 }
 

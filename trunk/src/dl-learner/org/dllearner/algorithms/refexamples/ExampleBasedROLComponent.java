@@ -213,6 +213,8 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(noisePercentage);
 		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
 		options.add(new BooleanConfigOption("forceRefinementLengthIncrease", "specifies whether nodes should be expanded until only longer refinements are reached"));
+		options.add(new DoubleConfigOption("negativeWeight", "Used to penalise errors on negative examples different from those of positive examples (lower = less importance for negatives).",1.0));
+		options.add(new DoubleConfigOption("startNodeBonus", "You can use this to give a heuristic bonus on the start node (= initially broader exploration of search space).",0.0));
 		return options;
 	}
 	
@@ -328,9 +330,9 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		} else {
 			if(learningProblem instanceof PosOnlyLP) {
 //				throw new RuntimeException("does not work with positive examples only yet");
-				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0);
+				algHeuristic = new MultiHeuristic(((PosOnlyLP)learningProblem).getPositiveExamples().size(),0, configurator);
 			} else {
-				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size());
+				algHeuristic = new MultiHeuristic(((PosNegLP)learningProblem).getPositiveExamples().size(),((PosNegLP)learningProblem).getNegativeExamples().size(), configurator);
 			}
 		}
 		
