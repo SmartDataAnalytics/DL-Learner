@@ -21,6 +21,7 @@ package org.dllearner.algorithms.refexamples;
 
 import java.util.List;
 
+import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
@@ -70,8 +71,8 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
 	// heuristic parameters
-	private double expansionPenaltyFactor;
-	private double gainBonusFactor;
+	private double expansionPenaltyFactor = 0.02;
+	private double gainBonusFactor = 0.5;
 	private double nodeChildPenalty = 0.0001; // (use higher values than 0.0001 for simple learning problems);
 	private double startNodeBonus = 0.1; //was 2.0
 	// penalise errors on positive examples harder than on negative examples
@@ -83,15 +84,27 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	private int nrOfExamples;
 	
 	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples) {
-		this(nrOfPositiveExamples, nrOfNegativeExamples, 0.02, 0.5);
-	}
-	
-	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
-		this.expansionPenaltyFactor = expansionPenaltyFactor;
-		this.gainBonusFactor = gainBonusFactor;
+//		this(nrOfPositiveExamples, nrOfNegativeExamples, 0.02, 0.5);
 	}
+	
+	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, ExampleBasedROLComponentConfigurator configurator) {
+		this.nrOfNegativeExamples = nrOfNegativeExamples;
+		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
+		negativeWeight = configurator.getNegativeWeight();
+		startNodeBonus = configurator.getStartNodeBonus();
+		System.out.println(negativeWeight);
+		System.out.println(startNodeBonus);
+	}
+	
+//	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {
+//		this.nrOfNegativeExamples = nrOfNegativeExamples;
+//		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
+//		this.expansionPenaltyFactor = expansionPenaltyFactor;
+//		this.gainBonusFactor = gainBonusFactor;
+//	}
+
 	
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
@@ -141,7 +154,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		// do not count TOP symbols (in particular in ALL r.TOP and EXISTS r.TOP)
 		// as they provide no extra information
 		if(description instanceof Thing)
-			bonus = 2;
+			bonus = 1; //2;
 		
 //		if(description instanceof BooleanValueRestriction)
 //			bonus = -1;
@@ -149,7 +162,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		// some bonus for doubles because they are already penalised by length 3
 		if(description instanceof DatatypeSomeRestriction) {
 //			System.out.println(description);
-			bonus = 2;
+			bonus = 3; //2;
 		}
 		
 		List<Description> children = description.getChildren();
