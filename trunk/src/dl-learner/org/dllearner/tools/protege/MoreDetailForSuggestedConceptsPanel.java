@@ -19,10 +19,10 @@
  */
 package org.dllearner.tools.protege;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.Iterator;
 
-import javax.swing.Box;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -93,8 +93,10 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	
 	 // Scroll pane if scroll bar is necessary to show all covered examples
 	 
-	private JScrollPane detailScroll;
-	
+	private JScrollPane posCoveredScroll;
+	private JScrollPane posNotCoveredScroll;
+	private JScrollPane negCoveredScroll;
+	private JScrollPane negNotCoveredScroll;
 	 // Evaluated description of the selected concept
 	private JPanel conceptPanel;
 	private JPanel accuracyPanel;
@@ -112,6 +114,9 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 * @param model DLLearnerModel
 	 */
 	public MoreDetailForSuggestedConceptsPanel(DLLearnerModel model) {
+		super();
+		setLayout(null);
+		setPreferredSize(new Dimension(600, 500));
 		this.model = model;
 		
 		
@@ -130,22 +135,36 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 * @param desc selected description
 	 */
 	public void renderDetailPanel(EvaluatedDescription desc) {
+		posCoveredScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		posCoveredScroll.setBounds(5, 150, 280, 140);
+		posNotCoveredScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		posNotCoveredScroll.setBounds(300, 150, 280, 140);
+		negCoveredScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		negCoveredScroll.setBounds(5, 325, 280, 140);
+		negNotCoveredScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		negNotCoveredScroll.setBounds(300, 325, 280, 140);
 		eval = desc;
-		JPanel posBox = new JPanel(new GridLayout(0, 2));
-		JPanel negBox = new JPanel(new GridLayout(0, 2));
-		Box exampleBox = Box.createVerticalBox();
 		concept = new JTextArea("Class Description:");
 		concept.setEditable(false);
+		
 		coveredPositiveExamples = new JLabel("Covered Positive Examples:");
 		coveredPositiveExamples.setForeground(colorGreen);
+		coveredPositiveExamples.setBounds(5, 110, 280, 30);
 		notCoveredPositiveExamples = new JLabel("Not Covered Positive Examples");
 		notCoveredPositiveExamples.setForeground(colorRed);
+		notCoveredPositiveExamples.setBounds(300, 110, 280, 30);
 		coveredNegativeExamples = new JLabel("Covered Negative Examples:");
 		coveredNegativeExamples.setForeground(colorRed);
+		coveredNegativeExamples.setBounds(5, 295, 280, 30);
 		notCoveredNegativeExamples = new JLabel("Not Covered Negative Examples");
 		notCoveredNegativeExamples.setForeground(colorGreen);
+		notCoveredNegativeExamples.setBounds(300, 295, 280, 30);
+		
 		conceptPanel = new JPanel(new GridLayout(0, 1));
+		conceptPanel.setBounds(5, 0, 600, 50);
 		accuracyPanel = new JPanel(new GridLayout(0, 1));
+		accuracyPanel.setBounds(5, 60, 600, 50);
+		
 		posCoveredPanel = new JPanel(new GridLayout(0, 1));
 		posNotCoveredPanel = new JPanel(new GridLayout(0, 1));
 		negCoveredPanel = new JPanel(new GridLayout(0, 1));
@@ -178,12 +197,11 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		setInformation();
 		
 		detailPopup = new JDialog();
-		detailPopup.setSize(400, 400);
+		detailPopup.setSize(600, 500);
 		 //window will be disposed if the x button is pressed
 		detailPopup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		detailPopup.setVisible(true);
-		detailPopup.setResizable(true);
-		detailScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		detailPopup.setResizable(false);
 		//adds all information to the example panel
 		conceptPanel.add(concept);
 		conceptPanel.add(conceptText);
@@ -191,16 +209,22 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		accuracyPanel.add(accuracy);
 		accuracyPanel.add(accuracyText);
 
-		exampleBox.add(conceptPanel);
-		exampleBox.add(accuracyPanel);
-		posBox.add(posCoveredPanel);
-		posBox.add(posNotCoveredPanel);
-		negBox.add(negCoveredPanel);
-		negBox.add(negNotCoveredPanel);
-		exampleBox.add(posBox);
-		exampleBox.add(negBox);
-		detailScroll.setViewportView(exampleBox);
-		detailPopup.add(detailScroll);
+		posCoveredScroll.setViewportView(posCoveredPanel);
+		posNotCoveredScroll.setViewportView(posNotCoveredPanel);
+		negCoveredScroll.setViewportView(negCoveredPanel);
+		negNotCoveredScroll.setViewportView(negNotCoveredPanel);
+		
+		add(conceptPanel);
+		add(accuracyPanel);
+		add(coveredPositiveExamples);
+		add(notCoveredPositiveExamples);
+		add(coveredNegativeExamples);
+		add(notCoveredNegativeExamples);
+		add(posCoveredScroll);
+		add(posNotCoveredScroll);
+		add(negCoveredScroll);
+		add(negNotCoveredScroll);
+		detailPopup.add(this);
 	}
 	/**
 	 * This method sets the Informations of the selected description.
@@ -211,11 +235,6 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 			conceptText.append(eval.getDescription().toManchesterSyntaxString(model.getURI().toString()+"#", null));
 			double acc = (eval.getAccuracy())*100;
 			accuracyText.append(String.valueOf(acc)+"%");
-			//sets the positive examples that are covered
-			posCoveredPanel.add(coveredPositiveExamples);
-			posNotCoveredPanel.add(notCoveredPositiveExamples);
-			negCoveredPanel.add(coveredNegativeExamples);
-			negNotCoveredPanel.add(notCoveredNegativeExamples);
 			for(Iterator<Individual> i = eval.getCoveredPositives().iterator(); i.hasNext();) {
 				JLabel posLabel = new JLabel(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null));
 				posLabel.setForeground(colorGreen);
