@@ -196,6 +196,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useHasValueConstructor());
 		options.add(CommonConfigOptions.valueFreqencyThreshold());
 		options.add(CommonConfigOptions.useCardinalityRestrictions());
+		options.add(CommonConfigOptions.cardinalityLimit());
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
 		options.add(CommonConfigOptions.useDoubleDatatypes());
@@ -376,6 +377,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		RhoDRDown operator = new RhoDRDown(
 				reasoner,
 				classHierarchy,
+				configurator,
 					applyAllFilter,
 					applyExistsFilter,
 					useAllConstructor, 
@@ -392,6 +394,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		// create an algorithm object and pass all configuration
 		// options to it
 		algorithm = new ExampleBasedROLearner(
+				configurator,
 				learningProblem,
 				reasoner,
 				operator,

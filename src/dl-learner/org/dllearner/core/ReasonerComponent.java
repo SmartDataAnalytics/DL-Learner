@@ -601,8 +601,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 			SortedSet<Constant> values = e.getValue();
 			if (values.size() > 1) {
 				logger.warn("Property " + datatypeProperty + " has more than one value " + e.getValue()
-						+ " for individual " + e.getKey() + ". We ignore the value.");
-				// d135
+						+ " for individual " + e.getKey() + ". We ignore the value.");			
 			} else {
 				if (values.first().getLiteral().equalsIgnoreCase("true")) {
 					ret.add(e.getKey());

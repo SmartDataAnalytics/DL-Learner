@@ -241,6 +241,15 @@ public boolean getUseCardinalityRestrictions() {
 return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useCardinalityRestrictions") ;
 }
 /**
+* cardinalityLimit Gives the maximum number used in cardinality restrictions..
+* mandatory: false| reinit necessary: true
+* default value: 5
+* @return int 
+**/
+public int getCardinalityLimit() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "cardinalityLimit") ;
+}
+/**
 * useNegation specifies whether negation is used in the learning algorothm.
 * mandatory: false| reinit necessary: true
 * default value: true
@@ -554,6 +563,15 @@ reinitNecessary = true;
 **/
 public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
 ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useCardinalityRestrictions", useCardinalityRestrictions);
+reinitNecessary = true;
+}
+/**
+* @param cardinalityLimit Gives the maximum number used in cardinality restrictions..
+* mandatory: false| reinit necessary: true
+* default value: 5
+**/
+public void setCardinalityLimit(int cardinalityLimit) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "cardinalityLimit", cardinalityLimit);
 reinitNecessary = true;
 }
 /**
