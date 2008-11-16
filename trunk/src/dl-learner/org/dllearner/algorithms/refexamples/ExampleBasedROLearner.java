@@ -37,6 +37,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.Score;
+import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -73,6 +74,7 @@ import com.jamonapi.Monitor;
 public class ExampleBasedROLearner {
 
 	private static Logger logger = Logger.getLogger(ExampleBasedROLearner.class);
+	private ExampleBasedROLComponentConfigurator configurator;
 
 	// basic setup: learning problem and reasoning service
 	private ReasonerComponent rs;
@@ -232,6 +234,7 @@ public class ExampleBasedROLearner {
 	private Map<String, String> prefixes;
 
 	public ExampleBasedROLearner(
+			ExampleBasedROLComponentConfigurator configurator,
 			LearningProblem learningProblem,
 			ReasonerComponent rs,
 			RefinementOperator operator,
@@ -268,6 +271,7 @@ public class ExampleBasedROLearner {
 			// nrOfNegativeExamples = lp.getPseudoNegatives().size();
 			nrOfNegativeExamples = 0;
 		}
+		this.configurator = configurator;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 		this.rs = rs;
 		this.operator = (RhoDRDown) operator;
@@ -384,10 +388,10 @@ public class ExampleBasedROLearner {
 
 		// start search with start class
 		if (startDescription == null) {
-			startNode = new ExampleBasedNode(Thing.instance);
+			startNode = new ExampleBasedNode(configurator, Thing.instance);
 			startNode.setCoveredExamples(positiveExamples, negativeExamples);
 		} else {
-			startNode = new ExampleBasedNode(startDescription);
+			startNode = new ExampleBasedNode(configurator, startDescription);
 			Set<Individual> coveredNegatives = rs.hasType(startDescription, negativeExamples);
 			Set<Individual> coveredPositives = rs.hasType(startDescription, positiveExamples);
 			startNode.setCoveredExamples(coveredPositives, coveredNegatives);
@@ -673,7 +677,7 @@ public class ExampleBasedROLearner {
 							properRefinements.add(refinement);
 							tooWeakList.add(refinement);
 
-							ExampleBasedNode newNode = new ExampleBasedNode(refinement);
+							ExampleBasedNode newNode = new ExampleBasedNode(configurator, refinement);
 							newNode.setHorizontalExpansion(refinement.getLength() - 1);
 							newNode.setTooWeak(true);
 							newNode
@@ -763,7 +767,7 @@ public class ExampleBasedROLearner {
 			if (nonRedundant) {
 
 				// newly created node
-				ExampleBasedNode newNode = new ExampleBasedNode(refinement);
+				ExampleBasedNode newNode = new ExampleBasedNode(configurator, refinement);
 				// die -1 ist wichtig, da sonst keine gleich langen Refinements
 				// für den neuen Knoten erlaubt wären z.B. person => male
 				newNode.setHorizontalExpansion(refinement.getLength() - 1);

@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -41,6 +42,8 @@ import org.dllearner.utilities.owl.ConceptComparator;
  */
 public class ExampleBasedNode {
 
+	private ExampleBasedROLComponentConfigurator configurator;
+	
 	private static DecimalFormat df = new DecimalFormat();
 	
 	// example based variables
@@ -72,7 +75,8 @@ public class ExampleBasedNode {
 	// a flag whether this could be a solution for a posonly learning problem
 	private boolean isPosOnlyCandidate = true;
 	
-	public ExampleBasedNode(Description concept) {
+	public ExampleBasedNode(ExampleBasedROLComponentConfigurator configurator, Description concept) {
+		this.configurator = configurator;
 		this.concept = concept;
 		horizontalExpansion = 0;
 		isQualityEvaluated = false;
@@ -165,7 +169,7 @@ public class ExampleBasedNode {
 			ret += "acc:" + df.format(accuracy) + "% ";			
 			
 			// comment this out to display the heuristic score with default parameters
-			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples);
+			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, configurator);
 			ret += "h:" +df.format(heuristicScore) + " ";
 			
 			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
@@ -188,7 +192,7 @@ public class ExampleBasedNode {
 			ret += "<b>acc: " + df.format(accuracy) + "% </b>";			
 			
 			// comment this out to display the heuristic score with default parameters
-			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples);
+			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, configurator);
 			ret += "h:" +df.format(heuristicScore) + " ";
 			
 			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();
@@ -212,7 +216,7 @@ public class ExampleBasedNode {
 			ret += "acc:" + df.format(accuracy) + "% ";			
 			
 			// comment this out to display the heuristic score with default parameters
-			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples);
+			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, configurator);
 			ret += "h:" +df.format(heuristicScore) + " ";
 			
 			int wrongPositives = nrOfPositiveExamples - coveredPositives.size();

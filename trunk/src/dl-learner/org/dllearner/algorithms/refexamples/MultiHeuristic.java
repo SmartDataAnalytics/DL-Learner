@@ -69,6 +69,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public class MultiHeuristic implements ExampleBasedHeuristic {
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
+//	private ExampleBasedROLComponentConfigurator configurator;
 	
 	// heuristic parameters
 	private double expansionPenaltyFactor = 0.02;
@@ -83,6 +84,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	private int nrOfNegativeExamples;
 	private int nrOfExamples;
 	
+	@Deprecated
 	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples) {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
@@ -92,10 +94,9 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, ExampleBasedROLComponentConfigurator configurator) {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
+//		this.configurator = configurator;
 		negativeWeight = configurator.getNegativeWeight();
 		startNodeBonus = configurator.getStartNodeBonus();
-		System.out.println(negativeWeight);
-		System.out.println(startNodeBonus);
 	}
 	
 //	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {
@@ -141,8 +142,8 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		return (coveredPositives + negativeWeight * (nrOfNegativeExamples - coveredNegatives))/(double)nrOfExamples;
 	}
 	
-	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples) {
-		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples);
+	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples, ExampleBasedROLComponentConfigurator configurator) {
+		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples, configurator);
 		return multi.getNodeScore(node);
 	}
 	

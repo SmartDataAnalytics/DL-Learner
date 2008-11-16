@@ -21,6 +21,9 @@ package org.dllearner.test.junit;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -32,8 +35,10 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.KBFile;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
 
 /**
@@ -45,6 +50,8 @@ import org.junit.Test;
 public class ReasonerTests {
 
 	private static Logger logger = Logger.getLogger(ReasonerTests.class);
+	
+	private String baseURI;
 
 	public KB getSimpleKnowledgeBase() {
 		String kb = "person SUB TOP.";
@@ -101,5 +108,65 @@ public class ReasonerTests {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Test of fast instance check algorithm on carcinogenesis data set.
+	 * @throws ComponentInitException 
+	 * @throws ParseException 
+	 */
+	@Test
+	public void fastInstanceCheckTest() throws ComponentInitException, ParseException {
+		String file = "examples/carcinogenesis/carcinogenesis.owl";
+		ComponentManager cm = ComponentManager.getInstance();
+		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+		try {
+			cm.applyConfigEntry(ks, "url", new File(file).toURI().toURL());
+		} catch (MalformedURLException e) {
+			// should never happen
+			e.printStackTrace();
+		}
+		ks.init();
+		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
+		reasoner.init();
+		baseURI = reasoner.getBaseURI();
+		
+		List<Description> testDescriptions = new LinkedList<Description>();
+		List<List<Individual>> posIndividuals = new LinkedList<List<Individual>>();
+		List<List<Individual>> negIndividuals = new LinkedList<List<Individual>>();
+		
+		// TODO manually verify that the results are indeed correct 
+		testDescriptions.add(KBParser.parseConcept("\"http://dl-learner.org/carcinogenesis#Compound\" AND (\"http://dl-learner.org/carcinogenesis#amesTestPositive\" = true OR >= 2 \"http://dl-learner.org/carcinogenesis#hasStructure\" \"http://dl-learner.org/carcinogenesis#Ar_halide\"))"));
+		posIndividuals.add(getIndSet("d113","d133","d171","d262","d265","d294","d68","d77","d79"));
+		negIndividuals.add(getIndSet("d139","d199","d202","d203","d283","d42"));
 
+		// TODO add more descriptions and instances
+		
+		// make the specified assertions
+		for(int i=0; i<testDescriptions.size(); i++) {
+			Description description = testDescriptions.get(i);
+			List<Individual> pos = posIndividuals.get(i);
+			List<Individual> neg = negIndividuals.get(i);
+			
+			for(Individual ind : pos) {
+				assertTrue(reasoner.hasType(description, ind));
+			}
+			
+			for(Individual ind : neg) {
+				assertTrue(!reasoner.hasType(description, ind));
+			}			
+		}
+	}
+
+	private List<Individual> getIndSet(String... inds) {
+		List<Individual> individuals = new LinkedList<Individual>();
+		for(String ind : inds) {
+			individuals.add(new Individual(uri(ind)));
+		}
+		return individuals;
+	}
+	
+	private String uri(String name) {
+		return "\""+baseURI+name+"\"";
+	}	
+	
 }

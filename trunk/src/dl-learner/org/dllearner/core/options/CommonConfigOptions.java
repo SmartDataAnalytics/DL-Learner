@@ -43,6 +43,7 @@ public final class CommonConfigOptions {
 	public static boolean useHasValueConstructorDefault = false;
 	public static int valueFrequencyThresholdDefault = 3;
 	public static boolean useCardinalityRestrictionsDefault = true;
+	public static int cardinalityLimitDefault = 5;
 	public static boolean useNegationDefault = true;
 	public static boolean useBooleanDatatypesDefault = true;
 	public static boolean useDoubleDatatypesDefault = true;
@@ -114,6 +115,10 @@ public final class CommonConfigOptions {
 	public static BooleanConfigOption useCardinalityRestrictions() {
 		return new BooleanConfigOption("useCardinalityRestrictions", "specifies whether CardinalityRestrictions is used in the learning algorithm",useCardinalityRestrictionsDefault);
 	}
+	
+	public static IntegerConfigOption cardinalityLimit() {
+		return new IntegerConfigOption("cardinalityLimit", "Gives the maximum number used in cardinality restrictions.",cardinalityLimitDefault);
+	}	
 	
 	public static BooleanConfigOption useNegation() {
 		return new BooleanConfigOption("useNegation", "specifies whether negation is used in the learning algorothm",useNegationDefault);
