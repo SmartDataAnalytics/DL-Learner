@@ -41,6 +41,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
 import org.protege.editor.owl.OWLEditorKit;
 
@@ -64,11 +65,12 @@ public class ActionHandler implements ActionListener, ItemListener,
 	// this is a boolean that checked if the advanced button was pressed or not.
 	private boolean toggled;
 	// This is the Tread of the DL-Learner
-	private Thread dlLearner;
 	private EvaluatedDescription evaluatedDescription;
 	// This is the view of the DL-Learner tab.
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 	private Timer timer;
+	private LearningAlgorithm la;
+	private SuggestionRetriever retriever;
 
 	/**
 	 * This is the constructor for the action handler.
@@ -107,10 +109,15 @@ public class ActionHandler implements ActionListener, ItemListener,
 			if (model.getAlreadyLearned()) {
 				model.unsetListModel();
 			}
+			model.setKnowledgeSource();
+			model.setReasoner();
+			model.setPositiveAndNegativeExamples();
+			model.setLearningProblem();
+			model.setLearningAlgorithm();
 			view.getRunButton().setEnabled(false);
 			view.renderErrorMessage("Learning started");
 			view.getPosAndNegSelectPanel().setCheckBoxesEnable(false);
-			final SuggestionRetriever retriever = new SuggestionRetriever();
+			retriever = new SuggestionRetriever();
 			//
 			// dlLearner.start();
 			retriever.execute();
@@ -263,7 +270,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 * Destroys the Thread after the Pluigin is closed.
 	 */
 	public void destroyDLLearnerThread() {
-		dlLearner = null;
+		//dlLearner = null;
 	}
 
 	/**
@@ -290,40 +297,51 @@ public class ActionHandler implements ActionListener, ItemListener,
 		// TODO Auto-generated method stub
 
 	}
-
+/**
+ * Inner Class that retrieves the concepts given by the DL-Learner. 
+ * @author Christian Koetteritzsch
+ *
+ */
 	class SuggestionRetriever extends
 			SwingWorker<List<EvaluatedDescription>, List<EvaluatedDescription>> {
-
+		
+		private Thread dlLearner;
+		/**
+		 * Constructor for the SuggestionRetriever.
+		 */
 		public SuggestionRetriever() {
 
 		}
-
+		@SuppressWarnings("unchecked")
 		@Override
 		protected List<EvaluatedDescription> doInBackground() throws Exception {
 			// DefaultListModel descriptions = new DefaultListModel();
 			// List<Description> descriptionList =
 			// model.getLearningAlgorithm().getCurrentlyBestDescriptions();
 			// Iterator<Description> it = descriptionList.iterator();
+			la = model.getLearningAlgorithm();
 			timer = new Timer();
-			timer.schedule(new TimerTask() {
-
-				@SuppressWarnings("unchecked")
+			timer.schedule(new TimerTask(){
+				
 				@Override
 				public void run() {
-					if (model.getLearningAlgorithm() != null) {
-						publish(model.getLearningAlgorithm()
-								.getCurrentlyBestEvaluatedDescriptions(30, 0.0,
-										true));
+					if (la != null) {
+						
+						publish(la
+								.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel()
+										.getNrOfConcepts(),
+										view.getPosAndNegSelectPanel().getOptionPanel()
+												.getMinAccuracy(), true));
 					}
 				}
 
-			}, 1000, 2000);
+			}, 0, 100);
 
 			dlLearner = new Thread(new Runnable() {
 
 				@Override
 				public void run() {
-
+					
 					model.run();
 				}
 
@@ -336,14 +354,12 @@ public class ActionHandler implements ActionListener, ItemListener,
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			List<EvaluatedDescription> result = model.getLearningAlgorithm()
-					.getCurrentlyBestEvaluatedDescriptions(
+			List<EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(
 							view.getPosAndNegSelectPanel().getOptionPanel()
 									.getNrOfConcepts(),
 							view.getPosAndNegSelectPanel().getOptionPanel()
 									.getMinAccuracy(), true);
 			
-
 			return result;
 		}
 
@@ -367,7 +383,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 		@Override
 		protected void process(List<List<EvaluatedDescription>> resultLists) {
 
-			// panel4.getModel().clear();
 
 			for (List<EvaluatedDescription> list : resultLists) {
 				updateList(list);

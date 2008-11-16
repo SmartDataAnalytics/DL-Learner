@@ -20,7 +20,6 @@
 
 package org.dllearner.tools.protege;
 
-import java.awt.Color;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -243,25 +242,6 @@ public class DLLearnerModel implements Runnable {
 	}
 
 	/**
-	 * This method adds the solutions from the DL-Learner to the List Model.
-	 */
-	private void addToListModel() {
-		
-		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts(), view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true);
-		for (int j = 0; j < evalDescriptions.size(); j++) {
-			if (isConsistent(evalDescriptions.get(j))) {
-				suggestModel.add(j, new SuggestListItem(Color.GREEN,
-						evalDescriptions.get(j).getDescription()
-								.toManchesterSyntaxString(ontologyURI, prefixes)));
-			} else {
-				suggestModel.add(j, new SuggestListItem(Color.RED,
-						evalDescriptions.get(j).getDescription()
-								.toManchesterSyntaxString(ontologyURI, prefixes)));
-			}
-		}
-	}
-
-	/**
 	 * This method checks which positive and negative examples are checked and
 	 * puts the checked examples into a tree set.
 	 */
@@ -385,11 +365,6 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public void run() {
 		error = "Learning succesful";
-		setKnowledgeSource();
-		setReasoner();
-		setPositiveAndNegativeExamples();
-		setLearningProblem();
-		setLearningAlgorithm();
 		String message = "To view details about why a class description was suggested, please doubleclick on it.";
 		// start the algorithm and print the best concept found
 		la.start();
@@ -766,7 +741,13 @@ public class DLLearnerModel implements Runnable {
 	public boolean getAlreadyLearned() {
 		return alreadyLearned;
 	}
-
+	
+	/**
+	 * This Method checks if after inserting of this concept the ontology is still
+	 * consistent.
+	 * @param eDescription EvauatedDescription
+	 * @return isConsistent boolean
+	 */
 	public boolean isConsistent(EvaluatedDescription eDescription) {
 		boolean isConsistent = false;
 		if (eDescription.getNotCoveredPositives().isEmpty()) {
@@ -786,6 +767,10 @@ public class DLLearnerModel implements Runnable {
 		return editor.getModelManager().getActiveOntology().getURI();
 	}
 	
+	/**
+	 * This method sets the suggestion list.
+	 * @param list List(EvaluatedDescription)
+	 */
 	public void setSuggestList(List<EvaluatedDescription> list) {
 		evalDescriptions = list;
 	}
