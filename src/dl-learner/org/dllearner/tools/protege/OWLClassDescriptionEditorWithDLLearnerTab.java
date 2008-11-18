@@ -24,7 +24,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -358,8 +357,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		private JTextArea hint;
 		// This is the Panel for more details of the suggested concept
 		private MoreDetailForSuggestedConceptsPanel detail;
-		//private OWLFrame<OWLClass> frame;
-		private URL pluginURL;
+		private OWLFrame<OWLClass> frame;
 
 		/**
 		 * The constructor for the DL-Learner tab in the class description
@@ -372,16 +370,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public DLLearnerView(OWLFrame<OWLClass> current, String label, OWLClassDescriptionEditorWithDLLearnerTab dlLearner) {
 			classSelectorPanel = new OWLClassSelectorPanel(editorKit);
 			mainWindow = dlLearner;
-			//frame = current;
-			try {
-				pluginURL = new URL("http://dl-learner.org/wiki/ProtegePlugin");
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			wikiPane = new JLabel("See " + pluginURL + " for an introduction.");
-			//wikiPane.setEditable(false);
-			
+			frame = current;
+			wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
 			classSelectorPanel.firePropertyChange("test", false, true);
 			URL iconUrl = this.getClass().getResource("arrow.gif");
 			icon = new ImageIcon(iconUrl);
@@ -443,19 +433,22 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 * This Method renders the view of the plugin.
 		 */
 		public void makeView() {
-			/*	
-			if (model.hasIndividuals(frame.getRootObject())) {
-				run.setEnabled(true);
-			} else {
-				run.setEnabled(false);
-				String message ="There are no Instances for "+ frame.getRootObject()+" available. Please insert some Instances.";
-				renderErrorMessage(message);
-			}*/	
-			advanced.setIcon(icon);
+			
 			model.clearVector();
 			model.unsetListModel();
 			model.initReasoner();
 			model.setPosVector();
+			hint.setVisible(true);
+			if (model.hasIndividuals(frame.getRootObject())) {
+				run.setEnabled(true);
+			} else {
+				run.setEnabled(false);
+				hint.setVisible(false);
+				String message ="There are no Instances for "+ frame.getRootObject()+" available. Please insert some Instances.";
+				renderErrorMessage(message);
+			}	
+			advanced.setIcon(icon);
+			
 			posPanel.setExampleList(model.getPosListModel(), model.getNegListModel());
 			accept.setEnabled(false);
 			action.resetToggled();
@@ -465,7 +458,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			advanced.setSelected(false);
 			sugPanel.setBounds(10, 35, 490, 110);
 			adv.setBounds(40, 200, 200, 20);
-			wikiPane.setBounds(220, 10, 350, 30);
+			wikiPane.setBounds(220, 0, 350, 30);
 			addButtonPanel.setBounds(510, 40, 80, 110);
 			run.setBounds(10, 0, 200, 30);
 			advanced.setBounds(10, 200, 20, 20);

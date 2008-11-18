@@ -58,6 +58,7 @@ import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyManager;
@@ -186,7 +187,6 @@ public class DLLearnerModel implements Runnable {
 	// This is necessary to get the details of the suggested concept
 
 	private JXTaskPane detailPane;
-	private String ontologyURI;
 	private Map<String, String> prefixes;
 	private DefaultListModel posListModel;
 	private DefaultListModel negListModel;
@@ -215,7 +215,6 @@ public class DLLearnerModel implements Runnable {
 		current = h;
 		this.id = id;
 		this.view = view;
-		ontologyURI = editor.getModelManager().getActiveOntology().getURI().toString()+"#";
 		owlDescription = new HashSet<OWLDescription>();
 		posListModel = new DefaultListModel();
 		negListModel = new DefaultListModel();
@@ -349,7 +348,6 @@ public class DLLearnerModel implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("TIME: "+view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime());
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime());
 		try {
 			// initializes the learning algorithm
@@ -406,23 +404,37 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public void setPosVector() {
 		setPositiveConcept();
+		Set<OWLIndividual> individual = editor.getModelManager().getActiveOntology().getReferencedIndividuals();
+		Iterator<OWLIndividual> it = individual.iterator();
+		while (it.hasNext()) {
+			OWLIndividual individum = it.next();
+			String individuals = individum.toString();
+			if (setPositivExamplesChecked(individuals)) {
+				// when yes then it sets the positive example checked
+				posListModel.add(0, individuals);
 
-		for (Iterator<Individual> j = reasoner.getIndividuals().iterator(); j
-				.hasNext();) {
-			Individual ind = j.next();
+			} else {
+				// When no it unchecks the positive example
+				negListModel.add(0, individuals);
+			}
+		}
+		SortedSet<Individual> reasonerIndi = reasoner.getIndividuals();
+		Iterator<Individual> reasonerIt = reasonerIndi.iterator();
+		while(reasonerIt.hasNext()) {
+			Individual ind = reasonerIt.next();
+			
 			String indiv = ind.toString();
 			// checks if individual belongs to the selected concept
 			if (setPositivExamplesChecked(indiv)) {
 				// when yes then it sets the positive example checked
-				posListModel.add(0, ind.toManchesterSyntaxString(ontologyURI, prefixes));
-				individualVector.add(new IndividualObject(indiv, ind.toManchesterSyntaxString(ontologyURI, prefixes), true));
+				individualVector.add(new IndividualObject(indiv, true));
 
 			} else {
 				// When no it unchecks the positive example
-				negListModel.add(0, ind.toManchesterSyntaxString(ontologyURI, prefixes));
-				individualVector.add(new IndividualObject(indiv, ind.toManchesterSyntaxString(ontologyURI, prefixes), false));
+				individualVector.add(new IndividualObject(indiv, false));
 			}
 		}
+		
 	}
 
 	/**
@@ -487,13 +499,23 @@ public class DLLearnerModel implements Runnable {
 		Iterator<NamedClass> it = reasoner.getNamedClasses().iterator();
 		while(it.hasNext()) {
 			concept = it.next();
-			if (concept.toManchesterSyntaxString(ontologyURI, prefixes).equals(owlConcept.toString())) {
-				selectedConcept = concept;
-				break;
+			Iterator<OWLOntology> onto = editor.getModelManager().getActiveOntologies().iterator();
+			while (onto.hasNext()) {
+				String uri = onto.next().getURI().toString();
+				if (concept.toString().contains(uri)) {
+					if (concept.toManchesterSyntaxString(uri+"#", prefixes).equals(owlConcept.toString())) {
+						selectedConcept = concept;
+						break;
+					}
+				}
+					
 			}
+			
 		}
-		if (reasoner.getIndividuals(selectedConcept).size() > 0) {
-			hasIndividuals = true;
+		if(selectedConcept != null) {
+			if (reasoner.getIndividuals(selectedConcept).size() > 0) {
+				hasIndividuals = true;
+			}
 		}
 		concept = null;
 		selectedConcept = null;
@@ -773,5 +795,9 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public void setSuggestList(List<EvaluatedDescription> list) {
 		evalDescriptions = list;
+	}
+	
+	public OWLEditorKit getOWLEditorKit() {
+		return editor;
 	}
 }

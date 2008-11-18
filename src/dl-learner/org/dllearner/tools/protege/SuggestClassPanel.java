@@ -25,6 +25,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
 /**
  * This class is the panel for the suggest list.
@@ -62,6 +63,7 @@ public class SuggestClassPanel extends JPanel {
 		suggestScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		model = new DefaultListModel();
 		descriptions = new JList(model);
+		descriptions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		suggestPanel = new JPanel();
 		descriptions.setVisible(true);
 		suggestPanel.add(descriptions);

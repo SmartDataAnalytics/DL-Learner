@@ -29,6 +29,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
 /**
  * This class is the Panel for the Check boxes where the positive and negative
@@ -123,7 +124,11 @@ public class PosAndNegSelectPanel extends JPanel {
 		neg = new JLabel("Negative Examples");
 		neg.setBounds(0, 0, 100, 30);
 		posList = new JList(posListModel);
-		negList = new JList(negListModel);	
+		posList.setName("pos");
+		posList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		negList = new JList(negListModel);
+		negList.setName("neg");
+		negList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		addToPosExamples = new JButton("pos");
 		addToNegExamples = new JButton("neg");
 		helpForPosExamples = new JButton("?");
@@ -276,7 +281,7 @@ public class PosAndNegSelectPanel extends JPanel {
 				if(negListModel.get(i).equals(example)) {
 					negListModel.remove(i);
 					for (int j = 0; j < model.getIndividualVector().size(); j++) {
-						if (model.getIndividualVector().get(j).getManchesterIndividual().equals(example)) {
+						if (model.getIndividualVector().get(j).getIndividualString().contains(example)) {
 							model.getIndividualVector().get(j).setExamplePositive(true);
 							break;
 						}
@@ -290,7 +295,7 @@ public class PosAndNegSelectPanel extends JPanel {
 				if(posListModel.get(i).equals(example)) {
 					posListModel.remove(i);
 					for (int j = 0; j < model.getIndividualVector().size(); j++) {
-						if (model.getIndividualVector().get(j).getManchesterIndividual().equals(example)) {
+						if (model.getIndividualVector().get(j).getIndividualString().contains(example)) {
 							model.getIndividualVector().get(j).setExamplePositive(false);
 						}
 					}

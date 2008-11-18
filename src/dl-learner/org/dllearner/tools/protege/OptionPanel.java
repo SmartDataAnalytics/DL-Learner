@@ -41,6 +41,7 @@ public class OptionPanel extends JPanel {
 	private JSlider maxExecutionTime;
 	private JSlider nrOfConcepts;
 	private JPanel optionPanel;
+	private double accuracy;
 	/**
 	 * Construktor for the Option Panel. 
 	 */
@@ -89,7 +90,7 @@ public class OptionPanel extends JPanel {
 	 */
 	public double getMinAccuracy() {
 		int acc = minAccuracy.getValue();
-		double accuracy = acc/100;
+		accuracy = (acc/100.0);
 		return accuracy;
 	}
 	
