@@ -32,6 +32,10 @@ import javax.swing.WindowConstants;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
+import org.semanticweb.owl.model.OWLOntology;
+
+
+
 /**
  * This class shows more details of the suggested concepts. It shows the positive and negative examples
  * that are covered and that are not covered by the suggested concepts. It also shows the accuracya of the 
@@ -146,7 +150,6 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		eval = desc;
 		concept = new JTextArea("Class Description:");
 		concept.setEditable(false);
-		
 		coveredPositiveExamples = new JLabel("Covered Positive Examples:");
 		coveredPositiveExamples.setForeground(colorGreen);
 		coveredPositiveExamples.setBounds(5, 110, 280, 30);
@@ -195,7 +198,6 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		//panel for the informations of the selected concept
 		//this method adds the informations for the selected concept to the panel
 		setInformation();
-		
 		detailPopup = new JDialog();
 		detailPopup.setSize(600, 500);
 		 //window will be disposed if the x button is pressed
@@ -235,28 +237,71 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 			conceptText.append(eval.getDescription().toManchesterSyntaxString(model.getURI().toString()+"#", null));
 			double acc = (eval.getAccuracy())*100;
 			accuracyText.append(String.valueOf(acc)+"%");
-			for(Iterator<Individual> i = eval.getCoveredPositives().iterator(); i.hasNext();) {
-				JLabel posLabel = new JLabel(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null));
-				posLabel.setForeground(colorGreen);
-				posCoveredPanel.add(posLabel);
+			Iterator<Individual> i = eval.getCoveredPositives().iterator();
+			while (i.hasNext()) {
+				Iterator<OWLOntology> onto = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
+				Individual ind = i.next();
+				while (onto.hasNext()) {
+					String uri = onto.next().getURI().toString();
+					if(ind.toString().contains(uri)) {
+						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri+"#", null));
+						posLabel.setForeground(colorGreen);
+						posCoveredPanel.add(posLabel);
+					}
+				}
+				
+				
 			}
 			//sets the positive examples that are not covered
-			for(Iterator<Individual> i = eval.getNotCoveredPositives().iterator(); i.hasNext();) {
-				JLabel posLabel = new JLabel(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null));
-				posLabel.setForeground(colorRed);
-				posNotCoveredPanel.add(posLabel);
+			Iterator<Individual> a = eval.getNotCoveredPositives().iterator();
+			while (a.hasNext()) {
+				Iterator<OWLOntology> onto = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
+				Individual ind = a.next();
+				while (onto.hasNext()) {
+					String uri = onto.next().getURI().toString();
+					if(ind.toString().contains(uri)) {
+						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri+"#", null));
+						posLabel.setForeground(colorRed);
+						posNotCoveredPanel.add(posLabel);
+					}
+				}
+				
+				
 			}
+
+
 			//sets the negative examples that are covered
-			for(Iterator<Individual> i = eval.getCoveredNegatives().iterator(); i.hasNext();) {
-				JLabel posLabel = new JLabel(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null));
-				posLabel.setForeground(colorRed);
-				negCoveredPanel.add(posLabel);
+			Iterator<Individual> b = eval.getCoveredNegatives().iterator();
+			while (b.hasNext()) {
+				Iterator<OWLOntology> onto = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
+				Individual ind = b.next();
+				while (onto.hasNext()) {
+					String uri = onto.next().getURI().toString();
+					if(ind.toString().contains(uri)) {
+						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri+"#", null));
+						posLabel.setForeground(colorRed);
+						negCoveredPanel.add(posLabel);
+					}
+				}
+				
+				
 			}
+
 			//sets the negative examples that are not covered
-			for(Iterator<Individual> i = eval.getNotCoveredNegatives().iterator(); i.hasNext();) {
-				JLabel posLabel = new JLabel(i.next().toManchesterSyntaxString(model.getURI().toString()+"#", null));
-				posLabel.setForeground(colorGreen);
-				negNotCoveredPanel.add(posLabel);
+			Iterator<Individual> c = eval.getNotCoveredNegatives().iterator();
+			while (c.hasNext()) {
+				Iterator<OWLOntology> onto = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
+				Individual ind = c.next();
+				while (onto.hasNext()) {
+					String uri = onto.next().getURI().toString();
+					if(ind.toString().contains(uri)) {
+						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri+"#", null));
+						posLabel.setForeground(colorGreen);
+						negNotCoveredPanel.add(posLabel);
+					}
+				}
+				
+				
 			}
 		}
 	}

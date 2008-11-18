@@ -44,6 +44,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
 import org.protege.editor.owl.OWLEditorKit;
+import org.semanticweb.owl.model.OWLOntology;
 
 /**
  * This class processes input from the user.
@@ -399,13 +400,20 @@ public class ActionHandler implements ActionListener, ItemListener,
 					model.setSuggestList(result);
 					// learnPanel.getListModel().clear();
 					Iterator<EvaluatedDescription> it = result.iterator();
-					//it.next().getDescription().toManchesterSyntaxString(baseURI, prefixes);
+					
 					while (it.hasNext()) {
+						Iterator<OWLOntology> ont = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
 						EvaluatedDescription eval = it.next();
-						if(model.isConsistent(eval)) {
-							dm.add(0, new SuggestListItem(Color.GREEN, eval.getDescription().toManchesterSyntaxString(model.getURI().toString()+"#", null)));
-						} else {
-							dm.add(0, new SuggestListItem(Color.RED, eval.getDescription().toManchesterSyntaxString(model.getURI().toString()+"#", null)));
+						while(ont.hasNext()) {
+							String onto = ont.next().getURI().toString();
+							System.out.println(eval.getDescription());
+							if(eval.getDescription().toString().contains(onto)) {
+								if(model.isConsistent(eval)) {
+									dm.add(0, new SuggestListItem(Color.GREEN, eval.getDescription().toManchesterSyntaxString(onto+"#", null)));
+								} else {
+									dm.add(0, new SuggestListItem(Color.RED, eval.getDescription().toManchesterSyntaxString(onto+"#", null)));
+								}
+							}
 						}
 					}
 					view.getSuggestClassPanel().getSuggestList().setModel(dm);

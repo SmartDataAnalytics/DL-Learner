@@ -26,7 +26,6 @@ package org.dllearner.tools.protege;
 public class IndividualObject {
 
 	private String normalIndividual;
-	private String manchesterIndividual;
 	private boolean isPos;
 	
 	/**
@@ -35,9 +34,8 @@ public class IndividualObject {
 	 * @param manchester String
 	 * @param pos boolean
 	 */
-	public IndividualObject(String normal, String manchester, boolean pos) {
+	public IndividualObject(String normal, boolean pos) {
 		normalIndividual = normal;
-		manchesterIndividual = manchester;
 		isPos = pos;
 	}
 	
@@ -47,14 +45,6 @@ public class IndividualObject {
 	 */
 	public String getIndividualString() {
 		return normalIndividual;
-	}
-	
-	/**
-	 * This method returns the manchester String of the Individual.
-	 * @return String manchesterIndividual
-	 */
-	public String getManchesterIndividual() {
-		return manchesterIndividual;
 	}
 	
 	/**

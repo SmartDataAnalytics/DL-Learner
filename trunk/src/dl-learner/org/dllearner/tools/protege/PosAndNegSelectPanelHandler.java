@@ -108,16 +108,16 @@ public void mouseEntered(MouseEvent m) {
  * @param m MouseEvent
  */
 public void mouseClicked(MouseEvent m) {
-	if (panel.getPosExampleList().getSelectedValue() != null) {
+	if (!panel.getPosExampleList().isSelectionEmpty() && m.toString().contains("pos")) {
 		panel.getAddToNegPanelButton().setEnabled(true);
-	} else {
-		panel.getAddToNegPanelButton().setEnabled(false);
-	}
-	if (panel.getNegExampleList().getSelectedValue()!= null) {
-		panel.getAddToPosPanelButton().setEnabled(true);
-	} else {
 		panel.getAddToPosPanelButton().setEnabled(false);
+		panel.getNegExampleList().clearSelection();
 	}
+	if (!panel.getNegExampleList().isSelectionEmpty() && m.toString().contains("neg")) {
+		panel.getAddToPosPanelButton().setEnabled(true);
+		panel.getAddToNegPanelButton().setEnabled(false);
+		panel.getPosExampleList().clearSelection();
+	} 
 }
 
 /**
