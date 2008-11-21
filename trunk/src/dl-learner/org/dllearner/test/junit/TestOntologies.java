@@ -55,10 +55,13 @@ public final class TestOntologies {
 			kbString += "cat SUB animal.\n";
 			kbString += "(human AND animal) = BOTTOM.\n";
 		} else if(ont.equals(TestOntology.SIMPLE2)) {
-			kbString += "Subrole(r2,r3).";
-			kbString += "a2 SUB a4.";
+			kbString += "Subrole(r1,r2).\n";
+			kbString += "a1 SUB TOP.\n";
+			kbString += "a2 SUB a3.\n";
 		} else if(ont.equals(TestOntology.R1SUBR2)) {
 			kbString += "Subrole(r1,r2).\n";
+			kbString += "a1 SUB TOP.\n";
+			kbString += "a2 SUB TOP.\n";
 		} else if(ont.equals(TestOntology.DATA1)) {
 			kbString += "man SUB person.\n";
 			kbString += "woman SUB person.\n";

@@ -330,7 +330,7 @@ public class ELDescriptionNode {
 	// (same in both cases)
 	private void labelSimulationUpdate() {
 		// compute the nodes, which need to be updated
-		Set<ELDescriptionNode> update = new TreeSet<ELDescriptionNode>();
+		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
 		
 		// loop over all nodes on the same level, which are not in the in set
 		Set<ELDescriptionNode> tmp = new HashSet<ELDescriptionNode>(tree.getNodesOnLevel(level));
@@ -345,8 +345,10 @@ public class ELDescriptionNode {
 			}
 		}
 		
-		// loop over all nodes in out set
-		for(ELDescriptionNode w : out) {
+		// loop over all nodes in out set (we make a copy, because out
+		// is potentially modified, so we cannot safely iterate over it)
+		tmp = new HashSet<ELDescriptionNode>(out);
+		for(ELDescriptionNode w : tmp) {
 			if(w != this) {
 				if(!tree.checkSC1(w, this)) {
 					tree.shrinkSimulation(w, this);
