@@ -49,7 +49,6 @@ import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Constant;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
@@ -126,7 +125,7 @@ public class OWLAPIReasoner extends ReasonerComponent {
 	private RoleComparator roleComparator = new RoleComparator();
 //	private ClassHierarchy subsumptionHierarchy;
 //	private ObjectPropertyHierarchy roleHierarchy;	
-	private DatatypePropertyHierarchy datatypePropertyHierarchy;
+//	private DatatypePropertyHierarchy datatypePropertyHierarchy;
 //	private Set<Description> allowedConceptsInSubsumptionHierarchy;
 	
 	// primitives

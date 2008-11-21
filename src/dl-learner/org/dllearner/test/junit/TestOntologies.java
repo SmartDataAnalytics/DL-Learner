@@ -56,7 +56,7 @@ public final class TestOntologies {
 			kbString += "(human AND animal) = BOTTOM.\n";
 		} else if(ont.equals(TestOntology.SIMPLE2)) {
 			kbString += "Subrole(r2,r3).";
-			kbString += "a2 SUB a4";
+			kbString += "a2 SUB a4.";
 		} else if(ont.equals(TestOntology.R1SUBR2)) {
 			kbString += "Subrole(r1,r2).\n";
 		} else if(ont.equals(TestOntology.DATA1)) {

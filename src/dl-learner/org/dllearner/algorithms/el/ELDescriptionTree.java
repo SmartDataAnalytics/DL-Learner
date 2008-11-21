@@ -234,16 +234,19 @@ public class ELDescriptionTree implements Cloneable {
 			// same level are tested before any node of a lower level is tested)
 			ELDescriptionNode v = list.pollFirst();
 			// loop through all nodes on same level
-			for(ELDescriptionNode w : levelNodeMapping.get(v.getLevel())) {
-				if(!v.out.contains(w) && v.outSC1.contains(w) && checkSC2(v,w)) {
-					extendSimulation(v,w);
-					list.add(v.getParent());
-					list.add(w.getParent());
-				}
-				if(!w.out.contains(v) && w.outSC1.contains(v) && checkSC2(w,v)) {
-					extendSimulation(w,v);
-					list.add(v.getParent());
-					list.add(w.getParent());
+			Set<ELDescriptionNode> sameLevel = levelNodeMapping.get(v.getLevel());
+			for(ELDescriptionNode w : sameLevel) {
+				if(v != w) {
+					if(!v.out.contains(w) && v.outSC1.contains(w) && checkSC2(v,w)) {
+						extendSimulation(v,w);
+						list.add(v.getParent());
+						list.add(w.getParent());
+					}
+					if(!w.out.contains(v) && w.outSC1.contains(v) && checkSC2(w,v)) {
+						extendSimulation(w,v);
+						list.add(v.getParent());
+						list.add(w.getParent());
+					}
 				}
 			}
 		}
@@ -327,6 +330,21 @@ public class ELDescriptionTree implements Cloneable {
 		node2.inSC2.add(node1);
 	}
 	
+	public void extendSimulationSC1(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.outSC1.add(node2);
+		node2.inSC1.add(node1);
+	}
+	
+	public void extendSimulationSC2(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.outSC2.add(node2);
+		node2.inSC2.add(node1);
+	}
+	
+	public void extendSimulationSC12(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.out.add(node2);
+		node2.in.add(node1);
+	}
+	
 	// removes (node1,node2) from simulation, takes care of all helper sets
 	public void shrinkSimulation(ELDescriptionNode node1, ELDescriptionNode node2) {
 		node1.out.remove(node2);
@@ -336,6 +354,21 @@ public class ELDescriptionTree implements Cloneable {
 		node2.inSC1.remove(node1);
 		node2.inSC2.remove(node1);
 	}	
+	
+	public void shrinkSimulationSC1(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.outSC1.remove(node2);
+		node2.inSC1.remove(node1);
+	}
+	
+	public void shrinkSimulationSC2(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.outSC2.remove(node2);
+		node2.inSC2.remove(node1);
+	}
+	
+	public void shrinkSimulationSC12(ELDescriptionNode node1, ELDescriptionNode node2) {
+		node1.out.remove(node2);
+		node2.in.remove(node1);
+	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
