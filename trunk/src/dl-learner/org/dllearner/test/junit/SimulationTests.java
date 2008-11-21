@@ -71,12 +71,14 @@ public class SimulationTests {
 		// perform test with empty background knowledge and A1 AND EXISTS r1.TOP AND EXISTS r2.TOP
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
+		NamedClass a1 = new NamedClass("a1");
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
+		v1.extendLabel(a1);
 		ObjectProperty r1 = new ObjectProperty("r1");
 		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, new TreeSet<NamedClass>());
 		ObjectProperty r2 = new ObjectProperty("r2");
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r2, new TreeSet<NamedClass>());
-		
+				
 		assertEmpty(v1);
 		assertAll(v2, v3);
 		assertAll(v3, v2);
@@ -108,6 +110,11 @@ public class SimulationTests {
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1, a2);
 		ObjectProperty r2 = new ObjectProperty("r2");
 		ELDescriptionNode v4 = new ELDescriptionNode(v1, r2, a1);
+		
+		System.out.println("v1:\n" + v1.toSimulationString());
+		System.out.println("v2:\n" + v2.toSimulationString());
+		System.out.println("v3:\n" + v3.toSimulationString());	
+		System.out.println("v4:\n" + v4.toSimulationString());
 		
 		assertEmpty(v1);
 		
@@ -160,7 +167,8 @@ public class SimulationTests {
 		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, a2, a3);
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1);
 		ELDescriptionNode v4 = new ELDescriptionNode(v2, r1, a1);
-		ELDescriptionNode v5 = new ELDescriptionNode(v2, r2, a1, a2);
+		ELDescriptionNode v5 = new ELDescriptionNode(v2, r3, a1, a2);
+		v2.refineEdge(1, r2);
 		ELDescriptionNode v6 = new ELDescriptionNode(v3, r3, a3);
 		
 		assertEmpty(v1);
