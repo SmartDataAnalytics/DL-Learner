@@ -28,6 +28,7 @@ import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.parser.KBParser;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.junit.Test;
 
@@ -71,12 +72,12 @@ public class SimulationTests {
 		// perform test with empty background knowledge and A1 AND EXISTS r1.TOP AND EXISTS r2.TOP
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
-		NamedClass a1 = new NamedClass("a1");
+		NamedClass a1 = new NamedClass(uri("a1"));
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
 		v1.extendLabel(a1);
-		ObjectProperty r1 = new ObjectProperty("r1");
+		ObjectProperty r1 = new ObjectProperty(uri("r1"));
 		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, new TreeSet<NamedClass>());
-		ObjectProperty r2 = new ObjectProperty("r2");
+		ObjectProperty r2 = new ObjectProperty(uri("r2"));
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r2, new TreeSet<NamedClass>());
 				
 		assertEmpty(v1);
@@ -95,20 +96,20 @@ public class SimulationTests {
      *
      * v1: -
      * v2: in=inSC1=inSC2=outSC2={v3,v4}
-     * v3: inSC2=outSC2={v2,v4}
-     * v4: inSC2=outSC2={v2,v3}
+     * v3: out=outSC1={v2}, inSC2=outSC2={v2,v4}
+     * v4: out=outSC1={v2}, inSC2=outSC2={v2,v3}
 	 */
 	@Test
 	public void test3() {
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.R1SUBR2);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
-		ObjectProperty r1 = new ObjectProperty("r1");
-		NamedClass a1 = new NamedClass("a1");
-		NamedClass a2 = new NamedClass("a2");
+		ObjectProperty r1 = new ObjectProperty(uri("r1"));
+		NamedClass a1 = new NamedClass(uri("a1"));
+		NamedClass a2 = new NamedClass(uri("a2"));
 		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, a1, a2);
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1, a2);
-		ObjectProperty r2 = new ObjectProperty("r2");
+		ObjectProperty r2 = new ObjectProperty(uri("r2"));
 		ELDescriptionNode v4 = new ELDescriptionNode(v1, r2, a1);
 		
 		System.out.println("v1:\n" + v1.toSimulationString());
@@ -123,13 +124,17 @@ public class SimulationTests {
 		assertOutSC1(v2);
 		assertOut(v2);
 		
+		assertOut(v3,v2);
+		assertOutSC1(v3,v2);
 		assertSC2(v3, v2, v4);
-		assertSC1(v3);
-		assertSC(v3);
+		assertInSC1(v3);
+		assertIn(v3);
 		
+		assertOut(v4,v2);
+		assertOutSC1(v4,v2);
 		assertSC2(v4, v2, v3);
-		assertSC1(v4);
-		assertSC(v4);			
+		assertInSC1(v4);
+		assertIn(v4);			
 	}
 	
 	/**
@@ -157,12 +162,12 @@ public class SimulationTests {
 	public void test4() {
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE2);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
-		ObjectProperty r1 = new ObjectProperty("r1");
-		ObjectProperty r2 = new ObjectProperty("r2");
-		ObjectProperty r3 = new ObjectProperty("r3");
-		NamedClass a1 = new NamedClass("a1");
-		NamedClass a2 = new NamedClass("a2");
-		NamedClass a3 = new NamedClass("a3");		
+		ObjectProperty r1 = new ObjectProperty(uri("r1"));
+		ObjectProperty r2 = new ObjectProperty(uri("r2"));
+		ObjectProperty r3 = new ObjectProperty(uri("r3"));
+		NamedClass a1 = new NamedClass(uri("a1"));
+		NamedClass a2 = new NamedClass(uri("a2"));
+		NamedClass a3 = new NamedClass(uri("a3"));		
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
 		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, a2, a3);
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1);
@@ -220,11 +225,13 @@ public class SimulationTests {
 		assertOutSC2(node, nodesOut);
 	}
 	
+	@SuppressWarnings("unused")
 	private void assertSC(ELDescriptionNode node, ELDescriptionNode... nodesOut) {
 		assertIn(node, nodesOut);
 		assertOut(node, nodesOut);
 	}
 	
+	@SuppressWarnings("unused")
 	private void assertSC1(ELDescriptionNode node, ELDescriptionNode... nodesOut) {
 		assertInSC1(node, nodesOut);
 		assertOutSC1(node, nodesOut);
@@ -285,5 +292,10 @@ public class SimulationTests {
 		assertTrue(node.getOut().isEmpty());
 		assertTrue(node.getOutSC1().isEmpty());
 		assertTrue(node.getOutSC2().isEmpty());		
+	}
+	
+	// we use the standard KB file prefix
+	private String uri(String localname) {
+		return KBParser.getInternalURI(localname);
 	}
 }

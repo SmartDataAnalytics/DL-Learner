@@ -322,52 +322,52 @@ public class ELDescriptionTree implements Cloneable {
 	
 	// adds (node1,node2) to simulation, takes care of all helper sets
 	public void extendSimulation(ELDescriptionNode node1, ELDescriptionNode node2) {
-		node1.out.add(node2);
-		node1.outSC1.add(node2);
-		node1.outSC2.add(node2);
-		node2.in.add(node1);
-		node2.inSC1.add(node1);
-		node2.inSC2.add(node1);
+		node1.in.add(node2);
+		node1.inSC1.add(node2);
+		node1.inSC2.add(node2);
+		node2.out.add(node1);
+		node2.outSC1.add(node1);
+		node2.outSC2.add(node1);
 	}
 	
 	public void extendSimulationSC1(ELDescriptionNode node1, ELDescriptionNode node2) {
-		node1.outSC1.add(node2);
-		node2.inSC1.add(node1);
+		node1.inSC1.add(node2);
+		node2.outSC1.add(node1);
 	}
 	
 	public void extendSimulationSC2(ELDescriptionNode node1, ELDescriptionNode node2) {
-		node1.outSC2.add(node2);
-		node2.inSC2.add(node1);
+		node1.inSC2.add(node2);
+		node2.outSC2.add(node1);
 	}
 	
 	public void extendSimulationSC12(ELDescriptionNode node1, ELDescriptionNode node2) {
-		node1.out.add(node2);
-		node2.in.add(node1);
+		node1.in.add(node2);
+		node2.out.add(node1);
 	}
 	
 	// removes (node1,node2) from simulation, takes care of all helper sets
 	public void shrinkSimulation(ELDescriptionNode node1, ELDescriptionNode node2) {
-		node1.out.remove(node2);
-		node1.outSC1.remove(node2);
-		node1.outSC2.remove(node2);
-		node2.in.remove(node1);
-		node2.inSC1.remove(node1);
-		node2.inSC2.remove(node1);
+		node1.in.remove(node2);
+		node1.inSC1.remove(node2);
+		node1.inSC2.remove(node2);
+		node2.out.remove(node1);
+		node2.outSC1.remove(node1);
+		node2.outSC2.remove(node1);
 	}	
 	
 	public void shrinkSimulationSC1(ELDescriptionNode node1, ELDescriptionNode node2) {
-		node1.outSC1.remove(node2);
-		node2.inSC1.remove(node1);
+		node1.inSC1.remove(node2);
+		node2.outSC1.remove(node1);
 	}
 	
 	public void shrinkSimulationSC2(ELDescriptionNode node1, ELDescriptionNode node2) {
-		node1.outSC2.remove(node2);
-		node2.inSC2.remove(node1);
+		node1.inSC2.remove(node2);
+		node2.outSC2.remove(node1);
 	}
 	
 	public void shrinkSimulationSC12(ELDescriptionNode node1, ELDescriptionNode node2) {
-		node1.out.remove(node2);
-		node2.in.remove(node1);
+		node1.in.remove(node2);
+		node2.out.remove(node1);
 	}
 	
 	@Override
