@@ -19,8 +19,10 @@
  */
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.el.ELDescriptionNode;
@@ -100,22 +102,37 @@ public class SimulationTests {
      * v4: out=outSC1={v2}, inSC2=outSC2={v2,v3}
 	 */
 	@Test
-	public void test3() {
+	public void test3() {	
+		// background knowledge, concepts, roles
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.R1SUBR2);
-		ELDescriptionTree tree = new ELDescriptionTree(rs);
-		ELDescriptionNode v1 = new ELDescriptionNode(tree);
 		ObjectProperty r1 = new ObjectProperty(uri("r1"));
 		NamedClass a1 = new NamedClass(uri("a1"));
 		NamedClass a2 = new NamedClass(uri("a2"));
-		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, a1, a2);
-		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1, a2);
 		ObjectProperty r2 = new ObjectProperty(uri("r2"));
-		ELDescriptionNode v4 = new ELDescriptionNode(v1, r2, a1);
 		
-		System.out.println("v1:\n" + v1.toSimulationString());
-		System.out.println("v2:\n" + v2.toSimulationString());
-		System.out.println("v3:\n" + v3.toSimulationString());	
-		System.out.println("v4:\n" + v4.toSimulationString());
+		// iteratively building up the tree (nodeNames is used for logging/debugging)
+		ELDescriptionTree tree = new ELDescriptionTree(rs);
+		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
+		ELDescriptionNode v1 = new ELDescriptionNode(tree);
+		nodeNames.put(v1, "v1");
+		log("root node v1", tree, nodeNames);
+		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1);
+		nodeNames.put(v2, "v2");
+		log("edge to v2 added", tree, nodeNames);
+		v2.extendLabel(a1);
+		log("a1 added to v2", tree, nodeNames);
+		v2.extendLabel(a2);
+		log("a2 added to v2", tree, nodeNames);
+		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1);
+		nodeNames.put(v3, "v3");
+		log("edge to v3 added", tree, nodeNames);
+		v3.extendLabel(a2);
+		log("a2 added to v3", tree, nodeNames);
+		ELDescriptionNode v4 = new ELDescriptionNode(v1, r2);
+		nodeNames.put(v4, "v4");
+		log("edge to v4 added", tree, nodeNames);
+		v4.extendLabel(a1);
+		log("a1 added to v4", tree, nodeNames);
 		
 		assertEmpty(v1);
 		
@@ -200,6 +217,16 @@ public class SimulationTests {
 		assertIn(v6);
 		assertOut(v6,v5);
 		assertOutSC1(v6,v5);		
+	}
+	
+	private void log(String message, ELDescriptionTree tree, Map<ELDescriptionNode,String> nodeNames) {
+		// print underlined message
+		System.out.println(message);
+		for(int i=0; i<=message.length(); i++) {
+			System.out.print("=");
+		}
+		System.out.println("\n");
+		System.out.println(tree.toSimulationString(nodeNames));
 	}
 	
 	// all relations (in, inSC1, inSC2) should have the 

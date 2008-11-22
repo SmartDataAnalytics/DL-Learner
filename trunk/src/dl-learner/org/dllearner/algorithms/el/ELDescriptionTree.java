@@ -370,6 +370,17 @@ public class ELDescriptionTree implements Cloneable {
 		node2.out.remove(node1);
 	}
 	
+	public String toSimulationString(Map<ELDescriptionNode,String> nodeNames) {
+		String str = "";
+		for(Entry<ELDescriptionNode,String> entry : nodeNames.entrySet()) {
+			String nodeName = entry.getValue();
+			ELDescriptionNode node = entry.getKey();
+			str += nodeName + ":\n";
+			str += node.toSimulationString(nodeNames) + "\n";
+		}
+		return str;
+	}	
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public ELDescriptionTree clone() {

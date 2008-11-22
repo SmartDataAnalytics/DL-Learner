@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -485,7 +486,29 @@ public class ELDescriptionNode {
 		return str;
 	}
 	
-
+	private String toString(Set<ELDescriptionNode> nodes, Map<ELDescriptionNode,String> nodeNames) {
+		String str = "";
+		// comma separated list of descriptions
+		for(ELDescriptionNode node : nodes) {
+			str += nodeNames.get(node) + ",";
+		}
+		// remove last comma
+		if(str.length() > 0) {
+			str = str.substring(0, str.length()-1);
+		}
+		return str;
+	}
+	
+	public String toSimulationString(Map<ELDescriptionNode,String> nodeNames) {
+		String str = "";
+		str += "  in: " + toString(in, nodeNames) + "\n";
+		str += "  inSC1: " + toString(inSC1, nodeNames) + "\n";
+		str += "  inSC2: " + toString(inSC2, nodeNames) + "\n";
+		str += "  out: " + toString(out, nodeNames) + "\n";
+		str += "  outSC1: " + toString(outSC1, nodeNames) + "\n";
+		str += "  outSC2: " + toString(outSC2, nodeNames) + "\n";		
+		return str;
+	}
 	
 	public ELDescriptionNode getParent() {
 		return parent;
