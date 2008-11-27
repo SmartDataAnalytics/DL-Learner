@@ -174,6 +174,8 @@ public class ELDescriptionNode {
 //			}
 //		}
 		
+		System.out.println(update);
+		
 		// apply updates recursively top-down
 		tree.updateSimulation(update);		
 		
@@ -352,7 +354,9 @@ public class ELDescriptionNode {
 		for(ELDescriptionNode w : tmp) {
 			if(w != this) {
 				if(!tree.checkSC1(w, this)) {
-					tree.shrinkSimulation(w, this);
+//					tree.shrinkSimulation(w, this);
+					tree.shrinkSimulationSC1(w, this);
+					tree.shrinkSimulationSC12(w, this);
 					update.add(w.parent);
 				}
 			}

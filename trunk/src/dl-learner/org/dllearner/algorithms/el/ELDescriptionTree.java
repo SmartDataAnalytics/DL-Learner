@@ -237,15 +237,25 @@ public class ELDescriptionTree implements Cloneable {
 			Set<ELDescriptionNode> sameLevel = levelNodeMapping.get(v.getLevel());
 			for(ELDescriptionNode w : sameLevel) {
 				if(v != w) {
-					if(!v.out.contains(w) && v.outSC1.contains(w) && checkSC2(v,w)) {
-						extendSimulation(v,w);
-						list.add(v.getParent());
-						list.add(w.getParent());
+					if(!v.out.contains(w) ) {
+						System.out.println("test");
+						if(checkSC2(v,w) && v.outSC1.contains(w)) {
+							extendSimulation(v,w);
+							list.add(v.getParent());
+							list.add(w.getParent());
+						} else {
+							System.out.println("test in");
+							shrinkSimulationSC2(v,w);
+						}
 					}
-					if(!w.out.contains(v) && w.outSC1.contains(v) && checkSC2(w,v)) {
-						extendSimulation(w,v);
-						list.add(v.getParent());
-						list.add(w.getParent());
+					if(!w.out.contains(v) ) {
+						if(checkSC2(w,v) && w.outSC1.contains(v)) {
+							extendSimulation(w,v);
+							list.add(v.getParent());
+							list.add(w.getParent());
+						} else {
+							shrinkSimulationSC2(w,v);
+						}
 					}
 				}
 			}
@@ -361,8 +371,10 @@ public class ELDescriptionTree implements Cloneable {
 	}
 	
 	public void shrinkSimulationSC2(ELDescriptionNode node1, ELDescriptionNode node2) {
+		System.out.println(node2.outSC2);
 		node1.inSC2.remove(node2);
 		node2.outSC2.remove(node1);
+		System.out.println(node2.outSC2);
 	}
 	
 	public void shrinkSimulationSC12(ELDescriptionNode node1, ELDescriptionNode node2) {

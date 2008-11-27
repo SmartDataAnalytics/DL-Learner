@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -223,11 +224,16 @@ public class OWLAPIReasoner extends ReasonerComponent {
 					}
 					
 					owlAPIOntologies.add(ontology);
-					allImports.addAll(manager.getImportsClosure(ontology));
-					classes.addAll(ontology.getReferencedClasses());
-					owlObjectProperties.addAll(ontology.getReferencedObjectProperties());
-					owlDatatypeProperties.addAll(ontology.getReferencedDataProperties());				
-					owlIndividuals.addAll(ontology.getReferencedIndividuals());
+					// imports includes the ontology itself
+					Set<OWLOntology> imports = manager.getImportsClosure(ontology);
+					allImports.addAll(imports);
+//					System.out.println(imports);
+					for(OWLOntology ont : imports) {
+						classes.addAll(ont.getReferencedClasses());
+						owlObjectProperties.addAll(ont.getReferencedObjectProperties());
+						owlDatatypeProperties.addAll(ont.getReferencedDataProperties());				
+						owlIndividuals.addAll(ont.getReferencedIndividuals());
+					}
 					
 					// if several knowledge sources are included, then we can only
 					// guarantee that the base URI is from one of those sources (there
@@ -366,20 +372,22 @@ public class OWLAPIReasoner extends ReasonerComponent {
 			individuals.add(new Individual(owlIndividual.getURI().toString()));
 		}		
 		
+
+		
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getAtomicConcepts()
 	 */
-	public Set<NamedClass> getNamedClasses() {
-		return atomicConcepts;
+	public Set<NamedClass> getNamedClasses() {		
+		return Collections.unmodifiableSet(atomicConcepts);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getAtomicRoles()
 	 */
 	public Set<ObjectProperty> getObjectProperties() {
-		return atomicRoles;
+		return Collections.unmodifiableSet(atomicRoles);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ import org.junit.Test;
  *
  */
 public class SimulationTests {
-
+	
 	/**
 	 * Empty tree - empty simulation.
 	 *
@@ -115,24 +115,25 @@ public class SimulationTests {
 		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
 		nodeNames.put(v1, "v1");
-		log("root node v1", tree, nodeNames);
+//		log("root node v1", tree, nodeNames);
 		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1);
 		nodeNames.put(v2, "v2");
-		log("edge to v2 added", tree, nodeNames);
+//		log("edge to v2 added", tree, nodeNames);
 		v2.extendLabel(a1);
-		log("a1 added to v2", tree, nodeNames);
+//		log("a1 added to v2", tree, nodeNames);
 		v2.extendLabel(a2);
-		log("a2 added to v2", tree, nodeNames);
+//		log("a2 added to v2", tree, nodeNames);
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1);
 		nodeNames.put(v3, "v3");
-		log("edge to v3 added", tree, nodeNames);
+//		log("edge to v3 added", tree, nodeNames);
 		v3.extendLabel(a2);
-		log("a2 added to v3", tree, nodeNames);
+//		log("a2 added to v3", tree, nodeNames);
 		ELDescriptionNode v4 = new ELDescriptionNode(v1, r2);
 		nodeNames.put(v4, "v4");
-		log("edge to v4 added", tree, nodeNames);
+//		log("edge to v4 added", tree, nodeNames);
 		v4.extendLabel(a1);
-		log("a1 added to v4", tree, nodeNames);
+//		log("a1 added to v4", tree, nodeNames);
+//		log("tree 3", tree, nodeNames);
 		
 		assertEmpty(v1);
 		
@@ -179,19 +180,35 @@ public class SimulationTests {
 	public void test4() {
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE2);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
+		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
+		
 		ObjectProperty r1 = new ObjectProperty(uri("r1"));
 		ObjectProperty r2 = new ObjectProperty(uri("r2"));
 		ObjectProperty r3 = new ObjectProperty(uri("r3"));
 		NamedClass a1 = new NamedClass(uri("a1"));
 		NamedClass a2 = new NamedClass(uri("a2"));
 		NamedClass a3 = new NamedClass(uri("a3"));		
+
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
+		nodeNames.put(v1, "v1");
 		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, a2, a3);
+		nodeNames.put(v2, "v2");
+		log("v2 added", tree, nodeNames);
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1);
+		nodeNames.put(v3, "v3");
+		log("v3 added", tree, nodeNames);
 		ELDescriptionNode v4 = new ELDescriptionNode(v2, r1, a1);
+		nodeNames.put(v4, "v4");
+		log("v4 added", tree, nodeNames);
 		ELDescriptionNode v5 = new ELDescriptionNode(v2, r3, a1, a2);
+		nodeNames.put(v5, "v5");
+		log("v5 added", tree, nodeNames);
 		v2.refineEdge(1, r2);
+		log("edge refined", tree, nodeNames);
 		ELDescriptionNode v6 = new ELDescriptionNode(v3, r3, a3);
+		nodeNames.put(v6, "v6");
+		log("v6 added", tree, nodeNames);
+		log("tree 4", tree, nodeNames);
 		
 		assertEmpty(v1);
 		
