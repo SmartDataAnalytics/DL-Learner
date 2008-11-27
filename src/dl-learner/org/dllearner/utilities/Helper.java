@@ -450,7 +450,9 @@ public class Helper {
 	 * the RDF, RDFS, OWL standards.
 	 * 
 	 * @param concepts The set from which concepts will be removed.
+	 * @deprecated Deprecated method, because it is not needed anymore. 
 	 */
+	@Deprecated
 	public static void removeUninterestingConcepts(Set<NamedClass> concepts) {
 		Iterator<NamedClass> it = concepts.iterator();
 		while (it.hasNext()) {
@@ -484,14 +486,14 @@ public class Helper {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
 		Set<NamedClass> concepts = rs.getNamedClasses();
-		Helper.removeUninterestingConcepts(concepts);
+//		Helper.removeUninterestingConcepts(concepts);
 		return concepts;
 	}
 	
 	// concepts case 2: ignore list
 	public static Set<NamedClass> computeConceptsUsingIgnoreList(ReasonerComponent rs, Set<NamedClass> ignoredConcepts) {
 		Set<NamedClass> concepts = rs.getNamedClasses();
-		Helper.removeUninterestingConcepts(concepts);
+//		Helper.removeUninterestingConcepts(concepts);
 		for (NamedClass ac : ignoredConcepts) {
 			boolean success = concepts.remove(ac);
 			if (!success)

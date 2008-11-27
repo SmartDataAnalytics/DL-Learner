@@ -1,0 +1,1224 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY dct "http://purl.org/dc/terms/" >
+    <!ENTITY req "http://ns.softwiki.de/req/" >
+    <!ENTITY foaf "http://xmlns.com/foaf/0.1/" >
+    <!ENTITY dcmitype "http://purl.org/dc/dcmitype/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY swrlb "http://www.w3.org/2003/11/swrlb#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY foaf2 "http://www.holygoat.co.uk/foaf.rdf#" >
+    <!ENTITY p1 "http://www.w3.org/2004/02/skos/core#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY tags "http://www.holygoat.co.uk/owl/redwood/0.1/tags/" >
+    <!ENTITY protege "http://protege.stanford.edu/plugins/owl/protege#" >
+    <!ENTITY xsp "http://www.owl-ontologies.com/2005/08/07/xsp.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://ns.softwiki.de/req/"
+     xml:base="http://ns.softwiki.de/req/"
+     xmlns:tags="http://www.holygoat.co.uk/owl/redwood/0.1/tags/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:foaf2="http://www.holygoat.co.uk/foaf.rdf#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:p1="http://www.w3.org/2004/02/skos/core#"
+     xmlns:dcmitype="http://purl.org/dc/dcmitype/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:dct="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:req="http://ns.softwiki.de/req/">
+    <owl:Ontology rdf:about="">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >SoftWiki Ontology for Requirements Engineering</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >A requirements engineering ontology for the SoftWiki project.</rdfs:comment>
+        <dc:contributor rdf:datatype="&xsd;string">Jens Lehmann</dc:contributor>
+        <dc:contributor rdf:datatype="&xsd;string"
+            >Sebastian Dietzold</dc:contributor>
+        <owl:versionInfo rdf:datatype="&xsd;string"
+            >version 1.00 - Thomas Riechert, Steffen Lohmann, Kim Lauenroth, Philipp Heim - starting the next generation of SWORE on 8th of July 2008 in Duisburg
+version 0.8 - Sebastian Dietzold - skos, tags and dc alignment (title now functional)
+version 0.7 - Sebastian Dietzold - labels completed and namespace correction
+version 0.6 - name space changed to ns.softwiki.de/req
+version 0.5 - refined by Thomas according to ESWC Poster submission 
+version 0.4 - refined by Jens on the way home from Essen
+version 0.3 - refined by Jens during discussion with Kim and Steffen on 13 March 2007 in Essen
+version 0.2 - refined by Thomas and Jens in the evening of 12 March 2007 in Essen
+version 0.1 - simple initial version by Thomas and Jens before meeting in Essen</owl:versionInfo>
+        <owl:imports rdf:resource="http://www.holygoat.co.uk/owl/redwood/0.1/tags/"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;comment">
+        <rdfs:label rdf:datatype="&xsd;string">comment</rdfs:label>
+    </owl:AnnotationProperty>
+    <owl:AnnotationProperty rdf:about="&owl;versionInfo">
+        <rdfs:label rdf:datatype="&xsd;string">version info</rdfs:label>
+    </owl:AnnotationProperty>
+    <owl:AnnotationProperty rdf:about="&rdfs;label"/>
+    <owl:AnnotationProperty rdf:about="&dc;contributor"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ns.softwiki.de/req/broader -->
+
+    <owl:ObjectProperty rdf:about="broader"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/comments -->
+
+    <owl:ObjectProperty rdf:about="comments">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="AbstractComment"/>
+        <rdfs:range rdf:resource="AbstractRequirement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/conflicts -->
+
+    <owl:ObjectProperty rdf:about="conflicts">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <owl:inverseOf rdf:resource="conflicts"/>
+        <rdfs:subPropertyOf rdf:resource="undirectedrelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/cui -->
+
+    <owl:ObjectProperty rdf:about="cui"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/defines -->
+
+    <owl:ObjectProperty rdf:about="defines">
+        <rdfs:label rdf:datatype="&xsd;string">defines</rdfs:label>
+        <rdfs:domain rdf:resource="Author"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="AbstractComment"/>
+                    <rdf:Description rdf:about="AbstractRequirement"/>
+                    <rdf:Description rdf:about="Keyword"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/depentsOn -->
+
+    <owl:ObjectProperty rdf:about="depentsOn">
+        <rdfs:range rdf:resource="AbstractRequirement"/>
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <owl:inverseOf rdf:resource="entails"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/details -->
+
+    <owl:ObjectProperty rdf:about="details">
+        <rdfs:label rdf:datatype="&xsd;string">details</rdfs:label>
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <rdfs:range rdf:resource="AbstractRequirement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/documentation -->
+
+    <owl:ObjectProperty rdf:about="documentation"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/entails -->
+
+    <owl:ObjectProperty rdf:about="entails">
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <rdfs:range rdf:resource="AbstractRequirement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/invalidates -->
+
+    <owl:ObjectProperty rdf:about="invalidates">
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <rdfs:range rdf:resource="AbstractRequirement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/isCommentedBy -->
+
+    <owl:ObjectProperty rdf:about="isCommentedBy">
+        <rdfs:range rdf:resource="AbstractComment"/>
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <owl:inverseOf rdf:resource="comments"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/isDefinedBy -->
+
+    <owl:ObjectProperty rdf:about="isDefinedBy">
+        <rdfs:label rdf:datatype="&xsd;string">defined by</rdfs:label>
+        <rdfs:range rdf:resource="Author"/>
+        <owl:inverseOf rdf:resource="defines"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="AbstractComment"/>
+                    <rdf:Description rdf:about="AbstractRequirement"/>
+                    <rdf:Description rdf:about="Keyword"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/isDetailedBy -->
+
+    <owl:ObjectProperty rdf:about="isDetailedBy">
+        <rdfs:label rdf:datatype="&xsd;string">detailed by</rdfs:label>
+        <rdfs:range rdf:resource="AbstractRequirement"/>
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <owl:inverseOf rdf:resource="details"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/isInvalidFor -->
+
+    <owl:ObjectProperty rdf:about="isInvalidFor">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:range rdf:resource="AbstractRequirement"/>
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <owl:inverseOf rdf:resource="invalidates"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/isLeadingTo -->
+
+    <owl:ObjectProperty rdf:about="isLeadingTo">
+        <rdfs:label rdf:datatype="&xsd;string">lead to</rdfs:label>
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <rdfs:range rdf:resource="AbstractSource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/isRedundant -->
+
+    <owl:ObjectProperty rdf:about="isRedundant">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <owl:inverseOf rdf:resource="isRedundant"/>
+        <rdfs:subPropertyOf rdf:resource="undirectedrelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/isRelated -->
+
+    <owl:ObjectProperty rdf:about="isRelated">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <owl:inverseOf rdf:resource="isRelated"/>
+        <rdfs:subPropertyOf rdf:resource="undirectedrelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/isSimilarTo -->
+
+    <owl:ObjectProperty rdf:about="isSimilarTo">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <rdfs:range rdf:resource="AbstractRequirement"/>
+        <owl:inverseOf rdf:resource="isSimilarTo"/>
+        <rdfs:subPropertyOf rdf:resource="undirectedrelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/leadsTo -->
+
+    <owl:ObjectProperty rdf:about="leadsTo">
+        <rdfs:label rdf:datatype="&xsd;string">leads to</rdfs:label>
+        <rdfs:range rdf:resource="AbstractRequirement"/>
+        <rdfs:domain rdf:resource="AbstractSource"/>
+        <owl:inverseOf rdf:resource="isLeadingTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/refersTo -->
+
+    <owl:ObjectProperty rdf:about="refersTo">
+        <rdfs:label rdf:datatype="&xsd;string">refers to</rdfs:label>
+        <rdfs:comment xml:lang="de"
+            >Relevanter Aspekt eines geplantes Systems (&#228;hnlich zu Tagging).</rdfs:comment>
+        <rdfs:range rdf:resource="AbstractReferencePoint"/>
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <owl:inverseOf rdf:resource="relevantRequirements"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/relevantRequirements -->
+
+    <owl:ObjectProperty rdf:about="relevantRequirements">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >relevant requirements</rdfs:label>
+        <rdfs:domain rdf:resource="AbstractReferencePoint"/>
+        <rdfs:range rdf:resource="AbstractRequirement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/undirectedrelation -->
+
+    <owl:ObjectProperty rdf:about="undirectedrelation">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Rule: only one ration between the same pair of two requirements allowed.</rdfs:comment>
+        <owl:inverseOf rdf:resource="undirectedrelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/title -->
+
+    <owl:ObjectProperty rdf:about="&dc;title">
+        <rdf:type rdf:resource="&owl;Class"/>
+        <owl:objectPropertyDomain rdf:resource="&dc;title"/>
+        <owl:objectPropertyRange rdf:resource="&xsd;string"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.holygoat.co.uk/owl/redwood/0.1/tags/taggedWithTag -->
+
+    <owl:ObjectProperty rdf:about="&tags;taggedWithTag">
+        <rdfs:label xml:lang="de">Tags</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
+
+    <owl:ObjectProperty rdf:about="&rdfs;label">
+        <rdf:type rdf:resource="&owl;AnnotationProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">label</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ns.softwiki.de/req/averagePriorityRate -->
+
+    <owl:DatatypeProperty rdf:about="averagePriorityRate">
+        <rdfs:subPropertyOf rdf:resource="averageRate"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/averageQualityRate -->
+
+    <owl:DatatypeProperty rdf:about="averageQualityRate">
+        <rdfs:subPropertyOf rdf:resource="averageRate"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/averageRate -->
+
+    <owl:DatatypeProperty rdf:about="averageRate">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Is calculated by given rates.</rdfs:comment>
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <rdfs:range rdf:resource="&xsd;float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/changeDate -->
+
+    <owl:DatatypeProperty rdf:about="changeDate">
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/creationDate -->
+
+    <owl:DatatypeProperty rdf:about="creationDate">
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/definition -->
+
+    <owl:DatatypeProperty rdf:about="definition">
+        <rdfs:domain rdf:resource="DefinedKeyword"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/rate -->
+
+    <owl:DatatypeProperty rdf:about="rate">
+        <rdfs:domain rdf:resource="Rating"/>
+        <rdfs:range rdf:resource="&xsd;float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/rational -->
+
+    <owl:DatatypeProperty rdf:about="rational">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">rational</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/result -->
+
+    <owl:DatatypeProperty rdf:about="result">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">result</rdfs:label>
+        <rdfs:comment xml:lang="de"
+            >z.B. Ver&#228;nderung von priority und agreement</rdfs:comment>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/role -->
+
+    <owl:DatatypeProperty rdf:about="role">
+        <rdfs:domain rdf:resource="Author"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/scenarioStep -->
+
+    <owl:DatatypeProperty rdf:about="scenarioStep">
+        <rdfs:label rdf:datatype="&xsd;string">scenario step</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <owl:versionInfo rdf:datatype="&xsd;string"
+            >TODO: es muss eine konkrete Reihenfolge der Steps gegeben sein (Listenstruktur)</owl:versionInfo>
+        <rdfs:domain rdf:resource="TextualScenario"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/state -->
+
+    <owl:DatatypeProperty rdf:about="state">
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string"
+                            >isNegativDecided</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">isPositvDecided</rdf:first>
+                                <rdf:rest rdf:resource="&rdf;nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ns.softwiki.de/req/voteTime -->
+
+    <owl:DatatypeProperty rdf:about="voteTime">
+        <rdfs:label rdf:datatype="&xsd;string">vote time</rdfs:label>
+        <rdfs:domain rdf:resource="Vote"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/description -->
+
+    <owl:DatatypeProperty rdf:about="&dc;description">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">description</rdfs:label>
+        <rdfs:label xml:lang="de">Beschreibung</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="Goal"/>
+                    <rdf:Description rdf:about="Requirement"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/title -->
+
+    <owl:DatatypeProperty rdf:about="&dc;title"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ns.softwiki.de/req/AbstractComment -->
+
+    <owl:Class rdf:about="AbstractComment"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/AbstractReferencePoint -->
+
+    <owl:Class rdf:about="AbstractReferencePoint">
+        <rdfs:label rdf:datatype="&xsd;string">reference point</rdfs:label>
+        <owl:disjointWith rdf:resource="AbstractRequirement"/>
+        <owl:disjointWith rdf:resource="AbstractSource"/>
+        <owl:disjointWith rdf:resource="Author"/>
+        <owl:disjointWith rdf:resource="Vote"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/AbstractRequirement -->
+
+    <owl:Class rdf:about="AbstractRequirement">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >abstract requirement</rdfs:label>
+        <rdfs:label xml:lang="de"
+            >abstraktes Requirement</rdfs:label>
+        <owl:disjointWith rdf:resource="AbstractSource"/>
+        <owl:disjointWith rdf:resource="Author"/>
+        <owl:disjointWith rdf:resource="Vote"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Es ist ung&#252;nstig, dass Requirement Subklasse von AbstractRequirement ist.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/AbstractSource -->
+
+    <owl:Class rdf:about="AbstractSource">
+        <rdfs:label rdf:datatype="&xsd;string">abstract source</rdfs:label>
+        <owl:disjointWith rdf:resource="Vote"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/ApplicationPointer -->
+
+    <owl:Class rdf:about="ApplicationPointer">
+        <rdfs:subClassOf rdf:resource="AbstractReferencePoint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/ApplicationState -->
+
+    <owl:Class rdf:about="ApplicationState">
+        <rdfs:subClassOf rdf:resource="AbstractReferencePoint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Author -->
+
+    <owl:Class rdf:about="Author">
+        <rdfs:label xml:lang="de">Autor</rdfs:label>
+        <rdfs:label xml:lang="en">author</rdfs:label>
+        <rdfs:subClassOf rdf:resource="Stakeholder"/>
+        <owl:disjointWith rdf:resource="Vote"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Comment -->
+
+    <owl:Class rdf:about="Comment">
+        <rdfs:subClassOf rdf:resource="AbstractComment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/DefinedKeyword -->
+
+    <owl:Class rdf:about="DefinedKeyword">
+        <rdfs:subClassOf rdf:resource="Keyword"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Document -->
+
+    <owl:Class rdf:about="Document">
+        <rdfs:subClassOf rdf:resource="AbstractSource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/FunctionalRequirement -->
+
+    <owl:Class rdf:about="FunctionalRequirement">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >functional requirement</rdfs:label>
+        <rdfs:subClassOf rdf:resource="Requirement"/>
+        <owl:disjointWith rdf:resource="QualityRequirement"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >refers to functional reference point, for instance components of the system</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Goal -->
+
+    <owl:Class rdf:about="Goal">
+        <rdfs:label rdf:datatype="&xsd;string">goal</rdfs:label>
+        <rdfs:label xml:lang="de">Ziel</rdfs:label>
+        <rdfs:subClassOf rdf:resource="AbstractRequirement"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&dc;description"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="Requirement"/>
+        <owl:disjointWith rdf:resource="Scenario"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Keyword -->
+
+    <owl:Class rdf:about="Keyword">
+        <rdfs:subClassOf rdf:resource="AbstractReferencePoint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/PriorityRating -->
+
+    <owl:Class rdf:about="PriorityRating">
+        <rdfs:subClassOf rdf:resource="Rating"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Rule: Every Author only defines at most one rating about the priority for each requirement.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/QualityRating -->
+
+    <owl:Class rdf:about="QualityRating">
+        <rdfs:subClassOf rdf:resource="Rating"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Rule: Every Author only defines at most one rating about the quality for each requirement.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/QualityRequirement -->
+
+    <owl:Class rdf:about="QualityRequirement">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >QualityRequirement</rdfs:label>
+        <rdfs:subClassOf rdf:resource="Requirement"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >refers to quality reference point, e.g. reliability, performance, usability</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Rating -->
+
+    <owl:Class rdf:about="Rating">
+        <rdfs:subClassOf rdf:resource="AbstractComment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Requirement -->
+
+    <owl:Class rdf:about="Requirement">
+        <rdfs:label rdf:datatype="&xsd;string">requirement</rdfs:label>
+        <rdfs:label xml:lang="de">Anforderung(en)</rdfs:label>
+        <rdfs:subClassOf rdf:resource="AbstractRequirement"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&dc;description"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&dc;title"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="Scenario"/>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <owl:versionInfo rdf:datatype="&xsd;string"
+            >TODO: semantische Verfeinerung geplant, d.h. Anforderungen nicht nur als Textstring, sondern z.B. als RDF-Triple formulieren</owl:versionInfo>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Scenario -->
+
+    <owl:Class rdf:about="Scenario">
+        <rdfs:label rdf:datatype="&xsd;string">scenario</rdfs:label>
+        <rdfs:subClassOf rdf:resource="AbstractRequirement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Stakeholder -->
+
+    <owl:Class rdf:about="Stakeholder">
+        <rdfs:subClassOf rdf:resource="AbstractSource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/TextualScenario -->
+
+    <owl:Class rdf:about="TextualScenario">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >textual scenario</rdfs:label>
+        <rdfs:subClassOf rdf:resource="Scenario"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="scenarioStep"/>
+                <owl:minCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="de"
+            >Szenario, welches aus mehreren textuell beschriebenen Szenarioschritten besteht.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Topic -->
+
+    <owl:Class rdf:about="Topic">
+        <rdfs:subClassOf rdf:resource="DefinedKeyword"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Rule: Every Requirement refers to exact one topic.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Vote -->
+
+    <owl:Class rdf:about="Vote">
+        <rdfs:label rdf:datatype="&xsd;string">vote</rdfs:label>
+        <rdfs:subClassOf rdf:resource="AbstractComment"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Rule: Every Author only votes at most one requirement.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/dc/dcmitype/Image -->
+
+    <owl:Class rdf:about="&dcmitype;Image"/>
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/title -->
+
+    <owl:Class rdf:about="&dc;title">
+        <rdfs:label rdf:datatype="&xsd;string">title</rdfs:label>
+        <rdfs:label xml:lang="de">Titel</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#Resource -->
+
+    <owl:Class rdf:about="&rdfs;Resource"/>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#string -->
+
+    <owl:Class rdf:about="&xsd;string">
+        <rdfs:label rdf:datatype="&xsd;string">string</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#Concept -->
+
+    <owl:Class rdf:about="&p1;Concept">
+        <rdfs:label xml:lang="de">Thema</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/Document -->
+
+    <owl:Class rdf:about="&foaf;Document"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ns.softwiki.de/req/1 -->
+
+    <Rating rdf:about="1">
+        <rdf:type rdf:resource="PriorityRating"/>
+        <rdf:type rdf:resource="QualityRating"/>
+    </Rating>
+    
+
+
+    <!-- http://ns.softwiki.de/req/2 -->
+
+    <Rating rdf:about="2">
+        <rdf:type rdf:resource="PriorityRating"/>
+        <rdf:type rdf:resource="QualityRating"/>
+    </Rating>
+    
+
+
+    <!-- http://ns.softwiki.de/req/3 -->
+
+    <PriorityRating rdf:about="3">
+        <rdf:type rdf:resource="QualityRating"/>
+        <rdf:type rdf:resource="Rating"/>
+    </PriorityRating>
+    
+
+
+    <!-- http://ns.softwiki.de/req/4 -->
+
+    <Rating rdf:about="4">
+        <rdf:type rdf:resource="PriorityRating"/>
+        <rdf:type rdf:resource="QualityRating"/>
+    </Rating>
+    
+
+
+    <!-- http://ns.softwiki.de/req/5 -->
+
+    <Rating rdf:about="5">
+        <rdf:type rdf:resource="PriorityRating"/>
+        <rdf:type rdf:resource="QualityRating"/>
+    </Rating>
+    
+
+
+    <!-- http://ns.softwiki.de/req/6 -->
+
+    <Rating rdf:about="6">
+        <rdf:type rdf:resource="PriorityRating"/>
+        <rdf:type rdf:resource="QualityRating"/>
+    </Rating>
+    
+
+
+    <!-- http://ns.softwiki.de/req/7 -->
+
+    <PriorityRating rdf:about="7">
+        <rdf:type rdf:resource="QualityRating"/>
+        <rdf:type rdf:resource="Rating"/>
+    </PriorityRating>
+    
+
+
+    <!-- http://ns.softwiki.de/req/8 -->
+
+    <QualityRating rdf:about="8">
+        <rdf:type rdf:resource="PriorityRating"/>
+        <rdf:type rdf:resource="Rating"/>
+    </QualityRating>
+    
+
+
+    <!-- http://ns.softwiki.de/req/9 -->
+
+    <Rating rdf:about="9">
+        <rdf:type rdf:resource="PriorityRating"/>
+        <rdf:type rdf:resource="QualityRating"/>
+    </Rating>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Allocated_Requirements -->
+
+    <Requirement rdf:about="Allocated_Requirements"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Andrew_Stellman -->
+
+    <Author rdf:about="Andrew_Stellman"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Complete -->
+
+    <QualityRequirement rdf:about="Complete"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Consistent -->
+
+    <QualityRequirement rdf:about="Consistent"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Correct -->
+
+    <QualityRequirement rdf:about="Correct"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Creditors -->
+
+    <Stakeholder rdf:about="Creditors"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Customer_Requirements_ -->
+
+    <Requirement rdf:about="Customer_Requirements_"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Customers -->
+
+    <Stakeholder rdf:about="Customers"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Derived_Requirements -->
+
+    <Requirement rdf:about="Derived_Requirements"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Design_Requirements -->
+
+    <Requirement rdf:about="Design_Requirements"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Feasible -->
+
+    <QualityRequirement rdf:about="Feasible"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Functional_Requirements -->
+
+    <Requirement rdf:about="Functional_Requirements"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Government -->
+
+    <Stakeholder rdf:about="Government"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Jennifer_Greene -->
+
+    <Author rdf:about="Jennifer_Greene"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Lastenheft -->
+
+    <Document rdf:about="Lastenheft"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Modifiable -->
+
+    <QualityRequirement rdf:about="Modifiable"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Necessary -->
+
+    <QualityRequirement rdf:about="Necessary"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Performance_Requirements -->
+
+    <Requirement rdf:about="Performance_Requirements"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Pflichtenheft -->
+
+    <Document rdf:about="Pflichtenheft"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Prioritized -->
+
+    <QualityRequirement rdf:about="Prioritized"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Senior_Management_staff -->
+
+    <Stakeholder rdf:about="Senior_Management_staff"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Steve_McConnell -->
+
+    <Author rdf:about="Steve_McConnell"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/TextualScenario -->
+
+    <Scenario rdf:about="TextualScenario"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Traceable -->
+
+    <QualityRequirement rdf:about="Traceable"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Trade_Unions -->
+
+    <Stakeholder rdf:about="Trade_Unions"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/UML -->
+
+    <Document rdf:about="UML"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Unambiguous -->
+
+    <QualityRequirement rdf:about="Unambiguous"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Verifiable -->
+
+    <QualityRequirement rdf:about="Verifiable"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/calculations -->
+
+    <FunctionalRequirement rdf:about="calculations"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/comment -->
+
+    <Comment rdf:about="comment"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/complete -->
+
+    <ApplicationState rdf:about="complete"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/data_manipulation -->
+
+    <FunctionalRequirement rdf:about="data_manipulation"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/important -->
+
+    <Vote rdf:about="important"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/incomplete -->
+
+    <ApplicationState rdf:about="incomplete"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/less_importent -->
+
+    <Vote rdf:about="less_importent"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/technical_details -->
+
+    <FunctionalRequirement rdf:about="technical_details"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/text -->
+
+    <TextualScenario rdf:about="text"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/topic -->
+
+    <Topic rdf:about="topic"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/unimportant -->
+
+    <Vote rdf:about="unimportant"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/use_cases -->
+
+    <Document rdf:about="use_cases"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/very_important -->
+
+    <Vote rdf:about="very_important"/>
+    
+
+
+    <!-- http://www.holygoat.co.uk/foaf.rdf#RichardNewman -->
+
+    <Author rdf:about="&foaf2;RichardNewman"/>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#boolean -->
+
+    <rdf:Description rdf:about="&xsd;boolean">
+        <rdfs:label rdf:datatype="&xsd;string">boolean</rdfs:label>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#dateTime -->
+
+    <rdf:Description rdf:about="&xsd;dateTime">
+        <rdfs:label rdf:datatype="&xsd;string">dateTime</rdfs:label>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#primarySubject -->
+
+    <Topic rdf:about="&p1;primarySubject">
+        <rdfs:label xml:lang="de">Thema</rdfs:label>
+    </Topic>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.914) http://owlapi.sourceforge.net -->
+

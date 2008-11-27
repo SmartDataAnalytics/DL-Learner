@@ -229,7 +229,7 @@ public class ClassHierarchy {
 				// they are empty)
 				TreeSet<Description> superClasses = new TreeSet<Description>(entry.getValue());
 				// storage for new super classes
-				TreeSet<Description> newSuperClasses = new TreeSet<Description>(entry.getValue());
+				TreeSet<Description> newSuperClasses = new TreeSet<Description>();
 				
 				while(!superClasses.isEmpty()) {
 					// pick and remove the first element
@@ -239,7 +239,8 @@ public class ClassHierarchy {
 						newSuperClasses.add(d);
 					// case 2: it is not allowed, so we try its super classes
 					} else {
-						superClasses.addAll(subsumptionHierarchyUp.get(d));
+						Set<Description> tmp = subsumptionHierarchyUp.get(d);
+						superClasses.addAll(tmp);
 					}
 				}
 				

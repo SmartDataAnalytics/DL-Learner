@@ -869,7 +869,7 @@ public abstract class ReasonerComponent extends Component implements Reasoner {
 		tmp = getSuperClassesImpl(Nothing.instance);
 		subsumptionHierarchyUp.put(Nothing.instance, tmp);
 		subsumptionHierarchyDown.put(Nothing.instance, new TreeSet<Description>());
-
+		
 		// ... and named classes
 		Set<NamedClass> atomicConcepts = getNamedClasses();
 		for (NamedClass atom : atomicConcepts) {
