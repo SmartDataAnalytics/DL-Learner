@@ -24,7 +24,6 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -36,7 +35,6 @@ import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -58,7 +56,6 @@ import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyManager;
@@ -85,7 +82,6 @@ public class DLLearnerModel implements Runnable {
 			"org.dllearner.algorithms.refexamples.ExampleBasedROLComponent",
 			"org.dllearner.algorithms.gp.GP" };
 
-
 	// Component Manager that manages the components of the DL-Learner
 
 	private ComponentManager cm;
@@ -96,7 +92,7 @@ public class DLLearnerModel implements Runnable {
 
 	// The Knowledge source for the reasoner
 
-	private KnowledgeSource source;
+	private OWLAPIOntology source;
 
 	// The View of the DL-Learner Plugin
 
@@ -187,9 +183,10 @@ public class DLLearnerModel implements Runnable {
 	// This is necessary to get the details of the suggested concept
 
 	private JXTaskPane detailPane;
-	private Map<String, String> prefixes;
 	private DefaultListModel posListModel;
 	private DefaultListModel negListModel;
+	private boolean hasIndividuals;
+	private NamedClass currentConcept;
 	private Vector<IndividualObject> individualVector;
 
 	// This is a List of evaluated descriptions to get more information of the
@@ -236,7 +233,6 @@ public class DLLearnerModel implements Runnable {
 		alreadyLearned = false;
 		setKnowledgeSource();
 		setReasoner();
-		prefixes = reasoner.getPrefixes();
 
 	}
 
@@ -249,11 +245,14 @@ public class DLLearnerModel implements Runnable {
 		negativeExamples = new TreeSet<String>();
 		for (int i = 0; i < individualVector.size(); i++) {
 			if (individualVector.get(i).isPositiveExample()) {
-				positiveExamples.add(individualVector.get(i).getIndividualString());
+				positiveExamples.add(individualVector.get(i)
+						.getIndividualString());
 			} else {
-				negativeExamples.add(individualVector.get(i).getIndividualString());
+				negativeExamples.add(individualVector.get(i)
+						.getIndividualString());
 			}
 		}
+		System.out.println("TEST: " + positiveExamples);
 	}
 
 	/**
@@ -291,6 +290,8 @@ public class DLLearnerModel implements Runnable {
 	public void setKnowledgeSource() {
 		this.source = new OWLAPIOntology(editor.getModelManager()
 				.getActiveOntology());
+		source.setOWLOntologies(editor.getModelManager().getActiveOntologies());
+
 	}
 
 	/**
@@ -306,7 +307,7 @@ public class DLLearnerModel implements Runnable {
 			System.out.println("fehler!!!!!!!!!");
 			e.printStackTrace();
 		}
-//		rs = cm.reasoningService(reasoner);
+		// rs = cm.reasoningService(reasoner);
 	}
 
 	/**
@@ -348,7 +349,9 @@ public class DLLearnerModel implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view.getPosAndNegSelectPanel().getOptionPanel().getMaxExecutionTime());
+		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
+				.getPosAndNegSelectPanel().getOptionPanel()
+				.getMaxExecutionTime());
 		try {
 			// initializes the learning algorithm
 			la.init();
@@ -366,17 +369,8 @@ public class DLLearnerModel implements Runnable {
 		String message = "To view details about why a class description was suggested, please doubleclick on it.";
 		// start the algorithm and print the best concept found
 		la.start();
-		//description = new Description[la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts())
-		//		.size()];
-		//addToListModel();
-		// renders the errormessage
 		view.renderErrorMessage(error);
 		view.setHintMessage(message);
-		// reenables the run button
-		//view.getRunButton().setEnabled(true);
-		// disables the cancel button
-		//view.getPosAndNegSelectPanel().setCheckBoxesEnable(true);
-		//view.getSuggestClassPanel().setSuggestList(suggestModel);
 	}
 
 	/**
@@ -404,37 +398,40 @@ public class DLLearnerModel implements Runnable {
 	 */
 	public void setPosVector() {
 		setPositiveConcept();
-		Set<OWLIndividual> individual = editor.getModelManager().getActiveOntology().getReferencedIndividuals();
-		Iterator<OWLIndividual> it = individual.iterator();
-		while (it.hasNext()) {
-			OWLIndividual individum = it.next();
-			String individuals = individum.toString();
-			if (setPositivExamplesChecked(individuals)) {
-				// when yes then it sets the positive example checked
-				posListModel.add(0, individuals);
-
-			} else {
-				// When no it unchecks the positive example
-				negListModel.add(0, individuals);
-			}
-		}
 		SortedSet<Individual> reasonerIndi = reasoner.getIndividuals();
 		Iterator<Individual> reasonerIt = reasonerIndi.iterator();
-		while(reasonerIt.hasNext()) {
+		while (reasonerIt.hasNext()) {
 			Individual ind = reasonerIt.next();
-			
-			String indiv = ind.toString();
-			// checks if individual belongs to the selected concept
-			if (setPositivExamplesChecked(indiv)) {
-				// when yes then it sets the positive example checked
-				individualVector.add(new IndividualObject(indiv, true));
+			Iterator<OWLOntology> onto = editor.getModelManager()
+					.getActiveOntologies().iterator();
+			while (onto.hasNext()) {
+				OWLOntology ont = onto.next();
+				String indiv = ind.toString();
+				// checks if individual belongs to the selected concept
+				if (setPositivExamplesChecked(indiv)) {
+					if (indiv.contains(ont.getURI().toString())) {
+						// when yes then it sets the positive example checked
+						
+						//OWLExpressionCheckerFactory
+						posListModel.add(0, ind.toManchesterSyntaxString(ont
+								.getURI().toString(), null));
+						individualVector.add(new IndividualObject(indiv, true));
+						break;
+					}
 
-			} else {
-				// When no it unchecks the positive example
-				individualVector.add(new IndividualObject(indiv, false));
+				} else {
+					// When no it unchecks the positive example
+					if (indiv.contains(ont.getURI().toString())) {
+						individualVector
+								.add(new IndividualObject(indiv, false));
+						negListModel.add(0, ind.toManchesterSyntaxString(ont
+								.getURI().toString(), null));
+						break;
+					}
+				}
 			}
 		}
-		
+
 	}
 
 	/**
@@ -443,39 +440,45 @@ public class DLLearnerModel implements Runnable {
 	public void unsetNewConcepts() {
 		while (owlDescription.iterator().hasNext()) {
 			owlDescription.remove(owlDescription.iterator().next());
-			
+
 		}
 	}
-	
+
 	/**
 	 * This method returns the Vector of IndividualObjects.
+	 * 
 	 * @return individualVector Vector
 	 */
 	public Vector<IndividualObject> getIndividualVector() {
 		return individualVector;
 	}
+
 	/**
 	 * This method sets the individuals that belong to the concept which is
 	 * chosen in protege.
 	 */
 	public void setPositiveConcept() {
 		SortedSet<Individual> individuals = null;
-		//System.out.println("TEST: " +  rs.getNamedClasses());
+		hasIndividuals = false;
 		// checks if selected concept is thing when yes then it selects all
 		// individuals
 		if (!current.getRootObject().toString().equals("Thing")) {
-			
-			for (Iterator<NamedClass> i = reasoner.getAtomicConceptsList().iterator(); i
-					.hasNext();) {
+
+			for (Iterator<NamedClass> i = reasoner.getAtomicConceptsList()
+					.iterator(); i.hasNext();) {
 				// if individuals is null
 				if (individuals == null) {
 					NamedClass concept = i.next();
 					// checks if the concept is the selected concept in protege
 					if (concept.toString().endsWith(
-							"#" + current.getRootObject().toString())) {
+							 current.getRootObject().toString())) {
 						// if individuals is not null it gets all individuals of
 						// the concept
+						currentConcept = concept;
 						if (reasoner.getIndividuals(concept) != null) {
+							if (reasoner.getIndividuals(concept).size() > 0) {
+								hasIndividuals = true;
+							}
 							individual = reasoner.getIndividuals(concept);
 							break;
 						}
@@ -483,44 +486,24 @@ public class DLLearnerModel implements Runnable {
 				}
 			}
 		} else {
+			if (reasoner.getIndividuals().size() > 0) {
+				hasIndividuals = true;
+			}
 			individual = reasoner.getIndividuals();
 		}
 	}
-	
+
 	/**
 	 * This Method checks if the selected class has any individuals.
-	 * @param owlConcept OWLClass
+	 * 
+	 * @param owlConcept
+	 *            OWLClass
 	 * @return boolean hasIndividuals
 	 */
-	public boolean hasIndividuals(OWLClass owlConcept) {
-		boolean hasIndividuals = false;
-		NamedClass concept = null;
-		NamedClass selectedConcept = null;
-		Iterator<NamedClass> it = reasoner.getNamedClasses().iterator();
-		while(it.hasNext()) {
-			concept = it.next();
-			Iterator<OWLOntology> onto = editor.getModelManager().getActiveOntologies().iterator();
-			while (onto.hasNext()) {
-				String uri = onto.next().getURI().toString();
-				if (concept.toString().contains(uri)) {
-					if (concept.toManchesterSyntaxString(uri+"#", prefixes).equals(owlConcept.toString())) {
-						selectedConcept = concept;
-						break;
-					}
-				}
-					
-			}
-			
-		}
-		if(selectedConcept != null) {
-			if (reasoner.getIndividuals(selectedConcept).size() > 0) {
-				hasIndividuals = true;
-			}
-		}
-		concept = null;
-		selectedConcept = null;
+	public boolean hasIndividuals() {
 		return hasIndividuals;
 	}
+
 	/**
 	 * This method gets an Individual and checks if this individual belongs to
 	 * the concept chosen in protege.
@@ -564,22 +547,25 @@ public class DLLearnerModel implements Runnable {
 	public void setDescriptionList(Description[] list) {
 		description = list;
 	}
-	
+
 	/**
 	 * This method returns the PosListModel.
+	 * 
 	 * @return DefaultListModel posListModel
 	 */
 	public DefaultListModel getPosListModel() {
 		return posListModel;
 	}
-	
+
 	/**
 	 * This method returns the NegListModel.
+	 * 
 	 * @return DefaultListModel negListModel
 	 */
 	public DefaultListModel getNegListModel() {
 		return negListModel;
 	}
+
 	/**
 	 * This method returns the current learning algorithm that is used to learn
 	 * new concepts.
@@ -686,33 +672,24 @@ public class DLLearnerModel implements Runnable {
 		return suggestModel;
 	}
 
-	/**
+	/*
 	 * This method gets the old concept from checking the positive examples.
+	 * 
+	 * private void setOldConceptOWLAPI() { // gets all individuals
+	 * SortedSet<Individual> indi = reasoner.getIndividuals(); // Iterator of
+	 * Individuals for (Iterator<Individual> i = indi.iterator(); i.hasNext();)
+	 * { Individual indi2 = i.next(); // checks if the current individual
+	 * belongs to positive examples if (positiveExamples != null) { if
+	 * (positiveExamples.toString().contains(indi2.toString())) { // if yes then
+	 * get the concepts of this individuals Set<NamedClass> concept =
+	 * reasoner.getTypes(indi2); // adds all concepts to old concept OWLAPI for
+	 * (Iterator<NamedClass> k = concept.iterator(); k .hasNext();) {
+	 * OWLDescription oldOWLAPI = OWLAPIDescriptionConvertVisitor
+	 * .getOWLDescription(k.next()); oldConceptOWLAPI = oldOWLAPI;
+	 * ds.add(oldOWLAPI); }
+	 * 
+	 * } } } }
 	 */
-	private void setOldConceptOWLAPI() {
-		// gets all individuals
-		SortedSet<Individual> indi = reasoner.getIndividuals();
-		// Iterator of Individuals
-		for (Iterator<Individual> i = indi.iterator(); i.hasNext();) {
-			Individual indi2 = i.next();
-			// checks if the current individual belongs to positive examples
-			if (positiveExamples != null) {
-				if (positiveExamples.toString().contains(indi2.toString())) {
-					// if yes then get the concepts of this individuals
-					Set<NamedClass> concept = reasoner.getTypes(indi2);
-					// adds all concepts to old concept OWLAPI
-					for (Iterator<NamedClass> k = concept.iterator(); k
-							.hasNext();) {
-						OWLDescription oldOWLAPI = OWLAPIDescriptionConvertVisitor
-								.getOWLDescription(k.next());
-						oldConceptOWLAPI = oldOWLAPI;
-						ds.add(oldOWLAPI);
-					}
-
-				}
-			}
-		}
-	}
 
 	/**
 	 * This method stores the new concept learned by the DL-Learner in the
@@ -724,7 +701,10 @@ public class DLLearnerModel implements Runnable {
 	public void changeDLLearnerDescriptionsToOWLDescriptions(
 			Description descript) {
 		setNewConceptOWLAPI(descript);
-		setOldConceptOWLAPI();
+		// setOldConceptOWLAPI();
+		oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor
+				.getOWLDescription(currentConcept);
+		ds.add(oldConceptOWLAPI);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
 		OWLDataFactory factory = manager.getOWLDataFactory();
@@ -763,11 +743,13 @@ public class DLLearnerModel implements Runnable {
 	public boolean getAlreadyLearned() {
 		return alreadyLearned;
 	}
-	
+
 	/**
-	 * This Method checks if after inserting of this concept the ontology is still
-	 * consistent.
-	 * @param eDescription EvauatedDescription
+	 * This Method checks if after inserting of this concept the ontology is
+	 * still consistent.
+	 * 
+	 * @param eDescription
+	 *            EvauatedDescription
 	 * @return isConsistent boolean
 	 */
 	public boolean isConsistent(EvaluatedDescription eDescription) {
@@ -788,15 +770,17 @@ public class DLLearnerModel implements Runnable {
 	public URI getURI() {
 		return editor.getModelManager().getActiveOntology().getURI();
 	}
-	
+
 	/**
 	 * This method sets the suggestion list.
-	 * @param list List(EvaluatedDescription)
+	 * 
+	 * @param list
+	 *            List(EvaluatedDescription)
 	 */
 	public void setSuggestList(List<EvaluatedDescription> list) {
 		evalDescriptions = list;
 	}
-	
+
 	public OWLEditorKit getOWLEditorKit() {
 		return editor;
 	}

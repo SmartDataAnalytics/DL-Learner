@@ -384,7 +384,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			adv = new JLabel("Advanced Settings");
 			advanced = new JToggleButton(icon);
 			advanced.setVisible(true);
-			
 			run = new JButton("Suggest " + label);
 			accept = new JButton("ADD");
 			addButtonPanel = new JPanel(new BorderLayout());
@@ -439,7 +438,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			model.initReasoner();
 			model.setPosVector();
 			hint.setVisible(true);
-			if (model.hasIndividuals(frame.getRootObject())) {
+			if (model.hasIndividuals()) {
 				run.setEnabled(true);
 			} else {
 				run.setEnabled(false);
@@ -604,7 +603,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			posPanel.removeListeners(action);
 			posPanel.removeHelpButtonListener(action);
 		}
-
+		
 		/**
 		 * Adds Actionlistener to the run button.
 		 * @param a ActionListener
