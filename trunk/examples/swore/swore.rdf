@@ -590,6 +590,14 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/AllocatedRequirement -->
+
+    <owl:Class rdf:about="AllocatedRequirement">
+        <rdfs:subClassOf rdf:resource="Requirement"/>
+    </owl:Class>
+    
+
+
     <!-- http://ns.softwiki.de/req/ApplicationPointer -->
 
     <owl:Class rdf:about="ApplicationPointer">
@@ -625,10 +633,50 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/Creditor -->
+
+    <owl:Class rdf:about="Creditor">
+        <rdfs:subClassOf rdf:resource="Stakeholder"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Customer -->
+
+    <owl:Class rdf:about="Customer">
+        <rdfs:subClassOf rdf:resource="Stakeholder"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/CustomerRequirement -->
+
+    <owl:Class rdf:about="CustomerRequirement">
+        <rdfs:subClassOf rdf:resource="Requirement"/>
+    </owl:Class>
+    
+
+
     <!-- http://ns.softwiki.de/req/DefinedKeyword -->
 
     <owl:Class rdf:about="DefinedKeyword">
         <rdfs:subClassOf rdf:resource="Keyword"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/DerivedRequirement -->
+
+    <owl:Class rdf:about="DerivedRequirement">
+        <rdfs:subClassOf rdf:resource="Requirement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/DesignRequirement -->
+
+    <owl:Class rdf:about="DesignRequirement">
+        <rdfs:subClassOf rdf:resource="Requirement"/>
     </owl:Class>
     
 
@@ -672,10 +720,26 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/Government -->
+
+    <owl:Class rdf:about="Government">
+        <rdfs:subClassOf rdf:resource="Stakeholder"/>
+    </owl:Class>
+    
+
+
     <!-- http://ns.softwiki.de/req/Keyword -->
 
     <owl:Class rdf:about="Keyword">
         <rdfs:subClassOf rdf:resource="AbstractReferencePoint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/PerformanceRequirement -->
+
+    <owl:Class rdf:about="PerformanceRequirement">
+        <rdfs:subClassOf rdf:resource="Requirement"/>
     </owl:Class>
     
 
@@ -728,13 +792,13 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
         <rdfs:subClassOf rdf:resource="AbstractRequirement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&dc;description"/>
+                <owl:onProperty rdf:resource="&dc;title"/>
                 <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&dc;title"/>
+                <owl:onProperty rdf:resource="&dc;description"/>
                 <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -751,6 +815,14 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <owl:Class rdf:about="Scenario">
         <rdfs:label rdf:datatype="&xsd;string">scenario</rdfs:label>
         <rdfs:subClassOf rdf:resource="AbstractRequirement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/SeniorManagementStaff -->
+
+    <owl:Class rdf:about="SeniorManagementStaff">
+        <rdfs:subClassOf rdf:resource="Stakeholder"/>
     </owl:Class>
     
 
@@ -787,6 +859,14 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
         <rdfs:subClassOf rdf:resource="DefinedKeyword"/>
         <rdfs:comment rdf:datatype="&xsd;string"
             >Rule: Every Requirement refers to exact one topic.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/TradeUnion -->
+
+    <owl:Class rdf:about="TradeUnion">
+        <rdfs:subClassOf rdf:resource="Stakeholder"/>
     </owl:Class>
     
 
@@ -943,15 +1023,21 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Allocated_Requirements -->
+    <!-- http://ns.softwiki.de/req/ActiveHelpDialog -->
 
-    <Requirement rdf:about="Allocated_Requirements"/>
+    <DesignRequirement rdf:about="ActiveHelpDialog"/>
     
 
 
     <!-- http://ns.softwiki.de/req/Andrew_Stellman -->
 
     <Author rdf:about="Andrew_Stellman"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/CentralOrganisationOfFinnishTrade -->
+
+    <TradeUnion rdf:about="CentralOrganisationOfFinnishTrade"/>
     
 
 
@@ -973,33 +1059,15 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Creditors -->
+    <!-- http://ns.softwiki.de/req/DialogSystemShoudRespondInUnder5Sec -->
 
-    <Stakeholder rdf:about="Creditors"/>
+    <PerformanceRequirement rdf:about="DialogSystemShoudRespondInUnder5Sec"/>
     
 
 
-    <!-- http://ns.softwiki.de/req/Customer_Requirements_ -->
+    <!-- http://ns.softwiki.de/req/EuropeanTradeUnionConfederation -->
 
-    <Requirement rdf:about="Customer_Requirements_"/>
-    
-
-
-    <!-- http://ns.softwiki.de/req/Customers -->
-
-    <Stakeholder rdf:about="Customers"/>
-    
-
-
-    <!-- http://ns.softwiki.de/req/Derived_Requirements -->
-
-    <Requirement rdf:about="Derived_Requirements"/>
-    
-
-
-    <!-- http://ns.softwiki.de/req/Design_Requirements -->
-
-    <Requirement rdf:about="Design_Requirements"/>
+    <TradeUnion rdf:about="EuropeanTradeUnionConfederation"/>
     
 
 
@@ -1009,15 +1077,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Functional_Requirements -->
+    <!-- http://ns.softwiki.de/req/GermanGovernment -->
 
-    <Requirement rdf:about="Functional_Requirements"/>
-    
-
-
-    <!-- http://ns.softwiki.de/req/Government -->
-
-    <Stakeholder rdf:about="Government"/>
+    <Government rdf:about="GermanGovernment"/>
     
 
 
@@ -1033,9 +1095,41 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/LogEveryUserActivity -->
+
+    <FunctionalRequirement rdf:about="LogEveryUserActivity"/>
+    
+
+
     <!-- http://ns.softwiki.de/req/Modifiable -->
 
     <QualityRequirement rdf:about="Modifiable"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/MultiTabSystem -->
+
+    <DesignRequirement rdf:about="MultiTabSystem"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/MultiUserSystem -->
+
+    <FunctionalRequirement rdf:about="MultiUserSystem"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/MultiWindowSystem -->
+
+    <DesignRequirement rdf:about="MultiWindowSystem"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/MustBeDiscussed -->
+
+    <Comment rdf:about="MustBeDiscussed">
+        <comments rdf:resource="UserCanAccessDataFromEveryComputer"/>
+    </Comment>
     
 
 
@@ -1045,9 +1139,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Performance_Requirements -->
+    <!-- http://ns.softwiki.de/req/NotNecessaryRequirment -->
 
-    <Requirement rdf:about="Performance_Requirements"/>
+    <Comment rdf:about="NotNecessaryRequirment"/>
     
 
 
@@ -1063,15 +1157,15 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Senior_Management_staff -->
-
-    <Stakeholder rdf:about="Senior_Management_staff"/>
-    
-
-
     <!-- http://ns.softwiki.de/req/Steve_McConnell -->
 
     <Author rdf:about="Steve_McConnell"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/SwedishTradeUnionConfederation -->
+
+    <TradeUnion rdf:about="SwedishTradeUnionConfederation"/>
     
 
 
@@ -1087,15 +1181,15 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Trade_Unions -->
-
-    <Stakeholder rdf:about="Trade_Unions"/>
-    
-
-
     <!-- http://ns.softwiki.de/req/UML -->
 
     <Document rdf:about="UML"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/USGovernment -->
+
+    <Government rdf:about="USGovernment"/>
     
 
 
@@ -1105,9 +1199,39 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/UseDatabaseToStoreUserData -->
+
+    <CustomerRequirement rdf:about="UseDatabaseToStoreUserData"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/UseOfIcons -->
+
+    <DesignRequirement rdf:about="UseOfIcons"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/UsefulRequirement -->
+
+    <Comment rdf:about="UsefulRequirement"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/UserCanAccessDataFromEveryComputer -->
+
+    <FunctionalRequirement rdf:about="UserCanAccessDataFromEveryComputer"/>
+    
+
+
     <!-- http://ns.softwiki.de/req/Verifiable -->
 
     <QualityRequirement rdf:about="Verifiable"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/WindowDesign -->
+
+    <DesignRequirement rdf:about="WindowDesign"/>
     
 
 
@@ -1135,6 +1259,18 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/determineCoreRequirements -->
+
+    <Goal rdf:about="determineCoreRequirements"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/determineSystemRequirements -->
+
+    <Goal rdf:about="determineSystemRequirements"/>
+    
+
+
     <!-- http://ns.softwiki.de/req/important -->
 
     <Vote rdf:about="important"/>
@@ -1150,6 +1286,18 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/less_importent -->
 
     <Vote rdf:about="less_importent"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/loadGUIInUnder2Sec -->
+
+    <PerformanceRequirement rdf:about="loadGUIInUnder2Sec"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/task -->
+
+    <owl:Thing rdf:about="task"/>
     
 
 
