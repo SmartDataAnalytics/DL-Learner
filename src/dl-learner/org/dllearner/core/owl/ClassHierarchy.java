@@ -229,7 +229,7 @@ public class ClassHierarchy {
 				// they are empty)
 				TreeSet<Description> superClasses = new TreeSet<Description>(entry.getValue());
 				// storage for new super classes
-				TreeSet<Description> newSuperClasses = new TreeSet<Description>();
+				TreeSet<Description> newSuperClasses = new TreeSet<Description>(conceptComparator);
 				
 				while(!superClasses.isEmpty()) {
 					// pick and remove the first element

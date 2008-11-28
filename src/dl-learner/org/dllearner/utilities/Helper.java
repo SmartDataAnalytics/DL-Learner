@@ -492,7 +492,7 @@ public class Helper {
 	
 	// concepts case 2: ignore list
 	public static Set<NamedClass> computeConceptsUsingIgnoreList(ReasonerComponent rs, Set<NamedClass> ignoredConcepts) {
-		Set<NamedClass> concepts = rs.getNamedClasses();
+		Set<NamedClass> concepts = new TreeSet<NamedClass>(rs.getNamedClasses());
 //		Helper.removeUninterestingConcepts(concepts);
 		for (NamedClass ac : ignoredConcepts) {
 			boolean success = concepts.remove(ac);
