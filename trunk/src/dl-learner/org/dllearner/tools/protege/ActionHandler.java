@@ -226,8 +226,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 					if (desc.equals(eDescription.getDescription()
 							.toManchesterSyntaxString(
 									editorKit.getModelManager()
-											.getActiveOntology().getURI()
-											+ "#", null))) {
+											.getActiveOntology().getURI().toString()
+											, null))) {
 						evaluatedDescription = eDescription;
 						
 						break;
@@ -406,12 +406,13 @@ public class ActionHandler implements ActionListener, ItemListener,
 						EvaluatedDescription eval = it.next();
 						while(ont.hasNext()) {
 							String onto = ont.next().getURI().toString();
-							System.out.println(eval.getDescription());
 							if(eval.getDescription().toString().contains(onto)) {
 								if(model.isConsistent(eval)) {
-									dm.add(0, new SuggestListItem(Color.GREEN, eval.getDescription().toManchesterSyntaxString(onto+"#", null)));
+									dm.add(0, new SuggestListItem(Color.GREEN, eval.getDescription().toManchesterSyntaxString(onto, null)));
+									break;
 								} else {
-									dm.add(0, new SuggestListItem(Color.RED, eval.getDescription().toManchesterSyntaxString(onto+"#", null)));
+									dm.add(0, new SuggestListItem(Color.RED, eval.getDescription().toManchesterSyntaxString(onto, null)));
+									break;
 								}
 							}
 						}

@@ -139,6 +139,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 * @param desc selected description
 	 */
 	public void renderDetailPanel(EvaluatedDescription desc) {
+		unsetEverything();
 		posCoveredScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		posCoveredScroll.setBounds(5, 150, 280, 140);
 		posNotCoveredScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -228,15 +229,19 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		add(negNotCoveredScroll);
 		detailPopup.add(this);
 	}
+	
+	private void unsetEverything() {
+		removeAll();
+	}
 	/**
 	 * This method sets the Informations of the selected description.
 	 */
 	private void setInformation() {
 		if(eval!=null) {
 			//sets the accuracy of the selected concept
-			conceptText.append(eval.getDescription().toManchesterSyntaxString(model.getURI().toString()+"#", null));
+			conceptText.setText(eval.getDescription().toManchesterSyntaxString(model.getURI().toString(), null));
 			double acc = (eval.getAccuracy())*100;
-			accuracyText.append(String.valueOf(acc)+"%");
+			accuracyText.setText(String.valueOf(acc)+"%");
 			Iterator<Individual> i = eval.getCoveredPositives().iterator();
 			while (i.hasNext()) {
 				Iterator<OWLOntology> onto = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
@@ -244,7 +249,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				while (onto.hasNext()) {
 					String uri = onto.next().getURI().toString();
 					if(ind.toString().contains(uri)) {
-						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri+"#", null));
+						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
 						posLabel.setForeground(colorGreen);
 						posCoveredPanel.add(posLabel);
 					}
@@ -260,7 +265,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				while (onto.hasNext()) {
 					String uri = onto.next().getURI().toString();
 					if(ind.toString().contains(uri)) {
-						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri+"#", null));
+						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
 						posLabel.setForeground(colorRed);
 						posNotCoveredPanel.add(posLabel);
 					}
@@ -278,7 +283,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				while (onto.hasNext()) {
 					String uri = onto.next().getURI().toString();
 					if(ind.toString().contains(uri)) {
-						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri+"#", null));
+						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
 						posLabel.setForeground(colorRed);
 						negCoveredPanel.add(posLabel);
 					}
@@ -295,7 +300,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				while (onto.hasNext()) {
 					String uri = onto.next().getURI().toString();
 					if(ind.toString().contains(uri)) {
-						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri+"#", null));
+						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
 						posLabel.setForeground(colorGreen);
 						negNotCoveredPanel.add(posLabel);
 					}
@@ -304,5 +309,5 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				
 			}
 		}
-	}
+	}	
 }
