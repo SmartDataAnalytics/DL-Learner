@@ -40,6 +40,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
@@ -106,7 +107,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void actionPerformed(ActionEvent z) {
 
-		if (z.getActionCommand().equals("Suggest " + id)) {
+		if (z.getActionCommand().equals(id)) {
 			if (model.getAlreadyLearned()) {
 				model.unsetListModel();
 			}
@@ -116,7 +117,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 			model.setLearningProblem();
 			model.setLearningAlgorithm();
 			view.getRunButton().setEnabled(false);
-			view.renderErrorMessage("Learning started");
+			view.renderErrorMessage("learning started");
 			view.getPosAndNegSelectPanel().setCheckBoxesEnable(false);
 			retriever = new SuggestionRetriever();
 			//
@@ -136,7 +137,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 								.getSuggestClassPanel().getSuggestList()
 								.getSelectedValue());
 			}
-			String message = "Concept added";
+			String message = "class description added";
 			view.renderErrorMessage(message);
 			view.updateWindow();
 		}
@@ -307,43 +308,40 @@ public class ActionHandler implements ActionListener, ItemListener,
 			SwingWorker<List<EvaluatedDescription>, List<EvaluatedDescription>> {
 		
 		private Thread dlLearner;
-		/**
-		 * Constructor for the SuggestionRetriever.
-		 */
-		public SuggestionRetriever() {
-
-		}
+		private DefaultListModel dm = new DefaultListModel();
+		Logger logger = Logger.getLogger(SuggestionRetriever.class);
+		Logger rootLogger = Logger.getRootLogger();
+		
 		@SuppressWarnings("unchecked")
 		@Override
 		protected List<EvaluatedDescription> doInBackground() throws Exception {
-			// DefaultListModel descriptions = new DefaultListModel();
-			// List<Description> descriptionList =
-			// model.getLearningAlgorithm().getCurrentlyBestDescriptions();
-			// Iterator<Description> it = descriptionList.iterator();
 			la = model.getLearningAlgorithm();
 			timer = new Timer();
 			timer.schedule(new TimerTask(){
 				
 				@Override
 				public void run() {
+					System.out.println("DA BIN ICH:");	
 					if (la != null) {
-						
-						publish(la
-								.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel()
-										.getNrOfConcepts(),
-										view.getPosAndNegSelectPanel().getOptionPanel()
-												.getMinAccuracy(), true));
+							
+							//System.out.println("EVAL: " + la.getCurrentlyBestEvaluatedDescriptions().isEmpty());
+							//System.out.println("SIZE: " + la.getCurrentlyBestEvaluatedDescriptions().size());
+						publish(la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts()
+								, view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true));
 					}
 				}
 
-			}, 0, 100);
+			}, 0, 1000);
 
 			dlLearner = new Thread(new Runnable() {
 
 				@Override
 				public void run() {
-					
+					try {
 					model.run();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 
 			});
@@ -355,11 +353,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			List<EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(
-							view.getPosAndNegSelectPanel().getOptionPanel()
-									.getNrOfConcepts(),
-							view.getPosAndNegSelectPanel().getOptionPanel()
-									.getMinAccuracy(), true);
+			List<EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts()
+					, view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true);
 			
 			return result;
 		}
@@ -378,6 +373,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 			}
 
 			view.getRunButton().setEnabled(true);
+			System.out.println("DONE");
 			updateList(result);
 		}
 
@@ -394,31 +390,35 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 			Runnable doUpdateList = new Runnable() {
 
-				DefaultListModel dm = new DefaultListModel();
+				
 
 				public void run() {
+					System.out.println("JETZT HIER:");
 					model.setSuggestList(result);
 					// learnPanel.getListModel().clear();
 					Iterator<EvaluatedDescription> it = result.iterator();
-					
+					int i = 0;
 					while (it.hasNext()) {
 						Iterator<OWLOntology> ont = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
 						EvaluatedDescription eval = it.next();
 						while(ont.hasNext()) {
 							String onto = ont.next().getURI().toString();
+							
 							if(eval.getDescription().toString().contains(onto)) {
 								if(model.isConsistent(eval)) {
-									dm.add(0, new SuggestListItem(Color.GREEN, eval.getDescription().toManchesterSyntaxString(onto, null)));
+									dm.add(i, new SuggestListItem(Color.GREEN, eval.getDescription().toManchesterSyntaxString(onto, null)));
+									i++;
 									break;
 								} else {
-									dm.add(0, new SuggestListItem(Color.RED, eval.getDescription().toManchesterSyntaxString(onto, null)));
+									dm.add(i, new SuggestListItem(Color.RED, eval.getDescription().toManchesterSyntaxString(onto, null)));
+									i++;
 									break;
 								}
 							}
 						}
 					}
-					view.getSuggestClassPanel().getSuggestList().setModel(dm);
-					
+					System.out.println("NAJA NUN HIER");
+					view.getSuggestClassPanel().setSuggestList(dm);
 				}
 			};
 			SwingUtilities.invokeLater(doUpdateList);

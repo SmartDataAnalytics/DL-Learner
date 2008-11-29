@@ -118,7 +118,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		//checker = new OWLDescriptionChecker(editorKit);
 		editor = new ExpressionEditor<OWLDescription>(editorKit, editorKit.getModelManager().getOWLExpressionCheckerFactory().getOWLDescriptionChecker());
 		editor.setExpressionObject(description);
-		dllearner = new DLLearnerView(frame, label, this);
+		
 		action = new ActionHandler(this.action, null, dllearner, null,
 				editorKit);
 		tabbedPane = new JTabbedPane();
@@ -127,9 +127,11 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		editingComponent.add(tabbedPane);
 		editingComponent.setPreferredSize(new Dimension(600, 520));
 		if (label.equals("equivalent classes")) {
+			dllearner = new DLLearnerView(frame, SUGGEST_EQUIVALENT_CLASS_LABEL, this);
 			tabbedPane.add(SUGGEST_EQUIVALENT_CLASS_LABEL, dllearner);
 		}
 		if (label.equals("super classes")) {
+			dllearner = new DLLearnerView(frame, SUGGEST_SUBCLASS_LABEL, this);
 			tabbedPane.add(SUGGEST_SUBCLASS_LABEL, dllearner);
 		}
 		
@@ -384,7 +386,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			adv = new JLabel("Advanced Settings");
 			advanced = new JToggleButton(icon);
 			advanced.setVisible(true);
-			run = new JButton("Suggest " + label);
+			run = new JButton(label);
 			accept = new JButton("ADD");
 			addButtonPanel = new JPanel(new BorderLayout());
 			sugPanel.addSuggestPanelMouseListener(action);

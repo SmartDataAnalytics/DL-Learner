@@ -88,7 +88,9 @@ public class SuggestClassPanel extends JPanel {
 	 * @param desc List model of descriptions made by the DL-Learner
 	 */
 	public void setSuggestList(DefaultListModel desc) {
+		System.out.println("HUHU");
 		descriptions.setModel(desc);
+		repaint();
 	}
 	/**
 	 * This method returns the current Description list.
