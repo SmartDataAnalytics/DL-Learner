@@ -60,7 +60,8 @@ public class ClassHierarchy {
 	public SortedSet<Description> getSuperClasses(Description concept) {
 		SortedSet<Description> result =  subsumptionHierarchyUp.get(concept);
 		if(result == null) {
-			logger.error("Query for super class of " + concept + " in subsumption hierarchy, but the class is not contained in the (upward) hierarchy");
+			logger.error("Query for super class of " + concept + " in subsumption hierarchy, but the class is not contained in the (upward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
+			return new TreeSet<Description>();
 		}
 		
 		// we copy all concepts before returning them such that they cannot be
@@ -71,7 +72,8 @@ public class ClassHierarchy {
 	public SortedSet<Description> getSubClasses(Description concept) {
 		SortedSet<Description> result =  subsumptionHierarchyDown.get(concept);
 		if(result == null) {
-			logger.error("Query for sub class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy");
+			logger.error("Query for sub class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
+			return new TreeSet<Description>();
 		}
 		
 		return new TreeSet<Description>(result);		
