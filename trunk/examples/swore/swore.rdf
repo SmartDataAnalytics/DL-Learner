@@ -198,6 +198,14 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/isCreatedBy -->
+
+    <owl:ObjectProperty rdf:about="isCreatedBy">
+        <rdfs:domain rdf:resource="AbstractRequirement"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://ns.softwiki.de/req/isDefinedBy -->
 
     <owl:ObjectProperty rdf:about="isDefinedBy">
@@ -269,6 +277,15 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/isReleatedTo -->
+
+    <owl:ObjectProperty rdf:about="isReleatedTo">
+        <rdfs:range rdf:resource="Customer"/>
+        <rdfs:domain rdf:resource="CustomerRequirement"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://ns.softwiki.de/req/isSimilarTo -->
 
     <owl:ObjectProperty rdf:about="isSimilarTo">
@@ -332,8 +349,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://purl.org/dc/elements/1.1/title -->
 
     <owl:ObjectProperty rdf:about="&dc;title">
-        <rdf:type rdf:resource="&owl;Class"/>
-        <owl:objectPropertyDomain rdf:resource="&dc;title"/>
+        <owl:objectPropertyDomain rdf:resource="AbstractRequirement"/>
         <owl:objectPropertyRange rdf:resource="&xsd;string"/>
     </owl:ObjectProperty>
     
@@ -645,6 +661,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <owl:Class rdf:about="Customer">
         <rdfs:subClassOf rdf:resource="Stakeholder"/>
+        <owl:disjointWith rdf:resource="Programmer"/>
     </owl:Class>
     
 
@@ -750,6 +767,14 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
         <rdfs:subClassOf rdf:resource="Rating"/>
         <rdfs:comment rdf:datatype="&xsd;string"
             >Rule: Every Author only defines at most one rating about the priority for each requirement.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Programmer -->
+
+    <owl:Class rdf:about="Programmer">
+        <rdfs:subClassOf rdf:resource="Stakeholder"/>
     </owl:Class>
     
 
@@ -947,6 +972,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <Rating rdf:about="1">
         <rdf:type rdf:resource="PriorityRating"/>
         <rdf:type rdf:resource="QualityRating"/>
+        <isDefinedBy rdf:resource="Andrew_Stellman"/>
     </Rating>
     
 
@@ -1031,13 +1057,39 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/Andrew_Stellman -->
 
-    <Author rdf:about="Andrew_Stellman"/>
+    <Author rdf:about="Andrew_Stellman">
+        <defines rdf:resource="1"/>
+        <defines rdf:resource="MultiUserSystem"/>
+        <defines rdf:resource="loadGUIInUnder2Sec"/>
+    </Author>
+    
+
+
+    <!-- http://ns.softwiki.de/req/BuildAFastSoftware -->
+
+    <CustomerRequirement rdf:about="BuildAFastSoftware">
+        <isCreatedBy rdf:resource="Charlotte_Blay"/>
+    </CustomerRequirement>
+    
+
+
+    <!-- http://ns.softwiki.de/req/BuildASoftwareThatRuns24hADay -->
+
+    <CustomerRequirement rdf:about="BuildASoftwareThatRuns24hADay">
+        <isCreatedBy rdf:resource="Philippe_Soupault"/>
+    </CustomerRequirement>
     
 
 
     <!-- http://ns.softwiki.de/req/CentralOrganisationOfFinnishTrade -->
 
     <TradeUnion rdf:about="CentralOrganisationOfFinnishTrade"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Charlotte_Blay -->
+
+    <Customer rdf:about="Charlotte_Blay"/>
     
 
 
@@ -1059,9 +1111,37 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/CreateModernGUIDesign -->
+
+    <CustomerRequirement rdf:about="CreateModernGUIDesign">
+        <isCreatedBy rdf:resource="Jane_Smiley"/>
+    </CustomerRequirement>
+    
+
+
+    <!-- http://ns.softwiki.de/req/CustomerRequirement1 -->
+
+    <CustomerRequirement rdf:about="CustomerRequirement1"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Derick_Garnier -->
+
+    <Customer rdf:about="Derick_Garnier"/>
+    
+
+
     <!-- http://ns.softwiki.de/req/DialogSystemShoudRespondInUnder5Sec -->
 
-    <PerformanceRequirement rdf:about="DialogSystemShoudRespondInUnder5Sec"/>
+    <PerformanceRequirement rdf:about="DialogSystemShoudRespondInUnder5Sec">
+        <isDefinedBy rdf:resource="NotNecessaryRequirment"/>
+    </PerformanceRequirement>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Dual_Core_2_GHz_2GB_RAM -->
+
+    <PerformanceRequirement rdf:about="Dual_Core_2_GHz_2GB_RAM"/>
     
 
 
@@ -1083,9 +1163,17 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/Jane_Smiley -->
+
+    <Customer rdf:about="Jane_Smiley"/>
+    
+
+
     <!-- http://ns.softwiki.de/req/Jennifer_Greene -->
 
-    <Author rdf:about="Jennifer_Greene"/>
+    <Author rdf:about="Jennifer_Greene">
+        <defines rdf:resource="MultiWindowSystem"/>
+    </Author>
     
 
 
@@ -1097,7 +1185,15 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/LogEveryUserActivity -->
 
-    <FunctionalRequirement rdf:about="LogEveryUserActivity"/>
+    <FunctionalRequirement rdf:about="LogEveryUserActivity">
+        <isDefinedBy rdf:resource="Steve_McConnell"/>
+    </FunctionalRequirement>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Michael_Steinmetz -->
+
+    <Customer rdf:about="Michael_Steinmetz"/>
     
 
 
@@ -1109,19 +1205,25 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/MultiTabSystem -->
 
-    <DesignRequirement rdf:about="MultiTabSystem"/>
+    <DesignRequirement rdf:about="MultiTabSystem">
+        <isDefinedBy rdf:resource="Steve_McConnell"/>
+    </DesignRequirement>
     
 
 
     <!-- http://ns.softwiki.de/req/MultiUserSystem -->
 
-    <FunctionalRequirement rdf:about="MultiUserSystem"/>
+    <FunctionalRequirement rdf:about="MultiUserSystem">
+        <isDefinedBy rdf:resource="Andrew_Stellman"/>
+    </FunctionalRequirement>
     
 
 
     <!-- http://ns.softwiki.de/req/MultiWindowSystem -->
 
-    <DesignRequirement rdf:about="MultiWindowSystem"/>
+    <DesignRequirement rdf:about="MultiWindowSystem">
+        <isDefinedBy rdf:resource="Jennifer_Greene"/>
+    </DesignRequirement>
     
 
 
@@ -1141,7 +1243,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/NotNecessaryRequirment -->
 
-    <Comment rdf:about="NotNecessaryRequirment"/>
+    <Comment rdf:about="NotNecessaryRequirment">
+        <isDefinedBy rdf:resource="&foaf2;RichardNewman"/>
+    </Comment>
     
 
 
@@ -1151,15 +1255,30 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/Philippe_Soupault -->
+
+    <Customer rdf:about="Philippe_Soupault"/>
+    
+
+
     <!-- http://ns.softwiki.de/req/Prioritized -->
 
     <QualityRequirement rdf:about="Prioritized"/>
     
 
 
+    <!-- http://ns.softwiki.de/req/Quad_Core_3_GHz_16_GB_RAM -->
+
+    <PerformanceRequirement rdf:about="Quad_Core_3_GHz_16_GB_RAM"/>
+    
+
+
     <!-- http://ns.softwiki.de/req/Steve_McConnell -->
 
-    <Author rdf:about="Steve_McConnell"/>
+    <Author rdf:about="Steve_McConnell">
+        <defines rdf:resource="LogEveryUserActivity"/>
+        <defines rdf:resource="MultiTabSystem"/>
+    </Author>
     
 
 
@@ -1169,9 +1288,27 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/SystemStabilityRequirement -->
+
+    <PerformanceRequirement rdf:about="SystemStabilityRequirement"/>
+    
+
+
     <!-- http://ns.softwiki.de/req/TextualScenario -->
 
     <Scenario rdf:about="TextualScenario"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Tilman_R&#246;hrig -->
+
+    <Customer rdf:about="Tilman_R&#246;hrig"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/Tom -->
+
+    <Programmer rdf:about="Tom"/>
     
 
 
@@ -1199,9 +1336,19 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/UseAsLittleSystemResourcesAsPosible -->
+
+    <CustomerRequirement rdf:about="UseAsLittleSystemResourcesAsPosible">
+        <isCreatedBy rdf:resource="Michael_Steinmetz"/>
+    </CustomerRequirement>
+    
+
+
     <!-- http://ns.softwiki.de/req/UseDatabaseToStoreUserData -->
 
-    <CustomerRequirement rdf:about="UseDatabaseToStoreUserData"/>
+    <CustomerRequirement rdf:about="UseDatabaseToStoreUserData">
+        <isCreatedBy rdf:resource="Derick_Garnier"/>
+    </CustomerRequirement>
     
 
 
@@ -1219,7 +1366,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/UserCanAccessDataFromEveryComputer -->
 
-    <FunctionalRequirement rdf:about="UserCanAccessDataFromEveryComputer"/>
+    <FunctionalRequirement rdf:about="UserCanAccessDataFromEveryComputer">
+        <isCommentedBy rdf:resource="MustBeDiscussed"/>
+    </FunctionalRequirement>
     
 
 
@@ -1238,6 +1387,12 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/calculations -->
 
     <FunctionalRequirement rdf:about="calculations"/>
+    
+
+
+    <!-- http://ns.softwiki.de/req/cluster -->
+
+    <PerformanceRequirement rdf:about="cluster"/>
     
 
 
@@ -1271,6 +1426,12 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
+    <!-- http://ns.softwiki.de/req/gro&#223;systemen -->
+
+    <PerformanceRequirement rdf:about="gro&#223;systemen"/>
+    
+
+
     <!-- http://ns.softwiki.de/req/important -->
 
     <Vote rdf:about="important"/>
@@ -1291,7 +1452,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/loadGUIInUnder2Sec -->
 
-    <PerformanceRequirement rdf:about="loadGUIInUnder2Sec"/>
+    <PerformanceRequirement rdf:about="loadGUIInUnder2Sec">
+        <isDefinedBy rdf:resource="Andrew_Stellman"/>
+    </PerformanceRequirement>
     
 
 
@@ -1339,7 +1502,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://www.holygoat.co.uk/foaf.rdf#RichardNewman -->
 
-    <Author rdf:about="&foaf2;RichardNewman"/>
+    <Author rdf:about="&foaf2;RichardNewman">
+        <defines rdf:resource="NotNecessaryRequirment"/>
+    </Author>
     
 
 
@@ -1364,6 +1529,37 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <Topic rdf:about="&p1;primarySubject">
         <rdfs:label xml:lang="de">Thema</rdfs:label>
     </Topic>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:Class>
+        <rdfs:subClassOf rdf:resource="CustomerRequirement"/>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="Requirement"/>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="isCreatedBy"/>
+                <owl:someValuesFrom rdf:resource="Customer"/>
+            </owl:Restriction>
+        </owl:intersectionOf>
+    </owl:Class>
+    <owl:Class>
+        <rdfs:subClassOf rdf:resource="CustomerRequirement"/>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="Requirement"/>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="isCreatedBy"/>
+                <owl:someValuesFrom rdf:resource="AbstractSource"/>
+            </owl:Restriction>
+        </owl:intersectionOf>
+    </owl:Class>
 </rdf:RDF>
 
 
