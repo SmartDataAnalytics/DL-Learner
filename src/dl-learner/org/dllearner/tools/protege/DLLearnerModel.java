@@ -35,6 +35,7 @@ import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -89,10 +90,6 @@ public class DLLearnerModel implements Runnable {
 	// The Reasoning Service for the Reasoner
 
 	private ReasonerComponent rs;
-
-	// The Knowledge source for the reasoner
-
-	private OWLAPIOntology source;
 
 	// The View of the DL-Learner Plugin
 
@@ -171,6 +168,7 @@ public class DLLearnerModel implements Runnable {
 	// The Individuals of the Ontology
 
 	private Set<Individual> individual;
+	private Set<OWLAPIOntology> ontologies;
 
 	// The error message which is rendered when an error occured
 
@@ -185,6 +183,8 @@ public class DLLearnerModel implements Runnable {
 	private JXTaskPane detailPane;
 	private DefaultListModel posListModel;
 	private DefaultListModel negListModel;
+	private Set<KnowledgeSource> sources;
+	//private KnowledgeSource source;
 	private boolean hasIndividuals;
 	private NamedClass currentConcept;
 	private Vector<IndividualObject> individualVector;
@@ -222,6 +222,7 @@ public class DLLearnerModel implements Runnable {
 		suggestModel = new DefaultListModel();
 		detailPane = new JXTaskPane();
 		detailPane.setTitle("Details");
+		sources = new HashSet<KnowledgeSource>();
 
 	}
 
@@ -252,7 +253,6 @@ public class DLLearnerModel implements Runnable {
 						.getIndividualString());
 			}
 		}
-		System.out.println("TEST: " + positiveExamples);
 	}
 
 	/**
@@ -288,10 +288,11 @@ public class DLLearnerModel implements Runnable {
 	 * OWLAPIOntology will be available.
 	 */
 	public void setKnowledgeSource() {
-		this.source = new OWLAPIOntology(editor.getModelManager()
-				.getActiveOntology());
-		source.setOWLOntologies(editor.getModelManager().getActiveOntologies());
-
+		//Ssource = new OWLAPIOntology(editor.getModelManager().getActiveOntology());
+		Iterator<OWLOntology> it = editor.getModelManager().getActiveOntologies().iterator();
+		while (it.hasNext()) {
+			sources.add(new OWLAPIOntology(it.next()));
+		}
 	}
 
 	/**
@@ -299,7 +300,8 @@ public class DLLearnerModel implements Runnable {
 	 * OWLAPIReasoner is available.
 	 */
 	public void setReasoner() {
-		this.reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		this.reasoner = cm.reasoner(OWLAPIReasoner.class, sources);
+		
 		try {
 			reasoner.init();
 		} catch (ComponentInitException e) {
@@ -316,12 +318,12 @@ public class DLLearnerModel implements Runnable {
 	 * classes.
 	 */
 	public void setLearningProblem() {
-		if (id.equals("equivalent classes")) {
+		if (id.equals("Suggest equivalent class")) {
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
 			lp = cm.learningProblem(PosNegDefinitionLP.class, reasoner);
 		}
-		if (id.equals("super classes")) {
+		if (id.equals("Suggest super class")) {
 			// sets the learning problem to PosNegInclusionLP when the dllearner
 			// should suggest a subclass
 			lp = cm.learningProblem(PosNegInclusionLP.class, reasoner);
@@ -349,6 +351,9 @@ public class DLLearnerModel implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Set<String> ignore = new TreeSet<String>();
+		ignore.add(currentConcept.toString());
+		cm.applyConfigEntry(la, "ignoredConcepts", ignore);
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
 				.getPosAndNegSelectPanel().getOptionPanel()
 				.getMaxExecutionTime());
@@ -365,7 +370,7 @@ public class DLLearnerModel implements Runnable {
 	 * This method starts the learning process.
 	 */
 	public void run() {
-		error = "Learning succesful";
+		error = "learning succesful";
 		String message = "To view details about why a class description was suggested, please doubleclick on it.";
 		// start the algorithm and print the best concept found
 		la.start();
@@ -470,17 +475,33 @@ public class DLLearnerModel implements Runnable {
 				if (individuals == null) {
 					NamedClass concept = i.next();
 					// checks if the concept is the selected concept in protege
-					if (concept.toString().endsWith(
-							 current.getRootObject().toString())) {
-						// if individuals is not null it gets all individuals of
-						// the concept
-						currentConcept = concept;
-						if (reasoner.getIndividuals(concept) != null) {
-							if (reasoner.getIndividuals(concept).size() > 0) {
-								hasIndividuals = true;
+					if(concept.toString().contains("#")) {
+						if (concept.toString().endsWith("#"+
+								current.getRootObject().toString())) {
+							// if individuals is not null it gets all individuals of
+							// the concept
+							currentConcept = concept;
+							if (reasoner.getIndividuals(concept) != null) {
+								if (reasoner.getIndividuals(concept).size() > 0) {
+									hasIndividuals = true;
+								}
+								individual = reasoner.getIndividuals(concept);
+								break;
 							}
-							individual = reasoner.getIndividuals(concept);
-							break;
+						}
+					} else {
+						if (concept.toString().endsWith(
+								 current.getRootObject().toString())) {
+							// if individuals is not null it gets all individuals of
+							// the concept
+							currentConcept = concept;
+							if (reasoner.getIndividuals(concept) != null) {
+								if (reasoner.getIndividuals(concept).size() > 0) {
+									hasIndividuals = true;
+								}
+								individual = reasoner.getIndividuals(concept);
+								break;
+							}
 						}
 					}
 				}
@@ -783,5 +804,18 @@ public class DLLearnerModel implements Runnable {
 
 	public OWLEditorKit getOWLEditorKit() {
 		return editor;
+	}
+	
+	/**
+	 * This method returns the currently used ontoloies including
+	 * importet ontologies.
+	 * @return Set<OWLAPIOntology> ontologies
+	 */
+	public Set<OWLAPIOntology> getOWLOntologies() {
+		return ontologies;
+	}
+	
+	public Set<KnowledgeSource> getKnowledgeSources() {
+		return sources;
 	}
 }
