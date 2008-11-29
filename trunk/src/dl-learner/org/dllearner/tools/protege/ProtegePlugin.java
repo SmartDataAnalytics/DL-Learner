@@ -19,6 +19,11 @@
  */
 package org.dllearner.tools.protege;
 
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.HTMLLayout;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.protege.editor.owl.ui.view.AbstractOWLClassViewComponent;
 import org.semanticweb.owl.model.OWLClass;
 import org.protege.editor.owl.ui.framelist.OWLFrameList2;
@@ -48,7 +53,17 @@ private OWLFrameList2<OWLClass> list;
 		JScrollPane dlLearner = new JScrollPane(list);
 		add(dlLearner);
 		
-		
+		// add file logger (comment out if not needed)
+		boolean useAdditionalLogger = true;
+		if(useAdditionalLogger) {
+			Layout layout = new HTMLLayout();
+			String fileName = "logs/dllearner_log.html";
+			FileAppender fileAppender = new FileAppender(layout, fileName);
+			// only add log statements in protege package to log file
+			Logger protegeLogger = Logger.getLogger("org.dllearner.tools.protege");
+			protegeLogger.addAppender(fileAppender);
+			protegeLogger.setLevel(Level.DEBUG);
+		}
 	}
 	
 	@Override
