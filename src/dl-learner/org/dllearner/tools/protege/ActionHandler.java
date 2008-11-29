@@ -58,6 +58,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 	// This is the DLLearnerModel.
 
+	private static Logger logger = Logger.getLogger(ActionHandler.class);
+	
 	private DLLearnerModel model;
 	private OWLEditorKit editorKit;
 
@@ -388,6 +390,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 		private void updateList(final List<EvaluatedDescription> result) {
 
+			logger.debug("update list with " + result);
+			
 			Runnable doUpdateList = new Runnable() {
 
 				
