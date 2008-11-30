@@ -62,6 +62,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    <owl:AnnotationProperty rdf:about="&rdfs;label"/>
     <owl:AnnotationProperty rdf:about="&dc;contributor"/>
     
 
@@ -184,6 +185,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/isCreatedBy -->
 
     <owl:ObjectProperty rdf:about="isCreatedBy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:domain rdf:resource="AbstractRequirement"/>
     </owl:ObjectProperty>
     
@@ -1010,7 +1012,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/ActiveHelpDialog -->
 
-    <DesignRequirement rdf:about="ActiveHelpDialog"/>
+    <DesignRequirement rdf:about="ActiveHelpDialog">
+        <isCreatedBy rdf:resource="GermanGovernment"/>
+    </DesignRequirement>
     
 
 
@@ -1095,7 +1099,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/DialogSystemShoudRespondInUnder5Sec -->
 
     <PerformanceRequirement rdf:about="DialogSystemShoudRespondInUnder5Sec">
-        <isDefinedBy rdf:resource="NotNecessaryRequirment"/>
+        <isCreatedBy rdf:resource="Tom"/>
     </PerformanceRequirement>
     
 
@@ -1148,6 +1152,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <FunctionalRequirement rdf:about="LogEveryUserActivity">
         <isDefinedBy rdf:resource="Steve_McConnell"/>
+        <isCreatedBy rdf:resource="USGovernment"/>
     </FunctionalRequirement>
     
 
@@ -1167,6 +1172,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/MultiTabSystem -->
 
     <DesignRequirement rdf:about="MultiTabSystem">
+        <isCreatedBy rdf:resource="Steve_McConnell"/>
         <isDefinedBy rdf:resource="Steve_McConnell"/>
     </DesignRequirement>
     
@@ -1176,6 +1182,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <FunctionalRequirement rdf:about="MultiUserSystem">
         <isDefinedBy rdf:resource="Andrew_Stellman"/>
+        <isCreatedBy rdf:resource="Andrew_Stellman"/>
     </FunctionalRequirement>
     
 
@@ -1184,6 +1191,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <DesignRequirement rdf:about="MultiWindowSystem">
         <isDefinedBy rdf:resource="Jennifer_Greene"/>
+        <isCreatedBy rdf:resource="Jennifer_Greene"/>
     </DesignRequirement>
     
 
@@ -1251,7 +1259,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/SystemStabilityRequirement -->
 
-    <PerformanceRequirement rdf:about="SystemStabilityRequirement"/>
+    <PerformanceRequirement rdf:about="SystemStabilityRequirement">
+        <isCreatedBy rdf:resource="CentralOrganisationOfFinnishTrade"/>
+    </PerformanceRequirement>
     
 
 
@@ -1329,6 +1339,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <FunctionalRequirement rdf:about="UserCanAccessDataFromEveryComputer">
         <isCommentedBy rdf:resource="MustBeDiscussed"/>
+        <isCreatedBy rdf:resource="USGovernment"/>
     </FunctionalRequirement>
     
 
@@ -1341,7 +1352,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/WindowDesign -->
 
-    <DesignRequirement rdf:about="WindowDesign"/>
+    <DesignRequirement rdf:about="WindowDesign">
+        <isCreatedBy rdf:resource="Andrew_Stellman"/>
+    </DesignRequirement>
     
 
 
@@ -1353,7 +1366,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/cluster -->
 
-    <PerformanceRequirement rdf:about="cluster"/>
+    <PerformanceRequirement rdf:about="cluster">
+        <isCreatedBy rdf:resource="Andrew_Stellman"/>
+    </PerformanceRequirement>
     
 
 
@@ -1389,7 +1404,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/gro&#223;systemen -->
 
-    <PerformanceRequirement rdf:about="gro&#223;systemen"/>
+    <PerformanceRequirement rdf:about="gro&#223;systemen">
+        <isCreatedBy rdf:resource="GermanGovernment"/>
+    </PerformanceRequirement>
     
 
 
@@ -1415,6 +1432,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <PerformanceRequirement rdf:about="loadGUIInUnder2Sec">
         <isDefinedBy rdf:resource="Andrew_Stellman"/>
+        <isCreatedBy rdf:resource="Andrew_Stellman"/>
     </PerformanceRequirement>
     
 
@@ -1490,40 +1508,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <Topic rdf:about="&skos;primarySubject">
         <rdfs:label xml:lang="de">Thema</rdfs:label>
     </Topic>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // General axioms
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    <owl:Class>
-        <rdfs:subClassOf rdf:resource="CustomerRequirement"/>
-        <owl:intersectionOf rdf:parseType="Collection">
-            <rdf:Description rdf:about="Requirement"/>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="isCreatedBy"/>
-                <owl:someValuesFrom rdf:resource="Customer"/>
-            </owl:Restriction>
-        </owl:intersectionOf>
-    </owl:Class>
-    <owl:Class>
-        <rdfs:subClassOf rdf:resource="CustomerRequirement"/>
-        <owl:intersectionOf rdf:parseType="Collection">
-            <rdf:Description rdf:about="Requirement"/>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="isCreatedBy"/>
-                <owl:someValuesFrom rdf:resource="AbstractSource"/>
-            </owl:Restriction>
-        </owl:intersectionOf>
-    </owl:Class>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 2.2.1.842) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 2.2.1.962) http://owlapi.sourceforge.net -->
 
