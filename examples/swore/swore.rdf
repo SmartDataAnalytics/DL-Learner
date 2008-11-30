@@ -1056,21 +1056,19 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Complete -->
-
-    <QualityRequirement rdf:about="Complete"/>
-    
-
-
     <!-- http://ns.softwiki.de/req/Consistent -->
 
-    <QualityRequirement rdf:about="Consistent"/>
+    <rdf:Description rdf:about="Consistent">
+        <isCreatedBy rdf:resource="USGovernment"/>
+    </rdf:Description>
     
 
 
     <!-- http://ns.softwiki.de/req/Correct -->
 
-    <QualityRequirement rdf:about="Correct"/>
+    <rdf:Description rdf:about="Correct">
+        <isCreatedBy rdf:resource="Jennifer_Greene"/>
+    </rdf:Description>
     
 
 
@@ -1104,21 +1102,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Dual_Core_2_GHz_2GB_RAM -->
-
-    <PerformanceRequirement rdf:about="Dual_Core_2_GHz_2GB_RAM"/>
-    
-
-
     <!-- http://ns.softwiki.de/req/EuropeanTradeUnionConfederation -->
 
     <TradeUnion rdf:about="EuropeanTradeUnionConfederation"/>
-    
-
-
-    <!-- http://ns.softwiki.de/req/Feasible -->
-
-    <QualityRequirement rdf:about="Feasible"/>
     
 
 
@@ -1163,12 +1149,6 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Modifiable -->
-
-    <QualityRequirement rdf:about="Modifiable"/>
-    
-
-
     <!-- http://ns.softwiki.de/req/MultiTabSystem -->
 
     <DesignRequirement rdf:about="MultiTabSystem">
@@ -1204,12 +1184,6 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Necessary -->
-
-    <QualityRequirement rdf:about="Necessary"/>
-    
-
-
     <!-- http://ns.softwiki.de/req/NotNecessaryRequirment -->
 
     <Comment rdf:about="NotNecessaryRequirment">
@@ -1227,18 +1201,6 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/Philippe_Soupault -->
 
     <Customer rdf:about="Philippe_Soupault"/>
-    
-
-
-    <!-- http://ns.softwiki.de/req/Prioritized -->
-
-    <QualityRequirement rdf:about="Prioritized"/>
-    
-
-
-    <!-- http://ns.softwiki.de/req/Quad_Core_3_GHz_16_GB_RAM -->
-
-    <PerformanceRequirement rdf:about="Quad_Core_3_GHz_16_GB_RAM"/>
     
 
 
@@ -1283,12 +1245,6 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Traceable -->
-
-    <QualityRequirement rdf:about="Traceable"/>
-    
-
-
     <!-- http://ns.softwiki.de/req/UML -->
 
     <Document rdf:about="UML"/>
@@ -1298,12 +1254,6 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/USGovernment -->
 
     <Government rdf:about="USGovernment"/>
-    
-
-
-    <!-- http://ns.softwiki.de/req/Unambiguous -->
-
-    <QualityRequirement rdf:about="Unambiguous"/>
     
 
 
@@ -1344,12 +1294,6 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     
 
 
-    <!-- http://ns.softwiki.de/req/Verifiable -->
-
-    <QualityRequirement rdf:about="Verifiable"/>
-    
-
-
     <!-- http://ns.softwiki.de/req/WindowDesign -->
 
     <DesignRequirement rdf:about="WindowDesign">
@@ -1361,14 +1305,6 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/calculations -->
 
     <FunctionalRequirement rdf:about="calculations"/>
-    
-
-
-    <!-- http://ns.softwiki.de/req/cluster -->
-
-    <PerformanceRequirement rdf:about="cluster">
-        <isCreatedBy rdf:resource="Andrew_Stellman"/>
-    </PerformanceRequirement>
     
 
 
@@ -1386,7 +1322,9 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
 
     <!-- http://ns.softwiki.de/req/data_manipulation -->
 
-    <FunctionalRequirement rdf:about="data_manipulation"/>
+    <FunctionalRequirement rdf:about="data_manipulation">
+        <isCreatedBy rdf:resource="Steve_McConnell"/>
+    </FunctionalRequirement>
     
 
 
@@ -1399,14 +1337,6 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <!-- http://ns.softwiki.de/req/determineSystemRequirements -->
 
     <Goal rdf:about="determineSystemRequirements"/>
-    
-
-
-    <!-- http://ns.softwiki.de/req/gro&#223;systemen -->
-
-    <PerformanceRequirement rdf:about="gro&#223;systemen">
-        <isCreatedBy rdf:resource="GermanGovernment"/>
-    </PerformanceRequirement>
     
 
 
