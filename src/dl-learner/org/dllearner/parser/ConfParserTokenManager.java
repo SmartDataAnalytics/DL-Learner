@@ -16,8 +16,8 @@ import org.dllearner.Info;
 import org.dllearner.cli.*;
 import org.dllearner.utilities.datastructures.*;
 
+@SuppressWarnings("all")
 /** Token Manager. */
-@SuppressWarnings("all") 
 public class ConfParserTokenManager implements ConfParserConstants
 {
 
