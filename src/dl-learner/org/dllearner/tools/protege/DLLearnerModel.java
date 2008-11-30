@@ -729,7 +729,7 @@ public class DLLearnerModel implements Runnable {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		if (id.equals("Equivalent classes")) {
+		if (id.equals("Suggest equivalent class")) {
 			axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
 		} else {
 			axiomOWLAPI = factory.getOWLSubClassAxiom(newConceptOWLAPI,
