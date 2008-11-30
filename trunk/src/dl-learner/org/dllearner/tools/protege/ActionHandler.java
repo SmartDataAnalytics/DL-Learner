@@ -400,6 +400,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 					System.out.println("JETZT HIER:");
 					model.setSuggestList(result);
 					// learnPanel.getListModel().clear();
+					dm.clear();
 					Iterator<EvaluatedDescription> it = result.iterator();
 					int i = 0;
 					while (it.hasNext()) {
@@ -407,7 +408,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 						EvaluatedDescription eval = it.next();
 						while(ont.hasNext()) {
 							String onto = ont.next().getURI().toString();
-							
 							if(eval.getDescription().toString().contains(onto)) {
 								if(model.isConsistent(eval)) {
 									dm.add(i, new SuggestListItem(Color.GREEN, eval.getDescription().toManchesterSyntaxString(onto, null)));
