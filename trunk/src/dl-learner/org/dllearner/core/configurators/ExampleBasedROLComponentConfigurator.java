@@ -349,6 +349,15 @@ public double getNoisePercentage() {
 return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "noisePercentage") ;
 }
 /**
+* terminateOnNoiseReached specifies whether to terminate when noise criterion is met.
+* mandatory: false| reinit necessary: true
+* default value: true
+* @return boolean 
+**/
+public boolean getTerminateOnNoiseReached() {
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "terminateOnNoiseReached") ;
+}
+/**
 * startClass the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class).
 * mandatory: false| reinit necessary: true
 * default value: null
@@ -383,6 +392,15 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 **/
 public double getStartNodeBonus() {
 return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "startNodeBonus") ;
+}
+/**
+* negationPenalty Penalty on negations (TODO: better explanation)..
+* mandatory: false| reinit necessary: true
+* default value: 0
+* @return int 
+**/
+public int getNegationPenalty() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "negationPenalty") ;
 }
 
 /**
@@ -674,6 +692,15 @@ ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "noise
 reinitNecessary = true;
 }
 /**
+* @param terminateOnNoiseReached specifies whether to terminate when noise criterion is met.
+* mandatory: false| reinit necessary: true
+* default value: true
+**/
+public void setTerminateOnNoiseReached(boolean terminateOnNoiseReached) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "terminateOnNoiseReached", terminateOnNoiseReached);
+reinitNecessary = true;
+}
+/**
 * @param startClass the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class).
 * mandatory: false| reinit necessary: true
 * default value: null
@@ -707,6 +734,15 @@ reinitNecessary = true;
 **/
 public void setStartNodeBonus(double startNodeBonus) {
 ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "startNodeBonus", startNodeBonus);
+reinitNecessary = true;
+}
+/**
+* @param negationPenalty Penalty on negations (TODO: better explanation)..
+* mandatory: false| reinit necessary: true
+* default value: 0
+**/
+public void setNegationPenalty(int negationPenalty) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "negationPenalty", negationPenalty);
 reinitNecessary = true;
 }
 

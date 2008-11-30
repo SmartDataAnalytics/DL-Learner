@@ -92,7 +92,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	// actual algorithm
 	private ExampleBasedROLearner algorithm;
 	private static Logger logger = Logger
-		.getLogger(ExampleBasedROLearner.class);
+		.getLogger(ExampleBasedROLComponent.class);
 	private String logLevel = CommonConfigOptions.logLevelDefault;	
 		
 	// configuration options
@@ -208,14 +208,13 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(new BooleanConfigOption("usePropernessChecks", "specifies whether to check for equivalence (i.e. discard equivalent refinements)",usePropernessChecksDefault));
 		options.add(new IntegerConfigOption("maxPosOnlyExpansion", "specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is" +
 				" considered as solution candidate",maxPosOnlyExpansionDefault));
-		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples",noisePercentageDefault);
-		noisePercentage.setLowerLimit(0);
-		noisePercentage.setUpperLimit(100);
-		options.add(noisePercentage);
+		options.add(CommonConfigOptions.getNoisePercentage());
+		options.add(CommonConfigOptions.getTerminateOnNoiseReached());
 		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
 		options.add(new BooleanConfigOption("forceRefinementLengthIncrease", "specifies whether nodes should be expanded until only longer refinements are reached"));
 		options.add(new DoubleConfigOption("negativeWeight", "Used to penalise errors on negative examples different from those of positive examples (lower = less importance for negatives).",1.0));
 		options.add(new DoubleConfigOption("startNodeBonus", "You can use this to give a heuristic bonus on the start node (= initially broader exploration of search space).",0.0));
+		options.add(new IntegerConfigOption("negationPenalty", "Penalty on negations (TODO: better explanation).", 0));
 		return options;
 	}
 	

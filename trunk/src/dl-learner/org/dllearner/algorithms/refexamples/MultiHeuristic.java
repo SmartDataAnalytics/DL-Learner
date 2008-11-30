@@ -24,6 +24,7 @@ import java.util.List;
 import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.owl.ConceptComparator;
 
@@ -69,7 +70,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public class MultiHeuristic implements ExampleBasedHeuristic {
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
-//	private ExampleBasedROLComponentConfigurator configurator;
+	private ExampleBasedROLComponentConfigurator configurator;
 	
 	// heuristic parameters
 	private double expansionPenaltyFactor = 0.02;
@@ -94,7 +95,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, ExampleBasedROLComponentConfigurator configurator) {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
-//		this.configurator = configurator;
+		this.configurator = configurator;
 		negativeWeight = configurator.getNegativeWeight();
 		startNodeBonus = configurator.getStartNodeBonus();
 	}
@@ -149,7 +150,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 	
 	// this function can be used to give some constructs a length bonus
 	// compared to their syntactic length
-	private static int getHeuristicLengthBonus(Description description) {
+	private int getHeuristicLengthBonus(Description description) {
 		int bonus = 0;
 		
 		// do not count TOP symbols (in particular in ALL r.TOP and EXISTS r.TOP)
@@ -157,11 +158,17 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		if(description instanceof Thing)
 			bonus = 1; //2;
 		
+		// we put a penalty on negations, because they often overfit
+		// (TODO: make configurable)
+		else if(description instanceof Negation) {
+			bonus = -configurator.getNegationPenalty();
+		}
+		
 //		if(description instanceof BooleanValueRestriction)
 //			bonus = -1;
 		
 		// some bonus for doubles because they are already penalised by length 3
-		if(description instanceof DatatypeSomeRestriction) {
+		else if(description instanceof DatatypeSomeRestriction) {
 //			System.out.println(description);
 			bonus = 3; //2;
 		}

@@ -52,13 +52,25 @@ public final class CommonConfigOptions {
 	public static int guaranteeXgoodDescriptionsDefault = 1;
 	public static int maxClassDescriptionTestsDefault = 0;
 	public static String logLevelDefault = "DEBUG";
-	//public static double noisePercentageDefault = 0.0;
+	public static double noisePercentageDefault = 0.0;
+	public static boolean terminateOnNoiseReachedDefault = true;
 	
 	public static StringConfigOption getVerbosityOption() {
 		StringConfigOption verbosityOption = new StringConfigOption("verbosity", "control verbosity of output for this component", "warning");
 		String[] allowedValues = new String[] {"quiet", "error", "warning", "notice", "info", "debug"};
 		verbosityOption.setAllowedValues(allowedValues);
 		return verbosityOption;
+	}
+	
+	public static DoubleConfigOption getNoisePercentage() {
+		DoubleConfigOption noisePercentage = new DoubleConfigOption("noisePercentage", "the (approximated) percentage of noise within the examples",noisePercentageDefault);
+		noisePercentage.setLowerLimit(0);
+		noisePercentage.setUpperLimit(100);
+		return noisePercentage;
+	}
+	
+	public static BooleanConfigOption getTerminateOnNoiseReached() {
+		return new BooleanConfigOption("terminateOnNoiseReached", "specifies whether to terminate when noise criterion is met", terminateOnNoiseReachedDefault);
 	}
 	
 	public static DoubleConfigOption getPercentPerLenghtUnitOption(double defaultValue) {

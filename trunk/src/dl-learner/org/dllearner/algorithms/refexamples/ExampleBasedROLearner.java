@@ -413,8 +413,8 @@ public class ExampleBasedROLearner {
 		long traversalInterval = 300l * 1000000000l;
 		long reductionInterval = 300l * 1000000000l;
 		long currentTime;
-
-		while (!solutionFound && !stop) {
+		
+		while ((!solutionFound || !configurator.getTerminateOnNoiseReached() ) && !stop) {
 
 			// print statistics at most once a second
 			currentTime = System.nanoTime();

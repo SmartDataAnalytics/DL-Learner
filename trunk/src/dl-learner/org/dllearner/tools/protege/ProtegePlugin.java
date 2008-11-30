@@ -58,7 +58,7 @@ private OWLFrameList2<OWLClass> list;
 		if(useAdditionalLogger) {
 			Layout layout = new HTMLLayout();
 			String fileName = "logs/dllearner_log.html";
-			FileAppender fileAppender = new FileAppender(layout, fileName);
+			FileAppender fileAppender = new FileAppender(layout, fileName, true);
 			// only add log statements in protege package to log file
 			Logger protegeLogger = Logger.getLogger("org.dllearner.tools.protege");
 			protegeLogger.addAppender(fileAppender);
