@@ -31,7 +31,6 @@ public class IndividualObject {
 	/**
 	 * Constructor for the IndividualObject.
 	 * @param normal String
-	 * @param manchester String
 	 * @param pos boolean
 	 */
 	public IndividualObject(String normal, boolean pos) {

@@ -54,14 +54,14 @@ public class OptionPanel extends JPanel {
 		maxExecutionTimeLabel = new JLabel("maximum execution time");
 		nrOfConceptsLabel = new JLabel("maximum number of results");
 		
-		minAccuracy = new JSlider(50, 100, 50);
+		minAccuracy = new JSlider(50, 100, 90);
 		minAccuracy.setPaintTicks(true);
 		minAccuracy.setMajorTickSpacing(10);
 		minAccuracy.setMinorTickSpacing(1);
 		minAccuracy.setPaintLabels(true);
 
 		
-		maxExecutionTime = new JSlider(5, 20, 10);
+		maxExecutionTime = new JSlider(2, 20, 3);
 		maxExecutionTime.setPaintTicks(true);
 		maxExecutionTime.setMajorTickSpacing(5);
 		maxExecutionTime.setMinorTickSpacing(1);
