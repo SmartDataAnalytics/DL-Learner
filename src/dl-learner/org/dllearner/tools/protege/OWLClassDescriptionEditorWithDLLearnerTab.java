@@ -629,6 +629,18 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public void addAdvancedButtonListener(ActionListener a) {
 			advanced.addActionListener(a);
 		}
+		
+		/**
+		 * This method sets the run button enable after learning.
+		 */
+		public void algorithmTerminated() {
+			String error = "learning succesful";
+			String message = "To view details about why a class description was suggested, please doubleclick on it.";
+			run.setEnabled(true);
+			// start the algorithm and print the best concept found
+			renderErrorMessage(error);
+			setHintMessage(message);
+		}
 
 	}
 	/**

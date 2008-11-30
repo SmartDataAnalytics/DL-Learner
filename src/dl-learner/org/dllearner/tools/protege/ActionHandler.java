@@ -75,7 +75,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 	private Timer timer;
 	private LearningAlgorithm la;
 	private SuggestionRetriever retriever;
-
 	/**
 	 * This is the constructor for the action handler.
 	 * 
@@ -110,9 +109,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 	public void actionPerformed(ActionEvent z) {
 
 		if (z.getActionCommand().equals(id)) {
-			if (model.getAlreadyLearned()) {
-				model.unsetListModel();
-			}
 			model.setKnowledgeSource();
 			model.setReasoner();
 			model.setPositiveAndNegativeExamples();
@@ -122,8 +118,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 			view.renderErrorMessage("learning started");
 			view.getPosAndNegSelectPanel().setCheckBoxesEnable(false);
 			retriever = new SuggestionRetriever();
-			//
-			// dlLearner.start();
 			retriever.execute();
 
 		}
@@ -301,6 +295,9 @@ public class ActionHandler implements ActionListener, ItemListener,
 		// TODO Auto-generated method stub
 
 	}
+	
+	
+	
 /**
  * Inner Class that retrieves the concepts given by the DL-Learner. 
  * @author Christian Koetteritzsch
@@ -322,18 +319,14 @@ public class ActionHandler implements ActionListener, ItemListener,
 			timer.schedule(new TimerTask(){
 				
 				@Override
-				public void run() {
-					System.out.println("DA BIN ICH:");	
+				public void run() {	
 					if (la != null) {
-							
-							//System.out.println("EVAL: " + la.getCurrentlyBestEvaluatedDescriptions().isEmpty());
-							//System.out.println("SIZE: " + la.getCurrentlyBestEvaluatedDescriptions().size());
 						publish(la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts()
 								, view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true));
 					}
 				}
 
-			}, 0, 1000);
+			}, 0, 500);
 
 			dlLearner = new Thread(new Runnable() {
 
@@ -374,8 +367,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 				e.printStackTrace();
 			}
 
-			view.getRunButton().setEnabled(true);
-			System.out.println("DONE");
+			view.algorithmTerminated();
 			updateList(result);
 		}
 
@@ -397,7 +389,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 				
 
 				public void run() {
-					System.out.println("JETZT HIER:");
 					model.setSuggestList(result);
 					// learnPanel.getListModel().clear();
 					dm.clear();
@@ -421,7 +412,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 							}
 						}
 					}
-					System.out.println("NAJA NUN HIER");
 					view.getSuggestClassPanel().setSuggestList(dm);
 				}
 			};

@@ -46,7 +46,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
-import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.jdesktop.swingx.JXTaskPane;
 import org.protege.editor.owl.OWLEditorKit;
@@ -68,13 +68,13 @@ import org.semanticweb.owl.model.OWLOntologyManager;
  * @author Christian Koetteritzsch
  * 
  */
-public class DLLearnerModel implements Runnable {
+public class DLLearnerModel implements Runnable{
 
 	// The Sting is for components that are available in the DL-Learner
 
 	private String[] componenten = { "org.dllearner.kb.OWLFile",
 			"org.dllearner.reasoning.OWLAPIReasoner",
-			"org.dllearner.reasoning.DIGReasoner",
+			"org.dllearner.reasoning.FastInstanceChecker",
 			"org.dllearner.reasoning.FastRetrievalReasoner",
 			"org.dllearner.learningproblems.PosNegInclusionLP",
 			"org.dllearner.learningproblems.PosNegDefinitionLP",
@@ -90,6 +90,8 @@ public class DLLearnerModel implements Runnable {
 	// The Reasoning Service for the Reasoner
 
 	private ReasonerComponent rs;
+	private static final String EQUIVALENT_CLASS_AXIOM_STRING = "Suggest equivalent class";
+	private static final String SUPER_CLASS_AXIOM_STRING = "Suggest super class";
 
 	// The View of the DL-Learner Plugin
 
@@ -127,7 +129,7 @@ public class DLLearnerModel implements Runnable {
 
 	// The Reasoner which is used to learn
 
-	private OWLAPIReasoner reasoner;
+	private FastInstanceChecker reasoner;
 
 	// A Set of Descriptions in OWL Syntax which the DL-Learner suggested
 
@@ -172,7 +174,6 @@ public class DLLearnerModel implements Runnable {
 
 	// The error message which is rendered when an error occured
 
-	private String error;
 
 	// This is the new axiom which will be added to the Ontology
 
@@ -184,7 +185,7 @@ public class DLLearnerModel implements Runnable {
 	private DefaultListModel posListModel;
 	private DefaultListModel negListModel;
 	private Set<KnowledgeSource> sources;
-	//private KnowledgeSource source;
+	// private KnowledgeSource source;
 	private boolean hasIndividuals;
 	private NamedClass currentConcept;
 	private Vector<IndividualObject> individualVector;
@@ -288,20 +289,22 @@ public class DLLearnerModel implements Runnable {
 	 * OWLAPIOntology will be available.
 	 */
 	public void setKnowledgeSource() {
-		//Ssource = new OWLAPIOntology(editor.getModelManager().getActiveOntology());
-		Iterator<OWLOntology> it = editor.getModelManager().getActiveOntologies().iterator();
+		// source = new
+		// OWLAPIOntology(editor.getModelManager().getActiveOntology());
+		Iterator<OWLOntology> it = editor.getModelManager()
+				.getActiveOntologies().iterator();
 		while (it.hasNext()) {
 			sources.add(new OWLAPIOntology(it.next()));
 		}
 	}
 
 	/**
-	 * This method sets the reasoner and the reasoning service Only
-	 * OWLAPIReasoner is available.
+	 * This method sets the reasoner. Only
+	 * FastInstanceChecker is available.
 	 */
 	public void setReasoner() {
-		this.reasoner = cm.reasoner(OWLAPIReasoner.class, sources);
-		
+		this.reasoner = cm.reasoner(FastInstanceChecker.class, sources);
+
 		try {
 			reasoner.init();
 		} catch (ComponentInitException e) {
@@ -318,12 +321,12 @@ public class DLLearnerModel implements Runnable {
 	 * classes.
 	 */
 	public void setLearningProblem() {
-		if (id.equals("Suggest equivalent class")) {
+		if (id.equals(EQUIVALENT_CLASS_AXIOM_STRING)) {
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
 			lp = cm.learningProblem(PosNegDefinitionLP.class, reasoner);
 		}
-		if (id.equals("Suggest super class")) {
+		if (id.equals(SUPER_CLASS_AXIOM_STRING)) {
 			// sets the learning problem to PosNegInclusionLP when the dllearner
 			// should suggest a subclass
 			lp = cm.learningProblem(PosNegInclusionLP.class, reasoner);
@@ -354,6 +357,9 @@ public class DLLearnerModel implements Runnable {
 		Set<String> ignore = new TreeSet<String>();
 		ignore.add(currentConcept.toString());
 		cm.applyConfigEntry(la, "ignoredConcepts", ignore);
+		cm.applyConfigEntry(la, "noisePercentage", 5);
+		cm.applyConfigEntry(la, "terminateOnNoiseReached", false);
+		cm.applyConfigEntry(la, "negationPenalty", 2);
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
 				.getPosAndNegSelectPanel().getOptionPanel()
 				.getMaxExecutionTime());
@@ -367,18 +373,6 @@ public class DLLearnerModel implements Runnable {
 	}
 
 	/**
-	 * This method starts the learning process.
-	 */
-	public void run() {
-		error = "learning succesful";
-		String message = "To view details about why a class description was suggested, please doubleclick on it.";
-		// start the algorithm and print the best concept found
-		la.start();
-		view.renderErrorMessage(error);
-		view.setHintMessage(message);
-	}
-
-	/**
 	 * This method returns the Concepts from the DL-Learner.
 	 * 
 	 * @return Array of learned Concepts.
@@ -386,17 +380,12 @@ public class DLLearnerModel implements Runnable {
 	public Description[] getSolutions() {
 		return description;
 	}
-
 	/**
-	 * This method gets an error message and storess it.
-	 * 
-	 * @param err
-	 *            error message
+	 * Starts the learning algorithm.
 	 */
-	public void setErrorMessage(String err) {
-		this.error = err;
+	public void run() {
+		la.start();
 	}
-
 	/**
 	 * This method sets the check boxes for the positive check boxes checked if
 	 * the individuals matches the concept that is chosen in protege.
@@ -416,8 +405,8 @@ public class DLLearnerModel implements Runnable {
 				if (setPositivExamplesChecked(indiv)) {
 					if (indiv.contains(ont.getURI().toString())) {
 						// when yes then it sets the positive example checked
-						
-						//OWLExpressionCheckerFactory
+
+						// OWLExpressionCheckerFactory
 						posListModel.add(0, ind.toManchesterSyntaxString(ont
 								.getURI().toString(), null));
 						individualVector.add(new IndividualObject(indiv, true));
@@ -475,10 +464,11 @@ public class DLLearnerModel implements Runnable {
 				if (individuals == null) {
 					NamedClass concept = i.next();
 					// checks if the concept is the selected concept in protege
-					if(concept.toString().contains("#")) {
-						if (concept.toString().endsWith("#"+
-								current.getRootObject().toString())) {
-							// if individuals is not null it gets all individuals of
+					if (concept.toString().contains("#")) {
+						if (concept.toString().endsWith(
+								"#" + current.getRootObject().toString())) {
+							// if individuals is not null it gets all
+							// individuals of
 							// the concept
 							currentConcept = concept;
 							if (reasoner.getIndividuals(concept) != null) {
@@ -491,8 +481,9 @@ public class DLLearnerModel implements Runnable {
 						}
 					} else {
 						if (concept.toString().endsWith(
-								 current.getRootObject().toString())) {
-							// if individuals is not null it gets all individuals of
+								current.getRootObject().toString())) {
+							// if individuals is not null it gets all
+							// individuals of
 							// the concept
 							currentConcept = concept;
 							if (reasoner.getIndividuals(concept) != null) {
@@ -517,8 +508,6 @@ public class DLLearnerModel implements Runnable {
 	/**
 	 * This Method checks if the selected class has any individuals.
 	 * 
-	 * @param owlConcept
-	 *            OWLClass
 	 * @return boolean hasIndividuals
 	 */
 	public boolean hasIndividuals() {
@@ -729,11 +718,11 @@ public class DLLearnerModel implements Runnable {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		if (id.equals("Suggest equivalent class")) {
+		if (id.equals(EQUIVALENT_CLASS_AXIOM_STRING)) {
 			axiomOWLAPI = factory.getOWLEquivalentClassesAxiom(ds);
 		} else {
-			axiomOWLAPI = factory.getOWLSubClassAxiom(newConceptOWLAPI,
-					oldConceptOWLAPI);
+			axiomOWLAPI = factory.getOWLSubClassAxiom(oldConceptOWLAPI,
+					newConceptOWLAPI);
 		}
 		OWLOntology onto = editor.getModelManager().getActiveOntology();
 		AddAxiom axiom = new AddAxiom(onto, axiomOWLAPI);
@@ -801,21 +790,73 @@ public class DLLearnerModel implements Runnable {
 	public void setSuggestList(List<EvaluatedDescription> list) {
 		evalDescriptions = list;
 	}
-
+	
+	/**
+	 * This method returns the OWLEditorKit.
+	 * @return OWLEditorKit
+	 */
 	public OWLEditorKit getOWLEditorKit() {
 		return editor;
 	}
-	
+
 	/**
-	 * This method returns the currently used ontoloies including
-	 * importet ontologies.
+	 * This method returns the currently used ontoloies including importet
+	 * ontologies.
+	 * 
 	 * @return Set<OWLAPIOntology> ontologies
 	 */
 	public Set<OWLAPIOntology> getOWLOntologies() {
 		return ontologies;
 	}
-	
+
+	/**
+	 * This method returns the Knowledgesources currenty used. 
+	 * @return Set<KnowledgSource>
+	 */
 	public Set<KnowledgeSource> getKnowledgeSources() {
 		return sources;
 	}
+
+	/*public void updateSuggestListItems() {
+		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(view
+				.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts(),
+				view.getPosAndNegSelectPanel().getOptionPanel()
+						.getMinAccuracy(), true);
+		// learnPanel.getListModel().clear();
+		DefaultListModel dm = new DefaultListModel();
+		Iterator<EvaluatedDescription> it = evalDescriptions.iterator();
+		int i = 0;
+		while (it.hasNext()) {
+			Iterator<OWLOntology> ont = editor.getModelManager()
+					.getActiveOntologies().iterator();
+			EvaluatedDescription eval = it.next();
+			while (ont.hasNext()) {
+				String onto = ont.next().getURI().toString();
+				if (eval.getDescription().toString().contains(onto)) {
+					if (isConsistent(eval)) {
+						dm.add(i, new SuggestListItem(Color.GREEN, eval
+								.getDescription().toManchesterSyntaxString(
+										onto, null)));
+						i++;
+						break;
+					} else {
+						dm.add(i, new SuggestListItem(Color.RED, eval
+								.getDescription().toManchesterSyntaxString(
+										onto, null)));
+						i++;
+						break;
+					}
+				}
+			}
+		}
+		view.getSuggestClassPanel().setSuggestList(dm);
+	}
+	
+	public void algorithmTerminated() {
+		error = "learning succesful";
+		String message = "To view details about why a class description was suggested, please doubleclick on it.";
+		// start the algorithm and print the best concept found
+		view.renderErrorMessage(error);
+		view.setHintMessage(message);
+	}*/
 }
