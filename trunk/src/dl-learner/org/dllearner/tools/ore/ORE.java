@@ -66,8 +66,8 @@ public class ORE {
 	private PosNegDefinitionLP lp;
 	private ComponentManager cm;
 	
-	private FastInstanceChecker fastReasoner;
-	private OWLAPIReasoner owlReasoner;
+	private ReasonerComponent fastReasoner;
+	private ReasonerComponent owlReasoner;
 	
 	private SortedSet<Individual> posExamples;
 	private SortedSet<Individual> negExamples;
@@ -85,9 +85,9 @@ public class ORE {
 	
 	
 	public ORE() {
-
+		
 		cm = ComponentManager.getInstance();
-
+		
 	}
 	
 	// step 1: detect knowledge sources
@@ -141,7 +141,7 @@ public class ORE {
 		modifier = new OntologyModifier(owlReasoner, rs);
 		baseURI = fastReasoner.getBaseURI();
 		prefixes = fastReasoner.getPrefixes();
-	
+		
 	}
 	
 	/**
@@ -155,8 +155,9 @@ public class ORE {
 	
 	
 	public void setPosNegExamples(){
-		posExamples = rs.getIndividuals(classToLearn);
-		negExamples = rs.getIndividuals();
+		posExamples = owlReasoner.getIndividuals(classToLearn);
+		negExamples = owlReasoner.getIndividuals();
+		
 		
 		for (Individual pos : posExamples){
 			negExamples.remove(pos);
@@ -182,11 +183,11 @@ public class ORE {
 		return prefixes;
 	}
 
-	public OWLAPIReasoner getOwlReasoner() {
+	public ReasonerComponent getOwlReasoner() {
 		return owlReasoner;
 	}
 	
-	public FastInstanceChecker getFastReasoner() {
+	public ReasonerComponent getFastReasoner() {
 		return fastReasoner;
 	}
 
@@ -470,8 +471,8 @@ public class ORE {
 	 */
 	public Set<NamedClass> getpossibleClassesMoveTo(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
-		for(NamedClass nc : rs.getNamedClasses()){
-			if(!rs.hasType(nc, ind)){
+		for(NamedClass nc : owlReasoner.getNamedClasses()){
+			if(!owlReasoner.hasType(nc, ind)){
 				moveClasses.add(nc);
 			}
 		}
@@ -487,8 +488,8 @@ public class ORE {
 	 */
 	public Set<NamedClass> getpossibleClassesMoveFrom(Individual ind){
 		Set<NamedClass> moveClasses = new HashSet<NamedClass>();
-		for(NamedClass nc : rs.getNamedClasses()){
-			if(rs.hasType(nc, ind)){
+		for(NamedClass nc : owlReasoner.getNamedClasses()){
+			if(owlReasoner.hasType(nc, ind)){
 				moveClasses.add(nc);
 			}
 		}
@@ -541,8 +542,33 @@ public class ORE {
 		
 		return complements;
 	}
-}
+
 	
+
+	public static void main(String[] args){
+		final ORE test = new ORE();
+		
+		File owlFile1 = new File("examples/ore/people+pets.owl");
+		File owlFile2 = new File("examples/ore/inconsistent.owl");
+		File owlFile3 = new File("examples/ore/incohaerent.owl");
+		
+		test.setKnowledgeSource(owlFile1);
+		test.initReasoners();
+		System.out.println(test.owlReasoner.isSatisfiable());
+		
+		test.setKnowledgeSource(owlFile2);
+		test.initReasoners();
+		System.out.println(test.owlReasoner.isSatisfiable());
+		
+		test.setKnowledgeSource(owlFile3);
+		test.initReasoners();
+		System.out.println(test.owlReasoner.isSatisfiable());
+		
+		
+		
+		
+	}
+}
 	
 //	public static void main(String[] args){
 //		

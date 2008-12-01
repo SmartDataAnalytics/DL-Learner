@@ -61,6 +61,7 @@ public class ColumnListCellRenderer extends JPanel implements ListCellRenderer {
 		desc.setText(((EvaluatedDescription) value).getDescription().toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
 		//round accuracy to 2 digits
 		double accuracy = ((EvaluatedDescription) value).getAccuracy();
+		
 		BigDecimal roundedAccuracy = new BigDecimal(accuracy * 100);
 		roundedAccuracy = roundedAccuracy.setScale(2, BigDecimal.ROUND_HALF_UP);
 		cor.setText(roundedAccuracy.toString());
