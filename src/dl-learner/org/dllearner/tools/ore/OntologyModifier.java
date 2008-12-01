@@ -75,17 +75,17 @@ import org.semanticweb.owl.util.OWLEntityRemover;
 public class OntologyModifier {
 
 	private OWLOntology ontology;
-	private OWLAPIReasoner reasoner;
+	private ReasonerComponent reasoner;
 	private OWLDataFactory factory;
 	private OWLOntologyManager manager;
 	private ReasonerComponent rs;
 	
 	
-	public OntologyModifier(OWLAPIReasoner reasoner, ReasonerComponent rs){
+	public OntologyModifier(ReasonerComponent reasoner, ReasonerComponent rs){
 		this.reasoner = reasoner;
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
-		this.ontology = reasoner.getOWLAPIOntologies().get(0);
+		this.ontology = ((OWLAPIReasoner)reasoner).getOWLAPIOntologies().get(0);
 		this.rs = rs;
 	}
 	
@@ -595,7 +595,7 @@ public class OntologyModifier {
 			}
 	        OWLDebugger debugger = new BlackBoxOWLDebugger(manager, ontology, checker);
 	        
-	        for(OWLClass owlClass : reasoner.getInconsistentOWLClasses()){
+	        for(OWLClass owlClass : ((OWLAPIReasoner)reasoner).getInconsistentOWLClasses()){
 	        /* Find the sets of support and print them */
 		        Set<Set<OWLAxiom>> allsos = null;
 				try {

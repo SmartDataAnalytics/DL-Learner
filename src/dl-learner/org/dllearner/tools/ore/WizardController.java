@@ -282,8 +282,8 @@ public class WizardController implements ActionListener {
 
 			wizard.getModel().getOre().initReasoners();
 
-			Set<NamedClass> ind = wizard.getModel().getOre()
-					.getReasonerComponent().getNamedClasses();
+			Set<NamedClass> ind = wizard.getModel().getOre().getOwlReasoner().getNamedClasses();
+					
 
 			return ind;
 		}
