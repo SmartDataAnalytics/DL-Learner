@@ -357,7 +357,7 @@ public class DLLearnerModel implements Runnable{
 		Set<String> ignore = new TreeSet<String>();
 		ignore.add(currentConcept.toString());
 		cm.applyConfigEntry(la, "ignoredConcepts", ignore);
-		cm.applyConfigEntry(la, "noisePercentage", 5);
+		cm.applyConfigEntry(la, "noisePercentage", 5.0);
 		cm.applyConfigEntry(la, "terminateOnNoiseReached", false);
 		cm.applyConfigEntry(la, "negationPenalty", 2);
 		cm.applyConfigEntry(la, "maxExecutionTimeInSeconds", view
