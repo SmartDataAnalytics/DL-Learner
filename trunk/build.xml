@@ -4,7 +4,7 @@
 	<!-- directory settings -->
 	<property name="lib_dir" value="lib" />
 	<property name="source_dir" value="src/dl-learner" />
-	<property name="protege_dir" value="/home/jl/programme/Protege_4.0_beta/plugins" />
+	<property name="protege_dir" value="C:/Programme/Protege_4.0_beta/plugins" />
 	<property name="class_dir" value="classes" />
 	
 	<property name="php_client_dir" value="src/php-client" />
@@ -307,8 +307,10 @@ public class Info {
 	<target name="protege">
 		<property name="source" value="src/dl-learner/org/dllearner/tools/protege" />
 		<property name="temp" value="${source}/temp" />
+		<property name="release" value="${source}/release" />
 			
 	    	<mkdir dir="${temp}" />
+			<mkdir dir="${release}" />
 	    	<mkdir dir="${temp}/META-INF" />
 			<mkdir dir="${temp}/lib" />
 			<mkdir dir="${temp}/lib/pellet" />
@@ -340,11 +342,30 @@ public class Info {
 	         debug="on">
 				<classpath refid="classpath"/>
 	    	</javac>
-	    	<jar destfile="${protege_dir}/dl-learner.jar" manifest="${temp}/META-INF/MANIFEST.MF">
+	    	<jar destfile="${release}/DL-Learner-protege-plugin.jar" manifest="${temp}/META-INF/MANIFEST.MF">
 	    			<fileset dir="${temp}" />
 	    		</jar>
-	    	<delete dir="${temp}" />
+		<copy file="LICENSE" toDir="${release}" />
+		<copy toDir="${release}" >
+						<fileset dir="${source}" includes="Install_protege,Readme_protege" excludes="**/*.java,**/*.gif" />
+					</copy>
 			
 		</target>
+	
+	<target name="copyProtegePluginToProtegeDir" depends="protege">
+		<copy toDir="${protege_dir}" >
+						<fileset dir="${release}" includes="DL-Learner-protege-plugin.jar" />
+					</copy>
+		<delete dir="${temp}" />
+		<delete dir="${release}" />
+		</target>
+	
+	<target name="buildProtegePlugin" depends="protege">
+		<zip destfile="${source}/protege-plugin.zip"
+		       basedir="${release}"
+		  />
+		<delete dir="${temp}" />
+		<delete dir="${release}" />
+	</target>
 	
 </project>
