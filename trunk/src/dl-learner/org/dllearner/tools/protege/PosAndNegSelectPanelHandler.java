@@ -60,8 +60,8 @@ public PosAndNegSelectPanelHandler(DLLearnerModel m, OWLClassDescriptionEditorWi
  */
 public void actionPerformed(ActionEvent action) {
 
-		
-	if (action.getActionCommand().equals("pos")) {
+		System.out.println(action.getSource());
+	if (action.getSource().toString().contains("pos")) {
 		panel.setExampleToOtherList(true, panel.getNegExampleList().getSelectedValue().toString());
 		System.out.println("COUNT: " + panel.getPosExampleList().getModel().getSize());
 		if(panel.getPosExampleList().getModel().getSize()>0) {
@@ -69,7 +69,7 @@ public void actionPerformed(ActionEvent action) {
 		}
 	}
 
-	if (action.getActionCommand().equals("neg")) {
+	if (action.getSource().toString().contains("neg")) {
 		panel.setExampleToOtherList(false, panel.getPosExampleList().getSelectedValue().toString());
 	}
 	
