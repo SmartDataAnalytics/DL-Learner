@@ -75,6 +75,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 	private Timer timer;
 	private LearningAlgorithm la;
 	private SuggestionRetriever retriever;
+	private final Color colorRed = new Color(139,0,0);
+	private final Color colorGreen = new Color(0,139,0);
 	/**
 	 * This is the constructor for the action handler.
 	 * 
@@ -220,16 +222,27 @@ public class ActionHandler implements ActionListener, ItemListener,
 				for (Iterator<EvaluatedDescription> i = model
 						.getEvaluatedDescriptionList().iterator(); i.hasNext();) {
 					eDescription = i.next();
-					if (desc.equals(eDescription.getDescription()
-							.toManchesterSyntaxString(
-									editorKit.getModelManager()
-											.getActiveOntology().getURI().toString()
-											, null))) {
-						evaluatedDescription = eDescription;
-						
-						break;
+					if(eDescription.getDescription().toString().contains("#")) {
+						if (desc.equals(eDescription.getDescription()
+								.toManchesterSyntaxString(
+										editorKit.getModelManager()
+												.getActiveOntology().getURI().toString() + "#"
+												, null))) {
+							evaluatedDescription = eDescription;
+							
+							break;
+						}
+					} else {
+						if (desc.equals(eDescription.getDescription()
+								.toManchesterSyntaxString(
+										editorKit.getModelManager()
+												.getActiveOntology().getURI().toString()
+												, null))) {
+							evaluatedDescription = eDescription;
+							
+							break;
+						}
 					}
-
 				}
 			}
 
@@ -400,14 +413,26 @@ public class ActionHandler implements ActionListener, ItemListener,
 						while(ont.hasNext()) {
 							String onto = ont.next().getURI().toString();
 							if(eval.getDescription().toString().contains(onto)) {
-								if(model.isConsistent(eval)) {
-									dm.add(i, new SuggestListItem(Color.GREEN, eval.getDescription().toManchesterSyntaxString(onto, null)));
-									i++;
-									break;
+								if(eval.getDescription().toString().contains("#")) {
+									if(model.isConsistent(eval)) {
+										dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(onto+"#", null)));
+										i++;
+										break;
+									} else {
+										dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(onto+"#", null)));
+										i++;
+										break;
+									}
 								} else {
-									dm.add(i, new SuggestListItem(Color.RED, eval.getDescription().toManchesterSyntaxString(onto, null)));
-									i++;
-									break;
+									if(model.isConsistent(eval)) {
+										dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(onto, null)));
+										i++;
+										break;
+									} else {
+										dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(onto, null)));
+										i++;
+										break;
+									}
 								}
 							}
 						}

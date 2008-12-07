@@ -402,25 +402,49 @@ public class DLLearnerModel implements Runnable{
 				OWLOntology ont = onto.next();
 				String indiv = ind.toString();
 				// checks if individual belongs to the selected concept
-				if (setPositivExamplesChecked(indiv)) {
-					if (indiv.contains(ont.getURI().toString())) {
-						// when yes then it sets the positive example checked
+				if(ind.toString().contains("#")) {
+					if (setPositivExamplesChecked(indiv)) {
+						if (indiv.contains(ont.getURI().toString())) {
+							// when yes then it sets the positive example checked
 
-						// OWLExpressionCheckerFactory
-						posListModel.add(0, ind.toManchesterSyntaxString(ont
-								.getURI().toString(), null));
-						individualVector.add(new IndividualObject(indiv, true));
-						break;
+							// OWLExpressionCheckerFactory
+							posListModel.add(0, ind.toManchesterSyntaxString(ont
+									.getURI().toString()+"#", null));
+							individualVector.add(new IndividualObject(indiv, true));
+							break;
+						}
+
+					} else {
+						// When no it unchecks the positive example
+						if (indiv.contains(ont.getURI().toString())) {
+							individualVector
+									.add(new IndividualObject(indiv, false));
+							negListModel.add(0, ind.toManchesterSyntaxString(ont
+									.getURI().toString()+"#", null));
+							break;
+						}
 					}
-
 				} else {
-					// When no it unchecks the positive example
-					if (indiv.contains(ont.getURI().toString())) {
-						individualVector
-								.add(new IndividualObject(indiv, false));
-						negListModel.add(0, ind.toManchesterSyntaxString(ont
-								.getURI().toString(), null));
-						break;
+					if (setPositivExamplesChecked(indiv)) {
+						if (indiv.contains(ont.getURI().toString())) {
+							// when yes then it sets the positive example checked
+
+							// OWLExpressionCheckerFactory
+							posListModel.add(0, ind.toManchesterSyntaxString(ont
+									.getURI().toString(), null));
+							individualVector.add(new IndividualObject(indiv, true));
+							break;
+						}
+
+					} else {
+						// When no it unchecks the positive example
+						if (indiv.contains(ont.getURI().toString())) {
+							individualVector
+									.add(new IndividualObject(indiv, false));
+							negListModel.add(0, ind.toManchesterSyntaxString(ont
+									.getURI().toString(), null));
+							break;
+						}
 					}
 				}
 			}

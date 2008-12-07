@@ -21,8 +21,10 @@ package org.dllearner.tools.protege;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.net.URL;
 
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -90,6 +92,8 @@ public class PosAndNegSelectPanel extends JPanel {
 	// This is the Text area where the help message is displayed.
 	private OptionPanel optionPanel;
 	private DefaultListModel posListModel;
+	private ImageIcon addToPosListIcon;
+	private ImageIcon addToNegListIcon;
 	private DefaultListModel negListModel;
 	private JPanel examplePanel;
 	private PosAndNegSelectPanelHandler handler;
@@ -117,6 +121,10 @@ public class PosAndNegSelectPanel extends JPanel {
 		examplePanel = new JPanel(null);
 		posLabelPanel = new JPanel(null);
 		negLabelPanel = new JPanel(null);
+		URL iconUrl = this.getClass().getResource("backspace.gif");
+		addToPosListIcon = new ImageIcon(iconUrl);
+		URL toggledIconUrl = this.getClass().getResource("space.gif");
+		addToNegListIcon = new ImageIcon(toggledIconUrl);
 		posListModel = new DefaultListModel();
 		negListModel = new DefaultListModel();
 		pos = new JLabel("Positive Examples");
@@ -129,8 +137,10 @@ public class PosAndNegSelectPanel extends JPanel {
 		negList = new JList(negListModel);
 		negList.setName("neg");
 		negList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		addToPosExamples = new JButton("pos");
-		addToNegExamples = new JButton("neg");
+		addToPosExamples = new JButton(addToPosListIcon);
+		addToPosExamples.setName("pos");
+		addToNegExamples = new JButton(addToNegListIcon);
+		addToNegExamples.setName("neg");
 		helpForPosExamples = new JButton("?");
 		helpForPosExamples.setBounds(100, 5, 20, 20);
 		helpForNegExamples = new JButton("?");

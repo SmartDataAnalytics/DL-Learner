@@ -109,10 +109,10 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private JPanel negCoveredPanel;
 	private JPanel negNotCoveredPanel;
 	private EvaluatedDescription eval;
-	private final Color colorRed = Color.red;
 	private JTextArea concept;
 	private JTextArea conceptText;
-	private final Color colorGreen = Color.green;
+	private final Color colorRed = new Color(139,0,0);
+	private final Color colorGreen = new Color(0,139,0);
 	/**
 	 * This is the constructor for the Panel.
 	 * @param model DLLearnerModel
@@ -239,7 +239,12 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private void setInformation() {
 		if(eval!=null) {
 			//sets the accuracy of the selected concept
-			conceptText.setText(eval.getDescription().toManchesterSyntaxString(model.getURI().toString(), null));
+			System.out.println("EVAL: " + eval.getDescription());
+			if(eval.getDescription().toString().contains("#")) {
+				conceptText.setText(eval.getDescription().toManchesterSyntaxString(model.getURI().toString() + "#", null));
+			} else {
+				conceptText.setText(eval.getDescription().toManchesterSyntaxString(model.getURI().toString(), null));
+			}
 			double acc = (eval.getAccuracy())*100;
 			accuracyText.setText(String.valueOf(acc)+"%");
 			Iterator<Individual> i = eval.getCoveredPositives().iterator();
@@ -248,10 +253,20 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				Individual ind = i.next();
 				while (onto.hasNext()) {
 					String uri = onto.next().getURI().toString();
-					if(ind.toString().contains(uri)) {
-						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
-						posLabel.setForeground(colorGreen);
-						posCoveredPanel.add(posLabel);
+					if(ind.toString().contains("#")) {
+						if(ind.toString().contains(uri)) {
+							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri + "#", null));
+							posLabel.setForeground(colorGreen);
+							posCoveredPanel.add(posLabel);
+							break;
+						}
+					} else {
+						if(ind.toString().contains(uri)) {
+							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
+							posLabel.setForeground(colorGreen);
+							posCoveredPanel.add(posLabel);
+							break;
+						}
 					}
 				}
 				
@@ -264,10 +279,20 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				Individual ind = a.next();
 				while (onto.hasNext()) {
 					String uri = onto.next().getURI().toString();
-					if(ind.toString().contains(uri)) {
-						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
-						posLabel.setForeground(colorRed);
-						posNotCoveredPanel.add(posLabel);
+					if(ind.toString().contains("#")) {
+						if(ind.toString().contains(uri)) {
+							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri + "#", null));
+							posLabel.setForeground(colorRed);
+							posNotCoveredPanel.add(posLabel);
+							break;
+						}
+					} else {
+						if(ind.toString().contains(uri)) {
+							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
+							posLabel.setForeground(colorRed);
+							posNotCoveredPanel.add(posLabel);
+							break;
+						}
 					}
 				}
 				
@@ -282,10 +307,20 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				Individual ind = b.next();
 				while (onto.hasNext()) {
 					String uri = onto.next().getURI().toString();
-					if(ind.toString().contains(uri)) {
-						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
-						posLabel.setForeground(colorRed);
-						negCoveredPanel.add(posLabel);
+					if(ind.toString().contains("#")) {
+						if(ind.toString().contains(uri)) {
+							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri + "#", null));
+							posLabel.setForeground(colorRed);
+							negCoveredPanel.add(posLabel);
+							break;
+						}
+					} else {
+						if(ind.toString().contains(uri)) {
+							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
+							posLabel.setForeground(colorRed);
+							negCoveredPanel.add(posLabel);
+							break;
+						}
 					}
 				}
 				
@@ -299,10 +334,18 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				Individual ind = c.next();
 				while (onto.hasNext()) {
 					String uri = onto.next().getURI().toString();
-					if(ind.toString().contains(uri)) {
-						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
-						posLabel.setForeground(colorGreen);
-						negNotCoveredPanel.add(posLabel);
+					if(ind.toString().contains("#")) {
+						if(ind.toString().contains(uri)) {
+							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri + "#", null));
+							posLabel.setForeground(colorGreen);
+							negNotCoveredPanel.add(posLabel);
+						}
+					} else {
+						if(ind.toString().contains(uri)) {
+							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
+							posLabel.setForeground(colorGreen);
+							negNotCoveredPanel.add(posLabel);
+						}
 					}
 				}
 				
