@@ -237,6 +237,42 @@ public class ELDescriptionTree implements Cloneable {
 			Set<ELDescriptionNode> sameLevel = levelNodeMapping.get(v.getLevel());
 			for(ELDescriptionNode w : sameLevel) {
 				if(v != w) {
+					
+//					System.out.println(v);
+//					System.out.println(w);
+					
+					// we update if SC2 did not hold but does now
+					if(!v.inSC2.contains(w) && checkSC2(v,w)) {
+//						System.out.println("extend sim. after update");
+						
+						extendSimulationSC2(v,w);
+						if(v.inSC1.contains(w)) {
+							extendSimulationSC12(v,w);
+						}
+						if(!list.contains(v.getParent())) {
+							list.add(v.getParent());
+						}
+						if(!list.contains(w.getParent())) {
+							list.add(w.getParent());
+						}					
+					}
+					
+					// similar case, but now possibly shrinking the simulation
+					if(w.inSC2.contains(v) && !checkSC2(w,v)) {
+//						System.out.println("shrink sim. after update");
+						
+						shrinkSimulationSC2(w,v);
+						if(w.inSC1.contains(v)) {
+							shrinkSimulationSC12(w,v);
+						}
+						if(!list.contains(v.getParent())) {
+							list.add(v.getParent());
+						}
+						if(!list.contains(w.getParent())) {
+							list.add(w.getParent());
+						}							
+					}
+					/*
 					if(!v.out.contains(w) ) {
 						System.out.println("test");
 						if(checkSC2(v,w) && v.outSC1.contains(w)) {
@@ -257,6 +293,7 @@ public class ELDescriptionTree implements Cloneable {
 							shrinkSimulationSC2(w,v);
 						}
 					}
+					*/
 				}
 			}
 		}
@@ -297,9 +334,10 @@ public class ELDescriptionTree implements Cloneable {
 		List<ELDescriptionEdge> edges1 = node1.getEdges();
 		List<ELDescriptionEdge> edges2 = node2.getEdges();
 		
-		for(ELDescriptionEdge edge : edges1) {
-			// try to find an edge satisfying SC2 in the set
-			if(!checkSC2Edge(edge, edges2)) {
+		for(ELDescriptionEdge superEdge : edges2) {
+			// try to find an edge satisfying SC2 in the set,
+			// i.e. detect whether superEdge is indeed more general
+			if(!checkSC2Edge(superEdge, edges1)) {
 				return false;
 			}
 		}
@@ -308,16 +346,16 @@ public class ELDescriptionTree implements Cloneable {
 	}
 	
 	// check whether edges contains an element satisfying SC2
-	private boolean checkSC2Edge(ELDescriptionEdge edge, List<ELDescriptionEdge> edges) {
-		ObjectProperty op1 = edge.getLabel();
-		ELDescriptionNode node1 = edge.getTree();
+	private boolean checkSC2Edge(ELDescriptionEdge superEdge, List<ELDescriptionEdge> edges) {
+		ObjectProperty superOP = superEdge.getLabel();
+		ELDescriptionNode node1 = superEdge.getTree();
 		
-		for(ELDescriptionEdge edge2 : edges) {
-			ObjectProperty op2 = edge2.getLabel();
+		for(ELDescriptionEdge edge : edges) {
+			ObjectProperty op = edge.getLabel();		
 			// we first check the condition on the properties
-			if(roleHierarchy.isSubpropertyOf(op1, op2)) {
+			if(roleHierarchy.isSubpropertyOf(op, superOP)) {
 				// check condition on simulations of referred nodes
-				ELDescriptionNode node2 = edge2.getTree();
+				ELDescriptionNode node2 = edge.getTree();
 				if(node1.in.contains(node2) || node2.in.contains(node1)) {
 					// we found a node satisfying the condition, so we can return
 					return true;
@@ -371,10 +409,10 @@ public class ELDescriptionTree implements Cloneable {
 	}
 	
 	public void shrinkSimulationSC2(ELDescriptionNode node1, ELDescriptionNode node2) {
-		System.out.println(node2.outSC2);
+//		System.out.println(node2.outSC2);
 		node1.inSC2.remove(node2);
 		node2.outSC2.remove(node1);
-		System.out.println(node2.outSC2);
+//		System.out.println(node2.outSC2);
 	}
 	
 	public void shrinkSimulationSC12(ELDescriptionNode node1, ELDescriptionNode node2) {

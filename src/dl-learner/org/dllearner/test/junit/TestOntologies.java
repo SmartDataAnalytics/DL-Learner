@@ -36,7 +36,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
  */
 public final class TestOntologies {
 
-	public enum TestOntology { EMPTY, SIMPLE, SIMPLE2, R1SUBR2, DATA1 };
+	public enum TestOntology { EMPTY, SIMPLE, SIMPLE2, SIMPLE3, R1SUBR2, DATA1 };
 	
 	public static ReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
@@ -55,9 +55,13 @@ public final class TestOntologies {
 			kbString += "cat SUB animal.\n";
 			kbString += "(human AND animal) = BOTTOM.\n";
 		} else if(ont.equals(TestOntology.SIMPLE2)) {
-			kbString += "Subrole(r1,r2).\n";
+			kbString += "Subrole(r2,r3).\n";
 			kbString += "a1 SUB TOP.\n";
 			kbString += "a2 SUB a3.\n";
+			kbString += "r1(a,b).\n"; // we have to declare r1
+		} else if(ont.equals(TestOntology.SIMPLE3)) {
+			kbString += "a1 SUB a2.\n";
+			kbString += "Subrole(r1,r2).\n";
 		} else if(ont.equals(TestOntology.R1SUBR2)) {
 			kbString += "Subrole(r1,r2).\n";
 			kbString += "a1 SUB TOP.\n";

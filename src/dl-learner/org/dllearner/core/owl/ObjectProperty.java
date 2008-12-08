@@ -60,4 +60,22 @@ public class ObjectProperty extends ObjectPropertyExpression implements Property
 	public int compareTo(ObjectProperty o) {
 		return name.compareTo(o.name);
 	}    
+	
+	@Override
+	public boolean equals(Object nc) {
+		// standard equals code - always return true for object identity and
+		// false if classes differ
+		if(nc == this) {
+			return true;
+		} else if(getClass() != nc.getClass()) {
+			return false;
+		}
+		// compare on URIs
+		return ((ObjectProperty)nc).name.equals(name);
+	}
+	
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}	
 }
