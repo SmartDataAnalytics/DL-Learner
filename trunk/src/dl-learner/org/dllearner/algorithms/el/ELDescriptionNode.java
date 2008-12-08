@@ -174,7 +174,7 @@ public class ELDescriptionNode {
 //			}
 //		}
 		
-		System.out.println(update);
+//		System.out.println(update);
 		
 		// apply updates recursively top-down
 		tree.updateSimulation(update);		
@@ -335,13 +335,42 @@ public class ELDescriptionNode {
 		// compute the nodes, which need to be updated
 		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
 		
+		Set<ELDescriptionNode> tmp = tree.getNodesOnLevel(level);
+		for(ELDescriptionNode w : tmp) {
+			if(w != this) {
+				// SC1(v,w) can only change from false to true
+				if(!inSC1.contains(w) && tree.checkSC1(this, w)) {
+					tree.extendSimulationSC1(this, w);
+					if(inSC2.contains(w)) {
+						tree.extendSimulationSC12(this, w);		
+					}
+					update.add(w.getParent());
+				}
+				// SC1(w,v) can only change from true to false
+				if(outSC1.contains(w) && !tree.checkSC1(w, this)) {
+					tree.shrinkSimulationSC1(w, this);
+					if(outSC2.contains(w)) {
+						tree.shrinkSimulationSC12(w, this);		
+					}
+					if(!update.contains(w.getParent())) {
+						update.add(w.getParent());
+					}
+				}
+			}
+		}
+		if(parent != null) {
+			update.add(parent);
+		}
+		
+		/*
 		// loop over all nodes on the same level, which are not in the in set
 		Set<ELDescriptionNode> tmp = new HashSet<ELDescriptionNode>(tree.getNodesOnLevel(level));
 		tmp.removeAll(in);
 		for(ELDescriptionNode w : tmp) {
 			if(w != this) {
-				// we only need to recompute SC2
+				// we only need to recompute SC1
 				if(inSC1.contains(w) && tree.checkSC2(this, w)) {
+					System.out.println("satisfied");
 					tree.extendSimulation(this, w);
 					update.add(w.parent);
 				}
@@ -361,6 +390,7 @@ public class ELDescriptionNode {
 				}
 			}
 		}
+		*/
 		
 		// apply updates recursively top-down
 		tree.updateSimulation(update);		
@@ -371,7 +401,9 @@ public class ELDescriptionNode {
 		
 		// compute the nodes, which need to be updated
 		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
+		update.add(this);
 		
+		/*
 		// loop over all nodes on the same level, which are not in the in set
 		Set<ELDescriptionNode> tmp = new HashSet<ELDescriptionNode>(tree.getNodesOnLevel(level));
 		tmp.removeAll(in);
@@ -394,6 +426,9 @@ public class ELDescriptionNode {
 				}
 			}
 		}
+		*/
+		
+//		update.add(this.parent);
 		
 		// apply updates recursively top-down
 		tree.updateSimulation(update);				

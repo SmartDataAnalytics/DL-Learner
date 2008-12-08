@@ -66,4 +66,9 @@ public class ELDescriptionEdge {
 		return tree;
 	}
 	
+	@Override
+	public String toString() {
+		return "--" + label + "--> " + tree.toDescriptionString(); 
+	}
+	
 }

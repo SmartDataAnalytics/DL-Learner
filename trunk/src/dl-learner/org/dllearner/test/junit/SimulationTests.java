@@ -200,14 +200,19 @@ public class SimulationTests {
 		ELDescriptionNode v4 = new ELDescriptionNode(v2, r1, a1);
 		nodeNames.put(v4, "v4");
 		log("v4 added", tree, nodeNames);
-		ELDescriptionNode v5 = new ELDescriptionNode(v2, r3, a1, a2);
+		ELDescriptionNode v5 = new ELDescriptionNode(v2, r3);
 		nodeNames.put(v5, "v5");
+		log("tmp 1", tree, nodeNames);
+		v5.extendLabel(a1);
+		log("tmp 2", tree, nodeNames);
+		v5.extendLabel(a2);
 		log("v5 added", tree, nodeNames);
 		v2.refineEdge(1, r2);
 		log("edge refined", tree, nodeNames);
-		ELDescriptionNode v6 = new ELDescriptionNode(v3, r3, a3);
+		ELDescriptionNode v6 = new ELDescriptionNode(v3, r3);
 		nodeNames.put(v6, "v6");
-		log("v6 added", tree, nodeNames);
+		log("v6 added", tree, nodeNames);		
+		v6.extendLabel(a3);
 		log("tree 4", tree, nodeNames);
 		
 		assertEmpty(v1);
@@ -233,7 +238,48 @@ public class SimulationTests {
 		assertInSC1(v6);
 		assertIn(v6);
 		assertOut(v6,v5);
-		assertOutSC1(v6,v5);		
+		assertOutSC1(v6,v5);	
+	}
+	
+	/**
+	 *                  v_1
+     *                /     \
+     *               r_2    r_1
+     *              /         \
+     *            v_2         v_3
+     *            /  |        |  \
+     *          r_1 r_1      r_1 r_2
+     *          /    |        |    \
+     *        v_4   v_5      v_6   v_7
+     *        / |   |  \      |     |
+     *      r_2 r_1 r_2 r_2  r_1   r_2
+     *      /   |   |    |    |     |
+     *    v_8  v_9 v_10 v_11 v_12  v_13
+     *    A_1  A_2  A_2 A_1  A_2   A_2 
+     *    
+     *    
+	 * inSC1:
+	 * (v_8,{v_9,..,v_13}), (v_9,{v_10,v_12,v_13}),... (Pattern wiederholt sich dann fuer die A_1 bzw A_2 Blaetter), (v_4,{v_5,v_6,v_7}),... (selbiges hier) (v_2,{v_3}), (v_3,{v_2})
+	 *
+	 * outSC1:
+	 * (v_8,{v_11}), v_9,{v_8, v_10,...v_13}),... Pattern wiederholt sich
+	 * fuer restliche Knoten gilt inSC1=outSC1
+	 * 
+	 * inSC2:
+	 * {v_8,...,v_13}2, (v_4,{v_5, v_6, v_7}), (v_5,{v_7}), (v_6,{v_7})
+	 * (v_2,{v_3})
+	 * 
+	 * outSC2:
+	 * {v_8,...,v_13}2, (v_5,{v_4}), (v_6,{v_4}), (v_7,{v_5, v_6}), (v_3,{v_2})
+	 * 
+	 * Baum ist nicht minimal. 
+	 */
+	@Test
+	public void test5() {
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE3);
+		ELDescriptionTree tree = new ELDescriptionTree(rs);
+		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
+				
 	}
 	
 	private void log(String message, ELDescriptionTree tree, Map<ELDescriptionNode,String> nodeNames) {

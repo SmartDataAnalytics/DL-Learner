@@ -74,6 +74,7 @@ public class ObjectPropertyHierarchy {
 		if(subProperty.equals(superProperty)) {
 			return true;
 		} else {
+//			System.out.println("oph: " + subProperty + " " + superProperty);
 			for(ObjectProperty moreGeneralProperty : roleHierarchyUp.get(subProperty)) {	
 				if(isSubpropertyOf(moreGeneralProperty, superProperty)) {
 					return true;

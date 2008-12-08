@@ -147,6 +147,7 @@ public class ClassHierarchy {
 			return true;
 		} else {
 			for (Description moreGeneralClass : subsumptionHierarchyUp.get(subClass)) {
+				
 				// search the upper classes of the subclass
 				if (moreGeneralClass instanceof NamedClass) {
 					if (isSubclassOf((NamedClass) moreGeneralClass, superClass)) {
