@@ -303,7 +303,7 @@ public class Info {
     	</javadoc>
     </target>	
 	
-	<!-- build protege plugin and copy it to the plugin folder -->
+	<!-- copy all necessary files in a folder to build the jar or a release bundle -->
 	<target name="protege">
 		<property name="source" value="src/dl-learner/org/dllearner/tools/protege" />
 		<property name="temp" value="${source}/temp" />
@@ -345,13 +345,10 @@ public class Info {
 	    	<jar destfile="${release}/DL-Learner-protege-plugin.jar" manifest="${temp}/META-INF/MANIFEST.MF">
 	    			<fileset dir="${temp}" />
 	    		</jar>
-		<copy file="LICENSE" toDir="${release}" />
-		<copy toDir="${release}" >
-						<fileset dir="${source}" includes="Install_protege,Readme_protege" excludes="**/*.java,**/*.gif" />
-					</copy>
-			
-		</target>
+		
+	</target>
 	
+	<!--Builds the DL-Learner-Protege-plugin jar file -->
 	<target name="copyProtegePluginToProtegeDir" depends="protege">
 		<copy toDir="${protege_dir}" >
 						<fileset dir="${release}" includes="DL-Learner-protege-plugin.jar" />
@@ -360,8 +357,15 @@ public class Info {
 		<delete dir="${release}" />
 		</target>
 	
+	<!--Builds the Releasebundle -->
 	<target name="buildProtegePlugin" depends="protege">
-		<zip destfile="${source}/protege-plugin.zip"
+		<copy file="LICENSE" toDir="${release}" />
+				<copy toDir="${release}" >
+								<fileset dir="${source}" includes="INSTALL,README,DL-Learner-Protege-plugin-screencast.url" excludes="**/*.java,**/*.gif" />
+				</copy>	
+		<property name="ProtRelease" value="releaseProtege/" />
+		<mkdir dir="${ProtRelease}" />
+		<zip destfile="${ProtRelease}/DL-Learner-plugin.zip"
 		       basedir="${release}"
 		  />
 		<delete dir="${temp}" />
