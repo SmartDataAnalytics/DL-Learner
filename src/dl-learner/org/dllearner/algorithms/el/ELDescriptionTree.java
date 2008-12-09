@@ -334,29 +334,37 @@ public class ELDescriptionTree implements Cloneable {
 		List<ELDescriptionEdge> edges1 = node1.getEdges();
 		List<ELDescriptionEdge> edges2 = node2.getEdges();
 		
+//		System.out.println(node1.transformToDescription());
+//		System.out.println(node2.transformToDescription());
+		
 		for(ELDescriptionEdge superEdge : edges2) {
 			// try to find an edge satisfying SC2 in the set,
 			// i.e. detect whether superEdge is indeed more general
 			if(!checkSC2Edge(superEdge, edges1)) {
+//				System.out.println("false");
 				return false;
 			}
 		}
-		
+//		System.out.println("true");
 		return true;
 	}
 	
 	// check whether edges contains an element satisfying SC2
 	private boolean checkSC2Edge(ELDescriptionEdge superEdge, List<ELDescriptionEdge> edges) {
 		ObjectProperty superOP = superEdge.getLabel();
-		ELDescriptionNode node1 = superEdge.getTree();
+		ELDescriptionNode superNode = superEdge.getTree();
 		
 		for(ELDescriptionEdge edge : edges) {
+//			System.out.println("superEdge: " + superEdge);
+//			System.out.println("edge: " + edge);
+			
 			ObjectProperty op = edge.getLabel();		
 			// we first check the condition on the properties
 			if(roleHierarchy.isSubpropertyOf(op, superOP)) {
 				// check condition on simulations of referred nodes
-				ELDescriptionNode node2 = edge.getTree();
-				if(node1.in.contains(node2) || node2.in.contains(node1)) {
+				ELDescriptionNode node = edge.getTree();
+//				if(superNode.in.contains(node) || node.in.contains(superNode)) {
+				if(node.in.contains(superNode)) {
 					// we found a node satisfying the condition, so we can return
 					return true;
 				}				

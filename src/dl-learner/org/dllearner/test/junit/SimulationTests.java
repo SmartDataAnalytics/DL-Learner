@@ -23,7 +23,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
@@ -193,27 +195,27 @@ public class SimulationTests {
 		nodeNames.put(v1, "v1");
 		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, a2, a3);
 		nodeNames.put(v2, "v2");
-		log("v2 added", tree, nodeNames);
+//		log("v2 added", tree, nodeNames);
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1);
 		nodeNames.put(v3, "v3");
-		log("v3 added", tree, nodeNames);
+//		log("v3 added", tree, nodeNames);
 		ELDescriptionNode v4 = new ELDescriptionNode(v2, r1, a1);
 		nodeNames.put(v4, "v4");
-		log("v4 added", tree, nodeNames);
+//		log("v4 added", tree, nodeNames);
 		ELDescriptionNode v5 = new ELDescriptionNode(v2, r3);
 		nodeNames.put(v5, "v5");
-		log("tmp 1", tree, nodeNames);
+//		log("tmp 1", tree, nodeNames);
 		v5.extendLabel(a1);
-		log("tmp 2", tree, nodeNames);
+//		log("tmp 2", tree, nodeNames);
 		v5.extendLabel(a2);
-		log("v5 added", tree, nodeNames);
+//		log("v5 added", tree, nodeNames);
 		v2.refineEdge(1, r2);
-		log("edge refined", tree, nodeNames);
+//		log("edge refined", tree, nodeNames);
 		ELDescriptionNode v6 = new ELDescriptionNode(v3, r3);
 		nodeNames.put(v6, "v6");
-		log("v6 added", tree, nodeNames);		
+//		log("v6 added", tree, nodeNames);		
 		v6.extendLabel(a3);
-		log("tree 4", tree, nodeNames);
+//		log("tree 4", tree, nodeNames);
 		
 		assertEmpty(v1);
 		
@@ -257,9 +259,12 @@ public class SimulationTests {
      *    v_8  v_9 v_10 v_11 v_12  v_13
      *    A_1  A_2  A_2 A_1  A_2   A_2 
      *    
+     * Knowledge base: A_1\sqsubseteq A_2
+                       r_1\sqsubseteq r_2   
      *    
 	 * inSC1:
-	 * (v_8,{v_9,..,v_13}), (v_9,{v_10,v_12,v_13}),... (Pattern wiederholt sich dann fuer die A_1 bzw A_2 Blaetter), (v_4,{v_5,v_6,v_7}),... (selbiges hier) (v_2,{v_3}), (v_3,{v_2})
+	 * (v_8,{v_9,..,v_13}), (v_9,{v_10,v_12,v_13}),... (Pattern wiederholt sich dann fuer die A_1 bzw A_2 Blaetter), 
+	 * (v_4,{v_5,v_6,v_7}),... (selbiges hier) (v_2,{v_3}), (v_3,{v_2})
 	 *
 	 * outSC1:
 	 * (v_8,{v_11}), v_9,{v_8, v_10,...v_13}),... Pattern wiederholt sich
@@ -280,8 +285,137 @@ public class SimulationTests {
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
 				
+		ObjectProperty r1 = new ObjectProperty(uri("r1"));
+		ObjectProperty r2 = new ObjectProperty(uri("r2"));
+		NamedClass a1 = new NamedClass(uri("a1"));
+		NamedClass a2 = new NamedClass(uri("a2"));
+		
+		ELDescriptionNode v1 = new ELDescriptionNode(tree);
+		nodeNames.put(v1, "v1");
+		ELDescriptionNode v2 = new ELDescriptionNode(v1, r2);
+		nodeNames.put(v2, "v2");
+		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1);
+		nodeNames.put(v3, "v3");
+		ELDescriptionNode v4 = new ELDescriptionNode(v2, r1);
+		nodeNames.put(v4, "v4");
+		ELDescriptionNode v5 = new ELDescriptionNode(v2, r1);
+		nodeNames.put(v5, "v5");
+		ELDescriptionNode v6 = new ELDescriptionNode(v3, r1);
+		nodeNames.put(v6, "v6");
+		ELDescriptionNode v7 = new ELDescriptionNode(v3, r2);
+		nodeNames.put(v7, "v7");
+		ELDescriptionNode v8 = new ELDescriptionNode(v4, r2, a1);
+		nodeNames.put(v8, "v8");
+		ELDescriptionNode v9 = new ELDescriptionNode(v4, r1, a2);
+		nodeNames.put(v9, "v9");
+		ELDescriptionNode v10 = new ELDescriptionNode(v5, r2, a2);
+		nodeNames.put(v10, "v10");
+		ELDescriptionNode v11 = new ELDescriptionNode(v5, r2, a1);
+		nodeNames.put(v11, "v11");
+		ELDescriptionNode v12 = new ELDescriptionNode(v6, r1, a2);
+		nodeNames.put(v12, "v12");
+		ELDescriptionNode v13 = new ELDescriptionNode(v7, r2, a2);
+		nodeNames.put(v13, "v13");
+		
+//		log("tree 5", tree, nodeNames);
+		
+		// automatically generated asserts
+		
+		assertInSC1(v1);
+		assertInSC2(v1);
+		assertIn(v1);
+		assertOutSC1(v1);
+		assertOutSC2(v1);
+		assertOut(v1);
+
+		assertInSC1(v2,v3);
+		assertInSC2(v2,v3);
+		assertIn(v2,v3);
+		assertOutSC1(v2,v3);
+		assertOutSC2(v2);
+		assertOut(v2);
+
+		assertInSC1(v3,v2);
+		assertInSC2(v3);
+		assertIn(v3);
+		assertOutSC1(v3,v2);
+		assertOutSC2(v3,v2);
+		assertOut(v3,v2);
+
+		assertInSC1(v4,v6,v5,v7);
+		assertInSC2(v4,v6,v5,v7);
+		assertIn(v4,v6,v5,v7);
+		assertOutSC1(v4,v6,v5,v7);
+		assertOutSC2(v4);
+		assertOut(v4);
+
+		assertInSC1(v5,v4,v6,v7);
+		assertInSC2(v5,v7);
+		assertIn(v5,v7);
+		assertOutSC1(v5,v4,v6,v7);
+		assertOutSC2(v5,v4);
+		assertOut(v5,v4);
+
+		assertInSC1(v6,v4,v5,v7);
+		assertInSC2(v6,v7);
+		assertIn(v6,v7);
+		assertOutSC1(v6,v4,v5,v7);
+		assertOutSC2(v6,v4);
+		assertOut(v6,v4);
+
+		assertInSC1(v7,v4,v6,v5);
+		assertInSC2(v7);
+		assertIn(v7);
+		assertOutSC1(v7,v4,v6,v5);
+		assertOutSC2(v7,v4,v6,v5);
+		assertOut(v7,v4,v6,v5);
+
+		assertInSC1(v8,v10,v13,v11,v9,v12);
+		assertInSC2(v8,v10,v13,v11,v9,v12);
+		assertIn(v8,v10,v13,v11,v9,v12);
+		assertOutSC1(v8,v11);
+		assertOutSC2(v8,v10,v13,v11,v9,v12);
+		assertOut(v8,v11);
+
+		assertInSC1(v9,v10,v13,v12);
+		assertInSC2(v9,v10,v13,v11,v12,v8);
+		assertIn(v9,v10,v13,v12);
+		assertOutSC1(v9,v10,v13,v11,v12,v8);
+		assertOutSC2(v9,v10,v13,v11,v12,v8);
+		assertOut(v9,v10,v13,v11,v12,v8);
+
+		assertInSC1(v10,v13,v9,v12);
+		assertInSC2(v10,v13,v11,v9,v12,v8);
+		assertIn(v10,v13,v9,v12);
+		assertOutSC1(v10,v13,v11,v9,v12,v8);
+		assertOutSC2(v10,v13,v11,v9,v12,v8);
+		assertOut(v10,v13,v11,v9,v12,v8);
+
+		assertInSC1(v11,v10,v13,v9,v12,v8);
+		assertInSC2(v11,v10,v13,v9,v12,v8);
+		assertIn(v11,v10,v13,v9,v12,v8);
+		assertOutSC1(v11,v8);
+		assertOutSC2(v11,v10,v13,v9,v12,v8);
+		assertOut(v11,v8);
+
+		assertInSC1(v12,v10,v13,v9);
+		assertInSC2(v12,v10,v13,v11,v9,v8);
+		assertIn(v12,v10,v13,v9);
+		assertOutSC1(v12,v10,v13,v11,v9,v8);
+		assertOutSC2(v12,v10,v13,v11,v9,v8);
+		assertOut(v12,v10,v13,v11,v9,v8);
+
+		assertInSC1(v13,v10,v9,v12);
+		assertInSC2(v13,v10,v11,v9,v8,v12);
+		assertIn(v13,v10,v9,v12);
+		assertOutSC1(v13,v10,v11,v9,v8,v12);
+		assertOutSC2(v13,v10,v11,v9,v8,v12);
+		assertOut(v13,v10,v11,v9,v8,v12);
+		
+//		logAsserts(tree, nodeNames);
 	}
 	
+	// display a simulation as debug log
 	private void log(String message, ELDescriptionTree tree, Map<ELDescriptionNode,String> nodeNames) {
 		// print underlined message
 		System.out.println(message);
@@ -290,6 +424,35 @@ public class SimulationTests {
 		}
 		System.out.println("\n");
 		System.out.println(tree.toSimulationString(nodeNames));
+	}
+	
+	// display Java code for assertions, i.e. the method generates the assertion code
+	// (under the assumption that the current algorithm output is correct, which needs
+	// to be verified of course)
+	@SuppressWarnings("unused")
+	private void logAsserts(ELDescriptionTree tree, Map<ELDescriptionNode,String> nodeNames) {
+		String str = "";
+		for(Entry<ELDescriptionNode,String> entry : nodeNames.entrySet()) {
+			String nodeName = entry.getValue();
+			ELDescriptionNode node = entry.getKey();
+			str += "assertInSC1" + getAssertString(node, nodeName, node.getInSC1(), nodeNames);
+			str += "assertInSC2" + getAssertString(node, nodeName, node.getInSC2(), nodeNames);
+			str += "assertIn" + getAssertString(node, nodeName, node.getIn(), nodeNames);
+			str += "assertOutSC1" + getAssertString(node, nodeName, node.getOutSC1(), nodeNames);
+			str += "assertOutSC2" + getAssertString(node, nodeName, node.getOutSC2(), nodeNames);
+			str += "assertOut" + getAssertString(node, nodeName, node.getOut(), nodeNames);
+			str += "\n";
+		}		
+		System.out.println(str);
+	}
+	
+	// convenience method 
+	private String getAssertString(ELDescriptionNode node, String nodeName, Set<ELDescriptionNode> nodes, Map<ELDescriptionNode,String> nodeNames) {
+		if(nodes.isEmpty()) {
+			return "(" + nodeName+");\n";
+		} else {
+			return "(" + nodeName+","+ELDescriptionNode.toString(nodes, nodeNames) + ");\n";
+		}
 	}
 	
 	// all relations (in, inSC1, inSC2) should have the 
