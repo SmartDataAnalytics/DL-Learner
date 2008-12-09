@@ -57,10 +57,8 @@ public class DoubleConfigOption extends ConfigOption<Double> {
 	 */
 	@Override
 	public boolean isValidValue(Double value) {
-		if (value >= lowerLimit && value <= upperLimit)
-			return true;
-		else
-			return false;
+		double tolerance = 0.0001;
+		return ((value >= lowerLimit-tolerance) && (value <= upperLimit+tolerance));
 	}
 
 	/**

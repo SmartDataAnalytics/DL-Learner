@@ -352,9 +352,7 @@ public class ELDescriptionNode {
 					if(outSC2.contains(w)) {
 						tree.shrinkSimulationSC12(w, this);		
 					}
-					if(!update.contains(w.getParent())) {
-						update.add(w.getParent());
-					}
+					update.add(w.getParent());
 				}
 			}
 		}
@@ -525,7 +523,14 @@ public class ELDescriptionNode {
 		return str;
 	}
 	
-	private String toString(Set<ELDescriptionNode> nodes, Map<ELDescriptionNode,String> nodeNames) {
+	/**
+	 * A convenience method (for debugging purposes) to get a comma separated list of nodes, where the
+	 * nodes are given names (to make them readable).
+	 * @param nodes The node objects.
+	 * @param nodeNames A mapping to node names.
+	 * @return A comma separated list of the node names.
+	 */
+	public static String toString(Set<ELDescriptionNode> nodes, Map<ELDescriptionNode,String> nodeNames) {
 		String str = "";
 		// comma separated list of descriptions
 		for(ELDescriptionNode node : nodes) {
