@@ -36,7 +36,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
  */
 public final class TestOntologies {
 
-	public enum TestOntology { EMPTY, SIMPLE, SIMPLE2, SIMPLE3, R1SUBR2, DATA1 };
+	public enum TestOntology { EMPTY, SIMPLE, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES };
 	
 	public static ReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
@@ -74,6 +74,13 @@ public final class TestOntologies {
 			kbString += "married(eric,diana).\n";
 			kbString += "hasChild(eric,frank).\n";
 			kbString += "hasChild(eric,tim).\n";
+		} else if(ont.equals(TestOntology.FIVE_ROLES)) {
+			// we only define five roles, no TBox
+			kbString += "r1(a,b).\n";
+			kbString += "r2(a,b).\n";
+			kbString += "r3(a,b).\n";
+			kbString += "r4(a,b).\n";
+			kbString += "r5(a,b).\n";
 		}
 		
 		try {	

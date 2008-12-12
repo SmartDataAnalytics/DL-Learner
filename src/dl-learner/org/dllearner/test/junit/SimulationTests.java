@@ -319,6 +319,8 @@ public class SimulationTests {
 		
 //		log("tree 5", tree, nodeNames);
 		
+		assertTrue(!tree.isMinimal());
+		
 		// automatically generated asserts
 		
 		assertInSC1(v1);
@@ -415,7 +417,253 @@ public class SimulationTests {
 //		logAsserts(tree, nodeNames);
 	}
 	
+	/**
+	 *                -------v_22-------
+     *               /         |        \
+     *              r_1       r_1       r_1
+     *             /           |          \
+     *           v_19         v_20         v_21
+     *           /  \         /  \         /  \
+     *         r_2 r_2     r_2  r_2      r_2  r_2
+     *        /      |      |     |        |    |
+     *       v_13   v_14   v_15  v_16     v_17  v_18__
+     *      /  \    /\      /\     / \     /  |    |  \
+     *    r_3 r_4 r_3 r_5 r_3 r_5 r_4 r_5 r_4 r_5 r_3 r_4
+     *     |   |   |   |   |   |   |   |   |   |   |    |
+     *    v_1 v_2 v_3 v_4 v_5 v_6 v_7 v_8 v_9 v_10 v_11 v_12
+     *
+	 * SC1=inSC1=outSC1={v_1,..,v_12}2 U {v_13,..,v_18}2 U {v_19,v_20,v_21}2
+	 *
+	 * SC2={v_1,..,v_12}2 U {(v_13, v_18), (v_14,v_15), (v_16,v_17)} U
+	 * {(v_18, v_13), (v_15,v_14), (v_17,v_16)}
+	 * 
+	 * S={v_1,..,v_12}2 
+	 */
+	@Test
+	public void test6() {
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.FIVE_ROLES);
+		ELDescriptionTree tree = new ELDescriptionTree(rs);
+		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
+		
+		ObjectProperty r1 = new ObjectProperty(uri("r1"));
+		ObjectProperty r2 = new ObjectProperty(uri("r2"));
+		ObjectProperty r3 = new ObjectProperty(uri("r3"));
+		ObjectProperty r4 = new ObjectProperty(uri("r4"));
+		ObjectProperty r5 = new ObjectProperty(uri("r5"));
+	
+		ELDescriptionNode v22 = new ELDescriptionNode(tree);
+		nodeNames.put(v22, "v22");
+		ELDescriptionNode v21 = new ELDescriptionNode(v22, r1);
+		nodeNames.put(v21, "v21");
+		ELDescriptionNode v20 = new ELDescriptionNode(v22, r1);
+		nodeNames.put(v20, "v20");
+		ELDescriptionNode v19 = new ELDescriptionNode(v22, r1);
+		nodeNames.put(v19, "v19");
+		ELDescriptionNode v18 = new ELDescriptionNode(v21, r2);
+		nodeNames.put(v18, "v18");
+		ELDescriptionNode v17 = new ELDescriptionNode(v21, r2);
+		nodeNames.put(v17, "v17");
+		ELDescriptionNode v16 = new ELDescriptionNode(v20, r2);
+		nodeNames.put(v16, "v16");
+		ELDescriptionNode v15 = new ELDescriptionNode(v20, r2);
+		nodeNames.put(v15, "v15");
+		ELDescriptionNode v14 = new ELDescriptionNode(v19, r2);
+		nodeNames.put(v14, "v14");
+		ELDescriptionNode v13 = new ELDescriptionNode(v19, r2);
+		nodeNames.put(v13, "v13");
+		ELDescriptionNode v12 = new ELDescriptionNode(v18, r4);
+		nodeNames.put(v12, "v12");
+		ELDescriptionNode v11 = new ELDescriptionNode(v18, r3);
+		nodeNames.put(v11, "v11");
+		ELDescriptionNode v10 = new ELDescriptionNode(v17, r5);
+		nodeNames.put(v10, "v10");
+		ELDescriptionNode v9 = new ELDescriptionNode(v17, r4);
+		nodeNames.put(v9, "v9");
+		ELDescriptionNode v8 = new ELDescriptionNode(v16, r5);
+		nodeNames.put(v8, "v8");
+		ELDescriptionNode v7 = new ELDescriptionNode(v16, r4);
+		nodeNames.put(v7, "v7");
+		ELDescriptionNode v6 = new ELDescriptionNode(v15, r5);
+		nodeNames.put(v6, "v6");
+		ELDescriptionNode v5 = new ELDescriptionNode(v15, r3);
+		nodeNames.put(v5, "v5");
+		ELDescriptionNode v4 = new ELDescriptionNode(v14, r5);
+		nodeNames.put(v4, "v4");
+		ELDescriptionNode v3 = new ELDescriptionNode(v14, r3);
+		nodeNames.put(v3, "v3");
+		ELDescriptionNode v2 = new ELDescriptionNode(v13, r4);
+		nodeNames.put(v2, "v2");
+		ELDescriptionNode v1 = new ELDescriptionNode(v13, r3);
+		nodeNames.put(v1, "v1");
+
+//		log("tree 6", tree, nodeNames);
+//		logAsserts(tree, nodeNames);
+		
+		assertTrue(tree.isMinimal());
+		
+		// automatically added asserts		
+		assertInSC1(v22);
+		assertInSC2(v22);
+		assertIn(v22);
+		assertOutSC1(v22);
+		assertOutSC2(v22);
+		assertOut(v22);
+
+		assertInSC1(v21,v20,v19);
+		assertInSC2(v21);
+		assertIn(v21);
+		assertOutSC1(v21,v20,v19);
+		assertOutSC2(v21);
+		assertOut(v21);
+
+		assertInSC1(v20,v21,v19);
+		assertInSC2(v20);
+		assertIn(v20);
+		assertOutSC1(v20,v21,v19);
+		assertOutSC2(v20);
+		assertOut(v20);
+
+		assertInSC1(v19,v20,v21);
+		assertInSC2(v19);
+		assertIn(v19);
+		assertOutSC1(v19,v20,v21);
+		assertOutSC2(v19);
+		assertOut(v19);
+
+		assertInSC1(v18,v14,v16,v15,v17,v13);
+		assertInSC2(v18,v13);
+		assertIn(v18,v13);
+		assertOutSC1(v18,v14,v16,v15,v17,v13);
+		assertOutSC2(v18,v13);
+		assertOut(v18,v13);
+
+		assertInSC1(v17,v14,v16,v18,v15,v13);
+		assertInSC2(v17,v16);
+		assertIn(v17,v16);
+		assertOutSC1(v17,v14,v16,v18,v15,v13);
+		assertOutSC2(v17,v16);
+		assertOut(v17,v16);
+
+		assertInSC1(v16,v14,v18,v15,v17,v13);
+		assertInSC2(v16,v17);
+		assertIn(v16,v17);
+		assertOutSC1(v16,v14,v18,v15,v17,v13);
+		assertOutSC2(v16,v17);
+		assertOut(v16,v17);
+
+		assertInSC1(v15,v14,v16,v18,v17,v13);
+		assertInSC2(v15,v14);
+		assertIn(v15,v14);
+		assertOutSC1(v15,v14,v16,v18,v17,v13);
+		assertOutSC2(v15,v14);
+		assertOut(v15,v14);
+
+		assertInSC1(v14,v16,v18,v15,v17,v13);
+		assertInSC2(v14,v15);
+		assertIn(v14,v15);
+		assertOutSC1(v14,v16,v18,v15,v17,v13);
+		assertOutSC2(v14,v15);
+		assertOut(v14,v15);
+
+		assertInSC1(v13,v14,v16,v18,v15,v17);
+		assertInSC2(v13,v18);
+		assertIn(v13,v18);
+		assertOutSC1(v13,v14,v16,v18,v15,v17);
+		assertOutSC2(v13,v18);
+		assertOut(v13,v18);
+
+		assertInSC1(v12,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v10);
+		assertInSC2(v12,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v10);
+		assertIn(v12,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v10);
+		assertOutSC1(v12,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v10);
+		assertOutSC2(v12,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v10);
+		assertOut(v12,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v10);
+
+		assertInSC1(v11,v3,v8,v5,v4,v9,v1,v2,v7,v6,v10,v12);
+		assertInSC2(v11,v3,v8,v5,v4,v9,v1,v2,v7,v6,v10,v12);
+		assertIn(v11,v3,v8,v5,v4,v9,v1,v2,v7,v6,v10,v12);
+		assertOutSC1(v11,v3,v8,v5,v4,v9,v1,v2,v7,v6,v10,v12);
+		assertOutSC2(v11,v3,v8,v5,v4,v9,v1,v2,v7,v6,v10,v12);
+		assertOut(v11,v3,v8,v5,v4,v9,v1,v2,v7,v6,v10,v12);
+
+		assertInSC1(v10,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v12);
+		assertInSC2(v10,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v12);
+		assertIn(v10,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v12);
+		assertOutSC1(v10,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v12);
+		assertOutSC2(v10,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v12);
+		assertOut(v10,v3,v8,v5,v11,v4,v9,v1,v2,v7,v6,v12);
+
+		assertInSC1(v9,v3,v8,v5,v11,v4,v1,v2,v7,v6,v10,v12);
+		assertInSC2(v9,v3,v8,v5,v11,v4,v1,v2,v7,v6,v10,v12);
+		assertIn(v9,v3,v8,v5,v11,v4,v1,v2,v7,v6,v10,v12);
+		assertOutSC1(v9,v3,v8,v5,v11,v4,v1,v2,v7,v6,v10,v12);
+		assertOutSC2(v9,v3,v8,v5,v11,v4,v1,v2,v7,v6,v10,v12);
+		assertOut(v9,v3,v8,v5,v11,v4,v1,v2,v7,v6,v10,v12);
+
+		assertInSC1(v8,v3,v5,v11,v4,v9,v1,v2,v7,v6,v10,v12);
+		assertInSC2(v8,v3,v5,v11,v4,v9,v1,v2,v7,v6,v10,v12);
+		assertIn(v8,v3,v5,v11,v4,v9,v1,v2,v7,v6,v10,v12);
+		assertOutSC1(v8,v3,v5,v11,v4,v9,v1,v2,v7,v6,v10,v12);
+		assertOutSC2(v8,v3,v5,v11,v4,v9,v1,v2,v7,v6,v10,v12);
+		assertOut(v8,v3,v5,v11,v4,v9,v1,v2,v7,v6,v10,v12);
+
+		assertInSC1(v7,v3,v8,v5,v11,v4,v9,v1,v2,v6,v10,v12);
+		assertInSC2(v7,v3,v8,v5,v11,v4,v9,v1,v2,v6,v10,v12);
+		assertIn(v7,v3,v8,v5,v11,v4,v9,v1,v2,v6,v10,v12);
+		assertOutSC1(v7,v3,v8,v5,v11,v4,v9,v1,v2,v6,v10,v12);
+		assertOutSC2(v7,v3,v8,v5,v11,v4,v9,v1,v2,v6,v10,v12);
+		assertOut(v7,v3,v8,v5,v11,v4,v9,v1,v2,v6,v10,v12);
+
+		assertInSC1(v6,v3,v8,v5,v11,v4,v9,v1,v2,v7,v10,v12);
+		assertInSC2(v6,v3,v8,v5,v11,v4,v9,v1,v2,v7,v10,v12);
+		assertIn(v6,v3,v8,v5,v11,v4,v9,v1,v2,v7,v10,v12);
+		assertOutSC1(v6,v3,v8,v5,v11,v4,v9,v1,v2,v7,v10,v12);
+		assertOutSC2(v6,v3,v8,v5,v11,v4,v9,v1,v2,v7,v10,v12);
+		assertOut(v6,v3,v8,v5,v11,v4,v9,v1,v2,v7,v10,v12);
+
+		assertInSC1(v5,v3,v8,v11,v4,v9,v1,v2,v7,v10,v6,v12);
+		assertInSC2(v5,v3,v8,v11,v4,v9,v1,v2,v7,v10,v6,v12);
+		assertIn(v5,v3,v8,v11,v4,v9,v1,v2,v7,v10,v6,v12);
+		assertOutSC1(v5,v3,v8,v11,v4,v9,v1,v2,v7,v10,v6,v12);
+		assertOutSC2(v5,v3,v8,v11,v4,v9,v1,v2,v7,v10,v6,v12);
+		assertOut(v5,v3,v8,v11,v4,v9,v1,v2,v7,v10,v6,v12);
+
+		assertInSC1(v4,v3,v8,v11,v5,v9,v1,v2,v7,v10,v6,v12);
+		assertInSC2(v4,v3,v8,v11,v5,v9,v1,v2,v7,v10,v6,v12);
+		assertIn(v4,v3,v8,v11,v5,v9,v1,v2,v7,v10,v6,v12);
+		assertOutSC1(v4,v3,v8,v11,v5,v9,v1,v2,v7,v10,v6,v12);
+		assertOutSC2(v4,v3,v8,v11,v5,v9,v1,v2,v7,v10,v6,v12);
+		assertOut(v4,v3,v8,v11,v5,v9,v1,v2,v7,v10,v6,v12);
+
+		assertInSC1(v3,v8,v11,v5,v4,v9,v1,v2,v7,v10,v6,v12);
+		assertInSC2(v3,v8,v11,v5,v4,v9,v1,v2,v7,v10,v6,v12);
+		assertIn(v3,v8,v11,v5,v4,v9,v1,v2,v7,v10,v6,v12);
+		assertOutSC1(v3,v8,v11,v5,v4,v9,v1,v2,v7,v10,v6,v12);
+		assertOutSC2(v3,v8,v11,v5,v4,v9,v1,v2,v7,v10,v6,v12);
+		assertOut(v3,v8,v11,v5,v4,v9,v1,v2,v7,v10,v6,v12);
+
+		assertInSC1(v2,v8,v3,v11,v5,v4,v9,v1,v7,v10,v6,v12);
+		assertInSC2(v2,v8,v3,v11,v5,v4,v9,v1,v7,v10,v6,v12);
+		assertIn(v2,v8,v3,v11,v5,v4,v9,v1,v7,v10,v6,v12);
+		assertOutSC1(v2,v8,v3,v11,v5,v4,v9,v1,v7,v10,v6,v12);
+		assertOutSC2(v2,v8,v3,v11,v5,v4,v9,v1,v7,v10,v6,v12);
+		assertOut(v2,v8,v3,v11,v5,v4,v9,v1,v7,v10,v6,v12);
+
+		assertInSC1(v1,v8,v3,v11,v5,v4,v9,v2,v7,v10,v6,v12);
+		assertInSC2(v1,v8,v3,v11,v5,v4,v9,v2,v7,v10,v6,v12);
+		assertIn(v1,v8,v3,v11,v5,v4,v9,v2,v7,v10,v6,v12);
+		assertOutSC1(v1,v8,v3,v11,v5,v4,v9,v2,v7,v10,v6,v12);
+		assertOutSC2(v1,v8,v3,v11,v5,v4,v9,v2,v7,v10,v6,v12);
+		assertOut(v1,v8,v3,v11,v5,v4,v9,v2,v7,v10,v6,v12);
+
+		// adding an edge leads to a non-minimal tree (it collapses)
+		new ELDescriptionNode(v13, r5);
+		assertTrue(!tree.isMinimal());
+		
+	}
+	
 	// display a simulation as debug log
+	@SuppressWarnings("unused")
 	private void log(String message, ELDescriptionTree tree, Map<ELDescriptionNode,String> nodeNames) {
 		// print underlined message
 		System.out.println(message);
