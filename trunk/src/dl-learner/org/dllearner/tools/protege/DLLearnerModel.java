@@ -356,6 +356,19 @@ public class DLLearnerModel implements Runnable{
 		}
 		Set<String> ignore = new TreeSet<String>();
 		ignore.add(currentConcept.toString());
+		if(id.equals(SUPER_CLASS_AXIOM_STRING)) {
+			Description currentClass = (Description)currentConcept;
+			String currentClassString = currentConcept.toString();
+			while(!currentClassString.contains("TOP")) {
+				Iterator<Description> it = reasoner.getSuperClasses(currentClass).iterator();
+				while(it.hasNext()) {
+					Description ignoredClass = it.next();
+					if(!ignoredClass.toString().equals("TOP")) {
+						ignore.add(ignoredClass.toString());
+					}
+				}
+			}
+		}
 		cm.applyConfigEntry(la, "ignoredConcepts", ignore);
 		cm.applyConfigEntry(la, "noisePercentage", 5.0);
 		cm.applyConfigEntry(la, "terminateOnNoiseReached", false);

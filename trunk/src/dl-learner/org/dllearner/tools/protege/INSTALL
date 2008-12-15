@@ -1,15 +1,16 @@
 Requirements
 ============
-Java 6 and the Protégé 4.0 Beta are required. (All other libraries are included in the release.)
+Java 6 and the ProtÃ©gÃ© 4.0 Beta are required. (All other libraries are included in the release.)
 
 Installation
 ============
-Put the DL-Learner-protege-plugin.jar in your plugin folder of Protégé.
+Put the DL-Learner-protege-plugin.jar in your plugin folder of ProtÃ©gÃ©.
 
 Running Instructions
 ====================
 To use the plugin go to view --> class views and click on class descriptions (including DL-Learner plugin).
-Put the new frame somewhere in the classes tab in Protégé and close the old class description view. All features are included in the plugin.
-If you have problems look at the screen cast link in the release bundle.  
+Put the new frame somewhere in the classes tab in ProtÃ©gÃ© and close the old class description view. All features are included in the plugin.
+
+If you have problems look at the screen cast: http://dl-learner.org/files/screencast/protege/prot.htm  
 
 

@@ -75,8 +75,8 @@ public class ActionHandler implements ActionListener, ItemListener,
 	private Timer timer;
 	private LearningAlgorithm la;
 	private SuggestionRetriever retriever;
-	private final Color colorRed = new Color(139,0,0);
-	private final Color colorGreen = new Color(0,139,0);
+	private final Color colorRed = new Color(139, 0, 0);
+	private final Color colorGreen = new Color(0, 139, 0);
 	/**
 	 * This is the constructor for the action handler.
 	 * 
