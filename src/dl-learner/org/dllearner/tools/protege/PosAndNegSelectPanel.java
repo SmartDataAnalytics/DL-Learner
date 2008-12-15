@@ -144,7 +144,7 @@ public class PosAndNegSelectPanel extends JPanel {
 		helpForPosExamples = new JButton("?");
 		helpForPosExamples.setBounds(100, 5, 20, 20);
 		helpForNegExamples = new JButton("?");
-		helpForNegExamples.setBounds(100, 5, 20, 20);
+		helpForNegExamples.setBounds(105, 5, 20, 20);
 		helpForPosExamples.setName("PosHelpButton");
 		helpForNegExamples.setName("NegHelpButton");
 		//set size for components that have no layout.
