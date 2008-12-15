@@ -348,7 +348,7 @@ public class Info {
 		
 	</target>
 	
-	<!--Builds the DL-Learner-Protege-plugin jar file -->
+	<!--Copy the DL-Learner-Protege-plugin jar file into the Protege plugin folder -->
 	<target name="copyProtegePluginToProtegeDir" depends="protege">
 		<copy toDir="${protege_dir}" >
 						<fileset dir="${release}" includes="DL-Learner-protege-plugin.jar" />
@@ -361,7 +361,7 @@ public class Info {
 	<target name="buildProtegePlugin" depends="protege">
 		<copy file="LICENSE" toDir="${release}" />
 				<copy toDir="${release}" >
-								<fileset dir="${source}" includes="INSTALL,README,DL-Learner-Protege-plugin-screencast.url" excludes="**/*.java,**/*.gif" />
+								<fileset dir="${source}" includes="INSTALL,README" excludes="**/*.java,**/*.gif" />
 				</copy>	
 		<property name="ProtRelease" value="releaseProtege/" />
 		<mkdir dir="${ProtRelease}" />
