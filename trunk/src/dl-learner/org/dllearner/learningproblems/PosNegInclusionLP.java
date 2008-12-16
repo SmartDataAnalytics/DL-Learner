@@ -195,9 +195,9 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	public Score computeScore(Description concept) {
 		// FastInstanceChecker supports only negation normal form, so we have to make
 		// sure to convert the description before
-		if(reasoner instanceof FastInstanceChecker) {
-			return definitionLP.computeScore(ConceptTransformation.transformToNegationNormalForm(new Negation(concept)));
-		}
+//		if(reasoner instanceof FastInstanceChecker) {
+//			return definitionLP.computeScore(ConceptTransformation.transformToNegationNormalForm(new Negation(concept)));
+//		}
 		return definitionLP.computeScore(new Negation(concept));
 	}
 

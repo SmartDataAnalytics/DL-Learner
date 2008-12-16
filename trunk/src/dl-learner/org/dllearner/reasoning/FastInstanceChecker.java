@@ -70,6 +70,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.ConceptTransformation;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -260,9 +261,12 @@ public class FastInstanceChecker extends ReasonerComponent {
 			if (child instanceof NamedClass) {
 				return classInstancesNeg.get((NamedClass) child).contains(individual);
 			} else {
-				throw new ReasoningMethodUnsupportedException("Instance check for description "
-						+ description
-						+ " unsupported. Description needs to be in negation normal form.");
+				logger.debug("Converting description to negation normal form in fast instance check (should be avoided if possible).");
+				Description nnf = ConceptTransformation.transformToNegationNormalForm(child);
+				return hasTypeImpl(nnf, individual);
+//				throw new ReasoningMethodUnsupportedException("Instance check for description "
+//						+ description
+//						+ " unsupported. Description needs to be in negation normal form.");
 			}
 		} else if (description instanceof Thing) {
 			return true;
