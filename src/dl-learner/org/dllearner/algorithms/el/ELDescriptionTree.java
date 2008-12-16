@@ -60,6 +60,10 @@ public class ELDescriptionTree implements Cloneable {
 
 	protected ELDescriptionNode rootNode;
 
+	// the set of all nodes in the tree
+	private Set<ELDescriptionNode> nodes = new HashSet<ELDescriptionNode>();
+	
+	// nodes on a given level of the tree
 	private Map<Integer, Set<ELDescriptionNode>> levelNodeMapping = new HashMap<Integer, Set<ELDescriptionNode>>();
 
 	// the background knowledge (we need to have it explicitly here, 
@@ -172,8 +176,8 @@ public class ELDescriptionTree implements Cloneable {
 	}
 	
 	/**
-	 * Internal method for updating the level node mapping. It is called when a
-	 * new node is added to the tree.
+	 * Internal method for updating the node set and the level node mapping. It must be 
+	 * called when a new node is added to the tree.
 	 * 
 	 * @param node
 	 *            The new node.
@@ -181,6 +185,7 @@ public class ELDescriptionTree implements Cloneable {
 	 *            Level of the new node.
 	 */
 	protected void addNodeToLevel(ELDescriptionNode node, int level) {
+		nodes.add(node);
 		if (level <= maxLevel) {
 			levelNodeMapping.get(level).add(node);
 		} else if (level == maxLevel + 1) {
@@ -553,5 +558,12 @@ public class ELDescriptionTree implements Cloneable {
 	 */
 	public String toDescriptionString() {
 		return rootNode.toDescriptionString();
+	}
+
+	/**
+	 * @return the nodes
+	 */
+	public Set<ELDescriptionNode> getNodes() {
+		return nodes;
 	}
 }

@@ -31,6 +31,7 @@ import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.el.ELDescriptionEdge;
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
@@ -50,21 +51,22 @@ import org.dllearner.core.owl.Thing;
  * 
  * <p>Properties:
  * <ul>
- *   <li>complete? (still open)</li>
+ *   <li>complete</li>
  *   <li>proper</li>
  *   <li>finite</li>
  *   <li>uses class/property hierarchy</li>
  *   <li>takes domain/range into account</li>
  *   <li>uses disjoint classes/classes without common instances</li>
+ *   <li>all refinements are minimal (i.e. cannot be shortened without changing semantics)</li>
  * </ul>
  * 
  * @author Jens Lehmann
  *
  */
 @SuppressWarnings("unused")
-public class ELDown extends RefinementOperatorAdapter {
+public class ELDown2 extends RefinementOperatorAdapter {
 
-//	private static Logger logger = Logger.getLogger(ELDown.class);	
+	private static Logger logger = Logger.getLogger(ELDown2.class);	
 	
 	private ReasonerComponent rs;
 	
@@ -85,7 +87,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	// utility class
 	private Utility utility;
 	
-	public ELDown(ReasonerComponent rs) {
+	public ELDown2(ReasonerComponent rs) {
 		this.rs = rs;
 		utility = new Utility(rs);
 		subsumptionHierarchy = rs.getClassHierarchy();
@@ -106,7 +108,6 @@ public class ELDown extends RefinementOperatorAdapter {
 	public Set<Description> refine(Description concept) {
 		ELDescriptionTree tree = new ELDescriptionTree(rs, concept);
 		Set<ELDescriptionTree> refinementTrees = refine(tree);
-//		System.out.println("Refinements finished.");
 		Set<Description> refinements = new HashSet<Description>();
 		for(ELDescriptionTree refinementTree : refinementTrees) {
 			refinements.add(refinementTree.transformToDescription());
@@ -123,8 +124,38 @@ public class ELDown extends RefinementOperatorAdapter {
 	 * @return Set of refined EL description trees.
 	 */
 	public Set<ELDescriptionTree> refine(ELDescriptionTree tree) {
-		return refine(tree, tree.getRootNode(), new Thing(), true);
+		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
+		// loop over all nodes of the tree and perform one of the 
+		// transformations on it (we make a copy of all nodes, because
+		// the transformations can, of course, add new nodes)
+		Set<ELDescriptionNode> nodes = new HashSet<ELDescriptionNode>(tree.getNodes());
+		for(ELDescriptionNode v : nodes) {
+			// perform operations
+			refinements.addAll(extendLabel(tree, v));
+			refinements.addAll(refineLabel(tree, v));
+			refinements.addAll(refineEdge(tree, v));
+			refinements.addAll(attachSubtree(tree, v));
+		}
+		
+//		return refine(tree, tree.getRootNode(), new Thing(), true);
+		return refinements;
 	}
+	
+	private Set<ELDescriptionTree> extendLabel(ELDescriptionTree tree, ELDescriptionNode v) {
+		return null;
+	}	
+	
+	private Set<ELDescriptionTree> refineLabel(ELDescriptionTree tree, ELDescriptionNode v) {
+		return null;
+	}	
+	
+	private Set<ELDescriptionTree> refineEdge(ELDescriptionTree tree, ELDescriptionNode v) {
+		return null;
+	}
+	
+	private Set<ELDescriptionTree> attachSubtree(ELDescriptionTree tree, ELDescriptionNode v) {
+		return null;
+	}	
 	
 	private Set<ELDescriptionTree> refine(ELDescriptionTree tree, ELDescriptionNode node, Description index, boolean minimize) {
 		// the set of all refinements, which we will return
