@@ -20,6 +20,7 @@
 package org.dllearner.refinementoperators;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,7 +52,7 @@ import org.dllearner.core.owl.Thing;
  * 
  * <p>Properties:
  * <ul>
- *   <li>complete</li>
+ *   <li>weakly complete (can be extended to guarantee completeness if desired)</li>
  *   <li>proper</li>
  *   <li>finite</li>
  *   <li>uses class/property hierarchy</li>
@@ -130,55 +131,56 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		// the transformations can, of course, add new nodes)
 		Set<ELDescriptionNode> nodes = new HashSet<ELDescriptionNode>(tree.getNodes());
 		for(ELDescriptionNode v : nodes) {
+			// the position of the node within the tree (needed for getting
+			// the corresponding node in a cloned tree) 
+			int[] position = v.getCurrentPosition();	
+			
 			// perform operations
-			refinements.addAll(extendLabel(tree, v));
-			refinements.addAll(refineLabel(tree, v));
-			refinements.addAll(refineEdge(tree, v));
-			refinements.addAll(attachSubtree(tree, v));
+			refinements.addAll(extendLabel(tree, v, position));
+			refinements.addAll(refineLabel(tree, v, position));
+			refinements.addAll(refineEdge(tree, v, position));
+			refinements.addAll(attachSubtree(tree, v, position));
 		}
 		
 //		return refine(tree, tree.getRootNode(), new Thing(), true);
 		return refinements;
 	}
-	
-	private Set<ELDescriptionTree> extendLabel(ELDescriptionTree tree, ELDescriptionNode v) {
-		return null;
-	}	
-	
-	private Set<ELDescriptionTree> refineLabel(ELDescriptionTree tree, ELDescriptionNode v) {
-		return null;
-	}	
-	
-	private Set<ELDescriptionTree> refineEdge(ELDescriptionTree tree, ELDescriptionNode v) {
-		return null;
-	}
-	
-	private Set<ELDescriptionTree> attachSubtree(ELDescriptionTree tree, ELDescriptionNode v) {
-		return null;
-	}	
-	
-	private Set<ELDescriptionTree> refine(ELDescriptionTree tree, ELDescriptionNode node, Description index, boolean minimize) {
-		// the set of all refinements, which we will return
+
+	// operation 1: label extension
+	private Set<ELDescriptionTree> extendLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
-		// the position of the node within the tree (needed for getting
-		// the corresponding node in a cloned tree)
-		int[] position = node.getCurrentPosition();	
+				
+		// the index is the range of role in the edge pointing to the parent of this node
+		Description index;
+		if(v.isRoot()) {
+			index = Thing.instance;
+		} else {
+			index = opRanges.get(v.getParentEdge().getLabel());
+		}
 		
-		// option 1: label extension
-		Set<NamedClass> candidates = utility.getClassCandidates(index, node.getLabel());
+		// call ncc (see paper)
+		Set<NamedClass> candidates = utility.getClassCandidates(index, v.getLabel());
+		
 		for(NamedClass nc : candidates) {
 			// clone operation
 			ELDescriptionTree clonedTree = tree.clone();
 			ELDescriptionNode clonedNode = clonedTree.getNode(position);
 			// extend label
 			clonedNode.extendLabel(nc);
-			refinements.add(clonedTree);
+			if(clonedTree.isMinimal()) {
+				refinements.add(clonedTree);	
+			}
 		}
+				
+		return refinements;
+	}	
+	
+	// operation 2: label refinement
+	private Set<ELDescriptionTree> refineLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
 		
-		
-		// option 2: label refinement
 		// loop through all classes in label
-		for(NamedClass nc : node.getLabel()) {
+		for(NamedClass nc : v.getLabel()) {
 			// find all more special classes for the given label
 			for(Description moreSpecial : rs.getSubClasses(nc)) {
 				if(moreSpecial instanceof NamedClass) {
@@ -186,117 +188,187 @@ public class ELDown2 extends RefinementOperatorAdapter {
 					ELDescriptionTree clonedTree = tree.clone();
 					ELDescriptionNode clonedNode = clonedTree.getNode(position);
 					
-//					System.out.println("tree: " + tree);
-//					System.out.println("cloned tree: " + clonedTree);
-//					System.out.println("node: " + node);
-//					System.out.println("cloned unmodified: " + clonedNode);
-					
 					// create refinements by replacing class					
 					clonedNode.replaceInLabel(nc, (NamedClass) moreSpecial);
 					
-//					System.out.println("cloned modified: " + clonedNode);
-					refinements.add(clonedTree);
+					if(clonedTree.isMinimal()) {
+						refinements.add(clonedTree);	
+					}
 				}
 			}
 		}
-		
-		// option 3: new edge
-		SortedSet<ObjectProperty> appOPs = utility.computeApplicableObjectProperties(index);
-		Set<ObjectProperty> mgr = utility.computeMgr(appOPs);
-		// temporary set of all concepts, which still have to pass the equivalence check
-		Stack<ELDescriptionTree> stack = new Stack<ELDescriptionTree>();
-		for(ObjectProperty op : mgr) {
-			// clone operation
-			ELDescriptionTree clonedTree = tree.clone();
-			ELDescriptionNode clonedNode = clonedTree.getNode(position);
-			// add a new node and edge
-			ELDescriptionNode newNode = new ELDescriptionNode(clonedNode, op, new TreeSet<NamedClass>());
-			stack.add(clonedTree);
-			
-			// recurse if concept is equivalent
-			while(stack.size() != 0) {
-				// we pick an arbitrary tree and remove it from the stack
-				ELDescriptionTree testTree = stack.pop();
-				// test equivalence (we found out that we can use the
-				// minimality test for equivalence in this case)
-				boolean equivalent = !testTree.isMinimal();
-				// if the tree is equivalent, we need to populate the
-				// stack with refinements (which are later tested for
-				// equivalence)
-				if(equivalent) {
-					// edge refinement
-					// we know that the edge we added is the last one for this node
-					int edgeNr = node.getEdges().size() - 1;
-					ELDescriptionEdge edge = node.getEdges().get(edgeNr);
-					// all refinements of this edge are added to the stack
-					// (set 1 in article)
-					refineEdge(stack, tree, node, position, edgeNr);
-					// perform node refinements in non-minimize-mode
-					// (set 2 in article)
-//					commented out, because didn't make sense to me
-//					refinements.addAll(refineEdges(tree, newNode, position));
-					stack.addAll(refine(tree, newNode, opRanges.get(edge), false));
-				} else {
-					// tree is not equivalent, i.e. a proper refinement
-					refinements.add(testTree);
-				}
-			}			
-		}
-		
-		// option 4: edge refinement
-		refinements.addAll(refineEdges(tree, node, position));
-		
-		// option 5: child refinement
-		for(ELDescriptionEdge edge : node.getEdges()) {
-			// recursive call on child node and property range as index
-			Description range = rs.getRange(edge.getLabel());
-//			System.out.println(tree + "\nrecurse to:\n"  + edge.getTree());
-			refinements.addAll(refine(tree, edge.getTree(), range, minimize));
-		}
-		
-		// we found out that, in case we start from the TOP concept
-		// (which is assumed in the current implementation), we can
-		// simply throw away all non-minimal concepts
-		if(minimize) {
-			Iterator<ELDescriptionTree> it = refinements.iterator();
-			while(it.hasNext()) {
-				if(!it.next().isMinimal()) {
-					it.remove();
-				}
-			}
-		}
-		
+				
 		return refinements;
-	}
-
-	private Set<ELDescriptionTree> refineEdges(ELDescriptionTree tree, ELDescriptionNode node, int[] position) {
+	}	
+	
+	// operation 3: refine edge
+	private Set<ELDescriptionTree> refineEdge(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
-		for(int edgeNumber = 0; edgeNumber < node.getEdges().size(); edgeNumber++) {
-			refineEdge(refinements, tree, node, position, edgeNumber);
-		}
+
+		for(int edgeNumber = 0; edgeNumber < v.getEdges().size(); edgeNumber++) {
+			ELDescriptionEdge edge = v.getEdges().get(edgeNumber);
+			ObjectProperty op = edge.getLabel();
+			// find all more special properties
+			for(ObjectProperty op2 : rs.getSubProperties(op)) {
+				// we check whether the range of this property is not disjoint
+				// with the existing child node (we do not perform a full disjointness
+				// check, but only compare with the flattened concept to keep the number
+				// of possible disjointness checks finite)
+				if(!utility.isDisjoint(getFlattenedConcept(edge.getNode()), opRanges.get(op2))) {
+					// clone operation
+					ELDescriptionTree clonedTree = tree.clone();
+					// find cloned edge and replace its label
+					clonedTree.getNode(position).refineEdge(edgeNumber, op2);
+//					ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
+//					clonedEdge.setLabel(op2);
+					if(clonedTree.isMinimal()) {
+						refinements.add(clonedTree);	
+					}
+				}
+			}	
+		}		
+		
 		return refinements;
 	}
 	
-	private void refineEdge(Collection<ELDescriptionTree> refinements, ELDescriptionTree tree, ELDescriptionNode node, int[] position, int edgeNumber) {
-		ELDescriptionEdge edge = node.getEdges().get(edgeNumber);
-		ObjectProperty op = edge.getLabel();
-		// find all more special properties
-		for(ObjectProperty op2 : rs.getSubProperties(op)) {
-			// we check whether the range of this property is not disjoint
-			// with the existing child node (we do not perform a full disjointness
-			// check, but only compare with the flattened concept to keep the number
-			// of possible disjointness checks finite)
-			if(!utility.isDisjoint(getFlattenedConcept(edge.getTree()), opRanges.get(op2))) {
-				// clone operation
-				ELDescriptionTree clonedTree = tree.clone();
-				// find cloned edge and replace its label
-				clonedTree.getNode(position).refineEdge(edgeNumber, op2);
-//				ELDescriptionEdge clonedEdge = clonedTree.getNode(position).getEdges().get(edgeNumber);
-//				clonedEdge.setLabel(op2);
-				refinements.add(clonedTree);				
-			}
-
+	// operation 4: attach tree
+	private Set<ELDescriptionTree> attachSubtree(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
+		
+		// compute the set of most general roles such that the domain of each role is not disjoint
+		// with the range of the role pointing to this node
+		Description index;
+		if(v.isRoot()) {
+			index = Thing.instance;
+		} else {
+			index = opRanges.get(v.getParentEdge().getLabel());
 		}
+		SortedSet<ObjectProperty> appOPs = utility.computeApplicableObjectProperties(index);
+		Set<ObjectProperty> mgr = utility.computeMgr(appOPs);
+		
+		// TODO: in as ist ein baum t nicht definiert; ersetzen durch t_{C'}
+		// TODO: Einrückung in as nach pick element nicht notwendig
+		
+		// loop through most general roles
+		for(ObjectProperty op : mgr) {
+			
+			// a list of subtrees (stored as edges i.e. role + root node which points to tree)
+			// TODO: Do we need to store m at all?
+			LinkedList<ELDescriptionEdge> m = new LinkedList<ELDescriptionEdge>();
+			
+			// create tree corresponding to top node
+			ELDescriptionTree topTree = new ELDescriptionTree(rs, Thing.instance);
+			
+			// init list with picked role and top node i.e. its root
+			m.add(new ELDescriptionEdge(op, topTree.getRootNode()));
+			
+			// iterate until m is empty
+			while(!m.isEmpty()) {
+				// pick and remove first element
+				ELDescriptionEdge edge = m.pollFirst();
+				ObjectProperty r = edge.getLabel();
+				// tp = t' in algorithm description (p stands for prime)
+				ELDescriptionTree tp = edge.getNode().getTree();
+				
+				// merge tree into main tree
+				ELDescriptionTree mergedTree = mergeTrees(tree, v, position, r, tp);
+				
+				// we check equivalence by a minimality test (TODO: can we still do this?)
+				if(mergedTree.isMinimal()) {
+					// it is not equivalent, i.e. we found a refinement
+					refinements.add(mergedTree);
+				} else {					
+					// perform complex check
+					boolean check = asCheck(v);
+					
+					if(check) {
+						// refine property
+						for(ObjectProperty subRole : rs.getSubProperties(r)) {
+							m.add(new ELDescriptionEdge(subRole, tp.getRootNode()));
+						}
+						// refine tree using recursive operator call
+						Set<ELDescriptionTree> recRefs = refine(tp);
+						for(ELDescriptionTree tpp : recRefs) {
+							m.add(new ELDescriptionEdge(r, tpp.getRootNode()));
+						}
+					}
+				}		
+			}
+		}
+				
+		return refinements;
+	}	
+	
+	// create a new tree which is obtained by attaching the new tree at the given node in the tree via role r
+	private ELDescriptionTree mergeTrees(ELDescriptionTree tree, ELDescriptionNode node, int[] position, ObjectProperty r, ELDescriptionTree newTree) {
+		// merged tree = tree + new node with role pointing to a new node
+		ELDescriptionTree mergedTree = tree.clone();
+		ELDescriptionNode clonedNode = mergedTree.getNode(position);
+//		ELDescriptionNode nodeNew = new ELDescriptionNode(clonedNode, r);
+		
+		// create a list of nodes we still need to process
+		LinkedList<ELDescriptionNode> toProcess = new LinkedList<ELDescriptionNode>();
+		toProcess.add(newTree.getRootNode());
+		
+		// map from nodes to cloned nodes
+		Map<ELDescriptionNode,ELDescriptionNode> cloneMap = new HashMap<ELDescriptionNode,ELDescriptionNode>();
+//		cloneMap.put(newTree.getRootNode(), nodeNew);
+		
+		// loop until the process list is empty
+		while(!toProcess.isEmpty()) {
+			// process a node
+			ELDescriptionNode v = toProcess.pollFirst();
+			// find parent
+			ELDescriptionNode vp;
+			if(v.isRoot()) {
+				// root is connected to main tree via role r
+				vp = new ELDescriptionNode(clonedNode, r);
+			} else {
+				ELDescriptionNode parent = cloneMap.get(v.getParent());
+				ObjectProperty role = v.getParentEdge().getLabel();
+				Set<NamedClass> label = v.getLabel();
+				// create new node
+				vp = new ELDescriptionNode(parent, role, label);				
+			}
+			cloneMap.put(v, vp);
+			// attach children of node to process list
+			for(ELDescriptionEdge edge : v.getEdges()) {
+				toProcess.add(edge.getNode());
+			}
+		}
+		
+		return mergedTree;
+	}
+	
+	private boolean asCheck(ELDescriptionNode v) {
+		// find all edges up to the root node
+		List<ELDescriptionEdge> piVEdges = new LinkedList<ELDescriptionEdge>();
+		ELDescriptionNode tmp = v;
+		while(!tmp.isRoot()) {
+			piVEdges.add(tmp.getParentEdge());
+			tmp = tmp.getParent();
+		}
+		
+		// go through all edges
+		for(ELDescriptionEdge piVEdge : piVEdges) {
+			// collect (w,s,w')
+			ELDescriptionNode wp = piVEdge.getNode();
+			ObjectProperty s = piVEdge.getLabel();
+			ELDescriptionNode w = wp.getParent();
+			
+			// go through all (w,s,w'') - TODO: s or a new s' ?
+			for(ELDescriptionEdge wEdge : w.getEdges()) {
+				ObjectProperty sp = wEdge.getLabel();
+				ELDescriptionNode wpp = wEdge.getNode();
+				if(s.equals(sp) && wp != wpp) {
+					if(wp.getIn().contains(wpp)) {
+						return false;
+					}
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	// simplifies a potentially nested tree in a flat conjunction by taking
@@ -304,6 +376,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	// C = Professor \sqcap \exists hasChild.Student
 	// the result would be Professor \sqcap Human (assuming Human is the domain
 	// of hasChild)
+	// TODO: used in both EL operators => move to utility class
 	private Description getFlattenedConcept(ELDescriptionNode node) {
 		Intersection i = new Intersection();
 		
@@ -323,16 +396,6 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		}
 		
 		return i;
-	}
-	
-//	private void computeMg(Description index) {
-//		// compute the applicable properties if this has not been done yet
-//		if(app.get(index) == null)
-//			app.put(index, utility.computeApplicableObjectProperties(index));	
-//		
-//		mgr.put(index, new TreeSet<ObjectProperty>());
-//		
-//		
-//	}	
+	}	
 	
 }

@@ -78,8 +78,8 @@ public class ELDescriptionNodeComparator implements Comparator<ELDescriptionNode
 						return compare;
 					
 					// compare child nodes
-					ELDescriptionNode child1 = node1.getEdges().get(i).getTree();
-					ELDescriptionNode child2 = node2.getEdges().get(i).getTree();
+					ELDescriptionNode child1 = node1.getEdges().get(i).getNode();
+					ELDescriptionNode child2 = node2.getEdges().get(i).getNode();
 					int compare2 = compare(child1, child2);
 					if(compare2 != 0)
 						return compare2;

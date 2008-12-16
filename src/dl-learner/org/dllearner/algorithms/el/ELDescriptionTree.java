@@ -158,8 +158,8 @@ public class ELDescriptionTree implements Cloneable {
 							ObjectProperty op1 = edges.get(j).getLabel();
 							ObjectProperty op2 = edges.get(k).getLabel();
 							if(rs.getObjectPropertyHierarchy().isSubpropertyOf(op1, op2)) {
-								ELDescriptionNode node1 = edges.get(j).getTree();
-								ELDescriptionNode node2 = edges.get(k).getTree();
+								ELDescriptionNode node1 = edges.get(j).getNode();
+								ELDescriptionNode node2 = edges.get(k).getNode();
 								// check simulation condition
 								if(node1.in.contains(node2) || node2.in.contains(node1)) {
 									// node1 is simulated by node2, i.e. we could remove one
@@ -224,7 +224,7 @@ public class ELDescriptionTree implements Cloneable {
 	public ELDescriptionNode getNode(int[] position) {
 		ELDescriptionNode currentNode = rootNode;
 		for (int i = 0; i < position.length; i++) {
-			currentNode = currentNode.getEdges().get(position[i]).getTree();
+			currentNode = currentNode.getEdges().get(position[i]).getNode();
 		}
 		return currentNode;
 	}
@@ -357,7 +357,7 @@ public class ELDescriptionTree implements Cloneable {
 	// check whether edges contains an element satisfying SC2
 	private boolean checkSC2Edge(ELDescriptionEdge superEdge, List<ELDescriptionEdge> edges) {
 		ObjectProperty superOP = superEdge.getLabel();
-		ELDescriptionNode superNode = superEdge.getTree();
+		ELDescriptionNode superNode = superEdge.getNode();
 		
 		for(ELDescriptionEdge edge : edges) {
 //			System.out.println("superEdge: " + superEdge);
@@ -367,7 +367,7 @@ public class ELDescriptionTree implements Cloneable {
 			// we first check the condition on the properties
 			if(roleHierarchy.isSubpropertyOf(op, superOP)) {
 				// check condition on simulations of referred nodes
-				ELDescriptionNode node = edge.getTree();
+				ELDescriptionNode node = edge.getNode();
 //				if(superNode.in.contains(node) || node.in.contains(superNode)) {
 				if(node.in.contains(superNode)) {
 					// we found a node satisfying the condition, so we can return
@@ -506,7 +506,7 @@ public class ELDescriptionTree implements Cloneable {
 			// edges
 			for(ELDescriptionEdge edge : oldNode.edges) {
 				// create a new edge with same label and replace the node the edge points to
-				newNode.edges.add(new ELDescriptionEdge(edge.getLabel(), cloneMap.get(edge.getTree())));
+				newNode.edges.add(new ELDescriptionEdge(edge.getLabel(), cloneMap.get(edge.getNode())));
 			}
 			
 		}
@@ -514,6 +514,7 @@ public class ELDescriptionTree implements Cloneable {
 		// update global tree
 		treeClone.rootNode = newRoot;
 		treeClone.maxLevel = maxLevel;
+		treeClone.nodes = new HashSet<ELDescriptionNode>(nodes);
 		for(int i=1; i<=maxLevel; i++) {
 			Set<ELDescriptionNode> oldNodes = levelNodeMapping.get(i);
 			Set<ELDescriptionNode> newNodes = new HashSet<ELDescriptionNode>();
@@ -541,8 +542,8 @@ public class ELDescriptionTree implements Cloneable {
 		// loop through all edges and clone the subtrees
 		for (ELDescriptionEdge edge : node.getEdges()) {
 			ELDescriptionNode tmp = new ELDescriptionNode(nodeClone, edge.getLabel(),
-					new TreeSet<NamedClass>(edge.getTree().getLabel()));
-			cloneRecursively(edge.getTree(), tmp);
+					new TreeSet<NamedClass>(edge.getNode().getLabel()));
+			cloneRecursively(edge.getNode(), tmp);
 		}
 	}
 

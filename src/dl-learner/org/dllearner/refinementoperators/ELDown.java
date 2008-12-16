@@ -220,7 +220,7 @@ public class ELDown extends RefinementOperatorAdapter {
 			// recursive call on child node and property range as index
 			Description range = rs.getRange(edge.getLabel());
 //			System.out.println(tree + "\nrecurse to:\n"  + edge.getTree());
-			refinements.addAll(refine(tree, edge.getTree(), range, minimize));
+			refinements.addAll(refine(tree, edge.getNode(), range, minimize));
 		}
 		
 		// we found out that, in case we start from the TOP concept
@@ -255,7 +255,7 @@ public class ELDown extends RefinementOperatorAdapter {
 			// with the existing child node (we do not perform a full disjointness
 			// check, but only compare with the flattened concept to keep the number
 			// of possible disjointness checks finite)
-			if(!utility.isDisjoint(getFlattenedConcept(edge.getTree()), opRanges.get(op2))) {
+			if(!utility.isDisjoint(getFlattenedConcept(edge.getNode()), opRanges.get(op2))) {
 				// clone operation
 				ELDescriptionTree clonedTree = tree.clone();
 				// find cloned edge and replace its label

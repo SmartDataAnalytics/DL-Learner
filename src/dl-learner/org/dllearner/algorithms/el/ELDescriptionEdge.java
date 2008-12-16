@@ -33,7 +33,7 @@ public class ELDescriptionEdge {
 
 	private ObjectProperty label;
 	
-	private ELDescriptionNode tree;
+	private ELDescriptionNode node;
 
 	/**
 	 * Constructs and edge given a label and an EL description tree.
@@ -42,7 +42,7 @@ public class ELDescriptionEdge {
 	 */
 	public ELDescriptionEdge(ObjectProperty label, ELDescriptionNode tree) {
 		this.label = label;
-		this.tree = tree;
+		this.node = tree;
 	}
 	
 	/**
@@ -62,13 +62,13 @@ public class ELDescriptionEdge {
 	/**
 	 * @return The EL description tree 
 	 */
-	public ELDescriptionNode getTree() {
-		return tree;
+	public ELDescriptionNode getNode() {
+		return node;
 	}
 	
 	@Override
 	public String toString() {
-		return "--" + label + "--> " + tree.toDescriptionString(); 
+		return "--" + label + "--> " + node.toDescriptionString(); 
 	}
 	
 }
