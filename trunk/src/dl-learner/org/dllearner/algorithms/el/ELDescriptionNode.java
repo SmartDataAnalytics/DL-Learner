@@ -111,7 +111,7 @@ public class ELDescriptionNode {
 		this(parentNode, parentProperty, new TreeSet<NamedClass>(Arrays.asList(label)));
 	}
 	
-	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, TreeSet<NamedClass> label) {
+	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, Set<NamedClass> label) {
 //		this.label = label;
 		// we first need to add the edge and update the simulation and then add
 		// all classes iteratively to the label (each time updating the simulation again)
@@ -261,7 +261,7 @@ public class ELDescriptionNode {
 				return label.first();
 			} else {
 				ELDescriptionEdge edge = edges.get(0);
-				Description child = edge.getTree().transformToDescription();
+				Description child = edge.getNode().transformToDescription();
 				return new ObjectSomeRestriction(edge.getLabel(),child);
 			}
 		// return an intersection of labels and edges
@@ -271,7 +271,7 @@ public class ELDescriptionNode {
 				is.addChild(nc);
 			}
 			for(ELDescriptionEdge edge : edges) {
-				Description child = edge.getTree().transformToDescription();
+				Description child = edge.getNode().transformToDescription();
 				ObjectSomeRestriction osr = new ObjectSomeRestriction(edge.getLabel(),child);
 				is.addChild(osr);
 			}
@@ -298,11 +298,12 @@ public class ELDescriptionNode {
 	}
 	
 	// returns the child number of this node, i.e. whether it is 
-	// the first, second, third etc. child
+	// the first, second, third etc. child;
+	// TODO: might be a bit faster to store this explicitly
 	private int getChildNumber() {
 		int count = 0;
 		for(ELDescriptionEdge edge : parent.edges) {
-			if(edge.getTree() == this) {
+			if(edge.getNode() == this) {
 				return count;
 			}
 		}
@@ -472,7 +473,7 @@ public class ELDescriptionNode {
 		String str = indentString + label.toString() + "\n";
 		for(ELDescriptionEdge edge : edges) {
 			str += indentString + "-- " + edge.getLabel() + " -->\n";
-			str += edge.getTree().toString(indent + 2);
+			str += edge.getNode().toString(indent + 2);
 		}
 		return str;
 	}
@@ -494,7 +495,7 @@ public class ELDescriptionNode {
 		}
 		for(ELDescriptionEdge edge : edges) {
 			str += " AND EXISTS " + edge.getLabel().toString() + ".(";
-			str += edge.getTree().toDescriptionString() + ")";
+			str += edge.getNode().toDescriptionString() + ")";
 		}
 		return str;		
 	}
@@ -557,6 +558,11 @@ public class ELDescriptionNode {
 	public ELDescriptionNode getParent() {
 		return parent;
 	}
+	
+	public ELDescriptionEdge getParentEdge() {
+		int childNr = getChildNumber();
+		return parent.edges.get(childNr);
+	}
 
 	/**
 	 * @return the in
@@ -598,5 +604,9 @@ public class ELDescriptionNode {
 	 */
 	public Set<ELDescriptionNode> getOutSC2() {
 		return outSC2;
+	}
+
+	public ELDescriptionTree getTree() {
+		return tree;
 	}
 }

@@ -101,7 +101,7 @@ public interface SchemaReasoner {
 	public ClassHierarchy getClassHierarchy();	
 	
 	/**
-	 * Returns more general concepts in the subsumption hierarchy.
+	 * Returns direct super classes in the class hierarchy.
 	 * 
 	 * @param description
 	 *            Atomic concept, top, or bottom.
@@ -110,7 +110,7 @@ public interface SchemaReasoner {
 	public SortedSet<Description> getSuperClasses(Description description);
 
 	/**
-	 * Returns more special concepts in the subsumption hierarchy.
+	 * Returns direct sub classes in the class hierarchy.
 	 * 
 	 * @param description
 	 *            Atomic concept, top, or bottom.

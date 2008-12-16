@@ -39,6 +39,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.refinementoperators.ELDown;
+import org.dllearner.refinementoperators.ELDown2;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 
 /**
@@ -55,7 +56,7 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
 	private ELLearningAlgorithmConfigurator configurator;
 	
-	private ELDown operator;
+	private ELDown2 operator;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;
@@ -97,7 +98,7 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 		heuristic = new StableHeuristic();
 		candidates = new TreeSet<SearchTreeNode>(heuristic);
 		
-		operator = new ELDown(reasoner);
+		operator = new ELDown2(reasoner);
 	}	
 	
 	@Override
