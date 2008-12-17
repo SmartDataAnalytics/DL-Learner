@@ -28,7 +28,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.dllearner.refinementoperators.ELDown;
+import org.dllearner.refinementoperators.ELDown2;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -61,7 +61,7 @@ public class ELDownTests {
 		
 		// TODO For this test, we need to turn instance based disjoints
 		// off! (We do not have any instances here.)
-		ELDown operator = new ELDown(rs);
+		ELDown2 operator = new ELDown2(rs);
 		
 		// desired refinements as strings
 		Set<String> desiredString = new TreeSet<String>();

@@ -38,7 +38,6 @@ import org.dllearner.core.configurators.ELLearningAlgorithmConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.refinementoperators.ELDown;
 import org.dllearner.refinementoperators.ELDown2;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 

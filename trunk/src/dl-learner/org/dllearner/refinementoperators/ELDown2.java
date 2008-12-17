@@ -107,6 +107,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	 */
 	@Override
 	public Set<Description> refine(Description concept) {
+		System.out.println("refining " + concept);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, concept);
 		Set<ELDescriptionTree> refinementTrees = refine(tree);
 		Set<Description> refinements = new HashSet<Description>();
@@ -125,20 +126,24 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	 * @return Set of refined EL description trees.
 	 */
 	public Set<ELDescriptionTree> refine(ELDescriptionTree tree) {
+		System.out.println("applying \\rho on " + tree.toDescriptionString());
+		
 		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
 		// loop over all nodes of the tree and perform one of the 
 		// transformations on it (we make a copy of all nodes, because
 		// the transformations can, of course, add new nodes)
 		Set<ELDescriptionNode> nodes = new HashSet<ELDescriptionNode>(tree.getNodes());
 		for(ELDescriptionNode v : nodes) {
+			System.out.println("picked node v: " + v);
+			
 			// the position of the node within the tree (needed for getting
 			// the corresponding node in a cloned tree) 
 			int[] position = v.getCurrentPosition();	
 			
 			// perform operations
 			refinements.addAll(extendLabel(tree, v, position));
-			refinements.addAll(refineLabel(tree, v, position));
-			refinements.addAll(refineEdge(tree, v, position));
+//			refinements.addAll(refineLabel(tree, v, position));
+//			refinements.addAll(refineEdge(tree, v, position));
 			refinements.addAll(attachSubtree(tree, v, position));
 		}
 		
@@ -160,8 +165,10 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		
 		// call ncc (see paper)
 		Set<NamedClass> candidates = utility.getClassCandidates(index, v.getLabel());
+//		System.out.println("label: " + v.getLabel());
 		
 		for(NamedClass nc : candidates) {
+//			System.out.println("candidate: " + nc);
 			// clone operation
 			ELDescriptionTree clonedTree = tree.clone();
 			ELDescriptionNode clonedNode = clonedTree.getNode(position);
@@ -246,14 +253,11 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		SortedSet<ObjectProperty> appOPs = utility.computeApplicableObjectProperties(index);
 		Set<ObjectProperty> mgr = utility.computeMgr(appOPs);
 		
-		// TODO: in as ist ein baum t nicht definiert; ersetzen durch t_{C'}
-		// TODO: Einrückung in as nach pick element nicht notwendig
-		
 		// loop through most general roles
 		for(ObjectProperty op : mgr) {
+			System.out.println("pick most general role: " + op);
 			
 			// a list of subtrees (stored as edges i.e. role + root node which points to tree)
-			// TODO: Do we need to store m at all?
 			LinkedList<ELDescriptionEdge> m = new LinkedList<ELDescriptionEdge>();
 			
 			// create tree corresponding to top node
@@ -266,20 +270,29 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			while(!m.isEmpty()) {
 				// pick and remove first element
 				ELDescriptionEdge edge = m.pollFirst();
+				System.out.println("picked first element of M: " + edge);
 				ObjectProperty r = edge.getLabel();
 				// tp = t' in algorithm description (p stands for prime)
 				ELDescriptionTree tp = edge.getNode().getTree();
 				
 				// merge tree into main tree
 				ELDescriptionTree mergedTree = mergeTrees(tree, v, position, r, tp);
+				ELDescriptionNode vClone = mergedTree.getNode(position);
+				
+				System.out.println("merged to t_{C'}: \n" + mergedTree);
+				
+//				System.out.println(mergedTree.toSimulationString());
 				
 				// we check equivalence by a minimality test (TODO: can we still do this?)
 				if(mergedTree.isMinimal()) {
+					System.out.println("Merged tree is minimal, i.e. not equivalent.");
 					// it is not equivalent, i.e. we found a refinement
 					refinements.add(mergedTree);
 				} else {					
-					// perform complex check
-					boolean check = asCheck(v);
+					System.out.println("Merged tree is not minimal, i.e. equivalent.");
+					// perform complex check in merged tree
+					boolean check = asCheck(vClone);
+					System.out.println("Result of complex check: " + check);
 					
 					if(check) {
 						// refine property
@@ -287,12 +300,17 @@ public class ELDown2 extends RefinementOperatorAdapter {
 							m.add(new ELDescriptionEdge(subRole, tp.getRootNode()));
 						}
 						// refine tree using recursive operator call
+						System.out.println("Recursive Call");
 						Set<ELDescriptionTree> recRefs = refine(tp);
+						System.out.println("Recursive Call Done");
 						for(ELDescriptionTree tpp : recRefs) {
+//							System.out.println("aa " + tpp.toDescriptionString());
 							m.add(new ELDescriptionEdge(r, tpp.getRootNode()));
 						}
 					}
-				}		
+				}
+				
+				System.out.println("M: " + m);
 			}
 		}
 				
@@ -301,10 +319,16 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	
 	// create a new tree which is obtained by attaching the new tree at the given node in the tree via role r
 	private ELDescriptionTree mergeTrees(ELDescriptionTree tree, ELDescriptionNode node, int[] position, ObjectProperty r, ELDescriptionTree newTree) {
+//		System.out.println("merge start");
+//		System.out.println(tree);
+//		System.out.println(newTree);
 		// merged tree = tree + new node with role pointing to a new node
 		ELDescriptionTree mergedTree = tree.clone();
 		ELDescriptionNode clonedNode = mergedTree.getNode(position);
 //		ELDescriptionNode nodeNew = new ELDescriptionNode(clonedNode, r);
+//		System.out.println("node: " + node);
+//		System.out.println("cloned node: " + clonedNode);
+		
 		
 		// create a list of nodes we still need to process
 		LinkedList<ELDescriptionNode> toProcess = new LinkedList<ELDescriptionNode>();
@@ -322,7 +346,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			ELDescriptionNode vp;
 			if(v.isRoot()) {
 				// root is connected to main tree via role r
-				vp = new ELDescriptionNode(clonedNode, r);
+				vp = new ELDescriptionNode(clonedNode, r, newTree.getRootNode().getLabel());
 			} else {
 				ELDescriptionNode parent = cloneMap.get(v.getParent());
 				ObjectProperty role = v.getParentEdge().getLabel();
@@ -337,6 +361,8 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			}
 		}
 		
+//		System.out.println(mergedTree);
+//		System.out.println("merge end");
 		return mergedTree;
 	}
 	
@@ -351,16 +377,16 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		
 		// go through all edges
 		for(ELDescriptionEdge piVEdge : piVEdges) {
-			// collect (w,s,w')
+			// collect (w,r',w')
 			ELDescriptionNode wp = piVEdge.getNode();
-			ObjectProperty s = piVEdge.getLabel();
+			ObjectProperty rp = piVEdge.getLabel();
 			ELDescriptionNode w = wp.getParent();
 			
 			// go through all (w,s,w'') - TODO: s or a new s' ?
 			for(ELDescriptionEdge wEdge : w.getEdges()) {
-				ObjectProperty sp = wEdge.getLabel();
+				ObjectProperty rpp = wEdge.getLabel();
 				ELDescriptionNode wpp = wEdge.getNode();
-				if(s.equals(sp) && wp != wpp) {
+				if(wp != wpp && opHierarchy.isSubpropertyOf(rp, rpp)) {
 					if(wp.getIn().contains(wpp)) {
 						return false;
 					}

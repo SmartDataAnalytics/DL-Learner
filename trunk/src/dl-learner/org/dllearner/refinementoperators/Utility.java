@@ -123,11 +123,11 @@ public final class Utility {
 				// not satisfied
 				// check1: disjointness with index
 				// check3: no superclass exists already
-				if(!isDisjoint(candidate,index) || !checkSubClasses(existingClasses,candidate)) {
+				if(!isDisjoint(candidate,index) && checkSubClasses(existingClasses,candidate)) {
 					// check whether the class is meaningful, i.e. adds something to the index
 					// to do this, we need to make sure that the class is not a superclass of the
 					// index (otherwise we get nothing new)
-					if(!isDisjoint(new Negation(candidate),index) || !checkSuperClasses(existingClasses,candidate)) {
+					if(!isDisjoint(new Negation(candidate),index) && checkSuperClasses(existingClasses,candidate)) {
 						// candidate went successfully through all checks
 						candidates.add(candidate);
 					} else {
@@ -140,17 +140,19 @@ public final class Utility {
 		return candidates;
 	}
 	
-	// returns true of the candidate is not subclass of an existing class,
+	// returns true if the candidate is not subclass of an existing class,
 	// false otherwise (check 3)
 	private boolean checkSubClasses(Set<NamedClass> existingClasses, NamedClass candidate) {
 		for(NamedClass nc : existingClasses) {
-			if(sh.isSubclassOf(candidate, nc))
+//			System.out.println("csc: " + nc + candidate);
+			if(sh.isSubclassOf(candidate, nc)) {
 				return false;
+			}
 		}
 		return true;
 	}
 	
-	// returns true of the candidate is not superclass of an existing class,
+	// returns true if the candidate is not superclass of an existing class,
 	// false otherwise (check 4)
 	private boolean checkSuperClasses(Set<NamedClass> existingClasses, NamedClass candidate) {
 		for(NamedClass nc : existingClasses) {

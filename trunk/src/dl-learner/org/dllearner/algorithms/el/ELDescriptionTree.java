@@ -161,7 +161,7 @@ public class ELDescriptionTree implements Cloneable {
 								ELDescriptionNode node1 = edges.get(j).getNode();
 								ELDescriptionNode node2 = edges.get(k).getNode();
 								// check simulation condition
-								if(node1.in.contains(node2) || node2.in.contains(node1)) {
+								if(node1.in.contains(node2)) { // || node2.in.contains(node1)) {
 									// node1 is simulated by node2, i.e. we could remove one
 									// of them, so the tree is not minimal
 									return false;
@@ -433,6 +433,14 @@ public class ELDescriptionTree implements Cloneable {
 		node2.out.remove(node1);
 	}
 	
+	public String toSimulationString() {
+		String str = "";
+		for(ELDescriptionNode node : nodes) {
+			str += node.toSimulationString() + "\n";
+		}
+		return str;
+	}		
+	
 	public String toSimulationString(Map<ELDescriptionNode,String> nodeNames) {
 		String str = "";
 		for(Entry<ELDescriptionNode,String> entry : nodeNames.entrySet()) {
@@ -514,7 +522,14 @@ public class ELDescriptionTree implements Cloneable {
 		// update global tree
 		treeClone.rootNode = newRoot;
 		treeClone.maxLevel = maxLevel;
-		treeClone.nodes = new HashSet<ELDescriptionNode>(nodes);
+		
+		// nodes
+		treeClone.nodes = new HashSet<ELDescriptionNode>();
+		for(ELDescriptionNode oldNode : nodes) {
+			treeClone.nodes.add(cloneMap.get(oldNode));
+		}		
+		
+		// level node mapping
 		for(int i=1; i<=maxLevel; i++) {
 			Set<ELDescriptionNode> oldNodes = levelNodeMapping.get(i);
 			Set<ELDescriptionNode> newNodes = new HashSet<ELDescriptionNode>();
