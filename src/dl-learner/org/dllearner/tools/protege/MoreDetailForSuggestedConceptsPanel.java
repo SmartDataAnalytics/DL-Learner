@@ -21,7 +21,7 @@ package org.dllearner.tools.protege;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.util.Iterator;
+import java.util.Set;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -32,7 +32,6 @@ import javax.swing.WindowConstants;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
-import org.semanticweb.owl.model.OWLOntology;
 
 
 
@@ -110,6 +109,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private JPanel negNotCoveredPanel;
 	private EvaluatedDescription eval;
 	private JTextArea concept;
+	private Set<String> ontologiesStrings;
 	private JTextArea conceptText;
 	private final Color colorRed = new Color(139, 0, 0);
 	private final Color colorGreen = new Color(0, 139, 0);
@@ -237,120 +237,74 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 * This method sets the Informations of the selected description.
 	 */
 	private void setInformation() {
+		ontologiesStrings = model.getOntologyURIString();
 		if(eval!=null) {
 			//sets the accuracy of the selected concept
-			System.out.println("EVAL: " + eval.getDescription());
-			if(eval.getDescription().toString().contains("#")) {
-				conceptText.setText(eval.getDescription().toManchesterSyntaxString(model.getURI().toString() + "#", null));
-			} else {
-				conceptText.setText(eval.getDescription().toManchesterSyntaxString(model.getURI().toString(), null));
+			for(String ontoString : ontologiesStrings) {
+				if(eval.getDescription().toString().contains(ontoString)) {
+					conceptText.setText(eval.getDescription().toManchesterSyntaxString(ontoString, null));
+					break;
+				}
 			}
+			
+			//sets the accuracy of the concept
 			double acc = (eval.getAccuracy())*100;
 			accuracyText.setText(String.valueOf(acc)+"%");
-			Iterator<Individual> i = eval.getCoveredPositives().iterator();
-			while (i.hasNext()) {
-				Iterator<OWLOntology> onto = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
-				Individual ind = i.next();
-				while (onto.hasNext()) {
-					String uri = onto.next().getURI().toString();
-					if(ind.toString().contains("#")) {
-						if(ind.toString().contains(uri)) {
-							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri + "#", null));
-							posLabel.setForeground(colorGreen);
-							posCoveredPanel.add(posLabel);
-							break;
-						}
-					} else {
-						if(ind.toString().contains(uri)) {
-							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
-							posLabel.setForeground(colorGreen);
-							posCoveredPanel.add(posLabel);
-							break;
-						}
-					}
+			
+			//Sets positive Covered Examples for the detail panel
+			Set<Individual> indi = eval.getCoveredPositives();
+			for(Individual ind : indi) {
+				for(String ontology : ontologiesStrings) {
+					if(ind.toString().contains(ontology)) {
+						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(ontology, null));
+						posLabel.setForeground(colorGreen);
+						posCoveredPanel.add(posLabel);
+						break;
+					} 
 				}
-				
-				
 			}
+				
+				
+			
 			//sets the positive examples that are not covered
-			Iterator<Individual> a = eval.getNotCoveredPositives().iterator();
-			while (a.hasNext()) {
-				Iterator<OWLOntology> onto = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
-				Individual ind = a.next();
-				while (onto.hasNext()) {
-					String uri = onto.next().getURI().toString();
-					if(ind.toString().contains("#")) {
-						if(ind.toString().contains(uri)) {
-							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri + "#", null));
-							posLabel.setForeground(colorRed);
-							posNotCoveredPanel.add(posLabel);
-							break;
-						}
-					} else {
-						if(ind.toString().contains(uri)) {
-							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
-							posLabel.setForeground(colorRed);
-							posNotCoveredPanel.add(posLabel);
-							break;
-						}
+			Set<Individual> individuals = eval.getNotCoveredPositives();
+			for(Individual ind : individuals) {
+				for(String onto : ontologiesStrings) {
+					if(ind.toString().contains(onto)) {
+						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(onto, null));
+						posLabel.setForeground(colorRed);
+						posNotCoveredPanel.add(posLabel);
+						break;
 					}
 				}
-				
-				
 			}
 
 
 			//sets the negative examples that are covered
-			Iterator<Individual> b = eval.getCoveredNegatives().iterator();
-			while (b.hasNext()) {
-				Iterator<OWLOntology> onto = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
-				Individual ind = b.next();
-				while (onto.hasNext()) {
-					String uri = onto.next().getURI().toString();
-					if(ind.toString().contains("#")) {
-						if(ind.toString().contains(uri)) {
-							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri + "#", null));
-							posLabel.setForeground(colorRed);
-							negCoveredPanel.add(posLabel);
-							break;
-						}
-					} else {
-						if(ind.toString().contains(uri)) {
-							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
-							posLabel.setForeground(colorRed);
-							negCoveredPanel.add(posLabel);
-							break;
-						}
+			Set<Individual> negCoveredIndi = eval.getCoveredNegatives(); 
+			for(Individual negIndi : negCoveredIndi) {
+				for(String ont : ontologiesStrings) {
+					if(negIndi.toString().contains(ont)) {
+						JLabel posLabel = new JLabel(negIndi.toManchesterSyntaxString(ont, null));
+						posLabel.setForeground(colorRed);
+						negCoveredPanel.add(posLabel);
+						break;
 					}
 				}
-				
-				
-			}
+			}	
 
 			//sets the negative examples that are not covered
-			Iterator<Individual> c = eval.getNotCoveredNegatives().iterator();
-			while (c.hasNext()) {
-				Iterator<OWLOntology> onto = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
-				Individual ind = c.next();
-				while (onto.hasNext()) {
-					String uri = onto.next().getURI().toString();
-					if(ind.toString().contains("#")) {
-						if(ind.toString().contains(uri)) {
-							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri + "#", null));
-							posLabel.setForeground(colorGreen);
-							negNotCoveredPanel.add(posLabel);
-						}
-					} else {
-						if(ind.toString().contains(uri)) {
-							JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(uri, null));
-							posLabel.setForeground(colorGreen);
-							negNotCoveredPanel.add(posLabel);
-						}
+			Set<Individual> negNotCoveredIndi = eval.getNotCoveredNegatives();
+			for(Individual negNotIndi : negNotCoveredIndi) {
+				for(String ontol : ontologiesStrings) {
+					if(negNotIndi.toString().contains(ontol)) {
+						JLabel posLabel = new JLabel(negNotIndi.toManchesterSyntaxString(ontol, null));
+						posLabel.setForeground(colorGreen);
+						negNotCoveredPanel.add(posLabel);
+						break;
 					}
-				}
-				
-				
+				} 	
 			}
 		}
+		}
 	}	
-}

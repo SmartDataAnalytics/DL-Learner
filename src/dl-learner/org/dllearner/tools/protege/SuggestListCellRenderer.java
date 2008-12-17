@@ -36,7 +36,7 @@ public class SuggestListCellRenderer extends JLabel implements ListCellRenderer 
 
 	private static final long serialVersionUID = 8040385703448641356L;
 	/**
-	 * Construktor for the Cell Renderer for the Suggest List.
+	 * Constructor for the Cell Renderer for the Suggest List.
 	 */
 	public SuggestListCellRenderer() {
 		setOpaque(true);
@@ -55,7 +55,7 @@ public class SuggestListCellRenderer extends JLabel implements ListCellRenderer 
 			int arg2, boolean iss, boolean arg4) {
 		// Set the text and
 		// background color for rendering
-		setText(((SuggestListItem) value).getValue());
+		setText(((SuggestListItem) value).getValue() + "  " + "Accuracy: " + ((SuggestListItem) value).getAccuracy()+"%");
 		setBackground(Color.WHITE);
 		setForeground(((SuggestListItem) value).getColor());
 		// Set a border if the list

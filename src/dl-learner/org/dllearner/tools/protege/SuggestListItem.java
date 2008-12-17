@@ -29,15 +29,18 @@ public class SuggestListItem {
 	
 	private Color color;
     private String value;
+    private double accuracy;
     /**
      * Constructor for the SuggestListItem.
      * @param c Color Color in which the text is painted.
      * @param s String text that is shown.
      */
     public SuggestListItem(
-       Color c, String s) {
-        color = c;
-        value = s;
+       Color c, String s, double acc) {
+        this.color = c;
+        this.value = s;
+        this.accuracy = acc;
+        
     }
     
     /**
@@ -55,5 +58,13 @@ public class SuggestListItem {
     public String getValue() {
         return value;
     }
+
+	/**
+	 * This method returns the accuracy of the current list item.
+	 * @return accuracy
+	 */
+	public double getAccuracy() {
+		return accuracy;
+	}
 }
 
