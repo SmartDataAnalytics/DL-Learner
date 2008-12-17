@@ -85,7 +85,7 @@ public final class ELDescriptionTreeTests {
 		ConceptTransformation.cleanConcept(d);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, d);
 		// clone performance (false for simple unit test, true for clone performance test)
-		boolean testPerformance = false;
+		boolean testPerformance = true;
 		ELDescriptionTree treeCloned = null;
 		if(testPerformance) {
 			int runs = 1000000;

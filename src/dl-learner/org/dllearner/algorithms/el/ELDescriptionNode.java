@@ -91,6 +91,11 @@ public class ELDescriptionNode {
 		this(tree, new TreeSet<NamedClass>());
 	}	
 	
+	// convenience constructor
+	public ELDescriptionNode(ELDescriptionTree tree, NamedClass... label) {
+		this(tree, new TreeSet<NamedClass>(Arrays.asList(label)));
+	}	
+	
 	/**
 	 * Constructs an EL description tree given its root label.
 	 * @param label Label of the root node.

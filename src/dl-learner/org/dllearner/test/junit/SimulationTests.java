@@ -32,6 +32,7 @@ import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.parser.KBParser;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.junit.Test;
@@ -660,6 +661,25 @@ public class SimulationTests {
 		new ELDescriptionNode(v13, r5);
 		assertTrue(!tree.isMinimal());
 		
+	}
+	
+	@Test
+	public void test7() {
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
+		ELDescriptionTree tree = new ELDescriptionTree(rs);
+		
+		ObjectProperty has = new ObjectProperty(uri("has"));
+		ObjectProperty hasChild = new ObjectProperty(uri("hasChild"));
+		NamedClass human = new NamedClass(uri("human"));
+		NamedClass animal = new NamedClass(uri("animal"));		
+		
+		ELDescriptionNode v1 = new ELDescriptionNode(tree, human);
+		new ELDescriptionNode(v1, has, animal);
+		new ELDescriptionNode(v1, hasChild);
+		
+//		System.out.println(tree.toSimulationString());
+		
+		assertTrue(tree.isMinimal());
 	}
 	
 	// display a simulation as debug log

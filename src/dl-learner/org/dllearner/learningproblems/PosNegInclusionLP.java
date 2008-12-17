@@ -29,10 +29,8 @@ import org.dllearner.core.configurators.PosNegInclusionLPConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Negation;
-import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SetManipulation;
-import org.dllearner.utilities.owl.ConceptTransformation;
 
 /**
  * The aim of this learning problem is to find an appropriate inclusion axiom
