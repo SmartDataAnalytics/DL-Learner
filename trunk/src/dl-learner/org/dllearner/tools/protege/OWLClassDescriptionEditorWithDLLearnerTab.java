@@ -119,8 +119,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		editor = new ExpressionEditor<OWLDescription>(editorKit, editorKit.getModelManager().getOWLExpressionCheckerFactory().getOWLDescriptionChecker());
 		editor.setExpressionObject(description);
 		
-		action = new ActionHandler(this.action, null, dllearner, null,
-				editorKit);
+		action = new ActionHandler(this.action, null, dllearner, null);
 		tabbedPane = new JTabbedPane();
 		tabbedPane.setFocusable(false);
 		editingComponent = new JPanel(new BorderLayout());
@@ -381,8 +380,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			toggledIcon = new ImageIcon(toggledIconUrl);
 			model = new DLLearnerModel(editorKit, current, label, this);
 			sugPanel = new SuggestClassPanel();
-			action = new ActionHandler(this.action, model, this, label,
-					editorKit);
+			action = new ActionHandler(this.action, model, this, label);
 			adv = new JLabel("Advanced Settings");
 			advanced = new JToggleButton(icon);
 			advanced.setVisible(true);
@@ -438,6 +436,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			model.clearVector();
 			model.unsetListModel();
 			model.initReasoner();
+			model.checkURI();
 			model.setPosVector();
 			hint.setVisible(true);
 			if (model.hasIndividuals()) {

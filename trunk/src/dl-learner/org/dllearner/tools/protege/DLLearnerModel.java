@@ -22,7 +22,6 @@ package org.dllearner.tools.protege;
 
 import java.net.URI;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -43,6 +42,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
@@ -185,10 +185,10 @@ public class DLLearnerModel implements Runnable{
 	private DefaultListModel posListModel;
 	private DefaultListModel negListModel;
 	private Set<KnowledgeSource> sources;
-	// private KnowledgeSource source;
 	private boolean hasIndividuals;
 	private NamedClass currentConcept;
 	private Vector<IndividualObject> individualVector;
+	private Set<String> ontologieURI;
 
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
@@ -221,10 +221,10 @@ public class DLLearnerModel implements Runnable{
 		cm = ComponentManager.getInstance();
 		ds = new HashSet<OWLDescription>();
 		suggestModel = new DefaultListModel();
+		ontologieURI = new HashSet<String>();
 		detailPane = new JXTaskPane();
 		detailPane.setTitle("Details");
 		sources = new HashSet<KnowledgeSource>();
-
 	}
 
 	/**
@@ -289,12 +289,9 @@ public class DLLearnerModel implements Runnable{
 	 * OWLAPIOntology will be available.
 	 */
 	public void setKnowledgeSource() {
-		// source = new
-		// OWLAPIOntology(editor.getModelManager().getActiveOntology());
-		Iterator<OWLOntology> it = editor.getModelManager()
-				.getActiveOntologies().iterator();
-		while (it.hasNext()) {
-			sources.add(new OWLAPIOntology(it.next()));
+		Set<OWLOntology> ontologies = editor.getModelManager().getActiveOntologies();
+		for(OWLOntology onto : ontologies) {
+			sources.add(new OWLAPIOntology(onto));
 		}
 	}
 
@@ -333,7 +330,7 @@ public class DLLearnerModel implements Runnable{
 		}
 		// adds the positive examples
 		cm.applyConfigEntry(lp, "positiveExamples", positiveExamples);
-		// adds the neagtive examples
+		// adds the negative examples
 		cm.applyConfigEntry(lp, "negativeExamples", negativeExamples);
 		try {
 			lp.init();
@@ -358,14 +355,13 @@ public class DLLearnerModel implements Runnable{
 		ignore.add(currentConcept.toString());
 		if(id.equals(SUPER_CLASS_AXIOM_STRING)) {
 			Description currentClass = (Description)currentConcept;
-			String currentClassString = currentConcept.toString();
-			while(!currentClassString.contains("TOP")) {
-				Iterator<Description> it = reasoner.getSuperClasses(currentClass).iterator();
-				while(it.hasNext()) {
-					Description ignoredClass = it.next();
-					if(!ignoredClass.toString().equals("TOP")) {
+			while(!(currentClass instanceof Thing)) {	
+				SortedSet<Description> superClasses = reasoner.getSuperClasses(currentClass);
+				for(Description ignoredClass : superClasses) {
+					if(!(ignoredClass instanceof Thing)) {
 						ignore.add(ignoredClass.toString());
 					}
+					currentClass = ignoredClass;
 				}
 			}
 		}
@@ -406,61 +402,31 @@ public class DLLearnerModel implements Runnable{
 	public void setPosVector() {
 		setPositiveConcept();
 		SortedSet<Individual> reasonerIndi = reasoner.getIndividuals();
-		Iterator<Individual> reasonerIt = reasonerIndi.iterator();
-		while (reasonerIt.hasNext()) {
-			Individual ind = reasonerIt.next();
-			Iterator<OWLOntology> onto = editor.getModelManager()
-					.getActiveOntologies().iterator();
-			while (onto.hasNext()) {
-				OWLOntology ont = onto.next();
+		for(Individual ind : reasonerIndi) {
+			Set<String> onto = ontologieURI;
+			for(String ont : onto) {
 				String indiv = ind.toString();
 				// checks if individual belongs to the selected concept
-				if(ind.toString().contains("#")) {
 					if (setPositivExamplesChecked(indiv)) {
-						if (indiv.contains(ont.getURI().toString())) {
+						if (indiv.contains(ont)) {
 							// when yes then it sets the positive example checked
 
 							// OWLExpressionCheckerFactory
-							posListModel.add(0, ind.toManchesterSyntaxString(ont
-									.getURI().toString()+"#", null));
+							posListModel.add(0, ind.toManchesterSyntaxString(ont, null));
 							individualVector.add(new IndividualObject(indiv, true));
 							break;
 						}
 
 					} else {
 						// When no it unchecks the positive example
-						if (indiv.contains(ont.getURI().toString())) {
+						if (indiv.contains(ont)) {
 							individualVector
 									.add(new IndividualObject(indiv, false));
-							negListModel.add(0, ind.toManchesterSyntaxString(ont
-									.getURI().toString()+"#", null));
-							break;
-						}
-					}
-				} else {
-					if (setPositivExamplesChecked(indiv)) {
-						if (indiv.contains(ont.getURI().toString())) {
-							// when yes then it sets the positive example checked
-
-							// OWLExpressionCheckerFactory
-							posListModel.add(0, ind.toManchesterSyntaxString(ont
-									.getURI().toString(), null));
-							individualVector.add(new IndividualObject(indiv, true));
-							break;
-						}
-
-					} else {
-						// When no it unchecks the positive example
-						if (indiv.contains(ont.getURI().toString())) {
-							individualVector
-									.add(new IndividualObject(indiv, false));
-							negListModel.add(0, ind.toManchesterSyntaxString(ont
-									.getURI().toString(), null));
+							negListModel.add(0, ind.toManchesterSyntaxString(ont, null));
 							break;
 						}
 					}
 				}
-			}
 		}
 
 	}
@@ -469,9 +435,8 @@ public class DLLearnerModel implements Runnable{
 	 * This method resets the Concepts that are learned.
 	 */
 	public void unsetNewConcepts() {
-		while (owlDescription.iterator().hasNext()) {
-			owlDescription.remove(owlDescription.iterator().next());
-
+		for(OWLDescription o : owlDescription) {
+			owlDescription.remove(o);
 		}
 	}
 
@@ -493,32 +458,16 @@ public class DLLearnerModel implements Runnable{
 		hasIndividuals = false;
 		// checks if selected concept is thing when yes then it selects all
 		// individuals
-		if (!current.getRootObject().toString().equals("Thing")) {
-
-			for (Iterator<NamedClass> i = reasoner.getAtomicConceptsList()
-					.iterator(); i.hasNext();) {
+		if (!(current.getRootObject() instanceof Thing)) {
+			List<NamedClass> classList = reasoner.getAtomicConceptsList();
+			for(NamedClass concept : classList) {
 				// if individuals is null
 				if (individuals == null) {
-					NamedClass concept = i.next();
 					// checks if the concept is the selected concept in protege
-					if (concept.toString().contains("#")) {
-						if (concept.toString().endsWith(
-								"#" + current.getRootObject().toString())) {
-							// if individuals is not null it gets all
-							// individuals of
-							// the concept
-							currentConcept = concept;
-							if (reasoner.getIndividuals(concept) != null) {
-								if (reasoner.getIndividuals(concept).size() > 0) {
-									hasIndividuals = true;
-								}
-								individual = reasoner.getIndividuals(concept);
-								break;
-							}
-						}
-					} else {
-						if (concept.toString().endsWith(
-								current.getRootObject().toString())) {
+					for(String onto : ontologieURI) {
+					if (concept.toString().contains(onto)) {
+						if (concept.toString().equals(
+								onto + current.getRootObject().toString())) {
 							// if individuals is not null it gets all
 							// individuals of
 							// the concept
@@ -533,6 +482,7 @@ public class DLLearnerModel implements Runnable{
 						}
 					}
 				}
+			}
 			}
 		} else {
 			if (reasoner.getIndividuals().size() > 0) {
@@ -719,25 +669,6 @@ public class DLLearnerModel implements Runnable{
 		return suggestModel;
 	}
 
-	/*
-	 * This method gets the old concept from checking the positive examples.
-	 * 
-	 * private void setOldConceptOWLAPI() { // gets all individuals
-	 * SortedSet<Individual> indi = reasoner.getIndividuals(); // Iterator of
-	 * Individuals for (Iterator<Individual> i = indi.iterator(); i.hasNext();)
-	 * { Individual indi2 = i.next(); // checks if the current individual
-	 * belongs to positive examples if (positiveExamples != null) { if
-	 * (positiveExamples.toString().contains(indi2.toString())) { // if yes then
-	 * get the concepts of this individuals Set<NamedClass> concept =
-	 * reasoner.getTypes(indi2); // adds all concepts to old concept OWLAPI for
-	 * (Iterator<NamedClass> k = concept.iterator(); k .hasNext();) {
-	 * OWLDescription oldOWLAPI = OWLAPIDescriptionConvertVisitor
-	 * .getOWLDescription(k.next()); oldConceptOWLAPI = oldOWLAPI;
-	 * ds.add(oldOWLAPI); }
-	 * 
-	 * } } } }
-	 */
-
 	/**
 	 * This method stores the new concept learned by the DL-Learner in the
 	 * Ontology.
@@ -748,7 +679,6 @@ public class DLLearnerModel implements Runnable{
 	public void changeDLLearnerDescriptionsToOWLDescriptions(
 			Description descript) {
 		setNewConceptOWLAPI(descript);
-		// setOldConceptOWLAPI();
 		oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor
 				.getOWLDescription(currentConcept);
 		ds.add(oldConceptOWLAPI);
@@ -853,47 +783,36 @@ public class DLLearnerModel implements Runnable{
 	public Set<KnowledgeSource> getKnowledgeSources() {
 		return sources;
 	}
-
-	/*public void updateSuggestListItems() {
-		evalDescriptions = la.getCurrentlyBestEvaluatedDescriptions(view
-				.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts(),
-				view.getPosAndNegSelectPanel().getOptionPanel()
-						.getMinAccuracy(), true);
-		// learnPanel.getListModel().clear();
-		DefaultListModel dm = new DefaultListModel();
-		Iterator<EvaluatedDescription> it = evalDescriptions.iterator();
-		int i = 0;
-		while (it.hasNext()) {
-			Iterator<OWLOntology> ont = editor.getModelManager()
-					.getActiveOntologies().iterator();
-			EvaluatedDescription eval = it.next();
-			while (ont.hasNext()) {
-				String onto = ont.next().getURI().toString();
-				if (eval.getDescription().toString().contains(onto)) {
-					if (isConsistent(eval)) {
-						dm.add(i, new SuggestListItem(Color.GREEN, eval
-								.getDescription().toManchesterSyntaxString(
-										onto, null)));
-						i++;
+	
+	/**
+	 * Checks the URI if a "#" is in it.
+	 */
+	public void checkURI() {
+		Set<OWLOntology> ont = editor.getModelManager().getActiveOntologies();
+		Set<Individual> indi = reasoner.getIndividuals();
+		for(OWLOntology onto : ont) {
+			String ontURI = onto.getURI().toString();
+			for(Individual ind : indi) {
+				if(ind.toString().contains(ontURI)) {
+					if(ind.toString().contains("#")) {
+						ontologieURI.add(onto.getURI().toString()+"#");
 						break;
 					} else {
-						dm.add(i, new SuggestListItem(Color.RED, eval
-								.getDescription().toManchesterSyntaxString(
-										onto, null)));
-						i++;
+						ontologieURI.add(onto.getURI().toString());
 						break;
 					}
 				}
 			}
-		}
-		view.getSuggestClassPanel().setSuggestList(dm);
+		}	
 	}
 	
-	public void algorithmTerminated() {
-		error = "learning succesful";
-		String message = "To view details about why a class description was suggested, please doubleclick on it.";
-		// start the algorithm and print the best concept found
-		view.renderErrorMessage(error);
-		view.setHintMessage(message);
-	}*/
+	/**
+	 * This method returns the Strings of the Ontology uri's that are currently used.
+	 * @return ontologieURI
+	 */
+	public Set<String> getOntologyURIString() {
+		return ontologieURI;
+	}
+
+
 }

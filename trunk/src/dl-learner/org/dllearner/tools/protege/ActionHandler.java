@@ -26,8 +26,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -44,9 +44,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
-import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owl.model.OWLOntology;
-
 /**
  * This class processes input from the user.
  * 
@@ -61,7 +58,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 	private static Logger logger = Logger.getLogger(ActionHandler.class);
 	
 	private DLLearnerModel model;
-	private OWLEditorKit editorKit;
 
 	// This is the id that checks if the equivalent class or subclass button is
 	// pressed in protege
@@ -93,8 +89,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public ActionHandler(ActionHandler a, DLLearnerModel m,
 			OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view,
-			String i, OWLEditorKit editor) {
-		this.editorKit = editor;
+			String i) {
 		this.view = view;
 		this.id = i;
 		this.model = m;
@@ -212,34 +207,20 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 *            MouseEvent
 	 */
 	public void mouseClicked(MouseEvent m) {
-		EvaluatedDescription eDescription = null;
+		//EvaluatedDescription eDescription = null;
 		
 		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
 			SuggestListItem item = (SuggestListItem) view
 					.getSuggestClassPanel().getSuggestList().getSelectedValue();
 			String desc = item.getValue();
 			if (model.getEvaluatedDescriptionList() != null) {
-				for (Iterator<EvaluatedDescription> i = model
-						.getEvaluatedDescriptionList().iterator(); i.hasNext();) {
-					eDescription = i.next();
-					if(eDescription.getDescription().toString().contains("#")) {
+				List<EvaluatedDescription> evalList = model.getEvaluatedDescriptionList();
+				Set<String> onto = model.getOntologyURIString();
+				for(EvaluatedDescription eDescription : evalList) {
+					for(String ont : onto) {
 						if (desc.equals(eDescription.getDescription()
-								.toManchesterSyntaxString(
-										editorKit.getModelManager()
-												.getActiveOntology().getURI().toString() + "#"
-												, null))) {
+								.toManchesterSyntaxString(ont, null))) {
 							evaluatedDescription = eDescription;
-							
-							break;
-						}
-					} else {
-						if (desc.equals(eDescription.getDescription()
-								.toManchesterSyntaxString(
-										editorKit.getModelManager()
-												.getActiveOntology().getURI().toString()
-												, null))) {
-							evaluatedDescription = eDescription;
-							
 							break;
 						}
 					}
@@ -403,36 +384,20 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 				public void run() {
 					model.setSuggestList(result);
-					// learnPanel.getListModel().clear();
 					dm.clear();
-					Iterator<EvaluatedDescription> it = result.iterator();
 					int i = 0;
-					while (it.hasNext()) {
-						Iterator<OWLOntology> ont = model.getOWLEditorKit().getModelManager().getActiveOntologies().iterator();
-						EvaluatedDescription eval = it.next();
-						while(ont.hasNext()) {
-							String onto = ont.next().getURI().toString();
-							if(eval.getDescription().toString().contains(onto)) {
-								if(eval.getDescription().toString().contains("#")) {
-									if(model.isConsistent(eval)) {
-										dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(onto+"#", null)));
-										i++;
-										break;
-									} else {
-										dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(onto+"#", null)));
-										i++;
-										break;
-									}
+					for(EvaluatedDescription eval : result) {
+						Set<String> ont = model.getOntologyURIString();
+						for(String ontology : ont) {
+							if(eval.getDescription().toString().contains(ontology)) {
+								if(model.isConsistent(eval)) {
+									dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null),eval.getAccuracy()*100));
+									i++;
+									break;
 								} else {
-									if(model.isConsistent(eval)) {
-										dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(onto, null)));
-										i++;
-										break;
-									} else {
-										dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(onto, null)));
-										i++;
-										break;
-									}
+									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null),eval.getAccuracy()*100));
+									i++;
+									break;
 								}
 							}
 						}
