@@ -127,4 +127,21 @@ public class Stat {
 		return max;
 	}
 
+	public String prettyPrint(String unit) {
+		DecimalFormat df = new DecimalFormat();
+		String str = "av. " + df.format(getMean()) + unit;
+		str += " (deviation " + df.format(getStandardDeviation()) + unit + "; ";
+		str += "min " + df.format(getMin()) + unit + "; ";
+		str += "max " + df.format(getMax()) + unit + ")";		
+		return str;
+	}	
+	
+	public String prettyPrint(String unit, DecimalFormat df) {
+		String str = "av. " + df.format(getMean()) + unit;
+		str += " (deviation " + df.format(getStandardDeviation()) + unit + "; ";
+		str += "min " + df.format(getMin()) + unit + "; ";
+		str += "max " + df.format(getMax()) + unit + ")";		
+		return str;
+	}	
+	
 }

@@ -188,7 +188,7 @@ public class Psi implements GeneticRefinementOperator {
 		
 		
 		Description conceptModForCache = ConceptTransformation.applyEquivalenceRules(conceptMod);
-		ConceptTransformation.transformToOrderedNegationNormalForm(conceptModForCache, conceptComparator);
+		ConceptTransformation.transformToOrderedForm(conceptModForCache, conceptComparator);
 		
 		Score score = program.getScore();
 		// Eval-Cache füllen
@@ -207,7 +207,7 @@ public class Psi implements GeneticRefinementOperator {
 		/////////// TESTCODE: umwandeln des erhaltenen Konzepts
 		// someTimeStart = System.nanoTime();
 		Description newConceptMod = ConceptTransformation.applyEquivalenceRules(newConcept);
-		ConceptTransformation.transformToOrderedNegationNormalForm(newConceptMod, conceptComparator);
+		ConceptTransformation.transformToOrderedForm(newConceptMod, conceptComparator);
 		// someTime += System.nanoTime() - someTimeStart;
 		///////////
 		

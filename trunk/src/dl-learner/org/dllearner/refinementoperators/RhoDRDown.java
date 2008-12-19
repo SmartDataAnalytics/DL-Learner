@@ -779,7 +779,7 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 						
 						// convert all concepts in ordered negation normal form
 						for(Description concept : baseSet) {
-							ConceptTransformation.transformToOrderedNegationNormalForm(concept, conceptComparator);
+							ConceptTransformation.transformToOrderedForm(concept, conceptComparator);
 						}
 						
 						// apply the exists filter (throwing out all refinements with

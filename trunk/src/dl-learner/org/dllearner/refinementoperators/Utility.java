@@ -123,7 +123,8 @@ public final class Utility {
 				// not satisfied
 				// check1: disjointness with index
 				// check3: no superclass exists already
-				if(!isDisjoint(candidate,index) && checkSubClasses(existingClasses,candidate)) {
+				// check5: disjointness
+				if(!isDisjoint(candidate,index) && checkSubClasses(existingClasses,candidate) && checkDisjoints(existingClasses,candidate)) {
 					// check whether the class is meaningful, i.e. adds something to the index
 					// to do this, we need to make sure that the class is not a superclass of the
 					// index (otherwise we get nothing new)
@@ -161,6 +162,16 @@ public final class Utility {
 		}
 		return true;
 	}	
+	
+	// returns false if any of the classes is disjoint with the new one; true otherwise
+	private boolean checkDisjoints(Set<NamedClass> existingClasses, NamedClass candidate) {
+		for(NamedClass nc : existingClasses) {
+			if(isDisjoint(nc, candidate))
+				return false;
+		}
+		return true;
+	}	
+		
 	
 	public boolean isDisjoint(Description d1, Description d2) {
 //		System.out.println("d1: " + d1);
