@@ -460,7 +460,7 @@ public class RhoDown extends RefinementOperatorAdapter {
 					
 					// Umwandlung aller Konzepte in Negationsnormalform
 					for(Description concept : baseSet) {
-						ConceptTransformation.transformToOrderedNegationNormalForm(concept, conceptComparator);
+						ConceptTransformation.transformToOrderedForm(concept, conceptComparator);
 					}
 					
 					if(applyExistsFilter) {

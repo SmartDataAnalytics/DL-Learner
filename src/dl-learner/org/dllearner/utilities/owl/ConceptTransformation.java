@@ -286,11 +286,11 @@ public class ConceptTransformation {
 	// wandelt ein Konzept in geordnete Negationsnormalform um;
 	// es wird angenommen, dass das Eingabekonzept in Negationsnormalform und
 	// "sauber" ist
-	public static void transformToOrderedNegationNormalForm(Description concept, Comparator<Description> conceptComparator) {
+	public static void transformToOrderedForm(Description concept, Comparator<Description> conceptComparator) {
 		
 		// alle Kinderkonzepte in geordnete Negationsnormalform bringen
 		for(Description child : concept.getChildren()) {
-			transformToOrderedNegationNormalForm(child, conceptComparator);
+			transformToOrderedForm(child, conceptComparator);
 		}
 		
 		onnfTimeNsStart = System.nanoTime();
