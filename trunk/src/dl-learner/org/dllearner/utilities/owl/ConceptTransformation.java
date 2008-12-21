@@ -33,6 +33,9 @@ import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.ObjectCardinalityRestriction;
+import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
+import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Intersection;
@@ -161,6 +164,21 @@ public class ConceptTransformation {
 					// All
 					else
 						return new ObjectSomeRestriction(r,transformToNegationNormalForm(c));					
+				} else if(child instanceof ObjectCardinalityRestriction) {
+					ObjectCardinalityRestriction card = (ObjectCardinalityRestriction)child;
+					ObjectPropertyExpression r = card.getRole();
+					int number = card.getCardinality();
+					// Negation nach innen
+					Description c = new Negation(child.getChild(0));
+					// <= n is transformed to >= n+1 
+					if(child instanceof ObjectMaxCardinalityRestriction)
+						return new ObjectMinCardinalityRestriction(number+1,r,transformToNegationNormalForm(c));
+					// >= n is transformed to <= n-1
+					else if(child instanceof ObjectMinCardinalityRestriction)
+						return new ObjectMinCardinalityRestriction(number+1,r,transformToNegationNormalForm(c));
+					// >= n is transformed to <= n-1
+					else
+						throw new RuntimeException("Conversion to negation normal form not supported for " + concept);			
 				} else if(child instanceof Intersection) {
 					// wg. Negation wird Konjunktion zu Disjunktion
 					Union md = new Union();

@@ -261,9 +261,14 @@ public class FastInstanceChecker extends ReasonerComponent {
 			if (child instanceof NamedClass) {
 				return classInstancesNeg.get((NamedClass) child).contains(individual);
 			} else {
-				logger.debug("Converting description to negation normal form in fast instance check (should be avoided if possible).");
-				Description nnf = ConceptTransformation.transformToNegationNormalForm(child);
-				return hasTypeImpl(nnf, individual);
+				// default negation
+				if(configurator.getDefaultNegation()) {
+					return !hasTypeImpl(child, individual);
+				} else {
+					logger.debug("Converting description to negation normal form in fast instance check (should be avoided if possible).");
+					Description nnf = ConceptTransformation.transformToNegationNormalForm(child);
+					return hasTypeImpl(nnf, individual);					
+				}
 //				throw new ReasoningMethodUnsupportedException("Instance check for description "
 //						+ description
 //						+ " unsupported. Description needs to be in negation normal form.");
