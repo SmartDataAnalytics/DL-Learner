@@ -55,7 +55,7 @@ public class SuggestListCellRenderer extends JLabel implements ListCellRenderer 
 			int arg2, boolean iss, boolean arg4) {
 		// Set the text and
 		// background color for rendering
-		setText(((SuggestListItem) value).getValue() + "  " + "Accuracy: " + ((SuggestListItem) value).getAccuracy()+"%");
+		setText(((SuggestListItem) value).getValue() + "  " + "Accuracy: " + Math.round(((SuggestListItem) value).getAccuracy())+"%");
 		setBackground(Color.WHITE);
 		setForeground(((SuggestListItem) value).getColor());
 		// Set a border if the list
