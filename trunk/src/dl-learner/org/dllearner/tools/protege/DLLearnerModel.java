@@ -364,6 +364,7 @@ public class DLLearnerModel implements Runnable{
 					currentClass = ignoredClass;
 				}
 			}
+			cm.applyConfigEntry(la, "useNegation", false);
 		}
 		cm.applyConfigEntry(la, "ignoredConcepts", ignore);
 		cm.applyConfigEntry(la, "noisePercentage", 5.0);
