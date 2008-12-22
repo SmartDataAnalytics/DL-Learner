@@ -356,6 +356,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		private JLabel wikiPane;
 		private ImageIcon toggledIcon;
 		private JTextArea hint;
+		private boolean isInconsistent;
 		// This is the Panel for more details of the suggested concept
 		private MoreDetailForSuggestedConceptsPanel detail;
 		private OWLFrame<OWLClass> frame;
@@ -434,22 +435,30 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public void makeView() {
 			
 			model.clearVector();
+			hint.setText("To get suggestions for class descriptions, please click the button above.");
+			isInconsistent = false;
 			model.unsetListModel();
 			model.initReasoner();
-			model.checkURI();
-			model.setPosVector();
-			hint.setVisible(true);
-			if (model.hasIndividuals()) {
-				run.setEnabled(true);
+			if(!isInconsistent) {
+				
+				model.checkURI();
+				model.setPosVector();
+				if (model.hasIndividuals()) {
+					run.setEnabled(true);
+				} else {
+					run.setEnabled(false);
+					hint.setVisible(false);
+					String message ="There are no Instances for "+ frame.getRootObject()+" available. Please insert some Instances.";
+					renderErrorMessage(message);
+				}
+				posPanel.setExampleList(model.getPosListModel(), model.getNegListModel());
 			} else {
+				hint.setForeground(Color.RED);
 				run.setEnabled(false);
-				hint.setVisible(false);
-				String message ="There are no Instances for "+ frame.getRootObject()+" available. Please insert some Instances.";
-				renderErrorMessage(message);
-			}	
+				hint.setText("Can't reason with inconsistent ontology");
+			}
+			hint.setVisible(true);
 			advanced.setIcon(icon);
-			
-			posPanel.setExampleList(model.getPosListModel(), model.getNegListModel());
 			accept.setEnabled(false);
 			action.resetToggled();
 			addButtonPanel.add("North", accept);
@@ -468,8 +477,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			posPanel.getAddToPosPanelButton().setEnabled(false);
 			posPanel.setBounds(10, 230, 490, 250);
 			accept.setBounds(510, 40, 80, 110);
-			hint.setBounds(10, 150, 490, 20);
-			errorMessage.setBounds(10, 170, 490, 20);
+			hint.setBounds(10, 150, 490, 35);
+			errorMessage.setBounds(10, 180, 490, 20);
 			learner.add(run);
 			learner.add(wikiPane);
 			learner.add(adv);
@@ -481,6 +490,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			learner.add(posPanel);
 			detail = new MoreDetailForSuggestedConceptsPanel(model);
 			add(learner);
+
 		}
 		/**
 		 * This method sets the right icon for the advanced Panel.
@@ -593,7 +603,10 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public JButton getRunButton() {
 			return run;
 		}
-
+		
+		public void setIsInconsistent(boolean isIncon) {
+			this.isInconsistent = isIncon;
+		}
 		/**
 	    * Destroys the view after the plugin is closed.
 	    */
@@ -634,7 +647,12 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 */
 		public void algorithmTerminated() {
 			String error = "learning succesful";
-			String message = "To view details about why a class description was suggested, please doubleclick on it.";
+			String message = "";
+			if(isInconsistent) {
+				message = "Class descriptions marked red will lead to an inconsistent ontology. \nPlease double click on them to view detail information.";
+			} else {
+				message = "To view details about why a class description was suggested, please doubleclick on it.";
+			}
 			run.setEnabled(true);
 			// start the algorithm and print the best concept found
 			renderErrorMessage(error);
