@@ -1,7 +1,7 @@
 README
 ======
 The Protégé DL-Learner plugin allows to learn equivalence and super class axioms based on 
-the instance data in the ontologies loaded in Protégé. It integrated seamlessly in Protégé.
+the instance data in the ontologies loaded in Protégé. It integrates seamlessly in Protégé.
 
 Homepage: http://dl-learner.org/wiki/ProtegePlugin
 Sourceforge.net Project Page: http://sourceforge.net/projects/dl-learner/
@@ -12,6 +12,6 @@ Sourcecode: https://dl-learner.svn.sourceforge.net/svnroot/dl-learner/trunk/src/
 
 The Protégé Plugin is Open Source and licenced under the GNU General Public License.
 
-Documentation for the Protégé Plugin can be found
-at http://dl-learner.org/wiki/ProtegePlugin.
+More information and a screencast can be found at:
+http://dl-learner.org/wiki/ProtegePlugin.
 
