@@ -49,6 +49,7 @@ import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.jdesktop.swingx.JXTaskPane;
+import org.mindswap.pellet.exceptions.InconsistentOntologyException;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.frame.OWLFrame;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -189,6 +190,7 @@ public class DLLearnerModel implements Runnable{
 	private NamedClass currentConcept;
 	private Vector<IndividualObject> individualVector;
 	private Set<String> ontologieURI;
+	private boolean ontologyConsistent;
 
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
@@ -213,6 +215,7 @@ public class DLLearnerModel implements Runnable{
 		current = h;
 		this.id = id;
 		this.view = view;
+		ontologyConsistent = true;
 		owlDescription = new HashSet<OWLDescription>();
 		posListModel = new DefaultListModel();
 		negListModel = new DefaultListModel();
@@ -301,14 +304,18 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public void setReasoner() {
 		this.reasoner = cm.reasoner(FastInstanceChecker.class, sources);
-
 		try {
 			reasoner.init();
+			reasoner.isSatisfiable();
+			view.setIsInconsistent(false);
 		} catch (ComponentInitException e) {
 			// TODO Auto-generated catch block
-			System.out.println("fehler!!!!!!!!!");
+			System.out.println("fehler!!!!!!!!!");	
 			e.printStackTrace();
+		} catch (InconsistentOntologyException incon) {
+			view.setIsInconsistent(true);
 		}
+		
 		// rs = cm.reasoningService(reasoner);
 	}
 
@@ -813,6 +820,13 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public Set<String> getOntologyURIString() {
 		return ontologieURI;
+	}
+	/**
+	 * This method reutrns a bollean if an ontology is inconsistent.
+	 * @return ontologyInconsistent
+	 */
+	public boolean getOntologyConsistent() {
+		return ontologyConsistent;
 	}
 
 

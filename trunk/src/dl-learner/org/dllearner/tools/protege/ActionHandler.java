@@ -397,6 +397,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 								} else {
 									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null),eval.getAccuracy()*100));
 									i++;
+									view.setIsInconsistent(true);
 									break;
 								}
 							}
