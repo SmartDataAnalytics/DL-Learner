@@ -45,6 +45,9 @@ import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+
 /**
  * EL downward refinement operator constructed by Jens Lehmann
  * and Christoph Haase. It takes an EL description tree as input
@@ -153,6 +156,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 
 	// operation 1: label extension
 	private Set<ELDescriptionTree> extendLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		Monitor mon = MonitorFactory.start("extend label");
 		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
 				
 		// the index is the range of role in the edge pointing to the parent of this node
@@ -179,11 +183,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			}
 		}
 				
+		mon.stop();
 		return refinements;
 	}	
 	
 	// operation 2: label refinement
 	private Set<ELDescriptionTree> refineLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		Monitor mon = MonitorFactory.start("refine label");
 		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
 		
 		// loop through all classes in label
@@ -204,12 +210,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				}
 			}
 		}
-				
+		mon.stop();
 		return refinements;
 	}	
 	
 	// operation 3: refine edge
 	private Set<ELDescriptionTree> refineEdge(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		Monitor mon = MonitorFactory.start("refine edge");
 		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
 
 		for(int edgeNumber = 0; edgeNumber < v.getEdges().size(); edgeNumber++) {
@@ -234,12 +241,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				}
 			}	
 		}		
-		
+		mon.stop();
 		return refinements;
 	}
 	
 	// operation 4: attach tree
 	private Set<ELDescriptionTree> attachSubtree(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		Monitor mon = MonitorFactory.start("attach tree");
 		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
 		
 		// compute the set of most general roles such that the domain of each role is not disjoint
@@ -307,7 +315,10 @@ public class ELDown2 extends RefinementOperatorAdapter {
 						}
 						// refine tree using recursive operator call
 						logger.trace("Recursive Call");
+						// do not monitor recursive calls (counts time twice or more)
+						mon.stop();
 						Set<ELDescriptionTree> recRefs = refine(tp);
+						mon.start();
 						logger.trace("Recursive Call Done");
 						for(ELDescriptionTree tpp : recRefs) {
 //							System.out.println("aa " + tpp.toDescriptionString());
@@ -319,12 +330,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				logger.trace("M: " + m);
 			}
 		}
-				
+		mon.stop();
 		return refinements;
 	}	
 	
 	// create a new tree which is obtained by attaching the new tree at the given node in the tree via role r
 	private ELDescriptionTree mergeTrees(ELDescriptionTree tree, ELDescriptionNode node, int[] position, ObjectProperty r, ELDescriptionTree newTree) {
+		Monitor mon = MonitorFactory.start("merge trees");
 //		System.out.println("merge start");
 //		System.out.println(tree);
 //		System.out.println(newTree);
@@ -369,6 +381,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		
 //		System.out.println(mergedTree);
 //		System.out.println("merge end");
+		mon.stop();
 		return mergedTree;
 	}
 	

@@ -71,6 +71,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.semanticweb.owl.inference.OWLReasonerException;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -723,6 +724,11 @@ public class FastInstanceChecker extends ReasonerComponent {
 	@Override
 	public Set<Constant> getRelatedValuesImpl(Individual individual, DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getRelatedValues(individual, datatypeProperty);
+	}	
+	
+	@Override
+	public boolean isSatisfiableImpl() {
+		return rc.isSatisfiable();
 	}	
 	
 	@Override
