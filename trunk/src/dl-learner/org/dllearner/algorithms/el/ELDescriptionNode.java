@@ -37,6 +37,9 @@ import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Helper;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+
 /**
  * Represents an EL description tree, which corresponds to a
  * description in the EL description logic. Note that an EL description tree
@@ -133,6 +136,7 @@ public class ELDescriptionNode {
 		tree.addNodeToLevel(this, level);		
 		
 		// simulation update
+		Monitor mon = MonitorFactory.start("simulation update");
 		// the nodes, which need to be updated
 		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
 		
@@ -182,7 +186,8 @@ public class ELDescriptionNode {
 //		System.out.println(update);
 		
 		// apply updates recursively top-down
-		tree.updateSimulation(update);		
+		tree.updateSimulation(update);
+		mon.stop();
 		
 		// add all classes in label
 		for(NamedClass nc : label) {
@@ -338,6 +343,7 @@ public class ELDescriptionNode {
 	// simulation update when extending or refining label 
 	// (same in both cases)
 	private void labelSimulationUpdate() {
+		Monitor mon = MonitorFactory.start("simulation update");
 		// compute the nodes, which need to be updated
 		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
 		
@@ -397,12 +403,14 @@ public class ELDescriptionNode {
 		*/
 		
 		// apply updates recursively top-down
-		tree.updateSimulation(update);		
+		tree.updateSimulation(update);	
+		mon.stop();
 	}
 
 	public void refineEdge(int edgeNumber, ObjectProperty op) {
 		edges.get(edgeNumber).setLabel(op);
 		
+		Monitor mon = MonitorFactory.start("simulation update");
 		// compute the nodes, which need to be updated
 		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
 		update.add(this);
@@ -435,7 +443,8 @@ public class ELDescriptionNode {
 //		update.add(this.parent);
 		
 		// apply updates recursively top-down
-		tree.updateSimulation(update);				
+		tree.updateSimulation(update);	
+		mon.stop();
 	}
 	
 	/**
