@@ -455,7 +455,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			} else {
 				hint.setForeground(Color.RED);
 				run.setEnabled(false);
-				hint.setText("Can't reason with inconsistent ontology");
+				hint.setText("The ontology is inconsistent and suggestions for class descriptions can only \nbe computed on consistent ontologies. Please repair the ontology first");
 			}
 			hint.setVisible(true);
 			advanced.setIcon(icon);
