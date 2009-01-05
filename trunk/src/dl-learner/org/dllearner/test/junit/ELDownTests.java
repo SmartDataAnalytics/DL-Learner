@@ -19,7 +19,7 @@
  */
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Set;
@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.refinementoperators.ELDown2;
@@ -38,7 +37,6 @@ import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.statistics.Stat;
