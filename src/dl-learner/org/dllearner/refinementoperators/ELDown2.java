@@ -393,7 +393,6 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		List<ELDescriptionEdge> piVEdges = new LinkedList<ELDescriptionEdge>();
 		ELDescriptionNode tmp = v;
 		while(!tmp.isRoot()) {
-//			System.out.println("blub");
 			piVEdges.add(tmp.getParentEdge());
 			tmp = tmp.getParent();
 		}
@@ -446,9 +445,14 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			i.addChild(opDomains.get(edge.getLabel()));
 		}
 		
+		int size = i.getChildren().size();
+		// size = 0 means we have the top concept
+		if(size == 0) {
+			return Thing.instance;
+		}
 		// if the intersection has just one element, we return
 		// the element itself instead
-		if(i.getChildren().size() == 1) {
+		else if(size == 1) {
 			return i.getChild(0);
 		}
 		

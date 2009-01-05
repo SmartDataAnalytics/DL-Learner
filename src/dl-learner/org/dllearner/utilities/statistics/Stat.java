@@ -24,7 +24,7 @@ import java.text.DecimalFormat;
 
 /**
  * Utility class for calculating the mean and standard deviation of a given set
- * of numbers.
+ * of numbers. The class also contains convenience methods for printing values.
  * 
  * @author Jens Lehmann
  * 
@@ -143,5 +143,21 @@ public class Stat {
 		str += "max " + df.format(getMax()) + unit + ")";		
 		return str;
 	}	
+	
+	/**
+	 * Pretty prints the results under the assumption that the input
+	 * values are time spans measured in nano seconds.
+	 * 
+	 * @see System#nanoTime()
+	 * @return A string summarising statistical values.
+	 */
+//	public String prettyPrintNanoSeconds() {
+//		DecimalFormat df = new DecimalFormat();
+//		String str = "av. " + df.format(getMean()) + unit;
+//		str += " (deviation " + df.format(getStandardDeviation()) + unit + "; ";
+//		str += "min " + df.format(getMin()) + unit + "; ";
+//		str += "max " + df.format(getMax()) + unit + ")";		
+//		return str;		
+//	}
 	
 }

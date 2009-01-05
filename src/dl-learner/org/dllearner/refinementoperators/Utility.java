@@ -176,6 +176,7 @@ public final class Utility {
 	public boolean isDisjoint(Description d1, Description d2) {
 //		System.out.println("d1: " + d1);
 //		System.out.println("d2: " + d2);
+//		System.out.println("cache: " + cachedDisjoints);
 		
 		// check whether we have cached this query
 		Map<Description,Boolean> tmp = cachedDisjoints.get(d1);

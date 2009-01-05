@@ -22,7 +22,7 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 /**
- * Implementation of owl:nothing/BOTTOM.
+ * Implementation of owl:Nothing/BOTTOM.
  * 
  * @author Jens Lehmann
  *
