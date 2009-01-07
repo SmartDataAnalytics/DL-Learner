@@ -19,6 +19,7 @@
  */
 package org.dllearner.refinementoperators;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.utilities.Helper;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -130,6 +132,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	 */
 	public Set<ELDescriptionTree> refine(ELDescriptionTree tree) {
 		logger.trace("applying \\rho on " + tree.toDescriptionString());
+//		System.out.println("tree:" + tree);
 		
 		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
 		// loop over all nodes of the tree and perform one of the 
@@ -142,6 +145,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			// the position of the node within the tree (needed for getting
 			// the corresponding node in a cloned tree) 
 			int[] position = v.getCurrentPosition();	
+			logger.trace("  at position " + Helper.arrayContent(position));
 			
 			// perform operations
 			refinements.addAll(extendLabel(tree, v, position));
@@ -149,6 +153,12 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			refinements.addAll(refineEdge(tree, v, position));
 			refinements.addAll(attachSubtree(tree, v, position));
 		}
+		
+//		for(ELDescriptionTree refinement : refinements) {
+//			if(refinement.getDepth() > tree.getDepth() + 1) {
+//				throw new Error("DEPTH WARNING");
+//			}
+//		}
 		
 //		return refine(tree, tree.getRootNode(), new Thing(), true);
 		return refinements;
@@ -290,6 +300,9 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				int[] wPosition = new int[position.length+1];
 				System.arraycopy(position, 0, wPosition, 0, position.length);
 				wPosition[position.length] = v.getEdges().size();
+//				logger.trace("position of v: " + arrayContent(position));
+//				logger.trace("position of w: " + arrayContent(wPosition));
+				
 				
 				ELDescriptionNode wClone = mergedTree.getNode(wPosition);
 				
@@ -344,8 +357,10 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		ELDescriptionTree mergedTree = tree.clone();
 		ELDescriptionNode clonedNode = mergedTree.getNode(position);
 //		ELDescriptionNode nodeNew = new ELDescriptionNode(clonedNode, r);
-//		System.out.println("node: " + node);
-//		System.out.println("cloned node: " + clonedNode);
+//		logger.trace("node: " + node);
+//		logger.trace("cloned node: " + clonedNode);
+//		logger.trace("node position: " + arrayContent(position));
+//		logger.trace("merge start: " + mergedTree);
 		
 		
 		// create a list of nodes we still need to process
