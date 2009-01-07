@@ -616,4 +616,12 @@ public class Helper {
 		System.out.println("remaining individuals: " + inds);
 		System.out.println();
 	}
+	
+	public static String arrayContent(int[] ar) {
+		String str = ""; 
+		for(int i=0; i<ar.length; i++) {
+			str += ar[i] + ",";
+		}
+		return str;
+	}	
 }

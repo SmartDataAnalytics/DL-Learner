@@ -32,7 +32,6 @@ import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.parser.KBParser;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.junit.Test;

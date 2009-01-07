@@ -301,7 +301,7 @@ public class ELDescriptionNode {
 		int[] position = new int[level-1];
 		ELDescriptionNode root = this;
 		while(root.parent != null) {
-			position[root.level-2] = getChildNumber();
+			position[root.level-2] = root.getChildNumber();
 			root = root.parent;	
 		}
 		return position;
@@ -316,6 +316,7 @@ public class ELDescriptionNode {
 			if(edge.getNode() == this) {
 				return count;
 			}
+			count++;
 		}
 		throw new RuntimeException("Inconsistent tree. Child tree not reachable from parent.");
 	}

@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
@@ -39,6 +40,8 @@ import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.UnsupportedLanguageException;
+import org.dllearner.refinementoperators.ELDown2;
+import org.dllearner.utilities.Helper;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -53,6 +56,8 @@ import com.jamonapi.MonitorFactory;
  */
 public class ELDescriptionTree implements Cloneable {
 
+	private static Logger logger = Logger.getLogger(ELDescriptionTree.class);
+	
 	// to simplify equivalence checks and minimisation, we
 	// attach a simulation relation to the description tree
 	// private Simulation simulation;
@@ -225,6 +230,8 @@ public class ELDescriptionTree implements Cloneable {
 	 * @return The node at the specified position.
 	 */
 	public ELDescriptionNode getNode(int[] position) {
+//		logger.trace(Helper.arrayContent(position));		
+//		logger.trace(this);
 		ELDescriptionNode currentNode = rootNode;
 		for (int i = 0; i < position.length; i++) {
 			currentNode = currentNode.getEdges().get(position[i]).getNode();
@@ -586,5 +593,9 @@ public class ELDescriptionTree implements Cloneable {
 	 */
 	public Set<ELDescriptionNode> getNodes() {
 		return nodes;
+	}
+	
+	public int getDepth() {
+		return maxLevel;
 	}
 }

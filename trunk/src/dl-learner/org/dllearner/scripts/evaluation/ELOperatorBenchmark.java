@@ -20,11 +20,16 @@
 package org.dllearner.scripts.evaluation;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -48,7 +53,15 @@ public class ELOperatorBenchmark {
 
 	private static Random rand = new Random(1);
 	
-	public static void main(String[] args) throws MalformedURLException, ComponentInitException {
+	public static void main(String[] args) throws ComponentInitException, IOException {
+		
+//		Logger logger = Logger.getRootLogger();
+//		logger.setLevel(Level.TRACE);
+//		SimpleLayout layout = new SimpleLayout();
+//		FileAppender app = new FileAppender(layout, "log/el/log.txt", false);
+//		logger.removeAllAppenders();
+//		logger.addAppender(app);
+		
 		String example = "/home/jl/promotion/ontologien/galen2.owl";
 		testOntology(example);
 		System.exit(0);
@@ -118,7 +131,7 @@ public class ELOperatorBenchmark {
 		System.out.println("done.");
 		System.out.println();
 		
-		int outerLoops = 10;
+		int outerLoops = 100;
 		for(int loop = 0; loop < outerLoops; loop++) {
 		
 			// application of operator and statistics recording	
@@ -130,6 +143,7 @@ public class ELOperatorBenchmark {
 			
 			System.out.println("Testing operator (applying it " + nrOfApplications + " times):");
 			for(int i=0; i < nrOfApplications; i++) {
+//				System.out.println(currTree.transformToDescription().toKBSyntaxString());
 				System.out.print("current concept: " + currTree.transformToDescription().toString(reasoner.getBaseURI(), reasoner.getPrefixes()));
 				// apply operator on current description
 				long start = System.nanoTime();
