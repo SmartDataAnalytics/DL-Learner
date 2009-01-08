@@ -62,7 +62,7 @@ public class ELOperatorBenchmark {
 //		logger.removeAllAppenders();
 //		logger.addAppender(app);
 		
-		String example = "/home/jl/promotion/ontologien/galen2.owl";
+		String example = "/home/jl/ontologien/galen2.owl";
 		testOntology(example);
 		System.exit(0);
 		
@@ -131,11 +131,11 @@ public class ELOperatorBenchmark {
 		System.out.println("done.");
 		System.out.println();
 		
-		int outerLoops = 100;
+		int outerLoops = 1000;
 		for(int loop = 0; loop < outerLoops; loop++) {
 		
 			// application of operator and statistics recording	
-			int nrOfApplications = 10;
+			int nrOfApplications = 15;
 			ELDescriptionTree currTree = new ELDescriptionTree(reasoner, Thing.instance);
 			ELDown2 operator = new ELDown2(reasoner);
 			Stat runtime = new Stat();
