@@ -32,11 +32,15 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.el.ELDescriptionNode;
+import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -185,7 +189,7 @@ public class ELDownTests {
 		
 		ComponentManager cm = ComponentManager.getInstance();
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		String ont = "/home/jl/promotion/ontologien/galen2.owl";
+		String ont = "/home/jl/ontologien/galen2.owl";
 		cm.applyConfigEntry(source, "url", new File(ont).toURI().toURL());
 		source.init();
 		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
@@ -195,9 +199,40 @@ public class ELDownTests {
 		Description input = KBParser.parseConcept("(\"http://www.co-ode.org/ontologies/galen#15.0\" AND (\"http://www.co-ode.org/ontologies/galen#30.0\" AND (EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".\"http://www.co-ode.org/ontologies/galen#5.0\" AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".\"http://www.co-ode.org/ontologies/galen#6.0\")))");
 		ConceptTransformation.cleanConcept(input);
 		
-		RefinementOperator operator = new ELDown2(reasoner);
+		ELDown2 operator = new ELDown2(reasoner);
 		operator.refine(input);
+		
+	}
 
+	@Test
+	public void asTest() throws ComponentInitException, MalformedURLException {
+		
+		ComponentManager cm = ComponentManager.getInstance();
+		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+		String ont = "/home/jl/ontologien/galen2.owl";
+		cm.applyConfigEntry(source, "url", new File(ont).toURI().toURL());
+		source.init();
+		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+		reasoner.init();
+		System.out.println("Galen loaded.");
+		
+		ELDescriptionTree tree = new ELDescriptionTree(reasoner);
+		NamedClass a1 = new NamedClass("http://www.co-ode.org/ontologies/galen#1.0");
+		NamedClass a2 = new NamedClass("http://www.co-ode.org/ontologies/galen#10.0");
+		NamedClass a3 = new NamedClass("http://www.co-ode.org/ontologies/galen#6.0");
+		NamedClass a4 = new NamedClass("http://www.co-ode.org/ontologies/galen#TopCategory");
+		ObjectProperty r1 = new ObjectProperty("http://www.co-ode.org/ontologies/galen#Attribute");
+		ObjectProperty r2 = new ObjectProperty("http://www.co-ode.org/ontologies/galen#DomainAttribute");
+		ELDescriptionNode v1 = new ELDescriptionNode(tree, a1, a2);
+		ELDescriptionNode v2 = new ELDescriptionNode(v1, r2, a1, a3, a4);
+		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1, a1, a4);
+		new ELDescriptionNode(v3, r1);
+		
+		ELDescriptionNode w = new ELDescriptionNode(v2, r1);
+
+		ELDown2 operator = new ELDown2(reasoner);
+		System.out.println(operator.asCheck(w));		
+		
 	}
 	
 }

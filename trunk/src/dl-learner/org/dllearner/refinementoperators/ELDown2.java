@@ -401,7 +401,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	}
 	
 	// TODO: variables have been renamed in article
-	private boolean asCheck(ELDescriptionNode v) {
+	public boolean asCheck(ELDescriptionNode v) {
 //		System.out.println("asCheck: " + v.getTree().toSimulationString());
 		
 		// find all edges up to the root node
@@ -421,9 +421,9 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			ObjectProperty rp = piVEdge.getLabel();
 			ELDescriptionNode w = wp.getParent();
 			
-//			System.out.println(w);
-//			System.out.println(rp);
-//			System.out.println(wp);
+//			System.out.println("w: " + w);
+//			System.out.println("rp: " + rp);
+//			System.out.println("wp: " + wp);
 			
 			// go through all (w,s,w'')
 			for(ELDescriptionEdge wEdge : w.getEdges()) {
@@ -432,7 +432,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				if(wp != wpp && opHierarchy.isSubpropertyOf(rp, rpp)) {
 //					System.out.println("wp: " + wp);
 //					System.out.println("wpp: " + wpp);
-					if(wp.getOut().contains(wpp)) {
+					if(wp.getIn().contains(wpp)) {
 						return false;
 					}
 				}
