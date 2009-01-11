@@ -136,12 +136,12 @@ public class ELDownTests {
 	
 		// number of refinements has to be correct and each produced
 		// refinement must be in the set of desired refinements
-//		assertTrue(refinements.size() == desired.size());
+		assertTrue(refinements.size() == desired.size());
 		System.out.println("\nproduced refinements and their unit test status (true = assertion satisfied):");
 		for(Description refinement : refinements) {
 			boolean ok = desired.contains(refinement);			
 			System.out.println(ok + ": " + refinement.toString(KBParser.internalNamespace, null));
-//			assertTrue(desired.contains(refinement));
+			assertTrue(desired.contains(refinement));
 		}
 		
 		File jamonlog = new File("log/jamontest.html");

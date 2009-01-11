@@ -20,23 +20,13 @@
 package org.dllearner.scripts.evaluation;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -171,7 +161,7 @@ public class ELOperatorBenchmark {
 				System.out.print("current concept: " + currTree.transformToDescription().toString(reasoner.getBaseURI(), reasoner.getPrefixes()));
 				// apply operator on current description
 				long start = System.nanoTime();
-				Set<ELDescriptionTree> refinements = operator.refine(currTree);
+				List<ELDescriptionTree> refinements = operator.refine(currTree);
 				long time = System.nanoTime() - start;
 				runtime.addNumber(time/1000000d);
 				runtimePerRefinement.addNumber(time/1000000d/refinements.size());
@@ -181,6 +171,7 @@ public class ELOperatorBenchmark {
 				
 				int sizeSum = 0;
 				for(ELDescriptionTree tree : refinements) {
+//					System.out.println("   " + tree.toDescriptionString());
 					sizeSum += tree.getSize();
 				}
 				
@@ -191,7 +182,8 @@ public class ELOperatorBenchmark {
 				// pick a refinement randomly (which is kind of slow for a set, but
 				// this does not matter here)
 				int index = rand.nextInt(refinements.size());
-				currTree = new ArrayList<ELDescriptionTree>(refinements).get(index);
+//				currTree = new ArrayList<ELDescriptionTree>(refinements).get(index);
+				currTree = refinements.get(index);
 				MonitorFactory.add("picked refinement size", "count", currTree.getSize());
 			}
 			System.out.println("operator time: " + runtime.prettyPrint("ms"));
@@ -218,10 +210,15 @@ public class ELOperatorBenchmark {
 		statString += getMonitorData(MonitorFactory.getMonitor("refine label", "ms."));
 		statString += getMonitorData(MonitorFactory.getMonitor("refine edge", "ms."));
 		statString += getMonitorData(MonitorFactory.getMonitor("attach tree", "ms."));
+		statString += getMonitorData(MonitorFactory.getMonitor("as.merge trees", "ms."));
+		statString += getMonitorData(MonitorFactory.getMonitor("as.complex check", "ms."));
+//		statString += getMonitorData(MonitorFactory.getMonitor("as.tmp", "ms."));
+//		statString += getMonitorData(MonitorFactory.getMonitor("el.tmp", "ms."));
 		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.minimal", "boolean"));
 		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.check", "boolean"));		
 		statString += getMonitorData(MonitorFactory.getMonitor("tree clone", "ms."));
 		statString += getMonitorData(MonitorFactory.getMonitor("simulation update", "ms."));
+		statString += getMonitorData(MonitorFactory.getMonitor("disjointness reasoning", "ms."));
 		
 		Files.createFile(statFile, statString);
 	}

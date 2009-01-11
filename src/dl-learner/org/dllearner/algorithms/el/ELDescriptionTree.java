@@ -19,6 +19,7 @@
  */
 package org.dllearner.algorithms.el;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,17 +32,15 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.UnsupportedLanguageException;
-import org.dllearner.refinementoperators.ELDown2;
-import org.dllearner.utilities.Helper;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -56,6 +55,7 @@ import com.jamonapi.MonitorFactory;
  */
 public class ELDescriptionTree implements Cloneable {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ELDescriptionTree.class);
 	
 	// to simplify equivalence checks and minimisation, we
@@ -69,7 +69,7 @@ public class ELDescriptionTree implements Cloneable {
 	protected ELDescriptionNode rootNode;
 
 	// the set of all nodes in the tree
-	private Set<ELDescriptionNode> nodes = new HashSet<ELDescriptionNode>();
+	private Collection<ELDescriptionNode> nodes = new LinkedList<ELDescriptionNode>();
 	
 	// nodes on a given level of the tree
 	private Map<Integer, Set<ELDescriptionNode>> levelNodeMapping = new HashMap<Integer, Set<ELDescriptionNode>>();
@@ -535,7 +535,7 @@ public class ELDescriptionTree implements Cloneable {
 		treeClone.maxLevel = maxLevel;
 		
 		// nodes
-		treeClone.nodes = new HashSet<ELDescriptionNode>();
+		treeClone.nodes = new LinkedList<ELDescriptionNode>();
 		for(ELDescriptionNode oldNode : nodes) {
 			treeClone.nodes.add(cloneMap.get(oldNode));
 		}		
@@ -591,7 +591,7 @@ public class ELDescriptionTree implements Cloneable {
 	/**
 	 * @return the nodes
 	 */
-	public Set<ELDescriptionNode> getNodes() {
+	public Collection<ELDescriptionNode> getNodes() {
 		return nodes;
 	}
 	

@@ -22,7 +22,6 @@ package org.dllearner.algorithms.el;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -116,7 +115,7 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 			// pick the best candidate according to the heuristic
 			SearchTreeNode best = candidates.pollLast();
 			// apply operator
-			Set<ELDescriptionTree> refinements = operator.refine(best.getDescriptionTree());
+			List<ELDescriptionTree> refinements = operator.refine(best.getDescriptionTree());
 			// add all refinements to search tree, candidates, best descriptions
 			for(ELDescriptionTree refinement : refinements) {
 				addDescriptionTree(refinement, best);

@@ -38,6 +38,9 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+
 /**
  * Utility methods for constructing refinement operators.
  * 
@@ -46,8 +49,9 @@ import org.dllearner.utilities.owl.ConceptComparator;
  */
 public final class Utility {
 		
-	private ReasonerComponent rs;
+	private ReasonerComponent reasoner;
 	ClassHierarchy sh; 
+	private Map<ObjectProperty,Description> opDomains;
 	
 	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();	
@@ -59,10 +63,18 @@ public final class Utility {
 	// cache for reasoner queries
 	private Map<Description,Map<Description,Boolean>> cachedDisjoints = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);
 		
-
+	// cache for applicaple object properties
+	private Map<Description, SortedSet<ObjectProperty>> appOPCache = new TreeMap<Description, SortedSet<ObjectProperty>>(conceptComparator);
+	
 	public Utility(ReasonerComponent rs) {
-		this.rs = rs;
+		throw new Error("not implemented yet");
+	}
+	
+	public Utility(ReasonerComponent rs, Map<ObjectProperty,Description> opDomains) {
+		this.reasoner = rs;
 		sh = rs.getClassHierarchy();
+		// we cache object property domains
+		this.opDomains = opDomains;
 	}
 	
 	/**
@@ -76,12 +88,18 @@ public final class Utility {
 	 * 
 	 */
 	public SortedSet<ObjectProperty> computeApplicableObjectProperties(Description index) {
-		Set<ObjectProperty> objectProperties = rs.getObjectProperties();
-		SortedSet<ObjectProperty> applicableObjectProperties = new TreeSet<ObjectProperty>();
-		for(ObjectProperty op : objectProperties) {
-			Description domain = rs.getDomain(op);
-			if(!isDisjoint(index,domain))
-				applicableObjectProperties.add(op);
+		// use a cache, because large ontologies can have many object properties
+		SortedSet<ObjectProperty> applicableObjectProperties = appOPCache.get(index);
+		if(applicableObjectProperties == null) {
+			Set<ObjectProperty> objectProperties = reasoner.getObjectProperties();
+			applicableObjectProperties = new TreeSet<ObjectProperty>();
+			for(ObjectProperty op : objectProperties) {
+				Description domain = opDomains.get(op);
+				if(!isDisjoint(index,domain)) {
+					applicableObjectProperties.add(op);
+				}
+			}
+			appOPCache.put(index, applicableObjectProperties);
 		}
 		return applicableObjectProperties;		
 	}
@@ -99,7 +117,7 @@ public final class Utility {
 	 * @return The most general applicable properties.
 	 */
 	public SortedSet<ObjectProperty> computeMgr(SortedSet<ObjectProperty> applicableObjectProperties) {
-		return Helper.intersection(rs.getMostGeneralProperties(), applicableObjectProperties);
+		return Helper.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties);
 	}
 	
 	public Set<NamedClass> getClassCandidates(Description index, Set<NamedClass> existingClasses) {
@@ -190,7 +208,9 @@ public final class Utility {
 				result = isDisjointInstanceBased(d1,d2);
 			} else {
 				Description d = new Intersection(d1, d2);
-				result = rs.isSuperClassOf(new Nothing(), d);				
+				Monitor mon = MonitorFactory.start("disjointness reasoning");
+				result = reasoner.isSuperClassOf(new Nothing(), d);	
+				mon.stop();
 			}
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
@@ -213,8 +233,8 @@ public final class Utility {
 	}	
 	
 	private boolean isDisjointInstanceBased(Description d1, Description d2) {
-		SortedSet<Individual> d1Instances = rs.getIndividuals(d1);
-		SortedSet<Individual> d2Instances = rs.getIndividuals(d2);
+		SortedSet<Individual> d1Instances = reasoner.getIndividuals(d1);
+		SortedSet<Individual> d2Instances = reasoner.getIndividuals(d2);
 		for(Individual d1Instance : d1Instances) {
 			if(d2Instances.contains(d1Instance))
 				return false;
