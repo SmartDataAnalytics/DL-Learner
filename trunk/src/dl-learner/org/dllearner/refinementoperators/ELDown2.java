@@ -95,7 +95,6 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	
 	public ELDown2(ReasonerComponent rs) {
 		this.rs = rs;
-		utility = new Utility(rs);
 		subsumptionHierarchy = rs.getClassHierarchy();
 		opHierarchy = rs.getObjectPropertyHierarchy();
 		
@@ -104,7 +103,9 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		for(ObjectProperty op : rs.getObjectProperties()) {
 			opDomains.put(op, rs.getDomain(op));
 			opRanges.put(op, rs.getRange(op));
-		}		
+		}	
+		
+		utility = new Utility(rs, opDomains);
 	}
 	
 	/* (non-Javadoc)
@@ -114,7 +115,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	public Set<Description> refine(Description concept) {
 		logger.trace("refining " + concept);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, concept);
-		Set<ELDescriptionTree> refinementTrees = refine(tree);
+		List<ELDescriptionTree> refinementTrees = refine(tree);
 		Set<Description> refinements = new HashSet<Description>();
 		for(ELDescriptionTree refinementTree : refinementTrees) {
 			refinements.add(refinementTree.transformToDescription());
@@ -130,15 +131,14 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	 * @param tree Input EL description tree.
 	 * @return Set of refined EL description trees.
 	 */
-	public Set<ELDescriptionTree> refine(ELDescriptionTree tree) {
+	public List<ELDescriptionTree> refine(ELDescriptionTree tree) {
 		logger.trace("applying \\rho on " + tree.toDescriptionString());
-//		System.out.println("tree:" + tree);
 		
-		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
+		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 		// loop over all nodes of the tree and perform one of the 
 		// transformations on it (we make a copy of all nodes, because
 		// the transformations can, of course, add new nodes)
-		Set<ELDescriptionNode> nodes = new HashSet<ELDescriptionNode>(tree.getNodes());
+		List<ELDescriptionNode> nodes = new LinkedList<ELDescriptionNode>(tree.getNodes());
 		for(ELDescriptionNode v : nodes) {
 			logger.trace("picked node v: " + v);
 			
@@ -154,20 +154,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			refinements.addAll(attachSubtree(tree, v, position));
 		}
 		
-//		for(ELDescriptionTree refinement : refinements) {
-//			if(refinement.getDepth() > tree.getDepth() + 1) {
-//				throw new Error("DEPTH WARNING");
-//			}
-//		}
-		
-//		return refine(tree, tree.getRootNode(), new Thing(), true);
 		return refinements;
 	}
 
 	// operation 1: label extension
-	private Set<ELDescriptionTree> extendLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+	private List<ELDescriptionTree> extendLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 		Monitor mon = MonitorFactory.start("extend label");
-		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
+		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 				
 		// the index is the range of role in the edge pointing to the parent of this node
 		Description index;
@@ -179,10 +172,8 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		
 		// call ncc (see paper)
 		Set<NamedClass> candidates = utility.getClassCandidates(index, v.getLabel());
-//		System.out.println("label: " + v.getLabel());
 		
 		for(NamedClass nc : candidates) {
-//			System.out.println("candidate: " + nc);
 			// clone operation
 			ELDescriptionTree clonedTree = tree.clone();
 			ELDescriptionNode clonedNode = clonedTree.getNode(position);
@@ -198,9 +189,9 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	}	
 	
 	// operation 2: label refinement
-	private Set<ELDescriptionTree> refineLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+	private List<ELDescriptionTree> refineLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 		Monitor mon = MonitorFactory.start("refine label");
-		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
+		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 		
 		// loop through all classes in label
 		for(NamedClass nc : v.getLabel()) {
@@ -225,9 +216,9 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	}	
 	
 	// operation 3: refine edge
-	private Set<ELDescriptionTree> refineEdge(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+	private List<ELDescriptionTree> refineEdge(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 		Monitor mon = MonitorFactory.start("refine edge");
-		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
+		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 
 		for(int edgeNumber = 0; edgeNumber < v.getEdges().size(); edgeNumber++) {
 			ELDescriptionEdge edge = v.getEdges().get(edgeNumber);
@@ -256,9 +247,9 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	}
 	
 	// operation 4: attach tree
-	private Set<ELDescriptionTree> attachSubtree(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+	private List<ELDescriptionTree> attachSubtree(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 		Monitor mon = MonitorFactory.start("attach tree");
-		Set<ELDescriptionTree> refinements = new HashSet<ELDescriptionTree>();
+		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 		
 		// compute the set of most general roles such that the domain of each role is not disjoint
 		// with the range of the role pointing to this node
@@ -268,12 +259,14 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		} else {
 			index = opRanges.get(v.getParentEdge().getLabel());
 		}
+		
 		SortedSet<ObjectProperty> appOPs = utility.computeApplicableObjectProperties(index);
+		
 		Set<ObjectProperty> mgr = utility.computeMgr(appOPs);
 		
 		// loop through most general roles
 		for(ObjectProperty op : mgr) {
-			logger.trace("pick most general role: " + op);
+//			logger.trace("pick most general role: " + op);
 			
 			// a list of subtrees (stored as edges i.e. role + root node which points to tree)
 			LinkedList<ELDescriptionEdge> m = new LinkedList<ELDescriptionEdge>();
@@ -288,7 +281,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			while(!m.isEmpty()) {
 				// pick and remove first element
 				ELDescriptionEdge edge = m.pollFirst();
-				logger.trace("picked first element of M: " + edge);
+//				logger.trace("picked first element of M: " + edge);
 				ObjectProperty r = edge.getLabel();
 				// tp = t' in algorithm description (p stands for prime)
 				ELDescriptionTree tp = edge.getNode().getTree();
@@ -299,29 +292,24 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				// the position of w is the position of v + #edges outgoing from v
 				int[] wPosition = new int[position.length+1];
 				System.arraycopy(position, 0, wPosition, 0, position.length);
-				wPosition[position.length] = v.getEdges().size();
-//				logger.trace("position of v: " + arrayContent(position));
-//				logger.trace("position of w: " + arrayContent(wPosition));
-				
+				wPosition[position.length] = v.getEdges().size();	
 				
 				ELDescriptionNode wClone = mergedTree.getNode(wPosition);
 				
-				logger.trace("merged to t_{C'}: \n" + mergedTree);
-				
-//				System.out.println(mergedTree.toSimulationString());
+//				logger.trace("merged to t_{C'}: \n" + mergedTree);
 				
 				// we check equivalence by a minimality test (TODO: can we still do this?)
 				boolean minimal = mergedTree.isMinimal();
 				MonitorFactory.add("as.minimal", "boolean", minimal ? 1 : 0);
 				if(minimal) {
-					logger.trace("Merged tree is minimal, i.e. not equivalent.");
+//					logger.trace("Merged tree is minimal, i.e. not equivalent.");
 					// it is not equivalent, i.e. we found a refinement
 					refinements.add(mergedTree);
 				} else {					
-					logger.trace("Merged tree is not minimal, i.e. equivalent.");
+//					logger.trace("Merged tree is not minimal, i.e. equivalent.");
 					// perform complex check in merged tree
 					boolean check = asCheck(wClone);
-					logger.trace("Result of complex check: " + check);
+//					logger.trace("Result of complex check: " + check);
 					MonitorFactory.add("as.check", "boolean", check ? 1 : 0);
 					
 					if(check) {
@@ -330,20 +318,19 @@ public class ELDown2 extends RefinementOperatorAdapter {
 							m.add(new ELDescriptionEdge(subRole, tp.getRootNode()));
 						}
 						// refine tree using recursive operator call
-						logger.trace("Recursive Call");
+//						logger.trace("Recursive Call");
 						// do not monitor recursive calls (counts time twice or more)
 						mon.stop();
-						Set<ELDescriptionTree> recRefs = refine(tp);
+						List<ELDescriptionTree> recRefs = refine(tp);
 						mon.start();
-						logger.trace("Recursive Call Done");
+//						logger.trace("Recursive Call Done");
 						for(ELDescriptionTree tpp : recRefs) {
-//							System.out.println("aa " + tpp.toDescriptionString());
 							m.add(new ELDescriptionEdge(r, tpp.getRootNode()));
 						}
 					}
 				}
 				
-				logger.trace("M: " + m);
+//				logger.trace("M: " + m);
 			}
 		}
 		mon.stop();
@@ -352,7 +339,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	
 	// create a new tree which is obtained by attaching the new tree at the given node in the tree via role r
 	private ELDescriptionTree mergeTrees(ELDescriptionTree tree, ELDescriptionNode node, int[] position, ObjectProperty r, ELDescriptionTree newTree) {
-		Monitor mon = MonitorFactory.start("merge trees");
+		Monitor mon = MonitorFactory.start("as.merge trees");
 //		System.out.println("merge start");
 //		System.out.println(tree);
 //		System.out.println(newTree);
@@ -365,14 +352,14 @@ public class ELDown2 extends RefinementOperatorAdapter {
 //		logger.trace("node position: " + arrayContent(position));
 //		logger.trace("merge start: " + mergedTree);
 		
-		
 		// create a list of nodes we still need to process
 		LinkedList<ELDescriptionNode> toProcess = new LinkedList<ELDescriptionNode>();
 		toProcess.add(newTree.getRootNode());
 		
 		// map from nodes to cloned nodes
 		Map<ELDescriptionNode,ELDescriptionNode> cloneMap = new HashMap<ELDescriptionNode,ELDescriptionNode>();
-//		cloneMap.put(newTree.getRootNode(), nodeNew);
+		
+//		Monitor mon2 = MonitorFactory.start("as.tmp");
 		
 		// loop until the process list is empty
 		while(!toProcess.isEmpty()) {
@@ -397,14 +384,15 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			}
 		}
 		
-//		System.out.println(mergedTree);
-//		System.out.println("merge end");
+//		mon2.stop();
+		
 		mon.stop();
 		return mergedTree;
 	}
 	
 	// TODO: variables have been renamed in article
 	public boolean asCheck(ELDescriptionNode v) {
+		Monitor mon = MonitorFactory.start("as.complex check");
 //		System.out.println("asCheck: " + v.getTree().toSimulationString());
 		
 		// find all edges up to the root node
@@ -442,6 +430,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			}
 		}
 		
+		mon.stop();
 		return true;
 	}
 	

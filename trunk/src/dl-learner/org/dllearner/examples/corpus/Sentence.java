@@ -8,10 +8,8 @@ import java.util.StringTokenizer;
 import org.dllearner.examples.Corpus;
 import org.dllearner.utilities.URLencodeUTF8;
 import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
 public class Sentence {
@@ -72,11 +70,11 @@ public class Sentence {
 		
 		//%String %% word			lemma			tag	morph		edge	parent	secedge comment
 		String word = st.nextToken();
-		String lemma =  st.nextToken();
+//		String lemma =  st.nextToken();
 		String tag =  st.nextToken();
 		String morph =  st.nextToken();
 		String edge =  st.nextToken();
-		String parent =  st.nextToken();
+//		String parent =  st.nextToken();
 		//word
 		if(word.startsWith("#")){
 			elementURL+="s_"+id+"_"+word.substring(1);
