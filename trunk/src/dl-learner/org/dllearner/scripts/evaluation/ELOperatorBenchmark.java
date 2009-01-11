@@ -20,9 +20,16 @@
 package org.dllearner.scripts.evaluation;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.Set;
 
@@ -39,7 +46,11 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.ELDown2;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.statistics.Stat;
+
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 /**
  * An evaluation of the EL refinement operator {@link ELDown2}. It creates
@@ -52,6 +63,7 @@ import org.dllearner.utilities.statistics.Stat;
 public class ELOperatorBenchmark {
 
 	private static Random rand = new Random(1);
+	private static DecimalFormat df = new DecimalFormat();
 	
 	public static void main(String[] args) throws ComponentInitException, IOException {
 		
@@ -62,8 +74,14 @@ public class ELOperatorBenchmark {
 //		logger.removeAllAppenders();
 //		logger.addAppender(app);
 		
-		String example = "/home/jl/ontologien/galen2.owl";
-		testOntology(example);
+		// create a directory for log files
+		Date dt = new Date();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String dir = "log/el/" + df.format(dt) + "/";
+		new File(dir).mkdir();		
+		
+		String example = "/home/jl/promotion/ontologien/galen2.owl";
+		testOntology(dir, example, 100, 15);
 		System.exit(0);
 		
 		/* TEST ON ARTIFICIAL ONTOLOGIES
@@ -119,30 +137,36 @@ public class ELOperatorBenchmark {
 //		ELDown2 operator = new ELDown2();
 	}
 	
-	private static void testOntology(String ont) throws MalformedURLException, ComponentInitException {
+	private static void testOntology(String statDir, String ont, int nrOfChains, int chainLength) throws ComponentInitException, IOException {
 		System.out.print("Reading in " + ont + " ... ");
 		ComponentManager cm = ComponentManager.getInstance();
 		// reading ontology into a reasoner
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
-		cm.applyConfigEntry(source, "url", new File(ont).toURI().toURL());
+		File ontFile = new File(ont);
+		cm.applyConfigEntry(source, "url", ontFile.toURI().toURL());
 		source.init();
 		ReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
 		reasoner.init();
 		System.out.println("done.");
 		System.out.println();
 		
-		int outerLoops = 1000;
-		for(int loop = 0; loop < outerLoops; loop++) {
+		// log file name
+		String name = ontFile.getName();
+		String statFileName = name.substring(0, name.lastIndexOf(".")) + ".txt";
+		File statFile = new File(statDir + statFileName);
+		
+		String statString = "";
+		MonitorFactory.reset();
+		for(int loop = 0; loop < nrOfChains; loop++) {
 		
 			// application of operator and statistics recording	
-			int nrOfApplications = 15;
 			ELDescriptionTree currTree = new ELDescriptionTree(reasoner, Thing.instance);
 			ELDown2 operator = new ELDown2(reasoner);
 			Stat runtime = new Stat();
 			Stat runtimePerRefinement = new Stat();
 			
-			System.out.println("Testing operator (applying it " + nrOfApplications + " times):");
-			for(int i=0; i < nrOfApplications; i++) {
+			System.out.println("Testing operator (applying it " + chainLength + " times):");
+			for(int i=0; i < chainLength; i++) {
 //				System.out.println(currTree.transformToDescription().toKBSyntaxString());
 				System.out.print("current concept: " + currTree.transformToDescription().toString(reasoner.getBaseURI(), reasoner.getPrefixes()));
 				// apply operator on current description
@@ -151,16 +175,66 @@ public class ELOperatorBenchmark {
 				long time = System.nanoTime() - start;
 				runtime.addNumber(time/1000000d);
 				runtimePerRefinement.addNumber(time/1000000d/refinements.size());
+				MonitorFactory.add("operator application time", "ms.", time/1000000d);
+				MonitorFactory.add("operator application time per refinement", "ms.", time/1000000d/refinements.size());
+				MonitorFactory.add("refinement count", "count", refinements.size());
+				
+				int sizeSum = 0;
+				for(ELDescriptionTree tree : refinements) {
+					sizeSum += tree.getSize();
+				}
+				
+				MonitorFactory.add("refinement size", "count", sizeSum/(double)refinements.size());
+				MonitorFactory.add("refinement size increase", "count", (sizeSum-refinements.size()*currTree.getSize())/(double)refinements.size());
+				
 				System.out.println("  [has " + refinements.size() + " refinements]");
 				// pick a refinement randomly (which is kind of slow for a set, but
 				// this does not matter here)
 				int index = rand.nextInt(refinements.size());
 				currTree = new ArrayList<ELDescriptionTree>(refinements).get(index);
+				MonitorFactory.add("picked refinement size", "count", currTree.getSize());
 			}
 			System.out.println("operator time: " + runtime.prettyPrint("ms"));
 			System.out.println("operator time per refinement: " + runtimePerRefinement.prettyPrint("ms"));
 			System.out.println();
 			
 		}
+		
+		statString += "file: " + name + "\n";
+		statString += "nr of refinement chains: " + nrOfChains + "\n";
+		statString += "refinement chain length: " + chainLength + "\n\n";
+		
+		statString += getMonitorData(MonitorFactory.getMonitor("operator application time", "ms."));
+		statString += getMonitorData(MonitorFactory.getMonitor("operator application time per refinement", "ms."));
+		statString += "\n";
+	
+		statString += getMonitorDataCount(MonitorFactory.getMonitor("refinement count", "count"));		
+		statString += getMonitorDataCount(MonitorFactory.getMonitor("refinement size", "count"));
+		statString += getMonitorDataCount(MonitorFactory.getMonitor("picked refinement size", "count"));
+		statString += getMonitorDataCount(MonitorFactory.getMonitor("refinement size increase", "count"));
+		statString += "\n";
+		
+		statString += getMonitorData(MonitorFactory.getMonitor("extend label", "ms."));
+		statString += getMonitorData(MonitorFactory.getMonitor("refine label", "ms."));
+		statString += getMonitorData(MonitorFactory.getMonitor("refine edge", "ms."));
+		statString += getMonitorData(MonitorFactory.getMonitor("attach tree", "ms."));
+		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.minimal", "boolean"));
+		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.check", "boolean"));		
+		statString += getMonitorData(MonitorFactory.getMonitor("tree clone", "ms."));
+		statString += getMonitorData(MonitorFactory.getMonitor("simulation update", "ms."));
+		
+		Files.createFile(statFile, statString);
 	}
+	
+	private static String getMonitorData(Monitor mon) {
+		return mon.getLabel() + ": av " + df.format(mon.getAvg()) + "ms  (stddev " + df.format(mon.getStdDev()) + "ms,  min " + df.format(mon.getMin()) +  "ms, max " + df.format(mon.getMax()) + "ms, " +  df.format(mon.getTotal()/1000) + "s total, " + (int)mon.getHits() + " hits)\n";
+	}
+	
+	private static String getMonitorDataCount(Monitor mon) {
+		return mon.getLabel() + ": av " + df.format(mon.getAvg()) + " (stddev " + df.format(mon.getStdDev()) + ",  min " + df.format(mon.getMin()) +  ", max " + df.format(mon.getMax()) + ", " +  df.format(mon.getTotal()) + " total, " + (int)mon.getHits() + " hits)\n";		
+	}
+	
+	private static String getMonitorDataBoolean(Monitor mon) {
+		return mon.getLabel() + ": " + df.format(mon.getAvg()*100) + "%\n";		
+	}	
 }

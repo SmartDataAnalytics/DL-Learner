@@ -145,7 +145,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			// the position of the node within the tree (needed for getting
 			// the corresponding node in a cloned tree) 
 			int[] position = v.getCurrentPosition();	
-			logger.trace("  at position " + Helper.arrayContent(position));
+//			logger.trace("  at position " + Helper.arrayContent(position));
 			
 			// perform operations
 			refinements.addAll(extendLabel(tree, v, position));
@@ -311,7 +311,9 @@ public class ELDown2 extends RefinementOperatorAdapter {
 //				System.out.println(mergedTree.toSimulationString());
 				
 				// we check equivalence by a minimality test (TODO: can we still do this?)
-				if(mergedTree.isMinimal()) {
+				boolean minimal = mergedTree.isMinimal();
+				MonitorFactory.add("as.minimal", "boolean", minimal ? 1 : 0);
+				if(minimal) {
 					logger.trace("Merged tree is minimal, i.e. not equivalent.");
 					// it is not equivalent, i.e. we found a refinement
 					refinements.add(mergedTree);
@@ -320,6 +322,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 					// perform complex check in merged tree
 					boolean check = asCheck(wClone);
 					logger.trace("Result of complex check: " + check);
+					MonitorFactory.add("as.check", "boolean", check ? 1 : 0);
 					
 					if(check) {
 						// refine property
