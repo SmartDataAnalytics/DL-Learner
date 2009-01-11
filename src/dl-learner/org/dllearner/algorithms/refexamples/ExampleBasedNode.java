@@ -183,7 +183,7 @@ public class ExampleBasedNode {
 	}
 	
 	public String getShortDescriptionHTML(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
-		String ret = "<html> " + concept.toString(baseURI,null) + " <i>[";
+		String ret = "<html><nobr> " + concept.toString(baseURI,null) + " <i>[";
 		
 		if(isTooWeak)
 			ret += "q:tw";
@@ -202,7 +202,7 @@ public class ExampleBasedNode {
 		ret += " ("+qualityEvaluationMethod+"), he:" + horizontalExpansion;
 		ret += " c:" + children.size() + "]";
 		
-		return ret + "</i></html>";
+		return ret + "</i></nobr></html>";
 	}	
 	
 	//TODO integrate this method with the one above

@@ -71,7 +71,7 @@ public class ELOperatorBenchmark {
 		new File(dir).mkdir();		
 		
 		String example = "/home/jl/promotion/ontologien/galen2.owl";
-		testOntology(dir, example, 100, 15);
+		testOntology(dir, example, 100, 17);
 		System.exit(0);
 		
 		/* TEST ON ARTIFICIAL ONTOLOGIES
