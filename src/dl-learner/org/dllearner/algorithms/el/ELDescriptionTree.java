@@ -465,7 +465,7 @@ public class ELDescriptionTree implements Cloneable {
 	@Override
 	@SuppressWarnings("unchecked")
 	public ELDescriptionTree clone() {
-		Monitor mon = MonitorFactory.start("EL tree clone");
+		Monitor mon = MonitorFactory.start("tree clone");
 		// clone "global" tree
 		ELDescriptionTree treeClone = new ELDescriptionTree(rs);
 		
@@ -597,5 +597,17 @@ public class ELDescriptionTree implements Cloneable {
 	
 	public int getDepth() {
 		return maxLevel;
+	}
+	
+	/**
+	 * size of tree = number of nodes + sum of cardinality of node labels
+	 * @return The tree size.
+	 */
+	public int getSize() {
+		int size = nodes.size();
+		for(ELDescriptionNode node : nodes) {
+			size += node.getLabel().size();
+		}
+		return size;
 	}
 }

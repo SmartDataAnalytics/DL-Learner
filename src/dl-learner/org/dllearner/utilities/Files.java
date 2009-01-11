@@ -178,7 +178,7 @@ public class Files {
 			if(debug){System.exit(0);}
 		}
 	}
-
+	
 	public static void clearFile(File file) {
 		try{
 		createFile(file, "");

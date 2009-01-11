@@ -196,7 +196,8 @@ public class ELDownTests {
 		reasoner.init();
 		System.out.println("Galen loaded.");
 		
-		Description input = KBParser.parseConcept("(\"http://www.co-ode.org/ontologies/galen#15.0\" AND (\"http://www.co-ode.org/ontologies/galen#30.0\" AND (EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".\"http://www.co-ode.org/ontologies/galen#5.0\" AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".\"http://www.co-ode.org/ontologies/galen#6.0\")))");
+//		Description input = KBParser.parseConcept("(\"http://www.co-ode.org/ontologies/galen#15.0\" AND (\"http://www.co-ode.org/ontologies/galen#30.0\" AND (EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".\"http://www.co-ode.org/ontologies/galen#5.0\" AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".\"http://www.co-ode.org/ontologies/galen#6.0\")))");
+		Description input = KBParser.parseConcept("(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#10.0\" AND (EXISTS \"http://www.co-ode.org/ontologies/galen#DomainAttribute\".(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#6.0\" AND \"http://www.co-ode.org/ontologies/galen#TopCategory\")) AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#TopCategory\" AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".TOP)))))");
 		ConceptTransformation.cleanConcept(input);
 		
 		ELDown2 operator = new ELDown2(reasoner);
