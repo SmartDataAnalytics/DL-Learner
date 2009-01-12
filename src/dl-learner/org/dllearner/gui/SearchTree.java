@@ -42,6 +42,7 @@ public class SearchTree extends JTree {
 		this.nrOfPositiveExamples = nrOfPositiveExamples;
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		this.baseURI = baseURI;
+//		setRowHeight(0);
 	}
 	
 	@Override
@@ -53,5 +54,6 @@ public class SearchTree extends JTree {
             boolean hasFocus) {
 		ExampleBasedNode node = (ExampleBasedNode) value;
 		return node.getShortDescriptionHTML(nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
+//		return node.toString();
 	}
 }

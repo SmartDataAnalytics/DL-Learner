@@ -183,7 +183,7 @@ public class ExampleBasedNode {
 	}
 	
 	public String getShortDescriptionHTML(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
-		String ret = "<html><nobr> " + concept.toString(baseURI,null) + " <i>[";
+		String ret = "<html><nobr> " + concept.toManchesterSyntaxString(baseURI,null) + " <i>[";
 		
 		if(isTooWeak)
 			ret += "q:tw";
