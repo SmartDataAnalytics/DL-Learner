@@ -86,6 +86,11 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 			int nrOfNegativeExamples = negExamples.size();
 			
 			tree = new SearchTree(ebNodeModel, nrOfPositiveExamples, nrOfNegativeExamples, baseURI);
+			// we need to call this, otherwise the width of the elements below the root node 
+			// corresponds to that of the toString() method on ExampleBasedNode, although we
+			// use a different method to create a string representation of a node
+			tree.updateUI();
+//			ebNodeModel.nodeChanged(rootNode);
 //			tree.addTreeWillExpandListener(this);
 			this.add(new JScrollPane(tree));
 		}
