@@ -78,6 +78,7 @@ public class ELDownTests {
 	 */
 	@Test
 	public void test1() throws ParseException, ComponentInitException {
+		System.out.println("TEST 1");
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
 		
 		// input description
@@ -158,6 +159,7 @@ public class ELDownTests {
 	
 	@Test
 	public void test2() throws ParseException, IOException {
+		System.out.println("TEST 2");
 //		Logger logger = Logger.getRootLogger();
 //		logger.setLevel(Level.TRACE);
 //		SimpleLayout layout = new SimpleLayout();
@@ -165,20 +167,89 @@ public class ELDownTests {
 //		logger.removeAllAppenders();
 //		logger.addAppender(app);			
 		
-		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DR);
 		
 		// input description
-		Description input = KBParser.parseConcept("(human AND (EXISTS has.bird AND EXISTS has.cat))");
+		Description input = KBParser.parseConcept("(human AND EXISTS hasPet.bird)");
 		ConceptTransformation.cleanConcept(input);
+		
+		Set<String> desiredString = new TreeSet<String>();
+		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS has.human))");
+		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS has.cat))");
+		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS has.EXISTS has.TOP))");
+		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasPet.cat))");
+		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasPet.EXISTS has.TOP))");
+		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasChild.TOP))");
+		
+		ConceptComparator cc = new ConceptComparator();
+		SortedSet<Description> desired = new TreeSet<Description>(cc);
+		for(String str : desiredString) {
+			Description tmp = KBParser.parseConcept(str);
+			ConceptTransformation.cleanConcept(tmp);
+			ConceptTransformation.transformToOrderedForm(tmp, cc);
+			desired.add(tmp);
+			System.out.println("desired: " + tmp.toString(KBParser.internalNamespace, null));
+		}		
 		
 		RefinementOperator operator = new ELDown2(rs);
 		
-		operator.refine(input);
+		Set<Description> refinements = operator.refine(input);
 		
+//		assertTrue(refinements.size() == desired.size());
+		System.out.println("\nproduced refinements and their unit test status (true = assertion satisfied):");
+		for(Description refinement : refinements) {
+			ConceptTransformation.transformToOrderedForm(refinement, cc);
+			boolean ok = desired.contains(refinement);
+			System.out.println(ok + ": " + refinement.toString(KBParser.internalNamespace, null));
+//			assertTrue(desired.contains(refinement));
+		}		
 	}
 	
 	@Test
-	public void test3() throws ComponentInitException, ParseException, IOException {
+	public void test3() throws ParseException, IOException {
+		System.out.println("TEST 3");
+		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DISJOINT);
+		
+		// input description
+		Description input = KBParser.parseConcept("(human AND (EXISTS hasChild.human AND EXISTS has.animal))");
+		ConceptTransformation.cleanConcept(input);
+		
+		Set<String> desiredString = new TreeSet<String>();
+		desiredString.add("(human AND (animal AND (EXISTS hasChild.human AND EXISTS has.animal)))");
+		desiredString.add("(human AND (EXISTS hasChild.human AND EXISTS has.(animal AND human)))");
+		desiredString.add("(human AND (EXISTS hasChild.human AND EXISTS has.bird))");
+		desiredString.add("(human AND (EXISTS hasChild.human AND EXISTS has.cat))");
+		desiredString.add("(human AND (EXISTS hasChild.human AND EXISTS hasPet.animal))");
+		desiredString.add("(human AND (EXISTS hasChild.human AND (EXISTS has.TOP AND EXISTS has.animal)))");
+		desiredString.add("(human AND (EXISTS hasChild.human AND EXISTS has.(animal AND EXISTS has.TOP)))");
+		desiredString.add("(human AND (EXISTS hasChild.human AND (EXISTS has.animal AND EXISTS has.EXISTS has.TOP)))");
+
+		ConceptComparator cc = new ConceptComparator();
+		SortedSet<Description> desired = new TreeSet<Description>(cc);
+		for(String str : desiredString) {
+			Description tmp = KBParser.parseConcept(str);
+			ConceptTransformation.cleanConcept(tmp);
+			ConceptTransformation.transformToOrderedForm(tmp, cc);
+			desired.add(tmp);
+			System.out.println("desired: " + tmp.toString(KBParser.internalNamespace, null));
+		}		
+		
+		RefinementOperator operator = new ELDown2(rs);
+		
+		Set<Description> refinements = operator.refine(input);
+		
+//		assertTrue(refinements.size() == desired.size());
+		System.out.println("\nproduced refinements and their unit test status (true = assertion satisfied):");
+		for(Description refinement : refinements) {
+			ConceptTransformation.transformToOrderedForm(refinement, cc);
+			boolean ok = desired.contains(refinement);
+			System.out.println(ok + ": " + refinement.toString(KBParser.internalNamespace, null));
+//			assertTrue(desired.contains(refinement));
+		}		
+	}	
+	
+//	@Test
+	public void test4() throws ComponentInitException, ParseException, IOException {
 		
 		Logger logger = Logger.getRootLogger();
 		logger.setLevel(Level.TRACE);
@@ -205,7 +276,7 @@ public class ELDownTests {
 		
 	}
 
-	@Test
+//	@Test
 	public void asTest() throws ComponentInitException, MalformedURLException {
 		
 		ComponentManager cm = ComponentManager.getInstance();
