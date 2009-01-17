@@ -98,6 +98,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		this.configurator = configurator;
 		negativeWeight = configurator.getNegativeWeight();
 		startNodeBonus = configurator.getStartNodeBonus();
+		expansionPenaltyFactor = configurator.getExpansionPenaltyFactor();
 	}
 	
 //	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, double expansionPenaltyFactor, double gainBonusFactor) {

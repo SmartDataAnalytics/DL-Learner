@@ -252,7 +252,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	public boolean hasTypeImpl(Description description, Individual individual)
 			throws ReasoningMethodUnsupportedException {
 
-		// System.out.println(description + " " + individual);
+//		 System.out.println(description + " " + individual);
 
 		if (description instanceof NamedClass) {
 			return classInstancesPos.get((NamedClass) description).contains(individual);
@@ -366,7 +366,10 @@ public class FastInstanceChecker extends ReasonerComponent {
 			int number = ((ObjectCardinalityRestriction) description).getNumber();
 			int nrOfFillers = 0;
 
-			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+//			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			SortedSet<Individual> roleFillers = mapping.get(individual);
+//			System.out.println(roleFillers);
+			
 			// special case: there are always at least zero fillers
 			if (number == 0) {
 				return true;
@@ -384,7 +387,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 					if (nrOfFillers == number) {
 						return true;
 					}
-					// earyl abort: e.g. >= 10 hasStructure.Methyl;
+					// early abort: e.g. >= 10 hasStructure.Methyl;
 					// if there are 11 fillers and 2 are not Methyl, the result
 					// is false
 				} else {
