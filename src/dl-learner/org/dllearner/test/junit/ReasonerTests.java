@@ -38,6 +38,7 @@ import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
 
@@ -76,7 +77,7 @@ public class ReasonerTests {
 	 * Performs an instance checks on all reasoner components to verify that
 	 * they all return the correct result.
 	 */
-	@Test
+//	@Test
 	public void instanceCheckTest() {
 		try {
 			ComponentManager cm = ComponentManager.getInstance();
@@ -114,7 +115,7 @@ public class ReasonerTests {
 	 * @throws ComponentInitException 
 	 * @throws ParseException 
 	 */
-	@Test
+//	@Test
 	public void fastInstanceCheckTest() throws ComponentInitException, ParseException {
 		String file = "examples/carcinogenesis/carcinogenesis.owl";
 		ComponentManager cm = ComponentManager.getInstance();
@@ -157,6 +158,28 @@ public class ReasonerTests {
 		}
 	}
 
+	@Test
+	public void fastInstanceCheck2() throws ComponentInitException, ParseException {
+		String file = "examples/epc/conf/sap_modell_komplett_2.owl";
+		ComponentManager cm = ComponentManager.getInstance();
+		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+		try {
+			cm.applyConfigEntry(ks, "url", new File(file).toURI().toURL());
+		} catch (MalformedURLException e) {
+			// should never happen
+			e.printStackTrace();
+		}
+		ks.init();
+		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		reasoner.init();
+		baseURI = reasoner.getBaseURI();
+		
+		Description description = KBParser.parseConcept("(\"http://localhost/aris/sap_model.owl#EPC\" AND EXISTS \"http://localhost/aris/sap_model.owl#hasModelElements\".(\"http://localhost/aris/sap_model.owl#Event\" AND >= 2 \"http://localhost/aris/sap_model.owl#previousObjects\".TOP))");
+		Individual ind = new Individual("http://localhost/aris/sap_model.owl#e4j0__6_____u__");
+		boolean result = reasoner.hasType(description, ind);
+		System.out.println(result);
+	}
+	
 	private List<Individual> getIndSet(String... inds) {
 		List<Individual> individuals = new LinkedList<Individual>();
 		for(String ind : inds) {

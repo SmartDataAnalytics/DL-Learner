@@ -71,7 +71,12 @@ public class ELOperatorBenchmark {
 		new File(dir).mkdir();		
 		
 		String example = "/home/jl/promotion/ontologien/galen2.owl";
-		testOntology(dir, example, 100, 17);
+		
+		for(int i=10; i<17; i++) {
+			rand = new Random(2);
+			testOntology(dir, example, 100, i);
+		}
+		
 		System.exit(0);
 		
 		/* TEST ON ARTIFICIAL ONTOLOGIES
@@ -142,7 +147,7 @@ public class ELOperatorBenchmark {
 		
 		// log file name
 		String name = ontFile.getName();
-		String statFileName = name.substring(0, name.lastIndexOf(".")) + ".txt";
+		String statFileName = name.substring(0, name.lastIndexOf(".")) + "_" + chainLength + ".txt";
 		File statFile = new File(statDir + statFileName);
 		
 		String statString = "";
@@ -221,6 +226,9 @@ public class ELOperatorBenchmark {
 		statString += getMonitorData(MonitorFactory.getMonitor("disjointness reasoning", "ms."));
 		
 		Files.createFile(statFile, statString);
+		
+		reasoner.releaseKB();
+		cm.freeAllComponents();
 	}
 	
 	private static String getMonitorData(Monitor mon) {

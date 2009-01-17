@@ -80,6 +80,11 @@ public final class CommonConfigOptions {
 		return option;
 	}
 	
+	public static DoubleConfigOption getExpansionPenaltyFactor(double defaultValue) {
+		DoubleConfigOption option = new DoubleConfigOption("expansionPenaltyFactor", "describes the reduction in heuristic score one is willing to accept for reducing the length of the concept by one", defaultValue);
+		return option;
+	}
+	
 	public static StringConfigOption getReturnType() {
 		return new StringConfigOption("returnType", "Specifies the type which the solution has to belong to (if already) known. This means we inform the learning algorithm that the solution is a subclass of this type.");
 	}

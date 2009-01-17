@@ -215,6 +215,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		options.add(new DoubleConfigOption("negativeWeight", "Used to penalise errors on negative examples different from those of positive examples (lower = less importance for negatives).",1.0));
 		options.add(new DoubleConfigOption("startNodeBonus", "You can use this to give a heuristic bonus on the start node (= initially broader exploration of search space).",0.0));
 		options.add(new IntegerConfigOption("negationPenalty", "Penalty on negations (TODO: better explanation).", 0));
+		options.add(CommonConfigOptions.getExpansionPenaltyFactor(0.02));
 		return options;
 	}
 	

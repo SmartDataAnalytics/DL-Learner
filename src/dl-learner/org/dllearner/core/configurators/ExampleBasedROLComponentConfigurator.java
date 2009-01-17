@@ -402,6 +402,15 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 public int getNegationPenalty() {
 return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "negationPenalty") ;
 }
+/**
+* expansionPenaltyFactor describes the reduction in heuristic score one is willing to accept for reducing the length of the concept by one.
+* mandatory: false| reinit necessary: true
+* default value: 0.02
+* @return double 
+**/
+public double getExpansionPenaltyFactor() {
+return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "expansionPenaltyFactor") ;
+}
 
 /**
 * @param writeSearchTree specifies whether to write a search tree.
@@ -743,6 +752,15 @@ reinitNecessary = true;
 **/
 public void setNegationPenalty(int negationPenalty) {
 ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "negationPenalty", negationPenalty);
+reinitNecessary = true;
+}
+/**
+* @param expansionPenaltyFactor describes the reduction in heuristic score one is willing to accept for reducing the length of the concept by one.
+* mandatory: false| reinit necessary: true
+* default value: 0.02
+**/
+public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
+ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "expansionPenaltyFactor", expansionPenaltyFactor);
 reinitNecessary = true;
 }
 
