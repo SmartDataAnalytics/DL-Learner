@@ -75,10 +75,11 @@ public class ELDownTests {
 	 * @throws ParseException Thrown if concept syntax does not correspond
 	 * to current KB syntax.
 	 * @throws ComponentInitException 
+	 * @throws IOException 
 	 */
 	@Test
-	public void test1() throws ParseException, ComponentInitException {
-		System.out.println("TEST 1");
+	public void test1() throws ParseException, ComponentInitException, IOException {
+		System.out.println("TEST 1");		
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
 		
 		// input description
@@ -111,6 +112,13 @@ public class ELDownTests {
 			desired.add(tmp);
 			System.out.println("desired: " + tmp.toString(KBParser.internalNamespace, null));
 		}
+		
+		Logger logger = Logger.getRootLogger();
+		logger.setLevel(Level.TRACE);
+		SimpleLayout layout = new SimpleLayout();
+		FileAppender app = new FileAppender(layout, "log/el/test.txt", false);
+		logger.removeAllAppenders();
+		logger.addAppender(app);			
 		
 		// perform refinement and compare solutions
 		long startTime = System.nanoTime();
@@ -159,13 +167,7 @@ public class ELDownTests {
 	
 	@Test
 	public void test2() throws ParseException, IOException {
-		System.out.println("TEST 2");
-//		Logger logger = Logger.getRootLogger();
-//		logger.setLevel(Level.TRACE);
-//		SimpleLayout layout = new SimpleLayout();
-//		FileAppender app = new FileAppender(layout, "log/el/log.txt", false);
-//		logger.removeAllAppenders();
-//		logger.addAppender(app);			
+		System.out.println("TEST 2");			
 		
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DR);
 		
@@ -180,6 +182,12 @@ public class ELDownTests {
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasPet.cat))");
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasPet.EXISTS has.TOP))");
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasChild.TOP))");
+		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasPet.human))");
+		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasPet.(animal AND EXISTS has.TOP)))"); 
+		desiredString.add("(human AND EXISTS hasPet.(bird AND cat))");
+		desiredString.add("(human AND (EXISTS has.(animal AND EXISTS has.TOP) AND EXISTS hasPet.bird))");
+		desiredString.add("(human AND (EXISTS has.(bird AND EXISTS has.TOP) AND EXISTS hasPet.bird))");
+		desiredString.add("(human AND EXISTS hasPet.(bird AND EXISTS has.TOP))"); 
 		
 		ConceptComparator cc = new ConceptComparator();
 		SortedSet<Description> desired = new TreeSet<Description>(cc);
@@ -190,6 +198,13 @@ public class ELDownTests {
 			desired.add(tmp);
 			System.out.println("desired: " + tmp.toString(KBParser.internalNamespace, null));
 		}		
+		
+		Logger logger = Logger.getRootLogger();
+		logger.setLevel(Level.TRACE);
+		SimpleLayout layout = new SimpleLayout();
+		FileAppender app = new FileAppender(layout, "log/el/test_no_dr.txt", false);
+		logger.removeAllAppenders();
+		logger.addAppender(app);		
 		
 		RefinementOperator operator = new ELDown2(rs);
 		
@@ -208,6 +223,7 @@ public class ELDownTests {
 	@Test
 	public void test3() throws ParseException, IOException {
 		System.out.println("TEST 3");
+		
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DISJOINT);
 		
 		// input description
@@ -223,7 +239,7 @@ public class ELDownTests {
 		desiredString.add("(human AND (EXISTS hasChild.human AND (EXISTS has.TOP AND EXISTS has.animal)))");
 		desiredString.add("(human AND (EXISTS hasChild.human AND EXISTS has.(animal AND EXISTS has.TOP)))");
 		desiredString.add("(human AND (EXISTS hasChild.human AND (EXISTS has.animal AND EXISTS has.EXISTS has.TOP)))");
-
+		
 		ConceptComparator cc = new ConceptComparator();
 		SortedSet<Description> desired = new TreeSet<Description>(cc);
 		for(String str : desiredString) {
@@ -233,6 +249,13 @@ public class ELDownTests {
 			desired.add(tmp);
 			System.out.println("desired: " + tmp.toString(KBParser.internalNamespace, null));
 		}		
+		
+		Logger logger = Logger.getRootLogger();
+		logger.setLevel(Level.TRACE);
+		SimpleLayout layout = new SimpleLayout();
+		FileAppender app = new FileAppender(layout, "log/el/test_no_disjoint.txt", false);
+		logger.removeAllAppenders();
+		logger.addAppender(app);		
 		
 		RefinementOperator operator = new ELDown2(rs);
 		

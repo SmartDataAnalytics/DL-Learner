@@ -35,6 +35,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.el.ELDescriptionEdge;
+import org.dllearner.algorithms.el.ELDescriptionEdgeComparator;
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.ReasonerComponent;
@@ -92,6 +93,9 @@ public class ELDown2 extends RefinementOperatorAdapter {
 
 	// utility class
 	private Utility utility;
+	
+	// comparators
+	ELDescriptionEdgeComparator edgeComp = new ELDescriptionEdgeComparator();
 	
 	public ELDown2(ReasonerComponent rs) {
 		this.rs = rs;
@@ -266,10 +270,12 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		
 		// loop through most general roles
 		for(ObjectProperty op : mgr) {
-//			logger.trace("pick most general role: " + op);
+			logger.trace("pick most general role: " + op);
 			
 			// a list of subtrees (stored as edges i.e. role + root node which points to tree)
-			LinkedList<ELDescriptionEdge> m = new LinkedList<ELDescriptionEdge>();
+//			LinkedList<ELDescriptionEdge> m = new LinkedList<ELDescriptionEdge>();
+			// we must store m as set, otherwise we get duplicates
+			TreeSet<ELDescriptionEdge> m = new TreeSet<ELDescriptionEdge>(edgeComp);
 			
 			// create tree corresponding to top node
 			ELDescriptionTree topTree = new ELDescriptionTree(rs, Thing.instance);
@@ -281,7 +287,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			while(!m.isEmpty()) {
 				// pick and remove first element
 				ELDescriptionEdge edge = m.pollFirst();
-//				logger.trace("picked first element of M: " + edge);
+				logger.trace("picked first element of M: " + edge);
 				ObjectProperty r = edge.getLabel();
 				// tp = t' in algorithm description (p stands for prime)
 				ELDescriptionTree tp = edge.getNode().getTree();
@@ -296,20 +302,20 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				
 				ELDescriptionNode wClone = mergedTree.getNode(wPosition);
 				
-//				logger.trace("merged to t_{C'}: \n" + mergedTree);
+				logger.trace("merged to t_{C'}: \n" + mergedTree);
 				
 				// we check equivalence by a minimality test (TODO: can we still do this?)
 				boolean minimal = mergedTree.isMinimal();
 				MonitorFactory.add("as.minimal", "boolean", minimal ? 1 : 0);
 				if(minimal) {
-//					logger.trace("Merged tree is minimal, i.e. not equivalent.");
+					logger.trace("Merged tree is minimal, i.e. not equivalent.");
 					// it is not equivalent, i.e. we found a refinement
 					refinements.add(mergedTree);
 				} else {					
-//					logger.trace("Merged tree is not minimal, i.e. equivalent.");
+					logger.trace("Merged tree is not minimal, i.e. equivalent.");
 					// perform complex check in merged tree
 					boolean check = asCheck(wClone);
-//					logger.trace("Result of complex check: " + check);
+					logger.trace("Result of complex check: " + check);
 					MonitorFactory.add("as.check", "boolean", check ? 1 : 0);
 					
 					if(check) {
@@ -318,19 +324,19 @@ public class ELDown2 extends RefinementOperatorAdapter {
 							m.add(new ELDescriptionEdge(subRole, tp.getRootNode()));
 						}
 						// refine tree using recursive operator call
-//						logger.trace("Recursive Call");
+						logger.trace("Recursive Call");
 						// do not monitor recursive calls (counts time twice or more)
 						mon.stop();
 						List<ELDescriptionTree> recRefs = refine(tp);
 						mon.start();
-//						logger.trace("Recursive Call Done");
+						logger.trace("Recursive Call Done");
 						for(ELDescriptionTree tpp : recRefs) {
 							m.add(new ELDescriptionEdge(r, tpp.getRootNode()));
 						}
 					}
 				}
 				
-//				logger.trace("M: " + m);
+				logger.trace("M: " + m);
 			}
 		}
 		mon.stop();
