@@ -112,6 +112,7 @@ public class ELDescriptionNode {
 		// this is the root node of the overall tree
 		tree.rootNode = this;
 		tree.addNodeToLevel(this, level);
+		tree.size += label.size();
 	}
 	
 	// convenience constructor
@@ -194,6 +195,8 @@ public class ELDescriptionNode {
 			extendLabel(nc);
 		}
 		
+		// 1 for the edge (labels are already taken care of by extendLabel)
+		tree.size += 1;
 	}
 	
 	/**
@@ -339,6 +342,9 @@ public class ELDescriptionNode {
 	public void extendLabel(NamedClass newClass) {
 		label.add(newClass);
 		labelSimulationUpdate();
+		tree.size += 1;
+//		System.out.println(tree);
+//		System.out.println(tree.size);
 	}	
 	
 	// simulation update when extending or refining label 

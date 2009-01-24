@@ -65,6 +65,8 @@ public class ELDescriptionTree implements Cloneable {
 	// max level = 0 means that there is no tree at all
 	// (max level = 1 means the root node exists)
 	private int maxLevel = 0;
+	
+	protected int size = 1;
 
 	protected ELDescriptionNode rootNode;
 
@@ -533,6 +535,7 @@ public class ELDescriptionTree implements Cloneable {
 		// update global tree
 		treeClone.rootNode = newRoot;
 		treeClone.maxLevel = maxLevel;
+		treeClone.size = size;
 		
 		// nodes
 		treeClone.nodes = new LinkedList<ELDescriptionNode>();
@@ -604,10 +607,10 @@ public class ELDescriptionTree implements Cloneable {
 	 * @return The tree size.
 	 */
 	public int getSize() {
-		int size = nodes.size();
-		for(ELDescriptionNode node : nodes) {
-			size += node.getLabel().size();
-		}
+//		int size = nodes.size();
+//		for(ELDescriptionNode node : nodes) {
+//			size += node.getLabel().size();
+//		}
 		return size;
 	}
 }

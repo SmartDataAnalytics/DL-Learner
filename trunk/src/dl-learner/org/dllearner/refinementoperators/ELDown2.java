@@ -38,6 +38,9 @@ import org.dllearner.algorithms.el.ELDescriptionEdge;
 import org.dllearner.algorithms.el.ELDescriptionEdgeComparator;
 import org.dllearner.algorithms.el.ELDescriptionNode;
 import org.dllearner.algorithms.el.ELDescriptionTree;
+import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
+import org.dllearner.algorithms.el.TreeAndRoleSet;
+import org.dllearner.algorithms.el.TreeAndRoleSetComparator;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
@@ -95,7 +98,9 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	private Utility utility;
 	
 	// comparators
-	ELDescriptionEdgeComparator edgeComp = new ELDescriptionEdgeComparator();
+	private ELDescriptionTreeComparator treeComp = new ELDescriptionTreeComparator();
+	private ELDescriptionEdgeComparator edgeComp = new ELDescriptionEdgeComparator();
+	private TreeAndRoleSetComparator mComp = new TreeAndRoleSetComparator();
 	
 	public ELDown2(ReasonerComponent rs) {
 		this.rs = rs;
@@ -155,7 +160,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			refinements.addAll(extendLabel(tree, v, position));
 			refinements.addAll(refineLabel(tree, v, position));
 			refinements.addAll(refineEdge(tree, v, position));
-			refinements.addAll(attachSubtree(tree, v, position));
+			refinements.addAll(attachSubtree2(tree, v, position));
 		}
 		
 		return refinements;
@@ -251,7 +256,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 	}
 	
 	// operation 4: attach tree
-	private List<ELDescriptionTree> attachSubtree(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+	private Collection<ELDescriptionTree> attachSubtree(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 		Monitor mon = MonitorFactory.start("attach tree");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 		
@@ -342,6 +347,103 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		mon.stop();
 		return refinements;
 	}	
+	
+	// new version of as
+	private Collection<ELDescriptionTree> attachSubtree2(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		Monitor mon = MonitorFactory.start("attach tree");
+		Set<ELDescriptionTree> refinements = new TreeSet<ELDescriptionTree>(treeComp);
+		
+		// create and initialise M
+		TreeSet<TreeAndRoleSet> m = new TreeSet<TreeAndRoleSet>(mComp);
+		ELDescriptionTree topTree = new ELDescriptionTree(rs, Thing.instance);
+		Description index = getIndex(v);
+		SortedSet<ObjectProperty> appOPs = utility.computeApplicableObjectProperties(index);
+		m.add(new TreeAndRoleSet(topTree, appOPs));
+		
+//		logger.trace("M initialised: " + m);
+		
+		while(!m.isEmpty()) {
+			
+			// pick first element of M
+			TreeAndRoleSet tars = m.pollFirst();
+			ELDescriptionTree tp = tars.getTree();
+			Set<ObjectProperty> rSet = tars.getRoles();
+//			logger.trace("selected first element of M: " + tars);
+			
+			
+			// init sets R' and R''
+			// more efficient
+			SortedSet<ObjectProperty> rpSet = utility.computeMgr(appOPs);
+			rpSet.retainAll(rSet);
+//			SortedSet<ObjectProperty> rpSet = new TreeSet<ObjectProperty>();
+//			for(ObjectProperty rEl : rSet) {
+//				if(!containsSuperProperty(rEl, rSet)) {
+//					rpSet.add(rEl);
+//				}
+//			}
+			
+//			logger.trace("R': " + rpSet);
+			Set<ObjectProperty> rppSet = new TreeSet<ObjectProperty>();
+			
+			while(!rpSet.isEmpty()) {
+				// pick an element r from R'
+				Iterator<ObjectProperty> it = rpSet.iterator();
+				ObjectProperty r = it.next();
+				it.remove();
+//				logger.trace("picked role r: " + r);
+				
+				ELDescriptionTree tpp = mergeTrees(tree, v, position, r, tp);
+//				logger.trace("merged tree:\n" + tpp);
+				// the position of w is the position of v + #edges outgoing from v
+				int[] wPosition = new int[position.length+1];
+				System.arraycopy(position, 0, wPosition, 0, position.length);
+				wPosition[position.length] = v.getEdges().size();
+				ELDescriptionNode w = tpp.getNode(wPosition);				
+				
+				if(tpp.isMinimal()) {
+					refinements.add(tpp);
+//					logger.trace("tree is minimal; added to T");
+				} else {
+					boolean check = asCheck(w);
+//					logger.trace("tree is not minimal; result of complex check: " + check);
+					
+					if(check) {
+						
+//						Monitor mon2 = MonitorFactory.start("as.tmp");
+						// add role to R' if it is in R (allowed)
+						for(ObjectProperty subRole : rs.getSubProperties(r)) {
+							if(rSet.contains(subRole)) {
+								rpSet.add(subRole);
+							}
+						}
+						rppSet.add(r);
+//						logger.trace("updated R' to: " + rpSet);
+//						logger.trace("updated R'' to: " + rppSet);
+//						mon2.stop();
+					}
+				}
+			}
+			
+			if(rppSet.size() != 0) {
+				// recursive call
+				mon.stop();
+//				logger.trace("recursive call start");
+				List<ELDescriptionTree> recRefs = refine(tp);
+//				logger.trace("recursive call end");
+				mon.start();				
+				
+				for(ELDescriptionTree tStar : recRefs) {
+					m.add(new TreeAndRoleSet(tStar, rppSet));
+				}	
+//				logger.trace("M after recursion: " + m);
+			}
+				
+		}
+		
+		mon.stop();
+		return refinements;		
+	}
+			
 	
 	// create a new tree which is obtained by attaching the new tree at the given node in the tree via role r
 	private ELDescriptionTree mergeTrees(ELDescriptionTree tree, ELDescriptionNode node, int[] position, ObjectProperty r, ELDescriptionTree newTree) {
@@ -471,5 +573,24 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		
 		return i;
 	}	
+	
+	private Description getIndex(ELDescriptionNode v) {
+		if(v.isRoot()) {
+			return Thing.instance;
+		} else {
+			return opRanges.get(v.getParentEdge().getLabel());
+		}		
+	}
+	
+	private boolean containsSuperProperty(ObjectProperty prop, Set<ObjectProperty> props) {
+		for(ObjectProperty p : props) {
+			if(!p.equals(prop)) {
+				if(opHierarchy.isSubpropertyOf(prop, p)) {
+					return true;
+				}						
+			}
+		}
+		return false;
+	}
 	
 }
