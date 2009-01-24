@@ -71,9 +71,10 @@ public class ELOperatorBenchmark {
 		new File(dir).mkdir();		
 		
 		String example = "/home/jl/promotion/ontologien/galen2.owl";
+//		example = "/home/jl/downloads/uni-leipzig/OTAGen-v1/generated/generatedOnt.owl";
 		
 		for(int i=10; i<17; i++) {
-			rand = new Random(2);
+			rand = new Random(1);
 			testOntology(dir, example, 100, i);
 		}
 		
@@ -217,7 +218,7 @@ public class ELOperatorBenchmark {
 		statString += getMonitorData(MonitorFactory.getMonitor("attach tree", "ms."));
 		statString += getMonitorData(MonitorFactory.getMonitor("as.merge trees", "ms."));
 		statString += getMonitorData(MonitorFactory.getMonitor("as.complex check", "ms."));
-//		statString += getMonitorData(MonitorFactory.getMonitor("as.tmp", "ms."));
+		statString += getMonitorData(MonitorFactory.getMonitor("as.tmp", "ms."));
 //		statString += getMonitorData(MonitorFactory.getMonitor("el.tmp", "ms."));
 		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.minimal", "boolean"));
 		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.check", "boolean"));		

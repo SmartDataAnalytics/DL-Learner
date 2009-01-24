@@ -82,6 +82,17 @@ public class ELDownTests {
 		System.out.println("TEST 1");		
 		ReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
 		
+//		ELDescriptionTree t = new ELDescriptionTree(rs);
+//		ObjectProperty p1 = new ObjectProperty("p1");
+//		ObjectProperty p2 = new ObjectProperty("p2");
+//		NamedClass a1 = new NamedClass("a1");
+//		ELDescriptionNode n1 = new ELDescriptionNode(t, a1);
+//		ELDescriptionNode n2 = new ELDescriptionNode(n1, p1, a1);
+//		
+//		System.out.println(t);
+//		System.out.println(t.getSize());
+//		System.exit(0);
+		
 		// input description
 		Description input = KBParser.parseConcept("(human AND EXISTS has.animal)");
 		System.out.println("refining: " + input.toString(KBParser.internalNamespace, null));		
@@ -179,6 +190,7 @@ public class ELDownTests {
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS has.human))");
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS has.cat))");
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS has.EXISTS has.TOP))");
+		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS has.(cat AND bird)))");
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasPet.cat))");
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasPet.EXISTS has.TOP))");
 		desiredString.add("(human AND (EXISTS hasPet.bird AND EXISTS hasChild.TOP))");
