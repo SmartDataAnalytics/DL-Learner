@@ -67,25 +67,46 @@ public class ELOperatorBenchmark {
 		// create a directory for log files
 		Date dt = new Date();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-		String dir = "log/el/" + df.format(dt) + "/";
-		new File(dir).mkdir();		
+		String statDir = "log/el/" + df.format(dt) + "/";
+		new File(statDir).mkdir();		
 		
-		String example = "/home/jl/promotion/ontologien/galen2.owl";
-//		example = "/home/jl/downloads/uni-leipzig/OTAGen-v1/generated/generatedOnt.owl";
+		// single ontology test
+//		String example = "/home/jl/promotion/ontologien/galen2.owl";
+//		for(int i=10; i<17; i++) {
+//			rand = new Random(1);
+//			testOntology(statDir, example, 100, i);
+//		}
 		
-		for(int i=10; i<17; i++) {
+		// real world ontology tests //
+		String base = "/home/jl/promotion/ontologien/el_benchmark/";
+		String[] onts = new String[] {"galen2", "cton", "earthrealm", "fma_owl_dl_component_1.4.0",
+				"iso_19115", "nci", "process", "pto", "tambis", "thesaurus", "transportation"};
+
+		for(String ont : onts) {
+			String file = base + ont + ".owl";
 			rand = new Random(1);
-			testOntology(dir, example, 100, i);
+			testOntology(statDir, file, 100, 10);
+		}
+		
+		// artificial ontology tests //
+		
+		// number of concepts and roles
+		int[] conceptCounts = new int[] { 5, 10, 50, 100 }; //, 500, 1000 };
+		int[] roleCounts = new int[] { 5, 10, 50, 100, 500, 1000};
+		base = "/home/jl/downloads/uni-leipzig/OTAGen-v1/generated/generated_";
+		
+		// loop through all artificial ontologies
+		for(int conceptCount : conceptCounts) {
+			for(int roleCount : roleCounts) {
+				String file = base + "c" + conceptCount + "_r" + roleCount + ".owl";
+				rand = new Random(1);
+				testOntology(statDir, file, 100, 10);
+			}
 		}
 		
 		System.exit(0);
-		
-		/* TEST ON ARTIFICIAL ONTOLOGIES
-		  
-		 
-		// number of concepts and roles
-		int[] conceptCounts = new int[] { 5, 10 };
-		int[] roleCounts = new int[] { 5, 10};
+	
+		/*
 		
 		// number of applications of operator
 		int opApplications = 10;
@@ -218,7 +239,7 @@ public class ELOperatorBenchmark {
 		statString += getMonitorData(MonitorFactory.getMonitor("attach tree", "ms."));
 		statString += getMonitorData(MonitorFactory.getMonitor("as.merge trees", "ms."));
 		statString += getMonitorData(MonitorFactory.getMonitor("as.complex check", "ms."));
-		statString += getMonitorData(MonitorFactory.getMonitor("as.tmp", "ms."));
+//		statString += getMonitorData(MonitorFactory.getMonitor("as.tmp", "ms."));
 //		statString += getMonitorData(MonitorFactory.getMonitor("el.tmp", "ms."));
 		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.minimal", "boolean"));
 		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.check", "boolean"));		
