@@ -400,11 +400,14 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				wPosition[position.length] = v.getEdges().size();
 				ELDescriptionNode w = tpp.getNode(wPosition);				
 				
-				if(tpp.isMinimal()) {
+				boolean minimal = tpp.isMinimal();
+				MonitorFactory.add("as.minimal", "boolean", minimal ? 1 : 0);
+				if(minimal) {
 					refinements.add(tpp);
 //					logger.trace("tree is minimal; added to T");
 				} else {
 					boolean check = asCheck(w);
+					MonitorFactory.add("as.check", "boolean", check ? 1 : 0);					
 //					logger.trace("tree is not minimal; result of complex check: " + check);
 					
 					if(check) {
