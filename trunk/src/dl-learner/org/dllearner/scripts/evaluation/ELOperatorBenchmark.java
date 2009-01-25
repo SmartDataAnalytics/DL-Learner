@@ -79,13 +79,30 @@ public class ELOperatorBenchmark {
 		
 		// real world ontology tests //
 		String base = "/home/jl/promotion/ontologien/el_benchmark/";
-		String[] onts = new String[] {"galen2", "cton", "earthrealm", "fma_owl_dl_component_1.4.0",
-				"iso_19115", "nci", "process", "pto", "tambis", "thesaurus", "transportation"};
+		String[] onts = new String[] {
+				// is ok at length 10
+				"galen2", 
+				// is ok at length 8 
+				"cton", 
+				// is ok at length 8 
+				"earthrealm2", 
+				// cannot even be read "fma_owl_dl_component_1.4.0",
+				// ontology file seems broken "iso_19115", 
+				// ontology file seems broken "nci", 
+				// is ok at length 8 
+				"process", 
+				// takes too long to read in "pto", 
+				// is ok at length 8 
+				"tambis", 
+				// ontology file seems broken "thesaurus", 
+				// is ok at length 8 
+				"transportation"
+				};
 
 		for(String ont : onts) {
 			String file = base + ont + ".owl";
 			rand = new Random(1);
-			testOntology(statDir, file, 100, 10);
+			testOntology(statDir, file, 100, 8);
 		}
 		
 		// artificial ontology tests //
@@ -100,7 +117,7 @@ public class ELOperatorBenchmark {
 			for(int roleCount : roleCounts) {
 				String file = base + "c" + conceptCount + "_r" + roleCount + ".owl";
 				rand = new Random(1);
-				testOntology(statDir, file, 100, 10);
+				testOntology(statDir, file, 100, 9);
 			}
 		}
 		
