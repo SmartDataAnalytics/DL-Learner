@@ -42,9 +42,6 @@ import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.UnsupportedLanguageException;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-
 /**
  * Represents an EL description tree. Unlike {@link ELDescriptionNode}, this is
  * a tree-wide structure, i.e. it does not implement the tree structure itself,
@@ -467,7 +464,7 @@ public class ELDescriptionTree implements Cloneable {
 	@Override
 	@SuppressWarnings("unchecked")
 	public ELDescriptionTree clone() {
-		Monitor mon = MonitorFactory.start("tree clone");
+//		Monitor mon = MonitorFactory.start("tree clone");
 		// clone "global" tree
 		ELDescriptionTree treeClone = new ELDescriptionTree(rs);
 		
@@ -553,7 +550,7 @@ public class ELDescriptionTree implements Cloneable {
 			treeClone.levelNodeMapping.put(i, newNodes);
 		}
 		
-		mon.stop();
+//		mon.stop();
 		return treeClone;
 	}
 	

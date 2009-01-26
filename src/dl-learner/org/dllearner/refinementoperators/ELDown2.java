@@ -51,8 +51,8 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Helper;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+//import com.jamonapi.Monitor;
+//import com.jamonapi.MonitorFactory;
 
 /**
  * EL downward refinement operator constructed by Jens Lehmann
@@ -168,7 +168,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 
 	// operation 1: label extension
 	private List<ELDescriptionTree> extendLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
-		Monitor mon = MonitorFactory.start("extend label");
+//		Monitor mon = MonitorFactory.start("extend label");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 				
 		// the index is the range of role in the edge pointing to the parent of this node
@@ -193,13 +193,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			}
 		}
 				
-		mon.stop();
+//		mon.stop();
 		return refinements;
 	}	
 	
 	// operation 2: label refinement
 	private List<ELDescriptionTree> refineLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
-		Monitor mon = MonitorFactory.start("refine label");
+//		Monitor mon = MonitorFactory.start("refine label");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 		
 		// loop through all classes in label
@@ -220,13 +220,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				}
 			}
 		}
-		mon.stop();
+//		mon.stop();
 		return refinements;
 	}	
 	
 	// operation 3: refine edge
 	private List<ELDescriptionTree> refineEdge(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
-		Monitor mon = MonitorFactory.start("refine edge");
+//		Monitor mon = MonitorFactory.start("refine edge");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 
 		for(int edgeNumber = 0; edgeNumber < v.getEdges().size(); edgeNumber++) {
@@ -251,13 +251,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				}
 			}	
 		}		
-		mon.stop();
+//		mon.stop();
 		return refinements;
 	}
 	
 	// operation 4: attach tree
 	private Collection<ELDescriptionTree> attachSubtree(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
-		Monitor mon = MonitorFactory.start("attach tree");
+//		Monitor mon = MonitorFactory.start("attach tree");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 		
 		// compute the set of most general roles such that the domain of each role is not disjoint
@@ -311,7 +311,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				
 				// we check equivalence by a minimality test (TODO: can we still do this?)
 				boolean minimal = mergedTree.isMinimal();
-				MonitorFactory.add("as.minimal", "boolean", minimal ? 1 : 0);
+//				MonitorFactory.add("as.minimal", "boolean", minimal ? 1 : 0);
 				if(minimal) {
 					logger.trace("Merged tree is minimal, i.e. not equivalent.");
 					// it is not equivalent, i.e. we found a refinement
@@ -321,7 +321,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 					// perform complex check in merged tree
 					boolean check = asCheck(wClone);
 					logger.trace("Result of complex check: " + check);
-					MonitorFactory.add("as.check", "boolean", check ? 1 : 0);
+//					MonitorFactory.add("as.check", "boolean", check ? 1 : 0);
 					
 					if(check) {
 						// refine property
@@ -331,9 +331,9 @@ public class ELDown2 extends RefinementOperatorAdapter {
 						// refine tree using recursive operator call
 						logger.trace("Recursive Call");
 						// do not monitor recursive calls (counts time twice or more)
-						mon.stop();
+//						mon.stop();
 						List<ELDescriptionTree> recRefs = refine(tp);
-						mon.start();
+//						mon.start();
 						logger.trace("Recursive Call Done");
 						for(ELDescriptionTree tpp : recRefs) {
 							m.add(new ELDescriptionEdge(r, tpp.getRootNode()));
@@ -344,13 +344,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				logger.trace("M: " + m);
 			}
 		}
-		mon.stop();
+//		mon.stop();
 		return refinements;
 	}	
 	
 	// new version of as
 	private Collection<ELDescriptionTree> attachSubtree2(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
-		Monitor mon = MonitorFactory.start("attach tree");
+//		Monitor mon = MonitorFactory.start("attach tree");
 		Set<ELDescriptionTree> refinements = new TreeSet<ELDescriptionTree>(treeComp);
 		
 		// create and initialise M
@@ -401,13 +401,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				ELDescriptionNode w = tpp.getNode(wPosition);				
 				
 				boolean minimal = tpp.isMinimal();
-				MonitorFactory.add("as.minimal", "boolean", minimal ? 1 : 0);
+//				MonitorFactory.add("as.minimal", "boolean", minimal ? 1 : 0);
 				if(minimal) {
 					refinements.add(tpp);
 //					logger.trace("tree is minimal; added to T");
 				} else {
 					boolean check = asCheck(w);
-					MonitorFactory.add("as.check", "boolean", check ? 1 : 0);					
+//					MonitorFactory.add("as.check", "boolean", check ? 1 : 0);					
 //					logger.trace("tree is not minimal; result of complex check: " + check);
 					
 					if(check) {
@@ -429,11 +429,11 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			
 			if(rppSet.size() != 0) {
 				// recursive call
-				mon.stop();
+//				mon.stop();
 //				logger.trace("recursive call start");
 				List<ELDescriptionTree> recRefs = refine(tp);
 //				logger.trace("recursive call end");
-				mon.start();				
+//				mon.start();				
 				
 				for(ELDescriptionTree tStar : recRefs) {
 					m.add(new TreeAndRoleSet(tStar, rppSet));
@@ -443,14 +443,14 @@ public class ELDown2 extends RefinementOperatorAdapter {
 				
 		}
 		
-		mon.stop();
+//		mon.stop();
 		return refinements;		
 	}
 			
 	
 	// create a new tree which is obtained by attaching the new tree at the given node in the tree via role r
 	private ELDescriptionTree mergeTrees(ELDescriptionTree tree, ELDescriptionNode node, int[] position, ObjectProperty r, ELDescriptionTree newTree) {
-		Monitor mon = MonitorFactory.start("as.merge trees");
+//		Monitor mon = MonitorFactory.start("as.merge trees");
 //		System.out.println("merge start");
 //		System.out.println(tree);
 //		System.out.println(newTree);
@@ -497,13 +497,13 @@ public class ELDown2 extends RefinementOperatorAdapter {
 		
 //		mon2.stop();
 		
-		mon.stop();
+//		mon.stop();
 		return mergedTree;
 	}
 	
 	// TODO: variables have been renamed in article
 	public boolean asCheck(ELDescriptionNode v) {
-		Monitor mon = MonitorFactory.start("as.complex check");
+//		Monitor mon = MonitorFactory.start("as.complex check");
 //		System.out.println("asCheck: " + v.getTree().toSimulationString());
 		
 		// find all edges up to the root node
@@ -541,7 +541,7 @@ public class ELDown2 extends RefinementOperatorAdapter {
 			}
 		}
 		
-		mon.stop();
+//		mon.stop();
 		return true;
 	}
 	
