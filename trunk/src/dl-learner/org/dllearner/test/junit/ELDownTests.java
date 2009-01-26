@@ -66,6 +66,7 @@ import com.jamonapi.MonitorFactory;
  */
 public class ELDownTests {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ELDownTests.class);		
 	
 	/**

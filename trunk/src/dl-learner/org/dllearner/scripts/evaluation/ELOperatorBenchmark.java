@@ -86,43 +86,45 @@ public class ELOperatorBenchmark {
 				"cton", 
 				// is ok at length 8 
 				"earthrealm2", 
-				// cannot even be read "fma_owl_dl_component_1.4.0",
-				// ontology file seems broken "iso_19115", 
-				// ontology file seems broken "nci", 
 				// is ok at length 8 
 				"process", 
-				// takes too long to read in "pto", 
 				// is ok at length 8 
 				"tambis", 
 				// ontology file seems broken "thesaurus", 
 				// is ok at length 8 
-				"transportation"
+				"transportation",
+				// takes too long to read in 
+				"pto",
+				// ontology file seems broken "iso_19115", 
+				// ontology file seems broken "nci", 	
+				// cannot even be read 
+				"fma_owl_dl_component_1.4.0"				
 				};
 
 		for(String ont : onts) {
 			String file = base + ont + ".owl";
 			rand = new Random(1);
-			testOntology(statDir, file, 100, 8);
+			testOntology(statDir, file, 100, 7);
 		}
 		
 		// artificial ontology tests //
-		
+		/*
 		// number of concepts and roles
 		int[] conceptCounts = new int[] { 5, 10, 50, 100 }; //, 500, 1000 };
 		int[] roleCounts = new int[] { 5, 10, 50, 100, 500, 1000};
-		base = "/home/jl/downloads/uni-leipzig/OTAGen-v1/generated/generated_";
+		String base = "/home/jl/downloads/uni-leipzig/OTAGen-v1/generated/generated_";
 		
 		// loop through all artificial ontologies
 		for(int conceptCount : conceptCounts) {
 			for(int roleCount : roleCounts) {
 				String file = base + "c" + conceptCount + "_r" + roleCount + ".owl";
 				rand = new Random(1);
-				testOntology(statDir, file, 100, 9);
+				testOntology(statDir, file, 100, 7);
 			}
 		}
 		
 		System.exit(0);
-	
+		*/
 		/*
 		
 		// number of applications of operator
@@ -190,6 +192,7 @@ public class ELOperatorBenchmark {
 		File statFile = new File(statDir + statFileName);
 		
 		String statString = "";
+		int refinementMaxSizeOverall = 0;
 		MonitorFactory.reset();
 		for(int loop = 0; loop < nrOfChains; loop++) {
 		
@@ -216,18 +219,32 @@ public class ELOperatorBenchmark {
 				int sizeSum = 0;
 				for(ELDescriptionTree tree : refinements) {
 //					System.out.println("   " + tree.toDescriptionString());
-					sizeSum += tree.getSize();
+					int size = tree.getSize();
+					sizeSum += size;
+					refinementMaxSizeOverall = Math.max(size, refinementMaxSizeOverall);
 				}
 				
 				MonitorFactory.add("refinement size", "count", sizeSum/(double)refinements.size());
 				MonitorFactory.add("refinement size increase", "count", (sizeSum-refinements.size()*currTree.getSize())/(double)refinements.size());
 				
 				System.out.println("  [has " + refinements.size() + " refinements]");
-				// pick a refinement randomly (which is kind of slow for a set, but
-				// this does not matter here)
+				
+				// pick a refinement randomly - this has the disadvantage that we have huge
+				// variations over different runs
 				int index = rand.nextInt(refinements.size());
-//				currTree = new ArrayList<ELDescriptionTree>(refinements).get(index);
 				currTree = refinements.get(index);
+				
+				// we pick a/the median of the refinements as next refinement
+//				ELDescriptionTreeComparator treeComp = new ELDescriptionTreeComparator();
+//				TreeSet<ELDescriptionTree> refinementsSet = new TreeSet<ELDescriptionTree>(treeComp);
+//				refinementsSet.addAll(refinements);
+//				List<ELDescriptionTree> refinementList = new LinkedList<ELDescriptionTree>(refinements);
+				// sort by size (first criterion of comparator)
+//				Collections.sort(refinementList, treeComp);
+//				currTree = refinementList.get((int)(refinementList.size()*0.5));
+//				System.out.println(rand.nextGaussian());
+//				currTree = refinementList.get((int)(refinementList.size()*rand.nextGaussian()));				
+				
 				MonitorFactory.add("picked refinement size", "count", currTree.getSize());
 			}
 			System.out.println("operator time: " + runtime.prettyPrint("ms"));
@@ -246,23 +263,26 @@ public class ELOperatorBenchmark {
 	
 		statString += getMonitorDataCount(MonitorFactory.getMonitor("refinement count", "count"));		
 		statString += getMonitorDataCount(MonitorFactory.getMonitor("refinement size", "count"));
+		statString += "refinement max size overall: " + refinementMaxSizeOverall + "\n";
 		statString += getMonitorDataCount(MonitorFactory.getMonitor("picked refinement size", "count"));
 		statString += getMonitorDataCount(MonitorFactory.getMonitor("refinement size increase", "count"));
 		statString += "\n";
 		
-		statString += getMonitorData(MonitorFactory.getMonitor("extend label", "ms."));
-		statString += getMonitorData(MonitorFactory.getMonitor("refine label", "ms."));
-		statString += getMonitorData(MonitorFactory.getMonitor("refine edge", "ms."));
-		statString += getMonitorData(MonitorFactory.getMonitor("attach tree", "ms."));
-		statString += getMonitorData(MonitorFactory.getMonitor("as.merge trees", "ms."));
-		statString += getMonitorData(MonitorFactory.getMonitor("as.complex check", "ms."));
+//		statString += getMonitorData(MonitorFactory.getMonitor("extend label", "ms."));
+//		statString += getMonitorData(MonitorFactory.getMonitor("refine label", "ms."));
+//		statString += getMonitorData(MonitorFactory.getMonitor("refine edge", "ms."));
+//		statString += getMonitorData(MonitorFactory.getMonitor("attach tree", "ms."));
+//		statString += getMonitorData(MonitorFactory.getMonitor("as.merge trees", "ms."));
+//		statString += getMonitorData(MonitorFactory.getMonitor("as.complex check", "ms."));
 //		statString += getMonitorData(MonitorFactory.getMonitor("as.tmp", "ms."));
 //		statString += getMonitorData(MonitorFactory.getMonitor("el.tmp", "ms."));
-		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.minimal", "boolean"));
-		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.check", "boolean"));		
-		statString += getMonitorData(MonitorFactory.getMonitor("tree clone", "ms."));
-		statString += getMonitorData(MonitorFactory.getMonitor("simulation update", "ms."));
+//		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.minimal", "boolean"));
+//		statString += getMonitorDataBoolean(MonitorFactory.getMonitor("as.check", "boolean"));		
+//		statString += getMonitorData(MonitorFactory.getMonitor("tree clone", "ms."));
+//		statString += getMonitorData(MonitorFactory.getMonitor("simulation update", "ms."));
 		statString += getMonitorData(MonitorFactory.getMonitor("disjointness reasoning", "ms."));
+		double reasoningPercentage = 100 * MonitorFactory.getMonitor("disjointness reasoning", "ms.").getTotal()/MonitorFactory.getMonitor("operator application time", "ms.").getTotal();
+		statString += "disjointness reasoning percentage: " + df.format(reasoningPercentage) + "%\n";
 		
 		Files.createFile(statFile, statString);
 		
@@ -278,6 +298,7 @@ public class ELOperatorBenchmark {
 		return mon.getLabel() + ": av " + df.format(mon.getAvg()) + " (stddev " + df.format(mon.getStdDev()) + ",  min " + df.format(mon.getMin()) +  ", max " + df.format(mon.getMax()) + ", " +  df.format(mon.getTotal()) + " total, " + (int)mon.getHits() + " hits)\n";		
 	}
 	
+	@SuppressWarnings("unused")
 	private static String getMonitorDataBoolean(Monitor mon) {
 		return mon.getLabel() + ": " + df.format(mon.getAvg()*100) + "%\n";		
 	}	
