@@ -84,8 +84,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 *            DLlearner tab
 	 * @param i
 	 *            id if it is a subclass or an equivalent class
-	 * @param editor
-	 *            OWLEditorKit
+	 * 
 	 */
 	public ActionHandler(ActionHandler a, DLLearnerModel m,
 			OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view,
@@ -302,7 +301,13 @@ public class ActionHandler implements ActionListener, ItemListener,
 		
 		private Thread dlLearner;
 		private DefaultListModel dm = new DefaultListModel();
+		/**
+		 * Errorlogger.
+		 */
 		Logger logger = Logger.getLogger(SuggestionRetriever.class);
+		/**
+		 * Errorlogger.
+		 */
 		Logger rootLogger = Logger.getRootLogger();
 		
 		@SuppressWarnings("unchecked")
@@ -391,11 +396,11 @@ public class ActionHandler implements ActionListener, ItemListener,
 						for(String ontology : ont) {
 							if(eval.getDescription().toString().contains(ontology)) {
 								if(model.isConsistent(eval)) {
-									dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null),eval.getAccuracy()*100));
+									dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), eval.getAccuracy()*100));
 									i++;
 									break;
 								} else {
-									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null),eval.getAccuracy()*100));
+									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null), eval.getAccuracy()*100));
 									i++;
 									view.setIsInconsistent(true);
 									break;

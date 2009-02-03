@@ -38,7 +38,6 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -48,7 +47,6 @@ import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.jdesktop.swingx.JXTaskPane;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.frame.OWLFrame;
@@ -90,7 +88,7 @@ public class DLLearnerModel implements Runnable{
 
 	// The Reasoning Service for the Reasoner
 
-	private ReasonerComponent rs;
+	//private ReasonerComponent rs;
 	private static final String EQUIVALENT_CLASS_AXIOM_STRING = "Suggest equivalent class";
 	private static final String SUPER_CLASS_AXIOM_STRING = "Suggest super class";
 
@@ -102,7 +100,7 @@ public class DLLearnerModel implements Runnable{
 
 	// A Array of Concepts which the DL-Learner suggested
 
-	private Description[] description;
+	//private Description[] description;
 
 	// The Learning problem that is used to learn new concepts
 
@@ -114,7 +112,7 @@ public class DLLearnerModel implements Runnable{
 
 	// The Ontology which is currently used
 
-	private OWLOntology ontology;
+	//private OWLOntology ontology;
 
 	// This is the learning algorithm
 
@@ -182,7 +180,7 @@ public class DLLearnerModel implements Runnable{
 
 	// This is necessary to get the details of the suggested concept
 
-	private JXTaskPane detailPane;
+	//private JXTaskPane detailPane;
 	private DefaultListModel posListModel;
 	private DefaultListModel negListModel;
 	private Set<KnowledgeSource> sources;
@@ -225,8 +223,8 @@ public class DLLearnerModel implements Runnable{
 		ds = new HashSet<OWLDescription>();
 		suggestModel = new DefaultListModel();
 		ontologieURI = new HashSet<String>();
-		detailPane = new JXTaskPane();
-		detailPane.setTitle("Details");
+		//detailPane = new JXTaskPane();
+		//detailPane.setTitle("Details");
 		sources = new HashSet<KnowledgeSource>();
 	}
 
@@ -272,10 +270,10 @@ public class DLLearnerModel implements Runnable{
 	 * This method returns an array of descriptions learned by the DL-Learner.
 	 * 
 	 * @return Array of descriptions learned by the DL-Learner.
-	 */
+	 
 	public Description[] getDescriptions() {
 		return description;
-	}
+	}*/
 
 	/**
 	 * This Method returns a List of evaluated descriptions suggested by the
@@ -292,8 +290,8 @@ public class DLLearnerModel implements Runnable{
 	 * OWLAPIOntology will be available.
 	 */
 	public void setKnowledgeSource() {
-		Set<OWLOntology> ontologies = editor.getModelManager().getActiveOntologies();
-		for(OWLOntology onto : ontologies) {
+		Set<OWLOntology> ontologieSet = editor.getModelManager().getActiveOntologies();
+		for(OWLOntology onto : ontologieSet) {
 			sources.add(new OWLAPIOntology(onto));
 		}
 	}
@@ -318,7 +316,18 @@ public class DLLearnerModel implements Runnable{
 		
 		// rs = cm.reasoningService(reasoner);
 	}
-
+	
+	public FastInstanceChecker getReasoner() {
+		return reasoner;
+	}
+	
+	/**
+	 * This method returns the current concept.
+	 * @return current concept
+	 */
+	public NamedClass getCurrentConcept() {
+		return currentConcept;
+	}
 	/**
 	 * This method sets the Learning problem for the learning process.
 	 * PosNegDefinitonLp for equivalent classes and PosNegInclusionLP for super
@@ -361,7 +370,7 @@ public class DLLearnerModel implements Runnable{
 		Set<String> ignore = new TreeSet<String>();
 		ignore.add(currentConcept.toString());
 		if(id.equals(SUPER_CLASS_AXIOM_STRING)) {
-			Description currentClass = (Description)currentConcept;
+			Description currentClass = (Description) currentConcept;
 			while(!(currentClass instanceof Thing)) {	
 				SortedSet<Description> superClasses = reasoner.getSuperClasses(currentClass);
 				for(Description ignoredClass : superClasses) {
@@ -393,10 +402,11 @@ public class DLLearnerModel implements Runnable{
 	 * This method returns the Concepts from the DL-Learner.
 	 * 
 	 * @return Array of learned Concepts.
-	 */
+	 
 	public Description[] getSolutions() {
 		return description;
-	}
+	}*/
+	
 	/**
 	 * Starts the learning algorithm.
 	 */
@@ -499,7 +509,23 @@ public class DLLearnerModel implements Runnable{
 			individual = reasoner.getIndividuals();
 		}
 	}
-
+	
+	/**
+	 * This method sets the positive examples for learning. 
+	 * @param ind
+	 */
+	public void setIndividuals(Set<Individual> ind) {
+		this.individual = ind;
+	}
+	
+	/**
+	 * This method sets the uri sting for the currently used
+	 * for learning. 
+	 * @param uri
+	 */
+	public void setOntologyURIString(Set<String> uri) {
+		this.ontologieURI = uri;
+	}
 	/**
 	 * This Method checks if the selected class has any individuals.
 	 * 
@@ -507,6 +533,14 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public boolean hasIndividuals() {
 		return hasIndividuals;
+	}
+	
+	/**
+	 * Sets if the ontology has individuals.
+	 * @param has
+	 */
+	public void setHasIndividuals(boolean has) {
+		this.hasIndividuals = has;
 	}
 
 	/**
@@ -517,7 +551,7 @@ public class DLLearnerModel implements Runnable{
 	 *            Individual to check if it belongs to the chosen concept
 	 * @return is Individual belongs to the concept which is chosen in protege.
 	 */
-	public boolean setPositivExamplesChecked(String indi) {
+	private boolean setPositivExamplesChecked(String indi) {
 		boolean isChecked = false;
 		// checks if individuals are not empty
 		if (individual != null) {
@@ -548,10 +582,10 @@ public class DLLearnerModel implements Runnable{
 	 * 
 	 * @param list
 	 *            Array of concepts from DL-Learner
-	 */
+	 
 	public void setDescriptionList(Description[] list) {
 		description = list;
-	}
+	}*/
 
 	/**
 	 * This method returns the PosListModel.
@@ -584,12 +618,12 @@ public class DLLearnerModel implements Runnable{
 	/**
 	 * This method resets the array of concepts from the DL_Learner. It is
 	 * called after the DL-Learner tab is closed.
-	 */
+	 
 	public void resetSuggestionList() {
 		for (int i = 0; i < description.length; i++) {
 			description[i] = null;
 		}
-	}
+	}*/
 
 	/**
 	 * This method resets the model for the suggest panel. It is called befor
@@ -617,10 +651,10 @@ public class DLLearnerModel implements Runnable{
 	 * This method returns the current OWLOntology that is loaded in protege.
 	 * 
 	 * @return current ontology
-	 */
+	
 	public OWLOntology getOWLOntology() {
 		return ontology;
-	}
+	} */
 
 	/**
 	 * This method returns a set of concepts that are learned by the DL-Learner.
@@ -639,6 +673,8 @@ public class DLLearnerModel implements Runnable{
 	 * @return Old Concept in OWLDescription format.
 	 */
 	public OWLDescription getOldConceptOWLAPI() {
+		oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor
+		.getOWLDescription(currentConcept);
 		return oldConceptOWLAPI;
 	}
 
@@ -714,10 +750,10 @@ public class DLLearnerModel implements Runnable{
 	 * This method returns the currently used reasoning service.
 	 * 
 	 * @return current reasoning service
-	 */
+	 
 	public ReasonerComponent getReasonerComponent() {
 		return rs;
-	}
+	}*/
 
 	/**
 	 * This method gets the status if the DL-Learner has already learned. It is
@@ -778,7 +814,7 @@ public class DLLearnerModel implements Runnable{
 	 * This method returns the currently used ontoloies including importet
 	 * ontologies.
 	 * 
-	 * @return Set<OWLAPIOntology> ontologies
+	 * @return Set of OWLAPI ontologies
 	 */
 	public Set<OWLAPIOntology> getOWLOntologies() {
 		return ontologies;
@@ -786,7 +822,7 @@ public class DLLearnerModel implements Runnable{
 
 	/**
 	 * This method returns the Knowledgesources currenty used. 
-	 * @return Set<KnowledgSource>
+	 * @return Set of Knowledgesources
 	 */
 	public Set<KnowledgeSource> getKnowledgeSources() {
 		return sources;
@@ -822,12 +858,45 @@ public class DLLearnerModel implements Runnable{
 		return ontologieURI;
 	}
 	/**
-	 * This method reutrns a bollean if an ontology is inconsistent.
+	 * This method returns a boolean if an ontology is inconsistent.
 	 * @return ontologyInconsistent
 	 */
 	public boolean getOntologyConsistent() {
 		return ontologyConsistent;
 	}
-
+	
+	/**
+	 * Sets the positive examples.
+	 * @param list
+	 */
+	public void setPosListModel(DefaultListModel list) {
+		this.posListModel = list;
+	}
+	
+	/**
+	 * Sets the negative examples.
+	 * @param list
+	 */
+	public void setNegListModel(DefaultListModel list) {
+		this.negListModel = list;
+	}
+	
+	/**
+	 * Sets the individual vector.
+	 * @param indi
+	 */
+	public void setIndividualVector(Vector<IndividualObject> indi) {
+		this.individualVector = indi;
+	}
+	
+	/**
+	 * This sets the current concept.
+	 * @param current
+	 */
+	public void setCurrentConcept(NamedClass current) {
+		this.currentConcept = current;
+	}
 
 }
+
+

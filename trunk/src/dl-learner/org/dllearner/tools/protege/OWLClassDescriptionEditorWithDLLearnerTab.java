@@ -360,6 +360,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		// This is the Panel for more details of the suggested concept
 		private MoreDetailForSuggestedConceptsPanel detail;
 		private OWLFrame<OWLClass> frame;
+		private ReadingOntologyThread readThread;
 
 		/**
 		 * The constructor for the DL-Learner tab in the class description
@@ -437,26 +438,10 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			model.clearVector();
 			hint.setText("To get suggestions for class descriptions, please click the button above.");
 			isInconsistent = false;
-			model.unsetListModel();
-			model.initReasoner();
-			if(!isInconsistent) {
-				
-				model.checkURI();
-				model.setPosVector();
-				if (model.hasIndividuals()) {
-					run.setEnabled(true);
-				} else {
-					run.setEnabled(false);
-					hint.setVisible(false);
-					String message ="There are no Instances for "+ frame.getRootObject()+" available. Please insert some Instances.";
-					renderErrorMessage(message);
-				}
-				posPanel.setExampleList(model.getPosListModel(), model.getNegListModel());
-			} else {
-				hint.setForeground(Color.RED);
-				run.setEnabled(false);
-				hint.setText("The ontology is inconsistent and suggestions for class descriptions can only \nbe computed on consistent ontologies. Please repair the ontology first");
-			}
+			readThread = new ReadingOntologyThread(editorKit, frame, this, model);
+			readThread.start();
+			//TODO: runbutton wird auf enable gesetzt obwohl keine instanzdaten vorhanden sind.
+			
 			hint.setVisible(true);
 			advanced.setIcon(icon);
 			accept.setEnabled(false);
@@ -512,7 +497,9 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public void setHintMessage(String message) {
 			hint.setText(message);
 		}
-		
+		public JTextArea getHintPanel() {
+			return hint;
+		}
 		/**
 		 * This Method returns the DL_Learner tab.
 		 * @return JComponent
@@ -604,6 +591,10 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			return run;
 		}
 		
+		/**
+		 * This method sets if ontology is inconsistent or not.
+		 * @param isIncon boolean if ontology is consisten
+		 */
 		public void setIsInconsistent(boolean isIncon) {
 			this.isInconsistent = isIncon;
 		}
