@@ -34,6 +34,7 @@ public class SuggestListItem {
      * Constructor for the SuggestListItem.
      * @param c Color Color in which the text is painted.
      * @param s String text that is shown.
+     * @param acc Accuracy of the concept
      */
     public SuggestListItem(
        Color c, String s, double acc) {

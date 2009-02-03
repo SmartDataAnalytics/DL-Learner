@@ -55,7 +55,7 @@ public class IndividualObject {
 	}
 	
 	/**
-	 * This method sets the example positive or negative if changed to the othe list.
+	 * This method sets the example positive or negative if changed to the other list.
 	 * @param pos boolean
 	 */
 	public void setExamplePositive(boolean pos) {

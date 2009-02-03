@@ -37,11 +37,12 @@ import org.dllearner.core.owl.Individual;
 
 /**
  * This class shows more details of the suggested concepts. It shows the positive and negative examples
- * that are covered and that are not covered by the suggested concepts. It also shows the accuracya of the 
+ * that are covered and that are not covered by the suggested concepts. It also shows the accuracy of the 
  * selected concept.
  * @author Christian Koetteritzsch
  *
  */
+
 public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 
 	private static final long serialVersionUID = 785272797932584581L;
@@ -113,6 +114,9 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private JTextArea conceptText;
 	private final Color colorRed = new Color(139, 0, 0);
 	private final Color colorGreen = new Color(0, 139, 0);
+	private static final int height = 500;
+	private static final int width = 600;
+	private GraphicalCoveragePanel p;
 	/**
 	 * This is the constructor for the Panel.
 	 * @param model DLLearnerModel
@@ -120,7 +124,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	public MoreDetailForSuggestedConceptsPanel(DLLearnerModel model) {
 		super();
 		setLayout(null);
-		setPreferredSize(new Dimension(600, 500));
+		setPreferredSize(new Dimension(width, height));
 		this.model = model;
 		
 		
@@ -150,6 +154,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		negNotCoveredScroll.setBounds(300, 325, 280, 140);
 		eval = desc;
 		concept = new JTextArea("Class Description:");
+		
 		concept.setEditable(false);
 		coveredPositiveExamples = new JLabel("Covered Positive Examples:");
 		coveredPositiveExamples.setForeground(colorGreen);
@@ -168,7 +173,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		conceptPanel.setBounds(5, 0, 600, 50);
 		accuracyPanel = new JPanel(new GridLayout(0, 1));
 		accuracyPanel.setBounds(5, 60, 600, 50);
-		
+
 		posCoveredPanel = new JPanel(new GridLayout(0, 1));
 		posNotCoveredPanel = new JPanel(new GridLayout(0, 1));
 		negCoveredPanel = new JPanel(new GridLayout(0, 1));
@@ -199,8 +204,10 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		//panel for the informations of the selected concept
 		//this method adds the informations for the selected concept to the panel
 		setInformation();
+		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), width, height);
+		p.setBounds(5, 110, 600, 650);
 		detailPopup = new JDialog();
-		detailPopup.setSize(600, 500);
+		detailPopup.setSize(width, height);
 		 //window will be disposed if the x button is pressed
 		detailPopup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		detailPopup.setVisible(true);
@@ -219,6 +226,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		
 		add(conceptPanel);
 		add(accuracyPanel);
+		add(p);
+		/*
 		add(coveredPositiveExamples);
 		add(notCoveredPositiveExamples);
 		add(coveredNegativeExamples);
@@ -226,7 +235,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		add(posCoveredScroll);
 		add(posNotCoveredScroll);
 		add(negCoveredScroll);
-		add(negNotCoveredScroll);
+		add(negNotCoveredScroll);*/
 		detailPopup.add(this);
 	}
 	
