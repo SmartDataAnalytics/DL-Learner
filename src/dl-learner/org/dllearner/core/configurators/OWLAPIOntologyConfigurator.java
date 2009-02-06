@@ -27,7 +27,7 @@ import org.dllearner.kb.OWLAPIOntology;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class OWLAPIOntologyConfigurator implements Configurator {
+public  class OWLAPIOntologyConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")

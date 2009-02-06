@@ -30,7 +30,7 @@ import org.dllearner.core.ReasonerComponent;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class GPConfigurator implements Configurator {
+public  class GPConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")

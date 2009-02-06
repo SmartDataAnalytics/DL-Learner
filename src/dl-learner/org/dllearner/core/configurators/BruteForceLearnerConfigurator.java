@@ -30,7 +30,7 @@ import org.dllearner.core.ReasonerComponent;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class BruteForceLearnerConfigurator implements Configurator {
+public  class BruteForceLearnerConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")

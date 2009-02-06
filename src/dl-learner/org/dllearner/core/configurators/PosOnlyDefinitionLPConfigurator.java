@@ -29,7 +29,7 @@ import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class PosOnlyDefinitionLPConfigurator implements Configurator {
+public  class PosOnlyDefinitionLPConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")

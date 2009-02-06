@@ -188,6 +188,11 @@ public class Files {
 		}
 	}
 	
+	
+	public static void deleteFile(String file) {
+		deleteFile(new File(file));
+	}
+	
 	public static void deleteFile(File file) {
 		
 		try{
@@ -231,6 +236,27 @@ public class Files {
 		    	
 		    	Files.deleteFile(new File(dir+File.separator+files[i]));
 		    }     
+	}
+	
+	/**
+	 * lists all files in a directory
+	 * 
+	 *
+	 * @param dir without a separator e.g. tmp/dir
+	 * @return a string array with filenames
+	 */
+	public static String[] listDir(String dir) {
+		
+			File f = new File(dir);
+			
+			if(debug){
+				System.out.println(dir);
+				System.exit(0);
+			}
+			
+		    return f.list();
+		   
+		   
 	}
 	
 	/**
