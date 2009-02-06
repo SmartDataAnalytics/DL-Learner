@@ -29,7 +29,7 @@ import org.dllearner.learningproblems.PosNegInclusionLP;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class PosNegInclusionLPConfigurator implements Configurator {
+public  class PosNegInclusionLPConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")

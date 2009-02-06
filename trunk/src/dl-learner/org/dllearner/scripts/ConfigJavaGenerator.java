@@ -21,6 +21,7 @@ package org.dllearner.scripts;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -37,6 +38,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.configurators.ROLearnerConfigurator;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.utilities.Files;
 
@@ -50,6 +52,22 @@ import org.dllearner.utilities.Files;
  * 
  */
 public final class ConfigJavaGenerator {
+	
+	private static final SortedSet<String> DONOTDELETE = 
+		new TreeSet<String>(Arrays.asList(new String[]{
+				".svn",
+				".svn",
+				}));
+	
+	// currently it targets the configurators for 
+	private static final SortedSet<String> EXTENDSREFINEMENTOPERATOR = 
+		new TreeSet<String>(Arrays.asList(new String[]{
+				ROLearnerConfigurator.class.getSimpleName(),
+				ROLearnerConfigurator.class.getSimpleName(),
+				}));
+	
+	@SuppressWarnings("unchecked")
+	private static final Class EXTENDSREFINEMENTOPERATORCLASS = Files.class;
 
 	private static final boolean INCLUDE_UNUSED = false;
 
@@ -89,6 +107,10 @@ public final class ConfigJavaGenerator {
 	private String className;
 
 	private String componentType;
+	
+	private String extendS = "";
+	
+	//private String implementS = "";
 
 	private List<String> body = new ArrayList<String>();
 
@@ -118,7 +140,21 @@ public final class ConfigJavaGenerator {
 
 		Files.backupDirectory(TARGET_DIR);
 		System.out.println("previous classes were backupped to tmp/+System.currentTimeMillis()");
-		Files.deleteDir(TARGET_DIR);
+		String[] files = Files.listDir(TARGET_DIR); 
+		
+		for (String file : files){
+			//System.out.println(DONOTDELETE);
+			
+			if(DONOTDELETE.contains(file)){
+				continue;
+			}
+			//System.out.println(file);
+			String todelete = TARGET_DIR + File.separator + file;
+			Files.deleteFile(todelete);
+			
+		}
+		//System.exit(0);
+		//Files.deleteDir(TARGET_DIR);
 
 		ComponentManager cm = ComponentManager.getInstance();
 		COMPONENT_FACTORY_IMPORTS.add(KnowledgeSource.class.getCanonicalName());
@@ -200,10 +236,12 @@ public final class ConfigJavaGenerator {
 
 		System.out.println("Done");
 	}
+	
+	
 
 	private ConfigJavaGenerator(Class<? extends Component> component,
 			String componentType) {
-		className = component.getSimpleName();
+		this.className = component.getSimpleName();
 		this.component = component;
 		this.componentType = componentType;
 		imports.add(component.getCanonicalName());
@@ -211,9 +249,14 @@ public final class ConfigJavaGenerator {
 		// imports.add(Configurator.class.getCanonicalName());
 		// imports.add(ConfigEntry.class.getCanonicalName());
 
-		vars
-				.add("private " + className + " " + deCapitalize(className)
+		vars.add("private " + className + " " + deCapitalize(className)
 						+ ";\n");
+		
+		if(EXTENDSREFINEMENTOPERATOR.contains(this.className+CONFIGURATOR)){
+				this.extendS = EXTENDSREFINEMENTOPERATORCLASS.getSimpleName();
+				this.imports.add(EXTENDSREFINEMENTOPERATORCLASS.getCanonicalName());
+			}
+			
 
 	}
 
@@ -265,7 +308,7 @@ public final class ConfigJavaGenerator {
 				TARGET_PACKAGE,
 				importtmp, 
 				className + CONFIGURATOR, 
-				"",
+				extendS,
 				bodytmp ,
 				"", 
 				CONFIGURATOR); 
@@ -494,8 +537,8 @@ public final class ConfigJavaGenerator {
 		ret += fillJavaDocComment(CLASS_COMMENT);
 		ret += (INCLUDE_UNUSED) ? UNUSED : "";
 		ret += "public "+classModifier+" class " + className + " "
-				+ ((extendS.length() > 0) ? "extends " + extendS : "")
-				+ ((implementS.length() > 0) ? "implements " + implementS : "")
+				+ ((extendS.length() > 0) ? " extends " + extendS : "")
+				+ ((implementS.length() > 0) ? " implements " + implementS : "")
 				+ " {\n\n";
 		ret += body + "\n";
 		ret += "}\n";

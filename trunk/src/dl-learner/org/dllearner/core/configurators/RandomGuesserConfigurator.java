@@ -30,7 +30,7 @@ import org.dllearner.core.ReasonerComponent;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class RandomGuesserConfigurator implements Configurator {
+public  class RandomGuesserConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")

@@ -31,7 +31,7 @@ import org.dllearner.core.ReasonerComponent;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class ExampleBasedROLComponentConfigurator implements Configurator {
+public  class ExampleBasedROLComponentConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
