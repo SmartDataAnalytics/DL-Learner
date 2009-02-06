@@ -80,6 +80,7 @@ public class ELOperatorBenchmark {
 		// real world ontology tests //
 		String base = "/home/jl/promotion/ontologien/el_benchmark/";
 		String[] onts = new String[] {
+				"go",
 				// is ok at length 10
 				"galen2", 
 				// is ok at length 8 

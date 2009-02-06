@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -39,6 +40,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ROLearnerConfigurator;
+import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.utilities.Files;
 
@@ -56,18 +58,18 @@ public final class ConfigJavaGenerator {
 	private static final SortedSet<String> DONOTDELETE = 
 		new TreeSet<String>(Arrays.asList(new String[]{
 				".svn",
-				".svn",
+				"RefinementOperatorConfigurator.java",
 				}));
 	
 	// currently it targets the configurators for 
 	private static final SortedSet<String> EXTENDSREFINEMENTOPERATOR = 
 		new TreeSet<String>(Arrays.asList(new String[]{
 				ROLearnerConfigurator.class.getSimpleName(),
-				ROLearnerConfigurator.class.getSimpleName(),
+				CELOE.class.getSimpleName(),
 				}));
 	
 	@SuppressWarnings("unchecked")
-	private static final Class EXTENDSREFINEMENTOPERATORCLASS = Files.class;
+	private static final Class EXTENDSREFINEMENTOPERATORCLASS = RefinementOperatorConfigurator.class;
 
 	private static final boolean INCLUDE_UNUSED = false;
 
