@@ -36,6 +36,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
+import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.BooleanValueRestriction;
 import org.dllearner.core.owl.DataRange;
@@ -184,6 +185,12 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	public RhoDRDown(ReasonerComponent reasoningService) {
 //		this(reasoningService, reasoningService.getClassHierarchy(), null, true, true, true, true, true, 3, true, true, true, true, null);
 		this.rs = reasoningService;
+	}
+	
+	public RhoDRDown(ReasonerComponent reasoner, ClassHierarchy subHierarchy, RefinementOperatorConfigurator configurator) {
+		this.rs = reasoner;
+		this.subHierarchy = subHierarchy;
+		// TODO add more options from configurator object
 	}
 	
 	// TODO constructor which takes a RhoDRDownConfigurator object;

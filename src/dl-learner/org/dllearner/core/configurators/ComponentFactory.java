@@ -26,6 +26,7 @@ import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.DBpediaNavigationSuggestor;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.SimpleSuggestionLearningAlgorithm;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
@@ -38,6 +39,7 @@ import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
 import org.dllearner.learningproblems.PosNegInclusionLP;
@@ -117,6 +119,15 @@ return FastRetrievalReasonerConfigurator.getFastRetrievalReasoner(knowledgeSourc
 **/
 public static OWLAPIReasoner getOWLAPIReasoner(Set<KnowledgeSource> knowledgeSource)  {
 return OWLAPIReasonerConfigurator.getOWLAPIReasoner(knowledgeSource);
+}
+
+/**
+* @param classToDescribe class of which a description should be learned
+* @param reasoningService see ReasoningService
+* @return a component ready for initialization ClassLearningProblem
+**/
+public static ClassLearningProblem getClassLearningProblem(ReasonerComponent reasoningService, String classToDescribe)  {
+return ClassLearningProblemConfigurator.getClassLearningProblem(reasoningService, classToDescribe);
 }
 
 /**
@@ -205,6 +216,16 @@ return RandomGuesserConfigurator.getRandomGuesser(learningProblem, reasoningServ
 **/
 public static SimpleSuggestionLearningAlgorithm getSimpleSuggestionLearningAlgorithm(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return SimpleSuggestionLearningAlgorithmConfigurator.getSimpleSuggestionLearningAlgorithm(learningProblem, reasoningService);
+}
+
+/**
+* @param learningProblem see LearningProblem
+* @param reasoningService see ReasoningService
+* @throws LearningProblemUnsupportedException see
+* @return a component ready for initialization CELOE
+**/
+public static CELOE getCELOE(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+return CELOEConfigurator.getCELOE(learningProblem, reasoningService);
 }
 
 /**

@@ -28,6 +28,10 @@ import org.dllearner.core.owl.Individual;
  * The score class is used to store how well a class description did
  * on a learning problem.
  * 
+ * TODO: If possible this class should be abstracted further. The current
+ * implementation requires positive and negative examples, i.e. does not 
+ * allow arbitrary learning problems.
+ * 
  * @author Jens Lehmann
  *
  */
