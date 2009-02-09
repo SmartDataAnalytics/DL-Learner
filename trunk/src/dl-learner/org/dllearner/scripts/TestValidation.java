@@ -31,9 +31,9 @@ import org.dllearner.cli.Start;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.parser.ParseException;
 
 /**
@@ -70,7 +70,7 @@ public class TestValidation {
 		Set<Individual> result = rs.getIndividuals(solution);
 		System.out.println("retrieval result: " + result);
 
-		Score score = lp.computeScore(solution);
+		ScorePosNeg score = (ScorePosNeg) lp.computeScore(solution);
 		System.out.println(score);
 	}
 	

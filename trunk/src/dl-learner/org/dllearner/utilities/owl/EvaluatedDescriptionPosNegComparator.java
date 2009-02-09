@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2009, Jens Lehmann
+ * Copyright (C) 2007-2008, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -21,7 +21,7 @@ package org.dllearner.utilities.owl;
 
 import java.util.Comparator;
 
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 
 /**
  * Comparator for evaluated descriptions, which orders them by
@@ -31,7 +31,7 @@ import org.dllearner.core.EvaluatedDescription;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescription> {
+public class EvaluatedDescriptionPosNegComparator implements Comparator<EvaluatedDescriptionPosNeg> {
 
 	ConceptComparator cc = new ConceptComparator();
 	
@@ -39,9 +39,9 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public int compare(EvaluatedDescription ed1, EvaluatedDescription ed2) {
-		double acc1 = ed1.getScoreValue();
-		double acc2 = ed2.getScoreValue();
+	public int compare(EvaluatedDescriptionPosNeg ed1, EvaluatedDescriptionPosNeg ed2) {
+		double acc1 = ed1.getAccuracy();
+		double acc2 = ed2.getAccuracy();
 		if(acc1 > acc2)
 			return -1;
 		else if(acc1 < acc2)

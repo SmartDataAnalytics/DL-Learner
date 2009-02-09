@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.Score;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Nothing;
@@ -24,6 +23,7 @@ import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
+import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.learningproblems.ScoreThreeValued;
 import org.dllearner.reasoning.FastRetrieval;
 import org.dllearner.reasoning.ReasonerType;
@@ -54,7 +54,7 @@ public class GPUtilities {
 	
     private static Random rand = new Random();
     
-    private static Score calculateFitness(LearningProblem learningProblem, Description hypothesis) {
+    private static ScorePosNeg calculateFitness(LearningProblem learningProblem, Description hypothesis) {
     	return calculateFitness(learningProblem, hypothesis, null);
     }
     
@@ -63,7 +63,7 @@ public class GPUtilities {
     // (macht aber nicht so viel Sinn, da man das bei richtigen Reasoning-Algorithmen
     // ohnehin mit einer Erweiterung der Wissensbasis um die Inklusion Target SUBSETOF ReturnType
     // erschlagen kann)
-	private static Score calculateFitness(LearningProblem learningProblem, Description hypothesis, Description adc) {
+	private static ScorePosNeg calculateFitness(LearningProblem learningProblem, Description hypothesis, Description adc) {
 		Description extendedHypothesis;
 		
 		// return type temporarily disabled 
@@ -87,13 +87,13 @@ public class GPUtilities {
 //		} else
 			extendedHypothesis = hypothesis;		
 		
-		Score score;
+		ScorePosNeg score;
 		if(adc != null)
 			// TODO: ADC-Support
 			// score = learningProblem.computeScore(extendedHypothesis, adc);
 			throw new RuntimeException("ADC not supported");
 		else
-			score = learningProblem.computeScore(extendedHypothesis);
+			score = (ScorePosNeg) learningProblem.computeScore(extendedHypothesis);
 		
 		// System.out.println(hypothesis);
 		// System.out.println(score.getScore());
@@ -143,18 +143,18 @@ public class GPUtilities {
     		if(Math.random()<0.5) {
     			Description mainTree = mutation(learningProblem, rs, p.getTree(),true);
     			Description adc = p.getAdc();
-    			Score score = calculateFitness(learningProblem,mainTree,adc);
+    			ScorePosNeg score = calculateFitness(learningProblem,mainTree,adc);
     			return new Program(score, mainTree, adc);
     		}
     		else {
     			Description mainTree = p.getTree();
     			Description adc = mutation(learningProblem, rs, p.getAdc(),false);
-    			Score score = calculateFitness(learningProblem,mainTree,adc);
+    			ScorePosNeg score = calculateFitness(learningProblem,mainTree,adc);
     			return new Program(score, mainTree, adc);    			
     		}
     	} else {
     		Description tree = mutation(learningProblem, rs,p.getTree(),false);
-    		Score score = calculateFitness(learningProblem, tree);
+    		ScorePosNeg score = calculateFitness(learningProblem, tree);
             return new Program(score, tree);
     	}
     }
@@ -340,7 +340,7 @@ public class GPUtilities {
     	// double bestScore = score.getScore()+Config.accuracyPenalty/2;
     	double bestScore = 0;
     	Map<Integer,List<String>> bestNeighbours = new TreeMap<Integer,List<String>>();
-    	Score tmpScore;
+    	ScorePosNeg tmpScore;
     	SortedSetTuple<String> tmp, tmp2;
     	// FlatABox abox = ((FastRetrievalReasoner)learningProblem.getReasoner().getFastRetrieval().getAbox();
     	// FlatABox abox = Main.getFlatAbox();
@@ -363,16 +363,16 @@ public class GPUtilities {
     		
     		tmp2 = FastRetrieval.calculateDisjunctionSets(stringTuple, tmp);
     		tmpScore = getScore(node.getLength()+2, learningProblem, rs, Helper.getIndividualSet(tmp2.getPosSet()),Helper.getIndividualSet(tmp2.getNegSet()));
-    		if(tmpScore.getScore()==bestScore)
+    		if(tmpScore.getScoreValue()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,1,concept,false);
-    		else if(tmpScore.getScore()>bestScore)
+    		else if(tmpScore.getScoreValue()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,1,concept,true);
     		
     		tmp2 = FastRetrieval.calculateConjunctionSets(stringTuple, tmp);
     		tmpScore = getScore(node.getLength()+2,learningProblem, rs, Helper.getIndividualSet(tmp2.getPosSet()),Helper.getIndividualSet(tmp2.getNegSet()));
-    		if(tmpScore.getScore()==bestScore)
+    		if(tmpScore.getScoreValue()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,2,concept,false);
-    		else if(tmpScore.getScore()>bestScore)
+    		else if(tmpScore.getScoreValue()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,2,concept,true);    		
     	}
     	
@@ -380,16 +380,16 @@ public class GPUtilities {
     	for(String role : abox.roles) {
     		tmp = FastRetrieval.calculateAllSet(abox,role,stringTuple);
     		tmpScore = getScore(node.getLength()+2,learningProblem, rs, Helper.getIndividualSet(tmp.getPosSet()),Helper.getIndividualSet(tmp.getNegSet()));
-    		if(tmpScore.getScore()==bestScore)
+    		if(tmpScore.getScoreValue()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,3,role,false);
-    		else if(tmpScore.getScore()>bestScore)
+    		else if(tmpScore.getScoreValue()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,3,role,true);    		
 
     		tmp = FastRetrieval.calculateExistsSet(abox,role,stringTuple);
     		tmpScore = getScore(node.getLength()+2,learningProblem, rs, Helper.getIndividualSet(tmp.getPosSet()),Helper.getIndividualSet(tmp.getNegSet()));
-    		if(tmpScore.getScore()==bestScore)
+    		if(tmpScore.getScoreValue()==bestScore)
     			bestNeighbours = updateMap(bestNeighbours,4,role,false);
-    		else if(tmpScore.getScore()>bestScore)
+    		else if(tmpScore.getScoreValue()>bestScore)
     			bestNeighbours = updateMap(bestNeighbours,4,role,true);    		
     	}
     	

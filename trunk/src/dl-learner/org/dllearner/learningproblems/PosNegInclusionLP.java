@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.PosNegInclusionLPConfigurator;
 import org.dllearner.core.owl.Description;
@@ -190,7 +189,7 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 	 * @see org.dllearner.core.LearningProblem#computeScore(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public Score computeScore(Description concept) {
+	public ScorePosNeg computeScore(Description concept) {
 		// FastInstanceChecker supports only negation normal form, so we have to make
 		// sure to convert the description before
 //		if(reasoner instanceof FastInstanceChecker) {

@@ -25,11 +25,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
+import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 
 /**
  * @author Sebastian Hellmann
@@ -42,7 +42,7 @@ public class ConceptSPARQLReEvaluator {
 	private static Logger logger = Logger
 			.getLogger(ConceptSPARQLReEvaluator.class);
 
-	List<EvaluatedDescription> descToBeReevaluated;
+	List<EvaluatedDescriptionPosNeg> descToBeReevaluated;
 
 	SPARQLTasks sparqlTasks;
 
@@ -81,12 +81,12 @@ public class ConceptSPARQLReEvaluator {
 	 * 
 	 * @param positiveSet
 	 */
-	public List<EvaluatedDescription> reevaluateConceptsByDataCoverage(
-			List<EvaluatedDescription> descToBeReevaluated,
+	public List<EvaluatedDescriptionPosNeg> reevaluateConceptsByDataCoverage(
+			List<EvaluatedDescriptionPosNeg> descToBeReevaluated,
 			SortedSet<String> positiveSet) {
 
-		SortedSet<EvaluatedDescription> returnSet = new TreeSet<EvaluatedDescription>(
-				new EvaluatedDescriptionComparator());
+		SortedSet<EvaluatedDescriptionPosNeg> returnSet = new TreeSet<EvaluatedDescriptionPosNeg>(
+				new EvaluatedDescriptionPosNegComparator());
 
 		SortedSet<String> instances = new TreeSet<String>();
 		SortedSet<String> PosAsPos = new TreeSet<String>();
@@ -100,7 +100,7 @@ public class ConceptSPARQLReEvaluator {
 
 		// elements are immediately removed from the list to save memory
 		while (!descToBeReevaluated.isEmpty()) {
-			EvaluatedDescription ed = descToBeReevaluated.remove(0);
+			EvaluatedDescriptionPosNeg ed = descToBeReevaluated.remove(0);
 			try {
 			instances = retrieveInstances(ed);
 
@@ -112,7 +112,7 @@ public class ConceptSPARQLReEvaluator {
 			PosAsNeg.addAll(positiveSet);
 			PosAsNeg.removeAll(PosAsPos);
 			
-			EvaluatedDescription d = new EvaluatedDescription(ed.getDescription(), Helper
+			EvaluatedDescriptionPosNeg d = new EvaluatedDescriptionPosNeg(ed.getDescription(), Helper
 					.getIndividualSet(PosAsPos), Helper
 					.getIndividualSet(PosAsNeg), NegAsPos, NegAsNeg);
 			
@@ -135,7 +135,7 @@ public class ConceptSPARQLReEvaluator {
 
 		}
 
-		return new ArrayList<EvaluatedDescription>(returnSet);
+		return new ArrayList<EvaluatedDescriptionPosNeg>(returnSet);
 
 	}
 
@@ -145,13 +145,13 @@ public class ConceptSPARQLReEvaluator {
 	 * 
 	 * @param positiveSet
 	 */
-	public List<EvaluatedDescription> reevaluateConceptsByLowestRecall(
-			List<EvaluatedDescription> descToBeReevaluated,
+	public List<EvaluatedDescriptionPosNeg> reevaluateConceptsByLowestRecall(
+			List<EvaluatedDescriptionPosNeg> descToBeReevaluated,
 			SortedSet<String> positiveSet) {
 		logger.info("reevaluating by lowest recall "
 				+ descToBeReevaluated.size() + " concepts");
-		SortedSet<EvaluatedDescription> returnSet = new TreeSet<EvaluatedDescription>(
-				new EvaluatedDescriptionComparator());
+		SortedSet<EvaluatedDescriptionPosNeg> returnSet = new TreeSet<EvaluatedDescriptionPosNeg>(
+				new EvaluatedDescriptionPosNegComparator());
 
 		SortedSet<String> instances = new TreeSet<String>();
 
@@ -163,7 +163,7 @@ public class ConceptSPARQLReEvaluator {
 		
 		// elements are immediately removed from the list to save memory
 		while (!descToBeReevaluated.isEmpty()) {
-			EvaluatedDescription ed = descToBeReevaluated.remove(0);
+			EvaluatedDescriptionPosNeg ed = descToBeReevaluated.remove(0);
 			try {
 			instances = retrieveInstances(ed);
 
@@ -175,7 +175,7 @@ public class ConceptSPARQLReEvaluator {
 			PosAsNeg.addAll(instances);
 			PosAsNeg.removeAll(PosAsPos);
 
-			EvaluatedDescription d = new EvaluatedDescription(ed.getDescription(), Helper
+			EvaluatedDescriptionPosNeg d = new EvaluatedDescriptionPosNeg(ed.getDescription(), Helper
 					.getIndividualSet(PosAsPos), Helper
 					.getIndividualSet(PosAsNeg), NegAsPos, NegAsNeg);
 			
@@ -197,11 +197,11 @@ public class ConceptSPARQLReEvaluator {
 		}
 		logger.info("finished reevaluating by lowest recall :"
 				+ returnSet.size() + " concepts");
-		return new ArrayList<EvaluatedDescription>(returnSet);
+		return new ArrayList<EvaluatedDescriptionPosNeg>(returnSet);
 
 	}
 
-	private SortedSet<String> retrieveInstances(EvaluatedDescription ed) {
+	private SortedSet<String> retrieveInstances(EvaluatedDescriptionPosNeg ed) {
 		String kbsyntax = ed.getDescription().toKBSyntaxString();
 		return sparqlTasks
 				.retrieveInstancesForClassDescriptionIncludingSubclasses(

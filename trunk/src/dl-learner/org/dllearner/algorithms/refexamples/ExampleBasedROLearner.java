@@ -33,10 +33,9 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -45,6 +44,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
@@ -52,7 +52,7 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
+import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 
 import com.jamonapi.Monitor;
 
@@ -184,7 +184,7 @@ public class ExampleBasedROLearner {
 	// comparator used to create ordered sets of concepts
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	// comparator for evaluated descriptions
-	private EvaluatedDescriptionComparator edComparator = new EvaluatedDescriptionComparator();
+	private EvaluatedDescriptionPosNegComparator edComparator = new EvaluatedDescriptionPosNegComparator();
 
 	// utility variables
 	private DecimalFormat df = new DecimalFormat();
@@ -1255,13 +1255,13 @@ public class ExampleBasedROLearner {
 		return best;
 	}
 	
-	public SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public SortedSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
 		Iterator<ExampleBasedNode> it = candidatesStable.descendingIterator();
 		int count = 0;
-		SortedSet<EvaluatedDescription> cbd = new TreeSet<EvaluatedDescription>(edComparator);
+		SortedSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<EvaluatedDescriptionPosNeg>(edComparator);
 		while(it.hasNext()) {
 			ExampleBasedNode eb = it.next();
-			cbd.add(new EvaluatedDescription(eb.getConcept(), getScore(eb.getConcept())));
+			cbd.add(new EvaluatedDescriptionPosNeg(eb.getConcept(), getScore(eb.getConcept())));
 			// return a maximum of 200 elements (we need a maximum, because the
 			// candidate set can be very large)
 			if (count > 200)
@@ -1304,18 +1304,18 @@ public class ExampleBasedROLearner {
 
 	}
 
-	public Score getSolutionScore() {
+	public ScorePosNeg getSolutionScore() {
 		if (posOnly)
 			return posOnlyLearningProblem.computeScore(getBestSolution());
 		else
-			return learningProblem.computeScore(getBestSolution());
+			return (ScorePosNeg) learningProblem.computeScore(getBestSolution());
 	}
 
-	private Score getScore(Description d) {
+	private ScorePosNeg getScore(Description d) {
 		if (posOnly)
 			return posOnlyLearningProblem.computeScore(d);
 		else
-			return learningProblem.computeScore(d);
+			return (ScorePosNeg) learningProblem.computeScore(d);
 	}
 
 	public ExampleBasedNode getStartNode() {

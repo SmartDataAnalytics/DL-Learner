@@ -57,7 +57,6 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
@@ -77,6 +76,7 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -840,7 +840,7 @@ public class Start {
 
 						logger.info("retrieval result (" + result.size() + "): " + result);
 
-						Score score = lp.computeScore(concept);
+						ScorePosNeg score = (ScorePosNeg) lp.computeScore(concept);
 						logger.info(score);
 
 					}

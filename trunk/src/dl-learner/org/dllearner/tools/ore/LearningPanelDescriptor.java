@@ -33,6 +33,7 @@ import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 
@@ -98,7 +99,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 //		Description de = new NamedClass("http://example.com/father#male");
 		
 		if (!e.getValueIsAdjusting()){
-			getWizardModel().getOre().setNewClassDescription(((EvaluatedDescription) (learnPanel.getResultList().getSelectedValue()))); 					
+			getWizardModel().getOre().setNewClassDescription(((EvaluatedDescriptionPosNeg) (learnPanel.getResultList().getSelectedValue()))); 					
 		}
 		
 	}
@@ -175,13 +176,13 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 	 * @author Lorenz Buehmann
 	 *
 	 */
-	class LearnSwingWorker extends SwingWorker<List<EvaluatedDescription>, List<EvaluatedDescription>> {
+	class LearnSwingWorker extends SwingWorker<List<? extends EvaluatedDescription>, List<? extends EvaluatedDescription>> {
 		    	
     	private Thread t;
     	
 		@SuppressWarnings("unchecked")
 		@Override
-		public List<EvaluatedDescription> doInBackground() {
+		public List<? extends EvaluatedDescription> doInBackground() {
 			
 			learnPanel.getResultList().setCellRenderer(new ColumnListCellRenderer(getWizardModel().getOre()));
 			learnPanel.getLoadingLabel().setBusy(true);
@@ -220,7 +221,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
-			List<EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(30, 0.0, true);
+			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(30, 0.0, true);
 			
 			return result;
 		}
@@ -229,7 +230,7 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		public void done() {
 			
 			timer.cancel();
-			List<EvaluatedDescription> result = null;
+			List<? extends EvaluatedDescription> result = null;
 			try {
 				result = get();
 			} catch (InterruptedException e) {
@@ -246,16 +247,16 @@ public class LearningPanelDescriptor extends WizardPanelDescriptor implements Ac
 		}
 
 		@Override
-		protected void process(List<List<EvaluatedDescription>> resultLists) {
+		protected void process(List<List<? extends EvaluatedDescription>> resultLists) {
 			
 //			panel4.getModel().clear();
 			
-			for (List<EvaluatedDescription> list : resultLists) {
+			for (List<? extends EvaluatedDescription> list : resultLists) {
 				updateList(list);
 			}
 		}
 		
-		private void updateList(final List<EvaluatedDescription> result) {
+		private void updateList(final List<? extends EvaluatedDescription> result) {
 			
 			Runnable doUpdateList = new Runnable() {
 				

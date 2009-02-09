@@ -31,9 +31,9 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
@@ -120,7 +120,7 @@ public class DumbLPFinder {
 
 				}
 
-				EvaluatedDescription d;
+				EvaluatedDescriptionPosNeg d;
 
 				d = learnSPARQL(positiveEx, negativeEx);
 				acc.addNumber(d.getAccuracy());
@@ -143,7 +143,7 @@ public class DumbLPFinder {
 
 	}
 
-	private static void writeFiles(String filename, EvaluatedDescription d,
+	private static void writeFiles(String filename, EvaluatedDescriptionPosNeg d,
 			SortedSet<Individual> positiveEx, SortedSet<Individual> negativeEx) {
 		String div = (System.currentTimeMillis() % 10000) + "";
 		if (d.getAccuracy() >= 0.99) {
@@ -171,7 +171,7 @@ public class DumbLPFinder {
 	}
 
 	@SuppressWarnings("unused")
-	private static String accString(EvaluatedDescription d) {
+	private static String accString(EvaluatedDescriptionPosNeg d) {
 
 		String acc = (d.getAccuracy()) + "";
 		try {
@@ -183,7 +183,7 @@ public class DumbLPFinder {
 		return acc;
 	}
 
-	private static String fileString( EvaluatedDescription d,
+	private static String fileString( EvaluatedDescriptionPosNeg d,
 			SortedSet<Individual> p, SortedSet<Individual> n) {
 
 		String str = "/**\n" + d.getDescription().toKBSyntaxString() + "\n" + d
@@ -207,7 +207,7 @@ public class DumbLPFinder {
 		return str;
 	}
 
-	private static EvaluatedDescription learnSPARQL(
+	private static EvaluatedDescriptionPosNeg learnSPARQL(
 			SortedSet<Individual> posExamples, SortedSet<Individual> negExamples) {
 
 		ExampleBasedROLComponent la = null;

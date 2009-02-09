@@ -30,6 +30,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
@@ -167,7 +168,7 @@ public class SemanticBible {
 
 	@SuppressWarnings("unchecked")
 	private static void learnOriginal(NamedClass target, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples) {
-		List<EvaluatedDescription> conceptresults = new ArrayList<EvaluatedDescription>();
+		List<? extends EvaluatedDescription> conceptresults = new ArrayList<EvaluatedDescriptionPosNeg>();
 		System.out.println("Starting to learn original");
 		//System.out.println(ConfWriter.listExamples(true, posExamples));
 		//System.out.println(ConfWriter.listExamples(false, negExamples));

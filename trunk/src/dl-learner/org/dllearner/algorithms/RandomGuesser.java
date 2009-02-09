@@ -25,17 +25,16 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.gp.GPUtilities;
 import org.dllearner.algorithms.gp.Program;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.RandomGuesserConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.owl.Description;
+import org.dllearner.learningproblems.ScorePosNeg;
 
 public class RandomGuesser extends LearningAlgorithm {
 
@@ -46,7 +45,7 @@ public class RandomGuesser extends LearningAlgorithm {
 	}
 	
     private Description bestDefinition = null;
-    private Score bestScore;
+    private ScorePosNeg bestScore;
     private double bestFitness = Double.NEGATIVE_INFINITY;
 
 	private int numberOfTrees;
@@ -121,7 +120,7 @@ public class RandomGuesser extends LearningAlgorithm {
 	}
 
 //	@Override
-	public Score getSolutionScore() {
+	public ScorePosNeg getSolutionScore() {
 		return bestScore;
 	}
 
@@ -131,8 +130,8 @@ public class RandomGuesser extends LearningAlgorithm {
 	}	
 	
 	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		return new EvaluatedDescription(bestDefinition,bestScore);
+	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
+		return new EvaluatedDescriptionPosNeg(bestDefinition,bestScore);
 	}
 
 	@Override

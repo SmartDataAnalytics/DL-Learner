@@ -48,6 +48,7 @@ import java.util.Map;
 
 import javax.swing.*;
 
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
@@ -377,12 +378,12 @@ public class RunPanel extends JPanel implements ActionListener {
 		gbc.weighty = wy;
 	}
 
-	private String getSolutionString(List<EvaluatedDescription> solutions) {
+	private String getSolutionString(List<? extends EvaluatedDescription> solutions) {
 		String baseURI = config.getReasoner().getBaseURI();
 		Map<String,String> prefixes = config.getReasoner().getPrefixes();
 		String string = "";
 		for (EvaluatedDescription d : solutions) {
-			string += "accuracy: " + (df.format(d.getAccuracy()*100)) + "%: \t"
+			string += "accuracy: " + (df.format(((EvaluatedDescriptionPosNeg)d).getAccuracy()*100)) + "%: \t"
 					+ d.getDescription().toManchesterSyntaxString(baseURI, prefixes) + "\n";
 		}
 		return string;

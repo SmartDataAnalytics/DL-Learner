@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -192,7 +193,7 @@ public class DLLearnerModel implements Runnable{
 
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
-	private List<EvaluatedDescription> evalDescriptions;
+	private List<? extends EvaluatedDescription> evalDescriptions;
 
 	/**
 	 * This is the constructor for DL-Learner model.
@@ -281,7 +282,7 @@ public class DLLearnerModel implements Runnable{
 	 * 
 	 * @return list of evaluated descriptions
 	 */
-	public List<EvaluatedDescription> getEvaluatedDescriptionList() {
+	public List<? extends EvaluatedDescription> getEvaluatedDescriptionList() {
 		return evalDescriptions;
 	}
 
@@ -775,7 +776,7 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public boolean isConsistent(EvaluatedDescription eDescription) {
 		boolean isConsistent = false;
-		if (eDescription.getNotCoveredPositives().isEmpty()) {
+		if (((EvaluatedDescriptionPosNeg)eDescription).getNotCoveredPositives().isEmpty()) {
 			isConsistent = true;
 		} else {
 			isConsistent = false;
@@ -798,7 +799,7 @@ public class DLLearnerModel implements Runnable{
 	 * @param list
 	 *            List(EvaluatedDescription)
 	 */
-	public void setSuggestList(List<EvaluatedDescription> list) {
+	public void setSuggestList(List<? extends EvaluatedDescription> list) {
 		evalDescriptions = list;
 	}
 	

@@ -187,6 +187,7 @@ public class ReadingOntologyThread extends Thread {
 
 	}
 	
+	@Override
 	public void run() {
 		model.unsetListModel();
 		model.initReasoner();

@@ -20,6 +20,7 @@
 package org.dllearner.core;
 
 import org.dllearner.core.owl.Description;
+import org.dllearner.learningproblems.ScorePosNeg;
 
 /**
  * Base class for all learning problems.

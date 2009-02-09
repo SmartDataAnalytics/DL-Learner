@@ -29,12 +29,11 @@ import java.util.SortedSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
@@ -52,6 +51,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
@@ -436,7 +436,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	}
 	
 //	@Override
-	public Score getSolutionScore() {
+	public ScorePosNeg getSolutionScore() {
 		return algorithm.getSolutionScore();
 	}
 	
@@ -451,12 +451,12 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	}	
 	
 	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		return new EvaluatedDescription(algorithm.getBestSolution(),algorithm.getSolutionScore());
+	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
+		return new EvaluatedDescriptionPosNeg(algorithm.getBestSolution(),algorithm.getSolutionScore());
 	}
 	
 	@Override
-	public synchronized SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public synchronized SortedSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
 		return algorithm.getCurrentlyBestEvaluatedDescriptions();
 	}
 

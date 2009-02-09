@@ -7,9 +7,9 @@ import java.util.TreeMap;
 
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.PsiDown;
 import org.dllearner.refinementoperators.PsiUp;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -26,7 +26,7 @@ public class Psi implements GeneticRefinementOperator {
 	
 	// Cache, damit keine Konzepte doppelt ausgewertet werden
 	ConceptComparator conceptComparator = new ConceptComparator();
-	public SortedMap<Description,Score> evalCache = new TreeMap<Description,Score>(conceptComparator);
+	public SortedMap<Description,ScorePosNeg> evalCache = new TreeMap<Description,ScorePosNeg>(conceptComparator);
 	
 	// Cache, damit PsiDown bzw. PsiUp nicht mehrfach für gleiches Konzept
 	// aufgerufen werden
@@ -190,7 +190,7 @@ public class Psi implements GeneticRefinementOperator {
 		Description conceptModForCache = ConceptTransformation.applyEquivalenceRules(conceptMod);
 		ConceptTransformation.transformToOrderedForm(conceptModForCache, conceptComparator);
 		
-		Score score = program.getScore();
+		ScorePosNeg score = program.getScore();
 		// Eval-Cache füllen
 		evalCache.put(conceptModForCache, score);
 		
@@ -214,11 +214,11 @@ public class Psi implements GeneticRefinementOperator {
 		// versuchen Reasoner-Cache zu treffen
 		// Problem: Score hängt von Konzeptlänge ab!! => muss hier explizit
 		// reingerechnet werden
-		Score newScore = evalCache.get(newConceptMod);
+		ScorePosNeg newScore = evalCache.get(newConceptMod);
 		
 		if(newScore==null) {
 			psiReasoningStartTime = System.nanoTime();
-			newScore = learningProblem.computeScore(newConcept);
+			newScore = (ScorePosNeg) learningProblem.computeScore(newConcept);
 			psiReasoningTimeNs += System.nanoTime() - psiReasoningStartTime;
 			
 			evalCache.put(newConceptMod, newScore);

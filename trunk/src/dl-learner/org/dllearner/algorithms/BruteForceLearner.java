@@ -26,11 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.BruteForceLearnerConfigurator;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigEntry;
@@ -47,6 +45,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
+import org.dllearner.learningproblems.ScorePosNeg;
 
 /**
  * A brute force learning algorithm.
@@ -70,7 +69,7 @@ public class BruteForceLearner extends LearningAlgorithm {
 	private ReasonerComponent rs;
 	
     private Description bestDefinition;
-    private Score bestScore;
+    private ScorePosNeg bestScore;
     
     //changing this wont have any effect any more
     private Integer maxLength = 7;
@@ -173,7 +172,7 @@ public class BruteForceLearner extends LearningAlgorithm {
         double bestScorePoints = Double.NEGATIVE_INFINITY;
         int overallCount = 0;
         int count = 0;
-        Score tmp;
+        ScorePosNeg tmp;
         double score;
         
         for(int i=1; i<=maxLength && !stop; i++) {
@@ -193,8 +192,8 @@ public class BruteForceLearner extends LearningAlgorithm {
             	} else
             		newRoot = program;
             	
-            	tmp = learningProblem.computeScore(newRoot);
-                score = tmp.getScore();
+            	tmp = (ScorePosNeg) learningProblem.computeScore(newRoot);
+                score = tmp.getScoreValue();
                 
                 // TODO: find termination criterion
                 if(score > bestScorePoints) {
@@ -288,7 +287,7 @@ public class BruteForceLearner extends LearningAlgorithm {
     }
 
 //    @Override
-	public Score getSolutionScore() {
+	public ScorePosNeg getSolutionScore() {
 		return bestScore;
 	}
 
@@ -298,8 +297,8 @@ public class BruteForceLearner extends LearningAlgorithm {
 	}    
     
 	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		return new EvaluatedDescription(bestDefinition,bestScore);
+	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
+		return new EvaluatedDescriptionPosNeg(bestDefinition,bestScore);
 	}
 
 	@Override

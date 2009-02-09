@@ -20,8 +20,8 @@
 
 package org.dllearner.algorithms.gp;
 
-import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
+import org.dllearner.learningproblems.ScorePosNeg;
 
 /**
  * This class represents a program, i.e. an individual.
@@ -39,7 +39,7 @@ public class Program {
 
 	private Description adc;
 
-	private Score score;
+	private ScorePosNeg score;
 
 	// private Score scoreAdc;
 	
@@ -51,11 +51,11 @@ public class Program {
 	 * Create a new program.
 	 * 
 	 */
-	public Program(Score score, Description hypothesis) {
+	public Program(ScorePosNeg score, Description hypothesis) {
 		this(score, hypothesis, null);
 	}
 
-	public Program(Score score, Description hypothesis, Description adc) {
+	public Program(ScorePosNeg score, Description hypothesis, Description adc) {
 		// this.learningProblem = learningProblem;
 		this.score = score;
 		this.hypothesis = hypothesis;
@@ -64,7 +64,7 @@ public class Program {
 		// Implementierung falsch !!
 		// fitness = score.getScore() - hypothesis.getLength() * Config.percentPerLengthUnit;
 		// => in getScore() ist jetzt schon der length penalty integriert
-		fitness = score.getScore();
+		fitness = score.getScoreValue();
 		// fitnessEvaluations++;
 		
 		// System.out.println("new program: " + hypothesis);
@@ -128,7 +128,7 @@ public class Program {
 		return hypothesis;
 	}
 
-	public Score getScore() {
+	public ScorePosNeg getScore() {
 		return score;
 	}
 

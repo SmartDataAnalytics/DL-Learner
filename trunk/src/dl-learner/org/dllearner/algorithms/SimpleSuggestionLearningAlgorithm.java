@@ -23,10 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.SimpleSuggestionLearningAlgorithmConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.owl.Description;
@@ -34,6 +32,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
+import org.dllearner.learningproblems.ScorePosNeg;
 
 /**
  * Algorithm for getting "simple" suggestions, e.g. it tests some of the most likely candidates on whether 
@@ -51,7 +50,7 @@ public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm impleme
 	}
 	
 //	private boolean stop = false;
-	private Score solutionScore;
+	private ScorePosNeg solutionScore;
 	private Description bestSollution;
 	private Set<Description> simpleSuggestions;
 
@@ -66,8 +65,8 @@ public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm impleme
 	}
 
 	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		return new EvaluatedDescription(bestSollution, solutionScore);
+	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
+		return new EvaluatedDescriptionPosNeg(bestSollution, solutionScore);
 	}
 
 	public static String getName() {
@@ -95,7 +94,7 @@ public class SimpleSuggestionLearningAlgorithm extends LearningAlgorithm impleme
 	}
 
 //	@Override
-	public Score getSolutionScore() {
+	public ScorePosNeg getSolutionScore() {
 		return solutionScore;
 	}
 

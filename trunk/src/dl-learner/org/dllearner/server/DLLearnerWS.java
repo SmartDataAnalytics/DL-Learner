@@ -41,6 +41,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.Info;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.DBpediaNavigationSuggestor;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
@@ -335,7 +336,7 @@ public class DLLearnerWS {
 	public String learnDescriptionsEvaluated(int id, int limit) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
-		List<EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(limit);
+		List<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(limit);
 		String json = "{";
 		int count = 1;
 		for(EvaluatedDescription description : descriptions) {
@@ -405,7 +406,7 @@ public class DLLearnerWS {
 	private String currentlyBestEvaluatedDescriptions(int id,int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) throws ClientNotKnownException
 	{
 		ClientState state = getState(id);
-		List<EvaluatedDescription> descriptions;
+		List<? extends EvaluatedDescription> descriptions;
 		if (accuracyThreshold!=-1) descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, accuracyThreshold, filterNonMinimalDescriptions);
 		else descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions);
 		String json = "{";

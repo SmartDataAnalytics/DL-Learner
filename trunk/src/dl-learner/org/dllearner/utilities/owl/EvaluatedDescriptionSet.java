@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.owl.Description;
 
 /**
@@ -39,9 +39,9 @@ import org.dllearner.core.owl.Description;
  */
 public class EvaluatedDescriptionSet {
 
-	private EvaluatedDescriptionComparator comp = new EvaluatedDescriptionComparator();
+	private EvaluatedDescriptionPosNegComparator comp = new EvaluatedDescriptionPosNegComparator();
 	
-	private SortedSet<EvaluatedDescription> set = new TreeSet<EvaluatedDescription>(comp);
+	private SortedSet<EvaluatedDescriptionPosNeg> set = new TreeSet<EvaluatedDescriptionPosNeg>(comp);
 
 	private int maxSize;
 	
@@ -49,17 +49,17 @@ public class EvaluatedDescriptionSet {
 		this.maxSize = maxSize;
 	}
 	
-	public void add(EvaluatedDescription ed) {
+	public void add(EvaluatedDescriptionPosNeg ed) {
 		set.add(ed);
 		if(set.size()>maxSize) {
-			Iterator<EvaluatedDescription> it = set.iterator();
+			Iterator<EvaluatedDescriptionPosNeg> it = set.iterator();
 			it.next();
 			it.remove();
 		}
 	}
 
-	public void addAll(Collection<EvaluatedDescription> eds) {
-		for(EvaluatedDescription ed : eds) {
+	public void addAll(Collection<EvaluatedDescriptionPosNeg> eds) {
+		for(EvaluatedDescriptionPosNeg ed : eds) {
 			add(ed);
 		}
 	}	
@@ -68,24 +68,24 @@ public class EvaluatedDescriptionSet {
 		return set.size();
 	}
 	
-	public EvaluatedDescription getBest() {
+	public EvaluatedDescriptionPosNeg getBest() {
 		return set.first();
 	}
 	
-	public EvaluatedDescription getWorst() {
+	public EvaluatedDescriptionPosNeg getWorst() {
 		return set.last();
 	}
 	
 	/**
 	 * @return the set
 	 */
-	public SortedSet<EvaluatedDescription> getSet() {
+	public SortedSet<EvaluatedDescriptionPosNeg> getSet() {
 		return set;
 	}
 	
 	public List<Description> toDescriptionList() {
 		List<Description> list = new LinkedList<Description>();
-		for(EvaluatedDescription ed : set) {
+		for(EvaluatedDescriptionPosNeg ed : set) {
 			list.add(ed.getDescription());
 		}
 		return list;

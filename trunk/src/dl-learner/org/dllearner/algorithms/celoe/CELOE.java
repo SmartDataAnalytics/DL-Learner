@@ -19,8 +19,8 @@
  */
 package org.dllearner.algorithms.celoe;
 
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.Configurator;
@@ -54,7 +54,7 @@ public class CELOE extends LearningAlgorithm {
 	 * @see org.dllearner.core.LearningAlgorithm#getCurrentlyBestEvaluatedDescription()
 	 */
 	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
 		// TODO Auto-generated method stub
 		return null;
 	}
