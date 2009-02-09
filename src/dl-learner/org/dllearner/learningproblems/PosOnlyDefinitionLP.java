@@ -20,7 +20,6 @@
 package org.dllearner.learningproblems;
 
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.PosOnlyDefinitionLPConfigurator;
 import org.dllearner.core.owl.Description;
@@ -82,7 +81,7 @@ public class PosOnlyDefinitionLP extends PosOnlyLP implements DefinitionLP {
 	 * @see org.dllearner.core.LearningProblemNew#computeScore(org.dllearner.core.dl.Concept)
 	 */
 	@Override
-	public Score computeScore(Description concept) {
+	public ScorePosNeg computeScore(Description concept) {
 		// TODO need to implement class <code>ScoreOneValued</code>
 		return null;
 	}

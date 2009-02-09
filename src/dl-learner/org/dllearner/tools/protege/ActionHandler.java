@@ -41,6 +41,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
@@ -213,7 +214,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 					.getSuggestClassPanel().getSuggestList().getSelectedValue();
 			String desc = item.getValue();
 			if (model.getEvaluatedDescriptionList() != null) {
-				List<EvaluatedDescription> evalList = model.getEvaluatedDescriptionList();
+				List<? extends EvaluatedDescription> evalList = model.getEvaluatedDescriptionList();
 				Set<String> onto = model.getOntologyURIString();
 				for(EvaluatedDescription eDescription : evalList) {
 					for(String ont : onto) {
@@ -297,7 +298,7 @@ public class ActionHandler implements ActionListener, ItemListener,
  *
  */
 	class SuggestionRetriever extends
-			SwingWorker<List<EvaluatedDescription>, List<EvaluatedDescription>> {
+			SwingWorker<List<? extends EvaluatedDescription>, List<? extends EvaluatedDescription>> {
 		
 		private Thread dlLearner;
 		private DefaultListModel dm = new DefaultListModel();
@@ -312,7 +313,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 		
 		@SuppressWarnings("unchecked")
 		@Override
-		protected List<EvaluatedDescription> doInBackground() throws Exception {
+		protected List<? extends EvaluatedDescription> doInBackground() throws Exception {
 			la = model.getLearningAlgorithm();
 			timer = new Timer();
 			timer.schedule(new TimerTask(){
@@ -347,7 +348,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			List<EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts()
+			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts()
 					, view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true);
 			
 			return result;
@@ -357,7 +358,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 		public void done() {
 
 			timer.cancel();
-			List<EvaluatedDescription> result = null;
+			List<? extends EvaluatedDescription> result = null;
 			try {
 				result = get();
 			} catch (InterruptedException e) {
@@ -371,15 +372,15 @@ public class ActionHandler implements ActionListener, ItemListener,
 		}
 
 		@Override
-		protected void process(List<List<EvaluatedDescription>> resultLists) {
+		protected void process(List<List<? extends EvaluatedDescription>> resultLists) {
 
 
-			for (List<EvaluatedDescription> list : resultLists) {
+			for (List<? extends EvaluatedDescription> list : resultLists) {
 				updateList(list);
 			}
 		}
 
-		private void updateList(final List<EvaluatedDescription> result) {
+		private void updateList(final List<? extends EvaluatedDescription> result) {
 
 			logger.debug("update list with " + result);
 			
@@ -396,11 +397,11 @@ public class ActionHandler implements ActionListener, ItemListener,
 						for(String ontology : ont) {
 							if(eval.getDescription().toString().contains(ontology)) {
 								if(model.isConsistent(eval)) {
-									dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), eval.getAccuracy()*100));
+									dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionPosNeg)eval).getAccuracy()*100));
 									i++;
 									break;
 								} else {
-									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null), eval.getAccuracy()*100));
+									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionPosNeg)eval).getAccuracy()*100));
 									i++;
 									view.setIsInconsistent(true);
 									break;

@@ -10,6 +10,7 @@ import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
 
@@ -67,6 +68,7 @@ public class GraphicalCoveragePanel extends JPanel {
 
 	}
 	
+	@Override
 	protected void paintComponent(Graphics g) {
 		g.setColor(Color.RED);
 		g.drawOval((5+shiftXAxis), 25, width+distortion, height+distortion);
@@ -94,8 +96,8 @@ public class GraphicalCoveragePanel extends JPanel {
 	
 	private void computeGraphics(){
 		int posGes = model.getPosListModel().size();
-		int notCovPos = eval.getNotCoveredPositives().size();
-		int covNeg = eval.getCoveredNegatives().size();
+		int notCovPos = ((EvaluatedDescriptionPosNeg)eval).getNotCoveredPositives().size();
+		int covNeg = ((EvaluatedDescriptionPosNeg)eval).getCoveredNegatives().size();
 		int negGes = model.getNegListModel().size();
 		double notCov = notCovPos;
 		float shift = (float) (width*(notCov/posGes));
@@ -108,7 +110,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	}
 	
 	private void computeIndividualPoints() {
-		Set<Individual> posInd = eval.getCoveredPositives();
+		Set<Individual> posInd = ((EvaluatedDescriptionPosNeg)eval).getCoveredPositives();
 		int i = 0;
 		double x = 20;
 		double y = 20;
@@ -146,7 +148,7 @@ public class GraphicalCoveragePanel extends JPanel {
 			}
 		}
 		
-		Set<Individual> posNotCovInd = eval.getNotCoveredPositives();
+		Set<Individual> posNotCovInd = ((EvaluatedDescriptionPosNeg)eval).getNotCoveredPositives();
 		int j = 0;
 		for(Individual ind : posNotCovInd) {
 			if(j<maxNumberOfIndividualPoints) {
@@ -173,7 +175,7 @@ public class GraphicalCoveragePanel extends JPanel {
 			}
 		}
 		
-		Set<Individual> negCovInd = eval.getCoveredNegatives();
+		Set<Individual> negCovInd = ((EvaluatedDescriptionPosNeg)eval).getCoveredNegatives();
 		int k = 0;
 		for(Individual ind : negCovInd) {
 			if(k<maxNumberOfIndividualPoints) {

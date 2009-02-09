@@ -207,7 +207,7 @@ public abstract class LearningAlgorithm extends Component {
 	 * first.
 	 * @return Best class descriptions found so far.
 	 */
-	public SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public SortedSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
 		TreeSet<EvaluatedDescription> ds = new TreeSet<EvaluatedDescription>();
 		ds.add(getCurrentlyBestEvaluatedDescription());
 		return ds;
@@ -231,14 +231,15 @@ public abstract class LearningAlgorithm extends Component {
 	 * 
 	 * @return A list of currently best class descriptions.
 	 */
-	public synchronized List<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) {
-		SortedSet<EvaluatedDescription> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
+	public synchronized List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) {
+		SortedSet<? extends EvaluatedDescription> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
 		List<EvaluatedDescription> returnList = new LinkedList<EvaluatedDescription>();
 		for(EvaluatedDescription ed : currentlyBest) {
 			// once we hit a description with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list
-			if(ed.getAccuracy() < accuracyThreshold) {
+//			if(ed.getAccuracy() < accuracyThreshold) {
+			if(ed.getScoreValue() < accuracyThreshold) {
 				return returnList;
 			}
 
@@ -270,7 +271,7 @@ public abstract class LearningAlgorithm extends Component {
 	 * @param nrOfDescriptions Maximum number of descriptions returned.
 	 * @return Return value is getCurrentlyBestDescriptions(nrOfDescriptions, 0.0, false).
 	 */
-	public synchronized List<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
+	public synchronized List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
 		return getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, 0.0, false);
 	}
 	
@@ -279,7 +280,7 @@ public abstract class LearningAlgorithm extends Component {
 	 * @param accuracyThreshold Only return solutions with this accuracy or higher.
 	 * @return Return value is getCurrentlyBestDescriptions(Integer.MAX_VALUE, accuracyThreshold, false).
 	 */
-	public synchronized  List<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(double accuracyThreshold) {
+	public synchronized  List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(double accuracyThreshold) {
 		return getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, accuracyThreshold, false);
 	}
 		

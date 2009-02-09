@@ -26,17 +26,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.Configurator;
 import org.dllearner.core.configurators.ELLearningAlgorithmConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.ELDown2;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 
@@ -168,8 +169,8 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 			// at least as high accuracy - if not we can save the reasoner calls
 			// for fully computing the evaluated description
 			if(bestEvaluatedDescriptions.size() == 0 || bestEvaluatedDescriptions.getWorst().getCoveredNegatives().size() >= node.getCoveredNegatives()) {
-				Score score = learningProblem.computeScore(description);
-				EvaluatedDescription ed = new EvaluatedDescription(description, score);
+				ScorePosNeg score = (ScorePosNeg) learningProblem.computeScore(description);
+				EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(description, score);
 				bestEvaluatedDescriptions.add(ed);
 			}
 			
@@ -216,7 +217,7 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 	}	
 	
 	@Override
-	public SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public SortedSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
 	}		
 	

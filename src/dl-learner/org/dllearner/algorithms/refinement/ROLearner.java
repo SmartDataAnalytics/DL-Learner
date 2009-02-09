@@ -14,11 +14,10 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.ROLearnerConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
@@ -36,12 +35,13 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.RhoDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.EvaluatedDescriptionComparator;
+import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 
 public class ROLearner extends LearningAlgorithm {
 	
@@ -107,7 +107,7 @@ public class ROLearner extends LearningAlgorithm {
 	private NodeComparatorStable nodeComparatorStable = new NodeComparatorStable();
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	// comparator for evaluated descriptions
-	private EvaluatedDescriptionComparator edComparator = new EvaluatedDescriptionComparator();
+	private EvaluatedDescriptionPosNegComparator edComparator = new EvaluatedDescriptionPosNegComparator();
 	DecimalFormat df = new DecimalFormat();	
 	
 	private PosNegLP learningProblem;
@@ -1054,17 +1054,17 @@ public class ROLearner extends LearningAlgorithm {
 	}	
 	
 	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		return new EvaluatedDescription(candidatesStable.last().getConcept(), getSolutionScore());
+	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
+		return new EvaluatedDescriptionPosNeg(candidatesStable.last().getConcept(), getSolutionScore());
 	}
 	
 	@Override
-	public SortedSet<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public SortedSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
 		int count = 0;
 		SortedSet<Node> rev = candidatesStable.descendingSet();
-		SortedSet<EvaluatedDescription> cbd = new TreeSet<EvaluatedDescription>(edComparator);
+		SortedSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<EvaluatedDescriptionPosNeg>(edComparator);
 		for(Node eb : rev) {
-			cbd.add(new EvaluatedDescription(eb.getConcept(), getSolutionScore(eb.getConcept())));
+			cbd.add(new EvaluatedDescriptionPosNeg(eb.getConcept(), getSolutionScore(eb.getConcept())));
 			// return a maximum of 200 elements (we need a maximum, because the
 			// candidate set can be very large)
 			if(count > 200)
@@ -1100,19 +1100,19 @@ public class ROLearner extends LearningAlgorithm {
 	}
 	
 //	@Override
-	public Score getSolutionScore() {
+	public ScorePosNeg getSolutionScore() {
 		if(posOnly)
 			return posOnlyLearningProblem.computeScore(getCurrentlyBestDescription());
 		else
-			return learningProblem.computeScore(getCurrentlyBestDescription());
+			return (ScorePosNeg) learningProblem.computeScore(getCurrentlyBestDescription());
 	}
 	
 	
-	public Score getSolutionScore(Description d) {
+	public ScorePosNeg getSolutionScore(Description d) {
 		if(posOnly)
 			return posOnlyLearningProblem.computeScore(d);
 		else
-			return learningProblem.computeScore(d);
+			return (ScorePosNeg) learningProblem.computeScore(d);
 	}
 
 	@Override

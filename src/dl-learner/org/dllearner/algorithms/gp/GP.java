@@ -29,12 +29,11 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.hybridgp.Psi;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.GPConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.ConfigEntry;
@@ -46,6 +45,7 @@ import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.utilities.Helper;
 
 /**
@@ -126,7 +126,7 @@ public class GP extends LearningAlgorithm {
     
     private long startTime;
 
-    private Score bestScore;
+    private ScorePosNeg bestScore;
     private Description bestConcept;
     
     // private GeneticRefinementOperator psi;
@@ -532,19 +532,19 @@ public class GP extends LearningAlgorithm {
 
         // nachschauen, ob ev. noch bessere Konzepte im Psi-Cache sind
         boolean betterValueFoundInPsiCache = false;
-        double bestValue = bestScore.getScore();
+        double bestValue = bestScore.getScoreValue();
         
         if(refinementProbability > 0) {
         	// das Problem ist hier, dass die gecachte Score nicht unbedingt
         	// der echten Score entsprechen muss, d.h. hier muss die
         	// Konzeptlänge mit einberechnet werden => deswegen werden
         	// neue Score-Objekte generiert
-        	Set<Entry<Description,Score>> entrySet = psi.evalCache.entrySet();
-        	for(Entry<Description,Score> entry : entrySet) {
-        		Score tmpScore = entry.getValue();
+        	Set<Entry<Description,ScorePosNeg>> entrySet = psi.evalCache.entrySet();
+        	for(Entry<Description,ScorePosNeg> entry : entrySet) {
+        		ScorePosNeg tmpScore = entry.getValue();
         		Description c = entry.getKey();
         		tmpScore = tmpScore.getModifiedLengthScore(c.getLength());
-        		double tmpScoreValue = tmpScore.getScore();
+        		double tmpScoreValue = tmpScore.getScoreValue();
         		if(tmpScoreValue>bestValue) {
         			bestValue = tmpScoreValue;
         			betterValueFoundInPsiCache = true;
@@ -947,7 +947,7 @@ public class GP extends LearningAlgorithm {
     }
 
 //    @Override
-	public Score getSolutionScore() {
+	public ScorePosNeg getSolutionScore() {
 		return bestScore;
 	}
 
@@ -957,9 +957,9 @@ public class GP extends LearningAlgorithm {
 	}    
     
 	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
 		// return fittestIndividual.getTree();
-		return new EvaluatedDescription(bestConcept,bestScore);
+		return new EvaluatedDescriptionPosNeg(bestConcept,bestScore);
 	}
 
 	@Override

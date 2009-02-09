@@ -25,7 +25,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.PosNegDefinitionLPConfigurator;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.Description;
@@ -169,7 +168,7 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 	 * @return Corresponding Score object.
 	 */
 	@Override
-	public Score computeScore(Description concept) {
+	public ScorePosNeg computeScore(Description concept) {
 		if (useRetrievalForClassification) {
 			SortedSet<Individual> posClassified = reasoner.getIndividuals(concept);
 			SortedSet<Individual> posAsPos = Helper.intersection(positiveExamples, posClassified);

@@ -40,10 +40,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
@@ -282,7 +282,7 @@ public class SemanticBibleComparison {
 				logger.warn(learningTimeClock.getAndSet("learning time")+" in stat: "+learningTime.getMean());
 				
 				
-				EvaluatedDescription bestDescription =(la.getCurrentlyBestEvaluatedDescription());
+				EvaluatedDescriptionPosNeg bestDescription =(la.getCurrentlyBestEvaluatedDescription());
 				
 				accFragment.addNumber(bestDescription.getAccuracy());
 				descDepth.addNumber((double)bestDescription.getDescriptionDepth());
@@ -298,7 +298,7 @@ public class SemanticBibleComparison {
 				// evaluate Concept versus Ontology
 				reasoningService = org.dllearner.utilities.components.ReasonerComponentFactory.getReasonerComponent(ontologyPath, ReasonerType.OWLAPI_PELLET);
 				SortedSet<Individual> retrieved = reasoningService.getIndividuals(bestDescription.getDescription());
-				EvaluatedDescription onOnto = reEvaluateDescription(
+				EvaluatedDescriptionPosNeg onOnto = reEvaluateDescription(
 						bestDescription.getDescription(), retrieved, posEx, negEx);
 				
 				logger.warn(bestDescription.getAccuracy());
@@ -639,7 +639,7 @@ public class SemanticBibleComparison {
 	
 
 	
-	public static EvaluatedDescription reEvaluateDescription(Description d, SortedSet<Individual> retrieved ,SortedSet<Individual> posEx ,SortedSet<Individual> negEx ){
+	public static EvaluatedDescriptionPosNeg reEvaluateDescription(Description d, SortedSet<Individual> retrieved ,SortedSet<Individual> posEx ,SortedSet<Individual> negEx ){
 		SortedSet<Individual> PosAsPos = new TreeSet<Individual>();
 		SortedSet<Individual> PosAsNeg = new TreeSet<Individual>();
 		SortedSet<Individual> NegAsPos = new TreeSet<Individual>();
@@ -670,7 +670,7 @@ public class SemanticBibleComparison {
 		//System.out.println(NegAsNeg);
 		
 		
-		return new EvaluatedDescription(d, PosAsPos, PosAsNeg, NegAsPos,NegAsNeg);
+		return new EvaluatedDescriptionPosNeg(d, PosAsPos, PosAsNeg, NegAsPos,NegAsNeg);
 		
 	}
 	

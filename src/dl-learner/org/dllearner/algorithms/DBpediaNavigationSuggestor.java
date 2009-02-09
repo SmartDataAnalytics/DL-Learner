@@ -29,7 +29,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.configurators.DBpediaNavigationSuggestorConfigurator;
 import org.dllearner.core.options.BooleanConfigOption;
@@ -43,6 +42,7 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.ScorePosNeg;
 
 /**
  * The DBpedia Navigation suggestor takes a knowledge fragment extracted
@@ -50,6 +50,9 @@ import org.dllearner.learningproblems.PosOnlyDefinitionLP;
  * algorithm, and then performs postprocessing steps. It does not 
  * implement a completely new learning algorithm itself, but uses the
  * example based refinement operator learning algorithm.
+ * 
+ * TODO: This should not be implemented as a learning algorithm (as it does
+ * almost nothing by itself) and maybe can be completely deleted.
  * 
  * @author Jens Lehmann
  *
@@ -180,17 +183,17 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 	}	
 	
 	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {
 		return learner.getCurrentlyBestEvaluatedDescription();
 	}
 	
 	@Override
-	public List<EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions){
+	public List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions){
 		return learner.getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, accuracyThreshold, filterNonMinimalDescriptions);
 	}
 
 //	@Override
-	public Score getSolutionScore() {
+	public ScorePosNeg getSolutionScore() {
 		return learner.getSolutionScore();
 	}
 

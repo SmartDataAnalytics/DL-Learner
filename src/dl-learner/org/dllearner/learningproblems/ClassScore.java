@@ -54,40 +54,14 @@ public class ClassScore extends Score {
 		return protusion;
 	}		
 	
-	// methods required by score class (not used in this context)
-	
+	/**
+	 * 
+	 * @return
+	 */
 	@Override
-	public double getAccuracy() {
-		throw new UnsupportedOperationException();		
-	}
-
-	@Override
-	public Set<Individual> getCoveredNegatives() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Set<Individual> getCoveredPositives() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Score getModifiedLengthScore(int newLength) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Set<Individual> getNotCoveredNegatives() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Set<Individual> getNotCoveredPositives() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public double getScore() {
+	public double getScoreValue() {
+		
+		
 		throw new UnsupportedOperationException();
 	}
 

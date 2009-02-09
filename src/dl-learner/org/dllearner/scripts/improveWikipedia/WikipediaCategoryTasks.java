@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SetManipulation;
@@ -63,7 +63,7 @@ public class WikipediaCategoryTasks {
 	 * @param posExamples
 	 */
 	public SortedSet<String> calculateWrongIndividualsAndNewPosEx(
-			List<EvaluatedDescription> conceptresults,
+			List<EvaluatedDescriptionPosNeg> conceptresults,
 			SortedSet<String> posExamples) {
 
 		definitelyWrongIndividuals.clear();
@@ -92,11 +92,11 @@ public class WikipediaCategoryTasks {
 	 * @param reEvaluatedDesc
 	 */
 	public SortedSet<String> makeNewNegativeExamples(
-			List<EvaluatedDescription> reEvaluatedDesc,
+			List<EvaluatedDescriptionPosNeg> reEvaluatedDesc,
 			SortedSet<String> posExamples, double negFactor) {
 		negExamples.clear();
 
-		EvaluatedDescription newDesc = reEvaluatedDesc.get(0);
+		EvaluatedDescriptionPosNeg newDesc = reEvaluatedDesc.get(0);
 		logger.info("Best concept: " + newDesc.getDescription());
 
 		negExamples.addAll(Helper.getStringSet(newDesc.getCoveredPositives()));

@@ -33,10 +33,10 @@ import java.util.Vector;
 
 import javax.swing.JLabel;
 
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -73,7 +73,7 @@ public class ORE {
 	private SortedSet<Individual> negExamples;
 	
 	private NamedClass classToLearn;
-	private EvaluatedDescription newClassDescription;
+	private EvaluatedDescriptionPosNeg newClassDescription;
 
 	
 	private OntologyModifier modifier;
@@ -170,7 +170,7 @@ public class ORE {
 	}
 
 
-	public EvaluatedDescription getNewClassDescription() {
+	public EvaluatedDescriptionPosNeg getNewClassDescription() {
 		return newClassDescription;
 	}
 
@@ -265,7 +265,7 @@ public class ORE {
 		
 	}
 		
-	public void setNewClassDescription(EvaluatedDescription newClassDescription) {
+	public void setNewClassDescription(EvaluatedDescriptionPosNeg newClassDescription) {
 		this.newClassDescription = newClassDescription;
 	}
 

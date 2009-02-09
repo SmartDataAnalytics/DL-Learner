@@ -20,7 +20,6 @@
 package org.dllearner.learningproblems;
 
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.Score;
 import org.dllearner.core.configurators.PosOnlyInclusionLPConfigurator;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
@@ -57,7 +56,7 @@ public class PosOnlyInclusionLP extends PosOnlyLP implements InclusionLP {
 	 * @see org.dllearner.core.LearningProblemNew#computeScore(org.dllearner.core.dl.Concept)
 	 */
 	@Override
-	public Score computeScore(Description concept) {
+	public ScorePosNeg computeScore(Description concept) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -33,6 +33,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
@@ -132,7 +133,7 @@ public class WikipediaCategoryCleaner {
 	}
 	
 	
-
+	@SuppressWarnings("unchecked")
 	private static void doit(String target) {
 		try{
 		String dir="";
@@ -142,7 +143,7 @@ public class WikipediaCategoryCleaner {
 		}catch (Exception e) {
 			 e.printStackTrace();
 		}
-		List<EvaluatedDescription> conceptresults;
+		List<EvaluatedDescriptionPosNeg> conceptresults;
 		SortedSet<String> currentPOSITIVEex = new TreeSet<String>();
 		SortedSet<String> currentNEGATIVEex = new TreeSet<String>();
 		SortedSet<String> wrongIndividuals;
@@ -162,7 +163,7 @@ public class WikipediaCategoryCleaner {
 		ExampleBasedROLComponent la = learn(currentPOSITIVEex, currentNEGATIVEex);
 		la.start();
 		// get wrong individuals and reevaluate concepts
-		conceptresults = la.getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, 0.5, true);
+		conceptresults = (List<EvaluatedDescriptionPosNeg>) la.getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, 0.5, true);
 		// TODO select concepts
 		conceptresults = selectConcepts(conceptresults);
 		wrongIndividuals = wikiTasks.calculateWrongIndividualsAndNewPosEx(
@@ -258,8 +259,8 @@ public class WikipediaCategoryCleaner {
 		
 	}
 
-	private static List<EvaluatedDescription> selectConcepts(
-			List<EvaluatedDescription> concepts) {
+	private static List<EvaluatedDescriptionPosNeg> selectConcepts(
+			List<EvaluatedDescriptionPosNeg> concepts) {
 		// TODO maybe not smart here
 		ConceptSelector cs = new ConceptSelector();
 		concepts = cs.getConceptsNotContainingString(concepts,
@@ -353,11 +354,11 @@ public class WikipediaCategoryCleaner {
 	
 
 	public static void printEvaluatedDescriptionCollection(int howMany,
-			Collection<EvaluatedDescription> c) {
+			Collection<EvaluatedDescriptionPosNeg> c) {
 		int x = 0;
 		Set<Individual> first = null;
 		Set<Individual> tmp = new HashSet<Individual>();
-		for (EvaluatedDescription ed : c) {
+		for (EvaluatedDescriptionPosNeg ed : c) {
 			if (x == 0) {
 				first = ed.getNotCoveredPositives();
 			}

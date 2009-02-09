@@ -32,7 +32,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 
 /**
  * List cell renderer for 2 columns.
@@ -58,9 +58,9 @@ public class ColumnListCellRenderer extends JPanel implements ListCellRenderer {
 		JLabel cor = new JLabel();
 		JLabel desc = new JLabel();
 		setLayout(new GridBagLayout());
-		desc.setText(((EvaluatedDescription) value).getDescription().toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
+		desc.setText(((EvaluatedDescriptionPosNeg) value).getDescription().toManchesterSyntaxString(ore.getBaseURI(), ore.getPrefixes()));
 		//round accuracy to 2 digits
-		double accuracy = ((EvaluatedDescription) value).getAccuracy();
+		double accuracy = ((EvaluatedDescriptionPosNeg) value).getAccuracy();
 		
 		BigDecimal roundedAccuracy = new BigDecimal(accuracy * 100);
 		roundedAccuracy = roundedAccuracy.setScale(2, BigDecimal.ROUND_HALF_UP);

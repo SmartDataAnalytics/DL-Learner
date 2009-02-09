@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,34 +19,25 @@
  */
 package org.dllearner.core;
 
-import java.util.Set;
-
 import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
-import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.semanticweb.owl.model.OWLDescription;
 
 /**
- * This represents a class description, which has been
- * evaluated by the learning algorithm, i.e. it has been checked
- * which examples it covers. It can be used as return value for
- * learning algorithms to make it easier for applications to
- * assess how good an offered class description is and how it
- * classifies particular examples.
+ * An evaluated description is a description and its score (with some
+ * convenience method and serialisation formats).
  * 
  * @author Jens Lehmann
  *
  */
 public class EvaluatedDescription {
 
-	private Description description;
-	private Score score;
+	protected Description description;
+	protected Score score;
 	
 	/**
 	 * Constructs an evaluated description using its score.
@@ -58,21 +49,6 @@ public class EvaluatedDescription {
 		this.score = score;
 	}
 	
-	/**
-	 * Constructs an evaluated description using example coverage.
-	 * @param description The description, which was evaluated.
-	 * @param posAsPos Positive examples classified as positive by (i.e. instance of) the description.
-	 * @param posAsNeg Positive examples classified as negative by (i.e. not instance of) the description.
-	 * @param negAsPos Negative examples classified as positive by (i.e. instance of) the description.
-	 * @param negAsNeg Negative examples classified as negative by (i.e. not instance of) the description.
-	 */
-	public EvaluatedDescription(Description description, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
-		this.description = description;
-		// usually core methods should not depend on methods outside of the core package (except utilities)
-		// in this case, this is just a convenience constructor
-		score = new ScoreTwoValued(posAsPos, posAsNeg, negAsPos, negAsNeg);
-	}
-
 	/**
 	 * Gets the description, which was evaluated.
 	 * @return The underlying description.
@@ -107,53 +83,11 @@ public class EvaluatedDescription {
 	}
 	
 	/**
-	 * @see org.dllearner.core.Score#getAccuracy()
-	 * @return Accuracy of the description.
+	 * @see org.dllearner.core.Score#getScoreValue()
+	 * @return Value in this score system.
 	 */
-	public double getAccuracy() {
-		return score.getAccuracy();
-	}
-	
-	/**
-	 * Gets the score of this description. This can be used to get
-	 * further statistical values.
-	 * @see org.dllearner.core.Score
-	 * @return The score object associated with this evaluated description.
-	 */
-	public Score getScore() {
-		return score;
-	}
-
-	/**
-	 * @see org.dllearner.core.Score#getCoveredNegatives()
-	 * @return Negative examples covered by the description.
-	 */
-	public Set<Individual> getCoveredNegatives() {
-		return score.getCoveredNegatives();
-	}
-
-	/**
-	 * @see org.dllearner.core.Score#getCoveredPositives()
-	 * @return Positive examples covered by the description.
-	 */
-	public Set<Individual> getCoveredPositives() {
-		return score.getCoveredPositives();
-	}
-
-	/**
-	 * @see org.dllearner.core.Score#getNotCoveredNegatives()
-	 * @return Negative examples not covered by the description.
-	 */
-	public Set<Individual> getNotCoveredNegatives() {
-		return score.getNotCoveredNegatives();
-	}
-
-	/**
-	 * @see org.dllearner.core.Score#getNotCoveredPositives()
-	 * @return Positive examples not covered by the description.
-	 */
-	public Set<Individual> getNotCoveredPositives() {
-		return score.getNotCoveredPositives();
+	public double getScoreValue() {
+		return score.getScoreValue();
 	}
 	
 	/**
@@ -169,7 +103,7 @@ public class EvaluatedDescription {
 	 */
 	public String getSparqlQuery(int limit) {
 		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(description, limit);
-	}
+	}	
 	
 	/**
 	 * This convenience method can be used to store and exchange evaluated
@@ -183,32 +117,12 @@ public class EvaluatedDescription {
 			OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(description);
 			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(d));
 			object.put("descriptionKBSyntax", description.toKBSyntaxString());
-			object.put("accuracy", score.getAccuracy());
-			object.put("coveredPositives", getJSONArray(score.getCoveredPositives()));
-			object.put("coveredNegatives", getJSONArray(score.getCoveredNegatives()));
-			object.put("notCoveredPositives", getJSONArray(score.getNotCoveredPositives()));
-			object.put("notCoveredNegatives", getJSONArray(score.getNotCoveredNegatives()));			
+			object.put("scoreValue", score.getScoreValue());		
 			return object.toString(3);
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
 		}
-	}
-	
-	@Override
-	public String toString() {
-		return description.toString() + "(accuracy: " + getAccuracy() + ")";
-	}
-	
-	// we need to use this method instead of the standard JSON array constructor,
-	// otherwise we'll get unexpected results (JSONArray does not take Individuals
-	// as arguments and does not use toString)
-	private static JSONArray getJSONArray(Set<Individual> individuals) {
-		JSONArray j = new JSONArray();
-		for(Individual i : individuals) {
-			j.put(i.getName());
-		}
-		return j;
-	}
+	}	
 
 }

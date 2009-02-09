@@ -30,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
 
@@ -257,11 +258,11 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 			}
 			
 			//sets the accuracy of the concept
-			double acc = (eval.getAccuracy())*100;
+			double acc = ((EvaluatedDescriptionPosNeg)eval).getAccuracy()*100;
 			accuracyText.setText(String.valueOf(acc)+"%");
 			
 			//Sets positive Covered Examples for the detail panel
-			Set<Individual> indi = eval.getCoveredPositives();
+			Set<Individual> indi = ((EvaluatedDescriptionPosNeg)eval).getCoveredPositives();
 			for(Individual ind : indi) {
 				for(String ontology : ontologiesStrings) {
 					if(ind.toString().contains(ontology)) {
@@ -276,7 +277,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 				
 			
 			//sets the positive examples that are not covered
-			Set<Individual> individuals = eval.getNotCoveredPositives();
+			Set<Individual> individuals = ((EvaluatedDescriptionPosNeg)eval).getNotCoveredPositives();
 			for(Individual ind : individuals) {
 				for(String onto : ontologiesStrings) {
 					if(ind.toString().contains(onto)) {
@@ -290,7 +291,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 
 
 			//sets the negative examples that are covered
-			Set<Individual> negCoveredIndi = eval.getCoveredNegatives(); 
+			Set<Individual> negCoveredIndi = ((EvaluatedDescriptionPosNeg)eval).getCoveredNegatives(); 
 			for(Individual negIndi : negCoveredIndi) {
 				for(String ont : ontologiesStrings) {
 					if(negIndi.toString().contains(ont)) {
@@ -303,7 +304,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 			}	
 
 			//sets the negative examples that are not covered
-			Set<Individual> negNotCoveredIndi = eval.getNotCoveredNegatives();
+			Set<Individual> negNotCoveredIndi = ((EvaluatedDescriptionPosNeg)eval).getNotCoveredNegatives();
 			for(Individual negNotIndi : negNotCoveredIndi) {
 				for(String ontol : ontologiesStrings) {
 					if(negNotIndi.toString().contains(ontol)) {

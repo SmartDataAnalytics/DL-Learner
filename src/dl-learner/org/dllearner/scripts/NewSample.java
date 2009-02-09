@@ -33,6 +33,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
@@ -90,13 +91,13 @@ public class NewSample {
 		negExamples.add("http://example.com/foo#west9");
 		negExamples.add("http://example.com/foo#west10");
 
-		List<EvaluatedDescription> results = learn(owlFile, posExamples, negExamples, 5);
+		List<? extends EvaluatedDescription> results = learn(owlFile, posExamples, negExamples, 5);
 		int x = 0;
 		for (EvaluatedDescription ed : results) {
 			System.out.println("solution: " + x);
 			System.out.println("  description: \t"
 					+ ed.getDescription().toManchesterSyntaxString(null, null));
-			System.out.println("  accuracy: \t" + df.format(ed.getAccuracy() * 100) + "%");
+			System.out.println("  accuracy: \t" + df.format(((EvaluatedDescriptionPosNeg)ed).getAccuracy() * 100) + "%");
 			System.out.println();
 			x++;
 		}
@@ -104,7 +105,7 @@ public class NewSample {
 		Files.createFile(new File("log/jamon_sample.html"), MonitorFactory.getReport());
 	}
 
-	public static List<EvaluatedDescription> learn(String owlFile, SortedSet<String> posExamples,
+	public static List<? extends EvaluatedDescription> learn(String owlFile, SortedSet<String> posExamples,
 			SortedSet<String> negExamples, int maxNrOfResults) throws ComponentInitException,
 			LearningProblemUnsupportedException {
 
