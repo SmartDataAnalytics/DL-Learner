@@ -15,6 +15,8 @@
 \urldef{\owl}{\url}{http://www.w3.org/2004/OWL/}
 \urldef{\owlce}{\url}{http://www.w3.org/TR/2008/WD-owl2-syntax-20081202/#Class_Expressions}
 \urldef{\carc}{\url}{http://dl-learner.org/wiki/Carcinogenesis}
+\urldef{\dldownload}{\url}{http://sourceforge.net/project/showfiles.php?group_id=203619}
+\urldef{\mos}{\url}{http://www.co-ode.org/resources/reference/manchester_syntax/}
 
 \title{DL-Learner Manual [Draft]}
 \author{Jens Lehmann}
@@ -50,6 +52,54 @@ As an example, consider the problem to find out whether a chemical compound can 
 
 \section{Getting Started}
 
+DL-Learner is written in Java, i.e.~it can be used on all platforms supporting Java. Currently, Java 6 or higher is required. To install the latest release, please visit the download page\footnote{\dldownload} and extract the file on your harddisk. In the top level directory, you will notice several executables. Those files ending with \verb|bat| are Windows executables, whereas the corresponding files without file extension are the Non-Windows (e.g.~Linux, Mac) executables. To test whether DL-Learner works, please run the following on the command line depending on your operating system:
+
+\begin{verbatim}
+dllearner examples/father.conf         (Non-Windows Operating System)
+dllearner.bat examples/father.conf     (Windows Operating System)
+\end{verbatim}
+
+\emph{Conf files}, e.g. \verb|examples/father.conf| in this case, describe the learning problem and specify which algorithm you want to use to solve it. In the simples case they just say where to find the background knowledge to use (in the OWL file \verb|examples/father.owl| in this case) and the positive and negative examples (marked by ``+'' and ``-'', respectively). When running the above command, you should get something similar to the following:
+
+\begin{verbatim}
+DL-Learner 2008-10-13 command line interface
+starting component manager ... OK (201ms)
+initialising component "OWL file" ... OK (0ms)
+initialising component "fast instance checker" ... OK (839ms)
+initialising component "two valued definition learning problem" 
+... OK (0ms)
+initialising component "example driven refinement operator based 
+learning algorithm" ... OK (14ms)
+
+more accurate (83,33%) node found: http://example.com/father#male 
+[q:1, he:0, children:0]
+more accurate (100,00%) node found: (http://example.com/father#male 
+AND EXISTS http://example.com/father#hasChild.TOP) 
+[q:0, he:4, children:0]
+best node (male AND EXISTS hasChild.TOP) [acc:100% h:0,962 q:0p-0n 
+(REASONER), he:7 c:12]
+solutions (at most 20 are shown):
+1: (male AND EXISTS hasChild.TOP) (length 5, depth 3)
+2: (male AND EXISTS hasChild.ALL hasChild.TOP) (length 7, depth 4)
+3: (male AND EXISTS hasChild.(female OR male)) (length 7, depth 4)
+Algorithm terminated succesfully.
+
+number of retrievals: 4
+retrieval reasoning time: 0ms ( 0ms per retrieval)
+number of instance checks: 194 (0 multiple)
+instance check reasoning time: 3ms ( 0ms per instance check)
+overall reasoning time: 3ms (13,901% of overall runtime)
+overall algorithm runtime: 26ms
+\end{verbatim}
+
+\todo{Use Manchester OWL Syntax for output.}
+\todo{Suppress http://localhost/foo in output.}
+\todo{empty line after init; empty line after algorithm finished}
+\todo{replace ``node'' by ``class expression''}
+\todo{find out why algorithm continues after finding EXISTS hasChild.TOP}
+
+The first part of the output tells you which components are used (more on this in Section \ref{sec:components}). In the second part you see output coming from the used learning algorithm, i.e.~it can print information while running (``more accurate (83,33\%) class description found'') and the final solutions, it computed. The results are displayed in Manchester OWL Syntax\footnote{\mos}. There can be several solutions, in which case they are ordered with the most promising one in the first position. The last part of the output contains some runtime statistics.
+
 \section{DL-Learner Architecture}
 
 DL-Learner consists of core functionality, which provides Machine Learning algorithms for solving the learning problem, support for different knowledge base formats, an OWL library, and reasoner interfaces. There are several interfaces for accessing this functionality, a couple of tools which use the DL-Learner algorithms, and a set of convenience scripts. The general structure is illustrated in the following \ref{fig:structure}.
@@ -70,9 +120,8 @@ In DL-Learner, there are four types of components (knowledge source, reasoning s
  \label{fig:components}
 \end{figure}
 
-
-
 \section{DL-Learner Components}
+\label{sec:components}
 
 \subsection{Knowledge Sources}
 
