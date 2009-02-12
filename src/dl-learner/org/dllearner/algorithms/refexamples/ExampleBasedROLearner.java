@@ -107,11 +107,11 @@ public class ExampleBasedROLearner {
 
 	// extended Options
 	private long maxExecutionTimeInSeconds;
-	private boolean maxExecutionTimeShown = false;
+	private boolean maxExecutionTimeAlreadyReached = false;
 	private long minExecutionTimeInSeconds = 0;
-	private boolean minExecutionTimeShown = false;
+	private boolean minExecutionTimeAlreadyReached = false;
 	private int guaranteeXgoodDescriptions = 1;
-	private boolean guaranteeXgoodShown = false;
+	private boolean guaranteeXgoodAlreadyReached = false;
 	private int maxClassDescriptionTests;
 
 	// if set to false we do not test properness; this may seem wrong
@@ -149,6 +149,8 @@ public class ExampleBasedROLearner {
 	private ExampleBasedNode startNode;
 
 	// solution protocol
+	// TODO isn't solution found already true if solutions.size()>=0 ???
+	@Deprecated
 	private boolean solutionFound = false;
 	private List<Description> solutions = new LinkedList<Description>();
 
@@ -300,9 +302,9 @@ public class ExampleBasedROLearner {
 		newCandidates.clear();
 		solutionFound = false;
 		solutions.clear();
-		maxExecutionTimeShown = false;
-		minExecutionTimeShown = false;
-		guaranteeXgoodShown = false;		
+		maxExecutionTimeAlreadyReached = false;
+		minExecutionTimeAlreadyReached = false;
+		guaranteeXgoodAlreadyReached = false;		
 		propernessTestsReasoner = 0;
 		propernessTestsAvoidedByShortConceptConstruction = 0;
 		propernessTestsAvoidedByTooWeakList = 0;
@@ -407,7 +409,8 @@ public class ExampleBasedROLearner {
 		long reductionInterval = 300l * 1000000000l;
 		long currentTime;
 		
-		while ((!solutionFound || !configurator.getTerminateOnNoiseReached() ) && !stop) {
+		while (!isTerminationCriteriaReached()) {
+		//while ((!solutionFound || !configurator.getTerminateOnNoiseReached() ) && !stop) {
 
 			// print statistics at most once a second
 			currentTime = System.nanoTime();
@@ -515,7 +518,8 @@ public class ExampleBasedROLearner {
 			loop++;
 		}// end while
 
-		if (solutionFound) {
+		if (isSolutionFound()) {
+		//if (solutionFound) {
 			int solutionLimit = 20;
 			// we do not need to print the best node if we display the top 20 solutions below anyway
 //			logger.info("best node "
@@ -1351,6 +1355,100 @@ public class ExampleBasedROLearner {
 		return true;
 	}
 
+	
+	
+	/**
+	 * In this function it is calculated if the algorithm should stop.
+	 * This is not always depends whether an actual solution was found
+	 * The algorithm stops if:
+	 * 1. the object attribute stop is set to true (possibly by an outside source)
+	 * 2. the maximimum execution time is reached
+	 * 3. the maximum number of class description tests is reached
+	 *
+	 * Continuation criteria and result improvement
+	 * The algorithm continues (although it would normally stop) if
+	 * 1. Minimum execution time is not reached (default 0)
+	 * 2. not enough good solutions are found (default 1)
+	 * otherwise it stops
+	 * 
+	 * @return true if the algorithm should stop, this is mostly indepent of the question if a solution was found
+	 */
+	private boolean isTerminationCriteriaReached(){
+		if(this.stop){
+			return true;
+		}
+		long totalTimeNeeded = System.currentTimeMillis() - this.runtime;
+		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
+		long minMilliSeconds = minExecutionTimeInSeconds * 1000;
+		int conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
+		boolean result = false;
+		
+		//ignore default
+		if (maxExecutionTimeInSeconds == 0)
+			result = false;
+		//alreadyReached
+		else if (maxExecutionTimeAlreadyReached)
+			return true;
+		//test
+		else if (maxMilliSeconds < totalTimeNeeded) {
+			this.stop();
+			logger.info("Maximum time (" + maxExecutionTimeInSeconds
+					+ " seconds) reached, stopping now...");
+			maxExecutionTimeAlreadyReached = true;
+			return true;
+		}
+		
+		//ignore default
+		if(maxClassDescriptionTests == 0) 
+			result = false;
+		//test
+		else if(conceptTests >= maxClassDescriptionTests){
+			logger.info("Maximum Class Description tests (" + maxClassDescriptionTests
+					+ " tests [actual: "+conceptTests+"]) reached, stopping now...");
+			return true;
+		}
+		
+		
+		if (guaranteeXgoodAlreadyReached){
+			result = true;
+		} else if(solutions.size() >= guaranteeXgoodDescriptions) {
+				logger.info("Minimum number (" + guaranteeXgoodDescriptions
+						+ ") of good descriptions reached.");
+				guaranteeXgoodAlreadyReached = true;
+				result = true;
+		}
+		
+				
+		if (minExecutionTimeAlreadyReached){
+			result = result && true;
+		}else if(minMilliSeconds < totalTimeNeeded) {
+				logger.info("Minimum time (" + minExecutionTimeInSeconds
+						+ " seconds) reached.");
+			minExecutionTimeAlreadyReached = true;
+			result = result && true;
+		} 
+		
+		return result;
+	
+	}
+	
+	/**
+	 * shows if a solution is found
+	 * @return 
+	 */
+	private boolean isSolutionFound(){
+		if(this.solutionFound){
+			return true;
+		}else if(solutions.size()>0){
+			return true;
+		}
+			
+		return false;
+		
+		
+	}
+	
+	@Deprecated
 	private void handleStoppingConditions() {
 		solutionFound = (guaranteeXgoodDescriptions());
 		solutionFound = (minExecutionTimeReached() && solutionFound);
@@ -1365,32 +1463,34 @@ public class ExampleBasedROLearner {
 		}
 	}
 
+	@Deprecated
 	private boolean guaranteeXgoodDescriptions() {
-		if (guaranteeXgoodShown)
+		if (guaranteeXgoodAlreadyReached)
 			return true;
 		if (solutions.size() > guaranteeXgoodDescriptions) {
 			if (guaranteeXgoodDescriptions != 1) {
 				logger.info("Minimum number (" + guaranteeXgoodDescriptions
 						+ ") of good descriptions reached, stopping now.");
 			}
-			guaranteeXgoodShown = true;
+			guaranteeXgoodAlreadyReached = true;
 			return true;
 		} else
 			return false;
 
 	}
 
+	@Deprecated
 	private boolean maxExecutionTimeReached() {
 		if (maxExecutionTimeInSeconds == 0)
 			return false;
-		if (maxExecutionTimeShown)
+		if (maxExecutionTimeAlreadyReached)
 			return true;
 		long needed = System.currentTimeMillis() - this.runtime;
 		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
 		if (maxMilliSeconds < needed) {
 			logger.info("Maximum time (" + maxExecutionTimeInSeconds
 					+ " seconds) reached, stopping now...");
-			maxExecutionTimeShown = true;
+			maxExecutionTimeAlreadyReached = true;
 			return true;
 		} else
 			return false;
@@ -1402,8 +1502,9 @@ public class ExampleBasedROLearner {
 	 * 
 	 * @return true
 	 */
+	@Deprecated
 	private boolean minExecutionTimeReached() {
-		if (minExecutionTimeShown)
+		if (minExecutionTimeAlreadyReached)
 			return true;
 		long needed = System.currentTimeMillis() - this.runtime;
 		long minMilliSeconds = minExecutionTimeInSeconds * 1000;
@@ -1412,7 +1513,7 @@ public class ExampleBasedROLearner {
 				logger.info("Minimum time (" + minExecutionTimeInSeconds
 						+ " seconds) reached, stopping when next solution is found");
 			}
-			minExecutionTimeShown = true;
+			minExecutionTimeAlreadyReached = true;
 			return true;
 		} else
 			return false;
