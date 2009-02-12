@@ -17,6 +17,9 @@
 \urldef{\carc}{\url}{http://dl-learner.org/wiki/Carcinogenesis}
 \urldef{\dldownload}{\url}{http://sourceforge.net/project/showfiles.php?group_id=203619}
 \urldef{\mos}{\url}{http://www.co-ode.org/resources/reference/manchester_syntax/}
+\urldef{\wsjavadoc}{\url}{http://dl-learner.org/javadoc/org/dllearner/server/DLLearnerWS.html}
+\urldef{\wsphpexamples}{\url}{http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/src/php-examples/}
+\urldef{\wikiprotplugin}{\url}{http://dl-learner.org/wiki/ProtegePlugin}
 
 \title{DL-Learner Manual [Draft]}
 \author{Jens Lehmann}
@@ -51,6 +54,7 @@ In the most common scenario we consider, supervised learning in OWL/DLs, means t
 As an example, consider the problem to find out whether a chemical compound can cause cancer\footnote{see \carc{} for a more detailed description}. In this case, the background knowledge contains information about chemical compounds in general and certain compounds we are interested in. The positive examples are those compounds causing cancer, whereas the negative examples are those compounds not causing cancer. The prediction for the examples is likely to have been obtained from experiments and long-term research trials in this case. Of course, all examples have to be present in the considered background knowledge. A learning algorithm can now derive a class expression from examples and background knowledge, e.g.~this class expression in natural language could be ``chemical compounds containing a phosphorus atom''. (Of course, in practice the expression will be more complex to obtain a reasonable accuracy.) Using this class expression, we can no classify unseen chemical compounds.
 
 \section{Getting Started}
+\label{sec:start}
 
 DL-Learner is written in Java, i.e.~it can be used on all platforms supporting Java. Currently, Java 6 or higher is required. To install the latest release, please visit the download page\footnote{\dldownload} and extract the file on your harddisk. In the top level directory, you will notice several executables. Those files ending with \verb|bat| are Windows executables, whereas the corresponding files without file extension are the Non-Windows (e.g.~Linux, Mac) executables. To test whether DL-Learner works, please run the following on the command line depending on your operating system:
 
@@ -92,17 +96,14 @@ overall reasoning time: 3ms (13,901% of overall runtime)
 overall algorithm runtime: 26ms
 \end{verbatim}
 
-\todo{Use Manchester OWL Syntax for output.}
-\todo{Suppress http://localhost/foo in output.}
-\todo{empty line after init; empty line after algorithm finished}
-\todo{replace ``node'' by ``class expression''}
+\todo{display accuracy of solutions}
 \todo{find out why algorithm continues after finding EXISTS hasChild.TOP}
 
 The first part of the output tells you which components are used (more on this in Section \ref{sec:components}). In the second part you see output coming from the used learning algorithm, i.e.~it can print information while running (``more accurate (83,33\%) class description found'') and the final solutions, it computed. The results are displayed in Manchester OWL Syntax\footnote{\mos}. There can be several solutions, in which case they are ordered with the most promising one in the first position. The last part of the output contains some runtime statistics.
 
 \section{DL-Learner Architecture}
 
-DL-Learner consists of core functionality, which provides Machine Learning algorithms for solving the learning problem, support for different knowledge base formats, an OWL library, and reasoner interfaces. There are several interfaces for accessing this functionality, a couple of tools which use the DL-Learner algorithms, and a set of convenience scripts. The general structure is illustrated in the following \ref{fig:structure}.
+DL-Learner consists of core functionality, which provides Machine Learning algorithms for solving the learning problem, support for different knowledge base formats, an OWL library, and reasoner interfaces. There are several interfaces for accessing this functionality, a couple of tools which use the DL-Learner algorithms, and a set of convenience scripts. The general structure is illustrated in Figure \ref{fig:structure}.
 
 \begin{figure}
  \includegraphics[width=\textwidth]{../../resources/structure_print}
@@ -110,9 +111,9 @@ DL-Learner consists of core functionality, which provides Machine Learning algor
  \label{fig:structure}
 \end{figure}
 
-To be flexible in integrating new learning algorithms, new kinds of learning problems, new knowledge bases, and new reasoner implementations, DL-Learner uses a component based model. Adding a component is as easy as subclassing the appropriate class and adding the name of the new class to the “components.ini” file (more on that in Section \ref{sec:developing}).
+To be flexible in integrating new learning algorithms, new kinds of learning problems, new knowledge bases, and new reasoner implementations, DL-Learner uses a component based model. Adding a component can be done by subclassing the appropriate class and adding the name of the new class to the “components.ini” file (more on that in Section \ref{sec:developing}).
 
-In DL-Learner, there are four types of components (knowledge source, reasoning service, learning problem, learning algorithm). There are several components of each type and each component can have its own configuration options as illustrated in Figure \ref{fig:components}.
+There are four types of components (knowledge source, reasoning service, learning problem, learning algorithm). For each type, there are several implemented components and each component can have its own configuration options as illustrated in Figure \ref{fig:components}. Configuration options can be used to change parameters/settings of a component. In Section \ref{sec:components}, we describe the components in DL-Learner and their configuration options.
 
 \begin{figure}
  \includegraphics[width=\textwidth]{../../resources/components_print}
@@ -123,6 +124,8 @@ In DL-Learner, there are four types of components (knowledge source, reasoning s
 \section{DL-Learner Components}
 \label{sec:components}
 
+
+
 \subsection{Knowledge Sources}
 
 \subsection{Reasoner Components}
@@ -131,7 +134,28 @@ In DL-Learner, there are four types of components (knowledge source, reasoning s
 
 \subsection{Learning Algorithms}
 
+
+
 \section{DL-Learner Interfaces}
+
+One interface you have already used in Section \ref{sec:start} is the command line. There are two executables, which can be used for starting DL-Learner on the commandline: \verb|dl-learner| and \verb|quickstart|. The first one takes a conf file as argument, whereas the latter one lists all conf files in the examples folder and allows you to select one of those.
+
+\begin{figure}
+ \centering
+ \includegraphics[width=.9\textwidth]{../../resources/screenshots/gui_algorithm}
+ \caption{GUI screenshot showing the learning algorithm tab. The UI allows you to set different options and then proceed to the next tab and execute the algorithm.}
+ \label{fig:gui}
+\end{figure}
+
+Apart from the command line, there is also a prototypical graphical interface. You can use \verb|gui| (or \verb|gui.bat|) to start it. You can optionally pass it a conf file as argument. The main GUI window has four tabs corresponding to the four different types of components and a run tab to execute the learning algorithm. Using the GUI, you can assemble the desired combination of components and options. The \verb|File| menu allows you to load a conf file or save the current configuration to a conf file. The GUI implementation is currently prototypical, so please report any bugs or feature requests you have (see Section \ref{sec:contact}). Since the GUI uses the component manager, it will automatically evolve when new components and options are added.
+
+A third interface through which DL-Learner can be accessed programmatically is a web service. You can execute \verb|ws| (or \verb|ws.bat|) to start the web service. It is based on the Java API for XML Web Services (JAX-WS), which is included in Java 6 or higher. Executing the command will start a web server on port 8181 of your local machine. The WSDL can be accessed via \url{http://localhost:8181/services?wsdl}. You can use a WSDL viewer to see the supported operation 
+or view the JavaDoc of the corresponding Java file\footnote{viewable online at \wsjavadoc}. 
+Some examples for calling the web service from PHP can be found in the DL-Learner subversion 
+repository\footnote{in the directory src/php-examples/:\\ \wsphpexamples}.
+\todo{Javadoc of web service needs to be improved (almost undocumented)}
+
+Another means to access DL-Learner, in particular for ontology engineering, is to use the OntoWiki and Protégé plugins. The OntoWiki plugin is not officially released yet, but can be used in the SVN version of OntoWiki. The Protégé 4 plugin can be installed either by downloading it from the DL-Learner download page or directly within Protégé 4 by clicking on ``File'', ``Preferences'', ``Plugins'', ``Check for Downloads'' now and selecting the DL-Learner plugin. For more information and a screencast see the Protégé plugin wiki page \footnote{\wikiprotplugin}.
 
 \section{Extending DL-Learner}
 \label{sec:developing}
@@ -150,6 +174,19 @@ Each component can specify its own configuration options. Currently, the followi
 \end{itemize}
 
 Although, we loose the ability to use arbitrary argument types in components, this gives us the possibility to build very flexible user interfaces. Whenever, a new component or a new configuration option for a component is added, the current user interfaces (GUI, web service, commandline) will automatically support it without any need for code changes.
+
+\section{General Information}
+\label{sec:general}
+\label{sec:contact}
+
+\begin{itemize}
+ \item Homepage: \url{http://dl-learner.org}
+ \item Contact: lehmann@informatik.uni-leipzig.de
+ \item Sourceforge.net project page: \url{http://sourceforge.net/projects/dl-learner/}
+ \item Tracker (bugs, features): \url{http://sourceforge.net/tracker/?group_id=203619}
+ \item Mailing Lists: \url{http://sourceforge.net/mail/?group_id=203619}
+ \item Latest Release: \url{http://sourceforge.net/project/showfiles.php?group_id=203619}
+\end{itemize}
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}
