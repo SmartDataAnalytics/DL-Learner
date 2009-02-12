@@ -160,7 +160,7 @@ Several reasoner components are implemented, which can be interfaces to concrete
 
 \subsection{Learning Problems}
 
-In the introduction Sections \ref{sec:whatis} and \ref{sec:start}, we described a specific learning problem where positive and negative examples are given. In practice different variations of similar problems occur. You can switch between the different problems using \verb|problem=$value;|, where \verb|problem| is one of \verb|posNegDefinitionLP|, \verb|posOnlyDefinitionLP|, \verb|classLearning|.
+In the introduction Sections \ref{sec:whatis} and \ref{sec:start}, we described a specific learning problem where positive and negative examples are given. In practice different variations of similar problems occur. You can switch between the different problems using \verb|problem=$value;|, where \verb|$value| is one of \verb|posNegDefinitionLP|, \verb|posOnlyDefinitionLP|, \verb|classLearning|.
 
 \begin{description}
  \item[Positive and Negative Examples] Let the name of the background ontology be $\mathcal{O}$. The goal in this learning problem is to find an OWL class expression $C$ such that all/many positive examples are instances of $C$ w.r.t.~$\mathcal{O}$ and none/few negative examples are instances of $C$ w.r.t.~$\mathcal{O}$. As explained previously, $C$ should be learned such that it generalises to unseen individuals and is readable. The important configuration options of this component are obviously the positive and negative examples, which are often indicated with \verb|+| and \verb|-| signs in conf files as an optional shortcut to using e.g.~\verb|posNegDefinitionLP.positiveExamples = {...}|.
@@ -168,11 +168,27 @@ In the introduction Sections \ref{sec:whatis} and \ref{sec:start}, we described 
  \item[Class Learning] In class learning, you are given an existing class $A$ within your ontology $\mathcal{O}$ and want to describe it. It is similar to the previous problem in that you can use the instances of the class as positive examples. However, there are some differences, e.g.~you do not want to have $A$ itself as a solution of the problem, and since this is an ontology engineering task, the focus on short and readable class expressions is stronger than for the two problems mentioned before. \todo{This is under construction, but will be implemented soon.}
 \end{description}
 
-
 \subsection{Learning Algorithms}
 
+The implemented algorithms vary from very simple (and usually inappropriate) algorithms to sophisticated ones. You can switch between the different algorithms using \verb|algorithm=$value;|, where \verb|$value| is one of \verb|bruteForce|, \verb|random|, \verb|gp|, \verb|refinement|, \verb|refexamples|, and \verb|celoe|. \todo{Rename refexamples to refinement2.}
+
 \begin{description}
- \item 
+ \item[Brute Force]: This algorithm tests all class expressions up to a specified length, which you can set using e.g.~\verb|bruteForce.maxlength = 7|.
+ \item[Random Guesser]: This algorithm randomly generates class expressions. To do this it creates trees, which can be mapped to class expressions. Its main parameter is the number of created trees, which you can set using e.g.~\verb|random.numberOfTrees = 5|.
+ \item[Genetic Programming (GP)]: GP is a well-known general problem solution method, which can be adapted to class expression learning. The adaption is straightforward. In DL-Learner, however, an additional genetic refinement operator was implemented, which has shown to improve GP performance\cite{hybrid_gp}. Some options are:
+ \begin{itemize}
+  \item number of individuals: The individual count is the size of each generation in a GP algorithm. It is one of the most crucial parameters. Setting it to a higher value usually means investing more computational resource for increasing the likelihood that a solution will be found. Usage: \verb|gp.numberOfIndividuals = 100|
+  \item refinement probability: This is used to specify how likely the usage of the genetic refinement operator should be, e.g.~\verb|gp.refinementProbability = 0.6| means that it will be selected 60\% of the time.
+ \end{itemize}
+ The GP algorithm has 15 more options documented in \verb|doc/configOptions.txt|.
+ \item[Refinement] This is a top down refinement operator approach, which is described in \cite{alc_learning_algorithm}. Some options include:
+ \begin{itemize}
+  \item target language: The standard target language of this algorithm is $\mathcal{ALCN(D)}$. However, you can specify the target language in more detail, i.e.~you can exclude the $\forall$ constructor by using \verb|refinement.useAllConstructor = true;|. Similar options exist for $\exists$, $\not$, cardinality restrictions, and boolean datatypes.
+  \item maximum execution time: If there is no perfect solution of a given problem, the algorithm can potentially run forever (in practice it will run out of memory). It is therefore often interesting to limit the execution time. You can use e.g.~\verb|refinement.maxExecutionTimeInSeconds = 100| to say that the algorithm should run for at most 100 seconds. Often, it will run slightly longer than the maximum executiontime since it waits until the next internal loop of the algorithm to stop gracefully.
+ \end{itemize}
+  The algorithm supports a range of further options. For instance, one can specify which classes and properties must not occur in resulting class expressions.
+ \item[Refinement II] The previous algorithm has been extended to make more sophisticated use of background knowledge and therefore run more efficiently on many problems. It also supports double datatypes and hasValue restrictions (which again can be turned on or off as desired). It also includes explicit noise handling through the \verb|noisePercentage| option. This is currently the default and recommend algorithm for learning from positive and negative examples. More than 30 options can be set to control its behaviour. However, apart from the target language the most important setting is noise, which should be optimised for the given problem. \todo{say more about it?, include option descriptions?, rename noise to minAccuracy which describes it better}
+ \item[Class Expression Learning for Ontology Engineering (CELOE)] \todo{This algorithm is under construction.}
 \end{description}
 
 Please note that while components are interchangeable, it is not possibly to arbitrarily combine them. For instance, the newer learning algorithms do not work with the DIG interface, since it does not provide the necessary inference tasks. Furthermore, a learning algorithm can specify which learning problems it can solve, i.e.~we do not require a learning algorithm to be able to solve each learning problem. In later versions of this manual, we may include a compatibility matrix. In the meantime, you can easily verify whether a combination works by testing it in a conf file.
@@ -183,7 +199,7 @@ One interface you have already used in Section \ref{sec:start} is the command li
 
 \begin{figure}
  \centering
- \includegraphics[width=.85\textwidth]{../../resources/screenshots/gui_algorithm}
+ \includegraphics[width=.8\textwidth]{../../resources/screenshots/gui_algorithm}
  \caption{GUI screenshot showing the learning algorithm tab. The UI allows you to set different options and then proceed to the next tab and execute the algorithm.}
  \label{fig:gui}
 \end{figure}

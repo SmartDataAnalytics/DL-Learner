@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.DBpediaNavigationSuggestor;
 import org.dllearner.algorithms.RandomGuesser;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
@@ -96,6 +97,7 @@ public class ConfMapper {
 		learningAlgorithmMapping.put("refexamples", ExampleBasedROLComponent.class);
 		learningAlgorithmMapping.put("dbpediaNavigationSuggestor", DBpediaNavigationSuggestor.class);
 		learningAlgorithmMapping.put("el", ELLearningAlgorithm.class);
+		learningAlgorithmMapping.put("celoe", CELOE.class);
 		
 		// you do not need to edit anything below
 		
