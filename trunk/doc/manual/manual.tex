@@ -44,6 +44,7 @@ DL-Learner is a machine learning framework for OWL and description logics. It in
 \clearpage
 
 \section{What is DL-Learner?}
+\label{sec:whatis}
 
 DL-Learner is an open source framework for (supervised) machine learning in OWL and Description Logics (from instance data). We further detail what this means:
 
@@ -159,8 +160,12 @@ Several reasoner components are implemented, which can be interfaces to concrete
 
 \subsection{Learning Problems}
 
+In the introduction Sections \ref{sec:whatis} and \ref{sec:start}, we described a specific learning problem where positive and negative examples are given. In practice different variations of similar problems occur. You can switch between the different problems using \verb|problem=$value;|, where \verb|problem| is one of \verb|posNegDefinitionLP|, \verb|posOnlyDefinitionLP|, \verb|classLearning|.
+
 \begin{description}
- \item 
+ \item[Positive and Negative Examples] Let the name of the background ontology be $\mathcal{O}$. The goal in this learning problem is to find an OWL class expression $C$ such that all/many positive examples are instances of $C$ w.r.t.~$\mathcal{O}$ and none/few negative examples are instances of $C$ w.r.t.~$\mathcal{O}$. As explained previously, $C$ should be learned such that it generalises to unseen individuals and is readable. The important configuration options of this component are obviously the positive and negative examples, which are often indicated with \verb|+| and \verb|-| signs in conf files as an optional shortcut to using e.g.~\verb|posNegDefinitionLP.positiveExamples = {...}|.
+ \item[Positive Examples] This learning problem is similar to the one before, but without negative examples. In this case, it is desirable to find a class expression which closely fits the positive examples while still generalising sufficiently well. For instance, you usually do not want to have \verb|owl:Thing| as a solution for this problem, but neither do you want to have an enumeration of individuals.
+ \item[Class Learning] In class learning, you are given an existing class $A$ within your ontology $\mathcal{O}$ and want to describe it. It is similar to the previous problem in that you can use the instances of the class as positive examples. However, there are some differences, e.g.~you do not want to have $A$ itself as a solution of the problem, and since this is an ontology engineering task, the focus on short and readable class expressions is stronger than for the two problems mentioned before. \todo{This is under construction, but will be implemented soon.}
 \end{description}
 
 
@@ -170,6 +175,7 @@ Several reasoner components are implemented, which can be interfaces to concrete
  \item 
 \end{description}
 
+Please note that while components are interchangeable, it is not possibly to arbitrarily combine them. For instance, the newer learning algorithms do not work with the DIG interface, since it does not provide the necessary inference tasks. Furthermore, a learning algorithm can specify which learning problems it can solve, i.e.~we do not require a learning algorithm to be able to solve each learning problem. In later versions of this manual, we may include a compatibility matrix. In the meantime, you can easily verify whether a combination works by testing it in a conf file.
 
 \section{DL-Learner Interfaces}
 

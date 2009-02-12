@@ -39,7 +39,9 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.reasoning.DIGReasoner;
@@ -85,6 +87,8 @@ public class ConfMapper {
 		learningProblemMapping.put("posNegDefinitionLP", PosNegDefinitionLP.class);
 		learningProblemMapping.put("posNegInclusionLP", PosNegInclusionLP.class);
 		learningProblemMapping.put("posOnlyDefinitionLP", PosOnlyDefinitionLP.class);
+		learningProblemMapping.put("posNegDefinitionLPStrict", PosNegDefinitionLPStrict.class);
+		learningProblemMapping.put("classLearning", ClassLearningProblem.class);
 		learningAlgorithmMapping.put("random", RandomGuesser.class);
 		learningAlgorithmMapping.put("bruteForce", BruteForceLearner.class);		
 		learningAlgorithmMapping.put("gp", GP.class);
