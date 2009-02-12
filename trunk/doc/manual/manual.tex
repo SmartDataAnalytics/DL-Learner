@@ -160,20 +160,41 @@ Another means to access DL-Learner, in particular for ontology engineering, is t
 \section{Extending DL-Learner}
 \label{sec:developing}
 
-\todo{example code of a simple component}
-
-Each component can specify its own configuration options. Currently, the following configuration option types exist (new ones can be implemented if necessary):
+DL-Learner is open source and component based. If you want to develop a specific part or extension of a class expression learning algorithm for OWL, then you are invited to use DL-Learner as a base. This allows you to focus on the part you want to implement while being able to use DL-Learner as a library and access it through one of the interfaces. In a first step, you have to decide which type of component you want to create. To implement a concrete component, you have to subclass one of the following classes and implement their abstract methods:
 
 \begin{itemize}
- \item boolean
- \item string (a set of allowed strings can be specified)
- \item int (min and max value can be specifified)
- \item double (min and max value can be specifified)
- \item set of strings
- \item list of string tuples
+ \item org.dllearner.core.KnowledgeSource
+ \item org.dllearner.core.ReasonerComponent
+ \item org.dllearner.core.LearningProblem
+ \item org.dllearner.core.LearningAlgorithm
 \end{itemize}
 
-Although, we loose the ability to use arbitrary argument types in components, this gives us the possibility to build very flexible user interfaces. Whenever, a new component or a new configuration option for a component is added, the current user interfaces (GUI, web service, commandline) will automatically support it without any need for code changes.
+You then have to add your component to \verb|lib/components.ini| such that it is registered in the component manager when DL-Learner starts up. If you want to use configuration options in your component, you need to create a static method as follows:
+
+\begin{verbatim}
+public static Collection<ConfigOption<?>> createConfigOptions() {
+  List<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
+  options.add(new IntegerConfigOption("maxDepth", 
+    "maximum depth of generated concepts/trees", 5));
+  return options;
+}
+\end{verbatim}
+
+This creates an option with name \verb|maxDepth|, the given description, and a default value of 5. To add further options, simply add more of them to the collection. Running \verb|org.dllearner.scripts.ConfigJavaGenerator| generates a file for you in package \verb|org.dllearner.configurators| to access the options of your component programmatically if desired. Currently, the following configuration option types exist (new ones can be implemented if necessary):
+
+\begin{itemize}
+ \item boolean, e.g. \verb|useCache|
+ \item string (a set of allowed strings can be specified), e.g. \verb|cacheDir|
+ \item URL, e.g. \verb|reasonerURL|
+ \item int (min and max value can be specifified), e.g. \verb|maxDepth|
+ \item double (min and max value can be specifified), e.g. \verb|noisePercentage|
+ \item set of strings, e.g. \verb|positiveExamples|
+ \item list of string tuples, e.g. \verb|replaceObject|
+\end{itemize}
+
+Although, we loose the ability to use arbitrary argument types as options in components, this gives us the possibility to build very flexible user interfaces. Whenever, a new component or a new configuration option for a component is added, the current user interfaces (GUI, web service, commandline) will automatically support it without any or only minimal code changes.
+
+This quick introduction only serves as an entry point to get you started. For more detailed questions about how to extend DL-Learner, please drop us a message in the DL-Learner mailing list.
 
 \section{General Information}
 \label{sec:general}
@@ -181,10 +202,10 @@ Although, we loose the ability to use arbitrary argument types in components, th
 
 \begin{itemize}
  \item Homepage: \url{http://dl-learner.org}
- \item Contact: lehmann@informatik.uni-leipzig.de
  \item Sourceforge.net project page: \url{http://sourceforge.net/projects/dl-learner/}
  \item Tracker (bugs, features): \url{http://sourceforge.net/tracker/?group_id=203619}
  \item Mailing Lists: \url{http://sourceforge.net/mail/?group_id=203619}
+ \item Contact: lehmann@informatik.uni-leipzig.de (please use the mailing list if possible)
  \item Latest Release: \url{http://sourceforge.net/project/showfiles.php?group_id=203619}
 \end{itemize}
 
