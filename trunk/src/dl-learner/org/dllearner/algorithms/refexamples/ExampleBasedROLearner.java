@@ -1412,8 +1412,10 @@ public class ExampleBasedROLearner {
 		if (guaranteeXgoodAlreadyReached){
 			result = true;
 		} else if(solutions.size() >= guaranteeXgoodDescriptions) {
+				if(guaranteeXgoodDescriptions != 1) {
 				logger.info("Minimum number (" + guaranteeXgoodDescriptions
 						+ ") of good descriptions reached.");
+				}
 				guaranteeXgoodAlreadyReached = true;
 				result = true;
 		}
@@ -1422,8 +1424,10 @@ public class ExampleBasedROLearner {
 		if (minExecutionTimeAlreadyReached){
 			result = result && true;
 		}else if(minMilliSeconds < totalTimeNeeded) {
+			if(minExecutionTimeInSeconds != 0) {
 				logger.info("Minimum time (" + minExecutionTimeInSeconds
 						+ " seconds) reached.");
+			}
 			minExecutionTimeAlreadyReached = true;
 			result = result && true;
 		} 
