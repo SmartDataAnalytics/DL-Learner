@@ -423,7 +423,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	}
 	
 	public static String getName() {
-		return "example driven refinement operator based learning algorithm";
+		return "refinement operator based learning algorithm II";
 	}
 	
 	public static String getUsage() {
