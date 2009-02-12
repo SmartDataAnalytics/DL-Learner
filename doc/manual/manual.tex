@@ -70,39 +70,31 @@ dllearner.bat examples/father.conf     (Windows Operating System)
 
 \begin{verbatim}
 DL-Learner 2008-10-13 command line interface
-starting component manager ... OK (201ms)
+starting component manager ... OK (81ms)
 initialising component "OWL file" ... OK (0ms)
-initialising component "fast instance checker" ... OK (839ms)
-initialising component "two valued definition learning problem" 
-... OK (0ms)
-initialising component "example driven refinement operator based 
-learning algorithm" ... OK (14ms)
+initialising component "fast instance checker" ... OK (861ms)
+initialising component "two valued definition learning 
+  problem" ... OK (0ms)
+initialising component "refinement operator based learning 
+  algorithm II" ... OK (14ms)
 
-more accurate (83,33%) node found: http://example.com/father#male 
-[q:1, he:0, children:0]
-more accurate (100,00%) node found: (http://example.com/father#male 
-AND EXISTS http://example.com/father#hasChild.TOP) 
-[q:0, he:4, children:0]
-best node (male AND EXISTS hasChild.TOP) [acc:100% h:0,962 q:0p-0n 
-(REASONER), he:7 c:12]
+starting top down refinement with: Thing (50% accuracy)
+more accurate (83,33%) class expression found: male
 solutions (at most 20 are shown):
-1: (male AND EXISTS hasChild.TOP) (length 5, depth 3)
-2: (male AND EXISTS hasChild.ALL hasChild.TOP) (length 7, depth 4)
-3: (male AND EXISTS hasChild.(female OR male)) (length 7, depth 4)
+1: (male and hasChild some Thing) (length 5, depth 3)
 Algorithm terminated succesfully.
 
 number of retrievals: 4
 retrieval reasoning time: 0ms ( 0ms per retrieval)
-number of instance checks: 194 (0 multiple)
-instance check reasoning time: 3ms ( 0ms per instance check)
-overall reasoning time: 3ms (13,901% of overall runtime)
-overall algorithm runtime: 26ms
+number of instance checks: 93 (0 multiple)
+instance check reasoning time: 0ms ( 0ms per instance check)
+overall reasoning time: 0ms (1,931% of overall runtime)
+overall algorithm runtime: 28ms
 \end{verbatim}
 
 \todo{display accuracy of solutions}
-\todo{find out why algorithm continues after finding EXISTS hasChild.TOP}
 
-The first part of the output tells you which components are used (more on this in Section \ref{sec:components}). In the second part you see output coming from the used learning algorithm, i.e.~it can print information while running (``more accurate (83,33\%) class description found'') and the final solutions, it computed. The results are displayed in Manchester OWL Syntax\footnote{\mos}. There can be several solutions, in which case they are ordered with the most promising one in the first position. The last part of the output contains some runtime statistics.
+The first part of the output tells you which components are used (more on this in Section \ref{sec:components}). In the second part you see output coming from the used learning algorithm, i.e.~it can print information while running (``more accurate (83,33\%) class description found'') and the final solutions, it computed. The results are displayed in Manchester OWL Syntax\footnote{\mos}. There can be several solutions, in which case they are ordered with the most promising one in the first position. In this case the only solution is \verb|male and hasChild some Thing| defining the class father. The last part of the output contains some runtime statistics.
 
 \section{DL-Learner Architecture}
 
@@ -183,7 +175,7 @@ The implemented algorithms vary from very simple (and usually inappropriate) alg
  The GP algorithm has 15 more options documented in \verb|doc/configOptions.txt|.
  \item[Refinement] This is a top down refinement operator approach, which is described in \cite{alc_learning_algorithm}. Some options include:
  \begin{itemize}
-  \item target language: The standard target language of this algorithm is $\mathcal{ALCN(D)}$. However, you can specify the target language in more detail, i.e.~you can exclude the $\forall$ constructor by using \verb|refinement.useAllConstructor = true;|. Similar options exist for $\exists$, $\not$, cardinality restrictions, and boolean datatypes.
+  \item target language: The standard target language of this algorithm is $\mathcal{ALCN(D)}$. However, you can specify the target language in more detail, i.e.~you can exclude the $\forall$ constructor by using \verb|refinement.useAllConstructor = true;|. Similar options exist for $\exists$, $\neg$, cardinality restrictions, and boolean datatypes.
   \item maximum execution time: If there is no perfect solution of a given problem, the algorithm can potentially run forever (in practice it will run out of memory). It is therefore often interesting to limit the execution time. You can use e.g.~\verb|refinement.maxExecutionTimeInSeconds = 100| to say that the algorithm should run for at most 100 seconds. Often, it will run slightly longer than the maximum executiontime since it waits until the next internal loop of the algorithm to stop gracefully.
  \end{itemize}
   The algorithm supports a range of further options. For instance, one can specify which classes and properties must not occur in resulting class expressions.
