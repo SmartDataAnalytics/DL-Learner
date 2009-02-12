@@ -20,6 +20,8 @@
 \urldef{\wsjavadoc}{\url}{http://dl-learner.org/javadoc/org/dllearner/server/DLLearnerWS.html}
 \urldef{\wsphpexamples}{\url}{http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/src/php-examples/}
 \urldef{\wikiprotplugin}{\url}{http://dl-learner.org/wiki/ProtegePlugin}
+\urldef{\owlapi}{\url}{http://owlapi.sourceforge.net}
+\urldef{\dig}{\url}{http://dl.kr.org/dig/}
 
 \title{DL-Learner Manual [Draft]}
 \author{Jens Lehmann}
@@ -124,16 +126,49 @@ There are four types of components (knowledge source, reasoning service, learnin
 \section{DL-Learner Components}
 \label{sec:components}
 
-
+In this part, we describe concrete components currently implemented in DL-Learner. Each of the subsections contains a list of components of type specified in the subsection heading. Note that this constitute a full description, i.e.~we omit some components and many configuration options. The purpose of the manual is to obtain a general understanding of the implemented components. A full list of components, which is generated automatically from the source code, can be found in \verb|doc/configOptions.txt| including the default values for all options and their usage in conf files. \todo{ConfigDocumentationGenerator seems partially broken, because it prints things like CLI usage: null = owlAPIReasoner;}
 
 \subsection{Knowledge Sources}
 
+Knowledge sources have a URI and can be included in conf files using \verb|import("$url");|, e.g.~\verb|import("ontology.owl")|. Depending on the file ending, DL-Learner will guess the correct type of knowledge source. If you want to overwrite this, you can use a second parameter with value \verb|OWL|, \verb|KB|, or \verb|SPARQL|, e.g.~\verb|import("ontology.owl","OWL")|.
+
+\begin{description}
+ \item[OWL File] DL-Learner supports OWL files in different formats, e.g. RDF/XML or N-Triples. If there is a standard OWL format, you want to use, but is not supported by DL-Learner please let us know.
+ \item[KB File] KB files are an internal non-standardised knowledge representation format, which corresponds to description logic syntax except that the special symbols have been replaced by ASCII strings, e.g.~\verb|AND| instead of $\sqcap$. You can find several KB files in the examples folder.
+ \item[SPARQL Endpoint] DL-Learner allows to use SPARQL endpoints as background knowledge source, which enables the incorporation of very large knowledge bases, e.g. DBpedia\cite{2008_dbpedia}, in DL-Learner. This works by using a set of start instances, which usually correspond to the examples in a learning problem, and then retrieving knowledge about these instances via SPARQL queries. The obtained knowledge base fragment can be converted to OWL and consumed by a reasoner later since it is now sufficiently to be processed in reasonable time. Please see \cite{2009_ijswis} for details. Some options of the SPARQL component are:
+\begin{itemize}
+ \item instances: Set of individuals to use for starting the knowledge fragment extraction. Example use in conf file: \begin{verbatim}sparql.instances = {"http://dbpedia.org/resource/Matt_Stone",
+ "http://dbpedia.org/resource/Sarah_Silverman"};\end{verbatim}
+ \item recursionDepth: Maximum distance of an extracted individual from a start individual. This influences the size of the extracted fragment and depends on the maximum property depth you want the learned class expression to have. Example use in conf file: \verb|sparql.recursionDepth = 3;|.
+\end{itemize}
+ Many further options allow to modify the extracted fragment on the fly or fine-tune the extraction process.
+\end{description}
+
 \subsection{Reasoner Components}
+
+Several reasoner components are implemented, which can be interfaces to concrete reasoner implementations. To select a component in a conf file, use \verb|reasoner=$value;|, where  \verb|$value| is one of \verb|digReasoner|, \verb|fastInstanceChecker|, or \verb|owlAPIReasoner|, which are explained below.
+
+\begin{description}
+ \item[OWL API] The OWL API\footnote{\owlapi} reasoner interface can be used in conjunction with the Pellet and FaCT++ reasoners. The only option allows to switch between both:
+ \begin{itemize}
+  \item reasonerType: Selects the desired reasoner. By default, Pellet is used. Usage: \verb|owlAPIReasoner.reasonerType = fact;|. Note that FaCT++ is written in C++ and we currently ship the 32 bit version of the JNI layer. This may change to 64 bit in the future.
+ \end{itemize}
+ \item[DIG] DIG 1.1\footnote{\dig} is an interface to description logic reasoners and supported by a large variety of reasoners including Pellet, FaCT++, KAON2, and Racer Pro. The major drawback is that the current version DIG 1.1 is not aligned with the OWL specification and therefore lacks several features, which are crucial to the more recent learning algorithms in DL-Learner. If you still want to use the DIG interface, you have to download a DIG capable reasoner and start the DIG server there. DL-Learner communicates with the reasoner using the XML based protocol over HTTP.
+ \item[Fast Instance Checker] Instance checks, i.e.~testing whether an individual is instance of a class, is the major reasoner task in many learning algorithms. This reasoner is a self-developed for the DL-Learner project. It remedies some problems related to Machine Learning and the Open World Assumption in OWL and therefore is not correct w.r.t.~OWL semantics. (See \cite{cheng00} Section 4 for an explanation.) Furthermore, it provides an improved performance for instance checks by precomputing some inferences. The fast instance checker is build on top of Pellet and the default reasoner component in DL-Learner.
+\end{description}
 
 \subsection{Learning Problems}
 
+\begin{description}
+ \item 
+\end{description}
+
+
 \subsection{Learning Algorithms}
 
+\begin{description}
+ \item 
+\end{description}
 
 
 \section{DL-Learner Interfaces}
@@ -142,7 +177,7 @@ One interface you have already used in Section \ref{sec:start} is the command li
 
 \begin{figure}
  \centering
- \includegraphics[width=.9\textwidth]{../../resources/screenshots/gui_algorithm}
+ \includegraphics[width=.85\textwidth]{../../resources/screenshots/gui_algorithm}
  \caption{GUI screenshot showing the learning algorithm tab. The UI allows you to set different options and then proceed to the next tab and execute the algorithm.}
  \label{fig:gui}
 \end{figure}
