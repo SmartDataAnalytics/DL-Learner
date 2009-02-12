@@ -523,7 +523,9 @@ public class Start {
 				} else {
 					String formatString = arguments.get(1);
 
-					if (formatString.equals("RDF/XML"))
+					if(formatString.equals("OWL")) {
+						ksClass = OWLFile.class;
+					} else if (formatString.equals("RDF/XML"))
 						ksClass = OWLFile.class;
 					else if (formatString.equals("KB"))
 						ksClass = KBFile.class;
