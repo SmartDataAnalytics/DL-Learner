@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -57,16 +57,7 @@ import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 import com.jamonapi.Monitor;
 
 /**
- * Implements the example based refinement operator learning approach.
- * 
- * TODO: Solve subsumption problems. It is easy to implement approximate fast
- * instance checks. However, subsumption is difficult to optimise. It should by
- * analysed whether it is reasonable to perform instance comparisions instead of
- * subsumption checks, e.g. a concept is only included in the search tree when
- * it covers strictly less examples than its parent. Note, that this does not
- * mean that concepts not bearing an advantage in classification are thrown
- * away. They are just handled like improper refinements. [TODO: How does this
- * differ from not checking subsumption at all?]
+ * Implements the 2nd version of the refinement operator based learning approach.
  * 
  * @author Jens Lehmann
  * 
@@ -403,6 +394,8 @@ public class ExampleBasedROLearner {
 		ExampleBasedNode bestNode = startNode;
 		ExampleBasedNode bestNodeStable = startNode;
 
+		logger.info("starting top down refinement with: " + startNode.getConcept().toManchesterSyntaxString(baseURI, prefixes) + " (" + df.format(100*startNode.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "% accuracy)");
+		
 		int loop = 0;
 
 		algorithmStartTime = System.nanoTime();
@@ -446,7 +439,7 @@ public class ExampleBasedROLearner {
 					.getCovPosMinusCovNeg()) {
 				String acc = new DecimalFormat( ".00%" ).format((candidatesStable.last().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)));
 				// no handling needed, it will just look ugly in the output
-				logger.info("more accurate ("+acc+") node found: " + candidatesStable.last());
+				logger.info("more accurate ("+acc+") class expression found: " + candidatesStable.last().getConcept().toManchesterSyntaxString(baseURI, prefixes));
 				bestNodeStable = candidatesStable.last();
 			}
 
@@ -524,17 +517,18 @@ public class ExampleBasedROLearner {
 
 		if (solutionFound) {
 			int solutionLimit = 20;
-			logger.info("best node "
-					+ candidatesStable.last().getShortDescription(nrOfPositiveExamples,
-							nrOfNegativeExamples, baseURI));
+			// we do not need to print the best node if we display the top 20 solutions below anyway
+//			logger.info("best node "
+//					+ candidatesStable.last().getShortDescription(nrOfPositiveExamples,
+//							nrOfNegativeExamples, baseURI));
 			logger.info("solutions (at most " + solutionLimit + " are shown):");
 			int show = 1;
 			String manchester = "MANCHESTER:\n";
 			String kbSyntax = "KBSyntax:\n";
 			for (Description c : solutions) {
-				logger.info(show + ": " + c.toString(baseURI, null) + " (length " + c.getLength()
+				logger.info(show + ": " + c.toManchesterSyntaxString(baseURI, prefixes) + " (length " + c.getLength()
 						+ ", depth " + c.getDepth() + ")");
-				manchester += show + ": " + c.toManchesterSyntaxString(baseURI, prefixes) + "\n";
+//				manchester += show + ": " + c.toManchesterSyntaxString(baseURI, prefixes) + "\n";
 				kbSyntax += show + ": " + c.toKBSyntaxString() + "\n";
 				if (show >= solutionLimit) {
 					break;
@@ -551,10 +545,11 @@ public class ExampleBasedROLearner {
 
 		printStatistics(true);
 
-		if (stop)
-			logger.info("Algorithm stopped.");
-		else
-			logger.info("Algorithm terminated succesfully.");
+		if (stop) {
+			logger.info("Algorithm stopped.\n");
+		} else {
+			logger.info("Algorithm terminated succesfully.\n");
+		}
 
 		totalLearningTime.stop();
 		isRunning = false;

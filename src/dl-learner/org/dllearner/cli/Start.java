@@ -329,6 +329,11 @@ public class Start {
 
 		// handle any CLI options
 		processCLIOptions(cm, parser, rc, lp);
+		
+		// newline to separate init phase from learning phase
+		if(logger.isInfoEnabled()) {
+			System.out.println("");
+		}
 	}
 
 	public void start(boolean inQueryMode) {
