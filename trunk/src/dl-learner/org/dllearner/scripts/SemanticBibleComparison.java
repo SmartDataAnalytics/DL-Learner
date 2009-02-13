@@ -41,14 +41,14 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
+import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -269,7 +269,7 @@ public class SemanticBibleComparison {
 				SortedSet<Individual> posEx = SetManipulation.stringToInd(getIndividuals(fileContent, true));
 				SortedSet<Individual> negEx = SetManipulation.stringToInd(getIndividuals(fileContent, false));
 				
-				ExampleBasedROLComponent la = experimentalSetup(exp,posEx,negEx);
+				ROLComponent2 la = experimentalSetup(exp,posEx,negEx);
 				
 				//SimpleClock init = new SimpleClock();
 				initAllComponents();
@@ -379,8 +379,8 @@ public class SemanticBibleComparison {
 		
 	}
 	
-	public static ExampleBasedROLComponent experimentalSetup(Experiments exp,SortedSet<Individual> posExamples, SortedSet<Individual> negExamples ){
-		ExampleBasedROLComponent la = null;
+	public static ROLComponent2 experimentalSetup(Experiments exp,SortedSet<Individual> posExamples, SortedSet<Individual> negExamples ){
+		ROLComponent2 la = null;
 		if(exp.toString().contains("SPARQL"))
 			la = prepareSparqlExperiment(exp, posExamples, negExamples);
 		else if(exp.toString().contains("NORMAL")){
@@ -397,7 +397,7 @@ public class SemanticBibleComparison {
 			System.exit(0);
 			}
 		
-		ExampleBasedROLComponentConfigurator c = la.getConfigurator();
+		ROLComponent2Configurator c = la.getConfigurator();
 		
 		//defaultSettings:
 		c.setUseHasValueConstructor(false);
@@ -431,10 +431,10 @@ public class SemanticBibleComparison {
 	}
 	
 	
-	public static ExampleBasedROLComponent prepareSparqlExperiment(Experiments exp, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
+	public static ROLComponent2 prepareSparqlExperiment(Experiments exp, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
 		
 
-		ExampleBasedROLComponent la = null;
+		ROLComponent2 la = null;
 		try{
 			SortedSet<Individual> instances = new TreeSet<Individual>();
 			instances.addAll(posExamples);
@@ -473,12 +473,12 @@ public class SemanticBibleComparison {
 					.getOWLAPIReasoner(tmp);
 	
 			// learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegDefinitionLP(f,
+			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 	
 			// learning algorithm
-			la = ComponentFactory.getExampleBasedROLComponent(lp, f);
+			la = ComponentFactory.getROLComponent2(lp, f);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
 			Config conf = new Config(ComponentManager.getInstance(), ks, f, lp, la);
 			new ConfigSave(conf).saveFile(new File(tmpFilename));
@@ -492,8 +492,8 @@ public class SemanticBibleComparison {
 		return la;
 	}
 	
-	public static ExampleBasedROLComponent prepareNormalExperiment(boolean fic, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
-		ExampleBasedROLComponent la = null;
+	public static ROLComponent2 prepareNormalExperiment(boolean fic, SortedSet<Individual> posExamples, SortedSet<Individual> negExamples){
+		ROLComponent2 la = null;
 		try{
 			SortedSet<Individual> instances = new TreeSet<Individual>();
 			instances.addAll(posExamples);
@@ -524,12 +524,12 @@ public class SemanticBibleComparison {
 //			ReasonerComponent rs = ComponentManager.getInstance().reasoningService(f);
 	
 //			 learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegDefinitionLP(f,
+			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 	
 			// learning algorithm
-			la = ComponentFactory.getExampleBasedROLComponent(lp, f);
+			la = ComponentFactory.getROLComponent2(lp, f);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
 			Config c = new Config(ComponentManager.getInstance(), ks, f, lp, la);
 			new ConfigSave(c).saveFile(new File(tmpFilename));

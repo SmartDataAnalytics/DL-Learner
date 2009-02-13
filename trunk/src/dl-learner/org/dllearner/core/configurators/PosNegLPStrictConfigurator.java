@@ -29,27 +29,27 @@ import org.dllearner.learningproblems.PosNegLPStrict;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class PosNegDefinitionLPStrictConfigurator  implements Configurator {
+public  class PosNegLPStrictConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
 
-private PosNegLPStrict posNegDefinitionLPStrict;
+private PosNegLPStrict posNegLPStrict;
 
 /**
-* @param posNegDefinitionLPStrict see PosNegDefinitionLPStrict
+* @param posNegLPStrict see PosNegLPStrict
 **/
-public PosNegDefinitionLPStrictConfigurator(PosNegLPStrict posNegDefinitionLPStrict){
-this.posNegDefinitionLPStrict = posNegDefinitionLPStrict;
+public PosNegLPStrictConfigurator(PosNegLPStrict posNegLPStrict){
+this.posNegLPStrict = posNegLPStrict;
 }
 
 /**
 * @param reasoningService see reasoningService
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
-* @return PosNegDefinitionLPStrict
+* @return PosNegLPStrict
 **/
-public static PosNegLPStrict getPosNegDefinitionLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
+public static PosNegLPStrict getPosNegLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
 PosNegLPStrict component = ComponentManager.getInstance().learningProblem(PosNegLPStrict.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "positiveExamples", positiveExamples);
 ComponentManager.getInstance().applyConfigEntry(component, "negativeExamples", negativeExamples);
@@ -64,7 +64,7 @@ return component;
 **/
 @SuppressWarnings("unchecked")
 public Set<String> getPositiveExamples() {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegDefinitionLPStrict,  "positiveExamples") ;
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegLPStrict,  "positiveExamples") ;
 }
 /**
 * negativeExamples negative examples.
@@ -74,7 +74,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegD
 **/
 @SuppressWarnings("unchecked")
 public Set<String> getNegativeExamples() {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegDefinitionLPStrict,  "negativeExamples") ;
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegLPStrict,  "negativeExamples") ;
 }
 /**
 * useRetrievalForClassficiation Specifies whether to use retrieval or instance checks for testing a concept..
@@ -83,7 +83,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posNegD
 * @return boolean 
 **/
 public boolean getUseRetrievalForClassficiation() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(posNegDefinitionLPStrict,  "useRetrievalForClassficiation") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(posNegLPStrict,  "useRetrievalForClassficiation") ;
 }
 /**
 * percentPerLenghtUnit describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one.
@@ -92,7 +92,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(posNegDefin
 * @return double 
 **/
 public double getPercentPerLenghtUnit() {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegDefinitionLPStrict,  "percentPerLenghtUnit") ;
+return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegLPStrict,  "percentPerLenghtUnit") ;
 }
 /**
 * useMultiInstanceChecks See UseMultiInstanceChecks enum..
@@ -101,7 +101,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegDefini
 * @return String 
 **/
 public String getUseMultiInstanceChecks() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(posNegDefinitionLPStrict,  "useMultiInstanceChecks") ;
+return (String) ComponentManager.getInstance().getConfigOptionValue(posNegLPStrict,  "useMultiInstanceChecks") ;
 }
 /**
 * penaliseNeutralExamples if set to true neutral examples are penalised.
@@ -110,7 +110,7 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(posNegDefini
 * @return boolean 
 **/
 public boolean getPenaliseNeutralExamples() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(posNegDefinitionLPStrict,  "penaliseNeutralExamples") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(posNegLPStrict,  "penaliseNeutralExamples") ;
 }
 /**
 * accuracyPenalty penalty for pos/neg examples which are classified as neutral.
@@ -119,7 +119,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(posNegDefin
 * @return double 
 **/
 public double getAccuracyPenalty() {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegDefinitionLPStrict,  "accuracyPenalty") ;
+return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegLPStrict,  "accuracyPenalty") ;
 }
 /**
 * errorPenalty penalty for pos. examples classified as negative or vice versa.
@@ -128,7 +128,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegDefini
 * @return double 
 **/
 public double getErrorPenalty() {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegDefinitionLPStrict,  "errorPenalty") ;
+return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegLPStrict,  "errorPenalty") ;
 }
 
 /**
@@ -137,7 +137,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(posNegDefini
 * default value: null
 **/
 public void setPositiveExamples(Set<String> positiveExamples) {
-ComponentManager.getInstance().applyConfigEntry(posNegDefinitionLPStrict, "positiveExamples", positiveExamples);
+ComponentManager.getInstance().applyConfigEntry(posNegLPStrict, "positiveExamples", positiveExamples);
 }
 /**
 * @param negativeExamples negative examples.
@@ -145,7 +145,7 @@ ComponentManager.getInstance().applyConfigEntry(posNegDefinitionLPStrict, "posit
 * default value: null
 **/
 public void setNegativeExamples(Set<String> negativeExamples) {
-ComponentManager.getInstance().applyConfigEntry(posNegDefinitionLPStrict, "negativeExamples", negativeExamples);
+ComponentManager.getInstance().applyConfigEntry(posNegLPStrict, "negativeExamples", negativeExamples);
 }
 /**
 * @param useRetrievalForClassficiation Specifies whether to use retrieval or instance checks for testing a concept..
@@ -153,7 +153,7 @@ ComponentManager.getInstance().applyConfigEntry(posNegDefinitionLPStrict, "negat
 * default value: false
 **/
 public void setUseRetrievalForClassficiation(boolean useRetrievalForClassficiation) {
-ComponentManager.getInstance().applyConfigEntry(posNegDefinitionLPStrict, "useRetrievalForClassficiation", useRetrievalForClassficiation);
+ComponentManager.getInstance().applyConfigEntry(posNegLPStrict, "useRetrievalForClassficiation", useRetrievalForClassficiation);
 reinitNecessary = true;
 }
 /**
@@ -162,7 +162,7 @@ reinitNecessary = true;
 * default value: 0.05
 **/
 public void setPercentPerLenghtUnit(double percentPerLenghtUnit) {
-ComponentManager.getInstance().applyConfigEntry(posNegDefinitionLPStrict, "percentPerLenghtUnit", percentPerLenghtUnit);
+ComponentManager.getInstance().applyConfigEntry(posNegLPStrict, "percentPerLenghtUnit", percentPerLenghtUnit);
 reinitNecessary = true;
 }
 /**
@@ -171,7 +171,7 @@ reinitNecessary = true;
 * default value: twoChecks
 **/
 public void setUseMultiInstanceChecks(String useMultiInstanceChecks) {
-ComponentManager.getInstance().applyConfigEntry(posNegDefinitionLPStrict, "useMultiInstanceChecks", useMultiInstanceChecks);
+ComponentManager.getInstance().applyConfigEntry(posNegLPStrict, "useMultiInstanceChecks", useMultiInstanceChecks);
 reinitNecessary = true;
 }
 /**
@@ -180,7 +180,7 @@ reinitNecessary = true;
 * default value: null
 **/
 public void setPenaliseNeutralExamples(boolean penaliseNeutralExamples) {
-ComponentManager.getInstance().applyConfigEntry(posNegDefinitionLPStrict, "penaliseNeutralExamples", penaliseNeutralExamples);
+ComponentManager.getInstance().applyConfigEntry(posNegLPStrict, "penaliseNeutralExamples", penaliseNeutralExamples);
 reinitNecessary = true;
 }
 /**
@@ -189,7 +189,7 @@ reinitNecessary = true;
 * default value: 1.0
 **/
 public void setAccuracyPenalty(double accuracyPenalty) {
-ComponentManager.getInstance().applyConfigEntry(posNegDefinitionLPStrict, "accuracyPenalty", accuracyPenalty);
+ComponentManager.getInstance().applyConfigEntry(posNegLPStrict, "accuracyPenalty", accuracyPenalty);
 reinitNecessary = true;
 }
 /**
@@ -198,7 +198,7 @@ reinitNecessary = true;
 * default value: 3.0
 **/
 public void setErrorPenalty(double errorPenalty) {
-ComponentManager.getInstance().applyConfigEntry(posNegDefinitionLPStrict, "errorPenalty", errorPenalty);
+ComponentManager.getInstance().applyConfigEntry(posNegLPStrict, "errorPenalty", errorPenalty);
 reinitNecessary = true;
 }
 

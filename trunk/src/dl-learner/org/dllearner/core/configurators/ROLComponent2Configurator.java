@@ -21,7 +21,7 @@
 package org.dllearner.core.configurators;
 
 import java.util.Set;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -31,28 +31,28 @@ import org.dllearner.core.ReasonerComponent;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class ExampleBasedROLComponentConfigurator  implements Configurator {
+public  class ROLComponent2Configurator  implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
 
-private ExampleBasedROLComponent exampleBasedROLComponent;
+private ROLComponent2 rOLComponent2;
 
 /**
-* @param exampleBasedROLComponent see ExampleBasedROLComponent
+* @param rOLComponent2 see ROLComponent2
 **/
-public ExampleBasedROLComponentConfigurator(ExampleBasedROLComponent exampleBasedROLComponent){
-this.exampleBasedROLComponent = exampleBasedROLComponent;
+public ROLComponent2Configurator(ROLComponent2 rOLComponent2){
+this.rOLComponent2 = rOLComponent2;
 }
 
 /**
 * @param reasoningService see reasoningService
 * @param learningProblem see learningProblem
 * @throws LearningProblemUnsupportedException see 
-* @return ExampleBasedROLComponent
+* @return ROLComponent2
 **/
-public static ExampleBasedROLComponent getExampleBasedROLComponent(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
-ExampleBasedROLComponent component = ComponentManager.getInstance().learningAlgorithm(ExampleBasedROLComponent.class, learningProblem, reasoningService);
+public static ROLComponent2 getROLComponent2(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException{
+ROLComponent2 component = ComponentManager.getInstance().learningAlgorithm(ROLComponent2.class, learningProblem, reasoningService);
 return component;
 }
 
@@ -63,7 +63,7 @@ return component;
 * @return boolean 
 **/
 public boolean getWriteSearchTree() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "writeSearchTree") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "writeSearchTree") ;
 }
 /**
 * searchTreeFile file to use for the search tree.
@@ -72,7 +72,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return String 
 **/
 public String getSearchTreeFile() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "searchTreeFile") ;
+return (String) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "searchTreeFile") ;
 }
 /**
 * replaceSearchTree specifies whether to replace the search tree in the log file after each run or append the new search tree.
@@ -81,7 +81,7 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 * @return boolean 
 **/
 public boolean getReplaceSearchTree() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "replaceSearchTree") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "replaceSearchTree") ;
 }
 /**
 * heuristic specifiy the heuristic to use.
@@ -90,7 +90,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return String 
 **/
 public String getHeuristic() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "heuristic") ;
+return (String) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "heuristic") ;
 }
 /**
 * applyAllFilter usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D).
@@ -99,7 +99,7 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 * @return boolean 
 **/
 public boolean getApplyAllFilter() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "applyAllFilter") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "applyAllFilter") ;
 }
 /**
 * applyExistsFilter usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D).
@@ -108,7 +108,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return boolean 
 **/
 public boolean getApplyExistsFilter() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "applyExistsFilter") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "applyExistsFilter") ;
 }
 /**
 * useTooWeakList try to filter out too weak concepts without sending them to the reasoner.
@@ -117,7 +117,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return boolean 
 **/
 public boolean getUseTooWeakList() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useTooWeakList") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useTooWeakList") ;
 }
 /**
 * useOverlyGeneralList try to find overly general concept without sending them to the reasoner.
@@ -126,7 +126,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return boolean 
 **/
 public boolean getUseOverlyGeneralList() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useOverlyGeneralList") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useOverlyGeneralList") ;
 }
 /**
 * useShortConceptConstruction shorten concept to see whether they already exist.
@@ -135,7 +135,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return boolean 
 **/
 public boolean getUseShortConceptConstruction() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useShortConceptConstruction") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useShortConceptConstruction") ;
 }
 /**
 * horizontalExpansionFactor horizontal expansion factor (see publication for description).
@@ -144,7 +144,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return double 
 **/
 public double getHorizontalExpansionFactor() {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "horizontalExpansionFactor") ;
+return (Double) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "horizontalExpansionFactor") ;
 }
 /**
 * improveSubsumptionHierarchy simplify subsumption hierarchy to reduce search space (see publication for description).
@@ -153,7 +153,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 * @return boolean 
 **/
 public boolean getImproveSubsumptionHierarchy() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "improveSubsumptionHierarchy") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "improveSubsumptionHierarchy") ;
 }
 /**
 * allowedConcepts concepts the algorithm is allowed to use.
@@ -163,7 +163,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 **/
 @SuppressWarnings("unchecked")
 public Set<String> getAllowedConcepts() {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "allowedConcepts") ;
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "allowedConcepts") ;
 }
 /**
 * ignoredConcepts concepts the algorithm must ignore.
@@ -173,7 +173,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(example
 **/
 @SuppressWarnings("unchecked")
 public Set<String> getIgnoredConcepts() {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "ignoredConcepts") ;
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "ignoredConcepts") ;
 }
 /**
 * allowedRoles roles the algorithm is allowed to use.
@@ -183,7 +183,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(example
 **/
 @SuppressWarnings("unchecked")
 public Set<String> getAllowedRoles() {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "allowedRoles") ;
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "allowedRoles") ;
 }
 /**
 * ignoredRoles roles the algorithm must ignore.
@@ -193,7 +193,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(example
 **/
 @SuppressWarnings("unchecked")
 public Set<String> getIgnoredRoles() {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "ignoredRoles") ;
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "ignoredRoles") ;
 }
 /**
 * useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
@@ -202,7 +202,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(example
 * @return boolean 
 **/
 public boolean getUseAllConstructor() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useAllConstructor") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useAllConstructor") ;
 }
 /**
 * useExistsConstructor specifies whether the existential concept constructor is used in the learning algorithm.
@@ -211,7 +211,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return boolean 
 **/
 public boolean getUseExistsConstructor() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useExistsConstructor") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useExistsConstructor") ;
 }
 /**
 * useHasValueConstructor specifies whether the hasValue constructor is used in the learning algorithm.
@@ -220,7 +220,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return boolean 
 **/
 public boolean getUseHasValueConstructor() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useHasValueConstructor") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useHasValueConstructor") ;
 }
 /**
 * valueFrequencyThreshold specifies how often an object must occur as value in order to be considered for hasValue restrictions.
@@ -229,7 +229,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return int 
 **/
 public int getValueFrequencyThreshold() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "valueFrequencyThreshold") ;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "valueFrequencyThreshold") ;
 }
 /**
 * useCardinalityRestrictions specifies whether CardinalityRestrictions is used in the learning algorithm.
@@ -238,7 +238,7 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return boolean 
 **/
 public boolean getUseCardinalityRestrictions() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useCardinalityRestrictions") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useCardinalityRestrictions") ;
 }
 /**
 * cardinalityLimit Gives the maximum number used in cardinality restrictions..
@@ -247,7 +247,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return int 
 **/
 public int getCardinalityLimit() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "cardinalityLimit") ;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "cardinalityLimit") ;
 }
 /**
 * useNegation specifies whether negation is used in the learning algorothm.
@@ -256,7 +256,7 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return boolean 
 **/
 public boolean getUseNegation() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useNegation") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useNegation") ;
 }
 /**
 * useBooleanDatatypes specifies whether boolean datatypes are used in the learning algorothm.
@@ -265,7 +265,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return boolean 
 **/
 public boolean getUseBooleanDatatypes() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useBooleanDatatypes") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useBooleanDatatypes") ;
 }
 /**
 * useDoubleDatatypes specifies whether boolean datatypes are used in the learning algorothm.
@@ -274,7 +274,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return boolean 
 **/
 public boolean getUseDoubleDatatypes() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "useDoubleDatatypes") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "useDoubleDatatypes") ;
 }
 /**
 * maxExecutionTimeInSeconds algorithm will stop after specified seconds.
@@ -283,7 +283,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return int 
 **/
 public int getMaxExecutionTimeInSeconds() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "maxExecutionTimeInSeconds") ;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "maxExecutionTimeInSeconds") ;
 }
 /**
 * minExecutionTimeInSeconds algorithm will run at least specified seconds.
@@ -292,7 +292,7 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return int 
 **/
 public int getMinExecutionTimeInSeconds() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "minExecutionTimeInSeconds") ;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "minExecutionTimeInSeconds") ;
 }
 /**
 * guaranteeXgoodDescriptions algorithm will run until X good (100%) concept descritpions are found.
@@ -301,7 +301,7 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return int 
 **/
 public int getGuaranteeXgoodDescriptions() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "guaranteeXgoodDescriptions") ;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "guaranteeXgoodDescriptions") ;
 }
 /**
 * maxClassDescriptionTests The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.).
@@ -310,7 +310,7 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return int 
 **/
 public int getMaxClassDescriptionTests() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "maxClassDescriptionTests") ;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "maxClassDescriptionTests") ;
 }
 /**
 * logLevel determines the logLevel for this component, can be {TRACE, DEBUG, INFO}.
@@ -319,7 +319,7 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return String 
 **/
 public String getLogLevel() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "logLevel") ;
+return (String) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "logLevel") ;
 }
 /**
 * usePropernessChecks specifies whether to check for equivalence (i.e. discard equivalent refinements).
@@ -328,7 +328,7 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 * @return boolean 
 **/
 public boolean getUsePropernessChecks() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "usePropernessChecks") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "usePropernessChecks") ;
 }
 /**
 * maxPosOnlyExpansion specifies how often a node in the search tree of a posonly learning problem needs to be expanded before it is considered as solution candidate.
@@ -337,7 +337,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return int 
 **/
 public int getMaxPosOnlyExpansion() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "maxPosOnlyExpansion") ;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "maxPosOnlyExpansion") ;
 }
 /**
 * noisePercentage the (approximated) percentage of noise within the examples.
@@ -346,7 +346,7 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return double 
 **/
 public double getNoisePercentage() {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "noisePercentage") ;
+return (Double) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "noisePercentage") ;
 }
 /**
 * terminateOnNoiseReached specifies whether to terminate when noise criterion is met.
@@ -355,7 +355,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 * @return boolean 
 **/
 public boolean getTerminateOnNoiseReached() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "terminateOnNoiseReached") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "terminateOnNoiseReached") ;
 }
 /**
 * startClass the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class).
@@ -364,7 +364,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return String 
 **/
 public String getStartClass() {
-return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "startClass") ;
+return (String) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "startClass") ;
 }
 /**
 * forceRefinementLengthIncrease specifies whether nodes should be expanded until only longer refinements are reached.
@@ -373,7 +373,7 @@ return (String) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 * @return boolean 
 **/
 public boolean getForceRefinementLengthIncrease() {
-return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "forceRefinementLengthIncrease") ;
+return (Boolean) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "forceRefinementLengthIncrease") ;
 }
 /**
 * negativeWeight Used to penalise errors on negative examples different from those of positive examples (lower = less importance for negatives)..
@@ -382,7 +382,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return double 
 **/
 public double getNegativeWeight() {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "negativeWeight") ;
+return (Double) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "negativeWeight") ;
 }
 /**
 * startNodeBonus You can use this to give a heuristic bonus on the start node (= initially broader exploration of search space)..
@@ -391,7 +391,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 * @return double 
 **/
 public double getStartNodeBonus() {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "startNodeBonus") ;
+return (Double) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "startNodeBonus") ;
 }
 /**
 * negationPenalty Penalty on negations (TODO: better explanation)..
@@ -400,7 +400,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 * @return int 
 **/
 public int getNegationPenalty() {
-return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "negationPenalty") ;
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "negationPenalty") ;
 }
 /**
 * expansionPenaltyFactor describes the reduction in heuristic score one is willing to accept for reducing the length of the concept by one.
@@ -409,7 +409,7 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(exampleBase
 * @return double 
 **/
 public double getExpansionPenaltyFactor() {
-return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBasedROLComponent,  "expansionPenaltyFactor") ;
+return (Double) ComponentManager.getInstance().getConfigOptionValue(rOLComponent2,  "expansionPenaltyFactor") ;
 }
 
 /**
@@ -418,7 +418,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(exampleBased
 * default value: false
 **/
 public void setWriteSearchTree(boolean writeSearchTree) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "writeSearchTree", writeSearchTree);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "writeSearchTree", writeSearchTree);
 reinitNecessary = true;
 }
 /**
@@ -427,7 +427,7 @@ reinitNecessary = true;
 * default value: log/searchTree.txt
 **/
 public void setSearchTreeFile(String searchTreeFile) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "searchTreeFile", searchTreeFile);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "searchTreeFile", searchTreeFile);
 reinitNecessary = true;
 }
 /**
@@ -436,7 +436,7 @@ reinitNecessary = true;
 * default value: false
 **/
 public void setReplaceSearchTree(boolean replaceSearchTree) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "replaceSearchTree", replaceSearchTree);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "replaceSearchTree", replaceSearchTree);
 reinitNecessary = true;
 }
 /**
@@ -445,7 +445,7 @@ reinitNecessary = true;
 * default value: lexicographic
 **/
 public void setHeuristic(String heuristic) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "heuristic", heuristic);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "heuristic", heuristic);
 reinitNecessary = true;
 }
 /**
@@ -454,7 +454,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setApplyAllFilter(boolean applyAllFilter) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "applyAllFilter", applyAllFilter);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "applyAllFilter", applyAllFilter);
 reinitNecessary = true;
 }
 /**
@@ -463,7 +463,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setApplyExistsFilter(boolean applyExistsFilter) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "applyExistsFilter", applyExistsFilter);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "applyExistsFilter", applyExistsFilter);
 reinitNecessary = true;
 }
 /**
@@ -472,7 +472,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setUseTooWeakList(boolean useTooWeakList) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useTooWeakList", useTooWeakList);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useTooWeakList", useTooWeakList);
 reinitNecessary = true;
 }
 /**
@@ -481,7 +481,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setUseOverlyGeneralList(boolean useOverlyGeneralList) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useOverlyGeneralList", useOverlyGeneralList);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useOverlyGeneralList", useOverlyGeneralList);
 reinitNecessary = true;
 }
 /**
@@ -490,7 +490,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setUseShortConceptConstruction(boolean useShortConceptConstruction) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useShortConceptConstruction", useShortConceptConstruction);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useShortConceptConstruction", useShortConceptConstruction);
 reinitNecessary = true;
 }
 /**
@@ -499,7 +499,7 @@ reinitNecessary = true;
 * default value: 0.6
 **/
 public void setHorizontalExpansionFactor(double horizontalExpansionFactor) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "horizontalExpansionFactor", horizontalExpansionFactor);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "horizontalExpansionFactor", horizontalExpansionFactor);
 reinitNecessary = true;
 }
 /**
@@ -508,7 +508,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setImproveSubsumptionHierarchy(boolean improveSubsumptionHierarchy) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "improveSubsumptionHierarchy", improveSubsumptionHierarchy);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "improveSubsumptionHierarchy", improveSubsumptionHierarchy);
 reinitNecessary = true;
 }
 /**
@@ -517,7 +517,7 @@ reinitNecessary = true;
 * default value: null
 **/
 public void setAllowedConcepts(Set<String> allowedConcepts) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "allowedConcepts", allowedConcepts);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "allowedConcepts", allowedConcepts);
 reinitNecessary = true;
 }
 /**
@@ -526,7 +526,7 @@ reinitNecessary = true;
 * default value: null
 **/
 public void setIgnoredConcepts(Set<String> ignoredConcepts) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "ignoredConcepts", ignoredConcepts);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "ignoredConcepts", ignoredConcepts);
 reinitNecessary = true;
 }
 /**
@@ -535,7 +535,7 @@ reinitNecessary = true;
 * default value: null
 **/
 public void setAllowedRoles(Set<String> allowedRoles) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "allowedRoles", allowedRoles);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "allowedRoles", allowedRoles);
 reinitNecessary = true;
 }
 /**
@@ -544,7 +544,7 @@ reinitNecessary = true;
 * default value: null
 **/
 public void setIgnoredRoles(Set<String> ignoredRoles) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "ignoredRoles", ignoredRoles);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "ignoredRoles", ignoredRoles);
 reinitNecessary = true;
 }
 /**
@@ -553,7 +553,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setUseAllConstructor(boolean useAllConstructor) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useAllConstructor", useAllConstructor);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useAllConstructor", useAllConstructor);
 reinitNecessary = true;
 }
 /**
@@ -562,7 +562,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setUseExistsConstructor(boolean useExistsConstructor) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useExistsConstructor", useExistsConstructor);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useExistsConstructor", useExistsConstructor);
 reinitNecessary = true;
 }
 /**
@@ -571,7 +571,7 @@ reinitNecessary = true;
 * default value: false
 **/
 public void setUseHasValueConstructor(boolean useHasValueConstructor) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useHasValueConstructor", useHasValueConstructor);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useHasValueConstructor", useHasValueConstructor);
 reinitNecessary = true;
 }
 /**
@@ -580,7 +580,7 @@ reinitNecessary = true;
 * default value: 3
 **/
 public void setValueFrequencyThreshold(int valueFrequencyThreshold) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "valueFrequencyThreshold", valueFrequencyThreshold);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "valueFrequencyThreshold", valueFrequencyThreshold);
 reinitNecessary = true;
 }
 /**
@@ -589,7 +589,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setUseCardinalityRestrictions(boolean useCardinalityRestrictions) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useCardinalityRestrictions", useCardinalityRestrictions);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useCardinalityRestrictions", useCardinalityRestrictions);
 reinitNecessary = true;
 }
 /**
@@ -598,7 +598,7 @@ reinitNecessary = true;
 * default value: 5
 **/
 public void setCardinalityLimit(int cardinalityLimit) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "cardinalityLimit", cardinalityLimit);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "cardinalityLimit", cardinalityLimit);
 reinitNecessary = true;
 }
 /**
@@ -607,7 +607,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setUseNegation(boolean useNegation) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useNegation", useNegation);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useNegation", useNegation);
 reinitNecessary = true;
 }
 /**
@@ -616,7 +616,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setUseBooleanDatatypes(boolean useBooleanDatatypes) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useBooleanDatatypes", useBooleanDatatypes);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useBooleanDatatypes", useBooleanDatatypes);
 reinitNecessary = true;
 }
 /**
@@ -625,7 +625,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setUseDoubleDatatypes(boolean useDoubleDatatypes) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "useDoubleDatatypes", useDoubleDatatypes);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "useDoubleDatatypes", useDoubleDatatypes);
 reinitNecessary = true;
 }
 /**
@@ -634,7 +634,7 @@ reinitNecessary = true;
 * default value: 0
 **/
 public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
 reinitNecessary = true;
 }
 /**
@@ -643,7 +643,7 @@ reinitNecessary = true;
 * default value: 0
 **/
 public void setMinExecutionTimeInSeconds(int minExecutionTimeInSeconds) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "minExecutionTimeInSeconds", minExecutionTimeInSeconds);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "minExecutionTimeInSeconds", minExecutionTimeInSeconds);
 reinitNecessary = true;
 }
 /**
@@ -652,7 +652,7 @@ reinitNecessary = true;
 * default value: 1
 **/
 public void setGuaranteeXgoodDescriptions(int guaranteeXgoodDescriptions) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "guaranteeXgoodDescriptions", guaranteeXgoodDescriptions);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "guaranteeXgoodDescriptions", guaranteeXgoodDescriptions);
 reinitNecessary = true;
 }
 /**
@@ -661,7 +661,7 @@ reinitNecessary = true;
 * default value: 0
 **/
 public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "maxClassDescriptionTests", maxClassDescriptionTests);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "maxClassDescriptionTests", maxClassDescriptionTests);
 reinitNecessary = true;
 }
 /**
@@ -670,7 +670,7 @@ reinitNecessary = true;
 * default value: DEBUG
 **/
 public void setLogLevel(String logLevel) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "logLevel", logLevel);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "logLevel", logLevel);
 reinitNecessary = true;
 }
 /**
@@ -679,7 +679,7 @@ reinitNecessary = true;
 * default value: false
 **/
 public void setUsePropernessChecks(boolean usePropernessChecks) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "usePropernessChecks", usePropernessChecks);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "usePropernessChecks", usePropernessChecks);
 reinitNecessary = true;
 }
 /**
@@ -688,7 +688,7 @@ reinitNecessary = true;
 * default value: 4
 **/
 public void setMaxPosOnlyExpansion(int maxPosOnlyExpansion) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "maxPosOnlyExpansion", maxPosOnlyExpansion);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "maxPosOnlyExpansion", maxPosOnlyExpansion);
 reinitNecessary = true;
 }
 /**
@@ -697,7 +697,7 @@ reinitNecessary = true;
 * default value: 0.0
 **/
 public void setNoisePercentage(double noisePercentage) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "noisePercentage", noisePercentage);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "noisePercentage", noisePercentage);
 reinitNecessary = true;
 }
 /**
@@ -706,7 +706,7 @@ reinitNecessary = true;
 * default value: true
 **/
 public void setTerminateOnNoiseReached(boolean terminateOnNoiseReached) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "terminateOnNoiseReached", terminateOnNoiseReached);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "terminateOnNoiseReached", terminateOnNoiseReached);
 reinitNecessary = true;
 }
 /**
@@ -715,7 +715,7 @@ reinitNecessary = true;
 * default value: null
 **/
 public void setStartClass(String startClass) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "startClass", startClass);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "startClass", startClass);
 reinitNecessary = true;
 }
 /**
@@ -724,7 +724,7 @@ reinitNecessary = true;
 * default value: null
 **/
 public void setForceRefinementLengthIncrease(boolean forceRefinementLengthIncrease) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "forceRefinementLengthIncrease", forceRefinementLengthIncrease);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "forceRefinementLengthIncrease", forceRefinementLengthIncrease);
 reinitNecessary = true;
 }
 /**
@@ -733,7 +733,7 @@ reinitNecessary = true;
 * default value: 1.0
 **/
 public void setNegativeWeight(double negativeWeight) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "negativeWeight", negativeWeight);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "negativeWeight", negativeWeight);
 reinitNecessary = true;
 }
 /**
@@ -742,7 +742,7 @@ reinitNecessary = true;
 * default value: 0.0
 **/
 public void setStartNodeBonus(double startNodeBonus) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "startNodeBonus", startNodeBonus);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "startNodeBonus", startNodeBonus);
 reinitNecessary = true;
 }
 /**
@@ -751,7 +751,7 @@ reinitNecessary = true;
 * default value: 0
 **/
 public void setNegationPenalty(int negationPenalty) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "negationPenalty", negationPenalty);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "negationPenalty", negationPenalty);
 reinitNecessary = true;
 }
 /**
@@ -760,7 +760,7 @@ reinitNecessary = true;
 * default value: 0.02
 **/
 public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
-ComponentManager.getInstance().applyConfigEntry(exampleBasedROLComponent, "expansionPenaltyFactor", expansionPenaltyFactor);
+ComponentManager.getInstance().applyConfigEntry(rOLComponent2, "expansionPenaltyFactor", expansionPenaltyFactor);
 reinitNecessary = true;
 }
 

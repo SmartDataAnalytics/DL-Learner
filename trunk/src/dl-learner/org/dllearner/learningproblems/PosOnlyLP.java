@@ -94,7 +94,7 @@ public abstract class PosOnlyLP extends LearningProblem {
 		
 		// create an instance of a standard definition learning problem
 		// instanciated with pseudo-negatives
-		definitionLP = ComponentFactory.getPosNegDefinitionLP(
+		definitionLP = ComponentFactory.getPosNegLPStandard(
 				reasoner, 
 				SetManipulation.indToString(positiveExamples), 
 				SetManipulation.indToString(pseudoNegatives));

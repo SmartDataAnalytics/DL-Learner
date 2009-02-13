@@ -95,7 +95,7 @@ public class PosNegInclusionLP extends PosNegLP {
 	@Override
 	public void init() {
 		super.init();
-		definitionLP = ComponentFactory.getPosNegDefinitionLP(
+		definitionLP = ComponentFactory.getPosNegLPStandard(
 				reasoner, 
 				SetManipulation.indToString(negativeExamples), 
 				SetManipulation.indToString(positiveExamples));

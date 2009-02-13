@@ -18,14 +18,14 @@
  *
  */
 
-package org.dllearner.algorithms.refexamples;
+package org.dllearner.algorithms.refinement2;
 
 import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
+import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -42,7 +42,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
  */
 public class ExampleBasedNode {
 
-	private ExampleBasedROLComponentConfigurator configurator;
+	private ROLComponent2Configurator configurator;
 	
 	private static DecimalFormat df = new DecimalFormat();
 	
@@ -75,7 +75,7 @@ public class ExampleBasedNode {
 	// a flag whether this could be a solution for a posonly learning problem
 	private boolean isPosOnlyCandidate = true;
 	
-	public ExampleBasedNode(ExampleBasedROLComponentConfigurator configurator, Description concept) {
+	public ExampleBasedNode(ROLComponent2Configurator configurator, Description concept) {
 		this.configurator = configurator;
 		this.concept = concept;
 		horizontalExpansion = 0;

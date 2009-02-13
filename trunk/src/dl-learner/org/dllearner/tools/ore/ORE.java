@@ -34,7 +34,7 @@ import java.util.Vector;
 import javax.swing.JLabel;
 
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
@@ -202,7 +202,7 @@ public class ORE {
 	
 	public void setLearningAlgorithm(){
 		try {
-			la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, owlReasoner);
+			la = cm.learningAlgorithm(ROLComponent2.class, lp, owlReasoner);
 		} catch (LearningProblemUnsupportedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

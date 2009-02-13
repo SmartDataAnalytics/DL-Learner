@@ -26,13 +26,12 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.dllearner.algorithms.BruteForceLearner;
-import org.dllearner.algorithms.DBpediaNavigationSuggestor;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -92,8 +91,7 @@ public class ConfMapper {
 		learningAlgorithmMapping.put("bruteForce", BruteForceLearner.class);		
 		learningAlgorithmMapping.put("gp", GP.class);
 		learningAlgorithmMapping.put("refinement", ROLearner.class);
-		learningAlgorithmMapping.put("refexamples", ExampleBasedROLComponent.class);
-		learningAlgorithmMapping.put("dbpediaNavigationSuggestor", DBpediaNavigationSuggestor.class);
+		learningAlgorithmMapping.put("refexamples", ROLComponent2.class);
 		learningAlgorithmMapping.put("el", ELLearningAlgorithm.class);
 		learningAlgorithmMapping.put("celoe", CELOE.class);
 		

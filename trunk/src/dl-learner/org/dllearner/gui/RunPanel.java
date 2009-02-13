@@ -49,7 +49,7 @@ import java.util.Map;
 import javax.swing.*;
 
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.PosNegLPStandard;
 
@@ -416,7 +416,7 @@ public class RunPanel extends JPanel implements ActionListener {
 //		System.out.println("TEST");
 		
 		// enable tree button
-		if((config.getLearningAlgorithm() instanceof ExampleBasedROLComponent)
+		if((config.getLearningAlgorithm() instanceof ROLComponent2)
 				&& (config.getLearningProblem() instanceof PosNegLPStandard)) {
 			treeButton.setEnabled(true);
 		}

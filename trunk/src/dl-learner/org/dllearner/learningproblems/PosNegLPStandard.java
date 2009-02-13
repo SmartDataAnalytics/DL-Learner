@@ -25,7 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.PosNegDefinitionLPConfigurator;
+import org.dllearner.core.configurators.PosNegLPStandardConfigurator;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -46,22 +46,22 @@ import org.dllearner.utilities.Helper;
  */
 public class PosNegLPStandard extends PosNegLP {
 
-	private PosNegDefinitionLPConfigurator configurator;
+	private PosNegLPStandardConfigurator configurator;
 	@Override
-	public PosNegDefinitionLPConfigurator getConfigurator() {
+	public PosNegLPStandardConfigurator getConfigurator() {
 		return configurator;
 	}
 
 	public PosNegLPStandard(ReasonerComponent reasoningService) {
 		super(reasoningService);
-		this.configurator = new PosNegDefinitionLPConfigurator(this);
+		this.configurator = new PosNegLPStandardConfigurator(this);
 	}
 
 	public PosNegLPStandard(ReasonerComponent reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
 		super(reasoningService);
 		this.positiveExamples = positiveExamples;
 		this.negativeExamples = negativeExamples;
-		this.configurator = new PosNegDefinitionLPConfigurator(this);
+		this.configurator = new PosNegLPStandardConfigurator(this);
 	}
 	
 	/*
