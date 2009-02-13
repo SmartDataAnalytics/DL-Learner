@@ -40,8 +40,8 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 	 */
 	@Override
 	public int compare(EvaluatedDescription ed1, EvaluatedDescription ed2) {
-		double acc1 = ed1.getScoreValue();
-		double acc2 = ed2.getScoreValue();
+		double acc1 = ed1.getAccuracy();
+		double acc2 = ed2.getAccuracy();
 		if(acc1 > acc2)
 			return -1;
 		else if(acc1 < acc2)

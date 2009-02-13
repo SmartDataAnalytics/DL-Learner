@@ -86,8 +86,8 @@ public class EvaluatedDescription {
 	 * @see org.dllearner.core.Score#getScoreValue()
 	 * @return Value in this score system.
 	 */
-	public double getScoreValue() {
-		return score.getScoreValue();
+	public double getAccuracy() {
+		return score.getAccuracy();
 	}
 	
 	/**
@@ -117,7 +117,7 @@ public class EvaluatedDescription {
 			OWLDescription d = OWLAPIDescriptionConvertVisitor.getOWLDescription(description);
 			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(d));
 			object.put("descriptionKBSyntax", description.toKBSyntaxString());
-			object.put("scoreValue", score.getScoreValue());		
+			object.put("scoreValue", score.getAccuracy());		
 			return object.toString(3);
 		} catch (JSONException e) {
 			e.printStackTrace();

@@ -49,7 +49,6 @@ import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyDefinitionLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.reasoning.ReasonerType;
@@ -156,7 +155,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		this.configurator = new ExampleBasedROLComponentConfigurator(this);
 	}
 	
-	public ExampleBasedROLComponent(PosOnlyDefinitionLP learningProblem, ReasonerComponent reasoningService) {
+	public ExampleBasedROLComponent(PosOnlyLP learningProblem, ReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
 		this.configurator = new ExampleBasedROLComponentConfigurator(this);
 	}
@@ -164,7 +163,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
 		problems.add(PosNegLP.class);
-		problems.add(PosOnlyDefinitionLP.class);
+		problems.add(PosOnlyLP.class);
 		return problems;
 	}
 	
@@ -324,7 +323,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 		if(heuristic == "lexicographic")
 			algHeuristic = new LexicographicHeuristic();
 		else if(heuristic == "flexible") {
-			if(learningProblem instanceof PosOnlyDefinitionLP) {
+			if(learningProblem instanceof PosOnlyLP) {
 				throw new RuntimeException("does not work with positive examples only yet");
 			}
 			algHeuristic = new FlexibleHeuristic(((PosNegLP)learningProblem).getNegativeExamples().size(), ((PosNegLP)learningProblem).getPercentPerLengthUnit());

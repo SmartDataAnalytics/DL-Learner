@@ -31,14 +31,12 @@ package org.dllearner.core;
 public abstract class Score {
 
 	/**
-	 * This method returns a value, which indicates how well a
-	 * class description solves a learning problem. Different implementations
-	 * of scoring systems can implement this differently. Higher values
-	 * are better and it is recommended to assign a score value in
-	 * the closed interval from 0 to 1 if possible. 
+	 * This method returns a value, which indicates how accurate a
+	 * class description solves a learning problem. 
 	 * 
-	 * @return A value indicating the quality (of a class description).
-	 */
-	public abstract double getScoreValue();
+	 * @see LearningProblem#getAccuracy(Description)
+	 * @return A value between 0 and 1 indicating the quality (of a class description).
+	 */	
+	public abstract double getAccuracy();
 	
 }

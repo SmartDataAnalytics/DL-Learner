@@ -41,7 +41,7 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  * @author Jens Lehmann
  *
  */
-public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
+public class PosNegLPStrict extends PosNegLP {
 
 	private SortedSet<Individual> neutralExamples;
 	private boolean penaliseNeutralExamples = false;
@@ -57,7 +57,7 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 		return configurator;
 	}
 	
-	public PosNegDefinitionLPStrict(ReasonerComponent reasoningService) {
+	public PosNegLPStrict(ReasonerComponent reasoningService) {
 		super(reasoningService);
 		this.configurator = new PosNegDefinitionLPStrictConfigurator(this);
 	}
@@ -202,5 +202,23 @@ public class PosNegDefinitionLPStrict extends PosNegLP implements DefinitionLP {
 	 */
 	public boolean isPenaliseNeutralExamples() {
 		return penaliseNeutralExamples;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
+	 */
+	@Override
+	public double getAccuracy(Description description) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
+	 */
+	@Override
+	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

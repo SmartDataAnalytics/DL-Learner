@@ -34,7 +34,7 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.RhoDown;
 import org.dllearner.utilities.Files;
@@ -111,7 +111,7 @@ public class ROLearner extends LearningAlgorithm {
 	DecimalFormat df = new DecimalFormat();	
 	
 	private PosNegLP learningProblem;
-	private PosOnlyDefinitionLP posOnlyLearningProblem;
+	private PosOnlyLP posOnlyLearningProblem;
 	private boolean posOnly = false;
 	
 	// Menge von Kandidaten für Refinement
@@ -203,7 +203,7 @@ public class ROLearner extends LearningAlgorithm {
 		
 	}
 	
-	public ROLearner(PosOnlyDefinitionLP learningProblem, ReasonerComponent reasoningService) {
+	public ROLearner(PosOnlyLP learningProblem, ReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
 		this.posOnlyLearningProblem = learningProblem;
 		this.configurator =  new ROLearnerConfigurator(this);
@@ -214,7 +214,7 @@ public class ROLearner extends LearningAlgorithm {
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends LearningProblem>> problems = new LinkedList<Class<? extends LearningProblem>>();
 		problems.add(PosNegLP.class);
-		problems.add(PosOnlyDefinitionLP.class);
+		problems.add(PosOnlyLP.class);
 		return problems;
 	}
 	
@@ -1102,7 +1102,7 @@ public class ROLearner extends LearningAlgorithm {
 //	@Override
 	public ScorePosNeg getSolutionScore() {
 		if(posOnly)
-			return posOnlyLearningProblem.computeScore(getCurrentlyBestDescription());
+			return (ScorePosNeg) posOnlyLearningProblem.computeScore(getCurrentlyBestDescription());
 		else
 			return (ScorePosNeg) learningProblem.computeScore(getCurrentlyBestDescription());
 	}
@@ -1110,7 +1110,7 @@ public class ROLearner extends LearningAlgorithm {
 	
 	public ScorePosNeg getSolutionScore(Description d) {
 		if(posOnly)
-			return posOnlyLearningProblem.computeScore(d);
+			return (ScorePosNeg) posOnlyLearningProblem.computeScore(d);
 		else
 			return (ScorePosNeg) learningProblem.computeScore(d);
 	}

@@ -31,7 +31,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.kb.KBFile;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -258,7 +258,7 @@ public class KRKModular {
 //		ReasonerComponent rs = new ReasonerComponent(r); 
 		
 		//cm.learningProblem(lpClass, reasoner)
-		LearningProblem lp = new PosNegDefinitionLP(r);
+		LearningProblem lp = new PosNegLPStandard(r);
 		//cm.getConfigOptionValue(lp, "");
 		cm.applyConfigEntry(lp, "positiveExamples",pos);
 		cm.applyConfigEntry(lp, "negativeExamples",neg);

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -20,7 +20,6 @@
 package org.dllearner.core;
 
 import org.dllearner.core.owl.Description;
-import org.dllearner.learningproblems.ScorePosNeg;
 
 /**
  * Base class for all learning problems.
@@ -29,14 +28,6 @@ import org.dllearner.learningproblems.ScorePosNeg;
  * Currently, we assume that all learning problems have the goal
  * of learning class descriptions. However, this may be extended
  * to other scenarios if desired. 
- * 
- * TODO: The current learning problem implementations assume that 
- * we learn a description for a class, which does not exist
- * in the knowledge base so far (if it exists, it needs to be ignored
- * explicitly). However, often we want to learn a complex definition 
- * for a concept which is already integrated in a subsumption hierarchy
- * or may already have an associated description. It may make sense
- * to use this knowledge for (re-)learning descriptions.
  * 
  * @author Jens Lehmann
  *
@@ -71,15 +62,43 @@ public abstract class LearningProblem extends Component {
 	public void changeReasonerComponent(ReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 	}
-	
+		
 	/**
 	 * Computes the <code>Score</code> of a given class description
 	 * with respect to this learning problem.
 	 * This can (but does not need to) be used by learning algorithms
 	 * to measure how good the description fits the learning problem.
+	 * Score objects are used to store e.g. covered examples, accuracy etc.,
+	 * so often it is more efficient to only create score objects for
+	 * promising class descriptions.
 	 * @param description A class description (as solution candidate for this learning problem).
 	 * @return A <code>Score</code> object.
 	 */
 	public abstract Score computeScore(Description description);
 	
+	/**
+	 * This method returns a value, which indicates how accurate a
+	 * class description solves a learning problem. There can be different
+	 * ways to compute accuracy depending on the type of learning problem
+	 * and other factors. However, all implementations are required to 
+	 * return a value between 0 and 1, where 1 stands for the highest
+	 * possible accuracy and 0 for the lowest possible accuracy.
+	 * 
+	 * @return A value between 0 and 1 indicating the quality (of a class description).
+	 */	
+	public abstract double getAccuracy(Description description);	
+	
+	/**
+	 * This method computes the accuracy as {@link #getAccuracy(Description)},
+	 * but returns -1 instead of the accuracy if 1.) the accuracy of the 
+	 * description is below the given threshold and 2.) the accuracy of all
+	 * more special w.r.t. subsumption descriptions is below the given threshold.
+	 * This is used for efficiency reasons, i.e. -1 can be returned instantly if
+	 * it is clear that the description and all its refinements are not 
+	 * sufficiently accurate.
+	 * 
+	 * @return A value between 0 and 1 indicating the quality (of a class description)
+	 * or -1 as described above.
+	 */	
+	public abstract double getAccuracyOrTooWeak(Description description, double minAccuracy);		
 }

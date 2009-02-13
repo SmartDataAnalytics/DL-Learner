@@ -49,7 +49,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.DIGReasoner;
 
 /**
@@ -168,7 +168,7 @@ public class MiniGUI extends JPanel implements ActionListener {
 				exampleSet.add(individuals.get(i).toString());
 			
 			// create a positive only learning problem
-			LearningProblem lp = cm.learningProblem(PosOnlyDefinitionLP.class, rs);
+			LearningProblem lp = cm.learningProblem(PosOnlyLP.class, rs);
 			cm.applyConfigEntry(lp, "positiveExamples", exampleSet);
 			try {
 				lp.init();

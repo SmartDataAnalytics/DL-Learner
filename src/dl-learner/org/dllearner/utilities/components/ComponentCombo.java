@@ -32,7 +32,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 
 /**
@@ -97,7 +97,7 @@ public class ComponentCombo {
 		KnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		sources = getSourceSet(source);
 		reasoner = cm.reasoner(FastInstanceChecker.class, source);
-		problem = cm.learningProblem(PosNegDefinitionLP.class, reasoner);
+		problem = cm.learningProblem(PosNegLPStandard.class, reasoner);
 		cm.applyConfigEntry(problem, "positiveExamples", posExamples);
 		cm.applyConfigEntry(problem, "negativeExamples", negExamples);
 		try {

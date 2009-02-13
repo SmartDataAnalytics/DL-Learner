@@ -33,7 +33,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -213,7 +213,7 @@ public class PaperStatistics {
 	 * properly.
 	 */
 	@SuppressWarnings("unused")
-	public static void createStatisticsMLDMPaper(PosNegDefinitionLP learningProblem, String baseDir) {
+	public static void createStatisticsMLDMPaper(PosNegLPStandard learningProblem, String baseDir) {
 		// Algorithmus 1: hybrid GP (100% refinement)
 		// Algorithmus 2: 50% refinement, 40% crossover, 1% mutation
 		// Algorithmus 3: 80% crossover, 2% mutation
@@ -285,7 +285,7 @@ public class PaperStatistics {
 					// rs = new ReasonerComponent(reasoner);
 //					ReasonerComponent rs = cm.reasoningService(reasoner);
 					// learningProblem = new LearningProblem(rs, posExamples, negExamples);
-					learningProblem = cm.learningProblem(PosNegDefinitionLP.class, reasoner);
+					learningProblem = cm.learningProblem(PosNegLPStandard.class, reasoner);
 					
 					// TODO: set up pos/neg examples
 					cm.applyConfigEntry(learningProblem, "positiveExamples", null);

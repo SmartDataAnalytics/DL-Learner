@@ -57,7 +57,7 @@ import org.dllearner.gui.ConfigSave;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerType;
@@ -473,7 +473,7 @@ public class SemanticBibleComparison {
 					.getOWLAPIReasoner(tmp);
 	
 			// learning problem
-			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(f,
+			PosNegLPStandard lp = ComponentFactory.getPosNegDefinitionLP(f,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 	
@@ -524,7 +524,7 @@ public class SemanticBibleComparison {
 //			ReasonerComponent rs = ComponentManager.getInstance().reasoningService(f);
 	
 //			 learning problem
-			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(f,
+			PosNegLPStandard lp = ComponentFactory.getPosNegDefinitionLP(f,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 	

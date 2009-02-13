@@ -49,7 +49,7 @@ import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
@@ -63,7 +63,7 @@ public class ORE {
 	private LearningAlgorithm la;
 	private ReasonerComponent rs;
 	private KnowledgeSource ks; 
-	private PosNegDefinitionLP lp;
+	private PosNegLPStandard lp;
 	private ComponentManager cm;
 	
 	private ReasonerComponent fastReasoner;
@@ -192,7 +192,7 @@ public class ORE {
 	}
 
 	public void setLearningProblem(){
-		lp = new PosNegDefinitionLP(owlReasoner, posExamples, negExamples);
+		lp = new PosNegLPStandard(owlReasoner, posExamples, negExamples);
 		lp.init();
 	}
 	

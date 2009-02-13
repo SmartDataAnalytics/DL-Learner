@@ -51,7 +51,7 @@ import javax.swing.*;
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 
 /**
  * @author Tilo Hielscher
@@ -417,7 +417,7 @@ public class RunPanel extends JPanel implements ActionListener {
 		
 		// enable tree button
 		if((config.getLearningAlgorithm() instanceof ExampleBasedROLComponent)
-				&& (config.getLearningProblem() instanceof PosNegDefinitionLP)) {
+				&& (config.getLearningProblem() instanceof PosNegLPStandard)) {
 			treeButton.setEnabled(true);
 		}
 	}

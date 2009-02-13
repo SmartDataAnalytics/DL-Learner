@@ -40,11 +40,10 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
-import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
+import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegLPStrict;
 import org.dllearner.learningproblems.PosNegInclusionLP;
-import org.dllearner.learningproblems.PosOnlyDefinitionLP;
-import org.dllearner.learningproblems.PosOnlyInclusionLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
@@ -136,7 +135,7 @@ return ClassLearningProblemConfigurator.getClassLearningProblem(reasoningService
 * @param reasoningService see ReasoningService
 * @return a component ready for initialization PosNegDefinitionLP
 **/
-public static PosNegDefinitionLP getPosNegDefinitionLP(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
+public static PosNegLPStandard getPosNegDefinitionLP(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
 return PosNegDefinitionLPConfigurator.getPosNegDefinitionLP(reasoningService, positiveExamples, negativeExamples);
 }
 
@@ -146,7 +145,7 @@ return PosNegDefinitionLPConfigurator.getPosNegDefinitionLP(reasoningService, po
 * @param reasoningService see ReasoningService
 * @return a component ready for initialization PosNegDefinitionLPStrict
 **/
-public static PosNegDefinitionLPStrict getPosNegDefinitionLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
+public static PosNegLPStrict getPosNegDefinitionLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
 return PosNegDefinitionLPStrictConfigurator.getPosNegDefinitionLPStrict(reasoningService, positiveExamples, negativeExamples);
 }
 
@@ -163,19 +162,10 @@ return PosNegInclusionLPConfigurator.getPosNegInclusionLP(reasoningService, posi
 /**
 * @param positiveExamples positive examples
 * @param reasoningService see ReasoningService
-* @return a component ready for initialization PosOnlyDefinitionLP
+* @return a component ready for initialization PosOnlyLP
 **/
-public static PosOnlyDefinitionLP getPosOnlyDefinitionLP(ReasonerComponent reasoningService, Set<String> positiveExamples)  {
-return PosOnlyDefinitionLPConfigurator.getPosOnlyDefinitionLP(reasoningService, positiveExamples);
-}
-
-/**
-* @param positiveExamples positive examples
-* @param reasoningService see ReasoningService
-* @return a component ready for initialization PosOnlyInclusionLP
-**/
-public static PosOnlyInclusionLP getPosOnlyInclusionLP(ReasonerComponent reasoningService, Set<String> positiveExamples)  {
-return PosOnlyInclusionLPConfigurator.getPosOnlyInclusionLP(reasoningService, positiveExamples);
+public static PosOnlyLP getPosOnlyLP(ReasonerComponent reasoningService, Set<String> positiveExamples)  {
+return PosOnlyLPConfigurator.getPosOnlyLP(reasoningService, positiveExamples);
 }
 
 /**

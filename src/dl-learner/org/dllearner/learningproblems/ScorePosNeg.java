@@ -34,8 +34,8 @@ import org.dllearner.core.owl.Individual;
  */
 public abstract class ScorePosNeg extends Score {
 	
-	// accuracy
-	public abstract double getAccuracy();
+
+	public abstract double getScoreValue();
 	
 	// example coverage
 	public abstract Set<Individual> getCoveredPositives();

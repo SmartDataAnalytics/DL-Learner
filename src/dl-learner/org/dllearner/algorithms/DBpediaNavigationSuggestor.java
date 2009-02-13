@@ -39,9 +39,9 @@ import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 
 /**
@@ -79,8 +79,8 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 			PosNegLP lp = (PosNegLP) learningProblem;
 			this.learner = ComponentFactory.getExampleBasedROLComponent(lp, rs);
 			//this.learner=new ExampleBasedROLComponent(lp, rs);
-		} else if(learningProblem instanceof PosOnlyDefinitionLP) {
-			PosOnlyDefinitionLP lp = (PosOnlyDefinitionLP) learningProblem;
+		} else if(learningProblem instanceof PosOnlyLP) {
+			PosOnlyLP lp = (PosOnlyLP) learningProblem;
 			this.learner = ComponentFactory.getExampleBasedROLComponent(lp, rs);
 			//this.learner=new ExampleBasedROLComponent(lp, rs);
 		}
@@ -100,12 +100,12 @@ public class DBpediaNavigationSuggestor extends LearningAlgorithm {
 		return "DBpedia Navigation Suggestor";
 	}
 	
-	public DBpediaNavigationSuggestor(PosOnlyDefinitionLP learningProblem, ReasonerComponent rs) {
+	public DBpediaNavigationSuggestor(PosOnlyLP learningProblem, ReasonerComponent rs) {
 	   	super(learningProblem, rs);		
 		System.out.println("test1");
 	}
 	
-	public DBpediaNavigationSuggestor(PosNegDefinitionLP learningProblem, ReasonerComponent rs) {
+	public DBpediaNavigationSuggestor(PosNegLPStandard learningProblem, ReasonerComponent rs) {
 	   	super(learningProblem, rs);		
 		System.out.println("test2");
 	}

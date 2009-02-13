@@ -39,7 +39,7 @@ import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Files;
@@ -235,7 +235,7 @@ public class DumbLPFinder {
 					.getOWLAPIReasoner(tmp);
 
 			// learning problem
-			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(f,
+			PosNegLPStandard lp = ComponentFactory.getPosNegDefinitionLP(f,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 

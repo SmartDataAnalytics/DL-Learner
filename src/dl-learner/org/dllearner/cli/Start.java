@@ -73,9 +73,9 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosNegInclusionLP;
-import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.parser.ConfParser;
 import org.dllearner.parser.KBParser;
@@ -291,13 +291,13 @@ public class Start {
 				handleError("Invalid value \"" + problemOption.getStringValue() + "\" in " + problemOption + ". Valid values are " + confMapper.getLearningProblems() + ".");
 			}			
 		} else {
-			lpClass = PosNegDefinitionLP.class;
+			lpClass = PosNegLPStandard.class;
 		}
 		lp = cm.learningProblem(lpClass, rc);
 		SortedSet<String> posExamples = parser.getPositiveExamples();
 		SortedSet<String> negExamples = parser.getNegativeExamples();
 		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
-		if (lpClass != PosOnlyDefinitionLP.class)
+		if (lpClass != PosOnlyLP.class)
 			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
 		configureComponent(cm, lp, parser);
 		initComponent(cm, lp);
@@ -365,9 +365,9 @@ public class Start {
 		componentPrefixMapping.put(FastRetrievalReasoner.class, "fastRetrieval");
 
 		// learning problems - configured via + and - flags for examples
-		componentPrefixMapping.put(PosNegDefinitionLP.class, "posNegDefinitionLP");
+		componentPrefixMapping.put(PosNegLPStandard.class, "posNegDefinitionLP");
 		componentPrefixMapping.put(PosNegInclusionLP.class, "posNegInclusionLP");
-		componentPrefixMapping.put(PosOnlyDefinitionLP.class, "posOnlyDefinitionLP");
+		componentPrefixMapping.put(PosOnlyLP.class, "posOnlyDefinitionLP");
 
 		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
@@ -943,11 +943,11 @@ public class Start {
 			ConfFileOption problemOption) {
 		Class<? extends LearningProblem> lpClass = null;
 		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinitionLP"))
-			lpClass = PosNegDefinitionLP.class;
+			lpClass = PosNegLPStandard.class;
 		else if (problemOption.getStringValue().equals("posNegInclusionLP"))
 			lpClass = PosNegInclusionLP.class;
 		else if (problemOption.getStringValue().equals("posOnlyDefinitionLP"))
-			lpClass = PosOnlyDefinitionLP.class;
+			lpClass = PosOnlyLP.class;
 		else
 			handleError("Unknown value " + problemOption.getValue() + " for option \"problem\".");
 
