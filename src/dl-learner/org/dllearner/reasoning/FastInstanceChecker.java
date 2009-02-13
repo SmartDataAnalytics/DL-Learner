@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
@@ -82,7 +83,10 @@ import org.dllearner.utilities.owl.ConceptTransformation;
  * object creation, which makes it extremely fast compared to standard
  * reasoners.
  * 
- * Note: This algorithm works only on concepts in negation normal form!
+ * Meanwhile, the algorithm has been extended to also perform fast retrieval
+ * operations. However, those need write access to memory and potentially have
+ * to deal with all individuals in a knowledge base. For many knowledge bases,
+ * they should still be reasonably fast. 
  * 
  * @author Jens Lehmann
  * 
@@ -149,6 +153,15 @@ public class FastInstanceChecker extends ReasonerComponent {
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
 		options.add(type);
 		options.add(new BooleanConfigOption("defaultNegation", "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", true, false, true));
+		StringConfigOption forallSemantics = new StringConfigOption("forallRetrievalSemantics",
+				"This option controls how to interpret the all quantifier in \forall r.C. The standard option is" +
+				"to return all those which do not have an r-filler not in C. The domain semantics is to use those" +
+				"which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to" +
+				"use those which have at least one r-filler and do not have an r-filler not in C.", "forallExists");
+		forallSemantics.setAllowedValues(new String[] { "standard", "domain", "forallExists" });
+		// closure option? see:
+		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
+		options.add(forallSemantics);		
 		return options;
 	}
 
@@ -482,22 +495,111 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
-	public SortedSet<Individual> getIndividualsImpl(Description concept)
+	public SortedSet<Individual> getIndividualsImpl(Description description)
 			throws ReasoningMethodUnsupportedException {
-		if (concept instanceof NamedClass) {
-			return classInstancesPos.get((NamedClass) concept);
-		} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
-			return classInstancesNeg.get((NamedClass) concept.getChild(0));
-		}
-		
-		// return rs.retrieval(concept);
-		SortedSet<Individual> inds = new TreeSet<Individual>();
-		for (Individual i : individuals) {
-			if (hasType(concept, i)) {
-				inds.add(i);
+		// policy: returned sets are clones, i.e. can be modified
+		// (of course we only have to clone the leafs of a class description tree)
+		if (description instanceof NamedClass) {
+			return new TreeSet<Individual>(classInstancesPos.get((NamedClass) description));
+		} else if (description instanceof Negation && description.getChild(0) instanceof NamedClass) {
+			return new TreeSet<Individual>(classInstancesNeg.get((NamedClass) description.getChild(0)));
+		} else if (description instanceof Thing) {
+			return new TreeSet<Individual>(individuals);
+		} else if (description instanceof Nothing) {
+			return new TreeSet<Individual>();
+		} else if (description instanceof Union) {
+			// copy instances of first element and then subtract all others
+			SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
+			int childNr = 0;
+			for(Description child : description.getChildren()) {
+				if(childNr != 0) {
+					ret.addAll(getIndividualsImpl(child));
+				}
+				childNr++;
+			}
+			return ret;
+		} else if (description instanceof Intersection) {
+			// copy instances of first element and then subtract all others
+			SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
+			int childNr = 0;
+			for(Description child : description.getChildren()) {
+				if(childNr != 0) {
+					ret.retainAll(getIndividualsImpl(child));
+				}
+				childNr++;
+			}
+			return ret;
+		} else if (description instanceof ObjectSomeRestriction) {
+			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+			
+			ObjectPropertyExpression ope = ((ObjectSomeRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
+			
+			// each individual is connected to a set of individuals via the property;
+			// we loop through the complete mapping
+			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+				SortedSet<Individual> inds = entry.getValue();
+				for(Individual ind : inds) {
+					if(targetSet.contains(ind)) {
+						returnSet.add(ind);
+						// once we found an individual, we do not need to check the others
+						continue; 
+					}
+				}
+			}
+		} else if (description instanceof ObjectAllRestriction) {
+			// \forall restrictions are difficult to handle; assume we want to check
+			// \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
+			// this is satisfied trivially (all of their non-existing children are male)
+			if(!configurator.getForallRetrievalSemantics().equals("forallExists")) {
+				throw new Error("Only forallExists semantics currently implemented.");
+			}
+			
+			// problem: we need to make sure that \neg \exists r.\top \equiv \forall r.\bot
+			// can still be reached in an algorithm (\forall r.\bot \equiv \bot under forallExists
+			// semantics)
+			
+			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+						
+			ObjectPropertyExpression ope = ((ObjectAllRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+			SortedSet<Individual> returnSet = new TreeSet<Individual>(mapping.keySet());
+			
+			// each individual is connected to a set of individuals via the property;
+			// we loop through the complete mapping
+			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+				SortedSet<Individual> inds = entry.getValue();
+				for(Individual ind : inds) {
+					if(!targetSet.contains(ind)) {
+						returnSet.remove(ind);
+						continue; 
+					}
+				}
 			}
 		}
-		return inds;
+			
+		throw new ReasoningMethodUnsupportedException("Retrieval for description "
+					+ description + " unsupported.");		
+			
+		// return rs.retrieval(concept);
+//		SortedSet<Individual> inds = new TreeSet<Individual>();
+//		for (Individual i : individuals) {
+//			if (hasType(concept, i)) {
+//				inds.add(i);
+//			}
+//		}
+//		return inds;
 	}
 
 	/*
