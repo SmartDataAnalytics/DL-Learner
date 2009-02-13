@@ -50,9 +50,10 @@ import org.dllearner.utilities.datastructures.SetManipulation;
  * @author Jens Lehmann
  *
  */
-public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
+@Deprecated
+public class PosNegInclusionLP extends PosNegLP {
 
-	private PosNegDefinitionLP definitionLP;
+	private PosNegLPStandard definitionLP;
 	private PosNegInclusionLPConfigurator configurator;
 	
 	@Override
@@ -196,6 +197,24 @@ public class PosNegInclusionLP extends PosNegLP implements InclusionLP {
 //			return definitionLP.computeScore(ConceptTransformation.transformToNegationNormalForm(new Negation(concept)));
 //		}
 		return definitionLP.computeScore(new Negation(concept));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
+	 */
+	@Override
+	public double getAccuracy(Description description) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
+	 */
+	@Override
+	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

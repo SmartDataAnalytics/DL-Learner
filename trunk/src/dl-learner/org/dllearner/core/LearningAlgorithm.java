@@ -239,7 +239,7 @@ public abstract class LearningAlgorithm extends Component {
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list
 //			if(ed.getAccuracy() < accuracyThreshold) {
-			if(ed.getScoreValue() < accuracyThreshold) {
+			if(ed.getAccuracy() < accuracyThreshold) {
 				return returnList;
 			}
 

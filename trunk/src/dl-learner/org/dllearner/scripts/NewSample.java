@@ -41,7 +41,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.configurators.ComponentFactory;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.Files;
 
@@ -128,7 +128,7 @@ public class NewSample {
 		FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
 
 		// learning problem
-		PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP( f, posExamples, negExamples);
+		PosNegLPStandard lp = ComponentFactory.getPosNegDefinitionLP( f, posExamples, negExamples);
 		
 		// learning algorithm
 		ExampleBasedROLComponent la = ComponentFactory.getExampleBasedROLComponent( lp, f);

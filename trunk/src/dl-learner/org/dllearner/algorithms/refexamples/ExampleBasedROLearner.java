@@ -43,7 +43,7 @@ import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosOnlyDefinitionLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -72,7 +72,7 @@ public class ExampleBasedROLearner {
 	// often the learning problems needn't be accessed directly; instead
 	// use the example sets below and the posonly variable
 	private PosNegLP learningProblem;
-	private PosOnlyDefinitionLP posOnlyLearningProblem;
+	private PosOnlyLP posOnlyLearningProblem;
 	private Description startDescription;
 	private boolean posOnly = false;
 	private int nrOfExamples;
@@ -254,8 +254,8 @@ public class ExampleBasedROLearner {
 			// System.out.println(nrOfNegativeExamples);
 			// System.exit(0);
 
-		} else if (learningProblem instanceof PosOnlyDefinitionLP) {
-			PosOnlyDefinitionLP lp = (PosOnlyDefinitionLP) learningProblem;
+		} else if (learningProblem instanceof PosOnlyLP) {
+			PosOnlyLP lp = (PosOnlyLP) learningProblem;
 			this.posOnlyLearningProblem = lp;
 			posOnly = true;
 			positiveExamples = lp.getPositiveExamples();
@@ -1305,14 +1305,14 @@ public class ExampleBasedROLearner {
 
 	public ScorePosNeg getSolutionScore() {
 		if (posOnly)
-			return posOnlyLearningProblem.computeScore(getBestSolution());
+			return (ScorePosNeg) posOnlyLearningProblem.computeScore(getBestSolution());
 		else
 			return (ScorePosNeg) learningProblem.computeScore(getBestSolution());
 	}
 
 	private ScorePosNeg getScore(Description d) {
 		if (posOnly)
-			return posOnlyLearningProblem.computeScore(d);
+			return (ScorePosNeg) posOnlyLearningProblem.computeScore(d);
 		else
 			return (ScorePosNeg) learningProblem.computeScore(d);
 	}

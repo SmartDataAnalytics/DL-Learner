@@ -23,33 +23,33 @@ package org.dllearner.core.configurators;
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.learningproblems.PosOnlyInclusionLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 
 /**
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
-public  class PosOnlyInclusionLPConfigurator  implements Configurator {
+public  class PosOnlyLPConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
 
-private PosOnlyInclusionLP posOnlyInclusionLP;
+private PosOnlyLP posOnlyLP;
 
 /**
-* @param posOnlyInclusionLP see PosOnlyInclusionLP
+* @param posOnlyLP see PosOnlyLP
 **/
-public PosOnlyInclusionLPConfigurator(PosOnlyInclusionLP posOnlyInclusionLP){
-this.posOnlyInclusionLP = posOnlyInclusionLP;
+public PosOnlyLPConfigurator(PosOnlyLP posOnlyLP){
+this.posOnlyLP = posOnlyLP;
 }
 
 /**
 * @param reasoningService see reasoningService
 * @param positiveExamples positive examples
-* @return PosOnlyInclusionLP
+* @return PosOnlyLP
 **/
-public static PosOnlyInclusionLP getPosOnlyInclusionLP(ReasonerComponent reasoningService, Set<String> positiveExamples) {
-PosOnlyInclusionLP component = ComponentManager.getInstance().learningProblem(PosOnlyInclusionLP.class, reasoningService);
+public static PosOnlyLP getPosOnlyLP(ReasonerComponent reasoningService, Set<String> positiveExamples) {
+PosOnlyLP component = ComponentManager.getInstance().learningProblem(PosOnlyLP.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "positiveExamples", positiveExamples);
 return component;
 }
@@ -62,7 +62,7 @@ return component;
 **/
 @SuppressWarnings("unchecked")
 public Set<String> getPositiveExamples() {
-return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posOnlyInclusionLP,  "positiveExamples") ;
+return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posOnlyLP,  "positiveExamples") ;
 }
 
 /**
@@ -71,7 +71,7 @@ return (Set<String>) ComponentManager.getInstance().getConfigOptionValue(posOnly
 * default value: null
 **/
 public void setPositiveExamples(Set<String> positiveExamples) {
-ComponentManager.getInstance().applyConfigEntry(posOnlyInclusionLP, "positiveExamples", positiveExamples);
+ComponentManager.getInstance().applyConfigEntry(posOnlyLP, "positiveExamples", positiveExamples);
 }
 
 /**

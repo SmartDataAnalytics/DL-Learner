@@ -49,7 +49,7 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.scripts.improveWikipedia.ConceptSPARQLReEvaluator;
 import org.dllearner.scripts.improveWikipedia.ConceptSelector;
@@ -313,7 +313,7 @@ public class WikipediaCategoryCleaner {
 			//OWLAPIReasoner f = ComponentFactory.getOWLAPIReasoner(tmp);
 	
 			// learning problem
-			PosNegDefinitionLP lp = ComponentFactory.getPosNegDefinitionLP(f,
+			PosNegLPStandard lp = ComponentFactory.getPosNegDefinitionLP(f,
 					posExamples, negExamples);
 	
 			// learning algorithm

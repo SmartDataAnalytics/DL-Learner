@@ -23,7 +23,7 @@ package org.dllearner.core.configurators;
 import java.util.Set;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
+import org.dllearner.learningproblems.PosNegLPStrict;
 
 /**
 * automatically generated, do not edit manually.
@@ -34,12 +34,12 @@ public  class PosNegDefinitionLPStrictConfigurator  implements Configurator {
 private boolean reinitNecessary = false;
 @SuppressWarnings("unused")
 
-private PosNegDefinitionLPStrict posNegDefinitionLPStrict;
+private PosNegLPStrict posNegDefinitionLPStrict;
 
 /**
 * @param posNegDefinitionLPStrict see PosNegDefinitionLPStrict
 **/
-public PosNegDefinitionLPStrictConfigurator(PosNegDefinitionLPStrict posNegDefinitionLPStrict){
+public PosNegDefinitionLPStrictConfigurator(PosNegLPStrict posNegDefinitionLPStrict){
 this.posNegDefinitionLPStrict = posNegDefinitionLPStrict;
 }
 
@@ -49,8 +49,8 @@ this.posNegDefinitionLPStrict = posNegDefinitionLPStrict;
 * @param negativeExamples negative examples
 * @return PosNegDefinitionLPStrict
 **/
-public static PosNegDefinitionLPStrict getPosNegDefinitionLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
-PosNegDefinitionLPStrict component = ComponentManager.getInstance().learningProblem(PosNegDefinitionLPStrict.class, reasoningService);
+public static PosNegLPStrict getPosNegDefinitionLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples) {
+PosNegLPStrict component = ComponentManager.getInstance().learningProblem(PosNegLPStrict.class, reasoningService);
 ComponentManager.getInstance().applyConfigEntry(component, "positiveExamples", positiveExamples);
 ComponentManager.getInstance().applyConfigEntry(component, "negativeExamples", negativeExamples);
 return component;

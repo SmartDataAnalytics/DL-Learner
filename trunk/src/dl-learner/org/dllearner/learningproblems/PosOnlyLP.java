@@ -26,12 +26,17 @@ import java.util.SortedSet;
 
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
+import org.dllearner.core.configurators.ComponentFactory;
+import org.dllearner.core.configurators.PosOnlyLPConfigurator;
 import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringSetConfigOption;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.datastructures.SetManipulation;
 
 /**
  * A learning problem, where we learn from positive examples only.
@@ -43,6 +48,14 @@ public abstract class PosOnlyLP extends LearningProblem {
 
 	protected SortedSet<Individual> positiveExamples;
 	protected SortedSet<Individual> pseudoNegatives;	
+
+	private PosNegLPStandard definitionLP;
+	private PosOnlyLPConfigurator configurator;
+	
+	@Override
+	public PosOnlyLPConfigurator getConfigurator(){
+		return configurator;
+	}	
 	
 	public PosOnlyLP(ReasonerComponent reasoningService) {
 		super(reasoningService);
@@ -69,6 +82,28 @@ public abstract class PosOnlyLP extends LearningProblem {
 		return options;
 	}		
 	
+	public static String getName() {
+		return "positive only definition learning problem";
+	}
+
+	
+	@Override
+	public void init() {
+		// by default we test all other instances of the knowledge base
+		pseudoNegatives = Helper.difference(reasoner.getIndividuals(), positiveExamples);
+		
+		// create an instance of a standard definition learning problem
+		// instanciated with pseudo-negatives
+		definitionLP = ComponentFactory.getPosNegDefinitionLP(
+				reasoner, 
+				SetManipulation.indToString(positiveExamples), 
+				SetManipulation.indToString(pseudoNegatives));
+		//definitionLP = new PosNegDefinitionLP(reasoningService, positiveExamples, pseudoNegatives);
+		// TODO: we must make sure that the problem also gets the same 
+		// reasoning options (i.e. options are the same up to reversed example sets)
+		definitionLP.init();		
+	}
+	
 	public SortedSet<Individual> getPositiveExamples() {
 		return positiveExamples;
 	}	
@@ -79,4 +114,10 @@ public abstract class PosOnlyLP extends LearningProblem {
 	public SortedSet<Individual> getPseudoNegatives() {
 		return pseudoNegatives;
 	}	
+	
+
+	public int coveredPseudoNegativeExamplesOrTooWeak(Description concept) {
+		return definitionLP.coveredNegativeExamplesOrTooWeak(concept);
+	}
+	
 }

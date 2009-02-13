@@ -111,4 +111,22 @@ public class ClassLearningProblem extends LearningProblem {
 	public boolean isEquivalenceProblem() {
 		return equivalence;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
+	 */
+	@Override
+	public double getAccuracy(Description description) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
+	 */
+	@Override
+	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

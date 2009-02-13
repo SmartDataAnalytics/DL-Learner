@@ -44,7 +44,7 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  * 
  */
-public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
+public class PosNegLPStandard extends PosNegLP {
 
 	private PosNegDefinitionLPConfigurator configurator;
 	@Override
@@ -52,12 +52,12 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 		return configurator;
 	}
 
-	public PosNegDefinitionLP(ReasonerComponent reasoningService) {
+	public PosNegLPStandard(ReasonerComponent reasoningService) {
 		super(reasoningService);
 		this.configurator = new PosNegDefinitionLPConfigurator(this);
 	}
 
-	public PosNegDefinitionLP(ReasonerComponent reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
+	public PosNegLPStandard(ReasonerComponent reasoningService, SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
 		super(reasoningService);
 		this.positiveExamples = positiveExamples;
 		this.negativeExamples = negativeExamples;
@@ -227,6 +227,24 @@ public class PosNegDefinitionLP extends PosNegLP implements DefinitionLP {
 						negAsNeg);
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
+	 */
+	@Override
+	public double getAccuracy(Description description) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
+	 */
+	@Override
+	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

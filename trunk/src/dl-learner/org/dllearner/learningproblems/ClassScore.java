@@ -52,17 +52,15 @@ public class ClassScore extends Score {
 	 */
 	public double getProtusion() {
 		return protusion;
-	}		
-	
-	/**
-	 * 
-	 * @return
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Score#getAccuracy()
 	 */
 	@Override
-	public double getScoreValue() {
-		
-		
-		throw new UnsupportedOperationException();
-	}
+	public double getAccuracy() {
+		// TODO Auto-generated method stub
+		return 0;
+	}		
 
 }

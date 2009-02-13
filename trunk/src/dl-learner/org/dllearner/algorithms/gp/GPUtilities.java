@@ -22,7 +22,7 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Thing;
-import org.dllearner.learningproblems.PosNegDefinitionLPStrict;
+import org.dllearner.learningproblems.PosNegLPStrict;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.learningproblems.ScoreThreeValued;
 import org.dllearner.reasoning.FastRetrieval;
@@ -459,7 +459,7 @@ public class GPUtilities {
     	// learningProblem.getReasoner().getIndividuals();
     	// neutClassified.retainAll(posClassified);
     	neutClassified.retainAll(negClassified);
-    	PosNegDefinitionLPStrict lp = (PosNegDefinitionLPStrict)learningProblem;
+    	PosNegLPStrict lp = (PosNegLPStrict)learningProblem;
     	return new ScoreThreeValued(conceptLength, lp.getAccuracyPenalty(), lp.getErrorPenalty(), lp.isPenaliseNeutralExamples(), lp.getPercentPerLengthUnit(), posClassified, neutClassified, negClassified, lp.getPositiveExamples(),lp.getNeutralExamples(),lp.getNegativeExamples());
     }
     

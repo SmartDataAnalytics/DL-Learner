@@ -30,7 +30,7 @@ import javax.swing.tree.ExpandVetoException;
 
 import org.dllearner.algorithms.refexamples.ExampleBasedNode;
 import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 
 /**
  * TreeWindow
@@ -78,7 +78,7 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 			// ebNodeModel.getChildren((ExampleBasedNode) first));
 			
 			// collect some helper values for display and accuracy calculations
-			PosNegDefinitionLP lp = (PosNegDefinitionLP) config.getLearningProblem();
+			PosNegLPStandard lp = (PosNegLPStandard) config.getLearningProblem();
 			Set<String> posExamples = lp.getConfigurator().getPositiveExamples();
 			Set<String> negExamples = lp.getConfigurator().getNegativeExamples();
 			String baseURI = config.getReasoner().getBaseURI();

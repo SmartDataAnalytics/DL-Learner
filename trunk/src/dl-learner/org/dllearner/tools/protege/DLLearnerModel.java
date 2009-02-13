@@ -44,7 +44,7 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
@@ -338,7 +338,7 @@ public class DLLearnerModel implements Runnable{
 		if (id.equals(EQUIVALENT_CLASS_AXIOM_STRING)) {
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
-			lp = cm.learningProblem(PosNegDefinitionLP.class, reasoner);
+			lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
 		}
 		if (id.equals(SUPER_CLASS_AXIOM_STRING)) {
 			// sets the learning problem to PosNegInclusionLP when the dllearner

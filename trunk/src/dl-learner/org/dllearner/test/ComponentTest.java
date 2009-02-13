@@ -33,7 +33,7 @@ import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.PosNegDefinitionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
@@ -65,7 +65,7 @@ public class ComponentTest {
 		reasoner.init();
 		
 		// create a learning problem and set positive and negative examples
-		LearningProblem lp = cm.learningProblem(PosNegDefinitionLP.class, reasoner);
+		LearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
 		Set<String> positiveExamples = new TreeSet<String>();
 		positiveExamples.add("http://localhost/foo#heinz");
 		positiveExamples.add("http://localhost/foo#alex");
