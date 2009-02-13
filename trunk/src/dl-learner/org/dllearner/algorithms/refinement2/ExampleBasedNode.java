@@ -49,6 +49,8 @@ public class ExampleBasedNode {
 	// example based variables
 	private Set<Individual> coveredPositives;
 	private Set<Individual> coveredNegatives;
+//	private int coveredPositiveSize;
+//	private int coveredNegativeSize;
 	
 	// the method by which quality was evaluated in this node
 	public enum QualityEvaluationMethod { START, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST };
