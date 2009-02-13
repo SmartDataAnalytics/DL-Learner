@@ -34,12 +34,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.configurators.ComponentFactory;
-import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
+import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.configurators.SparqlKnowledgeSourceConfigurator;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.extraction.ExtractionAlgorithm;
@@ -160,7 +160,7 @@ public class WikipediaCategoryCleaner {
 				SPARQL_RESULTSET_LIMIT_NEGATIVES, DEVELOPSTABLESETS);
 		currentPOSITIVEex.addAll(wikiTasks.getPosExamples());
 		currentNEGATIVEex.addAll(wikiTasks.getNegExamples());
-		ExampleBasedROLComponent la = learn(currentPOSITIVEex, currentNEGATIVEex);
+		ROLComponent2 la = learn(currentPOSITIVEex, currentNEGATIVEex);
 		la.start();
 		// get wrong individuals and reevaluate concepts
 		conceptresults = (List<EvaluatedDescriptionPosNeg>) la.getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, 0.5, true);
@@ -273,10 +273,10 @@ public class WikipediaCategoryCleaner {
 	}
 
 	
-	private static ExampleBasedROLComponent learn( SortedSet<String> posExamples, SortedSet<String> negExamples) {
+	private static ROLComponent2 learn( SortedSet<String> posExamples, SortedSet<String> negExamples) {
 		
 		
-		ExampleBasedROLComponent la = null;
+		ROLComponent2 la = null;
 		try{
 			SortedSet<Individual> instances = new TreeSet<Individual>();
 			instances.addAll(SetManipulation.stringToInd(posExamples));
@@ -313,12 +313,12 @@ public class WikipediaCategoryCleaner {
 			//OWLAPIReasoner f = ComponentFactory.getOWLAPIReasoner(tmp);
 	
 			// learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegDefinitionLP(f,
+			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
 					posExamples, negExamples);
 	
 			// learning algorithm
-			la = ComponentFactory.getExampleBasedROLComponent(lp, f);
-			ExampleBasedROLComponentConfigurator lc = la.getConfigurator();
+			la = ComponentFactory.getROLComponent2(lp, f);
+			ROLComponent2Configurator lc = la.getConfigurator();
 			la.getConfigurator().setNoisePercentage(20);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(100);
 			la.getConfigurator().setMaxExecutionTimeInSeconds(50);
@@ -440,7 +440,7 @@ public class WikipediaCategoryCleaner {
 				lwarn);
 		Logger.getLogger(AutomaticPositiveExampleFinderSPARQL.class).setLevel(
 				lwarn);
-		Logger.getLogger(ExampleBasedROLComponent.class).setLevel(lwarn);
+		Logger.getLogger(ROLComponent2.class).setLevel(lwarn);
 		Logger.getLogger(SparqlQuery.class).setLevel(lwarn);
 		Logger.getLogger(Cache.class).setLevel(lwarn);
 

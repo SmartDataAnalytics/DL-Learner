@@ -46,7 +46,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.Component;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -129,7 +129,7 @@ public class StartGUI extends JFrame implements ActionListener {
 		panels[0] = new ComponentPanel(config, this, KnowledgeSource.class, OWLFile.class, ignoredKnowledgeSources);
 		panels[1] = new ComponentPanel(config, this, ReasonerComponent.class, FastInstanceChecker.class);
 		panels[2] = new ComponentPanel(config, this, LearningProblem.class, PosNegLPStandard.class);
-		panels[3] = new ComponentPanel(config, this, LearningAlgorithm.class, ExampleBasedROLComponent.class);
+		panels[3] = new ComponentPanel(config, this, LearningAlgorithm.class, ROLComponent2.class);
 		runPanel = new RunPanel(config, this);		
 		
 		// add tabs for panels

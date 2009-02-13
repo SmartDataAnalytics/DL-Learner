@@ -32,7 +32,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
@@ -210,7 +210,7 @@ public class DumbLPFinder {
 	private static EvaluatedDescriptionPosNeg learnSPARQL(
 			SortedSet<Individual> posExamples, SortedSet<Individual> negExamples) {
 
-		ExampleBasedROLComponent la = null;
+		ROLComponent2 la = null;
 
 		try {
 
@@ -235,12 +235,12 @@ public class DumbLPFinder {
 					.getOWLAPIReasoner(tmp);
 
 			// learning problem
-			PosNegLPStandard lp = ComponentFactory.getPosNegDefinitionLP(f,
+			PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard(f,
 					SetManipulation.indToString(posExamples), SetManipulation
 							.indToString(negExamples));
 
 			// learning algorithm
-			la = ComponentFactory.getExampleBasedROLComponent(lp, f);
+			la = ComponentFactory.getROLComponent2(lp, f);
 			la.getConfigurator().setNoisePercentage(0.0);
 			la.getConfigurator().setGuaranteeXgoodDescriptions(1);
 			la.getConfigurator().setMaxExecutionTimeInSeconds(30);

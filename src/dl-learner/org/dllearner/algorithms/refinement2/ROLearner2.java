@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.algorithms.refexamples;
+package org.dllearner.algorithms.refinement2;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
+import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
@@ -62,10 +62,10 @@ import com.jamonapi.Monitor;
  * @author Jens Lehmann
  * 
  */
-public class ExampleBasedROLearner {
+public class ROLearner2 {
 
-	private static Logger logger = Logger.getLogger(ExampleBasedROLearner.class);
-	private ExampleBasedROLComponentConfigurator configurator;
+	private static Logger logger = Logger.getLogger(ROLearner2.class);
+	private ROLComponent2Configurator configurator;
 
 	// basic setup: learning problem and reasoning service
 	private ReasonerComponent rs;
@@ -226,8 +226,8 @@ public class ExampleBasedROLearner {
 	private String baseURI;
 	private Map<String, String> prefixes;
 
-	public ExampleBasedROLearner(
-			ExampleBasedROLComponentConfigurator configurator,
+	public ROLearner2(
+			ROLComponent2Configurator configurator,
 			LearningProblem learningProblem,
 			ReasonerComponent rs,
 			RefinementOperator operator,
@@ -318,7 +318,7 @@ public class ExampleBasedROLearner {
 		evaluateSetCreationTimeNs = 0;
 		improperConceptsRemovalTimeNs = 0;
 		
-		Monitor totalLearningTime = JamonMonitorLogger.getTimeMonitor(ExampleBasedROLComponent.class, "totalLearningTime")
+		Monitor totalLearningTime = JamonMonitorLogger.getTimeMonitor(ROLComponent2.class, "totalLearningTime")
 				.start();
 		// TODO: write a JUnit test for this problem (long-lasting or infinite
 		// loops because

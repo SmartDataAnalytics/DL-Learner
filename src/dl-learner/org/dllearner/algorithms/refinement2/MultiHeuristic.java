@@ -17,11 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.algorithms.refexamples;
+package org.dllearner.algorithms.refinement2;
 
 import java.util.List;
 
-import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
+import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.owl.DatatypeSomeRestriction;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Negation;
@@ -70,7 +70,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public class MultiHeuristic implements ExampleBasedHeuristic {
 	
 	private ConceptComparator conceptComparator = new ConceptComparator();
-	private ExampleBasedROLComponentConfigurator configurator;
+	private ROLComponent2Configurator configurator;
 	
 	// heuristic parameters
 	private double expansionPenaltyFactor = 0.02;
@@ -92,7 +92,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 //		this(nrOfPositiveExamples, nrOfNegativeExamples, 0.02, 0.5);
 	}
 	
-	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, ExampleBasedROLComponentConfigurator configurator) {
+	public MultiHeuristic(int nrOfPositiveExamples, int nrOfNegativeExamples, ROLComponent2Configurator configurator) {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 		this.configurator = configurator;
@@ -144,7 +144,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		return (coveredPositives + negativeWeight * (nrOfNegativeExamples - coveredNegatives))/(double)nrOfExamples;
 	}
 	
-	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples, ExampleBasedROLComponentConfigurator configurator) {
+	public static double getNodeScore(ExampleBasedNode node, int nrOfPositiveExamples, int nrOfNegativeExamples, ROLComponent2Configurator configurator) {
 		MultiHeuristic multi = new MultiHeuristic(nrOfPositiveExamples, nrOfNegativeExamples, configurator);
 		return multi.getNodeScore(node);
 	}

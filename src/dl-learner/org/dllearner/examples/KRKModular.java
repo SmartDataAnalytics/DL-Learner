@@ -16,7 +16,7 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -265,7 +265,7 @@ public class KRKModular {
 		
 		lp.init();
 		
-		la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp, r);
+		la = cm.learningAlgorithm(ROLComponent2.class, lp, r);
 		SortedSet<String> ignoredConcepts = getIgnoredConcepts(pos, neg);
 		
 		cm.applyConfigEntry(la,"useAllConstructor",false);

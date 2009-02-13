@@ -23,14 +23,12 @@ package org.dllearner.core.configurators;
 import java.net.URL;
 import java.util.Set;
 import org.dllearner.algorithms.BruteForceLearner;
-import org.dllearner.algorithms.DBpediaNavigationSuggestor;
 import org.dllearner.algorithms.RandomGuesser;
-import org.dllearner.algorithms.SimpleSuggestionLearningAlgorithm;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.gp.GP;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.LearningProblemUnsupportedException;
@@ -40,9 +38,9 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosNegLPStrict;
-import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -133,30 +131,30 @@ return ClassLearningProblemConfigurator.getClassLearningProblem(reasoningService
 * @param positiveExamples positive examples
 * @param negativeExamples negative examples
 * @param reasoningService see ReasoningService
-* @return a component ready for initialization PosNegDefinitionLP
-**/
-public static PosNegLPStandard getPosNegDefinitionLP(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
-return PosNegDefinitionLPConfigurator.getPosNegDefinitionLP(reasoningService, positiveExamples, negativeExamples);
-}
-
-/**
-* @param positiveExamples positive examples
-* @param negativeExamples negative examples
-* @param reasoningService see ReasoningService
-* @return a component ready for initialization PosNegDefinitionLPStrict
-**/
-public static PosNegLPStrict getPosNegDefinitionLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
-return PosNegDefinitionLPStrictConfigurator.getPosNegDefinitionLPStrict(reasoningService, positiveExamples, negativeExamples);
-}
-
-/**
-* @param positiveExamples positive examples
-* @param negativeExamples negative examples
-* @param reasoningService see ReasoningService
 * @return a component ready for initialization PosNegInclusionLP
 **/
 public static PosNegInclusionLP getPosNegInclusionLP(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
 return PosNegInclusionLPConfigurator.getPosNegInclusionLP(reasoningService, positiveExamples, negativeExamples);
+}
+
+/**
+* @param positiveExamples positive examples
+* @param negativeExamples negative examples
+* @param reasoningService see ReasoningService
+* @return a component ready for initialization PosNegLPStandard
+**/
+public static PosNegLPStandard getPosNegLPStandard(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
+return PosNegLPStandardConfigurator.getPosNegLPStandard(reasoningService, positiveExamples, negativeExamples);
+}
+
+/**
+* @param positiveExamples positive examples
+* @param negativeExamples negative examples
+* @param reasoningService see ReasoningService
+* @return a component ready for initialization PosNegLPStrict
+**/
+public static PosNegLPStrict getPosNegLPStrict(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
+return PosNegLPStrictConfigurator.getPosNegLPStrict(reasoningService, positiveExamples, negativeExamples);
 }
 
 /**
@@ -182,30 +180,10 @@ return BruteForceLearnerConfigurator.getBruteForceLearner(learningProblem, reaso
 * @param learningProblem see LearningProblem
 * @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
-* @return a component ready for initialization DBpediaNavigationSuggestor
-**/
-public static DBpediaNavigationSuggestor getDBpediaNavigationSuggestor(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
-return DBpediaNavigationSuggestorConfigurator.getDBpediaNavigationSuggestor(learningProblem, reasoningService);
-}
-
-/**
-* @param learningProblem see LearningProblem
-* @param reasoningService see ReasoningService
-* @throws LearningProblemUnsupportedException see
 * @return a component ready for initialization RandomGuesser
 **/
 public static RandomGuesser getRandomGuesser(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
 return RandomGuesserConfigurator.getRandomGuesser(learningProblem, reasoningService);
-}
-
-/**
-* @param learningProblem see LearningProblem
-* @param reasoningService see ReasoningService
-* @throws LearningProblemUnsupportedException see
-* @return a component ready for initialization SimpleSuggestionLearningAlgorithm
-**/
-public static SimpleSuggestionLearningAlgorithm getSimpleSuggestionLearningAlgorithm(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
-return SimpleSuggestionLearningAlgorithmConfigurator.getSimpleSuggestionLearningAlgorithm(learningProblem, reasoningService);
 }
 
 /**
@@ -242,20 +220,20 @@ return GPConfigurator.getGP(learningProblem, reasoningService);
 * @param learningProblem see LearningProblem
 * @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
-* @return a component ready for initialization ExampleBasedROLComponent
+* @return a component ready for initialization ROLearner
 **/
-public static ExampleBasedROLComponent getExampleBasedROLComponent(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
-return ExampleBasedROLComponentConfigurator.getExampleBasedROLComponent(learningProblem, reasoningService);
+public static ROLearner getROLearner(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+return ROLearnerConfigurator.getROLearner(learningProblem, reasoningService);
 }
 
 /**
 * @param learningProblem see LearningProblem
 * @param reasoningService see ReasoningService
 * @throws LearningProblemUnsupportedException see
-* @return a component ready for initialization ROLearner
+* @return a component ready for initialization ROLComponent2
 **/
-public static ROLearner getROLearner(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
-return ROLearnerConfigurator.getROLearner(learningProblem, reasoningService);
+public static ROLComponent2 getROLComponent2(LearningProblem learningProblem, ReasonerComponent reasoningService) throws LearningProblemUnsupportedException {
+return ROLComponent2Configurator.getROLComponent2(learningProblem, reasoningService);
 }
 
 

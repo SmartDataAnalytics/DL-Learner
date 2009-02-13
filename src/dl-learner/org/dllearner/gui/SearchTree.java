@@ -21,7 +21,7 @@ package org.dllearner.gui;
 
 import javax.swing.JTree;
 
-import org.dllearner.algorithms.refexamples.ExampleBasedNode;
+import org.dllearner.algorithms.refinement2.ExampleBasedNode;
 
 /**
  * Own JTree implemenation with improved formatting.

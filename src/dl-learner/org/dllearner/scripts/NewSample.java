@@ -34,7 +34,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
@@ -128,10 +128,10 @@ public class NewSample {
 		FastInstanceChecker f = ComponentFactory.getFastInstanceChecker(tmp);
 
 		// learning problem
-		PosNegLPStandard lp = ComponentFactory.getPosNegDefinitionLP( f, posExamples, negExamples);
+		PosNegLPStandard lp = ComponentFactory.getPosNegLPStandard( f, posExamples, negExamples);
 		
 		// learning algorithm
-		ExampleBasedROLComponent la = ComponentFactory.getExampleBasedROLComponent( lp, f);
+		ROLComponent2 la = ComponentFactory.getROLComponent2( lp, f);
 		//OPTIONAL PARAMETERS
 		la.getConfigurator().setUseAllConstructor( false);
 		la.getConfigurator().setUseExistsConstructor(true);

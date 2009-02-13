@@ -18,7 +18,7 @@
  *
  */
 
-package org.dllearner.algorithms.refexamples;
+package org.dllearner.algorithms.refinement2;
 
 import java.io.File;
 import java.util.Collection;
@@ -34,7 +34,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.configurators.ExampleBasedROLComponentConfigurator;
+import org.dllearner.core.configurators.ROLComponent2Configurator;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -80,18 +80,18 @@ import org.dllearner.utilities.Helper;
  * @author Jens Lehmann
  *
  */
-public class ExampleBasedROLComponent extends LearningAlgorithm {
+public class ROLComponent2 extends LearningAlgorithm {
 	
-	private ExampleBasedROLComponentConfigurator configurator;
+	private ROLComponent2Configurator configurator;
 	@Override
-	public ExampleBasedROLComponentConfigurator getConfigurator(){
+	public ROLComponent2Configurator getConfigurator(){
 		return configurator;
 	}
 	
 	// actual algorithm
-	private ExampleBasedROLearner algorithm;
+	private ROLearner2 algorithm;
 	private static Logger logger = Logger
-		.getLogger(ExampleBasedROLComponent.class);
+		.getLogger(ROLComponent2.class);
 	private String logLevel = CommonConfigOptions.logLevelDefault;	
 		
 	// configuration options
@@ -150,14 +150,14 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
-	public ExampleBasedROLComponent(PosNegLP learningProblem, ReasonerComponent reasoningService) {
+	public ROLComponent2(PosNegLP learningProblem, ReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-		this.configurator = new ExampleBasedROLComponentConfigurator(this);
+		this.configurator = new ROLComponent2Configurator(this);
 	}
 	
-	public ExampleBasedROLComponent(PosOnlyLP learningProblem, ReasonerComponent reasoningService) {
+	public ROLComponent2(PosOnlyLP learningProblem, ReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-		this.configurator = new ExampleBasedROLComponentConfigurator(this);
+		this.configurator = new ROLComponent2Configurator(this);
 	}
 	
 	public static Collection<Class<? extends LearningProblem>> supportedLearningProblems() {
@@ -392,7 +392,7 @@ public class ExampleBasedROLComponent extends LearningAlgorithm {
 			
 		// create an algorithm object and pass all configuration
 		// options to it
-		algorithm = new ExampleBasedROLearner(
+		algorithm = new ROLearner2(
 				configurator,
 				learningProblem,
 				reasoner,

@@ -31,7 +31,7 @@ import java.util.Vector;
 import javax.swing.DefaultListModel;
 
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
@@ -362,7 +362,7 @@ public class DLLearnerModel implements Runnable{
 	public void setLearningAlgorithm() {
 		try {
 			// sets the learning algorithm to ROlearner
-			this.la = cm.learningAlgorithm(ExampleBasedROLComponent.class, lp,
+			this.la = cm.learningAlgorithm(ROLComponent2.class, lp,
 					reasoner);
 		} catch (LearningProblemUnsupportedException e) {
 			// TODO Auto-generated catch block

@@ -46,8 +46,8 @@ import org.dllearner.Info;
 import org.dllearner.algorithms.BruteForceLearner;
 import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.gp.GP;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
 import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -313,7 +313,7 @@ public class Start {
 				handleError("Invalid value \"" + algorithmOption.getStringValue() + "\" in " + algorithmOption + ". Valid values are " + confMapper.getLearningAlgorithms() + ".");
 			}			
 		} else {
-			laClass = ExampleBasedROLComponent.class;
+			laClass = ROLComponent2.class;
 		}		
 		try {
 			la = cm.learningAlgorithm(laClass, lp, rc);
@@ -371,7 +371,7 @@ public class Start {
 
 		// learning algorithms
 		componentPrefixMapping.put(ROLearner.class, "refinement");
-		componentPrefixMapping.put(ExampleBasedROLComponent.class, "refexamples");
+		componentPrefixMapping.put(ROLComponent2.class, "refexamples");
 		componentPrefixMapping.put(GP.class, "gp");
 		componentPrefixMapping.put(BruteForceLearner.class, "bruteForce");
 		componentPrefixMapping.put(RandomGuesser.class, "random");
@@ -967,7 +967,7 @@ public class Start {
 			ConfFileOption algorithmOption) {
 		Class<? extends LearningAlgorithm> laClass = null;
 		if (algorithmOption == null || algorithmOption.getStringValue().equals("refexamples"))
-			laClass = ExampleBasedROLComponent.class;
+			laClass = ROLComponent2.class;
 		else if (algorithmOption.getStringValue().equals("refinement"))
 			laClass = ROLearner.class;
 		else if (algorithmOption.getStringValue().equals("gp"))

@@ -28,8 +28,8 @@ import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 
-import org.dllearner.algorithms.refexamples.ExampleBasedNode;
-import org.dllearner.algorithms.refexamples.ExampleBasedROLComponent;
+import org.dllearner.algorithms.refinement2.ExampleBasedNode;
+import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.learningproblems.PosNegLPStandard;
 
 /**
@@ -61,8 +61,8 @@ public class TreeWindow extends JFrame implements TreeWillExpandListener {
 					this.getClass().getResource("icon.gif")));
 
 		// tree model
-		if (config.getLearningAlgorithm() instanceof ExampleBasedROLComponent) {
-			ExampleBasedROLComponent ebrol = (ExampleBasedROLComponent) config
+		if (config.getLearningAlgorithm() instanceof ROLComponent2) {
+			ROLComponent2 ebrol = (ROLComponent2) config
 					.getLearningAlgorithm();
 			this.rootNode = ebrol.getStartNode();
 
