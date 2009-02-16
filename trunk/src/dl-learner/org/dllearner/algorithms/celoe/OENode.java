@@ -44,6 +44,8 @@ public class OENode {
 	
 	private double accuracy;
 	
+	private int horizontalExpansion;
+	
 	private OENode parent;
 	private List<OENode> children;
 	
@@ -51,12 +53,17 @@ public class OENode {
 		this.parent = parentNode;
 		this.description = description;
 		this.accuracy = accuracy;
+		horizontalExpansion = 0;
 	}
 
 	public void addChild(OENode node) {
 		children.add(node);
 	}
 
+	public void incHorizontalExpansion() {
+		horizontalExpansion++;
+	}
+	
 	/**
 	 * @return the description
 	 */
@@ -83,6 +90,13 @@ public class OENode {
 	 */
 	public List<OENode> getChildren() {
 		return children;
+	}
+
+	/**
+	 * @return the horizontalExpansion
+	 */
+	public int getHorizontalExpansion() {
+		return horizontalExpansion;
 	}
 	
 }
