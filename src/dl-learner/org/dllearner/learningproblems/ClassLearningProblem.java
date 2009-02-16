@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.dllearner.algorithms.EvaluatedDescriptionClass;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ClassLearningProblemConfigurator;
@@ -128,5 +130,21 @@ public class ClassLearningProblem extends LearningProblem {
 	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	/**
+	 * @return the classToDescribe
+	 */
+	public NamedClass getClassToDescribe() {
+		return classToDescribe;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
+	 */
+	@Override
+	public EvaluatedDescription evaluate(Description description) {
+		ClassScore score = computeScore(description);
+		return new EvaluatedDescriptionClass(description, score);
 	}
 }

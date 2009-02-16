@@ -77,6 +77,15 @@ public abstract class LearningProblem extends Component {
 	public abstract Score computeScore(Description description);
 	
 	/**
+	 * Evaluates the description by computing the score and returning an
+	 * evaluated description of the correct type (ClassLearningProblem
+	 * returns EvaluatedDescriptionClass instead of generic EvaluatedDescription).
+	 * @param description Description to evaluate.
+	 * @return 
+	 */
+	public abstract EvaluatedDescription evaluate(Description description);
+	
+	/**
 	 * This method returns a value, which indicates how accurate a
 	 * class description solves a learning problem. There can be different
 	 * ways to compute accuracy depending on the type of learning problem

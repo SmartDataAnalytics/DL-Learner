@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.PosNegLPStandardConfigurator;
 import org.dllearner.core.options.ConfigOption;
@@ -245,6 +246,15 @@ public class PosNegLPStandard extends PosNegLP {
 	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
+	 */
+	@Override
+	public EvaluatedDescription evaluate(Description description) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

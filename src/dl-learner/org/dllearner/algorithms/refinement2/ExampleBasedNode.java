@@ -42,6 +42,8 @@ import org.dllearner.utilities.owl.ConceptComparator;
  */
 public class ExampleBasedNode {
 
+//	public static long exampleMemoryCounter = 0;
+	
 	private ROLComponent2Configurator configurator;
 	
 	private static DecimalFormat df = new DecimalFormat();
@@ -114,6 +116,8 @@ public class ExampleBasedNode {
 		this.coveredPositives = coveredPositives;
 		this.coveredNegatives = coveredNegatives;
 		isQualityEvaluated = true;
+//		exampleMemoryCounter += coveredPositives.size() * 4;
+//		exampleMemoryCounter += coveredNegatives.size() * 4;
 	}
 
 	@Override		

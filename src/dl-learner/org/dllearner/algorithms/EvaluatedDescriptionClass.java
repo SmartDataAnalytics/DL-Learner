@@ -17,28 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.core;
+package org.dllearner.algorithms;
+
+import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.owl.Description;
+import org.dllearner.learningproblems.ClassScore;
 
 /**
- * The score class is used to store how well a class description did
- * on a learning problem. Depending on the learning problem at hand,
- * different criteria can be used. (Similar learning problems probably
- * score class descriptions/hypothesis in a similar way.)
- * 
- * TODO: Maybe we don't really need a score, but only EvaluatedDescription.
+ * An evaluated description for learning classes in ontologies.
  * 
  * @author Jens Lehmann
  *
  */
-public abstract class Score {
+public class EvaluatedDescriptionClass extends EvaluatedDescription {
 
 	/**
-	 * This method returns a value, which indicates how accurate a
-	 * class description solves a learning problem. 
-	 * 
-	 * @see LearningProblem#getAccuracy(Description)
-	 * @return A value between 0 and 1 indicating the quality (of a class description).
-	 */	
-	public abstract double getAccuracy();
-	
+	 * Constructs an evaluated description for learning classes in ontologies.
+	 * @param description Description.
+	 * @param score Score of description.
+	 */
+	public EvaluatedDescriptionClass(Description description, ClassScore score) {
+		super(description, score);
+	}
+
 }

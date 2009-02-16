@@ -418,6 +418,8 @@ public class ROLearner2 {
 				printStatistics(false);
 				lastPrintTime = currentTime;
 				logger.debug("--- loop " + loop + " started ---");
+//				logger.info("used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024);
+//				logger.info("test: " + ExampleBasedNode.exampleMemoryCounter/1024);
 			}
 
 			// traverse the current search tree to find a solution
