@@ -294,11 +294,14 @@ public class Start {
 			lpClass = PosNegLPStandard.class;
 		}
 		lp = cm.learningProblem(lpClass, rc);
-		SortedSet<String> posExamples = parser.getPositiveExamples();
-		SortedSet<String> negExamples = parser.getNegativeExamples();
-		cm.applyConfigEntry(lp, "positiveExamples", posExamples);
-		if (lpClass != PosOnlyLP.class)
+		if(lpClass == PosNegLPStandard.class || lpClass == PosOnlyLP.class) {
+			SortedSet<String> posExamples = parser.getPositiveExamples();
+			cm.applyConfigEntry(lp, "positiveExamples", posExamples);
+		}
+		if(lpClass == PosNegLPStandard.class) {
+			SortedSet<String> negExamples = parser.getNegativeExamples();
 			cm.applyConfigEntry(lp, "negativeExamples", negExamples);
+		}
 		configureComponent(cm, lp, parser);
 		initComponent(cm, lp);
 		lpMonitor.stop();

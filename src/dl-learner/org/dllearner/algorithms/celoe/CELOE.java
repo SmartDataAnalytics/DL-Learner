@@ -19,9 +19,11 @@
  */
 package org.dllearner.algorithms.celoe;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -85,6 +87,12 @@ public class CELOE extends LearningAlgorithm {
 	
 	// important parameters
 	private double minAcc;
+	private double maxDepth;
+	
+	// utility variables
+	private String baseURI;
+	private Map<String, String> prefixes;
+	DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	
 	@Override
 	public Configurator getConfigurator() {
@@ -93,6 +101,7 @@ public class CELOE extends LearningAlgorithm {
 	
 	public CELOE(ClassLearningProblem problem, ReasonerComponent reasoner) {
 		super(problem, reasoner);
+		configurator = new CELOEConfigurator(this);
 		classToDescribe = problem.getClassToDescribe();
 		isEquivalenceProblem = problem.isEquivalenceProblem();
 	}
@@ -114,8 +123,9 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
 		options.add(CommonConfigOptions.useDoubleDatatypes());
-		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
+		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
 		options.add(CommonConfigOptions.getNoisePercentage());
+		options.add(CommonConfigOptions.getMaxDepth(4));
 		return options;
 	}
 	
@@ -135,6 +145,7 @@ public class CELOE extends LearningAlgorithm {
 		
 		// we put important parameters in class variables
 		minAcc = configurator.getNoisePercentage()/100d;
+		maxDepth = configurator.getMaxDepth();
 	}
 
 	@Override
@@ -164,6 +175,10 @@ public class CELOE extends LearningAlgorithm {
 		reset();
 		nanoStartTime = System.nanoTime();
 		
+		// highest accuracy so far
+		double highestAccuracy = 0.0;
+		OENode bestNode;
+		
 		// start class: intersection of super classes for definitions (since it needs to
 		// capture all instances), but owl:Thing for learning subclasses (since it is
 		// superfluous to add super classes in this case)
@@ -176,16 +191,67 @@ public class CELOE extends LearningAlgorithm {
 		}
 		addNode(startClass, null);
 		
+		int loop = 0;
+		while (!terminationCriteriaSatisfied()) {
+
+			if(bestEvaluatedDescriptions.getBest().getAccuracy() > highestAccuracy) {
+				highestAccuracy = bestEvaluatedDescriptions.getBest().getAccuracy();
+				logger.info("more accurate (" + dfPercent.format(100*highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));	
+			}
+
+			// chose best node according to heuristics
+			bestNode = nodes.last();
+			int horizExp = bestNode.getHorizontalExpansion();
+			
+			// apply operator
+			TreeSet<Description> refinements = refineNode(bestNode); 
+				
+			while(refinements.size() != 0) {
+				// pick element from set
+				Description refinement = refinements.pollFirst();
+				int length = refinement.getLength();
+				
+				// we ignore all refinements with lower length and too high depth
+				if(length >= horizExp && refinement.getDepth() <= maxDepth) {
+		
+					boolean added = addNode(refinement, bestNode);
+					
+					// if refinements have the same length, we apply the operator again
+					// (descending the subsumption hierarchy)
+					if(added && length == horizExp) {
+						// ... refine node (first check whether we need this as there will
+						// the penalty for longer descriptions will be quite hard anyway)
+					}
+
+				}
+		
+			}
+			
+			// Anzahl Schleifendurchläufe
+			loop++;
+		}
+
+		if (stop) {
+			logger.info("Algorithm stopped.\n");
+		} else {
+			logger.info("Algorithm terminated succesfully.\n");
+		}
 		
 		// print solution(s)
-		logger.info("solution : " + bestEvaluatedDescriptions.getBest());		
+		logger.info("solution : " + bestDescriptionToString());			
 		
 		isRunning = false;
 	}
 
 	// expand node horizontically
-	private void expandNode(OENode node) {
-		
+	private TreeSet<Description> refineNode(OENode node) {
+		// we have to remove and add the node since its heuristic evaluation changes through the expansion
+		nodes.remove(node);
+		int horizExp = node.getHorizontalExpansion();
+		TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
+		node.incHorizontalExpansion();
+		nodes.add(node);
+		return refinements;
 	}
 	
 	// add node to search tree if it is not too weak
@@ -212,9 +278,13 @@ public class CELOE extends LearningAlgorithm {
 		} else {
 			parentNode.addChild(node);
 		}
+	
+		nodes.add(node);
 		
 		// maybe add to best descriptions (method keeps set size fixed)
-		bestEvaluatedDescriptions.add(description, accuracy, learningProblem);
+		if(checkNode(node)) {
+			bestEvaluatedDescriptions.add(description, accuracy, learningProblem);
+		}
 	
 		return true;
 	}	
@@ -222,11 +292,16 @@ public class CELOE extends LearningAlgorithm {
 	// check whether the node is a potential solution candidate
 	// (sufficient accuracy; minimal; rewriting steps?)
 	private boolean checkNode(OENode node) {
+		
+		// what to do if super class occurs? either return false, but then it
+		// does not make sense to expand it further; or rewrite but then we have to 
+		// take care of double occurrences
+		
 		return true;
 	}
 	
 	private boolean terminationCriteriaSatisfied() {
-		return !stop && (System.nanoTime() - nanoStartTime >= (configurator.getMaxExecutionTimeInSeconds()/1000000));
+		return stop || (System.nanoTime() - nanoStartTime >= (configurator.getMaxExecutionTimeInSeconds()*1000000));
 	}
 	
 	private void reset() {
@@ -248,4 +323,17 @@ public class CELOE extends LearningAlgorithm {
 		stop = true;
 	}
 
+	public OENode getSearchTreeRoot() {
+		return startNode;
+	}
+	
+	// central function for printing description
+	private String descriptionToString(Description description) {
+		return description.toManchesterSyntaxString(baseURI, prefixes);
+	}
+	
+	private String bestDescriptionToString() {
+		EvaluatedDescription best = bestEvaluatedDescriptions.getBest();
+		return best.getDescription().toManchesterSyntaxString(baseURI, prefixes) + " (accuracy: " + dfPercent.format(best.getAccuracy()*100) + ")";
+	}	
 }

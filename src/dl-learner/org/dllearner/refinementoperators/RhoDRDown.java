@@ -335,6 +335,11 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		throw new RuntimeException();
 	}
 
+	@Override
+	public Set<Description> refine(Description description, int maxLength) {
+		return refine(description, maxLength, null, startClass);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.refinement.RefinementOperator#refine(org.dllearner.core.owl.Description, int, java.util.List)
 	 */

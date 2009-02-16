@@ -155,6 +155,15 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "ma
 public double getNoisePercentage() {
 return (Double) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "noisePercentage") ;
 }
+/**
+* maxDepth maximum depth of description.
+* mandatory: false| reinit necessary: true
+* default value: 3
+* @return int 
+**/
+public int getMaxDepth() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "maxDepth") ;
+}
 
 /**
 * @param useAllConstructor specifies whether the universal concept constructor is used in the learning algorithm.
@@ -253,6 +262,15 @@ reinitNecessary = true;
 **/
 public void setNoisePercentage(double noisePercentage) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "noisePercentage", noisePercentage);
+reinitNecessary = true;
+}
+/**
+* @param maxDepth maximum depth of description.
+* mandatory: false| reinit necessary: true
+* default value: 3
+**/
+public void setMaxDepth(int maxDepth) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "maxDepth", maxDepth);
 reinitNecessary = true;
 }
 

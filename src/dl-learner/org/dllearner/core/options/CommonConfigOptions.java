@@ -73,6 +73,10 @@ public final class CommonConfigOptions {
 		return new BooleanConfigOption("terminateOnNoiseReached", "specifies whether to terminate when noise criterion is met", terminateOnNoiseReachedDefault);
 	}
 	
+	public static IntegerConfigOption getMaxDepth(int defaultValue) {
+		return new IntegerConfigOption("maxDepth", "maximum depth of description", defaultValue);
+	}
+	
 	public static DoubleConfigOption getPercentPerLenghtUnitOption(double defaultValue) {
 		DoubleConfigOption option = new DoubleConfigOption("percentPerLenghtUnit", "describes the reduction in classification accuracy in percent one is willing to accept for reducing the length of the concept by one", defaultValue);
 		option.setLowerLimit(0.0);
@@ -152,6 +156,10 @@ public final class CommonConfigOptions {
 	public static IntegerConfigOption maxExecutionTimeInSeconds() {
 		return new IntegerConfigOption("maxExecutionTimeInSeconds", "algorithm will stop after specified seconds",maxExecutionTimeInSecondsDefault);
 	}	
+	
+	public static IntegerConfigOption maxExecutionTimeInSeconds(int defaultValue) {
+		return new IntegerConfigOption("maxExecutionTimeInSeconds", "algorithm will stop after specified seconds",defaultValue);
+	}		
 	
 	public static IntegerConfigOption minExecutionTimeInSeconds() {
 		return new IntegerConfigOption("minExecutionTimeInSeconds", "algorithm will run at least specified seconds",minExecutionTimeInSecondsDefault);
