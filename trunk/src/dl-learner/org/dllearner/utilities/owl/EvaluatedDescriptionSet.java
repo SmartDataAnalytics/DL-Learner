@@ -27,6 +27,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
+import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.owl.Description;
 
 /**
@@ -39,9 +41,9 @@ import org.dllearner.core.owl.Description;
  */
 public class EvaluatedDescriptionSet {
 
-	private EvaluatedDescriptionPosNegComparator comp = new EvaluatedDescriptionPosNegComparator();
+	private EvaluatedDescriptionComparator comp = new EvaluatedDescriptionComparator();
 	
-	private SortedSet<EvaluatedDescriptionPosNeg> set = new TreeSet<EvaluatedDescriptionPosNeg>(comp);
+	private SortedSet<EvaluatedDescription> set = new TreeSet<EvaluatedDescription>(comp);
 
 	private int maxSize;
 	
@@ -49,10 +51,21 @@ public class EvaluatedDescriptionSet {
 		this.maxSize = maxSize;
 	}
 	
-	public void add(EvaluatedDescriptionPosNeg ed) {
+	public void add(Description description, double accuracy, LearningProblem problem) {
+		if(set.size()==0 || getWorst().getAccuracy() <= accuracy) {
+			set.add(problem.evaluate(description));
+		}	
+		if(set.size()>maxSize) {
+			Iterator<EvaluatedDescription> it = set.iterator();
+			it.next();
+			it.remove();
+		}		
+	}
+	
+	public void add(EvaluatedDescription ed) {
 		set.add(ed);
 		if(set.size()>maxSize) {
-			Iterator<EvaluatedDescriptionPosNeg> it = set.iterator();
+			Iterator<EvaluatedDescription> it = set.iterator();
 			it.next();
 			it.remove();
 		}
@@ -68,24 +81,24 @@ public class EvaluatedDescriptionSet {
 		return set.size();
 	}
 	
-	public EvaluatedDescriptionPosNeg getBest() {
+	public EvaluatedDescription getBest() {
 		return set.first();
 	}
 	
-	public EvaluatedDescriptionPosNeg getWorst() {
+	public EvaluatedDescription getWorst() {
 		return set.last();
 	}
 	
 	/**
 	 * @return the set
 	 */
-	public SortedSet<EvaluatedDescriptionPosNeg> getSet() {
+	public SortedSet<EvaluatedDescription> getSet() {
 		return set;
 	}
 	
 	public List<Description> toDescriptionList() {
 		List<Description> list = new LinkedList<Description>();
-		for(EvaluatedDescriptionPosNeg ed : set) {
+		for(EvaluatedDescription ed : set) {
 			list.add(ed.getDescription());
 		}
 		return list;

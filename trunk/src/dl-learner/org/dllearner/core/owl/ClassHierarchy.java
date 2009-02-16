@@ -197,6 +197,11 @@ public class ClassHierarchy {
 		return str;
 	}
 
+	@Override
+	public ClassHierarchy clone() {
+		return new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);		
+	}
+	
 	/**
 	 * The method computes a new class hierarchy, which is a copy of this
 	 * one, but only the specified classes are allowed to occur. For instance,

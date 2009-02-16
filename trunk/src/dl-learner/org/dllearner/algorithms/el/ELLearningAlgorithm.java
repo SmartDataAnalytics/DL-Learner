@@ -168,7 +168,7 @@ public class ELLearningAlgorithm extends LearningAlgorithm {
 			// the description has a chance to make it in the set if it has
 			// at least as high accuracy - if not we can save the reasoner calls
 			// for fully computing the evaluated description
-			if(bestEvaluatedDescriptions.size() == 0 || bestEvaluatedDescriptions.getWorst().getCoveredNegatives().size() >= node.getCoveredNegatives()) {
+			if(bestEvaluatedDescriptions.size() == 0 || ((EvaluatedDescriptionPosNeg)bestEvaluatedDescriptions.getWorst()).getCoveredNegatives().size() >= node.getCoveredNegatives()) {
 				ScorePosNeg score = (ScorePosNeg) learningProblem.computeScore(description);
 				EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(description, score);
 				bestEvaluatedDescriptions.add(ed);

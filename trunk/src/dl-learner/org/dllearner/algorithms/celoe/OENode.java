@@ -19,12 +19,70 @@
  */
 package org.dllearner.algorithms.celoe;
 
+import java.util.List;
+
+import org.dllearner.core.owl.Description;
+
 /**
  * A node in the search tree of the ontology engineering algorithm.
+ * 
+ * Differences to the node structures in other algorithms (this may change):
+ * - covered examples are not stored in node (i.e. coverage needs to be recomputed
+ * for child nodes, which costs time but saves memory)
+ * - only evaluated nodes are stored
+ * - too weak nodes are not stored
+ * - redundant nodes are not stored (?)
+ * - only accuracy is stored to make the node structure reusable for different 
+ *   learning problems and -algorithms
  * 
  * @author Jens Lehmann
  *
  */
 public class OENode {
 
+	private Description description;
+	
+	private double accuracy;
+	
+	private OENode parent;
+	private List<OENode> children;
+	
+	public OENode(OENode parentNode, Description description, double accuracy) {
+		this.parent = parentNode;
+		this.description = description;
+		this.accuracy = accuracy;
+	}
+
+	public void addChild(OENode node) {
+		children.add(node);
+	}
+
+	/**
+	 * @return the description
+	 */
+	public Description getDescription() {
+		return description;
+	}
+
+	/**
+	 * @return the accuracy
+	 */
+	public double getAccuracy() {
+		return accuracy;
+	}
+
+	/**
+	 * @return the parent
+	 */
+	public OENode getParent() {
+		return parent;
+	}
+
+	/**
+	 * @return the children
+	 */
+	public List<OENode> getChildren() {
+		return children;
+	}
+	
 }
