@@ -504,45 +504,48 @@ public final class ComponentManager {
 		doc += "* Knowledge Sources *\n";
 		doc += "*********************\n\n";
 		for(Class<? extends Component> component : knowledgeSources) {
-			doc += getComponentConfigString(component);
+			doc += getComponentConfigString(component, KnowledgeSource.class);
 		}
 		
 		doc += "*************\n";
 		doc += "* Reasoners *\n";
 		doc += "*************\n\n";
 		for(Class<? extends Component> component : reasonerComponents) {
-			doc += getComponentConfigString(component);
+			doc += getComponentConfigString(component, ReasonerComponent.class);
 		}
 		
 		doc += "*********************\n";
 		doc += "* Learning Problems *\n";
 		doc += "*********************\n\n";
 		for(Class<? extends Component> component : learningProblems) {
-			doc += getComponentConfigString(component);
+			doc += getComponentConfigString(component, LearningProblem.class);
 		}
 		
 		doc += "***********************\n";
 		doc += "* Learning Algorithms *\n";
 		doc += "***********************\n\n";
 		for(Class<? extends Component> component : learningAlgorithms) {
-			doc += getComponentConfigString(component);
+			doc += getComponentConfigString(component, LearningAlgorithm.class);
 		}
 		
 		Files.createFile(file, doc);
 	}
 	
-	private String getComponentConfigString(Class<? extends Component> component) {
+	private String getComponentConfigString(Class<? extends Component> component, Class<? extends Component> componentType) {
 		String componentDescription =  "component: " + invokeStaticMethod(component, "getName") + " (" + component.getName() + ")";
 		String str = componentDescription + "\n";
-		String cli = confMapper.getComponentTypeString(component);
+		String cli = confMapper.getComponentTypeString(componentType);
 		String usage = confMapper.getComponentString(component);
 	
 		for(int i=0; i<componentDescription.length(); i++) {
 			str += "=";
 		}
 		str += "\n\n";
-		str += "CLI usage: "+cli+" = "+usage+";\n\n";
-		
+		if (componentType.equals(KnowledgeSource.class)){
+			str += "CLI usage: "+cli+" (\"$url\",  \""+usage+"\");\n\n";
+		}else{
+			str += "CLI usage: "+cli+" = "+usage+";\n\n";
+		}
 		
 		for(ConfigOption<?> option : componentOptions.get(component)) {
 			str += option.toString() + 	"CLI usage: "+usage+"."
