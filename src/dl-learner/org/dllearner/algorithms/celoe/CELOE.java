@@ -204,6 +204,7 @@ public class CELOE extends LearningAlgorithm {
 			int horizExp = bestNode.getHorizontalExpansion();
 			
 			// apply operator
+			System.out.println(bestNode.getDescription());
 			TreeSet<Description> refinements = refineNode(bestNode); 
 				
 			while(refinements.size() != 0) {
@@ -301,7 +302,8 @@ public class CELOE extends LearningAlgorithm {
 	}
 	
 	private boolean terminationCriteriaSatisfied() {
-		return stop || (System.nanoTime() - nanoStartTime >= (configurator.getMaxExecutionTimeInSeconds()*1000000));
+//		double runtimeSec = (System.nanoTime() - nanoStartTime;
+		return stop || (System.nanoTime() - nanoStartTime >= (configurator.getMaxExecutionTimeInSeconds()*1000000000));
 	}
 	
 	private void reset() {

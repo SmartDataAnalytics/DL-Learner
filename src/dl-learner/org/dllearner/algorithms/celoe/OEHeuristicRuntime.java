@@ -19,21 +19,47 @@
  */
 package org.dllearner.algorithms.celoe;
 
-import java.util.Comparator;
-
 /**
+ * Search algorithm heuristic for the ontology engineering algorithm. The heuristic
+ * has a strong bias towards short descriptions (i.e. the algorithm is likely to be
+ * less suitable for learning complex descriptions).
+ * 
  * @author Jens Lehmann
  *
  */
 public class OEHeuristicRuntime implements OEHeuristic {
-
-	/* (non-Javadoc)
-	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-	 */
+	
+	// strong penalty for long descriptions
+	private double expansionPenaltyFactor = 0.1;
+	// bonus for being better than parent node
+	private double gainBonusFactor = 0.3;
+	// penalty if a node has very many children since exploring such a node is
+	// computationally very expensive
+	private double nodeChildPenalty = 0.0005;
+	
 	@Override
-	public int compare(OENode o1, OENode o2) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int compare(OENode node1, OENode node2) {
+		double diff = getNodeScore(node1) - getNodeScore(node2);
+		if(diff>0)
+			return 1;
+		else if(diff<0)
+			return -1;
+		else
+			return 0;
 	}
 
+	public double getNodeScore(OENode node) {
+		// accuracy as baseline
+		double score = node.getAccuracy();
+		// being better than the parent gives a bonus;
+		if(!node.isRoot()) {
+			double parentAccuracy = node.getParent().getAccuracy();
+			score += (parentAccuracy - score) * gainBonusFactor;
+		}
+		// penalty for horizontal expansion
+		score -= node.getHorizontalExpansion() * expansionPenaltyFactor;
+		// penalty for having many child nodes (stuck prevention)
+		score -= node.getChildren().size() * nodeChildPenalty;
+		return score;
+	}	
 }

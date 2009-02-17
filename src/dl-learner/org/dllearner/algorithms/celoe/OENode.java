@@ -19,6 +19,7 @@
  */
 package org.dllearner.algorithms.celoe;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.dllearner.core.owl.Description;
@@ -47,7 +48,7 @@ public class OENode {
 	private int horizontalExpansion;
 	
 	private OENode parent;
-	private List<OENode> children;
+	private List<OENode> children = new LinkedList<OENode>();
 	
 	public OENode(OENode parentNode, Description description, double accuracy) {
 		this.parent = parentNode;
@@ -62,6 +63,10 @@ public class OENode {
 
 	public void incHorizontalExpansion() {
 		horizontalExpansion++;
+	}
+	
+	public boolean isRoot() {
+		return (parent == null);
 	}
 	
 	/**
