@@ -20,13 +20,13 @@
 package org.dllearner.core.configurators;
 
 /**
- * Common options of refinement operators.
+ * Common options of refinement operators (manually created interface).
  * 
  * @author Jens Lehmann
  *
  */
 public abstract class RefinementOperatorConfigurator {
 
-	
+	public abstract boolean getUseCardinalityRestrictions();
 	
 }

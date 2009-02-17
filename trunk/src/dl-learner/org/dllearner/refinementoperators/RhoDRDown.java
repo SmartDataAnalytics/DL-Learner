@@ -190,7 +190,9 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 	public RhoDRDown(ReasonerComponent reasoner, ClassHierarchy subHierarchy, RefinementOperatorConfigurator configurator) {
 		this.rs = reasoner;
 		this.subHierarchy = subHierarchy;
+		useCardinalityRestrictions = configurator.getUseCardinalityRestrictions();
 		// TODO add more options from configurator object
+		init();
 	}
 	
 	// TODO constructor which takes a RhoDRDownConfigurator object;
@@ -212,9 +214,11 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		this.useNegation = useNegation;
 		this.useBooleanDatatypes = useBooleanDatatypes;
 		this.useDoubleDatatypes = useDoubleDatatypes;
+		init();
+	}
 		
 //		subHierarchy = rs.getClassHierarchy();
-		
+	public void init() {	
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
 		for(ObjectProperty op : rs.getObjectProperties()) {
