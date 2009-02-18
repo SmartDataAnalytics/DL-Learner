@@ -71,7 +71,7 @@ public class PosNegLPStandard extends PosNegLP {
 	 * @see org.dllearner.core.Component#getName()
 	 */
 	public static String getName() {
-		return "two valued definition learning problem";
+		return "pos neg learning problem";
 	}
 	
 

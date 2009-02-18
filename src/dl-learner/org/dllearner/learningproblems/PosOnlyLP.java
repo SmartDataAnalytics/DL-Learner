@@ -83,7 +83,7 @@ public abstract class PosOnlyLP extends LearningProblem {
 	}		
 	
 	public static String getName() {
-		return "positive only definition learning problem";
+		return "pos only learning problem";
 	}
 
 	
