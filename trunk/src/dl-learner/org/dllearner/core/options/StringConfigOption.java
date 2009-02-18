@@ -81,6 +81,13 @@ public class StringConfigOption extends ConfigOption<String> {
 	public Set<String> getAllowedValues() {
 		return allowedValues;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.options.ConfigOption#getAllowedValuesDescription()
+	 */
+	public String getAllowedValuesDescription() {
+		return getValueTypeAsJavaString() + " "+allowedValues+" ";
+	}
 
 	/**
 	 * @param allowedValues

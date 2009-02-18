@@ -186,7 +186,7 @@ public abstract class ConfigOption<T> {
 
 	//TODO maybe change the function getClass in the options to get simpleName
 	public String getAllowedValuesDescription() {
-		return getClass().toString();
+		return getValueTypeAsJavaString();
 	}
 
 	/**
@@ -212,8 +212,13 @@ public abstract class ConfigOption<T> {
 
 	@Override
 	public String toString() {
-		return "option name: " + name + "\ndescription: " + description + "\nvalues: "
-				+ getAllowedValuesDescription() + "\ndefault value: " + defaultValue + "\n";
+		String mand = (isMandatory())?" (mandatory)":"";
+		String defval = (defaultValue==null)?"not set":defaultValue+"";
+		return  "option name: " + name + "\n" +
+				"description: " + description + "\n" +
+				"allowed values: " + getAllowedValuesDescription() + "\n" +
+				//"values: " + getValueTypeAsJavaString() + "\n" +
+				"default value: " + defval + mand+ "\n";
 	}
 	
 	public String getJavaDocString() {

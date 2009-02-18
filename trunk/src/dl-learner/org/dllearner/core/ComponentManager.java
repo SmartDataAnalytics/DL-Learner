@@ -46,6 +46,7 @@ import org.dllearner.cli.ConfMapper;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
+import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Files;
 
 /**
@@ -503,7 +504,10 @@ public final class ComponentManager {
 		doc += "*********************\n";
 		doc += "* Knowledge Sources *\n";
 		doc += "*********************\n\n";
+		doc += "BEGIN MANUAL PART\n";
+		doc += "END MANUAL PART\n\n";
 		for(Class<? extends Component> component : knowledgeSources) {
+			if(component != SparqlKnowledgeSource.class){continue;}
 			doc += getComponentConfigString(component, KnowledgeSource.class);
 		}
 		
@@ -542,14 +546,16 @@ public final class ComponentManager {
 		}
 		str += "\n\n";
 		if (componentType.equals(KnowledgeSource.class)){
-			str += "CLI usage: "+cli+" (\"$url\",  \""+usage+"\");\n\n";
+			str += "conf file usage: "+cli+" (\"$url\",  \""+usage.toUpperCase()+"\");\n\n";
 		}else{
-			str += "CLI usage: "+cli+" = "+usage+";\n\n";
+			str += "conf file usage: "+cli+" = "+usage+";\n\n";
 		}
 		
 		for(ConfigOption<?> option : componentOptions.get(component)) {
-			str += option.toString() + 	"CLI usage: "+usage+"."
-			+ option.getName()+" = "+option.getDefaultValue()+";\n\n";
+			String val = (option.getDefaultValue()==null)?"":option.getDefaultValue()+"";
+			str += option.toString() + 	
+				"conf file usage: "+usage+"."
+				+ option.getName()+" = "+val+";\n\n";
 		}		
 		return str+"\n";
 	}

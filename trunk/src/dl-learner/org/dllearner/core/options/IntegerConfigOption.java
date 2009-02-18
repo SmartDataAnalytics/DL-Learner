@@ -112,7 +112,7 @@ public class IntegerConfigOption extends ConfigOption<Integer> {
 
 	@Override
 	public String getAllowedValuesDescription() {
-		String str = getClass().toString();
+		String str = getValueTypeAsJavaString()+" ";
 		if (lowerLimit != Integer.MIN_VALUE)
 			str += " min " + lowerLimit;
 		if (upperLimit != Integer.MAX_VALUE)
