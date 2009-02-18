@@ -70,29 +70,26 @@ dllearner.bat examples/father.conf     (Windows Operating System)
 
 \begin{verbatim}
 DL-Learner 2008-10-13 command line interface
-starting component manager ... OK (81ms)
+starting component manager ... OK (157ms)
 initialising component "OWL file" ... OK (0ms)
-initialising component "fast instance checker" ... OK (861ms)
-initialising component "two valued definition learning 
-  problem" ... OK (0ms)
-initialising component "refinement operator based learning 
-  algorithm II" ... OK (14ms)
+initialising component "fast instance checker" ... OK (842ms)
+initialising component "pos neg learning problem" ... OK (0ms)
+initialising component "refinement operator based 
+  learning algorithm II" ... OK (14ms)
 
 starting top down refinement with: Thing (50% accuracy)
 more accurate (83,33%) class expression found: male
 solutions (at most 20 are shown):
-1: (male and hasChild some Thing) (length 5, depth 3)
+1: (male and hasChild some Thing) (accuracy 100%, length 5, depth 3)
 Algorithm terminated succesfully.
 
 number of retrievals: 4
 retrieval reasoning time: 0ms ( 0ms per retrieval)
 number of instance checks: 93 (0 multiple)
-instance check reasoning time: 0ms ( 0ms per instance check)
-overall reasoning time: 0ms (1,931% of overall runtime)
-overall algorithm runtime: 28ms
+instance check reasoning time: 1ms ( 0ms per instance check)
+overall reasoning time: 1ms (11,016% of overall runtime)
+overall algorithm runtime: 17ms
 \end{verbatim}
-
-\todo{display accuracy of solutions}
 
 The first part of the output tells you which components are used (more on this in Section \ref{sec:components}). In the second part you see output coming from the used learning algorithm, i.e.~it can print information while running (``more accurate (83,33\%) class description found'') and the final solutions, it computed. The results are displayed in Manchester OWL Syntax\footnote{\mos}. There can be several solutions, in which case they are ordered with the most promising one in the first position. In this case the only solution is \verb|male and hasChild some Thing| defining the class father. The last part of the output contains some runtime statistics.
 
@@ -126,7 +123,7 @@ In this part, we describe concrete components currently implemented in DL-Learne
 Knowledge sources have a URI and can be included in conf files using \verb|import("$url");|, e.g.~\verb|import("ontology.owl")|. Depending on the file ending, DL-Learner will guess the correct type of knowledge source. If you want to overwrite this, you can use a second parameter with value \verb|OWL|, \verb|KB|, or \verb|SPARQL|, e.g.~\verb|import("ontology.owl","OWL")|.
 
 \begin{description}
- \item[OWL File] DL-Learner supports OWL files in different formats, e.g. RDF/XML or N-Triples. If there is a standard OWL format, you want to use, but is not supported by DL-Learner please let us know. Note: As we use the OWL API for parsing, all formats supported by it are possible\footnote{ for a list see \url{http://owlapi.sourceforge.net/}}.
+ \item[OWL File] DL-Learner supports OWL files in different formats, e.g. RDF/XML or N-Triples. If there is a standard OWL format, you want to use, but is not supported by DL-Learner please let us know. We use the OWL API for parsing, so all formats supported by it can be used\footnote{ for a list see \url{http://owlapi.sourceforge.net/}}.
  \item[KB File] KB files are an internal non-standardised knowledge representation format, which corresponds to description logic syntax except that the special symbols have been replaced by ASCII strings, e.g.~\verb|AND| instead of $\sqcap$. You can find several KB files in the examples folder.
  \item[SPARQL Endpoint] DL-Learner allows to use SPARQL endpoints as background knowledge source, which enables the incorporation of very large knowledge bases, e.g. DBpedia\cite{2008_dbpedia}, in DL-Learner. This works by using a set of start instances, which usually correspond to the examples in a learning problem, and then retrieving knowledge about these instances via SPARQL queries. The obtained knowledge base fragment can be converted to OWL and consumed by a reasoner later since it is now sufficiently small to be processed in reasonable time. Please see \cite{2009_ijswis} for details, the parameters for the extraction algorithm are similar (different names only) to the ones here. Some options of the SPARQL component are:
 \begin{itemize}

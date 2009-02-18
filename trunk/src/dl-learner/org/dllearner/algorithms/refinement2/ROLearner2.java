@@ -149,10 +149,7 @@ public class ROLearner2 {
 	private ExampleBasedNode startNode;
 
 	// solution protocol
-	// TODO isn't solution found already true if solutions.size()>=0 ???
-	@Deprecated
-	private boolean solutionFound = false;
-	private List<Description> solutions = new LinkedList<Description>();
+	private List<ExampleBasedNode> solutions = new LinkedList<ExampleBasedNode>();
 
 	// used refinement operator and heuristic (exchangeable)
 	private RhoDRDown operator;
@@ -300,7 +297,6 @@ public class ROLearner2 {
 		candidates.clear();
 		candidatesStable.clear();
 		newCandidates.clear();
-		solutionFound = false;
 		solutions.clear();
 		maxExecutionTimeAlreadyReached = false;
 		minExecutionTimeAlreadyReached = false;
@@ -493,7 +489,7 @@ public class ROLearner2 {
 				boolean solution = checkSubtreePosOnly(bestNode);
 
 				if (solution) {
-					solutions.add(bestNode.getConcept());
+					solutions.add(bestNode);
 					ExampleBasedNode bestChild = bestNode.getChildren().last();
 					System.out.println("solution: " + bestNode.getConcept());
 					System.out.println("maxPosOnlyExpansion: " + maxPosOnlyExpansion);
@@ -513,14 +509,11 @@ public class ROLearner2 {
 
 			}
 
-			// handle termination criteria
-			handleStoppingConditions();
-
 			// Anzahl Schleifendurchläufe
 			loop++;
 		}// end while
 
-		if (isSolutionFound()) {
+		if (solutions.size()>0) {
 		//if (solutionFound) {
 			int solutionLimit = 20;
 			// we do not need to print the best node if we display the top 20 solutions below anyway
@@ -531,11 +524,11 @@ public class ROLearner2 {
 			int show = 1;
 			String manchester = "MANCHESTER:\n";
 			String kbSyntax = "KBSyntax:\n";
-			for (Description c : solutions) {
-				logger.info(show + ": " + c.toManchesterSyntaxString(baseURI, prefixes) + " (length " + c.getLength()
-						+ ", depth " + c.getDepth() + ")");
+			for (ExampleBasedNode c : solutions) {
+				logger.info(show + ": " + c.getConcept().toManchesterSyntaxString(baseURI, prefixes) + " (accuracy " + df.format(100*c.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "%, length " + c.getConcept().getLength()
+						+ ", depth " + c.getConcept().getDepth() + ")");
 //				manchester += show + ": " + c.toManchesterSyntaxString(baseURI, prefixes) + "\n";
-				kbSyntax += show + ": " + c.toKBSyntaxString() + "\n";
+				kbSyntax += show + ": " + c.getConcept().toKBSyntaxString() + "\n";
 				if (show >= solutionLimit) {
 					break;
 				}
@@ -862,8 +855,7 @@ public class ROLearner2 {
 				} else {
 					// Lösung gefunden
 					if (quality >= 0 && quality <= allowedMisclassifications && !posOnly) {
-						solutionFound = true;
-						solutions.add(refinement);
+						solutions.add(newNode);
 					}
 
 					newCandidates.add(newNode);
@@ -1294,9 +1286,10 @@ public class ROLearner2 {
 			logger.trace("ordered by generality (most special solutions first):");
 			SubsumptionComparator sc = new SubsumptionComparator(rs);
 			TreeSet<Description> solutionsOrderedBySubsumption = new TreeSet<Description>(sc);
-			solutionsOrderedBySubsumption.addAll(solutions);
+//			solutionsOrderedBySubsumption.addAll(solutions);
 			for (Description d : solutionsOrderedBySubsumption)
 				logger.trace("special: " + d);
+			throw new Error("implementation needs to be updated to show ordered solutions");			
 		}
 		/*
 		 * for (int j = 0; j < solutions.size(); j++) { Description d =
@@ -1438,94 +1431,6 @@ public class ROLearner2 {
 	
 	}
 	
-	/**
-	 * shows if a solution is found
-	 * @return 
-	 */
-	private boolean isSolutionFound(){
-		if(this.solutionFound){
-			return true;
-		}else if(solutions.size()>0){
-			return true;
-		}
-			
-		return false;
-		
-		
-	}
-	
-	@Deprecated
-	private void handleStoppingConditions() {
-		solutionFound = (guaranteeXgoodDescriptions());
-		solutionFound = (minExecutionTimeReached() && solutionFound);
-		if (maxExecutionTimeReached()) {
-			stop();
-			if (solutions.size() > 0)
-				solutionFound = true;
-		}
-		if(!solutionFound && maxClassDescriptionTests != 0) {
-			int conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
-			solutionFound = (conceptTests >= maxClassDescriptionTests);
-		}
-	}
-
-	@Deprecated
-	private boolean guaranteeXgoodDescriptions() {
-		if (guaranteeXgoodAlreadyReached)
-			return true;
-		if (solutions.size() > guaranteeXgoodDescriptions) {
-			if (guaranteeXgoodDescriptions != 1) {
-				logger.info("Minimum number (" + guaranteeXgoodDescriptions
-						+ ") of good descriptions reached, stopping now.");
-			}
-			guaranteeXgoodAlreadyReached = true;
-			return true;
-		} else
-			return false;
-
-	}
-
-	@Deprecated
-	private boolean maxExecutionTimeReached() {
-		if (maxExecutionTimeInSeconds == 0)
-			return false;
-		if (maxExecutionTimeAlreadyReached)
-			return true;
-		long needed = System.currentTimeMillis() - this.runtime;
-		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
-		if (maxMilliSeconds < needed) {
-			logger.info("Maximum time (" + maxExecutionTimeInSeconds
-					+ " seconds) reached, stopping now...");
-			maxExecutionTimeAlreadyReached = true;
-			return true;
-		} else
-			return false;
-
-	}
-
-	/**
-	 * true if minExecutionTime reached
-	 * 
-	 * @return true
-	 */
-	@Deprecated
-	private boolean minExecutionTimeReached() {
-		if (minExecutionTimeAlreadyReached)
-			return true;
-		long needed = System.currentTimeMillis() - this.runtime;
-		long minMilliSeconds = minExecutionTimeInSeconds * 1000;
-		if (minMilliSeconds < needed) {
-			if (minExecutionTimeInSeconds != 0) {
-				logger.info("Minimum time (" + minExecutionTimeInSeconds
-						+ " seconds) reached, stopping when next solution is found");
-			}
-			minExecutionTimeAlreadyReached = true;
-			return true;
-		} else
-			return false;
-
-	}
-
 	public boolean isRunning() {
 		return isRunning;
 	}
