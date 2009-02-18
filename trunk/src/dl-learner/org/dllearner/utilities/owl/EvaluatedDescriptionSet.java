@@ -43,7 +43,7 @@ public class EvaluatedDescriptionSet {
 
 	private EvaluatedDescriptionComparator comp = new EvaluatedDescriptionComparator();
 	
-	private SortedSet<EvaluatedDescription> set = new TreeSet<EvaluatedDescription>(comp);
+	private TreeSet<EvaluatedDescription> set = new TreeSet<EvaluatedDescription>(comp);
 
 	private int maxSize;
 	
@@ -56,6 +56,7 @@ public class EvaluatedDescriptionSet {
 			set.add(problem.evaluate(description));
 		}	
 		if(set.size()>maxSize) {
+			// delete the worst element
 			Iterator<EvaluatedDescription> it = set.iterator();
 			it.next();
 			it.remove();
@@ -82,17 +83,17 @@ public class EvaluatedDescriptionSet {
 	}
 	
 	public EvaluatedDescription getBest() {
-		return set.first();
+		return set.last();
 	}
 	
 	public EvaluatedDescription getWorst() {
-		return set.last();
+		return set.first();
 	}
 	
 	/**
 	 * @return the set
 	 */
-	public SortedSet<EvaluatedDescription> getSet() {
+	public TreeSet<EvaluatedDescription> getSet() {
 		return set;
 	}
 	
@@ -102,5 +103,10 @@ public class EvaluatedDescriptionSet {
 			list.add(ed.getDescription());
 		}
 		return list;
+	}
+	
+	@Override
+	public String toString() {
+		return set.toString();
 	}
 }

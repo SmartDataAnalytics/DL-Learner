@@ -341,6 +341,10 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 
 	@Override
 	public Set<Description> refine(Description description, int maxLength) {
+		// check that maxLength is valid
+		if(maxLength < description.getLength()) {
+			throw new Error("length has to be at least description length (description: " + description + ", max length: " + maxLength + ")");
+		}
 		return refine(description, maxLength, null, startClass);
 	}
 	

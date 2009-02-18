@@ -95,19 +95,26 @@ public class ClassLearningProblem extends LearningProblem {
 	public ClassScore computeScore(Description description) {
 		Set<Individual> retrieval = reasoner.getIndividuals(description);
 		
-		int instancesCovered = 0;
-		int instancesProtused = 0;
+//		int instancesProtused = 0;
+//		
+//		for(Individual ind : retrieval) {
+//			if(classInstances.contains(ind)) {
+//				instancesCovered++;
+//			} else {
+//				instancesProtused++;
+//			}
+//		}		
 		
-		for(Individual ind : retrieval) {
-			if(classInstances.contains(ind)) {
+		int instancesCovered = 0;
+		
+		for(Individual ind : classInstances) {
+			if(retrieval.contains(ind)) {
 				instancesCovered++;
-			} else {
-				instancesProtused++;
 			}
 		}
 		
 		double coverage = instancesCovered/(double)classInstances.size();
-		double protusion = instancesCovered/(double)(instancesCovered + instancesProtused);
+		double protusion = instancesCovered/(double)retrieval.size();
 		
 		return new ClassScore(coverage, protusion);
 	}	
@@ -121,8 +128,19 @@ public class ClassLearningProblem extends LearningProblem {
 	 */
 	@Override
 	public double getAccuracy(Description description) {
-		// TODO Auto-generated method stub
-		return 0;
+		Set<Individual> retrieval = reasoner.getIndividuals(description);
+		int instancesCovered = 0;
+		
+		for(Individual ind : classInstances) {
+			if(retrieval.contains(ind)) {
+				instancesCovered++;
+			}
+		}
+		
+		double coverage = instancesCovered/(double)classInstances.size();
+		double protusion = instancesCovered/(double)retrieval.size();
+		
+		return 0.5d * (coverage + protusion);
 	}
 
 	/* (non-Javadoc)
@@ -130,8 +148,14 @@ public class ClassLearningProblem extends LearningProblem {
 	 */
 	@Override
 	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
-		// TODO Auto-generated method stub
-		return 0;
+		// since we have to perform a retrieval operation anyway, we cannot easily
+		// get a benefit from the accuracy limit
+		double accuracy = getAccuracy(description);
+		if(accuracy >= minAccuracy) {
+			return accuracy;
+		} else {
+			return -1;
+		}
 	}
 
 	/**

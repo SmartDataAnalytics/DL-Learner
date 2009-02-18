@@ -142,6 +142,8 @@ public class CELOE extends LearningAlgorithm {
 		
 		// create refinement operator
 		operator = new RhoDRDown(reasoner, classHierarchy, configurator);
+		baseURI = reasoner.getBaseURI();
+		prefixes = reasoner.getPrefixes();
 		
 		// we put important parameters in class variables
 		minAcc = configurator.getNoisePercentage()/100d;
@@ -194,9 +196,11 @@ public class CELOE extends LearningAlgorithm {
 		int loop = 0;
 		while (!terminationCriteriaSatisfied()) {
 
+//			System.out.println(startNode.toTreeString(baseURI));
+			
 			if(bestEvaluatedDescriptions.getBest().getAccuracy() > highestAccuracy) {
 				highestAccuracy = bestEvaluatedDescriptions.getBest().getAccuracy();
-				logger.info("more accurate (" + dfPercent.format(100*highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));	
+				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));	
 			}
 
 			// chose best node according to heuristics
@@ -204,7 +208,6 @@ public class CELOE extends LearningAlgorithm {
 			int horizExp = bestNode.getHorizontalExpansion();
 			
 			// apply operator
-			System.out.println(bestNode.getDescription());
 			TreeSet<Description> refinements = refineNode(bestNode); 
 				
 			while(refinements.size() != 0) {
@@ -213,7 +216,8 @@ public class CELOE extends LearningAlgorithm {
 				int length = refinement.getLength();
 				
 				// we ignore all refinements with lower length and too high depth
-				if(length >= horizExp && refinement.getDepth() <= maxDepth) {
+				// (this also avoids duplicate node children)
+				if(length > horizExp && refinement.getDepth() <= maxDepth) {
 		
 					boolean added = addNode(refinement, bestNode);
 					
@@ -239,7 +243,8 @@ public class CELOE extends LearningAlgorithm {
 		}
 		
 		// print solution(s)
-		logger.info("solution : " + bestDescriptionToString());			
+//		logger.info("solution : " + bestDescriptionToString());
+		logger.info(getSolutionString());
 		
 		isRunning = false;
 	}
@@ -285,6 +290,7 @@ public class CELOE extends LearningAlgorithm {
 		// maybe add to best descriptions (method keeps set size fixed)
 		if(checkNode(node)) {
 			bestEvaluatedDescriptions.add(description, accuracy, learningProblem);
+//			System.out.println(bestEvaluatedDescriptions.toString());
 		}
 	
 		return true;
@@ -302,8 +308,7 @@ public class CELOE extends LearningAlgorithm {
 	}
 	
 	private boolean terminationCriteriaSatisfied() {
-//		double runtimeSec = (System.nanoTime() - nanoStartTime;
-		return stop || (System.nanoTime() - nanoStartTime >= (configurator.getMaxExecutionTimeInSeconds()*1000000000));
+		return stop || ((System.nanoTime() - nanoStartTime) >= (configurator.getMaxExecutionTimeInSeconds()*1000000000l));
 	}
 	
 	private void reset() {
@@ -334,8 +339,23 @@ public class CELOE extends LearningAlgorithm {
 		return description.toManchesterSyntaxString(baseURI, prefixes);
 	}
 	
+	@SuppressWarnings("unused")
 	private String bestDescriptionToString() {
 		EvaluatedDescription best = bestEvaluatedDescriptions.getBest();
-		return best.getDescription().toManchesterSyntaxString(baseURI, prefixes) + " (accuracy: " + dfPercent.format(best.getAccuracy()*100) + ")";
+		return best.getDescription().toManchesterSyntaxString(baseURI, prefixes) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
 	}	
+	
+	private String getSolutionString() {
+		int max = 10;
+		int current = 1;
+		String str = "";
+		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
+			str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
+			current++;
+			if(current == max) {
+				break;
+			}
+		}
+		return str;
+	}
 }

@@ -110,7 +110,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 	private SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
 	private SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
 	private SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
-	private SortedSet<Individual> individuals;
+	private TreeSet<Individual> individuals;
 
 	// private ReasonerComponent rs;
 	private OWLAPIReasoner rc;
@@ -118,14 +118,14 @@ public class FastInstanceChecker extends ReasonerComponent {
 	// we use sorted sets (map indices) here, because they have only log(n)
 	// complexity for checking whether an element is contained in them
 	// instances of classes
-	private Map<NamedClass, SortedSet<Individual>> classInstancesPos = new TreeMap<NamedClass, SortedSet<Individual>>();
-	private Map<NamedClass, SortedSet<Individual>> classInstancesNeg = new TreeMap<NamedClass, SortedSet<Individual>>();
+	private Map<NamedClass, TreeSet<Individual>> classInstancesPos = new TreeMap<NamedClass, TreeSet<Individual>>();
+	private Map<NamedClass, TreeSet<Individual>> classInstancesNeg = new TreeMap<NamedClass, TreeSet<Individual>>();
 	// object property mappings
 	private Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos = new TreeMap<ObjectProperty, Map<Individual, SortedSet<Individual>>>();
 	// datatype property mappings
 	// we have one mapping for true and false for efficiency reasons
-	private Map<DatatypeProperty, SortedSet<Individual>> bdPos = new TreeMap<DatatypeProperty, SortedSet<Individual>>();
-	private Map<DatatypeProperty, SortedSet<Individual>> bdNeg = new TreeMap<DatatypeProperty, SortedSet<Individual>>();
+	private Map<DatatypeProperty, TreeSet<Individual>> bdPos = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
+	private Map<DatatypeProperty, TreeSet<Individual>> bdNeg = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
 	// for int and double we assume that a property can have several values,
 	// althoug this should be rare,
 	// e.g. hasValue(object,2) and hasValue(object,3)
@@ -200,7 +200,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
 			intDatatypeProperties = rc.getIntDatatypeProperties();
 			atomicRoles = rc.getObjectProperties();
-			individuals = rc.getIndividuals();
+			individuals = (TreeSet<Individual>) rc.getIndividuals();
 
 			// rs = new ReasonerComponent(rc);
 
@@ -215,10 +215,10 @@ public class FastInstanceChecker extends ReasonerComponent {
 			for (NamedClass atomicConcept : rc.getNamedClasses()) {
 
 				SortedSet<Individual> pos = rc.getIndividuals(atomicConcept);
-				classInstancesPos.put(atomicConcept, pos);
+				classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
 
 				if (configurator.getDefaultNegation()) {
-					classInstancesNeg.put(atomicConcept, Helper.difference(individuals, pos));
+					classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
 				} else {
 					// Pellet needs approximately infinite time to answer
 					// negated queries
@@ -226,7 +226,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 					// we have to
 					// be careful here
 					Negation negatedAtomicConcept = new Negation(atomicConcept);
-					classInstancesNeg.put(atomicConcept, rc.getIndividuals(negatedAtomicConcept));
+					classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) rc.getIndividuals(negatedAtomicConcept));
 				}
 
 			}
@@ -240,8 +240,8 @@ public class FastInstanceChecker extends ReasonerComponent {
 			logger.debug("dematerialising datatype properties");
 
 			for (DatatypeProperty dp : booleanDatatypeProperties) {
-				bdPos.put(dp, rc.getTrueDatatypeMembers(dp));
-				bdNeg.put(dp, rc.getFalseDatatypeMembers(dp));
+				bdPos.put(dp, (TreeSet<Individual>) rc.getTrueDatatypeMembers(dp));
+				bdNeg.put(dp, (TreeSet<Individual>) rc.getFalseDatatypeMembers(dp));
 			}
 
 			for (DatatypeProperty dp : intDatatypeProperties) {
@@ -495,16 +495,17 @@ public class FastInstanceChecker extends ReasonerComponent {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public SortedSet<Individual> getIndividualsImpl(Description description)
 			throws ReasoningMethodUnsupportedException {
 		// policy: returned sets are clones, i.e. can be modified
 		// (of course we only have to clone the leafs of a class description tree)
 		if (description instanceof NamedClass) {
-			return new TreeSet<Individual>(classInstancesPos.get((NamedClass) description));
+			return (TreeSet<Individual>) classInstancesPos.get((NamedClass) description).clone();
 		} else if (description instanceof Negation && description.getChild(0) instanceof NamedClass) {
-			return new TreeSet<Individual>(classInstancesNeg.get((NamedClass) description.getChild(0)));
+			return (TreeSet<Individual>) classInstancesNeg.get((NamedClass) description.getChild(0)).clone();
 		} else if (description instanceof Thing) {
-			return new TreeSet<Individual>(individuals);
+			return (TreeSet<Individual>) individuals.clone();
 		} else if (description instanceof Nothing) {
 			return new TreeSet<Individual>();
 		} else if (description instanceof Union) {
@@ -535,7 +536,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			
 			ObjectPropertyExpression ope = ((ObjectSomeRestriction) description).getRole();
 			if (!(ope instanceof ObjectProperty)) {
-				throw new ReasoningMethodUnsupportedException("Instance check for description "
+				throw new ReasoningMethodUnsupportedException("Retrieval for description "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			ObjectProperty op = (ObjectProperty) ope;
@@ -553,6 +554,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 					}
 				}
 			}
+			return returnSet;
 		} else if (description instanceof ObjectAllRestriction) {
 			// \forall restrictions are difficult to handle; assume we want to check
 			// \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
@@ -584,6 +586,138 @@ public class FastInstanceChecker extends ReasonerComponent {
 					if(!targetSet.contains(ind)) {
 						returnSet.remove(ind);
 						continue; 
+					}
+				}
+			}
+			return returnSet;
+		} else if (description instanceof ObjectMinCardinalityRestriction) {
+			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+
+			int number = ((ObjectCardinalityRestriction) description).getNumber();			
+
+			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+				int nrOfFillers = 0;
+				int index = 0;
+				SortedSet<Individual> inds = entry.getValue();
+				
+				// we do not need to run tests if there are not sufficiently many fillers
+				if(inds.size() < number) {
+					continue;
+				}
+				
+				for(Individual ind : inds) {
+					// stop inner loop when nr of fillers is reached
+					if(nrOfFillers >= number) {
+						returnSet.add(entry.getKey());
+						break;
+					}		
+					// early abort when too many instance checks failed
+					if (inds.size() - index < number) {
+						break;
+					}					
+					if(targetSet.contains(ind)) {
+						nrOfFillers++;
+					}
+					index++;
+				}
+			}			
+			
+			return returnSet;
+		} else if (description instanceof ObjectMaxCardinalityRestriction) {
+			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
+			if (!(ope instanceof ObjectProperty)) {
+				throw new ReasoningMethodUnsupportedException("Instance check for description "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			ObjectProperty op = (ObjectProperty) ope;
+			Description child = description.getChild(0);
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+			// initially all individuals are in the return set and we then remove those
+			// with too many fillers			
+			SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
+
+			int number = ((ObjectCardinalityRestriction) description).getNumber();			
+
+			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+				int nrOfFillers = 0;
+				int index = 0;
+				SortedSet<Individual> inds = entry.getValue();
+				
+				// we do not need to run tests if there are not sufficiently many fillers
+				if(number < inds.size()) {
+					returnSet.add(entry.getKey());
+					continue;
+				}
+				
+				for(Individual ind : inds) {
+					// stop inner loop when nr of fillers is reached
+					if(nrOfFillers >= number) {
+						break;
+					}		
+					// early abort when too many instance are true already
+					if (inds.size() - index < number) {
+						returnSet.add(entry.getKey());
+						break;
+					}					
+					if(targetSet.contains(ind)) {
+						nrOfFillers++;
+					}
+					index++;
+				}
+			}			
+			
+			return returnSet;
+		} else if (description instanceof ObjectValueRestriction) {
+			Individual i = ((ObjectValueRestriction)description).getIndividual();
+			ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
+			
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
+			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+			
+			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+				if(entry.getValue().contains(i)) {
+					returnSet.add(entry.getKey());
+				}
+			}
+			return returnSet;
+		} else if (description instanceof BooleanValueRestriction) {
+			DatatypeProperty dp = ((BooleanValueRestriction) description)
+					.getRestrictedPropertyExpresssion();
+			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
+
+			if (value) {
+				return (TreeSet<Individual>) bdPos.get(dp).clone();
+			} else {
+				return (TreeSet<Individual>) bdNeg.get(dp).clone();
+			}
+		} else if (description instanceof DatatypeSomeRestriction) {
+			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
+			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
+			DataRange dr = dsr.getDataRange();
+
+			Map<Individual, SortedSet<Double>> mapping = dd.get(dp);			
+			SortedSet<Individual> returnSet = new TreeSet<Individual>();			
+
+			if (dr instanceof DoubleMaxValue) {
+				for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+					if(entry.getValue().first() <= ((DoubleMaxValue)dr).getValue()) {
+						returnSet.add(entry.getKey());
+					}
+				}				
+			} else if (dr instanceof DoubleMinValue) {
+				for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+					if(entry.getValue().last() >= ((DoubleMinValue)dr).getValue()) {
+						returnSet.add(entry.getKey());
 					}
 				}
 			}

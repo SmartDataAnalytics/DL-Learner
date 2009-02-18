@@ -19,10 +19,7 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Set;
-
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Individual;
 
 /**
  * The score of a class in ontology engineering.
@@ -59,8 +56,7 @@ public class ClassScore extends Score {
 	 */
 	@Override
 	public double getAccuracy() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 0.5 * (coverage + protusion);
 	}		
 
 }

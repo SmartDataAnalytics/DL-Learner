@@ -19,6 +19,8 @@
  */
 package org.dllearner.core;
 
+import java.text.DecimalFormat;
+
 import org.dllearner.core.owl.Description;
 import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
@@ -38,6 +40,8 @@ public class EvaluatedDescription {
 
 	protected Description description;
 	protected Score score;
+	
+	protected static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	
 	/**
 	 * Constructs an evaluated description using its score.
@@ -124,5 +128,10 @@ public class EvaluatedDescription {
 			return null;
 		}
 	}	
+	
+	@Override
+	public String toString() {
+		return description.toString() + " " + dfPercent.format(getAccuracy());
+	}
 
 }
