@@ -19,9 +19,12 @@
  */
 package org.dllearner.algorithms.celoe;
 
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dllearner.algorithms.refinement2.ExampleBasedNode;
+import org.dllearner.algorithms.refinement2.MultiHeuristic;
 import org.dllearner.core.owl.Description;
 
 /**
@@ -50,11 +53,13 @@ public class OENode {
 	private OENode parent;
 	private List<OENode> children = new LinkedList<OENode>();
 	
+	DecimalFormat dfPercent = new DecimalFormat("0.00%");
+	
 	public OENode(OENode parentNode, Description description, double accuracy) {
 		this.parent = parentNode;
 		this.description = description;
 		this.accuracy = accuracy;
-		horizontalExpansion = 0;
+		horizontalExpansion = description.getLength()-1;
 	}
 
 	public void addChild(OENode node) {
@@ -104,4 +109,32 @@ public class OENode {
 		return horizontalExpansion;
 	}
 	
+	public String getShortDescription(String baseURI) {
+		String ret = description.toString(baseURI,null) + " [";
+		ret += "acc:" + dfPercent.format(accuracy) + ", ";
+		ret += "he:" + horizontalExpansion + ", ";
+		ret += "c:" + children.size() + "]";
+		return ret;
+	}	
+	
+	public String toTreeString() {
+		return toTreeString(0, null).toString();
+	}
+	
+	public String toTreeString(String baseURI) {
+		return toTreeString(0, baseURI).toString();
+	}	
+	
+	private StringBuilder toTreeString(int depth, String baseURI) {
+		StringBuilder treeString = new StringBuilder();
+		for(int i=0; i<depth-1; i++)
+			treeString.append("  ");
+		if(depth!=0)
+			treeString.append("|--> ");
+		treeString.append(getShortDescription(baseURI)+"\n");
+		for(OENode child : children) {
+			treeString.append(child.toTreeString(depth+1,baseURI));
+		}
+		return treeString;
+	}	
 }

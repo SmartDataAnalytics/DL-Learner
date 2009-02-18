@@ -39,5 +39,5 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription {
 	public EvaluatedDescriptionClass(Description description, ClassScore score) {
 		super(description, score);
 	}
-
+	
 }
