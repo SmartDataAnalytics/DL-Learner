@@ -55,5 +55,9 @@ public class IndividualPoint {
 	public int getYAxis() {
 		return yAxis;
 	}
+	
+	public String getIndividualName() {
+		return individual;
+	}
 
 }

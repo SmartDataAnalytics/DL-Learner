@@ -3,6 +3,7 @@ package org.dllearner.tools.protege;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.util.Set;
 import java.util.Vector;
@@ -32,28 +33,32 @@ public class GraphicalCoveragePanel extends JPanel {
 	private Vector<IndividualPoint> posCovIndVector;
 	private Vector<IndividualPoint> posNotCovIndVector;
 	private Vector<IndividualPoint> negCovIndVector;
+	private Vector<IndividualPoint> points;
 	private JButton allPositiveIndividuals;
 	private JButton allNegativeIndividuals;
 	private GraphicalCoveragePanelHandler handler;
+	private MoreDetailForSuggestedConceptsPanel panel;
 
 	/**
 	 * This is the constructor for the GraphicalCoveragePanel.
 	 */
-	public GraphicalCoveragePanel(EvaluatedDescription desc, DLLearnerModel m, String concept, int w, int h) {
+	public GraphicalCoveragePanel(EvaluatedDescription desc, DLLearnerModel m, String concept, int w, int h, MoreDetailForSuggestedConceptsPanel p) {
 		setPreferredSize(new Dimension(width, height));
 		setVisible(true);
 		setForeground(Color.GREEN);
 		repaint();
 		eval = desc;
 		model = m;
+		panel = p;
 		conceptNew = concept;
 		posCovIndVector = new Vector<IndividualPoint>();
 		posNotCovIndVector = new Vector<IndividualPoint>();
 		negCovIndVector = new Vector<IndividualPoint>();
+		points = new Vector<IndividualPoint>();
 		this.computeGraphics();
-		handler = new GraphicalCoveragePanelHandler();
+		handler = new GraphicalCoveragePanelHandler(this);
 		oldConcept = new Ellipse2D.Float(5, 25, 250, 250);
-		newConcept = new Ellipse2D .Float(5+shiftXAxis, 25, width+distortion, height+distortion);
+		newConcept = new Ellipse2D.Float(5+shiftXAxis, 25, width+distortion, height+distortion);
 		allPositiveIndividuals = new JButton();
 		//immer in der mitte und unten rauszubekommen mittels getMittelpunkt fuer x 
 		//und getMaxY fuer y.
@@ -61,7 +66,9 @@ public class GraphicalCoveragePanel extends JPanel {
 		allNegativeIndividuals = new JButton();
 		//allNegativeIndividuals.setBounds(arg0, arg1, arg2, arg3);
 		this.computeIndividualPoints();
-		this.addMouseListener(handler);
+		//this.addMouseListener(handler);
+		this.addMouseMotionListener(handler);
+		this.addPropertyChangeListener(handler);
 	}
 
 	public void drawCoverageForLearnedClassDescription(
@@ -73,26 +80,30 @@ public class GraphicalCoveragePanel extends JPanel {
 	
 	@Override
 	protected void paintComponent(Graphics g) {
-		g.setColor(Color.RED);
-		g.drawOval((5+shiftXAxis), 25, width+distortion, height+distortion);
-		g.drawString(conceptNew, 10 + width, 15);
-		g.setColor(Color.GREEN);
-		g.drawOval(5, 25, 250, 250);
-		g.drawString(model.getOldConceptOWLAPI().toString(), 10, 15);
+		Graphics2D g2D;
+		g2D = (Graphics2D) g;
+
+		g2D.setColor(Color.RED);
+		g2D.draw (newConcept);
+		//g.drawOval((5+shiftXAxis), 25, width+distortion, height+distortion);
+		g2D.drawString(conceptNew, 10 + width, 15);
+		g2D.setColor(Color.GREEN);
+		g2D.draw (oldConcept);
+		g2D.drawString(model.getOldConceptOWLAPI().toString(), 10, 15);
 		
 		for(int i = 0; i < posCovIndVector.size(); i++) {
-			g.setColor(Color.BLACK);
-			g.drawString(posCovIndVector.get(i).getPoint(), posCovIndVector.get(i).getXAxis(), posCovIndVector.get(i).getYAxis());
+			g2D.setColor(Color.BLACK);
+			g2D.drawString(posCovIndVector.get(i).getPoint(), posCovIndVector.get(i).getXAxis(), posCovIndVector.get(i).getYAxis());
 		}
 		
 		for(int i = 0; i < posNotCovIndVector.size(); i++) {
-			g.setColor(Color.BLACK);
-			g.drawString(posNotCovIndVector.get(i).getPoint(), posNotCovIndVector.get(i).getXAxis(), posNotCovIndVector.get(i).getYAxis());
+			g2D.setColor(Color.BLACK);
+			g2D.drawString(posNotCovIndVector.get(i).getPoint(), posNotCovIndVector.get(i).getXAxis(), posNotCovIndVector.get(i).getYAxis());
 		}
 		
 		for(int i = 0; i < negCovIndVector.size(); i++) {
-			g.setColor(Color.BLACK);
-			g.drawString(negCovIndVector.get(i).getPoint(), negCovIndVector.get(i).getXAxis(), negCovIndVector.get(i).getYAxis());
+			g2D.setColor(Color.BLACK);
+			g2D.drawString(negCovIndVector.get(i).getPoint(), negCovIndVector.get(i).getXAxis(), negCovIndVector.get(i).getYAxis());
 		}
 
 	}
@@ -106,9 +117,9 @@ public class GraphicalCoveragePanel extends JPanel {
 		float shift = (float) (width*(notCov/posGes));
 		shiftXAxis = Math.round(shift);
 		distortion = 0;
-		if(shiftXAxis == 0) {
-			distortion = Math.round((width*(covNeg/negGes))/4);
-		}
+		//if(shiftXAxis == 0) {
+		//	distortion = Math.round((width*(covNeg/negGes))/4);
+		//}
 		
 	}
 	
@@ -203,7 +214,23 @@ public class GraphicalCoveragePanel extends JPanel {
 				}
 			}
 		}
+		points.addAll(posCovIndVector);
+		points.addAll(posNotCovIndVector);
+		points.addAll(negCovIndVector);
 	}
+	
+	public Vector<IndividualPoint> getIndividualVector() {
+		return points;
+	}
+	
+	public GraphicalCoveragePanel getGraphicalCoveragePanel() {
+		return this;
+	}
+	
+	public MoreDetailForSuggestedConceptsPanel getMoreDetailForSuggestedConceptsPanel() {
+		return panel;
+	}
+	
 	
 	
 }
