@@ -205,7 +205,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		//panel for the informations of the selected concept
 		//this method adds the informations for the selected concept to the panel
 		setInformation();
-		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), width, height);
+		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), width, height, this);
 		p.setBounds(5, 110, 600, 650);
 		detailPopup = new JDialog();
 		detailPopup.setSize(width, height);
