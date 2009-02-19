@@ -44,8 +44,8 @@ import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosNegInclusionLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.mindswap.pellet.exceptions.InconsistentOntologyException;
@@ -80,8 +80,9 @@ public class DLLearnerModel implements Runnable{
 			"org.dllearner.learningproblems.PosNegDefinitionLP",
 			"org.dllearner.algorithms.RandomGuesser",
 			"org.dllearner.algorithms.refinement.ROLearner",
-			"org.dllearner.algorithms.refexamples.ExampleBasedROLComponent",
-			"org.dllearner.algorithms.gp.GP" };
+			"org.dllearner.algorithms.refinement2.ROLComponent2",
+			"org.dllearner.algorithms.gp.GP", "org.dllearner.learningproblems.PosOnlyLP",
+			"org.dllearner.learningproblems.PosNegLPStandard", "org.dllearner.learningproblems.ClassLearningProblem"};
 
 	// Component Manager that manages the components of the DL-Learner
 
@@ -190,6 +191,7 @@ public class DLLearnerModel implements Runnable{
 	private Vector<IndividualObject> individualVector;
 	private Set<String> ontologieURI;
 	private boolean ontologyConsistent;
+	private String learning;
 
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
@@ -215,6 +217,7 @@ public class DLLearnerModel implements Runnable{
 		this.id = id;
 		this.view = view;
 		ontologyConsistent = true;
+		learning = "";
 		owlDescription = new HashSet<OWLDescription>();
 		posListModel = new DefaultListModel();
 		negListModel = new DefaultListModel();
@@ -339,12 +342,18 @@ public class DLLearnerModel implements Runnable{
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
 			lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
+			learning = "equivalence";
 		}
 		if (id.equals(SUPER_CLASS_AXIOM_STRING)) {
 			// sets the learning problem to PosNegInclusionLP when the dllearner
 			// should suggest a subclass
+			learning = "superClass";
 			lp = cm.learningProblem(PosNegInclusionLP.class, reasoner);
 		}
+		System.out.println("CURRENT: " + currentConcept);
+		//lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+		//cm.applyConfigEntry(lp, "classToDescribe", currentConcept);
+		//cm.applyConfigEntry(lp, "type", learning);
 		// adds the positive examples
 		cm.applyConfigEntry(lp, "positiveExamples", positiveExamples);
 		// adds the negative examples

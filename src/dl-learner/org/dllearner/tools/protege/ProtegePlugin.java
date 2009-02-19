@@ -19,11 +19,11 @@
  */
 package org.dllearner.tools.protege;
 
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.HTMLLayout;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.FileAppender;
+//import org.apache.log4j.HTMLLayout;
+//import org.apache.log4j.Layout;
+//import org.apache.log4j.Level;
+//import org.apache.log4j.Logger;
 import org.protege.editor.owl.ui.view.AbstractOWLClassViewComponent;
 import org.semanticweb.owl.model.OWLClass;
 import org.protege.editor.owl.ui.framelist.OWLFrameList2;
@@ -39,7 +39,7 @@ import java.awt.*;
 public class ProtegePlugin  extends AbstractOWLClassViewComponent {
 private static final long serialVersionUID = 728362819273927L;
 /**
- * List of the lists for equibvalent classes and so on.
+ * List of the lists for equivalent classes and so on.
  */
 private OWLFrameList2<OWLClass> list;
 
@@ -54,21 +54,21 @@ private OWLFrameList2<OWLClass> list;
 		add(dlLearner);
 		
 		// add file logger (comment out if not needed)
-		boolean useAdditionalLogger = true;
-		if(useAdditionalLogger) {
-			Layout layout = new HTMLLayout();
-			String fileName = "logs/dllearner_log.html";
-			FileAppender fileAppender = new FileAppender(layout, fileName, true);
+		//boolean useAdditionalLogger = true;
+		//if(useAdditionalLogger) {
+		//	Layout layout = new HTMLLayout();
+		//	String fileName = "logs/dllearner_log.html";
+		//	FileAppender fileAppender = new FileAppender(layout, fileName, true);
 			// only add log statements in protege package to log file
-			Logger protegeLogger = Logger.getLogger("org.dllearner.tools.protege");
-			protegeLogger.addAppender(fileAppender);
-			protegeLogger.setLevel(Level.DEBUG);
-		}
+		//	Logger protegeLogger = Logger.getLogger("org.dllearner.tools.protege");
+		//	protegeLogger.addAppender(fileAppender);
+		//	protegeLogger.setLevel(Level.DEBUG);
+		//}
 	}
 	
 	@Override
 	/**
-	 * updates the view if somthing changes
+	 * updates the view if something changes
 	 */
 	protected OWLClass updateView(OWLClass selectedClass) {
         list.setRootObject(selectedClass);

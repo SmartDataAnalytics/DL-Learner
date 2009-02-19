@@ -34,6 +34,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	private Vector<IndividualPoint> negCovIndVector;
 	private JButton allPositiveIndividuals;
 	private JButton allNegativeIndividuals;
+	private GraphicalCoveragePanelHandler handler;
 
 	/**
 	 * This is the constructor for the GraphicalCoveragePanel.
@@ -50,6 +51,7 @@ public class GraphicalCoveragePanel extends JPanel {
 		posNotCovIndVector = new Vector<IndividualPoint>();
 		negCovIndVector = new Vector<IndividualPoint>();
 		this.computeGraphics();
+		handler = new GraphicalCoveragePanelHandler();
 		oldConcept = new Ellipse2D.Float(5, 25, 250, 250);
 		newConcept = new Ellipse2D .Float(5+shiftXAxis, 25, width+distortion, height+distortion);
 		allPositiveIndividuals = new JButton();
@@ -59,6 +61,7 @@ public class GraphicalCoveragePanel extends JPanel {
 		allNegativeIndividuals = new JButton();
 		//allNegativeIndividuals.setBounds(arg0, arg1, arg2, arg3);
 		this.computeIndividualPoints();
+		this.addMouseListener(handler);
 	}
 
 	public void drawCoverageForLearnedClassDescription(

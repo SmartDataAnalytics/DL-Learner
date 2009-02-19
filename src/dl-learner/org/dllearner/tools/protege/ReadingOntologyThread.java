@@ -141,13 +141,13 @@ public class ReadingOntologyThread extends Thread {
 					if (setPositivExamplesChecked(indiv)) {
 						if (indiv.contains(ont)) {
 							// when yes then it sets the positive example checked
-
+	
 							// OWLExpressionCheckerFactory
 							posListModel.add(0, ind.toManchesterSyntaxString(ont, null));
 							individualVector.add(new IndividualObject(indiv, true));
 							break;
 						}
-
+    
 					} else {
 						// When no it unchecks the positive example
 						if (indiv.contains(ont)) {
@@ -159,7 +159,7 @@ public class ReadingOntologyThread extends Thread {
 					}
 				}
 		}
-		view.getPosAndNegSelectPanel().setExampleList(posListModel, negListModel);
+		//view.getPosAndNegSelectPanel().setExampleList(posListModel, negListModel);
 		model.setPosListModel(posListModel);
 		model.setNegListModel(negListModel);
 		model.setIndividualVector(individualVector);
@@ -184,7 +184,7 @@ public class ReadingOntologyThread extends Thread {
 			}
 		}
 		return isChecked;
-
+    
 	}
 	
 	@Override
@@ -206,7 +206,7 @@ public class ReadingOntologyThread extends Thread {
 				String message ="There are no Instances for "+ current.getRootObject()+" available. Please insert some Instances.";
 				view.renderErrorMessage(message);
 			}
-			view.getPosAndNegSelectPanel().setExampleList(model.getPosListModel(), model.getNegListModel());
+			//view.getPosAndNegSelectPanel().setExampleList(model.getPosListModel(), model.getNegListModel());
 		} else {
 			view.getHintPanel().setForeground(Color.RED);
 			view.getRunButton().setEnabled(false);

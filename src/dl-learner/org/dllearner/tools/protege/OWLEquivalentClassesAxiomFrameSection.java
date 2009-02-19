@@ -26,7 +26,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.protege.editor.owl.OWLEditorKit;
-import org.protege.editor.owl.ui.frame.*;
+import org.protege.editor.owl.ui.frame.AbstractOWLFrameSection;
+import org.protege.editor.owl.ui.frame.OWLEquivalentClassesAxiomFrameSectionRow;
+import org.protege.editor.owl.ui.frame.OWLFrame;
+import org.protege.editor.owl.ui.frame.OWLFrameSectionRow;
+import org.protege.editor.owl.ui.frame.OWLFrameSectionRowObjectEditor;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.inference.UnsupportedReasonerOperationException;
 import org.semanticweb.owl.model.AddAxiom;

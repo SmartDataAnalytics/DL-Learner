@@ -40,7 +40,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
@@ -56,7 +56,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 	// This is the DLLearnerModel.
 
-	private static Logger logger = Logger.getLogger(ActionHandler.class);
+	//private static Logger logger = Logger.getLogger(ActionHandler.class);
 	
 	private DLLearnerModel model;
 
@@ -113,7 +113,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 			model.setLearningAlgorithm();
 			view.getRunButton().setEnabled(false);
 			view.renderErrorMessage("learning started");
-			view.getPosAndNegSelectPanel().setCheckBoxesEnable(false);
+			//view.getPosAndNegSelectPanel().setCheckBoxesEnable(false);
 			retriever = new SuggestionRetriever();
 			retriever.execute();
 
@@ -305,11 +305,11 @@ public class ActionHandler implements ActionListener, ItemListener,
 		/**
 		 * Errorlogger.
 		 */
-		Logger logger = Logger.getLogger(SuggestionRetriever.class);
+		//Logger logger = Logger.getLogger(SuggestionRetriever.class);
 		/**
 		 * Errorlogger.
 		 */
-		Logger rootLogger = Logger.getRootLogger();
+		//Logger rootLogger = Logger.getRootLogger();
 		
 		@SuppressWarnings("unchecked")
 		@Override
@@ -382,7 +382,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 		private void updateList(final List<? extends EvaluatedDescription> result) {
 
-			logger.debug("update list with " + result);
+			//logger.debug("update list with " + result);
 			
 			Runnable doUpdateList = new Runnable() {
 

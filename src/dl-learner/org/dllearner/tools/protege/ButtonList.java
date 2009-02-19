@@ -23,6 +23,8 @@ import org.protege.editor.owl.ui.frame.AbstractOWLFrame;
 import org.protege.editor.owl.ui.frame.InheritedAnonymousClassesFrameSection;
 import org.protege.editor.owl.ui.frame.OWLClassAssertionAxiomIndividualSection;
 import org.protege.editor.owl.ui.frame.OWLDisjointClassesAxiomFrameSection;
+//import org.protege.editor.owl.ui.frame.OWLEquivalentClassesAxiomFrameSection;
+//import org.protege.editor.owl.ui.frame.OWLSubClassAxiomFrameSection;
 import org.semanticweb.owl.model.OWLClass;
 import org.protege.editor.owl.OWLEditorKit;
 
@@ -35,21 +37,26 @@ import org.protege.editor.owl.OWLEditorKit;
  * 
  */
 public class ButtonList extends AbstractOWLFrame<OWLClass> {
+	private OWLEquivalentClassesAxiomFrameSection equi;
+	private OWLSubClassAxiomFrameSection sub;
 	/**
-	 * Construktor of the Buttonlist. 
+	 * Constructor of the Buttonlist. 
 	 * 
 	 * @param editorKit EditorKit from Protege
 	 */
 	public ButtonList(OWLEditorKit editorKit) {
+
 		super(editorKit.getModelManager().getOWLOntologyManager());
+		equi = new OWLEquivalentClassesAxiomFrameSection(editorKit, this);
+		sub = new OWLSubClassAxiomFrameSection(editorKit, this);
 		// own OWLEquivalentClassesAxiomFrameSection to add the dllearner plugin
 		// to the
 		// OWLClassDescritpionEditor
-		addSection(new OWLEquivalentClassesAxiomFrameSection(editorKit, this));
+		addSection(equi);
 		// own OWLEquivalentClassesAxiomFrameSection to add the dllearner plugin
 		// to the
 		// OWLClassDescritpionEditor
-		addSection(new OWLSubClassAxiomFrameSection(editorKit, this));
+		addSection(sub);
 		addSection(new InheritedAnonymousClassesFrameSection(editorKit, this));
 		addSection(new OWLClassAssertionAxiomIndividualSection(editorKit, this));
 		addSection(new OWLDisjointClassesAxiomFrameSection(editorKit, this));
