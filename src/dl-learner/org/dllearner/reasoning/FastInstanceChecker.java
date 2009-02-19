@@ -157,7 +157,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 				"This option controls how to interpret the all quantifier in \forall r.C. The standard option is" +
 				"to return all those which do not have an r-filler not in C. The domain semantics is to use those" +
 				"which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to" +
-				"use those which have at least one r-filler and do not have an r-filler not in C.", "forallExists");
+				"use those which have at least one r-filler and do not have an r-filler not in C.", "standard");
 		forallSemantics.setAllowedValues(new String[] { "standard", "domain", "forallExists" });
 		// closure option? see:
 		// http://owlapi.svn.sourceforge.net/viewvc/owlapi/owl1_1/trunk/tutorial/src/main/java/uk/ac/manchester/owl/tutorial/examples/ClosureAxiomsExample.java?view=markup
@@ -548,7 +548,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 				SortedSet<Individual> inds = entry.getValue();
 				for(Individual ind : inds) {
 					if(targetSet.contains(ind)) {
-						returnSet.add(ind);
+						returnSet.add(entry.getKey());
 						// once we found an individual, we do not need to check the others
 						continue; 
 					}
@@ -559,7 +559,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			// \forall restrictions are difficult to handle; assume we want to check
 			// \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
 			// this is satisfied trivially (all of their non-existing children are male)
-			if(!configurator.getForallRetrievalSemantics().equals("forallExists")) {
+			if(!configurator.getForallRetrievalSemantics().equals("standard")) {
 				throw new Error("Only forallExists semantics currently implemented.");
 			}
 			
@@ -576,7 +576,8 @@ public class FastInstanceChecker extends ReasonerComponent {
 			}
 			ObjectProperty op = (ObjectProperty) ope;
 			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-			SortedSet<Individual> returnSet = new TreeSet<Individual>(mapping.keySet());
+//			SortedSet<Individual> returnSet = new TreeSet<Individual>(mapping.keySet());
+			SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
 			
 			// each individual is connected to a set of individuals via the property;
 			// we loop through the complete mapping
@@ -584,7 +585,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 				SortedSet<Individual> inds = entry.getValue();
 				for(Individual ind : inds) {
 					if(!targetSet.contains(ind)) {
-						returnSet.remove(ind);
+						returnSet.remove(entry.getKey());
 						continue; 
 					}
 				}

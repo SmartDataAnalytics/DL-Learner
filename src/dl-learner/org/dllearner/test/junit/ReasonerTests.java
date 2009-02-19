@@ -25,6 +25,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
@@ -158,9 +159,9 @@ public class ReasonerTests {
 		}
 	}
 
-	@Test
+//	@Test
 	public void fastInstanceCheck2() throws ComponentInitException, ParseException {
-		String file = "examples/epc/conf/sap_modell_komplett_2.owl";
+		String file = "examples/epc/sap_epc.owl";
 		ComponentManager cm = ComponentManager.getInstance();
 		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
 		try {
@@ -178,6 +179,33 @@ public class ReasonerTests {
 		Individual ind = new Individual("http://localhost/aris/sap_model.owl#e4j0__6_____u__");
 		boolean result = reasoner.hasType(description, ind);
 		System.out.println(result);
+	}
+	
+	// simple unit test for new retrieval algorithm
+	@Test
+	public void fastInstanceCheck3() throws MalformedURLException, ComponentInitException, ParseException {
+		String file = "examples/family/father_oe.owl";
+		ComponentManager cm = ComponentManager.getInstance();
+		KnowledgeSource ks = cm.knowledgeSource(OWLFile.class);
+		cm.applyConfigEntry(ks, "url", new File(file).toURI().toURL());
+		ks.init();
+		ReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, ks);
+		reasoner.init();
+		baseURI = reasoner.getBaseURI();
+		Description description = KBParser.parseConcept("(\"http://example.com/father#male\" AND EXISTS \"http://example.com/father#hasChild\".TOP)");
+//		Description description = KBParser.parseConcept("EXISTS \"http://example.com/father#hasChild\".TOP");
+		SortedSet<Individual> result = reasoner.getIndividuals(description);
+		assertTrue(result.size()==3);
+		assertTrue(result.contains(new Individual("http://example.com/father#markus")));
+		assertTrue(result.contains(new Individual("http://example.com/father#martin")));
+		assertTrue(result.contains(new Individual("http://example.com/father#stefan")));
+//		System.out.println(result);	
+		
+		Description description2 = KBParser.parseConcept("(\"http://example.com/father#male\" AND ALL \"http://example.com/father#hasChild\".\"http://example.com/father#father\")");
+		SortedSet<Individual> result2 = reasoner.getIndividuals(description2);
+		assertTrue(result2.size()==2);
+		assertTrue(result2.contains(new Individual("http://example.com/father#heinz")));
+		assertTrue(result2.contains(new Individual("http://example.com/father#stefan")));
 	}
 	
 	private List<Individual> getIndSet(String... inds) {

@@ -123,7 +123,7 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
 		options.add(CommonConfigOptions.useDoubleDatatypes());
-		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
+		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(1));
 		options.add(CommonConfigOptions.getNoisePercentage());
 		options.add(CommonConfigOptions.getMaxDepth(4));
 		return options;
@@ -187,7 +187,12 @@ public class CELOE extends LearningAlgorithm {
 		Description startClass;
 		if(isEquivalenceProblem) {
 			Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
-			startClass = new Intersection(new LinkedList<Description>(superClasses));
+			if(superClasses.size() > 1) {
+				startClass = new Intersection(new LinkedList<Description>(superClasses));
+			} else {
+				startClass = (Description) superClasses.toArray()[0];
+			}
+			
 		} else {
 			startClass = Thing.instance;
 		}
@@ -246,6 +251,8 @@ public class CELOE extends LearningAlgorithm {
 //		logger.info("solution : " + bestDescriptionToString());
 		logger.info(getSolutionString());
 		
+//		System.out.println(startNode.toTreeString(baseURI));
+		
 		isRunning = false;
 	}
 
@@ -267,6 +274,11 @@ public class CELOE extends LearningAlgorithm {
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
+			return false;
+		}
+		
+		// check whether the description is allowed
+		if(!isDescriptionAllowed(description)) {
 			return false;
 		}
 		
@@ -295,6 +307,29 @@ public class CELOE extends LearningAlgorithm {
 	
 		return true;
 	}	
+	
+	// checks whether the description is allowed
+	private boolean isDescriptionAllowed(Description description) {
+		if(isEquivalenceProblem) {
+			// for equivalence problems, we need to check that the class we are learning does
+			// not itself occur on the outermost level (property depth 0)
+			if(description instanceof NamedClass) {
+				if(description.equals(classToDescribe)) {
+					return false;
+				}
+			} else if(description.getChildren().size() > 1) {
+				for(Description child : description.getChildren()) {
+					if(child.equals(classToDescribe)) {
+						return false;
+					}
+				}
+			}
+		} else {
+			
+		}
+		
+		return true;
+	}
 	
 	// check whether the node is a potential solution candidate
 	// (sufficient accuracy; minimal; rewriting steps?)
