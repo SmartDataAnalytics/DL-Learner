@@ -35,9 +35,9 @@ public class PosAndNegSelectPanelHandler implements ActionListener, MouseListene
 // This is the DLLearnerModel.
 
 //private DLLearnerModel model;
-private PosAndNegSelectPanel panel;
+//private PosAndNegSelectPanel panel;
 // This is the view of the DL-Learner tab.
-private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
+//private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 
 /**
  * This is the constructor for the PosAndNegSelectPanelHandler.
@@ -50,8 +50,8 @@ private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
  */
 public PosAndNegSelectPanelHandler(DLLearnerModel m, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView v, PosAndNegSelectPanel p) {
 	//model = m;
-	panel = p;
-	view = v;
+	//panel = p;
+	//view = v;
 }
 
 /**
@@ -62,28 +62,28 @@ public void actionPerformed(ActionEvent action) {
 
 		System.out.println(action.getSource());
 	if (action.getSource().toString().contains("pos")) {
-		panel.setExampleToOtherList(true, panel.getNegExampleList().getSelectedValue().toString());
-		System.out.println("COUNT: " + panel.getPosExampleList().getModel().getSize());
-		if(panel.getPosExampleList().getModel().getSize()>0) {
-			view.getRunButton().setEnabled(true);
-		}
+		//panel.setExampleToOtherList(true, panel.getNegExampleList().getSelectedValue().toString());
+		//System.out.println("COUNT: " + panel.getPosExampleList().getModel().getSize());
+		//if(panel.getPosExampleList().getModel().getSize()>0) {
+		//	view.getRunButton().setEnabled(true);
+		//}
 	}
 
 	if (action.getSource().toString().contains("neg")) {
-		panel.setExampleToOtherList(false, panel.getPosExampleList().getSelectedValue().toString());
+		//panel.setExampleToOtherList(false, panel.getPosExampleList().getSelectedValue().toString());
 	}
 	
 	if (action.getActionCommand().equals("?")) {
 		if (action.getSource().toString().contains("PosHelpButton")) {
-			String help = "An individual that should be an instance of the learned class description.\n"
-				+"Per default all that belongs to the class.";
-			view.getPosAndNegSelectPanel().renderHelpMessage(help);
+			//String help = "An individual that should be an instance of the learned class description.\n"
+			//	+"Per default all that belongs to the class.";
+			//view.getPosAndNegSelectPanel().renderHelpMessage(help);
 		}
 
 		if (action.getSource().toString().contains("NegHelpButton")) {
-			String help = "An individual that should not be instance of the learned class description.\n" 
-				+" By default, these are all individuals, which are not instances of the current class.";
-			view.getPosAndNegSelectPanel().renderHelpMessage(help);
+			//String help = "An individual that should not be instance of the learned class description.\n" 
+			//	+" By default, these are all individuals, which are not instances of the current class.";
+			//view.getPosAndNegSelectPanel().renderHelpMessage(help);
 		}
 
 	}
@@ -113,16 +113,16 @@ public void mouseEntered(MouseEvent m) {
  * @param m MouseEvent
  */
 public void mouseClicked(MouseEvent m) {
-	if (!panel.getPosExampleList().isSelectionEmpty() && m.toString().contains("pos")) {
-		panel.getAddToNegPanelButton().setEnabled(true);
-		panel.getAddToPosPanelButton().setEnabled(false);
-		panel.getNegExampleList().clearSelection();
-	}
-	if (!panel.getNegExampleList().isSelectionEmpty() && m.toString().contains("neg")) {
-		panel.getAddToPosPanelButton().setEnabled(true);
-		panel.getAddToNegPanelButton().setEnabled(false);
-		panel.getPosExampleList().clearSelection();
-	} 
+	//if (!panel.getPosExampleList().isSelectionEmpty() && m.toString().contains("pos")) {
+	//	panel.getAddToNegPanelButton().setEnabled(true);
+	//	panel.getAddToPosPanelButton().setEnabled(false);
+	//	panel.getNegExampleList().clearSelection();
+	//}
+	//if (!panel.getNegExampleList().isSelectionEmpty() && m.toString().contains("neg")) {
+	//	panel.getAddToPosPanelButton().setEnabled(true);
+	//	panel.getAddToNegPanelButton().setEnabled(false);
+	//	panel.getPosExampleList().clearSelection();
+	//} 
 }
 
 /**

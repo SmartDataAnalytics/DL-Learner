@@ -434,7 +434,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 * This Method renders the view of the plugin.
 		 */
 		public void makeView() {
-			
+			run.setEnabled(false);
 			model.clearVector();
 			hint.setText("To get suggestions for class descriptions, please click the button above.");
 			isInconsistent = false;
@@ -458,8 +458,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			advanced.setBounds(10, 200, 20, 20);
 			sugPanel.setVisible(true);
 			posPanel.setVisible(false);
-			posPanel.getAddToNegPanelButton().setEnabled(false);
-			posPanel.getAddToPosPanelButton().setEnabled(false);
+			//posPanel.getAddToNegPanelButton().setEnabled(false);
+			//posPanel.getAddToPosPanelButton().setEnabled(false);
 			posPanel.setBounds(10, 230, 490, 250);
 			accept.setBounds(510, 40, 80, 110);
 			hint.setBounds(10, 150, 490, 35);
@@ -563,7 +563,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			model.unsetNewConcepts();
 			action.destroyDLLearnerThread();
 			errorMessage.setText("");
-			posPanel.unsetPosAndNegPanel();
+			//posPanel.unsetPosAndNegPanel();
 			learner.removeAll();
 		}
 
@@ -605,8 +605,8 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			run.removeActionListener(action);
 			accept.removeActionListener(action);
 			advanced.removeActionListener(action);
-			posPanel.removeListeners(action);
-			posPanel.removeHelpButtonListener(action);
+			//posPanel.removeListeners(action);
+			//posPanel.removeHelpButtonListener(action);
 		}
 		
 		/**
