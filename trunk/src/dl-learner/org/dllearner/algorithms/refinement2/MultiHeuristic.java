@@ -121,8 +121,8 @@ public class MultiHeuristic implements ExampleBasedHeuristic {
 		else if(diff<0)
 			return -1;
 		else
-			// TODO: would it be OK to simply return 0 here (?)
-			// could improve performance a bit
+			// we cannot return 0 here otherwise different nodes/concepts with the
+			// same score may be ignored (not added to a set because an equal element exists)
 			return conceptComparator.compare(node1.getConcept(), node2.getConcept());
 	}
 

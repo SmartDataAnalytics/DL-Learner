@@ -36,7 +36,10 @@
 
     <!-- http://example.com/father#hasChild -->
 
-    <owl:ObjectProperty rdf:about="#hasChild"/>
+    <owl:ObjectProperty rdf:about="#hasChild">
+        <rdfs:range rdf:resource="#person"/>
+        <rdfs:domain rdf:resource="#person"/>
+    </owl:ObjectProperty>
     
 
 
@@ -62,6 +65,7 @@
     <!-- http://example.com/father#female -->
 
     <owl:Class rdf:about="#female">
+        <rdfs:subClassOf rdf:resource="#person"/>
         <owl:disjointWith rdf:resource="#male"/>
     </owl:Class>
     
@@ -69,7 +73,23 @@
 
     <!-- http://example.com/father#male -->
 
-    <owl:Class rdf:about="#male"/>
+    <owl:Class rdf:about="#male">
+        <rdfs:subClassOf rdf:resource="#person"/>
+    </owl:Class>
+    
+
+
+    <!-- http://example.com/father#person -->
+
+    <owl:Class rdf:about="#person">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
     
 
 

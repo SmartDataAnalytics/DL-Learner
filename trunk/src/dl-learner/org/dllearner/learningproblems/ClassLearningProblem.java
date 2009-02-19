@@ -28,7 +28,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.configurators.ClassLearningProblemConfigurator;
-import org.dllearner.core.configurators.PosNegLPStandardConfigurator;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
