@@ -23,6 +23,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.Set;
 
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -118,6 +119,9 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private static final int height = 500;
 	private static final int width = 600;
 	private GraphicalCoveragePanel p;
+	private JButton allPositiveIndividuals;
+	private JButton allNegativeIndividuals;
+	private MoreDetailForSuggestedConceptsPanelHandler handler;
 	/**
 	 * This is the constructor for the Panel.
 	 * @param model DLLearnerModel
@@ -127,6 +131,15 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		setLayout(null);
 		setPreferredSize(new Dimension(width, height));
 		this.model = model;
+		handler = new MoreDetailForSuggestedConceptsPanelHandler(model);
+		allPositiveIndividuals = new JButton("old");
+		allPositiveIndividuals.setBounds(100, 400, 50, 30);
+		allPositiveIndividuals.addActionListener(handler);
+		
+		allNegativeIndividuals = new JButton("new");
+		allNegativeIndividuals.setBounds(400, 400, 50, 30);
+		allNegativeIndividuals.addActionListener(handler);
+		
 		
 		
 	}
@@ -137,7 +150,6 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	public JDialog getMoreDialog() {
 		return detailPopup;
 	}
-	
 
 	/**
 	 * This method renders the output for the detail panel.
@@ -205,8 +217,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		//panel for the informations of the selected concept
 		//this method adds the informations for the selected concept to the panel
 		setInformation();
-		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), width, height, this);
-		p.setBounds(5, 110, 600, 650);
+		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), width, height-200, this);
+		p.setBounds(5, 110, 600, 300);
 		detailPopup = new JDialog();
 		detailPopup.setSize(width, height);
 		 //window will be disposed if the x button is pressed
@@ -228,6 +240,9 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		add(conceptPanel);
 		add(accuracyPanel);
 		add(p);
+		add(allPositiveIndividuals);
+		add(allNegativeIndividuals);
+		handler.setEvaluadtedDescription(eval);
 		/*
 		add(coveredPositiveExamples);
 		add(notCoveredPositiveExamples);
@@ -239,7 +254,13 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		add(negNotCoveredScroll);*/
 		detailPopup.add(this);
 	}
+	public JButton getAllPositiveindividuals() {
+		return allPositiveIndividuals;
+	}
 	
+	public JButton getAllNegativeIndividuals() {
+		return allNegativeIndividuals;
+	}
 	private void unsetEverything() {
 		removeAll();
 	}
