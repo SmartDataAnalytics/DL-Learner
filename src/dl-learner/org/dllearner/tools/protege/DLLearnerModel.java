@@ -191,7 +191,7 @@ public class DLLearnerModel implements Runnable{
 	private Vector<IndividualObject> individualVector;
 	private Set<String> ontologieURI;
 	private boolean ontologyConsistent;
-	private String learning;
+	//private String learning;
 
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
@@ -217,7 +217,7 @@ public class DLLearnerModel implements Runnable{
 		this.id = id;
 		this.view = view;
 		ontologyConsistent = true;
-		learning = "";
+		//learning = "";
 		owlDescription = new HashSet<OWLDescription>();
 		posListModel = new DefaultListModel();
 		negListModel = new DefaultListModel();
@@ -342,12 +342,12 @@ public class DLLearnerModel implements Runnable{
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
 			lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
-			learning = "equivalence";
+			//learning = "equivalence";
 		}
 		if (id.equals(SUPER_CLASS_AXIOM_STRING)) {
 			// sets the learning problem to PosNegInclusionLP when the dllearner
 			// should suggest a subclass
-			learning = "superClass";
+			//Slearning = "superClass";
 			lp = cm.learningProblem(PosNegInclusionLP.class, reasoner);
 		}
 		System.out.println("CURRENT: " + currentConcept);
@@ -713,7 +713,7 @@ public class DLLearnerModel implements Runnable{
 		owlDescription.add(newConceptOWLAPI);
 		this.desc = newConceptOWLAPI;
 	}
-
+	
 	/**
 	 * This methode returns the Model for the suggested Concepts.
 	 * 

@@ -8,7 +8,6 @@ import java.awt.geom.Ellipse2D;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
@@ -34,8 +33,6 @@ public class GraphicalCoveragePanel extends JPanel {
 	private Vector<IndividualPoint> posNotCovIndVector;
 	private Vector<IndividualPoint> negCovIndVector;
 	private Vector<IndividualPoint> points;
-	private JButton allPositiveIndividuals;
-	private JButton allNegativeIndividuals;
 	private GraphicalCoveragePanelHandler handler;
 	private MoreDetailForSuggestedConceptsPanel panel;
 
@@ -59,12 +56,6 @@ public class GraphicalCoveragePanel extends JPanel {
 		handler = new GraphicalCoveragePanelHandler(this);
 		oldConcept = new Ellipse2D.Float(5, 25, 250, 250);
 		newConcept = new Ellipse2D.Float(5+shiftXAxis, 25, width+distortion, height+distortion);
-		allPositiveIndividuals = new JButton();
-		//immer in der mitte und unten rauszubekommen mittels getMittelpunkt fuer x 
-		//und getMaxY fuer y.
-		//allPositiveIndividuals.setBounds(arg0, arg1, arg2, arg3);
-		allNegativeIndividuals = new JButton();
-		//allNegativeIndividuals.setBounds(arg0, arg1, arg2, arg3);
 		this.computeIndividualPoints();
 		//this.addMouseListener(handler);
 		this.addMouseMotionListener(handler);
@@ -111,8 +102,8 @@ public class GraphicalCoveragePanel extends JPanel {
 	private void computeGraphics(){
 		int posGes = model.getPosListModel().size();
 		int notCovPos = ((EvaluatedDescriptionPosNeg)eval).getNotCoveredPositives().size();
-		int covNeg = ((EvaluatedDescriptionPosNeg)eval).getCoveredNegatives().size();
-		int negGes = model.getNegListModel().size();
+		//int covNeg = ((EvaluatedDescriptionPosNeg)eval).getCoveredNegatives().size();
+		//int negGes = model.getNegListModel().size();
 		double notCov = notCovPos;
 		float shift = (float) (width*(notCov/posGes));
 		shiftXAxis = Math.round(shift);
