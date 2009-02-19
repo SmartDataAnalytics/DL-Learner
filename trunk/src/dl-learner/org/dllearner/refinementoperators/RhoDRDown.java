@@ -327,8 +327,8 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		System.exit(0);
 		*/
 		 
-		if(startClass != null)
-			this.startClass = startClass;
+//		if(startClass != null)
+//			this.startClass = startClass;
 	}
 	
 	/* (non-Javadoc)
