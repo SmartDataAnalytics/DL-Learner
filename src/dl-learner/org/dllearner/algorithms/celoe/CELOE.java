@@ -42,11 +42,13 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 
 /**
@@ -92,7 +94,8 @@ public class CELOE extends LearningAlgorithm {
 	// utility variables
 	private String baseURI;
 	private Map<String, String> prefixes;
-	DecimalFormat dfPercent = new DecimalFormat("0.00%");
+	private DecimalFormat dfPercent = new DecimalFormat("0.00%");
+	private ConceptComparator descriptionComparator = new ConceptComparator();
 	
 	@Override
 	public Configurator getConfigurator() {
@@ -249,7 +252,7 @@ public class CELOE extends LearningAlgorithm {
 		
 		// print solution(s)
 //		logger.info("solution : " + bestDescriptionToString());
-		logger.info(getSolutionString());
+		logger.info("solutions:\n" + getSolutionString());
 		
 //		System.out.println(startNode.toTreeString(baseURI));
 		
@@ -300,10 +303,12 @@ public class CELOE extends LearningAlgorithm {
 		nodes.add(node);
 		
 		// maybe add to best descriptions (method keeps set size fixed)
-		if(checkNode(node)) {
-			bestEvaluatedDescriptions.add(description, accuracy, learningProblem);
+//		if(checkNode(node)) {
+		Description niceDescription = rewriteNode(node);
+//		Description niceDescription = node.getDescription();
+		bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
 //			System.out.println(bestEvaluatedDescriptions.toString());
-		}
+//		}
 	
 		return true;
 	}	
@@ -311,35 +316,60 @@ public class CELOE extends LearningAlgorithm {
 	// checks whether the description is allowed
 	private boolean isDescriptionAllowed(Description description) {
 		if(isEquivalenceProblem) {
-			// for equivalence problems, we need to check that the class we are learning does
-			// not itself occur on the outermost level (property depth 0)
-			if(description instanceof NamedClass) {
-				if(description.equals(classToDescribe)) {
+			// the class to learn must not appear on the outermost property level
+			return !occursOnFirstLevel(description, classToDescribe);
+		} else {
+			// none of the superclasses of the class to learn must appear on the
+			// outermost property level
+			TreeSet<Description> toTest = new TreeSet<Description>();
+			toTest.add(classToDescribe);
+			while(!toTest.isEmpty()) {
+				Description d = toTest.pollFirst();
+				if(occursOnFirstLevel(description, d)) {
 					return false;
 				}
-			} else if(description.getChildren().size() > 1) {
-				for(Description child : description.getChildren()) {
-					if(child.equals(classToDescribe)) {
-						return false;
-					}
-				}
+				toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
 			}
-		} else {
-			
+			return true;
+		}
+	}
+	
+	// determine whether a named class occurs on the outermost level, i.e. property depth 0
+	// (it can still be at higher depth, e.g. if intersections are nested in unions)
+	private boolean occursOnFirstLevel(Description description, Description clazz) {
+		if(description instanceof NamedClass) {
+			if(description.equals(clazz)) {
+				return true;
+			}
+		} 
+		
+		if(description instanceof Restriction) {
+			return false;
 		}
 		
-		return true;
+		for(Description child : description.getChildren()) {
+			if(occursOnFirstLevel(child, clazz)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	// check whether the node is a potential solution candidate
 	// (sufficient accuracy; minimal; rewriting steps?)
-	private boolean checkNode(OENode node) {
+	private Description rewriteNode(OENode node) {
 		
 		// what to do if super class occurs? either return false, but then it
 		// does not make sense to expand it further; or rewrite but then we have to 
 		// take care of double occurrences
+		Description description = node.getDescription();
+		// shorten description (syntactically)
+		Description niceDescription = ConceptTransformation.getShortConcept(description, descriptionComparator);
+		// replace \exists r.\top with \exists r.range(r)
+		ConceptTransformation.replaceRange(niceDescription, reasoner);
 		
-		return true;
+		return niceDescription;
 	}
 	
 	private boolean terminationCriteriaSatisfied() {

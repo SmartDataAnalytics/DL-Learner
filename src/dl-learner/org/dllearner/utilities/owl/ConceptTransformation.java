@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -374,6 +374,12 @@ public class ConceptTransformation {
 			return concept;
 	}
 	
+	/**
+	 * Tries to shorten a concept, e.g. male AND male is shortened to male. 
+	 * @param concept The input concepts.
+	 * @param conceptComparator A comparator for concepts.
+	 * @return A shortened version of the concept (equal to the input concept if it cannot be shortened).
+	 */
 	public static Description getShortConcept(Description concept, ConceptComparator conceptComparator) {
 		shorteningTimeNsStart = System.nanoTime();
 		// deep copy des Konzepts, da es nicht verändert werden darf

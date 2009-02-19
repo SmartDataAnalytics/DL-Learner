@@ -19,6 +19,8 @@
  */
 package org.dllearner.algorithms.celoe;
 
+import org.dllearner.utilities.owl.ConceptComparator;
+
 /**
  * Search algorithm heuristic for the ontology engineering algorithm. The heuristic
  * has a strong bias towards short descriptions (i.e. the algorithm is likely to be
@@ -36,6 +38,8 @@ public class OEHeuristicRuntime implements OEHeuristic {
 	// penalty if a node has very many children since exploring such a node is
 	// computationally very expensive
 	private double nodeChildPenalty = 0.0005;
+	// syntactic comparison as final comparison criterion
+	private ConceptComparator conceptComparator = new ConceptComparator();
 	
 	@Override
 	public int compare(OENode node1, OENode node2) {
@@ -45,7 +49,7 @@ public class OEHeuristicRuntime implements OEHeuristic {
 		else if(diff<0)
 			return -1;
 		else
-			return 0;
+			return conceptComparator.compare(node1.getDescription(), node2.getDescription());
 	}
 
 	public double getNodeScore(OENode node) {

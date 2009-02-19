@@ -600,7 +600,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			ObjectProperty op = (ObjectProperty) ope;
 			Description child = description.getChild(0);
 			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+			SortedSet<Individual> targetSet = getIndividualsImpl(child);
 			SortedSet<Individual> returnSet = new TreeSet<Individual>();
 
 			int number = ((ObjectCardinalityRestriction) description).getNumber();			
