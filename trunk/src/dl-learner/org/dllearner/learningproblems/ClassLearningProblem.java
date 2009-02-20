@@ -67,6 +67,10 @@ public class ClassLearningProblem extends LearningProblem {
 		return options;
 	}
 
+	public static String getName() {
+		return "class learning problem";
+	}	
+	
 	@Override
 	public void init() {
 		classToDescribe = new NamedClass(configurator.getClassToDescribe());

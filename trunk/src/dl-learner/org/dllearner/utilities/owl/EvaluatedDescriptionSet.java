@@ -77,6 +77,10 @@ public class EvaluatedDescriptionSet {
 		}
 	}	
 	
+	public boolean isFull() {
+		return (set.size() >= maxSize);
+	}
+	
 	public int size() {
 		return set.size();
 	}
