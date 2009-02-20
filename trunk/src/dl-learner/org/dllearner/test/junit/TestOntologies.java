@@ -19,11 +19,16 @@
  */
 package org.dllearner.test.junit;
 
+import java.io.File;
+import java.net.MalformedURLException;
+
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasonerComponent;
 import org.dllearner.core.owl.KB;
 import org.dllearner.kb.KBFile;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -36,10 +41,11 @@ import org.dllearner.reasoning.FastInstanceChecker;
  */
 public final class TestOntologies {
 
-	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES };
+	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER_OE };
 	
 	public static ReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
+		String owlFile = "";
 		
 		if(ont.equals(TestOntology.EMPTY)) {
 			// no background knowledge
@@ -103,22 +109,31 @@ public final class TestOntologies {
 			kbString += "r3(a,b).\n";
 			kbString += "r4(a,b).\n";
 			kbString += "r5(a,b).\n";
+		} else if(ont.equals(TestOntology.FATHER_OE)) {
+			owlFile = "examples/family/father_oe.owl";
 		}
 		
 		try {	
-			KB kb = KBParser.parseKBFile(kbString);
-			
-			// create reasoner
 			ComponentManager cm = ComponentManager.getInstance();
-			KBFile source = new KBFile(kb);
+			KnowledgeSource source;
+			
+			// parse KB string if one has been specified
+			if(!kbString.isEmpty()) {
+				KB kb = KBParser.parseKBFile(kbString);
+				source = new KBFile(kb);
+			// parse OWL file otherwise
+			} else {
+				source = cm.knowledgeSource(OWLFile.class);
+				try {
+					cm.applyConfigEntry(source, "url", new File(owlFile).toURI().toURL());
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}			
+			}
+			
 			ReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, source);
-//			ReasonerComponent rs = cm.reasoningService(rc);
 			source.init();
 			rc.init();
-			// TODO there shouldn't be a need to call this explicitly!
-			// (otherwise we get a NullPointerException, because the hierarchy is not created)
-//			rs.prepareSubsumptionHierarchy();
-//			rs.prepareRoleHierarchy();
 			return rc;	
 		} catch(ParseException e) {
 			e.printStackTrace();
