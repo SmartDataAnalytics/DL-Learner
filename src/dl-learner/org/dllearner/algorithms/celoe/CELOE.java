@@ -49,6 +49,7 @@ import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.DescriptionMinimizer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 
 /**
@@ -71,6 +72,7 @@ public class CELOE extends LearningAlgorithm {
 //	private OEHeuristicRuntime heuristicRuntime = new OEHeuristicRuntime();
 	
 	private RefinementOperator operator;
+	private DescriptionMinimizer minimizer;
 	
 	// all nodes in the search tree (used for selecting most promising node)
 	private TreeSet<OENode> nodes;
@@ -126,7 +128,7 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
 		options.add(CommonConfigOptions.useDoubleDatatypes());
-		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(1));
+		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
 		options.add(CommonConfigOptions.getNoisePercentage());
 		options.add(CommonConfigOptions.getMaxDepth(4));
 		return options;
@@ -142,6 +144,8 @@ public class CELOE extends LearningAlgorithm {
 		// reachable via a single path
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
 		classHierarchy.thinOutSubsumptionHierarchy();		
+		
+		minimizer = new DescriptionMinimizer(reasoner);
 		
 		// create refinement operator
 		operator = new RhoDRDown(reasoner, classHierarchy, configurator);
@@ -302,14 +306,23 @@ public class CELOE extends LearningAlgorithm {
 	
 		nodes.add(node);
 		
-		// maybe add to best descriptions (method keeps set size fixed)
-//		if(checkNode(node)) {
-		Description niceDescription = rewriteNode(node);
-//		Description niceDescription = node.getDescription();
-		bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
-//			System.out.println(bestEvaluatedDescriptions.toString());
-//		}
-	
+		// maybe add to best descriptions (method keeps set size fixed);
+		// we need to make sure that this does not get called more often than
+		// necessary since rewriting is expensive
+		boolean isCandidate = (bestEvaluatedDescriptions.size()==0);
+		if(!isCandidate) {
+			EvaluatedDescription worst = bestEvaluatedDescriptions.getWorst();
+			double accThreshold = worst.getAccuracy();
+			isCandidate = 
+				(accuracy > accThreshold ||
+				(accuracy >= accThreshold && description.getLength() < worst.getDescriptionLength()));
+		}
+		
+		if(isCandidate) {
+			Description niceDescription = rewriteNode(node);
+			bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);			
+		}
+		
 		return true;
 	}	
 	
@@ -357,18 +370,13 @@ public class CELOE extends LearningAlgorithm {
 	}
 	
 	// check whether the node is a potential solution candidate
-	// (sufficient accuracy; minimal; rewriting steps?)
 	private Description rewriteNode(OENode node) {
-		
-		// what to do if super class occurs? either return false, but then it
-		// does not make sense to expand it further; or rewrite but then we have to 
-		// take care of double occurrences
 		Description description = node.getDescription();
-		// shorten description (syntactically)
-		Description niceDescription = ConceptTransformation.getShortConcept(description, descriptionComparator);
-		// replace \exists r.\top with \exists r.range(r)
+//		Description niceDescription = description;
+		// minimize description (expensive!)
+		Description niceDescription = minimizer.minimizeClone(description);
+		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		ConceptTransformation.replaceRange(niceDescription, reasoner);
-		
 		return niceDescription;
 	}
 	
