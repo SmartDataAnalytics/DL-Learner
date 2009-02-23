@@ -95,7 +95,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 	private ObjectRestrictionCreatorPanel restrictionCreatorPanel;
 
-	// private OWLDescription initialDescription;
+	 //private OWLDescription initialDescription;
 
 	private Set<InputVerificationStatusChangedListener> listeners = new HashSet<InputVerificationStatusChangedListener>();
 
@@ -114,12 +114,12 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	public OWLClassDescriptionEditorWithDLLearnerTab(OWLEditorKit editorKit,
 			OWLDescription description, OWLFrame<OWLClass> frame, String label) {
 		this.editorKit = editorKit;
-		// this.initialDescription = description;
-		//checker = new OWLDescriptionChecker(editorKit);
+		//this.initialDescription = description;
+		//checker = new OWLDescriptionChecker(editorKit.getModelManager());
 		editor = new ExpressionEditor<OWLDescription>(editorKit, editorKit.getModelManager().getOWLExpressionCheckerFactory().getOWLDescriptionChecker());
 		editor.setExpressionObject(description);
 		
-		action = new ActionHandler(this.action, null, dllearner, null);
+		action = new ActionHandler(this.action, null, dllearner, label);
 		tabbedPane = new JTabbedPane();
 		tabbedPane.setFocusable(false);
 		editingComponent = new JPanel(new BorderLayout());
@@ -380,7 +380,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			icon = new ImageIcon(iconUrl);
 			URL toggledIconUrl = this.getClass().getResource("arrow2.gif");
 			toggledIcon = new ImageIcon(toggledIconUrl);
-			model = new DLLearnerModel(editorKit, current, label, this);
+			model = new DLLearnerModel(editorKit, label, this);
 			sugPanel = new SuggestClassPanel();
 			action = new ActionHandler(this.action, model, this, label);
 			adv = new JLabel("Advanced Settings");

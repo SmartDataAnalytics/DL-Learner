@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.protege.editor.owl.OWLEditorKit;
-import org.protege.editor.owl.ui.frame.AbstractOWLFrameSection;
 import org.protege.editor.owl.ui.frame.OWLEquivalentClassesAxiomFrameSectionRow;
 import org.protege.editor.owl.ui.frame.OWLFrame;
 import org.protege.editor.owl.ui.frame.OWLFrameSectionRow;
 import org.protege.editor.owl.ui.frame.OWLFrameSectionRowObjectEditor;
+import org.protege.editor.owl.ui.frame.cls.AbstractOWLClassAxiomFrameSection;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.inference.UnsupportedReasonerOperationException;
 import org.semanticweb.owl.model.AddAxiom;
@@ -52,145 +52,147 @@ import org.semanticweb.owl.util.CollectionFactory;
  * Date: 19-Jan-2007<br>
  * <br>
  */
-public class OWLEquivalentClassesAxiomFrameSection
-		extends
-		AbstractOWLFrameSection<OWLClass, OWLEquivalentClassesAxiom, OWLDescription> {
+public class OWLEquivalentClassesAxiomFrameSection extends AbstractOWLClassAxiomFrameSection<OWLEquivalentClassesAxiom, OWLDescription> {
 
-	private static final String LABEL = "equivalent classes";
+    private static final String LABEL = "equivalent classes";
 
-	private Set<OWLClass> added;
+    private Set<OWLDescription> added = new HashSet<OWLDescription>();
 
-	private boolean inferredEquivalentClasses = true;
-	private OWLClassDescriptionEditorWithDLLearnerTab dlLearner;
+    private boolean inferredEquivalentClasses = true;
+    
+    private OWLFrame<OWLClass> frame;
 
-	private OWLFrame<OWLClass> frame;
-	/**
-	 * Constructor of the OWLEquivalentClassesAxiomFrameSection.
-	 * @param editorKit OWLEditorKit
-	 * @param frame OWLFrame
-	 */
-	public OWLEquivalentClassesAxiomFrameSection(OWLEditorKit editorKit,
-			OWLFrame<OWLClass> frame) {
-		super(editorKit, LABEL, frame);
-		added = new HashSet<OWLClass>();
-		this.frame = frame;
-	}
 
-	@Override
-	protected void clear() {
-		added.clear();
-	}
+    public OWLEquivalentClassesAxiomFrameSection(OWLEditorKit editorKit, OWLFrame<OWLClass> frame) {
+        super(editorKit, LABEL, "Equivalent class", frame);
+        this.frame = frame;
+    }
 
-	/**
-	 * Refills the section with rows. This method will be called by the system
-	 * and should be directly called.
-	 * @param ontology OWLOntology
-	 */
-	@Override
-	protected void refill(OWLOntology ontology) {
-		for (OWLEquivalentClassesAxiom ax : ontology
-				.getEquivalentClassesAxioms(getRootObject())) {
-			addRow(new OWLEquivalentClassesAxiomFrameSectionRow(
-					getOWLEditorKit(), this, ontology, getRootObject(), ax));
-			for (OWLDescription desc : ax.getDescriptions()) {
-				if (!desc.isAnonymous()) {
-					added.add(desc.asOWLClass());
-				}
-			}
-		}
-	}
 
-	@Override
-	protected void refillInferred() {
-		if (!inferredEquivalentClasses) {
-			return;
-		}
-		try {
-			if (!getOWLModelManager().getReasoner().isSatisfiable(
-					getRootObject())) {
-				addRow(new OWLEquivalentClassesAxiomFrameSectionRow(
-						getOWLEditorKit(), this, null, getRootObject(),
-						getOWLDataFactory().getOWLEquivalentClassesAxiom(
-								CollectionFactory.createSet(getRootObject(),
-										getOWLModelManager()
-												.getOWLDataFactory()
-												.getOWLNothing()))));
-				return;
-			}
-			for (OWLClass cls : getOWLModelManager().getReasoner()
-					.getEquivalentClasses(getRootObject())) {
-				if (!added.contains(cls) && !cls.equals(getRootObject())) {
-					addRow(new OWLEquivalentClassesAxiomFrameSectionRow(
-							getOWLEditorKit(), this, null, getRootObject(),
-							getOWLDataFactory().getOWLEquivalentClassesAxiom(
-									CollectionFactory.createSet(
-											getRootObject(), cls))));
-				}
-			}
-		} catch (UnsupportedReasonerOperationException e) {
-			inferredEquivalentClasses = false;
-		} catch (OWLReasonerException e) {
-			e.printStackTrace();
-		}
-	}
+    protected void clear() {
+        added.clear();
+    }
 
-	@Override
-	public void visit(OWLEquivalentClassesAxiom axiom) {
-		if (axiom.getDescriptions().contains(getRootObject())) {
-			reset();
-		}
-	}
 
-	@Override
-	protected OWLEquivalentClassesAxiom createAxiom(OWLDescription object) {
-		return getOWLDataFactory().getOWLEquivalentClassesAxiom(
-				CollectionFactory.createSet(getRootObject(), object));
-	}
+    protected void addAxiom(OWLEquivalentClassesAxiom ax, OWLOntology ontology) {
+        addRow(new OWLEquivalentClassesAxiomFrameSectionRow(getOWLEditorKit(),
+                                                            this,
+                                                            ontology,
+                                                            getRootObject(),
+                                                            ax));
+        for (OWLDescription desc : ax.getDescriptions()) {
+            added.add(desc);
+        }
+    }
 
-	@Override
-	public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
-		// Own OWLClassDescriptionEditor to integrate the dllearner in protege
-		// This is to suggest equivalent classes
-		dlLearner = new OWLClassDescriptionEditorWithDLLearnerTab(getOWLEditorKit(),
-				null, frame, LABEL);
-		return dlLearner;
-	}
 
-	@Override
-	public boolean canAcceptDrop(List<OWLObject> objects) {
-		for (OWLObject obj : objects) {
-			if (!(obj instanceof OWLDescription)) {
-				return false;
-			}
-		}
-		return true;
-	}
+    protected Set<OWLEquivalentClassesAxiom> getClassAxioms(OWLDescription descr, OWLOntology ont) {
+        if (!descr.isAnonymous()){
+            return ont.getEquivalentClassesAxioms(descr.asOWLClass());
+        }
+        else{
+            Set<OWLEquivalentClassesAxiom> axioms = new HashSet<OWLEquivalentClassesAxiom>();
+            for (OWLAxiom ax : ont.getGeneralClassAxioms()){
+                if (ax instanceof OWLEquivalentClassesAxiom &&
+                    ((OWLEquivalentClassesAxiom)ax).getDescriptions().contains(descr)){
+                    axioms.add((OWLEquivalentClassesAxiom)ax);
+                }
+            }
+            return axioms;
+        }
+    }
 
-	@Override
-	public boolean dropObjects(List<OWLObject> objects) {
-		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-		for (OWLObject obj : objects) {
-			if (obj instanceof OWLDescription) {
-				OWLDescription desc = (OWLDescription) obj;
-				OWLAxiom ax = getOWLDataFactory().getOWLEquivalentClassesAxiom(
-						CollectionFactory.createSet(getRootObject(), desc));
-				changes.add(new AddAxiom(getOWLModelManager()
-						.getActiveOntology(), ax));
-			} else {
-				return false;
-			}
-		}
-		getOWLModelManager().applyChanges(changes);
-		return true;
-	}
 
-	/**
-	 * Obtains a comparator which can be used to sort the rows in this section.
-	 * 
-	 * @return A comparator if to sort the rows in this section, or
-	 *         <code>null</code> if the rows shouldn't be sorted.
-	 */
-	public Comparator<OWLFrameSectionRow<OWLClass, OWLEquivalentClassesAxiom, OWLDescription>> getRowComparator() {
-		return null;
-	}
+    protected void refillInferred() {
+        if (!inferredEquivalentClasses) {
+            return;
+        }
+        try {
+            if (!getOWLModelManager().getReasoner().isSatisfiable(getRootObject())) {
+                addRow(new OWLEquivalentClassesAxiomFrameSectionRow(getOWLEditorKit(),
+                                                                    this,
+                                                                    null,
+                                                                    getRootObject(),
+                                                                    getOWLDataFactory().getOWLEquivalentClassesAxiom(
+                                                                            CollectionFactory.createSet(getRootObject(),
+                                                                                                        getOWLModelManager().getOWLDataFactory().getOWLNothing()))));
+            }
+            else{
+                for (OWLDescription cls : getOWLModelManager().getReasoner().getEquivalentClasses(getRootObject())) {
+                    if (!added.contains(cls) && !cls.equals(getRootObject())) {
+                        addRow(new OWLEquivalentClassesAxiomFrameSectionRow(getOWLEditorKit(),
+                                                                            this,
+                                                                            null,
+                                                                            getRootObject(),
+                                                                            getOWLDataFactory().getOWLEquivalentClassesAxiom(
+                                                                                    CollectionFactory.createSet(
+                                                                                            getRootObject(),
+                                                                                            cls))));
+                    }
+                }
+            }
+        }
+        catch (UnsupportedReasonerOperationException e) {
+            inferredEquivalentClasses = false;
+        }
+        catch (OWLReasonerException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void visit(OWLEquivalentClassesAxiom axiom) {
+        if (axiom.getDescriptions().contains(getRootObject())) {
+            reset();
+        }
+    }
+
+
+    protected OWLEquivalentClassesAxiom createAxiom(OWLDescription object) {
+        return getOWLDataFactory().getOWLEquivalentClassesAxiom(CollectionFactory.createSet(getRootObject(), object));
+    }
+
+
+    public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
+        return new OWLClassDescriptionEditorWithDLLearnerTab(getOWLEditorKit(), null, frame, LABEL);
+    }
+
+
+    public boolean canAcceptDrop(List<OWLObject> objects) {
+        for (OWLObject obj : objects) {
+            if (!(obj instanceof OWLDescription)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public boolean dropObjects(List<OWLObject> objects) {
+        List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+        for (OWLObject obj : objects) {
+            if (obj instanceof OWLDescription) {
+                OWLDescription desc = (OWLDescription) obj;
+                OWLAxiom ax = getOWLDataFactory().getOWLEquivalentClassesAxiom(CollectionFactory.createSet(getRootObject(),
+                                                                                                           desc));
+                changes.add(new AddAxiom(getOWLModelManager().getActiveOntology(), ax));
+            }
+            else {
+                return false;
+            }
+        }
+        getOWLModelManager().applyChanges(changes);
+        return true;
+    }
+
+
+    /**
+     * Obtains a comparator which can be used to sort the rows
+     * in this section.
+     * @return A comparator if to sort the rows in this section,
+     *         or <code>null</code> if the rows shouldn't be sorted.
+     */
+    public Comparator<OWLFrameSectionRow<OWLDescription, OWLEquivalentClassesAxiom, OWLDescription>> getRowComparator() {
+        return null;
+    }
 }
