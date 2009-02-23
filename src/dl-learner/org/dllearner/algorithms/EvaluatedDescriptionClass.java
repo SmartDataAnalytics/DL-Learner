@@ -19,8 +19,11 @@
  */
 package org.dllearner.algorithms;
 
+import java.util.Set;
+
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.ClassScore;
 
 /**
@@ -31,6 +34,8 @@ import org.dllearner.learningproblems.ClassScore;
  */
 public class EvaluatedDescriptionClass extends EvaluatedDescription {
 
+	private ClassScore classScore;
+	
 	/**
 	 * Constructs an evaluated description for learning classes in ontologies.
 	 * @param description Description.
@@ -38,6 +43,41 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription {
 	 */
 	public EvaluatedDescriptionClass(Description description, ClassScore score) {
 		super(description, score);
+		classScore = score;
+	}
+	
+	/**
+	 * @return The addition factor.
+	 * @see org.dllearner.learningproblems.ClassScore#getAddition()
+	 */
+	public double getAddition() {
+		return classScore.getAddition();
+	}
+
+	/**
+	 * @return The instances of the class description, which are not instances
+	 * of the class to learn.
+	 * @see org.dllearner.learningproblems.ClassScore#getAdditionalInstances()
+	 */
+	public Set<Individual> getAdditionalInstances() {
+		return classScore.getAdditionalInstances();
+	}
+
+	/**
+	 * @return The coverage percentage.
+	 * @see org.dllearner.learningproblems.ClassScore#getCoverage()
+	 */
+	public double getCoverage() {
+		return classScore.getCoverage();
+	}
+
+	/**
+	 * 
+	 * @return The instances covered by the class description.
+	 * @see org.dllearner.learningproblems.ClassScore#getCoveredInstances()
+	 */
+	public Set<Individual> getCoveredInstances() {
+		return classScore.getCoveredInstances();
 	}
 	
 }

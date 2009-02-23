@@ -22,8 +22,10 @@ package org.dllearner.learningproblems;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.algorithms.EvaluatedDescriptionClass;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.ReasonerComponent;
@@ -33,6 +35,7 @@ import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.utilities.Helper;
 
 /**
  * The problem of learning the description of an existing class
@@ -72,8 +75,12 @@ public class ClassLearningProblem extends LearningProblem {
 	}	
 	
 	@Override
-	public void init() {
+	public void init() throws ComponentInitException {
 		classToDescribe = new NamedClass(configurator.getClassToDescribe());
+		if(!reasoner.getNamedClasses().contains(classToDescribe)) {
+			throw new ComponentInitException("The class \"" + configurator.getClassToDescribe() + "\" does not exist. Make sure you spelled it correctly.");
+		}
+		
 		classInstances = reasoner.getIndividuals(classToDescribe);
 		equivalence = (configurator.getType().equals("equivalence"));
 	}
@@ -98,28 +105,23 @@ public class ClassLearningProblem extends LearningProblem {
 	public ClassScore computeScore(Description description) {
 		Set<Individual> retrieval = reasoner.getIndividuals(description);
 		
-//		int instancesProtused = 0;
-//		
-//		for(Individual ind : retrieval) {
-//			if(classInstances.contains(ind)) {
-//				instancesCovered++;
-//			} else {
-//				instancesProtused++;
-//			}
-//		}		
+		Set<Individual> coveredInstances = new TreeSet<Individual>();
 		
 		int instancesCovered = 0;
 		
 		for(Individual ind : classInstances) {
 			if(retrieval.contains(ind)) {
 				instancesCovered++;
+				coveredInstances.add(ind);
 			}
 		}
+		
+		Set<Individual> additionalInstances = Helper.difference(retrieval, coveredInstances);		
 		
 		double coverage = instancesCovered/(double)classInstances.size();
 		double protusion = instancesCovered/(double)retrieval.size();
 		
-		return new ClassScore(coverage, protusion);
+		return new ClassScore(coveredInstances, coverage, additionalInstances, protusion);
 	}	
 	
 	public boolean isEquivalenceProblem() {
