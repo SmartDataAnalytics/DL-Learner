@@ -31,9 +31,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
-import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
+import org.dllearner.algorithms.EvaluatedDescriptionClass;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Individual;
 
 
 
@@ -279,11 +278,11 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 			}
 			
 			//sets the accuracy of the concept
-			double acc = ((EvaluatedDescriptionPosNeg)eval).getAccuracy()*100;
+			double acc = ((EvaluatedDescriptionClass)eval).getAccuracy()*100;
 			accuracyText.setText(String.valueOf(acc)+"%");
 			
 			//Sets positive Covered Examples for the detail panel
-			Set<Individual> indi = ((EvaluatedDescriptionPosNeg)eval).getCoveredPositives();
+			/*Set<Individual> indi = ((EvaluatedDescriptionPosNeg)eval).getCoveredPositives();
 			for(Individual ind : indi) {
 				for(String ontology : ontologiesStrings) {
 					if(ind.toString().contains(ontology)) {
@@ -335,7 +334,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 						break;
 					}
 				} 	
-			}
+			}*/
 		}
 		}
 	}	

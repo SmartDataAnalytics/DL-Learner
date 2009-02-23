@@ -19,6 +19,7 @@
  */
 package org.dllearner.tools.protege;
 
+import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.frame.AbstractOWLFrame;
 import org.protege.editor.owl.ui.frame.InheritedAnonymousClassesFrameSection;
 import org.protege.editor.owl.ui.frame.OWLClassAssertionAxiomIndividualSection;
@@ -26,7 +27,6 @@ import org.protege.editor.owl.ui.frame.OWLDisjointClassesAxiomFrameSection;
 //import org.protege.editor.owl.ui.frame.OWLEquivalentClassesAxiomFrameSection;
 //import org.protege.editor.owl.ui.frame.OWLSubClassAxiomFrameSection;
 import org.semanticweb.owl.model.OWLClass;
-import org.protege.editor.owl.OWLEditorKit;
 
 /**
  * This class manages the list of the lists for equivalent classes and so on.
@@ -39,6 +39,7 @@ import org.protege.editor.owl.OWLEditorKit;
 public class ButtonList extends AbstractOWLFrame<OWLClass> {
 	private OWLEquivalentClassesAxiomFrameSection equi;
 	private OWLSubClassAxiomFrameSection sub;
+	//private DLLearnerView view;
 	/**
 	 * Constructor of the Buttonlist. 
 	 * 
@@ -48,6 +49,11 @@ public class ButtonList extends AbstractOWLFrame<OWLClass> {
 
 		super(editorKit.getModelManager().getOWLOntologyManager());
 		equi = new OWLEquivalentClassesAxiomFrameSection(editorKit, this);
+		//view = new DLLearnerView(equi.getName(), editorKit);
+		//OWLFrameSectionRowObjectEditor<OWLDescription> edit = equi.getObjectEditor();
+		//OWLClassDescriptionEditor ed = (OWLClassDescriptionEditor)edit;
+		//ed.addPanel(view);
+		//equi.getEditor().getEditorComponent().validate();
 		sub = new OWLSubClassAxiomFrameSection(editorKit, this);
 		// own OWLEquivalentClassesAxiomFrameSection to add the dllearner plugin
 		// to the

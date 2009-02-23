@@ -5,9 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.Vector;
-
-import javax.swing.DefaultListModel;
 
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -22,26 +19,20 @@ public class ReadingOntologyThread extends Thread {
 
 	
 	private boolean hasIndividuals;
-	private OWLFrame<OWLClass> current;
 	private FastInstanceChecker reasoner;
 	private NamedClass currentConcept;
 	private Set<Individual> individual;
 	private Set<String> ontologieURI;
 	private OWLEditorKit editor;
-	private DefaultListModel posListModel;
-	private DefaultListModel negListModel;
 	private DLLearnerModel model;
 	private boolean isInconsistent;
 	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
-	private Vector<IndividualObject> individualVector;
+	private OWLFrame<OWLClass> current;
 	
-	public ReadingOntologyThread(OWLEditorKit editorKit, OWLFrame<OWLClass> h, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView v, DLLearnerModel m) {
-		posListModel = new DefaultListModel();
-		negListModel = new DefaultListModel();
+	public ReadingOntologyThread(OWLEditorKit editorKit, OWLFrame<OWLClass> frame, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView v, DLLearnerModel m) {
 		ontologieURI = new HashSet<String>();
-		individualVector = new Vector<IndividualObject>();
 		this.editor = editorKit;
-		this.current = h;
+		current = frame;
 		this.view = v;
 		this.model = m;
 		
@@ -71,6 +62,7 @@ public class ReadingOntologyThread extends Thread {
 							currentConcept = concept;
 							if (reasoner.getIndividuals(concept) != null) {
 								if (reasoner.getIndividuals(concept).size() > 0) {
+									model.setInstancesCount(reasoner.getIndividuals(concept).size());
 									hasIndividuals = true;
 								}
 								individual = reasoner.getIndividuals(concept);
@@ -130,40 +122,40 @@ public class ReadingOntologyThread extends Thread {
 	 * This method sets the check boxes for the positive check boxes checked if
 	 * the individuals matches the concept that is chosen in protege.
 	 */
-	private void setPosVector() {
-		setPositiveConcept();
-		SortedSet<Individual> reasonerIndi = reasoner.getIndividuals();
-		for(Individual ind : reasonerIndi) {
-			Set<String> onto = ontologieURI;
-			for(String ont : onto) {
-				String indiv = ind.toString();
-				// checks if individual belongs to the selected concept
-					if (setPositivExamplesChecked(indiv)) {
-						if (indiv.contains(ont)) {
-							// when yes then it sets the positive example checked
-	
-							// OWLExpressionCheckerFactory
-							posListModel.add(0, ind.toManchesterSyntaxString(ont, null));
-							individualVector.add(new IndividualObject(indiv, true));
-							break;
-						}
-    
-					} else {
-						// When no it unchecks the positive example
-						if (indiv.contains(ont)) {
-							individualVector
-									.add(new IndividualObject(indiv, false));
-							negListModel.add(0, ind.toManchesterSyntaxString(ont, null));
-							break;
-						}
-					}
-				}
-		}
-		//view.getPosAndNegSelectPanel().setExampleList(posListModel, negListModel);
-		model.setPosListModel(posListModel);
-		model.setNegListModel(negListModel);
-		model.setIndividualVector(individualVector);
-	}
+	//private void setPosVector() {
+	//	setPositiveConcept();
+	//	SortedSet<Individual> reasonerIndi = reasoner.getIndividuals();
+	//	for(Individual ind : reasonerIndi) {
+	//		Set<String> onto = ontologieURI;
+	//		for(String ont : onto) {
+	//			String indiv = ind.toString();
+	//			// checks if individual belongs to the selected concept
+	//				if (setPositivExamplesChecked(indiv)) {
+	//					if (indiv.contains(ont)) {
+	//						// when yes then it sets the positive example checked
+	//
+	//						// OWLExpressionCheckerFactory
+	//						posListModel.add(0, ind.toManchesterSyntaxString(ont, null));
+	//						individualVector.add(new IndividualObject(indiv, true));
+	//						break;
+	//					}
+    //
+	//				} else {
+	//					// When no it unchecks the positive example
+	//					if (indiv.contains(ont)) {
+	//						individualVector
+	//								.add(new IndividualObject(indiv, false));
+	//						negListModel.add(0, ind.toManchesterSyntaxString(ont, null));
+	//						break;
+	//					}
+	//				}
+	//			}
+	//	}
+	//	//view.getPosAndNegSelectPanel().setExampleList(posListModel, negListModel);
+	//	model.setPosListModel(posListModel);
+	//	model.setNegListModel(negListModel);
+	//	model.setIndividualVector(individualVector);
+	//}
 	
 	/**
 	 * This method gets an Individual and checks if this individual belongs to
@@ -173,19 +165,19 @@ public class ReadingOntologyThread extends Thread {
 	 *            Individual to check if it belongs to the chosen concept
 	 * @return is Individual belongs to the concept which is chosen in protege.
 	 */
-	private boolean setPositivExamplesChecked(String indi) {
-		boolean isChecked = false;
-		// checks if individuals are not empty
-		if (individual != null) {
-			// checks if the delivered individual belongs to the individuals of
-			// the selected concept
-			if (individual.toString().contains(indi)) {
-				isChecked = true;
-			}
-		}
-		return isChecked;
-    
-	}
+	//private boolean setPositivExamplesChecked(String indi) {
+	//	boolean isChecked = false;
+	//	// checks if individuals are not empty
+	//	if (individual != null) {
+	//		// checks if the delivered individual belongs to the individuals of
+	//		// the selected concept
+	//		if (individual.toString().contains(indi)) {
+	//			isChecked = true;
+	//		}
+	//	}
+	//	return isChecked;
+    //
+	//}
 	
 	@Override
 	public void run() {
@@ -197,7 +189,7 @@ public class ReadingOntologyThread extends Thread {
 			
 			this.checkURI();
 			this.setPositiveConcept();
-			this.setPosVector();
+			//this.setPosVector();
 			if (this.hasIndividuals()) {
 				view.getRunButton().setEnabled(true);
 			} else {

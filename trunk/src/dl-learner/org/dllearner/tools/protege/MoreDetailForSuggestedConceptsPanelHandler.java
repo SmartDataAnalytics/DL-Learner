@@ -7,6 +7,7 @@ import java.util.SortedSet;
 
 import javax.swing.JOptionPane;
 
+import org.dllearner.algorithms.EvaluatedDescriptionClass;
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Individual;
@@ -38,7 +39,8 @@ public class MoreDetailForSuggestedConceptsPanelHandler implements ActionListene
 		}
 		
 		if(a.getActionCommand().equals(NEW_BUTTON_LABEL)) {
-			Set<Individual> posInd = ((EvaluatedDescriptionPosNeg)eval).getCoveredPositives();
+			Set<Individual> posInd = ((EvaluatedDescriptionClass)eval).getCoveredInstances();
+			posInd.addAll(((EvaluatedDescriptionClass)eval).getAdditionalInstances());
 			Set<String> uri = model.getOntologyURIString();
 			String toolTip = "This are the Individuals beloning to\n ";
 			for(String u : uri) {

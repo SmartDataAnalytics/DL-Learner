@@ -40,8 +40,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-//import org.apache.log4j.Logger;
-import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
+import org.dllearner.algorithms.EvaluatedDescriptionClass;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
@@ -87,9 +86,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 *            id if it is a subclass or an equivalent class
 	 * 
 	 */
-	public ActionHandler(ActionHandler a, DLLearnerModel m,
-			OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view,
-			String i) {
+	public ActionHandler(ActionHandler a, DLLearnerModel m, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view, String i) {
 		this.view = view;
 		this.id = i;
 		this.model = m;
@@ -108,12 +105,10 @@ public class ActionHandler implements ActionListener, ItemListener,
 		if (z.getActionCommand().equals(id)) {
 			model.setKnowledgeSource();
 			model.setReasoner();
-			model.setPositiveAndNegativeExamples();
 			model.setLearningProblem();
 			model.setLearningAlgorithm();
 			view.getRunButton().setEnabled(false);
 			view.renderErrorMessage("learning started");
-			//view.getPosAndNegSelectPanel().setCheckBoxesEnable(false);
 			retriever = new SuggestionRetriever();
 			retriever.execute();
 
@@ -132,7 +127,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 			}
 			String message = "class description added";
 			view.renderErrorMessage(message);
-			view.updateWindow();
 		}
 		if (z.getActionCommand().equals("")) {
 			if (!toggled) {
@@ -302,14 +296,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 		
 		private Thread dlLearner;
 		private DefaultListModel dm = new DefaultListModel();
-		/**
-		 * Errorlogger.
-		 */
-		//Logger logger = Logger.getLogger(SuggestionRetriever.class);
-		/**
-		 * Errorlogger.
-		 */
-		//Logger rootLogger = Logger.getRootLogger();
 		
 		@SuppressWarnings("unchecked")
 		@Override
@@ -321,8 +307,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 				@Override
 				public void run() {	
 					if (la != null) {
-						publish(la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts()
-								, view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true));
+						publish(la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts(), view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true));
 					}
 				}
 
@@ -382,7 +367,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 
 		private void updateList(final List<? extends EvaluatedDescription> result) {
 
-			//logger.debug("update list with " + result);
 			
 			Runnable doUpdateList = new Runnable() {
 
@@ -396,12 +380,13 @@ public class ActionHandler implements ActionListener, ItemListener,
 						Set<String> ont = model.getOntologyURIString();
 						for(String ontology : ont) {
 							if(eval.getDescription().toString().contains(ontology)) {
+								//dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass)eval).getAccuracy()*100));
 								if(model.isConsistent(eval)) {
-									dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionPosNeg)eval).getAccuracy()*100));
+									dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass)eval).getAccuracy()*100));
 									i++;
 									break;
 								} else {
-									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionPosNeg)eval).getAccuracy()*100));
+									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass)eval).getAccuracy()*100));
 									i++;
 									view.setIsInconsistent(true);
 									break;

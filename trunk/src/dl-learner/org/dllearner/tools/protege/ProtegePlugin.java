@@ -52,7 +52,6 @@ private OWLFrameList2<OWLClass> list;
 		setLayout(new BorderLayout());
 		JScrollPane dlLearner = new JScrollPane(list);
 		add(dlLearner);
-		
 		// add file logger (comment out if not needed)
 		//boolean useAdditionalLogger = true;
 		//if(useAdditionalLogger) {
