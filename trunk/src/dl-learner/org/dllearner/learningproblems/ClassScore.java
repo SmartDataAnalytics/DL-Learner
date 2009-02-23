@@ -19,7 +19,10 @@
  */
 package org.dllearner.learningproblems;
 
+import java.util.Set;
+
 import org.dllearner.core.Score;
+import org.dllearner.core.owl.Individual;
 
 /**
  * The score of a class in ontology engineering.
@@ -29,26 +32,34 @@ import org.dllearner.core.Score;
  */
 public class ClassScore extends Score {
 
-	private double coverage;
-	private double protusion;
+	private Set<Individual> coveredInstances;
+	private Set<Individual> additionalInstances;
 	
-	public ClassScore(double coverage, double protusion) {
+	private double coverage;
+	private double addition;
+	
+	public ClassScore(Set<Individual> coveredInstances, double coverage, Set<Individual> additionalInstances, double protusion) {
+		this.coveredInstances = coveredInstances;
+		this.additionalInstances = additionalInstances;
 		this.coverage = coverage;
-		this.protusion = protusion;
+		this.addition = protusion;
 	}
 	
 	/**
-	 * @return the coverage
+	 * @return Coverage of the class description.
 	 */
 	public double getCoverage() {
 		return coverage;
 	}
 
 	/**
-	 * @return the protusion
+	 * Let C be the considered class description and A the class to learn. 
+	 * The addition number is calculated as the number of instances of C which are also
+	 * instances of A divided by the number of instances of C.
+	 * @return Additional instances of the class description.
 	 */
-	public double getProtusion() {
-		return protusion;
+	public double getAddition() {
+		return addition;
 	}
 
 	/* (non-Javadoc)
@@ -56,7 +67,21 @@ public class ClassScore extends Score {
 	 */
 	@Override
 	public double getAccuracy() {
-		return 0.5 * (coverage + protusion);
+		return 0.5 * (coverage + addition);
+	}
+
+	/**
+	 * @return the coveredInstances
+	 */
+	public Set<Individual> getCoveredInstances() {
+		return coveredInstances;
+	}
+
+	/**
+	 * @return the additionalInstances
+	 */
+	public Set<Individual> getAdditionalInstances() {
+		return additionalInstances;
 	}		
 
 }

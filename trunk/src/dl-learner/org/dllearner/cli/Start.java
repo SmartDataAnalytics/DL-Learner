@@ -476,8 +476,14 @@ public class Start {
 				System.exit(0);
 			}
 
-		} else
-			handleError("Unknow option " + option + ".");
+		} else {
+			List<ConfigOption<?>> options = ComponentManager.getConfigOptions(component.getClass());
+			Set<String> optionStrings = new TreeSet<String>();
+			for(ConfigOption<?> o : options) {
+				optionStrings.add(o.getName());
+			}
+			handleError("Unknown option \"" + option.getSubOption() + "\" for component \"" + cm.getComponentName(component.getClass()) + "\". Valid options are " + optionStrings + ".");
+		}
 	}
 
 	/**
