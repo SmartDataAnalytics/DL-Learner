@@ -187,9 +187,10 @@ public class RhoDRDown extends RefinementOperatorAdapter {
 		this.rs = reasoningService;
 	}
 	
-	public RhoDRDown(ReasonerComponent reasoner, ClassHierarchy subHierarchy, RefinementOperatorConfigurator configurator) {
+	public RhoDRDown(ReasonerComponent reasoner, ClassHierarchy subHierarchy, Description startClass, RefinementOperatorConfigurator configurator) {
 		this.rs = reasoner;
 		this.subHierarchy = subHierarchy;
+		this.startClass = startClass;
 		useCardinalityRestrictions = configurator.getUseCardinalityRestrictions();
 		// TODO add more options from configurator object
 		init();

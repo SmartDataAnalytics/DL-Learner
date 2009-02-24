@@ -19,6 +19,8 @@
  */
 package org.dllearner.core.options;
 
+import org.dllearner.core.LearningAlgorithm;
+
 
 
 /**
@@ -167,6 +169,13 @@ public final class CommonConfigOptions {
 	
 	public static IntegerConfigOption guaranteeXgoodDescriptions() {
 		return new IntegerConfigOption("guaranteeXgoodDescriptions", "algorithm will run until X good (100%) concept descritpions are found",guaranteeXgoodDescriptionsDefault);
+	}
+	
+	public static IntegerConfigOption maxNrOfResults(int defaultValue) {
+		IntegerConfigOption opt = new IntegerConfigOption("maxNrOfResults", "Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).", defaultValue);
+		opt.setLowerLimit(1);
+		opt.setUpperLimit(LearningAlgorithm.MAX_NR_OF_RESULTS);
+		return opt;
 	}
 	
 	public static IntegerConfigOption maxClassDescriptionTests() {

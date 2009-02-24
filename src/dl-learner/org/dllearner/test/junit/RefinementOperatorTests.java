@@ -35,6 +35,7 @@ import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.junit.Test;
 
 /**
@@ -92,6 +93,26 @@ public class RefinementOperatorTests {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Test
+	public void rhoDRDownTest2() throws ParseException {
+		ReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.EPC_OE);
+		baseURI = reasoner.getBaseURI();
+		
+		RhoDRDown op = new RhoDRDown(reasoner);
+		Description concept = KBParser.parseConcept("(\"http://localhost/aris/sap_model.owl#EPC\" AND EXISTS \"http://localhost/aris/sap_model.owl#hasModelElements\".\"http://localhost/aris/sap_model.owl#Object\")");
+		Set<Description> results = op.refine(concept, 6);
+
+		for(Description result : results) {
+			System.out.println(result);
+		}
+			
+		int desiredResultSize = 141;
+		if(results.size() != desiredResultSize) {
+			System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
+		}
+		assertTrue(results.size()==desiredResultSize);
 	}
 	
 	private String uri(String name) {

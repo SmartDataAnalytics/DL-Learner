@@ -112,4 +112,11 @@ public class EvaluatedDescriptionSet {
 	public String toString() {
 		return set.toString();
 	}
+
+	/**
+	 * @return the maxSize
+	 */
+	public int getMaxSize() {
+		return maxSize;
+	}
 }

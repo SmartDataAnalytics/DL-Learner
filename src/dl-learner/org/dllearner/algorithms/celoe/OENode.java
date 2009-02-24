@@ -53,7 +53,12 @@ public class OENode {
 	private OENode parent;
 	private List<OENode> children = new LinkedList<OENode>();
 	
-	DecimalFormat dfPercent = new DecimalFormat("0.00%");
+	// the refinement count corresponds to the number of refinements of the
+	// description in this node - it is a better heuristic indicator than child count
+	// (and avoids the problem that adding children changes the heuristic value)
+	private int refinementCount = 0;
+	
+	private static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	
 	public OENode(OENode parentNode, Description description, double accuracy) {
 		this.parent = parentNode;
@@ -113,9 +118,15 @@ public class OENode {
 		String ret = description.toString(baseURI,null) + " [";
 		ret += "acc:" + dfPercent.format(accuracy) + ", ";
 		ret += "he:" + horizontalExpansion + ", ";
-		ret += "c:" + children.size() + "]";
+		ret += "c:" + children.size() + ", ";
+		ret += "ref:" + refinementCount + "]";
 		return ret;
-	}	
+	}
+	
+	@Override
+	public String toString() {
+		return getShortDescription(null);
+	}
 	
 	public String toTreeString() {
 		return toTreeString(0, null).toString();
@@ -136,5 +147,19 @@ public class OENode {
 			treeString.append(child.toTreeString(depth+1,baseURI));
 		}
 		return treeString;
+	}
+
+	/**
+	 * @return the refinementCount
+	 */
+	public int getRefinementCount() {
+		return refinementCount;
+	}
+
+	/**
+	 * @param refinementCount the refinementCount to set
+	 */
+	public void setRefinementCount(int refinementCount) {
+		this.refinementCount = refinementCount;
 	}	
 }

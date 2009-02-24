@@ -295,7 +295,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			// the union, we return true
 			List<Description> children = description.getChildren();
 			for (Description child : children) {
-				if (hasType(child, individual)) {
+				if (hasTypeImpl(child, individual)) {
 					return true;
 				}
 			}
@@ -305,7 +305,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			// the union, we return true
 			List<Description> children = description.getChildren();
 			for (Description child : children) {
-				if (!hasType(child, individual)) {
+				if (!hasTypeImpl(child, individual)) {
 					return false;
 				}
 			}
@@ -330,7 +330,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 				return false;
 			}
 			for (Individual roleFiller : roleFillers) {
-				if (hasType(child, roleFiller)) {
+				if (hasTypeImpl(child, roleFiller)) {
 					return true;
 				}
 			}
@@ -355,7 +355,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 				return true;
 			}
 			for (Individual roleFiller : roleFillers) {
-				if (!hasType(child, roleFiller)) {
+				if (!hasTypeImpl(child, roleFiller)) {
 					return false;
 				}
 			}
@@ -395,7 +395,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			int index = 0;
 			for (Individual roleFiller : roleFillers) {
 				index++;
-				if (hasType(child, roleFiller)) {
+				if (hasTypeImpl(child, roleFiller)) {
 					nrOfFillers++;
 					if (nrOfFillers == number) {
 						return true;
@@ -438,7 +438,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			int index = 0;
 			for (Individual roleFiller : roleFillers) {
 				index++;
-				if (hasType(child, roleFiller)) {
+				if (hasTypeImpl(child, roleFiller)) {
 					nrOfFillers++;
 					if (nrOfFillers > number) {
 						return false;

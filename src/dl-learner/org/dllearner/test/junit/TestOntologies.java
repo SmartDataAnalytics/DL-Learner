@@ -41,7 +41,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
  */
 public final class TestOntologies {
 
-	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER_OE };
+	public enum TestOntology { EMPTY, SIMPLE, SIMPLE_NO_DR, SIMPLE_NO_DISJOINT, SIMPLE_NO_DR_DISJOINT, SIMPLE2, SIMPLE3, R1SUBR2, DATA1, FIVE_ROLES, FATHER_OE, CARCINOGENESIS, EPC_OE };
 	
 	public static ReasonerComponent getTestOntology(TestOntology ont) {
 		String kbString = "";
@@ -111,6 +111,10 @@ public final class TestOntologies {
 			kbString += "r5(a,b).\n";
 		} else if(ont.equals(TestOntology.FATHER_OE)) {
 			owlFile = "examples/family/father_oe.owl";
+		} else if(ont.equals(TestOntology.CARCINOGENESIS)) {
+			owlFile = "examples/carcinogenesis/carcinogenesis.owl";
+		} else if(ont.equals(TestOntology.EPC_OE)) {
+			owlFile = "examples/epc/sap_epc_oe.owl";
 		}
 		
 		try {	

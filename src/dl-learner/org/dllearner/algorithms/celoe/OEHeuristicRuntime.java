@@ -35,21 +35,28 @@ public class OEHeuristicRuntime implements OEHeuristic {
 	private double expansionPenaltyFactor = 0.1;
 	// bonus for being better than parent node
 	private double gainBonusFactor = 0.3;
-	// penalty if a node has very many children since exploring such a node is
-	// computationally very expensive
-	private double nodeChildPenalty = 0.0005;
+	// penalty if a node description has very many refinements since exploring 
+	// such a node is computationally very expensive
+	private double nodeRefinementPenalty = 0.0001;
 	// syntactic comparison as final comparison criterion
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	
 	@Override
 	public int compare(OENode node1, OENode node2) {
+//		System.out.println("node1 " + node1);
+//		System.out.println("score: " + getNodeScore(node1));
+//		System.out.println("node2 " + node2);
+//		System.out.println("score: " + getNodeScore(node2));
+		
 		double diff = getNodeScore(node1) - getNodeScore(node2);
-		if(diff>0)
+		
+		if(diff>0) {		
 			return 1;
-		else if(diff<0)
+		} else if(diff<0) {
 			return -1;
-		else
+		} else {
 			return conceptComparator.compare(node1.getDescription(), node2.getDescription());
+		}
 	}
 
 	public double getNodeScore(OENode node) {
@@ -63,7 +70,7 @@ public class OEHeuristicRuntime implements OEHeuristic {
 		// penalty for horizontal expansion
 		score -= node.getHorizontalExpansion() * expansionPenaltyFactor;
 		// penalty for having many child nodes (stuck prevention)
-		score -= node.getChildren().size() * nodeChildPenalty;
+		score -= node.getRefinementCount() * nodeRefinementPenalty;
 		return score;
 	}	
 }
