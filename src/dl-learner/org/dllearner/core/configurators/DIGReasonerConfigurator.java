@@ -32,7 +32,7 @@ import org.dllearner.reasoning.DIGReasoner;
 public  class DIGReasonerConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 
 private DIGReasoner dIGReasoner;
 

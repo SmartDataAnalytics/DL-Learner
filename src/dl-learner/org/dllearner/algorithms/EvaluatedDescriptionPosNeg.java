@@ -22,7 +22,6 @@ package org.dllearner.algorithms;
 import java.util.Set;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.ScorePosNeg;

@@ -35,7 +35,7 @@ import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 public  class ROLearnerConfigurator  extends RefinementOperatorConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 
 private ROLearner rOLearner;
 

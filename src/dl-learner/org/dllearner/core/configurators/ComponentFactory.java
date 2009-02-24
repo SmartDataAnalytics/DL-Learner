@@ -38,7 +38,6 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosNegLPStrict;
 import org.dllearner.learningproblems.PosOnlyLP;
@@ -125,16 +124,6 @@ return OWLAPIReasonerConfigurator.getOWLAPIReasoner(knowledgeSource);
 **/
 public static ClassLearningProblem getClassLearningProblem(ReasonerComponent reasoningService, String classToDescribe)  {
 return ClassLearningProblemConfigurator.getClassLearningProblem(reasoningService, classToDescribe);
-}
-
-/**
-* @param positiveExamples positive examples
-* @param negativeExamples negative examples
-* @param reasoningService see ReasoningService
-* @return a component ready for initialization PosNegInclusionLP
-**/
-public static PosNegInclusionLP getPosNegInclusionLP(ReasonerComponent reasoningService, Set<String> positiveExamples, Set<String> negativeExamples)  {
-return PosNegInclusionLPConfigurator.getPosNegInclusionLP(reasoningService, positiveExamples, negativeExamples);
 }
 
 /**

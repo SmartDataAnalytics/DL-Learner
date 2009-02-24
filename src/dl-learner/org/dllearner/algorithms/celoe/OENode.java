@@ -23,8 +23,6 @@ import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dllearner.algorithms.refinement2.ExampleBasedNode;
-import org.dllearner.algorithms.refinement2.MultiHeuristic;
 import org.dllearner.core.owl.Description;
 
 /**

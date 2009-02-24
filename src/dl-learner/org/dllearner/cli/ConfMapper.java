@@ -42,7 +42,6 @@ import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosNegLPStrict;
-import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.FastRetrievalReasoner;
@@ -84,7 +83,6 @@ public class ConfMapper {
 		reasonerMapping.put("fastInstanceChecker", FastInstanceChecker.class);
 		reasonerMapping.put("fastRetrievalReasoner", FastRetrievalReasoner.class);
 		learningProblemMapping.put("posNegDefinitionLP", PosNegLPStandard.class);
-		learningProblemMapping.put("posNegInclusionLP", PosNegInclusionLP.class);
 		learningProblemMapping.put("posNegDefinitionLPStrict", PosNegLPStrict.class);
 		learningProblemMapping.put("classLearning", ClassLearningProblem.class);
 		learningAlgorithmMapping.put("random", RandomGuesser.class);
