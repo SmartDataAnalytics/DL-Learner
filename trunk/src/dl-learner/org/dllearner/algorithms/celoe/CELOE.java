@@ -28,8 +28,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.sound.midi.SysexMessage;
-
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
@@ -47,8 +45,6 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.parser.KBParser;
-import org.dllearner.parser.ParseException;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.ConceptComparator;
@@ -106,7 +102,7 @@ public class CELOE extends LearningAlgorithm {
 	private String baseURI;
 	private Map<String, String> prefixes;
 	private DecimalFormat dfPercent = new DecimalFormat("0.00%");
-	private ConceptComparator descriptionComparator = new ConceptComparator();
+//	private ConceptComparator descriptionComparator = new ConceptComparator();
 	
 	// statistical variables
 	private int descriptionTests = 0;

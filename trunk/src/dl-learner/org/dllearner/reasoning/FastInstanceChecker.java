@@ -642,7 +642,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 			ObjectProperty op = (ObjectProperty) ope;
 			Description child = description.getChild(0);
 			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+			SortedSet<Individual> targetSet = getIndividualsImpl(child);
 			// initially all individuals are in the return set and we then remove those
 			// with too many fillers			
 			SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();

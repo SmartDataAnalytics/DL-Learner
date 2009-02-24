@@ -34,7 +34,7 @@ import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 public  class CELOEConfigurator  extends RefinementOperatorConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 
 private CELOE cELOE;
 
@@ -158,7 +158,7 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "noi
 /**
 * maxDepth maximum depth of description.
 * mandatory: false| reinit necessary: true
-* default value: 4
+* default value: 7
 * @return int 
 **/
 public int getMaxDepth() {
@@ -276,7 +276,7 @@ reinitNecessary = true;
 /**
 * @param maxDepth maximum depth of description.
 * mandatory: false| reinit necessary: true
-* default value: 4
+* default value: 7
 **/
 public void setMaxDepth(int maxDepth) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "maxDepth", maxDepth);

@@ -32,7 +32,7 @@ import org.dllearner.learningproblems.PosNegLPStrict;
 public  class PosNegLPStrictConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 
 private PosNegLPStrict posNegLPStrict;
 

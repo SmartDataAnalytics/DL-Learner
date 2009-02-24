@@ -32,7 +32,7 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 public  class OWLAPIReasonerConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 
 private OWLAPIReasoner oWLAPIReasoner;
 

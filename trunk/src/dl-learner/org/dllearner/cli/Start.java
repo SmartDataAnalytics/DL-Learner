@@ -43,10 +43,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.dllearner.Info;
-import org.dllearner.algorithms.BruteForceLearner;
-import org.dllearner.algorithms.RandomGuesser;
-import org.dllearner.algorithms.gp.GP;
-import org.dllearner.algorithms.refinement.ROLearner;
 import org.dllearner.algorithms.refinement2.ROLComponent2;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
@@ -74,7 +70,6 @@ import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.learningproblems.PosNegInclusionLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.parser.ConfParser;
@@ -83,8 +78,6 @@ import org.dllearner.parser.ParseException;
 import org.dllearner.parser.TokenMgrError;
 import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.reasoning.FastRetrievalReasoner;
-import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
@@ -350,36 +343,6 @@ public class Start {
 
 			printConclusions(rc, algDuration);
 		}
-	}
-
-	/**
-	 * @deprecated See ConfMapper.
-	 * creates a mapping from components to option prefix strings
-	 */
-	@Deprecated
-	public static Map<Class<? extends Component>, String> createComponentPrefixMapping() {
-		Map<Class<? extends Component>, String> componentPrefixMapping = new HashMap<Class<? extends Component>, String>();
-		// knowledge sources
-		componentPrefixMapping.put(SparqlKnowledgeSource.class, "sparql");
-		// reasoners
-		componentPrefixMapping.put(DIGReasoner.class, "digReasoner");
-		componentPrefixMapping.put(FastInstanceChecker.class, "fastInstanceChecker");
-		componentPrefixMapping.put(OWLAPIReasoner.class, "owlAPIReasoner");
-		componentPrefixMapping.put(FastRetrievalReasoner.class, "fastRetrieval");
-
-		// learning problems - configured via + and - flags for examples
-		componentPrefixMapping.put(PosNegLPStandard.class, "posNegDefinitionLP");
-		componentPrefixMapping.put(PosNegInclusionLP.class, "posNegInclusionLP");
-		componentPrefixMapping.put(PosOnlyLP.class, "posOnlyDefinitionLP");
-
-		// learning algorithms
-		componentPrefixMapping.put(ROLearner.class, "refinement");
-		componentPrefixMapping.put(ROLComponent2.class, "refexamples");
-		componentPrefixMapping.put(GP.class, "gp");
-		componentPrefixMapping.put(BruteForceLearner.class, "bruteForce");
-		componentPrefixMapping.put(RandomGuesser.class, "random");
-
-		return componentPrefixMapping;
 	}
 	
 	/**
@@ -895,100 +858,6 @@ public class Start {
 
 	public ReasonerComponent getReasonerComponent() {
 		return rc;
-	}
-
-	/**
-	 * @deprecated See ConfMapper.
-	 * @param componentSuperClass
-	 * @return String.
-	 */
-	@Deprecated
-	public static String getCLIMapping(String componentSuperClass){
-		HashMap<String, String> m = new HashMap<String, String>();
-		m.put("KnowledgeSource", "import");
-		m.put("ReasonerComponent", "reasoner");
-		m.put("PosNegLP", "problem");
-		m.put("PosOnlyLP", "problem");
-		m.put("LearningAlgorithm", "algorithm");
-		return m.get(componentSuperClass);
-	}
-
-	/**
-	 * Set Reasoner class. Define here all possible reasoners.
-	 * 
-	 * @deprecated See ConfMapper.
-	 * @param reasonerOption
-	 *            from config file
-	 * @return reasonerClass reasoner class
-	 */
-	@Deprecated
-	public static Class<? extends ReasonerComponent> getReasonerClass(ConfFileOption reasonerOption) {
-		Class<? extends ReasonerComponent> reasonerClass = null;
-		if (reasonerOption == null || reasonerOption.getStringValue().equals("fastInstanceChecker"))
-			reasonerClass = FastInstanceChecker.class;
-		else if (reasonerOption.getStringValue().equals("owlAPI"))
-			reasonerClass = OWLAPIReasoner.class;
-		else if (reasonerOption.getStringValue().equals("fastRetrieval"))
-			reasonerClass = FastRetrievalReasoner.class;
-		else if (reasonerOption.getStringValue().equals("dig"))
-			reasonerClass = DIGReasoner.class;
-		else {
-			handleError("Unknown value " + reasonerOption.getStringValue()
-					+ " for option \"reasoner\".");
-		}
-		return reasonerClass;
-	}
-
-	/**
-	 * Set LearningProblem class. Define here all possible problems.
-	 * 
-	 * @deprecated See ConfMapper.
-	 * @param problemOption
-	 *            from config file
-	 * @return lpClass learning problem class
-	 */
-	@Deprecated
-	public static Class<? extends LearningProblem> getLearningProblemClass(
-			ConfFileOption problemOption) {
-		Class<? extends LearningProblem> lpClass = null;
-		if (problemOption == null || problemOption.getStringValue().equals("posNegDefinitionLP"))
-			lpClass = PosNegLPStandard.class;
-		else if (problemOption.getStringValue().equals("posNegInclusionLP"))
-			lpClass = PosNegInclusionLP.class;
-		else if (problemOption.getStringValue().equals("posOnlyDefinitionLP"))
-			lpClass = PosOnlyLP.class;
-		else
-			handleError("Unknown value " + problemOption.getValue() + " for option \"problem\".");
-
-		return lpClass;
-	}
-
-	/**
-	 * Set LearningAlorithm class. Define here all possible learning algorithms.
-	 * 
-	 * @deprecated See ConfMapper.
-	 * @param algorithmOption
-	 *            from config file
-	 * @return laClass learning algorithm class
-	 */
-	@Deprecated
-	public static Class<? extends LearningAlgorithm> getLearningAlgorithm(
-			ConfFileOption algorithmOption) {
-		Class<? extends LearningAlgorithm> laClass = null;
-		if (algorithmOption == null || algorithmOption.getStringValue().equals("refexamples"))
-			laClass = ROLComponent2.class;
-		else if (algorithmOption.getStringValue().equals("refinement"))
-			laClass = ROLearner.class;
-		else if (algorithmOption.getStringValue().equals("gp"))
-			laClass = GP.class;
-		else if (algorithmOption.getStringValue().equals("bruteForce"))
-			laClass = BruteForceLearner.class;
-		else if (algorithmOption.getStringValue().equals("randomGuesser"))
-			laClass = RandomGuesser.class;
-		else
-			handleError("Unknown value in " + algorithmOption);
-
-		return laClass;
 	}
 
 }
