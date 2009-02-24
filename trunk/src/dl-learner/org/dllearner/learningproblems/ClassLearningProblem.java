@@ -20,7 +20,10 @@
 package org.dllearner.learningproblems;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -50,6 +53,9 @@ public class ClassLearningProblem extends LearningProblem {
 	private Set<Individual> classInstances;
 	private boolean equivalence = true;
 	private ClassLearningProblemConfigurator configurator;
+	
+	// instances of super classes excluding instances of the class itself
+	private List<Individual> superClassInstances;
 	
 	@Override
 	public ClassLearningProblemConfigurator getConfigurator(){
@@ -83,6 +89,20 @@ public class ClassLearningProblem extends LearningProblem {
 		
 		classInstances = reasoner.getIndividuals(classToDescribe);
 		equivalence = (configurator.getType().equals("equivalence"));
+		
+		// we compute the instances of the super class to perform
+		// optimisations later on
+		Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
+		TreeSet<Individual> superClassInstancesTmp = new TreeSet<Individual>(reasoner.getIndividuals());
+		for(Description superClass : superClasses) {
+			superClassInstancesTmp.retainAll(reasoner.getIndividuals(superClass));
+		}
+		superClassInstancesTmp.removeAll(classInstances);
+		// since we use the instance list for approximations, we want to avoid
+		// any bias through URI names, so we shuffle the list once pseudo-randomly
+		superClassInstances = new LinkedList<Individual>(superClassInstancesTmp);
+		Random rand = new Random(1);
+		Collections.shuffle(superClassInstances, rand);
 	}
 	
 	/**
@@ -148,11 +168,88 @@ public class ClassLearningProblem extends LearningProblem {
 		return 0.5d * (coverage + protusion);
 	}
 
+	@Override
+	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
+		// instead of using the standard operation, we use optimisation
+		// and approximation here
+		
+		// we abort when there are too many uncovered positives
+		int maxNotCovered = (int) Math.ceil(minAccuracy*classInstances.size());
+		int instancesCovered = 0;
+		int instancesNotCovered = 0;
+		
+		for(Individual ind : classInstances) {
+			if(reasoner.hasType(description, ind)) {
+				instancesCovered++;
+//				System.out.println("covered");
+			} else {
+//				System.out.println(ind + " not covered.");
+				instancesNotCovered ++;
+				if(instancesNotCovered > maxNotCovered) {
+					return -1;
+				}
+			}
+		}	
+		
+		double coverage = instancesCovered/(double)classInstances.size();
+		
+		// we know that a definition candidate is always subclass of the
+		// intersection of all super classes, so we test only the relevent instances
+		// (leads to undesired effects for descriptions not following this rule,
+		// but improves performance a lot);
+		// for learning a superclass of a defined class, similar observations apply;
+
+		// we only test 10 * instances covered; while this is only an
+		// approximation, it is unlikely that further tests will have any
+		// significant impact on the overall accuracy
+		int maxTests = 10 * instancesCovered;
+//		int tests = Math.min(maxTests, superClassInstances.size());
+		int testsPerformed = 0;
+		int instancesDescription = 0;
+		
+		for(Individual ind : superClassInstances) {
+			
+//			System.out.println(ind);
+			
+			if(reasoner.hasType(description, ind)) {
+//				System.out.println("ind: " + ind);
+				instancesDescription++;
+			}
+			
+			testsPerformed++;
+			
+			if(testsPerformed > maxTests) {
+//				System.out.println(testsPerformed);
+//				System.out.println("estimating accuracy by random sampling");
+				// estimate for the number of instances of the description
+				instancesDescription = (int) (instancesDescription/(double)testsPerformed * superClassInstances.size());
+				break;
+			}
+		}
+		
+//		System.out.println(description);
+//		System.out.println("A and C: " + instancesCovered);
+//		System.out.println("instances description: " + instancesDescription);
+		
+		// since we measured/estimated accuracy only on instances outside A (superClassInstances
+		// does not include instances of A), we need to add it in the denominator
+		double protusion = instancesCovered/(double)(instancesDescription+instancesCovered);
+		
+//		System.out.println(description);
+//		System.out.println(instancesDescription);
+//		System.out.println("prot: " + protusion);
+		
+		double acc =  0.5d * (coverage + protusion);
+		
+//		System.out.println("acc: " + acc);
+		
+		return acc;
+	}	
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
-	@Override
-	public double getAccuracyOrTooWeak(Description description, double minAccuracy) {
+	public double getAccuracyOrTooWeakStandard(Description description, double minAccuracy) {
 		// since we have to perform a retrieval operation anyway, we cannot easily
 		// get a benefit from the accuracy limit
 		double accuracy = getAccuracy(description);

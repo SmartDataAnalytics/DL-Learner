@@ -544,11 +544,12 @@ public class ROLearner2 {
 
 		printStatistics(true);
 
+		int conceptTests = conceptTestsReasoner + conceptTestsTooWeakList + conceptTestsOverlyGeneralList;
 		if (stop) {
-			logger.info("Algorithm stopped.\n");
+			logger.info("Algorithm stopped ("+conceptTests+" descriptions tested).\n");
 		} else {
-			logger.info("Algorithm terminated succesfully.\n");
-		}
+			logger.info("Algorithm terminated succesfully ("+conceptTests+" descriptions tested).\n");
+		}		
 
 		totalLearningTime.stop();
 		isRunning = false;

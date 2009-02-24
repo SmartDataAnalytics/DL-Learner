@@ -140,7 +140,7 @@ return (Boolean) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "us
 /**
 * maxExecutionTimeInSeconds algorithm will stop after specified seconds.
 * mandatory: false| reinit necessary: true
-* default value: 0
+* default value: 10
 * @return int 
 **/
 public int getMaxExecutionTimeInSeconds() {
@@ -158,11 +158,20 @@ return (Double) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "noi
 /**
 * maxDepth maximum depth of description.
 * mandatory: false| reinit necessary: true
-* default value: 3
+* default value: 4
 * @return int 
 **/
 public int getMaxDepth() {
 return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "maxDepth") ;
+}
+/**
+* maxNrOfResults Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions)..
+* mandatory: false| reinit necessary: true
+* default value: 10
+* @return int 
+**/
+public int getMaxNrOfResults() {
+return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "maxNrOfResults") ;
 }
 
 /**
@@ -249,7 +258,7 @@ reinitNecessary = true;
 /**
 * @param maxExecutionTimeInSeconds algorithm will stop after specified seconds.
 * mandatory: false| reinit necessary: true
-* default value: 0
+* default value: 10
 **/
 public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "maxExecutionTimeInSeconds", maxExecutionTimeInSeconds);
@@ -267,10 +276,19 @@ reinitNecessary = true;
 /**
 * @param maxDepth maximum depth of description.
 * mandatory: false| reinit necessary: true
-* default value: 3
+* default value: 4
 **/
 public void setMaxDepth(int maxDepth) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "maxDepth", maxDepth);
+reinitNecessary = true;
+}
+/**
+* @param maxNrOfResults Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions)..
+* mandatory: false| reinit necessary: true
+* default value: 10
+**/
+public void setMaxNrOfResults(int maxNrOfResults) {
+ComponentManager.getInstance().applyConfigEntry(cELOE, "maxNrOfResults", maxNrOfResults);
 reinitNecessary = true;
 }
 
