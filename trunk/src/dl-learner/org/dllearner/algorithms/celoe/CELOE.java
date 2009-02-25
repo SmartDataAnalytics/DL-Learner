@@ -197,7 +197,7 @@ public class CELOE extends LearningAlgorithm {
 	
 	@Override
 	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		return bestEvaluatedDescriptions.getSet().last();
+		return bestEvaluatedDescriptions.getBest();
 	}	
 	
 	@Override
