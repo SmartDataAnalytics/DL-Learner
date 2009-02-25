@@ -27,6 +27,7 @@ import org.protege.editor.owl.ui.frame.OWLClassAssertionAxiomIndividualSection;
 import org.protege.editor.owl.ui.frame.OWLDisjointClassesAxiomFrameSection;
 import org.protege.editor.owl.ui.frame.OWLEquivalentClassesAxiomFrameSection;
 import org.protege.editor.owl.ui.frame.OWLFrameSectionRowObjectEditor;
+import org.protege.editor.owl.ui.frame.OWLSubClassAxiomFrameSection;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
 
@@ -58,6 +59,7 @@ public class ButtonList extends AbstractOWLFrame<OWLClass> {
 		//equi.getEditor().getEditorComponent().validate();
 		sub = new OWLSubClassAxiomFrameSection(editorKit, this);
 		OWLFrameSectionRowObjectEditor<OWLDescription> editor = sub.getObjectEditor();
+		System.out.println("test");
 		OWLClassDescriptionEditor edi = (OWLClassDescriptionEditor)editor;
 		edi.addPanel(view);
 		// own OWLEquivalentClassesAxiomFrameSection to add the dllearner plugin
