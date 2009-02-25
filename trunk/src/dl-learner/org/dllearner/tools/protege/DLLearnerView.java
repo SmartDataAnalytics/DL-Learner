@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007-2009, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.tools.protege;
 
 import java.awt.BorderLayout;
@@ -19,7 +38,13 @@ import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.editor.OWLDescriptionEditor;
 import org.semanticweb.owl.model.OWLDescription;
-
+/**
+ * This class is responsible for the view of the dllearner. It renders the
+ * output for the user and is the graphical component of the plugin.
+ * 
+ * @author Christian Koetteritzsch
+ * 
+ */
 public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 
 	
@@ -27,19 +52,19 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 	//private OWLClassDescriptionEditorWithDLLearnerTab mainWindow; 
 	// this is the Component which shows the view of the dllearner
 	private static final String TITLE = "DL-Learner";
-	private JComponent learner;
+	private final JComponent learner;
 
 	// Accept button to add the learned concept to the owl
 
-	private JButton accept;
+	private final JButton accept;
 
 	// Runbutton to start the learning algorithm
 
-	private JButton run;
+	private final JButton run;
 
 	// This is the label for the advanced button.
 
-	private JLabel adv;
+	private final JLabel adv;
 
 	// This is the color for the error message. It is red.
 
@@ -47,19 +72,19 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 
 	// This is the text area for the error message when an error occurred
 
-	private JTextArea errorMessage;
+	private final JTextArea errorMessage;
 
 	// Advanced Button to activate/deactivate the example select panel
 
-	private JToggleButton advanced;
+	private final JToggleButton advanced;
 
 	// Action Handler that manages the Button actions
 
-	private ActionHandler action;
+	private final ActionHandler action;
 
 	// This is the model of the dllearner plugin which includes all data
 
-	private DLLearnerModel model;
+	private final DLLearnerModel model;
 
 	// Panel for the suggested concepts
 
@@ -67,48 +92,48 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 
 	// Selection panel for the positive and negative examples
 
-	private PosAndNegSelectPanel posPanel;
+	private final PosAndNegSelectPanel posPanel;
 
 	// Picture for the advanced button when it is not toggled
 
-	private ImageIcon icon;
+	private final ImageIcon icon;
 
 	// Picture of the advanced button when it is toggled
-	private JPanel addButtonPanel;
-	private JLabel wikiPane;
-	private ImageIcon toggledIcon;
-	private JTextArea hint;
+	private final JPanel addButtonPanel;
+	private final JLabel wikiPane;
+	private final ImageIcon toggledIcon;
+	private final JTextArea hint;
 	private boolean isInconsistent;
 	// This is the Panel for more details of the suggested concept
 	private MoreDetailForSuggestedConceptsPanel detail;
 	//private OWLFrame<OWLClass> frame;
 	private ReadingOntologyThread readThread;
-	//private OWLEditorKit editorKit;
+	private final OWLEditorKit editorKit;
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
 	 * editor.
 	 * 
-	 * @param current OWLFrame
+	 * @param editor OWLEditorKit
 	 * @param label String
-	 * @param dlLearner OWLClassDescriptionEditorWithDLLearnerTab
 	 */
 	public DLLearnerView(String label, OWLEditorKit editor) {
 		//mainWindow = dlLearner;
-		//editorKit = editor;
+		editorKit = editor;
 		wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
 		URL iconUrl = this.getClass().getResource("arrow.gif");
 		icon = new ImageIcon(iconUrl);
 		URL toggledIconUrl = this.getClass().getResource("arrow2.gif");
 		toggledIcon = new ImageIcon(toggledIconUrl);
-		//model = new DLLearnerModel(editorKit, label, this);
+		model = new DLLearnerModel(editorKit, label, this);
 		sugPanel = new SuggestClassPanel();
-		//action = new ActionHandler(this.action, model, this, label);
+		action = new ActionHandler(this.action, model, this, label);
 		adv = new JLabel("Advanced Settings");
 		advanced = new JToggleButton(icon);
 		advanced.setVisible(true);
 		run = new JButton(label);
 		accept = new JButton("ADD");
+		System.out.println("blub");
 		addButtonPanel = new JPanel(new BorderLayout());
 		sugPanel.addSuggestPanelMouseListener(action);
 		errorMessage = new JTextArea();
@@ -122,10 +147,11 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 		learner.setPreferredSize(new Dimension(600, 520));
 		accept.setPreferredSize(new Dimension(290, 50));
 		advanced.setName("Advanced");
-		//posPanel = new PosAndNegSelectPanel(model, action, this);
+		posPanel = new PosAndNegSelectPanel(model, action);
 		addAcceptButtonListener(this.action);
 		addRunButtonListener(this.action);
 		addAdvancedButtonListener(this.action);
+		this.makeView();
 		
 
 	}
@@ -145,13 +171,6 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 	}
 	
 	/**
-	 * Returns the Mainwindow where the Plugin is integratet.
-	 * @return OWLClassDescriptionWithDLLearnerTab MainWindow
-	 */
-	//public OWLClassDescriptionEditorWithDLLearnerTab getMainWindow() {
-	//	return mainWindow;
-	//}
-	/**
 	 * This Method renders the view of the plugin.
 	 */
 	public void makeView() {
@@ -159,7 +178,7 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 		model.clearVector();
 		hint.setText("To get suggestions for class descriptions, please click the button above.");
 		isInconsistent = false;
-		//readThread = new ReadingOntologyThread(editorKit, this, model);
+		readThread = new ReadingOntologyThread(editorKit, null, this, model);
 		readThread.start();
 		//TODO: runbutton wird auf enable gesetzt obwohl keine instanzdaten vorhanden sind.
 		
@@ -179,8 +198,6 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 		advanced.setBounds(10, 200, 20, 20);
 		sugPanel.setVisible(true);
 		posPanel.setVisible(false);
-		//posPanel.getAddToNegPanelButton().setEnabled(false);
-		//posPanel.getAddToPosPanelButton().setEnabled(false);
 		posPanel.setBounds(10, 230, 490, 250);
 		accept.setBounds(510, 40, 80, 110);
 		hint.setBounds(10, 150, 490, 35);
@@ -218,15 +235,13 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 	public void setHintMessage(String message) {
 		hint.setText(message);
 	}
+	
+	/**
+	 * This method returns the hint panel.
+	 * @return hint panel
+	 */
 	public JTextArea getHintPanel() {
 		return hint;
-	}
-	/**
-	 * This Method returns the DL_Learner tab.
-	 * @return JComponent
-	 */
-	public JComponent getLearnerPanel() {
-		return learner;
 	}
 
 	/**
@@ -238,27 +253,13 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 	}
 
 	/**
-	 * Returns nothing.
-	 * @return null
-	 */
-	public JPanel getOptionPanel() {
-		return null;
-	}
-
-	/**
 	 * Returns the AddButton.
 	 * @return JButton
 	 */
 	public JButton getAddButton() {
 		return accept;
 	}
-	/**
-	 * This Method updates the the view of protege after
-	 * adding a new concept.
-	 */
-	//public void updateWindow() {
-	//	mainWindow.getHandler().handleEditingFinished(mainWindow.getEditedObjects());
-	//}
+
 	/**
 	 * Returns all added descriptions.
 	 * @return Set(OWLDescription) 
@@ -327,8 +328,6 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 		run.removeActionListener(action);
 		accept.removeActionListener(action);
 		advanced.removeActionListener(action);
-		//posPanel.removeListeners(action);
-		//posPanel.removeHelpButtonListener(action);
 	}
 	
 	/**
@@ -374,7 +373,7 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 	
 	@Override
 	public JComponent getComponent() {
-		return this;
+		return learner;
 	}
 
 	@Override

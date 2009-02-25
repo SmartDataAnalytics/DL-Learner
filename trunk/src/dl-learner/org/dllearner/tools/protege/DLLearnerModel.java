@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -66,7 +66,7 @@ public class DLLearnerModel implements Runnable{
 
 	// The Sting is for components that are available in the DL-Learner
 
-	private String[] componenten = { "org.dllearner.kb.OWLFile",
+	private final String[] componenten = { "org.dllearner.kb.OWLFile",
 			"org.dllearner.reasoning.OWLAPIReasoner",
 			"org.dllearner.reasoning.FastInstanceChecker",
 			"org.dllearner.reasoning.FastRetrievalReasoner",
@@ -78,7 +78,7 @@ public class DLLearnerModel implements Runnable{
 
 	// Component Manager that manages the components of the DL-Learner
 
-	private ComponentManager cm;
+	private final ComponentManager cm;
 
 	private static final String EQUIVALENT_CLASS_AXIOM_STRING = "Suggest equivalent class";
 	private static final String SUPER_CLASS_AXIOM_STRING = "Suggest super class";
@@ -87,7 +87,7 @@ public class DLLearnerModel implements Runnable{
 
 	// The View of the DL-Learner Plugin
 
-	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
+	//private final OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 
 	// The Learning problem that is used to learn new concepts
 
@@ -103,7 +103,7 @@ public class DLLearnerModel implements Runnable{
 
 	// Necessary to get the currently loaded Ontology
 
-	private OWLEditorKit editor;
+	private final OWLEditorKit editor;
 
 	// The Reasoner which is used to learn
 
@@ -111,7 +111,7 @@ public class DLLearnerModel implements Runnable{
 
 	// A Set of Descriptions in OWL Syntax which the DL-Learner suggested
 
-	private Set<OWLDescription> owlDescription;
+	private final Set<OWLDescription> owlDescription;
 
 	// The most fitting Description in OWL Syntax which the DL-Learner suggested
 
@@ -119,7 +119,7 @@ public class DLLearnerModel implements Runnable{
 
 	// String to distinguish between Equivalent classes and sub classes
 
-	private String id;
+	private final String id;
 
 	// The new Concept which is learned by the DL-Learner
 
@@ -131,11 +131,11 @@ public class DLLearnerModel implements Runnable{
 
 	// A Set of Descriptions in OWL Syntax which the DL-Learner suggested
 
-	private Set<OWLDescription> ds;
+	private final Set<OWLDescription> ds;
 
 	// The model for the suggested Descriptions
 
-	private DefaultListModel suggestModel;
+	private final DefaultListModel suggestModel;
 
 	// The Individuals of the Ontology
 
@@ -154,12 +154,13 @@ public class DLLearnerModel implements Runnable{
 
 	private DefaultListModel posListModel;
 	private DefaultListModel negListModel;
-	private Set<KnowledgeSource> sources;
+	private final Set<KnowledgeSource> sources;
 	private boolean hasIndividuals;
 	private NamedClass currentConcept;
 	private Vector<IndividualObject> individualVector;
 	private Set<String> ontologieURI;
-	private boolean ontologyConsistent;
+	private final boolean ontologyConsistent;
+	private final DLLearnerView view;
 
 	// This is a List of evaluated descriptions to get more information of the
 	// suggested concept
@@ -170,14 +171,30 @@ public class DLLearnerModel implements Runnable{
 	 * 
 	 * @param editorKit
 	 *            Editor Kit to get the currently loaded Ontology
-	 * @param h
-	 *            OWLFrame(OWLClass) to get the base uri of the Ontology
 	 * @param id
 	 *            String if it learns a subclass or a superclass.
 	 * @param view
 	 *            current view of the DL-Learner tab
 	 */
 	public DLLearnerModel(OWLEditorKit editorKit, String id, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view) {
+		editor = editorKit;
+		this.id = id;
+		this.view = null;
+		ontologyConsistent = true;
+		instancesCount = 0;
+		owlDescription = new HashSet<OWLDescription>();
+		posListModel = new DefaultListModel();
+		negListModel = new DefaultListModel();
+		ComponentManager.setComponentClasses(componenten);
+		individualVector = new Vector<IndividualObject>();
+		cm = ComponentManager.getInstance();
+		ds = new HashSet<OWLDescription>();
+		suggestModel = new DefaultListModel();
+		ontologieURI = new HashSet<String>();
+		sources = new HashSet<KnowledgeSource>();
+	}
+	
+	public DLLearnerModel(OWLEditorKit editorKit, String id, DLLearnerView view) {
 		editor = editorKit;
 		this.id = id;
 		this.view = view;
@@ -266,6 +283,10 @@ public class DLLearnerModel implements Runnable{
 		// rs = cm.reasoningService(reasoner);
 	}
 	
+	/**
+	 * This method returns the fast instance checker reasoner.
+	 * @return fast instance checker reasoner
+	 */
 	public FastInstanceChecker getReasoner() {
 		return reasoner;
 	}
@@ -326,15 +347,6 @@ public class DLLearnerModel implements Runnable{
 		}
 		alreadyLearned = true;
 	}
-
-	/**
-	 * This method returns the Concepts from the DL-Learner.
-	 * 
-	 * @return Array of learned Concepts.
-	 
-	public Description[] getSolutions() {
-		return description;
-	}*/
 	
 	/**
 	 * Starts the learning algorithm.
@@ -361,9 +373,10 @@ public class DLLearnerModel implements Runnable{
 		return individualVector;
 	}
 
+
 	/**
 	 * This method sets the positive examples for learning. 
-	 * @param ind
+	 * @param ind Set of Individuals
 	 */
 	public void setIndividuals(Set<Individual> ind) {
 		individual = ind;
@@ -372,7 +385,7 @@ public class DLLearnerModel implements Runnable{
 	/**
 	 * This method sets the uri sting for the currently used
 	 * for learning. 
-	 * @param uri
+	 * @param uri Set of uris
 	 */
 	public void setOntologyURIString(Set<String> uri) {
 		this.ontologieURI = uri;
@@ -388,7 +401,7 @@ public class DLLearnerModel implements Runnable{
 	
 	/**
 	 * Sets if the ontology has individuals.
-	 * @param has
+	 * @param has boolean if concept has Individuals
 	 */
 	public void setHasIndividuals(boolean has) {
 		this.hasIndividuals = has;
@@ -404,17 +417,6 @@ public class DLLearnerModel implements Runnable{
 		posListModel.removeAllElements();
 		negListModel.removeAllElements();
 	}
-
-	/**
-	 * This method gets an array of concepts from the DL-Learner and stores it
-	 * in the description array.
-	 * 
-	 * @param list
-	 *            Array of concepts from DL-Learner
-	 
-	public void setDescriptionList(Description[] list) {
-		description = list;
-	}*/
 
 	/**
 	 * This method returns the PosListModel.
@@ -443,16 +445,6 @@ public class DLLearnerModel implements Runnable{
 	public LearningAlgorithm getLearningAlgorithm() {
 		return la;
 	}
-
-	/**
-	 * This method resets the array of concepts from the DL_Learner. It is
-	 * called after the DL-Learner tab is closed.
-	 
-	public void resetSuggestionList() {
-		for (int i = 0; i < description.length; i++) {
-			description[i] = null;
-		}
-	}*/
 
 	/**
 	 * This method resets the model for the suggest panel. It is called befor
@@ -498,9 +490,15 @@ public class DLLearnerModel implements Runnable{
 		return oldConceptOWLAPI;
 	}
 	
+	/**
+	 * This method returns a set of OWL descriptions that should
+	 * be added to the OWL file.
+	 * @return Set of OWL descriptions
+	 */
 	public Set<OWLDescription> getDescriptions() {
 		return ds;
 	}
+	
 	/**
 	 * This method returns the currently learned description in OWLDescription
 	 * format.
@@ -589,7 +587,7 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public boolean isConsistent(EvaluatedDescription eDescription) {
 		boolean isConsistent = false;
-		if (((EvaluatedDescriptionClass)eDescription).getCoveredInstances().size() < instancesCount) {
+		if (((EvaluatedDescriptionClass) eDescription).getCoveredInstances().size() < instancesCount) {
 			isConsistent = false;
 		} else {
 			isConsistent = true;
@@ -659,7 +657,7 @@ public class DLLearnerModel implements Runnable{
 	
 	/**
 	 * Sets the positive examples.
-	 * @param list
+	 * @param list list of positive Expamles
 	 */
 	public void setPosListModel(DefaultListModel list) {
 		this.posListModel = list;
@@ -667,7 +665,7 @@ public class DLLearnerModel implements Runnable{
 	
 	/**
 	 * Sets the negative examples.
-	 * @param list
+	 * @param list list of negative examples
 	 */
 	public void setNegListModel(DefaultListModel list) {
 		this.negListModel = list;
@@ -675,7 +673,7 @@ public class DLLearnerModel implements Runnable{
 	
 	/**
 	 * Sets the individual vector.
-	 * @param indi
+	 * @param indi Vector of Individuals
 	 */
 	public void setIndividualVector(Vector<IndividualObject> indi) {
 		this.individualVector = indi;
@@ -683,19 +681,25 @@ public class DLLearnerModel implements Runnable{
 	
 	/**
 	 * This sets the current concept.
-	 * @param current
+	 * @param current currently selected class
 	 */
 	public void setCurrentConcept(NamedClass current) {
 		this.currentConcept = current;
 	}
 
 	/**
+	 * This method returns a set of individuals belonging to the
+	 * currently selected class. 
 	 * @return the individual
 	 */
 	public Set<Individual> getIndividual() {
 		return individual;
 	}
 	
+	/**
+	 * This method sets the number of instances.
+	 * @param i number of instances
+	 */
 	public void setInstancesCount(int i) {
 		instancesCount = i;
 	}

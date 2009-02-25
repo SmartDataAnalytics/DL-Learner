@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -25,7 +25,7 @@ package org.dllearner.tools.protege;
  */
 public class IndividualObject {
 
-	private String normalIndividual;
+	private final String normalIndividual;
 	private boolean isPos;
 	
 	/**

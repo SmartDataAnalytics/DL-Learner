@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -60,33 +60,33 @@ public PosAndNegSelectPanelHandler(DLLearnerModel m, OWLClassDescriptionEditorWi
  */
 public void actionPerformed(ActionEvent action) {
 
-		System.out.println(action.getSource());
-	if (action.getSource().toString().contains("pos")) {
+	//System.out.println(action.getSource());
+	//if (action.getSource().toString().contains("pos")) {
 		//panel.setExampleToOtherList(true, panel.getNegExampleList().getSelectedValue().toString());
 		//System.out.println("COUNT: " + panel.getPosExampleList().getModel().getSize());
 		//if(panel.getPosExampleList().getModel().getSize()>0) {
 		//	view.getRunButton().setEnabled(true);
 		//}
-	}
+	//}
 
-	if (action.getSource().toString().contains("neg")) {
+	//if (action.getSource().toString().contains("neg")) {
 		//panel.setExampleToOtherList(false, panel.getPosExampleList().getSelectedValue().toString());
-	}
+	//}
 	
-	if (action.getActionCommand().equals("?")) {
-		if (action.getSource().toString().contains("PosHelpButton")) {
+	//if (action.getActionCommand().equals("?")) {
+		//if (action.getSource().toString().contains("PosHelpButton")) {
 			//String help = "An individual that should be an instance of the learned class description.\n"
 			//	+"Per default all that belongs to the class.";
 			//view.getPosAndNegSelectPanel().renderHelpMessage(help);
-		}
+		//}
 
-		if (action.getSource().toString().contains("NegHelpButton")) {
+		//if (action.getSource().toString().contains("NegHelpButton")) {
 			//String help = "An individual that should not be instance of the learned class description.\n" 
 			//	+" By default, these are all individuals, which are not instances of the current class.";
 			//view.getPosAndNegSelectPanel().renderHelpMessage(help);
-		}
+		//}
 
-	}
+	//}
 }
 
 

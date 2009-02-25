@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -54,25 +54,24 @@ public class ActionHandler implements ActionListener, ItemListener,
 		MouseListener, ListSelectionListener, ListDataListener {
 
 	// This is the DLLearnerModel.
-
-	//private static Logger logger = Logger.getLogger(ActionHandler.class);
 	
-	private DLLearnerModel model;
+	private final DLLearnerModel model;
 
 	// This is the id that checks if the equivalent class or subclass button is
 	// pressed in protege
-	private String id;
+	private final String id;
 	// this is a boolean that checked if the advanced button was pressed or not.
 	private boolean toggled;
 	// This is the Tread of the DL-Learner
 	private EvaluatedDescription evaluatedDescription;
 	// This is the view of the DL-Learner tab.
-	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
+	//private final OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 	private Timer timer;
 	private LearningAlgorithm la;
 	private SuggestionRetriever retriever;
 	private final Color colorRed = new Color(139, 0, 0);
 	private final Color colorGreen = new Color(0, 139, 0);
+	private final DLLearnerView view;
 	/**
 	 * This is the constructor for the action handler.
 	 * 
@@ -87,6 +86,14 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 * 
 	 */
 	public ActionHandler(ActionHandler a, DLLearnerModel m, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view, String i) {
+		this.view = null;
+		this.id = i;
+		this.model = m;
+		toggled = false;
+
+	}
+	
+	public ActionHandler(ActionHandler a, DLLearnerModel m, DLLearnerView view, String i) {
 		this.view = view;
 		this.id = i;
 		this.model = m;
@@ -295,7 +302,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 			SwingWorker<List<? extends EvaluatedDescription>, List<? extends EvaluatedDescription>> {
 		
 		private Thread dlLearner;
-		private DefaultListModel dm = new DefaultListModel();
+		private final DefaultListModel dm = new DefaultListModel();
 		
 		@SuppressWarnings("unchecked")
 		@Override
@@ -382,12 +389,10 @@ public class ActionHandler implements ActionListener, ItemListener,
 							if(eval.getDescription().toString().contains(ontology)) {
 								//dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass)eval).getAccuracy()*100));
 								if(model.isConsistent(eval)) {
-									dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass)eval).getAccuracy()*100));
-									i++;
+									dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass) eval).getAccuracy()*100));
 									break;
 								} else {
-									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass)eval).getAccuracy()*100));
-									i++;
+									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass) eval).getAccuracy()*100));
 									view.setIsInconsistent(true);
 									break;
 								}

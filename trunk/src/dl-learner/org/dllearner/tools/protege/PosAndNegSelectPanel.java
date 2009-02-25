@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -21,17 +21,8 @@ package org.dllearner.tools.protege;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
-//import java.net.URL;
 
-//import javax.swing.DefaultListModel;
-//import javax.swing.ImageIcon;
-//import javax.swing.JButton;
-//import javax.swing.JLabel;
-//import javax.swing.JList;
-//import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-//import javax.swing.JScrollPane;
-//import javax.swing.ListSelectionModel;
 
 /**
  * This class is the Panel for the Check boxes where the positive and negative
@@ -90,7 +81,7 @@ public class PosAndNegSelectPanel extends JPanel {
 	//private JButton helpForNegExamples;
 
 	// This is the Text area where the help message is displayed.
-	private OptionPanel optionPanel;
+	private final OptionPanel optionPanel;
 	//private DefaultListModel posListModel;
 	//private ImageIcon addToPosListIcon;
 	//private ImageIcon addToNegListIcon;
@@ -106,9 +97,8 @@ public class PosAndNegSelectPanel extends JPanel {
 	 *            DLLearnerModel
 	 * @param act
 	 *            ActionHandler
-	 * @param v DLLearnerView
 	 */
-	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView v) {
+	public PosAndNegSelectPanel(DLLearnerModel model, ActionHandler act) {
 		//set layout for parent Panel
 		super();
 		setLayout(new GridLayout(0, 1));
@@ -196,12 +186,12 @@ public class PosAndNegSelectPanel extends JPanel {
 		//addToNegExamples.addActionListener(handler);
 	}
 
-	/**
-	 * This method adds the check boxes, the labels and the help buttons for
-	 * positive and negative examples.
-	 * @param posData DefaultListModel
-	 * @param negData DefaultListModel
-	 */
+	///**
+	// * This method adds the check boxes, the labels and the help buttons for
+	// * positive and negative examples.
+	// * @param posData DefaultListModel
+	// * @param negData DefaultListModel
+	// */
 	//public void setExampleList(DefaultListModel posData, DefaultListModel negData) {
 	//	posListModel = posData;
 	//	negListModel = negData;
@@ -209,18 +199,18 @@ public class PosAndNegSelectPanel extends JPanel {
 	//	negList.setModel(negListModel);
 	//}
 	
-	/**
-	 * This method returns the pos button.
-	 * @return JButton
-	 */
+	///**
+	// * This method returns the pos button.
+	// * @return JButton
+	// */
 	//public JButton getAddToPosPanelButton() {
 	//	return addToPosExamples;
 	//}
 	
-	/**
-	 * This method returns the neg button.
-	 * @return JButton
-	 */
+	///**
+	// * This method returns the neg button.
+	// * @return JButton
+	// */
 	//public JButton getAddToNegPanelButton() {
 	//	return addToNegExamples;
 	//}
@@ -269,22 +259,22 @@ public class PosAndNegSelectPanel extends JPanel {
 		return posAndNegSelectPanel;
 	}
 
-	/**
-	 * This message displays the help message after the help button is pressed.
-	 * 
-	 * @param assistance String
-	 */
+	///**
+	// * This message displays the help message after the help button is pressed.
+	// * 
+	// * @param assistance String
+	// */
 	//public void renderHelpMessage(String assistance) {
 	//	// renders scroll bar if necessary
 	//	JOptionPane.showMessageDialog(null, assistance);
     //
 	//}
 	
-	/**
-	 * this method sets the example to the other list when button is pressed.
-	 * @param toPos boolean
-	 * @param example String
-	 */
+	///**
+	// * this method sets the example to the other list when button is pressed.
+	// * @param toPos boolean
+	// * @param example String
+	// */
 	//public void setExampleToOtherList(boolean toPos, String example) {
 	//	if (toPos) {
 	//		for(int i = 0; i < negListModel.size(); i++) {
@@ -320,22 +310,24 @@ public class PosAndNegSelectPanel extends JPanel {
 	//	
 	//}
 	
-	/**
-	 * This method adds the Action listener to the help buttons.
-	 * 
-	 * @param handle
-	 *            PosAndNegSelectPanelHandler
-	 */
+	///**
+	// * This method adds the Action listener to the help buttons.
+	// * 
+	// * @param handle
+	// *            PosAndNegSelectPanelHandler
+	// */
 	//public void addHelpButtonListener(PosAndNegSelectPanelHandler handle) {
 	//	// adds listener to the help button for the positive examples
 	//	helpForPosExamples.addActionListener(handle);
 	//	// adds listener to the help button for the negative examples
 	//	helpForNegExamples.addActionListener(handle);
 	//}
-	/**
-	 * This Method removes the listeners for the help button.
-	 * @param a ActionHandler
-	 */
+	
+	
+	///**
+	// * This Method removes the listeners for the help button.
+	// * @param a ActionHandler
+	// */
 	//public void removeHelpButtonListener(ActionHandler a) {
 	//	helpForPosExamples.removeActionListener(a);
 	//	helpForNegExamples.removeActionListener(a);
@@ -349,18 +341,18 @@ public class PosAndNegSelectPanel extends JPanel {
 		return optionPanel;
 	}
 	
-	/**
-	 * This method returns the list of positive examples.
-	 * @return JList posExampleList
-	 */
+	///**
+	// * This method returns the list of positive examples.
+	// * @return JList posExampleList
+	// */
 	//public JList getPosExampleList() {
 	//	return posList;
 	//}
 	
-	/**
-	 * This method returns the list of negative examples.
-	 * @return JList negExampleList
-	 */
+	///**
+	// * This method returns the list of negative examples.
+	// * @return JList negExampleList
+	// */
 	//public JList getNegExampleList() {
 	//	return negList;
 	//}

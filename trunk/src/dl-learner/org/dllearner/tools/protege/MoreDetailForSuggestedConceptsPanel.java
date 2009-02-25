@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -50,7 +50,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	
 	 // Model of the dllearner
 	 
-	private DLLearnerModel model;
+	private final DLLearnerModel model;
 	
 	 // Textarea to render the accuracy of the concept
 	 
@@ -115,12 +115,12 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private JTextArea conceptText;
 	private final Color colorRed = new Color(139, 0, 0);
 	private final Color colorGreen = new Color(0, 139, 0);
-	private static final int height = 500;
-	private static final int width = 600;
+	private static final int HEIGHT = 500;
+	private static final int WIDTH = 600;
 	private GraphicalCoveragePanel p;
-	private JButton allPositiveIndividuals;
-	private JButton allNegativeIndividuals;
-	private MoreDetailForSuggestedConceptsPanelHandler handler;
+	private final JButton allPositiveIndividuals;
+	private final JButton allNegativeIndividuals;
+	private final MoreDetailForSuggestedConceptsPanelHandler handler;
 	/**
 	 * This is the constructor for the Panel.
 	 * @param model DLLearnerModel
@@ -128,7 +128,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	public MoreDetailForSuggestedConceptsPanel(DLLearnerModel model) {
 		super();
 		setLayout(null);
-		setPreferredSize(new Dimension(width, height));
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		this.model = model;
 		handler = new MoreDetailForSuggestedConceptsPanelHandler(model);
 		allPositiveIndividuals = new JButton("old");
@@ -216,10 +216,10 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		//panel for the informations of the selected concept
 		//this method adds the informations for the selected concept to the panel
 		setInformation();
-		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), width, height-200, this);
+		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), WIDTH, HEIGHT-200, this);
 		p.setBounds(5, 110, 600, 300);
 		detailPopup = new JDialog();
-		detailPopup.setSize(width, height);
+		detailPopup.setSize(WIDTH, HEIGHT);
 		 //window will be disposed if the x button is pressed
 		detailPopup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		detailPopup.setVisible(true);
@@ -242,21 +242,23 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		add(allPositiveIndividuals);
 		add(allNegativeIndividuals);
 		handler.setEvaluadtedDescription(eval);
-		/*
-		add(coveredPositiveExamples);
-		add(notCoveredPositiveExamples);
-		add(coveredNegativeExamples);
-		add(notCoveredNegativeExamples);
-		add(posCoveredScroll);
-		add(posNotCoveredScroll);
-		add(negCoveredScroll);
-		add(negNotCoveredScroll);*/
 		detailPopup.add(this);
 	}
+	
+	/**
+	 * This method returns the Button where you can get
+	 * all individuals of the old concept.
+	 * @return JButton
+	 */
 	public JButton getAllPositiveindividuals() {
 		return allPositiveIndividuals;
 	}
 	
+	/**
+	 * This method returns the Button where you can get
+	 * all individuals of the new concept.
+	 * @return JButton
+	 */
 	public JButton getAllNegativeIndividuals() {
 		return allNegativeIndividuals;
 	}
@@ -278,63 +280,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 			}
 			
 			//sets the accuracy of the concept
-			double acc = ((EvaluatedDescriptionClass)eval).getAccuracy()*100;
+			double acc = ((EvaluatedDescriptionClass) eval).getAccuracy()*100;
 			accuracyText.setText(String.valueOf(acc)+"%");
-			
-			//Sets positive Covered Examples for the detail panel
-			/*Set<Individual> indi = ((EvaluatedDescriptionPosNeg)eval).getCoveredPositives();
-			for(Individual ind : indi) {
-				for(String ontology : ontologiesStrings) {
-					if(ind.toString().contains(ontology)) {
-						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(ontology, null));
-						posLabel.setForeground(colorGreen);
-						posCoveredPanel.add(posLabel);
-						break;
-					} 
-				}
 			}
-				
-				
-			
-			//sets the positive examples that are not covered
-			Set<Individual> individuals = ((EvaluatedDescriptionPosNeg)eval).getNotCoveredPositives();
-			for(Individual ind : individuals) {
-				for(String onto : ontologiesStrings) {
-					if(ind.toString().contains(onto)) {
-						JLabel posLabel = new JLabel(ind.toManchesterSyntaxString(onto, null));
-						posLabel.setForeground(colorRed);
-						posNotCoveredPanel.add(posLabel);
-						break;
-					}
-				}
-			}
-
-
-			//sets the negative examples that are covered
-			Set<Individual> negCoveredIndi = ((EvaluatedDescriptionPosNeg)eval).getCoveredNegatives(); 
-			for(Individual negIndi : negCoveredIndi) {
-				for(String ont : ontologiesStrings) {
-					if(negIndi.toString().contains(ont)) {
-						JLabel posLabel = new JLabel(negIndi.toManchesterSyntaxString(ont, null));
-						posLabel.setForeground(colorRed);
-						negCoveredPanel.add(posLabel);
-						break;
-					}
-				}
-			}	
-
-			//sets the negative examples that are not covered
-			Set<Individual> negNotCoveredIndi = ((EvaluatedDescriptionPosNeg)eval).getNotCoveredNegatives();
-			for(Individual negNotIndi : negNotCoveredIndi) {
-				for(String ontol : ontologiesStrings) {
-					if(negNotIndi.toString().contains(ontol)) {
-						JLabel posLabel = new JLabel(negNotIndi.toManchesterSyntaxString(ontol, null));
-						posLabel.setForeground(colorGreen);
-						negNotCoveredPanel.add(posLabel);
-						break;
-					}
-				} 	
-			}*/
-		}
 		}
 	}	

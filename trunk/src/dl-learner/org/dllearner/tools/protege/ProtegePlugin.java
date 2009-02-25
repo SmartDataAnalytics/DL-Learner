@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,16 +19,13 @@
  */
 package org.dllearner.tools.protege;
 
-//import org.apache.log4j.FileAppender;
-//import org.apache.log4j.HTMLLayout;
-//import org.apache.log4j.Layout;
-//import org.apache.log4j.Level;
-//import org.apache.log4j.Logger;
+import java.awt.BorderLayout;
+
+import javax.swing.JScrollPane;
+
+import org.protege.editor.owl.ui.framelist.OWLFrameList2;
 import org.protege.editor.owl.ui.view.AbstractOWLClassViewComponent;
 import org.semanticweb.owl.model.OWLClass;
-import org.protege.editor.owl.ui.framelist.OWLFrameList2;
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * This is the class that must be implemented to get the plugin integrated
