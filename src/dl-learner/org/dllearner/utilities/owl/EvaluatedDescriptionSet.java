@@ -102,7 +102,7 @@ public class EvaluatedDescriptionSet {
 	
 	public List<Description> toDescriptionList() {
 		List<Description> list = new LinkedList<Description>();
-		for(EvaluatedDescription ed : set) {
+		for(EvaluatedDescription ed : set.descendingSet()) {
 			list.add(ed.getDescription());
 		}
 		return list;
