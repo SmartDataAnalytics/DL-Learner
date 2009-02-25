@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -34,13 +34,13 @@ public class OptionPanel extends JPanel {
 
 	
 	private static final long serialVersionUID = 2190682281812478244L;
-	private JLabel minAccuracyLabel;
-	private JLabel maxExecutionTimeLabel;
-	private JLabel nrOfConceptsLabel;
-	private JSlider minAccuracy;
-	private JSlider maxExecutionTime;
-	private JSlider nrOfConcepts;
-	private JPanel optionPanel;
+	private final JLabel minAccuracyLabel;
+	private final JLabel maxExecutionTimeLabel;
+	private final JLabel nrOfConceptsLabel;
+	private final JSlider minAccuracy;
+	private final JSlider maxExecutionTime;
+	private final JSlider nrOfConcepts;
+	private final JPanel optionPanel;
 	private double accuracy;
 	/**
 	 * Construktor for the Option Panel. 

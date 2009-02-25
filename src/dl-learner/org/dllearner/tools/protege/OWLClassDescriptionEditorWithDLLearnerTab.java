@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -80,26 +80,26 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	private static final String SUGGEST_EQUIVALENT_CLASS_LABEL = "Suggest equivalent class";
 	private static final String SUGGEST_SUBCLASS_LABEL = "Suggest super class";
 
-	private OWLEditorKit editorKit;
+	private final OWLEditorKit editorKit;
 
-	private ExpressionEditor<OWLDescription> editor;
+	private final ExpressionEditor<OWLDescription> editor;
 
-	private JComponent editingComponent;
+	private final JComponent editingComponent;
 
-	private JTabbedPane tabbedPane;
+	private final JTabbedPane tabbedPane;
 
 	private DLLearnerView dllearner;
-	private ActionHandler action;
+	private final ActionHandler action;
 
 	private OWLClassSelectorPanel classSelectorPanel;
 
 	private ObjectRestrictionCreatorPanel restrictionCreatorPanel;
 
-	 //private OWLDescription initialDescription;
+	 //private final OWLDescription initialDescription;
 
-	private Set<InputVerificationStatusChangedListener> listeners = new HashSet<InputVerificationStatusChangedListener>();
+	private final Set<InputVerificationStatusChangedListener> listeners = new HashSet<InputVerificationStatusChangedListener>();
 
-	private ChangeListener changeListener = new ChangeListener() {
+	private final ChangeListener changeListener = new ChangeListener() {
 		public void stateChanged(ChangeEvent changeEvent) {
 			handleVerifyEditorContents();
 		}
@@ -286,8 +286,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	 */
 	public void removeStatusChangedListener(
 			InputVerificationStatusChangedListener listener) {
-		//TODO: Suchen
-		//System.out.println("Comp: "+editorKit.getWorkspace().getComponents());
 		listeners.remove(listener);
 		editor.removeStatusChangedListener(listener);
 	}
@@ -302,22 +300,22 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	public class DLLearnerView extends JPanel {
 
 		private static final  long serialVersionUID = 624829578325729385L;
-		private OWLClassDescriptionEditorWithDLLearnerTab mainWindow; 
+		private final OWLClassDescriptionEditorWithDLLearnerTab mainWindow; 
 		// this is the Component which shows the view of the dllearner
 
-		private JComponent learner;
+		private final JComponent learner;
 
 		// Accept button to add the learned concept to the owl
 
-		private JButton accept;
+		private final JButton accept;
 
 		// Runbutton to start the learning algorithm
 
-		private JButton run;
+		private final JButton run;
 
 		// This is the label for the advanced button.
 
-		private JLabel adv;
+		private final JLabel adv;
 
 		// This is the color for the error message. It is red.
 
@@ -325,19 +323,19 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 		// This is the text area for the error message when an error occurred
 
-		private JTextArea errorMessage;
+		private final JTextArea errorMessage;
 
 		// Advanced Button to activate/deactivate the example select panel
 
-		private JToggleButton advanced;
+		private final JToggleButton advanced;
 
 		// Action Handler that manages the Button actions
 
-		private ActionHandler action;
+		private final ActionHandler action;
 
 		// This is the model of the dllearner plugin which includes all data
 
-		private DLLearnerModel model;
+		private final DLLearnerModel model;
 
 		// Panel for the suggested concepts
 
@@ -345,21 +343,21 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 
 		// Selection panel for the positive and negative examples
 
-		private PosAndNegSelectPanel posPanel;
+		private final PosAndNegSelectPanel posPanel;
 
 		// Picture for the advanced button when it is not toggled
 
-		private ImageIcon icon;
+		private final ImageIcon icon;
 
 		// Picture of the advanced button when it is toggled
-		private JPanel addButtonPanel;
-		private JLabel wikiPane;
-		private ImageIcon toggledIcon;
-		private JTextArea hint;
+		private final JPanel addButtonPanel;
+		private final JLabel wikiPane;
+		private final ImageIcon toggledIcon;
+		private final JTextArea hint;
 		private boolean isInconsistent;
 		// This is the Panel for more details of the suggested concept
 		private MoreDetailForSuggestedConceptsPanel detail;
-		private OWLFrame<OWLClass> frame;
+		private final OWLFrame<OWLClass> frame;
 		private ReadingOntologyThread readThread;
 
 		/**
@@ -401,7 +399,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			learner.setPreferredSize(new Dimension(600, 520));
 			accept.setPreferredSize(new Dimension(290, 50));
 			advanced.setName("Advanced");
-			posPanel = new PosAndNegSelectPanel(model, action, this);
+			posPanel = new PosAndNegSelectPanel(model, action);
 			addAcceptButtonListener(this.action);
 			addRunButtonListener(this.action);
 			addAdvancedButtonListener(this.action);
@@ -427,9 +425,9 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		 * Returns the Mainwindow where the Plugin is integratet.
 		 * @return OWLClassDescriptionWithDLLearnerTab MainWindow
 		 */
-		public OWLClassDescriptionEditorWithDLLearnerTab getMainWindow() {
+		/*public OWLClassDescriptionEditorWithDLLearnerTab getMainWindow() {
 			return mainWindow;
-		}
+		}*/
 		/**
 		 * This Method renders the view of the plugin.
 		 */
@@ -458,8 +456,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			advanced.setBounds(10, 200, 20, 20);
 			sugPanel.setVisible(true);
 			posPanel.setVisible(false);
-			//posPanel.getAddToNegPanelButton().setEnabled(false);
-			//posPanel.getAddToPosPanelButton().setEnabled(false);
 			posPanel.setBounds(10, 230, 490, 250);
 			accept.setBounds(510, 40, 80, 110);
 			hint.setBounds(10, 150, 490, 35);
@@ -497,15 +493,13 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 		public void setHintMessage(String message) {
 			hint.setText(message);
 		}
+		
+		/**
+		 * This method returns the hint panel.
+		 * @return hint panel
+		 */
 		public JTextArea getHintPanel() {
 			return hint;
-		}
-		/**
-		 * This Method returns the DL_Learner tab.
-		 * @return JComponent
-		 */
-		public JComponent getLearnerPanel() {
-			return learner;
 		}
 
 		/**
@@ -516,13 +510,6 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 			posPanel.setVisible(visible);
 		}
 
-		/**
-		 * Returns nothing.
-		 * @return null
-		 */
-		public JPanel getOptionPanel() {
-			return null;
-		}
 
 		/**
 		 * Returns the AddButton.
@@ -661,13 +648,13 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	
 		private static final long serialVersionUID = 1695484991927845068L;
 
-		private OWLObjectPropertySelectorPanel objectPropertySelectorPanel;
+		private final OWLObjectPropertySelectorPanel objectPropertySelectorPanel;
 
-		private OWLClassSelectorPanel classSelectorPanel;
+		private final OWLClassSelectorPanel classSelectorPanel;
 
-		private JSpinner cardinalitySpinner;
+		private final JSpinner cardinalitySpinner;
 
-		private JComboBox typeCombo;
+		private final JComboBox typeCombo;
 
 		public ObjectRestrictionCreatorPanel() {
 			objectPropertySelectorPanel = new OWLObjectPropertySelectorPanel(
@@ -807,7 +794,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	 */
 	private abstract class RestrictionCreator {
 
-		private String name;
+		private final String name;
 
 		protected RestrictionCreator(String name) {
 			this.name = name;
@@ -829,7 +816,7 @@ public class OWLClassDescriptionEditorWithDLLearnerTab extends
 	private abstract class CardinalityRestrictionCreator extends
 			RestrictionCreator {
 
-		private JSpinner cardinalitySpinner;
+		private final JSpinner cardinalitySpinner;
 
 		protected CardinalityRestrictionCreator(String name,
 				JSpinner cardinalitySpinner) {

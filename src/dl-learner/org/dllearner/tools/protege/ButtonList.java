@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -20,13 +20,15 @@
 package org.dllearner.tools.protege;
 
 import org.protege.editor.owl.OWLEditorKit;
+import org.protege.editor.owl.ui.editor.OWLClassDescriptionEditor;
 import org.protege.editor.owl.ui.frame.AbstractOWLFrame;
 import org.protege.editor.owl.ui.frame.InheritedAnonymousClassesFrameSection;
 import org.protege.editor.owl.ui.frame.OWLClassAssertionAxiomIndividualSection;
 import org.protege.editor.owl.ui.frame.OWLDisjointClassesAxiomFrameSection;
-//import org.protege.editor.owl.ui.frame.OWLEquivalentClassesAxiomFrameSection;
-//import org.protege.editor.owl.ui.frame.OWLSubClassAxiomFrameSection;
+import org.protege.editor.owl.ui.frame.OWLEquivalentClassesAxiomFrameSection;
+import org.protege.editor.owl.ui.frame.OWLFrameSectionRowObjectEditor;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDescription;
 
 /**
  * This class manages the list of the lists for equivalent classes and so on.
@@ -37,9 +39,9 @@ import org.semanticweb.owl.model.OWLClass;
  * 
  */
 public class ButtonList extends AbstractOWLFrame<OWLClass> {
-	private OWLEquivalentClassesAxiomFrameSection equi;
-	private OWLSubClassAxiomFrameSection sub;
-	//private DLLearnerView view;
+	private final OWLEquivalentClassesAxiomFrameSection equi;
+	private final OWLSubClassAxiomFrameSection sub;
+	private final DLLearnerView view;
 	/**
 	 * Constructor of the Buttonlist. 
 	 * 
@@ -49,12 +51,15 @@ public class ButtonList extends AbstractOWLFrame<OWLClass> {
 
 		super(editorKit.getModelManager().getOWLOntologyManager());
 		equi = new OWLEquivalentClassesAxiomFrameSection(editorKit, this);
-		//view = new DLLearnerView(equi.getName(), editorKit);
-		//OWLFrameSectionRowObjectEditor<OWLDescription> edit = equi.getObjectEditor();
-		//OWLClassDescriptionEditor ed = (OWLClassDescriptionEditor)edit;
-		//ed.addPanel(view);
+		view = new DLLearnerView(equi.getName(), editorKit);
+		OWLFrameSectionRowObjectEditor<OWLDescription> edit = equi.getObjectEditor();
+		OWLClassDescriptionEditor ed = (OWLClassDescriptionEditor)edit;
+		ed.addPanel(view);
 		//equi.getEditor().getEditorComponent().validate();
 		sub = new OWLSubClassAxiomFrameSection(editorKit, this);
+		OWLFrameSectionRowObjectEditor<OWLDescription> editor = sub.getObjectEditor();
+		OWLClassDescriptionEditor edi = (OWLClassDescriptionEditor)editor;
+		edi.addPanel(view);
 		// own OWLEquivalentClassesAxiomFrameSection to add the dllearner plugin
 		// to the
 		// OWLClassDescritpionEditor

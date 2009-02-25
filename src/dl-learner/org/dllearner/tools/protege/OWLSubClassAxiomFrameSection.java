@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -55,35 +55,42 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLClassAxiomFrameSect
 
     private static final String LABEL = "super classes";
 
-    private Set<OWLDescription> added = new HashSet<OWLDescription>();
-    private OWLFrame<OWLClass> frame;
+    private final Set<OWLDescription> added = new HashSet<OWLDescription>();
+    private final OWLFrame<OWLClass> frame;
 
+    /**
+     * Constructor.
+     * @param editorKit editorKit
+     * @param frame OWLFrame
+     */
     public OWLSubClassAxiomFrameSection(OWLEditorKit editorKit, OWLFrame<OWLClass> frame) {
         super(editorKit, LABEL, "Superclass", frame);
         this.frame = frame;
     }
 
 
-    protected void clear() {
+    @Override
+	protected void clear() {
         added.clear();
     }
 
 
-    protected void addAxiom(OWLSubClassAxiom ax, OWLOntology ont) {
+    @Override
+	protected void addAxiom(OWLSubClassAxiom ax, OWLOntology ont) {
         addRow(new OWLSubClassAxiomFrameSectionRow(getOWLEditorKit(), this, ont, getRootObject(), ax));
         added.add(ax.getSuperClass());
     }
 
 
-    protected Set<OWLSubClassAxiom> getClassAxioms(OWLDescription descr, OWLOntology ont) {
+    @Override
+	protected Set<OWLSubClassAxiom> getClassAxioms(OWLDescription descr, OWLOntology ont) {
         if (!descr.isAnonymous()){
             return ont.getSubClassAxiomsForLHS(descr.asOWLClass());
-        }
-        else{
+        }else{
             Set<OWLSubClassAxiom> axioms = new HashSet<OWLSubClassAxiom>();
             for (OWLAxiom ax : ont.getGeneralClassAxioms()){
-                if (ax instanceof OWLSubClassAxiom && ((OWLSubClassAxiom)ax).getSubClass().equals(descr)){
-                    axioms.add((OWLSubClassAxiom)ax);
+                if (ax instanceof OWLSubClassAxiom && ((OWLSubClassAxiom) ax).getSubClass().equals(descr)){
+                    axioms.add((OWLSubClassAxiom) ax);
                 }
             }
             return axioms;
@@ -91,7 +98,8 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLClassAxiomFrameSect
     }
 
 
-    protected void refillInferred() {
+    @Override
+	protected void refillInferred() {
         try {
             if (getOWLModelManager().getReasoner().isSatisfiable(getRootObject())) {
 
@@ -110,24 +118,26 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLClassAxiomFrameSect
                     }
                 }
             }
-        }
-        catch (OWLReasonerException e) {
+        }catch (OWLReasonerException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    protected OWLSubClassAxiom createAxiom(OWLDescription object) {
+    @Override
+	protected OWLSubClassAxiom createAxiom(OWLDescription object) {
             return getOWLDataFactory().getOWLSubClassAxiom(getRootObject(), object);
     }
 
 
-    public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
+    @Override
+	public OWLFrameSectionRowObjectEditor<OWLDescription> getObjectEditor() {
         return new OWLClassDescriptionEditorWithDLLearnerTab(getOWLEditorKit(), null, frame, LABEL);
     }
 
 
-    public boolean canAcceptDrop(List<OWLObject> objects) {
+    @Override
+	public boolean canAcceptDrop(List<OWLObject> objects) {
         for (OWLObject obj : objects) {
             if (!(obj instanceof OWLDescription)) {
                 return false;
@@ -140,25 +150,23 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLClassAxiomFrameSect
     private OWLObjectProperty prop;
 
 
-    public boolean dropObjects(List<OWLObject> objects) {
+    @Override
+	public boolean dropObjects(List<OWLObject> objects) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
         for (OWLObject obj : objects) {
             if (obj instanceof OWLDescription) {
                 OWLDescription desc;
                 if (prop != null) {
                     desc = getOWLDataFactory().getOWLObjectSomeRestriction(prop, (OWLDescription) obj);
-                }
-                else {
+                }else {
                     desc = (OWLDescription) obj;
                 }
                 OWLAxiom ax = getOWLDataFactory().getOWLSubClassAxiom(getRootObject(), desc);
                 changes.add(new AddAxiom(getOWLModelManager().getActiveOntology(), ax));
-            }
-            else if (obj instanceof OWLObjectProperty) {
+            } else if (obj instanceof OWLObjectProperty) {
                 // Prime
                 prop = (OWLObjectProperty) obj;
-            }
-            else {
+            }else {
                 return false;
             }
         }
@@ -167,7 +175,8 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLClassAxiomFrameSect
     }
 
 
-    public void visit(OWLSubClassAxiom axiom) {
+    @Override
+	public void visit(OWLSubClassAxiom axiom) {
         if (axiom.getSubClass().equals(getRootObject())) {
             reset();
         }
@@ -190,8 +199,7 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLClassAxiomFrameSect
                     if (!o2.isInferred()) {
                         return 1;
                     }
-                }
-                else {
+                }else {
                     if (o2.isInferred()) {
                         return -1;
                     }
@@ -201,8 +209,7 @@ public class OWLSubClassAxiomFrameSection extends AbstractOWLClassAxiomFrameSect
 
                 if(val == 0) {
                     return o1.getOntology().getURI().compareTo(o2.getOntology().getURI());
-                }
-                else {
+                }else {
                     return val;
                 }
 

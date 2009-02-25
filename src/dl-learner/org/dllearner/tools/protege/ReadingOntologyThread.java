@@ -1,3 +1,22 @@
+/**
+ * Copyright (C) 2007-2009, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ * 
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package org.dllearner.tools.protege;
 
 import java.awt.Color;
@@ -15,6 +34,11 @@ import org.protege.editor.owl.ui.frame.OWLFrame;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
 
+/**
+ * This class reads the ontologie in a seperate thread.
+ * @author Christian Koetteritzsch
+ *
+ */
 public class ReadingOntologyThread extends Thread {
 
 	
@@ -22,14 +46,31 @@ public class ReadingOntologyThread extends Thread {
 	private FastInstanceChecker reasoner;
 	private NamedClass currentConcept;
 	private Set<Individual> individual;
-	private Set<String> ontologieURI;
-	private OWLEditorKit editor;
-	private DLLearnerModel model;
+	private final Set<String> ontologieURI;
+	private final OWLEditorKit editor;
+	private final DLLearnerModel model;
 	private boolean isInconsistent;
-	private OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
-	private OWLFrame<OWLClass> current;
+	//private final OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
+	private final OWLFrame<OWLClass> current;
+	private final DLLearnerView view;
 	
+	/**
+	 * This is the constructor of the ReadingOntologyThread.
+	 * @param editorKit OWLEditorKit
+	 * @param frame OWLFrame
+	 * @param v DL-Learner view
+	 * @param m DL-Learner model
+	 */
 	public ReadingOntologyThread(OWLEditorKit editorKit, OWLFrame<OWLClass> frame, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView v, DLLearnerModel m) {
+		ontologieURI = new HashSet<String>();
+		this.editor = editorKit;
+		current = frame;
+		this.view = null;
+		this.model = m;
+		
+	}
+	
+	public ReadingOntologyThread(OWLEditorKit editorKit, OWLFrame<OWLClass> frame, DLLearnerView v, DLLearnerModel m) {
 		ontologieURI = new HashSet<String>();
 		this.editor = editorKit;
 		current = frame;
@@ -42,47 +83,49 @@ public class ReadingOntologyThread extends Thread {
 	 * chosen in protege.
 	 */
 	private void setPositiveConcept() {
-		SortedSet<Individual> individuals = null;
-		hasIndividuals = false;
-		// checks if selected concept is thing when yes then it selects all
-		// individuals
-		if (!(current.getRootObject() instanceof Thing)) {
-			List<NamedClass> classList = reasoner.getAtomicConceptsList();
-			for(NamedClass concept : classList) {
-				// if individuals is null
-				if (individuals == null) {
-					// checks if the concept is the selected concept in protege
-					for(String onto : ontologieURI) {
-					if (concept.toString().contains(onto)) {
-						if (concept.toString().equals(
-								onto + current.getRootObject().toString())) {
-							// if individuals is not null it gets all
-							// individuals of
-							// the concept
-							currentConcept = concept;
-							if (reasoner.getIndividuals(concept) != null) {
-								if (reasoner.getIndividuals(concept).size() > 0) {
-									model.setInstancesCount(reasoner.getIndividuals(concept).size());
-									hasIndividuals = true;
+		if(current != null) {
+			SortedSet<Individual> individuals = null;
+			hasIndividuals = false;
+			// checks if selected concept is thing when yes then it selects all
+			// individuals
+			if (!(current.getRootObject() instanceof Thing)) {
+				List<NamedClass> classList = reasoner.getAtomicConceptsList();
+				for(NamedClass concept : classList) {
+					// if individuals is null
+					if (individuals == null) {
+						// checks if the concept is the selected concept in protege
+						for(String onto : ontologieURI) {
+							if (concept.toString().contains(onto)) {
+								if (concept.toString().equals(
+										onto + current.getRootObject().toString())) {
+									// if individuals is not null it gets all
+									// individuals of
+									// the concept
+									currentConcept = concept;
+									if (reasoner.getIndividuals(concept) != null) {
+										if (reasoner.getIndividuals(concept).size() > 0) {
+											model.setInstancesCount(reasoner.getIndividuals(concept).size());
+											hasIndividuals = true;
+										}
+										individual = reasoner.getIndividuals(concept);
+										model.setIndividuals(individual);
+										model.setCurrentConcept(currentConcept);
+										break;
+									}
 								}
-								individual = reasoner.getIndividuals(concept);
-							    model.setIndividuals(individual);
-							    model.setCurrentConcept(currentConcept);
-								break;
 							}
 						}
 					}
 				}
-			}
-			}
-		} else {
-			if (reasoner.getIndividuals().size() > 0) {
-				hasIndividuals = true;
+			} else {
+				if (reasoner.getIndividuals().size() > 0) {
+					hasIndividuals = true;
 				
+				}
+				individual = reasoner.getIndividuals();
+				model.setIndividuals(individual);
+				model.setHasIndividuals(hasIndividuals);
 			}
-			individual = reasoner.getIndividuals();
-			model.setIndividuals(individual);
-			model.setHasIndividuals(hasIndividuals);
 		}
 	}
 	
@@ -118,10 +161,10 @@ public class ReadingOntologyThread extends Thread {
 		model.setOntologyURIString(ontologieURI);
 	}
 	
-	/**
-	 * This method sets the check boxes for the positive check boxes checked if
-	 * the individuals matches the concept that is chosen in protege.
-	 */
+	///**
+	// * This method sets the check boxes for the positive check boxes checked if
+	// * the individuals matches the concept that is chosen in protege.
+	// */
 	//private void setPosVector() {
 	//	setPositiveConcept();
 	//	SortedSet<Individual> reasonerIndi = reasoner.getIndividuals();
@@ -157,14 +200,14 @@ public class ReadingOntologyThread extends Thread {
 	//	model.setIndividualVector(individualVector);
 	//}
 	
-	/**
-	 * This method gets an Individual and checks if this individual belongs to
-	 * the concept chosen in protege.
-	 * 
-	 * @param indi
-	 *            Individual to check if it belongs to the chosen concept
-	 * @return is Individual belongs to the concept which is chosen in protege.
-	 */
+	///**
+	// * This method gets an Individual and checks if this individual belongs to
+	// * the concept chosen in protege.
+	// * 
+	//* @param indi
+	// *            Individual to check if it belongs to the chosen concept
+	// * @return is Individual belongs to the concept which is chosen in protege.
+	// */
 	//private boolean setPositivExamplesChecked(String indi) {
 	//	boolean isChecked = false;
 	//	// checks if individuals are not empty
@@ -195,7 +238,7 @@ public class ReadingOntologyThread extends Thread {
 			} else {
 				view.getRunButton().setEnabled(false);
 				view.getHintPanel().setVisible(false);
-				String message ="There are no Instances for "+ current.getRootObject()+" available. Please insert some Instances.";
+				String message ="There are no Instances for  available. Please insert some Instances.";
 				view.renderErrorMessage(message);
 			}
 			//view.getPosAndNegSelectPanel().setExampleList(model.getPosListModel(), model.getNegListModel());

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -39,15 +39,15 @@ public class SuggestClassPanel extends JPanel {
 	
 	 // Description List
 	 
-	private JList descriptions;
+	private final JList descriptions;
 	
 	 // Panel for the description list
 	 
-	private JPanel suggestPanel;
+	private final JPanel suggestPanel;
 	
 	 // Date for the description list
 	 
-	private DefaultListModel model;
+	private final DefaultListModel model;
 	
 	 //Scroll panel if the suggestions are longer than the Panel itself
 

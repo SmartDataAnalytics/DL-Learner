@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008, Jens Lehmann
+ * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -27,9 +27,9 @@ import java.awt.Color;
  */
 public class SuggestListItem {
 	
-	private Color color;
-    private String value;
-    private double accuracy;
+	private final Color color;
+    private final String value;
+    private final double accuracy;
     /**
      * Constructor for the SuggestListItem.
      * @param c Color Color in which the text is painted.
