@@ -89,6 +89,25 @@ public class ClassHierarchy {
 	}
 
 	/**
+	 * Computes the siblings of the specified descriptions. Siblings are all those
+	 * classes, which are subclasses of a parent of a class and not equal to the
+	 * class itself. Note that retrieving siblings is computationally more 
+	 * expensive than descending/ascending the hierarchy as siblings are computed
+	 * when required and not cached.
+	 * @param description A named class.
+	 * @return A set of named classes, which are siblings of the given class.
+	 */
+	public SortedSet<Description> getSiblingClasses(Description description) {
+		Set<Description> superClasses = subsumptionHierarchyUp.get(description);
+		TreeSet<Description> siblingClasses = new TreeSet<Description>(conceptComparator);
+		for(Description superClass : superClasses) {
+			siblingClasses.addAll(subsumptionHierarchyDown.get(superClass));
+		}
+		siblingClasses.remove(description);
+		return siblingClasses;
+	}
+	
+	/**
 	 * This method modifies the subsumption hierarchy such that for each class,
 	 * there is only a single path to reach it via upward and downward
 	 * refinement respectively.

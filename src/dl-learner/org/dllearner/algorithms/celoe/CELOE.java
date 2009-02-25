@@ -21,6 +21,7 @@ package org.dllearner.algorithms.celoe;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +134,8 @@ public class CELOE extends LearningAlgorithm {
 		options.add(CommonConfigOptions.valueFreqencyThreshold());
 		options.add(CommonConfigOptions.useCardinalityRestrictions());
 		options.add(CommonConfigOptions.cardinalityLimit());
-		options.add(CommonConfigOptions.useNegation());
+		// by default, we do not use negation (should be configurable in GUI)
+		options.add(CommonConfigOptions.useNegation(false));
 		options.add(CommonConfigOptions.useBooleanDatatypes());
 		options.add(CommonConfigOptions.useDoubleDatatypes());
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
@@ -227,7 +229,7 @@ public class CELOE extends LearningAlgorithm {
 		
 		// highest accuracy so far
 		double highestAccuracy = 0.0;
-		OENode bestNode;
+		OENode nextNode;
 
 		addNode(startClass, null);
 		
@@ -242,12 +244,12 @@ public class CELOE extends LearningAlgorithm {
 			}
 
 			// chose best node according to heuristics
-			bestNode = nodes.last();
-			int horizExp = bestNode.getHorizontalExpansion();
+			nextNode = getNextNodeToExpand();
+			int horizExp = nextNode.getHorizontalExpansion();
 			
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
-			TreeSet<Description> refinements = refineNode(bestNode);
+			TreeSet<Description> refinements = refineNode(nextNode);
 			mon.stop();
 				
 			while(refinements.size() != 0) {
@@ -260,7 +262,7 @@ public class CELOE extends LearningAlgorithm {
 				if(length > horizExp && refinement.getDepth() <= maxDepth) {
 					
 					Monitor mon2 = MonitorFactory.start("addNode");
-					boolean added = addNode(refinement, bestNode);
+					boolean added = addNode(refinement, nextNode);
 					mon2.stop();
 					
 					// if refinements have the same length, we apply the operator again
@@ -293,6 +295,23 @@ public class CELOE extends LearningAlgorithm {
 		isRunning = false;
 	}
 
+	private OENode getNextNodeToExpand() {
+		// we expand the best node of those, which have not achieved 100% accuracy
+		// already and have a horizontal expansion equalling their length
+		// (rationale: further extension is likely to add irrelevant syntactical constructs)
+		Iterator<OENode> it = nodes.descendingIterator();
+		while(it.hasNext()) {
+			OENode node = it.next();
+			if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
+				return node;
+			}
+		}
+		
+		// this should practically never be called, since for any reasonable learning
+		// task, we will always have at least one node with less than 100% accuracy
+		return nodes.last();
+	}
+	
 	// expand node horizontically
 	private TreeSet<Description> refineNode(OENode node) {
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
@@ -356,7 +375,21 @@ public class CELOE extends LearningAlgorithm {
 		
 		if(isCandidate) {
 			Description niceDescription = rewriteNode(node);
-			bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);			
+			
+			// another test: none of the other suggested descriptions should be 
+			// a subdescription of this one unless accuracy is different
+			boolean shorterDescriptionExists = false;
+			for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+				if(ed.getAccuracy()==accuracy && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
+					shorterDescriptionExists = true;
+					break;
+				}
+			}
+			
+			if(!shorterDescriptionExists) {
+				bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
+			}
+						
 		}
 		
 		return true;
@@ -379,8 +412,14 @@ public class CELOE extends LearningAlgorithm {
 				}
 				toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
 			}
-			return true;
 		}
+		
+		// we do not want to have negations of sibling classes on the outermost level
+		// (they are expressed more naturally by saying that the siblings are disjoint,
+		// so it is reasonable not to include them in solutions)
+		Set<Description> siblingClasses = reasoner.getClassHierarchy().getSiblingClasses(classToDescribe);
+		
+		return true;
 	}
 	
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
@@ -405,10 +444,29 @@ public class CELOE extends LearningAlgorithm {
 		return false;
 	}
 	
+	private boolean occursNegatedOnFirstLevel(Description description, Description clazz) {
+		if(description instanceof NamedClass) {
+			if(description.equals(clazz)) {
+				return true;
+			}
+		} 
+		
+		if(description instanceof Restriction) {
+			return false;
+		}
+		
+		for(Description child : description.getChildren()) {
+			if(occursOnFirstLevel(child, clazz)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}	
+	
 	// check whether the node is a potential solution candidate
 	private Description rewriteNode(OENode node) {
 		Description description = node.getDescription();
-//		Description niceDescription = description;
 		// minimize description (expensive!)
 		Description niceDescription = minimizer.minimizeClone(description);
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
@@ -423,7 +481,6 @@ public class CELOE extends LearningAlgorithm {
 	private void reset() {
 		// set all values back to their default values (used for running
 		// the algorithm more than once)
-//		candidates.clear();
 		nodes = new TreeSet<OENode>(new OEHeuristicRuntime());
 		descriptions = new TreeSet<Description>(new ConceptComparator());
 		bestEvaluatedDescriptions.getSet().clear();
@@ -456,15 +513,11 @@ public class CELOE extends LearningAlgorithm {
 	}	
 	
 	private String getSolutionString() {
-//		int max = 10;
 		int current = 1;
 		String str = "";
 		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
 			str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
 			current++;
-//			if(current == max) {
-//				break;
-//			}
 		}
 		return str;
 	}

@@ -23,10 +23,35 @@ package org.dllearner.core.configurators;
  * Common options of refinement operators (manually created interface).
  * 
  * @author Jens Lehmann
- *
+ * 
  */
 public abstract class RefinementOperatorConfigurator {
 
 	public abstract boolean getUseCardinalityRestrictions();
+
+	public abstract boolean getUseNegation();
+
+	public abstract boolean getUseAllConstructor();
+
+	public abstract boolean getUseExistsConstructor();
+
+	public abstract boolean getUseBooleanDatatypes();	
 	
+	// below are optional parameters (neutral return values choosen)
+	
+	public boolean getUseHasValueConstructor() {
+		return false;
+	}
+
+	public int getValueFrequencyThreshold() {
+		return 3;
+	}
+
+	public int getCardinalityLimit() {
+		return 5;
+	}
+
+	public boolean getUseDoubleDatatypes() {
+		return false;
+	}
 }

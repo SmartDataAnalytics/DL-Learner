@@ -147,6 +147,10 @@ public final class CommonConfigOptions {
 		return new BooleanConfigOption("useNegation", "specifies whether negation is used in the learning algorothm",useNegationDefault);
 	}
 	
+	public static BooleanConfigOption useNegation(boolean defaultValue) {
+		return new BooleanConfigOption("useNegation", "specifies whether negation is used in the learning algorothm",defaultValue);
+	}	
+	
 	public static BooleanConfigOption useBooleanDatatypes() {
 		return new BooleanConfigOption("useBooleanDatatypes", "specifies whether boolean datatypes are used in the learning algorothm",useBooleanDatatypesDefault);
 	}	
