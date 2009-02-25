@@ -59,6 +59,8 @@ public class ConceptTransformation {
 	public static long shorteningTimeNs = 0;
 	private static long shorteningTimeNsStart = 0;
 	
+	private static ConceptComparator descComp = new ConceptComparator();
+	
 	public static void cleanConceptNonRecursive(Description concept) {
 		// cleaningTimeNsStart = System.nanoTime();
 		
@@ -487,4 +489,85 @@ public class ConceptTransformation {
 		}
 	}
 	
+	/**
+	 * Tests whether a description is a subdescription in the sense that when
+	 * parts of <code>description</code> can be removed to yield <code>subdescription</code>.
+	 * 
+	 * @param description A description.
+	 * @param subDescription A potential subdescription.
+	 * @return True if <code>subdescription</code> is indeed a sub description and false
+	 * otherwise.
+	 */
+	public static boolean isSubdescription(Description description, Description subDescription) {
+//		if(description instanceof Thing) {
+//			return (subDescription instanceof Thing);
+//		} else if(description instanceof Nothing) {
+//			return (subDescription instanceof Thing);
+//		} else if(description instanceof NamedClass) {
+//			return ((subDescription instanceof NamedClass) && (((NamedClass)description).getName().equals(((NamedClass)subDescription).getName())));
+//		}
+		
+		List<Description> children = description.getChildren();
+		List<Description> subChildren = subDescription.getChildren();
+
+		// no children: both have to be equal
+		if(children.size()==0) {
+			return (descComp.compare(description, subDescription)==0);
+		// one child: both have to be of the same class, type, and the first
+		// child has to be sub description of the other child
+		} else if(children.size()==1) {
+			return (subChildren.size() == 1) && description.getClass().equals(subDescription.getClass()) && isSubdescription(children.get(0), subChildren.get(0));
+		// intersection or union
+		} else {
+			// test whether subdescription corresponds to an element of the 
+			// intersection/union
+			if(subChildren.size()<2) {
+				for(Description child : children) {
+					if(isSubdescription(child, subDescription)) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			// make sure that both are of the same type and subdescription actually has fewer children
+			if(!description.getClass().equals(subDescription.getClass()) || subChildren.size() > children.size()) {
+				return false;
+			}
+			
+			// comparing everything is quadratic; the faster linear variant (below)
+			// using 
+			
+			for(Description subChild : subChildren) {
+				boolean foundMatch = false;
+				for(Description child : children) {
+					if(isSubdescription(child, subChild)) {
+						foundMatch = true;
+						break;
+					}
+				}
+				if(!foundMatch) {
+					return false;
+				}
+			}
+			
+			return true;
+			
+//			// method core; traverse the descriptions in linear time using ordered
+//			// normal form (TODO: does not always work e.g. A2 \sqcap (A1 \sqcup A3)
+			// and A1 \sqcap A2 -> it won't find the A2 match because it has advanced
+			// beyond it already)
+//			int j = 0;
+//			for(Description child : children) {
+//				if(isSubdescription(child, subChildren.get(j))) {
+//					j++;
+//				}
+//				if(j == subChildren.size()) {
+//					return true;
+//				}
+//			}
+//			// there is at least one child we could not match
+//			return false;
+		}
+	}
 }

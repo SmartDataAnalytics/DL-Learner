@@ -32,6 +32,7 @@ import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
@@ -51,6 +52,8 @@ public class DescriptionMinimizer {
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	private Map<Description,Map<Description,Boolean>> cachedSubclassOf = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);	
 
+	private boolean beautify = false;
+	
 	public DescriptionMinimizer(ReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 	}
@@ -104,6 +107,12 @@ public class DescriptionMinimizer {
 			if(description.getChild(0) instanceof Thing) {
 				return Thing.instance;
 			} 		
+			// we rewrite \forall r.\bot to \neg \exists r.\top
+			// which is longer but easier to understand for humans
+			if(beautify && description.getChild(0) instanceof Nothing) {
+				ObjectProperty p = (ObjectProperty)((ObjectAllRestriction)description).getRole();
+				return new Negation(new ObjectSomeRestriction(p, Thing.instance));
+			}
 			return description;
 		} else if(description instanceof Negation) {
 			// \neg \bot \equiv \top

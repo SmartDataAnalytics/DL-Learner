@@ -857,7 +857,7 @@ public class FastInstanceChecker extends ReasonerComponent {
 		// Negation neg = new Negation(subConcept);
 		// Intersection c = new Intersection(neg,superConcept);
 		// return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
-		return rc.isSuperClassOf(superConcept, subConcept);
+		return rc.isSuperClassOfImpl(superConcept, subConcept);
 	}
 
 	/**
