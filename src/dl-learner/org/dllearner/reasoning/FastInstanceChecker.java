@@ -502,8 +502,12 @@ public class FastInstanceChecker extends ReasonerComponent {
 		// (of course we only have to clone the leafs of a class description tree)
 		if (description instanceof NamedClass) {
 			return (TreeSet<Individual>) classInstancesPos.get((NamedClass) description).clone();
-		} else if (description instanceof Negation && description.getChild(0) instanceof NamedClass) {
-			return (TreeSet<Individual>) classInstancesNeg.get((NamedClass) description.getChild(0)).clone();
+		} else if (description instanceof Negation) {
+			if(description.getChild(0) instanceof NamedClass) {
+				return (TreeSet<Individual>) classInstancesNeg.get((NamedClass) description.getChild(0)).clone();
+			}
+			// implement retrieval as default negation
+			return Helper.difference((TreeSet<Individual>) individuals.clone(), getIndividualsImpl(description.getChild(0)));
 		} else if (description instanceof Thing) {
 			return (TreeSet<Individual>) individuals.clone();
 		} else if (description instanceof Nothing) {

@@ -52,7 +52,7 @@ public class DescriptionMinimizer {
 	private ConceptComparator conceptComparator = new ConceptComparator();
 	private Map<Description,Map<Description,Boolean>> cachedSubclassOf = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);	
 
-	private boolean beautify = false;
+	private boolean beautify = true;
 	
 	public DescriptionMinimizer(ReasonerComponent reasoner) {
 		this.reasoner = reasoner;
