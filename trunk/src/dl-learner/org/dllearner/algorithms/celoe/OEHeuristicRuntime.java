@@ -72,5 +72,9 @@ public class OEHeuristicRuntime implements OEHeuristic {
 		// penalty for having many child nodes (stuck prevention)
 		score -= node.getRefinementCount() * nodeRefinementPenalty;
 		return score;
+	}
+
+	public double getExpansionPenaltyFactor() {
+		return expansionPenaltyFactor;
 	}	
 }

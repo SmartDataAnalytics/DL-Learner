@@ -80,6 +80,7 @@ public class CELOE extends LearningAlgorithm {
 	
 	// all nodes in the search tree (used for selecting most promising node)
 	private TreeSet<OENode> nodes;
+	private OEHeuristicRuntime heuristic = new OEHeuristicRuntime();
 	// root of search tree
 	private OENode startNode;
 	// the class with which we start the refinement process
@@ -107,6 +108,8 @@ public class CELOE extends LearningAlgorithm {
 	
 	// statistical variables
 	private int descriptionTests = 0;
+	private int minHorizExp = 0;
+	private int maxHorizExp = 0;
 	
 	@Override
 	public Configurator getConfigurator() {
@@ -262,19 +265,15 @@ public class CELOE extends LearningAlgorithm {
 				if(length > horizExp && refinement.getDepth() <= maxDepth) {
 					
 					Monitor mon2 = MonitorFactory.start("addNode");
-					boolean added = addNode(refinement, nextNode);
+//					boolean added = 
+					addNode(refinement, nextNode);
 					mon2.stop();
-					
-					// if refinements have the same length, we apply the operator again
-					// (descending the subsumption hierarchy)
-					if(added && length == horizExp) {
-						// ... refine node (first check whether we need this as there will
-						// the penalty for longer descriptions will be quite hard anyway)
-					}
 
 				}
 		
 			}
+			
+			updateMinMaxHorizExp(nextNode);
 			
 			// Anzahl Schleifendurchläufe
 			loop++;
@@ -481,7 +480,7 @@ public class CELOE extends LearningAlgorithm {
 	private void reset() {
 		// set all values back to their default values (used for running
 		// the algorithm more than once)
-		nodes = new TreeSet<OENode>(new OEHeuristicRuntime());
+		nodes = new TreeSet<OENode>(heuristic);
 		descriptions = new TreeSet<Description>(new ConceptComparator());
 		bestEvaluatedDescriptions.getSet().clear();
 		descriptionTests = 0;
@@ -520,5 +519,44 @@ public class CELOE extends LearningAlgorithm {
 			current++;
 		}
 		return str;
+	}
+
+	private void updateMinMaxHorizExp(OENode node) {
+		int newHorizExp = node.getHorizontalExpansion();
+		
+		// update maximum value
+		maxHorizExp = Math.max(maxHorizExp, newHorizExp);
+		
+		// we just expanded a node with minimum horizontal expansion;
+		// we need to check whether it was the last one
+		if(minHorizExp == newHorizExp - 1) {
+			
+			// the best accuracy that a node can achieve 
+			double scoreThreshold = heuristic.getNodeScore(node) + 1 - node.getAccuracy();
+			
+			for(OENode n : nodes.descendingSet()) {
+				if(n != node) {
+					if(n.getHorizontalExpansion() == minHorizExp) {
+						// we can stop instantly when another node with min. 
+						return;
+					}
+					if(heuristic.getNodeScore(n) < scoreThreshold) {
+						// we can stop traversing nodes when their score is too low
+						break;
+					}
+				}
+			}
+			
+			// inc. minimum since we found no other node which also has min. horiz. exp.
+			minHorizExp++;
+		}
+	}
+	
+	public int getMaximumHorizontalExpansion() {
+		return maxHorizExp;
+	}
+
+	public int getMinimumHorizontalExpansion() {
+		return minHorizExp;
 	}
 }
