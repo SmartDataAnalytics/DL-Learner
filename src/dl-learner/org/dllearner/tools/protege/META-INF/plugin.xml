@@ -1,10 +1,9 @@
 <?xml version="1.0" ?>
   <plugin>
-  	<extension id="org.dllearner.tools.protege.ProtegePlugin"
-			point="org.protege.editor.core.application.ViewComponent">
-  		<label value="Class Descriptions (including DL-Learner plugin)"/>
-  		<class value="org.dllearner.tools.protege.ProtegePlugin"/>
-  		<headerColor value="@org.protege.classcolor"/>
-  		<category value="@org.protege.classcategory"/>
-  	</extension>
+  <extension id="org.dllearner.tools.protege.ProtegePlugin"
+              point="org.protege.editor.owl.ui.editor">
+       <label value="DL-Learner"/>
+       <class value="org.dllearner.tools.protege.ProtegePlugin"/>
+   </extension>
+
   </plugin>

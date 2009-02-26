@@ -87,7 +87,6 @@ public class DLLearnerModel implements Runnable{
 
 	// The View of the DL-Learner Plugin
 
-	//private final OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 
 	// The Learning problem that is used to learn new concepts
 
@@ -176,24 +175,6 @@ public class DLLearnerModel implements Runnable{
 	 * @param view
 	 *            current view of the DL-Learner tab
 	 */
-	public DLLearnerModel(OWLEditorKit editorKit, String id, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view) {
-		editor = editorKit;
-		this.id = id;
-		this.view = null;
-		ontologyConsistent = true;
-		instancesCount = 0;
-		owlDescription = new HashSet<OWLDescription>();
-		posListModel = new DefaultListModel();
-		negListModel = new DefaultListModel();
-		ComponentManager.setComponentClasses(componenten);
-		individualVector = new Vector<IndividualObject>();
-		cm = ComponentManager.getInstance();
-		ds = new HashSet<OWLDescription>();
-		suggestModel = new DefaultListModel();
-		ontologieURI = new HashSet<String>();
-		sources = new HashSet<KnowledgeSource>();
-	}
-	
 	public DLLearnerModel(OWLEditorKit editorKit, String id, DLLearnerView view) {
 		editor = editorKit;
 		this.id = id;

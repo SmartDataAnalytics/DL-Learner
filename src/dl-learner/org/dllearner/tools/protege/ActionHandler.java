@@ -65,7 +65,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 	// This is the Tread of the DL-Learner
 	private EvaluatedDescription evaluatedDescription;
 	// This is the view of the DL-Learner tab.
-	//private final OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 	private Timer timer;
 	private LearningAlgorithm la;
 	private SuggestionRetriever retriever;
@@ -85,14 +84,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 *            id if it is a subclass or an equivalent class
 	 * 
 	 */
-	public ActionHandler(ActionHandler a, DLLearnerModel m, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view, String i) {
-		this.view = null;
-		this.id = i;
-		this.model = m;
-		toggled = false;
-
-	}
-	
 	public ActionHandler(ActionHandler a, DLLearnerModel m, DLLearnerView view, String i) {
 		this.view = view;
 		this.id = i;

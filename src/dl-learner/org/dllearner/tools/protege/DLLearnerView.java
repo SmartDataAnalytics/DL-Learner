@@ -45,7 +45,7 @@ import org.semanticweb.owl.model.OWLDescription;
  * @author Christian Koetteritzsch
  * 
  */
-public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
+public class DLLearnerView implements OWLDescriptionEditor{
 
 	
 	private static final  long serialVersionUID = 624829578325729385L;
@@ -212,7 +212,7 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 		learner.add(errorMessage);
 		learner.add(posPanel);
 		detail = new MoreDetailForSuggestedConceptsPanel(model);
-		add(learner);
+		//add(learner);
 
 	}
 	/**
@@ -407,6 +407,16 @@ public class DLLearnerView extends JPanel implements OWLDescriptionEditor{
 	@Override
 	public void removeStatusChangedListener(
 			InputVerificationStatusChangedListener arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setup(String arg0, String arg1, OWLEditorKit arg2) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void initialise() throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
