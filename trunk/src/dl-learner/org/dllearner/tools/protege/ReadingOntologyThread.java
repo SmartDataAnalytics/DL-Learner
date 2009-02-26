@@ -35,7 +35,7 @@ import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
 
 /**
- * This class reads the ontologie in a seperate thread.
+ * This class reads the ontologie in a separate thread.
  * @author Christian Koetteritzsch
  *
  */
@@ -50,7 +50,6 @@ public class ReadingOntologyThread extends Thread {
 	private final OWLEditorKit editor;
 	private final DLLearnerModel model;
 	private boolean isInconsistent;
-	//private final OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView view;
 	private final OWLFrame<OWLClass> current;
 	private final DLLearnerView view;
 	
@@ -61,15 +60,6 @@ public class ReadingOntologyThread extends Thread {
 	 * @param v DL-Learner view
 	 * @param m DL-Learner model
 	 */
-	public ReadingOntologyThread(OWLEditorKit editorKit, OWLFrame<OWLClass> frame, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView v, DLLearnerModel m) {
-		ontologieURI = new HashSet<String>();
-		this.editor = editorKit;
-		current = frame;
-		this.view = null;
-		this.model = m;
-		
-	}
-	
 	public ReadingOntologyThread(OWLEditorKit editorKit, OWLFrame<OWLClass> frame, DLLearnerView v, DLLearnerModel m) {
 		ontologieURI = new HashSet<String>();
 		this.editor = editorKit;

@@ -159,6 +159,7 @@ public class GraphicalCoveragePanel extends JPanel {
 				
 					if(y >= newConcept.getMaxY()) {
 						y = (int) newConcept.getMinY();
+						break;
 					}
 				
 					while(x < newConcept.getMaxX()) {
@@ -192,6 +193,7 @@ public class GraphicalCoveragePanel extends JPanel {
 				
 					if(y >= newConcept.getMaxY()) {
 						y = (int) oldConcept.getMinY();
+						break;
 					}
 				
 					while(x < newConcept.getMaxX()) {
@@ -226,6 +228,7 @@ public class GraphicalCoveragePanel extends JPanel {
 				
 					if(y >= oldConcept.getMaxY()) {
 						y = (int) oldConcept.getMinY();
+						break;
 					}
 				
 					while(x < oldConcept.getMaxX()) {

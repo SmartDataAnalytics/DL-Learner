@@ -19,63 +19,90 @@
  */
 package org.dllearner.tools.protege;
 
-import java.awt.BorderLayout;
+import java.util.Set;
 
-import javax.swing.JScrollPane;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-import org.protege.editor.owl.ui.framelist.OWLFrameList2;
-import org.protege.editor.owl.ui.view.AbstractOWLClassViewComponent;
-import org.semanticweb.owl.model.OWLClass;
+import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
+import org.protege.editor.owl.ui.editor.AbstractOWLDescriptionEditor;
+import org.semanticweb.owl.model.OWLDescription;
 
 /**
- * This is the class that must be implemented to get the plugin integrated
- * in protege.
+ * This is the class that must be implemented to get the plugin integrated in
+ * protege.
+ * 
  * @author Christian Koetteritzsch
- *
+ * 
  */
-public class ProtegePlugin  extends AbstractOWLClassViewComponent {
-private static final long serialVersionUID = 728362819273927L;
-/**
- * List of the lists for equivalent classes and so on.
- */
-private OWLFrameList2<OWLClass> list;
-
-	@Override
-	/**
-	 * This method initializes the view of the plugin.
-	 */
-	public void initialiseClassView() throws Exception {
-		list = new OWLFrameList2<OWLClass>(getOWLEditorKit(), new ButtonList(getOWLEditorKit()));
-		setLayout(new BorderLayout());
-		JScrollPane dlLearner = new JScrollPane(list);
-		add(dlLearner);
-		// add file logger (comment out if not needed)
-		//boolean useAdditionalLogger = true;
-		//if(useAdditionalLogger) {
-		//	Layout layout = new HTMLLayout();
-		//	String fileName = "logs/dllearner_log.html";
-		//	FileAppender fileAppender = new FileAppender(layout, fileName, true);
-			// only add log statements in protege package to log file
-		//	Logger protegeLogger = Logger.getLogger("org.dllearner.tools.protege");
-		//	protegeLogger.addAppender(fileAppender);
-		//	protegeLogger.setLevel(Level.DEBUG);
-		//}
-	}
+public class ProtegePlugin extends AbstractOWLDescriptionEditor {
+	private static final long serialVersionUID = 728362819273927L;
+	private JPanel test;
+	private SimpleViewTest tes;
 	
 	@Override
-	/**
-	 * updates the view if something changes
-	 */
-	protected OWLClass updateView(OWLClass selectedClass) {
-        list.setRootObject(selectedClass);
-        return selectedClass;
-    }
+	public JComponent getComponent() {
+		System.out.println("1");
+		// TODO Auto-generated method stub
+		return test;
+	}
 
 	@Override
-	/**
-	 * destroys every listener when protege is closed
-	 */
-    public void disposeView() {
-        list.dispose();
-    }
+	public Set<OWLDescription> getDescriptions() {
+		System.out.println("2");
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isValidInput() {
+		System.out.println("3");
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean setDescription(OWLDescription arg0) {
+		System.out.println("4");
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public void initialise() throws Exception {
+		System.out.println("5");
+		tes = new SimpleViewTest();
+		this.getOWLEditorKit().getOWLWorkspace().getOWLComponentFactory().getOWLClassDescriptionEditor(null).addPanel(tes);
+		test = new JPanel();
+		test.add(new JLabel("TEST"));
+		
+	}
+
+	@Override
+	public void dispose() throws Exception {
+		System.out.println("6");
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addStatusChangedListener(
+			InputVerificationStatusChangedListener arg0) {
+		System.out.println("7");
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeStatusChangedListener(
+			InputVerificationStatusChangedListener arg0) {
+		System.out.println("8");
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+
 }

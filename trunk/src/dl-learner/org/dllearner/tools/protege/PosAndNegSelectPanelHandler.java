@@ -48,7 +48,7 @@ public class PosAndNegSelectPanelHandler implements ActionListener, MouseListene
  * @param p
  *            PosAndNegSelectPanel
  */
-public PosAndNegSelectPanelHandler(DLLearnerModel m, OWLClassDescriptionEditorWithDLLearnerTab.DLLearnerView v, PosAndNegSelectPanel p) {
+public PosAndNegSelectPanelHandler(DLLearnerModel m, DLLearnerView v, PosAndNegSelectPanel p) {
 	//model = m;
 	//panel = p;
 	//view = v;
