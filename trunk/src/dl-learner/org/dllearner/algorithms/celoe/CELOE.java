@@ -43,6 +43,7 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.ClassLearningProblem;
@@ -341,6 +342,15 @@ public class CELOE extends LearningAlgorithm {
 			return false;
 		}
 		
+		// perform forall sanity tests (TODO: move to separate method)
+		if(parentNode != null && ConceptTransformation.getForallOccurences(description) > ConceptTransformation.getForallOccurences(parentNode.getDescription())) {
+			// we have an additional \forall construct, so we now fetch the contexts
+			// in which it occurs
+			List<List<ObjectProperty>> contexts = ConceptTransformation.getForallContexts(description);
+			List<List<ObjectProperty>> parentContexts = ConceptTransformation.getForallContexts(parentNode.getDescription());
+			
+		}
+		
 		// quality of description (return if too weak)
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, minAcc);
 		descriptionTests++;
@@ -559,4 +569,5 @@ public class CELOE extends LearningAlgorithm {
 	public int getMinimumHorizontalExpansion() {
 		return minHorizExp;
 	}
+	
 }

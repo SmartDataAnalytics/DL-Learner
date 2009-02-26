@@ -39,6 +39,7 @@ import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Union;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.ObjectPropertyExpression;
@@ -568,6 +569,46 @@ public class ConceptTransformation {
 //			}
 //			// there is at least one child we could not match
 //			return false;
+		}
+	}
+	
+	public static int getForallOccurences(Description description) {
+		int count = 0;
+		if(description instanceof ObjectAllRestriction) {
+			count++;
+		}
+		for(Description child : description.getChildren()) {
+			count += getForallOccurences(child);
+		}
+		return count;
+	}
+	
+	public static List<List<ObjectProperty>> getForallContexts(Description description) {
+		return getForallContexts(description, new LinkedList<ObjectProperty>());
+	}
+	
+	private static List<List<ObjectProperty>> getForallContexts(Description description, List<ObjectProperty> currentContext) {
+		// the context changes if we have a restriction
+		if(description instanceof Restriction) {
+			ObjectProperty op = (ObjectProperty) ((Restriction)description).getRestrictedPropertyExpression();
+			currentContext.add(op);
+			// if we have an all-restriction, we return it; otherwise we only change the context
+			// and call the method on the child
+			if(description instanceof ObjectAllRestriction) {
+				List<List<ObjectProperty>> contexts = new LinkedList<List<ObjectProperty>>();
+				contexts.add(currentContext);
+				contexts.addAll(getForallContexts(description.getChild(0), currentContext));
+				return contexts;
+			} else {
+				return getForallContexts(description.getChild(0), currentContext);
+			}
+		// for non-restrictions, we collect contexts over all children
+		} else {
+			List<List<ObjectProperty>> contexts = new LinkedList<List<ObjectProperty>>();
+			for(Description child : description.getChildren()) {
+				contexts.addAll(getForallContexts(child, currentContext));
+			}
+			return contexts;
 		}
 	}
 }
