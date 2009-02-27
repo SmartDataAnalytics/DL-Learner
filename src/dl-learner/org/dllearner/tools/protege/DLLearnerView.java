@@ -34,9 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 
-import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
 import org.protege.editor.owl.OWLEditorKit;
-import org.protege.editor.owl.ui.editor.OWLDescriptionEditor;
 import org.semanticweb.owl.model.OWLDescription;
 /**
  * This class is responsible for the view of the dllearner. It renders the
@@ -45,13 +43,12 @@ import org.semanticweb.owl.model.OWLDescription;
  * @author Christian Koetteritzsch
  * 
  */
-public class DLLearnerView implements OWLDescriptionEditor{
+public class DLLearnerView extends JPanel{
 
 	
 	private static final  long serialVersionUID = 624829578325729385L;
 	//private OWLClassDescriptionEditorWithDLLearnerTab mainWindow; 
 	// this is the Component which shows the view of the dllearner
-	private static final String TITLE = "DL-Learner";
 	private final JComponent learner;
 
 	// Accept button to add the learned concept to the owl
@@ -105,9 +102,9 @@ public class DLLearnerView implements OWLDescriptionEditor{
 	private final JTextArea hint;
 	private boolean isInconsistent;
 	// This is the Panel for more details of the suggested concept
-	private MoreDetailForSuggestedConceptsPanel detail;
+	private final MoreDetailForSuggestedConceptsPanel detail;
 	//private OWLFrame<OWLClass> frame;
-	private ReadingOntologyThread readThread;
+	private final ReadingOntologyThread readThread;
 	private final OWLEditorKit editorKit;
 
 	/**
@@ -151,29 +148,6 @@ public class DLLearnerView implements OWLDescriptionEditor{
 		addAcceptButtonListener(this.action);
 		addRunButtonListener(this.action);
 		addAdvancedButtonListener(this.action);
-		this.makeView();
-		
-
-	}
-	/**
-	 * This method returns the SuggestClassPanel.
-	 * @return SuggestClassPanel
-	 */
-	public SuggestClassPanel getSuggestClassPanel() {
-		return sugPanel;
-	}
-	/**
-	 * This method returns the PosAndNegSelectPanel.
-	 * @return PosAndNegSelectPanel
-	 */
-	public PosAndNegSelectPanel getPosAndNegSelectPanel() {
-		return posPanel;
-	}
-	
-	/**
-	 * This Method renders the view of the plugin.
-	 */
-	public void makeView() {
 		run.setEnabled(false);
 		model.clearVector();
 		hint.setText("To get suggestions for class descriptions, please click the button above.");
@@ -212,6 +186,29 @@ public class DLLearnerView implements OWLDescriptionEditor{
 		learner.add(errorMessage);
 		learner.add(posPanel);
 		detail = new MoreDetailForSuggestedConceptsPanel(model);
+		
+
+	}
+	/**
+	 * This method returns the SuggestClassPanel.
+	 * @return SuggestClassPanel
+	 */
+	public SuggestClassPanel getSuggestClassPanel() {
+		return sugPanel;
+	}
+	/**
+	 * This method returns the PosAndNegSelectPanel.
+	 * @return PosAndNegSelectPanel
+	 */
+	public PosAndNegSelectPanel getPosAndNegSelectPanel() {
+		return posPanel;
+	}
+	
+	/**
+	 * This Method renders the view of the plugin.
+	 */
+	public void makeView() {
+		
 		//add(learner);
 
 	}
@@ -320,15 +317,6 @@ public class DLLearnerView implements OWLDescriptionEditor{
 	public void setIsInconsistent(boolean isIncon) {
 		this.isInconsistent = isIncon;
 	}
-	/**
-    * Destroys the view after the plugin is closed.
-    */
-	@Override
-	public void dispose() {
-		run.removeActionListener(action);
-		accept.removeActionListener(action);
-		advanced.removeActionListener(action);
-	}
 	
 	/**
 	 * Adds Actionlistener to the run button.
@@ -371,54 +359,7 @@ public class DLLearnerView implements OWLDescriptionEditor{
 		setHintMessage(message);
 	}
 	
-	@Override
-	public JComponent getComponent() {
+	public JComponent getLearnerView() {
 		return learner;
 	}
-
-	@Override
-	public Set<OWLDescription> getDescriptions() {
-		return model.getDescriptions();
-	}
-
-	@Override
-	public String getEditorName() {
-		return TITLE;
-	}
-
-	@Override
-	public boolean isValidInput() {
-		return true;
-	}
-
-	@Override
-	public boolean setDescription(OWLDescription arg0) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
-	public void addStatusChangedListener(
-			InputVerificationStatusChangedListener arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeStatusChangedListener(
-			InputVerificationStatusChangedListener arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void setup(String arg0, String arg1, OWLEditorKit arg2) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void initialise() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

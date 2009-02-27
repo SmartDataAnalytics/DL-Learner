@@ -50,7 +50,7 @@ public class ReadingOntologyThread extends Thread {
 	private final OWLEditorKit editor;
 	private final DLLearnerModel model;
 	private boolean isInconsistent;
-	private final OWLFrame<OWLClass> current;
+	private final OWLClass current;
 	private final DLLearnerView view;
 	
 	/**
@@ -63,7 +63,7 @@ public class ReadingOntologyThread extends Thread {
 	public ReadingOntologyThread(OWLEditorKit editorKit, OWLFrame<OWLClass> frame, DLLearnerView v, DLLearnerModel m) {
 		ontologieURI = new HashSet<String>();
 		this.editor = editorKit;
-		current = frame;
+		current =  editor.getOWLWorkspace().getOWLComponentFactory().getOWLClassSelectorPanel().getSelectedObject();
 		this.view = v;
 		this.model = m;
 		
@@ -78,7 +78,7 @@ public class ReadingOntologyThread extends Thread {
 			hasIndividuals = false;
 			// checks if selected concept is thing when yes then it selects all
 			// individuals
-			if (!(current.getRootObject() instanceof Thing)) {
+			if (!(current instanceof Thing)) {
 				List<NamedClass> classList = reasoner.getAtomicConceptsList();
 				for(NamedClass concept : classList) {
 					// if individuals is null
@@ -87,7 +87,7 @@ public class ReadingOntologyThread extends Thread {
 						for(String onto : ontologieURI) {
 							if (concept.toString().contains(onto)) {
 								if (concept.toString().equals(
-										onto + current.getRootObject().toString())) {
+										onto + current.toString())) {
 									// if individuals is not null it gets all
 									// individuals of
 									// the concept
