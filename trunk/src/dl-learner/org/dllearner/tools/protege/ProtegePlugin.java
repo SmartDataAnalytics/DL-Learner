@@ -22,7 +22,6 @@ package org.dllearner.tools.protege;
 import java.util.Set;
 
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
@@ -39,13 +38,13 @@ import org.semanticweb.owl.model.OWLDescription;
 public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	private static final long serialVersionUID = 728362819273927L;
 	private JPanel test;
-	private SimpleViewTest tes;
+	private DLLearnerView view;
 	
 	@Override
 	public JComponent getComponent() {
 		System.out.println("1");
 		// TODO Auto-generated method stub
-		return test;
+		return view.getLearnerView();
 	}
 
 	@Override
@@ -58,6 +57,7 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	@Override
 	public boolean isValidInput() {
 		System.out.println("3");
+		view = new DLLearnerView("equivalent class", this.getOWLEditorKit());
 		// TODO Auto-generated method stub
 		return true;
 	}
@@ -72,11 +72,8 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	@Override
 	public void initialise() throws Exception {
 		System.out.println("5");
-		tes = new SimpleViewTest();
-		this.getOWLEditorKit().getOWLWorkspace().getOWLComponentFactory().getOWLClassDescriptionEditor(null).addPanel(tes);
-		test = new JPanel();
-		test.add(new JLabel("TEST"));
-		
+		System.out.println("test: " + this.getOWLEditorKit().getOWLWorkspace().getViewManager().getClass());
+		view = new DLLearnerView("equivalent class", this.getOWLEditorKit());
 	}
 
 	@Override
@@ -98,6 +95,7 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	public void removeStatusChangedListener(
 			InputVerificationStatusChangedListener arg0) {
 		System.out.println("8");
+		view = null;
 		// TODO Auto-generated method stub
 		
 	}
