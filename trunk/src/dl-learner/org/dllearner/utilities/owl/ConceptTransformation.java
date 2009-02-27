@@ -583,11 +583,11 @@ public class ConceptTransformation {
 		return count;
 	}
 	
-	public static List<List<ObjectProperty>> getForallContexts(Description description) {
-		return getForallContexts(description, new LinkedList<ObjectProperty>());
+	public static SortedSet<PropertyContext> getForallContexts(Description description) {
+		return getForallContexts(description, new PropertyContext());
 	}
 	
-	private static List<List<ObjectProperty>> getForallContexts(Description description, List<ObjectProperty> currentContext) {
+	private static SortedSet<PropertyContext> getForallContexts(Description description, PropertyContext currentContext) {
 		// the context changes if we have a restriction
 		if(description instanceof Restriction) {
 			ObjectProperty op = (ObjectProperty) ((Restriction)description).getRestrictedPropertyExpression();
@@ -595,7 +595,7 @@ public class ConceptTransformation {
 			// if we have an all-restriction, we return it; otherwise we only change the context
 			// and call the method on the child
 			if(description instanceof ObjectAllRestriction) {
-				List<List<ObjectProperty>> contexts = new LinkedList<List<ObjectProperty>>();
+				TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
 				contexts.add(currentContext);
 				contexts.addAll(getForallContexts(description.getChild(0), currentContext));
 				return contexts;
@@ -604,7 +604,7 @@ public class ConceptTransformation {
 			}
 		// for non-restrictions, we collect contexts over all children
 		} else {
-			List<List<ObjectProperty>> contexts = new LinkedList<List<ObjectProperty>>();
+			TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
 			for(Description child : description.getChildren()) {
 				contexts.addAll(getForallContexts(child, currentContext));
 			}

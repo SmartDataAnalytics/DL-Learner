@@ -41,6 +41,7 @@ import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
@@ -53,6 +54,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.dllearner.utilities.owl.PropertyContext;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -93,6 +95,7 @@ public class CELOE extends LearningAlgorithm {
 	private EvaluatedDescriptionSet bestEvaluatedDescriptions;
 	
 	private NamedClass classToDescribe;
+	private Set<Individual> classInstances;
 	private boolean isEquivalenceProblem;
 	
 	private long nanoStartTime;
@@ -159,6 +162,8 @@ public class CELOE extends LearningAlgorithm {
 		// reachable via a single path
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
 		classHierarchy.thinOutSubsumptionHierarchy();		
+		
+		classInstances = reasoner.getIndividuals(classToDescribe);
 		
 		minimizer = new DescriptionMinimizer(reasoner);
 		
@@ -338,17 +343,8 @@ public class CELOE extends LearningAlgorithm {
 		}
 		
 		// check whether the description is allowed
-		if(!isDescriptionAllowed(description)) {
+		if(!isDescriptionAllowed(description, parentNode)) {
 			return false;
-		}
-		
-		// perform forall sanity tests (TODO: move to separate method)
-		if(parentNode != null && ConceptTransformation.getForallOccurences(description) > ConceptTransformation.getForallOccurences(parentNode.getDescription())) {
-			// we have an additional \forall construct, so we now fetch the contexts
-			// in which it occurs
-			List<List<ObjectProperty>> contexts = ConceptTransformation.getForallContexts(description);
-			List<List<ObjectProperty>> parentContexts = ConceptTransformation.getForallContexts(parentNode.getDescription());
-			
 		}
 		
 		// quality of description (return if too weak)
@@ -405,10 +401,12 @@ public class CELOE extends LearningAlgorithm {
 	}	
 	
 	// checks whether the description is allowed
-	private boolean isDescriptionAllowed(Description description) {
+	private boolean isDescriptionAllowed(Description description, OENode parentNode) {
 		if(isEquivalenceProblem) {
 			// the class to learn must not appear on the outermost property level
-			return !occursOnFirstLevel(description, classToDescribe);
+			if(occursOnFirstLevel(description, classToDescribe)) {
+				return false;
+			}
 		} else {
 			// none of the superclasses of the class to learn must appear on the
 			// outermost property level
@@ -423,10 +421,42 @@ public class CELOE extends LearningAlgorithm {
 			}
 		}
 		
+		// perform forall sanity tests
+		if(parentNode != null && ConceptTransformation.getForallOccurences(description) > ConceptTransformation.getForallOccurences(parentNode.getDescription())) {
+			// we have an additional \forall construct, so we now fetch the contexts
+			// in which it occurs
+			SortedSet<PropertyContext> contexts = ConceptTransformation.getForallContexts(description);
+			SortedSet<PropertyContext> parentContexts = ConceptTransformation.getForallContexts(parentNode.getDescription());
+			contexts.removeAll(parentContexts);
+//			System.out.println("parent description: " + parentNode.getDescription());
+//			System.out.println("description: " + description);
+//			System.out.println("contexts: " + contexts);
+			// we now have to perform sanity checks: if \forall is used, then there
+			// should be at least on class instance which has a filler at the given context
+			for(PropertyContext context : contexts) {
+				// transform [r,s] to \exists r.\exists s.\top
+				Description existentialContext = context.toExistentialContext();
+				boolean fillerFound = false;
+				for(Individual instance : classInstances) {
+					if(reasoner.hasType(existentialContext, instance)) {
+//						System.out.println(instance + "  " + existentialContext);
+						fillerFound = true;
+						break;
+					}
+				}
+				// if we do not find a filler, this means that putting \forall at
+				// that position is not meaningful
+				if(!fillerFound) {
+					return false;
+				}
+			}
+		}		
+		
 		// we do not want to have negations of sibling classes on the outermost level
 		// (they are expressed more naturally by saying that the siblings are disjoint,
 		// so it is reasonable not to include them in solutions)
-		Set<Description> siblingClasses = reasoner.getClassHierarchy().getSiblingClasses(classToDescribe);
+//		Set<Description> siblingClasses = reasoner.getClassHierarchy().getSiblingClasses(classToDescribe);
+//		for now, we just disable negation
 		
 		return true;
 	}
@@ -452,26 +482,6 @@ public class CELOE extends LearningAlgorithm {
 		
 		return false;
 	}
-	
-	private boolean occursNegatedOnFirstLevel(Description description, Description clazz) {
-		if(description instanceof NamedClass) {
-			if(description.equals(clazz)) {
-				return true;
-			}
-		} 
-		
-		if(description instanceof Restriction) {
-			return false;
-		}
-		
-		for(Description child : description.getChildren()) {
-			if(occursOnFirstLevel(child, clazz)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}	
 	
 	// check whether the node is a potential solution candidate
 	private Description rewriteNode(OENode node) {
