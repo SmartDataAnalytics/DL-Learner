@@ -102,7 +102,7 @@ public class PosAndNegSelectPanel extends JPanel {
 		//set layout for parent Panel
 		super();
 		setLayout(new GridLayout(0, 1));
-		setPreferredSize(new Dimension(490, 250));
+		setPreferredSize(new Dimension(490, 100));
 		//view = v;
 		//this.model = model;
 		//handler = new PosAndNegSelectPanelHandler(model, view, this);

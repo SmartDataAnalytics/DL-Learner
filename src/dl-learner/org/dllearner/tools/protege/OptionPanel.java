@@ -20,7 +20,6 @@
 package org.dllearner.tools.protege;
 
 import java.awt.Dimension;
-import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -40,25 +39,26 @@ public class OptionPanel extends JPanel {
 	private final JSlider minAccuracy;
 	private final JSlider maxExecutionTime;
 	private final JSlider nrOfConcepts;
-	private final JPanel optionPanel;
 	private double accuracy;
 	/**
-	 * Construktor for the Option Panel. 
+	 * Constructor for the Option Panel. 
 	 */
 	public OptionPanel() {
-
-		setPreferredSize(new Dimension(490, 120));
-		setLayout(new GridLayout(0, 1));
-		optionPanel = new JPanel(new GridLayout(0, 2));
+		setPreferredSize(new Dimension(490, 100));
+		setLayout(null);
 		minAccuracyLabel = new JLabel("minimum accuracy");
+		minAccuracyLabel.setBounds(5, 0, 150, 40);
 		maxExecutionTimeLabel = new JLabel("maximum execution time");
+		maxExecutionTimeLabel.setBounds(5, 40, 150, 40);
 		nrOfConceptsLabel = new JLabel("maximum number of results");
+		nrOfConceptsLabel.setBounds(5, 80, 150, 40);
 		
 		minAccuracy = new JSlider(50, 100, 90);
 		minAccuracy.setPaintTicks(true);
 		minAccuracy.setMajorTickSpacing(10);
 		minAccuracy.setMinorTickSpacing(1);
 		minAccuracy.setPaintLabels(true);
+		minAccuracy.setBounds(160, 0, 200, 40);
 
 		
 		maxExecutionTime = new JSlider(2, 20, 5);
@@ -66,6 +66,7 @@ public class OptionPanel extends JPanel {
 		maxExecutionTime.setMajorTickSpacing(5);
 		maxExecutionTime.setMinorTickSpacing(1);
 		maxExecutionTime.setPaintLabels(true);
+		maxExecutionTime.setBounds(160, 40, 200, 40);
 
 		
 		nrOfConcepts = new JSlider(2, 20, 10);
@@ -73,15 +74,14 @@ public class OptionPanel extends JPanel {
 		nrOfConcepts.setMajorTickSpacing(2);
 		nrOfConcepts.setMinorTickSpacing(1);
 		nrOfConcepts.setPaintLabels(true);
+		nrOfConcepts.setBounds(160, 80, 200, 40);
 
-		optionPanel.add(minAccuracyLabel);
-		optionPanel.add(minAccuracy);
-		optionPanel.add(maxExecutionTimeLabel);
-		optionPanel.add(maxExecutionTime);
-		optionPanel.add(nrOfConceptsLabel);
-		optionPanel.add(nrOfConcepts);
-		add(optionPanel);
-		
+		add(minAccuracyLabel);
+		add(minAccuracy);
+		add(maxExecutionTimeLabel);
+		add(maxExecutionTime);
+		add(nrOfConceptsLabel);
+		add(nrOfConcepts);
 	}
 	
 	/**

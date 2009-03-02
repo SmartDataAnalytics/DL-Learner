@@ -114,14 +114,16 @@ public class DLLearnerView extends JPanel{
 	 */
 	public DLLearnerView(String label, OWLEditorKit editor) {
 		editorKit = editor;
+		model = new DLLearnerModel(editorKit, label, this);
+		sugPanel = new SuggestClassPanel();
+		action = new ActionHandler(this.action, model, this, label);
+		readThread = new ReadingOntologyThread(editorKit, null, this, model);
+		readThread.start();
 		wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
 		URL iconUrl = this.getClass().getResource("arrow.gif");
 		icon = new ImageIcon(iconUrl);
 		URL toggledIconUrl = this.getClass().getResource("arrow2.gif");
 		toggledIcon = new ImageIcon(toggledIconUrl);
-		model = new DLLearnerModel(editorKit, label, this);
-		sugPanel = new SuggestClassPanel();
-		action = new ActionHandler(this.action, model, this, label);
 		adv = new JLabel("Advanced Settings");
 		advanced = new JToggleButton(icon);
 		advanced.setVisible(true);
@@ -148,8 +150,6 @@ public class DLLearnerView extends JPanel{
 		model.clearVector();
 		hint.setText("To get suggestions for class descriptions, please click the button above.");
 		isInconsistent = false;
-		readThread = new ReadingOntologyThread(editorKit, null, this, model);
-		readThread.start();
 
 		hint.setVisible(true);
 		advanced.setIcon(icon);
@@ -277,7 +277,6 @@ public class DLLearnerView extends JPanel{
 		model.unsetNewConcepts();
 		action.destroyDLLearnerThread();
 		errorMessage.setText("");
-		//posPanel.unsetPosAndNegPanel();
 		learner.removeAll();
 	}
 
