@@ -63,7 +63,7 @@ public class ReadingOntologyThread extends Thread {
 	public ReadingOntologyThread(OWLEditorKit editorKit, OWLFrame<OWLClass> frame, DLLearnerView v, DLLearnerModel m) {
 		ontologieURI = new HashSet<String>();
 		this.editor = editorKit;
-		current =  editor.getOWLWorkspace().getOWLComponentFactory().getOWLClassSelectorPanel().getSelectedObject();
+		current =  editor.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
 		this.view = v;
 		this.model = m;
 		
