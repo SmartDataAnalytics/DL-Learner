@@ -27,10 +27,8 @@ import java.util.SortedSet;
 
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.protege.editor.owl.OWLEditorKit;
-import org.protege.editor.owl.ui.frame.OWLFrame;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
 
@@ -46,11 +44,11 @@ public class ReadingOntologyThread extends Thread {
 	private FastInstanceChecker reasoner;
 	private NamedClass currentConcept;
 	private Set<Individual> individual;
-	private final Set<String> ontologieURI;
+	private Set<String> ontologieURI;
 	private final OWLEditorKit editor;
 	private final DLLearnerModel model;
 	private boolean isInconsistent;
-	private final OWLClass current;
+	private OWLClass current;
 	private final DLLearnerView view;
 	
 	/**
@@ -60,25 +58,23 @@ public class ReadingOntologyThread extends Thread {
 	 * @param v DL-Learner view
 	 * @param m DL-Learner model
 	 */
-	public ReadingOntologyThread(OWLEditorKit editorKit, OWLFrame<OWLClass> frame, DLLearnerView v, DLLearnerModel m) {
-		ontologieURI = new HashSet<String>();
+	public ReadingOntologyThread(OWLEditorKit editorKit, DLLearnerView v, DLLearnerModel m) {
 		this.editor = editorKit;
-		current =  editor.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
 		this.view = v;
 		this.model = m;
-		
 	}
 	/**
 	 * This method sets the individuals that belong to the concept which is
 	 * chosen in protege.
 	 */
 	private void setPositiveConcept() {
+		current =  editor.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
 		if(current != null) {
 			SortedSet<Individual> individuals = null;
 			hasIndividuals = false;
 			// checks if selected concept is thing when yes then it selects all
 			// individuals
-			if (!(current instanceof Thing)) {
+			if (!(current.toString().equals("Thing"))) {
 				List<NamedClass> classList = reasoner.getAtomicConceptsList();
 				for(NamedClass concept : classList) {
 					// if individuals is null
@@ -99,7 +95,9 @@ public class ReadingOntologyThread extends Thread {
 										}
 										individual = reasoner.getIndividuals(concept);
 										model.setIndividuals(individual);
+										model.setHasIndividuals(hasIndividuals);
 										model.setCurrentConcept(currentConcept);
+										view.getRunButton().setEnabled(true);
 										break;
 									}
 								}
@@ -108,6 +106,7 @@ public class ReadingOntologyThread extends Thread {
 					}
 				}
 			} else {
+				System.out.println("hier");
 				if (reasoner.getIndividuals().size() > 0) {
 					hasIndividuals = true;
 				
@@ -132,6 +131,7 @@ public class ReadingOntologyThread extends Thread {
 	 * Checks the URI if a "#" is in it.
 	 */
 	private void checkURI() {
+		ontologieURI = new HashSet<String>();
 		Set<OWLOntology> ont = editor.getModelManager().getActiveOntologies();
 		Set<Individual> indi = reasoner.getIndividuals();
 		for(OWLOntology onto : ont) {
@@ -151,70 +151,9 @@ public class ReadingOntologyThread extends Thread {
 		model.setOntologyURIString(ontologieURI);
 	}
 	
-	///**
-	// * This method sets the check boxes for the positive check boxes checked if
-	// * the individuals matches the concept that is chosen in protege.
-	// */
-	//private void setPosVector() {
-	//	setPositiveConcept();
-	//	SortedSet<Individual> reasonerIndi = reasoner.getIndividuals();
-	//	for(Individual ind : reasonerIndi) {
-	//		Set<String> onto = ontologieURI;
-	//		for(String ont : onto) {
-	//			String indiv = ind.toString();
-	//			// checks if individual belongs to the selected concept
-	//				if (setPositivExamplesChecked(indiv)) {
-	//					if (indiv.contains(ont)) {
-	//						// when yes then it sets the positive example checked
-	//
-	//						// OWLExpressionCheckerFactory
-	//						posListModel.add(0, ind.toManchesterSyntaxString(ont, null));
-	//						individualVector.add(new IndividualObject(indiv, true));
-	//						break;
-	//					}
-    //
-	//				} else {
-	//					// When no it unchecks the positive example
-	//					if (indiv.contains(ont)) {
-	//						individualVector
-	//								.add(new IndividualObject(indiv, false));
-	//						negListModel.add(0, ind.toManchesterSyntaxString(ont, null));
-	//						break;
-	//					}
-	//				}
-	//			}
-	//	}
-	//	//view.getPosAndNegSelectPanel().setExampleList(posListModel, negListModel);
-	//	model.setPosListModel(posListModel);
-	//	model.setNegListModel(negListModel);
-	//	model.setIndividualVector(individualVector);
-	//}
-	
-	///**
-	// * This method gets an Individual and checks if this individual belongs to
-	// * the concept chosen in protege.
-	// * 
-	//* @param indi
-	// *            Individual to check if it belongs to the chosen concept
-	// * @return is Individual belongs to the concept which is chosen in protege.
-	// */
-	//private boolean setPositivExamplesChecked(String indi) {
-	//	boolean isChecked = false;
-	//	// checks if individuals are not empty
-	//	if (individual != null) {
-	//		// checks if the delivered individual belongs to the individuals of
-	//		// the selected concept
-	//		if (individual.toString().contains(indi)) {
-	//			isChecked = true;
-	//		}
-	//	}
-	//	return isChecked;
-    //
-	//}
-	
 	@Override
 	public void run() {
-		model.unsetListModel();
+		model.getSuggestModel().removeAllElements();
 		model.initReasoner();
 		reasoner = model.getReasoner();
 		isInconsistent = false;
@@ -222,7 +161,6 @@ public class ReadingOntologyThread extends Thread {
 			
 			this.checkURI();
 			this.setPositiveConcept();
-			//this.setPosVector();
 			if (this.hasIndividuals()) {
 				view.getRunButton().setEnabled(true);
 			} else {
@@ -231,7 +169,6 @@ public class ReadingOntologyThread extends Thread {
 				String message ="There are no Instances for  available. Please insert some Instances.";
 				view.renderErrorMessage(message);
 			}
-			//view.getPosAndNegSelectPanel().setExampleList(model.getPosListModel(), model.getNegListModel());
 		} else {
 			view.getHintPanel().setForeground(Color.RED);
 			view.getRunButton().setEnabled(false);

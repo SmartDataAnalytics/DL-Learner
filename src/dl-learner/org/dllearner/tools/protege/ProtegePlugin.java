@@ -50,9 +50,9 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 
 	@Override
 	public boolean isValidInput() {
-		System.out.println("testen2: " + super.getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass());
-		System.out.println("testen: " + super.getOWLEditorKit().getWorkspace());
+		System.out.println("testen: " + super.getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass());
 		view = new DLLearnerView("equivalent class", this.getOWLEditorKit());
+		view.makeView();
 		return true;
 	}
 
@@ -64,10 +64,12 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	@Override
 	public void initialise() throws Exception {
 		view = new DLLearnerView("equivalent class", super.getOWLEditorKit());
+		view.makeView();
 	}
 
 	@Override
 	public void dispose() throws Exception {
+		view.dispose();
 		view = null;
 	}
 
@@ -79,6 +81,7 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	@Override
 	public void removeStatusChangedListener(
 			InputVerificationStatusChangedListener arg0) {
+		view.dispose();
 		view = null;
 	}
 

@@ -199,8 +199,6 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 *            MouseEvent
 	 */
 	public void mouseClicked(MouseEvent m) {
-		//EvaluatedDescription eDescription = null;
-		
 		if (view.getSuggestClassPanel().getSuggestList().getSelectedValue() != null) {
 			SuggestListItem item = (SuggestListItem) view
 					.getSuggestClassPanel().getSuggestList().getSelectedValue();
