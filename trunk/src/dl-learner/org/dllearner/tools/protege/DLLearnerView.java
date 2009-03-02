@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.Set;
 
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -43,24 +44,24 @@ import org.semanticweb.owl.model.OWLDescription;
  * @author Christian Koetteritzsch
  * 
  */
-public class DLLearnerView extends JPanel{
+public class DLLearnerView {
 
 	
 	private static final  long serialVersionUID = 624829578325729385L; 
 	// this is the Component which shows the view of the dllearner
-	private final JComponent learner;
+	private JComponent learner;
 
 	// Accept button to add the learned concept to the owl
 
-	private final JButton accept;
+	private JButton accept;
 
 	// Runbutton to start the learning algorithm
 
-	private final JButton run;
+	private JButton run;
 
 	// This is the label for the advanced button.
 
-	private final JLabel adv;
+	private JLabel adv;
 
 	// This is the color for the error message. It is red.
 
@@ -68,19 +69,19 @@ public class DLLearnerView extends JPanel{
 
 	// This is the text area for the error message when an error occurred
 
-	private final JTextArea errorMessage;
+	private JTextArea errorMessage;
 
 	// Advanced Button to activate/deactivate the example select panel
 
-	private final JToggleButton advanced;
+	private JToggleButton advanced;
 
 	// Action Handler that manages the Button actions
 
-	private final ActionHandler action;
+	private ActionHandler action;
 
 	// This is the model of the dllearner plugin which includes all data
 
-	private final DLLearnerModel model;
+	private DLLearnerModel model;
 
 	// Panel for the suggested concepts
 
@@ -88,22 +89,23 @@ public class DLLearnerView extends JPanel{
 
 	// Selection panel for the positive and negative examples
 
-	private final PosAndNegSelectPanel posPanel;
+	private PosAndNegSelectPanel posPanel;
 
 	// Picture for the advanced button when it is not toggled
 
-	private final ImageIcon icon;
+	private ImageIcon icon;
 
 	// Picture of the advanced button when it is toggled
-	private final JPanel addButtonPanel;
-	private final JLabel wikiPane;
-	private final ImageIcon toggledIcon;
-	private final JTextArea hint;
+	private JPanel addButtonPanel;
+	private JLabel wikiPane;
+	private ImageIcon toggledIcon;
+	private JTextArea hint;
 	private boolean isInconsistent;
 	// This is the Panel for more details of the suggested concept
-	private final MoreDetailForSuggestedConceptsPanel detail;
-	private final ReadingOntologyThread readThread;
+	private MoreDetailForSuggestedConceptsPanel detail;
+	private ReadingOntologyThread readThread;
 	private final OWLEditorKit editorKit;
+	private final String label;
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -113,12 +115,33 @@ public class DLLearnerView extends JPanel{
 	 * @param label String
 	 */
 	public DLLearnerView(String label, OWLEditorKit editor) {
+		this.label = label;
 		editorKit = editor;
+		
+	}
+	
+	/**
+	 * This method returns the SuggestClassPanel.
+	 * @return SuggestClassPanel
+	 */
+	public SuggestClassPanel getSuggestClassPanel() {
+		return sugPanel;
+	}
+	/**
+	 * This method returns the PosAndNegSelectPanel.
+	 * @return PosAndNegSelectPanel
+	 */
+	public PosAndNegSelectPanel getPosAndNegSelectPanel() {
+		return posPanel;
+	}
+	
+	/**
+	 * This Method renders the view of the plugin.
+	 */
+	public void makeView() {
 		model = new DLLearnerModel(editorKit, label, this);
 		sugPanel = new SuggestClassPanel();
 		action = new ActionHandler(this.action, model, this, label);
-		readThread = new ReadingOntologyThread(editorKit, null, this, model);
-		readThread.start();
 		wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
 		URL iconUrl = this.getClass().getResource("arrow.gif");
 		icon = new ImageIcon(iconUrl);
@@ -147,16 +170,16 @@ public class DLLearnerView extends JPanel{
 		addRunButtonListener(this.action);
 		addAdvancedButtonListener(this.action);
 		run.setEnabled(false);
-		model.clearVector();
 		hint.setText("To get suggestions for class descriptions, please click the button above.");
 		isInconsistent = false;
-
+		readThread = new ReadingOntologyThread(editorKit, this, model);
+		readThread.start();
 		hint.setVisible(true);
 		advanced.setIcon(icon);
 		accept.setEnabled(false);
 		action.resetToggled();
 		addButtonPanel.add("North", accept);
-		sugPanel.setSuggestList(model.getSuggestList());
+		sugPanel.setSuggestList(new DefaultListModel());
 		sugPanel = sugPanel.updateSuggestClassList();
 		advanced.setSelected(false);
 		sugPanel.setBounds(10, 35, 490, 110);
@@ -181,31 +204,6 @@ public class DLLearnerView extends JPanel{
 		learner.add(errorMessage);
 		learner.add(posPanel);
 		detail = new MoreDetailForSuggestedConceptsPanel(model);
-		
-
-	}
-	/**
-	 * This method returns the SuggestClassPanel.
-	 * @return SuggestClassPanel
-	 */
-	public SuggestClassPanel getSuggestClassPanel() {
-		return sugPanel;
-	}
-	/**
-	 * This method returns the PosAndNegSelectPanel.
-	 * @return PosAndNegSelectPanel
-	 */
-	public PosAndNegSelectPanel getPosAndNegSelectPanel() {
-		return posPanel;
-	}
-	
-	/**
-	 * This Method renders the view of the plugin.
-	 */
-	public void makeView() {
-		
-		//add(learner);
-
 	}
 	/**
 	 * This method sets the right icon for the advanced Panel.
@@ -260,6 +258,14 @@ public class DLLearnerView extends JPanel{
 
 		return model.getNewOWLDescription();
 	}
+	
+	public void dispose() {
+		this.unsetEverything();
+		sugPanel.getSuggestList().removeAll();
+		learner.removeAll();
+		model.getSuggestModel().clear();
+		model.getIndividual().clear();
+	}
 
 	/**
 	 * Returns the last added description.
@@ -274,7 +280,7 @@ public class DLLearnerView extends JPanel{
     */
 	public void unsetEverything() {
 		run.setEnabled(true);
-		model.unsetNewConcepts();
+		model.getNewOWLDescription().clear();
 		action.destroyDLLearnerThread();
 		errorMessage.setText("");
 		learner.removeAll();

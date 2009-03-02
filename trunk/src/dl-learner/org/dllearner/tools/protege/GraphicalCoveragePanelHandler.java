@@ -52,9 +52,6 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener, Prope
 	@Override
 	public void mouseMoved(MouseEvent m) {
 		Vector<IndividualPoint> v = panel.getIndividualVector();
-		//System.out.println("hier: " + m.getX() + " " + m.getY());
-		//System.out.println("bla: " + v.get(0).getXAxis() + " "
-		//		+ v.get(0).getYAxis());
 		for (int i = 0; i < v.size(); i++) {
 			if (v.get(i).getXAxis() >= m.getX() - 5
 					&& v.get(i).getXAxis() <= m.getX() + 5

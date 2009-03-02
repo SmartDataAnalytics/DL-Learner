@@ -20,11 +20,9 @@
 
 package org.dllearner.tools.protege;
 
-import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 
@@ -80,7 +78,7 @@ public class DLLearnerModel implements Runnable{
 
 	private final ComponentManager cm;
 
-	private static final String EQUIVALENT_CLASS_AXIOM_STRING = "Suggest equivalent class";
+	private static final String EQUIVALENT_CLASS_AXIOM_STRING = "equivalent class";
 	private static final String SUPER_CLASS_AXIOM_STRING = "Suggest super class";
 	private static final String EQUIVALENT_CLASS_LEARNING = "equivalence";
 	private static final String SUPER_CLASS_LEARNING = "superClass";
@@ -139,7 +137,6 @@ public class DLLearnerModel implements Runnable{
 	// The Individuals of the Ontology
 
 	private Set<Individual> individual;
-	private Set<OWLAPIOntology> ontologies;
 	private int instancesCount;
 
 	// The error message which is rendered when an error occured
@@ -151,12 +148,9 @@ public class DLLearnerModel implements Runnable{
 
 	// This is necessary to get the details of the suggested concept
 
-	private DefaultListModel posListModel;
-	private DefaultListModel negListModel;
 	private final Set<KnowledgeSource> sources;
 	private boolean hasIndividuals;
 	private NamedClass currentConcept;
-	private Vector<IndividualObject> individualVector;
 	private Set<String> ontologieURI;
 	private final boolean ontologyConsistent;
 	private final DLLearnerView view;
@@ -182,10 +176,7 @@ public class DLLearnerModel implements Runnable{
 		ontologyConsistent = true;
 		instancesCount = 0;
 		owlDescription = new HashSet<OWLDescription>();
-		posListModel = new DefaultListModel();
-		negListModel = new DefaultListModel();
 		ComponentManager.setComponentClasses(componenten);
-		individualVector = new Vector<IndividualObject>();
 		cm = ComponentManager.getInstance();
 		ds = new HashSet<OWLDescription>();
 		suggestModel = new DefaultListModel();
@@ -203,24 +194,6 @@ public class DLLearnerModel implements Runnable{
 		setReasoner();
 
 	}
-
-	/**
-	 * This method returns the data for the suggest panel.
-	 * 
-	 * @return Model for the suggest panel.
-	 */
-	public DefaultListModel getSuggestList() {
-		return suggestModel;
-	}
-
-	/**
-	 * This method returns an array of descriptions learned by the DL-Learner.
-	 * 
-	 * @return Array of descriptions learned by the DL-Learner.
-	 
-	public Description[] getDescriptions() {
-		return description;
-	}*/
 
 	/**
 	 * This Method returns a List of evaluated descriptions suggested by the
@@ -260,8 +233,6 @@ public class DLLearnerModel implements Runnable{
 		} catch (InconsistentOntologyException incon) {
 			view.setIsInconsistent(true);
 		}
-		
-		// rs = cm.reasoningService(reasoner);
 	}
 	
 	/**
@@ -337,25 +308,6 @@ public class DLLearnerModel implements Runnable{
 	}
 
 	/**
-	 * This method resets the Concepts that are learned.
-	 */
-	public void unsetNewConcepts() {
-		for(OWLDescription o : owlDescription) {
-			owlDescription.remove(o);
-		}
-	}
-
-	/**
-	 * This method returns the Vector of IndividualObjects.
-	 * 
-	 * @return individualVector Vector
-	 */
-	public Vector<IndividualObject> getIndividualVector() {
-		return individualVector;
-	}
-
-
-	/**
 	 * This method sets the positive examples for learning. 
 	 * @param ind Set of Individuals
 	 */
@@ -389,35 +341,6 @@ public class DLLearnerModel implements Runnable{
 	}
 
 	/**
-	 * This method resets the vectors where the check boxes for positive and
-	 * negative Examples are stored. It is called when the DL-Learner View is
-	 * closed.
-	 */
-	public void clearVector() {
-		individualVector.removeAllElements();
-		posListModel.removeAllElements();
-		negListModel.removeAllElements();
-	}
-
-	/**
-	 * This method returns the PosListModel.
-	 * 
-	 * @return DefaultListModel posListModel
-	 */
-	public DefaultListModel getPosListModel() {
-		return posListModel;
-	}
-
-	/**
-	 * This method returns the NegListModel.
-	 * 
-	 * @return DefaultListModel negListModel
-	 */
-	public DefaultListModel getNegListModel() {
-		return negListModel;
-	}
-
-	/**
 	 * This method returns the current learning algorithm that is used to learn
 	 * new concepts.
 	 * 
@@ -425,28 +348,6 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public LearningAlgorithm getLearningAlgorithm() {
 		return la;
-	}
-
-	/**
-	 * This method resets the model for the suggest panel. It is called befor
-	 * the DL-Learner learns the second time or when the DL-Learner tab is
-	 * closed.
-	 */
-	public void unsetListModel() {
-		if (suggestModel != null) {
-			suggestModel.removeAllElements();
-		}
-	}
-
-	/**
-	 * This method gets a description from the DL-Learner and adds is to the
-	 * model from the suggest panel.
-	 * 
-	 * @param descript
-	 *            Description from the DL-Learner
-	 */
-	public void setSuggestModel(Description descript) {
-		suggestModel.add(0, descript);
 	}
 
 	/**
@@ -469,15 +370,6 @@ public class DLLearnerModel implements Runnable{
 		oldConceptOWLAPI = OWLAPIDescriptionConvertVisitor
 		.getOWLDescription(currentConcept);
 		return oldConceptOWLAPI;
-	}
-	
-	/**
-	 * This method returns a set of OWL descriptions that should
-	 * be added to the OWL file.
-	 * @return Set of OWL descriptions
-	 */
-	public Set<OWLDescription> getDescriptions() {
-		return ds;
 	}
 	
 	/**
@@ -577,15 +469,6 @@ public class DLLearnerModel implements Runnable{
 	}
 
 	/**
-	 * This Method returns the URI of the currently loaded Ontology.
-	 * 
-	 * @return URI Ontology URI
-	 */
-	public URI getURI() {
-		return editor.getModelManager().getActiveOntology().getURI();
-	}
-
-	/**
 	 * This method sets the suggestion list.
 	 * 
 	 * @param list
@@ -593,32 +476,6 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public void setSuggestList(List<? extends EvaluatedDescription> list) {
 		evalDescriptions = list;
-	}
-	
-	/**
-	 * This method returns the OWLEditorKit.
-	 * @return OWLEditorKit
-	 */
-	public OWLEditorKit getOWLEditorKit() {
-		return editor;
-	}
-
-	/**
-	 * This method returns the currently used ontoloies including importet
-	 * ontologies.
-	 * 
-	 * @return Set of OWLAPI ontologies
-	 */
-	public Set<OWLAPIOntology> getOWLOntologies() {
-		return ontologies;
-	}
-
-	/**
-	 * This method returns the Knowledgesources currenty used. 
-	 * @return Set of Knowledgesources
-	 */
-	public Set<KnowledgeSource> getKnowledgeSources() {
-		return sources;
 	}
 	
 	/**
@@ -634,30 +491,6 @@ public class DLLearnerModel implements Runnable{
 	 */
 	public boolean getOntologyConsistent() {
 		return ontologyConsistent;
-	}
-	
-	/**
-	 * Sets the positive examples.
-	 * @param list list of positive Expamles
-	 */
-	public void setPosListModel(DefaultListModel list) {
-		this.posListModel = list;
-	}
-	
-	/**
-	 * Sets the negative examples.
-	 * @param list list of negative examples
-	 */
-	public void setNegListModel(DefaultListModel list) {
-		this.negListModel = list;
-	}
-	
-	/**
-	 * Sets the individual vector.
-	 * @param indi Vector of Individuals
-	 */
-	public void setIndividualVector(Vector<IndividualObject> indi) {
-		this.individualVector = indi;
 	}
 	
 	/**
