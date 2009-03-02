@@ -22,7 +22,6 @@ package org.dllearner.tools.protege;
 import java.util.Set;
 
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
 import org.protege.editor.core.ui.util.InputVerificationStatusChangedListener;
 import org.protege.editor.owl.ui.editor.AbstractOWLDescriptionEditor;
@@ -37,67 +36,50 @@ import org.semanticweb.owl.model.OWLDescription;
  */
 public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	private static final long serialVersionUID = 728362819273927L;
-	private JPanel test;
 	private DLLearnerView view;
 	
 	@Override
 	public JComponent getComponent() {
-		System.out.println("1");
-		// TODO Auto-generated method stub
 		return view.getLearnerView();
 	}
 
 	@Override
 	public Set<OWLDescription> getDescriptions() {
-		System.out.println("2");
-		// TODO Auto-generated method stub
-		return null;
+		return view.getDLLearnerModel().getNewOWLDescription();
 	}
 
 	@Override
 	public boolean isValidInput() {
-		System.out.println("3");
+		System.out.println("testen2: " + super.getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass());
+		System.out.println("testen: " + super.getOWLEditorKit().getWorkspace());
 		view = new DLLearnerView("equivalent class", this.getOWLEditorKit());
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean setDescription(OWLDescription arg0) {
-		System.out.println("4");
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public void initialise() throws Exception {
-		System.out.println("5");
-		System.out.println("test: " + this.getOWLEditorKit().getOWLWorkspace().getViewManager().getClass());
-		view = new DLLearnerView("equivalent class", this.getOWLEditorKit());
+		view = new DLLearnerView("equivalent class", super.getOWLEditorKit());
 	}
 
 	@Override
 	public void dispose() throws Exception {
-		System.out.println("6");
-		// TODO Auto-generated method stub
-		
+		view = null;
 	}
 
 	@Override
 	public void addStatusChangedListener(
 			InputVerificationStatusChangedListener arg0) {
-		System.out.println("7");
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void removeStatusChangedListener(
 			InputVerificationStatusChangedListener arg0) {
-		System.out.println("8");
 		view = null;
-		// TODO Auto-generated method stub
-		
 	}
 
 

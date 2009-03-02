@@ -46,8 +46,7 @@ import org.semanticweb.owl.model.OWLDescription;
 public class DLLearnerView extends JPanel{
 
 	
-	private static final  long serialVersionUID = 624829578325729385L;
-	//private OWLClassDescriptionEditorWithDLLearnerTab mainWindow; 
+	private static final  long serialVersionUID = 624829578325729385L; 
 	// this is the Component which shows the view of the dllearner
 	private final JComponent learner;
 
@@ -103,7 +102,6 @@ public class DLLearnerView extends JPanel{
 	private boolean isInconsistent;
 	// This is the Panel for more details of the suggested concept
 	private final MoreDetailForSuggestedConceptsPanel detail;
-	//private OWLFrame<OWLClass> frame;
 	private final ReadingOntologyThread readThread;
 	private final OWLEditorKit editorKit;
 
@@ -115,7 +113,6 @@ public class DLLearnerView extends JPanel{
 	 * @param label String
 	 */
 	public DLLearnerView(String label, OWLEditorKit editor) {
-		//mainWindow = dlLearner;
 		editorKit = editor;
 		wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
 		URL iconUrl = this.getClass().getResource("arrow.gif");
@@ -130,7 +127,6 @@ public class DLLearnerView extends JPanel{
 		advanced.setVisible(true);
 		run = new JButton(label);
 		accept = new JButton("ADD");
-		System.out.println("blub");
 		addButtonPanel = new JPanel(new BorderLayout());
 		sugPanel.addSuggestPanelMouseListener(action);
 		errorMessage = new JTextArea();
@@ -154,8 +150,7 @@ public class DLLearnerView extends JPanel{
 		isInconsistent = false;
 		readThread = new ReadingOntologyThread(editorKit, null, this, model);
 		readThread.start();
-		//TODO: runbutton wird auf enable gesetzt obwohl keine instanzdaten vorhanden sind.
-		
+
 		hint.setVisible(true);
 		advanced.setIcon(icon);
 		accept.setEnabled(false);
@@ -361,5 +356,9 @@ public class DLLearnerView extends JPanel{
 	
 	public JComponent getLearnerView() {
 		return learner;
+	}
+	
+	public DLLearnerModel getDLLearnerModel() {
+		return model;
 	}
 }
