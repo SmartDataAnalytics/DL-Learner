@@ -1,0 +1,380 @@
+@charset 'utf-8';
+@import url(default.css);  
+
+/* moosique.net 
+ *
+ * Overall width: 955px -- golden ratio: 590px & 365px 
+ * 
+ * Semiblack:   #131313
+ * Dark Grey:   #383838
+ * Light Grey:  #545454
+ * White:       #fff
+ * Yellowish:   #ffbc00
+ * Border:      #272727
+ * 
+ * 
+ */
+
+@media screen {
+  
+/* Default Element Styling --- Start Editing below this line */
+/* =================================================================== */
+* {
+  font-family: Verdana, Arial, "Lucida Grande", Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 18px;
+  color: #fff;
+}
+
+body {
+  background: url(../img/bg_body.png) top left repeat-x #383838;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline; 
+  color: #ffbc00;
+}
+
+/* Abstand Zeilenhoehe nach unten bei manchen Elementen */
+p, h1, h2, h3, h4, h5, h6, table, ul, ol, blockquote, pre, form {
+  margin-bottom: 18px;
+}
+
+/* Default Container Positioning */
+/* =================================================================== */
+
+#container, #header, #mainContainer, #content {
+  position: relative;
+}
+
+#container {
+  width: 955px;
+  margin: 0 auto;
+}
+
+#header {
+  height: 132px;
+}
+
+#content {
+  /* width: 590px; */
+  top: 4px;
+  width: 557px;
+  padding: 30px 30px 30px 0;
+  border-right: 3px solid #272727;
+  min-height: 300px;
+  height: auto !important;
+  height: 300px;
+}
+
+#sidebar {
+  /* width: 365px; */
+  width: 335px;
+  position: absolute;
+  right: 0;
+  top: 4px;
+  padding: 30px 0 30px 30px;
+  
+}
+
+#footer {
+  padding: 20px;
+  text-align: center;
+}
+
+
+/* Header Area */
+/* =================================================================== */
+#header h1 a {
+  font-size: 36px;
+  line-height: 120px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  text-decoration: none;
+}
+
+#now {
+  position: absolute;
+  top: 30px;
+  left: 280px;
+  width: 410px;
+  height: 37px;
+  padding: 10px 20px;
+  background: #545454;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+
+#now h2, #now h3, now p {
+  margin: 0;
+}
+
+#now h2, #now p {
+  font-size: 11px;
+  line-height: 11px;
+}
+
+#now h3 {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+#now p {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  text-align: right;
+}
+
+#status {
+  position: absolute;
+  top: 93px;
+  left: 300px;
+  width: 410px;
+  font-size: 11px;  
+}
+
+#playerControls {
+  position: absolute;
+  width: 116px;
+  height: 37px;
+  top: 30px;
+  right: 0;
+  padding: 10px 20px;
+  background: #545454;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+
+#prev, #next, #stop, #playPause {
+  display: block;
+  width: 20px;
+  height: 37px;
+  text-decoration: none;
+  text-indent: -1000000px;
+  float: left;
+  margin-right: 10px;
+}
+
+#next {
+  margin-right: 0;
+}
+
+/* clicky feel */
+#prev:active, #next:active, #stop:active, #playPause:active {
+  position: relative;
+  top: 2px;
+}
+
+#prev {
+  
+}
+
+#playPause {
+  width: 26px;
+}
+  
+/* TODO Sprites */
+#prev {
+  background: url(../img/prev.png) center center no-repeat;
+}
+#next {
+  background: url(../img/next.png) center center no-repeat;
+}
+/* Will be changed by JavaScript onclick */
+#playPause {
+  background: url(../img/play.png) center center no-repeat;
+}
+#stop {
+  background: url(../img/stop.png) center center no-repeat;
+}
+
+#toggles {
+  position: absolute;
+  width: 156px;
+  height: 18px;
+  top: 93px;
+  right: 0;
+  text-align: center;
+}
+
+#toggleMute, #togglePlaylist {
+  font-size: 11px;
+  text-decoration: none;
+}
+
+#toggleMute {
+  padding-right: 10px;
+}
+
+
+
+/* Playlist Area */
+/* =================================================================== */
+
+#playlistContainer {
+  position: absolute;
+  width: 368px;
+  /* top: 132px; */
+  top: 450px;
+  right: 0;
+  background: #000;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  z-index: 100;
+}
+
+#playlistHeader {
+  position: relative;
+  -moz-border-radius-topleft: 10px;
+  -moz-border-radius-topright: 10px;
+  -webkit-border-top-left-radius: 10px;
+  -webkit-border-top-right-radius: 10px;
+  background: #111;
+  padding: 5px 10px;
+  cursor: move;
+}
+
+#playlistFooter {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  -moz-border-radius-bottomleft: 10px;
+  -moz-border-radius-bottomright: 10px;
+  -webkit-border-bottom-left-radius: 10px;
+  -webkit-border-bottom-right-radius: 10px;
+  background: #111;
+  padding: 5px 0;
+  cursor: se-resize;
+}
+
+#closePlaylist {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 5px;
+  right: 10px;
+  text-align: right;
+  font-weight: bold;
+}
+
+#playlist {
+  padding: 20px;
+  margin: 0 0 20px 0;
+}
+
+#playlist li {
+  position: relative; /* Delete Buttons */
+  list-style: decimal;
+  list-style-position: inside;
+  cursor: move;
+  padding: 3px;
+}
+
+#playlist li a.ymp-btn-page-pause {
+  font-weight: bold;
+}
+
+/* Delete buttons */
+#playlist li a.del {
+  position: absolute;
+  display: block;
+  top: 5px;
+  right: 10px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  color: #131313;
+  background: #fff;
+  font-weight: bold;
+  text-align: center;
+  margin-right: -19px;
+  z-index: 1000;
+}
+
+/* Samples */
+#samples li {
+  cursor: move;
+  padding: 3px;
+}
+
+
+/* Content Area */
+/* =================================================================== */
+#searchContainer * {
+  color: #131313;
+}
+
+
+#mainContainer h2 {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: bold;
+}
+
+/* for debugging */
+#mainContainer pre {
+  font-size: 12px;
+  font-family: "Courier New", Courier, monospace;
+}
+
+/* Recommendations and Samples */
+#content ol {
+  list-style: decimal;
+  margin-left: 24px;
+}
+
+#content ol li a {
+  cursor: move;
+  text-decoration: none;
+}
+
+#content ol li a:hover {
+  text-decoration: none;
+  color: #fff; 
+}
+
+
+/* Draggable li-Items */
+#playlist li.moving, #samples li.moving, #recommendations li.moving {
+  background: #666;
+  border: 3px solid #ffbc00;
+  color: #000;
+  font-weight: bold;
+} 
+
+
+/* Sidebar Area */
+/* =================================================================== */
+
+
+
+/* Footer Area */
+/* =================================================================== */
+#footer a {
+  font-size: 11px;
+}
+
+
+
+
+/* =================================================================== */
+/* ======================== IE 7 Styles ============================== */
+/* =================================================================== */
+.ie7 .class {
+  
+}
+
+
+/* =================================================================== */
+/* ================= IE 6  (and below) Styles ======================== */
+/* =================================================================== */
+.ie6 .class {
+  
+}
+
+
+} /* end @media screen
