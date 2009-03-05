@@ -46,10 +46,10 @@ public class ReadingOntologyThread extends Thread {
 	private Set<Individual> individual;
 	private Set<String> ontologieURI;
 	private final OWLEditorKit editor;
-	private final DLLearnerModel model;
+	private DLLearnerModel model;
 	private boolean isInconsistent;
 	private OWLClass current;
-	private final DLLearnerView view;
+	private DLLearnerView view;
 	
 	/**
 	 * This is the constructor of the ReadingOntologyThread.
@@ -61,6 +61,14 @@ public class ReadingOntologyThread extends Thread {
 	public ReadingOntologyThread(OWLEditorKit editorKit, DLLearnerView v, DLLearnerModel m) {
 		this.editor = editorKit;
 		this.view = v;
+		this.model = m;
+	}
+	
+	public void setDLLearnerView(DLLearnerView v) {
+		this.view = v;
+	}
+	
+	public void setDLLearnerModel(DLLearnerModel m) {
 		this.model = m;
 	}
 	/**
@@ -96,6 +104,7 @@ public class ReadingOntologyThread extends Thread {
 										individual = reasoner.getIndividuals(concept);
 										model.setIndividuals(individual);
 										model.setHasIndividuals(hasIndividuals);
+										System.out.println("current: " + currentConcept);
 										model.setCurrentConcept(currentConcept);
 										view.getRunButton().setEnabled(true);
 										break;
@@ -174,5 +183,9 @@ public class ReadingOntologyThread extends Thread {
 			view.getRunButton().setEnabled(false);
 			view.setHintMessage("The ontology is inconsistent and suggestions for class descriptions can only \nbe computed on consistent ontologies. Please repair the ontology first");
 		}
+	}
+	
+	public NamedClass getCurrentConcept() {
+		return currentConcept;
 	}
 }

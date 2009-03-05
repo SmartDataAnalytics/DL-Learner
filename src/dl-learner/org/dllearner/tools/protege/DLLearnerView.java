@@ -49,19 +49,19 @@ public class DLLearnerView {
 	
 	private static final  long serialVersionUID = 624829578325729385L; 
 	// this is the Component which shows the view of the dllearner
-	private JComponent learner;
+	private final JComponent learner;
 
 	// Accept button to add the learned concept to the owl
 
-	private JButton accept;
+	private final JButton accept;
 
 	// Runbutton to start the learning algorithm
 
-	private JButton run;
+	private final JButton run;
 
 	// This is the label for the advanced button.
 
-	private JLabel adv;
+	private final JLabel adv;
 
 	// This is the color for the error message. It is red.
 
@@ -69,19 +69,19 @@ public class DLLearnerView {
 
 	// This is the text area for the error message when an error occurred
 
-	private JTextArea errorMessage;
+	private final JTextArea errorMessage;
 
 	// Advanced Button to activate/deactivate the example select panel
 
-	private JToggleButton advanced;
+	private final JToggleButton advanced;
 
 	// Action Handler that manages the Button actions
 
-	private ActionHandler action;
+	private final ActionHandler action;
 
 	// This is the model of the dllearner plugin which includes all data
 
-	private DLLearnerModel model;
+	private final DLLearnerModel model;
 
 	// Panel for the suggested concepts
 
@@ -89,17 +89,17 @@ public class DLLearnerView {
 
 	// Selection panel for the positive and negative examples
 
-	private PosAndNegSelectPanel posPanel;
+	private final PosAndNegSelectPanel posPanel;
 
 	// Picture for the advanced button when it is not toggled
 
-	private ImageIcon icon;
+	private final ImageIcon icon;
 
 	// Picture of the advanced button when it is toggled
-	private JPanel addButtonPanel;
-	private JLabel wikiPane;
-	private ImageIcon toggledIcon;
-	private JTextArea hint;
+	private final JPanel addButtonPanel;
+	private final JLabel wikiPane;
+	private final ImageIcon toggledIcon;
+	private final JTextArea hint;
 	private boolean isInconsistent;
 	// This is the Panel for more details of the suggested concept
 	private MoreDetailForSuggestedConceptsPanel detail;
@@ -117,31 +117,10 @@ public class DLLearnerView {
 	public DLLearnerView(String label, OWLEditorKit editor) {
 		this.label = label;
 		editorKit = editor;
-		
-	}
-	
-	/**
-	 * This method returns the SuggestClassPanel.
-	 * @return SuggestClassPanel
-	 */
-	public SuggestClassPanel getSuggestClassPanel() {
-		return sugPanel;
-	}
-	/**
-	 * This method returns the PosAndNegSelectPanel.
-	 * @return PosAndNegSelectPanel
-	 */
-	public PosAndNegSelectPanel getPosAndNegSelectPanel() {
-		return posPanel;
-	}
-	
-	/**
-	 * This Method renders the view of the plugin.
-	 */
-	public void makeView() {
-		model = new DLLearnerModel(editorKit, label, this);
+		model = new DLLearnerModel(editorKit, this);
+		model.setID(label);
 		sugPanel = new SuggestClassPanel();
-		action = new ActionHandler(this.action, model, this, label);
+		action = new ActionHandler(model, this, label);
 		wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
 		URL iconUrl = this.getClass().getResource("arrow.gif");
 		icon = new ImageIcon(iconUrl);
@@ -169,6 +148,28 @@ public class DLLearnerView {
 		addAcceptButtonListener(this.action);
 		addRunButtonListener(this.action);
 		addAdvancedButtonListener(this.action);
+		
+	}
+	
+	/**
+	 * This method returns the SuggestClassPanel.
+	 * @return SuggestClassPanel
+	 */
+	public SuggestClassPanel getSuggestClassPanel() {
+		return sugPanel;
+	}
+	/**
+	 * This method returns the PosAndNegSelectPanel.
+	 * @return PosAndNegSelectPanel
+	 */
+	public PosAndNegSelectPanel getPosAndNegSelectPanel() {
+		return posPanel;
+	}
+	
+	/**
+	 * This Method renders the view of the plugin.
+	 */
+	public void makeView() {
 		run.setEnabled(false);
 		hint.setText("To get suggestions for class descriptions, please click the button above.");
 		isInconsistent = false;
@@ -191,6 +192,7 @@ public class DLLearnerView {
 		sugPanel.setVisible(true);
 		posPanel.setVisible(false);
 		posPanel.setBounds(10, 230, 490, 250);
+		posPanel.getOptionPanel().resetOptions();
 		accept.setBounds(510, 40, 80, 110);
 		hint.setBounds(10, 150, 490, 35);
 		errorMessage.setBounds(10, 180, 490, 20);
@@ -203,7 +205,8 @@ public class DLLearnerView {
 		learner.add(hint);
 		learner.add(errorMessage);
 		learner.add(posPanel);
-		detail = new MoreDetailForSuggestedConceptsPanel(model);
+		this.renderErrorMessage("");
+		detail = new MoreDetailForSuggestedConceptsPanel(model);	
 	}
 	/**
 	 * This method sets the right icon for the advanced Panel.
@@ -233,7 +236,7 @@ public class DLLearnerView {
 	public JTextArea getHintPanel() {
 		return hint;
 	}
-
+	
 	/**
 	 * Sets the panel to select/deselect the examples visible/invisible.
 	 * @param visible boolean
@@ -254,7 +257,7 @@ public class DLLearnerView {
 	 * Returns all added descriptions.
 	 * @return Set(OWLDescription) 
 	 */
-	public Set<OWLDescription> getSollutions() {
+	public Set<OWLDescription> getSolutions() {
 
 		return model.getNewOWLDescription();
 	}
@@ -263,6 +266,7 @@ public class DLLearnerView {
 		this.unsetEverything();
 		sugPanel.getSuggestList().removeAll();
 		learner.removeAll();
+		sugPanel = null;
 		model.getSuggestModel().clear();
 		model.getIndividual().clear();
 	}
@@ -271,7 +275,7 @@ public class DLLearnerView {
 	 * Returns the last added description.
 	 * @return OWLDescription
 	 */
-	public OWLDescription getSollution() {
+	public OWLDescription getSolution() {
 		return model.getSolution();
 	}
 
@@ -365,5 +369,9 @@ public class DLLearnerView {
 	
 	public DLLearnerModel getDLLearnerModel() {
 		return model;
+	}
+	
+	public ReadingOntologyThread getReadingOntologyThread() {
+		return readThread;
 	}
 }

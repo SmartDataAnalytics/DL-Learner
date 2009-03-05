@@ -37,6 +37,7 @@ import org.semanticweb.owl.model.OWLDescription;
 public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	private static final long serialVersionUID = 728362819273927L;
 	private DLLearnerView view;
+
 	
 	@Override
 	public JComponent getComponent() {
@@ -45,13 +46,11 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 
 	@Override
 	public Set<OWLDescription> getDescriptions() {
-		return view.getDLLearnerModel().getNewOWLDescription();
+		return view.getSolutions();
 	}
 
 	@Override
 	public boolean isValidInput() {
-		System.out.println("testen: " + super.getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass());
-		view = new DLLearnerView("equivalent class", this.getOWLEditorKit());
 		view.makeView();
 		return true;
 	}
@@ -81,8 +80,6 @@ public class ProtegePlugin extends AbstractOWLDescriptionEditor {
 	@Override
 	public void removeStatusChangedListener(
 			InputVerificationStatusChangedListener arg0) {
-		view.dispose();
-		view = null;
 	}
 
 
