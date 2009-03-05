@@ -39,11 +39,11 @@ public class SuggestClassPanel extends JPanel {
 	
 	 // Description List
 	 
-	private JList descriptions;
+	private final JList descriptions;
 	
 	 // Panel for the description list
 	 
-	private JPanel suggestPanel;
+	private final JPanel suggestPanel;
 	
 	 //Scroll panel if the suggestions are longer than the Panel itself
 
@@ -73,17 +73,6 @@ public class SuggestClassPanel extends JPanel {
 	 * @return updated SuggestClassPanel
 	 */
 	public SuggestClassPanel updateSuggestClassList() {
-		suggestScroll = new JScrollPane();
-		//renders scroll bars if necessary
-		suggestScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		descriptions = new JList();
-		descriptions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		suggestPanel = new JPanel();
-		descriptions.setVisible(true);
-		suggestPanel.add(descriptions);
-		suggestScroll.setPreferredSize(new Dimension(490, 108));
-		suggestScroll.setViewportView(descriptions);
-		descriptions.setCellRenderer(new SuggestListCellRenderer());
 		add(suggestScroll);
 		return this;
 		

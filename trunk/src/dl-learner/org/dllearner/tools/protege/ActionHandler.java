@@ -84,7 +84,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 *            id if it is a subclass or an equivalent class
 	 * 
 	 */
-	public ActionHandler(ActionHandler a, DLLearnerModel m, DLLearnerView view, String i) {
+	public ActionHandler(DLLearnerModel m, DLLearnerView view, String i) {
 		this.view = view;
 		this.id = i;
 		this.model = m;
@@ -109,6 +109,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 			view.renderErrorMessage("learning started");
 			retriever = new SuggestionRetriever();
 			retriever.execute();
+			//model.setCurrentConcept(null);
 
 		}
 

@@ -116,7 +116,7 @@ public class DLLearnerModel implements Runnable{
 
 	// String to distinguish between Equivalent classes and sub classes
 
-	private final String id;
+	private String id;
 
 	// The new Concept which is learned by the DL-Learner
 
@@ -169,9 +169,9 @@ public class DLLearnerModel implements Runnable{
 	 * @param view
 	 *            current view of the DL-Learner tab
 	 */
-	public DLLearnerModel(OWLEditorKit editorKit, String id, DLLearnerView view) {
+	public DLLearnerModel(OWLEditorKit editorKit, DLLearnerView view) {
 		editor = editorKit;
-		this.id = id;
+		
 		this.view = view;
 		ontologyConsistent = true;
 		instancesCount = 0;
@@ -183,7 +183,10 @@ public class DLLearnerModel implements Runnable{
 		ontologieURI = new HashSet<String>();
 		sources = new HashSet<KnowledgeSource>();
 	}
-
+	
+	public void setID(String id) {
+		this.id = id;
+	}
 	/**
 	 * This method initializes the SimpleSuggestionLearningAlgorithm and adds
 	 * the suggestions to the suggest panel model.
@@ -258,6 +261,7 @@ public class DLLearnerModel implements Runnable{
 	public void setLearningProblem() {
 		lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 		cm.applyConfigEntry(lp, "classToDescribe", currentConcept.toString());
+		System.out.println("lern: " + currentConcept);
 		if (id.equals(EQUIVALENT_CLASS_AXIOM_STRING)) {
 			// sets the learning problem to PosNegDefinitionLP when the
 			// dllearner should suggest an equivalent class
@@ -517,7 +521,6 @@ public class DLLearnerModel implements Runnable{
 	public void setInstancesCount(int i) {
 		instancesCount = i;
 	}
-
 }
 
 
