@@ -330,8 +330,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts()
-					, view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true);
+			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts());
 			
 			return result;
 		}
