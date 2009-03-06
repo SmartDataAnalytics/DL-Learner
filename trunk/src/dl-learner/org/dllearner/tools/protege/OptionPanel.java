@@ -46,7 +46,7 @@ public class OptionPanel extends JPanel {
 	public OptionPanel() {
 		setPreferredSize(new Dimension(490, 100));
 		setLayout(null);
-		minAccuracyLabel = new JLabel("minimum accuracy");
+		minAccuracyLabel = new JLabel("noise in %");
 		minAccuracyLabel.setBounds(5, 0, 150, 40);
 		maxExecutionTimeLabel = new JLabel("maximum execution time");
 		maxExecutionTimeLabel.setBounds(5, 40, 150, 40);
