@@ -31,10 +31,11 @@ import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
+@SuppressWarnings("all")
 public  class CELOEConfigurator  extends RefinementOperatorConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 
 private CELOE cELOE;
 
@@ -113,7 +114,7 @@ return (Integer) ComponentManager.getInstance().getConfigOptionValue(cELOE,  "ca
 /**
 * useNegation specifies whether negation is used in the learning algorothm.
 * mandatory: false| reinit necessary: true
-* default value: true
+* default value: false
 * @return boolean 
 **/
 public boolean getUseNegation() {
@@ -231,7 +232,7 @@ reinitNecessary = true;
 /**
 * @param useNegation specifies whether negation is used in the learning algorothm.
 * mandatory: false| reinit necessary: true
-* default value: true
+* default value: false
 **/
 public void setUseNegation(boolean useNegation) {
 ComponentManager.getInstance().applyConfigEntry(cELOE, "useNegation", useNegation);

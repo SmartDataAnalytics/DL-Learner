@@ -33,7 +33,7 @@ import org.dllearner.core.ReasonerComponent;
 public  class ELLearningAlgorithmConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 
 private ELLearningAlgorithm eLLearningAlgorithm;
 

@@ -30,7 +30,7 @@ import org.dllearner.kb.OWLAPIOntology;
 public  class OWLAPIOntologyConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 
 private OWLAPIOntology oWLAPIOntology;
 

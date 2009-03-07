@@ -60,7 +60,7 @@ public class SPARQLTest{
 		LearningAlgorithm la = null;
 		
 //			try {
-////				la = learn.learn(posExamples, negExamples, OWLAPIReasoner.class);
+		//la = learn.learn(posExamples, negExamples, OWLAPIReasoner.class);
 //			} catch (ComponentInitException e) {
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();

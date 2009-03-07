@@ -32,7 +32,7 @@ import org.dllearner.learningproblems.PosOnlyLP;
 public  class PosOnlyLPConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 
 private PosOnlyLP posOnlyLP;
 

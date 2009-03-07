@@ -33,7 +33,7 @@ import org.dllearner.core.ReasonerComponent;
 public  class RandomGuesserConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 
 private RandomGuesser randomGuesser;
 

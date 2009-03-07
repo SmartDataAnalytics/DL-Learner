@@ -32,10 +32,11 @@ import org.dllearner.core.configurators.RefinementOperatorConfigurator;
 * automatically generated, do not edit manually.
 * run org.dllearner.scripts.ConfigJavaGenerator to update
 **/
+@SuppressWarnings("all")
 public  class ROLearnerConfigurator  extends RefinementOperatorConfigurator implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 
 private ROLearner rOLearner;
 

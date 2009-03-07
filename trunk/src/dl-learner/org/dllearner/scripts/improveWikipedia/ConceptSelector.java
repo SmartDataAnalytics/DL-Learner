@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dllearner.algorithms.EvaluatedDescriptionPosNeg;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.datastructures.SetManipulation;
 
