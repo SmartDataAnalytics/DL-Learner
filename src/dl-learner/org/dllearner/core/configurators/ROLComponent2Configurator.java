@@ -34,7 +34,7 @@ import org.dllearner.core.ReasonerComponent;
 public  class ROLComponent2Configurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 
 private ROLComponent2 rOLComponent2;
 

@@ -39,7 +39,6 @@ import org.dllearner.kb.manipulator.Manipulator;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.kb.sparql.SparqlQueryMaker;
-import org.dllearner.utilities.JamonMonitorLogger;
 
 /**
  * Test class, uses the whole thing

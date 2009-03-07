@@ -258,14 +258,22 @@ public class SparqlQueryMaker {
 	}
 	
 	private void addFiltersForDBpediaUMBEL() {
-		addObjectFilter("http://umbel.org/umbel/sc/");
+		addObjectFilter("http://umbel.org/umbel/");
 	}
-	
+	@SuppressWarnings("unused")
+	private void addFiltersForDBpediaOntology() {
+		addObjectFilter("http://dbpedia.org/ontology/");
+	}
+	@SuppressWarnings("unused")
+	private void addFiltersForDBpediaCyc() {
+		addObjectFilter("http://sw.opencyc.org/2008/06/10/concept/");
+	}
 	
 	private void addFiltersForYago() {
 		addObjectFilter("http://dbpedia.org/class/yago");
 		
 	}
+	
 	private void addFiltersForOWLSameAs() {
 		addPredicateFilter("http://www.w3.org/2002/07/owl#sameAs");
 	}

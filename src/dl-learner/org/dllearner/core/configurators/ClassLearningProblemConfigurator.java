@@ -31,7 +31,7 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 public  class ClassLearningProblemConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 
 private ClassLearningProblem classLearningProblem;
 

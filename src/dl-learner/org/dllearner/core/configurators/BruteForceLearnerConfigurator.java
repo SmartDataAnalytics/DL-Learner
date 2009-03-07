@@ -33,7 +33,7 @@ import org.dllearner.core.ReasonerComponent;
 public  class BruteForceLearnerConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 
 private BruteForceLearner bruteForceLearner;
 

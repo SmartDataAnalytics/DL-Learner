@@ -31,7 +31,7 @@ import org.dllearner.kb.OWLFile;
 public  class OWLFileConfigurator  implements Configurator {
 
 private boolean reinitNecessary = false;
-@SuppressWarnings("all")
+@SuppressWarnings("unused")
 
 private OWLFile oWLFile;
 

@@ -74,6 +74,7 @@ public final class ConfigJavaGenerator {
 	private static final boolean INCLUDE_UNUSED = false;
 
 	private static final String UNUSED = "@SuppressWarnings(\"unused\")\n";
+	private static final String OVERRIDE = "@SuppressWarnings(\"all\")\n";
 
 	private static final String TARGET_DIR = "src/dl-learner/org/dllearner/core/configurators";
 
@@ -538,6 +539,7 @@ public final class ConfigJavaGenerator {
 		ret += imports + "\n";
 		ret += fillJavaDocComment(CLASS_COMMENT);
 		ret += (INCLUDE_UNUSED) ? UNUSED : "";
+		ret += (!extendS.isEmpty()) ? OVERRIDE : "";
 		ret += "public "+classModifier+" class " + className + " "
 				+ ((extendS.length() > 0) ? " extends " + extendS : "")
 				+ ((implementS.length() > 0) ? " implements " + implementS : "")
