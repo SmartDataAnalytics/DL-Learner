@@ -43,7 +43,6 @@ import org.dllearner.kb.extraction.Manager;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQuery;
-import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.components.ReasonerComponentFactory;
@@ -75,7 +74,7 @@ public class SemanticBible {
 	
 	public static String ontologyPath = "examples/semantic_bible/NTNcombined.owl";
 	
-	private static Class<? extends ReasonerComponent> usedReasoner = FastInstanceChecker.class;
+//	private static Class<? extends ReasonerComponent> usedReasoner = FastInstanceChecker.class;
 
 	/**
 	 * @param args

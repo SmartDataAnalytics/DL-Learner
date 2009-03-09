@@ -77,6 +77,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	 * @see org.dllearner.learningproblems.ScorePosNeg#getAccuracy()
 	 * @return Accuracy of the description.
 	 */
+	@Override
 	public double getAccuracy() {
 		return score2.getAccuracy();
 	}
