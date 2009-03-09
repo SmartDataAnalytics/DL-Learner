@@ -54,6 +54,9 @@ public class ClassLearningProblem extends LearningProblem {
 	private boolean equivalence = true;
 	private ClassLearningProblemConfigurator configurator;
 	
+	// factor for higher weight on coverage (needed for subclass learning)
+	private double coverageFactor;
+	
 	// instances of super classes excluding instances of the class itself
 	private List<Individual> superClassInstances;
 	
@@ -89,6 +92,12 @@ public class ClassLearningProblem extends LearningProblem {
 		
 		classInstances = reasoner.getIndividuals(classToDescribe);
 		equivalence = (configurator.getType().equals("equivalence"));
+		
+		if(equivalence) {
+			coverageFactor = 1;
+		} else {
+			coverageFactor = 3;
+		}
 		
 		// we compute the instances of the super class to perform
 		// optimisations later on
@@ -165,7 +174,7 @@ public class ClassLearningProblem extends LearningProblem {
 		double coverage = instancesCovered/(double)classInstances.size();
 		double protusion = instancesCovered/(double)retrieval.size();
 		
-		return 0.5d * (coverage + protusion);
+		return (coverageFactor * coverage + protusion) / (coverageFactor + 1);
 	}
 
 	@Override
@@ -239,7 +248,7 @@ public class ClassLearningProblem extends LearningProblem {
 //		System.out.println(instancesDescription);
 //		System.out.println("prot: " + protusion);
 		
-		double acc =  0.5d * (coverage + protusion);
+		double acc = (coverageFactor * coverage + protusion) / (coverageFactor + 1);
 		
 //		System.out.println("acc: " + acc);
 		
