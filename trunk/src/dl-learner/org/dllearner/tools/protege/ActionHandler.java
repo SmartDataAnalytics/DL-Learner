@@ -44,6 +44,7 @@ import org.dllearner.algorithms.EvaluatedDescriptionClass;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.owl.Description;
+
 /**
  * This class processes input from the user.
  * 
@@ -54,7 +55,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 		MouseListener, ListSelectionListener, ListDataListener {
 
 	// This is the DLLearnerModel.
-	
+
 	private final DLLearnerModel model;
 
 	// This is the id that checks if the equivalent class or subclass button is
@@ -71,6 +72,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	private final Color colorRed = new Color(139, 0, 0);
 	private final Color colorGreen = new Color(0, 139, 0);
 	private final DLLearnerView view;
+
 	/**
 	 * This is the constructor for the action handler.
 	 * 
@@ -100,7 +102,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 */
 	public void actionPerformed(ActionEvent z) {
 
-		if (z.getActionCommand().equals(id)) {
+		if (z.getActionCommand().equals("Suggest " + id +" description")) {
 			model.setKnowledgeSource();
 			model.setReasoner();
 			model.setLearningProblem();
@@ -109,11 +111,12 @@ public class ActionHandler implements ActionListener, ItemListener,
 			view.renderErrorMessage("learning started");
 			retriever = new SuggestionRetriever();
 			retriever.execute();
-			//model.setCurrentConcept(null);
+			// model.setCurrentConcept(null);
 
 		}
 
 		if (z.getActionCommand().equals("ADD")) {
+			view.getMoreDetailForSuggestedConceptsPanel().repaint();
 			if (evaluatedDescription != null) {
 				model
 						.changeDLLearnerDescriptionsToOWLDescriptions(evaluatedDescription
@@ -141,6 +144,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 		if (z.getActionCommand().equals("Why")) {
 			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(
 					evaluatedDescription);
+			view.getMoreDetailForSuggestedConceptsPanel().repaint();
 		}
 	}
 
@@ -205,10 +209,11 @@ public class ActionHandler implements ActionListener, ItemListener,
 					.getSuggestClassPanel().getSuggestList().getSelectedValue();
 			String desc = item.getValue();
 			if (model.getEvaluatedDescriptionList() != null) {
-				List<? extends EvaluatedDescription> evalList = model.getEvaluatedDescriptionList();
+				List<? extends EvaluatedDescription> evalList = model
+						.getEvaluatedDescriptionList();
 				Set<String> onto = model.getOntologyURIString();
-				for(EvaluatedDescription eDescription : evalList) {
-					for(String ont : onto) {
+				for (EvaluatedDescription eDescription : evalList) {
+					for (String ont : onto) {
 						if (desc.equals(eDescription.getDescription()
 								.toManchesterSyntaxString(ont, null))) {
 							evaluatedDescription = eDescription;
@@ -217,11 +222,9 @@ public class ActionHandler implements ActionListener, ItemListener,
 					}
 				}
 			}
-
-			if (m.getClickCount() == 2) {
-				view.getMoreDetailForSuggestedConceptsPanel()
-						.renderDetailPanel(evaluatedDescription);
-			}
+			view.getMoreDetailForSuggestedConceptsPanel()
+					.renderDetailPanel(evaluatedDescription);
+			view.getMoreDetailForSuggestedConceptsPanel().repaint();
 		}
 	}
 
@@ -253,7 +256,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 	 * Destroys the Thread after the Pluigin is closed.
 	 */
 	public void destroyDLLearnerThread() {
-		//dlLearner = null;
+		// dlLearner = null;
 	}
 
 	/**
@@ -280,31 +283,36 @@ public class ActionHandler implements ActionListener, ItemListener,
 		// TODO Auto-generated method stub
 
 	}
-	
-	
-	
-/**
- * Inner Class that retrieves the concepts given by the DL-Learner. 
- * @author Christian Koetteritzsch
- *
- */
-	class SuggestionRetriever extends
+
+	/**
+	 * Inner Class that retrieves the concepts given by the DL-Learner.
+	 * 
+	 * @author Christian Koetteritzsch
+	 * 
+	 */
+	class SuggestionRetriever
+			extends
 			SwingWorker<List<? extends EvaluatedDescription>, List<? extends EvaluatedDescription>> {
-		
+
 		private Thread dlLearner;
 		private final DefaultListModel dm = new DefaultListModel();
-		
+
 		@SuppressWarnings("unchecked")
 		@Override
-		protected List<? extends EvaluatedDescription> doInBackground() throws Exception {
+		protected List<? extends EvaluatedDescription> doInBackground()
+				throws Exception {
 			la = model.getLearningAlgorithm();
 			timer = new Timer();
-			timer.schedule(new TimerTask(){
-				
+			timer.schedule(new TimerTask() {
+
 				@Override
-				public void run() {	
+				public void run() {
 					if (la != null) {
-						publish(la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts(), view.getPosAndNegSelectPanel().getOptionPanel().getMinAccuracy(), true));
+						publish(la.getCurrentlyBestEvaluatedDescriptions(view
+								.getPosAndNegSelectPanel().getOptionPanel()
+								.getNrOfConcepts(), view
+								.getPosAndNegSelectPanel().getOptionPanel()
+								.getMinAccuracy(), false));
 					}
 				}
 
@@ -315,7 +323,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 				@Override
 				public void run() {
 					try {
-					model.run();
+						model.run();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -330,8 +338,11 @@ public class ActionHandler implements ActionListener, ItemListener,
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			List<? extends EvaluatedDescription> result = la.getCurrentlyBestEvaluatedDescriptions(view.getPosAndNegSelectPanel().getOptionPanel().getNrOfConcepts());
-			
+			List<? extends EvaluatedDescription> result = la
+					.getCurrentlyBestEvaluatedDescriptions(view
+							.getPosAndNegSelectPanel().getOptionPanel()
+							.getNrOfConcepts());
+
 			return result;
 		}
 
@@ -353,35 +364,49 @@ public class ActionHandler implements ActionListener, ItemListener,
 		}
 
 		@Override
-		protected void process(List<List<? extends EvaluatedDescription>> resultLists) {
-
+		protected void process(
+				List<List<? extends EvaluatedDescription>> resultLists) {
 
 			for (List<? extends EvaluatedDescription> list : resultLists) {
 				updateList(list);
 			}
 		}
 
-		private void updateList(final List<? extends EvaluatedDescription> result) {
+		private void updateList(
+				final List<? extends EvaluatedDescription> result) {
 
-			
 			Runnable doUpdateList = new Runnable() {
-
-				
 
 				public void run() {
 					model.setSuggestList(result);
 					dm.clear();
 					int i = 0;
-					for(EvaluatedDescription eval : result) {
+					for (EvaluatedDescription eval : result) {
 						Set<String> ont = model.getOntologyURIString();
-						for(String ontology : ont) {
-							if(eval.getDescription().toString().contains(ontology)) {
-								//dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass)eval).getAccuracy()*100));
-								if(model.isConsistent(eval)) {
-									dm.add(i, new SuggestListItem(colorGreen, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass) eval).getAccuracy()*100));
+						for (String ontology : ont) {
+							if (eval.getDescription().toString().contains(
+									ontology)) {
+								// dm.add(i, new SuggestListItem(colorGreen,
+								// eval
+								// .getDescription().toManchesterSyntaxString
+								// (ontology, null),
+								// ((EvaluatedDescriptionClass)
+								// eval).getAccuracy()*100));
+								if (model.isConsistent(eval)) {
+									dm.add(i, new SuggestListItem(colorGreen,
+											eval.getDescription()
+													.toManchesterSyntaxString(
+															ontology, null),
+											((EvaluatedDescriptionClass) eval)
+													.getAccuracy() * 100));
 									break;
 								} else {
-									dm.add(i, new SuggestListItem(colorRed, eval.getDescription().toManchesterSyntaxString(ontology, null), ((EvaluatedDescriptionClass) eval).getAccuracy()*100));
+									dm.add(i, new SuggestListItem(colorRed,
+											eval.getDescription()
+													.toManchesterSyntaxString(
+															ontology, null),
+											((EvaluatedDescriptionClass) eval)
+													.getAccuracy() * 100));
 									view.setIsInconsistent(true);
 									break;
 								}
