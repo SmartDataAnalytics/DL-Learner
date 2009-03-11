@@ -110,9 +110,4 @@ public class OptionPanel extends JPanel {
 		return nrOfConcepts.getValue();
 	}
 	
-	public void resetOptions() {
-		minAccuracy.setValue(90);
-		maxExecutionTime.setValue(5);
-		nrOfConcepts.setValue(10);
-	}
 }

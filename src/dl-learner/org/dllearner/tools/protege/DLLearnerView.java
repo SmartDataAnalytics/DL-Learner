@@ -102,10 +102,9 @@ public class DLLearnerView {
 	private final JTextArea hint;
 	private boolean isInconsistent;
 	// This is the Panel for more details of the suggested concept
-	private MoreDetailForSuggestedConceptsPanel detail;
+	private final MoreDetailForSuggestedConceptsPanel detail;
 	private ReadingOntologyThread readThread;
 	private final OWLEditorKit editorKit;
-	private final String label;
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -115,7 +114,6 @@ public class DLLearnerView {
 	 * @param label String
 	 */
 	public DLLearnerView(String label, OWLEditorKit editor) {
-		this.label = label;
 		editorKit = editor;
 		model = new DLLearnerModel(editorKit, this);
 		model.setID(label);
@@ -129,7 +127,7 @@ public class DLLearnerView {
 		adv = new JLabel("Advanced Settings");
 		advanced = new JToggleButton(icon);
 		advanced.setVisible(true);
-		run = new JButton(label);
+		run = new JButton("Suggest " + label + " description");
 		accept = new JButton("ADD");
 		addButtonPanel = new JPanel(new BorderLayout());
 		sugPanel.addSuggestPanelMouseListener(action);
@@ -141,13 +139,15 @@ public class DLLearnerView {
 		learner = new JPanel();
 		advanced.setSize(20, 20);
 		learner.setLayout(null);
-		learner.setPreferredSize(new Dimension(600, 520));
+		//learner.setPreferredSize(new Dimension(600, 520));
+		learner.setSize(new Dimension(1024, 768));
 		accept.setPreferredSize(new Dimension(290, 50));
 		advanced.setName("Advanced");
 		posPanel = new PosAndNegSelectPanel(model, action);
-		addAcceptButtonListener(this.action);
-		addRunButtonListener(this.action);
-		addAdvancedButtonListener(this.action);
+		detail = new MoreDetailForSuggestedConceptsPanel(model);
+		this.addAcceptButtonListener(this.action);
+		this.addRunButtonListener(this.action);
+		this.addAdvancedButtonListener(this.action);
 		
 	}
 	
@@ -171,6 +171,9 @@ public class DLLearnerView {
 	 */
 	public void makeView() {
 		run.setEnabled(false);
+		System.out.println("hier");
+		detail.unsetPanel();
+		detail.setVisible(false);
 		hint.setText("To get suggestions for class descriptions, please click the button above.");
 		isInconsistent = false;
 		readThread = new ReadingOntologyThread(editorKit, this, model);
@@ -184,15 +187,16 @@ public class DLLearnerView {
 		sugPanel = sugPanel.updateSuggestClassList();
 		advanced.setSelected(false);
 		sugPanel.setBounds(10, 35, 490, 110);
-		adv.setBounds(40, 200, 200, 20);
+		adv.setBounds(40, 505, 200, 20);
 		wikiPane.setBounds(220, 0, 350, 30);
 		addButtonPanel.setBounds(510, 40, 80, 110);
 		run.setBounds(10, 0, 200, 30);
-		advanced.setBounds(10, 200, 20, 20);
+		advanced.setBounds(10, 505, 20, 20);
+		detail.setBounds(10, 195, 600, 300);
+		detail.setVisible(true);
 		sugPanel.setVisible(true);
 		posPanel.setVisible(false);
-		posPanel.setBounds(10, 230, 490, 250);
-		posPanel.getOptionPanel().resetOptions();
+		posPanel.setBounds(10, 535, 490, 250);
 		accept.setBounds(510, 40, 80, 110);
 		hint.setBounds(10, 150, 490, 35);
 		errorMessage.setBounds(10, 180, 490, 20);
@@ -205,8 +209,9 @@ public class DLLearnerView {
 		learner.add(hint);
 		learner.add(errorMessage);
 		learner.add(posPanel);
+		learner.add(detail);
 		this.renderErrorMessage("");
-		detail = new MoreDetailForSuggestedConceptsPanel(model);	
+			
 	}
 	/**
 	 * This method sets the right icon for the advanced Panel.
@@ -243,6 +248,7 @@ public class DLLearnerView {
 	 */
 	public void setExamplePanelVisible(boolean visible) {
 		posPanel.setVisible(visible);
+		detail.repaint();
 	}
 
 	/**
@@ -350,7 +356,7 @@ public class DLLearnerView {
 	 * This method sets the run button enable after learning.
 	 */
 	public void algorithmTerminated() {
-		String error = "learning succesful";
+		String error = "learning successful";
 		String message = "";
 		if(isInconsistent) {
 			message = "Class descriptions marked red will lead to an inconsistent ontology. \nPlease double click on them to view detail information.";

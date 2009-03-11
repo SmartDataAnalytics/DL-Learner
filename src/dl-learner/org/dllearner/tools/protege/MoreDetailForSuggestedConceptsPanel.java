@@ -18,18 +18,12 @@
  *
  */
 package org.dllearner.tools.protege;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.Set;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.WindowConstants;
 
 import org.dllearner.algorithms.EvaluatedDescriptionClass;
 import org.dllearner.core.EvaluatedDescription;
@@ -54,73 +48,22 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	
 	 // Textarea to render the accuracy of the concept
 	 
-	private JTextArea accuracy;
-	
-	 // Label for the positive examples that are covered by the concept
+	private final  JTextArea accuracy;
+
 	 
-	private JLabel coveredPositiveExamples;
-	
-	 // Label for the negative examples that are covered by the concept
-	 
-	private JLabel coveredNegativeExamples;
-	
-	 // Label for the positive examples that are not covered by the concept
-	 
-	private JLabel notCoveredPositiveExamples;
-	
-	 // Label for the negative examples that are not covered by the concept
-	 
-	private JLabel notCoveredNegativeExamples;
-	
-	 // Pop up panel for the informations of the selected concept
-	 
-	private JDialog detailPopup;
-	
-	 // Text area that shows the covered positive examples
-	 
-	private JTextArea posCoveredText;
-	
-	 // Text area that shows the positive examples that are not covered by the selected concept
-	 
-	private JTextArea posNotCoveredText;
-	
-	 // Text area that shows the covered negative examples
-	 
-	private JTextArea negCoveredText;
-	
-	 // Text area that shows the negative examples that are not covered by the selected concept 
-	 
-	private JTextArea negNotCoveredText;
-	
-	 // Text area that shows the accurcy of the selected concept
-	 
-	private JTextArea accuracyText;
-	
-	 // Scroll pane if scroll bar is necessary to show all covered examples
-	 
-	private JScrollPane posCoveredScroll;
-	private JScrollPane posNotCoveredScroll;
-	private JScrollPane negCoveredScroll;
-	private JScrollPane negNotCoveredScroll;
+	private final  JTextArea accuracyText;
 	 // Evaluated description of the selected concept
-	private JPanel conceptPanel;
-	private JPanel accuracyPanel;
-	private JPanel posCoveredPanel;
-	private JPanel posNotCoveredPanel;
-	private JPanel negCoveredPanel;
-	private JPanel negNotCoveredPanel;
+	private final  JPanel conceptPanel;
+
 	private EvaluatedDescription eval;
-	private JTextArea concept;
+	private final  JTextArea concept;
 	private Set<String> ontologiesStrings;
-	private JTextArea conceptText;
-	private final Color colorRed = new Color(139, 0, 0);
-	private final Color colorGreen = new Color(0, 139, 0);
+	private final  JTextArea conceptText;
 	private static final int HEIGHT = 500;
 	private static final int WIDTH = 600;
 	private GraphicalCoveragePanel p;
-	private final JButton allPositiveIndividuals;
-	private final JButton allNegativeIndividuals;
 	private final MoreDetailForSuggestedConceptsPanelHandler handler;
+
 	/**
 	 * This is the constructor for the Panel.
 	 * @param model DLLearnerModel
@@ -130,24 +73,28 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		setLayout(null);
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		this.model = model;
-		handler = new MoreDetailForSuggestedConceptsPanelHandler(model);
-		allPositiveIndividuals = new JButton("old");
-		allPositiveIndividuals.setBounds(100, 400, 50, 30);
-		allPositiveIndividuals.addActionListener(handler);
+		handler = new MoreDetailForSuggestedConceptsPanelHandler(this);
+		concept = new JTextArea("Class Description:");
 		
-		allNegativeIndividuals = new JButton("new");
-		allNegativeIndividuals.setBounds(400, 400, 50, 30);
-		allNegativeIndividuals.addActionListener(handler);
+		concept.setEditable(false);
 		
 		
-		
-	}
-	/**
-	 * This method returns the Detail Panel.
-	 * @return DetailPanel
-	 */
-	public JDialog getMoreDialog() {
-		return detailPopup;
+		conceptPanel = new JPanel(new GridLayout(0, 2));
+		conceptPanel.setBounds(5, 0, 800, 50);
+
+		accuracy = new JTextArea("Accuracy:");
+		accuracy.setEditable(false);
+		conceptText = new JTextArea();
+		conceptText.setEditable(false);
+
+		accuracyText = new JTextArea();
+		//sets accuracy text area not editable
+		accuracyText.setEditable(false);
+		accuracy.setVisible(false);
+		accuracyText.setVisible(false);
+		concept.setVisible(false);
+		conceptText.setVisible(false);
+
 	}
 
 	/**
@@ -155,120 +102,39 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	 * @param desc selected description
 	 */
 	public void renderDetailPanel(EvaluatedDescription desc) {
-		unsetEverything();
-		posCoveredScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		posCoveredScroll.setBounds(5, 150, 280, 140);
-		posNotCoveredScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		posNotCoveredScroll.setBounds(300, 150, 280, 140);
-		negCoveredScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		negCoveredScroll.setBounds(5, 325, 280, 140);
-		negNotCoveredScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		negNotCoveredScroll.setBounds(300, 325, 280, 140);
+		accuracy.setVisible(false);
+		accuracyText.setVisible(false);
+		concept.setVisible(false);
+		conceptText.setVisible(false);
 		eval = desc;
-		concept = new JTextArea("Class Description:");
-		
-		concept.setEditable(false);
-		coveredPositiveExamples = new JLabel("Covered Positive Examples:");
-		coveredPositiveExamples.setForeground(colorGreen);
-		coveredPositiveExamples.setBounds(5, 110, 280, 30);
-		notCoveredPositiveExamples = new JLabel("Not Covered Positive Examples");
-		notCoveredPositiveExamples.setForeground(colorRed);
-		notCoveredPositiveExamples.setBounds(300, 110, 280, 30);
-		coveredNegativeExamples = new JLabel("Covered Negative Examples:");
-		coveredNegativeExamples.setForeground(colorRed);
-		coveredNegativeExamples.setBounds(5, 295, 280, 30);
-		notCoveredNegativeExamples = new JLabel("Not Covered Negative Examples");
-		notCoveredNegativeExamples.setForeground(colorGreen);
-		notCoveredNegativeExamples.setBounds(300, 295, 280, 30);
-		
-		conceptPanel = new JPanel(new GridLayout(0, 1));
-		conceptPanel.setBounds(5, 0, 600, 50);
-		accuracyPanel = new JPanel(new GridLayout(0, 1));
-		accuracyPanel.setBounds(5, 60, 600, 50);
 
-		posCoveredPanel = new JPanel(new GridLayout(0, 1));
-		posNotCoveredPanel = new JPanel(new GridLayout(0, 1));
-		negCoveredPanel = new JPanel(new GridLayout(0, 1));
-		negNotCoveredPanel = new JPanel(new GridLayout(0, 1));
-		accuracy = new JTextArea("Accuracy:");
-		accuracy.setEditable(false);
-		conceptText = new JTextArea();
-		conceptText.setEditable(false);
-		posCoveredText = new JTextArea();
-		posCoveredText.setForeground(colorGreen);
-		//sets covered positive examples text area not editable
-		posCoveredText.setEditable(false);
-		posNotCoveredText = new JTextArea();
-		posNotCoveredText.setForeground(colorRed);
-		//sets not covered positive examples text area not editable
-		posNotCoveredText.setEditable(false);
-		negCoveredText = new JTextArea();
-		negCoveredText.setForeground(colorRed);
-		//sets covered negative examples text area not editable
-		negCoveredText.setEditable(false);
-		negNotCoveredText = new JTextArea();
-		negNotCoveredText.setForeground(colorGreen);
-		//sets not covered negative examples text area not editable
-		negNotCoveredText.setEditable(false);
-		accuracyText = new JTextArea();
-		//sets accuracy text area not editable
-		accuracyText.setEditable(false);
 		//panel for the informations of the selected concept
 		//this method adds the informations for the selected concept to the panel
-		setInformation();
+		this.setInformation();
 		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), WIDTH, HEIGHT-200, this);
-		p.setBounds(5, 110, 600, 300);
-		detailPopup = new JDialog();
-		detailPopup.setSize(WIDTH, HEIGHT);
-		 //window will be disposed if the x button is pressed
-		detailPopup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		detailPopup.setVisible(true);
-		detailPopup.setResizable(false);
+		p.setBounds(5, 60, 600, 350);
 		//adds all information to the example panel
+		unsetEverything();
+		conceptPanel.removeAll();
 		conceptPanel.add(concept);
+		conceptPanel.add(accuracy);
 		conceptPanel.add(conceptText);
+		conceptPanel.add(accuracyText);
+		conceptPanel.setVisible(true);
+		this.add(conceptPanel);
+		this.add(p);
+		this.addPropertyChangeListener(handler);
+		conceptPanel.addPropertyChangeListener(handler);
+		this.repaint();
+	}
 
-		accuracyPanel.add(accuracy);
-		accuracyPanel.add(accuracyText);
-
-		posCoveredScroll.setViewportView(posCoveredPanel);
-		posNotCoveredScroll.setViewportView(posNotCoveredPanel);
-		negCoveredScroll.setViewportView(negCoveredPanel);
-		negNotCoveredScroll.setViewportView(negNotCoveredPanel);
-		
-		add(conceptPanel);
-		add(accuracyPanel);
-		add(p);
-		add(allPositiveIndividuals);
-		add(allNegativeIndividuals);
-		handler.setEvaluadtedDescription(eval);
-		detailPopup.add(this);
-	}
-	
-	/**
-	 * This method returns the Button where you can get
-	 * all individuals of the old concept.
-	 * @return JButton
-	 */
-	public JButton getAllPositiveindividuals() {
-		return allPositiveIndividuals;
-	}
-	
-	/**
-	 * This method returns the Button where you can get
-	 * all individuals of the new concept.
-	 * @return JButton
-	 */
-	public JButton getAllNegativeIndividuals() {
-		return allNegativeIndividuals;
-	}
 	private void unsetEverything() {
 		removeAll();
 	}
 	/**
 	 * This method sets the Informations of the selected description.
 	 */
-	private void setInformation() {
+	public void setInformation() {
 		ontologiesStrings = model.getOntologyURIString();
 		if(eval!=null) {
 			//sets the accuracy of the selected concept
@@ -283,5 +149,37 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 			double acc = ((EvaluatedDescriptionClass) eval).getAccuracy()*100;
 			accuracyText.setText(String.valueOf(acc)+"%");
 			}
+		accuracy.setVisible(true);
+		accuracyText.setVisible(true);
+		concept.setVisible(true);
+		conceptText.setVisible(true);
 		}
-	}	
+
+
+	public GraphicalCoveragePanel getGraphicalCoveragePanel() {
+		return p;
+	}
+	public JPanel getConceptPanel() {
+		return conceptPanel;
+	}
+	public void unsetPanel() {
+		unsetEverything();
+		conceptPanel.removeAll();
+		accuracy.setVisible(false);
+		accuracyText.setVisible(false);
+		concept.setVisible(false);
+		conceptText.setVisible(false);
+		if(p != null) {
+			p.unsetPanel();
+		}
+		conceptPanel.add(concept);
+		conceptPanel.add(accuracy);
+		conceptPanel.add(conceptText);
+		conceptPanel.add(accuracyText);
+		conceptPanel.setVisible(false);
+		this.add(conceptPanel);
+
+		repaint();
+	}
+	
+}
