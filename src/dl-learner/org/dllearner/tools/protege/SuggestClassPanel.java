@@ -47,14 +47,13 @@ public class SuggestClassPanel extends JPanel {
 	
 	 //Scroll panel if the suggestions are longer than the Panel itself
 
-	private JScrollPane suggestScroll;
+	private final JScrollPane suggestScroll;
 	/**
 	 * This is the constructor for the suggest panel.
 	 * It creates a new Scroll panel and puts the Suggest List in it. 
 	 */
 	public SuggestClassPanel() {
 		super();
-		suggestScroll = new JScrollPane();
 		//renders scroll bars if necessary
 		suggestScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		descriptions = new JList();

@@ -108,7 +108,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 			model.setLearningProblem();
 			model.setLearningAlgorithm();
 			view.getRunButton().setEnabled(false);
-			view.renderErrorMessage("learning started");
+			view.renderErrorMessage("learning\nstarted");
 			retriever = new SuggestionRetriever();
 			retriever.execute();
 			// model.setCurrentConcept(null);
@@ -144,6 +144,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 		if (z.getActionCommand().equals("Why")) {
 			view.getMoreDetailForSuggestedConceptsPanel().renderDetailPanel(
 					evaluatedDescription);
+			view.setGraphicalPanel();
 			view.getMoreDetailForSuggestedConceptsPanel().repaint();
 		}
 	}
@@ -224,6 +225,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 			}
 			view.getMoreDetailForSuggestedConceptsPanel()
 					.renderDetailPanel(evaluatedDescription);
+			view.setGraphicalPanel();
 			view.getMoreDetailForSuggestedConceptsPanel().repaint();
 		}
 	}
@@ -310,9 +312,7 @@ public class ActionHandler implements ActionListener, ItemListener,
 					if (la != null) {
 						publish(la.getCurrentlyBestEvaluatedDescriptions(view
 								.getPosAndNegSelectPanel().getOptionPanel()
-								.getNrOfConcepts(), view
-								.getPosAndNegSelectPanel().getOptionPanel()
-								.getMinAccuracy(), false));
+								.getNrOfConcepts()));
 					}
 				}
 
