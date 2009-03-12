@@ -46,7 +46,7 @@ public class GraphicalCoveragePanel extends JPanel {
 	private static final int HEIGHT = 150;
 	private static final int WIDTH = 150;
 	private static final int ELLIPSE_X_AXIS = 5;
-	private static final int ELLIPSE_Y_AXIS = 25;
+	private static final int ELLIPSE_Y_AXIS = 5;
 	private static final int MAX_NUMBER_OF_INDIVIDUAL_POINTS = 20;
 	private static final int PLUS_SIZE = 5;
 	private static final int GAP = 20;
@@ -87,15 +87,11 @@ public class GraphicalCoveragePanel extends JPanel {
 	 *            DLLearnerModel
 	 * @param concept
 	 *            String
-	 * @param w
-	 *            width
-	 * @param h
-	 *            height
 	 * @param p
 	 *            MoreDetailForSuggestedConceptsPanel
 	 */
 	public GraphicalCoveragePanel(EvaluatedDescription desc, DLLearnerModel m,
-			String concept, int w, int h, MoreDetailForSuggestedConceptsPanel p) {
+			String concept, MoreDetailForSuggestedConceptsPanel p) {
 		this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 100));
 		this.setVisible(false);
 		this.setForeground(Color.GREEN);
@@ -117,7 +113,6 @@ public class GraphicalCoveragePanel extends JPanel {
 		this.computeIndividualPoints();
 		this.addMouseMotionListener(handler);
 		this.addMouseListener(handler);
-		// this.addPropertyChangeListener(handler);
 	}
 
 	@Override
@@ -130,12 +125,10 @@ public class GraphicalCoveragePanel extends JPanel {
 					AlphaComposite.SRC_OVER, 0.5f);
 			g2D.setColor(Color.YELLOW);
 			g2D.fill(oldConcept);
-			g2D.setColor(Color.BLACK);
-			g2D.drawString(model.getOldConceptOWLAPI().toString(), 10, 15);
-			g2D.setColor(Color.BLACK);
-			g2D.drawString(conceptNew, 10 + WIDTH, 15);
-			g2D.setComposite(ac);
+			g2D.drawString(model.getOldConceptOWLAPI().toString(), 310, 10);
 			g2D.setColor(Color.ORANGE);
+			g2D.drawString(conceptNew, 310, 30);
+			g2D.setComposite(ac);
 			g2D.fill(newConcept);
 			g2D.setColor(Color.BLACK);
 

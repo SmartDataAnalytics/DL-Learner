@@ -32,6 +32,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 
@@ -105,6 +106,8 @@ public class DLLearnerView {
 	private final MoreDetailForSuggestedConceptsPanel detail;
 	private ReadingOntologyThread readThread;
 	private final OWLEditorKit editorKit;
+	private final JPanel learnerPanel;
+	private final JScrollPane learnerScroll;
 
 	/**
 	 * The constructor for the DL-Learner tab in the class description
@@ -118,6 +121,10 @@ public class DLLearnerView {
 		model = new DLLearnerModel(editorKit, this);
 		model.setID(label);
 		sugPanel = new SuggestClassPanel();
+		learnerPanel = new JPanel();
+		learnerPanel.setLayout(new BorderLayout());
+		learnerPanel.setPreferredSize(new Dimension(600, 400));
+		learnerScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		action = new ActionHandler(model, this, label);
 		wikiPane = new JLabel("<html>See <a href=\"http://dl-learner.org/wiki/ProtegePlugin\">http://dl-learner.org/wiki/ProtegePlugin</a> for an introduction.</html>");
 		URL iconUrl = this.getClass().getResource("arrow.gif");
@@ -139,10 +146,9 @@ public class DLLearnerView {
 		learner = new JPanel();
 		advanced.setSize(20, 20);
 		learner.setLayout(null);
-		//learner.setPreferredSize(new Dimension(600, 520));
-		learner.setSize(new Dimension(1024, 768));
 		accept.setPreferredSize(new Dimension(290, 50));
 		advanced.setName("Advanced");
+		learnerScroll.setPreferredSize(new Dimension(600, 400));
 		posPanel = new PosAndNegSelectPanel(model, action);
 		detail = new MoreDetailForSuggestedConceptsPanel(model);
 		this.addAcceptButtonListener(this.action);
@@ -170,6 +176,7 @@ public class DLLearnerView {
 	 * This Method renders the view of the plugin.
 	 */
 	public void makeView() {
+		learner.remove(detail);
 		run.setEnabled(false);
 		System.out.println("hier");
 		detail.unsetPanel();
@@ -187,19 +194,19 @@ public class DLLearnerView {
 		sugPanel = sugPanel.updateSuggestClassList();
 		advanced.setSelected(false);
 		sugPanel.setBounds(10, 35, 490, 110);
-		adv.setBounds(40, 505, 200, 20);
+		adv.setBounds(40, 195, 200, 20);
 		wikiPane.setBounds(220, 0, 350, 30);
 		addButtonPanel.setBounds(510, 40, 80, 110);
 		run.setBounds(10, 0, 200, 30);
-		advanced.setBounds(10, 505, 20, 20);
+		advanced.setBounds(10, 195, 20, 20);
 		detail.setBounds(10, 195, 600, 300);
 		detail.setVisible(true);
 		sugPanel.setVisible(true);
 		posPanel.setVisible(false);
-		posPanel.setBounds(10, 535, 490, 250);
+		posPanel.setBounds(10, 225, 490, 250);
 		accept.setBounds(510, 40, 80, 110);
 		hint.setBounds(10, 150, 490, 35);
-		errorMessage.setBounds(10, 180, 490, 20);
+		errorMessage.setBounds(510, 100, 490, 50);
 		learner.add(run);
 		learner.add(wikiPane);
 		learner.add(adv);
@@ -209,7 +216,8 @@ public class DLLearnerView {
 		learner.add(hint);
 		learner.add(errorMessage);
 		learner.add(posPanel);
-		learner.add(detail);
+		learnerPanel.add(learner);
+		learnerScroll.setViewportView(learnerPanel);
 		this.renderErrorMessage("");
 			
 	}
@@ -226,6 +234,27 @@ public class DLLearnerView {
 		}
 	}
 	
+	public void setGraphicalPanel() {
+		learner.remove(posPanel);
+		learner.remove(advanced);
+		learner.remove(adv);
+		learner.repaint();
+		posPanel.setBounds(10, 535, 490, 250);
+		adv.setBounds(40, 505, 200, 20);
+		advanced.setBounds(10, 505, 20, 20);
+		detail.setBounds(10, 195, 600, 300);
+		detail.setVisible(true);
+		learner.add(adv);
+		learner.add(advanced);
+		learner.add(posPanel);
+		learner.add(detail);
+		learnerPanel.removeAll();
+		learnerPanel.add(learner);
+		learnerScroll.setViewportView(learnerPanel);
+		learnerScroll.repaint();
+		
+		
+	}
 	/**
 	 * This Method changes the hint message. 
 	 * @param message String hintmessage
@@ -356,12 +385,12 @@ public class DLLearnerView {
 	 * This method sets the run button enable after learning.
 	 */
 	public void algorithmTerminated() {
-		String error = "learning successful";
+		String error = "learning\nsuccessful";
 		String message = "";
 		if(isInconsistent) {
 			message = "Class descriptions marked red will lead to an inconsistent ontology. \nPlease double click on them to view detail information.";
 		} else {
-			message = "To view details about why a class description was suggested, please doubleclick on it.";
+			message = "To view details about why a class description was suggested, please click on it.";
 		}
 		run.setEnabled(true);
 		// start the algorithm and print the best concept found
@@ -370,7 +399,7 @@ public class DLLearnerView {
 	}
 	
 	public JComponent getLearnerView() {
-		return learner;
+		return learnerScroll;
 	}
 	
 	public DLLearnerModel getDLLearnerModel() {

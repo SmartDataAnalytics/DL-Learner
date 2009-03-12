@@ -59,7 +59,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 	private final  JTextArea concept;
 	private Set<String> ontologiesStrings;
 	private final  JTextArea conceptText;
-	private static final int HEIGHT = 500;
+	private static final int HEIGHT = 350;
 	private static final int WIDTH = 600;
 	private GraphicalCoveragePanel p;
 	private final MoreDetailForSuggestedConceptsPanelHandler handler;
@@ -111,8 +111,8 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		//panel for the informations of the selected concept
 		//this method adds the informations for the selected concept to the panel
 		this.setInformation();
-		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), WIDTH, HEIGHT-200, this);
-		p.setBounds(5, 60, 600, 350);
+		p = new GraphicalCoveragePanel(eval, model, conceptText.getText(), this);
+		p.setBounds(5, 0, 600, 350);
 		//adds all information to the example panel
 		unsetEverything();
 		conceptPanel.removeAll();
@@ -121,7 +121,7 @@ public class MoreDetailForSuggestedConceptsPanel extends JPanel {
 		conceptPanel.add(conceptText);
 		conceptPanel.add(accuracyText);
 		conceptPanel.setVisible(true);
-		this.add(conceptPanel);
+		//this.add(conceptPanel);
 		this.add(p);
 		this.addPropertyChangeListener(handler);
 		conceptPanel.addPropertyChangeListener(handler);

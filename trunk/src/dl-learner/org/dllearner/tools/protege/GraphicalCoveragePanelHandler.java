@@ -71,6 +71,24 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 	@Override
 	public void mouseMoved(MouseEvent m) {
 		panel.getMoreDetailForSuggestedConceptsPanel().repaint();
+		if (m.getX() >= panel.getX1() + panel.getShiftCovered()
+				&& m.getX() <= panel.getX2() + panel.getShiftCovered()
+				&& m.getY() >= panel.getY1() && m.getY() <= panel.getY2()
+				|| m.getX() >= panel.getX1() + panel.getShiftNewConcept()
+				&& m.getX() <= panel.getX2() + panel.getShiftNewConcept()
+				&& m.getY() >= panel.getY1() && m.getY() <= panel.getY2()
+				|| m.getX() >= panel.getX1() + panel.getShiftNewConceptX()
+				&& m.getX() <= panel.getX2() + panel.getShiftNewConceptX()
+				&& m.getY() >= panel.getY1() + panel.getShiftNewConcept()
+				&& m.getY() <= panel.getY2() + panel.getShiftNewConcept()
+				|| m.getX() >= panel.getX1() - panel.getShiftOldConcept()
+				&& m.getX() <= panel.getX2() - panel.getShiftOldConcept()
+				&& m.getY() >= panel.getY1() && m.getY() <= panel.getY2()) {
+			panel.getGraphicalCoveragePanel().setToolTipText(
+					"To view all Individuals please click on the plus");
+		} else {
+			panel.getGraphicalCoveragePanel().setToolTipText(null);
+		}
 		Vector<IndividualPoint> v = panel.getIndividualVector();
 		for (int i = 0; i < v.size(); i++) {
 			if (v.get(i).getXAxis() >= m.getX() - 5
@@ -80,9 +98,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 				panel.getGraphicalCoveragePanel().setToolTipText(
 						v.get(i).getIndividualName());
 			}
-
 		}
-
 	}
 
 	@Override
